@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.1 2007/12/20 09:55:31 franciscom Exp $
+$Id: usersView.tpl,v 1.2 2007/12/21 22:57:17 schlundus Exp $
 
 Purpose: smarty template - users overview
 
@@ -94,7 +94,7 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 			{section name=row loop=$users start=0}
 				{assign var="user" value="$users[row]"}
 				{assign var="userLocale" value=$user->locale}
-				{assign var="r_d" value=$user->globalRole->description}
+				{assign var="r_d" value=$user->globalRole->name}
 
 				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
 				<td><a href="lib/usermanagement/usersedit.php?user_id={$user->dbID}"> 

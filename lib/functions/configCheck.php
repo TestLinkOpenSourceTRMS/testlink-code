@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/12/19 20:27:19 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/12/21 22:57:17 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -19,19 +19,14 @@
  * 20060103 - scs - ADOdb changes
  **/
 // ---------------------------------------------------------------------------------------------------
-
 require_once('plan.core.inc.php');
 
 /*
   function: 
            try to get home url.
            Code from Mantis Bugtracking system
-
-  args :
   
   returns: 
-
- 
 */
 function get_home_url()
 {
@@ -157,13 +152,22 @@ function checkForAdminDefaultPwd(&$db)
 	
 	$user = new tlUser();
 	$user->login = "admin";
-	if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == OK && 
-		 $user->comparePassword("admin") == OK)
+	if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == tl::OK && 
+		 $user->comparePassword("admin") == tl::OK)
 		$bDefaultPwd = true;
 		
 	return $bDefaultPwd;
 }
 
+function checkForLDAPExtension(&$bLDAPEnabled)
+{
+	$login_method = config_get('login_method');
+	
+	$bLDAPEnabled = ('LDAP' == $login_method )? 1 : 0;
+	if(!$bLDAPEnabled || ($bLDAPEnabled && extension_loaded("ldap")))
+		return true;
+	return 	false;
+}
 /**
  * builds the security notes while checking some security issues
  * these notes should be displayed!
@@ -178,69 +182,41 @@ function checkForAdminDefaultPwd(&$db)
  **/
 function getSecurityNotes(&$db)
 {
-  $repository['type']=config_get('repositoryType');
-  $repository['path']=config_get('repositoryPath');
+	$repository['type'] = config_get('repositoryType');
+	$repository['path'] = config_get('repositoryPath');
   
-  $login_method = config_get('login_method');
-  $ldap_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
-
-
 	$securityNotes = null;
 	if (checkForInstallDir())
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
 
-  if($ldap_password_mgmt)
-  {
-    // check is LDAP extension is loaded
-    if( !extension_loaded("ldap") )
-    {
-      $securityNotes[] = lang_get("ldap_extension_not_loaded");
-    }  
-  }
-  else
-  {
-	  if(checkForAdminDefaultPwd($db))
-	  {
-		  $securityNotes[] = lang_get("sec_note_admin_default_pwd");
-		}    
-  }
+	$bLDAPEnabled = false;
+	if (!checkForLDAPExtension($bLDAPEnabled))
+		$securityNotes[] = lang_get("ldap_extension_not_loaded");
+    if (!$bLDAPEnabled && checkForAdminDefaultPwd($db))
+		$securityNotes[] = lang_get("sec_note_admin_default_pwd");
   
-  
-	// 20060413 - franciscom
 	if (!checkForBTSconnection())
-	{
 		$securityNotes[] = lang_get("bts_connection_problems");
-	}
 		
-	// 20060429 - franciscom	
-  if( $repository['type'] == TL_REPOSITORY_TYPE_FS )
-  {
-    $ret = checkForRepositoryDir($repository['path']);
-    
-	  if(!$ret['status_ok'])
-	  {
-		  $securityNotes[] = $ret['msg'];
-	  }
+	if($repository['type'] == TL_REPOSITORY_TYPE_FS )
+	{
+		$ret = checkForRepositoryDir($repository['path']);
+		if(!$ret['status_ok'])
+			$securityNotes[] = $ret['msg'];
 	}
 
-  // 20070121 - needed when schemas change has been done
-  // This call can be removed when release is stable
-  $my_msg=check_schema_version($db);
-  if( strlen(trim($my_msg)) > 0 )
-  {
-    $securityNotes[] = $my_msg;
-  }
+	// 20070121 - needed when schemas change has been done
+	// This call can be removed when release is stable
+	if(strlen(trim(check_schema_version($db))))
+		$securityNotes[] = $my_msg;
   
-  // 20070911 - fixing bug 1021 
-  $my_msg=checkForTestPlansWithoutTestProjects($db);
-  if (strlen(trim($my_msg)) > 0)
-  {	
-	$securityNotes[] = $my_msg;
-  }
+	// 20070911 - fixing bug 1021 
+	if (strlen(trim(checkForTestPlansWithoutTestProjects($db))))
+		$securityNotes[] = $my_msg;
+	
+	checkForExtensions($securityNotes);
   
-  checkForExtensions($securityNotes);
-  
-  return $securityNotes;
+	return $securityNotes;
 }
 
 

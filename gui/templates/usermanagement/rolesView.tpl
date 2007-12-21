@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.2 2007/12/20 20:36:35 schlundus Exp $ 
+$Id: rolesView.tpl,v 1.3 2007/12/21 22:57:17 schlundus Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -54,7 +54,7 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 <div class="workBack">
 {if $affectedUsers neq null}
   {* show user list of users having role he/she want to delete *}
-  <h1>{lang_get s='delete_role'} {$roles[$id].role|escape}</h1>
+  <h1>{lang_get s='delete_role'} {$roles[$id]->name|escape}</h1>
   
 	<table class="common" style="width:50%">
 	<caption>{lang_get s='caption_possible_affected_users'}</caption>
@@ -64,7 +64,7 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 	</tr>
 	{/foreach}
 	</table>
-	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} => {$roles[$role_id_replacement].role|escape}</div><br />
+	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} => {$roles[$role_id_replacement]->name|escape}</div><br />
 	<div class="groupBtn">	
 		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" 
 		       onclick="location='lib/usermanagement/rolesview.php?confirmed=1&amp;deleterole=1&amp;id={$id}'"/>
@@ -85,30 +85,30 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 			{foreach from=$roles item=role}
 			<tr>
 				<td>
-					<a href="lib/usermanagement/rolesedit.php?id={$role.id}">
-						{$role.role|escape}
-   		      {if $gsmarty_gui->show_icon_edit}
+					<a href="lib/usermanagement/rolesedit.php?id={$role->dbID}">
+						{$role->name|escape}
+						{if $gsmarty_gui->show_icon_edit}
  						  <img title="{lang_get s='alt_edit_role'}" 
  						       alt="{lang_get s='alt_edit_role'}" 
  						       title="{lang_get s='alt_edit_role'}" 
- 						       src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
+ 						       src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png" />
  						{/if}       
 					</a>
 				</td>
 				<td>
-					{$role.notes|strip_tags|strip}
+					{$role->description|strip_tags|strip}
 				</td>
 				<td>
-				{if $role.id > $smarty.const.TL_LAST_SYSTEM_ROLE}
-		       <img style="border:none;cursor: pointer;" 
-  				            title="{lang_get s='alt_delete_role'}" 
-  				            alt="{lang_get s='alt_delete_role'}" 
- 					            onclick="delete_confirmation({$role.id},'{$role.role|escape:'javascript'}',
- 					                                         '{$del_msgbox_title}','{$warning_msg}');"
-  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
-				{else}
-					{lang_get s='N_A'}
-				{/if}
+					{if $role->dbID > $smarty.const.TL_LAST_SYSTEM_ROLE}
+				       <img style="border:none;cursor: pointer;" 
+		  				            title="{lang_get s='alt_delete_role'}" 
+		  				            alt="{lang_get s='alt_delete_role'}" 
+		 					            onclick="delete_confirmation({$role->dbID},'{$role->name|escape:'javascript'}',
+		 					                                         '{$del_msgbox_title}','{$warning_msg}');"
+		  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
+					{else}
+						{lang_get s='N_A'}
+					{/if}
 				</td>
 			</tr>
 			{/foreach}

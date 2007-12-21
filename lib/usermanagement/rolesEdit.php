@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
  *
  *
  * 20071201 - franciscom - new web editor code
@@ -18,7 +18,6 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("web_editor.php");
-
 testlinkInitPage($db);
 
 $template_dir = 'usermanagement/';
@@ -30,7 +29,6 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 // We need to be sure _SESSION info exists before using lang_get(); in any module.
 //
 init_global_rights_maps();
-
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
@@ -85,23 +83,19 @@ $role = null;
 $affectedUsers = null;
 $allUsers = null;
 
-$roles = getRoles($db,$id);
-if (sizeof($roles) && $id)
+$role = tlRole::getByID($db,$id);
+if($role)
 {
-	$role = $roles[$id];
-	if($role)
+	//build the checked attribute for the checkboxes
+	for($i = 0;$i < sizeof($role->rights);$i++)
 	{
-		//build the checked attribute for the checkboxes
-		$rights = explode(",",$role['rights']);
-		for($i = 0;$i < sizeof($rights);$i++)
-		{
-			$roleRights[$rights[$i]] = "checked=\"checked\"";
-		}
-		//get all users which are affected by changing the role definition
-		$allUsers = tlUser::getAll($db,null,"id");
-		$affectedUsers = getAllUsersWithRole($db,$id);
-		$of->Value = isset($role['notes']) ? $role['notes'] : '';
+		$right = $role->rights[$i];
+		$roleRights[$right->name] = "checked=\"checked\"";
 	}
+	//get all users which are affected by changing the role definition
+	$allUsers = tlUser::getAll($db,null,"id");
+	$affectedUsers = getAllUsersWithRole($db,$role->dbID);
+	$of->Value = $role->description;
 }
 
 $smarty = new TLSmarty();

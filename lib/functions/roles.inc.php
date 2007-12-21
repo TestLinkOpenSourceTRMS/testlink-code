@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/12/20 20:36:35 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -144,6 +144,7 @@ $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_righ
  * @param string $column [default = 'id'] column used as the key for the map
  * @return array assoc. array with keys from the column
  **/
+ //SCHLUNDUS: 50% refactored
 function getAllRights(&$db,$column = 'id')
 {
 	$query = "SELECT id,description FROM rights ORDER BY id ASC";
@@ -420,6 +421,7 @@ function getAllUsersWithRole(&$db,$roleID)
  * @param int $roleID the role id
  * @return int returns 1 on success, 0 else
  **/
+ //SCHLUNDUS: 50% refactored
 function deleteRoleRights(&$db,$roleID)
 {
 	$query = "DELETE FROM role_rights WHERE role_id = {$roleID}";
@@ -435,6 +437,7 @@ function deleteRoleRights(&$db,$roleID)
  * @param int $roleID the role id
  * @return int return 1 on success, 0 else
  **/
+  //SCHLUNDUS: 50% refactored
 function deleteRole(&$db,$roleID)
 {
 	if (deleteRoleRights($db,$roleID))
@@ -564,6 +567,7 @@ function getRoles(&$db)
  * @return array returns assoc-array in the form of 
  * 				 roles[role_id] => role_description
  **/
+ //SCHLUNDUS: 50% refactored
 function getAllRoles(&$db,$add_inherited=1)
 {
   

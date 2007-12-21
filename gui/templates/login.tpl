@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.15 2007/08/18 14:08:26 franciscom Exp $
+$Id: login.tpl,v 1.16 2007/12/21 22:57:17 schlundus Exp $
 Purpose: smarty template - login page 
 
 20070818 - franciscom - BUGID xxxx
@@ -16,16 +16,14 @@ window.onload=function(){
  Nifty("div#login_div","big");
  Nifty("div.warning_message","normal");
  Nifty("div.login_warning_message","normal");
- document.forms[0].elements[0].focus();
+ if (document.forms[0])
+	document.forms[0].elements[0].focus();
 }
 </script>
 {/literal}
 
-
 </head>
-
 <body>
-
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
 <div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
 <div class="forms" id="login_div">
@@ -50,8 +48,7 @@ window.onload=function(){
 	  <a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
 	{/if}
 	
-	{* BUGID xxxx
-	   the configured authentication method don't allow users to reset his/her password *}		
+	{* the configured authentication method don't allow users to reset his/her password *}		
 	{if $external_password_mgmt eq 0}
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>

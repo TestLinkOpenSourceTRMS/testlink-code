@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.54 2007/12/17 21:56:35 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.55 2007/12/21 22:57:18 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -125,7 +125,7 @@ $totals = $re->getTotalsForPlan();
 $arrKeywords = $tplan_mgr->get_keywords_map($tplan_id); 
 $arrBuilds = $tplan_mgr->get_builds($tplan_id); 
 $mapBuilds = $tplan_mgr->get_builds_for_html_options($tplan_id);
-$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
+$arrOwners = getUsersForHtmlOptions($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 
 
 

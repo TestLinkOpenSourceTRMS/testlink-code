@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/12/09 17:24:13 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20071110 - franciscom - solved (auto)bug when refactoring get_path

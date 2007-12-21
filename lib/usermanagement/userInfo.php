@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.1 $
-* @modified $Date: 2007/12/20 09:40:12 $
+* @version $Revision: 1.2 $
+* @modified $Date: 2007/12/21 22:57:18 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -33,7 +33,7 @@ $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $user = new tlUser($userID);
 $user->readFromDB($db);
 
-$updateResult = OK;
+$updateResult = tl::OK;
 if ($bEdit)
 {
 	$user->firstName = $first;
@@ -44,23 +44,20 @@ if ($bEdit)
 else if ($bChangePwd)
 {
 	$updateResult = $user->comparePassword($old);
-	if ($updateResult == OK)
+	if ($updateResult == tl::OK)
 		$updateResult = $user->setPassword($new);
 }
-if (($bEdit || $bChangePwd) && $updateResult == OK)
+if (($bEdit || $bChangePwd) && $updateResult == tl::OK)
 {
 	$updateResult = $user->writeToDB($db);
-	if ($updateResult == OK)
+	if ($updateResult == tl::OK)
 		setUserSession($db,$user->login, $userID, $user->globalRoleID, $user->emailAddress, $user->locale);
 }
 $msg = getUserErrorMessage($updateResult);
 $user->readFromDB($db);
 
-$login_method = config_get('login_method');
-$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
-
 $smarty = new TLSmarty();
-$smarty->assign('external_password_mgmt', $external_password_mgmt);
+$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('user',$user);
 $smarty->assign('msg', $msg);
 $smarty->assign('update_title_bar', $bEdit);

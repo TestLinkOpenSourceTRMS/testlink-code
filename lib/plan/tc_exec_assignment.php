@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.13 2007/12/02 17:16:02 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.14 2007/12/21 22:57:18 schlundus Exp $ 
  * 
  * rev :
  *       20070912 - franciscom - BUGID 1041
@@ -102,7 +102,7 @@ if($do_action)
   }  
 }
 
-$users = get_users_for_html_options($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
+$users = getUsersForHtmlOptions($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
 
 $map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id, $tproject_name,
                                                     $tplan_id,$tplan_name,$keyword_id);

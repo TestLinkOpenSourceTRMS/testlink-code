@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/12/19 18:27:06 $  $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/12/21 22:57:18 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -645,12 +645,12 @@ function count_testcases($id)
 
 	function deleteKeywords($testproject_id)
 	{
-		$result = OK;
+		$result = tl::OK;
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
 		for($i = 0;$i < sizeof($kwIDs);$i++)
 		{
 			$resultKw = $this->deleteKeyword($kwIDs[$i]);
-			if ($resultKw != OK)
+			if ($resultKw != tl::OK)
 				$result = $resultKw;
 		}
 		return $result;
@@ -720,11 +720,11 @@ function count_testcases($id)
 			{ 
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
-				if ($k->readFromCSV(implode($delim,$data)) == OK)
+				if ($k->readFromCSV(implode($delim,$data)) == tl::OK)
 					$k->writeToDB($this->db);
 			}
 			fclose($handle);
-			return OK;
+			return tl::OK;
 		}
 		else
 			return ERROR;
@@ -753,13 +753,13 @@ function count_testcases($id)
 			{
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
-				if ($k->readFromSimpleXML($keyword) == OK)
+				if ($k->readFromSimpleXML($keyword) == tl::OK)
 					$k->writeToDB($this->db);
 				else
 					return tlKeyword::KW_E_WRONGFORMAT;
 			}
 		}
-		return OK;
+		return tl::OK;
 	}
 	
 	/*

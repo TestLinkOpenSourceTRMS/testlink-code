@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2007/12/20 20:36:35 $ $Author: schlundus $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2007/12/21 22:57:18 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -16,316 +16,9 @@
  * 20060224 - franciscom - changes in session product -> testproject
  */
 require_once("common.php");
-
-//SCHLUNDUS: I will cleanup this file step by step
-//SCHLUNDUS: not completed
-class tlUser extends tlDBObject
-{
-	public $firstName;
-	public $lastName;
-	public $emailAddress;
-	public $locale;
-	public $bActive;
-	public $defaultTestprojectID;
-	public $globalRole;
-	public $globalRoleID;
-	public $login;
-	protected $password;
-	
-	//configuration options
-	protected $showRealname;
-	protected $usernameFormat;
-	protected $loginMethod;
-	protected $maxLoginLength;
-	
-	//error codes ...
-	const USER_E_LOGINLENGTH = -1;
-	const USER_E_EMAILLENGTH = -2;
-	const USER_E_NOTALLOWED = -4;
-	const USER_E_DBERROR = -8;
-	const USER_E_FIRSTNAMELENGTH = -16;
-	const USER_E_LASTNAMELENGTH = -32;
-	const USER_E_PWDEMPTY = -64;
-	const USER_E_PWDDONTMATCH = -128;
-	const USER_E_LOGINALREADYEXISTS = -256;
-
-	//search options
-	const USER_O_SEARCH_BYLOGIN = 2;
-	
-	function __construct($dbID = null)
-	{
-		parent::__construct($dbID);
-		
-		$this->showRealname = config_get('show_realname');
-		$this->usernameFormat = config_get('username_format');
-		$this->loginRegExp = config_get('user_login_valid_regex');
-		$this->maxLoginLength = 30; 
-		$this->loginMethod = config_get('login_method');
-		
-		$this->globalRoleID = TL_DEFAULT_ROLEID;
-		$this->locale =  TL_DEFAULT_LOCALE;
-		$this->bActive = 1;
-	}
-	
-	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
-	{
-		$this->firstName = null;
-		$this->lastName = null;
-		$this->emailAddress = null;
-		$this->locale = null;
-		$this->password = null;
-		$this->bActive = null;
-		$this->defaultTestprojectID = null;
-		$this->globalRoleID = null;
-		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-			$this->dbID = null;
-		if (!($options & self::USER_O_SEARCH_BYLOGIN))
-			$this->login = null;
-
-	}
-	/* fills the members  */
-	function create()
-	{
-	}
-	//BEGIN interface iDBSerialization
-	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
-	{
-		$this->_clean($options);
-		$query = "SELECT id,login,password,first,last,email,role_id,locale, login AS fullname, active,default_testproject_id FROM users";
-		
-		$clauses = null;
-		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-			$clauses[] = "id = {$this->dbID}";		
-		if ($options & self::USER_O_SEARCH_BYLOGIN)
-			$clauses[] = "login = '".$db->prepare_string($this->login)."'";		
-		if ($clauses)
-			$query .= " WHERE " . implode(" AND ",$clauses);
-		$info = $db->fetchFirstRow($query);			 
-		if ($info)
-		{
-			$this->dbID = $info['id'];
-			$this->firstName = $info['first'];
-			$this->lastName = $info['last'];
-			$this->login = $info['login'];
-			$this->emailAddress = $info['email'];
-			$this->globalRoleID = $info['role_id'];
-			
-			if ($this->globalRoleID)
-			{
-				$this->globalRole = new tlRole($this->globalRoleID);
-				$this->globalRole->readFromDB($db);
-			}
-			
-			$this->locale = $info['locale'];
-			$this->password = $info['password'];
-			$this->bActive = $info['active'];
-			$this->defaultTestprojectID = $info['default_testproject_id'];
-		}
-		return $info ? OK : ERROR;
-	}
-	public function writeToDB(&$db)
-	{
-		$result = $this->checkDetails($db);
-		if ($result == OK)
-		{		
-			if($this->dbID)
-			{
-				$query = "UPDATE users " .
-			       "SET first='" . $db->prepare_string($this->firstName) . "'" .
-			       ", last='" .  $db->prepare_string($this->lastName)    . "'" .
-			       ", email='" . $db->prepare_string($this->emailAddress)   . "'" .
-				   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
-				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
-				   ", role_id = ". "'" . $db->prepare_string($this->globalRoleID) . "'" .
-				   ", active = ". "'" . $db->prepare_string($this->bActive) . "'" ;
-				$query .= " WHERE id=" . $this->dbID;
-				$result = $db->exec_query($query);
-			}
-			else
-			{
-				$query = "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
-							VALUES ('" . 
-							$db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
-							$db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
-							$db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
-							$db->prepare_string($this->locale). "'," . $this->bActive . ")";
-				$result = $db->exec_query($query);
-				if($result)
-					$this->dbID = $db->insert_id('users');
-			}
-			$result = $result ? OK : self::USER_E_DBERROR;
-		}
-		return $result;
-	}	
-	public function deleteFromDB(&$db)
-	{
-		$query = "DELETE FROM users WHERE id=" . $this->dbID;
-		$result = $db->exec_query($query);
-			
-		return $result ? OK : ERRROR;
-	}
-	
-	public function getDisplayName()
-	{
-		if (!$this->showRealname)
-			return $this->login;
-
-		$keys = array('%first%','%last%','%login%','%email%');
-		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
-		
-		$displayName = trim(str_replace($keys,$values,$this->usernameFormat));
-	
-		return $displayName;
-	}
-	protected function encryptPassword($pwd)
-	{
-		return md5($pwd);
-	}
-	public function setPassword($pwd)
-	{
-		if ($this->loginMethod == 'MD5' && !strlen($pwd))
-			return self::USER_E_PWDEMPTY;
-		$this->password = $this->encryptPassword($pwd);
-		return OK;
-	}
-	public function getPassword()
-	{
-		return $this->password;
-	}
-	public function comparePassword($pwd)
-	{
-		if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
-			return OK;
-		return self::USER_E_PWDDONTMATCH;		
-	}
-	
-	public function checkDetails(&$db)
-	{
-		$this->firstName = trim($this->firstName);
-		$this->lastName = trim($this->lastName);
-		$this->emailAddress = trim($this->emailAddress);
-		$this->locale = trim($this->locale);
-		$this->bActive = intval($this->bActive);
-		$this->login = trim($this->login);
-	
-		$result = tlUser::checkEmailAdress($this->emailAddress);
-		if ($result == OK)
-			$result = $this->checkLogin($this->login);
-		if ($result == OK && !$this->dbID)
-			$result = tlUser::doesUserExist($db,$this->login) ? self::USER_E_LOGINALREADYEXISTS : OK;
-		if ($result == OK)
-			$result = tlUser::checkFirstName($this->firstName);
-		if ($result == OK)
-			$result = tlUser::checkLastName($this->lastName);
-			
-		return $result;
-	}
-	public function checkLogin($login)
-	{
-		$result = OK;
-		$login = trim($login);
-		//simple check for empty login, or login consisting only of whitespaces
-		//The DB field is only 30 characters
-		if (!strlen($login) || (strlen($login) > $this->maxLoginLength))
-			$result = self::USER_E_LOGINLENGTH;
-		else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
-			$result = self::USER_E_NOTALLOWED;
-
-		return $result;
-	}
-	static public function checkEmailAdress($email)
-	{
-		return is_blank($email) ? self::USER_E_EMAILLENGTH : OK;
-	}
-	static public function checkFirstName($first)
-	{
-		return is_blank($first) ? self::USER_E_FIRSTNAMELENGTH : OK;
-	}
-	static public function checkLastName($last)
-	{
-		return is_blank($last) ? self::USER_E_LASTNAMELENGTH : OK;
-	}
-	static public function doesUserExist(&$db,$login)
-	{
-		$user = new tlUser();
-		$user->login = $login;
-		if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == OK)
-			return $user->dbID;
-		return null;
-	}
-	static public function getByID(&$db,$id)
-	{
-		if ($id)
-			return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlUser::TLOBJ_O_SEARCH_BY_ID);
-		return null;
-	}
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null)
-	{
-		$query = " SELECT id FROM users";
-		if (!is_null($whereClause))
-			$query .= ' '.$whereClause;
-	
-		$query .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
-	
-		return tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true);
-	}
-}
-
-class tlRole extends tlDBObject
-{
-	public $description;
-	public $notes;
-	
-	function __construct($dbID = null)
-	{
-		parent::__construct($dbID);
-	}
-	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
-	{
-		$this->description = null;
-		$this->notes = null;
-		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-			$this->dbID = null;
-	}
-	//BEGIN interface iDBSerialization
-	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
-	{
-		$this->_clean($options);
-		$query = "SELECT id,description, notes FROM roles";
-		
-		$clauses = null;
-		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-			$clauses[] = "id = {$this->dbID}";		
-		if ($clauses)
-			$query .= " WHERE " . implode(" AND ",$clauses);
-			
-		$info = $db->fetchFirstRow($query);			 
-		if ($info)
-		{
-			$this->description = $info['description'];
-			$this->notes = $info['notes'];
-		}
-		return $info ? OK : ERROR;
-	}
-	public function writeToDB(&$db)
-	{
-	
-	}
-	public function deleteFromDB(&$db)
-	{
-	
-	}
-	static public function getByID(&$db,$id)
-	{
-		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlRole::TLOBJ_O_SEARCH_BY_ID);
-	}
-	
-}
-
-if( 'LDAP' == config_get('login_method') )
-{
-  require_once(dirname(__FILE__) . "/ldap_api.php");
-}
+require_once("user.class.php");
+if('LDAP' == config_get('login_method') )
+	require_once(dirname(__FILE__) . "/ldap_api.php");
 
 
 /**
@@ -365,7 +58,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 		$roleID = intval($roleID);
 		$_SESSION['roleID'] = $roleID; 
 		$role = new tlRole($roleID);
-		if ($role->readFromDb($db) == OK)
+		if ($role->readFromDb($db) == tl::OK)
 			$_SESSION['role'] = $role->description;
 		tLog('setUserSession: $user='.$_SESSION['role']);
 	}
@@ -402,7 +95,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	return 1;
 }
 
-function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=false)
+function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false)
 {
 	$users_map = null;
 	$users = tlUser::getAll($db,$whereClause,"id");
@@ -423,13 +116,14 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	$errorMsg = '';
 	$user = new tlUser($userID);
 	$result = $user->readFromDB($db);
-	if ($result == OK)
+	if ($result == tl::OK)
 	{
 		if (strlen($user->emailAddress))
 		{
 			$newPassword = md5(uniqid(rand(),1));
 			$result = $user->setPassword($newPassword);
-			if ($result == OK)
+			var_dump($result);
+			if ($result == tl::OK)
 			{
 				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');  
 				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,  
@@ -438,7 +132,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 					$result = $user->writeToDB($db);
 				else
 				{
-					$result = ERROR;
+					$result = tl::ERROR;
 					$errorMsg = $mail_op->msg;
 				}
 			}
@@ -457,7 +151,7 @@ function getUserErrorMessage($code)
 	$msg = 'ok';
 	switch($code)
 	{
-		case OK:
+		case tl::OK:
 			break;
 		case tlUser::USER_E_LOGINLENGTH:
 			$msg = lang_get('error_user_login_length_error');
@@ -482,6 +176,9 @@ function getUserErrorMessage($code)
 			break;
 		case tlUser::USER_E_PWDDONTMATCH:
 			$msg = lang_get('passwd_dont_match');
+			break;
+		case tlUser::USER_S_PWDMGTEXTERNAL	:
+			$msg = lang_get('password_mgmt_is_external');
 			break;
 		case ERROR:
 		case tlUser::USER_E_DBERROR:

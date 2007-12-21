@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.7 2007/12/19 21:33:40 schlundus Exp $
-* @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.8 2007/12/21 22:57:18 schlundus Exp $
+* @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -80,12 +80,12 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			$this->notes = $info['notes'];
 			$this->testprojectID = $info['testproject_id'];
 		}
-		return $info ? OK : ERROR;
+		return $info ? tl::OK : tl::ERROR;
 	}
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);
-		if ($result == OK)
+		if ($result == tl::OK)
 		{
 			$name = $db->prepare_string($this->name);
 			$notes = $db->prepare_string($this->notes);
@@ -105,7 +105,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				if ($result)
 					$this->dbID = $db->insert_id('keywords');
 			}
-			$result = $result ? OK : self::KW_E_DBERROR;
+			$result = $result ? tl::OK : self::KW_E_DBERROR;
 		}
 		return $result;
 	}
@@ -114,10 +114,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->name = trim($this->name);
 		$this->notes = trim($this->notes);
 		
-		$result = OK;
+		$result = tl::OK;
 		if (!$this->allowDuplicateKeywords)
 			$result = tlKeyword::doesKeywordExist($db,$this->name,$this->testprojectID,$this->dbID);
-		if ($result == OK)
+		if ($result == tl::OK)
 			$result = tlKeyword::checkKeywordName($this->name);
 			
 		return $result;
@@ -136,12 +136,17 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			$sql = "DELETE FROM keywords WHERE id = " . $this->dbID;
 			$result = $db->exec_query($sql);
 		}
-		return $result ? OK : ERROR;	
+		return $result ? tl::OK : tl::ERROR;	
 	}
-	static public function getByID(&$db,$id)
+	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlKeyword::TLOBJ_O_SEARCH_BY_ID);
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlKeyword::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod(__CLASS__.".getAll");
+	}
+
 	//END interface iDBSerialization
 	/* for legacy purposes */
 	public function getInfo()
@@ -160,7 +165,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	 **/
 	static public function checkKeywordName($name)
 	{
-		$result = OK;
+		$result = tl::OK;
 		if (strlen($name))
 		{
 			//we shouldnt allow " and , in keywords any longer
@@ -186,7 +191,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		if ($kwID)
 			$query .= " AND id <> " .$kwID;
 		
-		$result = OK;
+		$result = tl::OK;
 		if ($db->fetchFirstRow($query))
 			$result = self::KW_E_DUPLICATE;
 		
@@ -234,7 +239,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		if ($keyword->notes)
 			$this->notes = (string)$keyword->notes[0];
 			
-		return OK;
+		return tl::OK;
 	}
 	//END interface iSerializationToXML
 	

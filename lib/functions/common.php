@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.86 $ $Author: franciscom $
- * @modified $Date: 2007/12/21 10:19:17 $
+ * @version $Revision: 1.87 $ $Author: schlundus $
+ * @modified $Date: 2007/12/21 22:57:17 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -32,6 +32,11 @@ require_once("database.class.php");
 require_once("roles.inc.php");
 
 require_once(dirname(__FILE__)."/object.class.php");
+//SCHLUNDUS: i will lated remove not necessary requires 
+require_once(dirname(__FILE__)."/role.class.php");
+require_once(dirname(__FILE__)."/keyword.class.php");
+require_once(dirname(__FILE__)."/attachment.class.php");
+require_once(dirname(__FILE__)."/user.class.php");
 /** @TODO use the next include only if it is used -> must be removed*/
 require_once(dirname(__FILE__)."/testproject.class.php");
 require_once(dirname(__FILE__)."/testplan.class.php");
@@ -226,17 +231,9 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		doInitSelection($db) or die("Could not set session variables");
 }
 
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function checkUserRights(&$db)
 {
-	// bypassed as long roles and rights aren't fully defined
+	//bypassed as long roles and rights aren't fully defined
 	return;
 	
 	// global $g_userRights;

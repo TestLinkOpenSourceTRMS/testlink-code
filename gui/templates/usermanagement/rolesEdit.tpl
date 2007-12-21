@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.2 2007/12/20 20:36:35 schlundus Exp $
+$Id: rolesEdit.tpl,v 1.3 2007/12/21 22:57:17 schlundus Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
@@ -58,7 +58,7 @@ function validateForm(f)
 </div>
 
 {* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="Role" name=$role.role action="$action"}
+{include file="inc_update.tpl" result=$sqlResult item="Role" name=$role->name action="$action"}
 
 {* Create Form *}
 <div class="workBack">
@@ -71,12 +71,12 @@ function validateForm(f)
 		onsubmit="return false" 
 	{/if}
 	>
-	<input type="hidden" name="id" value="{$role.id}" />
+	<input type="hidden" name="id" value="{$role->dbID}" />
 	<table class="common">
 		<tr><th>{lang_get s='th_rolename'}</th></tr>
 		<tr><td>
 			   <input type="text" name="rolename" 
-			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$role.role|escape}"/>
+			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$role->name|escape}"/>
  				 {include file="error_icon.tpl" field="rolename"}
 		    </td></tr>
 		<tr><th>{lang_get s='th_rights'}</th></tr>
@@ -142,7 +142,7 @@ function validateForm(f)
 		</tr>
 
 	</table>
-	{if $role_management == "yes" && $role.id != $noRightsRole}
+	{if $role_management == "yes" && $role->dbID != $noRightsRole}
 		<div class="groupBtn">	
 		{if $role == 0}
 			<input type="submit" name="newRole" value="{lang_get s='btn_create_role'}" />

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/21 22:57:17 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -194,7 +194,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$filePath = $attachmentInfo['file_path'];
 		
 		$destFPath = $this->repositoryPath.DS.$filePath;
-		return @unlink($destFPath) ? OK : ERROR;
+		return @unlink($destFPath) ? tl::OK : tl::ERROR;
 	}
 
 	protected function deleteAttachmentFromDB($id,$dummy = null)
@@ -205,17 +205,17 @@ class tlAttachmentRepository extends tlObjectWithDB
 		
 	public function deleteAttachment($id,$attachmentInfo = null)
 	{
-		$bResult = ERROR;
+		$bResult = tl::ERROR;
 		if (is_null($attachmentInfo))
 			$attachmentInfo = $this->getAttachmentInfo($id);
 		if ($attachmentInfo)
 		{	
-			$bResult = OK;
+			$bResult = tl::OK;
 			if (strlen($attachmentInfo['file_path']))
 				$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
 			$bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
 		}
-		return $bResult ? OK : ERROR;
+		return $bResult ? tl::OK : tl::ERROR;
 	}
 	public function getAttachmentContent($id,$attachmentInfo = null)
 	{

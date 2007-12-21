@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/12/14 22:42:50 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/12/21 22:57:17 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -69,15 +69,7 @@ switch($note)
 }
 
 $securityNotes = getSecurityNotes($db);
-
-$login_method = config_get('login_method');
-$ldap_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
-$login_disabled=0;
-if($ldap_password_mgmt && !extension_loaded("ldap") )
-{
-   $login_disabled=1;  
-}
-
+$bLDAPEnabled = false;
 
 $smarty = new TLSmarty();
 $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
@@ -85,8 +77,7 @@ $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
-$smarty->assign('login_disabled', $login_disabled);
-$smarty->assign('external_password_mgmt', $ldap_password_mgmt);
-
+$smarty->assign('login_disabled', !checkForLDAPExtension($bLDAPEnabled));
+$smarty->assign('external_password_mgmt', $bLDAPEnabled);
 $smarty->display('login.tpl');
 ?>

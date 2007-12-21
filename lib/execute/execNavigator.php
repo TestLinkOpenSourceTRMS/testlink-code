@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/12/20 20:36:35 $ by $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/12/21 22:57:17 $ by $Author: schlundus $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 
@@ -152,7 +152,7 @@ $smarty->assign('assigned_to_user',$assigned_to_user);
 $smarty->assign('src_workframe',$src_workframe);
 $smarty->assign('tplan_name',$tplan_name);
 $smarty->assign('tplan_id', $tplan_id);
-$smarty->assign('users',get_users_for_html_options($db,null,true));
+$smarty->assign('users',getUsersForHtmlOptions($db,null,true));
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('treeColored', $treeColored);
 $smarty->assign('optBuild', $optBuild);

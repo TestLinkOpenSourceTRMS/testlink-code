@@ -5,11 +5,27 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.9 2007/12/20 20:36:35 schlundus Exp $
-* @modified $Date: 2007/12/20 20:36:35 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.10 2007/12/21 22:57:18 schlundus Exp $
+* @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
 *
 **/
-require_once( dirname(__FILE__) . '/int_serialization.php' );
+/* Namespace for TestLink, here we can safely define constants and other stuff, without risk of collision with other stuff */
+abstract class tl
+{
+	//error and status codes
+	//all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK
+	//so we can check for SUCCESS with >= tl::OK
+	const OK = 1;
+	//all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
+	//so we can check for ERRORS with <= tl::ERROR
+	const ERROR = 0;
+	
+	//return code for not implemented interface functions
+	const E_NOT_IMPLEMENTED = -0xFFFFFFFF;
+};
+
+
+require_once(dirname(__FILE__) . '/int_serialization.php');
 /*
 	The base class for all managed TestLink objects, all tl-managed objects should extend this base class
 */
@@ -27,7 +43,10 @@ abstract class tlObject implements iSerialization
 	{
 		$this->objectID = uniqid("tl", true);
 		
-		/* Any supported import/Export Serialization Interfaces must be prefixed with iSerializationTo */
+		/*
+			Any supported import/Export Serialization Interfaces must be prefixed with iSerializationTo 
+			so we can automatically detected the interfaces
+		*/
 		$prefix = "iSerializationTo";
 		$prefixLen = strlen($prefix);
 		$o = new ReflectionObject($this);
@@ -62,11 +81,10 @@ abstract class tlObject implements iSerialization
 	}
 	
 	/* function used for resetting the object's internal data */
-	//nothing special at the moment
 	protected function _clean()
 	{
 	}
-	/* returns all supported Import/Export Interfaces */
+	/* returns all supported Import/Export Interfaces  */
 	function getSupportedSerializationInterfaces()
 	{
 		return $this->serializationInterfaces;
@@ -75,6 +93,13 @@ abstract class tlObject implements iSerialization
 	function getSupportedSerializationFormatDescriptions()
 	{
 		return $this->serializationFormatDescriptors;
+	}
+	
+	/* should be called whenever a not implemented method is called  */	
+	protected function handleNotImplementedMethod($fName = "<unknown>")
+	{
+		trigger_error("Method ".$fName." called which is not implemented",E_USER_WARNING);
+		return tl::E_NOT_IMPLEMENTED;
 	}
 };
 /*
@@ -117,8 +142,10 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	}
 	/*
 	*	gets all infos about the attachments of the object specified by $id 	
-	*
+	*	//SCHLUNDUS: legacy function to keep existing code, should be replaced by a function which returns objects 
 	*	@param int $id this is the fkid of the attachments table
+	*
+	*	@return , returns map with the infos of the attachment, keys are the column names of the attachments table 
 	*/
 	function getAttachmentInfos($id)
 	{
@@ -128,6 +155,8 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	*	deletes all attachments of the object specified by $id 	
 	*
 	*	@param int $id this is the fkid of the attachments table
+	*
+	*	@return returns tl::OK on success, else error code
 	*/
 	function deleteAttachments($id)
 	{
@@ -141,12 +170,18 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 		$this->attachmentTableName = null;
 	}
 }
-//SCHLUNDUS: not sure about this Object... need to think about it
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
 	public $dbID;
+	protected $detailLevel;
 	
+	//standard get options, all other get options must be greater than this
 	const TLOBJ_O_SEARCH_BY_ID = 1;
+	
+	//standard detail levels, can be used to get only some specific details when reading an object
+	//to avoid unneccessary DB queries (if the info is actual not used and not needed)
+	const TLOBJ_O_GET_DETAIL_MINIMUM = 0;
+	const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
 	
 	/* standard constructor */
 	function __construct($dbID = null)
@@ -154,6 +189,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		parent::__construct();
 		
 		$this->dbID = $dbID;
+		$this->detailLevel = self::TLOBJ_O_GET_DETAIL_FULL;
 	}
 	public function getDbID()
 	{
@@ -163,25 +199,36 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	{
 		$this->dbID = $id;
 	}
-	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID)
+	
+	/* 
+		if we fetch an object, we can set here different details levels for the objects, because we 
+		don't always all nested data 
+	*/		
+	public function setDetailLevel($level = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		$this->detailLevel = $level;
+	}
+	
+	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$item = new $className($id);
-		if ($item->readFromDB($db,$options) == OK)
+		$item->setDetailLevel($detailLevel);
+		if ($item->readFromDB($db,$options) == tl::OK)
 			return $item;
 		return null;
 	}
-	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false)
+	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column);
-		return self::createObjectsFromDB($db,$ids,$className,$bAssoc);
+		return self::createObjectsFromDB($db,$ids,$className,$bAssoc,$detailLevel);
 	}
-	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false)
+	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$items = null;
 		for($i = 0;$i < sizeof($ids);$i++)
 		{
 			$id = $ids[$i];
-			$item = self::createObjectFromDB($db,$id,$className);
+			$item = self::createObjectFromDB($db,$id,$className,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 			if ($item)
 			{
 				if ($bAssoc)

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.58 2007/12/09 02:15:19 havlat Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.59 2007/12/21 22:57:18 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -33,7 +33,7 @@ $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
 
-$assigned_users = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+$assigned_users = getUsersForHtmlOptions($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
 $tc_status_code_label = get_status_for_reports_html_options();
 
 $re = new results($db, $tplan_mgr,$tproject_info,$tplan_info);

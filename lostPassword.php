@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/12/19 20:27:18 $ $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/12/21 22:57:17 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -36,7 +36,7 @@ if (strlen($login))
 	else
 	{
 		$result = resetPassword($db,$userID,$note);
-		if ($result == OK)
+		if ($result == tl::OK)
 		{
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
@@ -52,6 +52,7 @@ $smarty = new TLSmarty();
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('note',$note);
+$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));
 $smarty->display('loginLost.tpl');
 ?>

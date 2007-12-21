@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -30,7 +30,6 @@ $userID = $_SESSION['userID'];
 $sqlResult = null;
 $affectedUsers = null;
 $allUsers = tlUser::getAll($db,null,"id");
-$role_id_replacement = config_get('role_replace_for_deleted_roles');
 
 if ($bDelete && $id)
 {
@@ -43,19 +42,13 @@ if ($bDelete && $id)
 	
 	if (!sizeof($affectedUsers))
 	{
-		if (!deleteRole($db,$id))
+		$role = tlRole::getByID($db,$id,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+		if ($role && $role->deleteFromDB($db) == tl::OK)
 			$sqlResult = lang_get("error_role_deletion");
-		else
-		{
-			//reset all affected users by replacing the deleted role with configured role
-			resetUserRoles($db,$id,$role_id_replacement);
-		}
 	}
 	else
 		$sqlResult = null;
 }
-$roles = getRoles($db);
-
 if ($bDelete && $id)
 {
 	//reload the roles of the current user
@@ -64,6 +57,8 @@ if ($bDelete && $id)
 	if ($_SESSION['roleID'] == $id)
 	{
 		$_SESSION['roleID'] = TL_ROLES_NO_RIGHTS;
+		//SCHLUNDUS: needs to be refactored
+		$roles = getRoles($db);
 		$_SESSION['role'] = $roles[TL_ROLES_NO_RIGHTS]['role'];
 	}
 }
@@ -73,7 +68,7 @@ $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
-$smarty->assign('roles',$roles);
+$smarty->assign('roles',tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM));
 $smarty->assign('id',$id);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);

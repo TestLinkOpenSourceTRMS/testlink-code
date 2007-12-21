@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/12/21 22:57:17 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -117,7 +117,7 @@ class tlAttachment extends tlDBObject
 		$this->destFPath = str_replace($this->repositoryPath.DS,"",$destFPath);
 		$this->title = trim($title);
 		
-		return OK;
+		return tl::OK;
 	}
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -147,7 +147,7 @@ class tlAttachment extends tlDBObject
 			$this->compressionType = $info['compression_type'];
 		}
 				
-		return $info ? OK : ERROR;
+		return $info ? tl::OK : tl::ERROR;
 	}
 	
 	public function getInfo()
@@ -187,7 +187,7 @@ class tlAttachment extends tlDBObject
 		if ($result)
 			$this->dbID = $db->insert_id();
 		
-		return $result ? OK : ERROR;
+		return $result ? tl::OK : tl::ERROR;
 	}
 	
 	public function deleteFromDB(&$db)
@@ -195,12 +195,17 @@ class tlAttachment extends tlDBObject
 		$query = "DELETE FROM attachments WHERE id = {$this->dbID}";
 		$result = $db->exec_query($query);
 		
-		return $result ? OK : ERROR;
+		return $result ? tl::OK : tl::ERROR;
 	}
 	
-	static public function getByID(&$db,$id)
+	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlAttachment::TLOBJ_O_SEARCH_BY_ID);
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlAttachment::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
+	}
+	
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod(__CLASS__.".getAll");
 	}
 };
 

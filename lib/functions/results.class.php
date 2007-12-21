@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/12/03 22:07:13 $ by $Author: havlat $
+ * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -226,7 +226,7 @@ class results
 			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID); 	
 			
 			// get owner id -> owner name pairs used in this test plan
-			$arrOwners = get_users_for_html_options($db, null, false);
+			$arrOwners = getUsersForHtmlOptions($db, null, false);
 		
 			// get build id -> build name pairs used in this test plan
 			$arrBuilds1 = $tplan_mgr->get_builds($this->testPlanID); 

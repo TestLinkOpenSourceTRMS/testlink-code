@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/12/19 18:27:05 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/12/21 22:57:17 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -55,7 +55,7 @@ if($bEditUser)
 	{
 		$user = new tlUser();	
 		$sqlResult = $user->setPassword($password);
-		if ($sqlResult == OK)
+		if ($sqlResult == tl::OK)
 		{
 			$user->login = $login;
 			$user->emailAddress = $email;
@@ -63,7 +63,7 @@ if($bEditUser)
 			$user->lastName = $last;
 			$sqlResult = $user->writeToDB($db);
 		}
-		if ($sqlResult == OK)
+		if ($sqlResult == tl::OK)
 		{
 			redirect(TL_BASE_HREF . "login.php?note=first");
 			exit();

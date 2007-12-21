@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/20 09:45:38 $ -  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/21 22:57:18 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -35,11 +35,11 @@ switch($operation)
 	case 'delete':
 		$user = new tlUser($user_id);
 		$sqlResult = $user->readFromDB($db);
-		if ($sqlResult == OK)
+		if ($sqlResult == tl::OK)
 		{
 			$userLogin = $user->login;
 			$sqlResult = $user->deleteFromDB($db);
-			if ($sqlResult == OK)
+			if ($sqlResult == tl::OK)
 			{
 				//if the users deletes itself then logout
 				if ($user_id == $_SESSION['userID'])
@@ -50,7 +50,7 @@ switch($operation)
 				$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
 			}
 		}
-		if ($sqlResult != OK)
+		if ($sqlResult != tl::OK)
 			$user_feedback = lang_get('error_user_not_deleted');
 
 		$orderByType = $user_order_by;
@@ -89,9 +89,7 @@ $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('base_href', $_SESSION['basehref']);
 $smarty->display($template_dir . $g_tpl['usersview']);
-?>
 
-<?php
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
 	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 

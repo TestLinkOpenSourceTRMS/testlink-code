@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.1 $
-* @modified $Date: 2007/12/20 09:44:44 $ $Author: franciscom $
+* @version $Revision: 1.2 $
+* @modified $Date: 2007/12/21 22:57:18 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -32,16 +32,13 @@ $sqlResult = null;
 $action = null;
 $user_feedback = '';
 
-$login_method = config_get('login_method');
-$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
-
 if ($args->do_update)
 {
 	if ($args->user_id == 0)
 	{
 		$user = new tlUser();	
 		$sqlResult = $user->setPassword($args->password);
-		if ($sqlResult == OK)
+		if ($sqlResult == tl::OK)
 		{
 			$user->login = $args->login;
 			$user->emailAddress = $args->email;
@@ -53,7 +50,7 @@ if ($args->do_update)
 			
 			$sqlResult = $user->writeToDB($db);
 		}
-		if ($sqlResult == OK)
+		if ($sqlResult == tl::OK)
 			$user_feedback = sprintf(lang_get('user_created'),$args->login);
 		else 
 			$sqlResult = getUserErrorMessage($sqlResult);
@@ -62,7 +59,7 @@ if ($args->do_update)
 	{
 		$user = new tlUser($args->user_id);
 		$sqlResult = $user->readFromDB($db);
-		if ($sqlResult == OK)
+		if ($sqlResult == tl::OK)
 		{
 			$user->firstName = $args->first;
 			$user->lastName = $args->last;
@@ -72,7 +69,7 @@ if ($args->do_update)
 			$user->globalRoleID = $args->rights_id;
 			
 			$sqlResult = $user->writeToDB($db);
-			if ($sqlResult == OK && $sessionUserID == $args->user_id)
+			if ($sqlResult == tl::OK && $sessionUserID == $args->user_id)
 			{
 				setUserSession($db,$user->login, $sessionUserID, $user->globalRoleID, $user->emailAddress, $user->locale);
 				if (!$args->user_is_active)
@@ -89,7 +86,7 @@ if ($args->do_update)
 else if ($args->do_reset_password && $user_id)
 {
 	$result = resetPassword($db,$user_id,$user_feedback);
-	if ($result == OK)
+	if ($result == tl::OK)
 		$user_feedback = lang_get('password_reseted');  		
 }
 $user = null;
@@ -98,26 +95,22 @@ if ($user_id)
 	$user = new tlUser($user_id);
 	$user->readFromDB($db);
 }	
+$roles = getAllRoles($db);
+unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();
 $smarty->assign('user_feedback',$user_feedback);
-$smarty->assign('external_password_mgmt', $external_password_mgmt);
+$smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
-
-$roles = getAllRoles($db);
-unset($roles[TL_ROLES_UNDEFINED]);
-
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display($template_dir . $default_template);
-?>
 
-<?php
 function init_args($get_hash, $post_hash)
 {
 	$post_hash = strings_stripSlashes($post_hash);

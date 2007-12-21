@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.85 $ $Author: schlundus $
- * @modified $Date: 2007/12/19 21:59:30 $
+ * @version $Revision: 1.86 $ $Author: franciscom $
+ * @modified $Date: 2007/12/21 10:19:17 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -226,9 +226,17 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		doInitSelection($db) or die("Could not set session variables");
 }
 
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function checkUserRights(&$db)
 {
-	//bypassed as long roles and rights aren't fully defined
+	// bypassed as long roles and rights aren't fully defined
 	return;
 	
 	// global $g_userRights;
@@ -266,6 +274,14 @@ function redirect($path, $level = 'location')
 	exit;
 }
 
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function strings_stripSlashes($parameter,$bGPC = true)
 {
 	if ($bGPC && !ini_get('magic_quotes_gpc'))

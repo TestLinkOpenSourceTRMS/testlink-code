@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.138 $
- * @modified $Date: 2007/12/19 21:59:29 $ by $Author: schlundus $
+ * @version $Revision: 1.139 $
+ * @modified $Date: 2007/12/21 10:21:48 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -789,8 +789,6 @@ require_once('logging.inc.php');
 
 /** user right checking */
 require_once(TL_ABS_PATH . 'lib/functions/roles.inc.php');
-require_once(TL_ABS_PATH . 'cfg/userrightmatrix.php');
-
-
+require_once(TL_ABS_PATH . 'cfg/userRightMatrix.php');
 // ----- END OF FILE --------------------------------------------------
 ?>

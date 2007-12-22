@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -73,6 +73,6 @@ $smarty->assign('id',$id);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
-$smarty->assign('role_id_replacement',$role_id_replacement);
+$smarty->assign('role_id_replacement',config_get('role_replace_for_deleted_roles'));
 $smarty->display($template_dir . $default_template);
 ?>

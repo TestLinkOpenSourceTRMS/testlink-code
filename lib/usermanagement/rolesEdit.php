@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
  *
  *
  * 20071201 - franciscom - new web editor code
@@ -58,20 +58,22 @@ if ($postBack && has_rights($db,"role_management"))
 	$sqlResult = checkRole($db,$roleName,$rights,$id);
 	if ($sqlResult == 'ok')
 	{
-		$rights = array_keys($rights);
+		$rights = implode("','",array_keys($rights));
+		$role = new tlRole();
+		$role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
+		$role->name = $roleName;
+		$role->description = $notes;
+		
 		if ($bNew)
 		{
-			$id = createRole($db,$roleName,$rights,$notes);
-			if (!$id)
+			if ($role->writeToDB($db) < tl::OK)
 				$sqlResult = lang_get('error_role_creation');
 			$action = "do_add";
-			//reset id if all was ok
-			if ($sqlResult == "ok")
-				$id = 0;
 		}
 		else
 		{
-			if (!updateRole($db,$id,$roleName,$rights,$notes))
+			$role->dbID = $id;
+			if ($role->writeToDB($db) < tl::OK)
 				$sqlResult = lang_get('error_role_update');
 			$action = "updated";
 		}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2007/12/21 22:57:18 $ $Author: schlundus $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2007/12/22 09:58:59 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -122,7 +122,6 @@ function resetPassword(&$db,$userID,&$errorMsg)
 		{
 			$newPassword = md5(uniqid(rand(),1));
 			$result = $user->setPassword($newPassword);
-			var_dump($result);
 			if ($result == tl::OK)
 			{
 				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');  

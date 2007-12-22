@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.10 2007/12/21 22:57:18 schlundus Exp $
-* @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.11 2007/12/22 09:58:59 schlundus Exp $
+* @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, without risk of collision with other stuff */
@@ -14,10 +14,10 @@ abstract class tl
 {
 	//error and status codes
 	//all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK
-	//so we can check for SUCCESS with >= tl::OK
+	//so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
 	const OK = 1;
 	//all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
-	//so we can check for ERRORS with <= tl::ERROR
+	//so we can check for ERRORS with <= tl::ERROR, and for SUCCESS with > tl::ERROR
 	const ERROR = 0;
 	
 	//return code for not implemented interface functions
@@ -211,10 +211,13 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	
 	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		$item = new $className($id);
-		$item->setDetailLevel($detailLevel);
-		if ($item->readFromDB($db,$options) == tl::OK)
-			return $item;
+		if ($id)
+		{
+			$item = new $className($id);
+			$item->setDetailLevel($detailLevel);
+			if ($item->readFromDB($db,$options) == tl::OK)
+				return $item;
+		}
 		return null;
 	}
 	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
@@ -241,7 +244,11 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	}
 	static public function deleteObjectFromDB(&$db,$id,$className)
 	{
-		$item = new $className($id);
-		return $item->deleteFromDB($db);
+		if ($id)
+		{
+			$item = new $className($id);
+			return $item->deleteFromDB($db);
+		}
+		return tl::ERROR;
 	}
 }

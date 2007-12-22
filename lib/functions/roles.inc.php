@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -131,73 +131,7 @@ $g_rights_users = $g_rights_users_global;
 $g_propRights_global = array_merge($g_rights_users_global,$g_rights_product);
 $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
-
 						
-						
-						
-						
-						
-/**
- * Fetches all rights
- *
- * @param object $db [ref] db-object
- * @param string $column [default = 'id'] column used as the key for the map
- * @return array assoc. array with keys from the column
- **/
- //SCHLUNDUS: 50% refactored
-function getAllRights(&$db,$column = 'id')
-{
-	$query = "SELECT id,description FROM rights ORDER BY id ASC";
-	$rights = $db->fetchRowsIntoMap($query,$column);
-	
-	return $rights;
-}
-						
-/**
- * Creates a role with a given name and rights
- *
- * @param object $db [ref] the db-object
- * @param type $roleName the name for the role
- * @param array $rights the rights for the role (string array) 
- * @return int the new roleID on success, 0 else
- **/
-function createRole(&$db,$roleName,$rights,$notes)
-{
-	$roleID = 0;
-
-	$query = "INSERT INTO roles (description,notes) VALUES ('".$db->prepare_string($roleName)."',".
-			 "'".$db->prepare_string($notes)."')";
-	$result = $db->exec_query($query);		 
-	if ($result)
-	{
-		$roleID = $db->insert_id('roles');
-		if ($roleID)
-			insertRoleRights($db,$roleID,$rights);
-	}
-			 
-	return $roleID;
-}									
-
-/**
- * Inserts the rights for the role 
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the id of the role
- * @param array $rights string array of rights for the roles
- * @return int 1 on success, 0 else
- **/
-function insertRoleRights(&$db,$roleID,$rights)
-{
-	$bSuccess = 1;
-	$allRights = getAllRights($db,'description');
-	for($i = 0;$i < sizeof($rights);$i++)
-	{
-		$rightID = $allRights[$rights[$i]]['id'];
-		$query = "INSERT INTO role_rights (role_id,right_id) VALUES ({$roleID},{$rightID})";
-		$bSuccess = $bSuccess && ($db->exec_query($query) ? 1 : 0);
-	}
-	return $bSuccess;
-}
 
 /**
  * Gets all testplan related user assignments
@@ -413,64 +347,6 @@ function getAllUsersWithRole(&$db,$roleID)
 	
 	return $affectedUsers;
 }
-
-/**
- * Deletes all rights for a certain role
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id
- * @return int returns 1 on success, 0 else
- **/
- //SCHLUNDUS: 50% refactored
-function deleteRoleRights(&$db,$roleID)
-{
-	$query = "DELETE FROM role_rights WHERE role_id = {$roleID}";
-	$result = $db->exec_query($query);
-	
-	return $result ? 1 : 0;
-}
-
-/**
- * Deletes a role
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id
- * @return int return 1 on success, 0 else
- **/
-  //SCHLUNDUS: 50% refactored
-function deleteRole(&$db,$roleID)
-{
-	if (deleteRoleRights($db,$roleID))
-	{
-		$query = "DELETE FROM roles WHERE id = {$roleID}";
-		$result = $db->exec_query($query);
-	}
-	
-	return $result ? 1 : 0;
-}
-
-/**
- * Updates a role 
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id 
- * @param int $roleName the rolename
- * @param array $rights array of the rights for the roles
- * @return int returns 1 on success, 0 else
- **/
-function updateRole(&$db,$roleID,$roleName,$rights,$notes)
-{
-	deleteRoleRights($db,$roleID);
-	
-	$query = "UPDATE roles SET description = '".$db->prepare_string($roleName)."',".
-			 "notes ='".$db->prepare_string($notes)."'".
-			" WHERE id = {$roleID}";
-	
-	insertRoleRights($db,$roleID,$rights);
-	
-	return $db->exec_query($query) ? 1 : 0;
-}
-
 
 /**
  * Resets all assigned roles with a certain role_id to another role_id

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/21 22:57:18 $ $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/22 09:58:59 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -18,7 +18,9 @@ class tlRole extends tlDBObject
 	
 	//detail leveles
 	const TLOBJ_O_GET_DETAIL_RIGHTS = 1;
-	
+		
+	const ROLE_E_DBERROR = 2;	
+		
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
@@ -57,30 +59,70 @@ class tlRole extends tlDBObject
 	}
 	public function writeToDB(&$db)
 	{
-	
+		$result = tl::OK;//$this->checkDetails($db);
+		if ($result == tl::OK)
+		{		
+			if ($this->dbID)
+			{
+				$result = $this->deleteRightsFromDB($db);
+				if ($result == tl::OK)
+				{
+					$query = "UPDATE roles SET description = '".$db->prepare_string($this->name)."',".
+							"notes ='".$db->prepare_string($this->description)."'".
+							" WHERE id = {$this->dbID}";
+					$result = $db->exec_query($query);	
+				}
+			}
+			else
+			{
+				$query = "INSERT INTO roles (description,notes) VALUES ('".$db->prepare_string($this->name)."',".
+						 "'".$db->prepare_string($this->description)."')";
+				$result = $db->exec_query($query);	
+				if($result)
+					$this->dbID = $db->insert_id('users');
+			}
+			$result = $result ? tl::OK : self::ROLE_E_DBERROR;
+			if ($result == tl::OK)
+				$result = $this->addRightsToDB($db);
+		}
+		
+		return $result;
 	}
 	public function deleteFromDB(&$db)
 	{
-		$result = $this->deleteRights($db);
+		$result = $this->deleteRightsFromDB($db);
 		if ($result == tl::OK)
 		{
 			//SCHLUNDUS: needs refactoring
 			//reset all affected users by replacing the deleted role with configured role
-			resetUserRoles($db,$id,$replacementRoleID);
+			resetUserRoles($db,$this->dbID,$this->replacementRoleID);
 
-		
 			$query = "DELETE FROM roles WHERE id = {$this->dbID}";
 			$result = $db->exec_query($query);
 			$result = $result ? tl::OK : tl::ERROR;
 		}
 		return $result;
 	}
-	protected function deleteRights(&$db)
+	protected function deleteRightsFromDB(&$db)
 	{
 		$query = "DELETE FROM role_rights WHERE role_id = {$this->dbID}";
 		$result = $db->exec_query($query);
 		
 		return $result ? tl::OK : tl::ERROR;
+	}
+	protected function addRightsToDB(&$db)
+	{
+		$bSuccess = 1;
+		if ($this->rights)
+		{
+			foreach($this->rights as $right)
+			{
+				$rightID = $right->dbID;
+				$query = "INSERT INTO role_rights (role_id,right_id) VALUES ({$this->dbID},{$rightID})";
+				$bSuccess = $bSuccess && ($db->exec_query($query) ? 1 : 0);
+			}
+		}
+		return $bSuccess ? tl::OK : tl::ERROR;
 	}
 	protected function readRights(&$db)
 	{
@@ -136,11 +178,11 @@ class tlRight extends tlDBObject
 	}
 	public function writeToDB(&$db)
 	{
-	
+		return self::handleNotImplementedMethod("writeToDB");
 	}
 	public function deleteFromDB(&$db)
 	{
-		
+		return self::handleNotImplementedMethod("deleteFromDB");
 	}
 	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
@@ -154,7 +196,6 @@ class tlRight extends tlDBObject
 			$query .= ' '.$whereClause;
 	
 		$query .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
-	
 		return tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
 	}
 }

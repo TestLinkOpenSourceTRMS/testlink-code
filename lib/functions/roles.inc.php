@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -801,5 +801,29 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id=null)
   }
 
   return $effective_role;
+}
+
+function getRoleErrorMessage($code)
+{
+	$msg = 'ok';
+	switch($code)
+	{
+		case tlRole::ROLE_E_NAMEALREADYEXISTS:
+			$msg = lang_get('error_duplicate_rolename');
+			break;
+		case tlRole::ROLE_E_NAMELENGTH:
+			$msg = lang_get('error_role_no_rolename');
+			break;
+		case tlRole::ROLE_E_EMPTYROLE:
+			$msg = lang_get('error_role_no_rights');
+			break;
+		case tl::OK:
+			break;
+		case ERROR:
+		case tlRole::ROLE_E_DBERROR:
+		default:
+			$msg = lang_get('error_role_not_updated');
+	}
+	return $msg;
 }
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/21 22:57:18 $ -  $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/22 12:26:46 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -35,11 +35,11 @@ switch($operation)
 	case 'delete':
 		$user = new tlUser($user_id);
 		$sqlResult = $user->readFromDB($db);
-		if ($sqlResult == tl::OK)
+		if ($sqlResult >= tl::OK)
 		{
 			$userLogin = $user->login;
 			$sqlResult = $user->deleteFromDB($db);
-			if ($sqlResult == tl::OK)
+			if ($sqlResult >= tl::OK)
 			{
 				//if the users deletes itself then logout
 				if ($user_id == $_SESSION['userID'])

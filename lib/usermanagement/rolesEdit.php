@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/22 12:26:46 $ by $Author: schlundus $
  *
  *
  * 20071201 - franciscom - new web editor code
@@ -55,36 +55,22 @@ if ($postBack && has_rights($db,"role_management"))
 	unset($_POST['notes']);
 	
 	$rights = $_POST;
-	$sqlResult = checkRole($db,$roleName,$rights,$id);
-	if ($sqlResult == 'ok')
-	{
-		$rights = implode("','",array_keys($rights));
-		$role = new tlRole();
-		$role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
-		$role->name = $roleName;
-		$role->description = $notes;
-		
-		if ($bNew)
-		{
-			if ($role->writeToDB($db) < tl::OK)
-				$sqlResult = lang_get('error_role_creation');
-			$action = "do_add";
-		}
-		else
-		{
-			$role->dbID = $id;
-			if ($role->writeToDB($db) < tl::OK)
-				$sqlResult = lang_get('error_role_update');
-			$action = "updated";
-		}
-	}
+	$rights = implode("','",array_keys($rights));
+	$role = new tlRole();
+	$role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
+	$role->name = $roleName;
+	$role->description = $notes;
+	$role->dbID = $id;
+	
+	$result = $role->writeToDB($db);
+	$action = $bNew ? "do_add" : "updated";
+	$sqlResult = getRoleErrorMessage($result);
 }
 
-//get the role info
-$role = null;
 $affectedUsers = null;
 $allUsers = null;
 
+//get the role info
 $role = tlRole::getByID($db,$id);
 if($role)
 {

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -252,14 +252,14 @@ function getKeywordErrorMessage($code)
 			case tlKeyword::KW_E_NOTALLOWED:
 				$msg = lang_get('keywords_char_not_allowed'); 
 				break;
-			case tlKeyword::KW_E_EMPTY:
+			case tlKeyword::KW_E_NAMELENGTH:
 				$msg = lang_get('empty_keyword_no');
 				break;
 			case tlKeyword::KW_E_DBERROR:
 			case ERROR: 
 				$msg = lang_get('kw_update_fails');
 				break;
-			case tlKeyword::KW_E_DUPLICATE:
+			case tlKeyword::KW_E_NAMEALREADYEXISTS:
 				$msg = lang_get('keyword_already_exists');
 				break;
 			default:

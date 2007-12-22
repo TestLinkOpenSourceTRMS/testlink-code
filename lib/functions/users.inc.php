@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/12/22 09:58:59 $ $Author: schlundus $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/12/22 12:26:45 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -58,7 +58,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 		$roleID = intval($roleID);
 		$_SESSION['roleID'] = $roleID; 
 		$role = new tlRole($roleID);
-		if ($role->readFromDb($db) == tl::OK)
+		if ($role->readFromDb($db) >= tl::OK)
 			$_SESSION['role'] = $role->description;
 		tLog('setUserSession: $user='.$_SESSION['role']);
 	}
@@ -116,13 +116,13 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	$errorMsg = '';
 	$user = new tlUser($userID);
 	$result = $user->readFromDB($db);
-	if ($result == tl::OK)
+	if ($result >= tl::OK)
 	{
 		if (strlen($user->emailAddress))
 		{
 			$newPassword = md5(uniqid(rand(),1));
 			$result = $user->setPassword($newPassword);
-			if ($result == tl::OK)
+			if ($result >= tl::OK)
 			{
 				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');  
 				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,  

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.11 2007/12/22 09:58:59 schlundus Exp $
-* @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.12 2007/12/22 12:26:45 schlundus Exp $
+* @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, without risk of collision with other stuff */
@@ -215,7 +215,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		{
 			$item = new $className($id);
 			$item->setDetailLevel($detailLevel);
-			if ($item->readFromDB($db,$options) == tl::OK)
+			if ($item->readFromDB($db,$options) >= tl::OK)
 				return $item;
 		}
 		return null;

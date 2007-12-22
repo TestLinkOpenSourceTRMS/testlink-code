@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.8 2007/12/21 22:57:18 schlundus Exp $
-* @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.9 2007/12/22 12:26:45 schlundus Exp $
+* @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -27,9 +27,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	protected $allowDuplicateKeywords; 
 	
 	//Some error codes
-	const KW_E_NOTALLOWED = -1;
-	const KW_E_EMPTY = -2;
-	const KW_E_DUPLICATE = -4;
+	const KW_E_NAMENOTALLOWED = -1;
+	const KW_E_NAMELENGTH = -2;
+	const KW_E_NAMEALREADYEXISTS = -4;
 	const KW_E_DBERROR = -8;
 	const KW_E_WRONGFORMAT = -16;
 	
@@ -85,7 +85,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 		{
 			$name = $db->prepare_string($this->name);
 			$notes = $db->prepare_string($this->notes);
@@ -117,7 +117,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$result = tl::OK;
 		if (!$this->allowDuplicateKeywords)
 			$result = tlKeyword::doesKeywordExist($db,$this->name,$this->testprojectID,$this->dbID);
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 			$result = tlKeyword::checkKeywordName($this->name);
 			
 		return $result;
@@ -171,10 +171,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			//we shouldnt allow " and , in keywords any longer
 			$dummy = null;
 			if (preg_match("/(\"|,)/",$name,$dummy))
-				$result = self::KW_E_NOTALLOWED;
+				$result = self::KW_E_NAMENOTALLOWED;
 		}
 		else
-			$result = self::KW_E_EMPTY;
+			$result = self::KW_E_NAMELENGTH;
 
 		return $result;
 	}
@@ -193,7 +193,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		
 		$result = tl::OK;
 		if ($db->fetchFirstRow($query))
-			$result = self::KW_E_DUPLICATE;
+			$result = self::KW_E_NAMEALREADYEXISTS;
 		
 		return $result;
 	}

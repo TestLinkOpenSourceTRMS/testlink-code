@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/22 09:58:59 $ $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/22 12:26:45 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -15,21 +15,27 @@ class tlRole extends tlDBObject
 	public $rights;
 	
 	protected $replacementRoleID;
+	//options
+	const ROLE_O_SEARCH_BYNAME = 2;
 	
 	//detail leveles
 	const TLOBJ_O_GET_DETAIL_RIGHTS = 1;
 		
-	const ROLE_E_DBERROR = 2;	
+	const ROLE_E_DBERROR = -2;	
+	const ROLE_E_NAMELENGTH = -3;
+	const ROLE_E_NAMEALREADYEXISTS = -4;
+	const ROLE_E_EMPTYROLE = -5;
 		
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
 		
-		$replacementRoleID = config_get('role_replace_for_deleted_roles');
+		$this->replacementRoleID = config_get('role_replace_for_deleted_roles');
 	}
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
-		$this->name = null;
+		if (!($options & self::ROLE_O_SEARCH_BYNAME))
+			$this->name = null;
 		$this->descriptions = null;
 		$this->rights = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
@@ -42,6 +48,8 @@ class tlRole extends tlDBObject
 		$query = "SELECT id,description, notes FROM roles";
 		
 		$clauses = null;
+		if ($options & self::ROLE_O_SEARCH_BYNAME)
+			$clauses[] = "description = '".$db->prepare_string($this->name)."'";
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "id = {$this->dbID}";		
 		if ($clauses)
@@ -50,6 +58,7 @@ class tlRole extends tlDBObject
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
+			$this->dbID = $info['id'];
 			$this->name = $info['description'];
 			$this->description = $info['notes'];
 			if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS)
@@ -59,13 +68,13 @@ class tlRole extends tlDBObject
 	}
 	public function writeToDB(&$db)
 	{
-		$result = tl::OK;//$this->checkDetails($db);
-		if ($result == tl::OK)
+		$result = $this->checkDetails($db);
+		if ($result >= tl::OK)
 		{		
 			if ($this->dbID)
 			{
 				$result = $this->deleteRightsFromDB($db);
-				if ($result == tl::OK)
+				if ($result >= tl::OK)
 				{
 					$query = "UPDATE roles SET description = '".$db->prepare_string($this->name)."',".
 							"notes ='".$db->prepare_string($this->description)."'".
@@ -82,16 +91,43 @@ class tlRole extends tlDBObject
 					$this->dbID = $db->insert_id('users');
 			}
 			$result = $result ? tl::OK : self::ROLE_E_DBERROR;
-			if ($result == tl::OK)
+			if ($result >= tl::OK)
 				$result = $this->addRightsToDB($db);
 		}
 		
 		return $result;
 	}
+	public function checkDetails(&$db)
+	{
+		$this->name = trim($this->name);
+		$this->description = trim($this->description);
+		
+		$result = tl::OK;
+		if (!sizeof($this->rights))
+			$result = self::ROLE_E_EMPTYROLE;
+		if ($result >= tl::OK)
+			$result = self::checkRoleName($this->name);
+		if ($result >= tl::OK )
+			$result = self::doesRoleExist($db,$this->name,$this->dbID) ? self::ROLE_E_NAMEALREADYEXISTS : tl::OK;
+		
+		return $result;
+	}
+	static public function doesRoleExist(&$db,$name,$id)
+	{
+		$role = new tlRole();
+		$role->name = $name;
+		if ($role->readFromDB($db,self::ROLE_O_SEARCH_BYNAME) >= tl::OK && $role->dbID != $id)
+			return $role->dbID;
+		return null;
+	}
+	static public function checkRoleName($name)
+	{
+		return is_blank($name) ? self::ROLE_E_NAMELENGTH : tl::OK;
+	}
 	public function deleteFromDB(&$db)
 	{
 		$result = $this->deleteRightsFromDB($db);
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 		{
 			//SCHLUNDUS: needs refactoring
 			//reset all affected users by replacing the deleted role with configured role

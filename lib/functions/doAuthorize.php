@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/12/21 22:57:17 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -36,7 +36,7 @@ function doAuthorize(&$db,$login,$pwd)
 	{
 		$user = new tlUser();
 		$user->login = $login;
-		$login_exists = ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == tl::OK); 
+		$login_exists = ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK); 
 		tLog("Account exist = " . $login_exists);
 	    if ($login_exists)
 	    {

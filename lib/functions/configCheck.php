@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/12/21 22:57:17 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/12/22 12:26:45 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -152,8 +152,8 @@ function checkForAdminDefaultPwd(&$db)
 	
 	$user = new tlUser();
 	$user->login = "admin";
-	if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == tl::OK && 
-		 $user->comparePassword("admin") == tl::OK)
+	if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK && 
+		 $user->comparePassword("admin") >= tl::OK)
 		$bDefaultPwd = true;
 		
 	return $bDefaultPwd;

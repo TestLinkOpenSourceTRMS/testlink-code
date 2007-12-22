@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/22 09:58:59 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/22 12:26:46 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -43,7 +43,7 @@ if ($bDelete && $id)
 	if (!sizeof($affectedUsers))
 	{
 		$role = tlRole::getByID($db,$id,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-		if ($role && $role->deleteFromDB($db) == tl::OK)
+		if ($role && $role->deleteFromDB($db) < tl::OK)
 			$sqlResult = lang_get("error_role_deletion");
 	}
 	else

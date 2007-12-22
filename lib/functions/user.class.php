@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/21 22:57:18 $ $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/22 12:26:45 $ $Author: schlundus $
  *
  */
 
@@ -130,7 +130,7 @@ class tlUser extends tlDBObject
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 		{		
 			if($this->dbID)
 			{
@@ -222,13 +222,13 @@ class tlUser extends tlDBObject
 		$this->login = trim($this->login);
 	
 		$result = self::checkEmailAdress($this->emailAddress);
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 			$result = $this->checkLogin($this->login);
-		if ($result == tl::OK && !$this->dbID)
+		if ($result >= tl::OK && !$this->dbID)
 			$result = self::doesUserExist($db,$this->login) ? self::USER_E_LOGINALREADYEXISTS : tl::OK;
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 			$result = self::checkFirstName($this->firstName);
-		if ($result == tl::OK)
+		if ($result >= tl::OK)
 			$result = self::checkLastName($this->lastName);
 			
 		return $result;
@@ -262,7 +262,7 @@ class tlUser extends tlDBObject
 	{
 		$user = new tlUser();
 		$user->login = $login;
-		if ($user->readFromDB($db,self::USER_O_SEARCH_BYLOGIN) == tl::OK)
+		if ($user->readFromDB($db,self::USER_O_SEARCH_BYLOGIN) >= tl::OK)
 			return $user->dbID;
 		return null;
 	}

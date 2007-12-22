@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2007/12/21 22:57:18 $  $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/12/22 12:26:45 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -720,7 +720,7 @@ function count_testcases($id)
 			{ 
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
-				if ($k->readFromCSV(implode($delim,$data)) == tl::OK)
+				if ($k->readFromCSV(implode($delim,$data)) >= tl::OK)
 					$k->writeToDB($this->db);
 			}
 			fclose($handle);
@@ -753,7 +753,7 @@ function count_testcases($id)
 			{
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
-				if ($k->readFromSimpleXML($keyword) == tl::OK)
+				if ($k->readFromSimpleXML($keyword) >= tl::OK)
 					$k->writeToDB($this->db);
 				else
 					return tlKeyword::KW_E_WRONGFORMAT;

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.2 $
-* @modified $Date: 2007/12/21 22:57:18 $ $Author: schlundus $
+* @version $Revision: 1.3 $
+* @modified $Date: 2007/12/22 12:26:46 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -38,7 +38,7 @@ if ($args->do_update)
 	{
 		$user = new tlUser();	
 		$sqlResult = $user->setPassword($args->password);
-		if ($sqlResult == tl::OK)
+		if ($sqlResult >= tl::OK)
 		{
 			$user->login = $args->login;
 			$user->emailAddress = $args->email;
@@ -50,7 +50,7 @@ if ($args->do_update)
 			
 			$sqlResult = $user->writeToDB($db);
 		}
-		if ($sqlResult == tl::OK)
+		if ($sqlResult >= tl::OK)
 			$user_feedback = sprintf(lang_get('user_created'),$args->login);
 		else 
 			$sqlResult = getUserErrorMessage($sqlResult);
@@ -59,7 +59,7 @@ if ($args->do_update)
 	{
 		$user = new tlUser($args->user_id);
 		$sqlResult = $user->readFromDB($db);
-		if ($sqlResult == tl::OK)
+		if ($sqlResult >= tl::OK)
 		{
 			$user->firstName = $args->first;
 			$user->lastName = $args->last;
@@ -69,7 +69,7 @@ if ($args->do_update)
 			$user->globalRoleID = $args->rights_id;
 			
 			$sqlResult = $user->writeToDB($db);
-			if ($sqlResult == tl::OK && $sessionUserID == $args->user_id)
+			if ($sqlResult >= tl::OK && $sessionUserID == $args->user_id)
 			{
 				setUserSession($db,$user->login, $sessionUserID, $user->globalRoleID, $user->emailAddress, $user->locale);
 				if (!$args->user_is_active)
@@ -86,7 +86,7 @@ if ($args->do_update)
 else if ($args->do_reset_password && $user_id)
 {
 	$result = resetPassword($db,$user_id,$user_feedback);
-	if ($result == tl::OK)
+	if ($result >= tl::OK)
 		$user_feedback = lang_get('password_reseted');  		
 }
 $user = null;

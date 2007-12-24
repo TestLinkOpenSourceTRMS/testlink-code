@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsEdit.tpl,v 1.2 2007/12/18 19:30:02 franciscom Exp $ 
+$Id: cfieldsEdit.tpl,v 1.3 2007/12/24 17:12:24 franciscom Exp $ 
 
 
 Important Development note:
@@ -264,7 +264,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
   </form> 
 
 {else}
-<form method="post" name="cfields_edit" action="lib/cfields/cfields_edit.php" 
+<form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php" 
       onSubmit="javascript:return validateForm(this);">
   <input type="hidden" id="hidden_id" name="cfield_id" value="{$cf.id}">   
 	<table class="common">

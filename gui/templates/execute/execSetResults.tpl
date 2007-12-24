@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.3 2007/12/20 20:36:35 schlundus Exp $
+$Id: execSetResults.tpl,v 1.4 2007/12/24 17:08:38 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071103 - franciscom - BUGID 700
@@ -15,6 +15,15 @@ Rev:
     20070104 - franciscom - custom field management for test cases
     20070101 - franciscom - custom field management for test suite div
 *}	
+{assign var="title_sep"  value=$smarty.const.TITLE_SEP}
+{assign var="title_sep_type3"  value=$smarty.const.TITLE_SEP_TYPE3}
+
+{assign var="input_enabled_disabled" value="disabled"}
+{assign var="att_download_only" value=true}
+{assign var="enable_custom_fields" value=false}
+{assign var="draw_submit_button" value=false}
+
+
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -32,11 +41,22 @@ var msg="{lang_get s='warning_delete_execution'}";
 var import_xml_results="{lang_get s='import_xml_results'}";
 </script>
 
-</head>
+{if $smarty.const.USE_EXT_JS_LIBRARY}
+  {include file="inc_ext_js.tpl"}
+{/if}
 
-<body onLoad="show_hide('tplan_notes','tpn_view_status',{$tpn_view_status});
-              show_hide('build_notes','bn_view_status',{$bn_view_status});
-              show_hide('bulk_controls','bc_view_status',{$bc_view_status});
+</head>
+{* 
+IMPORTANT: if you change value, you need to chang init_args() logic on execSetResults.php
+*}
+{assign var="tplan_notes_view_memory_id" value="tpn_view_status"}
+{assign var="build_notes_view_memory_id" value="bn_view_status"}
+{assign var="bulk_controls_view_memory_id" value="bc_view_status"}
+
+
+<body onLoad="show_hide('tplan_notes','{$tplan_notes_view_memory_id}',{$tpn_view_status});
+              show_hide('build_notes','{$build_notes_view_memory_id}',{$bn_view_status});
+              show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$bc_view_status});
               multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
                                  '{$tsd_val_for_hidden_list}');
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}  
@@ -45,15 +65,14 @@ var import_xml_results="{lang_get s='import_xml_results'}";
               {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}"> 
 
 <h1>	
- {lang_get s='help' var='common_prefix'}
- {assign var="text_hint" value="$common_prefix"}
+ {lang_get s='help' var='text_hint'}
  {include file="inc_help.tpl" help="execMain" locale=$locale 
           alt="$text_hint" title="$text_hint"  style="float: right;"}
  
 	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
 	
 	{if $ownerDisplayName != ""}
-	  {$smarty.const.TITLE_SEP_TYPE3}{lang_get s='only_test_cases_assigned_to'}{$smarty.const.TITLE_SEP}{$ownerDisplayName|escape}  
+	  {$title_sep_type3}{lang_get s='only_test_cases_assigned_to'}{$title_sep}{$ownerDisplayName|escape}  
 	{/if}
 </h1>
 
@@ -61,13 +80,8 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 {* show echo about update if applicable *}
 {$updated}
 
-{assign var="input_enabled_disabled" value="disabled"}
-{assign var="att_download_only" value=true}
-{assign var="enable_custom_fields" value=false}
-{assign var="draw_submit_button" value=false}
 
 <div id="main_content" class="workBack">
-
   {if $edit_test_results eq "no"}
   <div class="warning_message" style="align:center;">
      {lang_get s="build_is_closed"}<br />
@@ -75,55 +89,47 @@ var import_xml_results="{lang_get s='import_xml_results'}";
   </div>
   <br />
   {/if}
-  
-  <div class="show_hide_title">
-    <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
-         title="{lang_get s='show_hide'}" 
-         onclick="show_hide('tplan_notes','tpn_view_status',
-                            document.getElementById('tplan_notes').style.display=='none')" />
-    {lang_get s='test_plan_notes'}
-  </div>
-  <div id="tplan_notes" class="exec_additional_info">
-  {$tplan_notes}
-  {if $tplan_cf neq ''}
-     <div class="custom_field_container">
-     {$tplan_cf} 
-     </div>
-  {/if}
-  </div>
-  
-<div class="show_hide_title">
-<img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
-     title="{lang_get s='show_hide'}" 
-     onclick="show_hide('build_notes','bn_view_status',
-                        document.getElementById('build_notes').style.display=='none')" />
-{lang_get s='builds_notes'}
-</div>
-<div id="build_notes" class="exec_additional_info">
-{$build_notes}
-</div>
-
-
 
 <form method="post" id="execSetResults" name="execSetResults" >
-  {* franciscom - implementation note - 
-     1. function of these inputs save the status when user saves executiosn.
-     2. value is setted via javascript using the body onload event
-     3. the same concepts applies to the hidden inputs tsdetails_view_status.
-  *}   
-  <input type="hidden" id="tpn_view_status" 
-                       name="tpn_view_status" 
-                       value="0" />
-  <input type="hidden" id="bn_view_status" 
-                       name="bn_view_status" 
-                       value="0" />
-  <input type="hidden" id="bc_view_status" 
-                       name="bc_view_status" 
-                       value="0" />
-  
-  {* 20070211 - franciscom *}
+
   <input type="hidden" id="do_delete"  name="do_delete" value="0" />
   <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
+
+  {* -------------------------------------------------------------------------------- *}
+  {* Test Plan notes show/hide management                                             *}
+  {* -------------------------------------------------------------------------------- *}
+  {lang_get s='test_plan_notes' var='title'}
+  {assign var="div_id" value='tplan_notes'}
+  {assign var="memstatus_id" value=$tplan_notes_view_memory_id}
+  
+  {include file="inc_show_hide_mgmt.tpl" 
+           args_container_title=$title
+           args_container_id=$div_id
+           args_container_view_status_id=$memstatus_id}
+
+  <div id="{$div_id}" class="exec_additional_info">
+    {$tplan_notes}
+    {if $tplan_cf neq ''} <div class="custom_field_container">{$tplan_cf}</div>{/if}
+  </div>
+  
+  {* -------------------------------------------------------------------------------- *}
+
+  {* -------------------------------------------------------------------------------- *}
+  {* Build notes show/hide management                                                 *}
+  {* -------------------------------------------------------------------------------- *}
+  {lang_get s='builds_notes' var='title'}
+  {assign var="div_id" value='build_notes'}
+  {assign var="memstatus_id" value=$build_notes_view_memory_id}
+
+  {include file="inc_show_hide_mgmt.tpl" 
+           args_container_title=$title
+           args_container_id=$div_id
+           args_container_view_status_id=$memstatus_id
+           args_container_draw=true
+           args_container_class='exec_additional_info'
+           args_container_html=$build_notes}
+  {* -------------------------------------------------------------------------------- *}
+
   
   
   {if $map_last_exec eq ""}
@@ -137,15 +143,16 @@ var import_xml_results="{lang_get s='import_xml_results'}";
         {assign var="draw_submit_button" value=true}
 
 
-        <div class="show_hide_title">
-        <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
-            title="{lang_get s='show_hide'}" 
-            onclick="show_hide('bulk_controls','bc_view_status',
-                               document.getElementById('bulk_controls').style.display=='none')" />
-        {lang_get s='bulk_tc_status_management'} </div>
- 
+        {lang_get s='bulk_tc_status_management' var='title'}
+        {assign var="div_id" value='bulk_controls'}
+        {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
         
-        <div id="bulk_controls" name="bulk_controls">
+        {include file="inc_show_hide_mgmt.tpl" 
+                 args_container_title=$title
+                 args_container_id=$div_id
+                 args_container_view_status_id=$memstatus_id}
+
+        <div id="{$div_id}" name="{$div_id}">
         	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
         	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
         	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
@@ -157,7 +164,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
       		         value="{lang_get s='btn_save_all_tests_results'}"/>
         </div>
     	{/if}
-    
+      
       <hr />
       <div class="groupBtn">
     		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
@@ -181,39 +188,38 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 	{/if}
 
   	{foreach item=tc_exec from=$map_last_exec}
+    {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
-		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_exec.testcase_id}' />
-		<input type='hidden' id="tsdetails_view_status_{$tc_exec.testcase_id}" 
-		                     name="tsdetails_view_status_{$tc_exec.testcase_id}"  value="0" />
+		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
 
-		<div class="show_hide_title">
-		<img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
-             title="{lang_get s='show_hide'}" 
-             onclick="show_hide('tsdetails_{$tc_exec.testcase_id}',
-                                'tsdetails_view_status_{$tc_exec.testcase_id}',
-                                document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')" />
-    
-		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}
-		</div>
+    {* ------------------------------------------------------------------------------------ *}
+    {lang_get s='th_testsuite' var='title'}
+    {assign var="div_id" value=tsdetails_$tc_id}
+    {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
+    {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name|escape}
+    {assign var="title" value="$title$title_sep$ts_name"}
 
-		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}" 
-		     class="exec_additional_info">
+    {include file="inc_show_hide_mgmt.tpl" 
+             args_container_title=$title
+             args_container_id=$div_id
+             args_container_view_status_id=$memstatus_id}
 
+		<div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
       <br />
       <div class="exec_testsuite_details" style="width:95%;">
       <span class="legend_container">{lang_get s='details'}</span><br />
-		  {$tsuite_info[$tc_exec.testcase_id].details}
+		  {$tsuite_info[$tc_id].details}
 		  </div>
 		  
 		  {* 20070104 - franciscom *}
-		  {if $ts_cf_smarty[$tc_exec.testcase_id] neq ''}
+		  {if $ts_cf_smarty[$tc_id] neq ''}
 		    <br />
 		    <div class="custom_field_container" style="border-color:black;width:95%;">
-         {$ts_cf_smarty[$tc_exec.testcase_id]}
+         {$ts_cf_smarty[$tc_id]}
         </div>
 		  {/if}
 		  
-  		{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
+  		{if $tSuiteAttachments[$tc_id] neq null}
   		  <br />
            <script language="JavaScript" type="text/javascript">
            var msg="{lang_get s='warning_delete_execution'}";
@@ -235,7 +241,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 		    {if $tc_exec.assigned_user eq ''}
 		      {lang_get s='has_no_assignment'}
 		    {else}  
-          {lang_get s='assigned_to'}{$smarty.const.TITLE_SEP}{$tc_exec.assigned_user|escape}
+          {lang_get s='assigned_to'}{$title_sep}{$tc_exec.assigned_user|escape}
         {/if}  
     </div>
 
@@ -251,16 +257,16 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
   		{if $history_on}
-  		    {lang_get s='execution_history'} {$smarty.const.TITLE_SEP_TYPE3}
+  		    {lang_get s='execution_history'} {$title_sep_type3}
   		    
   		    {if !$show_history_all_builds} 
-  		      {lang_get s='build'} {$smarty.const.TITLE_SEP} {$build_name|escape}
+  		      {lang_get s='build'} {$title_sep} {$build_name|escape}
   		    {/if}  
   		{else}
   			  {lang_get s='last_execution'} 
   			  {if $show_current_build} {lang_get s='exec_any_build'} {/if}
-  			  {$smarty.const.TITLE_SEP_TYPE3} {lang_get s='build'} 
-  			  {$smarty.const.TITLE_SEP} {$the_build}
+  			  {$title_sep_type3} {lang_get s='build'} 
+  			  {$title_sep} {$the_build}
   		{/if}
   		</div>
 
@@ -270,13 +276,13 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 			    {assign var="status_code" value=$abs_last_exec.status}
     
      			<div class="{$gsmarty_tc_status_css.$status_code}">
-     			{lang_get s='date_time_run'} {$smarty.const.TITLE_SEP} {localize_timestamp ts=$abs_last_exec.execution_ts}
-     			{$smarty.const.TITLE_SEP_TYPE3}
-     			{lang_get s='test_exec_by'} {$smarty.const.TITLE_SEP} {$alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape} 
-     			{$smarty.const.TITLE_SEP_TYPE3}
-     			{lang_get s='build'}{$smarty.const.TITLE_SEP} {$abs_last_exec.build_name|escape} 			
-     			{$smarty.const.TITLE_SEP_TYPE3}
-     			{lang_get s='exec_status'} {$smarty.const.TITLE_SEP} {localize_tc_status s=$status_code}
+     			{lang_get s='date_time_run'} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
+     			{$title_sep_type3}
+     			{lang_get s='test_exec_by'} {$title_sep} {$alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape} 
+     			{$title_sep_type3}
+     			{lang_get s='build'}{$title_sep} {$abs_last_exec.build_name|escape} 			
+     			{$title_sep_type3}
+     			{lang_get s='exec_status'} {$title_sep} {localize_tc_status s=$status_code}
      			</div>
   		    
   		  {else}
@@ -291,8 +297,8 @@ var import_xml_results="{lang_get s='import_xml_results'}";
       {if $history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
   			    {lang_get s='last_execution'} {lang_get s='exec_current_build'} 
-  			    {$smarty.const.TITLE_SEP_TYPE3} {lang_get s='build'} 
-  			    {$smarty.const.TITLE_SEP} {$build_name|escape}
+  			    {$title_sep_type3} {lang_get s='build'} 
+  			    {$title_sep} {$build_name|escape}
   			 </div>   
 		  {/if}
     
@@ -315,7 +321,6 @@ var import_xml_results="{lang_get s='import_xml_results'}";
         {/if}
 
 				{if $g_bugInterfaceOn}
-				   HOLA
           <th style="text-align:left">{lang_get s='bug_mgmt'}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
@@ -366,7 +371,6 @@ var import_xml_results="{lang_get s='import_xml_results'}";
   	      {/if}
   
     			{if $g_bugInterfaceOn}
-    			    HOLA
        		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
       			         style="border:none" /></a>

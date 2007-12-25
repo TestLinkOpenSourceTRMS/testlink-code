@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.4 2007/12/24 17:08:38 franciscom Exp $
+$Id: execSetResults.tpl,v 1.5 2007/12/25 20:16:18 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071103 - franciscom - BUGID 700
@@ -15,6 +15,8 @@ Rev:
     20070104 - franciscom - custom field management for test cases
     20070101 - franciscom - custom field management for test suite div
 *}	
+
+
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}
 {assign var="title_sep_type3"  value=$smarty.const.TITLE_SEP_TYPE3}
 
@@ -22,6 +24,22 @@ Rev:
 {assign var="att_download_only" value=true}
 {assign var="enable_custom_fields" value=false}
 {assign var="draw_submit_button" value=false}
+
+{assign var="show_current_build" value=0}
+{assign var="my_build_name" value=$build_name|escape}
+
+{lang_get s='build' var='build_title'} 
+
+{lang_get var='labels'
+          s='build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
+             th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
+             version,has_no_assignment,assigned_to,execution_history,
+             last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
+             test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
+	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
+	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
+	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
+
 
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -69,10 +87,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
  {include file="inc_help.tpl" help="execMain" locale=$locale 
           alt="$text_hint" title="$text_hint"  style="float: right;"}
  
-	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
+	{$labels.title_t_r_on_build} {$my_build_name} 
 	
 	{if $ownerDisplayName != ""}
-	  {$title_sep_type3}{lang_get s='only_test_cases_assigned_to'}{$title_sep}{$ownerDisplayName|escape}  
+	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$ownerDisplayName|escape}  
 	{/if}
 </h1>
 
@@ -82,10 +100,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
 <div id="main_content" class="workBack">
-  {if $edit_test_results eq "no"}
+  {if $build_is_open == 0}
   <div class="warning_message" style="align:center;">
-     {lang_get s="build_is_closed"}<br />
-     {lang_get s="test_cases_cannot_be_executed"}
+     {$labels.build_is_closed}<br />
+     {$labels.test_cases_cannot_be_executed}
   </div>
   <br />
   {/if}
@@ -135,8 +153,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {if $map_last_exec eq ""}
      <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
   {else}
-      {* $edit_test_results = "no",  if build is closed  *}
-      {if $rightsEdit == "yes" and $edit_test_results == "yes"}
+      {if $has_exec_right == 1 and $build_is_open == 1}
         {assign var="input_enabled_disabled" value=""}
         {assign var="att_download_only" value=false}
         {assign var="enable_custom_fields" value=true}
@@ -188,6 +205,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{/if}
 
   	{foreach item=tc_exec from=$map_last_exec}
+  	
     {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
@@ -236,37 +254,34 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   
 
 		<div class="exec_tc_title">
-		{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br />
+		{$labels.title_test_case} {$labels.th_test_case_id}{$tc_exec.testcase_id} :: {$labels.version}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
-		      {lang_get s='has_no_assignment'}
+		      {$labels.has_no_assignment}
 		    {else}  
-          {lang_get s='assigned_to'}{$title_sep}{$tc_exec.assigned_user|escape}
+          {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
         {/if}  
     </div>
 
  		{if $show_last_exec_any_build}
    		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
- 		  {assign var="the_build" value=$abs_last_exec.build_name|escape}
+ 		  {assign var="my_build_name" value=$abs_last_exec.build_name|escape}
  		  {assign var="show_current_build" value=1}
- 		{else}
- 		  {assign var="the_build" value=$build_name|escape}
- 		  {assign var="show_current_build" value=0}
     {/if}
+    {assign var="exec_build_title" value="$build_title $title_sep $my_build_name"}
+
 
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
   		{if $history_on}
-  		    {lang_get s='execution_history'} {$title_sep_type3}
-  		    
+  		    {$labels.execution_history} {$title_sep_type3}
   		    {if !$show_history_all_builds} 
-  		      {lang_get s='build'} {$title_sep} {$build_name|escape}
+  		      {$exec_build_title}
   		    {/if}  
   		{else}
   			  {lang_get s='last_execution'} 
-  			  {if $show_current_build} {lang_get s='exec_any_build'} {/if}
-  			  {$title_sep_type3} {lang_get s='build'} 
-  			  {$title_sep} {$the_build}
+  			  {if $show_current_build} {$labels.exec_any_build} {/if}
+  			  {$title_sep_type3} {$exec_build_title}
   		{/if}
   		</div>
 
@@ -276,57 +291,55 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 			    {assign var="status_code" value=$abs_last_exec.status}
     
      			<div class="{$gsmarty_tc_status_css.$status_code}">
-     			{lang_get s='date_time_run'} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
+     			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
-     			{lang_get s='test_exec_by'} {$title_sep} {$alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape} 
+     			{$labels.test_exec_by} {$title_sep} {$alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape} 
      			{$title_sep_type3}
-     			{lang_get s='build'}{$title_sep} {$abs_last_exec.build_name|escape} 			
+     			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape} 			
      			{$title_sep_type3}
-     			{lang_get s='exec_status'} {$title_sep} {localize_tc_status s=$status_code}
+     			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
      			</div>
   		    
   		  {else}
-    		   <div class="not_run">{lang_get s='test_status_not_run'}</div>
-    			   {lang_get s='tc_not_tested_yet'}
+    		   <div class="not_run">{$labels.test_status_not_run}</div>
+    			   {$labels.tc_not_tested_yet}
    		  {/if}
     {/if}
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $other_exec.$tcversion_id}
-    
       {if $history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
-  			    {lang_get s='last_execution'} {lang_get s='exec_current_build'} 
-  			    {$title_sep_type3} {lang_get s='build'} 
-  			    {$title_sep} {$build_name|escape}
+  			    {$labels.last_execution} {$labels.exec_current_build} 
+  			    {$title_sep_type3} {$exec_build_title}
   			 </div>   
 		  {/if}
-    
+
 		  <table cellspacing="0" class="exec_history">
 			 <tr>
-				<th style="text-align:left">{lang_get s='date_time_run'}</th>
+				<th style="text-align:left">{$labels.date_time_run}</th>
         {* 20071103 - BUGID 700 *}
 				{if $history_on == 0 || $show_history_all_builds}
-				  <th style="text-align:left">{lang_get s='build'}</th>
+				  <th style="text-align:left">{$labels.build}</th>
 				{/if}  
-				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
-				<th style="text-align:left">{lang_get s='exec_status'}</th>
+				<th style="text-align:left">{$labels.test_exec_by}</th>
+				<th style="text-align:left">{$labels.exec_status}</th>
 				<th style="text-align:center" >
-				   {lang_get s='exec_notes'}
+				   {$labels.exec_notes}
   			</th>
 				
 				{if $att_model->show_upload_column && !$att_download_only}
-						<th style="text-align:center">{lang_get s='attachment_mgmt'}</th>
+						<th style="text-align:center">{$labels.attachment_mgmt}</th>
             {assign var="my_colspan" value=$att_model->num_cols}
         {/if}
 
 				{if $g_bugInterfaceOn}
-          <th style="text-align:left">{lang_get s='bug_mgmt'}</th>
+          <th style="text-align:left">{$labels.bug_mgmt}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
         
 				{if $can_delete_execution}
-          <th style="text-align:left">{lang_get s='delete'}</th>
+          <th style="text-align:left">{$labels.delete}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
 
@@ -342,7 +355,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				
 				  {if $history_on == 0 || $show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}
-  				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{lang_get s='closed_build'}">{/if}
+  				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
   				    {$tc_old_exec.build_name|escape}
   				</td>
   				{/if}
@@ -355,8 +368,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
    			  <td align="center">
      			  {if $tc_old_exec.execution_notes neq ""}
        			  <a href="javascript:open_show_notes_window({$tc_old_exec.execution_id})">
-          			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/contact_16.png" alt="{lang_get s='alt_notes'}" 
-          			         title="{lang_get s='alt_notes'}"  style="border:none" /></a>
+          			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/contact_16.png" alt="{$labels.alt_notes}" 
+          			         title="{$labels.alt_notes}"  style="border:none" /></a>
           	{else}
           	 &nbsp;
           	{/if}		         
@@ -364,15 +377,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
             
           {if $att_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
-      			         alt="{lang_get s='alt_attachment_mgmt'}" 
+      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
+      			         alt="{$labels.alt_attachment_mgmt}" 
       			         style="border:none" /></a>
               </td>
   	      {/if}
   
     			{if $g_bugInterfaceOn}
        		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
+      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}" 
       			         style="border:none" /></a>
               </td>
           {/if}
@@ -382,7 +395,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
        		  	<td align="center">
              	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{lang_get s='img_title_delete_execution'}" 
+      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{$labels.img_title_delete_execution}" 
       			         style="border:none" /></a>
               </td>
           {/if}
@@ -436,131 +449,31 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   </div> 
 
   <br />
-  <div>
-   
-    <div class="exec_test_spec">
-		<table class="test_exec">
-		<tr>
-			<td colspan="2" class="title">{lang_get s='test_exec_summary'}</td>
-		</tr>
-		<tr>
-			<td colspan="2">{$tc_exec.summary}</td>
-		</tr>
-		<tr>
-			<td class="title" width="50%">{lang_get s='test_exec_steps'}</td>
-			<td class="title" width="50%">{lang_get s='test_exec_expected_r'}</td>
-		</tr>
-		<tr>
-			<td>{$tc_exec.steps}</td>
-			<td>{$tc_exec.expected_results}</td>
-		</tr>
-		
-    {* ------------------------------------------------------------------------------------- *}
-    {if $enable_custom_field and $tc_exec.active eq 1}
-  	  {if $execution_time_cf[$tc_exec.testcase_id]}
-  	 		<tr>
-  				<td colspan="2">
-  					<div class="custom_field_container" 
-  						style="background-color:#dddddd;">{$execution_time_cf[$tc_exec.testcase_id]}
-  					</div>
-  				</td>
-  			</tr>
-  		{/if}
-    {/if} {* if $enable_custom_field *}
-    {* ------------------------------------------------------------------------------------- *}
-    
-    
-    	{if $design_time_cf[$tc_exec.testcase_id] neq ''}
-			<tr>
-				<td colspan="2">
-					<div class="custom_field_container" 
-					style="background-color:#dddddd;">{$design_time_cf[$tc_exec.testcase_id]}
-					</div>
-				</td>
-			</tr>
- 		{/if} 
-		
-		<tr>
-			<td colspan="2">
-			{assign var="tcID" value=$tc_exec.testcase_id}
-			{if $tcAttachments[$tcID] neq null}
-				{include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
-						 attachmentInfos=$tcAttachments[$tcID] tableClassName="bordered"
-						 tableStyles="background-color:#dddddd;width:100%"
-				}
-			{/if}
-			</td>
-		</tr>
-		</table>
-		</div>
-		
-    {* ----------------------------------------------------------------------------------- *}
-    {* 20070708 - franciscom *}
-    {assign var="can_execute" value=0}
-   
-    {if $rightsEdit == "yes" and $edit_test_results eq "yes" and $tc_exec.active eq 1}
-   
-      {assign var="can_execute" value=1}
-      {* --------------------------------------------------------------------------------- *}
-      {if $exec_mode neq 'all'}
-        {assign var="can_execute" value=0}
-    	
-    	  {if $exec_mode eq 'assigned_to_me'} 
-    	      {if $tc_exec.assigned_user_id eq $tester_id}
-    	        {assign var="can_execute" value=1}
-    	      {/if} 
-    	  {/if}
-  
-    	  {if $exec_mode eq 'assigned_to_me_or_free'} 
-    	      {if $tc_exec.assigned_user_id eq $tester_id || $tc_exec.assigned_user_id eq ''}
-    	        {assign var="can_execute" value=1}
-    	      {/if} 
-        {/if}
-      {/if}
-      {* --------------------------------------------------------------------------------- *}
-      
-  	{/if}
-    {* ----------------------------------------------------------------------------------- *}
 
-  	
-  	{if $can_execute}
-  		<table border="0" width="100%">
-  		<tr>
-  			<td rowspan="2" align="center">
-  				<div class="title">{lang_get s='test_exec_notes'}</div>
-  				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$tcversion_id}]' 
-  					rows="10" style="width:99%"></textarea>			
-  			</td>
-  			<td valign="top" style="width:30%">			
-    				{* status of test *}
-      			<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
-    				
-    				<div class="resultBox">
-  
-                {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-    						<input type="radio" {$input_enabled_disabled} name="status[{$tcversion_id}]" 
-    							value="{$gsmarty_tc_status.$verbose_status}"
-    							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.$default_status}
-    							checked="checked" 
-    							{/if} />{lang_get s=$locale_status}<br />
-    					 {/foreach}		
-    					<br />		
-    		 			<input type="submit" name="save_results[{$tcversion_id}]" 
-    		 			       {$input_enabled_disabled}
-    		 			       value="{lang_get s='btn_save_tc_exec_results'}" />
-    				</div>
-    			</td>
-    		</tr>
-  		</table>
-	 {/if}
- 	 {if $tc_exec.active eq 0}
- 	  <h1><center>{lang_get s='testcase_version_is_inactive_on_exec'}</center></h1>
- 	 {/if}
-  
-  
-  
+  {* ----------------------------------------------------------------------------------- *}
+  <div>
+    {include file="execute/inc_exec_test_spec.tpl" 
+             args_tc_exec=$tc_exec
+             args_labels=$labels  
+             args_enable_custom_field=$enable_custom_field 
+             args_execution_time_cf=$execution_time_cf
+             args_design_time_cf=$design_time_cf
+             args_tcAttachments=$tcAttachments }
+
+		
+    {if $tc_exec.can_be_executed}
+      {include file="execute/inc_exec_controls.tpl"
+               args_input_enable_mgmt=$input_enabled_disabled
+               args_tcversion_id=$tcversion_id 
+               args_labels=$labels}
+	  {/if}
+ 	  {if $tc_exec.active eq 0}
+ 	   <h1><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
+ 	  {/if}
 	<hr />
 	</div>
+  {* ----------------------------------------------------------------------------------- *}
+
 	{/foreach}
 </form>
 </div>

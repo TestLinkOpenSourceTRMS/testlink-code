@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/05/25 20:44:12 $ - $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/12/25 20:18:17 $ - $Author: franciscom $
  *
  * rev :
+ *       20070501 - franciscom - lang_get_smarty() now accept a list of
+ *                               strings to translate.
+ * 
  *       20070501 - franciscom - enabled logic to manage a custom_strings.txt file
  *       
 */
@@ -55,7 +58,24 @@ function lang_get( $p_string, $p_lang = null )
 }
 
 /* 
------------------------------------------------
+----------------------------------------------------------------------
+20071225 - franciscom
+When you choose to have translation results assigned to a smarty variable
+now you can send a list (string with ',' as element separator) of labels
+to be translated.
+In this situation you will get as result an associative array that uses
+as key the string to be translated.
+
+Example:
+
+{lang_get s='th_testsuite,details' var='labels'}
+
+labels will be : labels['th_testsuite']
+                 labels['details']
+
+and on smarty template you will access in this way: $labels.details
+
+
 20050708 - fm
 Modified to cope with situation where you need
 to assign a Smarty Template variable instead
@@ -66,27 +86,32 @@ if the key 'var' is found in the associative array
 instead of return a value, this value is assigned
 to $params['var`]
 
--------------------------------------------------
-*/
+----------------------------------------------------------------------*/
 function lang_get_smarty($params, &$smarty)
 {
-	if (isset($params['locale']))
+  $myLocale=isset($params['locale']) ? $params['locale'] : null;
+  if(	isset($params['var']) )
 	{
-		$the_ret = lang_get($params['s'], $params['locale']);    
-	}	
-	else
-	{
-		$the_ret = lang_get($params['s']);  
-	}
-	
-	// 20050508 - fm
-	if(	isset($params['var']) )
-	{
-		$smarty->assign($params['var'], $the_ret);
-	}
-	else
-	{
-		return $the_ret;
+	  $labels2translate=explode(',',$params['s']);
+    if( count($labels2translate) == 1)
+    {
+       $myLabels=lang_get($params['s'], $myLocale);
+    }
+    else
+    {
+       $myLabels=array();
+       foreach($labels2translate as $str)
+       {
+         $str2search=trim($str);
+         $myLabels[$str2search]=lang_get($str2search, $myLocale);
+       }
+    }
+    $smarty->assign($params['var'], $myLabels); 
+ 	}  
+  else 
+  {  
+	  $the_ret = lang_get($params['s'], $myLocale);    
+	  return $the_ret;
 	}
 }
 // -----------------------------------------------

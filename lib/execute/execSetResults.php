@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2007/12/24 17:07:41 $ $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2007/12/25 20:17:40 $ $Author: franciscom $
  *
  * 20071224 - franciscom - refactoring
  * 20071113 - franciscom - added contribution History for all builds.
@@ -48,8 +48,12 @@ $tcase_mgr = new testcase($db);
 $build_mgr = new build_mgr($db);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
+$build_info = $build_mgr->get_by_id($args->build_id);
+
 $exec_mode=initializeExecMode($db,$exec_cfg,$args->user_id,$args->tproject_id,$args->tplan_id);
-$can_exec=(has_rights($db,"testplan_execute")=="yes"?1:0);
+$has_exec_right=(has_rights($db,"testplan_execute")=="yes"?1:0);
+
+
 
 if (!strlen($args->level))
 {
@@ -165,7 +169,7 @@ if(!is_null($linked_tcversions))
   			$cf_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_values($args->id,'design',$SHOW_ON_EXECUTION);
   			
         // BUGID 856: Guest user can execute test case
-  			if($can_exec)
+  			if($has_exec_right)
   			{
   			   $cfexec_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_inputs($args->id,$PID_NOT_NEEDED,
   			                                                                       'execution',"_{$args->id}");
@@ -227,7 +231,7 @@ if(!is_null($linked_tcversions))
 							                                                                        'design',$SHOW_ON_EXECUTION);
 							                                                                        
              // BUGID 856: Guest user can execute test case
-      			 if($can_exec)
+      			 if($has_exec_right)
   			     {
 							$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
 							                                                            $PID_NOT_NEEDED,'execution',
@@ -314,9 +318,14 @@ if(!is_null($linked_tcversions))
 
 }
 
+
 if( !is_null($map_last_exec) )
 {
-  updateTesterAssignment($db,$map_last_exec,$tcase_mgr,$args->tplan_id);
+  $map_last_exec=setTesterAssignment($db,$map_last_exec,$tcase_mgr,$args->tplan_id);
+
+  // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
+  $can_execute=$has_exec_right && ($build_info['is_open']==1);
+  $map_last_exec=setCanExecute($map_last_exec,$exec_mode,$can_execute,$args->user_id);
 }
 
 // --------------------------------------------------------------------
@@ -328,17 +337,17 @@ if( is_array($tcversion_id) )
 // --------------------------------------------------------------------
 
 
+
+smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+
 $smarty->assign('exec_mode', $exec_mode);
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
 
-$rs = $build_mgr->get_by_id($args->build_id);
-$smarty->assign('build_notes',$rs['notes']);
+$build_is_open=($build_info['is_open']==1 ? 1 : 0);
+$smarty->assign('build_notes',$build_info['notes']);
+$smarty->assign('build_is_open', $build_is_open);
 
-$editTestResult = ($rs['is_open']==1) ? "yes" : "no";
-$smarty->assign('edit_test_results', $editTestResult);
-
-smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
 
 $smarty->assign('tpn_view_status',$args->tpn_view_status);
 $smarty->assign('bn_view_status',$args->bn_view_status);
@@ -354,7 +363,7 @@ $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('attachments',$attachmentInfos);
 $smarty->assign('tSuiteAttachments',$tSuiteAttachments);
 $smarty->assign('id',$args->id);
-$smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
+$smarty->assign('has_exec_right', $has_exec_right);
 $smarty->assign('map_last_exec', $map_last_exec);
 $smarty->assign('other_exec', $other_execs);
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
@@ -589,8 +598,8 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
   }
   
   $info = array( 'attachment' => $attachmentInfos,
-               'bugs' => $bugs,
-               'cfexec_values' => $cfexec_values);      
+                 'bugs' => $bugs,
+                 'cfexec_values' => $cfexec_values);      
                
   return $info;
 } //function end
@@ -680,7 +689,7 @@ function initializeExecMode(&$db,$exec_cfg,$user_id,$tproject_id,$tplan_id)
   returns: 
 
 */
-function updateTesterAssignment(&$db,&$exec_info,&$tcase_mgr,$tplan_id)
+function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id)
 {     
 	foreach($exec_info as $version_id => $value)
 	{
@@ -688,20 +697,20 @@ function updateTesterAssignment(&$db,&$exec_info,&$tcase_mgr,$tplan_id)
 		$exec_info[$version_id]['assigned_user_id'] = 0;
 		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
 		
-		$userID = intval($p3[$version_id]['user_id']);
-		if($userID)
+		$assignedTesterId = intval($p3[$version_id]['user_id']);
+		
+		if($assignedTesterId)
 		{
-			$user = tlUser::getByID($db,$userID);
+			$user = tlUser::getByID($db,$assignedTesterId);
 			if ($user)
 			{
 				$exec_info[$version_id]['assigned_user']= $user->getDisplayName();  
 			}
-			$exec_info[$version_id]['assigned_user_id'] = $userID;
+			$exec_info[$version_id]['assigned_user_id'] = $assignedTesterId;
 		}  
 	}
+	return $exec_info;
 } //function end
-
-
 
 /*
   function: 
@@ -721,5 +730,52 @@ function reorderExecutions(&$tcversion_id,&$exec_info)
     }
     return $dummy;    
 }
+
+
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
+{     
+    foreach($exec_info as $key => $tc_exec) 
+    {
+      $execution_enabled = 0;  
+      if( $can_execute==1 && $tc_exec['active']==1)
+      {
+        $assigned_to_me = $tc_exec['assigned_user_id'] == $tester_id ? 1 : 0;
+        $is_free = $tc_exec['assigned_user_id'] == '' ? 1 : 0;
+          
+        switch($execution_mode)
+        {
+          case 'assigned_to_me':
+          $execution_enabled=$assigned_to_me;
+          break;
+          
+          case 'assigned_to_me_or_free':
+          $execution_enabled=$assigned_to_me || $is_free;
+          break;
+          
+          case 'all':
+          $execution_enabled=1;
+          break;
+          
+          default:
+          $execution_enabled = 0;  
+          break;
+        } // switch
+      }
+      
+      $exec_info[$key]['can_be_executed']=$execution_enabled;
+
+    } // foreach
+    return $exec_info;
+
+} //function end
 
 ?>																																

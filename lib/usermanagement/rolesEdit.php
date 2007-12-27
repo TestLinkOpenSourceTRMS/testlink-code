@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/22 12:26:46 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/27 17:07:00 $ by $Author: franciscom $
  *
  *
+ * 20071227 - franciscom - refactoring
  * 20071201 - franciscom - new web editor code
  * 20070901 - franciscom - BUGID 1016 
  * 20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
@@ -30,56 +31,57 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 //
 init_global_rights_maps();
 
-$_POST = strings_stripSlashes($_POST);
-$id = isset($_GET['id']) ? $_GET['id'] : 0;
-$postBack = (sizeof($_POST) > 2) ? 1 : 0;
+$args=init_args();
 
 $of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
-$roleRights = null;
-$sqlResult = null;
+$checkboxStatus = null;
+$userFeedback = null;
 $action = null;
-
-if ($postBack && has_rights($db,"role_management"))
-{
-	$roleName = isset($_POST['rolename']) ? $_POST['rolename'] : null;
-	$id = isset($_POST['id']) ? $_POST['id'] : 0;
-	$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : '';
-	$bNew = ($id == 0);
-	//remove all keys except the rights
-	unset($_POST['id']);
-	unset($_POST['editRole']);
-	unset($_POST['newRole']);
-	unset($_POST['rolename']);
-	unset($_POST['notes']);
-	
-	$rights = $_POST;
-	$rights = implode("','",array_keys($rights));
-	$role = new tlRole();
-	$role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
-	$role->name = $roleName;
-	$role->description = $notes;
-	$role->dbID = $id;
-	
-	$result = $role->writeToDB($db);
-	$action = $bNew ? "do_add" : "updated";
-	$sqlResult = getRoleErrorMessage($result);
-}
-
 $affectedUsers = null;
 $allUsers = null;
+$role=null;
+$action_type='edit';
 
-//get the role info
-$role = tlRole::getByID($db,$id);
+
+switch($args->doAction)
+{
+   case 'create':
+   $action_type='doCreate';
+   break;
+
+   case 'edit':
+   $action_type='doEdit';
+   $role = tlRole::getByID($db,$args->roleid);
+   break;
+  
+     
+   case 'doCreate': 
+   case 'doEdit': 
+   if( has_rights($db,"role_management") )
+   {
+     $action_type='edit';
+     $op = doCreate($db,$args); 
+     $role=$op->role;
+     $action=$op->action;
+     $userFeedback=$op->userFeedback;
+   }
+   break;
+}
+
 if($role)
 {
-	//build the checked attribute for the checkboxes
-	for($i = 0;$i < sizeof($role->rights);$i++)
+	// build checked attribute for checkboxes
+	$checkboxStatus = null;
+	if( sizeof($role->rights) > 0 )
 	{
-		$right = $role->rights[$i];
-		$roleRights[$right->name] = "checked=\"checked\"";
+	    foreach($role->rights as $key => $right)
+	    {
+	    	$checkboxStatus[$right->name] = "checked=\"checked\"";
+	    }
 	}
+	
 	//get all users which are affected by changing the role definition
 	$allUsers = tlUser::getAll($db,null,"id");
 	$affectedUsers = getAllUsersWithRole($db,$role->dbID);
@@ -87,6 +89,7 @@ if($role)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('action_type',$action_type);
 $smarty->assign('role',$role);
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
@@ -99,12 +102,53 @@ $smarty->assign('pRights',$g_rights_product);
 $smarty->assign('uRights',$g_rights_users);
 $smarty->assign('reqRights',$g_rights_req);
 $smarty->assign('cfRights',$g_rights_cf);
-$smarty->assign('roleRights',$roleRights);
-$smarty->assign('sqlResult',$sqlResult);
+$smarty->assign('checkboxStatus',$checkboxStatus);
+$smarty->assign('sqlResult',$userFeedback);
 $smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('action',$action);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->assign('noRightsRole',TL_ROLES_NONE);
 $smarty->display($template_dir . $default_template);
+?>
+
+<?php
+function init_args()
+{
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  
+  $key2loop=array('doAction' => null,'rolename' => null , 'roleid' => 0, 'notes' => '', 'grant' => null);
+  foreach($key2loop as $key => $value)
+  {
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+  }
+  return $args;
+}
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function doCreate(&$db,$args)
+{
+	$rights = implode("','",array_keys($args->grant));
+  $op->role = new tlRole();
+  $op->role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
+	$op->role->name = $args->rolename;
+	$op->role->description = $args->notes;
+	$op->role->dbID = $args->roleid;
+	
+	$result = $op->role->writeToDB($db);
+	$op->userFeedback = getRoleErrorMessage($result);
+	$op->action = ($args->roleid == 0) ? "do_add" : "updated";
+ 
+  return $op;
+}
+ 	
+	
+
 ?>

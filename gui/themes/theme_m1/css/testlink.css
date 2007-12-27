@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.12 2007/12/27 09:30:55 franciscom Exp $ 
+$Id: testlink.css,v 1.13 2007/12/27 18:02:49 franciscom Exp $ 
 Purpose: main css - theme m1
 
 20071227 - franciscom - input.tl-input
@@ -91,7 +91,6 @@ div.testproject_title{
 
 
 /***** main page table *****/
-
 table.mainTable{
 	background: 	#EEE;
 	border: 		1px double black;
@@ -732,36 +731,4 @@ input.tl-input{
   margin:2px;
   padding:2px;
 }
-
-
-/* Common */
-table.common-x {
-	background:     #EEE;
-	border: 		1px solid black;
-	margin-bottom:	20px;
-	min-width:		50%;
-}
-
-table.common-x td {
-	vertical-align: top;
-}
-
-table.common-x th {
-  overflow:hidden;
-  zoom:1;
-  color:#15428b;
-  font:bold 11px tahoma,arial,verdana,sans-serif;
-  padding:5px 3px 4px 5px;
-  border:1px solid #99bbe8;
-  line-height:15px;
-  background:transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;
-}
-
-table.common-x caption {
-	background:     #CCC;
-	border: 		1px solid black;
-	border-bottom-style: none;
-	font-weight:    bold;
-}
-
 /* ----------------------------------------------------------------------------- */

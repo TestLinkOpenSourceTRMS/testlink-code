@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.139 $
- * @modified $Date: 2007/12/21 10:21:48 $ by $Author: franciscom $
+ * @version $Revision: 1.140 $
+ * @modified $Date: 2007/12/27 18:03:53 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071227 - franciscom - now default is theme_m2
  *           20071130 - franciscom - $g_gui->webeditor (work in progress)
  *           20071113 - franciscom - $g_exec_cfg->show_history_all_builds
  *           20071112 - franciscom - config changes due to upgrade of Smarty
@@ -192,7 +193,7 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 /** CSS themes - modify if you create own*/
-define('TL_THEME_CSS_DIR','gui/themes/theme_m1/css/');
+define('TL_THEME_CSS_DIR','gui/themes/theme_m2/css/');
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');

@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.15 2007/12/16 12:20:56 schlundus Exp $
+$Id: inc_head.tpl,v 1.16 2007/12/27 17:01:25 franciscom Exp $
 Purpose: smarty template - HTML Common Header 
 
 rev :
@@ -29,6 +29,7 @@ rev :
 	  <style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	{/if}
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
+
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
 	

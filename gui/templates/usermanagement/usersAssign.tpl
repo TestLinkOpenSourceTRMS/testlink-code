@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.2 2007/12/20 20:36:35 schlundus Exp $ 
+$Id: usersAssign.tpl,v 1.3 2007/12/27 17:01:25 franciscom Exp $ 
 
 rev:
     20070818 - franciscom
@@ -11,7 +11,8 @@ rev:
       -  bug 1000  - Testplan User Role Assignments
     
 *}
-{include file="inc_head.tpl" jsValidate="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_ext_js.tpl" css_only=1}
 
 <body>
 
@@ -85,7 +86,7 @@ rev:
 			</tr>
 		</table>
     </div>
-      <table class="common" width="75%">
+      <table class="common-x" width="75%">
     	<tr>
     		<th>{lang_get s='User'}</th>
     		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>

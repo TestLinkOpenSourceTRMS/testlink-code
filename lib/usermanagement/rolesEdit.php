@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/27 17:07:00 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
  *
  *
  * 20071227 - franciscom - refactoring
@@ -30,8 +30,7 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 // We need to be sure _SESSION info exists before using lang_get(); in any module.
 //
 init_global_rights_maps();
-
-$args=init_args();
+$args = init_args();
 
 $of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
@@ -40,41 +39,35 @@ $checkboxStatus = null;
 $userFeedback = null;
 $action = null;
 $affectedUsers = null;
-$allUsers = null;
-$role=null;
-$action_type='edit';
-
-
+$role = null;
+$action_type = 'edit';
 switch($args->doAction)
 {
-   case 'create':
-   $action_type='doCreate';
-   break;
-
-   case 'edit':
-   $action_type='doEdit';
-   $role = tlRole::getByID($db,$args->roleid);
-   break;
-  
-     
-   case 'doCreate': 
-   case 'doEdit': 
-   if( has_rights($db,"role_management") )
-   {
-     $action_type='edit';
-     $op = doCreate($db,$args); 
-     $role=$op->role;
-     $action=$op->action;
-     $userFeedback=$op->userFeedback;
-   }
-   break;
+	case 'create':
+		$action_type = 'doCreate';
+		break;
+	case 'edit':
+		$action_type = 'doEdit';
+		$role = tlRole::getByID($db,$args->roleid);
+		break;
+	case 'doCreate': 
+	case 'doEdit': 
+		if(has_rights($db,"role_management"))
+		{
+			$action_type ='edit';
+			$op = doCreate($db,$args); 
+			$role = $op->role;
+			$action = $op->action;
+			$userFeedback = $op->userFeedback;
+		}
+		break;
 }
 
 if($role)
 {
 	// build checked attribute for checkboxes
 	$checkboxStatus = null;
-	if( sizeof($role->rights) > 0 )
+	if(sizeof($role->rights))
 	{
 	    foreach($role->rights as $key => $right)
 	    {
@@ -83,8 +76,7 @@ if($role)
 	}
 	
 	//get all users which are affected by changing the role definition
-	$allUsers = tlUser::getAll($db,null,"id");
-	$affectedUsers = getAllUsersWithRole($db,$role->dbID);
+	$affectedUsers = $role->getAllUsersWithRole($db);
 	$of->Value = $role->description;
 }
 
@@ -104,25 +96,22 @@ $smarty->assign('reqRights',$g_rights_req);
 $smarty->assign('cfRights',$g_rights_cf);
 $smarty->assign('checkboxStatus',$checkboxStatus);
 $smarty->assign('sqlResult',$userFeedback);
-$smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('action',$action);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->assign('noRightsRole',TL_ROLES_NONE);
 $smarty->display($template_dir . $default_template);
-?>
 
-<?php
 function init_args()
 {
-  $_REQUEST = strings_stripSlashes($_REQUEST);
-  
-  $key2loop=array('doAction' => null,'rolename' => null , 'roleid' => 0, 'notes' => '', 'grant' => null);
-  foreach($key2loop as $key => $value)
-  {
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-  }
-  return $args;
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+
+	$key2loop = array('doAction' => null,'rolename' => null , 'roleid' => 0, 'notes' => '', 'grant' => null);
+	foreach($key2loop as $key => $value)
+	{
+		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+	}
+	return $args;
 }
 
 /*
@@ -136,8 +125,8 @@ function init_args()
 function doCreate(&$db,$args)
 {
 	$rights = implode("','",array_keys($args->grant));
-  $op->role = new tlRole();
-  $op->role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
+ 	$op->role = new tlRole();
+  	$op->role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
 	$op->role->name = $args->rolename;
 	$op->role->description = $args->notes;
 	$op->role->dbID = $args->roleid;
@@ -148,7 +137,4 @@ function doCreate(&$db,$args)
  
   return $op;
 }
- 	
-	
-
 ?>

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/12/22 12:26:45 $  $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/12/27 18:50:23 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -580,7 +580,7 @@ function count_testcases($id)
 	public function addKeyword($testprojectID,$keyword,$notes)
 	{
 		$kw = new tlKeyword();
-		$kw->create($testprojectID,$keyword,$notes);
+		$kw->initialize($testprojectID,$keyword,$notes);
 		return $kw->writeToDB($this->db);
 	}
 	
@@ -597,7 +597,7 @@ function count_testcases($id)
 	function updateKeyword($testprojectID,$id,$keyword,$notes)
 	{
 		$kw = new tlKeyword($id);
-		$kw->create($testprojectID,$keyword,$notes);
+		$kw->initialize($testprojectID,$keyword,$notes);
 		return $kw->writeToDB($this->db);
 	}
 
@@ -719,7 +719,7 @@ function count_testcases($id)
 			while($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delim))
 			{ 
 				$k = new tlKeyword();
-				$k->create($testproject_id,NULL,NULL);
+				$k->initialize($testproject_id,NULL,NULL);
 				if ($k->readFromCSV(implode($delim,$data)) >= tl::OK)
 					$k->writeToDB($this->db);
 			}
@@ -746,17 +746,17 @@ function count_testcases($id)
 	function importKeywordsFromSimpleXML($testproject_id,$xml)
 	{
 		if (!$xml || $xml->getName() != 'keywords')
-			return tlKeyword::KW_E_WRONGFORMAT;
+			return tlKeyword::E_WRONGFORMAT;
 		if ($xml->keyword)
 		{
 			foreach($xml->keyword as $keyword)
 			{
 				$k = new tlKeyword();
-				$k->create($testproject_id,NULL,NULL);
+				$k->initialize($testproject_id,NULL,NULL);
 				if ($k->readFromSimpleXML($keyword) >= tl::OK)
 					$k->writeToDB($this->db);
 				else
-					return tlKeyword::KW_E_WRONGFORMAT;
+					return tlKeyword::E_WRONGFORMAT;
 			}
 		}
 		return tl::OK;

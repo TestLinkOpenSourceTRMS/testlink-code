@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/22 12:26:45 $ $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/27 18:50:23 $ $Author: schlundus $
  *
  */
 
@@ -164,11 +164,26 @@ class tlUser extends tlDBObject
 	public function deleteFromDB(&$db)
 	{
 		$query = "DELETE FROM users WHERE id=" . $this->dbID;
-		$result = $db->exec_query($query);
-			
-		return $result ? tl::OK : ERRROR;
+		$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
+		if ($result == tl::OK)
+			$result = $this->deleteTestProjectRoles($db);
+		
+		return $result;
 	}
-	
+
+	/**
+	 * Deletes all testproject related role assignments for a given user
+	 *
+	 * @param object $db [ref] the db-object
+	 * @param int $userID the user id
+	 * @return tl::OK on success, tl:ERROR else
+	 **/
+	 protected function deleteTestProjectRoles(&$db)
+	{
+		$query = "DELETE FROM user_testproject_roles WHERE user_id = {$this->dbID}";
+		return $db->exec_query($query) ? tl::OK : tl::ERROR;
+	}
+
 	public function getDisplayName()
 	{
 		if (!$this->showRealname)

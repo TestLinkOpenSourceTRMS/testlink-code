@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/12/22 12:26:45 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/12/27 18:50:23 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -94,7 +94,7 @@ function checkConfiguration()
 
 	if(!is_file($file_to_check))
 	{
-    echo '<html><body onload="' . "location.href='./install/index.php'" . '"></body></html>';
+		echo '<html><body onload="' . "location.href='./install/index.php'" . '"></body></html>';
 		exit();	
 	}
 }

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -148,12 +148,29 @@ function getTestPlanUserRoles(&$db,$testPlanID)
 }
 
 /**
+ * Gets all testproject related role assignments
+ *
+ * @param object $db [ref] the db-object
+ * @param int $tproject_id 
+ * @return array assoc array with keys take from the user_id column
+ **/
+ //SCHLUNDUS: should be moved inside test_project class
+function getTestProjectUserRoles(&$db,$tproject_id)
+{
+	$query = "SELECT user_id,role_id FROM user_testproject_roles " .
+	         "WHERE testproject_id = {$tproject_id}";
+	$roles = $db->fetchRowsIntoMap($query,'user_id');
+	
+	return $roles;
+}
+/**
  * Gets all testproject related role assignments for a give user
  *
  * @param object $db [ref] the db-object
  * @param int $userID the user id
  * @return array assoc map with keys taken from the testproject_id column
  **/
+ //SCHLUNDUS: should be moved inside tlUser
 function getUserTestProjectRoles(&$db,$userID)
 {
 	$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$userID}";
@@ -171,6 +188,7 @@ function getUserTestProjectRoles(&$db,$userID)
  * @return array documentation assoc array with keys take from the testplan_id
  * 				column
  **/
+//SCHLUNDUS: should be moved inside tlUser
 function getUserTestPlanRoles(&$db,$userID)
 {
 	$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$userID}";
@@ -179,34 +197,6 @@ function getUserTestPlanRoles(&$db,$userID)
 	return $roles;
 }
 
-/**
- * Gets all testproject related role assignments
- *
- * @param object $db [ref] the db-object
- * @param int $tproject_id 
- * @return array assoc array with keys take from the user_id column
- **/
-function getTestProjectUserRoles(&$db,$tproject_id)
-{
-	$query = "SELECT user_id,role_id FROM user_testproject_roles " .
-	         "WHERE testproject_id = {$tproject_id}";
-	$roles = $db->fetchRowsIntoMap($query,'user_id');
-	
-	return $roles;
-}
-
-/**
- * Deletes all testproject related role assignments for a given user
- *
- * @param object $db [ref] the db-object
- * @param int $userID the user id
- * @return int 1 on success, false else
- **/
-function deleteUserTestProjectRoles(&$db,$userID)
-{
-	$query = "DELETE FROM user_testproject_roles WHERE user_id = {$userID}";
-	return ($db->exec_query($query) ? 1 : 0);
-}
 
 /**
  * Deletes all testproject related role assignments for a given testproject
@@ -215,6 +205,7 @@ function deleteUserTestProjectRoles(&$db,$userID)
  * @param int $tproject_id
  * @return int 1 on success, false else
  **/
+//SCHLUNDUS: should be moved inside test_project class
 function deleteTestProjectUserRoles(&$db,$tproject_id)
 {
 	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$tproject_id}";
@@ -228,6 +219,7 @@ function deleteTestProjectUserRoles(&$db,$tproject_id)
  * @param int $testPlanID the testplan id
  * @return int 1 on success, false else
  **/
+//SCHLUNDUS: should be moved inside test_plan class 
 function deleteTestPlanUserRoles(&$db,$testPlanID)
 {
 	$query = "DELETE FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
@@ -243,6 +235,7 @@ function deleteTestPlanUserRoles(&$db,$testPlanID)
  * @param int $roleID the role id
  * @return int returns 1 on success, 0 else
  **/
+//SCHLUNDUS: should be moved inside tlUser class 
 function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
 {
 	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
@@ -258,6 +251,7 @@ function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
  * @param int $roleID the role id
  * @return int returns 1 on success, 0 else
  **/
+//SCHLUNDUS: should be moved inside tlUser class 
 function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
 {
 	$query = " INSERT INTO user_testproject_roles " .
@@ -265,111 +259,6 @@ function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
-
-/**
- * Gets all users with a certain global role
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id
- * @return array returns assoc map with the userids as the keys
- **/
-function getUsersWithGlobalRole(&$db,$roleID)
-{
-	$query = "SELECT id FROM users WHERE role_id = {$roleID}";
-	$users = $db->fetchColumnsIntoArray($query,'id');
-	
-	return $users;
-}
-
-/**
- * Gets all users with a certain testproject role
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id
- * @return array returns assoc map with the userids as the keys
- **/
-function getUsersWithTestProjectRole(&$db,$roleID)
-{
-	$query = "SELECT id FROM users,user_testproject_roles 
-	          WHERE users.id = user_testproject_roles.user_id";
-	$query .= " AND user_testproject_roles.role_id = {$roleID}";
-	$users = $db->fetchColumnsIntoArray($query,'id');
-	
-	return $users;
-}
-
-/**
- * Gets all users with a certain testplan role
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id
- * @return array returns assoc map with the userids as the keys
- **/
-function getUsersWithTestPlanRole(&$db,$roleID)
-{
-	$query = "SELECT id FROM users,user_testplan_roles 
-	          WHERE  users.id = user_testplan_roles.user_id";
-	$query .= " AND user_testplan_roles.role_id = {$roleID}";
-	$users = $db->fetchColumnsIntoArray($query,'id');
-	
-	return $users;
-}
-
-/**
- * Gets all users which have a certain global,testplan or testproject role
- *
- * @param object $db [ref] the db-object
- * @param int $roleID the role id
- * @return array returns assoc map with the userids as the keys
- **/
-function getAllUsersWithRole(&$db,$roleID)
-{
-	$global_users = getUsersWithGlobalRole($db,$roleID);
-	$tplan_users = getUsersWithTestPlanRole($db,$roleID);
-	$tproject_users = getUsersWithTestProjectRole($db,$roleID);
-	
-	if( is_null($global_users) )
-  {
-    $global_users=array();
-  }
-	if( is_null($tplan_users) )
-  {
-    $tplan_users=array();
-  }
-	if( is_null($tproject_users) )
-  {
-    $tproject_users=array();
-  }
-	
-	$affectedUsers = array_unique(array_merge($global_users,$tplan_users,$tproject_users));
-	if (!$affectedUsers)
-		$affectedUsers = null;
-	
-	return $affectedUsers;
-}
-
-/**
- * Resets all assigned roles with a certain role_id to another role_id
- *
- * @param object $db [ref] the db-object
- * @param int $id the role id
- * @return int returns 1 on success, 0 else
- *
- * rev: 20070819 - refactoring
- **/
-function resetUserRoles(&$db,$id,$role_id)
-{
-  $tables = array('users','user_testproject_roles','user_testplan_roles');
-  $result=true;
-  
-  foreach($tables as $the_table)
-  {
-    $query = "UPDATE {$the_table} SET role_id = {$role_id} WHERE role_id = {$id}";
- 	  $result = $result && ($db->exec_query($query) ? true : false);
-	
-  }
-	return ($result ? 1 : 0);
-}
 						
 /**
  * returns all roles from the db with the assigned rights. 
@@ -458,53 +347,6 @@ function getAllRoles(&$db,$add_inherited=1)
 	return $roles;
 }
 
-/**
- * Checks for the existing of a role with a given name
- *
- * @param object $db [ref] the db-object
- * @param string $roleName the role_name to search for
- * @param int $id [default = null] optional id which should be excluded by the search
- * @return int returns 1 if a role was found, 0 else
- **/
-function existRole(&$db,$roleName,$id = null)
-{
-	$roleName = $db->prepare_string($roleName);
-	$query = "SELECT id FROM roles WHERE description = '{$roleName}'";
-	if ($id)
-		$query .= " AND id != {$id}";
-		
-	return ($db->fetchFirstRowSingleColumn($query,"id") ? 1 : 0);
-}
-
-/**
- * Checks a role for correctness. Checks the role name, presence of at least one
- * assigned right, checks for duplicate role name
- *
- * @param object $db [ref] the db-object
- * @param string $roleName the role name
- * @param array $rights array of assigned rights for the role
- * @param int $id [default = null] optional id to be excluded while checking for
- * 				  already existing roles (used on updating a role)
- * @return string returns 'ok' if all checks passed, error message else
- **/
-function checkRole(&$db,$roleName,$rights,$id = null)
-{
-	$sqlResult = 'ok';
-	if (sizeof($rights))
-	{
-		if (strlen($roleName))
-		{
-			if (existRole($db,$roleName,$id))
-				$sqlResult = lang_get('error_duplicate_rolename');
-		}
-		else
-			$sqlResult = lang_get('error_role_no_rolename');
-	}
-	else
-		$sqlResult = lang_get('error_role_no_rights');
-		
-	return $sqlResult;		
-}
 /** 
 * function takes a roleQuestion from a specified link and returns whether 
 * the user has rights to view it
@@ -808,19 +650,19 @@ function getRoleErrorMessage($code)
 	$msg = 'ok';
 	switch($code)
 	{
-		case tlRole::ROLE_E_NAMEALREADYEXISTS:
+		case tlRole::E_NAMEALREADYEXISTS:
 			$msg = lang_get('error_duplicate_rolename');
 			break;
-		case tlRole::ROLE_E_NAMELENGTH:
+		case tlRole::E_NAMELENGTH:
 			$msg = lang_get('error_role_no_rolename');
 			break;
-		case tlRole::ROLE_E_EMPTYROLE:
+		case tlRole::E_EMPTYROLE:
 			$msg = lang_get('error_role_no_rights');
 			break;
 		case tl::OK:
 			break;
 		case ERROR:
-		case tlRole::ROLE_E_DBERROR:
+		case tlRole::E_DBERROR:
 		default:
 			$msg = lang_get('error_role_not_updated');
 	}

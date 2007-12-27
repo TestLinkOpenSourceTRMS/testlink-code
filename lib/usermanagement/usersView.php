@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/23 10:24:29 $ -  $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/27 18:50:23 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -56,7 +56,6 @@ switch($operation)
 		$orderByType = $user_order_by;
 		$orderByDir = $order_by_dir;
 		break;
-		
 	case 'order_by_role':
 	case 'order_by_login':
 		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
@@ -66,7 +65,6 @@ switch($operation)
 		$the_k = $operation . "_dir";
 		$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc'; 
 		break;
-
 	default:
 		$order_by_dir['order_by_login_dir'] = 'desc';
 		break;

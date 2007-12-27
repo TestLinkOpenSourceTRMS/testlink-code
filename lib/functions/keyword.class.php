@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.9 2007/12/22 12:26:45 schlundus Exp $
-* @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.10 2007/12/27 18:50:23 schlundus Exp $
+* @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -27,17 +27,17 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	protected $allowDuplicateKeywords; 
 	
 	//Some error codes
-	const KW_E_NAMENOTALLOWED = -1;
-	const KW_E_NAMELENGTH = -2;
-	const KW_E_NAMEALREADYEXISTS = -4;
-	const KW_E_DBERROR = -8;
-	const KW_E_WRONGFORMAT = -16;
+	const E_NAMENOTALLOWED = -1;
+	const E_NAMELENGTH = -2;
+	const E_NAMEALREADYEXISTS = -4;
+	const E_DBERROR = -8;
+	const E_WRONGFORMAT = -16;
 	
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
-		$this->name = NULL;
-		$this->notes = NULL;
-		$this->testprojectID = NULL;
+		$this->name = null;
+		$this->notes = null;
+		$this->testprojectID = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 	}
@@ -46,8 +46,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	{
 		parent::__construct($dbID);
 	
-		global $g_allow_duplicate_keywords;
-		$this->allowDuplicateKeywords = $g_allow_duplicate_keywords;
+		$this->allowDuplicateKeywords = config_get('allow_duplicate_keywords');
 	}
 	function __destruct()
 	{
@@ -55,7 +54,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->_clean();
 	}
 	/* fills the members  */
-	function create($testprojectID,$name,$notes)
+	function initialize($testprojectID,$name,$notes)
 	{
 		$this->name = $name;
 		$this->notes = $notes;
@@ -105,7 +104,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				if ($result)
 					$this->dbID = $db->insert_id('keywords');
 			}
-			$result = $result ? tl::OK : self::KW_E_DBERROR;
+			$result = $result ? tl::OK : self::E_DBERROR;
 		}
 		return $result;
 	}
@@ -171,10 +170,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			//we shouldnt allow " and , in keywords any longer
 			$dummy = null;
 			if (preg_match("/(\"|,)/",$name,$dummy))
-				$result = self::KW_E_NAMENOTALLOWED;
+				$result = self::E_NAMENOTALLOWED;
 		}
 		else
-			$result = self::KW_E_NAMELENGTH;
+			$result = self::E_NAMELENGTH;
 
 		return $result;
 	}
@@ -193,7 +192,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		
 		$result = tl::OK;
 		if ($db->fetchFirstRow($query))
-			$result = self::KW_E_NAMEALREADYEXISTS;
+			$result = self::E_NAMEALREADYEXISTS;
 		
 		return $result;
 	}
@@ -229,11 +228,11 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = NULL;
 		
 		if (!$keyword || $keyword->getName() != 'keyword')
-			return self::KW_E_WRONGFORMAT;
+			return self::E_WRONGFORMAT;
 			
 		$attributes = $keyword->attributes();
 		if (!isset($attributes['name']))
-			return self::KW_E_WRONGFORMAT;
+			return self::E_WRONGFORMAT;
 			
 		$this->name = (string)$attributes['name'];
 		if ($keyword->notes)

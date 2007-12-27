@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.4 2007/12/27 18:05:05 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.5 2007/12/27 18:50:23 schlundus Exp $ 
 
 rev:
     20070818 - franciscom
@@ -65,7 +65,7 @@ rev:
     	{if $feature == 'testproject'}
     		<tr><td class="labelHolder">{lang_get s='TestProject'}</td><td>&nbsp;<td>
     	{else}
-    		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name}</td><tr>
+    		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name}</td></tr>
     		<tr>
 				<td class="labelHolder">{lang_get s='TestPlan'}</td>
     	{/if}
@@ -86,7 +86,7 @@ rev:
 			</tr>
 		</table>
     </div>
-      <table class="common" width="75%">
+	    <table class="common" width="75%">
     	<tr>
     		<th>{lang_get s='User'}</th>
     		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
@@ -105,33 +105,29 @@ rev:
           {else}
             {assign var="ikx" value=$userFeatureRoles[$uID].uplayer_role_id }
           {/if}
-          {assign var="inherited_role_name" value=$optRights[$ikx] }
-          {* --------------------------------------------------------------------- *}
-         
-		     <select name="userRole[{$uID}]">
-		      {foreach key=role_id item=role_description from=$optRights}
+			{assign var="inherited_role_name" value=$optRights[$ikx]->name }
+             <select name="userRole[{$uID}]">
+		      {foreach key=role_id item=role from=$optRights}
 		        <option value="{$role_id}"
 		          {if ($userFeatureRoles[$uID].effective_role_id == $role_id && 
 		               $userFeatureRoles[$uID].is_inherited==0) || 
 		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
 		                $userFeatureRoles[$uID].is_inherited==1) }
 		            selected="selected" {/if}  >
-                {$role_description|escape}
+                {$role->name|escape}
                 {if $role_id == $smarty.const.TL_ROLES_INHERITED}
                   {$inherited_role_name|escape} 
                 {/if}
 		        </option>
 		      {/foreach}
-      	 </select>
-
-    		</td>
+			</select>
+			</td>
     	</tr>
     	{/foreach}
     	</table>
     	<div class="groupBtn">	
     		<input type="submit" name="do_update" value="{lang_get s='btn_upd_user_data'}" />
     	</div>
-  
   </form>
   <hr />
 {/if} {* if $features *}

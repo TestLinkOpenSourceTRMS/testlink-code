@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/12/21 22:57:17 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/12/27 18:50:22 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -20,7 +20,7 @@
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
-require('config.inc.php');
+require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.5 2007/12/27 18:05:05 franciscom Exp $ 
+$Id: rolesView.tpl,v 1.6 2007/12/27 18:50:23 schlundus Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -58,9 +58,9 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
   
 	<table class="common" style="width:50%">
 	<caption>{lang_get s='caption_possible_affected_users'}</caption>
-	{foreach from=$affectedUsers item=i}
+	{foreach from=$affectedUsers item=user}
 	<tr>
-		<td>{$allUsers[$i]->getDisplayName()|escape}</td>
+		<td>{$user->getDisplayName()|escape}</td>
 	</tr>
 	{/foreach}
 	</table>
@@ -83,6 +83,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 				<th>{lang_get s='th_delete'}</th>
 			</tr>
 			{foreach from=$roles item=role}
+			{if $role->dbID neq $smarty.const.TL_ROLES_INHERITED}
 			<tr>
 				<td>
 					<a href="lib/usermanagement/rolesEdit.php?doAction=edit&roleid={$role->dbID}">
@@ -111,6 +112,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 					{/if}
 				</td>
 			</tr>
+			{/if}
 			{/foreach}
 		</table>
 	{/if}

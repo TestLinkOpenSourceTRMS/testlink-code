@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.3 2007/12/27 17:01:25 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.4 2007/12/27 18:05:05 franciscom Exp $ 
 
 rev:
     20070818 - franciscom
@@ -86,7 +86,7 @@ rev:
 			</tr>
 		</table>
     </div>
-      <table class="common-x" width="75%">
+      <table class="common" width="75%">
     	<tr>
     		<th>{lang_get s='User'}</th>
     		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>

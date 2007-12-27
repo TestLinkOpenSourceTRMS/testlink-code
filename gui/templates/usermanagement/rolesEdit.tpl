@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.5 2007/12/27 17:02:08 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.6 2007/12/27 18:05:05 franciscom Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
@@ -89,7 +89,7 @@ function validateForm(f)
 	{/if}
 	>
 	<input type="hidden" name="roleid" value="{$role->dbID}" />
-	<table class="common-x">
+	<table class="common">
 		<tr><th>{lang_get s='th_rolename'}</th></tr>
 		<tr><td>
 			   <input type="text" name="rolename" 

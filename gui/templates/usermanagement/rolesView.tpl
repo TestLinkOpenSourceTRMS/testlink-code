@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.4 2007/12/27 17:02:08 franciscom Exp $ 
+$Id: rolesView.tpl,v 1.5 2007/12/27 18:05:05 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -56,7 +56,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
   {* show user list of users having role he/she want to delete *}
   <h1>{lang_get s='delete_role'} {$roles[$id]->name|escape}</h1>
   
-	<table class="common-x" style="width:50%">
+	<table class="common" style="width:50%">
 	<caption>{lang_get s='caption_possible_affected_users'}</caption>
 	{foreach from=$affectedUsers item=i}
 	<tr>
@@ -76,7 +76,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 		{lang_get s='no_roles'}
 	{else}
 		{* data table *}
-		<table class="common-x" width="50%">
+		<table class="common" width="50%">
 			<tr>
 				<th width="30%">{lang_get s='th_roles'}</th>
 				<th>{lang_get s='th_role_description'}</th>

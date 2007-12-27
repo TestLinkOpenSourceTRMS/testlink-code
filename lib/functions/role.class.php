@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/22 12:26:45 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/27 17:03:49 $ $Author: franciscom $
  */
 class tlRole extends tlDBObject
 {
@@ -66,6 +66,15 @@ class tlRole extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+
+  /*
+  function: 
+
+  args:
+  
+  returns: 
+
+  */
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);
@@ -145,7 +154,17 @@ class tlRole extends tlDBObject
 		$result = $db->exec_query($query);
 		
 		return $result ? tl::OK : tl::ERROR;
-	}
+	}                               
+	
+	
+  /*
+  function: 
+
+  args:
+  
+  returns: 
+
+  */
 	protected function addRightsToDB(&$db)
 	{
 		$bSuccess = 1;
@@ -160,6 +179,8 @@ class tlRole extends tlDBObject
 		}
 		return $bSuccess ? tl::OK : tl::ERROR;
 	}
+
+
 	protected function readRights(&$db)
 	{
 		$query = "SELECT right_id FROM role_rights WHERE role_id = {$this->dbID}";

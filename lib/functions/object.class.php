@@ -5,17 +5,20 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.12 2007/12/22 12:26:45 schlundus Exp $
-* @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.13 2007/12/27 09:41:16 franciscom Exp $
+* @modified $Date: 2007/12/27 09:41:16 $ by $Author: franciscom $
 *
 **/
-/* Namespace for TestLink, here we can safely define constants and other stuff, without risk of collision with other stuff */
+/* Namespace for TestLink, here we can safely define constants and other stuff, 
+   without risk of collision with other stuff 
+*/
 abstract class tl
 {
 	//error and status codes
 	//all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK
 	//so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
 	const OK = 1;
+
 	//all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
 	//so we can check for ERRORS with <= tl::ERROR, and for SUCCESS with > tl::ERROR
 	const ERROR = 0;
@@ -74,6 +77,7 @@ abstract class tlObject implements iSerialization
 	{
 		$this->_clean();
 	}
+
 	/* magic method for usage with print() or echo() , dumps out the object */
 	public function __toString()
 	{
@@ -84,11 +88,13 @@ abstract class tlObject implements iSerialization
 	protected function _clean()
 	{
 	}
+
 	/* returns all supported Import/Export Interfaces  */
 	function getSupportedSerializationInterfaces()
 	{
 		return $this->serializationInterfaces;
 	}
+
 	/* returns all supported Import/Export Interfaces  Format Descriptors */
 	function getSupportedSerializationFormatDescriptions()
 	{
@@ -102,6 +108,7 @@ abstract class tlObject implements iSerialization
 		return tl::E_NOT_IMPLEMENTED;
 	}
 };
+
 /*
 	The base class for all managed TestLink objects which need a db connection
 */
@@ -127,6 +134,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
 	/* the attachment repository object */
 	protected $attachmentRepository;
+
 	/* the foreign key table name to store the attachements */
 	protected $attachmentTableName;
 	
@@ -140,6 +148,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 		$this->attachmentRepository = tlAttachmentRepository::create($this->db);
 		$this->attachmentTableName = $attachmentTableName;
 	}
+
 	/*
 	*	gets all infos about the attachments of the object specified by $id 	
 	*	//SCHLUNDUS: legacy function to keep existing code, should be replaced by a function which returns objects 
@@ -151,6 +160,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	{
 		return $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName);
 	}
+
 	/*
 	*	deletes all attachments of the object specified by $id 	
 	*
@@ -170,6 +180,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 		$this->attachmentTableName = null;
 	}
 }
+
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
 	public $dbID;
@@ -191,10 +202,12 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		$this->dbID = $dbID;
 		$this->detailLevel = self::TLOBJ_O_GET_DETAIL_FULL;
 	}
+
 	public function getDbID()
 	{
 		return $dbID;
 	}
+
 	public function setDbID($id)
 	{
 		$this->dbID = $id;
@@ -209,7 +222,9 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		$this->detailLevel = $level;
 	}
 	
-	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	static public function createObjectFromDB(&$db,$id,$className,
+	                                          $options = self::TLOBJ_O_SEARCH_BY_ID,
+	                                          $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if ($id)
 		{
@@ -220,12 +235,16 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		}
 		return null;
 	}
-	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	
+	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,
+	                                                $bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column);
 		return self::createObjectsFromDB($db,$ids,$className,$bAssoc,$detailLevel);
 	}
-	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	
+	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false,
+	                                           $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$items = null;
 		for($i = 0;$i < sizeof($ids);$i++)
@@ -242,6 +261,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		}
 		return $items;
 	}
+	
 	static public function deleteObjectFromDB(&$db,$id,$className)
 	{
 		if ($id)

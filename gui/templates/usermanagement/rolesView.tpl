@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.3 2007/12/21 22:57:17 schlundus Exp $ 
+$Id: rolesView.tpl,v 1.4 2007/12/27 17:02:08 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -21,7 +21,7 @@ rev :
 
 <script type="text/javascript">
 /* All this stuff is need for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
+var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 </script>
 
 </head>
@@ -32,18 +32,18 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 {* tabs *}
 <div class="tabMenu">
 {if $mgt_users == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersEdit.php">{lang_get s='menu_new_user'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersView.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/rolesEdit.php?doAction=create">{lang_get s='menu_define_roles'}</a></span> 
 {/if}
 	<span class="selected">{lang_get s='menu_view_roles'}</span>
 {if $tproject_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
 {/if}
 {if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 {/if}
 </div>
 
@@ -56,7 +56,7 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
   {* show user list of users having role he/she want to delete *}
   <h1>{lang_get s='delete_role'} {$roles[$id]->name|escape}</h1>
   
-	<table class="common" style="width:50%">
+	<table class="common-x" style="width:50%">
 	<caption>{lang_get s='caption_possible_affected_users'}</caption>
 	{foreach from=$affectedUsers item=i}
 	<tr>
@@ -67,16 +67,16 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} => {$roles[$role_id_replacement]->name|escape}</div><br />
 	<div class="groupBtn">	
 		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" 
-		       onclick="location='lib/usermanagement/rolesview.php?confirmed=1&amp;deleterole=1&amp;id={$id}'"/>
+		       onclick="location='lib/usermanagement/rolesView.php?doAction=confirmDelete&roleid={$id}'"/>
 		<input type="submit" value="{lang_get s='btn_cancel'}" 
-		       onclick="location='lib/usermanagement/rolesview.php'" />
+		       onclick="location='lib/usermanagement/rolesView.php'" />
 	</div>
 {else}
 	{if $roles eq ''}
 		{lang_get s='no_roles'}
 	{else}
 		{* data table *}
-		<table class="common" width="50%">
+		<table class="common-x" width="50%">
 			<tr>
 				<th width="30%">{lang_get s='th_roles'}</th>
 				<th>{lang_get s='th_role_description'}</th>
@@ -85,7 +85,7 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 			{foreach from=$roles item=role}
 			<tr>
 				<td>
-					<a href="lib/usermanagement/rolesedit.php?id={$role->dbID}">
+					<a href="lib/usermanagement/rolesEdit.php?doAction=edit&roleid={$role->dbID}">
 						{$role->name|escape}
 						{if $gsmarty_gui->show_icon_edit}
  						  <img title="{lang_get s='alt_edit_role'}" 

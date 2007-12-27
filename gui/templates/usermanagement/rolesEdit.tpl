@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.4 2007/12/27 09:30:24 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.5 2007/12/27 17:02:08 franciscom Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
@@ -16,13 +16,17 @@ rev :
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
+{include file="inc_jsCheckboxes.tpl"}
 
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
-var warning_modify_role = "{lang_get s='warning_modify_role'}";
-var warning_empty_role_name = "{lang_get s='warning_empty_role_name'}";
+{lang_get s='warning,warning_modify_role,warning_empty_role_name,error_role_no_rights' var="labels"}
+
+var alert_box_title = "{$labels.warning}";
+var warning_modify_role = "{$labels.warning_modify_role}";
+var warning_empty_role_name = "{$labels.warning_empty_role_name}";
+var warning_error_role_no_rights = "{$labels.error_role_no_rights}";
 {literal}
 function validateForm(f)
 {
@@ -32,6 +36,14 @@ function validateForm(f)
       selectField(f, 'rolename');
       return false;
   }
+
+  /* 20071227 - franciscom */
+  if( checkbox_count_checked(f.id) == 0)
+  {
+      alert_message(alert_box_title,warning_error_role_no_rights);
+      return false;
+  } 
+ 
   return true;
 }
 </script>
@@ -76,7 +88,7 @@ function validateForm(f)
 		onsubmit="return false" 
 	{/if}
 	>
-	<input type="hidden" name="id" value="{$role->dbID}" />
+	<input type="hidden" name="roleid" value="{$role->dbID}" />
 	<table class="common-x">
 		<tr><th>{lang_get s='th_rolename'}</th></tr>
 		<tr><td>
@@ -91,28 +103,28 @@ function validateForm(f)
 				<tr>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_tp_rights'}</legend>
 							{foreach from=$tpRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]}/>{$id}<br />
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]}/>{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td>
 						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_mgttc_rights'}</legend>
 						{foreach from=$tcRights item=id key=k}
-						<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
 						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_req_rights'}</legend>
 						{foreach from=$reqRights item=id key=k}
-						<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
 						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_product_rights'}</legend>
 						{foreach from=$pRights item=id key=k}
-						<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
@@ -120,19 +132,19 @@ function validateForm(f)
 				<tr>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_user_rights'}</legend>
 							{foreach from=$uRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_kw_rights'}</legend>
 							{foreach from=$kwRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_cf_rights'}</legend>
 							{foreach from=$cfRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
@@ -148,16 +160,11 @@ function validateForm(f)
 
 	</table>
 	{if $role_management == "yes" && $role->dbID != $noRightsRole}
+	
 		<div class="groupBtn">	
-		{if $role == 0}
-			<input type="submit" name="newRole" value="{lang_get s='btn_create_role'}" />
-		{else}
-			<input type="submit" name="editRole" value="{lang_get s='btn_edit_role'}" 
-			{if $affectedUsers neq null}
-				onClick="return modifyRoles_warning()"
-			{/if}
-			/>
-		{/if}
+		<input type="hidden" name="doAction" value="{$action_type}" />
+		<input type="submit" name="role_mgmt" value="{lang_get s='btn_save'}" 
+		         {if $role != 0 && $affectedUsers neq null} onClick="return modifyRoles_warning(){/if}"/>
 	{/if}
 	</div>
 	<br />

@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.3 2007/12/21 22:57:17 schlundus Exp $
+$Id: rolesEdit.tpl,v 1.4 2007/12/27 09:30:24 franciscom Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
+     20071227 - franciscom - look and feel.
+     
      20070725 - franciscom
      - added js check on role name
      - use of input_dimensions.conf
@@ -13,9 +15,12 @@ rev :
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
 {literal}
 <script type="text/javascript">
 {/literal}
+var alert_box_title = "{lang_get s='warning'}";
 var warning_modify_role = "{lang_get s='warning_modify_role'}";
 var warning_empty_role_name = "{lang_get s='warning_empty_role_name'}";
 {literal}
@@ -23,7 +28,7 @@ function validateForm(f)
 {
   if (isWhitespace(f.rolename.value)) 
   {
-      alert(warning_empty_role_name);
+      alert_message(alert_box_title,warning_empty_role_name);
       selectField(f, 'rolename');
       return false;
   }
@@ -72,7 +77,7 @@ function validateForm(f)
 	{/if}
 	>
 	<input type="hidden" name="id" value="{$role->dbID}" />
-	<table class="common">
+	<table class="common-x">
 		<tr><th>{lang_get s='th_rolename'}</th></tr>
 		<tr><td>
 			   <input type="text" name="rolename" 
@@ -84,50 +89,50 @@ function validateForm(f)
 			<td>
 				<table>
 				<tr>
-					<td><fieldset><legend >{lang_get s='th_tp_rights'}</legend>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_tp_rights'}</legend>
 							{foreach from=$tpRights item=id key=k}
-							<input type="checkbox" name="{$k}" {$roleRights[$k]}/>{$id}<br />
+							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]}/>{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td>
-						<fieldset><legend >{lang_get s='th_mgttc_rights'}</legend>
+						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_mgttc_rights'}</legend>
 						{foreach from=$tcRights item=id key=k}
-						<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+						<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
-						<fieldset><legend >{lang_get s='th_req_rights'}</legend>
+						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_req_rights'}</legend>
 						{foreach from=$reqRights item=id key=k}
-						<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+						<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
-						<fieldset><legend >{lang_get s='th_product_rights'}</legend>
+						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_product_rights'}</legend>
 						{foreach from=$pRights item=id key=k}
-						<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+						<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 				</tr>
 				<tr>
-					<td><fieldset><legend >{lang_get s='th_user_rights'}</legend>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_user_rights'}</legend>
 							{foreach from=$uRights item=id key=k}
-							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
-					<td><fieldset><legend >{lang_get s='th_kw_rights'}</legend>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_kw_rights'}</legend>
 							{foreach from=$kwRights item=id key=k}
-							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
-					<td><fieldset><legend >{lang_get s='th_cf_rights'}</legend>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_cf_rights'}</legend>
 							{foreach from=$cfRights item=id key=k}
-							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							<input class="tl-input" type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>

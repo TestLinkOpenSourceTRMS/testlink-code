@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.2 2007/12/22 09:58:58 schlundus Exp $ 
+$Id: usersEdit.tpl,v 1.3 2007/12/27 09:30:25 franciscom Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -9,6 +9,7 @@ $Id: usersEdit.tpl,v 1.2 2007/12/22 09:58:58 schlundus Exp $
 {config_load file="input_dimensions.conf" section='login'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -72,7 +73,8 @@ function validateForm(f,check_password)
 {/literal}
 
 
-
+{assign var="ext_version" value="-2.0"}
+<link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
 </head>
 
 <body>
@@ -102,31 +104,35 @@ function validateForm(f,check_password)
 	{else}
 	  <span class="selected">{lang_get s='menu_new_user'}</span> 
 	{/if}
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersView.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/rolesEdit.php">{lang_get s='menu_define_roles'}</a></span> 
 {/if}	
-	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/rolesView.php">{lang_get s='menu_view_roles'}</a></span> 
 {if $tproject_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
 {/if}	
 {if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 {/if}
 </div>
 
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 <div class="workBack">
-
-<h2>{lang_get s='caption_user_details'}</h2>
-<form method="post" action="lib/usermanagement/usersedit.php" 
+<form method="post" action="lib/usermanagement/usersEdit.php" class"x-form"
       name="useredit" onSubmit="javascript:return validateForm(this,{$check_password});">
       
 	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
-	<table class="common">
+
+  <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
+  <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
+  {lang_get s='caption_user_details'}
+  </legend>
+	<table> 
+	{* <table class="common"> *}
 		<tr>
 			<th>{lang_get s='th_login'}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 
@@ -218,27 +224,27 @@ function validateForm(f,check_password)
 	</table>
 	
 	<div class="groupBtn">	
-	{if $userData neq null}
-		<input type="submit" name="do_update" value="{lang_get s='btn_upd_user_data'}" />
-	{else}
-		<input type="submit" name="do_update" value="{lang_get s='btn_add'}" />
-	{/if}
+	<input type="submit" name="do_update" 
+		     {if $userData neq null}	
+		        value="{lang_get s='btn_upd_user_data'}" />
+	       {else}
+		        value="{lang_get s='btn_add'}" />
+	       {/if}
 	
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersview.php';" />
 
 	</div>
 </form>
-    
+
 {if $userData neq null and $external_password_mgmt eq 0}
 <br /><form method="post" action="lib/usermanagement/usersedit.php" name="user_reset_password">
   	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="submit" id="do_reset_password" name="do_reset_password" value="{lang_get s='button_reset_password'}" />
 </form>
 {/if}
-
-<hr />
-
+    
+</fieldset>
 </div>
 
 </body>

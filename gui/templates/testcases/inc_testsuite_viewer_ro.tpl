@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_testsuite_viewer_ro.tpl,v 1.1 2007/12/07 07:04:23 franciscom Exp $
+$Id: inc_testsuite_viewer_ro.tpl,v 1.2 2007/12/27 09:30:24 franciscom Exp $
 
 20060805 - franciscom - added keywords management
 *}
@@ -10,7 +10,8 @@ $Id: inc_testsuite_viewer_ro.tpl,v 1.1 2007/12/07 07:04:23 franciscom Exp $
 	</tr>
 	<tr>
 		<td>
-			<fieldset><legend class="legend_container">{lang_get s='details'}</legend>
+			<fieldset class="x-fieldset x-form-label-left">
+			<legend class="legend_container">{lang_get s='details'}</legend>
 			{$container_data.details}
 			</fieldset>
 		</td>

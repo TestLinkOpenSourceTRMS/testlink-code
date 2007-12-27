@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.4 2007/12/20 09:31:49 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.5 2007/12/27 09:30:24 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -9,7 +9,10 @@ rev :
       20070216 - franciscom
       moved parameters from GET to hidden
 *}
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
+{assign var="ext_version" value="-2.0"}
+<link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
+</head>
 
 <body>
 <div class="workBack">

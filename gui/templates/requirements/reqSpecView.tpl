@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.11 2007/12/19 20:27:19 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.12 2007/12/27 09:30:23 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
-   rev: 20071106 - franciscom - added ext js library
+   rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
+        20071106 - franciscom - added ext js library
         20070102 - franciscom - added javascript validation of checked requirements 
 *}
 
@@ -65,7 +66,7 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqSpecEdit.php?do_action=do_del
 	</tr>
 	<tr>
 		<td>
-			<fieldset><legend class="legend_container">{lang_get s='scope'}</legend>
+			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='scope'}</legend>
 			{$req_spec.scope}
 			</fieldset>
 		</td>

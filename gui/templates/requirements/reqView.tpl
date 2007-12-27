@@ -1,6 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.3 2007/12/02 17:24:45 franciscom Exp $
+$Id: reqView.tpl,v 1.4 2007/12/27 09:30:24 franciscom Exp $
+
+rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
+
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -32,7 +35,7 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&
 
   <tr>
 		<td>
-			<fieldset><legend class="legend_container">{lang_get s='scope'}</legend>
+			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='scope'}</legend>
 			{$req.scope}
 			</fieldset>
 		</td>
@@ -42,7 +45,7 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&
   </tr>
   <tr>
 		<td>
-			<fieldset><legend class="legend_container">{lang_get s='coverage'}</legend>
+			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='coverage'}</legend>
 					  {section name=row loop=$req.coverage}
 			  <span>{$req.coverage[row].name}</span><br />
 		   {sectionelse}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/12/28 22:10:32 $ by $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/12/28 22:39:57 $ by $Author: schlundus $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 
@@ -28,11 +28,17 @@ testlinkInitPage($db);
 
 $template_dir = 'execute/';
 
-$tproject_id = $_SESSION['testprojectID'];
+$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 $user_id = $_SESSION['userID'];
 $tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
+
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
+$filter_assigned_to = isset($_POST['filter_assigned_to']) ? intval($_POST['filter_assigned_to']) : $user_filter_default;             
+$tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
+$keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
+$optResultSelected = isset($_POST['filter_status']) ? $_POST['filter_status'] : 'all';
 
 $exec_cfield_mgr = new exec_cfield_mgr($db,$tproject_id);
 
@@ -59,11 +65,6 @@ switch($exec_cfg->user_filter_default)
 		break;  
 }
 
-$filter_assigned_to = isset($_POST['filter_assigned_to']) ? intval($_POST['filter_assigned_to']) : $user_filter_default;             
-
-$tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
-$keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
-
 $tplan_mgr = new testplan($db);
 
 $effective_role = get_effective_role($db,$user_id,$tproject_id,$tplan_id);
@@ -86,7 +87,6 @@ switch ($exec_view_mode)
 
 // 20070123 - franciscom -  only active builds no matter user role
 $optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id,ACTIVE);
-$optResultSelected = isset($_POST['filter_status']) ? $_POST['filter_status'] : 'all';
 
 // 20070607 - franciscom - BUGID 887
 $maxBuildID = $tplan_mgr->get_max_build_id($tplan_id,GET_ACTIVE_BUILD, GET_OPEN_BUILD);
@@ -94,17 +94,13 @@ $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : $maxBuildID
 if (!$optBuildSelected && sizeof($optBuild))
 	$optBuildSelected = key($optBuild);
 
-$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
-
-
-$keywords_map = $tplan_mgr->get_keywords_map($_SESSION['testPlanId'],' order by keyword ');
+$keywords_map = $tplan_mgr->get_keywords_map($tplan_id,' order by keyword ');
 if(!is_null($keywords_map))
 {
 	// add the blank option
 	// 0 -> id for no keyword
 	$blank_map[0] = '';
-	$keywords_map = $blank_map+$keywords_map;
+	$keywords_map = $blank_map + $keywords_map;
 }
 $menuUrl = 'lib/execute/execSetResults.php';
 

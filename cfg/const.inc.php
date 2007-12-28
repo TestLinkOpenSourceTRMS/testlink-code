@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/12/28 18:55:04 $ by $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/12/28 22:39:57 $ by $Author: schlundus $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -573,10 +573,6 @@ define('GET_BUG_SUMMARY',true);
 
 // gen_spec_view()
 define('DO_PRUNE',1);
-
-// getAllRoles()
-define('EXCLUDE_UNDEFINED_ROLE',0);
-
 
 // executeTestCase()
 define('AUTOMATION_RESULT_KO', -1);

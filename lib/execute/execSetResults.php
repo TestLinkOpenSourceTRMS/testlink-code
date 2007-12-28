@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2007/12/25 20:17:40 $ $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2007/12/28 22:39:57 $ $Author: schlundus $
  *
  * 20071224 - franciscom - refactoring
  * 20071113 - franciscom - added contribution History for all builds.
@@ -22,7 +22,6 @@ require_once('common.php');
 require_once('exec.inc.php');
 require_once("builds.inc.php");
 require_once("attachments.inc.php");
-
 testlinkInitPage($db);
 
 $template_dir = 'execute/';
@@ -39,7 +38,7 @@ $testdata = array();
 $ts_cf_smarty = '';
 $submitResult = null;
 
-$args=init_args();
+$args = init_args();
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -50,15 +49,13 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
 $build_info = $build_mgr->get_by_id($args->build_id);
 
-$exec_mode=initializeExecMode($db,$exec_cfg,$args->user_id,$args->tproject_id,$args->tplan_id);
-$has_exec_right=(has_rights($db,"testplan_execute")=="yes"?1:0);
-
-
+$exec_mode = initializeExecMode($db,$exec_cfg,$args->user_id,$args->tproject_id,$args->tplan_id);
+$has_exec_right = (has_rights($db,"testplan_execute")=="yes" ? 1 : 0);
 
 if (!strlen($args->level))
 {
   	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=executeTest&locale={$_SESSION['locale']}");
-	  exit();
+	exit();
 }
 
 $ownerDisplayName = null;
@@ -75,12 +72,7 @@ $build_name = isset($the_builds[$args->build_id]) ? $the_builds[$args->build_id]
 $history_on = manage_history_on($_REQUEST,$_SESSION,$exec_cfg,'btn_history_on','btn_history_off','history_on');
 $_SESSION['history_on'] = $history_on;
 
-$history_status_btn_name = 'btn_history_on';
-if($history_on)
-{
-    $history_status_btn_name = 'btn_history_off';
-}
-
+$history_status_btn_name = $history_on ? 'btn_history_off' : 'btn_history_on';
 $testplan_cf = null;
 $cfexec_val_smarty = null;
 $bugs = null;
@@ -90,7 +82,6 @@ $other_execs = null;
 $map_last_exec_any_build = null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
-
 
 $get_mode = GET_ONLY_EXECUTED;
 if(is_null($args->filter_status) || $args->filter_status == $tc_status['not_run'])
@@ -102,29 +93,27 @@ if(is_null($args->filter_status) || $args->filter_status == $tc_status['not_run'
 if($args->doExec == 1)
 {
 	/** @note Retrive testcase ids in an array */
-	if( !is_null($args->tc_versions) && count($args->tc_versions) > 0)
+	if(!is_null($args->tc_versions) && count($args->tc_versions))
 	{
-	   $status_and_notes=do_remote_execution($db,$args->tc_versions);
-	   
-	   // Need to be added to $_REQUEST, because we are using $_REQUEST as input
-	   // for the function responsible of writing exec results. write_execution()
-	   $status_map=$status_and_notes['status'];
-	   $notes_map=$status_and_notes['notes'];
-	   
-	   if( count($status_map) > 0 )
-	   {
-	      foreach($status_map as $key => $value)
-	      {
-	        $_REQUEST['status'][$key]=$value;  
-	        $_REQUEST['notes'][$key]=$notes_map[$key];  
-	      } 
-	   }
+		$status_and_notes=do_remote_execution($db,$args->tc_versions);
+
+		// Need to be added to $_REQUEST, because we are using $_REQUEST as input
+		// for the function responsible of writing exec results. write_execution()
+		$status_map = $status_and_notes['status'];
+		$notes_map = $status_and_notes['notes'];
+
+		if(count($status_map))
+		{
+			foreach($status_map as $key => $value)
+			{
+				$_REQUEST['status'][$key]=$value;  
+				$_REQUEST['notes'][$key]=$notes_map[$key];  
+			} 
+		}
 	   
 	}
 }	
 // -----------------------------------------------------------
-
-
 // 20070306 - franciscom - BUGID 705
 // 20070914 - jbarchibald - added $cf_selected parameter
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc_id,$args->keyword_id,$get_mode,
@@ -135,28 +124,21 @@ $tcase_id = 0;
 
 // -------------------------------------------------
 $rs = $tplan_mgr->get_by_id($args->tplan_id);
-$testplan_cf=$tplan_mgr->html_table_of_custom_field_values($args->tplan_id,'execution',FILTER_BY_SHOW_ON_EXECUTION);
+$testplan_cf = $tplan_mgr->html_table_of_custom_field_values($args->tplan_id,'execution',FILTER_BY_SHOW_ON_EXECUTION);
 
 // 20071224 - think is not needed I can use what is defined on SESSION
 // $testproject_id=$rs['parent_id'];
-
-// needed to create a string that will not create problems when using to initialize
-// a javascript variable
-//$smarty->assign('tplan_notes',str_replace(array("\r\n", "\r", "\n"), '', $rs['notes']));
-//$smarty->assign('tplan_cf',str_replace(array("\r\n", "\r", "\n"), '', $testplan_cf));
-
 $smarty->assign('tplan_notes',$rs['notes']);
 $smarty->assign('tplan_cf',$testplan_cf);
-
 
 $attachmentRepository = tlAttachmentRepository::create($db);
 if(!is_null($linked_tcversions))
 {
-	  $items_to_exec = array();
-	  $_SESSION['s_lastAttachmentInfos'] = null;
-    if($args->level == 'testcase')
+	$items_to_exec = array();
+	$_SESSION['s_lastAttachmentInfos'] = null;
+	if($args->level == 'testcase')
     {
-  		$cf_smarty = '';
+		$cf_smarty = '';
   		$cfexec_smarty = '';
   		
   		$items_to_exec[$args->id] = $linked_tcversions[$args->id]['tcversion_id'];    
@@ -339,22 +321,14 @@ if( is_array($tcversion_id) )
 
 
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
-
 $smarty->assign('exec_mode', $exec_mode);
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
-
-$build_is_open=($build_info['is_open']==1 ? 1 : 0);
 $smarty->assign('build_notes',$build_info['notes']);
-$smarty->assign('build_is_open', $build_is_open);
-
-
+$smarty->assign('build_is_open', ($build_info['is_open'] == 1 ? 1 : 0));
 $smarty->assign('tpn_view_status',$args->tpn_view_status);
 $smarty->assign('bn_view_status',$args->bn_view_status);
 $smarty->assign('bc_view_status',$args->bc_view_status);
-
-
-// BUGID 647
 $smarty->assign('enable_custom_field',$gui_cfg->enable_custom_fields);
 $smarty->assign('can_delete_execution',$exec_cfg->can_delete_execution);
 $smarty->assign('default_status',config_get('tc_status_for_ui_default'));
@@ -380,11 +354,7 @@ $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->assign('tester_id',$args->user_id);
 $smarty->display($template_dir . $g_tpl['execSetResults']);
-?>
 
-
-
-<?php
 /*
   function: 
 
@@ -395,35 +365,34 @@ $smarty->display($template_dir . $g_tpl['execSetResults']);
 */
 function init_args()
 {
- 
-  $_REQUEST = strings_stripSlashes($_REQUEST);
-  $args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
-  $args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;
-  $args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
-  $args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
+ 	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
+	$args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;
+	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
+	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 
-  $key2loop=array('id' => 0,'build_id' =>0, 'keyword_id' => 0, 'exec_to_delete' => 0, 
-                  'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0, 
-                  'save_results' => 0, 'do_bulk_save' => 0,
-                  'tc_id' => null, 'filter_assigned_to' => null, 'filter_status' => null);
+	$key2loop = array('id' => 0,'build_id' =>0, 'keyword_id' => 0, 'exec_to_delete' => 0, 
+				  'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0, 
+				  'save_results' => 0, 'do_bulk_save' => 0,
+				  'tc_id' => null, 'filter_assigned_to' => null, 'filter_status' => null);
 
-  foreach($key2loop as $key => $value)
-  {
-    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
-  }
-  
-  $key2loop=array('level' => '','status' => null);
-  foreach($key2loop as $key => $value)
-  {
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-  }
-  
-  
-  $args->tproject_id = $_SESSION['testprojectID'];
-  $args->tplan_id = $_SESSION['testPlanId'];
-  $args->user_id = $_SESSION['userID'];
-  
-  return $args;  
+	foreach($key2loop as $key => $value)
+	{
+		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
+	}
+
+	$key2loop = array('level' => '','status' => null);
+	foreach($key2loop as $key => $value)
+	{
+		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+	}
+
+
+	$args->tproject_id = $_SESSION['testprojectID'];
+	$args->tplan_id = $_SESSION['testPlanId'];
+	$args->user_id = $_SESSION['userID'];
+
+	return $args;  
 }
 
 
@@ -438,7 +407,6 @@ function init_args()
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
-    
     if( isset($hash_REQUEST[$btn_on_name]) )
     {
 		$history_on = true;
@@ -476,7 +444,7 @@ function get_ts_name_details(&$db,$tcase_id)
 {
 	$rs = '';
 	$do_query = true;
-	$sql="Select ts.id as tsuite_id, ts.details, 
+	$sql = "Select ts.id as tsuite_id, ts.details, 
 	             nha.id as tc_id, nhb.name as tsuite_name 
 	      FROM testsuites ts, nodes_hierarchy nha, nodes_hierarchy nhb
 	      WHERE ts.id=nha.parent_id
@@ -670,13 +638,7 @@ function do_remote_execution(&$db,$tc_versions)
 function initializeExecMode(&$db,$exec_cfg,$user_id,$tproject_id,$tplan_id)
 {
     $effective_role = get_effective_role($db,$user_id,$tproject_id,$tplan_id);
-    $all_roles = getAllRoles($db);
-    $exec_mode = 'all';
-    if( $all_roles[$effective_role] == 'tester' )
-    {
-	     $exec_mode = $exec_cfg->exec_mode->tester;
-    }
-    return $exec_mode;
+	return ($effective_role == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
   
 } // function end
 
@@ -723,15 +685,13 @@ function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id)
 */
 function reorderExecutions(&$tcversion_id,&$exec_info)
 {
-    $dummy=array();
+    $dummy = array();
     foreach($tcversion_id as $key => $value)
     {
-       $dummy[$key]=$exec_info[$value];    
+       $dummy[$key] = $exec_info[$value];    
     }
     return $dummy;    
 }
-
-
 
 /*
   function: 
@@ -743,39 +703,33 @@ function reorderExecutions(&$tcversion_id,&$exec_info)
 */
 function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 {     
-    foreach($exec_info as $key => $tc_exec) 
-    {
-      $execution_enabled = 0;  
-      if( $can_execute==1 && $tc_exec['active']==1)
-      {
-        $assigned_to_me = $tc_exec['assigned_user_id'] == $tester_id ? 1 : 0;
-        $is_free = $tc_exec['assigned_user_id'] == '' ? 1 : 0;
-          
-        switch($execution_mode)
-        {
-          case 'assigned_to_me':
-          $execution_enabled=$assigned_to_me;
-          break;
-          
-          case 'assigned_to_me_or_free':
-          $execution_enabled=$assigned_to_me || $is_free;
-          break;
-          
-          case 'all':
-          $execution_enabled=1;
-          break;
-          
-          default:
-          $execution_enabled = 0;  
-          break;
-        } // switch
-      }
-      
-      $exec_info[$key]['can_be_executed']=$execution_enabled;
+	foreach($exec_info as $key => $tc_exec) 
+	{
+		$execution_enabled = 0;  
+		if($can_execute == 1 && $tc_exec['active'] == 1)
+		{
+			$assigned_to_me = $tc_exec['assigned_user_id'] == $tester_id ? 1 : 0;
+			$is_free = $tc_exec['assigned_user_id'] == '' ? 1 : 0;
 
-    } // foreach
-    return $exec_info;
-
+			switch($execution_mode)
+			{
+				case 'assigned_to_me':
+					$execution_enabled = $assigned_to_me;
+					break;
+				case 'assigned_to_me_or_free':
+					$execution_enabled = $assigned_to_me || $is_free;
+					break;
+				case 'all':
+					$execution_enabled = 1;
+					break;
+				default:
+					$execution_enabled = 0;  
+					break;
+			} // switch
+		}
+		$exec_info[$key]['can_be_executed']=$execution_enabled;
+	}
+	return $exec_info;
 } //function end
 
 ?>																																

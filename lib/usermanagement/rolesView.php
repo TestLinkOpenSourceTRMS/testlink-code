@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/12/28 18:55:05 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -109,7 +109,7 @@ function updateSessionRoles(&$db,$roleID,$userID,$roles)
 function deleteRole(&$db,$roleID)
 {
 	$userFeedback = 'ok';
-	$role = tlRole::getByID($db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$role = new tlRole($roleID);
 	if ($role && $role->deleteFromDB($db) < tl::OK)
 		$userFeedback = lang_get("error_role_deletion");
     return $userFeedback;

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.34 $ $Author: franciscom $
- * @modified $Date: 2007/12/18 22:07:29 $
+ * @version $Revision: 1.35 $ $Author: schlundus $
+ * @modified $Date: 2007/12/28 18:55:05 $
  *
  * @author Martin Havlat
  * 
@@ -34,7 +34,7 @@ $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testproje
 
 // ----------------------------------------------------------------------
 /** redirect admin to create product if not found */
-$can_manage_tprojects=has_rights($db,'mgt_modify_product');
+$can_manage_tprojects = has_rights($db,'mgt_modify_product');
 if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 { 
 	redirect($_SESSION['basehref'] . 'lib/project/projectedit.php?show_create_screen');
@@ -87,50 +87,37 @@ $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
 // ----- Test Plan Section ----------------------------------  
-$num_active_tplans =0;
-$active_tplans = $tproject_mgr->get_all_testplans($testprojectID,0,ACTIVE);
-
-if( !is_null($active_tplans) )
-{
-  $num_active_tplans = count($active_tplans);
-}
-
+$num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,0,ACTIVE));
 
 // get Test Plans available for the user 
 // 20070906 - interface changes
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$_SESSION['userID'],$filter_tp_by_product);
 
-$testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
-
-$roles = getAllRoles($db);
 $testPlanRole = null;
-$role_separator=config_get('role_separator');
-
+$testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 if ($testPlanID && isset($_SESSION['testPlanRoles'][$testPlanID]))
 {
-	$idx = $_SESSION['testPlanRoles'][$testPlanID]['role_id'];
-	$testPlanRole = $role_separator->open . $roles[$idx] . $role_separator->close;
+	$role_separator = config_get('role_separator');
+	$roleID = $_SESSION['testPlanRoles'][$testPlanID]['role_id'];
+	$role = tlRole::getByID($db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$testPlanRole = $role_separator->open . $role->name . $role_separator->close;
 }
-$securityNotes = getSecurityNotes($db);
 
-
-$rights2check=array('testplan_execute','testplan_create_build',
+$rights2check = array('testplan_execute','testplan_create_build',
                     'testplan_metrics','testplan_planning',
                     'cfield_view', 'cfield_management');
                         
 foreach($rights2check as $key => $the_right)
 {
-  $smarty->assign($the_right, has_rights($db,$the_right));
+	$smarty->assign($the_right, has_rights($db,$the_right));
 }                         
 
 $smarty->assign('metrics_dashboard_url','lib/results/metricsDashboard.php');
-
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
-
-$smarty->assign('securityNotes',$securityNotes);
+$smarty->assign('securityNotes',getSecurityNotes($db));
 $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
 $smarty->assign('num_active_tplans', $num_active_tplans);

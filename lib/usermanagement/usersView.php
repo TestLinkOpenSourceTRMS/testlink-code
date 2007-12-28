@@ -5,12 +5,12 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/27 18:50:23 $ -  $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/28 18:55:05 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
-include('../../config.inc.php');
+require_once("../../config.inc.php");
 require_once("users.inc.php");
 testlinkInitPage($db);
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2007/12/28 18:55:04 $ by $Author: schlundus $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2007/12/28 18:56:11 $ by $Author: schlundus $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 
@@ -67,8 +67,6 @@ $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;
 $tplan_mgr = new testplan($db);
 
 $effective_role = get_effective_role($db,$user_id,$tproject_id,$tplan_id);
-$all_roles = getAllRoles($db);
-
 $disable_filter_assigned_to = false;
 $assigned_to_user = '';
 

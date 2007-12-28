@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.3 $
-* @modified $Date: 2007/12/22 12:26:46 $ $Author: schlundus $
+* @version $Revision: 1.4 $
+* @modified $Date: 2007/12/28 18:55:05 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -95,7 +95,7 @@ if ($user_id)
 	$user = new tlUser($user_id);
 	$user->readFromDB($db);
 }	
-$roles = getAllRoles($db);
+$roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/12/17 21:31:46 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/12/28 18:55:05 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -17,37 +17,30 @@ require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db,true);
 
-$tproject_mgr = new testproject($db);
-
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 $curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$user_id=$_SESSION['userID'];
-$role_id=$_SESSION['roleID'];
+$user_id = $_SESSION['userID'];
+$role_id = $_SESSION['roleID'];
 
-
-$gui_cfg=config_get('gui');
-$order_by=$gui_cfg->tprojects_combo_order_by;
+$gui_cfg = config_get('gui');
+$order_by = $gui_cfg->tprojects_combo_order_by;
 $role_separator = config_get('role_separator');
-// $arr_tprojects = getAccessibleProducts($db,$user_id, $role_id, 'map', $order_by);
 
+$tproject_mgr = new testproject($db);
 $arr_tprojects = $tproject_mgr->get_accessible_for_user($user_id,'map', $order_by);
-
 
 if ($curr_tproject_id)
 	getAccessibleTestPlans($db,$curr_tproject_id,$user_id,1,$tpID);
 	
-
-$roles = getAllRoles($db);
-$roleName = $roles[$role_id];
+$role = tlRole::getByID($db,$role_id,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+$roleName = $role->name;
 
 $testprojectRole = null;
 if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id]))
 {
-	$testprojectRole = $role_separator->open . 
-	                   $roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']] . 
-	                   $role_separator->close;
+	$role = tlRole::getByID($db,$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id'],tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$testprojectRole = $role_separator->open . $role->name . $role_separator->close;
 }	                   
-
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 $smarty = new TLSmarty();
 
@@ -63,10 +56,7 @@ if (isset($_GET['testproject']))
 	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
-$logo_img = '';
-if (defined('LOGO_NAVBAR') )
-	$logo_img = LOGO_NAVBAR;
-
+$logo_img = defined('LOGO_NAVBAR') ? LOGO_NAVBAR : '';
 	
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));

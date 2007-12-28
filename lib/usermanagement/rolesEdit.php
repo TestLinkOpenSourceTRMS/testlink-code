@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/12/28 18:55:05 $ by $Author: schlundus $
  *
  *
  * 20071227 - franciscom - refactoring
@@ -135,6 +135,6 @@ function doCreate(&$db,$args)
 	$op->userFeedback = getRoleErrorMessage($result);
 	$op->action = ($args->roleid == 0) ? "do_add" : "updated";
  
-  return $op;
+	return $op;
 }
 ?>

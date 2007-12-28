@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/12/27 18:50:23 $  $Author: schlundus $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/12/28 18:55:05 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -808,7 +808,7 @@ function count_testcases($id)
            " FROM req_specs SRS " . $additional_table .
            " WHERE testproject_id={$tproject_id} " .
            $additional_join . 
-  		     " ORDER BY title";
+  		     " ORDER BY SRS.title";
   	return $this->db->fetchColumnsIntoMap($sql,'id','title');
   } // function end
 

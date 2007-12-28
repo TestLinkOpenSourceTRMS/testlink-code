@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2007/12/20 20:36:36 $ $Author: schlundus $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2007/12/28 18:55:05 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -139,7 +139,7 @@ $TLS_tc_copied = "Testfall %s wurde erfolgreich in <br> Test Suite %s kopiert";
 $TLS_tc_created = "Testfall %s wurde erfolgreich erstellt.";
 $TLS_tc_deleted = "Testfall %s wurde erfolgreich erstellt.";
 $TLS_tc_updated = "Testfall %s wurde erfolgreich erstellt.";
-$TLS_tc_update_failed = "Aktuallisierung von Testfall %s fehlgeschlagen!";
+$TLS_tc_update_failed = "Aktualisierung von Testfall %s fehlgeschlagen!";
 $TLS_tc_new_version = "Testfall-Version %d wurde erfolgreich erstellt";
 $TLS_tc_version_deleted = "Testfall %s Version %d wurde erfolgreich gelöscht";
 
@@ -1302,9 +1302,9 @@ $TLS_href_print_tc_results = "Testergebnisse drucken";
 $TLS_href_remove_test_case = "Testfälle abtrennen";
 $TLS_href_rep_and_metrics = "Test Ergebnis";
 $TLS_href_tc_exec_assignment = "Testfälle an Benutzer zuweisen";
-$TLS_href_upd_mod_tc = "Testfälle aktuallisieren";
+$TLS_href_upd_mod_tc = "Testfälle aktualisieren";
 $TLS_msg_no_rights_for_tp = "- nicht verfügbar (Sie haben keine Berechtigung für einen Testplan)";
-$TLS_testplan_role = "TestPlan Rollen";
+$TLS_testplan_role = "TestPlan Rolle";
 $TLS_title_test_case_suite = "Testplan Inhalt";
 $TLS_title_test_execution = "Test Ausführung";
 $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
@@ -1546,7 +1546,7 @@ $TLS_warning_percentage_value_higher_than_100 = "Alle Werte dürfen in Summe maxi
 // lib/plan/planMilestones.php
 $TLS_milestone_delete_fails = "Die Meilensteine könnten nicht gelöscht werden!";
 $TLS_warning_milestone_add_failed = "Der Meilenstein konnte nicht erstellt werden!";
-$TLS_warning_milestone_update_failed = "Der Meilenstein konnte nicht aktuallisiert werden!";
+$TLS_warning_milestone_update_failed = "Der Meilenstein konnte nicht aktualisiert werden!";
 
 
 
@@ -1751,8 +1751,8 @@ $TLS_error_role_deletion = "Die Rolle konnte nicht gelöscht werden!";
 // lib/usermanagement/usersassign.php
 $TLS_no_test_projects = "Es sind keine Testprojekte definiert.";
 $TLS_no_test_plans = "Für dieses Testprojekt sind keine Testpläne vorhanden.";
-$TLS_test_project_user_roles_updated = "Rolle aktuallisiert.";
-$TLS_test_plan_user_roles_updated = "Rolle aktuallisiert.";
+$TLS_test_project_user_roles_updated = "Rolle aktualisiert.";
+$TLS_test_plan_user_roles_updated = "Rolle aktualisiert.";
 
 
 // lib/usermanagement/usersedit.php
@@ -1764,14 +1764,14 @@ $TLS_user_not_added = "Der Benutzer konnte nicht hinzugefügt werden!";
 
 // lib/usermanagement/rolesedit.php
 $TLS_error_role_creation = "Die Rolle konnte nicht erstellt werden!";
-$TLS_error_role_update = "Die Rolle konnte nicht aktuallisiert werden!";
+$TLS_error_role_update = "Die Rolle konnte nicht aktualisiert werden!";
 
 
 
 // lib/cfields/cfields_edit.php
 $TLS_cf_name_exists = "Feldname bereits vorhanden. Bitte verwenden Sie einen anderen Namen.";
 $TLS_error_creating_cf = "Das benutzerdefinierte Feld konnte nicht erstellt werden!";
-$TLS_do_update = "aktuallisiert";
+$TLS_do_update = "aktualisiert";
 $TLS_do_delete = "gelöscht";
 $TLS_do_add = "erstellt";
 ?>

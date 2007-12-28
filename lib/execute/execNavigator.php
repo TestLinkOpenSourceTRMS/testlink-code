@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/12/28 18:56:11 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/12/28 22:10:32 $ by $Author: schlundus $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 
@@ -70,7 +70,7 @@ $effective_role = get_effective_role($db,$user_id,$tproject_id,$tplan_id);
 $disable_filter_assigned_to = false;
 $assigned_to_user = '';
 
-$exec_view_mode = ($effective_role == TL_ROLES_TESTER) ? 'all' : $exec_cfg->view_mode->tester;
+$exec_view_mode = ($effective_role == TL_ROLES_TESTER) ? $exec_cfg->view_mode->tester : 'all';
 switch ($exec_view_mode)
 {
 	case 'all':
@@ -106,12 +106,7 @@ if(!is_null($keywords_map))
 	$blank_map[0] = '';
 	$keywords_map = $blank_map+$keywords_map;
 }
-
-$menuUrl = null;
-$SP_html_help_file = TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html";
-
 $menuUrl = 'lib/execute/execSetResults.php';
-
 
 $getArguments = '&build_id=' . $optBuildSelected;
 if ($keyword_id)
@@ -125,7 +120,6 @@ if ($optResultSelected != 'all')
 if ($cf_selected)
 	$getArguments .= '&cfields='.serialize($cf_selected);
 
-$optResult = createResultsMenu();
 if ($optResultSelected == 'all')
 	$optResultSelected = null;
 
@@ -139,8 +133,6 @@ $src_workframe = null;
 if(isset($_REQUEST['submitOptions']))
 	$src_workframe = $_SESSION['basehref'].$menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
                      
-$tree = invokeMenu($sMenu,null,null);
-
 $smarty = new TLSmarty();
 $smarty->assign('design_time_cf',$cf_smarty); 
 $smarty->assign('disable_filter_assigned_to',$disable_filter_assigned_to);
@@ -153,15 +145,15 @@ $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('treeColored', $treeColored);
 $smarty->assign('optBuild', $optBuild);
 $smarty->assign('optBuildSelected', $optBuildSelected);
-$smarty->assign('optResult', $optResult);
+$smarty->assign('optResult', createResultsMenu());
 $smarty->assign('optResultSelected', $optResultSelected); 
 $smarty->assign('filter_assigned_to', $filter_assigned_to);
 $smarty->assign('keywords_map', $keywords_map);
 $smarty->assign('keyword_id', $keyword_id);
 $smarty->assign('tcID', intval($tc_id) > 0 ? $tc_id : '');
-$smarty->assign('tree', $tree);
+$smarty->assign('tree', invokeMenu($sMenu,null,null));
 $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
-$smarty->assign('SP_html_help_file',$SP_html_help_file);
+$smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
 $smarty->display($template_dir . 'execNavigator.tpl');
 ?>

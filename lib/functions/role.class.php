@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/27 18:50:23 $ $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/28 18:55:05 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -134,8 +134,7 @@ class tlRole extends tlDBObject
 			$this->replaceUserRolesWith(&$db,$this->replacementRoleID);
 
 			$query = "DELETE FROM roles WHERE id = {$this->dbID}";
-			$result = $db->exec_query($query);
-			$result = $result ? tl::OK : tl::ERROR;
+			$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
 		}
 		return $result;
 	}

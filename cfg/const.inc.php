@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2007/12/20 09:57:10 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/12/28 18:55:04 $ by $Author: schlundus $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -400,6 +400,7 @@ $g_reports_list['list_problems'] = array(
 
 
 /** [Roles] */
+define("TL_ROLES_TESTER",7);
 define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);
 define("TL_ROLES_NO_RIGHTS",3);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/12/28 22:39:57 $ by $Author: schlundus $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/12/29 18:32:07 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -514,10 +514,17 @@ define('INACTIVE',0);
 define('OPEN',1);
 define('CLOSED',0);
 
-// moved from testSetNavigator.php
+// planTCNavigator.php
 define('FILTER_BY_BUILD_OFF',0);
 define('FILTER_BY_OWNER_OFF',0);
 define('FILTER_BY_TC_STATUS_OFF',null);
+define('FILTER_BY_KEYWORD_OFF',null);
+define('FILTER_BY_ASSIGNED_TO_OFF',0);
+define('SEARCH_BY_CUSTOM_FIELDS_OFF',null);
+define('COLOR_BY_TC_STATUS_OFF',0);
+define('CREATE_TC_STATUS_COUNTERS_OFF',0);
+
+
 
 // moved from testSetRemove.php
 define('WRITE_BUTTON_ONLY_IF_LINKED',1);
@@ -590,5 +597,9 @@ define('ENABLED',1);
 define('NO_FILTER_SHOW_ON_EXEC',null);
 define('DONT_REFRESH','no');
 define('DEFAULT_TC_ORDER',0);
+
+
+// 
+
 // -------------------------------------------------------------------
 ?>

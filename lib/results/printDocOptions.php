@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: printDocOptions.php,v 1.2 2007/12/10 22:59:45 havlat Exp $
+* @version 	$Id: printDocOptions.php,v 1.3 2007/12/29 18:31:00 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * Navigator for print/export functionality. 
@@ -86,8 +86,13 @@ else if ($type == 'testplan')
 {
 	$tp = new testplan($db);
 	$latestBuild = $tp->get_max_build_id($tplan_id);
-	$treeString = generateExecTree($db,$workPath,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$latestBuild,$args,null,null,true);
-
+	$treeString = generateExecTree($db,$workPath,$tproject_id,$tproject_name,
+	                               $tplan_id,$tplan_name,$latestBuild,$args,
+	                               FILTER_BY_KEYWORD_OFF,FILTER_BY_TC_OFF,
+	                               HIDE_TESTCASES,FILTER_BY_ASSIGNED_TO_OFF,FILTER_BY_TC_STATUS_OFF,
+                                 SEARCH_BY_CUSTOM_FIELDS_OFF,CREATE_TC_STATUS_COUNTERS_OFF,
+                                 COLOR_BY_TC_STATUS_OFF);
+                                 
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	
 else

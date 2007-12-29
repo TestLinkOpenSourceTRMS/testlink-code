@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2007/12/09 17:27:38 $  by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2007/12/29 18:33:10 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20071201 - franciscom - new web editor code
@@ -388,7 +388,7 @@ else if($args->move_copy_tc)
 else if($args->do_move)
 {
 	$result = $tree_mgr->change_parent($args->tcase_id,$args->new_container_id);
-	$smarty->assign('refreshTree',$do_refresh);
+	$smarty->assign('refreshTree',$args->do_refresh);
 	$tsuite_mgr->show($smarty,$template_dir,$args->old_container_id);
 }
 else if($args->do_copy)
@@ -414,9 +414,9 @@ else if($args->do_copy)
     $path=trim($path,$ts_sep);
     $user_feedback=sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
   }	
-	$smarty->assign('refreshTree',$do_refresh);
+	$smarty->assign('refreshTree',$args->do_refresh);
 	
-	$do_refresh_yes_no=$do_refresh?"yes":"no";
+	$do_refresh_yes_no=$args->do_refresh?"yes":"no";
 	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id,$args->tcversion_id,
 	                 $action_result,$msg,$do_refresh_yes_no,$user_feedback);
 }

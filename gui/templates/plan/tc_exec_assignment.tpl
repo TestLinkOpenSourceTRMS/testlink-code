@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.2 2007/12/29 08:26:46 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.3 2007/12/29 18:32:20 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -21,10 +21,17 @@ rev :
 
 {if $has_tc }
 
+{lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
+                          btn_update_selected_tc,show_tcase_spec,can_not_execute,
+                          th_test_case,version,assigned_to,assign_to,note_keyword_filter'}
+
+
+
+
 
 {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
 {if $key ne ''}
-	<div style="margin-left: 20px; font-size: smaller;"><p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p></div>
+	<div style="margin-left: 20px; font-size: smaller;"><p>{$labels.note_keyword_filter} '{$key|escape}'</p></div>
 {/if}
 
 {* prefix for checkbox name ADD*}   
@@ -48,19 +55,19 @@ rev :
 
     	{if $ts.write_buttons eq 'yes'}
   			<p>
-  			{lang_get s="user_bulk_assignment"}
+  			{$labels.user_bulk_assignment}
   			
   			{* Bulk Tester Object ID (BTOID)*}
   			{assign var=btoid value=bulk_tester_div_$ts_id}
   			
   			<select name="bulk_tester_div[{$ts_id}]"  id="{$btoid}">
-      		{html_options options=$users selected=0}
+      		{html_options options=$testers selected=0}
       	</select>
       	<input type='button' name='{$ts.testsuite.name|escape}_mua' 
       	      onclick='javascript: set_combo_if_checkbox("{$div_id}",
       	                                                 "tester_for_tcid_",
       	                                                 document.getElementById("{$btoid}").value)' 
-      	       value='{lang_get s='btn_do'}' />
+      	       value="{$labels.btn_do}" />
   			<p>
               	
       
@@ -71,12 +78,13 @@ rev :
 			     <td width="5px" align="center">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
-                    title="{lang_get s='check_uncheck_all_checkboxes'}">
+                    title="{$labels.check_uncheck_all_checkboxes}">
 			     </td>
-          	<td class="tcase_id_cell">{lang_get s='th_id'}</td> 
-            <td>{lang_get s='th_test_case'}</td>
-          	<td align="center">&nbsp;&nbsp;{lang_get s='version'}</td>
-          	<td align="center">&nbsp;&nbsp;{lang_get s='user'}</td>
+          	<td class="tcase_id_cell">{$labels.th_id}</td> 
+            <td>{$labels.th_test_case}</td>
+          	<td align="center">&nbsp;&nbsp;{$labels.version}</td>
+          	<td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
+          	<td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
           </tr>
           {foreach from=$ts.testcases item=tcase }
           	{if $tcase.linked_version_id ne 0}
@@ -92,17 +100,22 @@ rev :
             	  <td>
             	  {$tcase.id}
                 </td>
-            	  <td title="{lang_get s='show_tcase_spec'}">
+            	  <td title="{$labels.show_tcase_spec}">
             	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
                 </td>
                 <td align="center">
         				{$tcase.tcversions[$tcase.linked_version_id]}
                 </td>
                 <td align="center">
+                {$users[$tcase.user_id]}
+                {if $users[$tcase.user_id] != '' && $testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if} 
+                </td>
+
+                <td align="center">
       		  		<select name="tester_for_tcid[{$tcase.id}]" 
       		  		        id="tester_for_tcid_{$tcase.id}"
       		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
-      			  	{html_options options=$users selected=$tcase.user_id}
+      			  	{html_options options=$testers selected=$tcase.user_id}
       				  </select>
               </td>
               </tr>
@@ -118,7 +131,7 @@ rev :
 </div>
 
 <div class="workBack">    
-	<input type='submit' name='doAction' value='{lang_get s='btn_update_selected_tc'}' />
+	<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
 </div>
 
 </form>

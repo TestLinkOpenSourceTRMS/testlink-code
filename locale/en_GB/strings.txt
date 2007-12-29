@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.233 $
- * @modified $Date: 2007/12/16 12:20:59 $ $Author: schlundus $
+ * @version $Revision: 1.234 $
+ * @modified $Date: 2007/12/29 18:31:36 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -784,7 +784,7 @@ $TLS_password_reset = "Reset password";
 
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "Your search delivered no results!";
-
+$TLS_other_versions='Other versions';
 
 
 // gui/templates/execSetResults.tpl
@@ -1241,8 +1241,10 @@ $TLS_no_tc_spec_av = "No Test Specification available!";
 
 
 // gui/templates/tc_exec_assignment.tpl
+$TLS_assign_to = "Assign to";
 $TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Save";
+$TLS_can_not_execute=" (No execution right)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
 $TLS_user = "User";
 $TLS_user_bulk_assignment = "Bulk user assignment";

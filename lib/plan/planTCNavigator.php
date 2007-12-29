@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: planTCNavigator.php,v 1.1 2007/12/02 17:16:02 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.2 2007/12/29 18:30:51 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -105,10 +105,12 @@ if ($keyword_id)
 	$getArguments .= '&keyword_id='.$keyword_id;
 }
 
-// 20070204 - franciscom - added $hide_tc
+// 20071229 - franciscom - added arguments to avoid counters and coloring
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
                           FILTER_BY_BUILD_OFF,$getArguments,$keyword_id,FILTER_BY_TC_OFF,
-                          $hide_tc);
+                          $hide_tc,FILTER_BY_ASSIGNED_TO_OFF,FILTER_BY_TC_STATUS_OFF,
+                          SEARCH_BY_CUSTOM_FIELDS_OFF,
+                          CREATE_TC_STATUS_COUNTERS_OFF,COLOR_BY_TC_STATUS_OFF);
 
 $tree = invokeMenu($sMenu,'',null);
 

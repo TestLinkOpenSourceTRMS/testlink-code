@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.15 2007/12/29 08:26:08 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.16 2007/12/29 18:30:51 franciscom Exp $ 
  * 
  * rev :
  *       20071228 - franciscom - BUG build combo of users using only users
@@ -93,6 +93,7 @@ if(!is_null($args->doAction))
 }
 
 // 20071228 - franciscom
+$users = getUsersForHtmlOptions($db);
 $testers = getTestersForHtmlOptions($db,$args->tplan_id,$args->tproject_id);
 $map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
                                                     $args->tplan_id,$tplan_name,$args->keyword_id);
@@ -146,7 +147,8 @@ switch($args->level)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('users', $testers);
+$smarty->assign('users', $users);
+$smarty->assign('testers', $testers);
 $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
 $smarty->assign('arrData', $out['spec_view']);
 $smarty->assign('testPlanName', $tplan_name);

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.43 2007/12/10 22:59:45 havlat Exp $ 
+// $Id: testlink_library.js,v 1.44 2007/12/29 18:31:48 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -245,7 +245,8 @@ function TPLAN_PTS(id)
 function TPLAN_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=testplan&level=testproject&id="+id+args+"&"+pParams;
+	var my_location = fRoot+menuUrl+"?print_scope=testplan&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location =my_location; 
 }
 
 
@@ -255,7 +256,8 @@ function TPLAN_PTP(id)
 */
 function TPLAN_PTC(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=testplan&level=tc&id="+id+args;
+	var my_location = fRoot+menuUrl+"?print_scope=testplan&level=tc&id="+id+args;
+	parent.workframe.location = my_location;
 }
 
 

@@ -1,9 +1,12 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.14 2007/12/21 22:57:18 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.15 2007/12/29 08:26:08 franciscom Exp $ 
  * 
  * rev :
+ *       20071228 - franciscom - BUG build combo of users using only users
+ *                               that can execute test cases in testplan.
+ * 
  *       20070912 - franciscom - BUGID 1041
  *       20070124 - franciscom
  *       use show_help.php to apply css configuration to help pages
@@ -22,31 +25,18 @@ $tcase_mgr = new testcase($db);
 $assignment_mgr = new assignment_mgr($db); 
 
 $template_dir='plan/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-$user_id=$_SESSION['userID'];
-
-$tproject_id = $_SESSION['testprojectID'];
-$tproject_name = $_SESSION['testprojectName'];
-
-$tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$args = init_args();
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tplan_name = $tplan_info['name'];
 
-
-$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-$version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
-$level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
-$keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-$do_action = isset($_POST['assign_tc']) ? 1 : 0;
-
-$resultString = null;
 $arrData = array();
 
 // ---------------------------------------------------------------------------------------
-if($do_action)
+if(!is_null($args->doAction))
 {
-  $a_tc = isset($_POST['achecked_tc']) ? $_POST['achecked_tc'] : null;
-  if(!is_null($a_tc))
+  if(!is_null($args->achecked_tc))
   {
       $types_map = $assignment_mgr->get_available_types();
       $status_map = $assignment_mgr->get_available_status();
@@ -59,31 +49,31 @@ if($do_action)
       $features2ins = array();
       $features2del = array();
       
-      foreach($a_tc as $key_tc => $value_tcversion)
+      foreach($args->achecked_tc as $key_tc => $value_tcversion)
       {
-        $feature_id = $_POST['feature_id'][$key_tc];
+        $feature_id = $args->feature_id[$key_tc];
         
-        if($_POST['has_prev_assignment'][$key_tc] > 0)
+        if($args->has_prev_assignment[$key_tc] > 0)
         {
-           if( $_POST['tester_for_tcid'][$key_tc] > 0 )
+           if( $args->tester_for_tcid[$key_tc] > 0 )
            {
-              $features2upd[$feature_id]['user_id'] = $_POST['tester_for_tcid'][$key_tc];
-              $features2upd[$feature_id]['assigner_id'] = $user_id;
+              $features2upd[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
               $features2upd[$feature_id]['type'] = $task_test_execution;
               $features2upd[$feature_id]['status'] = $open;
+              $features2upd[$feature_id]['assigner_id'] = $args->user_id;
            } 
            else
            {
               $features2del[$feature_id] = $feature_id;
            }
         }
-        else if($_POST['tester_for_tcid'][$key_tc] > 0)
+        else if($args->tester_for_tcid[$key_tc] > 0)
         {
-           $features2ins[$feature_id]['user_id'] = $_POST['tester_for_tcid'][$key_tc];
+           $features2ins[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
            $features2ins[$feature_id]['type'] = $task_test_execution;
            $features2ins[$feature_id]['status'] = $open;
            $features2ins[$feature_id]['creation_ts'] = $db_now;
-           $features2ins[$feature_id]['assigner_id'] = $user_id;
+           $features2ins[$feature_id]['assigner_id'] = $args->user_id;
         }
       }
       
@@ -102,62 +92,50 @@ if($do_action)
   }  
 }
 
-$users = getUsersForHtmlOptions($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
+// 20071228 - franciscom
+$testers = getTestersForHtmlOptions($db,$args->tplan_id,$args->tproject_id);
+$map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
+                                                    $args->tplan_id,$tplan_name,$args->keyword_id);
 
-$map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id, $tproject_name,
-                                                    $tplan_id,$tplan_name,$keyword_id);
-
-
-switch($level)
+switch($args->level)
 {
 	case 'testcase':
 		// build the data need to call gen_spec_view
-		$my_path = $tree_mgr->get_path($id);
+		$my_path = $tree_mgr->get_path($args->id);
 		$idx_ts = count($my_path) - 1;
 		$tsuite_data= $my_path[$idx_ts - 1];
 		
 		
-		$pp = $tcase_mgr->get_versions_status_quo($id, $version_id);
-		$linked_items[$id] = $pp[$version_id];
-		$linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
-		$linked_items[$id]['tc_id'] = $id;
+		$status_quo = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id);
+		$linked_items[$args->id] = $status_quo[$args->version_id];
+		$linked_items[$args->id]['testsuite_id'] = $tsuite_data['id'];
+		$linked_items[$args->id]['tc_id'] = $args->id;
 		
-		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
-		$linked_items[$id]['user_id'] = $p3[$version_id]['user_id'];
-		$linked_items[$id]['feature_id'] = $p3[$version_id]['feature_id'];
+		$exec_assignment = $tcase_mgr->get_version_exec_assignment($args->version_id,$args->tplan_id);
+		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
+		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
 		
-		$my_out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 				    		            $linked_items,$map_node_tccount,
-							              $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+							              $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 							           
-    // index 0 conatins data for the parent test suite of this test case, 
+    // index 0 contains data for the parent test suite of this test case, 
     // other elements are not needed.
 		$out=array();
 		$out['spec_view'][0]=$my_out['spec_view'][0];
-		// $out['spec_view'][0]['next_level']=0;
 		$out['num_tc']=1;
 		break;
 
 
 	case 'testsuite':
-		$tsuite_data = $tsuite_mgr->get_by_id($id);
+		$tsuite_data = $tsuite_mgr->get_by_id($args->id);
 		
 		// BUGID 1041
-		$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id);
-		$out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
+		$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($args->tplan_id,FILTER_BY_TC_OFF,$args->keyword_id);
+		$out = gen_spec_view($db,'testplan',$args->tplan_id,$args->id,$tsuite_data['name'],
                          $tplan_linked_tcversions,
                          $map_node_tccount,
-                         $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-                         
-    
-    // 20070408 - for new gui
-    // $spec_view=$out['spec_view'];
-    // $qta_loops=count($spec_view)-1;
-    // $out['spec_view'][$qta_loops]['next_level']=0;  
-    // for($idx=0; $idx < $qta_loops; $idx++)
-    // {
-    //   $out['spec_view'][$idx]['next_level']=$out['spec_view'][$idx+1]['level'];  
-    // }
+                         $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
  break;
 		
 		
@@ -168,9 +146,41 @@ switch($level)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('users', $users);
+$smarty->assign('users', $testers);
 $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
 $smarty->assign('arrData', $out['spec_view']);
 $smarty->assign('testPlanName', $tplan_name);
-$smarty->display($template_dir . 'tc_exec_assignment.tpl');
+$smarty->display($template_dir . $default_template);
+?>
+
+
+<?php
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+
+  $args->user_id=$_SESSION['userID'];
+  $args->tproject_id = $_SESSION['testprojectID'];
+  $args->tproject_name = $_SESSION['testprojectName'];
+
+  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+
+  $key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+                  'version_id' => 0, 'keyword_id' => 0, 'has_prev_assignment' => null,
+                  'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
+  foreach($key2loop as $key => $value)
+  {
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+  }
+
+  return $args;
+}
 ?>

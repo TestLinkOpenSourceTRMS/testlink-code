@@ -5,15 +5,12 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2007/12/22 12:26:45 $ $Author: schlundus $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2007/12/29 08:25:34 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * 20050821 - fm - BUGID 239
- * 20051231 - scs - changes due to ADBdb
- * 20060205 - JBA - Remember last product (BTS 221); added by MHT
- * 20060224 - franciscom - changes in session product -> testproject
+ * 20071228 - franciscom - added getTestersForHtmlOptions() 
  */
 require_once("common.php");
 require_once("user.class.php");
@@ -95,15 +92,45 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	return 1;
 }
 
-function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false)
+/*
+  function: getUsersForHtmlOptions
+
+  args:  db: reference to db object
+        [whereClause]:
+        [add_blank_option]:
+        [active_filter]:
+  
+  returns: map 
+         
+  rev :
+       20071228 - franciscom - added active_filter
+*/
+function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null)
 {
 	$users_map = null;
 	$users = tlUser::getAll($db,$whereClause,"id");
+	
+	$the_users=$users;
 	if ($users)
+	{
+    if( !is_null($active_filter) )
+    {
+        $the_users=array();
+		    foreach($users as $id => $user)
+		    {
+		      if($user->bActive == $active_filter)
+		      {
+		    	  $the_users[$id] = $users[$id];
+		    	}  
+		    }
+    }
+  }
+
+	if ($the_users)
 	{
 		if($add_blank_option)
 			$users_map[0] = '';
-		foreach($users as $id => $user)
+		foreach($the_users as $id => $user)
 		{
 			$users_map[$id] = $user->getDisplayName();
 		}
@@ -111,6 +138,18 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 	return $users_map;
 }
 
+
+
+
+
+/*
+  function: resetPassword
+
+  args:
+  
+  returns: 
+
+*/
 function resetPassword(&$db,$userID,&$errorMsg)
 {
 	$errorMsg = '';
@@ -187,6 +226,15 @@ function getUserErrorMessage($code)
 	return $msg;
 }
 
+
+/*
+  function: getAllUsersRoles
+
+  args:
+  
+  returns: 
+
+*/
 function getAllUsersRoles(&$db,$order_by = null)
 {
 	$query = "SELECT users.id FROM users LEFT OUTER JOIN roles ON users.role_id = roles.id ";
@@ -194,5 +242,39 @@ function getAllUsersRoles(&$db,$order_by = null)
 	
 	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser");
 	return $users;
+}
+
+/*
+  function: getTestersForHtmlOptions
+
+  args :
+  
+  returns: 
+
+*/
+function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
+{
+    define('ACTIVE_USERS',1);
+    $users_roles=get_tplan_effective_role($db,$tplanID,$tprojectID);
+    $userFilter=array();
+    foreach($users_roles as $keyUserID => $roleInfo)
+    {
+      if( roleHasRight($db,$roleInfo['effective_role_id'],'testplan_execute') )
+      {
+        $userFilter[]=$keyUserID;
+      }  
+    } 
+   
+    $testerList='';
+    if( count($userFilter) > 0 && isset($userFilter[0]) )
+    {
+      $testerList=implode("','",$userFilter);  
+    }
+    $whereClause=" WHERE id IN ('{$testerList}') ";        
+
+
+    $testers = getUsersForHtmlOptions($db,$whereClause,ADD_BLANK_OPTION,ACTIVE_USERS);
+    return $testers;
+    
 }
 ?>

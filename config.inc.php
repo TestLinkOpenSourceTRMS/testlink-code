@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.140 $
- * @modified $Date: 2007/12/27 18:03:53 $ by $Author: franciscom $
+ * @version $Revision: 1.141 $
+ * @modified $Date: 2007/12/29 18:28:08 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,10 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
+ *                                   $g_exec_cfg->enable_tree_colouring;
+ *
+ *
  *           20071227 - franciscom - now default is theme_m2
  *           20071130 - franciscom - $g_gui->webeditor (work in progress)
  *           20071113 - franciscom - $g_exec_cfg->show_history_all_builds
@@ -599,6 +603,16 @@ $g_exec_cfg->can_delete_execution=0;
 //
 // 0 -> disable
 $g_exec_cfg->enable_test_automation=0;
+
+
+
+// 1 -> enable testcase counters by status on tree
+$g_exec_cfg->enable_tree_testcase_counters=1;
+
+// 1 -> test cases and test case counters will be coluored
+//      according to test case status
+$g_exec_cfg->enable_tree_colouring=1;
+
 
 /** [Test case specification] */
 

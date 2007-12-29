@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.2 2007/12/29 08:26:46 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -118,7 +118,7 @@ rev :
 </div>
 
 <div class="workBack">    
-	<input type='submit' name='assign_tc' value='{lang_get s='btn_update_selected_tc'}' />
+	<input type='submit' name='doAction' value='{lang_get s='btn_update_selected_tc'}' />
 </div>
 
 </form>

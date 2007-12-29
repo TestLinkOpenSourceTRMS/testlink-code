@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/12/29 08:32:38 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,7 +34,8 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
- * rev : 20070912 - franciscom - BUGID 1039 - getAllRoles()
+ * rev : 20071228 - franciscom - added roleHasRight()
+ *       20070912 - franciscom - BUGID 1039 - getAllRoles()
  *       20070901 - franciscom - BUGID 1016
  *       20070819 - franciscom - 
  *       added get_tplan_effective_role(), get_tproject_effective_role()
@@ -667,5 +668,26 @@ function getRoleErrorMessage($code)
 			$msg = lang_get('error_role_not_updated');
 	}
 	return $msg;
+}
+
+/*
+  function: roleHasRight
+            check if a role has requested right
+
+  args: 
+  
+  returns: true / false 
+
+*/
+function roleHasRight(&$db,$roleID,$verboseRight)
+{
+  $sql=" SELECT RR.*, RI.description " .
+       " FROM role_rights RR, rights RI " .
+       " WHERE RR.right_id = RI.id " .
+       " AND RI.description = '" . $verboseRight . "' " .
+       " AND RR.role_id = {$roleID} ";
+       
+  $rs=$db->fetchRowsIntoMap($sql,'role_id');
+  return (!is_null($rs) && count($rs) > 0) ? true : false;
 }
 ?>

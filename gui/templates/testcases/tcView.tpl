@@ -1,12 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: tcView.tpl,v 1.2 2007/12/29 08:33:02 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+
+{if $smarty.const.USE_EXT_JS_LIBRARY}
+  {include file="inc_ext_js.tpl" css_only=1}
+{/if}
+
 </head>
+
+{lang_get s='other_versions,version' var='labels'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
 
@@ -55,17 +62,33 @@ Purpose: smarty template - view test case in test specification
     {* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
         {assign var="vid" value=$testcase_curr_version[idx][0].id}
-         
-        <span style="cursor: pointer" class="type1" 
-              onclick="viewElement(document.getElementById('vers_{$vid}'),document.getElementById('vers_{$vid}').style.display=='none')"> Other Versions </span>
+        {assign var="div_id" value=vers_$vid}
+        {assign var="memstatus_id" value=mem_$div_id}
+  
+        {include file="inc_show_hide_mgmt.tpl" 
+                 args_container_title=$labels.other_versions
+                 args_container_id=$div_id
+                 args_container_view_status_id=$memstatus_id}
+               
         <div id="vers_{$vid}" class="workBack">
         
   	    {foreach item=my_testcase from=$testcase_other_versions[idx]}
-  	          <span style="cursor: pointer" class="type1" 
-  	                onclick="viewElement(document.getElementById('v{$vid}_{$my_testcase.version}'),document.getElementById('v{$vid}_{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
-  	          <br />
-  	          <div id="v{$vid}_{$my_testcase.version}" class="workBack">
-				
+
+            {assign var="version_num" value=$my_testcase.version}
+            {assign var="title" value="$labels.version}
+            {assign var="title" value="$title $version_num"}
+            
+            {assign var="div_id" value=v_$vid}
+            {assign var="sep" value="_"}
+            {assign var="div_id" value=$div_id$sep$version_num}
+            {assign var="memstatus_id" value=mem_$div_id}
+           
+            {include file="inc_show_hide_mgmt.tpl" 
+                     args_container_title=$title
+                     args_container_id=$div_id
+                     args_container_view_status_id=$memstatus_id}
+ 
+  	          <div id="{$div_id}" class="workBack">
 				      {include file="$this_template_dir/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
                        args_keywords_map=$keywords_map[idx] 
@@ -95,7 +118,7 @@ Purpose: smarty template - view test case in test specification
  	  	      viewElement(document.getElementById('vers_{$vid}'),false);
 
     	  		{foreach item=my_testcase from=$testcase_other_versions[idx]}
-  	  	      viewElement(document.getElementById('{$my_testcase.version}'),false);
+  	  	      viewElement(document.getElementById('v_{$vid}_{$my_testcase.version}'),false);
 			      {/foreach}
       	{literal}
       	</script>

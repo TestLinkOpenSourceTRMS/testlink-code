@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/27 18:50:23 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/29 08:27:51 $ $Author: franciscom $
  *
  */
 
@@ -31,7 +31,7 @@ class tlUser extends tlDBObject
 	protected $loginMethod;
 	protected $maxLoginLength;
 	
-	//error codes ...
+	//error codes
 	const USER_E_LOGINLENGTH = -1;
 	const USER_E_EMAILLENGTH = -2;
 	const USER_E_NOTALLOWED = -4;
@@ -91,11 +91,13 @@ class tlUser extends tlDBObject
 	function create()
 	{
 	}
+	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = "SELECT id,login,password,first,last,email,role_id,locale, login AS fullname, active,default_testproject_id FROM users";
+		$query = "SELECT id,login,password,first,last,email,role_id,locale, " .
+		         " login AS fullname, active,default_testproject_id FROM users";
 		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
@@ -161,6 +163,7 @@ class tlUser extends tlDBObject
 		}
 		return $result;
 	}	
+	
 	public function deleteFromDB(&$db)
 	{
 		$query = "DELETE FROM users WHERE id=" . $this->dbID;
@@ -196,6 +199,7 @@ class tlUser extends tlDBObject
 	
 		return $displayName;
 	}
+	
 	protected function encryptPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
@@ -203,6 +207,7 @@ class tlUser extends tlDBObject
 
 		return md5($pwd);
 	}
+	
 	public function setPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
@@ -213,10 +218,12 @@ class tlUser extends tlDBObject
 		$this->password = $this->encryptPassword($pwd);
 		return tl::OK;
 	}
+	
 	public function getPassword()
 	{
 		return $this->password;
 	}
+	
 	public function comparePassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
@@ -248,6 +255,7 @@ class tlUser extends tlDBObject
 			
 		return $result;
 	}
+	
 	public function checkLogin($login)
 	{
 		$result = tl::OK;
@@ -261,18 +269,22 @@ class tlUser extends tlDBObject
 
 		return $result;
 	}
+	
 	static public function checkEmailAdress($email)
 	{
 		return is_blank($email) ? self::USER_E_EMAILLENGTH : tl::OK;
 	}
+	
 	static public function checkFirstName($first)
 	{
 		return is_blank($first) ? self::USER_E_FIRSTNAMELENGTH : tl::OK;
 	}
+	
 	static public function checkLastName($last)
 	{
 		return is_blank($last) ? self::USER_E_LASTNAMELENGTH : tl::OK;
 	}
+	
 	static public function doesUserExist(&$db,$login)
 	{
 		$user = new tlUser();
@@ -281,13 +293,24 @@ class tlUser extends tlDBObject
 			return $user->dbID;
 		return null;
 	}
+	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if ($id)
 			return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 		return null;
 	}
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	
+  /*
+    function: 
+
+    args :
+    
+    returns: 
+
+  */
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$query = " SELECT id FROM users";
 		if (!is_null($whereClause))

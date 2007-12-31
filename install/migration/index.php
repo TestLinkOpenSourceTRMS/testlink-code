@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.4 2007/02/13 13:04:09 franciscom Exp $ 
+$Id: index.php,v 1.5 2007/12/31 17:16:02 franciscom Exp $ 
 
 20060218 - franciscom
 */
@@ -13,7 +13,7 @@ if( !isset($_SESSION) )
 $_SESSION['session_test'] = 1;
 
 // 20060523 - franciscom - configure before creating a new release
-$_SESSION['testlink_version']='1.7 beta';
+$_SESSION['testlink_version']='1.7.x';
 $operation='Migration from 1.6.2';
 ?>
 

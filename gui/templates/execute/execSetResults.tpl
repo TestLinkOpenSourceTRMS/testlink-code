@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.5 2007/12/25 20:16:18 franciscom Exp $
+$Id: execSetResults.tpl,v 1.6 2007/12/31 16:24:34 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+    20071231 - franciscom - new show/hide section to show exec notes
     20071103 - franciscom - BUGID 700
     20071101 - franciscom - added test automation code
     20070826 - franciscom - added some niftycube effects
@@ -33,7 +34,7 @@ Rev:
 {lang_get var='labels'
           s='build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
              th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
-             version,has_no_assignment,assigned_to,execution_history,
+             version,has_no_assignment,assigned_to,execution_history,exec_notes,
              last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
              test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
@@ -62,6 +63,17 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 {if $smarty.const.USE_EXT_JS_LIBRARY}
   {include file="inc_ext_js.tpl"}
 {/if}
+
+<script language="JavaScript" type="text/javascript">
+{literal}
+function load_notes(panel,exec_id)
+{
+  var url2load=fRoot+'lib/execute/getExecNotes.php?exec_id=' + exec_id;
+  panel.load({url:url2load}); 
+}
+{/literal}
+</script>
+
 
 </head>
 {* 
@@ -204,7 +216,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 	{/if}
 
-  	{foreach item=tc_exec from=$map_last_exec}
+ 	{foreach item=tc_exec from=$map_last_exec}
   	
     {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
@@ -239,10 +251,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		  
   		{if $tSuiteAttachments[$tc_id] neq null}
   		  <br />
-           <script language="JavaScript" type="text/javascript">
-           var msg="{lang_get s='warning_delete_execution'}";
-           </script>
-  		  
 		    {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
 			        	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
 			        	 inheritStyle=1
@@ -279,7 +287,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   		      {$exec_build_title}
   		    {/if}  
   		{else}
-  			  {lang_get s='last_execution'} 
+  			  {$labels.last_execution} 
   			  {if $show_current_build} {$labels.exec_any_build} {/if}
   			  {$title_sep_type3} {$exec_build_title}
   		{/if}
@@ -324,10 +332,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 				{/if}  
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:left">{$labels.exec_status}</th>
-				<th style="text-align:center" >
-				   {$labels.exec_notes}
-  			</th>
-				
+			
 				{if $att_model->show_upload_column && !$att_download_only}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
             {assign var="my_colspan" value=$att_model->num_cols}
@@ -350,7 +355,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 			{foreach item=tc_old_exec from=$other_exec.$tcversion_id}
   	     {assign var="tc_status_code" value=$tc_old_exec.status}
 
-   			<tr style="border-top:1px solid black">
+   			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
   				
 				  {if $history_on == 0 || $show_history_all_builds}
@@ -364,16 +369,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
-
-   			  <td align="center">
-     			  {if $tc_old_exec.execution_notes neq ""}
-       			  <a href="javascript:open_show_notes_window({$tc_old_exec.execution_id})">
-          			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/contact_16.png" alt="{$labels.alt_notes}" 
-          			         title="{$labels.alt_notes}"  style="border:none" /></a>
-          	{else}
-          	 &nbsp;
-          	{/if}		         
-          </td>
             
           {if $att_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
@@ -402,7 +397,34 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
             
   			</tr>  
-  
+ 			  {if $tc_old_exec.execution_notes neq ""}
+  			<script>
+        {literal}
+        Ext.onReady(function(){
+		    var p = new Ext.Panel({
+        title: {/literal}'{$labels.exec_notes}'{literal},
+        collapsible:true,
+        collapsed: true,
+        /*style: 'padding:2px 1px 1px 2px;', */
+        baseCls: 'x-tl-panel',
+        /* contentEl: {/literal}'imo{$tc_old_exec.execution_id}'{literal}, */
+        renderTo: {/literal}'exec_notes_container_{$tc_old_exec.execution_id}'{literal},
+        width:'100%',
+        html:''
+        });
+    
+        p.on({'expand' : function(){load_notes(this,{/literal}{$tc_old_exec.execution_id}{literal});}});
+        });
+        {/literal}
+        
+  			</script> 
+  			<tr>
+  			 <td colspan="{$my_colspan}" id="exec_notes_container_{$tc_old_exec.execution_id}" 
+  			     style="padding:5px 5px 5px 5px;">
+  			</td>
+   			</tr>
+ 			  {/if $tc_old_exec.execution_notes neq ""}
+    
   			{* 20070105 - Custom field values  *}
   			<tr>
   			<td colspan="{$my_colspan}">

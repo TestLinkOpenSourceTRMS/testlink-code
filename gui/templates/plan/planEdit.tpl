@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.3 2007/12/18 17:18:00 franciscom Exp $
+$Id: planEdit.tpl,v 1.4 2007/12/31 16:23:15 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -75,7 +75,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}">
 	<table class="common" width="80%">
 	
-		<tr><th>{lang_get s='testplan_th_name'}</th>
+		<tr><th style="background:none;">{lang_get s='testplan_th_name'}</th>
 			<td><input type="text" name="testplan_name" 
 			           size="{#TESTPLAN_NAME_SIZE#}" 
 			           maxlength="{#TESTPLAN_NAME_MAXLEN#}" 
@@ -83,11 +83,11 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
   				{include file="error_icon.tpl" field="testplan_name"}
 			</td>
 		</tr>	
-		<tr><th>{lang_get s='testplan_th_notes'}</th>
+		<tr><th style="background:none;">{lang_get s='testplan_th_notes'}</th>
 			<td >{$notes}</td>
 		</tr>
 		{if $tplan_id eq 0}
-			<tr><th>{lang_get s='testplan_question_create_tp_from'}</th>
+			<tr><th style="background:none;">{lang_get s='testplan_question_create_tp_from'}</th>
 			<td>
 				<select name="copy_from_tplan_id" 
 				        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/12/29 18:32:07 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/12/31 16:22:34 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -597,9 +597,5 @@ define('ENABLED',1);
 define('NO_FILTER_SHOW_ON_EXEC',null);
 define('DONT_REFRESH','no');
 define('DEFAULT_TC_ORDER',0);
-
-
-// 
-
 // -------------------------------------------------------------------
 ?>

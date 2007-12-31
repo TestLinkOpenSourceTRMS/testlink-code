@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsEdit.tpl,v 1.3 2007/12/24 17:12:24 franciscom Exp $ 
+$Id: cfieldsEdit.tpl,v 1.4 2007/12/31 16:23:15 franciscom Exp $ 
 
 
 Important Development note:
@@ -278,8 +278,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     </tr> 
 	
 	 <tr>
-			<th>{lang_get s='name'}	
-      </th>
+			<th style="background:none;">{lang_get s='name'}</th>
 			<td><input type="text" name="cf_name" 
 			                       size="{#CFIELD_NAME_SIZE#}" 
 			                       maxlength="{#CFIELD_NAME_MAXLEN#}" 
@@ -288,7 +287,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     	</td>
 		</tr>
 		<tr>
-			<th>{lang_get s='label'}</th>
+			<th style="background:none;">{lang_get s='label'}</th>
 			<td><input type="text" name="cf_label" 
 			                       size="{#CFIELD_LABEL_SIZE#}" 
 			                       maxlength="{#CFIELD_LABEL_MAXLEN#}" 
@@ -298,7 +297,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 	  </tr>
 		
 		<tr>
-			<th>{lang_get s='type'}</th>
+			<th style="background:none;">{lang_get s='type'}</th>
 			<td>
 			  {if $is_used}
 			    {assign var="idx" value=$cf.type}
@@ -323,7 +322,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value="none"}
 		{/if}
 		<tr id="possible_values" style="display:{$display_style};">
-			<th>{lang_get s='possible_values'}</th>
+			<th style="background:none;">{lang_get s='possible_values'}</th>
 			<td>
 				<input type="text" id="cf_possible_values"
 				                   name="cf_possible_values"
@@ -342,7 +341,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     {/if}
 		
 		<tr id="container_cf_show_on_design" style="display:{$display_style};">
-			<th>{lang_get s='show_on_design'}</th>
+			<th style="background:none;">{lang_get s='show_on_design'}</th>
 			<td>
 				<select id="cf_show_on_design"
 				        name="cf_show_on_design"
@@ -359,7 +358,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 		<tr	id="container_cf_enable_on_design" style="display:{$display_style};">
-			<th>{lang_get s='enable_on_design'}</th>
+			<th style="background:none;">{lang_get s='enable_on_design'}</th>
 			<td>
 				<select name="cf_enable_on_design"
 				        id="cf_enable_on_design"
@@ -380,7 +379,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     {/if}
     
 		<tr id="container_cf_show_on_execution" style="display:{$display_style};">
-			<th>{lang_get s='show_on_exec'}</th>
+			<th style="background:none;">{lang_get s='show_on_exec'}</th>
 			<td>
 				<select id="cf_show_on_execution"  name="cf_show_on_execution" 
 				        {$disabled_cf_show_on.execution}> 
@@ -395,7 +394,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 		<tr id="container_cf_enable_on_execution" style="display:{$display_style};">
-			<th>{lang_get s='enable_on_exec'}</th>
+			<th style="background:none;">{lang_get s='enable_on_exec'}</th>
 			<td>
 				<select id="cf_enable_on_execution" 
 				        name="cf_enable_on_execution"
@@ -408,7 +407,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 
 		<tr>
-			<th>{lang_get s='available_on'}</th>
+			<th style="background:none;">{lang_get s='available_on'}</th>
 			<td>
 			  {if $is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$cf.node_type_id}

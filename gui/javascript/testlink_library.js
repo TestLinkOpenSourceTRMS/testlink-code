@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.44 2007/12/29 18:31:48 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.45 2007/12/31 16:22:54 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -457,7 +457,8 @@ function tree_getCheckBox(id)
 
 function open_bug_add_window(exec_id)
 {
-	window.open(fRoot+"lib/execute/bug_add.php?exec_id="+exec_id,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
+	window.open(fRoot+"lib/execute/bugAdd.php?exec_id="+exec_id,"bug_add",
+	            "width=510,height=270,resizable=yes,dependent=yes");
 }
 function bug_dialog() 
 {
@@ -507,7 +508,7 @@ function deleteBug_onClick(execution_id,bug_id,warning_msg)
 {
 	if (confirm(warning_msg))
 	{
-		window.open(fRoot+"lib/execute/bug_delete.php?exec_id="+execution_id+"&bug_id="+bug_id,
+		window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+execution_id+"&bug_id="+bug_id,
 		            "Delete","width=510,height=150,resizable=yes,dependent=yes");
 	}	
 }

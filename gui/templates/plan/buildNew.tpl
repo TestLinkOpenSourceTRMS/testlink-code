@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.2 2007/12/18 17:18:00 franciscom Exp $
+$Id: buildNew.tpl,v 1.3 2007/12/31 16:23:15 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -58,22 +58,22 @@ function validateForm(f)
 	      
 	<table class="common" style="width:80%">
 		<tr>
-			<th>{lang_get s='enter_build'}</th>
+			<th style="background:none;">{lang_get s='enter_build'}</th>
 			<td><input type="text" name="build_name" maxlength="{#BUILD_NAME_MAXLEN#}" 
 			           value="{$build_name|escape}" size="{#BUILD_NAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="build_name"}
 			</td>
 		</tr>
-		<tr><th>{lang_get s='enter_build_notes'}</th>
+		<tr><th style="background:none;">{lang_get s='enter_build_notes'}</th>
 			<td>{$notes}</td>
 		</tr>
-		<tr><th>{lang_get s='active'}</th>
+		<tr><th style="background:none;">{lang_get s='active'}</th>
 		    <td><input type="checkbox"  name="is_active" id="is_active"  
 		               {if $is_active eq 1} checked {/if} />
         </td>
 		</tr>
     <tr>
-		    <th>{lang_get s='open'}</th>
+		    <th style="background:none;">{lang_get s='open'}</th>
 		    <td><input type="checkbox"  name="is_open" id="is_open"  
 		               {if $is_open eq 1} checked {/if} />
         </td>

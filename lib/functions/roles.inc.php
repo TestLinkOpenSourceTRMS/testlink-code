@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/12/31 12:21:50 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/12/31 13:15:26 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -162,40 +162,6 @@ function getTestProjectUserRoles(&$db,$tproject_id)
 	
 	return $roles;
 }
-/**
- * Gets all testproject related role assignments for a give user
- *
- * @param object $db [ref] the db-object
- * @param int $userID the user id
- * @return array assoc map with keys taken from the testproject_id column
- **/
- //SCHLUNDUS: should be moved inside tlUser, 50% refactored
-function getUserTestProjectRoles(&$db,$userID)
-{
-	$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$userID}";
-	$roles = $db->fetchRowsIntoMap($query,'testproject_id');
-	
-	return $roles;
-}
-
-
-/**
- * Gets all testplan related role assignments for a given user
- *
- * @param object $db [ref] the db-object
- * @param int $userID the user id
- * @return array documentation assoc array with keys take from the testplan_id
- * 				column
- **/
-//SCHLUNDUS: should be moved inside tlUser,50% refactored
-function getUserTestPlanRoles(&$db,$userID)
-{
-	$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$userID}";
-	$roles = $db->fetchRowsIntoMap($query,'testplan_id');
-	
-	return $roles;
-}
-
 
 /**
  * Deletes all testproject related role assignments for a given testproject
@@ -339,8 +305,6 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	// so the rights are fetched only once per script 
 	static $s_allRoles = null;
 	static $s_currentUser = null;
-	static $s_userProductRoles = null;
-	static $s_userTestPlanRoles = null;
 	static $s_userGlobalRole = null;
 	
 	//load the current user
@@ -353,18 +317,6 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	if (is_null($s_allRoles))
 		$s_allRoles = getRoles($db);
 	
-	//SCHLUNDUS: will be removed later
-	if (is_null($s_userProductRoles))
-	{
-		$s_userProductRoles = getUserTestProjectRoles($db,$_SESSION['userID']);
-		$_SESSION['testprojectRoles'] = $s_userProductRoles;
-	}
-	//SCHLUNDUS: will be removed later
-	if (is_null($s_userTestPlanRoles))
-	{
-		$s_userTestPlanRoles = getUserTestPlanRoles($db,$_SESSION['userID']);
-		$_SESSION['testPlanRoles'] = $s_userTestPlanRoles;
-	}
 	if (!isset($s_allRoles[$_SESSION['roleID']]))
 		$_SESSION['roleID'] = config_get('role_replace_for_deleted_roles');
 	
@@ -483,24 +435,18 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 */
 function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
 {
-  $user = tlUser::getById($db,$user_id);
-  $default_role = $user->globalRoleID;
-  $tprojects_role = getUserTestProjectRoles($db,$user_id);
-  $tplans_role = getUserTestPlanRoles($db,$user_id);
+	$user = tlUser::getById($db,$user_id);
+	$default_role = $user->globalRoleID;
+	$tprojects_role = $user->tprojectRoles;
+	$tplans_role = $user->tplanRoles;
 
-  if( !is_null($tplans_role) && isset($tplans_role[$tplan_id]))
-  {
-    $effective_role=$tplans_role[$tplan_id]['role_id'];  
-  }
-  else if( !is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
-  {
-     $effective_role=$tprojects_role[$tproject_id]['role_id'];  
-  }
-  else
-  {
-    $effective_role=$default_role;
-  }
-  return $effective_role;
+	$effective_role = $default_role;
+	if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
+		$effective_role = $tplans_role[$tplan_id]->dbID;  
+	else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
+		$effective_role = $tprojects_role[$tproject_id]->dbID;  
+	
+	return $effective_role;
 }
 
 /*

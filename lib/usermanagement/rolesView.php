@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/12/31 12:21:55 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/12/31 13:15:27 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -92,14 +92,9 @@ function init_args()
 //SCHLUNDUS: will be removed later
 function updateSessionRoles(&$db,$roleID,$userID,$roles)
 {
-	//reload the roles of the current user
-	$_SESSION['testprojectRoles'] = getUserTestProjectRoles($db,$userID);
-	$_SESSION['testPlanRoles'] = getUserTestPlanRoles($db,$userID);
-	
 	if ($_SESSION['roleID'] == $roleID)
 	{
 		$_SESSION['roleID'] = TL_ROLES_NO_RIGHTS;
-		$_SESSION['role'] = $roles[TL_ROLES_NO_RIGHTS]->name;
 	}
 }
 

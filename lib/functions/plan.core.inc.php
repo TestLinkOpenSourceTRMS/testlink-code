@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/12/19 21:59:30 $ $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/12/31 13:15:26 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -31,12 +31,11 @@
 function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_product=0,$tpID = null)
 {
 	$show_tp_without_prodid = config_get('show_tp_without_prodid');
+	$currentUser = $_SESSION['currentUser'];
 	
 	$my_user_id=$user_id;
-	if( $user_id==0 )
-	{
-	  $my_user_id = $_SESSION['userID'];
-	}
+	if(!$user_id)
+		$my_user_id = $currentUser->dbID;
 	
 	$query = "SELECT nodes_hierarchy.id, nodes_hierarchy.name, testplans.active 
 	         FROM nodes_hierarchy 
@@ -50,11 +49,11 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 	$bGlobalNo = ($_SESSION['roleID'] == TL_ROLES_NONE);
 	$bProductNo = 0;
 	// BUGID: 951 - wrong key to access session info
-	$analyse_global_role=1;
-	if (isset($_SESSION['testprojectRoles'][$testproject_id]['role_id']))
+	$analyse_global_role = 1;
+	if (isset($currentUser->tprojectRoles[$testproject_id]->dbID))
 	{
-		$bProductNo = ($_SESSION['testprojectRoles'][$testproject_id]['role_id'] == TL_ROLES_NONE); 
-	  $analyse_global_role=0;	
+		$bProductNo = ($currentUser->tprojectRoles[$testproject_id]->dbID == TL_ROLES_NONE); 
+		$analyse_global_role = 0;	
 	}
 	
   if( $bProductNo || ($analyse_global_role && $bGlobalNo))

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2007/12/31 12:21:54 $ $Author: schlundus $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2007/12/31 13:15:26 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -31,8 +31,7 @@ if('LDAP' == config_get('login_method') )
  * @return type documentation
 
  **/
-function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null,
-                        $usertestprojectRoles = null,$userTestPlanRoles = null)
+function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null)
 {
 	tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 	if (!is_null($user))
@@ -40,19 +39,13 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 
 	$_SESSION['userID']	= $id;
 	$_SESSION['email'] = $email; 
-	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
-	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
 	$_SESSION['testprojectID'] = null;
 	$_SESSION['s_lastAttachmentList'] = null;
 
 	if (!is_null($roleID))
 	{
-		$roleID = intval($roleID);
-		$_SESSION['roleID'] = $roleID; 
-		$role = new tlRole($roleID);
-		if ($role->readFromDb($db) >= tl::OK)
-			$_SESSION['role'] = $role->description;
-		tLog('setUserSession: $user='.$_SESSION['role']);
+		$_SESSION['roleID'] = intval($roleID); 
+		tLog('setUserSession: $user :: roleID '.$_SESSION['roleID']);
 	}
 	if (!is_null($locale))
 	{

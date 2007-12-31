@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/28 18:55:05 $ $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/12/31 12:21:50 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -269,6 +269,11 @@ class tlRight extends tlDBObject
 		$this->name = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
+	}
+	
+	public function __toString()
+	{
+		return $this->name;
 	}
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)

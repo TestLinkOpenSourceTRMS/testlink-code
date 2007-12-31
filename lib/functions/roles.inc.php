@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/12/29 08:32:38 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/12/31 12:21:50 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -35,10 +35,8 @@
  *
  *
  * rev : 20071228 - franciscom - added roleHasRight()
- *       20070912 - franciscom - BUGID 1039 - getAllRoles()
  *       20070901 - franciscom - BUGID 1016
- *       20070819 - franciscom - 
- *       added get_tplan_effective_role(), get_tproject_effective_role()
+ *       20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
  *       20070818 - franciscom - changes in getRoles()
  *       20070702 - franciscom - new get_effective_role()
  */
@@ -171,7 +169,7 @@ function getTestProjectUserRoles(&$db,$tproject_id)
  * @param int $userID the user id
  * @return array assoc map with keys taken from the testproject_id column
  **/
- //SCHLUNDUS: should be moved inside tlUser
+ //SCHLUNDUS: should be moved inside tlUser, 50% refactored
 function getUserTestProjectRoles(&$db,$userID)
 {
 	$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$userID}";
@@ -189,7 +187,7 @@ function getUserTestProjectRoles(&$db,$userID)
  * @return array documentation assoc array with keys take from the testplan_id
  * 				column
  **/
-//SCHLUNDUS: should be moved inside tlUser
+//SCHLUNDUS: should be moved inside tlUser,50% refactored
 function getUserTestPlanRoles(&$db,$userID)
 {
 	$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$userID}";
@@ -326,28 +324,6 @@ function getRoles(&$db)
 	return $roles;
 }
 
-/**
- * returns all roles and their descriptions
- *
- * @param object $db [ref] the db-object
- * @return array returns assoc-array in the form of 
- * 				 roles[role_id] => role_description
- **/
- //SCHLUNDUS: 50% refactored
-function getAllRoles(&$db,$add_inherited=1)
-{
-  
-	$inherited_role_descr=lang_get('inherited_role');
-	
-	$roles  = $db->fetchColumnsIntoMap("SELECT id,description FROM roles",'id','description');
-
-	if($add_inherited)
-	{
-	  $roles[TL_ROLES_INHERITED] = $inherited_role_descr;
-	}
-	return $roles;
-}
-
 /** 
 * function takes a roleQuestion from a specified link and returns whether 
 * the user has rights to view it
@@ -359,26 +335,39 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	global $g_propRights_global;
 	global $g_propRights_product;
 	
-	
 	// we dont need to query the db for the rights every call
 	// so the rights are fetched only once per script 
 	static $s_allRoles = null;
+	static $s_currentUser = null;
 	static $s_userProductRoles = null;
 	static $s_userTestPlanRoles = null;
+	static $s_userGlobalRole = null;
 	
+	//load the current user
+	if (is_null($s_currentUser))
+	{
+		checkSessionValid($db);
+		$s_currentUser = $_SESSION['currentUser'];
+	}
 	//load the rights
 	if (is_null($s_allRoles))
 		$s_allRoles = getRoles($db);
+	
+	//SCHLUNDUS: will be removed later
 	if (is_null($s_userProductRoles))
 	{
 		$s_userProductRoles = getUserTestProjectRoles($db,$_SESSION['userID']);
 		$_SESSION['testprojectRoles'] = $s_userProductRoles;
 	}
+	//SCHLUNDUS: will be removed later
 	if (is_null($s_userTestPlanRoles))
 	{
 		$s_userTestPlanRoles = getUserTestPlanRoles($db,$_SESSION['userID']);
 		$_SESSION['testPlanRoles'] = $s_userTestPlanRoles;
 	}
+	if (!isset($s_allRoles[$_SESSION['roleID']]))
+		$_SESSION['roleID'] = config_get('role_replace_for_deleted_roles');
+	
 	$globalRoleID = $_SESSION['roleID'];
 	$globalRights = isset($s_allRoles[$globalRoleID]['rights']) ? $s_allRoles[$globalRoleID]['rights'] : '';
 	$globalRights = explode(",",$globalRights);
@@ -387,36 +376,34 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 		$testPlanID = $tplanID;
 	else
 		$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-	$userTestPlanRoles = $_SESSION['testPlanRoles'];
+	$userTestPlanRoles = $s_currentUser->tplanRoles;
 	
 	if (!is_null($tprojectID))
 		$productID = $tprojectID;
 	else
 		$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-		
-	$userProductRoles = $_SESSION['testprojectRoles'];
 	
 	$allRights = $globalRights;
-	/* if $productID == -1 we dont check rights at product level! */
-	if (isset($userProductRoles[$productID]))
-	{
-		$productRoleID = $userProductRoles[$productID]['role_id'];
-		$productRights = $s_allRoles[$productRoleID]['rights'];
-		$productRights = explode(",",$productRights);
 		
+	$userTestProjectRoles = $s_currentUser->tprojectRoles;
+	/* if $productID == -1 we dont check rights at product level! */
+	if (isset($userTestProjectRoles[$productID]))
+	{
+		$productRights = $userTestProjectRoles[$productID]->rights;
+		//SCHLUNDUS: hack, will be removed later
+		$productRights = explode(",",implode(",",$productRights));
 		//subtract global rights		
 		$productRights = array_diff($productRights,array_keys($g_propRights_global));
 
 		propagateRights($globalRights,$g_propRights_global,$productRights);
 		$allRights = $productRights;
 	}
-
 	/* if $tplanID == -1 we dont check rights at tp level! */
 	if (isset($userTestPlanRoles[$testPlanID]))
 	{
-		$testPlanRoleID = $userTestPlanRoles[$testPlanID]['role_id'];
-		$testPlanRights = $s_allRoles[$testPlanRoleID]['rights'];
-		$testPlanRights = explode(",",$testPlanRights);
+		$testPlanRights = $userTestPlanRoles[$testPlanID]->rights;
+		//SCHLUNDUS: hack, will be removed later
+		$testPlanRights = explode(",",implode(",",$testPlanRights));
 		
 		//subtract product rights		
 		$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));

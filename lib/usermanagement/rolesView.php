@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/28 18:55:05 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/31 12:21:55 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -39,7 +39,11 @@ switch ($args->doAction)
 		break;  
 }
 if($doDelete)
+{
     $userFeedback = deleteRole($db,$args->roleid);
+	//refresh the current user
+	checkSessionValid($db);
+}
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 if($doDelete)
 	updateSessionRoles($db,$args->roleid,$args->userID,$roles);
@@ -85,6 +89,7 @@ function init_args()
   returns: 
 
 */
+//SCHLUNDUS: will be removed later
 function updateSessionRoles(&$db,$roleID,$userID,$roles)
 {
 	//reload the roles of the current user

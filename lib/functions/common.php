@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.87 $ $Author: schlundus $
- * @modified $Date: 2007/12/21 22:57:17 $
+ * @version $Revision: 1.88 $ $Author: schlundus $
+ * @modified $Date: 2007/12/31 12:21:50 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -161,7 +161,7 @@ function setPaths()
 }
 
 /** Verify if user is log in. Redirect to login page if not. */
-function checkSessionValid()
+function checkSessionValid(&$db)
 {
 	if (!isset($_SESSION['userID']))
 	{
@@ -178,6 +178,12 @@ function checkSessionValid()
 			$fName = "../".$fName;
 		}
 		exit();
+	}
+	else
+	{
+		$user = new tlUser($_SESSION['userID']);
+		$user->readFromDB($db);
+		$_SESSION['currentUser'] = $user;
 	}
 }
 
@@ -223,7 +229,7 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 	set_dt_formats();
 	
 	if (!$bDontCheckSession)
-		checkSessionValid();
+		checkSessionValid($db);
 
 	checkUserRights($db);
 		

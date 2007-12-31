@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.35 $ $Author: schlundus $
- * @modified $Date: 2007/12/28 18:55:05 $
+ * @version $Revision: 1.36 $ $Author: schlundus $
+ * @modified $Date: 2007/12/31 12:21:55 $
  *
  * @author Martin Havlat
  * 
@@ -31,6 +31,8 @@ $smarty = new TLSmarty();
 $tproject_mgr = new testproject($db);
 
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+$currentUser = $_SESSION['currentUser'];
+$userID = $currentUser->dbID;
 
 // ----------------------------------------------------------------------
 /** redirect admin to create product if not found */
@@ -91,15 +93,14 @@ $num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,0,AC
 
 // get Test Plans available for the user 
 // 20070906 - interface changes
-$arrPlans = getAccessibleTestPlans($db,$testprojectID,$_SESSION['userID'],$filter_tp_by_product);
+$arrPlans = getAccessibleTestPlans($db,$testprojectID,$userID,$filter_tp_by_product);
 
 $testPlanRole = null;
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
-if ($testPlanID && isset($_SESSION['testPlanRoles'][$testPlanID]))
+if ($testPlanID && isset($currentUser->tplanRoles[$testPlanID]))
 {
 	$role_separator = config_get('role_separator');
-	$roleID = $_SESSION['testPlanRoles'][$testPlanID]['role_id'];
-	$role = tlRole::getByID($db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$role = $currentUser->tplanRoles[$testPlanID];
 	$testPlanRole = $role_separator->open . $role->name . $role_separator->close;
 }
 

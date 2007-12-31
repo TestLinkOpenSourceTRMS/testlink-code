@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2007/12/29 08:25:34 $ $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2007/12/31 12:21:54 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -39,17 +39,12 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 		$_SESSION['user'] = $user; 
 
 	$_SESSION['userID']	= $id;
-	$_SESSION['userdisplayname'] = $user;
 	$_SESSION['email'] = $email; 
 	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
 	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
 	$_SESSION['testprojectID'] = null;
 	$_SESSION['s_lastAttachmentList'] = null;
 
-	$user = tlUser::getById($db,$id);
-	if ($user)
-		$_SESSION['userdisplayname'] = $user->getDisplayName();
-	
 	if (!is_null($roleID))
 	{
 		$roleID = intval($roleID);

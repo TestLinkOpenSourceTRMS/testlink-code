@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/29 08:27:51 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/31 12:21:51 $ $Author: schlundus $
  *
  */
 
@@ -22,6 +22,8 @@ class tlUser extends tlDBObject
 	public $defaultTestprojectID;
 	public $globalRole;
 	public $globalRoleID;
+	public $tprojectRoles; 
+	public $tplanRoles;
 	public $login;
 	protected $password;
 	
@@ -47,6 +49,10 @@ class tlUser extends tlDBObject
 	//search options
 	const USER_O_SEARCH_BYLOGIN = 2;
 	
+	
+	//detail leveles
+	const TLOBJ_O_GET_DETAIL_ROLES = 1;
+	
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
@@ -60,6 +66,8 @@ class tlUser extends tlDBObject
 		$this->globalRoleID = TL_DEFAULT_ROLEID;
 		$this->locale =  TL_DEFAULT_LOCALE;
 		$this->bActive = 1;
+		$this->tprojectRoles = null;
+		$this->tplanRoles = null;
 	}
 	
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
@@ -76,7 +84,8 @@ class tlUser extends tlDBObject
 			$this->dbID = null;
 		if (!($options & self::USER_O_SEARCH_BYLOGIN))
 			$this->login = null;
-
+		$this->tprojectRoles = null;
+		$this->tplanRoles = null;
 	}
 	
 	static public function isPasswordMgtExternal()
@@ -91,7 +100,6 @@ class tlUser extends tlDBObject
 	function create()
 	{
 	}
-	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -121,6 +129,11 @@ class tlUser extends tlDBObject
 				$this->globalRole = new tlRole($this->globalRoleID);
 				$this->globalRole->readFromDB($db);
 			}
+			if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES)
+			{
+				$this->readTestProjectRolesFromDB(&$db);
+				$this->readTestPlanRolesFromDB(&$db);
+			}
 			
 			$this->locale = $info['locale'];
 			$this->password = $info['password'];
@@ -129,6 +142,39 @@ class tlUser extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+	protected function readTestProjectRolesFromDB(&$db)
+	{
+		$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$this->dbID}";
+		$allRoles = $db->fetchColumnsIntoMap($query,'testproject_id','role_id');
+		$this->tprojectRoles = null;
+		if (sizeof($allRoles))
+		{
+			foreach($allRoles as $tprojectID => $roleID)
+			{
+				$tpRole = tlRole::createObjectFromDB(&$db,$roleID,"tlRole",true);
+				if ($tpRole)
+					$this->tprojectRoles[$tprojectID] = $tpRole;
+			}
+		}
+		return tl::OK;
+	}
+	protected function readTestPlanRolesFromDB(&$db)
+	{
+		$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$this->dbID}";
+		$allRoles = $db->fetchColumnsIntoMap($query,'testplan_id','role_id');
+		$this->tplanRoles = null;
+		if (sizeof($allRoles))
+		{
+			foreach($allRoles as $tplanID => $roleID)
+			{
+				$tpRole = tlRole::createObjectFromDB(&$db,$roleID,"tlRole",true);
+				if ($tpRole)
+					$this->tplanRoles[$tplanID] = $tpRole;
+			}
+		}
+		return tl::OK;
+	}
+	
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);

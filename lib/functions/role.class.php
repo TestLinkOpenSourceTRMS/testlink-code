@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/31 16:29:19 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/31 17:15:47 $ $Author: franciscom $
  */
 class tlRole extends tlDBObject
 {
@@ -230,16 +230,20 @@ class tlRole extends tlDBObject
 		}
 		return $bSuccess ? tl::OK : tl::ERROR;
 	}
+	
 	protected function readRights(&$db)
 	{
 		$query = "SELECT right_id FROM role_rights WHERE role_id = {$this->dbID}";
 		$this->rights = tlDBObject::createObjectsFromDBbySQL($db,$query,'right_id','tlRight');
 	}	
+	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	
+	static public function getAll(&$db,$whereClause = null,$column = null,
+	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$query = " SELECT id FROM roles";
 		if (!is_null($whereClause))
@@ -256,6 +260,7 @@ class tlRole extends tlDBObject
 		return $roles;
 	}
 }
+
 class tlRight extends tlDBObject
 {
 	public $name;
@@ -264,6 +269,7 @@ class tlRight extends tlDBObject
 	{
 		parent::__construct($dbID);
 	}
+	
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->name = null;
@@ -275,6 +281,7 @@ class tlRight extends tlDBObject
 	{
 		return $this->name;
 	}
+	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -298,7 +305,9 @@ class tlRight extends tlDBObject
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	
+	static public function getAll(&$db,$whereClause = null,$column = null,
+	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$query = " SELECT id FROM rights";
 		if (!is_null($whereClause))
@@ -312,6 +321,7 @@ class tlRight extends tlDBObject
 	{
 		return self::handleNotImplementedMethod("writeToDB");
 	}
+	
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod("deleteFromDB");

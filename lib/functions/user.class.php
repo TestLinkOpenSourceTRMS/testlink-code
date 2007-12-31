@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/31 12:21:51 $ $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/31 17:15:47 $ $Author: franciscom $
  *
  */
 
@@ -131,8 +131,8 @@ class tlUser extends tlDBObject
 			}
 			if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES)
 			{
-				$this->readTestProjectRolesFromDB(&$db);
-				$this->readTestPlanRolesFromDB(&$db);
+				$this->readTestProjectRolesFromDB($db);
+				$this->readTestPlanRolesFromDB($db);
 			}
 			
 			$this->locale = $info['locale'];
@@ -142,6 +142,7 @@ class tlUser extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+	
 	protected function readTestProjectRolesFromDB(&$db)
 	{
 		$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$this->dbID}";
@@ -151,13 +152,14 @@ class tlUser extends tlDBObject
 		{
 			foreach($allRoles as $tprojectID => $roleID)
 			{
-				$tpRole = tlRole::createObjectFromDB(&$db,$roleID,"tlRole",true);
+				$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
 				if ($tpRole)
 					$this->tprojectRoles[$tprojectID] = $tpRole;
 			}
 		}
 		return tl::OK;
 	}
+	
 	protected function readTestPlanRolesFromDB(&$db)
 	{
 		$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$this->dbID}";
@@ -167,7 +169,7 @@ class tlUser extends tlDBObject
 		{
 			foreach($allRoles as $tplanID => $roleID)
 			{
-				$tpRole = tlRole::createObjectFromDB(&$db,$roleID,"tlRole",true);
+				$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
 				if ($tpRole)
 					$this->tplanRoles[$tplanID] = $tpRole;
 			}
@@ -188,8 +190,8 @@ class tlUser extends tlDBObject
 			       ", email='" . $db->prepare_string($this->emailAddress)   . "'" .
 				   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
 				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
-				   ", role_id = ". "'" . $db->prepare_string($this->globalRoleID) . "'" .
-				   ", active = ". "'" . $db->prepare_string($this->bActive) . "'" ;
+				   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
+				   ", active = ". $db->prepare_string($this->bActive);
 				$query .= " WHERE id=" . $this->dbID;
 				$result = $db->exec_query($query);
 			}

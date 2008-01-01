@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.4 $
-* @modified $Date: 2008/01/01 16:38:17 $
+* @version $Revision: 1.5 $
+* @modified $Date: 2008/01/01 22:20:44 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -28,7 +28,7 @@ $old = isset($_REQUEST['old']) ? $_REQUEST['old'] : null;
 $new = isset($_REQUEST['new1']) ? $_REQUEST['new1'] : null;
 $bEdit = isset($_REQUEST['editUser']) ? 1 : 0;
 $bChangePwd = isset($_REQUEST['changePasswd']) ? 1 : 0;
-$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0; 
+$userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0; 
 
 $user = new tlUser($userID);
 $user->readFromDB($db);

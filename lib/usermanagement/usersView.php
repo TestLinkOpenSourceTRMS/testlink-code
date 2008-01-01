@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/28 18:55:05 $ -  $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/01/01 22:20:44 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -42,7 +42,7 @@ switch($operation)
 			if ($sqlResult >= tl::OK)
 			{
 				//if the users deletes itself then logout
-				if ($user_id == $_SESSION['userID'])
+				if ($user_id == $_SESSION['currentUser']->dbID)
 				{
 					header("Location: ../../logout.php");
 					exit();

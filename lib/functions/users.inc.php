@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/01/01 22:20:43 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -16,7 +16,6 @@ require_once("common.php");
 require_once("user.class.php");
 if('LDAP' == config_get('login_method') )
 	require_once(dirname(__FILE__) . "/ldap_api.php");
-
 
 /**
  * set session data after modification or authorization
@@ -39,11 +38,6 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	$_SESSION['testprojectID'] = null;
 	$_SESSION['s_lastAttachmentList'] = null;
 
-	if (!is_null($roleID))
-	{
-		$_SESSION['roleID'] = intval($roleID); 
-		tLog('setUserSession: $user :: roleID '.$_SESSION['roleID']);
-	}
 	if (!is_null($locale))
 	{
 		$_SESSION['locale'] = $locale;
@@ -122,10 +116,6 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 	}
 	return $users_map;
 }
-
-
-
-
 
 /*
   function: resetPassword
@@ -239,15 +229,12 @@ function getAllUsersRoles(&$db,$order_by = null)
 */
 function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
 {
-    define('ACTIVE_USERS',1);
-    $users_roles=get_tplan_effective_role($db,$tplanID,$tprojectID);
-    $userFilter=array();
+    $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID);
+    $userFilter = array();
     foreach($users_roles as $keyUserID => $roleInfo)
     {
-      if( roleHasRight($db,$roleInfo['effective_role_id'],'testplan_execute') )
-      {
-        $userFilter[]=$keyUserID;
-      }  
+		if(roleHasRight($db,$roleInfo['effective_role_id'],'testplan_execute') )
+			$userFilter[]=$keyUserID;
     } 
    
     $testerList='';
@@ -255,11 +242,10 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
     {
       $testerList=implode("','",$userFilter);  
     }
-    $whereClause=" WHERE id IN ('{$testerList}') ";        
+    $whereClause=" WHERE id IN ('{$testerList}') and active = 1";        
 
 
-    $testers = getUsersForHtmlOptions($db,$whereClause,ADD_BLANK_OPTION,ACTIVE_USERS);
+    $testers = getUsersForHtmlOptions($db,$whereClause,ADD_BLANK_OPTION);
     return $testers;
-    
 }
 ?>

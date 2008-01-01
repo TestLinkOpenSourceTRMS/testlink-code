@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/01/01 22:20:44 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -74,7 +74,7 @@ function init_args()
 	
 	$args->roleid = isset($_REQUEST['roleid']) ? intval($_REQUEST['roleid']) : 0;
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
-    $args->userID = $_SESSION['userID'];
+    $args->userID = $_SESSION['currentUser']->dbID;
 
     return $args;  
 }

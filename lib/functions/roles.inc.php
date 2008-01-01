@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/01/01 22:20:43 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -37,7 +37,6 @@
  * rev : 20071228 - franciscom - added roleHasRight()
  *       20070901 - franciscom - BUGID 1016
  *       20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
- *       20070818 - franciscom - changes in getRoles()
  *       20070702 - franciscom - new get_effective_role()
  */
  
@@ -225,71 +224,7 @@ function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
-						
-/**
- * returns all roles from the db with the assigned rights. 
- *
- * @param object $db [ref] the db-object
- * @return array assoc-array of the following form
- * 				 roles[role_id] => array ('id' => role_id,
- * 										  'role' => role_description,
- * 										  'rights' => comma-separated list of rights
- *
- * rev:
- *      20070818 - franciscom - get description from db for TL_ROLES_NONE
- *                              instead of using a php constant
- *
- **/
-function getRoles(&$db)
-{
-	$roles = null;
-	$sql = "SELECT roles.id, roles.description, rights.description AS rights_description, notes
-	        FROM role_rights r, roles, rights
-	        WHERE role_id=roles.id and right_id=rights.id";
-	          
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-	  // ---------------------------------------------------
-	  // get description from db for TL_ROLES_NONE
-	  $sql = " SELECT id,description" .
-	         " FROM roles" .
-	         " WHERE id=" . TL_ROLES_NONE;
 
-    $mm=$db->fetchRowsIntoMap($sql,'id');	
-    $descr=$mm[TL_ROLES_NONE]['description'];
-    // ---------------------------------------------------
-    
-		$roles[TL_ROLES_NONE] = array('id' => TL_ROLES_NONE,
-									                'role' => $descr,
-									                'rights' => '',
-									  );
-		while($row = $db->fetch_array($result))
-		{
-			$roleID = $row['id'];
-			$roleDesc = $row['description'];
-			$rightDescription = $row['rights_description'];
-			//add the new role if not present
-			if (!isset($roles[$roleID]))
-				$roles[$roleID] = array('id' => $roleID,
-										'role' => $roleDesc,
-										'rights' => $rightDescription,
-										'notes' => $row['notes'],
-										);
-			else
-			{
-				//update the right list for existing roles
-				$roleString = $roles[$roleID]['rights'];
-				if (strlen($roleString))
-					$roleString .= ",";
-				$roleString .= $rightDescription;
-				$roles[$roleID]['rights'] = $roleString;
-			}
-		}
-	}
-	
-	return $roles;
-}
 
 /** 
 * function takes a roleQuestion from a specified link and returns whether 
@@ -306,7 +241,6 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	// so the rights are fetched only once per script 
 	static $s_allRoles = null;
 	static $s_currentUser = null;
-	static $s_userGlobalRole = null;
 	
 	//load the current user
 	if (is_null($s_currentUser))

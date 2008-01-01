@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.14 2007/12/27 18:50:23 schlundus Exp $
-* @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.15 2008/01/01 22:20:43 schlundus Exp $
+* @modified $Date: 2008/01/01 22:20:43 $ by $Author: schlundus $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, 
@@ -181,7 +181,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	const TLOBJ_O_SEARCH_BY_ID = 1;
 	
 	//standard detail levels, can be used to get only some specific details when reading an object
-	//to avoid unneccessary DB queries (if the info is actual not used and not needed)
+	//to avoid unneccessary DB queries (when the info is actual not used and not needed)
 	const TLOBJ_O_GET_DETAIL_MINIMUM = 0;
 	const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
 	
@@ -203,6 +203,17 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		$this->detailLevel = $level;
 	}
 	/* some factory functions to be used to create objects */
+	/*
+		This one can be used to create any tl-managed objects
+		
+		@param object [ref] $db the database connection
+		@param int $id the id of the object to be created (must exist in the database)
+		@param string $className the  class name of the object
+		@param int $options some additional options for creating the options (these are class specific)
+		@param int $detailLevel the detail level of the object
+		
+		@return the newly created object on success, or null else
+	*/
 	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if ($id)
@@ -214,6 +225,18 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		}
 		return null;
 	}
+	/*
+		This one can be used to create any tl-managed objects
+		
+		@param object [ref] $db the database connection
+		@param string $query the idsof the objects to be created are obtained by this query
+		@param string $column the  name of the column which delivers the ids
+		@param string $className the  class name of the object
+		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, if false they are returned in a normal array
+		@param int $detailLevel the detail level of the object
+		
+		@return the newly created objects on success, or null else
+	*/
 	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column);

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.5 $
-* @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
+* @version $Revision: 1.6 $
+* @modified $Date: 2008/01/01 22:20:44 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -18,11 +18,10 @@ require_once('../../config.inc.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+testlinkInitPage($db);
 
 $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-testlinkInitPage($db);
 
 $args = init_args($_GET,$_POST);
 $user_id = $args->user_id;

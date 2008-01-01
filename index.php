@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/02/10 12:15:41 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -44,7 +44,7 @@ if (!is_null($login))
 }
 
 //verify the session during a work
-if (!isset($_SESSION['user']))
+if (!isset($_SESSION['currentUser']))
 {
 	redirect(TL_BASE_HREF ."login.php?note=expired");
 	exit;

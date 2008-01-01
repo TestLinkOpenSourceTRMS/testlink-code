@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/12/31 13:15:26 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -45,18 +45,18 @@ function doAuthorize(&$db,$login,$pwd)
 			{
 				// 20051007 MHT Solved  0000024 Session confusion 
 				// Disallow two sessions within one browser
-				if (isset($_SESSION['user']) && strlen($_SESSION['user']))
+				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
 				{
 					$sProblem = 'sessionExists';
 					tLog("Session exists. No second login is allowed", 'INFO');
 				}
 				else
 				{ 
-					$_SESSION['currentUser'] = $user;
 					$_SESSION['filter_tp_by_product'] = 1;
 					
 					//Setting user's session information
 					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
+					$_SESSION['currentUser'] = $user;
 					$bSuccess = true;
 				}
 			}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: myTPInfo.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/25 07:02:25 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -87,7 +87,7 @@ function getMetrics(&$db)
 	
 	$sql = "SELECT projID,tcid,status FROM results,testplans,component,category,testcase where ".
          "testplans.id = component.projid AND component.id = category.compid AND category.id = testcase.catid and testcase.id = ".
-         "results.tcid AND owner = '".$db->prepare_string($_SESSION['user'])."' AND projID IN ({$testplan_list}) ORDER BY projID,tcID,build_id";
+         "results.tcid AND owner = '".$db->prepare_string($_SESSION['currentUser']->login)."' AND projID IN ({$testplan_list}) ORDER BY projID,tcID,build_id";
 
 	$myTcInfo = null;
 

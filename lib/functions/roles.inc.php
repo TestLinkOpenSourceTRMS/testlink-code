@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/12/31 13:15:26 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -139,6 +139,7 @@ $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_righ
  * @param int $testPlanID the testplan id
  * @return array assoc map with keys taken from the user_id column
  **/
+  //SCHLUNDUS: should be moved inside testplan class
 function getTestPlanUserRoles(&$db,$testPlanID)
 {
 	$query = "SELECT user_id,role_id FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
@@ -200,7 +201,7 @@ function deleteTestPlanUserRoles(&$db,$testPlanID)
  * @param int $roleID the role id
  * @return int returns 1 on success, 0 else
  **/
-//SCHLUNDUS: should be moved inside tlUser class 
+//SCHLUNDUS: should be moved inside test_plan class 
 function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
 {
 	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
@@ -216,7 +217,7 @@ function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
  * @param int $roleID the role id
  * @return int returns 1 on success, 0 else
  **/
-//SCHLUNDUS: should be moved inside tlUser class 
+//SCHLUNDUS: should be moved inside testproject class 
 function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
 {
 	$query = " INSERT INTO user_testproject_roles " .
@@ -315,14 +316,12 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	}
 	//load the rights
 	if (is_null($s_allRoles))
-		$s_allRoles = getRoles($db);
-	
-	if (!isset($s_allRoles[$_SESSION['roleID']]))
-		$_SESSION['roleID'] = config_get('role_replace_for_deleted_roles');
-	
-	$globalRoleID = $_SESSION['roleID'];
-	$globalRights = isset($s_allRoles[$globalRoleID]['rights']) ? $s_allRoles[$globalRoleID]['rights'] : '';
-	$globalRights = explode(",",$globalRights);
+		$s_allRoles = tlRole::getAll($db);
+		
+	$globalRoleID = $s_currentUser->globalRoleID;
+	$globalRights = is_null($s_allRoles[$globalRoleID]->rights) ? '' : $s_allRoles[$globalRoleID]->rights;
+	//SCHLUNDUS: hack, will be removed later
+	$globalRights = explode(",",implode(",",$globalRights));
 	
 	if (!is_null($tplanID))
 		$testPlanID = $tplanID;

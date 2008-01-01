@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2007/12/31 13:15:26 $ $Author: schlundus $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -34,11 +34,8 @@ if('LDAP' == config_get('login_method') )
 function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null)
 {
 	tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
-	if (!is_null($user))
-		$_SESSION['user'] = $user; 
-
+	
 	$_SESSION['userID']	= $id;
-	$_SESSION['email'] = $email; 
 	$_SESSION['testprojectID'] = null;
 	$_SESSION['s_lastAttachmentList'] = null;
 
@@ -164,7 +161,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 			}
 		}
 		else
-			$result = tlUser::USER_E_EMAILLENGTH;
+			$result = tlUser::E_EMAILLENGTH;
 	}
 	if (!strlen($errorMsg))
 		$errorMsg = getUserErrorMessage($result);
@@ -179,35 +176,35 @@ function getUserErrorMessage($code)
 	{
 		case tl::OK:
 			break;
-		case tlUser::USER_E_LOGINLENGTH:
+		case tlUser::E_LOGINLENGTH:
 			$msg = lang_get('error_user_login_length_error');
 			break;
-		case tlUser::USER_E_EMAILLENGTH:
+		case tlUser::E_EMAILLENGTH:
 			$msg = lang_get('empty_email_address');
 			break;
-		case tlUser::USER_E_NOTALLOWED:
+		case tlUser::E_NOTALLOWED:
 			$msg = lang_get('user_login_valid_regex');
 			break;
-		case tlUser::USER_E_FIRSTNAMELENGTH:
+		case tlUser::E_FIRSTNAMELENGTH:
 			$msg = lang_get('empty_first_name');
 			break;
-		case tlUser::USER_E_LOGINALREADYEXISTS:
+		case tlUser::E_LOGINALREADYEXISTS:
 			$msg = lang_get('user_name_exists');
 			break;
-		case tlUser::USER_E_LASTNAMELENGTH:
+		case tlUser::E_LASTNAMELENGTH:
 			$msg = lang_get('empty_last_name');
 			break;
-		case tlUser::USER_E_PWDEMPTY:
+		case tlUser::E_PWDEMPTY:
 			$msg = lang_get('warning_empty_pwd');
 			break;
-		case tlUser::USER_E_PWDDONTMATCH:
+		case tlUser::E_PWDDONTMATCH:
 			$msg = lang_get('passwd_dont_match');
 			break;
 		case tlUser::USER_S_PWDMGTEXTERNAL	:
 			$msg = lang_get('password_mgmt_is_external');
 			break;
 		case ERROR:
-		case tlUser::USER_E_DBERROR:
+		case tlUser::E_DBERROR:
 		default:
 			$msg = lang_get('error_user_not_updated');
 	}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2007/12/29 18:33:10 $  by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/01/01 16:38:17 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * 20071201 - franciscom - new web editor code
@@ -87,7 +87,7 @@ if($args->do_activate_this)
 	$action_result = "activate_this_version";
 }
 
-$login_name = $_SESSION['user'];
+$login_name = $_SESSION['currentUser']->login;
 $version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : 0; 
 
 $updatedKeywords = null;

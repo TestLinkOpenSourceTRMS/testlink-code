@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/05/10 19:55:43 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/01/01 16:38:17 $
  *
  * @author Martin Havlat
  *
@@ -75,7 +75,7 @@ function tLog ($message, $level = 'DEBUG')
         $fd = fopen(tlGetLogFileName(),'a+');
 		if ($fd)
 		{
-			$userName = isset($_SESSION['user']) ? $_SESSION['user'] : "<unknown>";
+			$userName = isset($_SESSION['currentUser']->login) ? $_SESSION['currentUser']->login : "<unknown>";
 	    	fputs($fd,'['.date("y/M/j H:i:s"). ']['. $level . '][' . $_SERVER['SCRIPT_NAME'] . ']['. $userName .'][' . $sID . "]\n\t". $message. "\n");
 	    	fclose($fd);
 		}

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.3 $
-* @modified $Date: 2007/12/27 18:50:23 $ $Author: schlundus $
+* @version $Revision: 1.4 $
+* @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -33,8 +33,8 @@ $featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$userID = $_SESSION['userID'];
-$role_id = $_SESSION['roleID'];
+$userID = $_SESSION['currentUser']->dbID;
+
 
 $user_feedback = '';
 $no_features = '';

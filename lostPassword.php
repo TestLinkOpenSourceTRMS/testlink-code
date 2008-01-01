@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/12/22 12:26:44 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -41,7 +41,7 @@ if (strlen($login))
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
 		}
-		else if ($result == tlUser::USER_E_EMAILLENGTH)
+		else if ($result == tlUser::E_EMAILLENGTH)
 			$note = lang_get('mail_empty_address');
 		else if (!strlen($note))
 			$note = getUserErrorMessage($result);

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/12/31 13:15:26 $ $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -33,9 +33,7 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 	$show_tp_without_prodid = config_get('show_tp_without_prodid');
 	$currentUser = $_SESSION['currentUser'];
 	
-	$my_user_id=$user_id;
-	if(!$user_id)
-		$my_user_id = $currentUser->dbID;
+	$my_user_id = $user_id ? $user_id : $currentUser->dbID;
 	
 	$query = "SELECT nodes_hierarchy.id, nodes_hierarchy.name, testplans.active 
 	         FROM nodes_hierarchy 
@@ -46,9 +44,8 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 	if ($filter_by_product)
 		$query .= "(testproject_id = {$testproject_id} OR testproject_id = 0) AND ";
 	
-	$bGlobalNo = ($_SESSION['roleID'] == TL_ROLES_NONE);
+	$bGlobalNo = ($currentUser->globalRoleID == TL_ROLES_NONE);
 	$bProductNo = 0;
-	// BUGID: 951 - wrong key to access session info
 	$analyse_global_role = 1;
 	if (isset($currentUser->tprojectRoles[$testproject_id]->dbID))
 	{

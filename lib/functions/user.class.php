@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/31 17:15:47 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
  *
  */
 
@@ -34,17 +34,17 @@ class tlUser extends tlDBObject
 	protected $maxLoginLength;
 	
 	//error codes
-	const USER_E_LOGINLENGTH = -1;
-	const USER_E_EMAILLENGTH = -2;
-	const USER_E_NOTALLOWED = -4;
-	const USER_E_DBERROR = -8;
-	const USER_E_FIRSTNAMELENGTH = -16;
-	const USER_E_LASTNAMELENGTH = -32;
-	const USER_E_PWDEMPTY = -64;
-	const USER_E_PWDDONTMATCH = -128;
-	const USER_E_LOGINALREADYEXISTS = -256;
+	const E_LOGINLENGTH = -1;
+	const E_EMAILLENGTH = -2;
+	const E_NOTALLOWED = -4;
+	const E_DBERROR = -8;
+	const E_FIRSTNAMELENGTH = -16;
+	const E_LASTNAMELENGTH = -32;
+	const E_PWDEMPTY = -64;
+	const E_PWDDONTMATCH = -128;
+	const E_LOGINALREADYEXISTS = -256;
 	
-	const USER_S_PWDMGTEXTERNAL = 2;
+	const S_PWDMGTEXTERNAL = 2;
 	
 	//search options
 	const USER_O_SEARCH_BYLOGIN = 2;
@@ -131,8 +131,8 @@ class tlUser extends tlDBObject
 			}
 			if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_ROLES)
 			{
-				$this->readTestProjectRolesFromDB($db);
-				$this->readTestPlanRolesFromDB($db);
+				$this->readTestProjectRoles($db);
+				$this->readTestPlanRoles($db);
 			}
 			
 			$this->locale = $info['locale'];
@@ -143,7 +143,7 @@ class tlUser extends tlDBObject
 		return $info ? tl::OK : tl::ERROR;
 	}
 	
-	protected function readTestProjectRolesFromDB(&$db)
+	protected function readTestProjectRoles(&$db)
 	{
 		$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$this->dbID}";
 		$allRoles = $db->fetchColumnsIntoMap($query,'testproject_id','role_id');
@@ -160,7 +160,7 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
-	protected function readTestPlanRolesFromDB(&$db)
+	protected function readTestPlanRoles(&$db)
 	{
 		$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$this->dbID}";
 		$allRoles = $db->fetchColumnsIntoMap($query,'testplan_id','role_id');
@@ -207,7 +207,7 @@ class tlUser extends tlDBObject
 				if($result)
 					$this->dbID = $db->insert_id('users');
 			}
-			$result = $result ? tl::OK : self::USER_E_DBERROR;
+			$result = $result ? tl::OK : self::E_DBERROR;
 		}
 		return $result;
 	}	
@@ -262,7 +262,7 @@ class tlUser extends tlDBObject
 			return self::USER_S_PWDMGTEXTERNAL;
 			
 		if (!strlen($pwd))
-			return self::USER_E_PWDEMPTY;
+			return self::E_PWDEMPTY;
 		$this->password = $this->encryptPassword($pwd);
 		return tl::OK;
 	}
@@ -279,7 +279,7 @@ class tlUser extends tlDBObject
 
 		if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
 			return tl::OK;
-		return self::USER_E_PWDDONTMATCH;		
+		return self::E_PWDDONTMATCH;		
 	}
 	
 	public function checkDetails(&$db)
@@ -295,7 +295,7 @@ class tlUser extends tlDBObject
 		if ($result >= tl::OK)
 			$result = $this->checkLogin($this->login);
 		if ($result >= tl::OK && !$this->dbID)
-			$result = self::doesUserExist($db,$this->login) ? self::USER_E_LOGINALREADYEXISTS : tl::OK;
+			$result = self::doesUserExist($db,$this->login) ? self::E_LOGINALREADYEXISTS : tl::OK;
 		if ($result >= tl::OK)
 			$result = self::checkFirstName($this->firstName);
 		if ($result >= tl::OK)
@@ -311,26 +311,26 @@ class tlUser extends tlDBObject
 		//simple check for empty login, or login consisting only of whitespaces
 		//The DB field is only 30 characters
 		if (!strlen($login) || (strlen($login) > $this->maxLoginLength))
-			$result = self::USER_E_LOGINLENGTH;
+			$result = self::E_LOGINLENGTH;
 		else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
-			$result = self::USER_E_NOTALLOWED;
+			$result = self::E_NOTALLOWED;
 
 		return $result;
 	}
 	
 	static public function checkEmailAdress($email)
 	{
-		return is_blank($email) ? self::USER_E_EMAILLENGTH : tl::OK;
+		return is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
 	}
 	
 	static public function checkFirstName($first)
 	{
-		return is_blank($first) ? self::USER_E_FIRSTNAMELENGTH : tl::OK;
+		return is_blank($first) ? self::E_FIRSTNAMELENGTH : tl::OK;
 	}
 	
 	static public function checkLastName($last)
 	{
-		return is_blank($last) ? self::USER_E_LASTNAMELENGTH : tl::OK;
+		return is_blank($last) ? self::E_LASTNAMELENGTH : tl::OK;
 	}
 	
 	static public function doesUserExist(&$db,$login)

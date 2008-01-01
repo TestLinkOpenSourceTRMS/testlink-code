@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.28 2007/12/03 20:42:27 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.29 2008/01/01 16:38:17 schlundus Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
@@ -74,6 +74,6 @@ switch($feature)
 
 	default:
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
-		trigger_error($_SESSION['user'].'> $_GET["edit"] has invalid value.', E_USER_ERROR);
+		trigger_error($_SESSION['currentUser']->login.'> $_GET["edit"] has invalid value.', E_USER_ERROR);
 }
 ?>

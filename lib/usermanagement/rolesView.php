@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/12/31 13:15:27 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
  *
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
@@ -45,8 +45,6 @@ if($doDelete)
 	checkSessionValid($db);
 }
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-if($doDelete)
-	updateSessionRoles($db,$args->roleid,$args->userID,$roles);
 
 $smarty = new TLSmarty();
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
@@ -79,23 +77,6 @@ function init_args()
     $args->userID = $_SESSION['userID'];
 
     return $args;  
-}
-
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
-//SCHLUNDUS: will be removed later
-function updateSessionRoles(&$db,$roleID,$userID,$roles)
-{
-	if ($_SESSION['roleID'] == $roleID)
-	{
-		$_SESSION['roleID'] = TL_ROLES_NO_RIGHTS;
-	}
 }
 
 /*

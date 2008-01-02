@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2007/12/06 14:54:38 $ $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/01/02 21:14:00 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -890,7 +890,32 @@ function copy_priorities($id,$new_tplan_id)
     }
   }
 }
+/**
+ * Inserts a testplan related role for a given user
+ *
+ * @param int $userID the id of the user
+ * @param int $testPlanID the testplan id 
+ * @param int $roleID the role id
+ * @return returns tl::OK on success, tl::ERROR else
+ **/
 
+function addUserRole($userID,$testPlanID,$roleID)
+{
+	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
+	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+}
+
+/**
+ * Deletes all testplan related role assignments for a given testplan
+ *
+ * @param int $testPlanID the testplan id
+ * @return tl::OK  on success, tl::FALSE else
+ **/
+function deleteUserRoles($testPlanID)
+{
+	$query = "DELETE FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
+	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+}
 
 /*
   function: 
@@ -908,7 +933,7 @@ function delete($id)
   $the_sql=array();
   $main_sql=array();
   
-  $the_sql[]="DELETE FROM user_testplan_roles WHERE testplan_id={$id}";
+  $this->deleteUserRoles($id);
   $the_sql[]="DELETE FROM milestones WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM testplan_tcversions WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM builds WHERE testplan_id={$id}";

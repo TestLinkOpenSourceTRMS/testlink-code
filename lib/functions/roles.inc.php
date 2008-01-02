@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/01/02 19:34:05 $ by $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/01/02 21:14:00 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -163,142 +163,16 @@ function getTestProjectUserRoles(&$db,$tproject_id)
 	return $roles;
 }
 
-/**
- * Deletes all testproject related role assignments for a given testproject
- *
- * @param object $db [ref] the db-object
- * @param int $tproject_id
- * @return int 1 on success, false else
- **/
-//SCHLUNDUS: should be moved inside test_project class
-function deleteTestProjectUserRoles(&$db,$tproject_id)
-{
-	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$tproject_id}";
-	return ($db->exec_query($query) ? 1 : 0);
-}
-
-/**
- * Deletes all testplan related role assignments for a given testplan
- *
- * @param object $db [ref] the db-object
- * @param int $testPlanID the testplan id
- * @return int 1 on success, false else
- **/
-//SCHLUNDUS: should be moved inside test_plan class 
-function deleteTestPlanUserRoles(&$db,$testPlanID)
-{
-	$query = "DELETE FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
-	return ($db->exec_query($query) ? 1 : 0);
-}
-
-/**
- * Inserts a testplan related role for a given user
- *
- * @param object $db [ref] the db-object
- * @param int $userID the id of the user
- * @param int $testPlanID the testplan id 
- * @param int $roleID the role id
- * @return int returns 1 on success, 0 else
- **/
-//SCHLUNDUS: should be moved inside test_plan class 
-function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
-{
-	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
-	return ($db->exec_query($query) ? 1 : 0);
-}
-
-/**
- * Inserts a testproject related role for a given user
- *
- * @param object $db [ref] the db-object
- * @param int $userID the id of the user
- * @param int $tproject_id 
- * @param int $roleID the role id
- * @return int returns 1 on success, 0 else
- **/
-//SCHLUNDUS: should be moved inside testproject class 
-function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
-{
-	$query = " INSERT INTO user_testproject_roles " .
-	         " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
-	return ($db->exec_query($query) ? 1 : 0);
-}
-
-
 
 /** 
 * function takes a roleQuestion from a specified link and returns whether 
 * the user has rights to view it
-* 20051231 - scs - added reloading the rights if the users role has changed
-*
 */
-//SCHLUNDUS: should be moved inside tlUser, 50% done
 function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 {
-	global $g_propRights_global;
-	global $g_propRights_product;
-	
-	// we dont need to query the db for the rights every call
-	// so the rights are fetched only once per script 
-	static $s_allRoles = null;
-	static $s_currentUser = null;
-	
-	//load the current user
-	if (is_null($s_currentUser))
-	{
-		checkSessionValid($db);
-		$s_currentUser = $_SESSION['currentUser'];
-	}
-	//load the rights
-	if (is_null($s_allRoles))
-		$s_allRoles = tlRole::getAll($db);
-		
-	$globalRoleID = $s_currentUser->globalRoleID;
-	$globalRights = is_null($s_allRoles[$globalRoleID]->rights) ? '' : $s_allRoles[$globalRoleID]->rights;
-	//SCHLUNDUS: hack, will be removed later
-	$globalRights = explode(",",implode(",",$globalRights));
-	
-	if (!is_null($tplanID))
-		$testPlanID = $tplanID;
-	else
-		$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-	$userTestPlanRoles = $s_currentUser->tplanRoles;
-	
-	if (!is_null($tprojectID))
-		$productID = $tprojectID;
-	else
-		$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	
-	$allRights = $globalRights;
-		
-	$userTestProjectRoles = $s_currentUser->tprojectRoles;
-	/* if $productID == -1 we dont check rights at product level! */
-	if (isset($userTestProjectRoles[$productID]))
-	{
-		$productRights = $userTestProjectRoles[$productID]->rights;
-		//SCHLUNDUS: hack, will be removed later
-		$productRights = explode(",",implode(",",$productRights));
-		//subtract global rights		
-		$productRights = array_diff($productRights,array_keys($g_propRights_global));
-
-		propagateRights($globalRights,$g_propRights_global,$productRights);
-		$allRights = $productRights;
-	}
-	/* if $tplanID == -1 we dont check rights at tp level! */
-	if (isset($userTestPlanRoles[$testPlanID]))
-	{
-		$testPlanRights = $userTestPlanRoles[$testPlanID]->rights;
-		//SCHLUNDUS: hack, will be removed later
-		$testPlanRights = explode(",",implode(",",$testPlanRights));
-		
-		//subtract product rights		
-		$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
-		
-		propagateRights($allRights,$g_propRights_product,$testPlanRights);
-		$allRights = $testPlanRights;
-	}
-	return checkForRights($allRights,$roleQuestion);
+	return $_SESSION['currentUser']->hasRight($db,$roleQuestion,$tprojectID,$tplanID);
 }
+
 
 /*
   function: 

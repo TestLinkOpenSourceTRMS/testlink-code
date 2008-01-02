@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/01/02 21:14:00 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -25,10 +25,10 @@ require_once("users.inc.php");
 require_once("roles.inc.php");
 
 /** authorization function verifies login & password and set user session data */
-function doAuthorize(&$db,$login,$pwd)
+function doAuthorize(&$db,$login,$pwd,&$msg)
 {
-    $bSuccess = false;
-	$sProblem = 'wrong'; // default problem attribute value
+    $result = tl::ERROR;
+	$msg = 'wrong'; // default problem attribute value
 	
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
 
@@ -47,7 +47,7 @@ function doAuthorize(&$db,$login,$pwd)
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
 				{
-					$sProblem = 'sessionExists';
+					$msg = 'sessionExists';
 					tLog("Session exists. No second login is allowed", 'INFO');
 				}
 				else
@@ -55,26 +55,14 @@ function doAuthorize(&$db,$login,$pwd)
 					$_SESSION['filter_tp_by_product'] = 1;
 					
 					//Setting user's session information
-					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
 					$_SESSION['currentUser'] = $user;
-					$bSuccess = true;
+					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
+					$result = tl::OK;
 				}
 			}
 		}
 	}
-	if ($bSuccess)
-	{
-	    tLog("Login ok. (Timing: " . tlTimingCurrent() . ')', 'INFO');
-	    //forwarding user to the mainpage
-	    redirect($_SESSION['basehref'] ."index.php");
-	}
-	else
-	{
-		tLog("Account ".$login." doesn't exist or used wrong password.",'INFO');
-		// not authorized
-		tLog("Login '$login' fails. (Timing: " . tlTimingCurrent() . ')', 'INFO');
-		redirect($_SESSION['basehref'] . "login.php?note=" . $sProblem);
-	}
+	return $result;
 }
 
 

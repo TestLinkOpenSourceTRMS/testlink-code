@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/01/02 19:34:05 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/01/02 21:14:00 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -32,8 +32,17 @@ if (!is_null($login))
 	
 	if ($op['status'])
 	{
-		doAuthorize($db,$login,$pwd);
-	}	
+		if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)
+		{
+			tLog("Account ".$login." doesn't exist or used wrong password.",'INFO');
+			// not authorized
+			tLog("Login '$login' fails. (Timing: " . tlTimingCurrent() . ')', 'INFO');
+			redirect($_SESSION['basehref'] . "login.php?note=" . $msg);
+			exit();
+		}
+		else
+			tLog("Login ok. (Timing: " . tlTimingCurrent() . ')', 'INFO');
+	}
 	else
 	{
 		$smarty = new TLSmarty();

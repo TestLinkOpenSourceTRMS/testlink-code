@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.4 $
-* @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
+* @version $Revision: 1.5 $
+* @modified $Date: 2008/01/02 21:14:01 $ $Author: schlundus $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -29,60 +29,53 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 
 $feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
 $featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
+$map_userid_roleid = isset($_REQUEST['userRole']) ? $_REQUEST['userRole'] : null;
+$bUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
 
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $userID = $_SESSION['currentUser']->dbID;
 
-
 $user_feedback = '';
 $no_features = '';
 $roles_updated = '';
-
-$testPlans = null;
 $bTestproject = false;
 $bTestPlan = false;
-$pfn = null;
-$bUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
+$mgr = null;
 
 if ($feature == "testproject")
 {
 	$roles_updated = lang_get("test_project_user_roles_updated");
 	$no_features = lang_get("no_test_projects");
 	$bTestproject = true;
-	$pfn = array( 	'delete' => 'deleteTestProjectUserRoles',
-					'add'    => 'insertUserTestProjectRole'); 
+	$mgr = new testproject($db);
 }
 else if ($feature == "testplan")
 {
 	$roles_updated = lang_get("test_plan_user_roles_updated");
 	$no_features = lang_get("no_test_plans");
 	$bTestPlan = true;
-	$pfn = array( 	'delete' => 'deleteTestPlanUserRoles',
-					'add'    => 'insertUserTestPlanRole'); 
+	$mgr = new testplan($db);
 }
 
-if ($featureID && $bUpdate)
+if ($featureID && $bUpdate && $mgr)
 {
-	$map_userid_roleid = $_REQUEST['userRole'];
-	$pfn['delete']($db,$featureID);			
+	$mgr->deleteUserRoles($featureID);			
 	foreach($map_userid_roleid as $user_id => $role_id)
 	{
 		if ($role_id)
-			$pfn['add']($db,$user_id,$featureID,$role_id);
+			$mgr->addUserRole($user_id,$featureID,$role_id);
 	}
-	$user_feedback=$roles_updated; 
+	$user_feedback = $roles_updated; 
 }
 $userFeatureRoles = null;
 $features = null;
 if ($bTestproject)
 {
-	$tproject_mgr = new testproject($db);
-
 	$gui_cfg = config_get('gui');
 	$order_by = $gui_cfg->tprojects_combo_order_by;
-	$features = $tproject_mgr->get_accessible_for_user($userID,'array_of_map',$order_by);
+	$features = $mgr->get_accessible_for_user($userID,'array_of_map',$order_by);
 
 	// If have no a test project ID, try to figure out which test project to show
 	// Try with session info, if failed go to first test project available. 
@@ -101,7 +94,7 @@ else if($bTestPlan)
 	$features = array();
 	if (has_rights($db,"mgt_users"))
 		$features = $activeFeatures;
-	else if (sizeof($activeFeatures))
+	else
 	{
 		for($i = 0;$i < sizeof($activeFeatures);$i++)
 		{
@@ -130,7 +123,6 @@ else if($bTestPlan)
 	
 	$userFeatureRoles = get_tplan_effective_role($db,$featureID,$testprojectID);
 }
-$roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 if(is_null($features))
 	$user_feedback = $no_features;
 $can_manage_users = has_rights($db,"mgt_users");
@@ -144,7 +136,7 @@ $smarty->assign('tp_user_role_assignment',
 $smarty->assign('tproject_user_role_assignment', 
                 $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('tproject_name',$testprojectName);
-$smarty->assign('optRights', $roles);
+$smarty->assign('optRights', tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM));
 $smarty->assign('userData',tlUser::getAll($db));
 $smarty->assign('userFeatureRoles',$userFeatureRoles);
 $smarty->assign('featureID',$featureID);

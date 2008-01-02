@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/02 19:34:05 $ $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/02 21:14:00 $ $Author: schlundus $
  *
  */
 
@@ -365,7 +365,7 @@ class tlUser extends tlDBObject
 			propagateRights($allRights,$g_propRights_product,$testPlanRights);
 			$allRights = $testPlanRights;
 		}
-		return checkForRights($allRights,$roleQuestion) == "yes" ? true : false;
+		return checkForRights($allRights,$roleQuestion);
 	}
 	
 	

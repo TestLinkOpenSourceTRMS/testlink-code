@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/12/28 18:55:05 $  $Author: schlundus $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2008/01/02 21:14:00 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -994,8 +994,34 @@ function count_testcases($id)
   }
 /* END REQUIREMENT RELATED */
 // ----------------------------------------------------------------------------------------
+/**
+ * Deletes all testproject related role assignments for a given testproject
+ *
+ * @param int $tproject_id
+ * @returns tl::OK on success, tl::ERROR else
+ **/
+function deleteUserRoles($tproject_id)
+{
+	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$tproject_id}";
+	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+}
 
 
+/**
+ * Inserts a testproject related role for a given user
+ *
+ * @param int $userID the id of the user
+ * @param int $tproject_id 
+ * @param int $roleID the role id
+ * @returns tl::OK on success, tl::ERROR else
+ **/
+//SCHLUNDUS: should be moved inside testproject class 
+function addUserRole($userID,$tproject_id,$roleID)
+{
+	$query = " INSERT INTO user_testproject_roles " .
+	         " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
+	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+}
 /*
   function: delete
             delete test project from system, deleting all dependent data:
@@ -1049,13 +1075,13 @@ function delete($id,&$error)
 			 'info_resetting_default_project_fails',
 	);
 	
-	$a_sql[] = array(
-			"DELETE FROM user_testproject_roles WHERE testproject_id = {$id}",
-			 'info_deleting_project_roles_fails',
-	);
+	if ($this->deleteUserRoles($id) < tl::OK)
+		$error .= lang_get('info_deleting_project_roles_fails');
+	
 	$tpIDs = $this->get_all_testplans($id);
 	if ($tpIDs)
 	{
+		//SCHLUNDUS: can be refactored by calling testplan->delete and let the testplan delete itself
 		$tpIDs = implode(",",array_keys($tpIDs));
 		$a_sql[] = array(
 			"DELETE FROM user_testplan_roles WHERE testplan_id IN  ({$tpIDs})",

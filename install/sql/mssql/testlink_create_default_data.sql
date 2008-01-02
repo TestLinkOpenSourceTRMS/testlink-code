@@ -1,10 +1,11 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.12 2007/10/12 08:34:22 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.13 2008/01/02 18:53:13 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
 --
+--  20080102 - franciscom - added note on db_version
 --  20070724 - franciscom - BUGID 950 
 --             removed right with id=19
 --             renamed right with id=5 
@@ -13,7 +14,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO db_version (version,upgrade_ts) VALUES ('DB 1.1',GETDATE());
+INSERT INTO db_version (version,notes,upgrade_ts) VALUES ('DB 1.2','first version with API feature',GETDATE());
 
 --  admin account 
 --  SECURITY: change password after first login

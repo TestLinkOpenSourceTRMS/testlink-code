@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.17 2007/10/10 06:36:33 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.18 2008/01/02 18:53:28 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
@@ -131,4 +131,4 @@ INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
 INSERT INTO assignment_status (id,description) VALUES(5,'todo');
 
 # Database version
-INSERT INTO db_version VALUES('DB 1.1', CURRENT_TIMESTAMP());
+INSERT INTO db_version (version,notes,upgrade_ts) VALUES('DB 1.2', 'first version with API feature',CURRENT_TIMESTAMP());

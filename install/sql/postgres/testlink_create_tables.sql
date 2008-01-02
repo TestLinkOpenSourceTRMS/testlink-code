@@ -1,12 +1,15 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.14 2007/12/03 08:28:31 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.15 2008/01/02 18:53:44 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20080102 - franciscom - added changes for API feature (DB 1.2)
+--                              added notes fields on db_version
+--
 --      20071202 - franciscom - added tcversions.execution_type
 --      20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
 --      20070519 - franciscom - milestones table date -> target_date, because
@@ -28,6 +31,18 @@
 --                              required_on_design,required_on_execution
 --      20060515 - franciscom - creation
 --
+
+--
+--
+--
+CREATE TABLE "api_developer_keys" (  
+  "id" BIGSERIAL NOT NULL ,
+  "developer_key" VARCHAR(32) NOT NULL,
+  "user_id" BIGINT NOT NULL,
+  PRIMARY KEY ("id")
+); 
+CREATE INDEX "api_developer_keys_user_id" ON "api_developer_keys" ("user_id");
+
 
 --
 -- Table structure for table `assignment_status`
@@ -179,9 +194,12 @@ CREATE TABLE "executions" (  "id" BIGSERIAL NOT NULL ,
   "status" CHAR(1) NULL DEFAULT NULL,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
   "tcversion_id" BIGINT NOT NULL DEFAULT '0',
+  "execution_type" INT2 NOT NULL DEFAULT '1',
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
+CREATE INDEX "executions_idx1" ON "executions" ("testplan_id","tcversion_id");
+CREATE INDEX "executions_idx2" ON "executions" ("execution_type");
 
 
 --

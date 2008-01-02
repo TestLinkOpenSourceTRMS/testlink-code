@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.19 2007/12/03 08:28:31 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.20 2008/01/02 18:53:28 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20080102 - franciscom - added changes for API feature (DB 1.2)
+#                               added notes fields on db_version
+#
 #       20071202 - franciscom - added tcversions.execution_type
 #       20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
 #
@@ -62,6 +65,15 @@
 # --------------------------------------------------------
 #
 #
+CREATE TABLE `api_developer_keys` (
+  `id` int(10) NOT NULL auto_increment,
+  `developer_key` varchar(32) NOT NULL,
+  `user_id` int(10) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `user_id` (`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='authentication keys for using the api';
+
+
 CREATE TABLE `builds` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
@@ -76,7 +88,8 @@ CREATE TABLE `builds` (
 
 CREATE TABLE `db_version` (
   `version` varchar(50) NOT NULL default 'unknown',
-  `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00'
+  `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `notes` text
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
@@ -95,9 +108,12 @@ CREATE TABLE `executions` (
   `status` char(1) default NULL,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
   `notes` text,
   PRIMARY KEY  (`id`),
-  KEY `testplan_id_tcversion_id`(`testplan_id`,`tcversion_id`)
+  KEY `testplan_id_tcversion_id`(`testplan_id`,`tcversion_id`),
+  KEY `execution_type`(`execution_type`)
+
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `keywords` (

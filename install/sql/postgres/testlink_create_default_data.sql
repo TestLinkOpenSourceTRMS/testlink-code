@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.12 2007/10/10 06:36:33 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.13 2008/01/02 18:53:44 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -139,4 +139,4 @@ INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcvers
 --
 -- Dumping data for table db_version
 --
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('DB 1.1','2007-10-10 23:00:00');
+INSERT INTO "db_version" ("version","upgrade_ts","notes") VALUES ('DB 1.2',now(),'first version with API feature');

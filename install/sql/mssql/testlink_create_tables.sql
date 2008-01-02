@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.19 2007/12/14 20:03:19 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.20 2008/01/02 18:53:13 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -25,9 +25,25 @@
 --                               
 --                               
 --  -----------------------------------------------------------------------------------
+CREATE TABLE [api_developer_keys] (  
+	[id] [int] IDENTITY(1,1) NOT NULL,
+  [developer_key] [VARCHAR] (32) NOT NULL,
+  [user_id] [int] NOT NULL,
+  CONSTRAINT [PK_api_developer_keys] PRIMARY KEY CLUSTERED 
+  (
+	 [id] ASC
+  ) ON [PRIMARY]
+) ON [PRIMARY] 
+CREATE NONCLUSTERED INDEX [api_developer_keys_user_id] ON [api_developer_keys] 
+(
+	[user_id] ASC
+) ON [PRIMARY]
+
+
 CREATE TABLE [db_version](
 [version] [varchar](50)  NOT NULL CONSTRAINT [DF_db_version_version]  DEFAULT (N'unknown'),
-[upgrade_ts] [datetime] NOT NULL CONSTRAINT [DF_db_version_upgrade_ts]  DEFAULT (getdate())
+[upgrade_ts] [datetime] NOT NULL CONSTRAINT [DF_db_version_upgrade_ts]  DEFAULT (getdate()),
+[notes] [text]  NULL
 ) ON [PRIMARY]
 
 
@@ -172,12 +188,20 @@ CREATE TABLE [executions](
 	[status] [char](1)  NULL CONSTRAINT [DF_executions_status]  DEFAULT (NULL),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_executions_testplan_id]  DEFAULT ((0)),
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_executions_tcversion_id]  DEFAULT ((0)),
+	[execution_type] [tinyint] NOT NULL CONSTRAINT [DF_executions_execution_type]  DEFAULT ((1)),
 	[notes] [text]  NULL CONSTRAINT [DF_executions_notes]  DEFAULT (NULL),
  CONSTRAINT [PK_executions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+CREATE NONCLUSTERED INDEX [IX_executions_execution_type] ON [executions] 
+(
+	[execution_type] ASC
+) ON [PRIMARY]
+
+
 
 CREATE TABLE [risk_assignments](
 	[id] [int] IDENTITY(1,1) NOT NULL,

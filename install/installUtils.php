@@ -1,10 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.28 2007/11/07 17:57:17 franciscom Exp $ 
+$Id: installUtils.php,v 1.29 2008/01/02 18:52:50 franciscom Exp $ 
 
 
 rev :
+     20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
      20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
      20070302 - franciscom - changed PHP minimun required versions
 
@@ -621,17 +622,7 @@ if ($inst_type == "upgrade" )
   $msg .= "<h1>You have requested an Upgrade, " .
           "this process WILL MODIFY your TestLink Database <br>" .
           "We STRONGLY recomend you to backup your Database Before starting this upgrade process"; 
-  
-  
-  $msg .= "<br><br> Attention PLEASE:";
-  $msg .= "<br> 1. The name/title of testcases, categories, ecc WILL BE TRUNCATED to 100 chars";
-  $msg .= "<br> 2. Components and Categories present in Test Plans ";
-  $msg .= "BUT NO MORE PRESENT IN PRODUCTS <br>WILL BE DELETED</h1>";
   $msg .= '<br>' . $many_warnings . "<br><br>"; 
-  
-        
-
-
 }
 
 return($msg);
@@ -794,32 +785,48 @@ return ($ret);
 
 
 
-// 20060428 - franciscom
-// 20071107
+/*
+  function: check_db_loaded_extension
+
+  args :
+  
+  returns: 
+
+  rev :
+       20080102 - franciscom - fix to check postgres
+*/
 function check_db_loaded_extension($db_type)
 {
-$msg_ko = "<span class='notok'>Failed!</span>";
-$msg_ok = '<span class="ok">OK!</span>';
-$tt=array_flip(get_loaded_extensions());
-
-$errors=0;	
-$final_msg = "</b><br/>Checking PHP DB extensions<b> ";
-
-if( !isset($tt[$db_type]) )
-{
-	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension - " .
-	              "without it is IMPOSSIBLE to use Testlink.</span>";
-	$final_msg .= $msg_ko;
-	$errors += 1;
-}
-else
-{
-	$final_msg .= $msg_ok;
-}
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-return ($ret);
+    $ext2search=$db_type;  
+    $dbType2PhpExtension=array('postgres' => 'pgsql');
+    
+    if( isset($dbType2PhpExtension[$db_type]) )
+    {
+      $ext2search=$dbType2PhpExtension[$db_type];  
+    }
+      
+    $msg_ko = "<span class='notok'>Failed!</span>";
+    $msg_ok = '<span class="ok">OK!</span>';
+    $tt=array_flip(get_loaded_extensions());
+    
+    $errors=0;	
+    $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
+    
+    if( !isset($tt[$ext2search]) )
+    {
+    	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension {$ext2search}- " .
+    	              "without it is IMPOSSIBLE to use Testlink.</span>";
+    	$final_msg .= $msg_ko;
+    	$errors += 1;
+    }
+    else
+    {
+    	$final_msg .= $msg_ok;
+    }
+    $ret = array ('errors' => $errors,
+                  'msg' => $final_msg);
+    
+    return ($ret);
 }  //function end
 
 

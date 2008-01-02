@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.18 2007/11/07 11:28:02 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.19 2008/01/02 18:52:50 franciscom Exp $ */
 
 // 20070302 - franciscom - changed link for help
 //
@@ -92,10 +92,6 @@ echo $check['msg'];
 $check = check_with_feedback();
 echo $check['msg'];
 $errors += $check['errors'];
-
-// $check = check_pear_modules();
-//echo $check['msg'];
-//$errors += $check['errors'];
 
 ?>
 

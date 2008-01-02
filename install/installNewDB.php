@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.35 2007/11/07 11:28:02 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.36 2008/01/02 18:52:49 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,7 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20080102 - franciscom - added DB 1.2
 20071018 - franciscom - added DB 1.1 
 20070725 - franciscom - added 1.7.0 RC 3
 20070414 - franciscom - added 1.7.0 RC 2
@@ -134,19 +135,14 @@ $adminpass = '';
 
 // do some database checks
 echo "</b><br />Creating connection to Database Server:<b> ";
+echo "<pre>debug 20080102 - \$db_type - " . __FUNCTION__ . " --- "; print_r($db_type); echo "</pre>";
 
 // ------------------------------------------------------------------------------------------------
 // Connect to DB Server without choosing an specific database
+// $db_type='coco';
 $db = new database($db_type);
 define('NO_DSN',FALSE);
-
-//echo "<pre>debug 20071010 - \$db_server - " . __FUNCTION__ . " --- "; print_r($db_server); echo "</pre>";
-//echo "<pre>debug 20071010 - \$db_admin_name - " . __FUNCTION__ . " --- "; print_r($db_admin_name); echo "</pre>";
-//echo "<pre>debug 20071010 - \$db_admin_pass - " . __FUNCTION__ . " --- "; print_r($db_admin_pass); echo "</pre>";
-
 $conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
-//echo "<pre>debug 20071010 - \$conn_result - " . __FUNCTION__ . " --- "; print_r($conn_result); echo "</pre>";
-
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -173,7 +169,6 @@ if($check['errors'] > 0)
 }
 else
 {
-	//echo "<span class='ok'>OK!", $check['msg'], "</span><p />" ;
 	echo "<span class='ok'>", $check['msg'], "</span><p />" ;
 }	 
 $db->close();
@@ -185,8 +180,6 @@ $db=null;
 // Connect to the Database (if Succesful -> database exists)
 $db = new database($db_type);
 $conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
-
-// echo "<pre>debug 20071010 - \$conn_result - " . __FUNCTION__ . " --- "; print_r($conn_result); echo "</pre>";
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -248,20 +241,6 @@ if($create)
   // Postgres uses as identifier quote character " (double quotes):
   //  
   $sql_create_db =$db->build_sql_create_db($db_name);
-  
-  /*
-  switch($db_type)
-  {
-      case 'mysql':
-      $sql_create_db = "CREATE DATABASE `" . $db->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
-      break;
-        
-      case 'postgres':
-      $sql_create_db = 'CREATE DATABASE "' . $db->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
-      break;
-  }
-  */
-  
   
 	if(!$db->exec_query($sql_create_db)) 
 	{
@@ -343,6 +322,7 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
         $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
       	break;
 
       	case '1.7.0 Beta 3':
@@ -351,6 +331,7 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
         $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
       	break;
       	
       	case '1.7.0 Beta 4':
@@ -358,24 +339,33 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
         $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
       	break;
 
       	case '1.7.0 Beta 5':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
         $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
       	break;
       	
       	case '1.7.0 RC 2':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
         $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
       	break;
       	
       	case '1.7.0 RC 3':
         $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
         break;
-      	
+
       	case 'DB 1.1':
+        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
+        break;
+
+      	
+      	case 'DB 1.2':
       	echo "<br>Your DB Schema {$schema_version} is the last available, then you don't need to do any upgrade.";
         echo "<br>bye!";
         close_html_and_exit();          

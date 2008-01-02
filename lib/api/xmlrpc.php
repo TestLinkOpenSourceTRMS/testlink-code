@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.2 2007/12/03 23:04:39 asielb Exp $
+ * $Id: xmlrpc.php,v 1.3 2008/01/02 15:29:29 franciscom Exp $
  */
  
 /**
@@ -51,22 +51,40 @@ require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
 class TestlinkXMLRPCServer extends IXR_Server
 {
 	public static $version = "1.0 Beta 2";
+	
+	private $nodes_hierarchy_table="nodes_hierarchy";
+  private $node_types_table="node_types";
+  private $api_developer_keys_table="api_developer_keys";
+  private $testplans_table="testplans";
+  private $testprojects_table="testprojects";
+  private $testsuites_table="testsuites";
+  private $builds_table="builds";
+  private $executions_table="executions";  
+  
+
+	
 	/**
 	 * The DB object used throughout the class
 	 * 
 	 * @access private
 	 */
 	private $dbObj = null;
+
 	/** Whether the server will run in a testing mode */
 	private  $testMode = false;
+
 	/** userID associated with the devKey provided */
 	private $userID = null;
+
 	/** array where all the args are stored for requests */
 	private $args = null;	
+
 	/** array where error codes and messages are stored */
 	private $errors = array();
+
 	/** The api key being used to make a request */
 	private $devKey = null;
+
 	/** The version of a test case that is being used */
 	private $tcVersionID = null;
 	
@@ -76,6 +94,7 @@ class TestlinkXMLRPCServer extends IXR_Server
  	 */
 	public static $devKeyParamName = "devKey";
 	public static $tcidParamName = "tcid";
+	
 	//TODO: fix this to be clear on either test plan or test project (currently testplan)
 	public static $tpidParamName = "tpid";
 	public static $testProjectIDParamName = "testprojectid";
@@ -306,7 +325,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{    		
     		// See if this TPID exists in the db
 			$tpid = $this->dbObj->prepare_int($this->args[self::$tpidParamName]);
-        	$query = "SELECT id FROM testplans WHERE id={$tpid}";
+        	$query = "SELECT id FROM {$this->testplans_table} WHERE id={$tpid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -350,7 +369,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{    		
     		// See if this Test Project ID exists in the db
 			$testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
-        	$query = "SELECT id FROM testprojects WHERE id={$testprojectid}";
+        	$query = "SELECT id FROM {$this->testprojects_table} WHERE id={$testprojectid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -384,7 +403,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{    		
     		// See if this Test Suite ID exists in the db
 			$testsuiteid = $this->dbObj->prepare_int($this->args[self::$testSuiteIDParamName]);
-        	$query = "SELECT id FROM testsuites WHERE id={$testsuiteid}";
+        	$query = "SELECT id FROM {$this->testsuites} WHERE id={$testsuiteid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -447,7 +466,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	   	
 	   	// actually check that the buildID thats set is valid
 	   	$buildID = $this->dbObj->prepare_int($this->args[self::$buildidParamName]);
-        $query = "SELECT id FROM builds WHERE id='{$buildID}'";
+        $query = "SELECT id FROM {$this->builds_table} WHERE id={$buildID}";
         $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         return (null == $result ? false : true);
     }
@@ -656,7 +675,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     	}
     	$tcid = $this->dbObj->prepare_int($tcid);
     	// the tcid must be of type 'testcase' and show up in the nodes_hierarchy    	
-		$query = "SELECT nodes_hierarchy.id AS id FROM nodes_hierarchy, node_types " .
+		$query = "SELECT nodes_hierarchy.id AS id " .
+		         "FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
 				"WHERE nodes_hierarchy.id={$tcid} AND node_type_id=node_types.id " .
 				"AND node_types.description='testcase'";
 		$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
@@ -686,7 +706,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         else
         {        	                		
         	$devKey = $this->dbObj->prepare_string($devKey);
-        	$query = "SELECT id FROM api_developer_keys WHERE developer_key='{$devKey}'";
+        	$query = "SELECT id FROM {$api_developer_keys_table} WHERE developer_key='{$devKey}'";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -696,7 +716,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         	{
         		$this->devKey = $devKey;
         		// set the userID based on this valid devKey
-        		$query = "SELECT user_id FROM api_developer_keys WHERE developer_key='{$devKey}'";
+        		$query = "SELECT user_id FROM {$api_developer_keys_table} WHERE developer_key='{$devKey}'";
         		$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "user_id");
         		         	
         		return true;
@@ -728,7 +748,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     	$tcid = $this->args[self::$tcidParamName];
     	
     	// get all versions of the testcase in the nodes_hierarchy    	
-    	$query = "SELECT nodes_hierarchy.id AS id FROM nodes_hierarchy, node_types " .
+    	$query = "SELECT nodes_hierarchy.id AS id " .
+    	         " FROM {$this->nodes_hierarchy}, {$this->node_types} " .
     			"WHERE nodes_hierarchy.parent_id=$tcid AND node_type_id=node_types.id " .
     			"AND node_types.description='testcase_version'";
     	$result = $this->dbObj->fetchColumnsIntoArray($query, "id");
@@ -736,7 +757,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     	if(count($result) > 0)
     	{
 	    	// determine which version if any is part of the test plan 
-	    	$versionQuery = "SELECT tcversion_id FROM `testplan_tcversions` WHERE tcversion_id IN(" . 
+	    	$versionQuery = "SELECT tcversion_id " .
+	    	                " FROM {$this->testplan_tcversions} WHERE tcversion_id IN(" . 
 	    				implode(",", $result) . ") AND testplan_id=$tpid";
 	    	$versionResult = $this->dbObj->fetchFirstRowSingleColumn($versionQuery, "tcversion_id");			      	
 	    	if(null == $versionResult)
@@ -891,10 +913,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return int
 	 * @access private
 	 */		
-	protected function getLatestBuildForTestPlan($tpid)
+	protected function getLatestBuildForTestPlan($tplan_id)
 	{     	                		
     	$devKey = $this->dbObj->prepare_int($tpid);
-    	$query = "SELECT max(id) AS id FROM `builds` WHERE testplan_id='$tpid'";
+    	$query = "SELECT max(id) AS id FROM {$this->builds_table} WHERE testplan_id={$tplan_id}";
     	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
     	if(null == $result)
     	{
@@ -920,19 +942,15 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$status = 		$this->args[self::$statusParamName];
 		$testplan_id =	$this->args[self::$tpidParamName];
 		$tcversion_id =	$this->tcVersionID;
-		// TODO: set the automated flag correctly
-		$automated = 1;
+		$db_now=$this->dbObj->db_now();
 		
-		$query = "INSERT INTO executions (build_id, tester_id, execution_ts, status, " .
-				"testplan_id, tcversion_id, automated) VALUES(" .
-				$build_id . "," .
-				$tester_id . "," .
-				"NOW()," . 
-				"'" . $status . "'," .
-				$testplan_id . "," .
-				$tcversion_id . "," .
-				$automated .
-			")";
+		$execution_type = TESTCASE_EXECUTION_TYPE_AUTO;
+		
+		$query = "INSERT INTO {$this->executions_table} (build_id, tester_id, execution_ts, status, " .
+				     "testplan_id, tcversion_id, execution_type) "
+				     "VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
+				     "{$tcversion_id},{$execution_type})";
+				
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id();		
 	}
@@ -957,12 +975,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}		
 		// TODO: set the active and is_open flags		
 		
-		$query = "INSERT INTO builds (testplan_id, name, notes) " .
-				"VALUES(" .
-				$testplan_id . "," .
-				"'" . $name . "'," .
-				"'" . $notes . "'" . 				
-			")";
+		$query = "INSERT INTO {$builds_name} (testplan_id, name, notes) " .
+				     "VALUES(" . $testplan_id . "," . "'" . $name . "'," .	"'" . $notes . "')";
+				
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id();		
 	}	
@@ -1038,7 +1053,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		$this->_setArgs($args);
 		$str = " Testlink API Version: " . self::$version . " written by Asiel Brumfield\n" .
-				"See http://testlink.org/api/ for additional information";
+				   "See http://testlink.org/api/ for additional information";
 		return $str;				
 	}
 	
@@ -1091,12 +1106,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			return $this->errors;
 		}
-		
-		// query that only gets active (the testproject method gets everything)
-		//$query = "SELECT nodes_hierarchy.id AS id, nodes_hierarchy.name AS name, testprojects.notes AS " .
-		//		"notes FROM `testprojects`, `nodes_hierarchy`, node_types WHERE " .
-		//		"nodes_hierarchy.node_type_id=node_types.id AND node_types.description='testproject' " .
-		//		"AND testprojects.active=1 AND testprojects.id=nodes_hierarchy.id";		
 	}
 	
 	/**
@@ -1170,7 +1179,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 				{					
 					// TODO: add method with this functionality to testsuite.class.php								
 					$query=	"SELECT nodes_hierarchy.*" .
-							"FROM `nodes_hierarchy`,`node_types` " .
+		              "FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
 							"WHERE nodes_hierarchy.parent_id={$testSuiteID} AND " .
 							"node_type_id=node_types.id AND " .
 							"node_types.description='testcase' ORDER BY node_order,id";

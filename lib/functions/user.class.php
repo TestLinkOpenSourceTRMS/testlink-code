@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/02 19:34:05 $ $Author: schlundus $
  *
  */
 
@@ -317,6 +317,57 @@ class tlUser extends tlDBObject
 
 		return $result;
 	}
+	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
+	{
+		global $g_propRights_global;
+		global $g_propRights_product;
+		
+		$globalRights = is_null($this->globalRole->rights) ? '' : $this->globalRole->rights;
+		//SCHLUNDUS: hack, will be removed later
+		$globalRights = explode(",",implode(",",$globalRights));
+		
+		if (!is_null($tplanID))
+			$testPlanID = $tplanID;
+		else
+			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+		$userTestPlanRoles = $this->tplanRoles;
+		
+		if (!is_null($tprojectID))
+			$productID = $tprojectID;
+		else
+			$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+		
+		$allRights = $globalRights;
+			
+		$userTestProjectRoles = $this->tprojectRoles;
+		/* if $productID == -1 we dont check rights at product level! */
+		if (isset($userTestProjectRoles[$productID]))
+		{
+			$productRights = $userTestProjectRoles[$productID]->rights;
+			//SCHLUNDUS: hack, will be removed later
+			$productRights = explode(",",implode(",",$productRights));
+			//subtract global rights		
+			$productRights = array_diff($productRights,array_keys($g_propRights_global));
+
+			propagateRights($globalRights,$g_propRights_global,$productRights);
+			$allRights = $productRights;
+		}
+		/* if $tplanID == -1 we dont check rights at tp level! */
+		if (isset($userTestPlanRoles[$testPlanID]))
+		{
+			$testPlanRights = $userTestPlanRoles[$testPlanID]->rights;
+			//SCHLUNDUS: hack, will be removed later
+			$testPlanRights = explode(",",implode(",",$testPlanRights));
+			
+			//subtract product rights		
+			$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
+			
+			propagateRights($allRights,$g_propRights_product,$testPlanRights);
+			$allRights = $testPlanRights;
+		}
+		return checkForRights($allRights,$roleQuestion) == "yes" ? true : false;
+	}
+	
 	
 	static public function checkEmailAdress($email)
 	{

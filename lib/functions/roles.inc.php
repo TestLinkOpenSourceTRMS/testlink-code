@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/01/01 22:20:43 $ by $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/01/02 19:34:05 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -232,6 +232,7 @@ function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
 * 20051231 - scs - added reloading the rights if the users role has changed
 *
 */
+//SCHLUNDUS: should be moved inside tlUser, 50% done
 function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 {
 	global $g_propRights_global;
@@ -329,6 +330,7 @@ function propagateRights($fromRights,$propRights,&$toRights)
  * @since 20.02.2006, 20:30:07
  *
  **/
+ //SCHLUNDUS: return value will be changed later to yes or no
 function checkForRights($rights,$roleQuestion,$bAND = 1)
 {
 	$ret = null;

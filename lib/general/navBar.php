@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/12/31 12:21:55 $ $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/01/02 19:34:05 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -52,18 +52,17 @@ if (isset($_GET['testproject']))
 	// set test project ID for the next session
 	setcookie('lastProductForUser'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
-
 $logo_img = defined('LOGO_NAVBAR') ? LOGO_NAVBAR : '';
 	
 $smarty->assign('logo', $logo_img);
-$smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
+$smarty->assign('view_tc_rights',$currentUser->hasRight($db,"mgt_view_tc"));
 $smarty->assign('user', $currentUser->getDisplayName() . ' '. 
                         lang_get('Role'). " :: {$role_separator->open} {$currentUser->globalRole->name} {$role_separator->close}");
 $smarty->assign('testprojectRole',$testprojectRole);
-$smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
-$smarty->assign('rightExecute', has_rights($db,"testplan_execute"));
-$smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));
-$smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
+$smarty->assign('rightViewSpec', $currentUser->hasRight($db,"mgt_view_tc"));
+$smarty->assign('rightExecute', $currentUser->hasRight($db,"testplan_execute"));
+$smarty->assign('rightMetrics', $currentUser->hasRight($db,"testplan_metrics"));
+$smarty->assign('rightUserAdmin', $currentUser->hasRight($db,"mgt_users"));
 $smarty->assign('countPlans', $countPlans);
 $smarty->assign('countProjects',sizeof($arr_tprojects));
 $smarty->assign('arrayProducts', $arr_tprojects);

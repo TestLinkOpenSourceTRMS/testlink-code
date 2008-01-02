@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/01 16:38:17 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/01/02 19:34:05 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -19,6 +19,7 @@ require_once('config.inc.php');
 require_once('doAuthorize.php');
 require_once('common.php');
 doSessionStart();
+unset($_SESSION['basehref']);
 setPaths();
 
 $_POST = strings_stripSlashes($_POST);

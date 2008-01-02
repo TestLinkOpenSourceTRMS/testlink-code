@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.4 2007/12/20 20:36:35 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.5 2008/01/02 11:33:34 franciscom Exp $
 viewer for test case in test specification
 
 20071204 - franciscom - display execution_type
@@ -8,6 +8,13 @@ viewer for test case in test specification
 20061230 - franciscom - an experiment to make simple management
                         of frequent used href
 *}
+
+{assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
+{assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
+
+{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?requirement_id="}
+{assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
+
 
 {if $args_show_title == "yes"}
 <h1>{lang_get s='title_test_case'} {$args_testcase.name|escape} </h1>
@@ -187,13 +194,13 @@ viewer for test case in test specification
 		  	<td colspan="2">
   				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>
-       			  <td colspan="2"><span><a href="lib/req/reqSpecList.php" 
+       			  <td colspan="2"><span><a href="{$hrefReqSpecMgmt}" 
       				target="mainframe" class="bold">{lang_get s='Requirements'}</a>
       				: &nbsp;</span>
       			  </td>
       			  <td>
       				{section name=item loop=$args_reqs}
-      					<span onclick="javascript: open_top(fRoot+'lib/req/reqView.php?idReq={$args_reqs[item].id}');"
+      					<span onclick="javascript: open_top('{$hrefReqMgmt}{$args_reqs[item].id}');"
       					style="cursor:  pointer;">{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}

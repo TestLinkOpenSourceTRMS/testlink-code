@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.141 $
- * @modified $Date: 2007/12/29 18:28:08 $ by $Author: franciscom $
+ * @version $Revision: 1.142 $
+ * @modified $Date: 2008/01/02 18:56:51 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20080102 - franciscom - new default for $g_log_path
  *           20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
  *                                   $g_exec_cfg->enable_tree_colouring;
  *
@@ -137,7 +138,7 @@ define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"" . TL_TPL_CHARS
 // ----------------------------------------------------------------------------
 /** [LOGGING] */
 /** @see logging.inc.php for more information */
-$g_log_path=TL_TEMP_PATH;
+$g_log_path=TL_ABS_PATH . 'logs' . DS ;
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 $g_log_level='NONE';

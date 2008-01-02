@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/12/27 18:50:23 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/01/02 15:21:39 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -207,12 +207,18 @@ function getSecurityNotes(&$db)
 
 	// 20070121 - needed when schemas change has been done
 	// This call can be removed when release is stable
-	if(strlen(trim(check_schema_version($db))))
-		$securityNotes[] = $my_msg;
+  $my_msg=check_schema_version($db);
+  if( strlen(trim($my_msg)) > 0 )
+  {
+      $securityNotes[] = $my_msg;
+  }
   
 	// 20070911 - fixing bug 1021 
-	if (strlen(trim(checkForTestPlansWithoutTestProjects($db))))
-		$securityNotes[] = $my_msg;
+  $my_msg=checkForTestPlansWithoutTestProjects($db);
+  if (strlen(trim($my_msg)) > 0)
+  {	
+	    $securityNotes[] = $my_msg;
+  }
 	
 	checkForExtensions($securityNotes);
   
@@ -323,7 +329,8 @@ function checkForRepositoryDir($the_dir)
 */
 function check_schema_version(&$db)
 {
-	$last_version = 'DB 1.1';
+  $last_version = 'DB 1.2';  // 20080102 - franciscom
+	// $last_version = 'DB 1.1';
 	// 1.7.0 RC 3';
 	
 	$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
@@ -343,6 +350,7 @@ function check_schema_version(&$db)
 		case '1.7.0 Beta 5':
 		case '1.7.0 RC 2':
 		case '1.7.0 RC 3':
+		case 'DB 1.1':
 			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
 				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
 				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';

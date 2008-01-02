@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.7 2007/04/15 10:55:57 franciscom Exp $ 
+$Id: index.php,v 1.8 2008/01/02 11:32:43 franciscom Exp $ 
 */
 require_once("../cfg/const.inc.php");
 
@@ -38,9 +38,11 @@ $_SESSION['testlink_version']=TL_VERSION;
 			<a href="newInstallStart_TL.php?installationType=new">New installation</a>
 			<p />
 			<a href="newInstallStart_TL.php?installationType=upgrade">Upgrade installation</a>
-			</p>
+			<p />
 			<a href="./migration/index.php">Migration from 1.6.2 to 1.7.0 </a>
-			</p>
+			<p />
+			<a href="./migration/migrate_17/index.php">Migration from 1.7.2 to 1.8.0 </a>
+			<p />
 			
 		</td>
       </tr>

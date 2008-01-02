@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/19 21:02:56 $  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/02 11:35:01 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -20,6 +20,9 @@ require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
 
 testlinkInitPage($db);
+
+$template_dir = "requirements/";
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $tproject_mgr=new testproject($db);
 $req_spec_mgr=new requirement_spec_mgr($db);
@@ -135,5 +138,5 @@ $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('arrAssignedReq', $arrAssignedReq);
 $smarty->assign('selectedReqSpec', $idReqSpec);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
-$smarty->display('reqAssign.tpl');
+$smarty->display($template_dir . $default_template);
 ?>

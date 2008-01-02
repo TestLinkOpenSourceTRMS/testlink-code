@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/11/22 07:34:37 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/02 11:35:01 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -26,8 +26,7 @@ require_once('requirement_spec_mgr.class.php');
 testlinkInitPage($db);
 
 $template_dir="requirements/";
-
-// echo "<pre>debug 20071121 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $req_spec_id = isset($_REQUEST['req_spec_id']) ? strings_stripSlashes($_REQUEST['req_spec_id']) : null;
 $importType = isset($_REQUEST['importType']) ? strings_stripSlashes($_REQUEST['importType']) : null;
@@ -84,9 +83,6 @@ $req_spec = $req_spec_mgr->get_by_id($req_spec_id);
 $import_types=$req_spec_mgr->get_import_file_types();
 
 $smarty = new TLSmarty;
-
-
-
 $smarty->assign('file_check',$file_check);  
 $smarty->assign('try_upload',$bUpload);
 $smarty->assign('reqFormatStrings',$g_reqFormatStrings);
@@ -99,7 +95,7 @@ $smarty->assign('importType', $importType);
 $smarty->assign('uploadedFile', $fileName);
 $smarty->assign('importLimit', TL_IMPORT_LIMIT);
 $smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1024));
-$smarty->display($template_dir . 'reqImport.tpl');
+$smarty->display($template_dir . $default_template);
 ?>
 
 

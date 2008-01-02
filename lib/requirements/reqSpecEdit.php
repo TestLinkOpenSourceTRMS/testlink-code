@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/12/20 20:36:36 $ $Author: schlundus $ 
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/01/02 11:35:01 $ $Author: franciscom $ 
  * 
  * @author Martin Havlat
  * 
@@ -36,13 +36,15 @@ $req_spec_mgr = new requirement_spec_mgr($db);
 $smarty = new TLSmarty();
 
 $template_dir="requirements/";
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+
 
 switch($args->do_action)
 {
   case "create":
   $main_descr=lang_get('testproject') . TITLE_SEP . $args->tproject_name;
   $action_descr=lang_get('create_req_spec');
-  $template = $template_dir . 'reqSpecEdit.tpl';
+  $template = $template_dir . $default_template;
 	
 	// get custom fields
 	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs(null,$args->tproject_id);
@@ -56,7 +58,7 @@ switch($args->do_action)
   $main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
   $action_descr=lang_get('edit_req_spec');
 
-  $template = $template_dir . 'reqSpecEdit.tpl';
+  $template = $template_dir . $default_template;
   
   $args->scope=$req_spec['scope'];			
 	
@@ -78,7 +80,7 @@ switch($args->do_action)
   $smarty->assign('submit_button_label',lang_get('btn_save'));
   $smarty->assign('submit_button_action','do_create');
 
-  $template = $template_dir . 'reqSpecEdit.tpl';
+  $template = $template_dir . $default_template;
   $cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs(null,$args->tproject_id);
 	$ret = $req_spec_mgr->create($args->tproject_id,$args->title,$args->scope,$args->countReq,$args->user_id);
 	
@@ -192,8 +194,5 @@ function init_args()
 
   return $args;
 }
-
-
-
 ?>
 

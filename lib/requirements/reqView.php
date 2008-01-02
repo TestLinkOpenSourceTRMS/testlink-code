@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/02 11:35:01 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -19,6 +19,7 @@ require_once('users.inc.php');
 testlinkInitPage($db);
 
 $template_dir = "requirements/";
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $req_mgr = new requirement_mgr($db);
 $req_id = isset($_REQUEST['requirement_id']) ? intval($_REQUEST['requirement_id']) : null;
@@ -50,5 +51,5 @@ $smarty->assign('req', $req);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->assign('selectReqStatus', $arrReqStatus);
 $smarty->assign('attachments',$attachments);
-$smarty->display($template_dir . 'reqView.tpl');
+$smarty->display($template_dir . $default_template);
 ?>

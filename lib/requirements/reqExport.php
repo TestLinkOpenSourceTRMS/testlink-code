@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/22 07:42:33 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/02 11:35:01 $ by $Author: franciscom $
  *
  * This page this allows users to export requirements. 
  *
@@ -20,6 +20,7 @@ require_once('requirement_spec_mgr.class.php');
 
 testlinkInitPage($db);
 $template_dir="requirements/";
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $bExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
 $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
@@ -61,5 +62,5 @@ $smarty = new TLSmarty();
 $smarty->assign('req_spec_id', $req_spec_id);
 $smarty->assign('req_spec', $req_spec);
 $smarty->assign('exportTypes',$export_types);
-$smarty->display($template_dir .'reqExport.tpl');
+$smarty->display($template_dir . $default_template);
 ?>

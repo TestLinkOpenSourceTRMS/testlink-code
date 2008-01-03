@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.142 $
- * @modified $Date: 2008/01/02 18:56:51 $ by $Author: franciscom $
+ * @version $Revision: 1.143 $
+ * @modified $Date: 2008/01/03 11:50:59 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -198,7 +198,9 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 /** CSS themes - modify if you create own*/
-define('TL_THEME_CSS_DIR','gui/themes/theme_m2/css/');
+define('TL_THEME_BASE_DIR','gui/themes/theme_m2/');
+
+define('TL_THEME_CSS_DIR',TL_THEME_BASE_DIR . 'css/');
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
@@ -213,7 +215,7 @@ define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css
 
 
 // path to IMAGE directory - DO NOT ADD FINAL /
-define('TL_THEME_IMG_DIR','gui/themes/theme_m1/images');
+define('TL_THEME_IMG_DIR',TL_THEME_BASE_DIR . 'images');
 
 // logo for login page
 $g_logo_login_page='<img alt="TestLink" title="TestLink" src="' . 

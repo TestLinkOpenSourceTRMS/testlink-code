@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.234 $
- * @modified $Date: 2007/12/29 18:31:36 $ $Author: franciscom $
+ * @version $Revision: 1.235 $
+ * @modified $Date: 2008/01/03 11:53:15 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -810,6 +810,8 @@ $TLS_exec_current_build="(current build)";
 $TLS_exec_notes = "Notes";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Execution history";
+$TLS_execution_type_manual="Manual";
+$TLS_execution_type_auto="Automated";
 $TLS_has_no_assignment = "No tester assigned";
 $TLS_img_title_bug_mgmt = "Bug management";
 $TLS_img_title_delete_execution= "Delete execution";
@@ -818,6 +820,7 @@ $TLS_just_last_execution_for_this_build = "Last execution for build";
 $TLS_last_execution = "Last execution";
 $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to="Only Test Cases assigned to";
+$TLS_run_mode="Run mode";
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_tc_not_tested_yet = "Not Tested Yet";

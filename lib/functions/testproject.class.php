@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2008/01/02 21:14:00 $  $Author: schlundus $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2008/01/03 20:44:06 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -1006,7 +1006,20 @@ function deleteUserRoles($tproject_id)
 	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
 }
 
-
+/**
+ * Gets all testproject related role assignments
+ *
+ * @param int $tproject_id 
+ * @return array assoc array with keys take from the user_id column
+ **/
+function getUserRoleIDs($tproject_id)
+{
+	$query = "SELECT user_id,role_id FROM user_testproject_roles " .
+	         "WHERE testproject_id = {$tproject_id}";
+	$roles = $this->db->fetchRowsIntoMap($query,'user_id');
+	
+	return $roles;
+}
 /**
  * Inserts a testproject related role for a given user
  *
@@ -1015,7 +1028,6 @@ function deleteUserRoles($tproject_id)
  * @param int $roleID the role id
  * @returns tl::OK on success, tl::ERROR else
  **/
-//SCHLUNDUS: should be moved inside testproject class 
 function addUserRole($userID,$tproject_id,$roleID)
 {
 	$query = " INSERT INTO user_testproject_roles " .

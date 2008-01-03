@@ -5,22 +5,18 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/12/29 18:28:35 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
  *
- * 20071229 - franciscom - refactoring
- *                         tree colouring and counters config
- *
+ * 20071229 - franciscom - refactoring tree colouring and counters config
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
- * 
  * 20070912 - jbarchibald - custom field search BUGID - 1051
  * 20070630 - franciscom - set default value for filter_assigned_to
  * 20070607 - franciscom - BUGID 887 - problem with builds
  * 20070212 - franciscom - name changes on html inputs
- *
  * 20070123 - franciscom - 
- * 1. added logic to only show ACTIVE BUILDS
- * 2. removed deprecated functions
+ * 	1. added logic to only show ACTIVE BUILDS
+ * 	2. removed deprecated functions
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -33,7 +29,6 @@ $template_dir = 'execute/';
 
 $gui_cfg = config_get('gui');
 $exec_cfg = config_get('exec_cfg');
-
 $args = init_args($exec_cfg);
 
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
@@ -43,27 +38,24 @@ $cf_selected = null;
 $cf_smarty = null;
 if($gui_cfg->enable_custom_fields)
 {
-	  $cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
+	$cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
     $cf_selected = $exec_cfield_mgr->get_set_values();
 }
 
 $tplan_mgr = new testplan($db);
-$effective_role = get_effective_role($db,$args->user_id,$args->tproject_id,$args->tplan_id);
+$effective_role = $args->user->getEffectiveRole($db,$args->tproject_id,$args->tplan_id);
 $disable_filter_assigned_to = false;
 $assigned_to_user = '';
 
+//SCHLUNDUS: hmm, for user defined roles, this wont work correctly
 $exec_view_mode = ($effective_role == TL_ROLES_TESTER) ? $exec_cfg->view_mode->tester : 'all';
 switch ($exec_view_mode)
 {
 	case 'all':
 		break;
-		
 	case 'assigned_to_me':
-		$args->filter_assigned_to = $args->user_id;
-		$user = tlUser::getById($db,$args->user_id);
-		
-		if ($user)
-			$assigned_to_user = $user->getDisplayName();
+		$args->filter_assigned_to = $args->user->dbID;
+		$assigned_to_user = $args->user->getDisplayName();
 		$disable_filter_assigned_to = true;
 		break;
 }
@@ -142,39 +134,32 @@ $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
 $smarty->display($template_dir . 'execNavigator.tpl');
-?>
 
-<?php
+//SCHLUNDUS: changed the user_id to the currentUser of the session
 function init_args($exec_cfg)
 {
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
-    $args->user_id = $_SESSION['userID'];
+    $args->user = $_SESSION['currentUser'];
     $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
     $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
-    
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tc_id = isset($_REQUEST['tcID']) ? intval($_REQUEST['tcID']) : null;
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;             
-    
     $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : 'all';
-
 
     $user_filter_default = 0;
     switch($exec_cfg->user_filter_default)
     {
     	case 'logged_user':
-    		$user_filter_default=$args->user_id;
+    		$user_filter_default = $args->user->dbID;
     		break;  
-    		
     	case 'none':
     	default:
     		break;  
     }
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;             
-
     $args->buildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
-
 
     return $args;
 }    

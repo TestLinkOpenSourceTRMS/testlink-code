@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/01/02 21:14:00 $ $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -869,6 +869,19 @@ function copy_user_roles($id,$new_tplan_id)
     }
   }
 }
+
+/**
+ * Gets all testplan related user assignments
+ *
+ * @param int $testPlanID the testplan id
+ * @return array assoc map with keys taken from the user_id column
+ **/
+	function getUserRoleIDs($testPlanID)
+	{
+		$query = "SELECT user_id,role_id FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
+		$roles = $this->db->fetchRowsIntoMap($query,'user_id');
+		return $roles;
+	}
 
 // $id: source testplan id
 // $new_tplan_id: destination

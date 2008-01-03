@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: int_serialization.php,v $
 * 
-* @version $Id: int_serialization.php,v 1.5 2007/12/21 22:57:18 schlundus Exp $
-* @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+* @version $Id: int_serialization.php,v 1.6 2008/01/03 20:44:06 schlundus Exp $
+* @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
 *
 **/
 
@@ -118,6 +118,8 @@ interface iDBSerialization
 	*/
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 	
+	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
+
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 	
 }

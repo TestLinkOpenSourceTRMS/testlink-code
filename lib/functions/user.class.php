@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/02 21:14:00 $ $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
  *
  */
 
@@ -317,6 +317,30 @@ class tlUser extends tlDBObject
 
 		return $result;
 	}
+	
+	/*
+		Returns the id of the effective role in the context of ($tproject_id,$tplan_id)
+	  	@param object $db [ref] the db-object
+		@param int $tproject_id the testproject id
+		@param int $tplan_id the plan id
+  
+		@return int id of the effective role
+	*/
+	function getEffectiveRole(&$db,$tproject_id,$tplan_id)
+	{
+		$default_role = $this->globalRoleID;
+		$tprojects_role = $this->tprojectRoles;
+		$tplans_role = $this->tplanRoles;
+
+		$effective_role = $default_role;
+		if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
+			$effective_role = $tplans_role[$tplan_id]->dbID;  
+		else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
+			$effective_role = $tprojects_role[$tproject_id]->dbID;  
+		
+		return $effective_role;
+	}
+	
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
 		global $g_propRights_global;
@@ -345,7 +369,7 @@ class tlUser extends tlDBObject
 		{
 			$productRights = $userTestProjectRoles[$productID]->rights;
 			//SCHLUNDUS: hack, will be removed later
-			$productRights = explode(",",implode(",",$productRights));
+			$productRights = explode(",",implode(",",(array)$productRights));
 			//subtract global rights		
 			$productRights = array_diff($productRights,array_keys($g_propRights_global));
 
@@ -357,7 +381,7 @@ class tlUser extends tlDBObject
 		{
 			$testPlanRights = $userTestPlanRoles[$testPlanID]->rights;
 			//SCHLUNDUS: hack, will be removed later
-			$testPlanRights = explode(",",implode(",",$testPlanRights));
+			$testPlanRights = explode(",",implode(",",(array)$testPlanRights));
 			
 			//subtract product rights		
 			$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
@@ -395,12 +419,23 @@ class tlUser extends tlDBObject
 	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		if ($id)
-			return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
-		return null;
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
 	
-  /*
+
+	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		$users = null;
+		for($i = 0;$i < sizeof($ids);$i++)
+		{
+			$id = $ids[$i];
+			$user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
+			if ($user)
+				$users[$id] = $user;
+		}
+		return $users ? $users : null;
+	}
+	/*
     function: 
 
     args :

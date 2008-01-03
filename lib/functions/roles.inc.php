@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/01/02 21:14:00 $ by $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -37,7 +37,6 @@
  * rev : 20071228 - franciscom - added roleHasRight()
  *       20070901 - franciscom - BUGID 1016
  *       20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
- *       20070702 - franciscom - new get_effective_role()
  */
  
 require_once( dirname(__FILE__). '/lang_api.php' );
@@ -129,40 +128,6 @@ $g_rights_users = $g_rights_users_global;
 $g_propRights_global = array_merge($g_rights_users_global,$g_rights_product);
 $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
-						
-
-/**
- * Gets all testplan related user assignments
- *
- * @param object $db [ref] the db-object
- * @param int $testPlanID the testplan id
- * @return array assoc map with keys taken from the user_id column
- **/
-  //SCHLUNDUS: should be moved inside testplan class
-function getTestPlanUserRoles(&$db,$testPlanID)
-{
-	$query = "SELECT user_id,role_id FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
-	$roles = $db->fetchRowsIntoMap($query,'user_id');
-	return $roles;
-}
-
-/**
- * Gets all testproject related role assignments
- *
- * @param object $db [ref] the db-object
- * @param int $tproject_id 
- * @return array assoc array with keys take from the user_id column
- **/
- //SCHLUNDUS: should be moved inside test_project class
-function getTestProjectUserRoles(&$db,$tproject_id)
-{
-	$query = "SELECT user_id,role_id FROM user_testproject_roles " .
-	         "WHERE testproject_id = {$tproject_id}";
-	$roles = $db->fetchRowsIntoMap($query,'user_id');
-	
-	return $roles;
-}
-
 
 /** 
 * function takes a roleQuestion from a specified link and returns whether 
@@ -172,7 +137,6 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 {
 	return $_SESSION['currentUser']->hasRight($db,$roleQuestion,$tprojectID,$tplanID);
 }
-
 
 /*
   function: 
@@ -204,7 +168,6 @@ function propagateRights($fromRights,$propRights,&$toRights)
  * @since 20.02.2006, 20:30:07
  *
  **/
- //SCHLUNDUS: return value will be changed later to yes or no
 function checkForRights($rights,$roleQuestion,$bAND = 1)
 {
 	$ret = null;
@@ -229,33 +192,6 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 		$ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
 	
 	return $ret;
-}
-
-/*
-  function: get_effective_role()
-
-  args : $user_id
-         $tproject_id
-         $tplan_id
-         
-  
-  returns: effetive_role in context ($tproject_id,$tplan_id)
-
-*/
-function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
-{
-	$user = tlUser::getById($db,$user_id);
-	$default_role = $user->globalRoleID;
-	$tprojects_role = $user->tprojectRoles;
-	$tplans_role = $user->tplanRoles;
-
-	$effective_role = $default_role;
-	if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
-		$effective_role = $tplans_role[$tplan_id]->dbID;  
-	else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
-		$effective_role = $tprojects_role[$tproject_id]->dbID;  
-	
-	return $effective_role;
 }
 
 /*
@@ -286,46 +222,36 @@ function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
   
 
 */
+//SCHLUNDUS: removed code by using the roles in the tlUser class, so additional queries for the testproject-user-roles aren't needed
+//also removed the SQL related code, should be done inside the users class
 function get_tproject_effective_role(&$db,$tproject_id,$user_id = null)
 {
-	$filter = null;
-	if(!is_null($user_id))
-	{
-		$filter = " WHERE id";
-		if(is_array($user_id))
-			$filter .= " IN (" . implode(',',$user_id) . ") ";
-		else
-			$filter .= " = {$user_id} ";    
-	}
- 
 	$effective_role = array();
-	$users = tlUser::getAll($db,$filter,"id");
+	if (!is_null($user_id))
+		$users = tlUser::getByIDs($db,(array)$user_id);
+	else
+		$users = tlUser::getAll($db);
 	if ($users)
 	{
 		foreach($users as $id => $user)
 		{
+			$isInherited = 1;
+			$effectiveRoleID = $user->globalRoleID;
+			
+			if(isset($user->tprojectRoles[$tproject_id]))
+			{
+				$isInherited = 0;
+				$effectiveRoleID = $user->tprojectRoles[$tproject_id]->dbID;
+			}  
+
 			$effective_role[$id] = array('login' => $user->login,
 										 'user_role_id' => $user->globalRoleID,
 										 'uplayer_role_id' => $user->globalRoleID,
 										 'uplayer_is_inherited' => 0,
-										 'effective_role_id' => $user->globalRoleID,
-										 'is_inherited' => 1);
+										 'effective_role_id' => $effectiveRoleID,
+										 'is_inherited' => $isInherited);
 		}  
 	}
-	$tproject_users_role = getTestProjectUserRoles($db,$tproject_id);
-  
-	if(!is_null($tproject_users_role))
-	{
-		foreach($effective_role as $user_id => $row)
-		{
-			if(isset($tproject_users_role[$user_id]))
-			{
-				$effective_role[$user_id]['is_inherited'] = 0;
-				$effective_role[$user_id]['effective_role_id'] = $tproject_users_role[$user_id]['role_id'];
-			}
-		}  
-	}
-
 	return $effective_role;
 }
 
@@ -360,32 +286,29 @@ function get_tproject_effective_role(&$db,$tproject_id,$user_id = null)
   
 
 */
-function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id=null)
+//SCHLUNDUS: combined the two loops to one
+function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id = null)
 {
-  $effective_role=array();
-  $effective_role=get_tproject_effective_role($db,$tproject_id,$user_id);   
+	$effective_role = get_tproject_effective_role($db,$tproject_id,$user_id);   
 
-  foreach($effective_role as $user_id => $row)
-  {
-    $effective_role[$user_id]['uplayer_role_id']=$effective_role[$user_id]['effective_role_id'];
-    $effective_role[$user_id]['uplayer_is_inherited']=$effective_role[$user_id]['is_inherited'];
-    $effective_role[$user_id]['is_inherited']=1;
-  }
-  
-  $tplan_users_role = getTestPlanUserRoles($db,$tplan_id);
-  if( !is_null($tplan_users_role) )
-  {
-    foreach($effective_role as $user_id => $row)
-    {
-      if( isset($tplan_users_role[$user_id]) )
-      {
-        $effective_role[$user_id]['is_inherited']=0;
-        $effective_role[$user_id]['effective_role_id']=$tplan_users_role[$user_id]['role_id'];  
-      }
-    }  
-  }
+	$tplan = new testplan($db);
+	$tplan_users_role = $tplan->getUserRoleIDs($tplan_id);
 
-  return $effective_role;
+	foreach($effective_role as $user_id => $row)
+	{
+		$isInherited = 1;
+		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
+		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
+		
+		if(isset($tplan_users_role[$user_id]))
+		{
+			$isInherited = 0;
+			$effective_role[$user_id]['effective_role_id'] = $tplan_users_role[$user_id]['role_id'];  
+		}
+
+		$effective_role[$user_id]['is_inherited'] = $isInherited;
+	}
+	return $effective_role;
 }
 
 function getRoleErrorMessage($code)

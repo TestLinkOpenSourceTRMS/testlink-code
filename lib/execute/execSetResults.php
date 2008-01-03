@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2007/12/28 22:39:57 $ $Author: schlundus $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
  *
  * 20071224 - franciscom - refactoring
  * 20071113 - franciscom - added contribution History for all builds.
@@ -49,7 +49,7 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
 $build_info = $build_mgr->get_by_id($args->build_id);
 
-$exec_mode = initializeExecMode($db,$exec_cfg,$args->user_id,$args->tproject_id,$args->tplan_id);
+$exec_mode = initializeExecMode($db,$exec_cfg,$args->user,$args->tproject_id,$args->tplan_id);
 $has_exec_right = (has_rights($db,"testplan_execute")=="yes" ? 1 : 0);
 
 if (!strlen($args->level))
@@ -242,7 +242,7 @@ if(!is_null($linked_tcversions))
     {
       // 20070105 - added $testproject_id
       // 20071224 - $testproject_id -> args->tproject_id 
-    	$submitResult = write_execution($db,$args->user_id,$_REQUEST,$args->tproject_id,
+    	$submitResult = write_execution($db,$args->user->dbID,$_REQUEST,$args->tproject_id,
     	                                $args->tplan_id,$args->build_id,$map_last_exec);
     }
 
@@ -307,7 +307,7 @@ if( !is_null($map_last_exec) )
 
   // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
   $can_execute=$has_exec_right && ($build_info['is_open']==1);
-  $map_last_exec=setCanExecute($map_last_exec,$exec_mode,$can_execute,$args->user_id);
+  $map_last_exec=setCanExecute($map_last_exec,$exec_mode,$can_execute,$args->user->dbID);
 }
 
 // --------------------------------------------------------------------
@@ -352,7 +352,7 @@ $smarty->assign('owner', $args->filter_assigned_to);
 $smarty->assign('ownerDisplayName', $ownerDisplayName);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
-$smarty->assign('tester_id',$args->user_id);
+$smarty->assign('tester_id',$args->user->dbID);
 $smarty->display($template_dir . $g_tpl['execSetResults']);
 
 /*
@@ -363,6 +363,7 @@ $smarty->display($template_dir . $g_tpl['execSetResults']);
   returns: 
 
 */
+//SCHLUNDUS: changed the user_id to the currentUser of the session
 function init_args()
 {
  	$_REQUEST = strings_stripSlashes($_REQUEST);
@@ -390,7 +391,7 @@ function init_args()
 
 	$args->tproject_id = $_SESSION['testprojectID'];
 	$args->tplan_id = $_SESSION['testPlanId'];
-	$args->user_id = $_SESSION['userID'];
+	$args->user = $_SESSION['currentUser'];
 
 	return $args;  
 }
@@ -635,13 +636,12 @@ function do_remote_execution(&$db,$tc_versions)
   returns: 
 
 */
-function initializeExecMode(&$db,$exec_cfg,$user_id,$tproject_id,$tplan_id)
+function initializeExecMode(&$db,$exec_cfg,$user,$tproject_id,$tplan_id)
 {
-    $effective_role = get_effective_role($db,$user_id,$tproject_id,$tplan_id);
+    $effective_role = $user->getEffectiveRole($db,$tproject_id,$tplan_id);
+	//SCHLUNDUS: hmm, for user defined roles, this wont work correctly
 	return ($effective_role == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
-  
-} // function end
-
+}
 
 /*
   function: 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/12/31 17:15:47 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -259,6 +259,10 @@ class tlRole extends tlDBObject
 		
 		return $roles;
 	}
+	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod("getByIDs");
+	}
 }
 
 class tlRight extends tlDBObject
@@ -306,6 +310,11 @@ class tlRight extends tlDBObject
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
 	
+	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod("getByIDs");
+	}
+
 	static public function getAll(&$db,$whereClause = null,$column = null,
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{

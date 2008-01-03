@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.3 2008/01/02 15:29:29 franciscom Exp $
+ * $Id: xmlrpc.php,v 1.4 2008/01/03 11:51:30 franciscom Exp $
  */
  
 /**
@@ -19,7 +19,9 @@
  * @package 	TestlinkAPI
  * @link        http://testlink.org/api/
  * 
-
+ *
+ * rev :
+ *      20080103 - franciscom - fixed minor bugs due to refactoring
  */
 
 /** 
@@ -60,6 +62,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   private $testsuites_table="testsuites";
   private $builds_table="builds";
   private $executions_table="executions";  
+  private $testplan_tcversions_table="testplan_tcversions";
   
 
 	
@@ -403,7 +406,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{    		
     		// See if this Test Suite ID exists in the db
 			$testsuiteid = $this->dbObj->prepare_int($this->args[self::$testSuiteIDParamName]);
-        	$query = "SELECT id FROM {$this->testsuites} WHERE id={$testsuiteid}";
+        	$query = "SELECT id FROM {$this->testsuites_table} WHERE id={$testsuiteid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -706,7 +709,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         else
         {        	                		
         	$devKey = $this->dbObj->prepare_string($devKey);
-        	$query = "SELECT id FROM {$api_developer_keys_table} WHERE developer_key='{$devKey}'";
+        	$query = "SELECT id FROM {$this->api_developer_keys_table} WHERE developer_key='{$devKey}'";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -716,7 +719,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         	{
         		$this->devKey = $devKey;
         		// set the userID based on this valid devKey
-        		$query = "SELECT user_id FROM {$api_developer_keys_table} WHERE developer_key='{$devKey}'";
+        		$query = "SELECT user_id FROM {$this->api_developer_keys_table} WHERE developer_key='{$devKey}'";
         		$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "user_id");
         		         	
         		return true;
@@ -749,7 +752,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	
     	// get all versions of the testcase in the nodes_hierarchy    	
     	$query = "SELECT nodes_hierarchy.id AS id " .
-    	         " FROM {$this->nodes_hierarchy}, {$this->node_types} " .
+    	         " FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
     			"WHERE nodes_hierarchy.parent_id=$tcid AND node_type_id=node_types.id " .
     			"AND node_types.description='testcase_version'";
     	$result = $this->dbObj->fetchColumnsIntoArray($query, "id");
@@ -758,7 +761,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{
 	    	// determine which version if any is part of the test plan 
 	    	$versionQuery = "SELECT tcversion_id " .
-	    	                " FROM {$this->testplan_tcversions} WHERE tcversion_id IN(" . 
+	    	                " FROM {$this->testplan_tcversions_table} WHERE tcversion_id IN(" . 
 	    				implode(",", $result) . ") AND testplan_id=$tpid";
 	    	$versionResult = $this->dbObj->fetchFirstRowSingleColumn($versionQuery, "tcversion_id");			      	
 	    	if(null == $versionResult)
@@ -915,7 +918,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */		
 	protected function getLatestBuildForTestPlan($tplan_id)
 	{     	                		
-    	$devKey = $this->dbObj->prepare_int($tpid);
+    	$devKey = $this->dbObj->prepare_int($tplan_id);
     	$query = "SELECT max(id) AS id FROM {$this->builds_table} WHERE testplan_id={$tplan_id}";
     	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
     	if(null == $result)
@@ -947,10 +950,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$execution_type = TESTCASE_EXECUTION_TYPE_AUTO;
 		
 		$query = "INSERT INTO {$this->executions_table} (build_id, tester_id, execution_ts, status, " .
-				     "testplan_id, tcversion_id, execution_type) "
+				     "testplan_id, tcversion_id, execution_type) " .
 				     "VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
 				     "{$tcversion_id},{$execution_type})";
-				
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id();		
 	}
@@ -975,7 +977,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}		
 		// TODO: set the active and is_open flags		
 		
-		$query = "INSERT INTO {$builds_name} (testplan_id, name, notes) " .
+		$query = "INSERT INTO {$this->builds_name} (testplan_id, name, notes) " .
 				     "VALUES(" . $testplan_id . "," . "'" . $name . "'," .	"'" . $notes . "')";
 				
 		$this->dbObj->exec_query($query);

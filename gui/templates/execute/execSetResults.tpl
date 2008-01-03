@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.6 2007/12/31 16:24:34 franciscom Exp $
+$Id: execSetResults.tpl,v 1.7 2008/01/03 11:52:34 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes
@@ -39,6 +39,7 @@ Rev:
              test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
+	           execution_type_manual,execution_type_auto,run_mode,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
 
 
@@ -331,7 +332,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}  
 				<th style="text-align:left">{$labels.test_exec_by}</th>
-				<th style="text-align:left">{$labels.exec_status}</th>
+				<th style="text-align:center">{$labels.exec_status}</th>
 			
 				{if $att_model->show_upload_column && !$att_download_only}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
@@ -347,6 +348,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
           <th style="text-align:left">{$labels.delete}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
+
+        {* 20080103 - franciscom *}
+        <th style="text-align:left">{$labels.run_mode}</th>
+        {assign var="my_colspan" value=$my_colspan+1}
 
 
 			 </tr>
@@ -366,7 +371,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				{/if}
   				
   				<td>{$alluserInfo[$tc_old_exec.tester_id]->getDisplayName()|escape}</td> 
-  				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
+  				<td class="{$gsmarty_tc_status_css.$tc_status_code}" style="text-align:center">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
             
@@ -394,6 +399,17 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       			         style="border:none" /></a>
               </td>
           {/if}
+
+       		<td class="icon_cell" align="center">
+       		  {if $tc_old_exec.execution_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
+      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}" 
+      		            style="border:none" />
+       		  {else}
+      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bullet_wrench.png" title="{$labels.execution_type_auto}" 
+      		            style="border:none" />
+       		  {/if}
+          </td>
+
 
             
   			</tr>  

@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.78 $
- * @modified $Date: 2007/12/20 20:36:35 $ $Author: schlundus $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/01/03 11:53:53 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20080103 - franciscom - changes in:  get_last_execution()
+ *                                      get_executions()
+ *                         added execution_type column in output recordset
  *
  * 20071209 - franciscom - fixed bug - no display of custom fields when editing TC
  *                                   - no display of custom fields when executing TC 
@@ -1376,6 +1379,7 @@ function deleteKeywords($tcID,$kwID = null)
                   status: execution status
                   execution_notes
                   execution_ts
+                  execution_type: see const.inc.php TESTCASE_EXECUTION_TYPE_ constants
                   build_id
                   build_name
                   build_is_active
@@ -1433,7 +1437,8 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 	        $where_clause  .= " AND e.id <> {$exec_id_list} ";
 			}
 	}
-  // --------------------------------------------------------------------	
+  // --------------------------------------------------------------------
+  // 20080103 - franciscom - added execution_type 	
   // 20071113 - franciscom - added JOIN builds b ON e.build_id=b.id
   //
   $sql="SELECT	NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
@@ -1442,7 +1447,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 		    users.last AS tester_last_name,
 			  users.id AS tester_id, 
 		    e.id AS execution_id, e.status, 
-		    e.notes AS execution_notes, e.execution_ts, e.build_id AS build_id,
+		    e.notes AS execution_notes, e.execution_ts, e.execution_type,e.build_id AS build_id,
 		    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
 	      FROM nodes_hierarchy NHA
         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
@@ -1473,6 +1478,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
            value: map with following keys:
             			execution_id
             			status: execution status
+                  execution_type: see const.inc.php TESTCASE_EXECUTION_TYPE_ constants
             			name: testcase name
             			testcase_id
             			tsuite_id: parent testsuite of testcase (node id)
@@ -1500,7 +1506,8 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
             			build_is_open
             			
    rev:
-       added build_is_active, build_is_open         			
+       20080103 - franciscom - added execution_type
+       
 
 */
 function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executions=0)
@@ -1575,10 +1582,11 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
      $executions_join .= " AND e.status IS NOT NULL ";
   }
 
+  // 20080103 - franciscom - added execution_type in recordset 
   // 20060921 - franciscom - 
   // added NHB.parent_id  to get same order as in the navigator tree
   //
-  $sql="SELECT e.id AS execution_id, e.status,
+  $sql="SELECT e.id AS execution_id, e.status,e.execution_type,
         NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
         tcversions.*, 
 		    users.login AS tester_login,

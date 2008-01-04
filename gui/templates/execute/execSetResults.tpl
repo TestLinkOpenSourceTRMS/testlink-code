@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.7 2008/01/03 11:52:34 franciscom Exp $
+$Id: execSetResults.tpl,v 1.8 2008/01/04 16:17:49 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes
@@ -487,7 +487,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   </div> 
 
   <br />
-
+  
   {* ----------------------------------------------------------------------------------- *}
   <div>
     {include file="execute/inc_exec_test_spec.tpl" 
@@ -503,6 +503,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       {include file="execute/inc_exec_controls.tpl"
                args_input_enable_mgmt=$input_enabled_disabled
                args_tcversion_id=$tcversion_id 
+               args_webeditor=$exec_notes_editors[$tc_id]
                args_labels=$labels}
 	  {/if}
  	  {if $tc_exec.active eq 0}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.1 2007/12/25 20:16:18 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.2 2008/01/04 16:17:49 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -11,8 +11,7 @@ Rev:
   		<tr>
   			<td rowspan="2" align="center">
   				<div class="title">{$args_labels.test_exec_notes}</div>
-  				<textarea {$args_input_enabled_disabled} class="tcDesc" name='notes[{$args_tcversion_id}]' 
-  					rows="10" style="width:99%"></textarea>			
+          {$args_webeditor} 
   			</td>
   			<td valign="top" style="width:30%">			
     				{* status of test *}

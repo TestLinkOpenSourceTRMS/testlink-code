@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2008/01/03 20:44:06 $  $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2008/01/04 20:27:23 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080104 - franciscom - fixed bug on gen_combo_test_suites()
+ *                         due to wrong exclusion in get_subtree().
  * 20071111 - franciscom - new method get_subtree();
  * 20071106 - franciscom - createReqSpec() - changed return type
  * 20071104 - franciscom - get_accessible_for_user
@@ -23,6 +25,9 @@ require_once( dirname(__FILE__) . '/keyword.class.php');
 
 class testproject extends tlObjectWithAttachments
 {
+  const RECURSIVE_MODE=true;
+  const EXCLUDE_TESTCASES=true;  
+  
 	var $db;
 	var $tree_manager;
   var $cfield_mgr;
@@ -330,18 +335,29 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 
   args: id: testsuite id
         [recursive_mode]: default false
+        [exclude_testcases]: default: false
+        [exclude_branches]
+        [and_not_in_clause]
         
   
   returns: map
            see tree->get_subtree() for details.
 
+  rev : 20080104 - franciscom - added exclude_testcases
+   
 */
-function get_subtree($id,$recursive_mode=false,$exclude_branches=null, $and_not_in_clause='')
+function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
+                     $exclude_branches=null, $and_not_in_clause='')
 {
-  $exclude_branches=null; 
-  $and_not_in_clause='';
   
-	$subtree = $this->tree_manager->get_subtree($id,$this->nt2exclude,
+	// 20080104 - franciscom
+  $exclude_node_types=$this->nt2exclude; 
+  if($exclude_testcases)
+  {
+    $exclude_node_types['testcase']='exclude me';
+  }
+	
+	$subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,
 	                                                $this->nt2exclude_children,
 	                                                $exclude_branches,
 	                                                $and_not_in_clause,
@@ -478,16 +494,9 @@ function count_testcases($id)
   */
 	function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
 	{
-	  $NO_RECURSIVE_MODE=false;
 		$aa = array(); 
-	
-	  // 20071111 - franciscom
-		$test_spec = $this->get_subtree($id,$NO_RECURSIVE_MODE,$exclude_branches);
-	  
-		$hash_descr_id = $this->tree_manager->get_available_node_types();
-		$hash_id_descr = array_flip($hash_descr_id);
-	  
-	  
+		$test_spec = $this->get_subtree($id,!self::RECURSIVE_MODE,self::EXCLUDE_TESTCASES,$exclude_branches);
+  
 		if(count($test_spec))
 		{
 			$pivot = $test_spec[0];

@@ -4,9 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2008/01/01 16:38:17 $  by $Author: schlundus $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2008/01/04 20:27:23 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
+ *
+ * 20080104 - franciscom - REQID 12xx - added logic to manage copy/move on top or bottom
  *
  * 20071201 - franciscom - new web editor code
  * 20071106 - BUGID 1165 
@@ -36,8 +38,6 @@ $spec_cfg=config_get('spec_cfg');
 
 $tcase_template_cfg=config_get('testcase_template');
 
-
-// --------------------------------------------------------------------
 // create web editor objects
 //
 // When using tinymce or none as web editor, we need to set rows and cols
@@ -45,7 +45,6 @@ $tcase_template_cfg=config_get('testcase_template');
 // null => use default values defined on editor class file
 //
 // Rows and Cols values are useless for FCKeditor
-//
 //
 $a_oWebEditor_cfg = array('summary' => array('rows'=> null,'cols' => null),
                           'steps' => array('rows'=> null,'cols' => 38) ,
@@ -55,7 +54,6 @@ foreach ($a_oWebEditor_cfg as $key => $value)
 {
 	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref']);
 }
-// --------------------------------------------------------------------
 
 $show_newTC_form = 0;
 $args=init_args($spec_cfg);
@@ -73,11 +71,6 @@ $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 $opt_cfg->js_ot_name = 'ot';
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keywords_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
-
-// manage the forms to collect data
-
-
-// really do the operation requested
 
 $active_status=0;
 $action_result = "deactivate_this_version";
@@ -210,7 +203,6 @@ else if($args->do_update)
 else if($args->create_tc)
 {
 	$show_newTC_form = 1;
-
 	$opt_cfg->to->map=array();
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
 	$smarty->assign('opt_cfg', $opt_cfg);
@@ -377,6 +369,8 @@ else if($args->move_copy_tc)
      $move_enabled=0;  
   }
 
+  $smarty->assign('top_checked','checked=checked');
+  $smarty->assign('bottom_checked','');
 	$smarty->assign('old_container', $the_tc_node['parent_id']); // original container
 	$smarty->assign('array_container', $the_xx);
 	$smarty->assign('testcase_id', $args->tcase_id);
@@ -393,32 +387,61 @@ else if($args->do_move)
 }
 else if($args->do_copy)
 {
-  $user_feedback=''; 
-	$msg = '';
-	$action_result = 'copied';
-	$result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
-	                              config_get('check_names_for_duplicates'),'block');
-	$msg = $result['msg'];
- 
-  if($result['msg'] == "ok" )
-  {
-    $ts_sep=config_get('testsuite_sep');
-    $tc_info=$tcase_mgr->get_by_id($args->tcase_id);
-    $container_info=$tree_mgr->get_node_hierachy_info($args->new_container_id);
-    $container_path=$tree_mgr->get_path($args->new_container_id);
-    $path='';
-    foreach($container_path as $key => $value)
+    $user_feedback=''; 
+	  $msg = '';
+	  $action_result = 'copied';
+    switch ($args->target_position)
     {
-      $path .= $value['name'] . $ts_sep;
+        case 'top':
+        $exclude=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
+        $children=$tree_mgr->get_children($args->new_container_id,$exclude);
+        break;
     }
-    $path=trim($path,$ts_sep);
-    $user_feedback=sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
-  }	
-	$smarty->assign('refreshTree',$args->do_refresh);
-	
-	$do_refresh_yes_no=$args->do_refresh?"yes":"no";
-	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id,$args->tcversion_id,
-	                 $action_result,$msg,$do_refresh_yes_no,$user_feedback);
+
+	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
+	                                config_get('check_names_for_duplicates'),'block');
+	  $msg = $result['msg'];
+    if( $msg == "ok" )
+    {
+      // 20080104 - franciscom - now adjust order
+      $no=array();
+      switch ($args->target_position)
+      {
+          case 'top':
+          $no[]=$result['id'];
+          if( !is_null($children) )
+          {
+              foreach($children as $key => $value)
+              {
+                  $no[]=$value['id'];
+              }    
+          }
+          break;
+            
+          case 'bottom':  
+          $new_order=getBottomOrder($db,$args->new_container_id)+1;
+          $no[$new_order]=$result['id'];
+          break;
+      }
+      $tree_mgr->change_order_bulk($no);    
+    
+      $ts_sep=config_get('testsuite_sep');
+      $tc_info=$tcase_mgr->get_by_id($args->tcase_id);
+      $container_info=$tree_mgr->get_node_hierachy_info($args->new_container_id);
+      $container_path=$tree_mgr->get_path($args->new_container_id);
+      $path='';
+      foreach($container_path as $key => $value)
+      {
+        $path .= $value['name'] . $ts_sep;
+      }
+      $path=trim($path,$ts_sep);
+      $user_feedback=sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
+    }	
+	  $smarty->assign('refreshTree',$args->do_refresh);
+	  
+	  $do_refresh_yes_no=$args->do_refresh?"yes":"no";
+	  $tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id,$args->tcversion_id,
+	                   $action_result,$msg,$do_refresh_yes_no,$user_feedback);
 }
 else if($args->do_create_new_version)
 {
@@ -485,16 +508,12 @@ if ($show_newTC_form)
   } // foreach ($a_oWebEditor_cfg as $key)
   // ------------------------------------------------------------------------
 
-
   $cf_smarty = '';
   if($gui_cfg->enable_custom_fields) 
   {
-    echo "<pre>debug 20071209 - \ - " . __FUNCTION__ . " --- "; print_r($args->container_id); echo "</pre>";
 	  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
   }
   $smarty->assign('cf',$cf_smarty);	
-	// ------------------------------------------------------------------------------------------------------
-	
 	$smarty->display($template_dir . $g_tpl['tcNew']);
 }
 ?>
@@ -572,6 +591,8 @@ function init_args($spec_cfg)
   $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
   $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
 
+  $args->target_position=isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
+
 
   // from session
   $args->testproject_id = $_SESSION['testprojectID'];
@@ -585,4 +606,36 @@ function init_args($spec_cfg)
 
   return $args;
 }
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function getTopOrder(&$db,$parentID)
+{
+    $sql="SELECT MIN(node_order) AS TOP_ORDER" .
+         " FROM nodes_hierarchy " . 
+         " WHERE parent_id={$parentID} " .
+         " GROUP BY parent_id";
+    $rs=$db->get_recordset($sql);
+    
+    return $rs[0]['TOP_ORDER'];     
+}
+
+function getBottomOrder(&$db,$parentID)
+{
+    $sql="SELECT MAX(node_order) AS TOP_ORDER" .
+         " FROM nodes_hierarchy " . 
+         " WHERE parent_id={$parentID} " .
+         " GROUP BY parent_id";
+    $rs=$db->get_recordset($sql);
+    
+    return $rs[0]['TOP_ORDER'];     
+}
+
+
 ?>

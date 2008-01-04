@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/01/03 11:53:53 $ $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/01/04 20:27:23 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080103 - franciscom - changes in:  get_last_execution()
@@ -1776,7 +1776,9 @@ function copy_attachments($source_id,$target_id)
 			if($status_ok)
 			{
 				$attachment = new tlAttachment();
-				$attachment->create($target_id,$table_name,$value['file_name'],$destFPath,$file_contents,$value['file_type'],$value['file_size'],$value['title']);
+				$attachment->create($target_id,$table_name,$value['file_name'],
+				                    $destFPath,$file_contents,$value['file_type'],
+				                    $value['file_size'],$value['title']);
 				$attachment->writeToDb($db);
 			}
 		}
@@ -1897,7 +1899,6 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 	
 	if($scope == 'design')
 	{
-	  echo "id $id - parent_id $parent_id";
 		$cf_map = $this->get_linked_cfields_at_design($id,$parent_id);
 	}
 	else

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.36 2008/01/02 18:52:49 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.37 2008/01/04 20:30:23 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -135,11 +135,9 @@ $adminpass = '';
 
 // do some database checks
 echo "</b><br />Creating connection to Database Server:<b> ";
-echo "<pre>debug 20080102 - \$db_type - " . __FUNCTION__ . " --- "; print_r($db_type); echo "</pre>";
 
 // ------------------------------------------------------------------------------------------------
 // Connect to DB Server without choosing an specific database
-// $db_type='coco';
 $db = new database($db_type);
 define('NO_DSN',FALSE);
 $conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.11 2008/01/03 20:44:06 schlundus Exp $
-* @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.12 2008/01/04 20:31:21 franciscom Exp $
+* @modified $Date: 2008/01/04 20:31:21 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 **/
@@ -19,10 +19,13 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 {
 	//the name of the keyword
 	public $name;
+
 	//the notes for the keyword
 	public $notes;
+
 	// the testprojectID the keyword belongs to
 	public $testprojectID;
+
 	// config valuze
 	protected $allowDuplicateKeywords; 
 	

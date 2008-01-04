@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: int_serialization.php,v $
 * 
-* @version $Id: int_serialization.php,v 1.6 2008/01/03 20:44:06 schlundus Exp $
-* @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
+* @version $Id: int_serialization.php,v 1.7 2008/01/04 20:31:21 franciscom Exp $
+* @modified $Date: 2008/01/04 20:31:21 $ by $Author: franciscom $
 *
 **/
 
@@ -20,6 +20,7 @@ interface iSerialization
 				     value = Format name (humand readable)	
 	*/
 	public function getSupportedSerializationInterfaces();
+
 	/*
              	Returns all supported Import/Export Serialization Interfaces Format Descriptor
 		  
@@ -41,6 +42,7 @@ interface iSerializationToCSV
 		@return int, tl::OK on success, other error code else 
 	*/
 	public function writeToCSV(&$csv,$delimiter = ';');
+
 	/*
 		Serializes the objects from csv (string)
 		
@@ -66,6 +68,7 @@ interface iSerializationToXML
 		@return int, tl::OK on success, other error code else 
 	*/
 	public function writeToXML(&$xml,$bNoHeader = false);
+
 	/*
 		Serializes the objects from XML code (string)
 		
@@ -99,6 +102,7 @@ interface iDBSerialization
 		@return int, tl::OK on success, other error code else 
 	*/
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID);
+
 	/*
 		Serializes the object from the database connection given by [ref] $db
 		
@@ -120,7 +124,8 @@ interface iDBSerialization
 	
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL);
 	
 }
 ?>

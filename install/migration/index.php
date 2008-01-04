@@ -1,9 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.5 2007/12/31 17:16:02 franciscom Exp $ 
+$Id: index.php,v 1.6 2008/01/04 20:30:23 franciscom Exp $ 
 
-20060218 - franciscom
+rev :
+     20080103 - franciscom - removed setting of $_SESSION['testlink_version']
+                             fixed path to images
 */
 
 if( !isset($_SESSION) )
@@ -11,10 +13,7 @@ if( !isset($_SESSION) )
   session_start();
 }
 $_SESSION['session_test'] = 1;
-
-// 20060523 - franciscom - configure before creating a new release
-$_SESSION['testlink_version']='1.7.x';
-$operation='Migration from 1.6.2';
+$operation='Migration from 1.6.2 to 1.7.x';
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -30,7 +29,7 @@ $operation='Migration from 1.6.2';
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> </span></td>
+    <td><span class="headers">&nbsp;<img src="../img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> </span></td>
     <td align="right"><span class="headers"><?php echo $operation ?></span></td>
   </tr>
   <tr class="fancyRow2">
@@ -45,7 +44,8 @@ $operation='Migration from 1.6.2';
       </p>
       
       <ul>
-      <li> Migration is supported ONLY from version 1.6.2 MySQL to 1.7.0 MySQL</li>
+      <li> Migration is supported ONLY from version 1.6.2 to 1.7.x</li>
+      <li> MySQL is only Database type supported.</li>
       <li>No changes will be made to the 1.6.2 database (source database)</li>
       <li>The following items IDs will be preserved:
           <ul>

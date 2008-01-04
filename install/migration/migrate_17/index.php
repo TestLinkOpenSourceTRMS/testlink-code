@@ -1,9 +1,12 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.1 2008/01/02 11:34:21 franciscom Exp $ 
-
+$Id: index.php,v 1.2 2008/01/04 20:30:23 franciscom Exp $ 
 Author: franciscom
+
+rev :
+     20080103 - franciscom - fixed path to images
+
 */
 
 if( !isset($_SESSION) )
@@ -13,8 +16,7 @@ if( !isset($_SESSION) )
 $_SESSION['session_test'] = 1;
 
 // configure before creating a new release
-$_SESSION['testlink_version']='1.8.0';
-$operation='Migration from 1.7.2';
+$operation='Migration from 1.7.2 (or greater)';
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -30,7 +32,7 @@ $operation='Migration from 1.7.2';
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="../img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> </span></td>
+    <td><span class="headers">&nbsp;<img src="../../img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> </span></td>
     <td align="right"><span class="headers"><?php echo $operation ?></span></td>
   </tr>
   <tr class="fancyRow2">
@@ -45,7 +47,7 @@ $operation='Migration from 1.7.2';
       </p>
       
       <ul>
-      <li> Migration is supported ONLY from version 1.7.2 to 1.8.0 </li>
+      <li> Migration is supported ONLY from version 1.7.2 (or greater) to 1.8.0 </li>
       <li> <span class="headers">Changes will be made to the 1.7.2 database (source database)<br>
                                  Please Backup DB before start</span></li>
       <li>    

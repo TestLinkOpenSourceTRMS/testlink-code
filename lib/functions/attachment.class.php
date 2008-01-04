@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/04 20:31:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
 */
@@ -119,11 +119,12 @@ class tlAttachment extends tlDBObject
 		
 		return tl::OK;
 	}
+	
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
 		$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,".
-				"compression_type,file_path,fk_id,fk_table FROM attachments ";
+				     "compression_type,file_path,fk_id,fk_table FROM attachments ";
 				
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)

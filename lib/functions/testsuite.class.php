@@ -2,16 +2,15 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/12/03 20:42:27 $ - $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/01/04 20:31:21 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
  * 20071101 - franciscom - import_file_types, export_file_types
  * 
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
- * 20070602 - franciscom - added 
- nt copy on copy_to() method
+ * 20070602 - franciscom - added  nt copy on copy_to() method
  *                         using testcase copy_attachment() method.
  *                         added delete attachments. 
  *                         added remove of custom field values 
@@ -487,9 +486,7 @@ function copy_to($id, $parent_id, $user_id,
 	$new_tsuite_id = $ret['id'];
   $tcase_mgr->copy_attachments($id,$new_tsuite_id);
 	
-	// 20071111 - franciscom
 	$subtree = $this->tree_manager->get_subtree($id);
-	
 	if (!is_null($subtree))
 	{
 	  $parent_decode=array();

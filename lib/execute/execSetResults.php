@@ -4,9 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/01/04 16:34:54 $ $Author: franciscom $
  *
+ * 20080104 - franciscom - REQ 1232 - web editor on execution notes
+ *                         added createExecNotesWebEditor()
  * 20071224 - franciscom - refactoring
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -22,6 +24,8 @@ require_once('common.php');
 require_once('exec.inc.php');
 require_once("builds.inc.php");
 require_once("attachments.inc.php");
+require_once("web_editor.php");
+
 testlinkInitPage($db);
 
 $template_dir = 'execute/';
@@ -318,9 +322,12 @@ if( is_array($tcversion_id) )
 }
 // --------------------------------------------------------------------
 
+$execNotesInputs=createExecNotesWebEditor($map_last_exec,$_SESSION['basehref']);
+
 
 
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+$smarty->assign('exec_notes_editors', $execNotesInputs);
 $smarty->assign('exec_mode', $exec_mode);
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
@@ -373,9 +380,9 @@ function init_args()
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 
 	$key2loop = array('id' => 0,'build_id' =>0, 'keyword_id' => 0, 'exec_to_delete' => 0, 
-				  'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0, 
-				  'save_results' => 0, 'do_bulk_save' => 0,
-				  'tc_id' => null, 'filter_assigned_to' => null, 'filter_status' => null);
+				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0, 
+				            'save_results' => 0, 'do_bulk_save' => 0,
+				            'tc_id' => null, 'filter_assigned_to' => null, 'filter_status' => null);
 
 	foreach($key2loop as $key => $value)
 	{
@@ -639,9 +646,14 @@ function do_remote_execution(&$db,$tc_versions)
 function initializeExecMode(&$db,$exec_cfg,$user,$tproject_id,$tplan_id)
 {
     $effective_role = $user->getEffectiveRole($db,$tproject_id,$tplan_id);
-	//SCHLUNDUS: hmm, for user defined roles, this wont work correctly
-	return ($effective_role == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
-}
+	  
+	  // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
+	  // 20080104 - franciscom - Please explain why do you think will not work ok ?
+	  //                         do you prefer to check for exec right ?
+	  //
+	  return ($effective_role == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
+} // function end
+
 
 /*
   function: 
@@ -716,12 +728,15 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 				case 'assigned_to_me':
 					$execution_enabled = $assigned_to_me;
 					break;
+
 				case 'assigned_to_me_or_free':
 					$execution_enabled = $assigned_to_me || $is_free;
 					break;
+
 				case 'all':
 					$execution_enabled = 1;
 					break;
+
 				default:
 					$execution_enabled = 0;  
 					break;
@@ -731,5 +746,55 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 	}
 	return $exec_info;
 } //function end
+
+
+/*
+  function: createExecNotesWebEditor
+            creates map of html needed to display web editors
+            for execution notes.
+            
+  args: tcversions: array where each element has information
+                    about testcase version that can be executed.
+                    
+        basehref: URL            
+  
+  returns: map
+           key: testcase id
+           value: html to display web editor.
+
+  rev : 20080104 - creation  
+*/
+function createExecNotesWebEditor(&$tcversions,$basehref)
+{
+    // Important Notice:
+    //
+    // When using tinymce or none as web editor, we need to set rows and cols
+    // to appropriate values, to avoid an ugly ui.
+    // null => use default values defined on editor class file
+    //
+    // Rows and Cols values are useless for FCKeditor.
+    //
+    //
+    $a_oWebEditor_cfg = array('summary' => array('rows'=> null,'cols' => null),
+                             'steps' => array('rows'=> null,'cols' => 38) ,
+                          'expected_results' => array('rows'=> null,'cols' => 38));
+
+
+    $idx=0;
+    foreach($tcversions as $key => $tcv)
+    {
+        $tcversion_id=$tcv['id'];
+        $tcase_id=$tcv['testcase_id'];
+
+        $of=web_editor("notes[{$tcversion_id}]",$basehref) ;
+        $of->Value = null;
+        
+        // Magic numbers that can be determined by trial and error
+        $editors[$tcase_id]=$of->CreateHTML(10,60);         
+        unset($of);
+    }
+    return $editors;
+}
+
 
 ?>																																

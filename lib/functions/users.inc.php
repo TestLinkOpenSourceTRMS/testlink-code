@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/01/01 22:20:43 $ $Author: schlundus $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -92,29 +92,33 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 	$the_users=$users;
 	if ($users)
 	{
-    if( !is_null($active_filter) )
-    {
-        $the_users=array();
-		    foreach($users as $id => $user)
-		    {
-		      if($user->bActive == $active_filter)
-		      {
-		    	  $the_users[$id] = $users[$id];
-		    	}  
-		    }
-    }
-  }
-
-	if ($the_users)
-	{
-		if($add_blank_option)
-			$users_map[0] = '';
-		foreach($the_users as $id => $user)
+		if(!is_null($active_filter))
 		{
-			$users_map[$id] = $user->getDisplayName();
+			$the_users=array();
+			foreach($users as $id => $user)
+			{
+				if($user->bActive == $active_filter)
+					$the_users[$id] = $users[$id];
+			}
 		}
 	}
-	return $users_map;
+
+	return buildUserMap($the_users,$add_blank_option);
+}
+
+function buildUserMap($users,$add_blank_option = false)
+{
+	$usersMap = null;
+	if ($users)
+	{
+		if($add_blank_option)
+			$usersMap[0] = '';
+		foreach($users as $id => $user)
+		{
+			$usersMap[$id] = $user->getDisplayName();
+		}
+	}
+	return $usersMap;
 }
 
 /*
@@ -227,25 +231,16 @@ function getAllUsersRoles(&$db,$order_by = null)
   returns: 
 
 */
+//SCHLUNDUS: removed the SQL queries by using the objects
 function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
 {
     $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID);
     $userFilter = array();
-    foreach($users_roles as $keyUserID => $roleInfo)
+	foreach($users_roles as $keyUserID => $roleInfo)
     {
-		if(roleHasRight($db,$roleInfo['effective_role_id'],'testplan_execute') )
-			$userFilter[]=$keyUserID;
+		if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
+			$userFilter[$keyUserID] = $roleInfo['user'];
     } 
-   
-    $testerList='';
-    if( count($userFilter) > 0 && isset($userFilter[0]) )
-    {
-      $testerList=implode("','",$userFilter);  
-    }
-    $whereClause=" WHERE id IN ('{$testerList}') and active = 1";        
-
-
-    $testers = getUsersForHtmlOptions($db,$whereClause,ADD_BLANK_OPTION);
-    return $testers;
+	return buildUserMap($userFilter,true);
 }
 ?>

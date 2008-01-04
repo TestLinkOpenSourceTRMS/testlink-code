@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.15 2008/01/01 22:20:43 schlundus Exp $
-* @modified $Date: 2008/01/01 22:20:43 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.16 2008/01/04 20:30:50 schlundus Exp $
+* @modified $Date: 2008/01/04 20:30:50 $ by $Author: schlundus $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, 
@@ -229,9 +229,9 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		This one can be used to create any tl-managed objects
 		
 		@param object [ref] $db the database connection
-		@param string $query the idsof the objects to be created are obtained by this query
+		@param string $query the ids of the objects to be created are obtained by this query
 		@param string $column the  name of the column which delivers the ids
-		@param string $className the  class name of the object
+		@param string $className the  class name of the objects
 		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, if false they are returned in a normal array
 		@param int $detailLevel the detail level of the object
 		
@@ -242,6 +242,17 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		$ids = $db->fetchColumnsIntoArray($query,$column);
 		return self::createObjectsFromDB($db,$ids,$className,$bAssoc,$detailLevel);
 	}
+	/*
+		This one can be used to create any tl-managed objects
+		
+		@param object [ref] $db the database connection
+		@param array $ids the ids of the objects to be created
+		@param string $className the class name of the objects
+		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, if false they are returned in a normal array
+		@param int $detailLevel the detail level of the object
+		
+		@return the newly created objects on success, or null else
+	*/
 	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$items = null;
@@ -259,6 +270,13 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		}
 		return $items;
 	}
+	/*
+		deletes an tl-Managed object from the DB
+		
+		@param object [rerf] $db the database connection
+		@param int $id the database-id of the object which should be deleted
+		@param string $className the class name of the object
+	*/
 	static public function deleteObjectFromDB(&$db,$id,$className)
 	{
 		if ($id)

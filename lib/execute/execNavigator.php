@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/01/03 20:44:06 $ by $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2008/01/04 20:30:49 $ by $Author: schlundus $
  *
  * 20071229 - franciscom - refactoring tree colouring and counters config
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -43,12 +43,11 @@ if($gui_cfg->enable_custom_fields)
 }
 
 $tplan_mgr = new testplan($db);
-$effective_role = $args->user->getEffectiveRole($db,$args->tproject_id,$args->tplan_id);
 $disable_filter_assigned_to = false;
 $assigned_to_user = '';
-
+$effective_role = $args->user->getEffectiveRole($db,$args->tproject_id,$args->tplan_id);
 //SCHLUNDUS: hmm, for user defined roles, this wont work correctly
-$exec_view_mode = ($effective_role == TL_ROLES_TESTER) ? $exec_cfg->view_mode->tester : 'all';
+$exec_view_mode = ($effective_role->dbID == TL_ROLES_TESTER) ? $exec_cfg->view_mode->tester : 'all';
 switch ($exec_view_mode)
 {
 	case 'all':

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/01/04 16:34:54 $ $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
  *
  * 20080104 - franciscom - REQ 1232 - web editor on execution notes
  *                         added createExecNotesWebEditor()
@@ -651,7 +651,10 @@ function initializeExecMode(&$db,$exec_cfg,$user,$tproject_id,$tplan_id)
 	  // 20080104 - franciscom - Please explain why do you think will not work ok ?
 	  //                         do you prefer to check for exec right ?
 	  //
-	  return ($effective_role == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
+	  // SCHLUNDUS: jep, exactly. If a user defines it own roles than a check for the tester
+	  // role will not do the desired effect of putting the logged in user in tester-view-mode
+	  // instead we must check for presence (and or absence) the right(s) which mades a user a tester 
+	  return ($effective_role->dbID == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
 } // function end
 
 

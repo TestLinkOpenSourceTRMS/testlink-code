@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.6 $
-* @modified $Date: 2008/01/01 22:20:44 $ $Author: schlundus $
+* @version $Revision: 1.7 $
+* @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -70,9 +70,8 @@ if ($args->do_update)
 			$sqlResult = $user->writeToDB($db);
 			if ($sqlResult >= tl::OK && $sessionUserID == $args->user_id)
 			{
-				setUserSession($db,$user->login, $args->user_id, $user->globalRoleID, $user->emailAddress, $user->locale);
-				//refresh the current user
 				$_SESSION['currentUser'] = $user;
+				setUserSession($db,$user->login, $args->user_id, $user->globalRoleID, $user->emailAddress, $user->locale);
 				if (!$args->user_is_active)
 				{
 					header("Location: ../../logout.php");

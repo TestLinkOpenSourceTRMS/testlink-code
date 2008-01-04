@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -197,7 +197,7 @@ class tlRole extends tlDBObject
 	 * @param int $roleID the role id
 	 * @return array returns assoc map with the userids as the keys
 	 **/
-	function getAllUsersWithRole(&$db)
+	public function getAllUsersWithRole(&$db)
 	{
 		$global_users = $this->getUsersWithGlobalRole($db);
 		$tplan_users = $this->getUsersWithTestPlanRole($db);
@@ -207,6 +207,18 @@ class tlRole extends tlDBObject
 		if (!$affectedUsers)
 			$affectedUsers = null;
 		return $affectedUsers;
+	}
+	/*
+		check if a role has requested right
+		
+		@param string $rights the name of the right to check
+		
+		@return bool returns true if present, false else
+	*/
+	public function hasRight($right)
+	{
+		$rights = explode(",",implode(",",(array)$this->rights));
+		return in_array($right,$rights);
 	}
 	
 	protected function deleteRightsFromDB(&$db)

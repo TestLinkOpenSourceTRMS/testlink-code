@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
  *
  */
 
@@ -324,19 +324,19 @@ class tlUser extends tlDBObject
 		@param int $tproject_id the testproject id
 		@param int $tplan_id the plan id
   
-		@return int id of the effective role
+		@return tlRole the effective role
 	*/
 	function getEffectiveRole(&$db,$tproject_id,$tplan_id)
 	{
-		$default_role = $this->globalRoleID;
+		$default_role = $this->globalRole;
 		$tprojects_role = $this->tprojectRoles;
 		$tplans_role = $this->tplanRoles;
 
 		$effective_role = $default_role;
 		if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
-			$effective_role = $tplans_role[$tplan_id]->dbID;  
+			$effective_role = $tplans_role[$tplan_id];  
 		else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
-			$effective_role = $tprojects_role[$tproject_id]->dbID;  
+			$effective_role = $tprojects_role[$tproject_id];  
 		
 		return $effective_role;
 	}
@@ -348,7 +348,7 @@ class tlUser extends tlDBObject
 		
 		$globalRights = is_null($this->globalRole->rights) ? '' : $this->globalRole->rights;
 		//SCHLUNDUS: hack, will be removed later
-		$globalRights = explode(",",implode(",",$globalRights));
+		$globalRights = explode(",",implode(",",(array)$globalRights));
 		
 		if (!is_null($tplanID))
 			$testPlanID = $tplanID;

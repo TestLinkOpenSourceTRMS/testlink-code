@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.5 $
-* @modified $Date: 2008/01/02 21:14:01 $ $Author: schlundus $
+* @version $Revision: 1.6 $
+* @modified $Date: 2008/01/04 21:03:02 $ $Author: schlundus $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -69,6 +69,8 @@ if ($featureID && $bUpdate && $mgr)
 	}
 	$user_feedback = $roles_updated; 
 }
+$can_manage_users = has_rights($db,"mgt_users");
+
 $userFeatureRoles = null;
 $features = null;
 if ($bTestproject)
@@ -92,7 +94,7 @@ else if($bTestPlan)
 {
 	$activeFeatures = getAllActiveTestPlans($db,$testprojectID,$_SESSION['filter_tp_by_product']);
 	$features = array();
-	if (has_rights($db,"mgt_users"))
+	if ($can_manage_users)
 		$features = $activeFeatures;
 	else
 	{
@@ -125,7 +127,6 @@ else if($bTestPlan)
 }
 if(is_null($features))
 	$user_feedback = $no_features;
-$can_manage_users = has_rights($db,"mgt_users");
 
 $smarty = new TLSmarty();
 $smarty->assign('user_feedback',$user_feedback);

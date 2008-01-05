@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/01/05 17:56:03 $ $Author: franciscom $
  *
  * 20080104 - franciscom - REQ 1232 - web editor on execution notes
  *                         added createExecNotesWebEditor()
@@ -327,6 +327,7 @@ $execNotesInputs=createExecNotesWebEditor($map_last_exec,$_SESSION['basehref']);
 
 
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+$smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 $smarty->assign('exec_notes_editors', $execNotesInputs);
 $smarty->assign('exec_mode', $exec_mode);
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);

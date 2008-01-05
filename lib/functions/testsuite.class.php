@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/01/04 20:31:21 $ - $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/01/05 17:53:45 $ - $Author: franciscom $
  * @author franciscom
+ *
+ * 20080105 - franciscom - copy_to() changed return type
+ *                         minor bug on copy_to. (tcversion nodes were not excluded).
  *
  * 20071111 - franciscom - new method get_subtree();
  * 20071101 - franciscom - import_file_types, export_file_types
@@ -39,7 +42,9 @@ require_once( dirname(__FILE__) . '/attachments.inc.php');
 
 class testsuite extends tlObjectWithAttachments
 {
-	var $db;
+  const NODE_TYPE_FILTER_OFF=null;
+  
+ 	var $db;
 	var $tree_manager;
 	var $node_types_descr_id;
 	var $node_types_id_descr;
@@ -466,9 +471,13 @@ function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action,
                                                
                                                
   
-  returns: - 
+  returns: map with foloowing keys:
+           status_ok: 0 / 1
+           msg: 'ok' if status_ok == 1
+           id: new created if everything OK, -1 if problems.
 
   rev :
+       20080105 - franciscom - changed return type
        20070324 - BUGID 710
 */
 function copy_to($id, $parent_id, $user_id,
@@ -476,21 +485,26 @@ function copy_to($id, $parent_id, $user_id,
 				         $action_on_duplicate_name = 'allow_repeat',
 				         $copyKeywords = 0 )
 {
+  $exclude_children_of=array('testcase' => 'exclude my children');
 	$tcase_mgr = new testcase($this->db);
 	
 	$tsuite_info = $this->get_by_id($id);
-	$ret = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-	                     $tsuite_info['node_order'], 
-						           $check_duplicate_name,$action_on_duplicate_name);
+	$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
+	                    $tsuite_info['node_order'], 
+					           $check_duplicate_name,$action_on_duplicate_name);
 	
-	$new_tsuite_id = $ret['id'];
+	
+	$new_tsuite_id = $op['id'];
   $tcase_mgr->copy_attachments($id,$new_tsuite_id);
 	
-	$subtree = $this->tree_manager->get_subtree($id);
+	$subtree = $this->tree_manager->get_subtree($id,self::NODE_TYPE_FILTER_OFF,$exclude_children_of);
 	if (!is_null($subtree))
 	{
+	  
 	  $parent_decode=array();
-    $parent_decode[$id]=$new_tsuite_id;
+    // key: original parent id
+	  // value: new parent id
+	  $parent_decode[$id]=$new_tsuite_id;
 		
 		foreach($subtree as $the_key => $elem)
 		{
@@ -512,6 +526,7 @@ function copy_to($id, $parent_id, $user_id,
 			}
 		}
 	}
+	return $op;
 }
 
 

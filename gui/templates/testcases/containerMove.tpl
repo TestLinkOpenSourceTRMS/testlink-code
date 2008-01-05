@@ -1,20 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerMove.tpl,v 1.2 2007/12/19 20:27:19 schlundus Exp $
+$Id: containerMove.tpl,v 1.3 2008/01/05 17:50:47 franciscom Exp $
 Purpose: smarty template - form for move/copy container in test specification 
 
 rev :
+     20080105 - franciscom - 
      20070904 - franciscom - BUGID 1019
      removed checkbox copy nested data
 *}
 {include file="inc_head.tpl"}
-{if $level == 'category'}
-	{assign var='parent' value='component'}
-{elseif $level == 'component'}
-	{assign var='parent' value='product'}
-{else}
-	{assign var='parent' value='container'}
-{/if}
+{assign var='parent' value='container'}
+{lang_get var="labels" 
+          s="cont_move_first,cont_copy_first,cont_move_second,cont_copy_second,choose_target,
+             btn_move,btn_cp,as_first_testsuite,as_last_testsuite"}
+
 <body>
 {lang_get s=$level var=level_translated}
 <h1>{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
@@ -27,14 +26,22 @@ rev :
 {else}
 	<form method="post" action="lib/testcases/containerEdit.php?objectID={$objectID|escape}">
 		<p>
-		{lang_get s='cont_move_first'} {$level_translated} {lang_get s='cont_move_second'} {$parent|escape}.<br />
-		{lang_get s='cont_copy_first'} {$level_translated} {lang_get s='cont_copy_second'} {$parent|escape}.
+		{$labels.cont_move_first} {$level_translated} {$labels.cont_move_second} {$parent|escape}.<br />
+		{$labels.cont_copy_first} {$level_translated} {$labels.cont_copy_second} {$parent|escape}.
 		</p>
-		<p>{lang_get s='choose_target'} {$parent|escape}:
+		<p>{$labels.choose_target} {$parent|escape}:
 			<select name="containerID">
 				{html_options options=$arraySelect}
 			</select>
 		</p>
+	
+	  {* 20080105 - franciscom *}
+		<p><input type="radio" name="target_position"	 
+	          value="top" {$top_checked}>{$labels.as_first_testsuite}
+  	<br><input type="radio" name="target_position" 
+	          value="bottom" {$bottom_checked}>{$labels.as_last_testsuite}
+	  <p>
+
 	
 		<p>
 			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
@@ -42,8 +49,8 @@ rev :
 		</p>
 
 		<div>
-			<input type="submit" name="do_move" value="{lang_get s='btn_move'}" />
-			<input type="submit" name="do_copy" value="{lang_get s='btn_cp'}" />
+			<input type="submit" name="do_move" value="{$labels.btn_move}" />
+			<input type="submit" name="do_copy" value="{$labels.btn_cp}" />
 			<input type="hidden" name="old_containerID" value="{$old_containerID}" />
 		</div>	
 

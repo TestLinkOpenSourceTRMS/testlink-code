@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.237 $
- * @modified $Date: 2008/01/05 12:13:23 $ $Author: franciscom $
+ * @version $Revision: 1.238 $
+ * @modified $Date: 2008/01/05 17:52:19 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -250,6 +250,8 @@ $TLS_title_delete_bug = "Delete bug";
 
 
 // gui/templates/containerMove.tpl
+$TLS_as_first_testsuite = "Destination position top";
+$TLS_as_last_testsuite = "Destination position bottom";
 $TLS_choose_target = "Choose a target";
 $TLS_cont_copy_first = "Copy";
 $TLS_cont_copy_second = "to Any";

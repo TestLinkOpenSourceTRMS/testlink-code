@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/01/05 12:12:25 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/01/05 17:53:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20080105 - franciscom - new method change_child_order()
@@ -529,7 +529,7 @@ function change_child_order($parent_id,$node_id,$top_bottom,$exclude_node_types=
        $node_type_filter=" AND NT.description NOT IN ('{$types}') ";
     }
     
-    $sql = " SELECT NH.id, NH.node_order " .
+    $sql = " SELECT NH.id, NH.node_order, NH.name " .
            " FROM {$this->obj_table} NH, {$this->node_types_table} NT " .
            " WHERE NH.node_type_id=NT.id " .
            " AND NH.parent_id = {$parent_id} AND NH.id <> {$node_id} " . 
@@ -543,7 +543,10 @@ function change_child_order($parent_id,$node_id,$top_bottom,$exclude_node_types=
         $no[]=$node_id;
         if( !is_null($children) )
         {
-            $no=$no+$children;     
+            foreach($children as $key => $value)
+            {
+              $no[]=$value['id'];     
+            }
         }
         break;
           

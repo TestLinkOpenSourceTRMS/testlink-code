@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.8 2008/01/04 16:17:49 franciscom Exp $
+$Id: execSetResults.tpl,v 1.9 2008/01/05 17:50:47 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes
@@ -496,6 +496,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
              args_enable_custom_field=$enable_custom_field 
              args_execution_time_cf=$execution_time_cf
              args_design_time_cf=$design_time_cf
+             args_execution_types=$execution_types
              args_tcAttachments=$tcAttachments }
 
 		

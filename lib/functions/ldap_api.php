@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: ldap_api.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/05/17 10:12:55 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/05 17:56:29 $ by $Author: franciscom $
  *
  * This piece of software has been copied and adapted from:
  
@@ -34,6 +34,10 @@
 
 		$t_ds = ldap_connect ( $t_ldap_server, $t_ldap_port );
 		
+		// BUGID 1247
+		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, 3);
+    ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
+
 		if ( $t_ds > 0 ) {
 		  
 		  $ret->handler=$t_ds;

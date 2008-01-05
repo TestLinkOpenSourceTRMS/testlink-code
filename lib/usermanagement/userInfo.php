@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.6 $
-* @modified $Date: 2008/01/04 20:30:50 $
+* @version $Revision: 1.7 $
+* @modified $Date: 2008/01/05 22:00:54 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -33,7 +33,7 @@ $userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
 $user = new tlUser($userID);
 $user->readFromDB($db);
 
-$updateResult = tl::OK;
+$updateResult = null;
 if ($bEdit)
 {
 	$user->firstName = $first;
@@ -56,7 +56,9 @@ if (($bEdit || $bChangePwd) && $updateResult >= tl::OK)
 		setUserSession($db,$user->login, $userID, $user->globalRoleID, $user->emailAddress, $user->locale);
 	}
 }
-$msg = getUserErrorMessage($updateResult);
+$msg = null;
+if ($updateResult)
+	$msg = getUserErrorMessage($updateResult);
 $user->readFromDB($db);
 
 $smarty = new TLSmarty();

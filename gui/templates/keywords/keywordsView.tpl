@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.8 2007/12/19 18:27:06 schlundus Exp $
+$Id: keywordsView.tpl,v 1.9 2008/01/05 22:00:53 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -11,7 +11,7 @@ Purpose: smarty template - View all keywords
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&amp;id=';
+var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 </script>
  
 </head>

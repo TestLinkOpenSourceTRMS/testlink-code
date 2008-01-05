@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/12/31 16:22:34 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2008/01/05 22:00:51 $ by $Author: schlundus $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -466,7 +466,7 @@ $g_testsuite_sep='/';
 
 // using niftycorners
 define('MENU_ITEM_OPEN','<div class="menu_bubble">');
-define('MENU_ITEM_CLOSE','</div><p>');
+define('MENU_ITEM_CLOSE','</div><br />');
 
 
 

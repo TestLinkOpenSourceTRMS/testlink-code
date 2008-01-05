@@ -5,11 +5,11 @@
  * 
  * Filename $RCSfile: logout.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/02/13 13:04:10 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/05 22:00:51 $
 **/
 // Unset all of the session variables.
-if( !isset($_SESSION) )
+if(!isset($_SESSION))
 { 
   session_start();
 }

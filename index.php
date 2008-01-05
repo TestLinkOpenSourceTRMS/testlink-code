@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/01/02 21:14:00 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/01/05 22:00:51 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -14,7 +14,6 @@
 **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
-
 require_once('config.inc.php');
 require_once('doAuthorize.php');
 require_once('common.php');
@@ -29,7 +28,6 @@ $pwd = isset($_POST['password']) ? $_POST['password'] : null;
 if (!is_null($login))
 {
 	$op = doDBConnect($db);
-	
 	if ($op['status'])
 	{
 		if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)

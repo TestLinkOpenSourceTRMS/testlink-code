@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2008/01/05 22:00:53 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -194,7 +194,7 @@ function getUserErrorMessage($code)
 		case tlUser::E_PWDDONTMATCH:
 			$msg = lang_get('passwd_dont_match');
 			break;
-		case tlUser::USER_S_PWDMGTEXTERNAL	:
+		case tlUser::S_PWDMGTEXTERNAL	:
 			$msg = lang_get('password_mgmt_is_external');
 			break;
 		case ERROR:

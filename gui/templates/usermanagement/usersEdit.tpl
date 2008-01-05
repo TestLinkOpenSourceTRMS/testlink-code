@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.4 2007/12/28 18:55:04 schlundus Exp $ 
+$Id: usersEdit.tpl,v 1.5 2008/01/05 22:00:53 schlundus Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -131,8 +131,7 @@ function validateForm(f,check_password)
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {lang_get s='caption_user_details'}
   </legend>
-	<table> 
-	{* <table class="common"> *}
+	<table class="common">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 

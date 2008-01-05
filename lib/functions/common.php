@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.88 $ $Author: schlundus $
- * @modified $Date: 2007/12/31 12:21:50 $
+ * @version $Revision: 1.89 $ $Author: schlundus $
+ * @modified $Date: 2008/01/05 22:00:53 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -309,51 +309,6 @@ function strings_stripSlashes($parameter,$bGPC = true)
 		return stripslashes($parameter);
 }
 
-/** 
- * generalized execution SELECT query
- *
- * @param string SQL request
- * @return associated array  
- */
-function selectData(&$db,$sql)
-{
-	$output = null;
-	$result = $db->exec_query($sql);
-	
-	if ($result)
-	{
-		while($row = $db->fetch_array($result))
-		{
-			$output[] = $row;
-		}	
-	}
-	else
-	{
-		tLog('FAILED SQL: ' . $sql . "\n" . $db->error_msg(), 'ERROR');
-	}
-	
-	return($output);
-}
-
-// --------------------------------------------------------------
-// returns an array of messages, one element for every
-// key of $a_fields_msg, that has empty value in $a_fields_values.
-// The messages is taken from $a_fields_msg
-//
-// If the key from $a_fields_msg doesn't exists in $a_fields_values
-// is considered has existent and empty.
-function control_empty_fields( $a_fields_values, $a_fields_msg )
-{
-	$a_msg = array();
-	
-	foreach ($a_fields_msg as $key_f=>$value_m)
-	{
-		if (strlen($a_fields_values[$key_f]) == 0)
-			$a_msg[] = $value_m ;    
-	}
-	return $a_msg;
-}
-
 function to_boolean($alt_boolean)
 {
 	$the_val = 1;
@@ -433,21 +388,6 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 	return $retVal;
 }
 
-/**
- * Turn a hash into a number valued array
- *
- * 
- * @return  array    number valued array of posted input 
- */
-function hash2array($hash, $bStripInput = false)
-{
-	$newArray = null;
-	foreach ($hash as $key)
-	{
-		$newArray[] = $bStripInput ? strings_stripSlashes($key) : $key;
-	}
-	return $newArray;
-}
 
 /**
  *

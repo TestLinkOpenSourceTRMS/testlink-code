@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/12/27 18:50:22 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/01/05 22:00:51 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -19,10 +19,8 @@
  **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
-
 require_once('config.inc.php');
 require_once('common.php');
-require_once('users.inc.php');
 
 tLog('Login page requested by ' . $_SERVER['REMOTE_ADDR'], 'INFO');
 $op = doDBConnect($db);
@@ -48,8 +46,6 @@ switch($note)
 			session_start();
 		session_unset();
 		session_destroy();
-		// 20070110 - MHT - removed note because it confuses in some cases 	
-		// $message = lang_get('session_expired');
 		break;
 	case 'wrong':
 		$message = lang_get('bad_user_passwd');

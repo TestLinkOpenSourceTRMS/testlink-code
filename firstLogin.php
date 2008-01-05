@@ -5,18 +5,12 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/12/22 12:26:44 $ $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/01/05 22:00:51 $ $Author: schlundus $
  *
- * @author Asiel Brumfield
- * @author Martin Havlat 
- *
- * rev :
- *       20070626 - franciscom - added missing LDAP code
-**/
+ */
 require_once('config.inc.php');
 require_once('common.php');
-require_once('users.inc.php');
 
 $_POST = strings_stripSlashes($_POST);
 $bEditUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;
@@ -29,18 +23,12 @@ $email = isset($_POST['email']) ? $_POST['email'] : null;
 
 $message = lang_get('your_info_please');
 
-// 20070626 - franciscom
-$login_method = config_get('login_method');
-$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
-
 $op = doDBConnect($db);
 if (!config_get('user_self_signup'))
 {
-	$msg = lang_get('error_self_signup_disabled');
-
 	$smarty = new TLSmarty();
 	$smarty->assign('title', lang_get('fatal_page_title'));
-	$smarty->assign('content', $msg);
+	$smarty->assign('content', lang_get('error_self_signup_disabled'));
 	$smarty->assign('link_to_op', "login.php");
 	$smarty->assign('hint_text', lang_get('link_back_to_login'));
 	$smarty->display('workAreaSimple.tpl');
@@ -74,7 +62,7 @@ if($bEditUser)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('external_password_mgmt',$external_password_mgmt);
+$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('login', $login);
 $smarty->assign('firstName', $first);
 $smarty->assign('lastName', $last);

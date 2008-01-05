@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/01/05 22:00:53 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -165,107 +165,6 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$fi
 function getAllActiveTestPlans(&$db,$testproject_id = ALL_PRODUCTS,$filter_by_product = 0)
 {
 	return getAllTestPlans($db,$testproject_id,TP_STATUS_ACTIVE,$filter_by_product);
-}
-
-// ------------------------------------------------------------
-// 20050810 - fm
-// Checks if the testproject_id is tp's father
-function check_tp_father(&$db,$testproject_id,$tpID)
-{
-  $ret = 0;
-	$sql = " SELECT id, name, notes , active, testproject_id " .
-	       " FROM testplans " . 
-	       " WHERE testplans.id=" . $tpID .
-	       " AND   testplans.testproject_id=" . $testproject_id;
-	       
-	$rs = selectData($db,$sql);
-	
-	if( sizeof($rs) == 1)
-  {
-  	$ret = 1;
-	}       
-	return($ret);
-}
-// ------------------------------------------------------------
-
-// ------------------------------------------------------------
-// 20050926 - fm
-// 
-function get_tp_father(&$db,$tpID)
-{
-  $ret = 0;
-	$sql = " SELECT id, name, notes , active, testproject_id " .
-	       " FROM testplans TP" . 
-	       " WHERE TP.id=" . $tpID;
-	       
-	       
-	$rs = selectData($db,$sql);
-	return($rs[0]['testproject_id']);
-}
-// ------------------------------------------------------------
-
-
-
-
-
-/*
-20050914 - fm - interface changes
-
-*/
-function dispCategories(&$db,$idPlan, $keyword, $resultCat) 
-{
-	$arrData = array();
-	
-	while($rowCAT = $db->fetch_array($resultCat))
-	{ 
-		$arrTestCases = array();					
-		$idCAT = $rowCAT[0];
-		$nameCAT = $rowCAT[1];
-
-		$sqlTC = "SELECT id, title FROM mgttestcase " .
-		         "WHERE catid=" . $idCAT;
-		         
-	
-		
-		//Check the keyword that the user has submitted.
-		if($keyword != 'NONE')
-		{
-			$keyword = $db->prepare_string($keyword);
-			//keywordlist always have a trailing slash, so there are only two cases to consider 
-			//the keyword is the first in the list
-			//or its in the middle of list 		 
-			$sqlTC .= " AND (keywords LIKE '%,{$keyword},%' OR keywords like '{$keyword},%') ";
-		}
-		$sqlTC .= " ORDER BY TCorder,id";
-
-		$resultTC = $db->exec_query($sqlTC);
-		
-		while($rowTC = $db->fetch_array($resultTC))
-		{ 
-			//Display all test cases
-			$idTC = $rowTC['id']; 
-			$titleTC = $rowTC['title']; 
-			
-			//Displays the test case name and a checkbox next to it
-			//
-			// 20050807 - fm - $idPlan
-			
-			$sqlCheck = " SELECT mgttcid FROM testplans,component,category,testcase " .
-			            " WHERE mgttcid=" . $idTC . 
-			            " AND testplans.id=component.projid AND component.id=category.compid AND " .
-			            " category.id=testcase.catid AND testplans.id=" . $idPlan;
-			$checkResult = $db->exec_query($sqlCheck);
-			$checkRow = $db->num_rows($checkResult);
-			
-			array_push($arrTestCases, array( 'id' => $idTC, 'name' => $titleTC,
-											                 'added' => $checkRow));
-		}
-		
-		array_push($arrData, array( 'id' => $idCAT, 'name' => $nameCAT,
-									              'tc' => $arrTestCases));
-	}
-	
-	return $arrData;
 }
 
 // 20070911 - azl

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/01/02 21:14:00 $ $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/01/05 22:00:53 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -39,7 +39,6 @@ if ($curr_tproject_id && isset($currentUser->tprojectRoles[$curr_tproject_id]))
 	$testprojectRole = $role_separator->open . $role->name . $role_separator->close;
 }	                   
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
-$smarty = new TLSmarty();
 
 // only when the user has changed the product using the combo
 // the _GET has this key.
@@ -53,7 +52,8 @@ if (isset($_GET['testproject']))
 	setcookie('lastProductForUser'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 $logo_img = defined('LOGO_NAVBAR') ? LOGO_NAVBAR : '';
-	
+
+$smarty = new TLSmarty();
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
 $smarty->assign('user', $currentUser->getDisplayName() . ' '. 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/12/27 18:50:23 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/01/05 22:00:53 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -241,7 +241,6 @@ function do_delete(&$smarty,&$args,&$tproject_mgr)
 
 	$ret->template = 'keywordsView.tpl';
 	$ret->status = $tproject_mgr->deleteKeyword($args->keyword_id);
-
 	return $ret;
 }
 
@@ -249,7 +248,7 @@ function getKeywordErrorMessage($code)
 {
 	switch($code)
 	{
-			case tlKeyword::E_NOTALLOWED:
+			case tlKeyword::E_NAMENOTALLOWED:
 				$msg = lang_get('keywords_char_not_allowed'); 
 				break;
 			case tlKeyword::E_NAMELENGTH:

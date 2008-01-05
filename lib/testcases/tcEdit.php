@@ -4,11 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/01/04 20:27:23 $  by $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/01/05 12:12:27 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
- * 20080104 - franciscom - REQID 12xx - added logic to manage copy/move on top or bottom
+ * 20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
  *
  * 20071201 - franciscom - new web editor code
  * 20071106 - BUGID 1165 
@@ -35,6 +35,7 @@ $sqlResult="";
 $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
 $spec_cfg=config_get('spec_cfg');
+$exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
 
 $tcase_template_cfg=config_get('testcase_template');
 
@@ -351,11 +352,12 @@ else if($args->move_copy_tc)
 	$the_tc_node = $tree_mgr->get_node_hierachy_info($args->tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
 	
+	// 20080105 - franciscom - seems to be useless
 	// 20071111 - franciscom
-	$the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
-	                                                       "requirement_spec"=>"exclude me",
-	                                                       "requirement"=>"exclude me",
-	                                                       "testcase"=>"exclude me"));
+	// $the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
+	//                                                        "requirement_spec"=>"exclude me",
+	//                                                        "requirement"=>"exclude me",
+	//                                                        "testcase"=>"exclude me"));
 	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
 
 	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')'; 
@@ -380,8 +382,11 @@ else if($args->move_copy_tc)
 // move test case to another category
 }
 else if($args->do_move)
-{
+{                     
 	$result = $tree_mgr->change_parent($args->tcase_id,$args->new_container_id);
+  $tree_mgr->change_child_order($args->new_container_id,$args->tcase_id,
+                                $args->target_position,$exclude_node_types);
+
 	$smarty->assign('refreshTree',$args->do_refresh);
 	$tsuite_mgr->show($smarty,$template_dir,$args->old_container_id);
 }
@@ -390,40 +395,14 @@ else if($args->do_copy)
     $user_feedback=''; 
 	  $msg = '';
 	  $action_result = 'copied';
-    switch ($args->target_position)
-    {
-        case 'top':
-        $exclude=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
-        $children=$tree_mgr->get_children($args->new_container_id,$exclude);
-        break;
-    }
 
 	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
 	                                config_get('check_names_for_duplicates'),'block');
 	  $msg = $result['msg'];
     if( $msg == "ok" )
     {
-      // 20080104 - franciscom - now adjust order
-      $no=array();
-      switch ($args->target_position)
-      {
-          case 'top':
-          $no[]=$result['id'];
-          if( !is_null($children) )
-          {
-              foreach($children as $key => $value)
-              {
-                  $no[]=$value['id'];
-              }    
-          }
-          break;
-            
-          case 'bottom':  
-          $new_order=getBottomOrder($db,$args->new_container_id)+1;
-          $no[$new_order]=$result['id'];
-          break;
-      }
-      $tree_mgr->change_order_bulk($no);    
+      $tree_mgr->change_child_order($args->new_container_id,$result['id'],
+                                    $args->target_position,$exclude_node_types);
     
       $ts_sep=config_get('testsuite_sep');
       $tc_info=$tcase_mgr->get_by_id($args->tcase_id);
@@ -606,36 +585,4 @@ function init_args($spec_cfg)
 
   return $args;
 }
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function getTopOrder(&$db,$parentID)
-{
-    $sql="SELECT MIN(node_order) AS TOP_ORDER" .
-         " FROM nodes_hierarchy " . 
-         " WHERE parent_id={$parentID} " .
-         " GROUP BY parent_id";
-    $rs=$db->get_recordset($sql);
-    
-    return $rs[0]['TOP_ORDER'];     
-}
-
-function getBottomOrder(&$db,$parentID)
-{
-    $sql="SELECT MAX(node_order) AS TOP_ORDER" .
-         " FROM nodes_hierarchy " . 
-         " WHERE parent_id={$parentID} " .
-         " GROUP BY parent_id";
-    $rs=$db->get_recordset($sql);
-    
-    return $rs[0]['TOP_ORDER'];     
-}
-
-
 ?>

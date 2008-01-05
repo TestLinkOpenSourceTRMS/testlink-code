@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.236 $
- * @modified $Date: 2008/01/04 20:28:41 $ $Author: franciscom $
+ * @version $Revision: 1.237 $
+ * @modified $Date: 2008/01/05 12:13:23 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -767,7 +767,7 @@ $TLS_password_mgmt_is_external = "Password management is external";
 
 
 // gui/templates/tcMove.tpl
-$TLS_as_first_testcase = "Destination position top (as much as possible)";
+$TLS_as_first_testcase = "Destination position top";
 $TLS_as_last_testcase = "Destination position bottom";
 
 $TLS_btn_mv = "Move";

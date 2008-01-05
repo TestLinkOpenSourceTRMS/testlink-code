@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/01/05 12:12:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20080105 - franciscom - new method change_child_order()
  * 20071110 - franciscom - solved (auto)bug when refactoring get_path
  * 20071024 - franciscom - DTREE bug
  * 20070620 - franciscom - BUGID 903
@@ -44,7 +45,8 @@ class tree
 	var $ROOT_NODE_PARENT_ID = NULL;
 	
 	var $db;
-    var $obj_table = 'nodes_hierarchy';
+  var $obj_table = 'nodes_hierarchy';
+  var $node_types_table = 'node_types';
     
 
   /*
@@ -497,6 +499,81 @@ function change_order_bulk($nodes)
 	      	    WHERE id = {$node_id}";
 	  $result = $this->db->exec_query($sql);
 	}
+}
+
+
+/*
+  function: change_child_order
+            will change order of children of parent id, to position
+            choosen node on top or bottom of children.             
+
+  args:
+        parent_id: node used as root of a tree.
+        node_id: node which we want to reposition
+        $top_bottom: possible values 'top', 'bottom'
+        [exclude_node_types]: map 
+                              key: verbose description of node type to exclude.
+                                   see get_available_node_types.
+                              value: anything is ok
+
+   
+  returns: -
+
+*/
+function change_child_order($parent_id,$node_id,$top_bottom,$exclude_node_types=null)
+{
+    $node_type_filter='';
+    if( !is_null($exclude_node_types) )
+    {
+       $types=implode("','",array_keys($exclude_node_types));  
+       $node_type_filter=" AND NT.description NOT IN ('{$types}') ";
+    }
+    
+    $sql = " SELECT NH.id, NH.node_order " .
+           " FROM {$this->obj_table} NH, {$this->node_types_table} NT " .
+           " WHERE NH.node_type_id=NT.id " .
+           " AND NH.parent_id = {$parent_id} AND NH.id <> {$node_id} " . 
+           $node_type_filter .
+           " ORDER BY NH.node_order,NH.id";
+    $children=$this->db->get_recordset($sql);
+    
+    switch ($top_bottom)
+    {
+        case 'top':
+        $no[]=$node_id;
+        if( !is_null($children) )
+        {
+            $no=$no+$children;     
+        }
+        break;
+          
+        case 'bottom':  
+        $new_order=$this->getBottomOrder($parent_id)+1;
+        $no[$new_order]=$node_id;
+        break;
+    }
+    $this->change_order_bulk($no);    
+} 
+
+/*
+  function: getBottomOrder
+            given a node id to be used as parent, returns  the max(node_order) from the children nodes.
+            We consider this bottom order.
+
+  args: parentID: 
+  
+  returns: order
+
+*/
+function getBottomOrder($parentID)
+{
+    $sql="SELECT MAX(node_order) AS TOP_ORDER" .
+         " FROM {$this->obj_table} " . 
+         " WHERE parent_id={$parentID} " .
+         " GROUP BY parent_id";
+    $rs=$this->db->get_recordset($sql);
+    
+    return $rs[0]['TOP_ORDER'];     
 }
 
 

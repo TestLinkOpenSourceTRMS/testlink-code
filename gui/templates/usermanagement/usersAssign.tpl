@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.5 2007/12/27 18:50:23 schlundus Exp $ 
+$Id: usersAssign.tpl,v 1.6 2008/01/06 20:33:54 schlundus Exp $ 
 
 rev:
     20070818 - franciscom
@@ -13,7 +13,7 @@ rev:
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
-
+</head>
 <body>
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>

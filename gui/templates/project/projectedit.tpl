@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: projectedit.tpl,v 1.2 2008/01/06 20:33:54 schlundus Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -76,8 +76,7 @@ function validateForm(f)
 		      
 		<input type="hidden" name="id" value="{$id}" />
 		<table class="common" width="80%">
-		  {* 20051208 - fm #{$id} -> {$name} *} 
-			<caption>
+		  <caption>
 			{if $id neq '-1'}
 				{lang_get s='caption_edit_product'} 
 			{else}
@@ -85,7 +84,7 @@ function validateForm(f)
 			{/if}
 				{$name|escape}</caption>
 			<tr>
-				<td>{lang_get s='name'}</td>
+				<th>{lang_get s='name'}</th>
 				<td><input type="text" name="tproject_name" 
   			           size="{#TESTPROJECT_NAME_SIZE#}" 
 	  		           maxlength="{#TESTPROJECT_NAME_MAXLEN#}" 
@@ -93,14 +92,13 @@ function validateForm(f)
 				  				{include file="error_icon.tpl" field="tproject_name"}
 				</td>
 			</tr>
-	   <tr>
-		  <td>{lang_get s='notes'}</td>
-		  <td width="80%">{$notes}</td>
-	   </tr>
-	   
-	   {if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
+		   <tr>
+			  <th>{lang_get s='notes'}</th>
+			  <td width="80%">{$notes}</td>
+		   </tr>
+		{if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
 			<tr>
-				<td>{lang_get s='color'}</td>
+				<th>{lang_get s='color'}</th>
 				<td>
 					<input type="text" name="color" value="{$color|escape}" maxlength="12" />
 					{* this function below calls the color picker javascript function. 
@@ -113,7 +111,7 @@ function validateForm(f)
 			</tr>
 		 {/if}	
 			<tr>
-				<td>{lang_get s='enable_requirements'}</td>
+				<th>{lang_get s='enable_requirements'}</th>
 				<td>
 					<select name="optReq">
 					{html_options options=$gsmarty_option_yes_no selected=$reqs_default}

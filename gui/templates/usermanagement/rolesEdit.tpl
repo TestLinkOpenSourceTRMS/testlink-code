@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.7 2007/12/27 18:50:23 schlundus Exp $
+$Id: rolesEdit.tpl,v 1.8 2008/01/06 20:33:54 schlundus Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
@@ -37,7 +37,6 @@ function validateForm(f)
       return false;
   }
 
-  /* 20071227 - franciscom */
   if( checkbox_count_checked(f.id) == 0)
   {
       alert_message(alert_box_title,warning_error_role_no_rights);
@@ -52,8 +51,9 @@ function validateForm(f)
 
 
 <body>
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='caption_define_role'}</h1>
 
@@ -164,7 +164,8 @@ function validateForm(f)
 		<div class="groupBtn">	
 		<input type="hidden" name="doAction" value="{$action_type}" />
 		<input type="submit" name="role_mgmt" value="{lang_get s='btn_save'}" 
-		         {if $role != 0 && $affectedUsers neq null} onClick="return modifyRoles_warning(){/if}"/>
+		         {if $role != 0 && $affectedUsers neq null} onClick="return modifyRoles_warning()"{/if} 
+		/>
 	{/if}
 	</div>
 	<br />

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.6 2007/12/27 18:50:23 schlundus Exp $ 
+$Id: rolesView.tpl,v 1.7 2008/01/06 20:33:54 schlundus Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -86,7 +86,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 			{if $role->dbID neq $smarty.const.TL_ROLES_INHERITED}
 			<tr>
 				<td>
-					<a href="lib/usermanagement/rolesEdit.php?doAction=edit&roleid={$role->dbID}">
+					<a href="lib/usermanagement/rolesEdit.php?doAction=edit&amp;roleid={$role->dbID}">
 						{$role->name|escape}
 						{if $gsmarty_gui->show_icon_edit}
  						  <img title="{lang_get s='alt_edit_role'}" 

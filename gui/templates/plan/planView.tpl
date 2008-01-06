@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.2 2007/12/03 08:27:17 franciscom Exp $ 
+$Id: planView.tpl,v 1.3 2008/01/06 20:33:54 schlundus Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -51,7 +51,7 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>
-			<td><a href="lib/plan/planEdit.php?tplan_id={$testplan.id}&do_action=edit"> 
+			<td><a href="lib/plan/planEdit.php?tplan_id={$testplan.id}&amp;do_action=edit"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{lang_get s='testplan_alt_edit_tp'}" 

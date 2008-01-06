@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.5 2008/01/05 22:00:53 schlundus Exp $ 
+$Id: usersEdit.tpl,v 1.6 2008/01/06 20:33:54 schlundus Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -121,7 +121,7 @@ function validateForm(f,check_password)
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 <div class="workBack">
-<form method="post" action="lib/usermanagement/usersEdit.php" class"x-form"
+<form method="post" action="lib/usermanagement/usersEdit.php" class="x-form"
       name="useredit" onSubmit="javascript:return validateForm(this,{$check_password});">
       
 	<input type="hidden" name="user_id" value="{$user_id}" />
@@ -237,6 +237,7 @@ function validateForm(f,check_password)
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersview.php';" />
 
 	</div>
+</fieldset>
 </form>
 
 {if $userData neq null and $external_password_mgmt eq 0}
@@ -246,7 +247,6 @@ function validateForm(f,check_password)
 </form>
 {/if}
     
-</fieldset>
 </div>
 
 </body>

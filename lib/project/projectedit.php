@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/02 17:29:51 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/01/06 20:33:54 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -16,13 +16,6 @@
  *
  * 20070725 - franciscom - refactoring to control display of edit/delete tab
  *                         when there are 0 test projects on system.
- * 
- * 20070620 - franciscom - BUGID 914 
- * 20070221 - franciscom - BUGID 652
- * 20070206 - franciscom - BUGID 617
- * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
- * 20050908 - fm - BUGID 0000086
- *
 **/
 include('../../config.inc.php');
 require_once('common.php');
@@ -30,7 +23,7 @@ require_once('testproject.class.php');
 require_once("web_editor.php");
 testlinkInitPage($db,true);
 
-$template_dir='project/';
+$template_dir = 'project/';
 
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $enable_edit_feature = $session_tproject_id ? 1 : 0;
@@ -50,7 +43,7 @@ $tlog_level = 'INFO';
 $tproject = new testproject($db);
 $args = init_args($tproject, $_REQUEST, $session_tproject_id);
 
-$of=web_editor('notes',$_SESSION['basehref']) ;
+$of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
 if ($session_tproject_id)
@@ -65,7 +58,7 @@ switch($args->do)
 		$error = null;
 		if ($tproject->delete($args->id,$error))
 		{
-		  $user_feedback = sprintf(lang_get('test_project_deleted'),$args->tproject_name);
+			$user_feedback = sprintf(lang_get('test_project_deleted'),$args->tproject_name);
 			$tlog_msg .= " was deleted.";
 		} 
 		else 
@@ -190,9 +183,7 @@ $smarty->assign('show_prod_attributes', $show_prod_attributes);
 $smarty->assign('enable_edit_feature',$enable_edit_feature);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->display($template_dir . 'projectedit.tpl');
-?>
 
-<?php
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.

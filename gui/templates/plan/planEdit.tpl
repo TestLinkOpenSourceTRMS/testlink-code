@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.4 2007/12/31 16:23:15 franciscom Exp $
+$Id: planEdit.tpl,v 1.5 2008/01/06 20:33:54 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -72,7 +72,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	      action="lib/plan/planEdit.php?action={$form_action}"
 	      onSubmit="javascript:return validateForm(this);">
 	
-	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}">
+	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}" />
 	<table class="common" width="80%">
 	
 		<tr><th style="background:none;">{lang_get s='testplan_th_name'}</th>
@@ -135,7 +135,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		         onclick="do_action.value='do_create'"/>
 		{else}
 		
-		  <input type="hidden" name="do_action" value="do_update">
+		  <input type="hidden" name="do_action" value="do_update" />
 		  <input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
 		         onclick="do_action.value='do_update'"/>
 

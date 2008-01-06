@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/01/02 15:21:39 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/01/06 20:33:54 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -163,7 +163,7 @@ function checkForLDAPExtension(&$bLDAPEnabled)
 {
 	$login_method = config_get('login_method');
 	
-	$bLDAPEnabled = ('LDAP' == $login_method )? 1 : 0;
+	$bLDAPEnabled = ('LDAP' == $login_method ) ? 1 : 0;
 	if(!$bLDAPEnabled || ($bLDAPEnabled && extension_loaded("ldap")))
 		return true;
 	return 	false;
@@ -192,13 +192,14 @@ function getSecurityNotes(&$db)
 	$bLDAPEnabled = false;
 	if (!checkForLDAPExtension($bLDAPEnabled))
 		$securityNotes[] = lang_get("ldap_extension_not_loaded");
+		
     if (!$bLDAPEnabled && checkForAdminDefaultPwd($db))
 		$securityNotes[] = lang_get("sec_note_admin_default_pwd");
   
-	if (!checkForBTSconnection())
+	if (!checkForBTSConnection())
 		$securityNotes[] = lang_get("bts_connection_problems");
 		
-	if($repository['type'] == TL_REPOSITORY_TYPE_FS )
+	if($repository['type'] == TL_REPOSITORY_TYPE_FS)
 	{
 		$ret = checkForRepositoryDir($repository['path']);
 		if(!$ret['status_ok'])
@@ -207,18 +208,14 @@ function getSecurityNotes(&$db)
 
 	// 20070121 - needed when schemas change has been done
 	// This call can be removed when release is stable
-  $my_msg=check_schema_version($db);
-  if( strlen(trim($my_msg)) > 0 )
-  {
-      $securityNotes[] = $my_msg;
-  }
-  
+	$msg = check_schema_version($db);
+	if(strlen($msg))
+		$securityNotes[] = $msg;
+	
 	// 20070911 - fixing bug 1021 
-  $my_msg=checkForTestPlansWithoutTestProjects($db);
-  if (strlen(trim($my_msg)) > 0)
-  {	
-	    $securityNotes[] = $my_msg;
-  }
+	$msg = checkForTestPlansWithoutTestProjects($db);
+	if(strlen($msg))
+		$securityNotes[] = $msg;
 	
 	checkForExtensions($securityNotes);
   
@@ -235,18 +232,14 @@ function getSecurityNotes(&$db)
  * @version 1.0
  * @author franciscom 
  **/
-function checkForBTSconnection()
+function checkForBTSConnection()
 {
 	global $g_bugInterface;
-	$status_ok=1;
-	if($g_bugInterface)
-	{
-		if( !$g_bugInterface->connect() )
-		{
-			$status_ok=0;
-		}
-	}
-	return($status_ok);
+	$status_ok = true;
+	if($g_bugInterface && !$g_bugInterface->connect())
+		$status_ok = false;
+
+	return $status_ok; 
 }
 
 
@@ -329,7 +322,7 @@ function checkForRepositoryDir($the_dir)
 */
 function check_schema_version(&$db)
 {
-  $last_version = 'DB 1.2';  // 20080102 - franciscom
+	$last_version = 'DB 1.2';  // 20080102 - franciscom
 	// $last_version = 'DB 1.1';
 	// 1.7.0 RC 3';
 	
@@ -363,7 +356,8 @@ function check_schema_version(&$db)
 			$msg = "Unknown Schema version " .  trim($myrow['version']) . 
 			       ", please upgrade your Testlink Database to " . $last_version;
 			break;
-		}
+	}
+	
 	return $msg;
 }
 
@@ -378,17 +372,14 @@ function check_schema_version(&$db)
 function checkForTestPlansWithoutTestProjects(&$db)
 {
 	$msg = "";
-	
-	$count = count(getTestPlansWithoutProject($db)); 
-	if($count > 0)
+	if(count(getTestPlansWithoutProject($db)))
 	{	
-		$msg = "You have Test Plans that are not associated with Test Projects. ";
+		$msg = "You have Test Plans that are not associated with Test Projects!";
 		if(isset($_SESSION['basehref']))
 		{		
 			$url = $_SESSION['basehref'] . "/lib/project/fix_tplans.php"; 			
-			$msg .= "<a style=\"color:red\" href=\"{$url}\">Fix This</a>";		
+			$msg .= " <a style=\"color:red\" href=\"{$url}\">Fix This</a>";		
 		}
-		
 	}	
 	return $msg;
 }

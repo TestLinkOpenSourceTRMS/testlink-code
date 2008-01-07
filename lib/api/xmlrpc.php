@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.5 2008/01/07 22:09:37 asielb Exp $
+ * $Id: xmlrpc.php,v 1.6 2008/01/07 22:35:53 asielb Exp $
  */
  
 /**
@@ -947,7 +947,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$tcversion_id =	$this->tcVersionID;
 		$db_now=$this->dbObj->db_now();
 		
-		$execution_type = TESTCASE_EXECUTION_TYPE_AUTO;
+		$execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
 		
 		$query = "INSERT INTO {$this->executions_table} (build_id, tester_id, execution_ts, status, " .
 				     "testplan_id, tcversion_id, execution_type) " .
@@ -973,11 +973,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		else
 		{
-			$notes = "NULL";
+			$notes = "";
 		}		
 		// TODO: set the active and is_open flags		
 		
-		$query = "INSERT INTO {$this->builds_name} (testplan_id, name, notes) " .
+		$query = "INSERT INTO {$this->builds_table} (testplan_id, name, notes) " .
 				     "VALUES(" . $testplan_id . "," . "'" . $name . "'," .	"'" . $notes . "')";
 				
 		$this->dbObj->exec_query($query);

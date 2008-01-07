@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/01/07 07:57:52 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/07 07:58:41 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -16,6 +16,13 @@
  *
  * 20070725 - franciscom - refactoring to control display of edit/delete tab
  *                         when there are 0 test projects on system.
+ * 
+ * 20070620 - franciscom - BUGID 914 
+ * 20070221 - franciscom - BUGID 652
+ * 20070206 - franciscom - BUGID 617
+ * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
+ * 20050908 - fm - BUGID 0000086
+ *
 **/
 include('../../config.inc.php');
 require_once('common.php');
@@ -23,167 +30,154 @@ require_once('testproject.class.php');
 require_once("web_editor.php");
 testlinkInitPage($db,true);
 
-$template_dir = 'project/';
+$template_dir='project/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
+// current testproject displayed on testproject combo.
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$enable_edit_feature = $session_tproject_id ? 1 : 0;
-
-$user_feedback ='';
-$updateResult = null;
 
 // Important: 
 // if != 'no' refresh of navbar frame is done
 //
 $action = 'no';
-$show_prod_attributes = 'yes';
+$template=null;
+$ui=array('doActionValue' => '', 'buttonValue' => '', 'caption' => '');
+$user_feedback ='';
+$reloadType='none';
 
 $tlog_msg = "Product [ID: Name]=";
 $tlog_level = 'INFO';
 
-$tproject = new testproject($db);
-$args = init_args($tproject, $_REQUEST, $session_tproject_id);
+$tproject_mgr = new testproject($db);
+$args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 
-$of = web_editor('notes',$_SESSION['basehref']) ;
+$of=web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
 if ($session_tproject_id)
 	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
 else
-	$tlog_msg .= $args->id . ': ' . $args->tproject_name;
+	$tlog_msg .= $args->tprojectID . ': ' . $args->tprojectName;
 
-switch($args->do)
+switch($args->doAction)
 {
-	case 'do_delete':
-		$show_prod_attributes = 'no';
-		$error = null;
-		if ($tproject->delete($args->id,$error))
+	case 'create':
+		$ui=array();
+    $ui['doActionValue']='doCreate';
+		$ui['buttonValue']=lang_get('btn_create');
+		$ui['caption']=lang_get('caption_new_tproject');
+    $found='yes';
+    $template=$default_template;
+		break;	 
+
+	case 'edit':
+	  $ui=edit($args,$tproject_mgr);
+    $template=$default_template;
+    $found='yes';
+		break;
+		
+	case 'doCreate':
+	  $template=$default_template;
+		$action="do_create";
+	  $op=doCreate($args,$tproject_mgr);
+    if($op->status_ok)
+    {
+        $template=null;
+    }
+    else
+    {
+        $user_feedback=$op->msg; 
+    } 
+		break;
+		
+	case 'doUpdate':
+	  $template=$default_template;
+		$action="do_update";
+	  $op=doUpdate($args,$tproject_mgr);
+    if($op->status_ok)
+    {
+        $template=null;
+		    if( $session_tproject_id == $args->tprojectID)
+		    {
+          $reloadType='reloadNavBar';
+	      }
+    }
+    else
+    {
+        $user_feedback=$op->msg; 
+    } 
+  	break;
+	
+	
+	case 'doDelete':
+		$op=$tproject_mgr->delete($args->tprojectID);
+		
+		if ($op['status_ok'])
 		{
-			$user_feedback = sprintf(lang_get('test_project_deleted'),$args->tproject_name);
+		   if( $session_tproject_id == $args->tprojectID)
+		   {
+         $reloadType='reloadNavBar';
+	     }
+
+		  $user_feedback = sprintf(lang_get('test_project_deleted'),$args->tprojectName);
 			$tlog_msg .= " was deleted.";
 		} 
 		else 
 		{
-			$updateResult = lang_get('info_product_not_deleted_check_log') . ' ' . $error;
+			$user_feedback = lang_get('info_product_not_deleted_check_log') . ' ' . $op['msg'];
 			$tlog_msg .=  " wasn't deleted.\t";
 			$tlog_level = 'ERROR';
 		}
 		$action = 'delete';
 		break;
-		
-	case 'show_create_screen':
-		$args->id = -1;
-		break;	 
-		
-	case 'do_create':
-		if ($tproject->checkTestProjectName($args->tproject_name,$updateResult))
-		{
-			if (!$tproject->get_by_name($args->tproject_name))
-			{
-				$args->id = $tproject->create($args->tproject_name, $args->color, $args->optReq, $args->notes);
-				if (!$args->id)
-					$user_feedback = lang_get('refer_to_log');
-				else
-				{
-					$args->id = -1;
-					// 20070221 - BUGID 652 
-					$user_feedback = sprintf(lang_get('test_project_created'),$args->tproject_name);
-				}	
-			}
-			else
-			{
-				$user_feedback = sprintf(lang_get('error_product_name_duplicate'),$args->tproject_name);
-			}
-		}
-		// 20070324 - BUGID
-		$action="do_create";
-		break;
-		
-	case 'do_edit':
-		$updateResult = 'ok';
-		if ($tproject->checkTestProjectName($args->tproject_name,$updateResult))
-		{
-			if (!$tproject->get_by_name($args->tproject_name,"testprojects.id <> {$args->id}"))
-			{
-				$action = 'updated';
-				
-				$user_feedback = sprintf(lang_get('test_project_update_failed'),$args->tproject_name);
-				if( $tproject->update($args->id, $args->tproject_name, $args->color,$args->optReq, $args->notes) )
-				{
-				  $user_feedback = sprintf(lang_get('test_project_updated'),$args->tproject_name);
-				}
-				
-			}
-			else
-				$updateResult = lang_get('error_product_name_duplicate');
-		}
-		break;
-	
-	case 'inactivateProduct':
-		if ($tproject->activateTestProject($args->id,0))
-		{
-			$user_feedback = sprintf(lang_get('test_project_inactivated'),$args->tproject_name);
-			$tlog_msg .= 'was inactivated.';
-		}
-		$action = 'inactivate';
-		break;
 
-	case 'activateProduct':
-		if ($tproject->activateTestProject($args->id,1))
-		{
-			$user_feedback = sprintf(lang_get('test_project_activated'),$args->tproject_name);
-			$tlog_msg .= 'was activated.';
-		}
-		$action = 'activate';
-		break;
 }
 
-$smarty = new TLSmarty();
-if ($args->do != 'deleteProduct')
-{
-	if ($args->id != -1)
-	{
-		if ($session_tproject_id)
-		{
-			$the_data = $tproject->get_by_id($session_tproject_id);
-			if ($the_data)
-			{
-				$args->tproject_name = $the_data['name'];
-				$smarty->assign('found', 'yes');
-				$smarty->assign('id', $the_data['id']);
-				$smarty->assign('color', $the_data['color']);
-				$smarty->assign('active', $the_data['active']);
-				$smarty->assign('reqs_default', $the_data['option_reqs']);
-			}
-			else
-				$updateResult = lang_get('info_failed_loc_prod');
-		}
-		else
-			$updateResult = lang_get('info_no_more_prods');
-	}
-	else
-	{
-		$smarty->assign('found', 'yes');
-		$smarty->assign('id', -1);
-		$args->tproject_name = '';
-		$args->notes = '';
-		$args->color = '';
-	}
-}
+
+// ----------------------------------------------------------------------
+// render GUI
+// ----------------------------------------------------------------------
 
 if($action != 'no')
 	tLog($tlog_msg, $tlog_level);
 
-$of->Value = $args->notes;
+$smarty = new TLSmarty();
+$smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
-$smarty->assign('user_feedback', $user_feedback);
-$smarty->assign('action', $action);
-$smarty->assign('sqlResult', $updateResult);
-$smarty->assign('name', $args->tproject_name);
-$smarty->assign('show_prod_attributes', $show_prod_attributes);
-$smarty->assign('enable_edit_feature',$enable_edit_feature);
-$smarty->assign('notes', $of->CreateHTML());
-$smarty->display($template_dir . 'projectedit.tpl');
+switch($args->doAction)
+{
+    case "doCreate":
+    case "doDelete":
+    case "doUpdate":
+        $tprojects=$tproject_mgr->get_all();
+        $template= is_null($template) ? 'projectView.tpl' : $template;
+        $smarty->assign('tprojects',$tprojects);
+        $smarty->assign('doAction',$reloadType);
+        $smarty->display($template_dir . $template);
+    break; 
+    
+    default:
+        $of->Value = $args->notes;
+        
+        $smarty->assign('doActionValue',$ui['doActionValue']);
+        $smarty->assign('buttonValue',$ui['buttonValue']);
+        $smarty->assign('caption',$ui['caption']);
+        $smarty->assign('user_feedback', $user_feedback);
+        $smarty->assign('id', $args->tprojectID);
+        $smarty->assign('name', $args->tprojectName);
+        $smarty->assign('active', $args->active);
+        $smarty->assign('action', $action);
+        $smarty->assign('notes', $of->CreateHTML());
+        $smarty->assign('found', $found);
+        $smarty->display($template_dir . $template);
+    break; 
 
+} 
+
+
+?>
+
+<?php
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.
@@ -198,48 +192,35 @@ $smarty->display($template_dir . 'projectedit.tpl');
  *
  * 20070206 - franciscom - BUGID 617
 */
-function init_args($tproject,$request_hash, $session_tproject_id)
+function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
 	$request_hash = strings_stripSlashes($request_hash);
-	
-	$do_keys = array('show_create_screen','do_delete','do_edit',
-	                 'inactivateProduct','activateProduct','do_create');
-	$args->do = '';
-	foreach ($do_keys as $value)
-	{
-		$args->do = isset($request_hash[$value]) ? $value : $args->do;
-	}
-	
-	$nullable_keys = array('tproject_name','color','notes');
+	$nullable_keys = array('tprojectName','color','notes','doAction');
 	foreach ($nullable_keys as $value)
 	{
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
 	}
 	
-	$intval_keys = array('optReq' => 0, 'id' => null);
+	$intval_keys = array('optReq' => 0, 'tprojectID' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 	
-	// Special algorithm for notes
-	$the_tproject_id = 0;
-	if ($args->do == 'show_create_screen' || $args->do == 'do_create')
-		$args->id = -1;
-	else if ($session_tproject_id)
+	$checkbox_keys = array('active' => 0);
+	foreach ($checkbox_keys as $key => $value)
 	{
-		$the_tproject_id = $session_tproject_id;
-		$args->id = $the_tproject_id;
-	}	
-	else if(!is_null($args->id))
-		$the_tproject_id = $args->id;
+		$args->$key = isset($request_hash[$key]) ? 1 : $value;
+	}
+	
 
+  // Special algorithm for notes
   // 20070206 - BUGID 617
-	if( $args->do != 'do_edit' && $args->do != 'do_create')
+	if( $args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
 	{
-		if ($the_tproject_id > 0)
+		if ($args->tprojectID > 0)
 		{
-			$the_data = $tproject->get_by_id($the_tproject_id);
+			$the_data = $tprojectMgr->get_by_id($args->tprojectID);
 			$args->notes = 	$the_data['notes'];
 		}
 		else
@@ -247,7 +228,115 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 			$args->notes = '';
 		}	
 	}
-	
+
 	return $args;
 }
+
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function doCreate($argsObj,&$tprojectMgr)
+{
+    $op->status_ok=0;
+    $op->template='';
+    $op->msg='';  
+    
+    $check_op=$tprojectMgr->checkName($argsObj->tprojectName);
+    $op->msg=$check_op['msg'];
+    
+		if($check_op['status_ok'])
+		{
+			if (!$tprojectMgr->get_by_name($argsObj->tprojectName))
+			{
+				$new_id=$tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
+				                             $argsObj->optReq, $argsObj->notes, $argsObj->active);
+				if (!$new_id)
+				{
+					$op->msg = lang_get('refer_to_log');
+				}
+				else
+				{
+				  $op->status_ok=1;
+				  $op->template='projectView.tpl';	
+				}	
+			}
+			else
+			{
+				$op->msg = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+			}
+		}
+    return $op;
+}
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function doUpdate($argsObj,&$tprojectMgr)
+{
+    $op->status_ok=0;
+    $op->msg='';  
+    
+    $check_op=$tprojectMgr->checkName($argsObj->tprojectName);
+    $op->msg=$check_op['msg'];
+
+		if ($check_op['status_ok'])
+		{
+			if (!$tprojectMgr->get_by_name($argsObj->tprojectName,"testprojects.id <> {$argsObj->tprojectID}"))
+			{
+				$op->msg = sprintf(lang_get('test_project_update_failed'),$argsObj->tprojectName);
+				if( $tprojectMgr->update($argsObj->tprojectID,$argsObj->tprojectName,$argsObj->color,
+				                         $argsObj->optReq,$argsObj->notes) )
+				{
+				  $op->msg = sprintf(lang_get('test_project_updated'),$argsObj->tprojectName);
+				  $op->status_ok=1;
+				  $tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
+				}
+				
+			}
+			else
+				$op->msg = lang_get('error_product_name_duplicate');
+		}
+		return $op;
+}
+
+/*
+  function: edit
+            initialize variables to launch user interface (smarty template)
+            to get information to accomplish edit task.
+
+  args:
+  
+  returns: - 
+
+*/
+function edit(&$argsObj,&$tprojectMgr)
+{
+	  $tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
+       
+    $argsObj->tprojectName=$tprojectInfo['name'];
+	  $argsObj->color=$tprojectInfo['color'];
+	  $argsObj->notes=$tprojectInfo['notes'];
+	  $argsObj->optReq=$tprojectInfo['option_reqs'];
+	  $argsObj->active=$tprojectInfo['active'];
+
+    $ui=array(); 
+
+    $ui['doActionValue']='doUpdate';
+		$ui['buttonValue']=lang_get('btn_save');
+		$ui['caption']=lang_get('caption_edit_tproject');
+		return $ui;
+}
+
+
 ?>

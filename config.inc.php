@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.143 $
- * @modified $Date: 2008/01/03 11:50:59 $ by $Author: franciscom $
+ * @version $Revision: 1.144 $
+ * @modified $Date: 2008/01/07 10:15:21 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20080105 - franciscom - $g_testsuite_template
  *           20080102 - franciscom - new default for $g_log_path
  *           20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
  *                                   $g_exec_cfg->enable_tree_colouring;
@@ -298,7 +299,7 @@ $g_gui->webeditor='fckeditor';
  */
 
 // can be redefined using custom_config.inc.php
-$g_tree_type='LAYERSMENU';
+$g_tree_type='JTREE';
  
 
 // When creating an node in the tree, you can choose if:
@@ -675,7 +676,10 @@ $g_exec_cfg->user_filter_default='logged_user';
 // value
 // 
 // Possible values for type member: 
+// none: template will not be used, default will be a clean editor screen.
+//
 // string: value of value member is assigned to FCK object
+//
 // string_id: value member is used in a lang_get() call, and return value 
 //            is assigned to FCK object.
 //            Configure string_id on custom_strings.txt            
@@ -695,6 +699,36 @@ $g_testcase_template->steps->value='';
 
 $g_testcase_template->expected_results->type='none';
 $g_testcase_template->expected_results->value='';
+
+
+// Important
+// object members has SAME NAME that FCK editor objects.
+// the logic present on tcEdit.php is dependent of this rule.
+// 
+// every member contains an object with following members:
+// type
+// value
+// 
+// Possible values for type member: 
+// none: template will not be used, default will be a clean editor screen.
+//
+// string: value of value member is assigned to FCK object
+//
+// string_id: value member is used in a lang_get() call, and return value 
+//            is assigned to FCK object.
+//            Configure string_id on custom_strings.txt            
+//
+// file: value member is used as file name.
+//       file is readed and it's contains assigned to FCK object
+//       example:
+//               $g_testsuite_template->details->type='file';
+//               $g_testsuite_template->details->value='D:\w3\tl\head_20080103\logs\tsuite.txt';
+//
+// any other value for type, results on '' assigned to Web Editor object.
+//        
+//
+$g_testsuite_template->details->type='none';
+$g_testsuite_template->details->value='';
 
 
 //

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.2 2008/01/06 20:33:54 schlundus Exp $
+$Id: projectEdit.tpl,v 1.1 2008/01/07 20:12:45 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:

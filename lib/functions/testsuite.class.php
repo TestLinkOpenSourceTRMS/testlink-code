@@ -2,9 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/01/05 17:53:45 $ - $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/01/07 07:55:24 $ - $Author: franciscom $
  * @author franciscom
+ *
+ * 20080106 - franciscom - viewer_edit_new() changes to use user templates
+ *                         to fill details when creating a new test suites.
+ *                         new private method related to this feature:
+ *                         _initializeWebEditors(), read_file()
  *
  * 20080105 - franciscom - copy_to() changed return type
  *                         minor bug on copy_to. (tcversion nodes were not excluded).
@@ -388,10 +393,11 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
   returns: -
 
   rev :
+       20080105 - franciscom - added $userTemplateCfg
        20071202 - franciscom - interface changes -> template_dir
 */
 function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action, $parent_id, 
-                         $id=null, $result_msg=null, $user_feedback=null)
+                         $id=null, $result_msg=null, $user_feedback=null, $userTemplateCfg=null)
 {
   $gui_cfg=config_get('gui');
   $cf_smarty=-2;
@@ -408,12 +414,10 @@ function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action,
 	$the_tpl = $a_tpl[$action];
 	$smarty->assign('sqlResult', $result_msg);
 	$smarty->assign('containerID',$parent_id);	 
-	
-	// 20070204 - franciscom
 	$smarty->assign('user_feedback', $user_feedback);
-
 	
 	$the_data = null;
+	
 	$name = '';
 	if ($action == 'edit_testsuite')
 	{
@@ -421,25 +425,29 @@ function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action,
 		$name=$the_data['name'];
 		$smarty->assign('containerID',$id);	
   }
-  
-  // ----------------------------------------------------------------------
-  // 20061226 - franciscom
+  $webEditorData = $the_data;
+	
   // Custom fields
   if( $gui_cfg->enable_custom_fields ) 
   {
     $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
-  } // if( $gui_cfg
+  }
   $smarty->assign('cf',$cf_smarty);	
-  // ----------------------------------------------------------------------
 	
-	// webeditor 
+	// webeditor
+	if( $action == 'new_testsuite' && !is_null($userTemplateCfg) )
+	{
+	   // need to understand if need to use templates
+	   $webEditorData=$this->_initializeWebEditors($amy_keys,$userTemplateCfg);
+	   
+	} 
 	foreach ($amy_keys as $key)
 	{
 		// Warning:
 		// the data assignment will work while the keys in $the_data are identical
 		// to the keys used on $oWebEditor.
 		$of = &$oWebEditor[$key];
-		$of->Value = isset($the_data[$key]) ? $the_data[$key] : null;
+		$of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
 		$smarty->assign($key, $of->CreateHTML());
 	}
 	
@@ -673,6 +681,70 @@ function delete_deep($id)
     $this->tree_manager->delete_subtree($id);
 	}
 } // end function
+
+
+/*
+  function: initializeWebEditors
+
+  args:
+  
+  returns: 
+
+*/
+private function _initializeWebEditors($WebEditors,$templateCfg)
+{
+  $wdata=array();
+  foreach ($WebEditors as $key => $html_name)
+  {
+    switch($templateCfg->$html_name->type)
+    {
+      case 'string':
+    	$wdata[$html_name] = $templateCfg->$html_name->value;
+      break;
+      
+      case 'string_id':
+    	$wdata[$html_name] = lang_get($templateCfg->$html_name->value);
+      break;
+      
+      
+      case 'file':
+    	$wdata[$html_name] = $this->read_file($templateCfg->$html_name->value);
+      break;
+      
+      default:
+      $wdata[$html_name] = '';
+      break;
+    }
+  } // foreach  
+  return $wdata;
+}
+
+
+/*
+  function: read_file
+
+  args: file_name 
+  
+  returns: if file exist and can be read -> file contents
+           else error message
+
+*/
+private function read_file($file_name)
+{
+	$fContents = null;
+	@$fd = fopen($file_name,"rb");
+	if ($fd)
+	{
+		$fContents = fread($fd,filesize($file_name));
+		fclose($fd);
+	}
+	else
+	{
+	  $fContents= lang_get('problems_trying_to_access_template') . " {$file_name} ";  
+	}
+	return $fContents;
+}
+
 
 
 /*

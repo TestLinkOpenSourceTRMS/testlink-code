@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.238 $
- * @modified $Date: 2008/01/05 17:52:19 $ $Author: franciscom $
+ * @version $Revision: 1.239 $
+ * @modified $Date: 2008/01/07 07:55:11 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -61,6 +61,12 @@ $TLS_testplan 		= $TLS_test_plan;
 $TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title 			= "Title";
+
+$TLS_th_active = "Active";
+$TLS_th_delete = "Delete";
+$TLS_th_name = "Name";
+$TLS_th_notes = "Notes";
+$TLS_th_requirement_feature="Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
@@ -303,7 +309,6 @@ $TLS_btn_new_com = "New Test Suite";
 $TLS_btn_new_tc = "Create Test Case(s)";
 $TLS_btn_reorder_cat = "Reorder children";
 $TLS_edit_testproject_basic_data = "Edit Test Project basic data";
-$TLS_th_notes = "Notes";
 $TLS_th_product_name = "Test Project Name";
 
 
@@ -354,7 +359,6 @@ $TLS_test_status_all_status = $TLS_test_status_all;
 
 // gui/templates/mainPage.tpl
 $TLS_th_my_perc_completed = "My completed [%]";
-$TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 
@@ -737,8 +741,6 @@ $TLS_alt_delete_user = "Really delete the selected user?";
 $TLS_alt_edit_user = "Edit user";
 $TLS_order_by_login = "Order by login";
 $TLS_order_by_role_descr = "Order by role description";
-$TLS_th_active = "Active";
-$TLS_th_delete = "Delete";
 $TLS_th_email = "Email";
 $TLS_th_first_name = "First Name";
 $TLS_th_last_name = "Last  Name";
@@ -991,7 +993,8 @@ $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test P
                             "Are you sure to delete the Test Project?"; 
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
-
+// gui/templates/projectView.tpl
+$TLS_title_testproject_management="Test Project Management";
 
 // gui/templates/reqAssign.tpl
 $TLS_please_select_a_req = "Please select a requirement";
@@ -1378,6 +1381,7 @@ $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification document";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Case(s)";
+$TLS_href_tproject_management="Test Project Management";
 $TLS_href_user_management = "User Management";
 $TLS_title_requirements = "Requirements";
 $TLS_title_test_spec = "Test Specification";

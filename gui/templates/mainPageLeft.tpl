@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.1 2007/12/18 22:08:30 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.2 2008/01/07 07:58:04 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -80,16 +80,13 @@
     <h3>{lang_get s='title_product_mgmt'}</h3>
 	  {if $modify_product_rights == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="lib/project/projectedit.php?show_create_screen">{lang_get s='href_create_product'}</a>
-        <br />
-  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="lib/project/projectedit.php">{lang_get s='href_edit_product'}</a>
+        <a href="lib/project/projectView.php">{lang_get s='href_tproject_management'}</a>
     {/if} {* modify_product_rights *}
     
 	  {if $tproject_user_role_assignment == "yes"}
         <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="lib/usermanagement/usersassign.php?feature=testproject&amp;featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
+        <a href="lib/usermanagement/usersAssign.php?feature=testproject&amp;featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
 	  {/if}
     {$smarty.const.MENU_ITEM_CLOSE}
 	{/if}

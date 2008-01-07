@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2008/01/04 20:27:23 $  $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2008/01/07 07:55:24 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080106 - franciscom - checkName() method
+ *                         delete() changed return type
  * 20080104 - franciscom - fixed bug on gen_combo_test_suites()
  *                         due to wrong exclusion in get_subtree().
  * 20071111 - franciscom - new method get_subtree();
@@ -27,6 +29,19 @@ class testproject extends tlObjectWithAttachments
 {
   const RECURSIVE_MODE=true;
   const EXCLUDE_TESTCASES=true;  
+
+	private $object_table='testprojects';
+	private $requirements_table='requirements';
+	private $requirement_spec_table='req_specs';
+	private $req_coverage_table="req_coverage";
+	private $nodes_hierarchy_table="nodes_hierarchy";
+	private $keywords="keywords";
+	private $testcase_keywords_table="testcase_keywords";  
+  private $testplans_table="testplans";
+  private $custom_fields_table="custom_fields";
+  private $cfield_testprojects_table="cfield_testprojects";
+  private $cfield_node_types_table="cfield_node_types";
+
   
 	var $db;
 	var $tree_manager;
@@ -81,7 +96,7 @@ function create($name,$color,$optReq,$notes,$active=1)
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
-	$sql = " INSERT INTO testprojects (id,color,option_reqs,notes,active) " .
+	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,notes,active) " .
 	       " VALUES (" . $root_node_id . ", '" .	
 	                     $this->db->prepare_string($color) . "'," . 
 	                     $optReq . ",'" .
@@ -123,7 +138,7 @@ function update($id, $name, $color, $opt_req,$notes)
 	$log_msg = 'Test project ' . $name . ' update: Ok.';
 	$log_level = 'INFO';
 	
-	$sql = " UPDATE testprojects SET color='" . $this->db->prepare_string($color) . "', ".
+	$sql = " UPDATE {$this->object_table} SET color='" . $this->db->prepare_string($color) . "', ".
 			" option_reqs=" .  $opt_req . ", " .
 			" notes='" . $this->db->prepare_string($notes) . "'" . 
 			" WHERE id=" . $id;
@@ -131,7 +146,7 @@ function update($id, $name, $color, $opt_req,$notes)
 	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
-		$sql = "UPDATE nodes_hierarchy SET name='" . 
+		$sql = "UPDATE {$this->nodes_hierarchy_table} SET name='" . 
 				$this->db->prepare_string($name) .
 				"' WHERE id= {$id}";
 		$result = $this->db->exec_query($sql);
@@ -167,13 +182,13 @@ function update($id, $name, $color, $opt_req,$notes)
 function get_by_name($name,$addClause = null)
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
-	       "  FROM testprojects, nodes_hierarchy ". 
+	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ". 
 	       " WHERE testprojects.id = nodes_hierarchy.id AND".
-	       "  nodes_hierarchy.name = '" . 
-	         $this->db->prepare_string($name) . "'";
+	       "  nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
+	       
 	if (!is_null($addClause))
 		$sql .= " AND " . $addClause;
-			 
+
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
 }
@@ -191,7 +206,7 @@ function get_by_name($name,$addClause = null)
 function get_by_id($id)
 {
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
-	       " FROM testprojects, nodes_hierarchy ".
+	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ".
 	       " AND testprojects.id = {$id}";
 	$recordset = $this->db->get_recordset($sql);
@@ -214,7 +229,7 @@ rev:
 function get_all($order_by=" ORDER BY nodes_hierarchy.name ")
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
-	       " FROM testprojects, nodes_hierarchy ".
+	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ";
 	if( !is_null($order_by) )
 	{
@@ -272,7 +287,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 	
 	
 	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active
- 	          FROM nodes_hierarchy 
+ 	          FROM {$this->nodes_hierarchy_table} 
  	          JOIN testprojects ON nodes_hierarchy.id=testprojects.id  
 	          LEFT OUTER JOIN user_testproject_roles 
 		        ON testprojects.id = user_testproject_roles.testproject_id AND  
@@ -541,26 +556,26 @@ function count_testcases($id)
 	 * Checks a test project name for correctness
 	 *
 	 * @param string $name the name to check
-	 * @param string $msg [ref] the error msg on failure
-	 * @return integer return 1 on success, 0 else
+	 * @return map with keys: status_ok, msg
 	 **/
-	function checkTestProjectName($name,&$msg)
+	function checkName($name)
 	{
 		global $g_ereg_forbidden;
+		$ret['status_ok']=1;
+		$ret['msg']='ok';
 		
-		$name_ok = 1;
 		if (!strlen($name))
 		{
-			$msg = lang_get('info_product_name_empty');
-			$name_ok = 0;
+			$ret['msg'] = lang_get('info_product_name_empty');
+			$ret['status_ok'] = 0;
 		}
 		// BUGID 0000086
-		if ($name_ok && !check_string($name,$g_ereg_forbidden))
+		if ($ret['status_ok'] && !check_string($name,$g_ereg_forbidden))
 		{
-			$msg = lang_get('string_contains_bad_chars');
-			$name_ok = 0;
+			$ret['msg'] = lang_get('string_contains_bad_chars');
+			$ret['status_ok'] = 0;
 		}
-		return $name_ok;
+		return $ret;
 	}
 	
 	
@@ -1051,15 +1066,16 @@ function addUserRole($userID,$tproject_id,$roleID)
 
             
   args :id: testproject id
-        error [ref]: used to return verbose feedback about operation.
   
   returns: -
 
 */
-function delete($id,&$error)
+function delete($id)
 {
+  $ret['msg']='ok';
+  $ret['status_ok']=1;
 
-	$error = ''; //clear error string
+	$error = ''; 
 	
 	$a_sql = array();
 	
@@ -1206,7 +1222,7 @@ function delete($id,&$error)
     $sql="DELETE FROM cfield_testprojects WHERE testproject_id = {$id} ";
     $this->db->exec_query($sql);     
 
-		$sql = "DELETE FROM testprojects WHERE id = {$id}";
+		$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
 	
 		$result = $this->db->exec_query($sql);
 		if ($result)
@@ -1223,10 +1239,17 @@ function delete($id,&$error)
   // missing
   if (empty($error))
 	{
-    $sql="DELETE FROM nodes_hierarchy WHERE id = {$id} ";
+    $sql="DELETE FROM {$this->nodes_hierarchy_table} WHERE id = {$id} ";
     $this->db->exec_query($sql);     
   }
-	return empty($error) ? 1 : 0;
+
+  if( !empty($error) )
+  {
+    $ret['msg']=$error;
+    $ret['status_ok']=0;
+  }
+  
+	return $ret;
 }
 
 	
@@ -1245,10 +1268,7 @@ function delete($id,&$error)
 function get_all_testcases_id($id)
 {
 	$a_tcid = array();
-	
-	// 20071111 - franciscom
 	$test_spec = $this->get_subtree($id);
-	
 	$hash_descr_id = $this->tree_manager->get_available_node_types();
 	if(count($test_spec))
 	{
@@ -1291,7 +1311,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
     }
 		$map_keywords = null;
 		$sql = " SELECT testcase_id,keyword_id,keyword 
-		         FROM keywords K, testcase_keywords  
+		         FROM {$this->keywords_table} K, {$this->testcase_keywords_table}  
 		         WHERE keyword_id = K.id  
 		         AND testproject_id = {$testproject_id}
 		         {$keyword_filter}
@@ -1322,7 +1342,7 @@ function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_s
 {
 	$sql = " SELECT nodes_hierarchy.id, nodes_hierarchy.name, 
 	                notes,active, testproject_id 
-	         FROM nodes_hierarchy,testplans";
+	         FROM {$this->nodes_hierarchy_table},{$this->testplans_table}";
 	$where = " WHERE nodes_hierarchy.id=testplans.id ";
   $where .= ' AND (testproject_id = ' . $testproject_id . " ";  	
 
@@ -1361,7 +1381,7 @@ function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_s
 function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 {
 	$sql = " SELECT NH.id, NH.name, testproject_id " .
-	       " FROM nodes_hierarchy NH, testplans " .
+	       " FROM {$this->nodes_hierarchy_table} NH, {$this->testplans_table} " .
          " WHERE NH.id=testplans.id " .
          " AND testproject_id = {$tproject_id} ";  	
 
@@ -1479,11 +1499,11 @@ function get_linked_custom_fields($id,$node_type=null)
  		$hash_descr_id = $this->tree_manager->get_available_node_types();
     $node_type_id=$hash_descr_id[$node_type]; 
   
-    $additional_table=",cfield_node_types CFNT ";
+    $additional_table=",{$this->cfield_node_types_table} CFNT ";
     $additional_join=" AND CFNT.field_id=CF.id AND CFNT.node_type_id={$node_type_id} ";
   }
   $sql="SELECT CF.*,CFTP.display_order " .
-       " FROM custom_fields CF, cfield_testprojects CFTP " .
+       " FROM {$this->custom_fields_table} CF, {$this->cfield_testprojects_table} CFTP " .
        $additional_table .  
        " WHERE CF.id=CFTP.field_id " .
        " AND   CFTP.testproject_id={$id} " .

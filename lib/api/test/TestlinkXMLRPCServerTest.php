@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: TestlinkXMLRPCServerTest.php,v 1.2 2007/12/03 23:04:42 asielb Exp $
+ * $Id: TestlinkXMLRPCServerTest.php,v 1.3 2008/01/07 22:09:37 asielb Exp $
  *
  * These tests require phpunit: http://www.phpunit.de/
  */
@@ -77,6 +77,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		//$suite->addTest(new TestlinkXMLRPCServerTest('testGetTestCasesForTestSuite'));
 		//$suite->addTest(new TestlinkXMLRPCServerTest('testGetTestCasesForTestSuiteDeepFalse'));
 		//$suite->addTest(new TestlinkXMLRPCServerTest('testGetTestCasesForTestSuiteWithInvalidSuiteID'));
+		//$suite->addTest(new TestlinkXMLRPCServerTest('testReportTCResultWithNotes'));
 		// run all the tests		
 		$suite->addTestSuite('TestlinkXMLRPCServerTest');
 		return $suite;
@@ -329,9 +330,31 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$response = $this->client->getResponse();
 		// Just check the size is good since we don't know the insert id
 		$this->assertEquals(3, sizeof($response[0]));
+	}
+		
+	function testReportTCResultWithNoParams()
+	{
+		$data = array();		
+		
+		if(!$this->client->query('tl.reportTCResult', $data)) {
+			echo "\n" . $this->getName() . " >> something went really wrong - " . $this->client->getErrorCode() .
+					$this->client->getErrorMessage();
+		}		
+		
+		$expectedResult = array();
+		$expectedResult[0]["code"] = constant("NO_DEV_KEY");		
+		$expectedResult[0]["message"] = constant("NO_DEV_KEY_STR");			
+		$this->assertEquals($expectedResult, $this->client->getResponse());	
+	}
+	
+	// TODO: Implement
+	function testReportTCResultWithInvalidTCIDAndTPIDCombo()
+	{
+		// TCID_NOT_IN_TPID, TCID_NOT_IN_TPID_STR
+		throw new PHPUnit_Framework_IncompleteTestError('This test is not yet implemented');	
 	}	
 	
-	function testValidReportTCResultRequest()
+	function testReportTCResultValidRequest()
 	{
 		$data = array();
 		$data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -348,8 +371,8 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		// Just check the size is good since we don't know the insert id
 		$this->assertEquals(3, sizeof($response[0]));
 	}
-	
-	function testValidReportTCResultRequestWithBuildID()
+
+	function testReportTCResultRequestWithValidBuildID()
 	{
 		$data = array();
 		$data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
@@ -370,8 +393,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$response = $this->client->getResponse();
 		// Just check the size is good since we don't know the insert id
 		$this->assertEquals(3, sizeof($response[0]));
-	}
-		
+	}		
 	
 	function testReportTCResultNotGuessingBuildID()
 	{
@@ -398,6 +420,30 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$response = $this->client->getResponse();
 		$this->assertEquals($expectedResult, $response);	
 	}
+
+	function testReportTCResultWithTimestamp()
+	{
+		throw new PHPUnit_Framework_IncompleteTestError('This test is not yet implemented');	
+	}
+	
+	function testReportTCResultWithNotes()
+	{
+		$data = array();
+		$data["devKey"] = TestlinkXMLRPCServerTestData::testDevKey;
+		$data["tcid"] = TestlinkXMLRPCServerTestData::testTCID;
+		$data["tpid"] = TestlinkXMLRPCServerTestData::testTPID;
+		$data["status"] = "p";
+		$data["notes"] = "this is a note about the test";
+		
+		if(!$this->client->query('tl.reportTCResult', $data)) {
+			echo "\n" . $this->getName() . " >> something went really wrong - " . $this->client->getErrorCode() .
+					$this->client->getErrorMessage();
+		}
+		
+		$response = $this->client->getResponse();
+		// Just check the size is good since we don't know the insert id
+		$this->assertEquals(3, sizeof($response[0]));				
+	}		
 	
 	function testCreateBuildWithoutNotes()
 	{
@@ -496,7 +542,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$expectedResult[0]["option_priority"] = "1";		
 		
 		$response = $this->client->getResponse();
-		$this->assertNotEquals($expectedResult, $response);		
+		$this->assertEquals($expectedResult, $response);		
 	}
 	
 	function testGetProjectTestPlansWithInvalidID()
@@ -526,7 +572,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$expectedResult[$testplanID]["id"] = $testplanID;
 		$expectedResult[$testplanID]["name"] = "A test plan for testing";
 		// characters like <p> are stripped
-		$expectedResult[$testplanID]["notes"] = "A description of a test plan for testing";		
+		$expectedResult[$testplanID]["notes"] = "<p>A description of a test plan for testing</p>";		
 		$expectedResult[$testplanID]["active"] = "1";
 		$expectedResult[$testplanID]["testproject_id"] = "1";				
 		
@@ -577,7 +623,7 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$expectedResult[2]["node_order"] = 100;
 		
 		$response = $this->client->getResponse();
-		//print_r($response);
+		
 		$this->assertEquals($expectedResult, $response, "arrays do not match");		
 	}
 
@@ -693,28 +739,6 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expectedResult, $response);
 	}
 	
-	function testReportTCResultWithNoParams()
-	{
-		$data = array();		
-		
-		if(!$this->client->query('tl.reportTCResult', $data)) {
-			echo "\n" . $this->getName() . " >> something went really wrong - " . $this->client->getErrorCode() .
-					$this->client->getErrorMessage();
-		}		
-		
-		$expectedResult = array();
-		$expectedResult[0]["code"] = constant("NO_DEV_KEY");		
-		$expectedResult[0]["message"] = constant("NO_DEV_KEY_STR");			
-		$this->assertEquals($expectedResult, $this->client->getResponse());	
-	}
-	
-	// TODO: Implement
-	function testReportTCResultWithInvalidTCIDAndTPIDCombo()
-	{
-		// TCID_NOT_IN_TPID, TCID_NOT_IN_TPID_STR
-		throw new PHPUnit_Framework_IncompleteTestError('This test is not yet implemented');	
-	}
-	
 
 	function testRepeat()
 	{		
@@ -741,16 +765,6 @@ class TestlinkXMLRPCServerTest extends PHPUnit_Framework_TestCase
 		{
 			echo "success!";
 		}
-	}
-	
-	function testReportTCResultWithTimestamp()
-	{
-		throw new PHPUnit_Framework_IncompleteTestError('This test is not yet implemented');	
-	}
-	
-	function testReportTCResultWithNotes()
-	{
-		throw new PHPUnit_Framework_IncompleteTestError('This test is not yet implemented');
 	}	
 		
 	function testNonExistantMethod()

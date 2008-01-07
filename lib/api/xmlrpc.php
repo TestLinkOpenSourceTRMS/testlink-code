@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.4 2008/01/03 11:51:30 franciscom Exp $
+ * $Id: xmlrpc.php,v 1.5 2008/01/07 22:09:37 asielb Exp $
  */
  
 /**
@@ -104,7 +104,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $testSuiteIDParamName = "testsuiteid";
 	public static $statusParamName = "status";
 	public static $buildidParamName = "buildid";
-	public static $noteParamName = "note";
+	public static $noteParamName = "notes";
 	public static $timeStampParamName = "timestamp";
 	public static $guessParamName = "guess";
 	public static $deepParamName = "deep";
@@ -1055,7 +1055,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		$this->_setArgs($args);
 		$str = " Testlink API Version: " . self::$version . " written by Asiel Brumfield\n" .
-				   "See http://testlink.org/api/ for additional information";
+				"See http://testlink.org/api/ for additional information";
 		return $str;				
 	}
 	
@@ -1108,6 +1108,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			return $this->errors;
 		}
+		
+		// query that only gets active (the testproject method gets everything)
+		//$query = "SELECT nodes_hierarchy.id AS id, nodes_hierarchy.name AS name, testprojects.notes AS " .
+		//		"notes FROM `testprojects`, `nodes_hierarchy`, node_types WHERE " .
+		//		"nodes_hierarchy.node_type_id=node_types.id AND node_types.description='testproject' " .
+		//		"AND testprojects.active=1 AND testprojects.id=nodes_hierarchy.id";		
 	}
 	
 	/**
@@ -1283,7 +1289,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param int $args["tpid"] 
      * @param string $args["status"] - status is {@link $validStatusList}
      * @param int $args["buildid"] - optional
-     * @param string $args["note"] - optional
+     * @param string $args["notes"] - optional
      * @param bool $args["guess"] - optional definiing whether to guess optinal params or require them 
      * 								explicitly default is true (guess by default)
 	 * @return mixed $resultInfo 

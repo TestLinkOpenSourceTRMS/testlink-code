@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.1 2008/01/07 20:12:45 franciscom Exp $
+$Id: projectEdit.tpl,v 1.2 2008/01/07 20:13:30 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -16,8 +16,22 @@ rev:
     BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
 
 *}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+{* Configure Actions *}
+{assign var="managerURL" value="lib/project/projectEdit.php"}
+{assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
+
+{lang_get var="labels" s='caption_edit_tproject,caption_new_tproject,name,
+                          title_testproject_management,notes,color,
+                          enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del'} 
+
+
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
-{include file="inc_jsPicker.tpl"}
+{if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
+  {include file="inc_jsPicker.tpl"}
+{/if}
 
 {literal}
 <script type="text/javascript">
@@ -26,10 +40,10 @@ var warning_empty_tproject_name = "{lang_get s='warning_empty_tproject_name'}";
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.tproject_name.value)) 
+  if (isWhitespace(f.tprojectName.value)) 
   {
       alert(warning_empty_tproject_name);
-      selectField(f, 'tproject_name');
+      selectField(f, 'tprojectName');
       return false;
   }
   return true;
@@ -41,64 +55,42 @@ function validateForm(f)
 
 
 <body>
-{config_load file="input_dimensions.conf" section="projectedit"} {* Constant definitions *}
-
-<h1>{lang_get s='title_product_mgmt'}
+<h1>{$labels.title_testproject_management}
 {if $action != "delete"} - {$name|escape}{/if}
 </h1>
-
-{* tabs *}
-<div class="tabMenu">
-	{if $id neq '-1'}
-	<span class="unselected"><a href="lib/project/projectedit.php?show_create_screen">{lang_get s='btn_create'}</a></span> 
-	<span class="selected">{lang_get s='btn_edit_del'}</span>
-	{else}
-	<span class="selected">{lang_get s='btn_create'}</span> 
-	   {if $enable_edit_feature neq 0}
-	     <span class="unselected"><a href="lib/project/projectedit.php">{lang_get s='btn_edit_del'}</a></span> 
-	   {/if}  
-	{/if}
-
-</div>
-
 <div class="workBack">
 
-{include file="inc_update.tpl" result=$sqlResult item="product" name=$name user_feedback=$user_feedback}
-	
-{if $show_prod_attributes == "yes"}
+{if $user_feedback != ''}
+  {include file="inc_update.tpl" result=$sqlResult item="product" name=$name user_feedback=$user_feedback}
+{/if}	
 
 	{* edit product form *}
 	{if $found == "yes"}
 		<div>
 		<form name="edit_testproject" id="edit_testproject"
-		      method="post" action="lib/project/projectedit.php"
+		      method="post" action="{$managerURL}"
 		      onSubmit="javascript:return validateForm(this);">
 		      
-		<input type="hidden" name="id" value="{$id}" />
+		<input type="hidden" name="tprojectID" value="{$id}" />
 		<table class="common" width="80%">
-		  <caption>
-			{if $id neq '-1'}
-				{lang_get s='caption_edit_product'} 
-			{else}
-				{lang_get s='caption_new_product'} 
-			{/if}
-				{$name|escape}</caption>
+			<caption>{$caption}{$name|escape}</caption>
 			<tr>
-				<th>{lang_get s='name'}</th>
-				<td><input type="text" name="tproject_name" 
+				<td>{$labels.name}</td>
+				<td><input type="text" name="tprojectName" 
   			           size="{#TESTPROJECT_NAME_SIZE#}" 
 	  		           maxlength="{#TESTPROJECT_NAME_MAXLEN#}" 
 				           value="{$name|escape}"/>
-				  				{include file="error_icon.tpl" field="tproject_name"}
+				  				{include file="error_icon.tpl" field="tprojectName"}
 				</td>
 			</tr>
-		   <tr>
-			  <th>{lang_get s='notes'}</th>
-			  <td width="80%">{$notes}</td>
-		   </tr>
-		{if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
+	   <tr>
+		  <td>{$labels.notes}</td>
+		  <td width="80%">{$notes}</td>
+	   </tr>
+	   
+	   {if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
 			<tr>
-				<th>{lang_get s='color'}</th>
+				<td>{$labels.color}</td>
 				<td>
 					<input type="text" name="color" value="{$color|escape}" maxlength="12" />
 					{* this function below calls the color picker javascript function. 
@@ -111,40 +103,29 @@ function validateForm(f)
 			</tr>
 		 {/if}	
 			<tr>
-				<th>{lang_get s='enable_requirements'}</th>
+				<td>{$labels.enable_requirements}</td>
 				<td>
 					<select name="optReq">
 					{html_options options=$gsmarty_option_yes_no selected=$reqs_default}
 					</select>
 				</td>
 			</tr>
+
+			<tr><td>
+				{lang_get s='th_active'}
+				<input type="checkbox" name="active" {if $active eq 1} checked="checked"	{/if} />
+      </td></tr>
+
 	
 		</table>
+    {if $canManage == "yes"}
 		<div class="groupBtn">
-		
     {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
-       added hidden    
-    *}
-		{if $id neq '-1'}
-			<input type="hidden" name="do_edit" value="do_edit" />
-			<input type="submit" name="do_edit_button" value="{lang_get s='btn_upd'}" />
-		{else}
-			<input type="hidden" name="do_create" value="do_create" />
-			<input type="submit" name="do_create_button" value="{lang_get s='btn_create'}" />
-		{/if}
-		
-			{if $id neq '-1'}
-				{if $active == '1'}
-				<input type="submit" name="inactivateProduct" value="{lang_get s='btn_inactivate'}" />
-				{else}
-				<input type="submit" name="activateProduct" value="{lang_get s='btn_activate'}" />
-				{/if}
-				<input type="button" name="do_delete" value="{lang_get s='btn_del'}" 
-					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}{$name|escape:"javascript"}?'))
-					{ldelim}location.href=fRoot+'lib/project/projectedit.php?do_delete=&amp;id={$id}&amp;name={$name|escape:"url"}';
-					{rdelim};" />
-			{/if}
+                  added hidden   *}
+    <input type="hidden" name="doAction" value="{$doActionValue}" />
+    <input type="submit" name="doActionButton" value="{$buttonValue}" />
 		</div>
+		{/if}
 
 		</form>
 	</div>
@@ -155,26 +136,6 @@ function validateForm(f)
 		{/if}
 		{lang_get s='invalid_query'}: {$sqlResult|escape}<p>
 	{/if}
-
-{/if}
 </div>
-
-{if $action != "no"}
-	{* this renews menu bar after change *}
-	{if $action == 'delete'}
-	<script type="text/javascript">
-	// alert(' projectedit.tpl ' + top.location);
-	top.location = top.location;
-	</script>
-	{else}
-	<script type="text/javascript">
-  // remove query string to avoid reload of home page,
-  // instead of reload only navbar
-  var href_pieces=parent.titlebar.location.href.split('?');
-	parent.titlebar.location=href_pieces[0];
-	</script>
-	{/if}
-{/if}
-
 </body>
 </html>

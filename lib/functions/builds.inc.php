@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.23 2007/11/04 00:03:44 havlat Exp $
+* $Id: builds.inc.php,v 1.24 2008/01/08 19:50:44 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -43,24 +43,6 @@ function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC",$active=nul
  		$sql .= " " . $order_by;
  	}
 	return getBuildInfo($db,$sql);
-}
-
-/**
- * @author kl - 10/13/2005
- * return a comma delimited list of build.id's which are part of a test plan
- *
- */
-function DEPR_get_cs_builds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC")
-{
-  $comma_separated = null;
-  $arrAllBuilds = getBuilds($db,$idPlan, $order_by);
-  if ($arrAllBuilds){
-    $arrAllKeys = array_keys($arrAllBuilds);
-    $comma_separated = implode("','", $arrAllKeys);
-    // add single quotes to front and back
-    $comma_separated = "'" . $comma_separated . "'";
-  }
-  return $comma_separated;
 }
 
 function getBuildInfo(&$db,$sql)

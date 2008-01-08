@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/01/01 16:38:17 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/01/08 19:50:44 $
  *
  * @author Martin Havlat
  *
@@ -166,30 +166,4 @@ function tlTimingCurrent ($name = 'default')
 * See the optimizations section below for the examination of echo versus 
 * inline coding for an example of the use of these functions.
 */
-
-/** DEPRECATED
- * Wrapper to execute a query 
- *
- * @param string $query the query to execute
- * @param resource $resource [default = null] link identifier to the db connection
- * @return resource result handle of the db query
- *
- * 20050905 - scs - added overall duration
- * 20051229 - scs - adopted the new ADODb style, moved the logging part
- * 					to the db-class. So this function now becomes DEPRECATED
- * 					$db->exec_query should be used instead!
- **/
-function do_sql_query($query, $resource = null)
-{
-	global $db;
-	
-	$my_db = &$db;
-	if (!is_null($resource))
-	{
-		$my_db = &$resource;
-	}	
-	$result = $my_db->exec_query($query);
-	
-	return $result;
-}
 ?>

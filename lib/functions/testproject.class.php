@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2008/01/07 07:55:24 $  $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2008/01/08 07:46:00 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080107 - franciscom - get_accessible_for_user(), added more data
+ *                         for array_of_map output type
  * 20080106 - franciscom - checkName() method
  *                         delete() changed return type
  * 20080104 - franciscom - fixed bug on gen_combo_test_suites()
@@ -41,6 +43,8 @@ class testproject extends tlObjectWithAttachments
   private $custom_fields_table="custom_fields";
   private $cfield_testprojects_table="cfield_testprojects";
   private $cfield_node_types_table="cfield_node_types";
+  private $user_testproject_roles_table="user_testproject_roles";
+
 
   
 	var $db;
@@ -261,9 +265,7 @@ args:
                                  value -> array ('name' => test project name,
                                                  'active' => active status)
                                                  
-                     array_of_map: value -> array ('id' => test project id
-                                                   'name' => test project name,
-                                                   'active' => active status)
+                     array_of_map: value -> array  with all testproject table fields plus name.
                                                  
                      
                      default: map
@@ -286,10 +288,10 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 	$role_id=$user_info[0]['role_id'];
 	
 	
-	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active
+	$sql =  " SELECT nodes_hierarchy.name,testprojects.*
  	          FROM {$this->nodes_hierarchy_table} 
- 	          JOIN testprojects ON nodes_hierarchy.id=testprojects.id  
-	          LEFT OUTER JOIN user_testproject_roles 
+ 	          JOIN {$this->object_table} ON nodes_hierarchy.id=testprojects.id  
+	          LEFT OUTER JOIN {$this->user_testproject_roles_table}
 		        ON testprojects.id = user_testproject_roles.testproject_id AND  
 		 	      user_testproject_roles.user_ID = {$user_id} WHERE ";
 		 	      
@@ -303,10 +305,19 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 		$sql .= " AND active=1 ";
 
 	$sql .= $order_by;
+
+  if($output_type == 'array_of_map')
+	{
+	    $items = $this->db->get_recordset($sql);
+	    $do_post_process=0;
+	}
+	else
+	{
+	    $arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
+	    $do_post_process=1;
+	}
 	
-	$arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
-	
-	if (sizeof($arrTemp))
+	if ($do_post_process && sizeof($arrTemp))
 	{
     switch ($output_type)
 	  {
@@ -325,14 +336,6 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 		   {
 			   $items[$id] = array( 'name' => $row['name'],
 			                        'active' => $row['active']);
-		   }
-		   
-		   case 'array_of_map':
-		   foreach($arrTemp as $id => $row)
-		   {
-			   $items[] = array( 'id' => $id,
-			                     'name' => $row['name'],
-			                     'active' => $row['active']);
 		   }
 		   break;
 	  }

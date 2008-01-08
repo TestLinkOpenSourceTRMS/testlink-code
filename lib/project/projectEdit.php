@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/07 07:58:41 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/08 07:46:44 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -149,7 +149,10 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        $tprojects=$tproject_mgr->get_all();
+        // $tprojects=$tproject_mgr->get_all();
+        $tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
+                                                            " ORDER BY nodes_hierarchy.name ");
+
         $template= is_null($template) ? 'projectView.tpl' : $template;
         $smarty->assign('tprojects',$tprojects);
         $smarty->assign('doAction',$reloadType);
@@ -229,6 +232,8 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		}	
 	}
 
+  $args->userID=isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+ 
 	return $args;
 }
 

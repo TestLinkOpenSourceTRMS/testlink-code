@@ -1,5 +1,10 @@
 <?php
 /*
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * $Id: class-IXR.php,v 1.3 2008/01/08 07:53:49 franciscom Exp $
+ */
+
+/*
    IXR - The Inutio XML-RPC Library - (c) Incutio Ltd 2002-2005
    Version 1.7 (beta) - Simon Willison, 23rd May 2005
    Site:   http://scripts.incutio.com/xmlrpc/

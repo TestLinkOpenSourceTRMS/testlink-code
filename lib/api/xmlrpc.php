@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.6 2008/01/07 22:35:53 asielb Exp $
+ * $Id: xmlrpc.php,v 1.7 2008/01/08 07:52:54 franciscom Exp $
  */
  
 /**
@@ -1055,7 +1055,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		$this->_setArgs($args);
 		$str = " Testlink API Version: " . self::$version . " written by Asiel Brumfield\n" .
-				"See http://testlink.org/api/ for additional information";
+		       " contribution by TestLink development Team \n" .
+				   "See http://testlink.org/api/ for additional information";
 		return $str;				
 	}
 	

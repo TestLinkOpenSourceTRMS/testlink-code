@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/01/05 12:12:27 $  by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/01/09 08:15:58 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
@@ -230,6 +230,12 @@ else if($args->do_create)
       $user_feedback=sprintf(lang_get('tc_created'),$args->name);
       $sqlResult='ok';        
 		}
+    // BUGID 0001267 by cmurray
+		elseif(isset($tcase['msg'])) 
+		{
+     $user_feedback .= '' . $tcase['msg'];
+     
+    }
 	}
 
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 

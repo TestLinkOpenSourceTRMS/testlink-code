@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.3 2008/01/06 20:33:54 schlundus Exp $ 
+$Id: planView.tpl,v 1.4 2008/01/09 07:05:19 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -18,6 +18,7 @@ Rev :
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
+<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" language="javascript"></script>
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -42,12 +43,12 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 
 {else}
 	{* <h2>{lang_get s='testplan_title_list'}</h2> *}
-	<table class="simple" width="95%">
+	<table class="simple sortable" width="95%">
 		<tr>
 			<th>{lang_get s='testplan_th_name'}</th>
-			<th>{lang_get s='testplan_th_notes'}</th>
-			<th>{lang_get s='testplan_th_active'}</th>
-			<th>{lang_get s='testplan_th_delete'}</th>
+			<th class="sorttable_nosort">{lang_get s='testplan_th_notes'}</th>
+			<th class="sorttable_nosort">{lang_get s='testplan_th_active'}</th>
+			<th class="sorttable_nosort">{lang_get s='testplan_th_delete'}</th>
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: buildView.tpl,v 1.2 2008/01/09 07:05:19 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -16,6 +16,7 @@ Rev :
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
+<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" language="javascript"></script>
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -34,13 +35,13 @@ var del_action=fRoot+'lib/plan/buildNew.php?do_action=do_delete&build_id=';
 <div id="existing_builds">
   {* <h2>{lang_get s='title_build_list'}</h2> *}
   {if $the_builds ne ""}
-  	<table class="simple" style="width:80%">
+  	<table class="simple  sortable" style="width:80%">
   		<tr>
-  			<th>{lang_get s='th_title'}</th>
-  			<th>{lang_get s='th_description'}</th>
-  			<th>{lang_get s='th_active'}</th>
-  			<th>{lang_get s='th_open'}</th>
-  			<th>{lang_get s='th_delete'}</th>
+  			<th title="click to sort">{lang_get s='th_title'}</th>
+  			<th class="sorttable_nosort">{lang_get s='th_description'}</th>
+  			<th class="sorttable_nosort">{lang_get s='th_active'}</th>
+  			<th class="sorttable_nosort">{lang_get s='th_open'}</th>
+  			<th class="sorttable_nosort">{lang_get s='th_delete'}</th>
   		</tr>
   		{foreach item=build from=$the_builds}
   			<tr>

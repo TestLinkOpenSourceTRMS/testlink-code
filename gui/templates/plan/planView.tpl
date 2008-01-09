@@ -1,17 +1,31 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.4 2008/01/09 07:05:19 franciscom Exp $ 
+$Id: planView.tpl,v 1.5 2008/01/09 15:21:20 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
      some variables smarty and javascript are created on the inc_*.tpl files.
      
-Rev :
-     20071006 - franciscom - added logic to use ext js confirm widget
+Rev:
+    20080109 - franciscom - added sort table by JS
+    20071006 - franciscom - added logic to use ext js confirm widget
      
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{assign var="theme_dir" value=$smarty.const.TL_THEME_IMG_DIR}
+{assign var="sort_img" value="$theme_dir/sort_hint.png"}
+{assign var="checked_img" value="$theme_dir/apply_f2_16.png"}
+{assign var="delete_img" value="$theme_dir/trash.png"}
+
+
+{lang_get var="labels" 
+          s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
+          testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
+          testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,
+          btn_testplan_create'}
+
 
 {lang_get s='warning_delete_testplan' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -29,7 +43,7 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 
 <body {$body_onload}>
 
-<h1>{lang_get s='testplan_title_tp_management'}</h1>
+<h1>{$labels.testplan_title_tp_management}</h1>
 {if $editResult ne ""}
 	<div>
 		<p class="info">{$editResult}</p>
@@ -39,24 +53,25 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 <div class="workBack">
 <div id="testplan_management_list">
 {if $tplans eq ''}
-	{lang_get s='testplan_txt_empty_list'}
+	{$labels.testplan_txt_empty_list}
 
 {else}
-	{* <h2>{lang_get s='testplan_title_list'}</h2> *}
 	<table class="simple sortable" width="95%">
 		<tr>
-			<th>{lang_get s='testplan_th_name'}</th>
-			<th class="sorttable_nosort">{lang_get s='testplan_th_notes'}</th>
-			<th class="sorttable_nosort">{lang_get s='testplan_th_active'}</th>
-			<th class="sorttable_nosort">{lang_get s='testplan_th_delete'}</th>
+			<th><img title="{$labels.sort_table_by_column}"  alt="{$labels.sort_table_by_column}" 
+ 				       src="{$sort_img}" align="left"/>{$labels.testplan_th_name}
+ 			</th>
+			<th class="sorttable_nosort">{$labels.testplan_th_notes}</th>
+			<th class="sorttable_nosort">{$labels.testplan_th_active}</th>
+			<th class="sorttable_nosort">{$labels.testplan_th_delete}</th>
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>
 			<td><a href="lib/plan/planEdit.php?tplan_id={$testplan.id}&amp;do_action=edit"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
- 				         <img title="{lang_get s='testplan_alt_edit_tp'}" 
- 				              alt="{lang_get s='testplan_alt_edit_tp'}" 
+ 				         <img title="{$labels.testplan_alt_edit_tp}" 
+ 				              alt="{$labels.testplan_alt_edit_tp}" 
  				              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
  				     {/if}  
  				  </a>
@@ -67,20 +82,20 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 			<td class="clickable_icon">
 				{if $testplan.active eq 1} 
   					<img style="border:none" 
-  				            title="{lang_get s='alt_active_testplan'}" 
-  				            alt="{lang_get s='alt_active_testplan'}" 
-  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
+  				            title="{$labels.alt_active_testplan}" 
+  				            alt="{$labels.alt_active_testplan}" 
+  				            src="{$checked_img}"/>
   				{else}
   					&nbsp;        
   				{/if}
 			</td>
 			<td class="clickable_icon">
 				  <img style="border:none;cursor: pointer;" 
-				       alt="{lang_get s='testplan_alt_delete_tp'}"
-					   title="{lang_get s='testplan_alt_delete_tp'}" 
+				       alt="{$labels.testplan_alt_delete_tp}"
+					   title="{$labels.testplan_alt_delete_tp}" 
 					   onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
-				     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
+				     src="{$delete_img}"/>
 			</td>
 		</tr>
 		{/foreach}
@@ -93,7 +108,7 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
  {if $testplan_create}
  <div class="groupBtn">
     <form method="post" action="lib/plan/planEdit.php?do_action=create">
-      <input type="submit" name="create_testplan" value="{lang_get s='btn_testplan_create'}" />
+      <input type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />
     </form>
   </div>
  {/if}

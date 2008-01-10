@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.6 2008/01/06 20:33:54 schlundus Exp $ 
+$Id: usersEdit.tpl,v 1.7 2008/01/10 07:51:15 franciscom Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -133,7 +133,7 @@ function validateForm(f,check_password)
   </legend>
 	<table class="common">
 		<tr>
-			<th>{lang_get s='th_login'}</th>
+			<th style="background:none;">{lang_get s='th_login'}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 
 			{if $userData neq null}
 				disabled="disabled"
@@ -143,13 +143,13 @@ function validateForm(f,check_password)
 			 </td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_first_name'}</th>
+			<th style="background:none;">{lang_get s='th_first_name'}</th>
 			<td><input type="text" name="first" value="{$userData->firstName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
 			     {include file="error_icon.tpl" field="first"}
 			</td></tr>
 		<tr>
-			<th>{lang_get s='th_last_name'}</th>
+			<th style="background:none;">{lang_get s='th_last_name'}</th>
 			<td><input type="text" name="last" value="{$userData->lastName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
  			     {include file="error_icon.tpl" field="last"}
@@ -159,7 +159,7 @@ function validateForm(f,check_password)
 		{if $userData eq null}
 		     <tr>
 			    {if $external_password_mgmt eq 0 }
- 			      <th>{lang_get s='th_password'}</th>
+ 			      <th style="background:none;">{lang_get s='th_password'}</th>
 		        <td><input type="password" id="password" name="password" 
 		                   size="{#PASSWD_SIZE#}" 
 		                   maxlength="{#PASSWD_SIZE#}" />
@@ -171,14 +171,14 @@ function validateForm(f,check_password)
    
    
 		<tr>
-			<th>{lang_get s='th_email'}</th>
+			<th style="background:none;">{lang_get s='th_email'}</th>
 			<td><input type="text" id="email" name="email" value="{$userData->emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
           {include file="error_icon.tpl" field="email"}       
 			</td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_role'}</th>
+			<th style="background:none;">{lang_get s='th_role'}</th>
 			<td>
 		  	   {assign var=selected_role value=$userData->globalRoleID}
 			  {if $userData->globalRoleID eq 0}
@@ -195,7 +195,7 @@ function validateForm(f,check_password)
 		</tr>
 
 		<tr>
-			<th>{lang_get s='th_locale'}</th>
+			<th style="background:none;">{lang_get s='th_locale'}</th>
 			<td>		   
         {* 20060425 - franciscom - better management of default locale 
            Very important: the locale member that holds the value of TL_DEFAULT_LOCALE
@@ -213,7 +213,7 @@ function validateForm(f,check_password)
 		</tr>
 
 		<tr>
-			<th>{lang_get s='th_active'}</th>
+			<th style="background:none;">{lang_get s='th_active'}</th>
 			<td> 
 			  <input type="checkbox"  name="user_is_active" {if $userData->bActive eq 1} checked {/if} />
 			</td>

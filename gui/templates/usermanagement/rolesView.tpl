@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.7 2008/01/06 20:33:54 schlundus Exp $ 
+$Id: rolesView.tpl,v 1.8 2008/01/10 07:51:15 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
-rev :
-     20071013 - franciscom -
+rev:
+     20080109 - franciscom - table sorting feature
      20070921 - franciscom - BUGID - added strip_tags|strip to notes 
      20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -16,7 +16,7 @@ rev :
 {lang_get s='warning_delete_role' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
@@ -76,11 +76,11 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 		{lang_get s='no_roles'}
 	{else}
 		{* data table *}
-		<table class="common" width="50%">
+		<table class="common sortable" width="50%">
 			<tr>
-				<th width="30%">{lang_get s='th_roles'}</th>
-				<th>{lang_get s='th_role_description'}</th>
-				<th>{lang_get s='th_delete'}</th>
+				<th width="30%">{$sortHintIcon}{lang_get s='th_roles'}</th>
+				<th class="{$noSortableColumnClass}">{lang_get s='th_role_description'}</th>
+				<th class="{$noSortableColumnClass}">{lang_get s='th_delete'}</th>
 			</tr>
 			{foreach from=$roles item=role}
 			{if $role->dbID neq $smarty.const.TL_ROLES_INHERITED}

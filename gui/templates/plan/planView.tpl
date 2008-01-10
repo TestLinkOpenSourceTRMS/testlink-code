@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.5 2008/01/09 15:21:20 franciscom Exp $ 
+$Id: planView.tpl,v 1.6 2008/01/10 07:50:57 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
-     some variables smarty and javascript are created on the inc_*.tpl files.
+     some smarty and javascript variables are created on the inc_*.tpl files.
      
 Rev:
     20080109 - franciscom - added sort table by JS
@@ -14,10 +14,11 @@ Rev:
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="theme_dir" value=$smarty.const.TL_THEME_IMG_DIR}
-{assign var="sort_img" value="$theme_dir/sort_hint.png"}
-{assign var="checked_img" value="$theme_dir/apply_f2_16.png"}
-{assign var="delete_img" value="$theme_dir/trash.png"}
+{* Configure Actions *}
+{assign var="managerURL" value="lib/plan/planEdit.php"}
+{assign var="editAction" value="$managerURL?do_action=edit&tplan_id="}
+{assign var="deleteAction" value="$managerURL?do_action=delete&tplan_id="}
+{assign var="createAction" value="$managerURL?do_action=create"}
 
 
 {lang_get var="labels" 
@@ -30,13 +31,12 @@ Rev:
 {lang_get s='warning_delete_testplan' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
-<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" language="javascript"></script>
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
+var del_action=fRoot+'{$deleteAction}';
 </script>
 
 </head>
@@ -58,16 +58,15 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 {else}
 	<table class="simple sortable" width="95%">
 		<tr>
-			<th><img title="{$labels.sort_table_by_column}"  alt="{$labels.sort_table_by_column}" 
- 				       src="{$sort_img}" align="left"/>{$labels.testplan_th_name}
+			<th>{$sortHintIcon}{$labels.testplan_th_name}
  			</th>
-			<th class="sorttable_nosort">{$labels.testplan_th_notes}</th>
-			<th class="sorttable_nosort">{$labels.testplan_th_active}</th>
-			<th class="sorttable_nosort">{$labels.testplan_th_delete}</th>
+			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
+			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
+			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>
-			<td><a href="lib/plan/planEdit.php?tplan_id={$testplan.id}&amp;do_action=edit"> 
+			<td><a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{$labels.testplan_alt_edit_tp}" 
@@ -107,14 +106,12 @@ var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 
  {if $testplan_create}
  <div class="groupBtn">
-    <form method="post" action="lib/plan/planEdit.php?do_action=create">
+    <form method="post" action="{$createAction}">
       <input type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />
     </form>
   </div>
  {/if}
 </div>
-
-
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.6 2008/01/06 20:33:54 schlundus Exp $ 
+$Id: usersAssign.tpl,v 1.7 2008/01/10 07:51:15 franciscom Exp $ 
 
 rev:
     20070818 - franciscom
@@ -11,7 +11,7 @@ rev:
       -  bug 1000  - Testplan User Role Assignments
     
 *}
-{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
 </head>
 <body>
@@ -86,10 +86,10 @@ rev:
 			</tr>
 		</table>
     </div>
-	    <table class="common" width="75%">
+	    <table class="common sortable" width="75%">
     	<tr>
-    		<th>{lang_get s='User'}</th>
-    		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
+    		<th>{$sortHintIcon}{lang_get s='User'}</th>
+    		<th>{$sortHintIcon}{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$userData item=user}
     	<tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">

@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.16 2007/12/27 17:01:25 franciscom Exp $
+$Id: inc_head.tpl,v 1.17 2008/01/10 07:50:58 franciscom Exp $
 Purpose: smarty template - HTML Common Header 
 
 rev :
+     20080109 - franciscom - added sort table engine management
      20071201 - franciscom - tinymce support
 *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -64,6 +65,14 @@ rev :
     <script type="text/javascript" src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js" language="javascript" ></script>
     {include file="inc_tinymce_init.tpl"}
 	{/if}
+
+  {* 20080109 - franciscom *}
+  {if $enableTableSorting == "yes"}
+      {if $smarty.const.TL_SORT_TABLE_ENGINE == 'kryogenix.org'}
+          <script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" language="javascript"></script>
+      {else}
+      {/if}
+  {/if}
 
 
 {if $openHead == "no"} {* 'no' is default defined in config *}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.144 $
- * @modified $Date: 2008/01/07 10:15:21 $ by $Author: franciscom $
+ * @version $Revision: 1.145 $
+ * @modified $Date: 2008/01/10 07:51:07 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20080109 - franciscom - $g_sort_table_engine
  *           20080105 - franciscom - $g_testsuite_template
  *           20080102 - franciscom - new default for $g_log_path
  *           20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
@@ -321,6 +322,11 @@ $g_tree_node_ordering->default_testsuite_order=1;
 /** [GUI: Javascript libraries] */
 /* 1 -> use EXT JS library , GUI widgets */
 $g_use_ext_js_library=1;
+
+// May be in future another table sort engine will be better
+// kryogenix.org -> Stuart Langridge sortTable
+// '' (empty string) -> disable table sorting feature
+$g_sort_table_engine='kryogenix.org';
 
 // ----------------------------------------------------------------------------
 /** [GENERATED DOCUMENTATION] */
@@ -780,7 +786,7 @@ define('TL_DOC_COMPANY_LOGO', $g_company_logo);
 define('TL_DOC_COPYRIGHT', $g_copyright);
 define('TL_DOC_CONFIDENT', $g_confidential);
 
-
+define('TL_SORT_TABLE_ENGINE',$g_sort_table_engine);
 
 /** Support for localization */
 $serverLanguage = false;

@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.42 2007/12/17 21:31:46 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.43 2008/01/10 23:57:51 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -83,8 +83,7 @@ if($do_report['status_ok'])
   		$map_tplans[$value['id']]=$value['name'];
 	}
 }
-$workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
-                                       "?help=showMetrics&locale={$_SESSION['locale']}";
+$workframe=$_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
 
 
 $smarty = new TLSmarty;

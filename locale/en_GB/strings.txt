@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.239 $
- * @modified $Date: 2008/01/07 07:55:11 $ $Author: franciscom $
+ * @version $Revision: 1.240 $
+ * @modified $Date: 2008/01/11 09:21:24 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -51,6 +51,7 @@ $TLS_reqs 			= "Requirements";
 $TLS_req_spec 		= "Requirements Specification Document";
 $TLS_SRS 			= "SRS";
 $TLS_Role 			= "Role";
+$TLS_sort_table_by_column="Click to change sort order"; 
 $TLS_scope 			= "Scope";
 $TLS_status 		= "Status";
 $TLS_Keyword 		= "Keyword";

@@ -4,14 +4,16 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/12/19 21:59:30 $ $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/01/11 09:21:10 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
+ * 20080109 - franciscom - added some *_img for URL to common used images.
+ *
  * 20070624 - franciscom - g_locales_html_select_date_field_order
  *                         g_locales_date_format
  *                         g_locales_timestamp_format
@@ -119,7 +121,31 @@ class TLSmarty extends Smarty
     $this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
     $this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
 
+    // Some common images
+    $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
+    $this->assign("sort_img",$sort_img);
+    $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
+    $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
 
+    // Some useful values for Sort Table Engine
+    switch (TL_SORT_TABLE_ENGINE)
+    {
+        case 'kryogenix.org':
+        $sort_table_by_column=lang_get('sort_table_by_column');    
+        $sortHintIcon="<img title=\"{$sort_table_by_column}\" " .
+                      " alt=\"{$sort_table_by_column}\" " .
+                      " src=\"{$sort_img}\" align=\"left\" />";
+
+        $this->assign("sortHintIcon",$sortHintIcon);
+        $this->assign("noSortableColumnClass","sorttable_nosort");
+        break;  
+        
+        default:
+        $this->assign("sortHintIcon",'');
+        $this->assign("noSortableColumnClass",'');
+        break;
+    }
+  
     // Registered functions
 	  $this->register_function("lang_get", "lang_get_smarty");
 	  $this->register_function("localize_date", "localize_date_smarty");
@@ -128,7 +154,6 @@ class TLSmarty extends Smarty
     
     $this->register_modifier("basename","basename");
     $this->register_modifier("dirname","dirname");
-		
 	}
 }
 ?>

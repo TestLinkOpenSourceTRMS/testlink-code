@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.145 $
- * @modified $Date: 2008/01/10 07:51:07 $ by $Author: franciscom $
+ * @version $Revision: 1.146 $
+ * @modified $Date: 2008/01/11 09:20:40 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20080110 - franciscom - $g_tree_show_testcase_id
  *           20080109 - franciscom - $g_sort_table_engine
  *           20080105 - franciscom - $g_testsuite_template
  *           20080102 - franciscom - new default for $g_log_path
@@ -317,6 +318,10 @@ $g_tree_type='JTREE';
 $g_tree_node_ordering->default_testcase_order=100;
 $g_tree_node_ordering->default_testsuite_order=1;
 
+
+// 20080110 - franciscom
+// 0 -> do not show testcase id on tree
+$g_tree_show_testcase_id=1;
 
 // ----------------------------------------------------------------------------
 /** [GUI: Javascript libraries] */

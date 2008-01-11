@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/12/19 20:27:19 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/01/11 00:54:33 $ by $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -41,8 +41,8 @@ $aa_tfp = array(
             'searchTc' => 'lib/testcases/searchForm.php',
             'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
             'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
-            'testSetAdd'    => 'lib/plan/planAddTCNavigator.php',
-            'testSetRemove' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=testSetRemove',
+            'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
+            'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=testSetRemove',
             'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
 //            'printTestSet'  => 'lib/print/selectData.php?type=testplan',
@@ -96,7 +96,8 @@ else
 {
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
   $smarty->assign('treeframe', $aa_tfp[$showFeature]);
-  $smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
+  $smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
+//  $smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
   $smarty->display('frmInner.tpl');
 }
 

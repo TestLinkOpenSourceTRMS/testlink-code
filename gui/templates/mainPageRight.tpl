@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageRight.tpl,v 1.1 2007/12/18 22:08:30 franciscom Exp $     
+ $Id: mainPageRight.tpl,v 1.2 2008/01/11 00:57:07 havlat Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -93,11 +93,11 @@
 	    <h3>{lang_get s='title_test_case_suite'}</h3>
 		<p>
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	        <a href="{$launcher}?feature=testSetAdd">{lang_get s='href_add_test_case'}</a>
+	        <a href="{$launcher}?feature=planAddTC">{lang_get s='href_add_test_case'}</a>
 	        <br />
 	        
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=testSetRemove">{lang_get s='href_remove_test_case'}</a>
+	   		<a href="{$launcher}?feature=planRemoveTC">{lang_get s='href_remove_test_case'}</a>
 	        <br />
 
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />

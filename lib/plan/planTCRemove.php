@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.1 2007/12/02 17:16:02 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.2 2008/01/11 00:54:33 havlat Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -110,7 +110,7 @@ switch($level)
 		
 	default:
 		// show instructions
-  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=testSetRemove&locale={$_SESSION['locale']}");
+  	redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planRemoveTC");
 
 	break;
 }

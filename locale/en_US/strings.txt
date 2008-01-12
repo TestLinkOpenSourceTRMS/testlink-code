@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/12/03 23:11:58 $ $Author: asielb $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/01/12 00:29:18 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -682,6 +682,8 @@ $TLS_th_last_name = "Last  Name";
 $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
+$TLS_th_api = "API Key";
+$TLS_api_gen_key_action = "generate";
 $TLS_warning_delete_user = "Really delete the selected user?";
 
 

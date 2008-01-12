@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.240 $
- * @modified $Date: 2008/01/11 09:21:24 $ $Author: franciscom $
+ * @version $Revision: 1.241 $
+ * @modified $Date: 2008/01/12 00:29:18 $ $Author: asielb $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -748,6 +748,8 @@ $TLS_th_last_name = "Last  Name";
 $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
+$TLS_th_api = "API Key";
+$TLS_api_gen_key_action = "generate";
 $TLS_warning_delete_user = "You are going to delete: %s <br><br> Are you sure?"; 
 
 

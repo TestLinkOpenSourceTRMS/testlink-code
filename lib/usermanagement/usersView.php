@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/01/01 22:20:44 $ -  $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/12 02:41:17 $ -  $Author: asielb $
  *
  * This page shows all users
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
+require_once("../../lib/api/APIKey.php");
 testlinkInitPage($db);
 
 $template_dir = 'usermanagement/';
@@ -56,6 +57,10 @@ switch($operation)
 		$orderByType = $user_order_by;
 		$orderByDir = $order_by_dir;
 		break;
+	case 'gen_api_key':
+		$APIKey = new APIKey();
+		$result = $APIKey->addKeyForUser($user_id);
+		break;
 	case 'order_by_role':
 	case 'order_by_login':
 		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
@@ -71,8 +76,11 @@ switch($operation)
 }
 $order_by_clause = get_order_by_clause($orderByType,$orderByDir);
 $users = getAllUsersRoles($db,$order_by_clause);
+$api_users = APIKey::getAPIKeys($db);
 
 $smarty = new TLSmarty();
+$smarty->assign('api_users', $api_users);
+$smarty->assign('api_ui_show', $g_api_ui_show);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_order_by',$user_order_by);
 $smarty->assign('order_by_role_dir',$order_by_dir['order_by_role_dir']);

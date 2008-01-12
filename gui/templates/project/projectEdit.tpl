@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.2 2008/01/07 20:13:30 franciscom Exp $
+$Id: projectEdit.tpl,v 1.3 2008/01/12 17:31:46 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
+    20080112 - franciscom - added test case prefix management
     20070725 - franciscom
     refactoring: if test project qty == 0 -> do not display the edit/delete tab
                  remove query string from url, to avoid redirect to home page.
@@ -23,7 +24,7 @@ rev:
 {assign var="managerURL" value="lib/project/projectEdit.php"}
 {assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
 
-{lang_get var="labels" s='caption_edit_tproject,caption_new_tproject,name,
+{lang_get var="labels" s='caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
                           title_testproject_management,notes,color,
                           enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del'} 
 
@@ -103,18 +104,27 @@ function validateForm(f)
 			</tr>
 		 {/if}	
 			<tr>
-				<td>{$labels.enable_requirements}</td>
-				<td>
-					<select name="optReq">
-					{html_options options=$gsmarty_option_yes_no selected=$reqs_default}
-					</select>
+				<td>{$labels.tcase_id_prefix}</td>
+				<td><input type="text" name="tcasePrefix" 
+  			           size="{#TESTCASE_PREFIX_SIZE#}" 
+	  		           maxlength="{#TESTCASE_PREFIX_MAXLEN#}" 
+				           value="{$tcasePrefix|escape}"/>
+				  				{include file="error_icon.tpl" field="tcasePrefix"}
 				</td>
 			</tr>
 
-			<tr><td>
-				{lang_get s='th_active'}
-				<input type="checkbox" name="active" {if $active eq 1} checked="checked"	{/if} />
-      </td></tr>
+			<tr>
+				<td>{$labels.enable_requirements}</td>
+				<td>
+				  <input type="checkbox" name="optReq" {if $optReq eq 1} checked="checked"	{/if} />
+				</td>
+			</tr>
+
+			<tr><td>{lang_get s='th_active'}</td>
+			    <td>
+			    <input type="checkbox" name="active" {if $active eq 1} checked="checked"	{/if} /> 
+			    </td>
+      </tr>
 
 	
 		</table>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/08 07:46:44 $ $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/01/12 17:32:39 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,6 +14,7 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
+ * 20080112 - franciscom - adding testcase prefix management
  * 20070725 - franciscom - refactoring to control display of edit/delete tab
  *                         when there are 0 test projects on system.
  * 
@@ -149,7 +150,6 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        // $tprojects=$tproject_mgr->get_all();
         $tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
                                                             " ORDER BY nodes_hierarchy.name ");
 
@@ -169,6 +169,8 @@ switch($args->doAction)
         $smarty->assign('id', $args->tprojectID);
         $smarty->assign('name', $args->tprojectName);
         $smarty->assign('active', $args->active);
+        $smarty->assign('optReq', $args->optReq);
+        $smarty->assign('tcasePrefix', $args->tcasePrefix);
         $smarty->assign('action', $action);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('found', $found);
@@ -193,24 +195,26 @@ switch($args->doAction)
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
- * 20070206 - franciscom - BUGID 617
+ * rev:20080112 - franciscom - 
+ *     20070206 - franciscom - BUGID 617
 */
 function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
 	$request_hash = strings_stripSlashes($request_hash);
-	$nullable_keys = array('tprojectName','color','notes','doAction');
+	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
 	}
 	
-	$intval_keys = array('optReq' => 0, 'tprojectID' => 0);
+	// $intval_keys = array('optReq' => 0, 'tprojectID' => 0);
+	$intval_keys = array('tprojectID' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 	
-	$checkbox_keys = array('active' => 0);
+	$checkbox_keys = array('active' => 0,'optReq' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -301,7 +305,8 @@ function doUpdate($argsObj,&$tprojectMgr)
 			{
 				$op->msg = sprintf(lang_get('test_project_update_failed'),$argsObj->tprojectName);
 				if( $tprojectMgr->update($argsObj->tprojectID,$argsObj->tprojectName,$argsObj->color,
-				                         $argsObj->optReq,$argsObj->notes) )
+				                         $argsObj->optReq,$argsObj->notes,
+				                         $argsObj->active,$argsObj->tcasePrefix) )
 				{
 				  $op->msg = sprintf(lang_get('test_project_updated'),$argsObj->tprojectName);
 				  $op->status_ok=1;
@@ -334,6 +339,8 @@ function edit(&$argsObj,&$tprojectMgr)
 	  $argsObj->notes=$tprojectInfo['notes'];
 	  $argsObj->optReq=$tprojectInfo['option_reqs'];
 	  $argsObj->active=$tprojectInfo['active'];
+	  $argsObj->tcasePrefix=$tprojectInfo['tc_prefix'];
+	  
 
     $ui=array(); 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.241 $
- * @modified $Date: 2008/01/12 00:29:18 $ $Author: asielb $
+ * @version $Revision: 1.242 $
+ * @modified $Date: 2008/01/12 17:35:28 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -994,6 +994,8 @@ $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test P
                             "You can also use to deactivate instead of delete.\\n" .
                             "Recommendation: Execute a dump of database at first.\\n" .
                             "Are you sure to delete the Test Project?"; 
+                            
+$TLS_tcase_id_prefix="Test Case ID prefix";
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
 // gui/templates/projectView.tpl

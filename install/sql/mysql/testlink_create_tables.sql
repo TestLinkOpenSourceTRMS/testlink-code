@@ -1,11 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.20 2008/01/02 18:53:28 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.21 2008/01/12 17:32:04 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20080112 - franciscom - tcversions.tc_external_id
+#                               testprojects.tc_prefix
+#                               testprojects.tc_counter
+#
 #       20080102 - franciscom - added changes for API feature (DB 1.2)
 #                               added notes fields on db_version
 #
@@ -264,6 +268,7 @@ CREATE TABLE `testcase_keywords` (
 
 CREATE TABLE `tcversions` (
   `id` int(10) unsigned NOT NULL,
+  `tc_external_id` int(10) unsigned NULL,
   `version` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
   `steps` text,
@@ -306,6 +311,8 @@ CREATE TABLE `testprojects` (
   `active` tinyint(1) NOT NULL default '1',
   `option_reqs` tinyint(1) NOT NULL default '0',
   `option_priority` tinyint(1) NOT NULL default '1',
+  `tc_prefix` varchar(3) NULL,
+  `tc_counter` int(10) unsigned NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `id_active` (`id`,`active`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

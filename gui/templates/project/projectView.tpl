@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: projectView.tpl,v 1.1 2008/01/07 20:11:48 franciscom Exp $ 
+$Id: projectView.tpl,v 1.2 2008/01/12 17:31:46 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -21,7 +21,7 @@ Rev :
 {lang_get s='popup_product_delete' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{lang_get var="labels" s='title_testproject_management,testproject_txt_empty_list,
+{lang_get var="labels" s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
                           th_name,th_notes,testproject_alt_edit,testproject_alt_active,
                           th_requirement_feature,testproject_alt_delete,btn_create,
                           testproject_alt_requirement_feature,th_active,th_delete'}
@@ -55,8 +55,8 @@ var del_action=fRoot+'{$deleteAction}';
 		<tr>
 			<th>{$labels.th_name}</th>
 			<th>{$labels.th_notes}</th>
+			<th>{$labels.tcase_id_prefix}</th>
 			<th>{$labels.th_requirement_feature}</th>
-			
 			<th class="icon_cell">{$labels.th_active}</th>
 			{if $canManage == "yes"}
 			<th class="icon_cell">{$labels.th_delete}</th>
@@ -75,6 +75,9 @@ var del_action=fRoot+'{$deleteAction}';
 			</td>
 			<td>
 				{$testproject.notes|strip_tags|strip|truncate:#TESTPROJECT_NOTES_TRUNCATE#}
+			</td>
+			<td width="10%">
+				{$testproject.tc_prefix}
 			</td>
 			<td class="clickable_icon">
 				{if $testproject.option_reqs eq 1} 

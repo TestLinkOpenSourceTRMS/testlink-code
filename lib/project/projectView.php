@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectView.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/08 07:46:44 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/12 17:32:39 $ $Author: franciscom $
  *
  * Display list of test projects
  *
@@ -28,7 +28,6 @@ $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 // $tprojects = getAccessibleTestProjects($db,$args->userID);
 $tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
                                                     " ORDER BY nodes_hierarchy.name ");
-
 
 if(count($tprojects) == 0)
 {

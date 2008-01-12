@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2008/01/08 07:46:00 $  $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2008/01/12 17:32:38 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080112 - franciscom - changed method to manage tc_prefix field
  * 20080107 - franciscom - get_accessible_for_user(), added more data
  *                         for array_of_map output type
  * 20080106 - franciscom - checkName() method
@@ -31,6 +32,8 @@ class testproject extends tlObjectWithAttachments
 {
   const RECURSIVE_MODE=true;
   const EXCLUDE_TESTCASES=true;  
+  const TESTCASE_PREFIX_MAXLEN=3; // must be changed if field dimension changes  
+
 
 	private $object_table='testprojects';
 	private $requirements_table='requirements';
@@ -86,26 +89,30 @@ class testproject extends tlObjectWithAttachments
  * @param string $optReq [1,0]
  * @param string $notes
  * [@param boolean $active [1,0] ]
- *
+ * [@param string $tcasePrefix [''] ]
+  *
  * @return everything OK -> test project id
  *         problems      -> 0 (invalid node id) 
  *
+ * 20080112 - franciscom - added $tcasePrefix
  * 20060709 - franciscom - return type changed
  *                         added new optional argument active
  *
- * 20060312 - franciscom - name is setted on nodes_hierarchy table
- * 20060101 - franciscom - added notes
  */
-function create($name,$color,$optReq,$notes,$active=1)
+function create($name,$color,$optReq,$notes,$active=1,$tcasePrefix='')
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
+	
+	$tcprefix=$this->formatTcPrefix($tcasePrefix);
+	
 	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,notes,active) " .
 	       " VALUES (" . $root_node_id . ", '" .	
 	                     $this->db->prepare_string($color) . "'," . 
 	                     $optReq . ",'" .
 		                   $this->db->prepare_string($notes) . "'," . 
-		                   $active . ")";
+		                   $active . ",'" .
+		                   $this->db->prepare_string($tcprefix) . "')";
 			             
 	$result = $this->db->exec_query($sql);
 	if ($result)
@@ -134,7 +141,7 @@ function create($name,$color,$optReq,$notes,$active=1)
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
-function update($id, $name, $color, $opt_req,$notes)
+function update($id, $name, $color, $opt_req,$notes,$active=null,$tcasePrefix=null)
 {
   $status_ok=1;
 	
@@ -142,10 +149,25 @@ function update($id, $name, $color, $opt_req,$notes)
 	$log_msg = 'Test project ' . $name . ' update: Ok.';
 	$log_level = 'INFO';
 	
+	$add_upd='';
+	if( !is_null($active) )
+	{
+	    $add_upd .=',active=' . (intval($active) > 0 ? 1:0);  
+	}
+	
+	if( !is_null($tcasePrefix) )
+	{
+	    $tcprefix=$this->formatTcPrefix($tcasePrefix);
+	    $add_upd .=",tc_prefix='" . $this->db->prepare_string($tcprefix) . "'" ;
+	}
+	
 	$sql = " UPDATE {$this->object_table} SET color='" . $this->db->prepare_string($color) . "', ".
 			" option_reqs=" .  $opt_req . ", " .
-			" notes='" . $this->db->prepare_string($notes) . "'" . 
+			" notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
 			" WHERE id=" . $id;
+			
+	  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+		
 	
 	$result = $this->db->exec_query($sql);
 	if ($result)
@@ -594,6 +616,27 @@ function count_testcases($id)
 		return $result ? 1 : 0;
 	}
 	
+  /*
+    function: 
+
+    args:
+    
+    returns: 
+
+  */
+
+  function formatTcPrefix($str)
+  {
+	    // limit tcasePrefix len.
+	    $fstr=trim($str);
+	    if(strlen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
+	    {
+	      $tcprefix=substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
+	    }
+      return $fstr;  
+  }
+
+
 	
 	/* Keywords related methods  */	
 	/**

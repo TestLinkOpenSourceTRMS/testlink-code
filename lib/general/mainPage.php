@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.36 $ $Author: schlundus $
- * @modified $Date: 2007/12/31 12:21:55 $
+ * @version $Revision: 1.37 $ $Author: franciscom $
+ * @modified $Date: 2008/01/12 17:32:38 $
  *
  * @author Martin Havlat
  * 
@@ -39,7 +39,7 @@ $userID = $currentUser->dbID;
 $can_manage_tprojects = has_rights($db,'mgt_modify_product');
 if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 { 
-	redirect($_SESSION['basehref'] . 'lib/project/projectedit.php?show_create_screen');
+	redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
 }
 // ----------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.2 2007/12/21 22:57:17 schlundus Exp $
+$Id: usersView.tpl,v 1.3 2008/01/12 02:03:14 asielb Exp $
 
 Purpose: smarty template - users overview
 
@@ -87,7 +87,10 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 				</th>
 				
 				<th>{lang_get s='th_locale'}</th>	
-				<th style="width:50px;">{lang_get s='th_active'}</th>	
+				<th style="width:50px;">{lang_get s='th_active'}</th>
+				{if $api_ui_show eq 1}
+					<th style="width:50px;">{lang_get s='th_api'}</th>
+				{/if}
 				<th style="width:50px;">{lang_get s='th_delete'}</th>
 			</tr>
 			
@@ -95,6 +98,7 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 				{assign var="user" value="$users[row]"}
 				{assign var="userLocale" value=$user->locale}
 				{assign var="r_d" value=$user->globalRole->name}
+				{assign var="userID" value=$user->dbID}
 
 				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
 				<td><a href="lib/usermanagement/usersedit.php?user_id={$user->dbID}"> 
@@ -119,6 +123,16 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 						{lang_get s='No'}
 					{/if}
 				</td>
+				{if $api_ui_show eq 1}
+				<td>									
+					{if array_key_exists($userID, $api_users)}											
+						{$api_users.$userID}						
+						{*<a href="lib/usermanagement/usersView.php?user={$user->dbID}&operation=del_api_key">{lang_get s='btn_delete'}</a>*}					
+					{else}
+						<a href="lib/usermanagement/usersView.php?user={$user->dbID}&operation=gen_api_key">{lang_get s='api_gen_key_action'}</a>
+					{/if}
+				</td>
+				{/if}
 				<td>
 				  <img style="border:none;cursor: pointer;"  
                alt="{lang_get s='alt_delete_user'}"

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/11/12 07:45:54 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/12 00:25:01 $ by $Author: asielb $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -19,4 +19,5 @@
  *             cfg\const.inc.php
  *-----------------------------------------------------------------------------
 */
+$g_log_level = "DEBUG";
 ?>

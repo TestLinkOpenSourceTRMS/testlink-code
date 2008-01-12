@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.243 $
- * @modified $Date: 2008/01/12 19:16:00 $ $Author: schlundus $
+ * @version $Revision: 1.244 $
+ * @modified $Date: 2008/01/12 19:23:11 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -195,14 +195,14 @@ $TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
                                 "then no execution data can exist => no report can be created";
 
 // tcEdit.php
-$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
-$TLS_tc_created = "Test Case %s was succesfully created";
-$TLS_tc_deleted = "Test Case %s was succesfully deleted";
-$TLS_tc_updated = "Test Case %s was succesfully updated";
-$TLS_tc_new_version = "Test Case Version %d was succesfully created";
-$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_copied = "Test Case %s was successfully copied to <br> Test Suite %s";
+$TLS_tc_created = "Test Case %s was successfully created";
+$TLS_tc_deleted = "Test Case %s was successfully deleted";
+$TLS_tc_updated = "Test Case %s was successfully updated";
+$TLS_tc_new_version = "Test Case Version %d was successfully created";
+$TLS_tc_updated = "Test Case %s was successfully updated";
 $TLS_tc_update_failed = "Update of Test Case %s failed!";
-$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
+$TLS_tc_version_deleted = "Test Case %s version %d was successfully deleted";
 
 
 // tcexecute.php
@@ -1730,11 +1730,11 @@ $TLS_info_product_inactivated = "The Test Project was deactivated.";
 $TLS_info_product_not_deleted_check_log = "Test Project was not deleted. Please check TestLink log.";
 $TLS_info_product_was_deleted = "The Test Project was successfully deleted.";
 $TLS_refer_to_log = " Please refer to TestLink log for more information.";
-$TLS_test_project_activated = "Test Project %s was succesfully activated";
-$TLS_test_project_created = "Test Project %s was succesfully created";
-$TLS_test_project_deleted = "Test Project %s was succesfully deleted";
-$TLS_test_project_inactivated = "Test Project %s was succesfully inactivated";
-$TLS_test_project_updated = "Test Project %s was succesfully updated";
+$TLS_test_project_activated = "Test Project %s was successfully activated";
+$TLS_test_project_created = "Test Project %s was successfully created";
+$TLS_test_project_deleted = "Test Project %s was successfully deleted";
+$TLS_test_project_inactivated = "Test Project %s was successfully inactivated";
+$TLS_test_project_updated = "Test Project %s was successfully updated";
 $TLS_test_project_update_failed = "Update of Test Project %s failed!";
 
 
@@ -1906,8 +1906,8 @@ $TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
 
 // reqSpecEdit.php
 $TLS_delete_req_spec = "Delete Requirement Specification";
-$TLS_req_spec_created = "Requirement Specification: %s was succesfully created";
-$TLS_req_spec_deleted = "Requirement Specification: %s was succesfully deleted";
+$TLS_req_spec_created = "Requirement Specification: %s was successfully created";
+$TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
 
 $TLS_title_req_spec="Requirement Specifications";
 $TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
@@ -1918,8 +1918,8 @@ $TLS_edit_req_spec="Edit Requirements Specification";
 $TLS_create_req="Create Requirement";
 $TLS_delete_req = "Delete Requirement";
 $TLS_edit_req="Edit Requirement";
-$TLS_req_created = "Requirement: %s was succesfully created";
-$TLS_req_deleted = "Requirement: %s was succesfully deleted";
+$TLS_req_created = "Requirement: %s was successfully created";
+$TLS_req_deleted = "Requirement: %s was successfully deleted";
 
 // reqSpecReorder.tpl
 $TLS_title_change_req_spec_order="Change Requirement Specifications order";

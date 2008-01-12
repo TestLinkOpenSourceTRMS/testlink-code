@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2007/12/28 18:55:05 $ $Author: schlundus $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/01/12 19:16:00 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1418,7 +1418,7 @@ $TLS_req_import_result_overwritten = "Die Ergebnisse wurden überschrieben";
 $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 $TLS_req_state_not_testable = "Nicht testbar";
 $TLS_req_state_valid = "Gültig";
-$TLS_the_format_req_xml_import = "Falsches Format für den XML Import";
+$TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITEL</title><description>BESCHREIBUNG</description></requirement> ... </requirements>");
 $TLS_warning_duplicate_reqdoc_id = "Doppelte Dok. ID";
 
 

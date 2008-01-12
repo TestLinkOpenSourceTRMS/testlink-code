@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/01/12 00:29:18 $ $Author: asielb $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/01/12 19:16:00 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1380,7 +1380,7 @@ $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
 $TLS_req_state_not_testable = "Not testable";
 $TLS_req_state_valid = "Valid";
-$TLS_the_format_req_xml_import = "Wrong XML Format for requirement import";
+$TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITLE</title><description>DESCRIPTION</description></requirement> ... </requirements>");
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
 
 

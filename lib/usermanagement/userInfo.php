@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.7 $
-* @modified $Date: 2008/01/05 22:00:54 $
+* @version $Revision: 1.8 $
+* @modified $Date: 2008/01/12 19:15:59 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -40,6 +40,7 @@ if ($bEdit)
 	$user->lastName = $last;
 	$user->emailAddress = $email;
 	$user->locale = $locale;
+	$updateResult = tl::OK;
 }
 else if ($bChangePwd)
 {

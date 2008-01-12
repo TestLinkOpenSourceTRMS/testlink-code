@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.146 $
- * @modified $Date: 2008/01/11 09:20:40 $ by $Author: franciscom $
+ * @version $Revision: 1.147 $
+ * @modified $Date: 2008/01/12 00:27:06 $ by $Author: asielb $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ * 			 20081011 - asielb	   - $g_api_ui_show
  *           20080110 - franciscom - $g_tree_show_testcase_id
  *           20080109 - franciscom - $g_sort_table_engine
  *           20080105 - franciscom - $g_testsuite_template
@@ -289,6 +290,10 @@ $g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 // 'none' -> use plan html textarea input field
 //
 $g_gui->webeditor='fckeditor';
+
+// 20080111 - asielb
+// Is API related functionality visible in the UI
+$g_api_ui_show = TRUE; 
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/01/11 09:20:32 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2008/01/13 12:06:02 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -837,8 +837,8 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
                                              $tc_action_enabled,$bForPrinting,
                                              $useCounters=1,$useColors=1,$showTestCaseID=1)
 {
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
+	$status_descr_code=config_get('tc_status');
+	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
 
 
@@ -942,8 +942,8 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
                                         $tc_action_enabled,$bForPrinting,
                                         $useCounters=1,$useColors=1,$showTestCaseID=1)
 {
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
+	$status_descr_code=config_get('tc_status');
+	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
 	
 	$dtreeCounter = $node['id'];
@@ -1045,6 +1045,10 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,
                                         $bForPrinting,$useCounters=1,$useColors=1,$showTestCaseID=1)
 {
+	$status_descr_code=config_get('tc_status');
+	$status_code_descr=array_flip($status_descr_code);
+	$status_verbose=config_get('tc_status_verbose_labels');
+	
 	$menustring = "['";
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
@@ -1069,8 +1073,8 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 		if (!$buildLinkTo)
 			$pfn = "void";
 
-  	$status_code = $tcase_node[$node['id']]['exec_status'];
- 	  $status_descr=$status_code_descr[$status_code];
+	$status_code = $tcase_node[$node['id']]['exec_status'];
+	$status_descr = $status_code_descr[$status_code];
 
     $css_class= $useColors ? (" class=\"{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';

@@ -4,28 +4,29 @@
  *
  * Filename $RCSfile: staticPage.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/01/11 00:54:33 $  $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/13 12:06:02 $  $Author: schlundus $
  * @author 	Martin Havlat
  *
  * manage launch of static pages (help, instructions).
  *
 **/
-
 require('../../config.inc.php');
+require('../functions/common.php');
+testlinkInitPage($db);
 
 if (isset($_REQUEST['key'])) {
 	$pageKey = $_REQUEST['key'];
 } else {
 	exit ("Error: Invalid page parameter.");
 }
-
-// need session to get active locale
-session_start();
-// link appropriate definition file
+// link appropriate definition file and default to en_GB if not present in the current language
 $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : $g_default_language;
-require('../../locale/'.$locale.'/texts.php');
-
+if (file_exists('../../locale/'.$locale.'/texts.php'))
+	include('../../locale/'.$locale.'/texts.php');
+else
+	include('../../locale/en_GB/texts.php');
+	
 if (isset($TLS_htmltext[$pageKey])) {
 	$pageTitle = $TLS_htmltext_title[$pageKey];
 	$pageContent =  $TLS_htmltext[$pageKey];
@@ -41,5 +42,4 @@ $smarty = new TLSmarty();
 $smarty->assign('title', $pageTitle);
 $smarty->assign('pageContent', $pageContent); 
 $smarty->display('staticPage.tpl');
-
 ?>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planMilestones.tpl,v 1.2 2007/12/16 13:03:15 schlundus Exp $ 
+$Id: planMilestones.tpl,v 1.3 2008/01/13 12:22:52 schlundus Exp $ 
 Purpose: smarty template - edit milestones 
 
 rev :
@@ -169,9 +169,7 @@ function validateForm(f)
 								{$arrMilestone[Row].C|escape}
 							</td>
 							<td>
-								<a href="javascript:delete_confirmation(
-								                    fRoot+'lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}',
-								                    '{$arrMilestone[Row].name}');">
+								<a href="javascript:delete_confirmation(fRoot+'lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}','{$arrMilestone[Row].name}');">
 								<img style="border:none" 
 								     title="{lang_get s='alt_delete_milestone'}" 
 								     alt="{lang_get s='alt_delete_milestone'}" 

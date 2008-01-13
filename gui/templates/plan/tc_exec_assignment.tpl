@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.3 2007/12/29 18:32:20 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.4 2008/01/13 12:22:52 schlundus Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -11,9 +11,9 @@ rev :
      20070120 - franciscom - BUGID 530
 *}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-
+</head>
 <body>
 
 <h1>{lang_get s='title_tc_exec_assignment'}  {$testPlanName|escape}</h1>
@@ -54,7 +54,7 @@ rev :
      <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
 
     	{if $ts.write_buttons eq 'yes'}
-  			<p>
+  			<br />
   			{$labels.user_bulk_assignment}
   			
   			{* Bulk Tester Object ID (BTOID)*}
@@ -68,17 +68,16 @@ rev :
       	                                                 "tester_for_tcid_",
       	                                                 document.getElementById("{$btoid}").value)' 
       	       value="{$labels.btn_do}" />
-  			<p>
-              	
-      
+  			<br />
+              	     
 
       {if $ts.testcase_qty gt 0 }
           <table cellspacing="0" style="font-size:small;" width="100%">
            <tr style="background-color:blue;font-weight:bold;color:white">
-			     <td width="5px" align="center">
+			     <td width="5" align="center">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
-                    title="{$labels.check_uncheck_all_checkboxes}">
+                    title="{$labels.check_uncheck_all_checkboxes}" />
 			     </td>
           	<td class="tcase_id_cell">{$labels.th_id}</td> 
             <td>{$labels.th_test_case}</td>
@@ -88,14 +87,14 @@ rev :
           </tr>
           {foreach from=$ts.testcases item=tcase }
           	{if $tcase.linked_version_id ne 0}
-           	  <input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}">
-     				  <input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}"}>
-     				  <input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}"}>
           	  <tr>
             	  <td>
-        				  <input type="checkbox"  name='{$add_cb}[{$tcase.id}]' 
-    				                              id='{$add_cb}_{$tcase.id}' 
-        				                          value="{$tcase.linked_version_id}">
+						<input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}" />
+						<input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}" />
+						<input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}" />
+        				<input type="checkbox"  name='{$add_cb}[{$tcase.id}]' 
+    				                            id='{$add_cb}_{$tcase.id}' 
+        				                        value="{$tcase.linked_version_id}" />
        				  </td>
             	  <td>
             	  {$tcase.id}

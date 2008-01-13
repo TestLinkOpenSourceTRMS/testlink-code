@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/01/12 17:32:39 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/01/13 15:19:40 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -264,7 +264,8 @@ function doCreate($argsObj,&$tprojectMgr)
 			if (!$tprojectMgr->get_by_name($argsObj->tprojectName))
 			{
 				$new_id=$tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
-				                             $argsObj->optReq, $argsObj->notes, $argsObj->active);
+				                             $argsObj->optReq, $argsObj->notes,
+				                             $argsObj->active,$argsObj->tcasePrefix);
 				if (!$new_id)
 				{
 					$op->msg = lang_get('refer_to_log');

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/01/04 20:27:23 $ $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/01/13 13:22:38 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080103 - franciscom - changes in:  get_last_execution()
@@ -1911,9 +1911,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
-      // 20070501 - franciscom
-      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
-
+			$label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,TL_TPL_CHARSET));
 			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
 				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
 						"</td></tr>\n";

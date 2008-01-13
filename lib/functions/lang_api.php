@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/12/25 20:18:17 $ - $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/13 13:22:38 $ - $Author: schlundus $
  *
  * rev :
  *       20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -38,7 +38,7 @@ $g_lang_overrides = array();
 #      20070501 - franciscom - added TL_LOCALIZE_TAG in order to 
 #                              improve label management for custom fields
 #
-function lang_get( $p_string, $p_lang = null )
+function lang_get( $p_string, $p_lang = null)
 {
 	global $TLS_STRINGFILE_CHARSET;
 	$t_lang = $p_lang;
@@ -48,13 +48,20 @@ function lang_get( $p_string, $p_lang = null )
 	if (null === $t_lang)
 		$t_lang = TL_DEFAULT_LOCALE;
 
-	lang_ensure_loaded( $t_lang );
+	lang_ensure_loaded($t_lang);
 	global $g_lang_strings;
-	$the_str = isset($g_lang_strings[$t_lang][$p_string]) ? $g_lang_strings[$t_lang][$p_string] : TL_LOCALIZE_TAG .$p_string;
+	//if lang_get is used to localize a string from the DB (like custom field label) we must simply passthrough the string
+	if (isset($g_lang_strings[$t_lang][$p_string]))
+	{
+		$the_str = $g_lang_strings[$t_lang][$p_string];
+		if (!isset($TLS_STRINGFILE_CHARSET))
+			$TLS_STRINGFILE_CHARSET = "ISO-8859-1";
+		$the_str = iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$the_str);	
+	}
+	else
+		$the_str = TL_LOCALIZE_TAG .$p_string;
 	
-	if (!isset($TLS_STRINGFILE_CHARSET))
-		$TLS_STRINGFILE_CHARSET = "ISO-8859-1";
-	return iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$the_str);
+	return $the_str;
 }
 
 /* 

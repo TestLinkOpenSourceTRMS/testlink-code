@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.2 2008/01/13 13:22:38 schlundus Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -58,8 +58,7 @@ function validateForm(f)
 		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_save'}" />
 	</div>	
 
-  {* 20071202 - franciscom *}
-  {assign var=this_template_dir value=$smarty.template|dirname}
+	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
     
     <br />

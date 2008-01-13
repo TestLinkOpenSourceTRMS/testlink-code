@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsEdit.tpl,v 1.4 2007/12/31 16:23:15 franciscom Exp $ 
+$Id: cfieldsEdit.tpl,v 1.5 2008/01/13 13:22:38 schlundus Exp $ 
 
 
 Important Development note:
@@ -266,7 +266,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 {else}
 <form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php" 
       onSubmit="javascript:return validateForm(this);">
-  <input type="hidden" id="hidden_id" name="cfield_id" value="{$cf.id}">   
+  <input type="hidden" id="hidden_id" name="cfield_id" value="{$cf.id}" />
 	<table class="common">
     <tr> 
       <td colspan="2"> 
@@ -328,7 +328,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 				                   name="cf_possible_values"
 		                       size="{#CFIELD_POSSIBLE_VALUES_SIZE#}" 
 		                       maxlength="{#CFIELD_POSSIBLE_VALUES_MAXLEN#}" 
-				                   value="{$cf.possible_values}"> 
+				                   value="{$cf.possible_values}" /> 
 			</td>
 		</tr>
 
@@ -428,7 +428,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 	</table>
 	
 	<div class="groupBtn">	
-	<input type="hidden" name="do_action" value="">
+	<input type="hidden" name="do_action" value="" />
 	{if $user_action eq 'edit'}
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
 		       onclick="do_action.value='do_update'"/>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2008/01/13 12:06:02 $ by $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2008/01/13 15:29:46 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -171,6 +171,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
 	
+	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id);
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE,
 												                  $exclude_branches,NO_NODE_TYPE_TO_FILTER);
 												                  
@@ -178,7 +179,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];;
-	
+		
 	$map_node_tccount=array();
 	$tplan_tcs=null;
 	
@@ -208,9 +209,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 		  $test_spec[$key]=$testcase_counters[$key];
 		}
 		
+		// 20080113 - franciscom - added $tcase_prefix
     // 20080110 - franciscom - added $showTestCaseID
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
-		                             $tc_action_enabled,$linkto,$bForPrinting,$showTestCaseID);
+		                             $tc_action_enabled,$linkto,$tcase_prefix,
+		                             $bForPrinting,$showTestCaseID);
 	}
 	return $menustring;
 }
@@ -292,12 +295,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
   
 	if ($node_type == 'testcase')
 	{
+       echo "{$node_type}<br>";
+
+    $viewType=is_null($tp_tcs) ? 'testSpecTree' : 'executionTree';
+    
 		if (!is_null($tck_map))
 		{
 			if (!isset($tck_map[$node['id']]))
 				$node = null;
 		}
-	  	if ($node && !is_null($tp_tcs))
+	
+	  if ($node && $viewType=='executionTree')
 		{
 		  // We are buildind a execution tree.
 			if (!isset($tp_tcs[$node['id']]))
@@ -316,8 +324,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			{
 				$node['tcversion_id'] = $tp_tcs[$node['id']]['tcversion_id'];		
 				$node['version'] = $tp_tcs[$node['id']]['version'];		
+
+			  // 20080113 - franciscom
+			  $sql=" SELECT TCV.tc_external_id AS external_id " .
+			       " FROM tcversions TCV " .
+			       " WHERE TCV.id=" . $node['tcversion_id'];
+			     
+			  $result = $db->exec_query($sql);
+			  $myrow = $db->fetch_array($result);
 			}
 		}
+	
 		if ($node && $ignore_inactive_testcases)
 		{
 			// there are active tcversions for this node ???
@@ -329,7 +346,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			// Postgres Problems
 			// =======================================================================================
 			// Problem 1 - SQL Sintax
-			//   While testing witrh postgres
+			//   While testing with postgres
 			//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
 			//
 			//   At least for what I remember using AS to create COLUMN ALIAS IS REQUIRED and Standard
@@ -353,6 +370,20 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			{
 				$node = null;
 			}
+		}
+		
+		// 20080113 - franciscom
+		if ($node && $viewType=='testSpecTree')
+		{
+			  $sql=" SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
+			       " FROM tcversions TCV, nodes_hierarchy NH " .
+			       " WHERE  NH.id = TCV.id " .
+			       " AND NH.parent_id=" . $node['id'];
+	
+		    $result = $db->exec_query($sql);
+			  $myrow = $db->fetch_array($result);
+				$node['external_id'] = $myrow['external_id'];		
+			  
 		}
 		
 		foreach($tcase_counters as $key => $value)
@@ -438,21 +469,23 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 //
 //
 function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
-                        $tc_action_enabled,$linkto,$bForPrinting=0,$showTestCaseID)
+                        $tc_action_enabled,$linkto,
+                        $testCasePrefix,
+                        $bForPrinting=0,$showTestCaseID)
 {
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
 		$menustring = jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
-		                                                 $bForPrinting,$showTestCaseID);
+		                                                 $bForPrinting,$showTestCaseID,$testCasePrefix);
 	else if (TL_TREE_KIND == 'DTREE')
 		$menustring = dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
 		                                                 $getArguments,$tc_action_enabled,
-		                                                 $bForPrinting,$showTestCaseID);
+		                                                 $bForPrinting,$showTestCaseID,$testCasePrefix);
 	else 
 		$menustring = layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArguments,
 		                                                      $level,$tc_action_enabled,
-		                                                      $bForPrinting,$showTestCaseID);
+		                                                      $bForPrinting,$showTestCaseID,$testCasePrefix);
 		
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -465,7 +498,8 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 				continue;
 			
 			$menustring .= renderTreeNode($level+1,$current,$getArguments,$hash_id_descr,
-			                              $tc_action_enabled,$linkto,$bForPrinting,$showTestCaseID);
+			                              $tc_action_enabled,$linkto,$testCasePrefix,
+			                              $bForPrinting,$showTestCaseID);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
@@ -487,7 +521,7 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 //
 function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
                                                  $getArguments,$level,$tc_action_enabled,
-                                                 $bForPrinting,$showTestCaseID)
+                                                 $bForPrinting,$showTestCaseID,$testCasePrefix)
 {
 	$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
 	$name = filterString($node['name']);
@@ -543,7 +577,8 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
 //
 //
 function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArguments,
-                                            $tc_action_enabled,$bForPrinting,$showTestCaseID)
+                                            $tc_action_enabled,$bForPrinting,
+                                            $showTestCaseID,$testCasePrefix)
 {
 	$dtreeCounter = $node['id'];
 
@@ -568,7 +603,7 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
 		$label = "";
 		if($showTestCaseID)
 		{
-		   $label .= "<b>{$node['id']}</b>:";
+		   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
 		

@@ -2,11 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2008/01/12 17:32:38 $  $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2008/01/13 15:29:46 $  $Author: franciscom $
  * @author franciscom
  *
- * 20080112 - franciscom - changed method to manage tc_prefix field
+ * 20080112 - franciscom - changed methods to manage tc_prefix field
+ *                         new methods getTestCasePrefix()
+ *
  * 20080107 - franciscom - get_accessible_for_user(), added more data
  *                         for array_of_map output type
  * 20080106 - franciscom - checkName() method
@@ -106,7 +108,7 @@ function create($name,$color,$optReq,$notes,$active=1,$tcasePrefix='')
 	
 	$tcprefix=$this->formatTcPrefix($tcasePrefix);
 	
-	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,notes,active) " .
+	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,notes,active,tc_prefix) " .
 	       " VALUES (" . $root_node_id . ", '" .	
 	                     $this->db->prepare_string($color) . "'," . 
 	                     $optReq . ",'" .
@@ -166,9 +168,6 @@ function update($id, $name, $color, $opt_req,$notes,$active=null,$tcasePrefix=nu
 			" notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
 			" WHERE id=" . $id;
 			
-	  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-		
-	
 	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
@@ -634,6 +633,57 @@ function count_testcases($id)
 	      $tcprefix=substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
 	    }
       return $fstr;  
+  }
+
+  /*
+    function: getTestCasePrefix
+              
+  
+    args : id: test project
+    
+    returns: null if query fails
+             string
+  
+  */
+  function getTestCasePrefix($id)
+  {
+  	$ret=null;
+  	$sql = " SELECT testprojects.tc_prefix ".
+  	       " FROM {$this->object_table} " .
+  	       " WHERE testprojects.id = {$id}";
+  	$recordset = $this->db->get_recordset($sql);
+  	
+  	if(!is_null($recordset) )
+  	{
+  	    $ret=$recordset[0]['tc_prefix'];  
+  	}
+  	return ($ret);
+  }
+
+  /*
+    function: generateTestCaseNumber
+              
+  
+    args: id: test project
+    
+    returns: null if query fails
+             a new test case number
+  
+  */
+  function generateTestCaseNumber($id)
+  {
+  	$ret=null;
+    $sql = " UPDATE {$this->object_table} " .
+           " SET tc_counter=tc_counter+1 " .
+  	       " WHERE testprojects.id = {$id}";
+  	$recordset = $this->db->exec_query($sql);
+
+  	$sql = " SELECT tc_counter ".
+  	       " FROM {$this->object_table} " .
+  	       " WHERE testprojects.id = {$id}";
+  	$recordset = $this->db->get_recordset($sql);
+    $ret=$recordset[0]['tc_counter'];
+  	return ($ret);
   }
 
 

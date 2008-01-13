@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/01/13 13:22:38 $ $Author: schlundus $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/01/13 15:29:46 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080103 - franciscom - changes in:  get_last_execution()
@@ -66,8 +66,13 @@ define("TC_COPY_KEYWORDS",0);
 
 class testcase extends tlObjectWithAttachments
 {
+  private $tcversions_table="tcversions";
+	private $nodes_hierarchy_table="nodes_hierarchy";
+
 	var $db;
 	var $tree_manager;
+	var $tproject_mgr;
+	
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
@@ -85,7 +90,9 @@ class testcase extends tlObjectWithAttachments
 	function testcase(&$db)
 	{
 		$this->db = &$db;	
-		$this->tree_manager = New tree($this->db);
+		$this->tproject_mgr = New testproject($this->db);
+		$this->tree_manager = &$this->tproject_mgr->tree_manager;
+		
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
 		$this->my_node_type=$this->node_types_descr_id['testcase'];
@@ -189,7 +196,7 @@ function create($parent_id,$name,$summary,$steps,
 			$this->addKeywords($ret['id'],$a_keywords);
 		}
 	
-		$op = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
+		$op = $this->create_tcversion($ret['id'],$ret['external_id'],$first_version,$summary,$steps,
 		                              $expected_results,$author_id,$execution_type);
 		                              
 		$ret['msg']=$op['msg'];
@@ -221,6 +228,7 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
                            $action_on_duplicate_name='generate_new')
 {
   $ret['id'] = -1;
+  $ret['external_id']=0;
   $ret['status_ok'] = 1;
   $ret['msg'] = 'ok';
 	$ret['new_name'] = '';
@@ -256,9 +264,15 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
   
   if( $ret['status_ok'] )
   {
+    // Get tproject id
+    $path2root=$this->tree_manager->get_path($parent_id);
+    $tprojectID=$path2root[0]['parent_id'];
+    $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tprojectID);
+    
     $tcase_id = $this->tree_manager->new_node($parent_id,
                                                $this->my_node_type,$name,$order,$id);
     $ret['id'] = $tcase_id;
+    $ret['external_id'] = $tcaseNumber;
     $ret['msg'] = 'ok';
   }
   
@@ -266,23 +280,25 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
 }
 
 /*
-  function: 
+  function: create_tcversion 
 
   args:
   
   returns: 
+  
+  rev: 20080113 - franciscom - interface changes added tc_ext_id
 
 */
-function create_tcversion($id,$version,$summary,$steps,
+function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
                           $expected_results,$author_id,
                           $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
 {
 	// get a new id
 	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
-	$sql = "INSERT INTO tcversions (id,version,summary,steps," .
-	       " expected_results,author_id,creation_ts,execution_type)" .
-  	     " VALUES({$tcase_version_id},{$version},'" .  $this->db->prepare_string($summary) . "'," . 
+	$sql = "INSERT INTO {$this->tcversions_table} " .
+	       " (id,tc_external_id,version,summary,steps,expected_results,author_id,creation_ts,execution_type)" .
+  	     " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .  $this->db->prepare_string($summary) . "'," . 
 	  	   "'" . $this->db->prepare_string($steps) . "'," .
 	  	   "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
                $this->db->db_now() . ", {$execution_type} )";
@@ -803,7 +819,7 @@ function copy_to($id,$parent_id,$user_id,
 	    $ret['status_ok']=1;
  			foreach($tcase_info as $tcversion)
 			{
-				$this->create_tcversion($new_tc['id'],$tcversion['version'],
+				$this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
 				                        $tcversion['summary'],$tcversion['steps'],
 				                        $tcversion['expected_results'],$tcversion['author_id']);
 			}
@@ -813,8 +829,6 @@ function copy_to($id,$parent_id,$user_id,
 			}
 			$this->copy_cfields_design_values($id,$new_tc['id']);
 
-
-      // 20070602 - franciscom
       $this->copy_attachments($id,$new_tc['id']);
 		}
 	}

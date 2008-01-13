@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.16 2007/12/21 22:57:17 schlundus Exp $
+$Id: login.tpl,v 1.17 2008/01/13 10:28:38 schlundus Exp $
 Purpose: smarty template - login page 
 
 20070818 - franciscom - BUGID xxxx
@@ -31,7 +31,7 @@ window.onload=function(){
 	<form method="post" action="index.php">
     {if $login_disabled eq 0}		
   	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
-
+		<input type="hidden" name="reqURI" value="{$reqURI}"/>
   		<p class="label">{lang_get s='login_name'}<br />
   		<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
   		

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.89 $ $Author: schlundus $
- * @modified $Date: 2008/01/05 22:00:53 $
+ * @version $Revision: 1.90 $ $Author: schlundus $
+ * @modified $Date: 2008/01/13 10:28:38 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -168,11 +168,15 @@ function checkSessionValid(&$db)
 		$ip = getenv ("REMOTE_ADDR");
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
 		$fName = "login.php";
+		$requestURI = null;
+		if (strlen($_SERVER['REQUEST_URI']))
+			$requestURI = "&req=".urlencode($_SERVER['REQUEST_URI']);
+		
 		for($i = 0;$i < 5;$i++)
 		{
 			if (file_exists($fName))
 			{
-				redirect($_SESSION['basehref'] . $fName."?note=expired","top.location");
+				redirect($_SESSION['basehref'] . $fName."?note=expired".$requestURI,"top.location");
 				break;
 			}
 			$fName = "../".$fName;
@@ -205,11 +209,8 @@ function doSessionStart()
 {
 	session_set_cookie_params(99999);
 
-  if( !isset($_SESSION) )
-  { 
-    session_start();
-  }
-	return 1;
+	if(!isset($_SESSION))
+		session_start();
 }
 
 /** 
@@ -222,8 +223,8 @@ function doSessionStart()
 */
 function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 {
-	doSessionStart() or die("Could not start session");
-	doDBConnect($db) or die("Could not connect to DB");
+	doSessionStart();
+	doDBConnect($db);
 	
 	setPaths();
 	set_dt_formats();

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/01/05 22:00:51 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/01/13 10:28:38 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -36,6 +36,7 @@ if (!$op['status'])
 
 $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
+$reqURI = isset($_GET['req']) ? $_GET['req'] : null;
 
 $message = lang_get('please_login');
 // assign a comment for login
@@ -72,6 +73,7 @@ $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
+$smarty->assign('reqURI',$reqURI);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('login_disabled', !checkForLDAPExtension($bLDAPEnabled));
 $smarty->assign('external_password_mgmt', $bLDAPEnabled);

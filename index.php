@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/01/05 22:00:51 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/01/13 10:28:38 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -24,6 +24,7 @@ setPaths();
 $_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login'] : null;
 $pwd = isset($_POST['password']) ? $_POST['password'] : null;
+$reqURI = isset($_POST['reqURI']) ? $_POST['reqURI'] : 'lib/general/mainPage.php';
 
 if (!is_null($login))
 {
@@ -61,6 +62,6 @@ if (!isset($_SESSION['currentUser']))
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
 $smarty->assign('titleframe', 'lib/general/navBar.php');
-$smarty->assign('mainframe', 'lib/general/mainPage.php');
+$smarty->assign('mainframe', $reqURI);
 $smarty->display('main.tpl');
 ?>

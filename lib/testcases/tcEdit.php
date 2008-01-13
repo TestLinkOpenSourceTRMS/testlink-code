@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2008/01/09 08:15:58 $  by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/01/13 13:29:09 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * 20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
@@ -157,8 +157,7 @@ if($args->edit_tc)
     $cf_smarty = '';
     if($gui_cfg->enable_custom_fields) 
     {
-      echo "WW";
-		  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
+		$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
     }
     $smarty->assign('cf',$cf_smarty);	
    	$smarty->assign('tc', $tc_data[0]);

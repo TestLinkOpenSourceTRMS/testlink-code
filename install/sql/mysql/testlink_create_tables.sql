@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.21 2008/01/12 17:32:04 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.22 2008/01/14 00:05:00 havlat Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#		20080114 - mht - changes for priorities (add 2 + delete 1 table)
+#						 add table for templates
+#						 add table for usergroups
 #       20080112 - franciscom - tcversions.tc_external_id
 #                               testprojects.tc_prefix
 #                               testprojects.tc_counter
@@ -160,24 +163,12 @@ CREATE TABLE `nodes_hierarchy` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `priorities` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `testplan_id` int(10) unsigned NOT NULL default '0',
-  `priority` char(1) NOT NULL default 'B',
-  `risk`     char(1) NOT NULL default '2',
-  `importance` char(1) NOT NULL default 'M',
-  PRIMARY KEY  (`id`),
-  KEY `testplan_id` (`testplan_id`),
-  UNIQUE KEY `prio_risk_imp` (`testplan_id`,`priority`, `risk`, `importance`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 CREATE TABLE `req_coverage` (
   `req_id` int(10) NOT NULL,
   `testcase_id` int(10) NOT NULL,
   KEY `req_testcase` (`req_id`,`testcase_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 
-DROP TABLE IF EXISTS `req_specs`;
 CREATE TABLE `req_specs` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testproject_id` int(10) unsigned NOT NULL,
@@ -273,7 +264,7 @@ CREATE TABLE `tcversions` (
   `summary` text,
   `steps` text,
   `expected_results` text,
-  `importance` char(1) NOT NULL default 'M',
+  `importance` smallint(5) unsigned NOT NULL default '2',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `updater_id` int(10) unsigned default NULL,
@@ -443,4 +434,37 @@ CREATE TABLE `assignment_status` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default 'unknown',
   PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+/* mht - 0000774: Global Project Template */
+CREATE TABLE `text_templates` (
+  `id` int(10) unsigned NOT NULL,
+  `tpl_type` smallint(5) unsigned NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `template_data` text,
+  `author_id` int(10) unsigned default NULL,
+  `create_ts` datetime NOT NULL default '1900-00-00 01:00:00',
+  `is_public` tinyint(1) NOT NULL default '0',
+  UNIQUE KEY `idx_text_templates` (`type`,`title`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
+
+/* mht - 0000537: Dsicussion: Priority = Urgency + Importance */
+CREATE TABLE `test_urgency` (
+  `node_id` int(10) unsigned NOT NULL,
+  `testplan_id` int(10) unsigned NOT NULL,
+  `urgency` smallint(5) unsigned NOT NULL default '2',
+  UNIQUE KEY `idx_test_urgency` (`node_id`,`testplan_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Urgence of testing test suite in a Test Plan';
+
+/* mht - group users for large companies */
+CREATE TABLE `user_group` (
+  `usergroup_id` int(10) unsigned NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` text,
+  UNIQUE KEY (`title`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_group_assign` (
+  `usergroup_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

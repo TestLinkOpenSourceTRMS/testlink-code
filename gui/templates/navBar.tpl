@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.23 2007/12/28 18:55:04 schlundus Exp $ 
+	$Id: navBar.tpl,v 1.24 2008/01/14 07:53:04 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -68,7 +68,7 @@
 		      action="lib/testcases/archiveData.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
 		<input style="font-size: 80%; width: 50px;" type="text" 
-		       title="{lang_get s='search_testcase'}" name="id" value="" /> 
+		       title="{lang_get s='search_testcase'}" name="targetTestCase" value="" /> 
 		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png" 
 		     title="{lang_get s='search_testcase'}"
 			 alt="{lang_get s='search_testcase'}"

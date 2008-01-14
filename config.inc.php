@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.148 $
- * @modified $Date: 2008/01/12 19:15:59 $ by $Author: schlundus $
+ * @version $Revision: 1.149 $
+ * @modified $Date: 2008/01/14 07:53:51 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -572,6 +572,11 @@ $g_priority=array( 'A' => 'high_priority',
 // 0 -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
 $g_testcase_cfg->can_edit_executed=0;
 
+//
+// used to create full external id in this way:
+// testCasePrefix . g_testcase_cfg->glue_character . external_id
+// CAN NOT BE EMPTY
+$g_testcase_cfg->glue_character='-';
 
 /** [Test Plan] */
 // TRUE  -> standard behaviour, user can remove assigned test cases
@@ -788,6 +793,7 @@ if(!defined('TL_LOG_LEVEL_DEFAULT'))
 {
 	define('TL_LOG_LEVEL_DEFAULT', $g_log_level);
 }
+
 
 
 // For printing documents

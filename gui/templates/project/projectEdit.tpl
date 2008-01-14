@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.4 2008/01/14 02:25:31 havlat Exp $
+$Id: projectEdit.tpl,v 1.5 2008/01/14 08:08:08 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -30,6 +30,8 @@ rev:
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
 {if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
   {include file="inc_jsPicker.tpl"}
 {/if}
@@ -37,16 +39,25 @@ rev:
 {literal}
 <script type="text/javascript">
 {/literal}
+var alert_box_title = "{lang_get s='warning'}";
+var warning_empty_tcase_prefix = "{lang_get s='warning_empty_tcase_prefix'}";
 var warning_empty_tproject_name = "{lang_get s='warning_empty_tproject_name'}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.tprojectName.value)) 
   {
-      alert(warning_empty_tproject_name);
+      alert_message(alert_box_title,warning_empty_tproject_name);
       selectField(f, 'tprojectName');
       return false;
   }
+  if (isWhitespace(f.tcasePrefix.value)) 
+  {
+      alert_message(alert_box_title,warning_empty_tcase_prefix);
+      selectField(f, 'tcasePrefix');
+      return false;
+  }
+
   return true;
 }
 </script>

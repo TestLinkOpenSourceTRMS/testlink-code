@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.29 2008/01/01 16:38:17 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.30 2008/01/14 08:08:18 franciscom Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
@@ -24,6 +24,7 @@ $user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 $allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
+$targetTestCase = isset($_GET['targetTestCase']) ? $_GET['targetTestCase'] : null;
 
 // load data and show template
 $smarty = new TLSmarty();
@@ -50,11 +51,18 @@ switch($feature)
 		break;
 
 	case 'testcase':
-		$smarty->assign('id',$id);
 		$item_mgr = new testcase($db);
+    if( !is_null($targetTestCase) )
+    {
+       // need to get internal Id from External ID
+       $cfg = config_get('testcase_cfg');
+       $id=$item_mgr->getInternalID($targetTestCase,$cfg->glue_character); 
+    }
+
 		$attachments = getAttachmentInfosFrom($item_mgr,$id);
 		$attachmentsTpl[$id] = $attachments;
 		
+		$smarty->assign('id',$id);
 		$smarty->assign('attachments',$attachmentsTpl);
 				
 		$no_msg = '';
@@ -75,5 +83,17 @@ switch($feature)
 	default:
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
 		trigger_error($_SESSION['currentUser']->login.'> $_GET["edit"] has invalid value.', E_USER_ERROR);
+}
+?>
+
+<?php
+function init_args()
+{
+    $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+    $args->feature = isset($_GET['edit']) ? $_GET['edit'] : null;
+    $args->id = isset($_GET['id']) ? intval($_GET['id']) : null;
+    // $targetTestCase
+    $args->allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
+    return $args;  
 }
 ?>

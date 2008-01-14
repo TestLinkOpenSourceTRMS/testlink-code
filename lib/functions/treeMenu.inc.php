@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2008/01/13 15:29:46 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2008/01/14 08:08:18 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,9 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20080113 - franciscom - changes to *_renderTestSpec* functions
+ *                              to manage new external_id and testcase prefix.
+ *
  *      20080111 - franciscom - added logic to manage show/hide testcase id
  *      20071229 - franciscom - added new arguments in generateExecTree()
  *                              renderExecTreeNode()
@@ -295,8 +298,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
   
 	if ($node_type == 'testcase')
 	{
-       echo "{$node_type}<br>";
-
     $viewType=is_null($tp_tcs) ? 'testSpecTree' : 'executionTree';
     
 		if (!is_null($tck_map))
@@ -523,6 +524,8 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
                                                  $getArguments,$level,$tc_action_enabled,
                                                  $bForPrinting,$showTestCaseID,$testCasePrefix)
 {
+	$cfg=config_get('testcase_cfg');
+
 	$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
 	$name = filterString($node['name']);
 	$icon = "";
@@ -547,7 +550,12 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
     $label='';  
 		if($showTestCaseID)
 		{
-		   $label .= "<b>{$node['id']}</b>:";
+		   // $label .= "<b>{$node['id']}</b>:";
+		   if( strlen(trim($testCasePrefix)) > 0 )
+       {
+            $testCasePrefix .= $cfg->glue_character;
+       }
+  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
     break;
@@ -580,6 +588,7 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
                                             $tc_action_enabled,$bForPrinting,
                                             $showTestCaseID,$testCasePrefix)
 {
+	$cfg=config_get('testcase_cfg');
 	$dtreeCounter = $node['id'];
 
 	$parentID = isset($node['parent_id']) ? $node['parent_id'] : -1;
@@ -603,7 +612,11 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
 		$label = "";
 		if($showTestCaseID)
 		{
-		   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+ 		   if( strlen(trim($testCasePrefix)) > 0 )
+       {
+            $testCasePrefix .= $cfg->glue_character;
+       }
+  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
 		
@@ -636,8 +649,9 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
 //
 //
 function jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
-                                            $bForPrinting,$showTestCaseID)
+                                            $bForPrinting,$showTestCaseID,$testCasePrefix)
 {
+	$cfg=config_get('testcase_cfg');
 	$menustring = "['";
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
@@ -664,7 +678,12 @@ function jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
 		$label = "";
 		if($showTestCaseID)
 		{
-		   $label .= "<b>{$node['id']}</b>:";
+		   // $label .= "<b>{$node['id']}</b>:";
+ 		   if( strlen(trim($testCasePrefix)) > 0 )
+       {
+            $testCasePrefix .= $cfg->glue_character;
+       }
+  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
 	  break;

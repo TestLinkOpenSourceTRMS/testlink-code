@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/01/14 02:25:31 $ $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/01/14 08:05:52 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -60,6 +60,9 @@ if ($session_tproject_id)
 else
 	$tlog_msg .= $args->tprojectID . ': ' . $args->tprojectName;
 
+$found='yes';
+$status_ok=1;
+
 switch($args->doAction)
 {
 	case 'create':
@@ -88,6 +91,10 @@ switch($args->doAction)
     else
     {
         $user_feedback=$op->msg; 
+        $status_ok=0;
+        $ui['doActionValue']='doCreate';
+		    $ui['buttonValue']=lang_get('btn_create');
+		    $ui['caption']=lang_get('caption_new_tproject');
     } 
 		break;
 		
@@ -106,6 +113,7 @@ switch($args->doAction)
     else
     {
         $user_feedback=$op->msg; 
+        $status_ok=0;
     } 
   	break;
 	
@@ -128,6 +136,7 @@ switch($args->doAction)
 			$user_feedback = lang_get('info_product_not_deleted_check_log') . ' ' . $op['msg'];
 			$tlog_msg .=  " wasn't deleted.\t";
 			$tlog_level = 'ERROR';
+      $status_ok=0;
 		}
 		$action = 'delete';
 		break;
@@ -145,6 +154,11 @@ if($action != 'no')
 $smarty = new TLSmarty();
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
+if( !$status_ok )
+{
+   $args->doAction="ErrorOnAction";  
+}
+
 switch($args->doAction)
 {
     case "doCreate":
@@ -159,6 +173,7 @@ switch($args->doAction)
         $smarty->display($template_dir . $template);
     break; 
     
+    case "ErrorOnAction":
     default:
         $of->Value = $args->notes;
         
@@ -256,15 +271,12 @@ function doCreate($argsObj,&$tprojectMgr)
     $op->status_ok=0;
     $op->template='';
     $op->msg='';  
+
+		tLog('Project priority available = '. $argsObj->optPriority);
     
-    $check_op=$tprojectMgr->checkName($argsObj->tprojectName);
-    $op->msg=$check_op['msg'];
-    
+    $check_op=crossChecks($argsObj,$tprojectMgr);
 		if($check_op['status_ok'])
 		{
-			if (!$tprojectMgr->get_by_name($argsObj->tprojectName))
-			{
-				tLog('Project priority available = '. $argsObj->optPriority);
 				$new_id=$tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
 				                             $argsObj->optReq, $argsObj->optPriority, $argsObj->notes,
 				                             $argsObj->active,$argsObj->tcasePrefix);
@@ -277,11 +289,13 @@ function doCreate($argsObj,&$tprojectMgr)
 				  $op->status_ok=1;
 				  $op->template='projectView.tpl';	
 				}	
-			}
-			else
-			{
-				$op->msg = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
-			}
+		}
+		else
+		{
+		     foreach($check_op['msg'] as $key => $msg)
+		     {
+		        $op->msg .=  $msg . "<br>";   
+		     }
 		}
     return $op;
 }
@@ -352,6 +366,100 @@ function edit(&$argsObj,&$tprojectMgr)
 		$ui['buttonValue']=lang_get('btn_save');
 		$ui['caption']=lang_get('caption_edit_tproject');
 		return $ui;
+}
+
+/*
+  function: createCrossChecks
+
+  args:
+  
+  returns: - 
+
+*/
+function  createCrossChecks($argsObj,&$tprojectMgr)
+{
+    $op=$tprojectMgr->checkName($argsObj->tprojectName);
+    
+    $check_op=array();
+    $check_op['msg']=array();
+    $check_op['status_ok']=$op['status_ok'];
+    
+    if( $check_op['status_ok'] )
+    {
+      if( $tprojectMgr->get_by_name($argsObj->tprojectName) )
+      {
+          $check_op['msg'][]=sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+          $check_op['status_ok']=0;
+      }
+      
+      $sql="SELECT id FROM testprojects " .
+           " WHERE tc_prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+		  
+      $rs=$tprojectMgr->db->get_recordset($sql);
+      if( !is_null($rs) )
+      {
+          $check_op['msg'][]=sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
+          $check_op['status_ok']=0;
+      }
+    }
+    else
+    {
+         $check_op['msg'][]=$op['msg'];
+    }
+
+    return $check_op;
+}
+
+/*
+  function: createCrossChecks
+
+  args:
+  
+  returns: - 
+
+*/
+function  crossChecks($argsObj,&$tprojectMgr)
+{
+    $updateAdditionalSQL=null;
+    $op=$tprojectMgr->checkName($argsObj->tprojectName);
+    
+    $check_op=array();
+    $check_op['msg']=array();
+    $check_op['status_ok']=$op['status_ok'];
+    
+    if( $argsObj->doAction=='doUpdate' )
+    {
+      $updateAdditionalSQL="testprojects.id <> {$argsObj->tprojectID}";
+    }
+   
+    if( $check_op['status_ok'] )
+    {
+      if( $tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL) )
+      {
+          $check_op['msg'][]=sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+          $check_op['status_ok']=0;
+      }
+      
+      $sql="SELECT id FROM testprojects " .
+           " WHERE tc_prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+      if( !is_null($updateAdditionalSQL) )
+      {
+          $sql .= " AND {$updateAdditionalSQL} "; 
+      }
+           
+		  
+      $rs=$tprojectMgr->db->get_recordset($sql);
+      if( !is_null($rs) )
+      {
+          $check_op['msg'][]=sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
+          $check_op['status_ok']=0;
+      }
+    }
+    else
+    {
+         $check_op['msg'][]=$op['msg'];
+    }
+    return $check_op;
 }
 
 

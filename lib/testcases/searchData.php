@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.25 2007/12/03 20:42:27 schlundus Exp $
+ * $Id: searchData.php,v 1.26 2008/01/14 08:08:18 franciscom Exp $
  * Purpose:  This page presents the search results. 
 **/
 require('../../config.inc.php');
@@ -96,9 +96,6 @@ if ($tproject)
         }
         // ------------------------------------------------------------------------------------
 
-
-
-
 		$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,expected_results,version ".
 			     " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions " .
 			     " {$from['by_keyword_id']} {$from['by_custom_field']}".
@@ -125,6 +122,8 @@ if(count($map))
 }
 else
 {
+  echo 'DDD';
+  die();
 	$the_tpl = config_get('tpl');
 	$smarty->display($template_dir . $the_tpl['tcView']);
 }

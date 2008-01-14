@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.5 2008/01/02 11:33:34 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.6 2008/01/14 08:08:08 franciscom Exp $
 viewer for test case in test specification
 
+20080113 - franciscom - changed format for test case id + name
 20071204 - franciscom - display execution_type
 20070628 - franciscom - active_status_op_enabled always true
 20061230 - franciscom - an experiment to make simple management
@@ -124,8 +125,7 @@ viewer for test case in test specification
     {if $args_show_title == "yes"}
 		<tr>
 			<th  colspan="2">
-			{lang_get s='th_test_case_id'}{$args_testcase.testcase_id}{$smarty.const.TITLE_SEP_TYPE4} 
-			{lang_get s='title_test_case'} {$args_testcase.name|escape}</th>
+			{$args_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$args_testcase.name|escape}</th>
 		</tr>
     {/if} 
     

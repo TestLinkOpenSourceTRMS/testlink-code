@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.82 $
- * @modified $Date: 2008/01/13 15:29:46 $ $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2008/01/14 08:07:34 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080103 - franciscom - changes in:  get_last_execution()
@@ -67,6 +67,7 @@ define("TC_COPY_KEYWORDS",0);
 class testcase extends tlObjectWithAttachments
 {
   private $tcversions_table="tcversions";
+	private $testprojects_table="testprojects";
 	private $nodes_hierarchy_table="nodes_hierarchy";
 
 	var $db;
@@ -382,14 +383,14 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
               $msg_result='', $refresh_tree='yes', $user_feedback='', $disable_edit=0)
 {
   
+  echo "<pre>debug 20080113 - \$id - " . __FUNCTION__ . " --- "; print_r($id); echo "</pre>";
+  
   $req_mgr = new requirement_mgr($this->db);
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
 
 	$arrReqs = null;
-	
-	// 20070930 - franciscom
 	$can_edit = $disable_edit == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
 
 	if(is_array($id))
@@ -407,17 +408,31 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 	$keywords_map = array();
 	$arrReqs = array();
   
+  // 20080113 - franciscom
+  $path2root=$this->tree_manager->get_path($a_id[0]);
+  $tprojectID=$path2root[0]['parent_id'];
+  $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+  
+  if( strlen(trim($tcasePrefix)) > 0 )
+  {
+       $tcasePrefix .= $tcase_cfg->glue_character;
+  }
+  
 	foreach($a_id as $key => $tc_id)
 	{
 		$tc_array = $this->get_by_id($tc_id,$version_id);
 		if (!$tc_array)
 			continue;
 			
+			
+  	$tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
+			
 		//get the status quo of execution and links of tc versions
 		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
 		
 		$keywords_map[] = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
 		$tc_array[0]['keywords'] = $keywords_map;
+		
 		$tc_current_version[] = array($tc_array[0]);
 		
 		$qta_versions = count($tc_array);
@@ -442,6 +457,9 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 		}
 		$smarty->assign('cf',$cf_smarty);	
  	}
+ 	
+ 	echo "<pre>debug 20080113 - \$tc_current_version - " . __FUNCTION__ . " --- "; print_r($tc_current_version); echo "</pre>";
+ 	
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('user_feedback',$user_feedback);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
@@ -774,6 +792,21 @@ function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 }
 
 
+/*
+  function: get_testproject
+            Given a testcase id get node id of testproject to which testcase belongs.
+  args :id: testcase id
+  
+  returns: testproject id
+
+*/
+function formatTestCaseIdentity($id,$external_id)
+{
+    $path2root=$this->tree_manager->get_path($tc_id);
+    $tprojectID=$path2root[0]['parent_id'];
+    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+    
+}			
 
 
 /*
@@ -1240,6 +1273,51 @@ function get_exec_status($id)
 }
 // -------------------------------------------------------------------------------
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function getInternalID($stringID,$glueCharacter)
+{
+  $internalID=0;  
+  $pieces=explode($glueCharacter,$stringID);
+  $testCasePrefix=$pieces[0];  
+  $externalID=$pieces[1];  
+  
+  $sql="SELECT DISTINCT NH.parent_id AS tcase_id" .
+       " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
+       " WHERE TCV.id = NH.id " .
+       " AND  TCV.tc_external_id={$externalID}";
+      
+  $testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');      
+ 
+  if( !is_null($testCases) )
+  {                          
+      $sql="SELECT id" .
+           " FROM {$this->testprojects_table} " .
+           " WHERE prefix='" . $this->db->prepare_string($testCasePrefix) . "'";
+      $recordset = $this->db->get_recordset($sql);
+      $tprojectID = $recordset[0]['id'];
+
+      $tprojectSet=array();                       
+      foreach($testCases as $tcaseID => $value )
+      {
+          $path2root=$this->tree_manager->get_path($tcaseID);
+          if( $tprojectID == $path2root[0]['parent_id'])
+          {
+              $internalID=$tcaseID;
+              break;  
+          }
+      }
+  }
+
+  return $internalID; 
+}
 
 
 // -------------------------------------------------------------------------------

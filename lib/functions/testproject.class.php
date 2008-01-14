@@ -2,11 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2008/01/14 02:25:31 $  $Author: havlat $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2008/01/14 08:07:07 $  $Author: franciscom $
  * @author franciscom
  *
- * 20080112 - franciscom - changed methods to manage tc_prefix field
+ * 20080112 - franciscom - changed methods to manage prefix field
  *                         new methods getTestCasePrefix()
  *
  * 20080107 - franciscom - get_accessible_for_user(), added more data
@@ -214,7 +214,7 @@ function get_by_name($name,$addClause = null)
 	       " WHERE testprojects.id = nodes_hierarchy.id AND".
 	       "  nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
 	       
-	if (!is_null($addClause))
+	if (!is_null($addClause) )
 		$sql .= " AND " . $addClause;
 
 	$recordset = $this->db->get_recordset($sql);
@@ -686,6 +686,7 @@ function count_testcases($id)
   }
 
 
+	
 	
 	/* Keywords related methods  */	
 	/**

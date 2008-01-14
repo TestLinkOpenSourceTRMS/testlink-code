@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: projectView.tpl,v 1.2 2008/01/12 17:31:46 franciscom Exp $ 
+$Id: projectView.tpl,v 1.3 2008/01/14 19:15:06 asielb Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -24,7 +24,7 @@ Rev :
 {lang_get var="labels" s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
                           th_name,th_notes,testproject_alt_edit,testproject_alt_active,
                           th_requirement_feature,testproject_alt_delete,btn_create,
-                          testproject_alt_requirement_feature,th_active,th_delete'}
+                          testproject_alt_requirement_feature,th_active,th_delete,th_id'}
 
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -53,6 +53,9 @@ var del_action=fRoot+'{$deleteAction}';
 {else}
 	<table class="simple" width="95%">
 		<tr>
+			{if $api_ui_show eq 1}
+				<th>{$labels.th_id}</th>
+			{/if}
 			<th>{$labels.th_name}</th>
 			<th>{$labels.th_notes}</th>
 			<th>{$labels.tcase_id_prefix}</th>
@@ -64,6 +67,9 @@ var del_action=fRoot+'{$deleteAction}';
 		</tr>
 		{foreach item=testproject from=$tprojects}
 		<tr>
+			{if $api_ui_show eq 1}
+				<td>{$testproject.id}</td>
+			{/if}
 			<td><a href="{$editAction}{$testproject.id}"> 
 				     {$testproject.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/01/14 08:05:52 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/14 08:06:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -357,7 +357,7 @@ function edit(&$argsObj,&$tprojectMgr)
 	  $argsObj->optReq=$tprojectInfo['option_reqs'];
 	  $argsObj->optPriority=$tprojectInfo['option_priority'];
 	  $argsObj->active=$tprojectInfo['active'];
-	  $argsObj->tcasePrefix=$tprojectInfo['tc_prefix'];
+	  $argsObj->tcasePrefix=$tprojectInfo['prefix'];
 	  
 
     $ui=array(); 
@@ -393,7 +393,7 @@ function  createCrossChecks($argsObj,&$tprojectMgr)
       }
       
       $sql="SELECT id FROM testprojects " .
-           " WHERE tc_prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+           " WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
 		  
       $rs=$tprojectMgr->db->get_recordset($sql);
       if( !is_null($rs) )
@@ -441,7 +441,7 @@ function  crossChecks($argsObj,&$tprojectMgr)
       }
       
       $sql="SELECT id FROM testprojects " .
-           " WHERE tc_prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+           " WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
       if( !is_null($updateAdditionalSQL) )
       {
           $sql .= " AND {$updateAdditionalSQL} "; 

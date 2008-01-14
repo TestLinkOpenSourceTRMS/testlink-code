@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.2 $
-$Date: 2008/01/14 00:24:17 $
+$Revision: 1.3 $
+$Date: 2008/01/14 02:02:58 $
 $Author: havlat $
 $RCSfile: db_schema_update.sql,v $
 */
@@ -9,6 +9,9 @@ DROP TABLE IF EXISTS `priorities`;
 DROP TABLE IF EXISTS `risk_assignments`;
 
 ALTER TABLE tcversions ADD COLUMN `importance` smallint(5) unsigned NOT NULL default '2';
+ALTER TABLE testprojects ADD COLUMN `prefix` varchar(30) NULL;
+/* ALTER TABLE testprojects ADD COLUMN `tc_counter` int(10) unsigned NULL default '0'; */
+ALTER TABLE users ADD COLUMN `script_key` varchar(32) NULL;
 
 /* mht - 0000774: Global Project Template */
 CREATE TABLE `text_templates` (

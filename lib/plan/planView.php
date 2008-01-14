@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/02 17:16:02 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/14 18:51:52 $ $Author: asielb $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -26,6 +26,7 @@ if($tproject_id)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('api_ui_show',$g_api_ui_show);
 $smarty->assign('tplans',$tplans);
 $smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
 $smarty->display($template_dir . 'planView.tpl');

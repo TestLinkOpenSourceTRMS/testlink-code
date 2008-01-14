@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.6 2008/01/10 07:50:57 franciscom Exp $ 
+$Id: planView.tpl,v 1.7 2008/01/14 18:51:52 asielb Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -25,7 +25,7 @@ Rev:
           s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,
-          btn_testplan_create'}
+          btn_testplan_create,th_id'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg" }
@@ -58,14 +58,21 @@ var del_action=fRoot+'{$deleteAction}';
 {else}
 	<table class="simple sortable" width="95%">
 		<tr>
-			<th>{$sortHintIcon}{$labels.testplan_th_name}
- 			</th>
+			{if $api_ui_show eq 1}
+				<th class="{$noSortableColumnClass}">{$labels.th_id}</th>
+			{/if}
+			<th>{$sortHintIcon}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>
+			{if $api_ui_show eq 1}
+				<td>
+					{$testplan.id|escape}
+				</td>
+			{/if}
 			<td><a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}

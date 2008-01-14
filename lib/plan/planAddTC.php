@@ -1,11 +1,12 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.39 2007/12/05 21:25:15 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.40 2008/01/14 21:43:23 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20080114 - franciscom - added testCasePrefix management
 //      20070930 - franciscom - BUGID
 //      20070912 - franciscom - BUGID 905
 //      20070124 - franciscom
@@ -19,12 +20,17 @@ testlinkInitPage($db);
 $tree_mgr = new tree($db); 
 $tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
+$tproject_mgr = new testproject($db); 
 
 $template_dir='plan/';
 
+$tcase_cfg=config_get('testcase_cfg');
 $do_display = 0;
 $tproject_id =  $_SESSION['testprojectID'];
 $tproject_name =  $_SESSION['testprojectName'];
+
+$testCasePrefix=$tproject_mgr->getTestCasePrefix($tproject_id);
+$testCasePrefix .= $tcase_cfg->glue_character;
 
 // REQ - BUGID 
 $tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
@@ -98,6 +104,8 @@ if($do_display)
 	// 1 => add/remove
 	// 0 => just remove
 	$smarty->assign('full_control', 1); 
+
+	$smarty->assign('testCasePrefix', $testCasePrefix);
 	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);

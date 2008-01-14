@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.90 $ $Author: schlundus $
- * @modified $Date: 2008/01/13 10:28:38 $
+ * @version $Revision: 1.91 $ $Author: franciscom $
+ * @modified $Date: 2008/01/14 21:43:23 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20080114 - franciscom - gen_spec_view(): adde external_id management.
  * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
  *                         string_api.php, also from Mantis.
  * 
@@ -704,7 +705,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	if($write_button_only_if_linked)
 		$write_status = 'no';
 	
-	//  20070104 - franciscom - added 'has_linked_items' => 0, to remove a warning message.
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	
 	$out = array(); 
@@ -718,7 +718,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$tcase_node_type = $hash_descr_id['testcase'];
 	$hash_id_descr = array_flip($hash_descr_id);
 
-  // 20071111 - franciscom 
 	$test_spec = $tproject_mgr->get_subtree($id);
 	     
 	// ---------------------------------------------------------------------------------------------
@@ -730,6 +729,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 			case 'testproject':
 				$tobj_mgr = new testproject($db); 
 				break;  
+				
 			case 'testplan':
 				$tobj_mgr = new testplan($db); 
 				break;  
@@ -787,8 +787,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				$parent_idx = $hash_id_pos[$current['parent_id']];
   				$a_tsuite_idx[$tc_id] = $parent_idx;
   				
-  				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
-  				                  'name' => $current['name']);
+  				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
+  				
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
   				
   				// 20070630 - franciscom
@@ -822,8 +822,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   						$the_level = $level[$current['parent_id']];
   				}
   	            
-  	            $out[$idx]['testsuite']=array('id' => $current['id'],
-  	     			                            'name' => $current['name']);
+  	      $out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);
   				$out[$idx]['testcases'] = array();
   				$out[$idx]['testcase_qty'] = 0;
   				$out[$idx]['linked_testcase_qty'] = 0;
@@ -878,13 +877,14 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   			$parent_idx = $a_tsuite_idx[$tc_id];
   		
         // --------------------------------------------------------------------------
-        // 20070630 - franciscom
         if($the_tc['active'] == 1)
         {       
-          // 20070630 - franciscom 
     			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
             
+          // 20080114 - franciscom  
+          $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+  				  
 		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
 			    else
@@ -905,8 +905,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
        				{
         				$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 0;
-  					  }
+    					  // 20080114 - franciscom
+                $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+				      }
   						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
+              
+              
   						$out[$parent_idx]['write_buttons'] = 'yes';
   						$out[$parent_idx]['linked_testcase_qty']++;
   						

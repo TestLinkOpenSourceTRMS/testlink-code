@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2008/01/14 08:08:18 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2008/01/14 21:43:23 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,8 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20080114 - franciscom - changes to *_renderExecTreeNode*
+ *
  *      20080113 - franciscom - changes to *_renderTestSpec* functions
  *                              to manage new external_id and testcase prefix.
  *
@@ -333,6 +335,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			     
 			  $result = $db->exec_query($sql);
 			  $myrow = $db->fetch_array($result);
+				$node['external_id'] = $myrow[0]['external_id'];		
+
 			}
 		}
 	
@@ -550,7 +554,6 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
     $label='';  
 		if($showTestCaseID)
 		{
-		   // $label .= "<b>{$node['id']}</b>:";
 		   if( strlen(trim($testCasePrefix)) > 0 )
        {
             $testCasePrefix .= $cfg->glue_character;
@@ -756,8 +759,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
 
 
-
-  // 20071111 - franciscom
+  // 20080114 - franciscom
+ 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 
 
@@ -776,7 +779,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	$map_node_tccount = array();
 
-	
 	if($test_spec)
 	{
 		$tck_map = null;
@@ -807,7 +809,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  // value -> map with info about execution status
 	  //
 		$menustring = renderExecTreeNode(1,$test_spec,$tp_tcs,$getArguments,$hash_id_descr,1,
-		                                 $menuUrl,$bHideTCs,$useCounters,$useColors,$showTestCaseID);
+		                                 $menuUrl,$bHideTCs,$useCounters,$useColors,
+		                                 $showTestCaseID,$tcase_prefix);
 	}
 	return $menustring;
 }
@@ -834,24 +837,27 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 */
 function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_descr,
                             $tc_action_enabled,$linkto,$bHideTCs,
-                            $useCounters,$useColors,$showTestCaseID)
+                            $useCounters,$useColors,$showTestCaseID,$testCasePrefix)
 {
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
 		$menustring = jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 		                                             $tc_action_enabled,$bHideTCs,
-		                                             $useCounters,$useColors,$showTestCaseID);
+		                                             $useCounters,$useColors,
+		                                             $showTestCaseID,$testCasePrefix);
 	else if (TL_TREE_KIND == 'DTREE')
 		$menustring = dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 		                                             $linkto,$getArguments,
 		                                             $tc_action_enabled,$bHideTCs,
-		                                             $useCounters,$useColors,$showTestCaseID);
+		                                             $useCounters,$useColors,
+		                                             $showTestCaseID,$testCasePrefix);
 	else 
 		$menustring = layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 		                                                  $linkto,$getArguments,$level,
 		                                                  $tc_action_enabled,$bHideTCs,
-		                                                  $useCounters,$useColors,$showTestCaseID);
+		                                                  $useCounters,$useColors,
+		                                                  $showTestCaseID,$testCasePrefix);
 		                                                  
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -866,7 +872,8 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 			$menustring .= renderExecTreeNode($level+1,$current,$tcase_node,
 			                                  $getArguments,$hash_id_descr,
 			                                  $tc_action_enabled,$linkto,$bHideTCs,
-			                                  $useCounters,$useColors,$showTestCaseID);
+			                                  $useCounters,$useColors,$showTestCaseID,
+			                                  $testCasePrefix);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
@@ -889,8 +896,10 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 */
 function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,$level,
                                              $tc_action_enabled,$bForPrinting,
-                                             $useCounters=1,$useColors=1,$showTestCaseID=1)
+                                             $useCounters=1,$useColors=1,
+                                             $showTestCaseID=1,$testCasePrefix)
 {
+	$cfg=config_get('testcase_cfg');
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
@@ -931,8 +940,16 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 
 		if($showTestCaseID)
 		{
-		   $label .= "<b>{$node['id']}</b>:";
+		   // $label .= "<b>{$node['id']}</b>:";
+		   if( strlen(trim($testCasePrefix)) > 0 )
+       {
+            $testCasePrefix .= $cfg->glue_character;
+       }
+  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+
 		} 
+
+
 		$label .= $name . "</span>";
 		$versionID = $node['tcversion_id'];
 	  break;
@@ -994,8 +1011,10 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 */
 function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,
                                         $tc_action_enabled,$bForPrinting,
-                                        $useCounters=1,$useColors=1,$showTestCaseID=1)
+                                        $useCounters=1,$useColors=1,
+                                        $showTestCaseID=1,$testCasePrefix)
 {
+ 	$cfg=config_get('testcase_cfg');
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
@@ -1030,7 +1049,14 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 		  
 		  if($showTestCaseID)
 		  {
-		     $label .= "<b>{$node['id']}</b>:";
+		     // $label .= "<b>{$node['id']}</b>:";
+		     if( strlen(trim($testCasePrefix)) > 0 )
+         {
+            $testCasePrefix .= $cfg->glue_character;
+         }
+  	     $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+
+		     
 		  } 
 		  $label .= $name . "</span>";
 		         
@@ -1097,8 +1123,10 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
       20080110 - franciscom - added $showTestCaseID
 */
 function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,
-                                        $bForPrinting,$useCounters=1,$useColors=1,$showTestCaseID=1)
+                                        $bForPrinting,$useCounters=1,$useColors=1,
+                                        $showTestCaseID=1,$testCasePrefix)
 {
+ 	$cfg=config_get('testcase_cfg');
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
@@ -1135,7 +1163,13 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 		
 		if($showTestCaseID)
 		{
-		   $label .= "<b>{$node['id']}</b>:";
+		   //$label .= "<b>{$node['id']}</b>:";
+ 		   if( strlen(trim($testCasePrefix)) > 0 )
+       {
+            $testCasePrefix .= $cfg->glue_character;
+       }
+  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+
 		} 
 		$label .= $name . "</span>";
 		$versionID = $node['tcversion_id'];

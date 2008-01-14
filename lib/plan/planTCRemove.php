@@ -1,10 +1,11 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.2 2008/01/11 00:54:33 havlat Exp $ 
+ * @version $Id: planTCRemove.php,v 1.3 2008/01/14 21:43:23 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
+ * 20080114 - franciscom - added testCasePrefix management
  * 20070408 - franciscom - refactoring to use planAddTC_m1.tpl, 
  *                         wrapped by planRemoveTC_m1.tpl
  *
@@ -28,8 +29,12 @@ $template_dir='plan/';
 $tplan_id = $_SESSION['testPlanId'];
 $tplan_name = $_SESSION['testPlanName'];
 
+$tcase_cfg=config_get('testcase_cfg');
 $tproject_id =  $_SESSION['testprojectID'];
 $tproject_name =  $_SESSION['testprojectName'];
+
+$testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($tproject_id);
+$testCasePrefix .= $tcase_cfg->glue_character;
 
 
 $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
@@ -120,6 +125,7 @@ $smarty = new TLSmarty();
 
 $smarty->assign('has_tc', 1);
 $smarty->assign('arrData',null);
+$smarty->assign('testCasePrefix', $testCasePrefix);
 
 if( !is_null($out) )
 {

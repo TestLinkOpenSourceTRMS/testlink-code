@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.149 $
- * @modified $Date: 2008/01/14 07:53:51 $ by $Author: franciscom $
+ * @version $Revision: 1.150 $
+ * @modified $Date: 2008/01/14 21:43:23 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,7 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
- * 			 20081011 - asielb	   - $g_api_ui_show
+ * 			     20081011 - asielb	   - $g_api_ui_show
  *           20080110 - franciscom - $g_tree_show_testcase_id
  *           20080109 - franciscom - $g_sort_table_engine
  *           20080105 - franciscom - $g_testsuite_template

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.4 2008/01/13 12:22:52 schlundus Exp $
+$Id: tc_exec_assignment.tpl,v 1.5 2008/01/14 21:43:23 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -97,7 +97,7 @@ rev :
         				                        value="{$tcase.linked_version_id}" />
        				  </td>
             	  <td>
-            	  {$tcase.id}
+            	  {$testCasePrefix}{$tcase.external_id}
                 </td>
             	  <td title="{$labels.show_tcase_spec}">
             	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>

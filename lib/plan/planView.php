@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/14 18:51:52 $ $Author: asielb $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/01/14 21:43:23 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
 */
 require('../../config.inc.php');
-require_once("../functions/common.php");
+require_once("common.php");
 testlinkInitPage($db);
 
 $template_dir='plan/';

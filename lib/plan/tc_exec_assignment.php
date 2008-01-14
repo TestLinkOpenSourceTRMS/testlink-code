@@ -1,9 +1,10 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.16 2007/12/29 18:30:51 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.17 2008/01/14 21:43:23 franciscom Exp $ 
  * 
  * rev :
+ *       20080114 - franciscom - added testcase external_id management
  *       20071228 - franciscom - BUG build combo of users using only users
  *                               that can execute test cases in testplan.
  * 
@@ -18,6 +19,8 @@ require_once("treeMenu.inc.php");
 
 testlinkInitPage($db);
 
+$tcase_cfg=config_get('testcase_cfg');
+
 $tree_mgr = new tree($db); 
 $tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
@@ -30,6 +33,9 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 $args = init_args();
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tplan_name = $tplan_info['name'];
+
+$testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id);
+$testCasePrefix .= $tcase_cfg->glue_character;
 
 $arrData = array();
 
@@ -147,6 +153,7 @@ switch($args->level)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('testCasePrefix', $testCasePrefix);
 $smarty->assign('users', $users);
 $smarty->assign('testers', $testers);
 $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));

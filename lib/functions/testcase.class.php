@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/01/14 19:34:26 $ $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/01/14 21:43:23 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20080114 - franciscom - new method getPrefix()
  * 20080103 - franciscom - changes in:  get_last_execution()
  *                                      get_executions()
  *                         added execution_type column in output recordset
@@ -789,9 +790,10 @@ function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 
 
 /*
-  function: get_testproject
-            Given a testcase id get node id of testproject to which testcase belongs.
-  args :id: testcase id
+  function: formatTestCaseIdentity
+
+  args: id: testcase id
+        external_id
   
   returns: testproject id
 
@@ -803,6 +805,25 @@ function formatTestCaseIdentity($id,$external_id)
     $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
     
 }			
+
+
+/*
+  function: getPrefix
+
+  args: id: testcase id
+  
+  returns: prefix
+
+*/
+function getPrefix($id)
+{
+    $path2root=$this->tree_manager->get_path($tc_id);
+    $tprojectID=$path2root[0]['parent_id'];
+    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+    return $tcasePrefix; 
+}			
+
+
 
 
 /*
@@ -1116,19 +1137,19 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open
 	}
 
 	$sql = "SELECT	U.login AS updater_login,users.login as author_login,
-		    NHB.name,NHB.node_order,NHA.parent_id AS testcase_id, tcversions.*, 
-		    users.first AS author_first_name, 
-		    users.last AS author_last_name, 
-		    U.first AS updater_first_name, 
-		    U.last  AS updater_last_name
-        FROM nodes_hierarchy NHA
-        JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-        JOIN tcversions ON NHA.id = tcversions.id 
-        LEFT OUTER JOIN users ON tcversions.author_id = users.id 
-        LEFT OUTER JOIN users U ON tcversions.updater_id = U.id  
-        $where_clause 
-        $active_filter
-        ORDER BY tcversions.version DESC";
+		     NHB.name,NHB.node_order,NHA.parent_id AS testcase_id, tcversions.*, 
+		     users.first AS author_first_name, 
+		     users.last AS author_last_name, 
+		     U.first AS updater_first_name, 
+		     U.last  AS updater_last_name
+         FROM nodes_hierarchy NHA
+         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
+         JOIN tcversions ON NHA.id = tcversions.id 
+         LEFT OUTER JOIN users ON tcversions.author_id = users.id 
+         LEFT OUTER JOIN users U ON tcversions.updater_id = U.id  
+         $where_clause 
+         $active_filter
+         ORDER BY tcversions.version DESC";
 
 
 	if ($version_id != TC_LATEST_VERSION)

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2008/01/03 20:44:06 $ $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2008/01/14 21:43:23 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  * 
  * rev :
+ *       20080114 - franciscom - get_linked_tcversions()
  *       20071205 - franciscom - copy_as() - added reactored code from contribution
  *                               
  *
@@ -352,6 +353,7 @@ function link_tcversions($id,&$items_to_link)
                            tcversion_id if has executions 
 
  rev :
+       20080114 - franciscom - added external_id in output
      	 20070825 - franciscom - added NHB.node_order on ORDER BY
        20070630 - franciscom - added active tcversion status in output recorset
        20070306 - franciscom - BUGID 705
@@ -432,14 +434,17 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// missing condition on testplan_id between execution and testplan_tcversions
 	// added tc_id in order clause to maintain same order that navigation tree
 	
-	// 20070106 - francisco.mancardi@gruppotesi.com
+	// 20080114 - franciscom - added tc_external_id
+	//
+	// 20070106 - franciscom
 	// Postgres does not like Column alias without AS, and (IMHO) he is right
 	//
 	// 20070917 - added version
 	//
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id, NHB.node_order AS z," .
-	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id,TCV.version AS version, TCV.active," .
+	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
+	     "        TCV.version AS version, TCV.active,TCV.tc_external_id AS external_id," .
 	     "        E.id AS exec_id, " .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, " .

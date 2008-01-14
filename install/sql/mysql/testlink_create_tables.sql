@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.22 2008/01/14 00:05:00 havlat Exp $
+# $Id: testlink_create_tables.sql,v 1.23 2008/01/14 00:24:17 havlat Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -445,7 +445,7 @@ CREATE TABLE `text_templates` (
   `author_id` int(10) unsigned default NULL,
   `create_ts` datetime NOT NULL default '1900-00-00 01:00:00',
   `is_public` tinyint(1) NOT NULL default '0',
-  UNIQUE KEY `idx_text_templates` (`type`,`title`)
+  UNIQUE KEY `idx_text_templates` (`tpl_type`,`title`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
 /* mht - 0000537: Dsicussion: Priority = Urgency + Importance */
@@ -466,5 +466,5 @@ CREATE TABLE `user_group` (
 
 CREATE TABLE `user_group_assign` (
   `usergroup_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

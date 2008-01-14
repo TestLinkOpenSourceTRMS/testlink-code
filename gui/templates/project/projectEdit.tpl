@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.3 2008/01/12 17:31:46 franciscom Exp $
+$Id: projectEdit.tpl,v 1.4 2008/01/14 02:25:31 havlat Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -25,7 +25,7 @@ rev:
 {assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
 
 {lang_get var="labels" s='caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
-                          title_testproject_management,notes,color,
+                          title_testproject_management,notes,color,enable_priority,
                           enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del'} 
 
 
@@ -117,6 +117,12 @@ function validateForm(f)
 				<td>{$labels.enable_requirements}</td>
 				<td>
 				  <input type="checkbox" name="optReq" {if $optReq eq 1} checked="checked"	{/if} />
+				</td>
+			</tr>
+			<tr>
+				<td>{$labels.enable_priority}</td>
+				<td>
+				  <input type="checkbox" name="optPriority" {if $optPriority eq 1} checked="checked"	{/if} />
 				</td>
 			</tr>
 

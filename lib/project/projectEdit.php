@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/01/13 15:19:40 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/14 02:25:31 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -170,6 +170,7 @@ switch($args->doAction)
         $smarty->assign('name', $args->tprojectName);
         $smarty->assign('active', $args->active);
         $smarty->assign('optReq', $args->optReq);
+        $smarty->assign('optPriority', $args->optPriority);
         $smarty->assign('tcasePrefix', $args->tcasePrefix);
         $smarty->assign('action', $action);
         $smarty->assign('notes', $of->CreateHTML());
@@ -214,7 +215,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 	
-	$checkbox_keys = array('active' => 0,'optReq' => 0);
+	$checkbox_keys = array('active' => 1,'optReq' => 0,'optPriority' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -263,8 +264,9 @@ function doCreate($argsObj,&$tprojectMgr)
 		{
 			if (!$tprojectMgr->get_by_name($argsObj->tprojectName))
 			{
+				tLog('Project priority available = '. $argsObj->optPriority);
 				$new_id=$tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
-				                             $argsObj->optReq, $argsObj->notes,
+				                             $argsObj->optReq, $argsObj->optPriority, $argsObj->notes,
 				                             $argsObj->active,$argsObj->tcasePrefix);
 				if (!$new_id)
 				{
@@ -306,7 +308,7 @@ function doUpdate($argsObj,&$tprojectMgr)
 			{
 				$op->msg = sprintf(lang_get('test_project_update_failed'),$argsObj->tprojectName);
 				if( $tprojectMgr->update($argsObj->tprojectID,$argsObj->tprojectName,$argsObj->color,
-				                         $argsObj->optReq,$argsObj->notes,
+				                         $argsObj->optReq, $argsObj->optPriority, $argsObj->notes,
 				                         $argsObj->active,$argsObj->tcasePrefix) )
 				{
 				  $op->msg = sprintf(lang_get('test_project_updated'),$argsObj->tprojectName);
@@ -339,6 +341,7 @@ function edit(&$argsObj,&$tprojectMgr)
 	  $argsObj->color=$tprojectInfo['color'];
 	  $argsObj->notes=$tprojectInfo['notes'];
 	  $argsObj->optReq=$tprojectInfo['option_reqs'];
+	  $argsObj->optPriority=$tprojectInfo['option_priority'];
 	  $argsObj->active=$tprojectInfo['active'];
 	  $argsObj->tcasePrefix=$tprojectInfo['tc_prefix'];
 	  

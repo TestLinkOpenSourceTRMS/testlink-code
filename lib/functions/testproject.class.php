@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2008/01/13 15:29:46 $  $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2008/01/14 02:25:31 $  $Author: havlat $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage tc_prefix field
@@ -101,17 +101,18 @@ class testproject extends tlObjectWithAttachments
  *                         added new optional argument active
  *
  */
-function create($name,$color,$optReq,$notes,$active=1,$tcasePrefix='')
+function create($name,$color,$optReq,$optPriority,$notes,$active=1,$tcasePrefix='')
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
 	
 	$tcprefix=$this->formatTcPrefix($tcasePrefix);
 	
-	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,notes,active,tc_prefix) " .
+	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority,notes,active,prefix) " .
 	       " VALUES (" . $root_node_id . ", '" .	
 	                     $this->db->prepare_string($color) . "'," . 
-	                     $optReq . ",'" .
+	                     $optReq . "," .
+	                     $optPriority . ",'" .
 		                   $this->db->prepare_string($notes) . "'," . 
 		                   $active . ",'" .
 		                   $this->db->prepare_string($tcprefix) . "')";
@@ -143,7 +144,7 @@ function create($name,$color,$optReq,$notes,$active=1,$tcasePrefix='')
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
-function update($id, $name, $color, $opt_req,$notes,$active=null,$tcasePrefix=null)
+function update($id, $name, $color, $opt_req, $optPriority, $notes,$active=null,$tcasePrefix=null)
 {
   $status_ok=1;
 	
@@ -160,11 +161,12 @@ function update($id, $name, $color, $opt_req,$notes,$active=null,$tcasePrefix=nu
 	if( !is_null($tcasePrefix) )
 	{
 	    $tcprefix=$this->formatTcPrefix($tcasePrefix);
-	    $add_upd .=",tc_prefix='" . $this->db->prepare_string($tcprefix) . "'" ;
+	    $add_upd .=",prefix='" . $this->db->prepare_string($tcprefix) . "'" ;
 	}
 	
 	$sql = " UPDATE {$this->object_table} SET color='" . $this->db->prepare_string($color) . "', ".
 			" option_reqs=" .  $opt_req . ", " .
+			" option_priority=" .  $optPriority . ", " .
 			" notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
 			" WHERE id=" . $id;
 			
@@ -182,6 +184,7 @@ function update($id, $name, $color, $opt_req,$notes,$active=null,$tcasePrefix=nu
 		$_SESSION['testprojectColor'] = $color;
 		$_SESSION['testprojectName'] = $name;
 		$_SESSION['testprojectOptReqs'] = $opt_req;
+		$_SESSION['testprojectOptReqs'] = $optPriority;
 	}
 	else
 	{
@@ -648,15 +651,11 @@ function count_testcases($id)
   function getTestCasePrefix($id)
   {
   	$ret=null;
-  	$sql = " SELECT testprojects.tc_prefix ".
+  	$sql = " SELECT testprojects.prefix ".
   	       " FROM {$this->object_table} " .
   	       " WHERE testprojects.id = {$id}";
-  	$recordset = $this->db->get_recordset($sql);
-  	
-  	if(!is_null($recordset) )
-  	{
-  	    $ret=$recordset[0]['tc_prefix'];  
-  	}
+	$ret = $this->db->fetchOneValue($sql);
+
   	return ($ret);
   }
 
@@ -1225,16 +1224,6 @@ function delete($id)
 			 'info_deleting_testplan_tcversions_fails',
 		);
 
-		$a_sql[] = array(
-			"DELETE FROM risk_assignments WHERE testplan_id IN ({$tpIDs})",
-			 'info_deleting_testplan_risk_assignments_fails',
-		);
-		
-		$a_sql[] = array(
-			"DELETE FROM priorities WHERE testplan_id IN ({$tpIDs})",
-			 'info_deleting_testplan_risk_assignments_fails',
-		);
-		
 		$a_sql[] = array(
 			"DELETE FROM milestones WHERE testplan_id IN ({$tpIDs})",
 			 'info_deleting_testplan_milestones_fails',

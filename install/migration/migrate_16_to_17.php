@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.20 2007/08/24 22:53:37 asielb Exp $ 
+$Id: migrate_16_to_17.php,v 1.21 2008/01/14 18:13:54 asielb Exp $ 
 
 20070515 - franciscom - 
 improved controls on source db version
@@ -18,8 +18,16 @@ require_once("migrate_16_to_17_functions.php");
 require_once("Migrator.php");
 
 define('ADODB_ERROR_LOG_TYPE',3); 
-// TODO: this log needs to work on Linux too!
-define('ADODB_ERROR_LOG_DEST','C:/errors.log'); 
+
+// 20080114 - asielb - fix for bug 1244
+if (PHP_OS == "Windows")
+{
+	define('ADODB_ERROR_LOG_DEST','C:/testlink_errors.log');
+}
+else
+{
+	 define('ADODB_ERROR_LOG_DEST','/tmp/testlink_errors.log');
+}
 require_once(dirname(__FILE__) . '/../../third_party/adodb/adodb-errorhandler.inc.php'); 
 
 

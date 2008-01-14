@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/14 08:06:33 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/14 19:34:26 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -278,7 +278,8 @@ function doCreate($argsObj,&$tprojectMgr)
 		if($check_op['status_ok'])
 		{
 				$new_id=$tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
-				                             $argsObj->optReq, $argsObj->optPriority, $argsObj->notes,
+				                             $argsObj->optReq, $argsObj->optPriority, 
+				                             $argsObj->notes,
 				                             $argsObj->active,$argsObj->tcasePrefix);
 				if (!$new_id)
 				{

@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.25 2008/01/14 07:59:59 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.26 2008/01/14 19:29:20 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#   20080114 - franciscom - usergroup_id -> id
+#
 #		20080114 - mht - changes for priorities (add 2 + delete 1 table)
 #				 add table for templates
 #				 add table for usergroups
@@ -452,7 +454,7 @@ CREATE TABLE `text_templates` (
   UNIQUE KEY `idx_text_templates` (`tpl_type`,`title`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
-/* mht - 0000537: Dsicussion: Priority = Urgency + Importance */
+/* mht - 0000537: Discussion: Priority = Urgency + Importance */
 CREATE TABLE `test_urgency` (
   `node_id` int(10) unsigned NOT NULL,
   `testplan_id` int(10) unsigned NOT NULL,
@@ -462,13 +464,15 @@ CREATE TABLE `test_urgency` (
 
 /* mht - group users for large companies */
 CREATE TABLE `user_group` (
-  `usergroup_id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` text,
+  PRIMARY KEY  (`id`),
   UNIQUE KEY (`title`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_group_assign` (
   `usergroup_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL
+  `user_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY `idx_user_group_assign` (`usergroup_id`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

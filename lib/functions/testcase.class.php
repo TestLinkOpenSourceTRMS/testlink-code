@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.83 $
- * @modified $Date: 2008/01/14 08:07:34 $ $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2008/01/14 19:34:26 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080103 - franciscom - changes in:  get_last_execution()
@@ -383,8 +383,6 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
               $msg_result='', $refresh_tree='yes', $user_feedback='', $disable_edit=0)
 {
   
-  echo "<pre>debug 20080113 - \$id - " . __FUNCTION__ . " --- "; print_r($id); echo "</pre>";
-  
   $req_mgr = new requirement_mgr($this->db);
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
@@ -457,8 +455,6 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 		}
 		$smarty->assign('cf',$cf_smarty);	
  	}
- 	
- 	echo "<pre>debug 20080113 - \$tc_current_version - " . __FUNCTION__ . " --- "; print_r($tc_current_version); echo "</pre>";
  	
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('user_feedback',$user_feedback);

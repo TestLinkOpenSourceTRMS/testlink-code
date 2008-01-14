@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/02 17:16:02 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/14 22:53:26 $ $Author: asielb $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -30,6 +30,7 @@ $tplan_name = $_SESSION['testPlanName'];
 $the_builds = $tplan_mgr->get_builds($tplan_id);
 
 $smarty = new TLSmarty();
+$smarty->assign('api_ui_show', $g_api_ui_show);
 $smarty->assign('user_feedback',null); // disable notice
 $smarty->assign('tplan_name', $tplan_name);
 $smarty->assign('tplan_id', $tplan_id);

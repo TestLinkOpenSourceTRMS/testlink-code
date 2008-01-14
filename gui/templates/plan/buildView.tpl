@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.3 2008/01/10 07:50:57 franciscom Exp $
+$Id: buildView.tpl,v 1.4 2008/01/14 22:53:26 asielb Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -26,7 +26,7 @@ Rev:
           s='title_build_2,test_plan,th_title,th_description,th_active,
              th_open,th_delete,alt_edit_build,alt_active_build,
              alt_open_build,alt_delete_build,no_builds,btn_build_create,
-             builds_description,sort_table_by_column'}
+             builds_description,sort_table_by_column,th_id'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -49,6 +49,9 @@ var del_action=fRoot+'{$deleteAction}';
   {if $the_builds ne ""}
   	<table class="simple  sortable" style="width:80%">
   		<tr>
+  			{if $api_ui_show eq 1}
+  				<th class="{$noSortableColumnClass}">{$labels.th_id}</th>
+  			{/if}
   			<th>{$sortHintIcon}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
@@ -57,6 +60,11 @@ var del_action=fRoot+'{$deleteAction}';
   		</tr>
   		{foreach item=build from=$the_builds}
   			<tr>
+  				{if $api_ui_show eq 1}
+  					<td>
+  						{$build.id}
+  					</td>
+  				{/if}
   				<td><a href="{$editAction}{$build.id}"
   				       title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}

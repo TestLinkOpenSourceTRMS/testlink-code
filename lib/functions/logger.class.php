@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/01/15 21:02:16 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/15 21:28:08 $
  *
  * @author Martin Havlat
  *
@@ -61,7 +61,7 @@ class tlLogger extends tlObject
 	{
 		foreach($this->transactions as $name => $t)
 		{
-			$t->close();
+			$this->endTransaction($name);
 		}
 		$this->transactions = null;
 		parent::__destruct();
@@ -162,6 +162,7 @@ class tlTransaction extends tlObject
 	protected $userID = null;
 	protected $sessionID = null;
 	protected $events = null;
+	public $duration = null;
 	
 	public function __construct(&$logger,$entryPoint,$name,$userID,$sessionID)
 	{
@@ -173,6 +174,7 @@ class tlTransaction extends tlObject
 		$this->userID = $userID;
 		$this->sessionID = $sessionID;
 		$this->writeTransaction($this);
+		tlTimingStart($name);
 	}
 	public function __destruct()
 	{
@@ -184,6 +186,8 @@ class tlTransaction extends tlObject
 	public function close()
 	{
 		$this->endDate = gmmktime();
+		tlTimingStop($this->name);
+		$this->duration = tlTimingCurrent($this->name);
 		$this->writeTransaction($this);
 		$this->name = null;
 	}
@@ -270,7 +274,8 @@ class tlDBLogger extends tlObjectWithDB
 class tlFileLogger extends tlObject
 {
 	static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
-	static protected $transactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startDate][%endDate]\n";
+	static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startDate]\n";
+	static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startDate][%endDate][took %duration secs]\n";
 	protected $logLevelFilter = null;
 	
 		public function __construct()
@@ -283,16 +288,18 @@ class tlFileLogger extends tlObject
 		if (!$this->logLevelFilter)
 			return;
 		//build the logfile entry	
-		$subjects = array("%prefix","%transactionID","%name","%entryPoint","%startDate","%endDate");
+		$subjects = array("%prefix","%transactionID","%name","%entryPoint","%startDate","%endDate","%duration");
 		$bFinished = $t->endDate ? 1 : 0; 
+		$formatString = $bFinished ? self::$closedTransactionFormatString : self::$openTransactionFormatString;
 		$replacements = array($bFinished ? "<<" :">>",
 							$t->getObjectID(),
 							$t->name,
 							$t->entryPoint,
 							gmdate("y/M/j H:i:s",$t->startDate),
-							$bFinished ? gmdate("y/M/j H:i:s",$t->endDate) : null
+							$bFinished ? gmdate("y/M/j H:i:s",$t->endDate) : null,
+							$t->duration,
 						);
-		$line = str_replace($subjects,$replacements,self::$transactionFormatString);
+		$line = str_replace($subjects,$replacements,$formatString);
 		return $this->writeEntry(tlLogger::getLogFileName(),$line);
 	}
 	public function writeEvent(&$e)

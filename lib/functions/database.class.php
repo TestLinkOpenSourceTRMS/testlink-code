@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/01/15 21:28:08 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -117,7 +117,7 @@ class database
 		//build loginfo
 		$logLevel = 'DEBUG';
 		$message = "SQL [". $this->nQuery . "] executed [took {$t_elapsed} secs]" .
-		           "[all took {$this->overallDuration} secs]:\n\t" . $p_query;
+		           "[all took {$this->overallDuration} secs]:\n\t\t" . $p_query;
 		
 		$this->overallDuration += $t_elapsed;	
 		if (!$t_result)

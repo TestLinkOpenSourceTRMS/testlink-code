@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/14 19:34:26 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/15 18:31:20 $ $Author: asielb $
  *
  * @author Martin Havlat
  *
@@ -177,6 +177,7 @@ switch($args->doAction)
     default:
         $of->Value = $args->notes;
         
+        $smarty->assign('api_ui_show',$g_api_ui_show);
         $smarty->assign('doActionValue',$ui['doActionValue']);
         $smarty->assign('buttonValue',$ui['buttonValue']);
         $smarty->assign('caption',$ui['caption']);

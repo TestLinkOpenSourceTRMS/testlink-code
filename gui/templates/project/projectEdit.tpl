@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.5 2008/01/14 08:08:08 franciscom Exp $
+$Id: projectEdit.tpl,v 1.6 2008/01/15 18:31:20 asielb Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -26,7 +26,7 @@ rev:
 
 {lang_get var="labels" s='caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
                           title_testproject_management,notes,color,enable_priority,
-                          enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del'} 
+                          enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'} 
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -86,6 +86,12 @@ function validateForm(f)
 		<input type="hidden" name="tprojectID" value="{$id}" />
 		<table class="common" width="80%">
 			<caption>{$caption}{$name|escape}</caption>
+			{if $api_ui_show eq 1}
+				<tr>					
+					<td>{$labels.th_id}</td>
+					<td>{$id}</td>
+				</tr>
+			{/if}
 			<tr>
 				<td>{$labels.name}</td>
 				<td><input type="text" name="tprojectName" 

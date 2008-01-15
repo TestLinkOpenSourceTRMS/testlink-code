@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/01/12 19:16:00 $ $Author: schlundus $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/01/15 21:02:17 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -950,7 +950,7 @@ $TLS_btn_mv_cp = "Verschieben / Kopieren";
 $TLS_btn_new_version = "Neue Version erstellen";
 $TLS_can_not_edit_tc = "Sie können diese Version nicht verändern, da Sie schon ausgeführt wurde!";
 $TLS_deactivate_this_tcversion = "Version deaktivieren";
-$TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Testpläne nicht verfügbar";
+$TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Testplänen nicht verfügbar";
 
 
 

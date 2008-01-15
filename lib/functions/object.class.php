@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.16 2008/01/04 20:30:50 schlundus Exp $
-* @modified $Date: 2008/01/04 20:30:50 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.17 2008/01/15 21:02:16 schlundus Exp $
+* @modified $Date: 2008/01/15 21:02:16 $ by $Author: schlundus $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, 
@@ -43,7 +43,7 @@ abstract class tlObject implements iSerialization
 	/* standard constructor, set's the object id */
 	public function __construct()
 	{
-		$this->objectID = uniqid("tl", true);
+		$this->objectID = str_replace(".","",uniqid("", true));
 		
 		/*
 			Any supported import/Export Serialization Interfaces must be prefixed with iSerializationTo 
@@ -70,6 +70,10 @@ abstract class tlObject implements iSerialization
 			}
 		}
 		$this->getSupportedSerializationFormatDescriptions();
+	}
+	public function getObjectID()
+	{	
+		return $this->objectID;
 	}
 	/* standard destructor */
 	public function __destruct()

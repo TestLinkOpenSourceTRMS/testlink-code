@@ -1,52 +1,5 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *
- * Filename $RCSfile: logging.inc.php,v $
- *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/01/08 19:50:44 $
- *
- * @author Martin Havlat
- *
- * Log Functions
- *
- * A great way to debug is through logging. It's even easier if you can leave 
- * the log messages through your code and turn them on and off with a single command. 
- * To facilitate this we will create a number of logging functions.
- *
- * @author Andreas Morsing: added new loglevel for inlining the log messages 
-**/
-/** Set default logging level */
-// 20061203 - franciscom
-if( !defined('TL_LOG_LEVEL_DEFAULT') )
-{
-  define('TL_LOG_LEVEL_DEFAULT','NONE');
-}
-tlLogSetLevel(TL_LOG_LEVEL_DEFAULT);
-
-$tl_log_levels = array(
-    'NONE'  => 0,
-    'ERROR' => 1,
-    'INFO'  => 2,
-    'DEBUG' => 3,
-    'EXTENDED' => 4,
-	);
-
-/**
-* There are 4 logging levels available. Log messages will only be displayed 
-* if they are at a level less verbose than that currently set. So, we can turn 
-* on logging with the following command:
-*
-*    tlLogSetLevel('INFO');
-*/
-function tlLogSetLevel ($level = ERROR) 
-{
-    global $tl_log_level;
-    $tl_log_level = $level;
-}
-
-/**
 * Now any log messages from the levels ERROR or INFO will be recorded. 
 * DEBUG messages will be ignored. We can have as many log entries as we like. 
 * They take the form:
@@ -66,19 +19,14 @@ function tlLogSetLevel ($level = ERROR)
 */
 function tLog ($message, $level = 'DEBUG') 
 {
-    global $tl_log_level, $tl_log_levels;
-    if ($tl_log_levels[$tl_log_level] < $tl_log_levels[$level])
-        return false;
-    else
-	{
-		$sID = isset($_SESSION) ? session_id() : "<nosession>";
-        $fd = fopen(tlGetLogFileName(),'a+');
-		if ($fd)
-		{
-			$userName = isset($_SESSION['currentUser']->login) ? $_SESSION['currentUser']->login : "<unknown>";
-	    	fputs($fd,'['.date("y/M/j H:i:s"). ']['. $level . '][' . $_SERVER['SCRIPT_NAME'] . ']['. $userName .'][' . $sID . "]\n\t". $message. "\n");
-	    	fclose($fd);
-		}
+	global $g_tlLogger;
+	$t = $g_tlLogger->getTransaction();
+	//to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
+	$logLevel = is_string($level) ? tlLogger::$revertedLogLevels[$level] : $level;
+	$t->add($logLevel,$message);
+	
+	/*
+		//SCHLUNDUS: could be a special "to page" logger?
 		$bExtendedLogLevel = ($tl_log_levels[$tl_log_level] >= $tl_log_levels['EXTENDED']);
 		if ($bExtendedLogLevel)
 		{
@@ -94,33 +42,8 @@ function tLog ($message, $level = 'DEBUG')
 		}
     	return true;
     }
+		*/
 }
-
-/**
- * the logfilename is dynamic and depends of the user and its session
- *
- * @return string returns the name of the logfile
- *
- * @author Andreas Morsing
- * 20050821 - scs - used directory_separator instead of slash
- **/
-function tlGetLogFileName()
-{
-	global $g_log_path; 
-	$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-		
-	return $g_log_path . DIRECTORY_SEPARATOR . 'userlog' . $uID . ".log";
-}
-/**
-* You can empty the log at any time with:
-*   tlLogReset();
-* @author Andreas Morsing - logfilenames are dynamic
-*/
-function tlLogReset() 
-{
-    @unlink(tlGetLogFileName());
-}
-
 
 /** 
 * Optimization 

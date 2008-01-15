@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/01/13 10:28:38 $ by $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/01/15 21:02:16 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -22,7 +22,7 @@ checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
 
-tLog('Login page requested by ' . $_SERVER['REMOTE_ADDR'], 'INFO');
+tLog(TLS("audit_login_page",$_SERVER['REMOTE_ADDR']),'AUDIT');
 $op = doDBConnect($db);
 if (!$op['status'])
 {
@@ -30,7 +30,7 @@ if (!$op['status'])
 	$smarty->assign('title', lang_get('fatal_page_title'));
 	$smarty->assign('content', $op['dbms_msg']);
 	$smarty->display('workAreaSimple.tpl'); 
-	tLog('Connection fail page shown.'); 
+	tLog('Connection fail page shown.','ERROR'); 
 	exit();
 }
 

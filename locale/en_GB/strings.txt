@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.245 $
- * @modified $Date: 2008/01/14 07:53:15 $ $Author: franciscom $
+ * @version $Revision: 1.246 $
+ * @modified $Date: 2008/01/15 21:02:17 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1960,4 +1960,5 @@ $TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does no
 $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
 $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
 
+$TLS_audit_login_page = "Login page requested by {%1}";
 ?>

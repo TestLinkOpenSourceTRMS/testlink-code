@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.91 $ $Author: franciscom $
- * @modified $Date: 2008/01/14 21:43:23 $
+ * @version $Revision: 1.92 $ $Author: schlundus $
+ * @modified $Date: 2008/01/15 21:02:16 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -33,7 +33,8 @@ require_once("database.class.php");
 require_once("roles.inc.php");
 
 require_once(dirname(__FILE__)."/object.class.php");
-//SCHLUNDUS: i will lated remove not necessary requires 
+require_once(dirname(__FILE__)."/metastring.class.php");
+require_once(dirname(__FILE__)."/logger.class.php");
 require_once(dirname(__FILE__)."/role.class.php");
 require_once(dirname(__FILE__)."/keyword.class.php");
 require_once(dirname(__FILE__)."/attachment.class.php");
@@ -224,7 +225,10 @@ function doSessionStart()
 */
 function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 {
+	global $g_tlLogger;
+	$g_tlLogger->endTransaction();
 	doSessionStart();
+	$g_tlLogger->startTransaction();
 	doDBConnect($db);
 	
 	setPaths();

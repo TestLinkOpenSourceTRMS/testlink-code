@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIKey.php,v 1.2 2008/01/15 20:30:40 havlat Exp $
+ * $Id: APIKey.php,v 1.3 2008/01/15 22:07:28 havlat Exp $
  * 
  * Class that deals with API keys
  */
@@ -41,7 +41,18 @@ class APIKey extends tlObjectWithDB
 		return md5($key) . "\n";
 	}
 
+	/* get a key to show */
+	public function getAPIKey($userID)
+	{
+       	$query = "SELECT script_key FROM users WHERE id=".$userID;
+       	$result = $this->db->fetchFirstRowSingleColumn($query, "id");         	
+		if (!$result)
+			$result = "N/A";
+		
+		return $result;
+	}
 }
 
+		
 
 ?>

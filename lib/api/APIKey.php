@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIKey.php,v 1.1 2008/01/12 02:39:33 asielb Exp $
+ * $Id: APIKey.php,v 1.2 2008/01/15 20:30:40 havlat Exp $
  * 
  * Class that deals with API keys
  */
@@ -19,8 +19,8 @@ class APIKey extends tlObjectWithDB
 	
 	public function addKeyForUser($userid)
 	{
-		$query = "INSERT INTO api_developer_keys(user_id, developer_key) VALUES($userid, '" . 
-					$this->generate_key() . "')"; 
+		$query = "INSERT INTO users (script_key) VALUES ('" . 
+					$this->generate_key() . "') WHERE id=".$userid; 
 		$result = $this->db->exec_query($query);
 		if ($result)
 			$this->dbID = $this->db->insert_id();
@@ -31,7 +31,7 @@ class APIKey extends tlObjectWithDB
 	/**
 	 *  very simple key generation 
 	*/
-	public function generate_key()
+	private function generate_key()
 	{
 		$key = '';
 		
@@ -40,21 +40,7 @@ class APIKey extends tlObjectWithDB
 		
 		return md5($key) . "\n";
 	}
-	
-	public static function getAPIKeys($db)
-	{
-		$query = "SELECT user_id,developer_key FROM api_developer_keys";
-		$result = $db->fetchColumnsIntoMap($query, "user_id", "developer_key");
-		// deal with the case where there are no API keys yet
-		if(sizeof($result)==0)
-		{
-			return array();
-		}
-		else
-		{
-			return $result;
-		}
-	}	
+
 }
 
 

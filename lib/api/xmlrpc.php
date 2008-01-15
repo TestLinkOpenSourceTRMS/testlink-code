@@ -1,11 +1,16 @@
 <?php
-/*
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.7 2008/01/08 07:52:54 franciscom Exp $
- */
- 
 /**
- * The Testlink API makes it possible to interact with Testlink {@link http://testlink.org} 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *  
+ * Filename $RCSfile: xmlrpc.php,v $
+ *
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/15 20:30:40 $ by $Author: havlat $
+ * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
+ * @package 	TestlinkAPI
+ * 
+ * The Testlink API makes it possible to interact with Testlink  
  * using external applications and services. This makes it possible to report test results 
  * directly from automation frameworks as well as other features.
  * 
@@ -15,13 +20,10 @@
  * @example ../sample_clients/ruby/clientSample.rb ruby client sample
  * @example ../sample_clients/python/clientSample.py python client sample
  * 
- * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
- * @package 	TestlinkAPI
- * @link        http://testlink.org/api/
- * 
  *
  * rev :
  *      20080103 - franciscom - fixed minor bugs due to refactoring
+ * 		20080115 - havlatm - 0001296: API table refactoring 
  */
 
 /** 
@@ -56,7 +58,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 	
 	private $nodes_hierarchy_table="nodes_hierarchy";
   private $node_types_table="node_types";
-  private $api_developer_keys_table="api_developer_keys";
   private $testplans_table="testplans";
   private $testprojects_table="testprojects";
   private $testsuites_table="testsuites";
@@ -707,21 +708,17 @@ class TestlinkXMLRPCServer extends IXR_Server
             return false;
         }
         else
-        {        	                		
-        	$devKey = $this->dbObj->prepare_string($devKey);
-        	$query = "SELECT id FROM {$this->api_developer_keys_table} WHERE developer_key='{$devKey}'";
-        	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
-        	if(null == $result)
+        {   
+        	$this->userID = null;
+        	$this->devKey = $this->dbObj->prepare_string($devKey);
+        	$query = "SELECT id FROM users WHERE script_key='{$this->devKey}'";
+        	$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
+        	if(null == $this->userID)
         	{
         		return false;        		
         	}
         	else
         	{
-        		$this->devKey = $devKey;
-        		// set the userID based on this valid devKey
-        		$query = "SELECT user_id FROM {$this->api_developer_keys_table} WHERE developer_key='{$devKey}'";
-        		$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "user_id");
-        		         	
         		return true;
         	}
         }                    	
@@ -1055,8 +1052,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		$this->_setArgs($args);
 		$str = " Testlink API Version: " . self::$version . " written by Asiel Brumfield\n" .
-		       " contribution by TestLink development Team \n" .
-				   "See http://testlink.org/api/ for additional information";
+		       " contribution by TestLink development Team";
 		return $str;				
 	}
 	

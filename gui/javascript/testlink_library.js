@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.47 2008/01/14 07:53:03 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.48 2008/01/15 22:07:44 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -22,6 +22,7 @@
 //
 // ----------------------------------------------------------------------------
 //
+// 20080115 - franciscom - added show_hide_column()
 // 20071118 - franciscom - requirement functions added.
 // 20071014 - franciscom - removed deleteRole_onClick(),deleteBuild_onClick()
 //                                 deleteUser_onClick()
@@ -649,3 +650,38 @@ function REQ_MGMT(id)
 }
 
 
+/*
+  function: show_hide_column
+
+  args:
+  
+  returns: 
+
+*/
+function show_hide_column(table_id,col_no) 
+{
+
+  var tbl  = document.getElementById(table_id);
+  var rows = tbl.getElementsByTagName('tr');
+
+  for (var row=0; row<rows.length;row++) {
+    if( row ==0 )
+    {
+      cellTag='th'
+    }
+    else
+    {
+      cellTag='td'
+    }
+    var cels = rows[row].getElementsByTagName(cellTag)
+    if(cels[col_no].style.display == 'none')
+    {
+        cels[col_no].style.display='block';
+    }
+    else
+    {
+       cels[col_no].style.display='none';
+    }    
+    
+  }
+}

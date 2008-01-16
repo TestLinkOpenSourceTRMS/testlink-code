@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.17 2008/01/10 07:50:58 franciscom Exp $
+$Id: inc_head.tpl,v 1.18 2008/01/16 22:09:20 havlat Exp $
 Purpose: smarty template - HTML Common Header 
 
 rev :
@@ -67,12 +67,9 @@ rev :
 	{/if}
 
   {* 20080109 - franciscom *}
-  {if $enableTableSorting == "yes"}
       {if $smarty.const.TL_SORT_TABLE_ENGINE == 'kryogenix.org'}
           <script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" language="javascript"></script>
-      {else}
       {/if}
-  {/if}
 
 
 {if $openHead == "no"} {* 'no' is default defined in config *}

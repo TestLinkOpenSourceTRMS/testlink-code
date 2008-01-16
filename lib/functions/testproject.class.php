@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2008/01/14 08:07:07 $  $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/01/16 21:48:46 $  $Author: havlat $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -101,21 +101,22 @@ class testproject extends tlObjectWithAttachments
  *                         added new optional argument active
  *
  */
-function create($name,$color,$optReq,$optPriority,$notes,$active=1,$tcasePrefix='')
+function create($name,$color,$optReq,$optPriority,$optAutomation,$notes,$active=1,$tcasePrefix='')
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
 	
 	$tcprefix=$this->formatTcPrefix($tcasePrefix);
 	
-	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority,notes,active,prefix) " .
-	       " VALUES (" . $root_node_id . ", '" .	
+	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority," .
+	       "option_automation,notes,active,prefix) VALUES (" . $root_node_id . ", '" .	
 	                     $this->db->prepare_string($color) . "'," . 
 	                     $optReq . "," .
-	                     $optPriority . ",'" .
-		                   $this->db->prepare_string($notes) . "'," . 
-		                   $active . ",'" .
-		                   $this->db->prepare_string($tcprefix) . "')";
+	                     $optPriority . "," .
+	                     $optAutomation . ",'" .
+		                 $this->db->prepare_string($notes) . "'," . 
+		                 $active . ",'" .
+		                 $this->db->prepare_string($tcprefix) . "')";
 			             
 	$result = $this->db->exec_query($sql);
 	if ($result)
@@ -144,7 +145,7 @@ function create($name,$color,$optReq,$optPriority,$notes,$active=1,$tcasePrefix=
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
-function update($id, $name, $color, $opt_req, $optPriority, $notes,$active=null,$tcasePrefix=null)
+function update($id, $name, $color, $opt_req, $optPriority, $optAutomation, $notes,$active=null,$tcasePrefix=null)
 {
   $status_ok=1;
 	
@@ -167,6 +168,7 @@ function update($id, $name, $color, $opt_req, $optPriority, $notes,$active=null,
 	$sql = " UPDATE {$this->object_table} SET color='" . $this->db->prepare_string($color) . "', ".
 			" option_reqs=" .  $opt_req . ", " .
 			" option_priority=" .  $optPriority . ", " .
+			" option_automation=" .  $optAutomation . ", " .
 			" notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
 			" WHERE id=" . $id;
 			
@@ -184,7 +186,8 @@ function update($id, $name, $color, $opt_req, $optPriority, $notes,$active=null,
 		$_SESSION['testprojectColor'] = $color;
 		$_SESSION['testprojectName'] = $name;
 		$_SESSION['testprojectOptReqs'] = $opt_req;
-		$_SESSION['testprojectOptReqs'] = $optPriority;
+		$_SESSION['testprojectOptPriority'] = $optPriority;
+		$_SESSION['testprojectOptAutomation'] = $optAutomation;
 	}
 	else
 	{

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.92 $ $Author: schlundus $
- * @modified $Date: 2008/01/15 21:02:16 $
+ * @version $Revision: 1.93 $ $Author: havlat $
+ * @modified $Date: 2008/01/16 21:55:22 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -108,6 +108,7 @@ function setSessionTestProject($tproject_info)
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
 		$_SESSION['testprojectOptReqs'] = isset($tproject_info['option_reqs']) ? $tproject_info['option_reqs'] : null;
 		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
+		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
 		
 		tLog("Product was adjusted to [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
 		tLog("Product features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
@@ -119,6 +120,7 @@ function setSessionTestProject($tproject_info)
 		unset($_SESSION['testprojectColor']);
 		unset($_SESSION['testprojectOptReqs']);
 		unset($_SESSION['testprojectOptPriority']);
+		unset($_SESSION['testprojectOptAutomation']);
 	}
 }
 

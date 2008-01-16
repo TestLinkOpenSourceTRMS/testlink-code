@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2008/01/05 22:00:51 $ by $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2008/01/16 22:46:29 $ by $Author: havlat $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -446,8 +446,12 @@ $g_role_colour = array (
 );
 
 
-$g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
-
+/** magic numbers: three levels for priority */
+$gtl_const_3levels = array(
+	1 => 'low', 
+	2 => 'medium', 
+	3 => 'high'
+);
 
 // use when componing an title using several strings
 $g_title_sep=' : ';
@@ -476,6 +480,8 @@ define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
 
 // 20071117 - franciscom
 // need ask Martin what are possible types
+// MHT: the later solution could include status: draft, valid(final,reviewed and approved), obsolete, todo, future
+//	so REQ review process could be apllied. The current solution is simple, but enough from testing point of view
 define('TL_REQ_TYPE_1', 'V');
 define('TL_REQ_TYPE_2', 'N');
 

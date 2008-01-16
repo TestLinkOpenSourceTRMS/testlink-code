@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.4 2008/01/14 22:53:26 asielb Exp $
+$Id: buildView.tpl,v 1.5 2008/01/16 07:36:45 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
 Rev:
+    20080116 - franciscom - added option to show/hide id useful for API 
+                            removed testplan id from title
     20080109 - franciscom - added sort table by JS
     20071007 - franciscom - delete on click logic refactored 
     20070921 - franciscom - BUGID  - added strip_tags|strip to notes
@@ -39,7 +41,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 <body {$body_onload}>
 
-<h1>{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan} {$tplan_id|escape}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
+<h1>{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
 
 <div class="workBack">
 {include file="inc_update.tpl" result=$sqlResult item="build"}
@@ -47,25 +49,23 @@ var del_action=fRoot+'{$deleteAction}';
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
   {if $the_builds ne ""}
-  	<table class="simple  sortable" style="width:80%">
+  	<table id="item_view" class="simple  sortable" style="width:80%">
   		<tr>
-  			{if $api_ui_show eq 1}
-  				<th class="{$noSortableColumnClass}">{$labels.th_id}</th>
-  			{/if}
+ 				<th class="{$noSortableColumnClass}" style='display:none'>{$labels.th_id}</th>
   			<th>{$sortHintIcon}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
   		</tr>
+		  {assign var="idx" value=0}
   		{foreach item=build from=$the_builds}
-  			<tr>
-  				{if $api_ui_show eq 1}
-  					<td>
-  						{$build.id}
-  					</td>
-  				{/if}
-  				<td><a href="{$editAction}{$build.id}"
+  				{assign var="idx" value=$idx+1}
+        	<tr>
+ 					<td  style='display:none'>
+ 						{$build.id}
+ 					</td>
+  				<td>{if $idx == 1}{$toogle_api_info_img}{/if}<a href="{$editAction}{$build.id}"
   				       title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none"

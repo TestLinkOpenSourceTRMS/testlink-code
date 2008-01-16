@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/01/11 09:21:10 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/01/16 07:36:56 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -123,9 +123,19 @@ class TLSmarty extends Smarty
 
     // Some common images
     $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
+    $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
+    
     $this->assign("sort_img",$sort_img);
     $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
     $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
+
+    $msg=lang_get('show_hide_api_info');    
+    $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
+                         " onclick=\"show_hide_column('item_view',0);\" " .
+                         " src=\"{$api_info_img}\" align=\"left\" />";
+
+    $this->assign("toogle_api_info_img",$toogle_api_info_img);
+ 				  
 
     // Some useful values for Sort Table Engine
     switch (TL_SORT_TABLE_ENGINE)

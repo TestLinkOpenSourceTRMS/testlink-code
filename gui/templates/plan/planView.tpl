@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.8 2008/01/15 22:09:04 franciscom Exp $ 
+$Id: planView.tpl,v 1.9 2008/01/16 07:36:45 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
      some smarty and javascript variables are created on the inc_*.tpl files.
      
 Rev:
+    20080116 - franciscom - added option to show/hide id useful for API 
     20080109 - franciscom - added sort table by JS
     20071006 - franciscom - added logic to use ext js confirm widget
      
@@ -58,9 +59,7 @@ var del_action=fRoot+'{$deleteAction}';
 {else}
 	<table id='item_view'class="simple sortable" width="95%">
 		<tr>
-			{if $api_ui_show eq 1}
-				<th class="{$noSortableColumnClass}" style='display:none'>{$labels.th_id}</th>
-			{/if}
+			<th class="{$noSortableColumnClass}" style='display:none'>{$labels.th_id}</th>
 			<th>{$sortHintIcon}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
@@ -70,11 +69,9 @@ var del_action=fRoot+'{$deleteAction}';
 		{foreach item=testplan from=$tplans}
 		{assign var="idx" value=$idx+1}
 		<tr>
-			{if $api_ui_show eq 1}
-				<td style='display:none'>
-					{$testplan.id|escape}
-				</td>
-			{/if}
+			<td style='display:none'>
+			{$testplan.id|escape}
+			</td>
 			<td>{if $idx == 1}{$toogle_api_info_img}{/if}<a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}

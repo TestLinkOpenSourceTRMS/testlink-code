@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: projectView.tpl,v 1.4 2008/01/14 19:33:11 franciscom Exp $ 
+$Id: projectView.tpl,v 1.5 2008/01/16 07:36:45 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
      some variables smarty and javascript are created on the inc_*.tpl files.
      
 Rev :
+    20080116 - franciscom - added option to show/hide id useful for API 
      
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -51,11 +52,9 @@ var del_action=fRoot+'{$deleteAction}';
 	{$labels.testproject_txt_empty_list}
 
 {else}
-	<table class="simple" width="95%">
+	<table id="item_view" class="simple" width="95%">
 		<tr>
-			{if $api_ui_show eq 1}
-				<th>{$labels.th_id}</th>
-			{/if}
+			<th style='display:none'>{$labels.th_id}</th>
 			<th>{$labels.th_name}</th>
 			<th>{$labels.th_notes}</th>
 			<th>{$labels.tcase_id_prefix}</th>
@@ -65,12 +64,12 @@ var del_action=fRoot+'{$deleteAction}';
 			<th class="icon_cell">{$labels.th_delete}</th>
 			{/if}
 		</tr>
+	  {assign var="idx" value=0}
 		{foreach item=testproject from=$tprojects}
+		{assign var="idx" value=$idx+1}
 		<tr>
-			{if $api_ui_show eq 1}
-				<td>{$testproject.id}</td>
-			{/if}
-			<td><a href="{$editAction}{$testproject.id}"> 
+			<td style="display:none;">{$testproject.id}</td>
+			<td>{if $idx == 1}{$toogle_api_info_img}{/if}<a href="{$editAction}{$testproject.id}"> 
 				     {$testproject.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{$labels.testproject_alt_edit}" 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/13 13:22:38 $ - $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/16 22:47:58 $ - $Author: havlat $
  *
  * rev :
  *       20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -173,5 +173,15 @@ function lang_ensure_loaded( $p_lang ) {
 	if ( ! isset( $g_lang_strings[ $p_lang ] ) ) {
 		lang_load( $p_lang );
 	}
+}
+
+/** localize strings in array (used for example in html_options)*/
+function localize_array( $input_array ) {
+
+	foreach ($input_array as &$value) {
+    	$value = lang_get($value);
+	}
+	
+	return $input_array;
 }
 ?>

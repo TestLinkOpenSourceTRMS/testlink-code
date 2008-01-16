@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/01/14 21:43:23 $ $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2008/01/16 22:47:58 $ $Author: havlat $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -688,14 +688,14 @@ function get_keywords_tcases($id,$keyword_id=0)
 function copy_as($id,$new_tplan_id,$tplan_name=null,
                  $tproject_id=null,$copy_options=null,$tcversion_type=null)
 {
-  $cp_options = array('copy_tcases' => 1,'copy_priorities' => 1, 
+  $cp_options = array('copy_tcases' => 1,'copy_test_urgency' => 1, 
 	                    'copy_milestones' => 1, 'copy_user_roles' => 1, 'copy_builds' => 1);
 
   $cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
-                      'copy_priorities' => 'copy_priorities', 
-	                    'copy_milestones' => 'copy_milestones', 
-	                    'copy_user_roles' => 'copy_user_roles', 
-	                    'copy_builds' => 'copy_builds');
+                      'copy_test_urgency' => 'copy_test_urgency', 
+	                  'copy_milestones' => 'copy_milestones', 
+	                  'copy_user_roles' => 'copy_user_roles', 
+	                  'copy_builds' => 'copy_builds');
   
     
   if( !is_null($copy_options) )
@@ -876,6 +876,25 @@ function copy_user_roles($id,$new_tplan_id)
 }
 
 /**
+ * Copy definition about test urgency to a new Test Plan
+ */
+function copy_test_urgency($id,$new_tplan_id)
+{
+  $sql="SELECT * FROM test_urgency WHERE testplan_id={$id} ";
+  $rs=$this->db->get_recordset($sql);
+  if(!is_null($rs))
+  {
+    foreach($rs as $pr)
+    {
+      $sql="INSERT test_urgency (urgency,node_id,testplan_id) VALUES (" .
+            $pr['urgency'] . "," . $pr['node_id'] . ",{$new_tplan_id})";
+
+      $this->db->exec_query($sql);     
+    }
+  }
+}
+
+/**
  * Gets all testplan related user assignments
  *
  * @param int $testPlanID the testplan id
@@ -888,26 +907,7 @@ function copy_user_roles($id,$new_tplan_id)
 		return $roles;
 	}
 
-// $id: source testplan id
-// $new_tplan_id: destination
-//
-// 20070310 - BUGID 731
-function copy_priorities($id,$new_tplan_id)
-{
-  $sql="SELECT * FROM priorities WHERE testplan_id={$id} ";
-  $rs=$this->db->get_recordset($sql);
-  if(!is_null($rs))
-  {
-    foreach($rs as $pr)
-    {
-      $sql="INSERT priorities (priority,risk,importance,testplan_id) " .
-           " VALUES ('" . $pr['priority'] . "','" . $pr['risk'] . "','" . 
-           $pr['importance'] . "',{$new_tplan_id})";
 
-      $this->db->exec_query($sql);     
-    }
-  }
-}
 /**
  * Inserts a testplan related role for a given user
  *
@@ -955,8 +955,7 @@ function delete($id)
   $the_sql[]="DELETE FROM milestones WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM testplan_tcversions WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM builds WHERE testplan_id={$id}";
-  $the_sql[]="DELETE FROM priorities WHERE testplan_id={$id}";
-  $the_sql[]="DELETE FROM risk_assignments WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM test_urgency WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM cfield_execution_values WHERE testplan_id={$id}";
   
   // When deleting from executions, we need to clean related tables
@@ -1396,6 +1395,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
   returns: 
 
 */
+/*
 function insert_default_priorities($tplan_id)
 {
   $risk_range=array_keys(config_get('risk'));
@@ -1411,7 +1411,7 @@ function insert_default_priorities($tplan_id)
     }  
   }
 }
-
+*/
 
 /*
   function: 
@@ -1421,6 +1421,7 @@ function insert_default_priorities($tplan_id)
   returns: 
 
 */
+/*
 function get_priority_rules($tplan_id,$do_lang_get=0)
 {
 	$sql = "SELECT * FROM priorities " .
@@ -1454,7 +1455,7 @@ function get_priority_rules($tplan_id,$do_lang_get=0)
 	
 	return($rs);
 }
-
+*/
 
 /**
  * Set rules for priority within actual Plan
@@ -1481,6 +1482,7 @@ function get_priority_rules($tplan_id,$do_lang_get=0)
  *
  *      
  */
+/*
 function set_priority_rules($tplan_id,$priority_hash)
 {
 	foreach($priority_hash as $priID => $priority)
@@ -1491,7 +1493,7 @@ function set_priority_rules($tplan_id,$priority_hash)
 			$result = $this->db->exec_query($sql);
 	}
 }
-
+*/
 
   /*
     function: filter_cf_selection

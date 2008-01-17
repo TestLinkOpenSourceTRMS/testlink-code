@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.7 2008/01/16 21:48:46 havlat Exp $
+$Id: projectEdit.tpl,v 1.8 2008/01/17 11:13:21 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
+    20080117 - franciscom - removed displayy of ID -> use projectview feature
     20080112 - franciscom - added test case prefix management
     20070725 - franciscom
     refactoring: if test project qty == 0 -> do not display the edit/delete tab
@@ -86,12 +87,6 @@ function validateForm(f)
 		<input type="hidden" name="tprojectID" value="{$id}" />
 		<table class="common" width="80%">
 			<caption>{$caption}{$name|escape}</caption>
-			{if $api_ui_show eq 1}
-				<tr>					
-					<td>{$labels.th_id}</td>
-					<td>{$id}</td>
-				</tr>
-			{/if}
 			<tr>
 				<td>{$labels.name}</td>
 				<td><input type="text" name="tprojectName" 

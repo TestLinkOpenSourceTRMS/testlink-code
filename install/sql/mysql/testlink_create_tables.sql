@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.26 2008/01/14 19:29:20 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.27 2008/01/17 09:47:40 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#   20080117 - franciscom - prefix size increased (16)
 #   20080114 - franciscom - usergroup_id -> id
 #
 #		20080114 - mht - changes for priorities (add 2 + delete 1 table)
@@ -305,7 +306,7 @@ CREATE TABLE `testprojects` (
   `active` tinyint(1) NOT NULL default '1',
   `option_reqs` tinyint(1) NOT NULL default '0',
   `option_priority` tinyint(1) NOT NULL default '0',
-  `prefix` varchar(3) NOT NULL,
+  `prefix` varchar(16) NOT NULL,
   `tc_counter` int(10) unsigned NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `id_active` (`id`,`active`),

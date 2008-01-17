@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.150 $
- * @modified $Date: 2008/01/14 21:43:23 $ by $Author: franciscom $
+ * @version $Revision: 1.151 $
+ * @modified $Date: 2008/01/17 21:22:44 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -145,7 +145,7 @@ define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"" . TL_TPL_CHARS
 $g_log_path=TL_ABS_PATH . 'logs' . DS ;
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-$g_log_level='NONE';
+$g_log_level='ERROR';
 
 // ----------------------------------------------------------------------------
 /** [Bug Tracking systems] */

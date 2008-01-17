@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/17 11:13:43 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/01/17 21:22:45 $
  *
  * @author Martin Havlat
  *
@@ -17,8 +17,6 @@
  *
  * @author Andreas Morsing: added new loglevel for inlining the log messages 
 **/
-require_once("object.class.php");
-
 class tlLogger extends tlObject
 {
 	//loglevels
@@ -40,6 +38,7 @@ class tlLogger extends tlObject
 	//all transactions, at the moment there is only one transaction supported, 
 	//could be extended if we need more
 	protected $transactions = null;
+	//the logger which are controlled
 	protected $loggers = null;
 	//log only event which pass the filter, 
 	//SCHLUNDUS: should use $g_log_level
@@ -49,42 +48,48 @@ class tlLogger extends tlObject
 	{
 		parent::__construct();
 		
-		$this->loggers[] = new tlDBLogger($db);
+		//the database logger
+		$this->loggers[] = new tlDBLogger(&$db);
+		$this->loggers[] = new tlFileLogger();
 		
-		$fileName = $this->getLogFileName();
-		$auditFileName = $this->getAuditLogFileName();
-		$this->loggers[] = new tlFileLogger($fileName,$auditFileName);
-		
-		$this->setLogLevel(self::ERROR | self::WARNING | self::AUDIT);
+		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT | self::DEBUG);
 	}
 	public function __destruct()
 	{
-		foreach($this->transactions as $name => $t)
-		{
-			$this->endTransaction($name);
-		}
-		$this->transactions = null;
 		parent::__destruct();
 	}
-	public function setLogLevel($level)
+	
+	/*
+		set the log level filter, only events which matches the filter can pass
+		can be combination of any of the tlLogger::LogLevels
+	*/
+	public function setLogLevelFilter($filter)
 	{
-		$this->logLevelFilter = $level;
+		$this->logLevelFilter = $filter;
+		//propagate the filter to the controlled loggers
 		for($i = 0;$i < sizeof($this->loggers);$i++)
 		{
-			$this->loggers[$i]->setLogLevel($level);
+			$this->loggers[$i]->setLogLevelFilter($filter);
 		}
+		return tl::OK;
 	}
+	/*
+		returns the transaction with the specified name, null else
+	*/
 	public function getTransaction($name = "DEFAULT")
 	{
 		if (isset($this->transactions[$name]))
 			return $this->transactions[$name];
 		return null;
 	}
-	
-    public static function create(&$db) 
+	/*
+		create the logger for TestLink
+	*/
+	static public function create(&$db) 
     {
         if (!isset(self::$s_instance))
 		{
+			//create the logging instance
 			self::$logLevels = array (self::DEBUG => "DEBUG",
 							 self::INFO => "INFO",
 							 self::WARNING => "WARNING",
@@ -95,25 +100,33 @@ class tlLogger extends tlObject
             $c = __CLASS__;
             self::$s_instance = new $c($db);
         }
-
         return self::$s_instance;
     }
 	
+	/*
+		starts a transaction
+	*/
 	public function startTransaction($name = "DEFAULT",$entryPoint = null,$userID = null)
 	{
+		//if we have already a transaction with this name, return
 		if (isset($transactions[$name]))
 			return tl::ERROR;
 		if (is_null($entryPoint))
 			$entryPoint = $_SERVER['SCRIPT_NAME'];
 		if (is_null($userID))
 			$userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
-		$sessionID = null;
-		if ($userID)	
-			$sessionID = session_id();
-		$this->transactions[$name] = new tlTransaction($this->loggers,$entryPoint,$name,$userID,$sessionID);
+		$sessionID = $userID ? session_id() : null;
+		
+		$t = new tlTransaction($this->db);
+		$this->transactions[$name] = &$t;
+		$t->initialize($this->loggers,$entryPoint,$name,$userID,$sessionID);
+		
 		return $this->transactions[$name];
 	}
 	
+	/*
+		ends a transaction
+	*/
 	public function endTransaction($name = "DEFAULT")
 	{
 		if (!isset($this->transactions[$name]))
@@ -121,90 +134,103 @@ class tlLogger extends tlObject
 		$this->transactions[$name]->close();
 		unset($this->transactions[$name]);
 	}
-	
-	/**
-	 * the logfilename is dynamic and depends of the user and its session
-	 *
-	 * @return string returns the name of the logfile
-	 **/
-	static public function getLogFileName()
-	{
-		global $g_log_path;
-		$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-			
-		return $g_log_path . DIRECTORY_SEPARATOR . 'userlog' . $uID . ".log";
-	}
-	static public function getAuditLogFileName()
-	{
-		global $g_log_path;
-		
-		return $g_log_path . DIRECTORY_SEPARATOR . "audits.log";
-	}
-	/*
-	* You can empty the log at any time with:
-	*  resetLogFile
-	* @author Andreas Morsing - logfilenames are dynamic
-	*/
-	static public function resetLogFile() 
-	{
-		@unlink($this->getLogFileName());
-	}
-	//todo: watch the logfile size, display warning / shrink it,....
 }
 //the transaction class
-class tlTransaction extends tlObject
+class tlTransaction extends tlDBObject
 {
+	//the attached loggers
 	protected $loggers = null;
+	
 	public $name = null;
 	public $entryPoint = null;
-	public $startDate = null;
-	public $endDate = null;
+	public $startTime = null;
+	public $endTime = null;
+	public $duration = null;
+	
 	protected $userID = null;
 	protected $sessionID = null;
 	protected $events = null;
-	public $duration = null;
 	
-	public function __construct(&$logger,$entryPoint,$name,$userID,$sessionID)
+	public function __construct(&$db)
 	{
-		parent::__construct();
+		parent::__construct($db);
+	}
+	
+	public function initialize(&$logger,$entryPoint,$name,$userID,$sessionID)
+	{
 		$this->loggers = $logger;
 		$this->name = $name;
 		$this->entryPoint = $entryPoint;
-		$this->startDate = gmmktime();
+		$this->startTime = gmmktime();
 		$this->userID = $userID;
 		$this->sessionID = $sessionID;
 		$this->writeTransaction($this);
 		tlTimingStart($name);
 	}
+	
 	public function __destruct()
 	{
 		if (!is_null($this->name))
 			$this->close();
 		parent::__destruct();			
 	}
-	
+	/* 
+		closes the transaction 
+	*/
 	public function close()
 	{
-		$this->endDate = gmmktime();
+		$this->endTime = gmmktime();
 		tlTimingStop($this->name);
 		$this->duration = tlTimingCurrent($this->name);
-		$this->writeTransaction($this);
+		$result = $this->writeTransaction($this);
 		$this->name = null;
+		
+		return $result;
 	}
 
 	//add an event to the transaction the last arguments are proposed for holding information about the objects 
 	//SCHLUNDUS: toDO
 	public function add($logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
-		//if the event has no source defined, we use the entrypoint of the transaction
-		if (is_null($source))
-			$source = str_replace(TL_BASE_HREF,'',$this->entryPoint);
-			
-		$e = new tlEvent($this->userID,$this->sessionID,$logLevel,$description,$source,$activityCode = null,$objectID = null,$objectType = null);
+		$e = new tlEvent();
+		$e->initialize($this->dbID,$this->userID,$this->sessionID,$logLevel,$description,$source,$activityCode = null,$objectID = null,$objectType = null);
 		$this->writeEvent($e);
 		$this->events[] = $e;
 			
 		return tl::OK;
+	}
+	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+	public function writeToDB(&$db)
+	{
+		if (!$this->dbID)
+		{
+			$entryPoint = $db->prepare_string($this->entryPoint);	
+			$startTime = $db->prepare_int(gmmktime());
+			$endTime = $db->prepare_int(0);
+			$userID = $db->prepare_int($this->userID);
+			$sessionID = "NULL";
+			if (!is_null($this->sessionID))
+				$sessionID = "'".$db->prepare_string($this->sessionID)."'";
+				
+			$query = "INSERT INTO transactions (entry_point,start_time,end_time,user_id,session_id) VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
+			$result = $db->exec_query($query);
+			if ($result)
+				$this->dbID = $db->insert_id('events');
+		}
+		else
+		{
+			$endTime = $db->prepare_int(gmmktime());
+			$query = "UPDATE transactions SET end_time = {$endTime} WHERE id = {$this->dbID}";
+			$result = $db->exec_query($query);
+		}
+		return $result ? tl::OK : tl::ERROR;
+	}
+	public function deleteFromDB(&$db)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 	
 	protected function writeEvent(&$e)
@@ -224,9 +250,22 @@ class tlTransaction extends tlObject
 		}
 		return tl::OK;
 	}
+	
+	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlEvent::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
+	}
+	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
 }
 //the event class
-class tlEvent extends tlObject
+class tlEvent extends tlDBObject
 {
 	public $logLevel = null;
 	public $description = null;
@@ -235,10 +274,16 @@ class tlEvent extends tlObject
 	public $userID = null;
 	public $sessionID = null;
 	
-	public function __construct($userID,$sessionID,$logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
+	public function __construct($dbID = null)
 	{
-		parent::__construct();
+		parent::__construct($dbID);
+	}
+	
+	public function initialize($transactionID,$userID,$sessionID,$logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
+	{
 		$this->timestamp = gmmktime();
+
+		$this->transactionID = $transactionID;
 		$this->userID = $userID;
 		$this->sessionID = $sessionID;
 		$this->logLevel = $logLevel;
@@ -248,12 +293,61 @@ class tlEvent extends tlObject
 		$this->objectID = $objectID;
 		$this->objectType = $objectType;
 	}
+	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+	public function writeToDB(&$db)
+	{
+		if (!$this->dbID)
+		{
+			$logLevel = $db->prepare_int($this->logLevel);
+			//this event logger supports tlMetaString and normal strings
+			if (is_object($this->description))
+				$description = $this->description->serialize();
+			else
+				$description = $this->description;
+			
+			$description = $db->prepare_string($description);
+			$source = "NULL";
+			if (!is_null($this->source))
+				$source = "'".$db->prepare_string($this->source)."'";
+				
+			$firedAt = $db->prepare_int($this->timestamp);
+			$transactionID = $db->prepare_int($this->transactionID);
+			
+			$query = "INSERT INTO events (transaction_id,log_level,description,source,fired_at) VALUES ({$transactionID},{$logLevel},'{$description}',{$source},{$firedAt})";
+			$result = $db->exec_query($query);
+			if ($result)
+				$this->dbID = $db->insert_id('events');
+		}
+	}
+	public function deleteFromDB(&$db)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlEvent::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
+	}
+	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+	
 }
 
 //class for logging events to datebase event tables 
 //SCHLUNDUS: toDO
 class tlDBLogger extends tlObjectWithDB
 {
+	protected $logLevelFilter = null;
+	protected $pendingTransaction = null;
+	
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
@@ -261,24 +355,72 @@ class tlDBLogger extends tlObjectWithDB
 	
 	public function writeTransaction(&$t)
 	{
-	
+		if (!$this->logLevelFilter)
+			return;
+		if ($this->checkDBConnection() < tl::OK)
+			return tl::ERROR;
+		//if we get a closed transaction without a dbID then the transaction wasn't stored
+		//into the db, so we can also ignore this write
+		if ($t->endTime)
+		{
+			$this->pendingTransaction = null;
+			if ($t->dbID)
+				$t->writeToDb($this->db);
+			return tl::OK;
+		}
+		else
+		{
+			//the db logger only writes transaction if they have at least one event which should be logged
+			//so we store the transaction for later usage
+			$this->pendingTransaction = &$t;	
+		}
+		return tl::OK;	
 	}
 	public function writeEvent(&$e)
 	{
+		if (!($e->logLevel & $this->logLevelFilter))
+			return;	
+		if ($this->checkDBConnection() < tl::OK)
+			return tl::ERROR;
+		//if we have a pending transaction so we could write it now
+		if ($this->pendingTransaction)
+		{
+			$this->pendingTransaction->writeToDb($this->db);	
+			$e->transactionID = $this->pendingTransaction->dbID;
+			$this->pendingTransaction = null;
+		}
+		
+		return $e->writeToDb($this->db);
 	}
-	public function setLogLevel($level)
+	public function setLogLevelFilter($filter)
 	{
+		//we should never log DEBUG to db
+		$this->logLevelFilter = $filter ^ tlLogger::DEBUG;
 	}
+	public function checkDBConnection()
+	{
+		//check if the DB connection is still valid before writing log entries and try to reattach
+		if (!$this->db)
+		{
+			global $db;
+			if ($db)
+				$this->db = &$db;
+		}
+		if (!$this->db || !$this->db->db->isConnected())
+			return tl::ERROR;
+		return tl::OK;
+	}
+	
 }
 //class for logging events to file
 class tlFileLogger extends tlObject
 {
 	static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
-	static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startDate]\n";
-	static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startDate][%endDate][took %duration secs]\n";
+	static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime]\n";
+	static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime][%endTime][took %duration secs]\n";
 	protected $logLevelFilter = null;
 	
-		public function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}
@@ -288,19 +430,19 @@ class tlFileLogger extends tlObject
 		if (!$this->logLevelFilter)
 			return;
 		//build the logfile entry	
-		$subjects = array("%prefix","%transactionID","%name","%entryPoint","%startDate","%endDate","%duration");
-		$bFinished = $t->endDate ? 1 : 0; 
+		$subjects = array("%prefix","%transactionID","%name","%entryPoint","%startTime","%endTime","%duration");
+		$bFinished = $t->endTime ? 1 : 0; 
 		$formatString = $bFinished ? self::$closedTransactionFormatString : self::$openTransactionFormatString;
 		$replacements = array($bFinished ? "<<" :">>",
 							$t->getObjectID(),
 							$t->name,
 							$t->entryPoint,
-							gmdate("y/M/j H:i:s",$t->startDate),
-							$bFinished ? gmdate("y/M/j H:i:s",$t->endDate) : null,
+							gmdate("y/M/j H:i:s",$t->startTime),
+							$bFinished ? gmdate("y/M/j H:i:s",$t->endTime) : null,
 							$t->duration,
 						);
 		$line = str_replace($subjects,$replacements,$formatString);
-		return $this->writeEntry(tlLogger::getLogFileName(),$line);
+		return $this->writeEntry(self::getLogFileName(),$line);
 	}
 	public function writeEvent(&$e)
 	{
@@ -320,10 +462,10 @@ class tlFileLogger extends tlObject
 								$e->sessionID ? $e->sessionID : "<nosession>");
 		$line = str_replace($subjects,$replacements,self::$eventFormatString);
 		
-		$this->writeEntry(tlLogger::getLogFileName(),$line);
+		$this->writeEntry(self::getLogFileName(),$line);
 		//audits are also logged to a global audits logfile
 		if ($e->logLevel == tlLogger::AUDIT)
-			$this->writeEntry(tlLogger::getAuditLogFileName(),$line);
+			$this->writeEntry(self::getAuditLogFileName(),$line);
 	}
 	
 	protected function writeEntry($fileName,$line)
@@ -336,10 +478,45 @@ class tlFileLogger extends tlObject
 		}
 	}
 	
-	public function setLogLevel($level)
+	public function setLogLevelFilter($filter)
 	{
-		$this->logLevelFilter = $level;
+		$this->logLevelFilter = $filter;
 	}
+	
+		
+	/**
+	 * the logfilename is dynamic and depends of the user and its session
+	 *
+	 * @return string returns the name of the logfile
+	 **/
+	static public function getLogFileName()
+	{
+		global $g_log_path;
+		$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+			
+		return $g_log_path . DIRECTORY_SEPARATOR . 'userlog' . $uID . ".log";
+	}
+	/**
+	 * get the file which should be used audit logging
+	 *
+	 * @return string returns the name of the logfile
+	 **/
+	static public function getAuditLogFileName()
+	{
+		global $g_log_path;
+		
+		return $g_log_path . DIRECTORY_SEPARATOR . "audits.log";
+	}
+	/*
+	* You can empty the log at any time with:
+	*  resetLogFile
+	* @author Andreas Morsing - logfilenames are dynamic
+	*/
+	static public function resetLogFile() 
+	{
+		@unlink($this->getLogFileName());
+	}
+	//todo: watch the logfile size, display warning / shrink it,....
 }
 
 //SCHLUNDUS: idea of a debug "to screen logger", to be defined,
@@ -350,4 +527,13 @@ class tlHTMLLogger
 //create the global TestLink Logger, and open the initial default transaction
 $g_tlLogger = tlLogger::create($db);
 $g_tlLogger->startTransaction();
+
+//we need a save way to shutdown the logger, or the current transaction will not be closed
+register_shutdown_function("shutdownLogger");
+function shutdownLogger()
+{
+	global $g_tlLogger;
+	if ($g_tlLogger)
+		$g_tlLogger->endTransaction();
+}
 ?>

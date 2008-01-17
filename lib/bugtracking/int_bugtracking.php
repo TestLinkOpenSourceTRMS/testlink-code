@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/01/17 21:22:45 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -294,14 +294,8 @@ class bugtrackingInterface
 	**/
 	function checkBugID_existence($id)
 	{
-	  $status_ok=1;    
-  	return $status_ok;
+		return 1;
 	}	
-	
-	
-	
-	
-	
 }	
 				
 //DONT TOUCH ANYTHING BELOW THIS NOTICE!				

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/01/15 21:28:08 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -127,7 +127,7 @@ class database
 			$message .= "\nQuery failed: errorcode[" . $ec . "]". "\n\terrormsg:".$emsg;
 			$logLevel = 'ERROR';
 		}
-		tLog($message,$logLevel);
+		tLog($message,$logLevel,"DATABASE");
 		array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 
 		if ( !$t_result ) {
@@ -248,10 +248,13 @@ class database
 	# --------------------
 	# prepare a string before DB insertion
 	# 20051226 - fm
-	function prepare_string( $p_string ) {
-  	$t_escaped = $this->db->qstr( $p_string, false );
-  	
-  	// from second char(1) to one before last(-1)
+	function prepare_string( $p_string )
+	{
+		if (is_null($p_string))
+			return '';
+			
+		$t_escaped = $this->db->qstr( $p_string, false );
+		// from second char(1) to one before last(-1)
 		return(substr($t_escaped,1,-1));
 	}
 

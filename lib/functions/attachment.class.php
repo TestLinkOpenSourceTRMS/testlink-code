@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/04 21:03:01 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -206,12 +206,12 @@ class tlAttachment extends tlDBObject
 	
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return self::handleNotImplementedMethod("getByIDs");
+		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 	
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return self::handleNotImplementedMethod(__CLASS__.".getAll");
+		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 };
 

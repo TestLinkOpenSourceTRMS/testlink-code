@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.12 2008/01/04 20:31:21 franciscom Exp $
-* @modified $Date: 2008/01/04 20:31:21 $ by $Author: franciscom $
+* @version $Id: keyword.class.php,v 1.13 2008/01/17 21:22:45 schlundus Exp $
+* @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -146,11 +146,11 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	}
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return self::handleNotImplementedMethod("getByIDs");
+		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return self::handleNotImplementedMethod(__CLASS__.".getAll");
+		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 
 	//END interface iDBSerialization

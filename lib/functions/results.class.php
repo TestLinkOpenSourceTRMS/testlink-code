@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+ * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -204,7 +204,7 @@ class results
 
 		// build suiteStructure and flatArray
 		if (($this->suiteStructure == null) && ($this->flatArray == null) && ($this->linked_tcversions == null)){
-		    $this->suiteStructure = $this->generateExecTree($keywordId, $owner);
+		    $this->suiteStructure = $this->generateExecTree($db,$keywordId, $owner);
 		}
 		
 		// KL - if no builds are specified, no need to execute the following block of code
@@ -1085,7 +1085,7 @@ class results
 	*	suite[5] = array() of child suites or null 
 	*
 	*/
-	private function generateExecTree($keyword_id = 0, $owner = null) {
+	private function generateExecTree(&$db,$keyword_id = 0, $owner = null) {
 	  
 	  $RECURSIVE_MODE=true;
 		$tplan_mgr = $this->tp;

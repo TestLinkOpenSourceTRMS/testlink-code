@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.26 2008/01/14 08:08:18 franciscom Exp $
+ * $Id: searchData.php,v 1.27 2008/01/17 21:22:45 schlundus Exp $
  * Purpose:  This page presents the search results. 
 **/
 require('../../config.inc.php');
@@ -122,8 +122,6 @@ if(count($map))
 }
 else
 {
-  echo 'DDD';
-  die();
 	$the_tpl = config_get('tpl');
 	$smarty->display($template_dir . $the_tpl['tcView']);
 }

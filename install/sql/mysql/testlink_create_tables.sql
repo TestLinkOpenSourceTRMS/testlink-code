@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.27 2008/01/17 09:47:40 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.28 2008/01/17 21:23:26 schlundus Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#	20080117 - schlundus - added table for events and transactions
 #   20080117 - franciscom - prefix size increased (16)
 #   20080114 - franciscom - usergroup_id -> id
 #
@@ -103,6 +104,15 @@ CREATE TABLE `db_version` (
   `notes` text
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE  `events` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `transaction_id` int(10) unsigned NOT NULL default '0',
+  `log_level` smallint(5) unsigned NOT NULL default '0',
+  `source` varchar(45) default NULL,
+  `description` text NOT NULL,
+  `fired_at` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `execution_bugs` (
   `execution_id` int(10) unsigned NOT NULL default '0',
@@ -317,6 +327,16 @@ CREATE TABLE `testprojects` (
 CREATE TABLE `testsuites` (
   `id` int(10) unsigned NOT NULL,
   `details` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `transactions` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `entry_point` varchar(45) NOT NULL default '',
+  `start_time` int(10) unsigned NOT NULL default '0',
+  `end_time` int(10) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `session_id` varchar(45) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

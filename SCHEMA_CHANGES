@@ -2,6 +2,8 @@ Schema Changes on TL 1.7.x / 1.8.x
 
 TL 1.8.0 development - Database version DB 1.2 - 20080102
 new tables: api_developer_keys
+			events
+			transactions
 table: executions
        added field execution_type
        

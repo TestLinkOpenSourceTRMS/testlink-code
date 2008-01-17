@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.93 $ $Author: havlat $
- * @modified $Date: 2008/01/16 21:55:22 $
+ * @version $Revision: 1.94 $ $Author: schlundus $
+ * @modified $Date: 2008/01/17 21:22:45 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -94,7 +94,11 @@ function doDBConnect(&$db)
 			}
 		}
 	}
-
+	//if we establish a DB connection, we reopen the session, to attach the db connection
+	global $g_tlLogger;
+	$g_tlLogger->endTransaction();
+	$g_tlLogger->startTransaction();
+	
  	return $result;
 }
 
@@ -227,10 +231,7 @@ function doSessionStart()
 */
 function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 {
-	global $g_tlLogger;
-	$g_tlLogger->endTransaction();
 	doSessionStart();
-	$g_tlLogger->startTransaction();
 	doDBConnect($db);
 	
 	setPaths();

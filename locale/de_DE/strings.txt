@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/01/15 21:02:17 $ $Author: schlundus $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/01/17 21:22:45 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1521,7 +1521,7 @@ $TLS_kw_update_fails = "Das Aktualisieren schlug fehl";
 
 
 // lib/keywords/keywordsAssign.php
-$TLS_assigned_kword = "Zugewiesende Stichwörter";
+$TLS_assigned_kword = "Zugewiesene Stichwörter";
 $TLS_available_kword = "Verfügbare Stichwörter";
 
 

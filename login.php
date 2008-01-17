@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/01/15 21:02:16 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -21,9 +21,9 @@ require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
+$op = doDBConnect($db);
 
 tLog(TLS("audit_login_page",$_SERVER['REMOTE_ADDR']),'AUDIT');
-$op = doDBConnect($db);
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
@@ -33,7 +33,6 @@ if (!$op['status'])
 	tLog('Connection fail page shown.','ERROR'); 
 	exit();
 }
-
 $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 $reqURI = isset($_GET['req']) ? $_GET['req'] : null;
@@ -64,6 +63,8 @@ switch($note)
 	default:
 		break;
 }
+
+
 
 $securityNotes = getSecurityNotes($db);
 $bLDAPEnabled = false;

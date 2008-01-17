@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/01/16 21:48:46 $  $Author: havlat $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/01/17 21:56:50 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -42,7 +42,7 @@ class testproject extends tlObjectWithAttachments
 	private $requirement_spec_table='req_specs';
 	private $req_coverage_table="req_coverage";
 	private $nodes_hierarchy_table="nodes_hierarchy";
-	private $keywords="keywords";
+	private $keywords_table = "keywords";
 	private $testcase_keywords_table="testcase_keywords";  
   private $testplans_table="testplans";
   private $custom_fields_table="custom_fields";

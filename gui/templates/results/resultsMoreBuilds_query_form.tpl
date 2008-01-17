@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.2 2007/12/17 21:31:45 schlundus Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.3 2008/01/17 21:56:50 schlundus Exp $
 @author Francisco Mancardi
 
 rev :
@@ -8,7 +8,7 @@ rev :
      20070901 - franciscom - use config file and smarty date and time controls
 
 *}
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl"}
@@ -22,11 +22,11 @@ rev :
 {* ------------------------------------------------------------------------------- *}
 {* Calculate combo size *}
 {if $build_qty > #BUILDS_COMBO_NUM_ITEMS# }
-  {assign var="build_qty" value=#ASSIGNED_TESTERS_COMBO_NUM_ITEMS# }
+  {assign var="build_qty" value={#BUILDS_COMBO_NUM_ITEMS#} }
 {/if}
 
 {if $testsuite_qty > #TESTSUITES_COMBO_NUM_ITEMS# }
-  {assign var="testsuite_qty" value=#TESTSUITES_COMBO_NUM_ITEMS# }
+  {assign var="testsuite_qty" value=#TSUITES_COMBO_NUM_ITEMS# }
 {/if}
 
 {if $keyword_qty > #KEYWORDS_COMBO_NUM_ITEMS# }

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/15 21:28:08 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/17 11:13:43 $
  *
  * @author Martin Havlat
  *
@@ -49,7 +49,7 @@ class tlLogger extends tlObject
 	{
 		parent::__construct();
 		
-		$this->loggers[] = new tlDBLogger(&$db);
+		$this->loggers[] = new tlDBLogger($db);
 		
 		$fileName = $this->getLogFileName();
 		$auditFileName = $this->getAuditLogFileName();

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.5 2008/01/16 07:36:45 franciscom Exp $
+$Id: buildView.tpl,v 1.6 2008/01/18 15:47:48 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -51,8 +51,7 @@ var del_action=fRoot+'{$deleteAction}';
   {if $the_builds ne ""}
   	<table id="item_view" class="simple  sortable" style="width:80%">
   		<tr>
- 				<th class="{$noSortableColumnClass}" style='display:none'>{$labels.th_id}</th>
-  			<th>{$sortHintIcon}{$labels.th_title}</th>
+  			<th>{$toogle_api_info_img}{$sortHintIcon}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
@@ -62,11 +61,8 @@ var del_action=fRoot+'{$deleteAction}';
   		{foreach item=build from=$the_builds}
   				{assign var="idx" value=$idx+1}
         	<tr>
- 					<td  style='display:none'>
- 						{$build.id}
- 					</td>
-  				<td>{if $idx == 1}{$toogle_api_info_img}{/if}<a href="{$editAction}{$build.id}"
-  				       title="{$labels.alt_edit_build}">{$build.name|escape}
+  				<td><span class="api_info" style='display:none'>[API ID:{$build.id}]</span>
+  				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none"
   					              alt="{$labels.alt_edit_build}" 

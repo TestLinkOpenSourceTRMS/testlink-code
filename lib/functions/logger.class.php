@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/01/17 21:22:45 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/01/18 20:40:18 $
  *
  * @author Martin Havlat
  *
@@ -193,7 +193,7 @@ class tlTransaction extends tlDBObject
 	public function add($logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
 		$e = new tlEvent();
-		$e->initialize($this->dbID,$this->userID,$this->sessionID,$logLevel,$description,$source,$activityCode = null,$objectID = null,$objectType = null);
+		$e->initialize($this->dbID,$this->userID,$this->sessionID,$logLevel,$description,$source,$activityCode,$objectID,$objectType);
 		$this->writeEvent($e);
 		$this->events[] = $e;
 			
@@ -273,6 +273,9 @@ class tlEvent extends tlDBObject
 	public $timestamp = null;
 	public $userID = null;
 	public $sessionID = null;
+	public $activityCode = null;
+	public $objectID = null;
+	public $objectType = null;
 	
 	public function __construct($dbID = null)
 	{
@@ -312,11 +315,16 @@ class tlEvent extends tlDBObject
 			$source = "NULL";
 			if (!is_null($this->source))
 				$source = "'".$db->prepare_string($this->source)."'";
-				
+			$objectType	= "NULL";			
+			if (!is_null($this->objectType))
+				$objectType = "'".$db->prepare_string($this->objectType)."'";
+			$objectID = "NULL";
+			if (!is_null($this->objectID))
+				$objectID = $db->prepare_int($this->objectID);
 			$firedAt = $db->prepare_int($this->timestamp);
 			$transactionID = $db->prepare_int($this->transactionID);
 			
-			$query = "INSERT INTO events (transaction_id,log_level,description,source,fired_at) VALUES ({$transactionID},{$logLevel},'{$description}',{$source},{$firedAt})";
+			$query = "INSERT INTO events (transaction_id,log_level,description,source,fired_at,object_id,object_type) VALUES ({$transactionID},{$logLevel},'{$description}',{$source},{$firedAt},{$objectID},{$objectType})";
 			$result = $db->exec_query($query);
 			if ($result)
 				$this->dbID = $db->insert_id('events');

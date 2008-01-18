@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/01/01 16:38:17 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/01/18 20:40:17 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -26,7 +26,6 @@ if ($op['status'] == 0)
 	$smarty->display('fatal_error.tpl');
 	exit();
 }
-
 $note = lang_get('your_info_for_passwd');
 if (strlen($login))
 {
@@ -38,6 +37,7 @@ if (strlen($login))
 		$result = resetPassword($db,$userID,$note);
 		if ($result >= tl::OK)
 		{
+			tLog(TLS("audit_pwd_reset_requested"),'AUDIT',null,$userID,"users");
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
 		}

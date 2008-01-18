@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/01/13 12:06:00 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/01/18 20:40:17 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -15,43 +15,14 @@
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
-require_once('doAuthorize.php');
 require_once('common.php');
 doSessionStart();
+
 unset($_SESSION['basehref']);
 setPaths();
+$reqURI = isset($_GET['reqURI']) ? $_GET['reqURI'] : 'lib/general/mainPage.php';
 
-$_POST = strings_stripSlashes($_POST);
-$login = isset($_POST['login']) ? $_POST['login'] : null;
-$pwd = isset($_POST['password']) ? $_POST['password'] : null;
-$reqURI = (isset($_POST['reqURI']) && strlen($_POST['reqURI'])) ? $_POST['reqURI'] : 'lib/general/mainPage.php';
-
-if (!is_null($login))
-{
-	$op = doDBConnect($db);
-	if ($op['status'])
-	{
-		if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)
-		{
-			tLog("Account ".$login." doesn't exist or used wrong password.",'INFO');
-			// not authorized
-			tLog("Login '$login' fails. (Timing: " . tlTimingCurrent() . ')', 'INFO');
-			redirect($_SESSION['basehref'] . "login.php?note=" . $msg);
-			exit();
-		}
-		else
-			tLog("Login ok. (Timing: " . tlTimingCurrent() . ')', 'INFO');
-	}
-	else
-	{
-		$smarty = new TLSmarty();
-		$smarty->assign('title', lang_get('fatal_page_title'));
-		$smarty->assign('content', $op['dbms_msg']);
-		$smarty->display('workAreaSimple.tpl');  
-		exit();
-	}
-}
-
+//moved the code to the login page
 //verify the session during a work
 if (!isset($_SESSION['currentUser']))
 {

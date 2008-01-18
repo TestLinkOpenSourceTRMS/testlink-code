@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/17 21:22:45 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/01/18 20:40:18 $ $Author: schlundus $
  */
 class tlRole extends tlDBObject
 {
@@ -246,7 +246,9 @@ class tlRole extends tlDBObject
 	protected function readRights(&$db)
 	{
 		$query = "SELECT right_id FROM role_rights WHERE role_id = {$this->dbID}";
-		$this->rights = tlDBObject::createObjectsFromDBbySQL($db,$query,'right_id','tlRight');
+		$ids = $db->fetchColumnsIntoArray($query,"right_id");
+		$this->rights = tlRight::getByIDs($db,$ids,tlRight::TLOBJ_O_GET_DETAIL_FULL);
+		return tl::OK;
 	}	
 	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
@@ -324,7 +326,18 @@ class tlRight extends tlDBObject
 	
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return self::handleNotImplementedMethod(__FUNCTION__);
+		if (!sizeof($ids))
+			return null;
+		$query = "SELECT id,description FROM rights WHERE id IN (".implode(",",$ids).")";
+		$rows = $db->fetchArrayRowsIntoMap($query,"id");
+		$rights = null;
+		foreach($rows as $id => $row)
+		{
+			$right = new tlRight($id);
+			$right->name = $row[0]["description"];
+			$rights[$id] = $right;
+		}
+		return $rights;
 	}
 
 	static public function getAll(&$db,$whereClause = null,$column = null,

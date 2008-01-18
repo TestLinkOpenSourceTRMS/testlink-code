@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/01/05 22:00:53 $ $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/01/18 20:40:18 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -87,7 +87,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null)
 {
 	$users_map = null;
-	$users = tlUser::getAll($db,$whereClause,"id");
+	$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 	
 	$the_users=$users;
 	if ($users)

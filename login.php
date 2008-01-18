@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/01/18 20:40:17 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -21,9 +21,9 @@ require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
-$op = doDBConnect($db);
+require_once('doAuthorize.php');
 
-tLog(TLS("audit_login_page",$_SERVER['REMOTE_ADDR']),'AUDIT');
+$op = doDBConnect($db);
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
@@ -36,6 +36,10 @@ if (!$op['status'])
 $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 $reqURI = isset($_GET['req']) ? $_GET['req'] : null;
+$_POST = strings_stripSlashes($_POST);
+$login = isset($_POST['login']) ? $_POST['login'] : null;
+$pwd = isset($_POST['password']) ? $_POST['password'] : null;
+$preqURI = (isset($_POST['reqURI']) && strlen($_POST['reqURI'])) ? $_POST['reqURI'] : null;
 
 $message = lang_get('please_login');
 // assign a comment for login
@@ -46,9 +50,6 @@ switch($note)
 			session_start();
 		session_unset();
 		session_destroy();
-		break;
-	case 'wrong':
-		$message = lang_get('bad_user_passwd');
 		break;
 	case 'first':
 		$message = lang_get('your_first_login');
@@ -63,8 +64,23 @@ switch($note)
 	default:
 		break;
 }
-
-
+if (!is_null($login))
+{
+	doSessionStart();
+	unset($_SESSION['basehref']);
+	setPaths();
+	if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)
+	{
+		tLog(TLS("audit_login_failed",$login),'AUDIT',null,null,"users");
+		$message = lang_get('bad_user_passwd');
+	}
+	else
+	{
+		tLog(TLS("audit_login_succeeded",$login),'AUDIT',null,$_SESSION['currentUser']->dbID,"users");
+		redirect($_SESSION['basehref']."index.php".($preqURI ? "?reqURI=".urlencode($preqURI) :""));
+		exit();
+	}
+}
 
 $securityNotes = getSecurityNotes($db);
 $bLDAPEnabled = false;
@@ -74,7 +90,7 @@ $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
-$smarty->assign('reqURI',$reqURI);
+$smarty->assign('reqURI',$reqURI ? $reqURI : $preqURI);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('login_disabled', !checkForLDAPExtension($bLDAPEnabled));
 $smarty->assign('external_password_mgmt', $bLDAPEnabled);

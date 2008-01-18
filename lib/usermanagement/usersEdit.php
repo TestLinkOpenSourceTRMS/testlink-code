@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.7 $
-* @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
+* @version $Revision: 1.8 $
+* @modified $Date: 2008/01/18 22:22:53 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -50,7 +50,10 @@ if ($args->do_update)
 			$sqlResult = $user->writeToDB($db);
 		}
 		if ($sqlResult >= tl::OK)
+		{
+			tLog(TLS("audit_user_created"),'AUDIT',null,$user->dbID,"users");
 			$user_feedback = sprintf(lang_get('user_created'),$args->login);
+		}
 		else 
 			$sqlResult = getUserErrorMessage($sqlResult);
 	}
@@ -68,14 +71,18 @@ if ($args->do_update)
 			$user->globalRoleID = $args->rights_id;
 			
 			$sqlResult = $user->writeToDB($db);
-			if ($sqlResult >= tl::OK && $sessionUserID == $args->user_id)
+			if ($sqlResult >= tl::OK)
 			{
-				$_SESSION['currentUser'] = $user;
-				setUserSession($db,$user->login, $args->user_id, $user->globalRoleID, $user->emailAddress, $user->locale);
-				if (!$args->user_is_active)
+				tLog(TLS("audit_user_saved"),'AUDIT',null,$user->dbID,"users");
+				if ($sessionUserID == $args->user_id)
 				{
-					header("Location: ../../logout.php");
-					exit();
+					$_SESSION['currentUser'] = $user;
+					setUserSession($db,$user->login, $args->user_id, $user->globalRoleID, $user->emailAddress, $user->locale);
+					if (!$args->user_is_active)
+					{
+						header("Location: ../../logout.php");
+						exit();
+					}
 				}
 			}
 			$sqlResult = getUserErrorMessage($sqlResult);
@@ -87,7 +94,10 @@ else if ($args->do_reset_password && $user_id)
 {
 	$result = resetPassword($db,$user_id,$user_feedback);
 	if ($result >= tl::OK)
+	{
+		tLog(TLS("audit_pwd_reset_requested"),'AUDIT',null,$user_id,"users");
 		$user_feedback = lang_get('password_reseted');  		
+	}
 }
 $user = null;
 if ($user_id)

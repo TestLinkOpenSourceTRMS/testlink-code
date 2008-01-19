@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/01/14 21:43:23 $ $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/01/19 17:50:59 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
  * 20080114 - franciscom - new method getPrefix()
  * 20080103 - franciscom - changes in:  get_last_execution()
  *                                      get_executions()
@@ -963,17 +964,20 @@ function get_last_version_info($id)
 /*
   function: copy_tcversion
 
-  args :
+  args:
   
-  returns: 
+  returns:
+  
+  rev: 20080119 - franciscom - tc_external_id management 
 
 */
 function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 {
     $now = $this->db->db_now();
-		$sql="INSERT INTO tcversions (id,version,author_id,creation_ts," .
+		$sql="INSERT INTO tcversions (id,version,tc_external_id,author_id,creation_ts," .
 		     "                        summary,steps,expected_results,importance,execution_type) " .
          " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
+         "        tc_external_id, " . 
          "        {$user_id} AS author_id, {$now} AS creation_ts," .
          "        summary,steps,expected_results,importance,execution_type " .
          " FROM tcversions " .

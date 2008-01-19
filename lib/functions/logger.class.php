@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/01/18 20:40:18 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/19 17:16:35 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -16,6 +16,12 @@
  * To facilitate this we will create a number of logging functions.
  *
  * @author Andreas Morsing: added new loglevel for inlining the log messages 
+ *
+ * rev :
+ *      20080119 - franciscom - bug due to Call-time pass-by-reference. ?
+ *      Warning: Call-time pass-by-reference has been deprecated
+ *      $this->loggers[] = new tlDBLogger(&$db);
+ *
 **/
 class tlLogger extends tlObject
 {
@@ -27,7 +33,7 @@ class tlLogger extends tlObject
 	*/
 	const ERROR = 1;
 	const WARNING = 2;
-    const INFO = 4;
+  const INFO = 4;
 	const DEBUG = 8;
 	const AUDIT = 16;
 	static $logLevels = null;
@@ -35,11 +41,14 @@ class tlLogger extends tlObject
 		
 	//the one and only logger of TesTLink	
 	private static $s_instance;
+
 	//all transactions, at the moment there is only one transaction supported, 
 	//could be extended if we need more
 	protected $transactions = null;
+
 	//the logger which are controlled
 	protected $loggers = null;
+
 	//log only event which pass the filter, 
 	//SCHLUNDUS: should use $g_log_level
 	protected $logLevelFilter = null;
@@ -49,11 +58,16 @@ class tlLogger extends tlObject
 		parent::__construct();
 		
 		//the database logger
-		$this->loggers[] = new tlDBLogger(&$db);
+		// With line I got:
+		// Warning: Call-time pass-by-reference has been deprecated
+		// $this->loggers[] = new tlDBLogger(&$db);
+		//                                         
+		$this->loggers[] = new tlDBLogger($db);
 		$this->loggers[] = new tlFileLogger();
 		
 		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT | self::DEBUG);
 	}
+	
 	public function __destruct()
 	{
 		parent::__destruct();

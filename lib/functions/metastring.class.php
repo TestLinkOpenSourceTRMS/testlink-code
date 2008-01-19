@@ -1,4 +1,15 @@
 <?php
+/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * 
+ * @filesource $RCSfile: metastring.class.php,v $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/19 17:17:25 $ $Author: franciscom $
+ * @author franciscom
+ *
+ * rev:
+ *     20080119 - franciscom - added pseudo standard file documentation header
+*/
+
 //shorthand function for creating meta strings
 function TLS($label,$params = null)
 {

@@ -20,6 +20,8 @@
 function tLog($message, $level = 'DEBUG', $source = null,$objectID = null,$objectType = null) 
 {
 	global $g_tlLogger;
+	if (!$g_tlLogger)
+		return;
 	$t = $g_tlLogger->getTransaction();
 	//to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
 	$logLevel = is_string($level) ? tlLogger::$revertedLogLevels[$level] : $level;

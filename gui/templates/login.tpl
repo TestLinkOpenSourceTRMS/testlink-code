@@ -1,11 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.18 2008/01/18 20:40:18 schlundus Exp $
+$Id: login.tpl,v 1.19 2008/01/19 17:47:47 schlundus Exp $
 Purpose: smarty template - login page 
-
-20070818 - franciscom - BUGID xxxx
-20070401 - franciscom - new rounding engine
-20070301 - franciscom - BUGID 695 (fawel contribute)
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
 
@@ -33,24 +29,23 @@ window.onload=function(){
   	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
 		<input type="hidden" name="reqURI" value="{$reqURI}"/>
   		<p class="label">{lang_get s='login_name'}<br />
-  		<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
-  		
+			<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
+		</p>
   		<p class="label">{lang_get s='password'}<br />
-  		<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
-  		
-  		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
+			<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />
+		</p>
+		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
 		{/if}
 	</form>
 	
 	<p>
-	{* BUGID 695 *} 
-	{if $g_user_self_signup eq true}
-	  <a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
+	{if $g_user_self_signup}
+		<a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
 	{/if}
 	
 	{* the configured authentication method don't allow users to reset his/her password *}		
 	{if $external_password_mgmt eq 0}
-	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
+		<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
 	{/if}
 

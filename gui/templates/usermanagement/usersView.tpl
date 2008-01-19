@@ -1,32 +1,21 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.3 2008/01/12 02:03:14 asielb Exp $
+$Id: usersView.tpl,v 1.4 2008/01/19 17:47:48 schlundus Exp $
 
 Purpose: smarty template - users overview
-
-rev :
-     20071007 - franciscom - delete user refactoring
-     20071002 - azl - BUGID 1093. 
-     20070829 - jbarchibald - BUGID 1000 - Testplan User Role Assignments
-     
-     20070120 - franciscom - role_colour management improved
-     20070106 - franciscom - added order by login and order by role
 *}
-
-{lang_get s='warning_delete_user' var="warning_msg"}
-{lang_get s='delete' var="del_msgbox_title" }
-
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
+{lang_get s='warning_delete_user' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title" }
 <script type="text/javascript">
-var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
+	var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 </script>
 </head>
 
 <body {$body_onload}>
 
-{* 20071002 - azl - fix for bug 1093. Don't show this content if user doesn't have permissions *}
 {if $mgt_users == "yes"}
 	
 	<h1>{lang_get s='title_user_mgmt'}</h1>

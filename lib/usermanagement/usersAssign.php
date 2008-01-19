@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.6 $
-* @modified $Date: 2008/01/04 21:03:02 $ $Author: schlundus $
+* @version $Revision: 1.7 $
+* @modified $Date: 2008/01/19 17:47:48 $ $Author: schlundus $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -61,6 +61,7 @@ else if ($feature == "testplan")
 
 if ($featureID && $bUpdate && $mgr)
 {
+	tLog(TLS("audit_user_assign_changed"),'AUDIT',null,$featureID,$feature."s");
 	$mgr->deleteUserRoles($featureID);			
 	foreach($map_userid_roleid as $user_id => $role_id)
 	{

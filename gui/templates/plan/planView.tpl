@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.9 2008/01/16 07:36:45 franciscom Exp $ 
+$Id: planView.tpl,v 1.10 2008/01/19 12:19:19 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -59,20 +59,15 @@ var del_action=fRoot+'{$deleteAction}';
 {else}
 	<table id='item_view'class="simple sortable" width="95%">
 		<tr>
-			<th class="{$noSortableColumnClass}" style='display:none'>{$labels.th_id}</th>
-			<th>{$sortHintIcon}{$labels.testplan_th_name}</th> 			
+			<th>{$toogle_api_info_img}{$sortHintIcon}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
 		</tr>
-		{assign var="idx" value=0}
 		{foreach item=testplan from=$tplans}
-		{assign var="idx" value=$idx+1}
 		<tr>
-			<td style='display:none'>
-			{$testplan.id|escape}
-			</td>
-			<td>{if $idx == 1}{$toogle_api_info_img}{/if}<a href="{$editAction}{$testplan.id}"> 
+			<td><span class="api_info" style='display:none'>{$smarty.const.TL_API_ID_FORMAT|replace:"%s":$testplan.id}</span>
+			    <a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{$labels.testplan_alt_edit_tp}" 

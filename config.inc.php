@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.151 $
- * @modified $Date: 2008/01/17 21:22:44 $ by $Author: schlundus $
+ * @version $Revision: 1.152 $
+ * @modified $Date: 2008/01/19 12:17:31 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20080118 - franciscom - $g_api_id_format
  * 			     20081011 - asielb	   - $g_api_ui_show
  *           20080110 - franciscom - $g_tree_show_testcase_id
  *           20080109 - franciscom - $g_sort_table_engine
@@ -294,6 +295,9 @@ $g_gui->webeditor='fckeditor';
 // 20080111 - asielb
 // Is API related functionality visible in the UI
 $g_api_ui_show = TRUE; 
+
+// used to display API ID info in the *View pages 
+$g_api_id_format	= "[API ID: %s ]";
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */
@@ -795,6 +799,7 @@ if(!defined('TL_LOG_LEVEL_DEFAULT'))
 }
 
 
+define('TL_API_ID_FORMAT',$g_api_id_format);
 
 // For printing documents
 define('TL_DOC_COMPANY', $g_company_name);

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: projectView.tpl,v 1.5 2008/01/16 07:36:45 franciscom Exp $ 
+$Id: projectView.tpl,v 1.6 2008/01/19 12:19:31 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -28,7 +28,7 @@ Rev :
                           testproject_alt_requirement_feature,th_active,th_delete,th_id'}
 
 
-{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
@@ -52,24 +52,21 @@ var del_action=fRoot+'{$deleteAction}';
 	{$labels.testproject_txt_empty_list}
 
 {else}
-	<table id="item_view" class="simple" width="95%">
+	<table id="item_view" class="simple sortable" width="95%">
 		<tr>
-			<th style='display:none'>{$labels.th_id}</th>
-			<th>{$labels.th_name}</th>
-			<th>{$labels.th_notes}</th>
-			<th>{$labels.tcase_id_prefix}</th>
-			<th>{$labels.th_requirement_feature}</th>
+			<th>{$toogle_api_info_img}{$sortHintIcon}{$labels.th_name}</th>
+			<th class="{$noSortableColumnClass}">{$labels.th_notes}</th>
+			<th>{$sortHintIcon}{$labels.tcase_id_prefix}</th>
+			<th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
 			<th class="icon_cell">{$labels.th_active}</th>
 			{if $canManage == "yes"}
 			<th class="icon_cell">{$labels.th_delete}</th>
 			{/if}
 		</tr>
-	  {assign var="idx" value=0}
 		{foreach item=testproject from=$tprojects}
-		{assign var="idx" value=$idx+1}
 		<tr>
-			<td style="display:none;">{$testproject.id}</td>
-			<td>{if $idx == 1}{$toogle_api_info_img}{/if}<a href="{$editAction}{$testproject.id}"> 
+			<td><span class="api_info" style='display:none'>{$smarty.const.TL_API_ID_FORMAT|replace:"%s":$testproject.id}</span>
+			    <a href="{$editAction}{$testproject.id}"> 
 				     {$testproject.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{$labels.testproject_alt_edit}" 

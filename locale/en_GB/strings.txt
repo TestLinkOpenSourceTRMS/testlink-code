@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.246 $
- * @modified $Date: 2008/01/15 21:02:17 $ $Author: schlundus $
+ * @version $Revision: 1.247 $
+ * @modified $Date: 2008/01/19 17:14:42 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -977,17 +977,20 @@ $TLS_title_new_milestone = "New Milestone";
 
 
 
-// gui/templates/projectedit.tpl
+// gui/templates/projectEdit.tpl
 $TLS_btn_activate = "Activate";
 $TLS_btn_del = "Delete";
 $TLS_btn_edit_del = "Edit / Delete";
 $TLS_btn_inactivate = "Inactivate";
-$TLS_caption_edit_product = "Edit Test Project";
-$TLS_caption_new_product = "New Test Project";
+$TLS_caption_edit_tproject = "Edit ";
+$TLS_caption_new_tproject = "Create";
 $TLS_color = "Color";
-$TLS_enable_requirements = "Enable Requirements functionality";
+$TLS_enable_requirements = "Requirements Management";
+$TLS_enable_priority = "Priority Management";
+$TLS_enable_automation = "Test Automation";
 $TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
 $TLS_notes = "Related Notes";
+
 // Warning!!! - if JS string you must use \\n to get \n                                       
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .
                             "data (including test results, plans, etc.). " .

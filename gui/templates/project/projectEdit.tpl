@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.8 2008/01/17 11:13:21 franciscom Exp $
+$Id: projectEdit.tpl,v 1.9 2008/01/19 17:12:47 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -79,16 +79,16 @@ function validateForm(f)
 
 	{* edit product form *}
 	{if $found == "yes"}
+		<h2>{$caption}{$name|escape}</h2>
 		<div>
 		<form name="edit_testproject" id="edit_testproject"
 		      method="post" action="{$managerURL}"
 		      onSubmit="javascript:return validateForm(this);">
 		      
 		<input type="hidden" name="tprojectID" value="{$id}" />
-		<table class="common" width="80%">
-			<caption>{$caption}{$name|escape}</caption>
+		<table id="item_view" class="common sortable" style="width:80%">
 			<tr>
-				<td>{$labels.name}</td>
+				<th style="background:none;">{$labels.name}</th>
 				<td><input type="text" name="tprojectName" 
   			           size="{#TESTPROJECT_NAME_SIZE#}" 
 	  		           maxlength="{#TESTPROJECT_NAME_MAXLEN#}" 
@@ -97,13 +97,13 @@ function validateForm(f)
 				</td>
 			</tr>
 	   <tr>
-		  <td>{$labels.notes}</td>
+		  <th style="background:none;">{$labels.notes}</th>
 		  <td width="80%">{$notes}</td>
 	   </tr>
 	   
 	   {if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
 			<tr>
-				<td>{$labels.color}</td>
+				<th style="background:none;">{$labels.color}</th>
 				<td>
 					<input type="text" name="color" value="{$color|escape}" maxlength="12" />
 					{* this function below calls the color picker javascript function. 
@@ -116,7 +116,7 @@ function validateForm(f)
 			</tr>
 		 {/if}	
 			<tr>
-				<td>{$labels.tcase_id_prefix}</td>
+				<th style="background:none;">{$labels.tcase_id_prefix}</th>
 				<td><input type="text" name="tcasePrefix" 
   			           size="{#TESTCASE_PREFIX_SIZE#}" 
 	  		           maxlength="{#TESTCASE_PREFIX_MAXLEN#}" 
@@ -126,25 +126,25 @@ function validateForm(f)
 			</tr>
 
 			<tr>
-				<td>{$labels.enable_requirements}</td>
+				<th style="background:none;">{$labels.enable_requirements}</th>
 				<td>
 				  <input type="checkbox" name="optReq" {if $optReq eq 1} checked="checked"	{/if} />
 				</td>
 			</tr>
 			<tr>
-				<td>{$labels.enable_priority}</td>
+				<th style="background:none;">{$labels.enable_priority}</th>
 				<td>
 				  <input type="checkbox" name="optPriority" {if $optPriority eq 1} checked="checked"	{/if} />
 				</td>
 			</tr>
 			<tr>
-				<td>{$labels.enable_automation}</td>
+				<th style="background:none;">{$labels.enable_automation}</th>
 				<td>
 				  <input type="checkbox" name="optAutomation" {if $optAutomation eq 1} checked="checked"	{/if} />
 				</td>
 			</tr>
 
-			<tr><td>{lang_get s='th_active'}</td>
+			<tr><th style="background:none;">{lang_get s='th_active'}</th>
 			    <td>
 			    <input type="checkbox" name="active" {if $active eq 1} checked="checked"	{/if} /> 
 			    </td>

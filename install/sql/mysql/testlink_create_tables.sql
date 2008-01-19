@@ -1,79 +1,80 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.29 2008/01/18 20:40:18 schlundus Exp $
+# $Id: testlink_create_tables.sql,v 1.30 2008/01/19 17:13:06 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+# 20080119 - franciscom - testprojects.option_automation
 #	20080117 - schlundus - added table for events and transactions
-#   20080117 - franciscom - prefix size increased (16)
-#   20080114 - franciscom - usergroup_id -> id
+# 20080117 - franciscom - prefix size increased (16)
+# 20080114 - franciscom - usergroup_id -> id
 #
-#		20080114 - mht - changes for priorities (add 2 + delete 1 table)
-#				 add table for templates
-#				 add table for usergroups
+#	20080114 - mht - changes for priorities (add 2 + delete 1 table)
+#			 add table for templates
+#			 add table for usergroups
 #
-#   20080112 - franciscom - tcversions.tc_external_id
-#                           testprojects.prefix
-#                           testprojects.tc_counter
+# 20080112 - franciscom - tcversions.tc_external_id
+#                         testprojects.prefix
+#                         testprojects.tc_counter
 #
-#   20080102 - franciscom - added changes for API feature (DB 1.2)
-#                           added notes fields on db_version
+# 20080102 - franciscom - added changes for API feature (DB 1.2)
+#                         added notes fields on db_version
 #
-#   20071202 - franciscom - added tcversions.execution_type
-#   20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
+# 20071202 - franciscom - added tcversions.execution_type
+# 20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
 #
-#   20070519 - franciscom - milestones table date -> target_date, because
-#                           date is reserved word for Oracle
+# 20070519 - franciscom - milestones table date -> target_date, because
+#                         date is reserved word for Oracle
 #
-#   20070414 - franciscom - table requirements: added field node_order 
-#   20070204 - franciscom - changes in tables priorities, risk_assignments 
+# 20070414 - franciscom - table requirements: added field node_order 
+# 20070204 - franciscom - changes in tables priorities, risk_assignments 
 #
-#   20070131 - franciscom - requirements -> req_doc_id(32), 
+# 20070131 - franciscom - requirements -> req_doc_id(32), 
 #
-#   20070120 - franciscom - following BUGID 458 ( really a new feature request)
-#                           two new fields on builds table
-#                           active, open
+# 20070120 - franciscom - following BUGID 458 ( really a new feature request)
+#                         two new fields on builds table
+#                         active, open
 # 
-#   20070113 - franciscom - table cfield_testprojects added fields
-#                           required_on_design,required_on_execution
+# 20070113 - franciscom - table cfield_testprojects added fields
+#                         required_on_design,required_on_execution
 # 
-#   20070106 - franciscom - again, and again  'en_GB' as default NOT en_US
+# 20070106 - franciscom - again, and again  'en_GB' as default NOT en_US
 #
-#   20061228 - franciscom - added field active on table cfield_testprojects
+# 20061228 - franciscom - added field active on table cfield_testprojects
 #
-#   20061224 - franciscom - changes to custom field related tables
+# 20061224 - franciscom - changes to custom field related tables
 #
-#   20061220 - franciscom - added new indexes to solve performance problems
-#                           executions, user_assignment, testplan_tcversions
-#                           changed column order on index on testplan_tcversions
+# 20061220 - franciscom - added new indexes to solve performance problems
+#                         executions, user_assignment, testplan_tcversions
+#                         changed column order on index on testplan_tcversions
 #
-#   20061009 - franciscom - changes to index names for rights and roles tables
-#                           added UNIQUE to req_doc_id KEY in table requirements
+# 20061009 - franciscom - changes to index names for rights and roles tables
+#                         added UNIQUE to req_doc_id KEY in table requirements
 #
-#   20060908 - franciscom - changes to user_assignments
-#                           new tables assignment_types, assignment_status
+# 20060908 - franciscom - changes to user_assignments
+#                         new tables assignment_types, assignment_status
 #
-#   20060815 - franciscom - changes to user_assignments
-#                                      risk_assignments
-#                           added object_keywords
+# 20060815 - franciscom - changes to user_assignments
+#                                    risk_assignments
+#                         added object_keywords
 #
-#   20060715 - schlundus - changes to milestones table.
-#    
-#   20060711 - franciscom - added index pid_m_nodeorder on nodes_hierarchy
-#	 	to improve performance
+# 20060715 - schlundus - changes to milestones table.
+#  
+# 20060711 - franciscom - added index pid_m_nodeorder on nodes_hierarchy
+#	to improve performance
 #
 #
-#   20060424 - franciscom - redoing asiel changes on users table due to wrong name
-#   20060312 - franciscom
-#   changed bud_id column type to varchar(16) as requested by Asiel
-#   to avoid problems with JIRA bug tracking system.
+# 20060424 - franciscom - redoing asiel changes on users table due to wrong name
+# 20060312 - franciscom
+# changed bud_id column type to varchar(16) as requested by Asiel
+# to avoid problems with JIRA bug tracking system.
 #
-#   added name to nodes_hierarchy table to improve performance in
-#   tree operations
+# added name to nodes_hierarchy table to improve performance in
+# tree operations
 # 
-#   changed some int(11) to int(10)
+# changed some int(11) to int(10)
 # --------------------------------------------------------
 #
 #
@@ -318,6 +319,7 @@ CREATE TABLE `testprojects` (
   `active` tinyint(1) NOT NULL default '1',
   `option_reqs` tinyint(1) NOT NULL default '0',
   `option_priority` tinyint(1) NOT NULL default '0',
+  `option_automation` tinyint(1) NOT NULL default '0',  
   `prefix` varchar(16) NOT NULL,
   `tc_counter` int(10) unsigned NULL default '0',
   PRIMARY KEY  (`id`),

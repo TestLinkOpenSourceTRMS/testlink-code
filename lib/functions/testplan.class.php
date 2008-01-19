@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2008/01/16 22:47:58 $ $Author: havlat $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2008/01/19 17:13:42 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,8 @@
  *
  * 
  * rev :
+ *       20080119 - franciscom - improved logic in copy_as to avoid bug due to
+ *                               missing methods.
  *       20080114 - franciscom - get_linked_tcversions()
  *       20071205 - franciscom - copy_as() - added reactored code from contribution
  *                               
@@ -693,13 +695,13 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,
 
   $cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
                       'copy_test_urgency' => 'copy_test_urgency', 
-	                  'copy_milestones' => 'copy_milestones', 
-	                  'copy_user_roles' => 'copy_user_roles', 
-	                  'copy_builds' => 'copy_builds');
+	                    'copy_milestones' => 'copy_milestones', 
+	                    'copy_user_roles' => 'copy_user_roles', 
+	                    'copy_builds' => 'copy_builds');
   
     
   if( !is_null($copy_options) )
-{
+  {
     $cp_options=$copy_options;  
   }
   
@@ -727,16 +729,13 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,
   {
     if( $do_copy )
     {
-      $copy_method=$cp_methods[$key];
-      $this->$copy_method($id,$new_tplan_id,$tcversion_type);
+      if( isset($cp_methods[$key]) )
+      {
+          $copy_method=$cp_methods[$key];
+          $this->$copy_method($id,$new_tplan_id,$tcversion_type);
+      }    
     }
   }  
-  // $this->copy_builds($id,$new_tplan_id);
-  // $this->copy_linked_tcversions($id,$new_tplan_id);
-  // $this->copy_milestones($id,$new_tplan_id);
-  // //$this->copy_attachments($id,$new_tplan_id);
-  // $this->copy_user_roles($id,$new_tplan_id);
-  // $this->copy_priorities($id,$new_tplan_id);
 
 } // end function
 

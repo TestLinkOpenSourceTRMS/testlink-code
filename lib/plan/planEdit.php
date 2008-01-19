@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/12/06 14:55:00 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/01/19 17:13:42 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
  * rev :
+ *       20080119 - franciscom - remove priority code
  *       20071201 - franciscom - new web editor code
  *
  */
@@ -164,10 +165,11 @@ switch($args->do_action)
    					                    $args->testplan_name,$args->tproject_id,
    					                    $args->copy_options,$args->tcversion_type);
    				}
-   				else
-   				{
-  				  $tplan_mgr->insert_default_priorities($tplan_id);
-  				}
+   				// 20080119 - francisco.mancardi@gruppotesi.com
+   				// else
+   				// {
+  				//   $tplan_mgr->insert_default_priorities($tplan_id);
+  				// }
          }
        } // !$name_exists
        

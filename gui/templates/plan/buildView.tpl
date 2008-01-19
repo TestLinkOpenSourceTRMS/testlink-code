@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.7 2008/01/19 12:19:19 franciscom Exp $
+$Id: buildView.tpl,v 1.8 2008/01/19 17:12:46 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -49,6 +49,7 @@ var del_action=fRoot+'{$deleteAction}';
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
   {if $the_builds ne ""}
+    {* table id MUST BE item_view to use show/hide API info *}
   	<table id="item_view" class="simple  sortable" style="width:80%">
   		<tr>
   			<th>{$toogle_api_info_img}{$sortHintIcon}{$labels.th_title}</th>

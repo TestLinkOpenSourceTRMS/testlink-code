@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.37 $ $Author: franciscom $
- * @modified $Date: 2008/01/12 17:32:38 $
+ * @version $Revision: 1.38 $ $Author: franciscom $
+ * @modified $Date: 2008/01/20 15:39:18 $
  *
  * @author Martin Havlat
  * 
@@ -17,6 +17,7 @@
  * There is also some javascript that handles the form information.
  *
  * rev :
+ *       20080120 - franciscom - added logic to enable/disable test case search link
  *       20070725 - franciscom - refactoring of rights checking 
  *       20070509 - franciscom - improving test plan availabilty checking
  *       20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
@@ -35,7 +36,7 @@ $currentUser = $_SESSION['currentUser'];
 $userID = $currentUser->dbID;
 
 // ----------------------------------------------------------------------
-/** redirect admin to create product if not found */
+/** redirect admin to create testproject if not found */
 $can_manage_tprojects = has_rights($db,'mgt_modify_product');
 if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 { 
@@ -51,6 +52,9 @@ if(has_rights($db,"mgt_view_tc"))
     
     //users can modify tcs
     $smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc")); 
+    
+   	$hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
+   	$smarty->assign('hasTestCases',$hasTestCases);
 }
 
 // REQS
@@ -67,14 +71,6 @@ $smarty->assign('modify_product_rights', $can_manage_tprojects);
 
 
 // ----- Test Statistics Section --------------------------
-// only print the metrics table if it is enabled
-// $smarty->assign('metricsEnabled', MAIN_PAGE_METRICS_ENABLED);
-// if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
-// {
-// 	require_once('myTPInfo.php');
-//   $smarty->assign('myTPdata', printMyTPData($db));
-// }
-
 $filter_tp_by_product = 1;
 if(isset($_REQUEST['filter_tp_by_product']))
 	$filter_tp_by_product = 1;
@@ -92,7 +88,6 @@ $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 $num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,0,ACTIVE));
 
 // get Test Plans available for the user 
-// 20070906 - interface changes
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$userID,$filter_tp_by_product);
 
 $testPlanRole = null;

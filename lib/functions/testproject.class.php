@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/01/17 21:56:50 $  $Author: schlundus $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/01/20 15:39:17 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -466,11 +466,8 @@ function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modd
 */
 function count_testcases($id)
 {
-  // 20071111 - franciscom
 	$test_spec = $this->get_subtree($id);
-	
  	$hash_descr_id = $this->tree_manager->get_available_node_types();
-  
  	$qty = 0;
 	if(count($test_spec))
 	{

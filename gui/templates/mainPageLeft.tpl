@@ -1,9 +1,11 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.2 2008/01/07 07:58:04 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.3 2008/01/20 15:37:37 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
+      20070523 - franciscom - test case search link enabled only if session testproject
+                              has test cases.
       20070523 - franciscom - new config constant $smarty.const.TL_ITEM_BULLET_IMG
       20070227 - franciscom - fixed minor presentation bug
 *}
@@ -21,9 +23,11 @@
   	      {lang_get s='href_browse_tc'}
   	   {/if}
   	  </a>
+      {if $hasTestCases}
       <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
           <a href="{$launcher}?feature=searchTc">{lang_get s='href_search_tc'}</a>
+      {/if}    
   		 {if $modify_tc_rights eq "yes"}
   	        <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />

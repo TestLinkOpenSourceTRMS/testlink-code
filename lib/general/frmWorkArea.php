@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/01/11 00:54:33 $ by $Author: havlat $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/01/20 15:39:18 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -129,7 +129,7 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 	  {
 	     // final url will be composed adding to $basehref 
 	     // (one TL variable available on smarty templates) to $link_to_op
-	     $link_to_op="lib/plan/buildNew.php?do_action=create";
+	     $link_to_op="lib/plan/buildEdit.php?do_action=create";
 	     $hint_text=lang_get('create_a_build');
 	  }  
 	  else

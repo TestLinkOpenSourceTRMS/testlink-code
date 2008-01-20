@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchForm.php,v 1.13 2007/12/08 19:10:19 schlundus Exp $
+ * $Id: searchForm.php,v 1.14 2008/01/20 15:39:18 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
 **/
@@ -11,18 +11,28 @@ testlinkInitPage($db);
 
 $template_dir='testcases/';
 
-$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
 $tproject_mgr = new testproject($db);
+$args=init_args();
 
 $enabled=1;
 $no_show_filter=null;
-
-$cf_map_for_tcases = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+$mainCaption=lang_get('testproject') . " " . $args->tprojectName;
+$cf_map_for_tcases = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
 	                                                                           $no_show_filter,'testcase');
 
 $smarty = new TLSmarty();
-$smarty->assign('keywords', $tproject_mgr->getKeywords($tproject_id));
+$smarty->assign('mainCaption',$mainCaption);
+$smarty->assign('keywords', $tproject_mgr->getKeywords($args->tprojectID));
 $smarty->assign('design_cf', $cf_map_for_tcases);
 $smarty->display($template_dir . 'tcSearchForm.tpl');
 ?>
 
+<?php
+function init_args()
+{
+    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+    return $args;
+}
+?>

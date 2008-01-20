@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/01/19 17:50:59 $ $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/01/20 15:39:17 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
@@ -1296,11 +1296,16 @@ function get_exec_status($id)
 
 
 /*
-  function: 
+  function: getInternalID
 
-  args :
+  args: stringID: external test case ID, an string with this components
+                  XXXXXGNN
+                  
+                  XXXXX: test case prefix, exists one for each test project
+                  G: glue character
+                  NN: test case number (generated using testprojects.tc_counter field)  
   
-  returns: 
+  returns: internal id (node id in nodes_hierarchy)
 
 */
 function getInternalID($stringID,$glueCharacter)

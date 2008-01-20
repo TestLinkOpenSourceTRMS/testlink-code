@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.3 2007/12/31 16:23:15 franciscom Exp $
+$Id: buildEdit.tpl,v 1.1 2008/01/20 15:36:15 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 

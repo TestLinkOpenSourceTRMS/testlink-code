@@ -1,10 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.10 2008/01/04 20:30:23 franciscom Exp $ 
+$Id: index.php,v 1.11 2008/01/20 15:37:19 franciscom Exp $ 
 
-rev :
-     20080103 - franciscom - minor adjustments on link descriptions
+rev:
+    20080120 - franciscom - added link to README
+    20080103 - franciscom - minor adjustments on link descriptions
 */
 require_once("../cfg/const.inc.php");
 
@@ -46,6 +47,9 @@ $_SESSION['testlink_version']=TL_VERSION;
 			<p />
 			<a href="./migration/migrate_17/index.php">Migration from 1.7.2 (or greater) to 1.8.0 </a>
 			<p />
+			<p />
+			<a href="../README">Access README for install/upgrade details </a>
+			
 			
 		</td>
       </tr>

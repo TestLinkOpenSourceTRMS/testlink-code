@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.6 2008/01/04 20:30:23 franciscom Exp $ 
+$Id: index.php,v 1.7 2008/01/20 15:37:50 franciscom Exp $ 
 
 rev :
      20080103 - franciscom - removed setting of $_SESSION['testlink_version']
@@ -72,6 +72,10 @@ $operation='Migration from 1.6.2 to 1.7.x';
       <p class="headers">
       THIS MIGRATION PROCESS IS NOT 100% AUTOMATIC.
       </p>
+      <p class="headers">
+      Please BACKUP your Database Before starting.
+      </p>
+
       <ul>
       <li><span class="headers">STEP ONE:</span> Add this page to your bookmarks or save the URL.
       <li><span class="headers">STEP TWO:</span> Go back to the main installation screen and start a New Installation.

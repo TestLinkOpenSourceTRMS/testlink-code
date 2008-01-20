@@ -4,21 +4,17 @@
  *
  * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/20 10:00:51 $  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/20 15:37:19 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *
  * This page allows configuration of the accessrights needed for
  * executing pages
  *
- * 20071206 - franciscom - page name changes
- * 20060818 - franciscom - changes due to addition of new rights
- *
- *												 role_management
- *                         user_role_assignment
- *
- *
+ * rev:
+ *      20080120 - franciscom - buildnew -> buildedit 
+ *      20071206 - franciscom - page name changes
  *
  * 
 **/
@@ -63,7 +59,7 @@ $test_exec=array("$test_exec_url/execnavigator.php" => array("testplan_execute",
 $kword_admin=array("$kword_admin_url/keywordsview.php"   => array("mgt_view_key",),
  						       "$kword_admin_url/keywordsassign.php" => array("mgt_modify_key",));
 
-$build_admin=array("$tplan_admin_url/buildnew.php" => array("testplan_create_build",));
+$build_admin=array("$tplan_admin_url/buildedit.php" => array("testplan_create_build",));
 
 $tplan_admin=array("$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),
 						       "$tplan_admin_url/planaddtc.php" => array("testplan_planning",),														

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.8 2008/01/19 17:12:46 franciscom Exp $
+$Id: buildView.tpl,v 1.9 2008/01/20 15:36:15 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -15,7 +15,7 @@ Rev:
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
-{assign var="managerURL" value="lib/plan/buildNew.php"}
+{assign var="managerURL" value="lib/plan/buildEdit.php"}
 {assign var="editAction" value="$managerURL?do_action=edit&build_id="}
 {assign var="deleteAction" value="$managerURL?do_action=delete&build_id="}
 {assign var="createAction" value="$managerURL?do_action=create"}

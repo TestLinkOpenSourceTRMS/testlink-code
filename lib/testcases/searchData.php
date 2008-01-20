@@ -1,7 +1,10 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.27 2008/01/17 21:22:45 schlundus Exp $
+ * $Id: searchData.php,v 1.28 2008/01/20 15:39:18 franciscom Exp $
  * Purpose:  This page presents the search results. 
+ *
+ * rev:
+ *     20080120 - franciscom
 **/
 require('../../config.inc.php');
 require_once("common.php");
@@ -10,89 +13,77 @@ require_once("attachments.inc.php");
 testlinkInitPage($db);
 
 $template_dir = 'testcases/';
-
-$_POST = strings_stripSlashes($_POST);
-
-$name = isset($_POST['name']) ? trim($_POST['name']) : null;
-$summary = isset($_POST['summary']) ? trim($_POST['summary']) : null;
-$steps = isset($_POST['steps']) ? trim($_POST['steps']) : null;
-$expected_results = isset($_POST['expected_results']) ? trim($_POST['expected_results']) : null;
-$keyword_id = isset($_POST['key']) ? intval($_POST['key']) : 0;
-$tc_id = isset($_POST['TCID']) ? intval($_POST['TCID']) : 0;
-$version = isset($_POST['version']) ? intval($_POST['version']) : 0;
-
-// BUGID 
-$custom_field_id = isset($_POST['custom_field_id']) ? intval($_POST['custom_field_id']) : 0;
-$custom_field_value = isset($_POST['custom_field_value']) ? trim($_POST['custom_field_value']) : null;
-
-$arrTc = null;
-$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-$tproject = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_mgr = new testproject($db);
 
+
 $map = null;
-if ($tproject)
+$args=init_args();
+if ($args->tprojectID)
 {
 	$from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
   
-	$a_tcid = $tproject_mgr->get_all_testcases_id($tproject);
+	$a_tcid = $tproject_mgr->get_all_testcases_id($args->tprojectID);
 	$filter = null;
 	if(count($a_tcid))
 	{
-		if($tc_id)
+	  
+		if($args->targetTestCase)
 		{
-			$filter['by_tc_id'] = " AND NHB.parent_id = {$tc_id} ";
+      $tcase_mgr = new testcase ($db);
+      $cfg = config_get('testcase_cfg');
+		  $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);  
+			$filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
 		}
 		else
 		{
 			$filter['by_tc_id'] = " AND NHB.parent_id IN (" . implode(",",$a_tcid) . ") ";
 		}
 	
-		if($version)
+		if($args->version)
 		{
-			$filter['by_version'] = " AND version = {$version} ";
+			$filter['by_version'] = " AND version = {$args->version} ";
 		}
      
-		if($keyword_id)				
+		if($args->keyword_id)				
 		{
 			$from['by_keyword_id'] = ' ,testcase_keywords KW';
-			$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$keyword_id} ";	
+			$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
 		}
 
-        if(strlen($name))
-        {
-            $name =  $db->prepare_string($name);
-        	$filter['by_name'] = " AND NHA.name like '%{$name}%' ";
-        }
+    if(strlen($args->name))
+    {
+        $args->name =  $db->prepare_string($args->name);
+    	  $filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
+    }
       
-	    if(strlen($summary))
+	    if(strlen($args->summary))
         {
-            $summary = $db->prepare_string($summary);
-        	$filter['by_summary'] = " AND summary like '%{$summary}%' ";	
+            $summary = $db->prepare_string($args->summary);
+        	$filter['by_summary'] = " AND summary like '%{$args->summary}%' ";	
         }    
 
-        if(strlen($steps))
+        if(strlen($args->steps))
         {
-            $steps = $db->prepare_string($steps);
-        	$filter['by_steps'] = " AND steps like '%{$steps}%' ";	
+          $args->steps = $db->prepare_string($args->steps);
+        	$filter['by_steps'] = " AND steps like '%{$args->steps}%' ";	
         }    
 
-        if(strlen($expected_results))
+        if(strlen($args->expected_results))
         {
-            $expected_results = $db->prepare_string($expected_results);
-        	$filter['by_expected_results'] = " AND expected_results like '%{$expected_results}%' ";	
+          $args->expected_results = $db->prepare_string($args->expected_results);
+        	$filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	
         }    
 
         // ------------------------------------------------------------------------------------
         // BUGID
-        if($custom_field_id > 0)
+        if($args->custom_field_id > 0)
         {
-            $custom_field_id = $db->prepare_string($custom_field_id);
-            $custom_field_value = $db->prepare_string($custom_field_value);
+            $args->custom_field_id = $db->prepare_string($args->custom_field_id);
+            $args->custom_field_value = $db->prepare_string($args->custom_field_value);
             $from['by_custom_field']= ' ,cfield_design_values CFD'; 
-            $filter['by_custom_field'] = " AND CFD.field_id={$custom_field_id} " .
+            $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
 				 						                     " AND CFD.node_id=NHA.id " .
-			 							                     " AND CFD.value like '%{$custom_field_value}%' ";
+			 							                     " AND CFD.value like '%{$args->custom_field_value}%' ";
         }
         // ------------------------------------------------------------------------------------
 
@@ -107,6 +98,7 @@ if ($tproject)
 	}
 	
 }
+
 $smarty = new TLSmarty();
 if(count($map))
 {
@@ -118,11 +110,36 @@ if(count($map))
 	}
 	$smarty->assign('attachments',$attachments);
 	$tcase_mgr = new testcase($db);   
-	$tcase_mgr->show($smarty,array_keys($map), $userID);
+	$tcase_mgr->show($smarty, $template_dir,array_keys($map), $args->userID);
 }
 else
 {
 	$the_tpl = config_get('tpl');
 	$smarty->display($template_dir . $the_tpl['tcView']);
+}
+?>
+
+
+<?php
+function init_args()
+{
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+  
+    $strnull=array('name','summary','steps','expected_results','custom_field_value','targetTestCase');
+    foreach($strnull as $keyvar)
+    {
+        $args->$keyvar=isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
+    }
+
+    $int0=array('keyword_id','version','custom_field_id');
+    foreach($int0 as $keyvar)
+    {
+        $args->$keyvar=isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;  
+    }
+    
+    $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+    return $args;
 }
 ?>

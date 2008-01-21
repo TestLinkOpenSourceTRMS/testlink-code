@@ -13,8 +13,8 @@
  * @link http://trac-hacks.swapoff.org/wiki/XmlRpcPlugin/ "Trac XmlRpcPlugin"
  *
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/19 18:27:06 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/21 04:36:13 $
  *
  * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
  * @author Ichiro Okazaki
@@ -29,25 +29,26 @@ require_once(TL_ABS_PATH . 'third_party/xml-rpc/class-IXR.php');
 
 class tracInterface extends bugtrackingInterface
 {
-    var $dbHost = BUG_TRACK_DB_HOST;
-    var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+    var $m_dbHost = null;
+    var $m_enterBugURL = null;
     
-    var $dbConnection = null;
-    var $bConnected = false;
+    var $m_dbConnection = null;
+    var $m_bConnected = false;
     
     // Trac Variables
-    var $xmlrpcClient = null;
+    var $m_xmlrpcClient = null;
+    var $m_currentTestProjectName = null;
 
     /**
      * Constructor of bugtrackingInterface
      * put special initialization in here
      * 
-     * @version 1.0
+     * @version 1.1
      * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
      **/
     function tracInterface()
     {
-        $this->xmlrpcClient = new IXR_Client($this->dbHost);
+        // Do nothing at constructor
     }
 
     /**
@@ -57,18 +58,13 @@ class tracInterface extends bugtrackingInterface
      * @return bool returns true if the db connection was established and the 
      * db could be selected, false else
      *
-     * @version 1.0
+     * @version 1.1
      * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
      **/
     function connect()
     {
-        if ($this->xmlrpcClient->query('system.getAPIVersion')) {
-            $this->bConnected = true;
-        }
-        else {
-            $this->bConnected = false;
-        }
-        return $this->bConnected;
+        $this->m_bConnected = true;      
+        return $this->m_bConnected;
     }
 
     /**
@@ -81,7 +77,7 @@ class tracInterface extends bugtrackingInterface
      **/
     function isConnected()
     {
-        return $this->bConnected;
+        return $this->m_bConnected;
     }
 
     /**
@@ -92,7 +88,7 @@ class tracInterface extends bugtrackingInterface
      **/
     function disconnect()
     {
-        $this->bConnected = false;
+        $this->m_bConnected = false;
     }
 
     /**
@@ -104,13 +100,15 @@ class tracInterface extends bugtrackingInterface
      * @return string returns a complete URL to view the given bug, or false if the bug 
      *             wasnt found
      *
-     * @version 1.0
+     * @version 1.1
      * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
      **/
     function buildViewBugURL($id)
     {
-        $ticket_url = $this->enterBugURL . "/$id";
-        return $ticket_url;
+        $this->checkConnectionViaXmarpc();
+
+        $ticketUrl = $this->m_enterBugURL . "/$id";
+        return $ticketUrl;
     }
 
     /**
@@ -127,16 +125,20 @@ class tracInterface extends bugtrackingInterface
      **/
     function getBugStatusString($id)
     {
-        if ($this->xmlrpcClient->query('ticket.get', $id)) {
-            $xmlrpc_response = $this->xmlrpcClient->getResponse();
-            $status_string = $xmlrpc_response[3]['status'];
+        if($this->checkConnectionViaXmarpc() == false) {
+            return '';
+        }
+
+        if ($this->m_xmlrpcClient->query('ticket.get', $id)) {
+            $xmlrpcResponse = $this->m_xmlrpcClient->getResponse();
+            $statusString = $xmlrpcResponse[3]['status'];
         }
         else
         {
-            $status_string = "Error: Ticket #$id is not registered in Trac.";
+            $statusString = "Error: Ticket #$id is not registered in Trac.";
         }
-        
-        return $status_string;
+
+        return $statusString;
     }
 
     /*
@@ -158,25 +160,67 @@ class tracInterface extends bugtrackingInterface
      **/
     function getBugSummaryString($id)
     {
+        if($this->checkConnectionViaXmarpc() == false) {
+            return '';
+        }
+
         $summary_string = "Error: Ticket #$id is not registered in Trac.";
         
-        if ($this->xmlrpcClient->query('ticket.get', $id)) {
-            $xmlrpc_response = $this->xmlrpcClient->getResponse();
-            $summary_string = $xmlrpc_response[3]['summary'];
+        if ($this->m_xmlrpcClient->query('ticket.get', $id)) {
+            $xmlrpc_response = $this->m_xmlrpcClient->getResponse();
+            $summary_string = "$id. " . $xmlrpc_response[3]['summary'];
         }
         
         return $summary_string;
-    }
+     }
     
     /**
      * checks is bug id is present on BTS
      * 
-     * @return bool 
+     * @param int id the bug id
+     * 
+     * @return if the bug id exest it returns true; otherwise false
+     *
+     * @version 1.0
+     * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
      **/
     function checkBugID_existence($id)
     {
-      $status_ok = 1;
-      return $status_ok;
+        $this->checkConnectionViaXmarpc();
+        $statusOk = $this->m_xmlrpcClient->query('ticket.get', $id);
+        
+        return $statusOk;
+    }
+
+    /**
+     * Check the connection of XML-RPC each Test Project
+     * 
+     * @param int id the bug id
+     * 
+     * @return if the specified trac project exest it returns true; otherwise false
+     *
+     * @version 1.0
+     * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
+     **/
+    function checkConnectionViaXmarpc()
+    {
+        global $g_interface_bugs_project_name_mapping;
+
+        $tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xx';
+        
+        if ($this->m_currentTestProjectName != $tprojectName) {
+            if(!isset($g_interface_bugs_project_name_mapping[$tprojectName])) {
+                $this->m_bConnected = false;
+                return false;
+            }
+            $this->m_currentTestProjectName = $tprojectName;
+            $tracProjectName = $g_interface_bugs_project_name_mapping[$tprojectName];
+            $this->m_dbHost = BUG_TRACK_DB_HOST . $tracProjectName;
+            $this->m_xmlrpcClient = new IXR_Client($this->m_dbHost . '/xmlrpc');
+            $this->m_enterBugURL = $this->m_dbHost . BUG_TRACK_ENTER_BUG_HREF;
+        }
+
+        return true;
     }
 }
 ?>

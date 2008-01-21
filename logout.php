@@ -5,8 +5,8 @@
  * 
  * Filename $RCSfile: logout.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/19 17:47:47 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/01/21 20:10:54 $
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -18,7 +18,7 @@ if(!isset($_SESSION))
 	session_start();
 	$userID = $_SESSION['userID'] ?  $_SESSION['userID'] : null;
 }
-tLog(TLS("audit_user_logout"),'AUDIT',null,$userID,"users");  
+logAuditEvent(TLS("audit_user_logout"),"LOGOUT",$userID,"users");  
 session_unset();
 session_destroy();
 

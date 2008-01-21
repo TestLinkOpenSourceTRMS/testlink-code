@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/01/02 21:14:00 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -37,8 +37,7 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 		$user = new tlUser();
 		$user->login = $login;
 		$login_exists = ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK); 
-		tLog("Account exist = " . $login_exists);
-	    if ($login_exists)
+		if ($login_exists)
 	    {
 			$password_check = auth_does_password_match($user,$pwd);
 			if ($password_check->status_ok && $user->bActive)
@@ -46,20 +45,18 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 				// 20051007 MHT Solved  0000024 Session confusion 
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
-				{
 					$msg = 'sessionExists';
-					tLog("Session exists. No second login is allowed", 'INFO');
-				}
 				else
 				{ 
 					$_SESSION['filter_tp_by_product'] = 1;
-					
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
 					$result = tl::OK;
 				}
 			}
+			else
+				logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
 		}
 	}
 	return $result;

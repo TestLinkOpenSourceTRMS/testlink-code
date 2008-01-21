@@ -17,7 +17,12 @@
 * @author Andreas Morsing : errors in extended level will be shown in red instead of
 * 							inlined as comments
 */
-function tLog($message, $level = 'DEBUG', $source = null,$objectID = null,$objectType = null) 
+function logAuditEvent($message,$activityCode = null,$objectID = null,$objectType = null)
+{
+	return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
+}
+
+function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$objectType = null, $activityCode = null) 
 {
 	global $g_tlLogger;
 	if (!$g_tlLogger)
@@ -25,7 +30,7 @@ function tLog($message, $level = 'DEBUG', $source = null,$objectID = null,$objec
 	$t = $g_tlLogger->getTransaction();
 	//to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
 	$logLevel = is_string($level) ? tlLogger::$revertedLogLevels[$level] : $level;
-	$t->add($logLevel,$message,$source,null,$objectID,$objectType);
+	$t->add($logLevel,$message,$source,$activityCode,$objectID,$objectType);
 	
 	/*
 		//SCHLUNDUS: could be a special "to page" logger?

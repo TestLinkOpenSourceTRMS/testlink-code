@@ -5,15 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/28 18:55:05 $ by $Author: schlundus $
- *
- *
- * 20071227 - franciscom - refactoring
- * 20071201 - franciscom - new web editor code
- * 20070901 - franciscom - BUGID 1016 
- * 20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
- *
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/21 20:10:55 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -25,7 +18,7 @@ $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 // 20070901 - BUGID 1016
-// lang_get() is used inside roles.inc.php to translate user right descriptionm and needs $_SESSION info.
+// lang_get() is used inside roles.inc.php to translate user right description and needs $_SESSION info.
 // If no _SESSION info is found, then default locale is used.
 // We need to be sure _SESSION info exists before using lang_get(); in any module.
 //
@@ -114,14 +107,6 @@ function init_args()
 	return $args;
 }
 
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function doCreate(&$db,$args)
 {
 	$rights = implode("','",array_keys($args->grant));
@@ -131,9 +116,21 @@ function doCreate(&$db,$args)
 	$op->role->description = $args->notes;
 	$op->role->dbID = $args->roleid;
 	
+	if ($args->roleid == 0)
+	{
+		$op->action =  "do_add";
+		$auditMsg = "audit_role_created";
+	}
+	else
+	{
+		$op->action = "updated";
+		$auditMsg = "audit_role_saved";
+	}
 	$result = $op->role->writeToDB($db);
+	if ($result >= tl::OK)
+		tLog(TLS($auditMsg),'AUDIT',null,$op->role->dbID,"roles");
+
 	$op->userFeedback = getRoleErrorMessage($result);
-	$op->action = ($args->roleid == 0) ? "do_add" : "updated";
  
 	return $op;
 }

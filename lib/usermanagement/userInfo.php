@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.9 $
-* @modified $Date: 2008/01/18 22:22:53 $
+* @version $Revision: 1.10 $
+* @modified $Date: 2008/01/21 20:10:55 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -61,6 +61,9 @@ if (($bEdit || $bChangePwd) && $updateResult >= tl::OK)
 		setUserSession($db,$user->login, $userID, $user->globalRoleID, $user->emailAddress, $user->locale);
 	}
 }
+$failedLogins = $g_tlLogger->getAuditEventsFor($userID,"users","LOGIN_FAILED",10);
+$successfulLogins = $g_tlLogger->getAuditEventsFor($userID,"users","LOGIN",10);
+
 $msg = null;
 if ($updateResult)
 	$msg = getUserErrorMessage($updateResult);
@@ -70,6 +73,8 @@ $smarty = new TLSmarty();
 $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('user',$user);
 $smarty->assign('msg', $msg);
+$smarty->assign('failedLogins', $failedLogins);
+$smarty->assign('successfulLogins', $successfulLogins);
 $smarty->assign('update_title_bar', $bEdit);
 $smarty->display($template_dir . $default_template);
 ?>

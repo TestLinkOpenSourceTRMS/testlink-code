@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -449,10 +449,10 @@ class database
 	 * @param string $column the name of the column
 	 * @return array an enumerated array, which contains all the values
 	 **/
-	function fetchColumnsIntoArray($query,$column)
+	function fetchColumnsIntoArray($query,$column,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query);
+		$result = $this->exec_query($query,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -470,10 +470,10 @@ class database
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
-	function fetchRowsIntoMap($query,$column,$bCumulative = 0)
+	function fetchRowsIntoMap($query,$column,$bCumulative = 0,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query);
+		$result = $this->exec_query($query,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -496,9 +496,9 @@ class database
 	 * @return array return an assoc array whose keys are the values of column1 
 	 *				 and the values are the values of column2 
 	 **/
-	function fetchColumnsIntoMap($query,$column1,$column2)
+	function fetchColumnsIntoMap($query,$column1,$column2,$limit = -1)
 	{
-		$result = $this->exec_query($query);
+		$result = $this->exec_query($query,$limit);
 		$items = null;
 		if ($result)
 		{
@@ -529,11 +529,11 @@ class database
 
 
 	// the old selectData with new name.
-	function get_recordset($sql,$fetch_mode=null)
+	function get_recordset($sql,$fetch_mode = null,$limit = -1)
 	{
 		$output = null;
 
-		$result = $this->exec_query($sql);
+		$result = $this->exec_query($sql,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -553,10 +553,10 @@ class database
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
-	function fetchArrayRowsIntoMap($query,$column)
+	function fetchArrayRowsIntoMap($query,$column,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query);
+		$result = $this->exec_query($query,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -568,10 +568,10 @@ class database
 		return $items;
 	}
 
-	function fetchMapRowsIntoMap($query,$column_main_key,$column_sec_key)
+	function fetchMapRowsIntoMap($query,$column_main_key,$column_sec_key,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query);
+		$result = $this->exec_query($query,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))

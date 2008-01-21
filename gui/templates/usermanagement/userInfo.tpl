@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.3 2007/12/19 18:27:06 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.4 2008/01/21 20:10:54 schlundus Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
@@ -94,6 +94,24 @@ function valAllText(form)
 {else}
    <p>{lang_get s='your_password_is_external'}<p>
 {/if}
+
+<h1>{lang_get s="audit_login_history"}</h1>
+<div>
+	<h2>{lang_get s="audit_last_succesful_logins"}</h2>
+	{foreach from=$successfulLogins item=event}
+	<span>{localize_timestamp ts=$event->timestamp}</span>
+	<span>{$event->description|escape}</span>
+	<br/>
+	{/foreach}
+</div>
+<div>
+	<h2>{lang_get s="audit_last_failed_logins"}</h2>
+	{foreach from=$failedLogins item=event}
+	<span>{localize_timestamp ts=$event->timestamp}</span>
+	<span>{$event->description|escape}</span>
+	<br/>
+	{/foreach}
+</div>
 
 </div>
 

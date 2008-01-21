@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.94 $ $Author: schlundus $
- * @modified $Date: 2008/01/17 21:22:45 $
+ * @version $Revision: 1.95 $ $Author: schlundus $
+ * @modified $Date: 2008/01/21 20:10:54 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -391,7 +391,9 @@ function localize_timestamp_smarty($params, &$smarty)
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 {
 	$format = config_get($what);
-	$retVal = strftime($format, strtotime($value));	
+	if (!is_numeric($value))
+		$value = strtotime($value);
+	$retVal = strftime($format, $value);	
 	if(isset($params['var']))
 		$smarty->assign($params['var'],$retVal);
 	return $retVal;

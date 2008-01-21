@@ -2,18 +2,17 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/19 17:17:25 $ $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/01/21 20:10:54 $ $Author: schlundus $
  * @author franciscom
- *
- * rev:
- *     20080119 - franciscom - added pseudo standard file documentation header
-*/
+ */
 
 //shorthand function for creating meta strings
 function TLS($label,$params = null)
 {
-	return new tlMetaString($label,$params);
+	$args = func_get_args();
+	array_shift($args);
+	return new tlMetaString($label,$args);
 }
 
 class tlMetaStringHelper
@@ -35,8 +34,7 @@ class tlMetaString extends tlObject
 	}
 	public function initialize($label,$args = null)
 	{
-		$args = func_get_args();
-		$this->helper->label = array_shift($args);
+		$this->helper->label = $label;
 		$this->helper->params = $args;
 	}
 	static public function unserialize($representation)
@@ -84,7 +82,7 @@ class tlMetaString extends tlObject
 			{
 				$subjects[] = "{%".($i+1)."}";
 			}
-			$replacements = $param;
+			$replacements[] = $param;
 		}
 		$str = str_replace($subjects,$replacements,$str);
 				

@@ -5,10 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/01 22:20:44 $ by $Author: schlundus $
- *
- *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/01/21 20:10:55 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -60,14 +58,6 @@ $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('role_id_replacement',config_get('role_replace_for_deleted_roles'));
 $smarty->display($template_dir . $default_template);
 
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -79,20 +69,14 @@ function init_args()
     return $args;  
 }
 
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function deleteRole(&$db,$roleID)
 {
 	$userFeedback = 'ok';
 	$role = new tlRole($roleID);
-	if ($role && $role->deleteFromDB($db) < tl::OK)
+	if ($role->deleteFromDB($db) < tl::OK)
 		$userFeedback = lang_get("error_role_deletion");
+	else
+		tLog(TLS("audit_role_deleted"),'AUDIT',null,$roleID,"roles");
     return $userFeedback;
 }
 ?>

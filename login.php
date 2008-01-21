@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/01/19 17:47:47 $ by $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -64,13 +64,10 @@ if (!is_null($login))
 	unset($_SESSION['basehref']);
 	setPaths();
 	if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)
-	{
-		tLog(TLS("audit_login_failed",$login),'AUDIT',null,null,"users");
 		$note = lang_get('bad_user_passwd');
-	}
 	else
 	{
-		tLog(TLS("audit_login_succeeded",$login),'AUDIT',null,$_SESSION['currentUser']->dbID,"users");
+		logAuditEvent(TLS("audit_login_succeeded",$login,$_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
 		redirect($_SESSION['basehref']."index.php".($preqURI ? "?reqURI=".urlencode($preqURI) :""));
 		exit();
 	}

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/01/20 15:39:17 $ $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/01/21 07:42:16 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20080120 - franciscom - show() interface changes
  * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
  * 20080114 - franciscom - new method getPrefix()
  * 20080103 - franciscom - changes in:  get_last_execution()
@@ -366,13 +367,15 @@ function get_all()
         $user_id: user requesting operation
         [$version_id]: you can work on ONE test case version, or on ALL
                        default: ALL
-        [$action]
-        [$msg_result]
-        [$refresh_tree]: controls if tree view is refreshed after every operation.
-                         default: yes
-        [$user_feedback]:
-        [$disable_edit]: used to overwrite user rights
-                         default: 0 -> no
+
+        [viewer_args]: map with keys
+                       action
+                       msg_result
+                       refresh_tree: controls if tree view is refreshed after every operation.
+                                     default: yes 
+                       user_feedback
+                       disable_edit: used to overwrite user rights
+                                        default: 0 -> no
   
   returns: 
   
@@ -381,42 +384,75 @@ function get_all()
        added disable_edit argument
 
 */
-function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
-              $msg_result='', $refresh_tree='yes', $user_feedback='', $disable_edit=0)
+function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,$viewer_args=null)
 {
+
+  $status_ok=1;
+  $viewer_defaults=array('action' => '', 'msg_result' => '','user_feedback' => '',
+                         'refresh_tree' => 'yes', 'disable_edit' => 0,
+                         'display_testproject' => 0,'display_parent_testsuite' => 0);
+
+  if( !is_null($viewer_args) )
+  {
+      foreach($viewer_defaults as $key => $value)                         
+      {
+          if(isset($viewer_args[$key]) )
+          {
+                $viewer_defaults[$key]=$viewer_args[$key];
+          }  
+      }
+  }
   
   $req_mgr = new requirement_mgr($this->db);
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
-
-	$arrReqs = null;
-	$can_edit = $disable_edit == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
-
-	if(is_array($id))
-	{
-		$a_id = $id;
-	}
-	else
-	{
-		$a_id = array($id);  
-	}
- 
+  $tprojectName='';
+  $parentTestSuiteName='';
+  $requirements_feature=null;
 	$tc_current_version = array();
 	$tc_other_versions = array();
 	$status_quo_map = array();
 	$keywords_map = array();
 	$arrReqs = array();
-  
-  // 20080113 - franciscom
-  $path2root=$this->tree_manager->get_path($a_id[0]);
-  $tprojectID=$path2root[0]['parent_id'];
-  $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
-  
-  if( strlen(trim($tcasePrefix)) > 0 )
+
+	$can_edit = $viewer_defaults['disable_edit'] == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
+
+	if(is_array($id))
+	{
+		  $a_id = $id;
+	}
+	else
+	{
+	    $status_ok=$id > 0 ? 1 : 0;
+		  $a_id = array($id);  
+	}
+ 
+  if( $status_ok )
   {
-       $tcasePrefix .= $tcase_cfg->glue_character;
+      $path2root=$this->tree_manager->get_path($a_id[0]);
+      $tprojectID=$path2root[0]['parent_id'];
+      $info=$this->tproject_mgr->get_by_id($tprojectID);
+      $requirements_feature=$info['option_reqs'];
+      
+      if( $viewer_defaults['display_testproject'] )
+      {
+          $tprojectName=$info['name'];
+      }
+      
+      if( $viewer_defaults['display_parent_testsuite'] )
+      {
+          $parent_idx=count($path2root)-2;
+          $parentTestSuiteName=$path2root[$parent_idx]['name'];
+      }
+      
+      $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+      if( strlen(trim($tcasePrefix)) > 0 )
+      {
+           $tcasePrefix .= $tcase_cfg->glue_character;
+      }
   }
+  
   
 	foreach($a_id as $key => $tc_id)
 	{
@@ -446,7 +482,6 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 		}
 		
 		// get assigned REQs
-		// $arrReqs[] = $req_mgr->getReq4Tc($this->db,$tc_id);
     $arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
 
 		// custom fields
@@ -458,22 +493,26 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 		$smarty->assign('cf',$cf_smarty);	
  	}
  	
+	$smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
+	$smarty->assign('sqlResult',$viewer_defaults['msg_result']);
+	$smarty->assign('action',$viewer_defaults['action']);
+	$smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
+
+	$smarty->assign('tprojectName',$tprojectName);
+  $smarty->assign('parentTestSuiteName',$parentTestSuiteName);
+
 	$smarty->assign('execution_types',$this->execution_types);
-	$smarty->assign('user_feedback',$user_feedback);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
-	$smarty->assign('action',$action);
 	$smarty->assign('users',tlUser::getAll($this->db,null,'id'));
-	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);
 	$smarty->assign('can_delete_version',$can_edit);
 	$smarty->assign('status_quo',$status_quo_map);
-	$smarty->assign('refresh_tree',$refresh_tree);
 	$smarty->assign('testcase_curr_version',$tc_current_version);
 	$smarty->assign('testcase_other_versions',$tc_other_versions);
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
-	$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 	
+	$smarty->assign('opt_requirements',$requirements_feature);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->display($template_dir . $the_tpl['tcView']);
 }

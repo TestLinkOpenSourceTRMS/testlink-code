@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.6 2008/01/14 08:08:08 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.7 2008/01/21 07:42:05 franciscom Exp $
 viewer for test case in test specification
 
 20080113 - franciscom - changed format for test case id + name
@@ -18,6 +18,15 @@ viewer for test case in test specification
 
 
 {if $args_show_title == "yes"}
+    {if $args_tproject_name != ''}
+     <h1>{lang_get s='testproject'} {$args_tproject_name|escape} </h1>
+     <br />
+    {/if}
+    {if $args_tsuite_name != ''}
+     <h1>{lang_get s='testsuite'} {$args_tsuite_name|escape} </h1>
+     <br />
+    {/if}
+
 <h1>{lang_get s='title_test_case'} {$args_testcase.name|escape} </h1>
 {/if}
 	{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}

@@ -3,20 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.31 2008/01/19 17:51:21 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.32 2008/01/21 07:42:16 franciscom Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
- *      20080119 - franciscom - code clean up
+ *      20080120 - franciscom - show() method for test cases - interface changes
  *      20070930 - franciscom - REQ - BUGID 1078
  * 
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once("../functions/attachments.inc.php");
+require_once("attachments.inc.php");
 testlinkInitPage($db);
 
 $template_dir='testcases/';
@@ -41,14 +41,26 @@ switch($args->feature)
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
 		
-	    $_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
+    $_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
 		$item_mgr->show($smarty,$template_dir,$args->id);
 		break;
 
 	case 'testcase':
+		$spec_cfg = config_get('spec_cfg');
+    $viewerArgs=array('action' => '', 'msg_result' => '','user_feedback' => '');
+    $viewerArgs['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
+    if(isset($_SESSION['tcspec_refresh_on_action']))
+    {
+			$viewerArgs['refresh_tree']=$_SESSION['tcspec_refresh_on_action'];
+    }
+    $viewerArgs['disable_edit'] = !$args->allow_edit;
+
 		$item_mgr = new testcase($db);
     if( !is_null($args->targetTestCase) )
     {
+	     $viewerArgs['display_testproject'] = 1;
+	     $viewerArgs['display_parent_testsuite'] = 1;
+
        // need to get internal Id from External ID
        $cfg = config_get('testcase_cfg');
        $args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character); 
@@ -60,19 +72,10 @@ switch($args->feature)
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachmentsTpl);
 				
-		$no_msg = '';
-		$no_action = '';
-		$no_user_feedback = '';
-
-		$spec_cfg = config_get('spec_cfg');
-		$do_refresh_yes_no=$spec_cfg->automatic_tree_refresh?"yes":"no";
-		if(isset($_SESSION['tcspec_refresh_on_action']))
-			$do_refresh_yes_no=$_SESSION['tcspec_refresh_on_action'];
     	
-	    // 20070930 - franciscom - REQ - BUGID 1078
-    	// added two arguments on call.
-		$item_mgr->show($smarty,$template_dir,$args->id,$args->user_id,TC_ALL_VERSIONS,
-		                $no_action,$no_msg,$do_refresh_yes_no,$no_user_feedback,!$args->allow_edit);
+	  // 20070930 - franciscom - REQ - BUGID 1078
+    // added two arguments on call.
+		$item_mgr->show($smarty,$template_dir,$args->id,$args->user_id,TC_ALL_VERSIONS,$viewerArgs);
 		break;
 
 	default:

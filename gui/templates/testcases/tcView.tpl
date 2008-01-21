@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.2 2007/12/29 08:33:02 franciscom Exp $
+$Id: tcView.tpl,v 1.3 2008/01/21 07:42:05 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 *}
 
@@ -49,6 +49,9 @@ Purpose: smarty template - view test case in test specification
 		         args_cf=$cf[idx] 
 		         args_tcase_cfg=$tcase_cfg
 		         args_users=$users
+
+		         args_tproject_name=$tprojectName
+		         args_tsuite_name=$parentTestSuiteName
 		         }
 		
 		{assign var="tcID" value=$testcase_curr_version[idx][0].testcase_id}

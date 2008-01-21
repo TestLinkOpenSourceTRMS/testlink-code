@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.152 $
- * @modified $Date: 2008/01/19 12:17:31 $ by $Author: franciscom $
+ * @version $Revision: 1.153 $
+ * @modified $Date: 2008/01/21 20:14:20 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -297,7 +297,7 @@ $g_gui->webeditor='fckeditor';
 $g_api_ui_show = TRUE; 
 
 // used to display API ID info in the *View pages 
-$g_api_id_format	= "[API ID: %s ]";
+$g_api_id_format	= "[ID: %s ]";
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/01/18 20:40:17 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/01/21 20:21:17 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -37,7 +37,7 @@ if (strlen($login))
 		$result = resetPassword($db,$userID,$note);
 		if ($result >= tl::OK)
 		{
-			tLog(TLS("audit_pwd_reset_requested"),'AUDIT',null,$userID,"users");
+			logAuditEvent(TLS("audit_pwd_reset_requested"),"PWD_RESET",$userID,"users");
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
 		}

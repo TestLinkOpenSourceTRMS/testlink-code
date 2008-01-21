@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/01/21 20:21:17 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -35,7 +35,6 @@ $login = isset($_POST['login']) ? $_POST['login'] : null;
 $pwd = isset($_POST['password']) ? $_POST['password'] : null;
 $preqURI = (isset($_POST['reqURI']) && strlen($_POST['reqURI'])) ? $_POST['reqURI'] : null;
 
-$note = lang_get('please_login');
 // assign a comment for login
 switch($note)
 {
@@ -56,6 +55,7 @@ switch($note)
  				   lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 		break;
 	default:
+		$note = lang_get('please_login');
 		break;
 }
 if (!is_null($login))

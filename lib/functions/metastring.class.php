@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/01/21 20:10:54 $ $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
  * @author franciscom
  */
 
@@ -40,13 +40,16 @@ class tlMetaString extends tlObject
 	static public function unserialize($representation)
 	{
 		//at the moment we do this, maybe there is a more readable serialization
-		$helper = unserialize($representation);
-		$metaString = null;
-		if ($helper)
+		$helper = @unserialize($representation);
+		$metaString = new tlMetaString();
+		if (!$helper)
 		{
-			$metaString = new tlMetaString();
-			$metaString->helper = &$helper;
-		}	
+			$helper = new tlMetaStringHelper();
+			$helper->label = $representation;
+			$helper->params = null;
+		}
+		
+		$metaString->helper = &$helper;
 		return $metaString;
 	}
 	public function serialize()

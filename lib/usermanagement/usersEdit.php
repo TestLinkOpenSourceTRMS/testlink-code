@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.8 $
-* @modified $Date: 2008/01/18 22:22:53 $ $Author: schlundus $
+* @version $Revision: 1.9 $
+* @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -51,7 +51,7 @@ if ($args->do_update)
 		}
 		if ($sqlResult >= tl::OK)
 		{
-			tLog(TLS("audit_user_created"),'AUDIT',null,$user->dbID,"users");
+			logAuditEvent(TLS("audit_user_created",$user->login),"CREATE",$user->dbID,"users");
 			$user_feedback = sprintf(lang_get('user_created'),$args->login);
 		}
 		else 
@@ -73,7 +73,7 @@ if ($args->do_update)
 			$sqlResult = $user->writeToDB($db);
 			if ($sqlResult >= tl::OK)
 			{
-				tLog(TLS("audit_user_saved"),'AUDIT',null,$user->dbID,"users");
+				logAuditEvent(TLS("audit_user_saved",$user->login),"SAVE",$user->dbID,"users");
 				if ($sessionUserID == $args->user_id)
 				{
 					$_SESSION['currentUser'] = $user;
@@ -95,7 +95,7 @@ else if ($args->do_reset_password && $user_id)
 	$result = resetPassword($db,$user_id,$user_feedback);
 	if ($result >= tl::OK)
 	{
-		tLog(TLS("audit_pwd_reset_requested"),'AUDIT',null,$user_id,"users");
+		logAuditEvent(TLS("audit_pwd_reset_requested",$user->login),"PWD_RESET",$user_id,"users");
 		$user_feedback = lang_get('password_reseted');  		
 	}
 }

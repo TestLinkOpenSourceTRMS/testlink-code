@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.248 $
- * @modified $Date: 2008/01/21 20:10:55 $ $Author: schlundus $
+ * @version $Revision: 1.249 $
+ * @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1966,4 +1966,5 @@ $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!
 //audit log entries
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
+$TLS_audit_role_saved = "Role '{%1}' was saved!";
 ?>

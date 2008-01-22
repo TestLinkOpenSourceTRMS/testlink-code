@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/18 22:22:53 $ -  $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/22 21:52:19 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -42,7 +42,7 @@ switch($operation)
 			$sqlResult = $user->deleteFromDB($db);
 			if ($sqlResult >= tl::OK)
 			{
-				tLog(TLS("audit_user_deleted"),'AUDIT',null,$user_id,"users");
+				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$user_id,"users");
 				//if the users deletes itself then logout
 				if ($user_id == $_SESSION['currentUser']->dbID)
 				{
@@ -62,7 +62,7 @@ switch($operation)
 		$APIKey = new APIKey();
 		$result = $APIKey->addKeyForUser($user_id);
 		if ($result)
-			tLog(TLS("audit_user_apikey_set"),'AUDIT',null,$user_id,"users");
+			logAuditEvent(TLS("audit_user_apikey_set"),"CREATE",$user_id,"users");
 		break;
 	case 'order_by_role':
 	case 'order_by_login':

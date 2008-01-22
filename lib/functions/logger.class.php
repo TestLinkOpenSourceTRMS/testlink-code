@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/01/21 20:10:54 $ $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -60,9 +60,13 @@ class tlLogger extends tlObject
 	{
 		parent::__destruct();
 	}
-	public function getAuditEventsFor($objectID,$objectType,$activityCodes = null,$limit = -1)
+	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1)
 	{
-		return $this->eventManager->getAuditEventsFor($objectID,$objectType,$activityCodes,$limit);
+		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,$limit);
+	}
+	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1)
+	{
+		return $this->eventManager->getEventsFor(null,$objectIDs,$objectTypes,$activityCodes,$limit);
 	}
 	/*
 		set the log level filter, only events which matches the filter can pass
@@ -179,6 +183,18 @@ class tlTransaction extends tlDBObject
 			$this->close();
 		parent::__destruct();			
 	}
+	
+	public function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
+	{
+		$this->loggers = null;
+		$this->name = null;
+		$this->entryPoint = null;
+		$this->startTime = null;
+		$this->userID = null;
+		$this->sessionID = null;
+		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+			$this->dbID = null;
+	}
 	/* 
 		closes the transaction 
 	*/
@@ -206,7 +222,24 @@ class tlTransaction extends tlDBObject
 	}
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
-		return self::handleNotImplementedMethod(__FUNCTION__);
+		$this->_clean($options);
+		$query = " SELECT id,entry_point,start_time,end_time,user_id,session_id FROM transactions ";
+		$clauses = null;
+		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+			$clauses[] = "id = {$this->dbID}";		
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
+		$info = $db->fetchFirstRow($query);			 
+		if ($info)
+		{
+			$this->dbID = $info['id'];
+			$this->entry_point = $info['entry_point'];
+			$this->startTime = $info['start_time'];
+			$this->endTime = $info['end_time'];
+			$this->userID = $info['user_id'];
+			$this->session_id = $info['session_id'];
+		}
+		return $info ? tl::OK : tl::ERROR;
 	}
 	public function writeToDB(&$db)
 	{
@@ -287,18 +320,36 @@ class tlEventManager extends tlObjectWithDB
 
         return self::$s_instance;
     }
-	public function getAuditEventsFor($objectID,$objectType,$activityCodes = null,$limit = -1)
+	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1)
 	{
-		$objectID = $this->db->prepare_int($objectID);
-		$objectType = $this->db->prepare_string($objectType);
-		$query = "SELECT id FROM events WHERE log_level = ".tlLogger::AUDIT." AND object_id = {$objectID} AND object_type = '{$objectType}'";
-		
+		$clauses = null;
+		if (!is_null($logLevels))
+		{
+			$logLevels = (array) $logLevels;
+			$logLevels = implode(",",$logLevels);
+			$clauses[] = "log_level IN ({$logLevels})";
+		}
+		if (!is_null($objectIDs))
+		{
+			$objectIDs = (array) $objectIDs;
+			$objectIDs = implode(",",$objectIDs);
+			$clauses[] = "object_id IN ({$objectIDs})";
+		}
+		if (!is_null($objectTypes))
+		{
+			$objectTypes = (array) $objectTypes;
+			$objectTypes = $this->db->prepare_string(implode("','",$objectTypes));
+			$clauses[] = "object_type IN ('{$objectTypes}')";
+		}
 		if (!is_null($activityCodes))
 		{
 			$activityCodes = (array) $activityCodes;
 			$activityCodes = "('".implode("','",$activityCodes)."')";
-			$query .= " AND activity IN {$activityCodes}";
+			$clauses[] = "activity IN {$activityCodes}";
 		}
+		$query = "SELECT id FROM events";
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
 		$query .= " ORDER BY fired_at DESC";
 		return tlEvent::createObjectsFromDBbySQL($this->db,$query,'id',"tlEvent",true,tlEvent::TLOBJ_O_GET_DETAIL_FULL,$limit);
 	}
@@ -314,10 +365,21 @@ class tlEvent extends tlDBObject
 	public $timestamp = null;
 	public $userID = null;
 	public $sessionID = null;
+	public $transactionID = null;
 	//hm?
 	public $activityCode = null;
 	public $objectID = null;
 	public $objectType = null;
+	
+	public $transaction = null;
+	
+		//detail leveles
+	const TLOBJ_O_GET_DETAIL_TRANSACTION = 1;
+	
+	public function getLogLevel()
+	{
+		return tlLogger::$logLevels[$this->logLevel];
+	}
 	
 	public function __construct($dbID = null)
 	{
@@ -334,6 +396,7 @@ class tlEvent extends tlDBObject
 		$this->source = null;
 		$this->objectID = null;
 		$this->objectType = null;
+		$this->transaction = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 	}
@@ -365,7 +428,7 @@ class tlEvent extends tlDBObject
 		{
 			$this->dbID = $info['id'];
 			$this->transactionID = $info['transaction_id'];
-			$this->logLovel = $info['log_level'];
+			$this->logLevel = $info['log_level'];
 			$this->source = $info['source'];
 			$this->description = $info['source'];
 			$tmp = tlMetaString::unserialize($info['description']);
@@ -375,10 +438,11 @@ class tlEvent extends tlDBObject
 			$this->objectID = $info['object_id'];
 			$this->objectType = $info['object_type'];
 			$this->activityCode = $info['activity'];
+			
+			if ($this->transactionID && $options & self::TLOBJ_O_GET_DETAIL_TRANSACTION)
+				$this->transaction = tlTransaction::getByID($db,$this->transactionID,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 		}
 		return $info ? tl::OK : tl::ERROR;
-		
-		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 	public function writeToDB(&$db)
 	{

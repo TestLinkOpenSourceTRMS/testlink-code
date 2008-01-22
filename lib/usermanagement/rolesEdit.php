@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/21 20:10:55 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/22 21:52:19 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -120,15 +120,17 @@ function doCreate(&$db,$args)
 	{
 		$op->action =  "do_add";
 		$auditMsg = "audit_role_created";
+		$activity = "CREATE";
 	}
 	else
 	{
 		$op->action = "updated";
 		$auditMsg = "audit_role_saved";
+		$activity = "SAVE";
 	}
 	$result = $op->role->writeToDB($db);
 	if ($result >= tl::OK)
-		tLog(TLS($auditMsg),'AUDIT',null,$op->role->dbID,"roles");
+		logAuditEvent(TLS($auditMsg,$args->rolename),$activity,$op->role->dbID,"roles");
 
 	$op->userFeedback = getRoleErrorMessage($result);
  

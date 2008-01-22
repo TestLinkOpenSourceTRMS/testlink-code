@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.4 2008/01/19 17:47:48 schlundus Exp $
+$Id: usersView.tpl,v 1.5 2008/01/22 18:02:21 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -10,7 +10,7 @@ Purpose: smarty template - users overview
 {lang_get s='warning_delete_user' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title" }
 <script type="text/javascript">
-	var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
+	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=delete&user=";
 </script>
 </head>
 
@@ -23,25 +23,25 @@ Purpose: smarty template - users overview
 	{***** TABS *****}
 	<div class="tabMenu">
 	{if $mgt_users == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
+		<span class="unselected"><a href="lib/usermanagement/usersEdit.php">{lang_get s='menu_new_user'}</a></span> 
 		<span class="selected">{lang_get s='menu_view_users'}</span>
 	{/if}
 	{if $role_management == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+		<span class="unselected"><a href="lib/usermanagement/rolesEdit.php">{lang_get s='menu_define_roles'}</a></span> 
 	{/if}
-		<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
+		<span class="unselected"><a href="lib/usermanagement/rolesView.php">{lang_get s='menu_view_roles'}</a></span> 
 	{if $tproject_user_role_assignment == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+		<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
 	{/if}	
 	{if $tp_user_role_assignment == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+		<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 	{/if}
 	</div>
 	
 	
 	{***** existing users form *****}
 	<div class="workBack">
-		<form method="post" action="lib/usermanagement/usersview.php" name="usersview" id="usersview">
+		<form method="post" action="lib/usermanagement/usersView.php" name="usersview" id="usersview">
 		<input type="hidden" id="operation" name="operation" value="" />
 		<input type="hidden" id="order_by_role_dir" name="order_by_role_dir" value="{$order_by_role_dir}" />
 		<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$order_by_login_dir}" />
@@ -90,7 +90,7 @@ Purpose: smarty template - users overview
 				{assign var="userID" value=$user->dbID}
 
 				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
-				<td><a href="lib/usermanagement/usersedit.php?user_id={$user->dbID}"> 
+				<td><a href="lib/usermanagement/usersEdit.php?user_id={$user->dbID}"> 
 				    {$user->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
 				      <img title="{lang_get s='alt_edit_user'}" 

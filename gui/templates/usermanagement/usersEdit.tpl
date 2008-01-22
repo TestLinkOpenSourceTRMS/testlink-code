@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.7 2008/01/10 07:51:15 franciscom Exp $ 
+$Id: usersEdit.tpl,v 1.8 2008/01/22 18:00:41 franciscom Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -234,14 +234,14 @@ function validateForm(f,check_password)
 	       {/if}
 	
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersview.php';" />
+			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
 	</div>
 </fieldset>
 </form>
 
 {if $userData neq null and $external_password_mgmt eq 0}
-<br /><form method="post" action="lib/usermanagement/usersedit.php" name="user_reset_password">
+<br /><form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
   	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="submit" id="do_reset_password" name="do_reset_password" value="{lang_get s='button_reset_password'}" />
 </form>

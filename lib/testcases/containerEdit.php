@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2008/01/05 17:53:45 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/01/22 17:50:24 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
+ * 20080122 - franciscom - BUGID 1312
  * 20080105 - franciscom - refactoring
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
  *                         refresh tree logic
@@ -431,7 +432,7 @@ function	addTestSuite(&$tsuiteMgr,&$argsObj,$container,$cf_enabled,&$hash)
 		  
       if( strlen(trim($argsObj->assigned_keyword_list)) > 0 )
       {
-         $tsuiteMgr->addKeywords($ret['id'],explode(",",$args->assigned_keyword_list));   	 
+         $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));   	 
       }   
       if( $cf_enabled )
       {

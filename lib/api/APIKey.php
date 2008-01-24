@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIKey.php,v 1.3 2008/01/15 22:07:28 havlat Exp $
+ * $Id: APIKey.php,v 1.4 2008/01/24 14:31:46 havlat Exp $
  * 
  * Class that deals with API keys
  */
@@ -19,8 +19,9 @@ class APIKey extends tlObjectWithDB
 	
 	public function addKeyForUser($userid)
 	{
-		$query = "INSERT INTO users (script_key) VALUES ('" . 
-					$this->generate_key() . "') WHERE id=".$userid; 
+		$query = "UPDATE users SET script_key='" .
+                $this->generate_key() .
+                "' WHERE id='".intval($userid)."'"; 
 		$result = $this->db->exec_query($query);
 		if ($result)
 			$this->dbID = $this->db->insert_id();

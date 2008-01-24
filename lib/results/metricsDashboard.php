@@ -4,12 +4,14 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/18 22:11:28 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/24 21:21:04 $ $Author: franciscom $
  *
  * @author franciscom
  *
- *20070907 - francisco.mancardi@gruppotesi.com
+ * rev:
+ *     20080124 - franciscom - BUGID 1321
+ *     20070907 - franciscom
 **/
 require('../../config.inc.php');
 require_once('common.php');
@@ -86,6 +88,7 @@ function getMetrics(&$db,$user_id,$tproject_id)
   
   
   // Calculate percentages
+  $round_precision=config_get('dashboard_precision');
   foreach($metrics as $tplan_id => $value)
   {
     if( $metrics[$tplan_id]['total'] > 0 )
@@ -94,12 +97,15 @@ function getMetrics(&$db,$user_id,$tproject_id)
       {
         $metrics[$tplan_id]['executed_vs_active']=$metrics[$tplan_id]['executed']/$metrics[$tplan_id]['active'];
         $metrics[$tplan_id]['executed_vs_active'] *=100;
+        $metrics[$tplan_id]['executed_vs_active'] = round($metrics[$tplan_id]['executed_vs_active'],$round_precision);
       }  
       $metrics[$tplan_id]['executed_vs_total']=$metrics[$tplan_id]['executed']/$metrics[$tplan_id]['total'];
       $metrics[$tplan_id]['executed_vs_total'] *=100;
+      $metrics[$tplan_id]['executed_vs_total'] = round($metrics[$tplan_id]['executed_vs_total'],$round_precision);
       
       $metrics[$tplan_id]['active_vs_total']=$metrics[$tplan_id]['active']/$metrics[$tplan_id]['total'];
       $metrics[$tplan_id]['active_vs_total'] *=100;
+      $metrics[$tplan_id]['active_vs_total'] = round($metrics[$tplan_id]['active_vs_total'],$round_precision);
     }
   } // foreach
   return $metrics;

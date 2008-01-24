@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.153 $
- * @modified $Date: 2008/01/21 20:14:20 $ by $Author: schlundus $
+ * @version $Revision: 1.154 $
+ * @modified $Date: 2008/01/24 21:21:03 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20080124 - franciscom - $g_dashboard_precision
  *           20080118 - franciscom - $g_api_id_format
  * 			     20081011 - asielb	   - $g_api_ui_show
  *           20080110 - franciscom - $g_tree_show_testcase_id
@@ -298,6 +299,11 @@ $g_api_ui_show = TRUE;
 
 // used to display API ID info in the *View pages 
 $g_api_id_format	= "[ID: %s ]";
+
+
+// 20080124 - franciscom
+// used to round percentages on metricsDashboard.php
+$g_dashboard_precision=2;
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */

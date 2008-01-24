@@ -2,9 +2,9 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
- * @author franciscom
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/24 21:21:31 $ $Author: franciscom $
+ * @author 
  */
 
 //shorthand function for creating meta strings

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/14 21:43:23 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/24 17:02:22 $ by $Author: asielb $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -19,10 +19,7 @@
  *             cfg\const.inc.php
  *-----------------------------------------------------------------------------
 */
-//$g_tree_type='LAYERSMENU';
-//$g_tree_type='DTREE';
-$g_tree_type='JTREE';
-$g_tree_show_testcase_id=1;
-$g_exec_cfg->enable_tree_testcase_counters=1;
-$g_exec_cfg->enable_tree_colouring=1;
+// for example: uncomment the line below to change tree type
+//$g_tree_type='JTREE';
+
 ?>

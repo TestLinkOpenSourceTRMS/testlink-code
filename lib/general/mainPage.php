@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.38 $ $Author: franciscom $
- * @modified $Date: 2008/01/20 15:39:18 $
+ * @version $Revision: 1.39 $ $Author: havlat $
+ * @modified $Date: 2008/01/25 09:59:19 $
  *
  * @author Martin Havlat
  * 
@@ -58,16 +58,17 @@ if(has_rights($db,"mgt_view_tc"))
 }
 
 // REQS
-$smarty->assign('view_req_rights', has_rights($db,"mgt_view_req")); 
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
+$smarty->assign('rights_reqs_view', has_rights($db,"mgt_view_req")); 
+$smarty->assign('rights_reqs_edit', has_rights($db,"mgt_modify_req")); 
 $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 
 
 // view and modify Keywords 
-$smarty->assign('view_keys_rights', has_rights($db,"mgt_view_key"));
-$smarty->assign('modify_keys_rights', has_rights($db,"mgt_modify_key"));
+$smarty->assign('rights_keywords_view', has_rights($db,"mgt_view_key"));
+$smarty->assign('rights_keywords_edit', has_rights($db,"mgt_modify_key"));
 
 // User has test project rights
-$smarty->assign('modify_product_rights', $can_manage_tprojects);
+$smarty->assign('rights_project_edit', $can_manage_tprojects);
+$smarty->assign('rights_configuration', has_rights($db,"system_configuraton"));
 
 
 // ----- Test Statistics Section --------------------------

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/01/25 11:31:38 $ $Author: havlat $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/01/25 16:13:50 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -40,9 +40,10 @@ class TLSmarty extends Smarty
 		global $g_gui;
 		global $g_spec_cfg;
 		global $g_interface_bugs;
-    global $g_locales_html_select_date_field_order;
-    global $g_locales_date_format;
-    global $g_locales_timestamp_format;
+	    global $g_locales_html_select_date_field_order;
+    	global $g_locales_date_format;
+    	global $g_locales_timestamp_format;
+    	global $g_log_level;
 
 
 
@@ -63,7 +64,12 @@ class TLSmarty extends Smarty
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
 
-    
+		if ($g_log_level == 'DEBUG' || $g_log_level == 'EXTENDED')
+		{
+			$this->debugging = true;
+			tLog("Smarty debug ok.");
+		}
+		
 		$this->assign('basehref', $basehref);
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
 		$this->assign('css', $basehref . TL_TESTLINK_CSS);

@@ -1,8 +1,9 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: Migrator.php,v 1.4 2007/12/13 15:36:21 havlat Exp $
+ * $Id: Migrator.php,v 1.5 2008/01/25 14:49:53 franciscom Exp $
  *
+ * BUGID 1328 - LEFT without AS
  */
 
 require_once("migrate_16_to_17_functions.php");
@@ -143,7 +144,7 @@ class Migrator
 		$tmp_table_name = "tmp_good_testcases";
 		$sql="CREATE TEMPORARY TABLE " . $this->tmp_table_name . " " .
 			 "SELECT mtc.id, " .
-			 "LEFT(mtc.title,100)," .
+			 "LEFT(mtc.title,100) AS title," .
 			 "mtc.steps," .
 			 "mtc.exresult," .
 			 "mtc.keywords," .

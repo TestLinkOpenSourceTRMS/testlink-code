@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/04 20:30:50 $ $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/01/25 11:31:38 $ $Author: havlat $
  *
  */
 
@@ -25,6 +25,7 @@ class tlUser extends tlDBObject
 	public $tprojectRoles; 
 	public $tplanRoles;
 	public $login;
+	public $userApiKey;
 	protected $password;
 	
 	//configuration options
@@ -105,7 +106,7 @@ class tlUser extends tlDBObject
 	{
 		$this->_clean($options);
 		$query = "SELECT id,login,password,first,last,email,role_id,locale, " .
-		         " login AS fullname, active,default_testproject_id FROM users";
+		         " login AS fullname, active,default_testproject_id, script_key FROM users";
 		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
@@ -123,6 +124,7 @@ class tlUser extends tlDBObject
 			$this->login = $info['login'];
 			$this->emailAddress = $info['email'];
 			$this->globalRoleID = $info['role_id'];
+			$this->userApiKey = $info['script_key'];
 			
 			if ($this->globalRoleID)
 			{

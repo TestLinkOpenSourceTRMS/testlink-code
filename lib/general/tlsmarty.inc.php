@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/01/18 15:47:57 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/01/25 11:31:38 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -106,7 +106,11 @@ class TLSmarty extends Smarty
 		$this->assign('jsTree', null);
 		$this->assign('sqlResult', null);
 		
+		// user feedback variables (used in inc_update.tpl)
 		$this->assign('action', 'updated');
+		$this->assign('user_feedback', null);
+		$this->assign('feedback_type', 'soft');
+		$this->assign('refresh', 'no');
 	
 		$this->assign('optLocale',$g_locales);
 

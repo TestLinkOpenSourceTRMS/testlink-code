@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.4 2008/01/21 20:10:54 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.5 2008/01/25 11:31:37 havlat Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
@@ -38,6 +38,7 @@ function valAllText(form)
 </script>
 {/literal}
 
+<h2>{lang_get s="title_personal_data"}</h2>
 <form method="post" action="lib/usermanagement/userinfo.php" onsubmit="return valAllText(this)">
 	<input type="hidden" name="id" value="{$user->dbID}" />
 	<table class="common">
@@ -73,8 +74,9 @@ function valAllText(form)
 		<input type="submit" name="editUser" value="{lang_get s='btn_save'}" />
 	</div>
 </form>
-<hr />
 
+<hr />
+<h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0 }
 	<form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
 		onsubmit="return validatePassword(document.changePass);">
@@ -95,9 +97,25 @@ function valAllText(form)
    <p>{lang_get s='your_password_is_external'}<p>
 {/if}
 
-<h1>{lang_get s="audit_login_history"}</h1>
+{if $api_ui_show eq 1}
+<hr />
+<h2>{lang_get s="title_api_interface"}</h2>
+<div>									
+	<form name="genApi" method="post" action="lib/usermanagement/userinfo.php">
+	<input type="hidden" name="id" value="{$user->dbID}" />
+	<p>{lang_get s='user_api_key'} = {$user->userApiKey|escape}</p>
+	<div class="groupBtn">	
+		<input type="submit" name="genApi" value="{lang_get s='btn_apikey_generate'}" />
+	</div>
+	</form>
+</div>
+{/if}
+
+
+<hr />
+<h2>{lang_get s="audit_login_history"}</h2>
 <div>
-	<h2>{lang_get s="audit_last_succesful_logins"}</h2>
+	<h3>{lang_get s="audit_last_succesful_logins"}</h3>
 	{foreach from=$successfulLogins item=event}
 	<span>{localize_timestamp ts=$event->timestamp}</span>
 	<span>{$event->description|escape}</span>
@@ -105,11 +123,13 @@ function valAllText(form)
 	{/foreach}
 </div>
 <div>
-	<h2>{lang_get s="audit_last_failed_logins"}</h2>
+	<h3>{lang_get s="audit_last_failed_logins"}</h3>
 	{foreach from=$failedLogins item=event}
 	<span>{localize_timestamp ts=$event->timestamp}</span>
 	<span>{$event->description|escape}</span>
 	<br/>
+	{foreachelse}
+	<span>{lang_get s="none"}</span>
 	{/foreach}
 </div>
 

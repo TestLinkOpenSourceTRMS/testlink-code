@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.250 $
- * @modified $Date: 2008/01/25 09:39:52 $ $Author: havlat $
+ * @version $Revision: 1.251 $
+ * @modified $Date: 2008/01/25 11:31:36 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1293,7 +1293,9 @@ $TLS_your_password_is_external = "Your password is managed by an external system
 $TLS_user_api_key = "Personal API access key";
 $TLS_audit_login_history = "Login history";
 $TLS_audit_last_succesful_logins = "Last succesful logins";
-$TLS_audit_last_failed_logins = "Last failed logins";
+$TLS_result_password_changed = "Your password was changed succesfully";
+$TLS_result_apikey_create_ok = "New API key was generated";
+$TLS_result_user_changed = "Personal data changed";
 
 
 // gui/templates/usersassign.tpl

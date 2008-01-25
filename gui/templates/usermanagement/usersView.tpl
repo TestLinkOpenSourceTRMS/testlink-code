@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.5 2008/01/22 18:02:21 franciscom Exp $
+$Id: usersView.tpl,v 1.6 2008/01/25 11:31:37 havlat Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -112,16 +112,6 @@ Purpose: smarty template - users overview
 						{lang_get s='No'}
 					{/if}
 				</td>
-				{if $api_ui_show eq 1}
-				<td>									
-					{if array_key_exists($userID, $api_users)}											
-						{$api_users.$userID}						
-						{*<a href="lib/usermanagement/usersView.php?user={$user->dbID}&operation=del_api_key">{lang_get s='btn_delete'}</a>*}					
-					{else}
-						<a href="lib/usermanagement/usersView.php?user={$user->dbID}&operation=gen_api_key">{lang_get s='api_gen_key_action'}</a>
-					{/if}
-				</td>
-				{/if}
 				<td>
 				  <img style="border:none;cursor: pointer;"  
                alt="{lang_get s='alt_delete_user'}"

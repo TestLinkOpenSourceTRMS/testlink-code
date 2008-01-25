@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.3 $
-$Date: 2008/01/14 02:02:58 $
+$Revision: 1.4 $
+$Date: 2008/01/25 09:36:58 $
 $Author: havlat $
 $RCSfile: db_schema_update.sql,v $
 */
@@ -45,3 +45,8 @@ CREATE TABLE `user_group_assign` (
   `usergroup_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+/* mht: new rights */
+INSERT INTO `rights` (id,description) VALUES (19,'system_configuraton');
+INSERT INTO `role_rights` (role_id,right_id) VALUES (8,19);

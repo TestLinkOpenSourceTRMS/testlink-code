@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/01/21 07:42:16 $ $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/01/26 08:32:44 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20080126 - franciscom - BUGID 1313 
  * 20080120 - franciscom - show() interface changes
  * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
  * 20080114 - franciscom - new method getPrefix()
@@ -1346,41 +1347,52 @@ function get_exec_status($id)
   
   returns: internal id (node id in nodes_hierarchy)
 
+  rev:
+      20080126 - franciscom - BUGID 1313 
 */
 function getInternalID($stringID,$glueCharacter)
 {
+  $status_ok=1;
+  
   $internalID=0;  
   $pieces=explode($glueCharacter,$stringID);
-  $testCasePrefix=$pieces[0];  
-  $externalID=$pieces[1];  
+  if( count($pieces) != 2 )
+  {
+    $status_ok=0;  
+  }
   
-  $sql="SELECT DISTINCT NH.parent_id AS tcase_id" .
-       " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
-       " WHERE TCV.id = NH.id " .
-       " AND  TCV.tc_external_id={$externalID}";
+  if( $status_ok )
+  {
+      $testCasePrefix=$pieces[0];  
+      $externalID=$pieces[1];  
       
-  $testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');      
- 
-  if( !is_null($testCases) )
-  {                          
-      $sql="SELECT id" .
-           " FROM {$this->testprojects_table} " .
-           " WHERE prefix='" . $this->db->prepare_string($testCasePrefix) . "'";
-      $recordset = $this->db->get_recordset($sql);
-      $tprojectID = $recordset[0]['id'];
-
-      $tprojectSet=array();                       
-      foreach($testCases as $tcaseID => $value )
-      {
-          $path2root=$this->tree_manager->get_path($tcaseID);
-          if( $tprojectID == $path2root[0]['parent_id'])
+      $sql="SELECT DISTINCT NH.parent_id AS tcase_id" .
+           " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
+           " WHERE TCV.id = NH.id " .
+           " AND  TCV.tc_external_id={$externalID}";
+          
+      $testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');      
+      
+      if( !is_null($testCases) )
+      {                          
+          $sql="SELECT id" .
+               " FROM {$this->testprojects_table} " .
+               " WHERE prefix='" . $this->db->prepare_string($testCasePrefix) . "'";
+          $recordset = $this->db->get_recordset($sql);
+          $tprojectID = $recordset[0]['id'];
+      
+          $tprojectSet=array();                       
+          foreach($testCases as $tcaseID => $value )
           {
-              $internalID=$tcaseID;
-              break;  
+              $path2root=$this->tree_manager->get_path($tcaseID);
+              if( $tprojectID == $path2root[0]['parent_id'])
+              {
+                  $internalID=$tcaseID;
+                  break;  
+              }
           }
       }
-  }
-
+  } 
   return $internalID; 
 }
 

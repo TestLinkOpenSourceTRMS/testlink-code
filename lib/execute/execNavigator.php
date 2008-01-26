@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2008/01/20 15:39:17 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2008/01/26 09:32:45 $ by $Author: franciscom $
  *
  * 20071229 - franciscom - refactoring tree colouring and counters config
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -38,7 +38,7 @@ $cf_selected = null;
 $cf_smarty = null;
 if($gui_cfg->enable_custom_fields)
 {
-	$cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
+	  $cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
     $cf_selected = $exec_cfield_mgr->get_set_values();
 }
 
@@ -81,21 +81,10 @@ if(!is_null($keywords_map))
 }
 $menuUrl = 'lib/execute/execSetResults.php';
 
-$getArguments = '&build_id=' . $args->buildSelected;
-if ($args->keyword_id)
-	$getArguments .= '&keyword_id='.$args->keyword_id;
-if ($args->tc_id)
-	$getArguments .= '&tc_id='.$args->tc_id;
-if ($args->filter_assigned_to)
-	$getArguments .= '&filter_assigned_to='.$args->filter_assigned_to;
-if ($args->optResultSelected != 'all')
-	$getArguments .= '&filter_status='.$args->optResultSelected;
-if ($cf_selected)
-	$getArguments .= '&cfields='. serialize($cf_selected);
+$getArguments=initializeGetArguments($args,$cf_selected);
 
 if ($args->optResultSelected == 'all')
 	$args->optResultSelected = null;
-
 
 // 20071229 - franciscom - tree colouring and counters config
 $useCounters = $exec_cfg->enable_tree_testcase_counters;
@@ -136,8 +125,11 @@ $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
 $smarty->display($template_dir . 'execNavigator.tpl');
+?>
 
-//SCHLUNDUS: changed the user_id to the currentUser of the session
+
+<?php
+// schlundus: changed the user_id to the currentUser of the session
 function init_args($exec_cfg)
 {
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -165,4 +157,35 @@ function init_args($exec_cfg)
 
     return $args;
 }    
+
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function initializeGetArguments($argsObj,$customFieldSelected)
+{
+    $settings = '&build_id=' . $argsObj->buildSelected;
+    
+    if ($argsObj->keyword_id)
+    	$settings .= '&keyword_id='.$argsObj->keyword_id;
+    
+    if ($argsObj->tc_id)
+    	$settings .= '&tc_id='.$argsObj->tc_id;
+    
+    if ($argsObj->filter_assigned_to)
+    	$settings .= '&filter_assigned_to='.$argsObj->filter_assigned_to;
+    
+    if ($argsObj->optResultSelected != 'all')
+    	$settings .= '&filter_status='.$argsObj->optResultSelected;
+    	
+    if ($customFieldSelected)
+    	$settings .= '&cfields='. serialize($customFieldSelected);
+
+    return $settings;
+}
 ?>

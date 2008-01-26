@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.37 2008/01/22 21:52:19 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.38 2008/01/26 09:31:18 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -35,9 +35,6 @@ window.onload=function(){
 
 {* Right Column                  *}
 {include file="mainPageRight.tpl"}
-
-{* SCHLUNDUS: for testing purposes, here until i know a better place *}
-<a href="lib/events/eventviewer.php">Eventviewer</a>
 
 {*   left column                 *}
 {include file="mainPageLeft.tpl"}

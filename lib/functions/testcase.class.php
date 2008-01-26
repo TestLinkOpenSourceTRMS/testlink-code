@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.89 $
- * @modified $Date: 2008/01/26 08:32:44 $ $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2008/01/26 09:32:46 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080126 - franciscom - BUGID 1313 
@@ -858,7 +858,7 @@ function formatTestCaseIdentity($id,$external_id)
 */
 function getPrefix($id)
 {
-    $path2root=$this->tree_manager->get_path($tc_id);
+    $path2root=$this->tree_manager->get_path($id);
     $tprojectID=$path2root[0]['parent_id'];
     $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
     return $tcasePrefix; 

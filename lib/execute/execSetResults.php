@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2008/01/05 17:56:03 $ $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2008/01/26 09:32:45 $ $Author: franciscom $
  *
  * 20080104 - franciscom - REQ 1232 - web editor on execution notes
  *                         added createExecNotesWebEditor()
@@ -33,6 +33,7 @@ $template_dir = 'execute/';
 $exec_cfg = config_get('exec_cfg');
 $gui_cfg = config_get('gui');
 $tc_status = config_get('tc_status'); 
+$testcase_cfg = config_get('testcase_cfg'); 
 
 $tcversion_id = null;
 
@@ -138,18 +139,19 @@ $smarty->assign('tplan_cf',$testplan_cf);
 $attachmentRepository = tlAttachmentRepository::create($db);
 if(!is_null($linked_tcversions))
 {
-	$items_to_exec = array();
-	$_SESSION['s_lastAttachmentInfos'] = null;
-	if($args->level == 'testcase')
+	  $items_to_exec = array();
+	  $_SESSION['s_lastAttachmentInfos'] = null;
+	  if($args->level == 'testcase')
     {
-		$cf_smarty = '';
+		  $cf_smarty = '';
   		$cfexec_smarty = '';
   		
   		$items_to_exec[$args->id] = $linked_tcversions[$args->id]['tcversion_id'];    
   		$tcase_id = $args->id;
   		$tcversion_id = $linked_tcversions[$args->id]['tcversion_id'];
   		$tcAttachments[$args->id] = getAttachmentInfos($attachmentRepository,$args->id,'nodes_hierarchy',1);
-   
+      $tcasePrefix=$tcase_mgr->getPrefix($tcase_id);
+      
   		if($gui_cfg->enable_custom_fields)
   		{
   			$cf_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_values($args->id,'design',$SHOW_ON_EXECUTION);
@@ -160,7 +162,6 @@ if(!is_null($linked_tcversions))
   			   $cfexec_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_inputs($args->id,$PID_NOT_NEEDED,
   			                                                                       'execution',"_{$args->id}");
   			}
-
   		}
   		$smarty->assign('design_time_cf',$cf_smarty);
   		$smarty->assign('execution_time_cf',$cfexec_smarty);	
@@ -169,22 +170,21 @@ if(!is_null($linked_tcversions))
       $tc_info=$tree_mgr->get_node_hierachy_info($tcase_id);
 	    $tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($attachmentRepository,$tc_info['parent_id'],
 		                                                                 'nodes_hierarchy',true,1);
-
     }
     else
     {
-      // ---------------------------------------------------------------------------------
-      // 20070708 - franciscom
-      $tsuite_mgr=new testsuite($db); 
-          $tsuite_data = $tsuite_mgr->get_by_id($args->id);
+        // ---------------------------------------------------------------------------------
+        // 20070708 - franciscom
+        $tsuite_mgr=new testsuite($db); 
+        $tsuite_data = $tsuite_mgr->get_by_id($args->id);
         
-          $out = gen_spec_view($db,'testplan',$args->tplan_id,$args->id,$tsuite_data['name'],
-                           $linked_tcversions,null,$args->keyword_id,
-                           FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);
-      $tcase_id = array();
-    	$tcversion_id = array();
-      foreach($out['spec_view'] as $key => $value)
-      {
+        $out = gen_spec_view($db,'testplan',$args->tplan_id,$args->id,$tsuite_data['name'],
+                             $linked_tcversions,null,$args->keyword_id,
+                             FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);
+        $tcase_id = array();
+    	  $tcversion_id = array();
+        foreach($out['spec_view'] as $key => $value)
+        {
          if( count($value['testcases']) > 0 )
          {
            foreach($value['testcases'] as $xkey => $xvalue)
@@ -193,47 +193,48 @@ if(!is_null($linked_tcversions))
              $tcversion_id[]=$xvalue['linked_version_id'];
            }  
          }
-      }
-      // ---------------------------------------------------------------------------------
+        }
+        $tcasePrefix=$tcase_mgr->getPrefix($tcase_id[0]);
+        // ---------------------------------------------------------------------------------
 
-		  // Get the path for every test case, grouping test cases that
-		  // have same parent.
-		  $idx = 0;
-    	foreach($linked_tcversions as $item)
-    	{
-    		$path_f = $tree_mgr->get_path($item['tc_id'],null,'full');
-    		foreach($path_f as $key => $path_elem)
-    		{
-    			if( $path_elem['parent_id'] == $args->id )
-    			{
-					 // Can be added because is present in the branch the user wants to view
-					 // ID of branch starting node is in $args->id
-					 $tcAttachments[$item['tc_id']] = getAttachmentInfos($attachmentRepository,$item['tc_id'],'nodes_hierarchy',true,1);
-
-		       // --------------------------------------------------------------------------------------
-			     if($gui_cfg->enable_custom_fields)
-			     {
-							$cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
-							                                                                        'design',$SHOW_ON_EXECUTION);
-							                                                                        
-             // BUGID 856: Guest user can execute test case
-      			 if($has_exec_right)
-  			     {
-							$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
-							                                                            $PID_NOT_NEEDED,'execution',
-							                                                            "_".$item['tc_id']);
-             }
-			     }
-			     $smarty->assign('design_time_cf',$cf_smarty);	
-			     $smarty->assign('execution_time_cf',$cfexec_smarty);	
-			     // --------------------------------------------------------------------------------------
-    			} // if( $path_elem['parent_id'] == $args->id )
-    			
-				  if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
-					   $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($attachmentRepository,$path_elem['id'],'nodes_hierarchy',true,1);
-					   
-			  } //foreach($path_f as $key => $path_elem) 
-    	} // foreach($linked_tcversions as $item)
+		    // Get the path for every test case, grouping test cases that
+		    // have same parent.
+		    $idx = 0;
+    	  foreach($linked_tcversions as $item)
+    	  {
+    	  	$path_f = $tree_mgr->get_path($item['tc_id'],null,'full');
+    	  	foreach($path_f as $key => $path_elem)
+    	  	{
+    	  		if( $path_elem['parent_id'] == $args->id )
+    	  		{
+			  		 // Can be added because is present in the branch the user wants to view
+			  		 // ID of branch starting node is in $args->id
+			  		 $tcAttachments[$item['tc_id']] = getAttachmentInfos($attachmentRepository,$item['tc_id'],'nodes_hierarchy',true,1);
+        
+		         // --------------------------------------------------------------------------------------
+			       if($gui_cfg->enable_custom_fields)
+			       {
+			  				$cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
+			  				                                                                        'design',$SHOW_ON_EXECUTION);
+			  				                                                                        
+               // BUGID 856: Guest user can execute test case
+        			 if($has_exec_right)
+  		  	     {
+			  				$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
+			  				                                                            $PID_NOT_NEEDED,'execution',
+			  				                                                            "_".$item['tc_id']);
+               }
+			       }
+			       $smarty->assign('design_time_cf',$cf_smarty);	
+			       $smarty->assign('execution_time_cf',$cfexec_smarty);	
+			       // --------------------------------------------------------------------------------------
+    	  		} // if( $path_elem['parent_id'] == $args->id )
+    	  		
+			  	  if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
+			  		   $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($attachmentRepository,$path_elem['id'],'nodes_hierarchy',true,1);
+			  		   
+			    } //foreach($path_f as $key => $path_elem) 
+    	  } // foreach($linked_tcversions as $item)
     }
     
     
@@ -324,9 +325,8 @@ if( is_array($tcversion_id) )
 
 $execNotesInputs=createExecNotesWebEditor($map_last_exec,$_SESSION['basehref']);
 
-
-
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+$smarty->assign('tcasePrefix',$tcasePrefix . $testcase_cfg->glue_character);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 $smarty->assign('exec_notes_editors', $execNotesInputs);
 $smarty->assign('exec_mode', $exec_mode);
@@ -362,16 +362,19 @@ $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->assign('tester_id',$args->user->dbID);
 $smarty->display($template_dir . $g_tpl['execSetResults']);
+?>
 
+<?php
 /*
   function: 
 
   args:
   
   returns: 
-
+  
+  rev:
+      schlundus: changed the user_id to the currentUser of the session
 */
-//SCHLUNDUS: changed the user_id to the currentUser of the session
 function init_args()
 {
  	$_REQUEST = strings_stripSlashes($_REQUEST);
@@ -770,6 +773,12 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 */
 function createExecNotesWebEditor(&$tcversions,$basehref)
 {
+  
+    if(is_null($tcversions) || count($tcversions) == 0 )
+    {
+        return null;  // nothing todo >>>------> bye!  
+    }
+     
     // Important Notice:
     //
     // When using tinymce or none as web editor, we need to set rows and cols
@@ -780,8 +789,8 @@ function createExecNotesWebEditor(&$tcversions,$basehref)
     //
     //
     $a_oWebEditor_cfg = array('summary' => array('rows'=> null,'cols' => null),
-                             'steps' => array('rows'=> null,'cols' => 38) ,
-                          'expected_results' => array('rows'=> null,'cols' => 38));
+                              'steps' => array('rows'=> null,'cols' => 38) ,
+                              'expected_results' => array('rows'=> null,'cols' => 38));
 
 
     $idx=0;

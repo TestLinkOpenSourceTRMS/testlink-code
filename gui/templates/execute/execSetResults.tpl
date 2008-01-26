@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.9 2008/01/05 17:50:47 franciscom Exp $
+$Id: execSetResults.tpl,v 1.10 2008/01/26 09:31:18 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes
@@ -238,11 +238,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		<div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
       <br />
       <div class="exec_testsuite_details" style="width:95%;">
-      <span class="legend_container">{lang_get s='details'}</span><br />
+      <span class="legend_container">{$labels.details}</span><br />
 		  {$tsuite_info[$tc_id].details}
 		  </div>
 		  
-		  {* 20070104 - franciscom *}
 		  {if $ts_cf_smarty[$tc_id] neq ''}
 		    <br />
 		    <div class="custom_field_container" style="border-color:black;width:95%;">
@@ -263,7 +262,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   
 
 		<div class="exec_tc_title">
-		{$labels.title_test_case} {$labels.th_test_case_id}{$tc_exec.testcase_id} :: {$labels.version}: {$tc_exec.version}<br />
+		{* 20080126 - franciscom - external id - $tc_exec.testcase_id *}
+		{$labels.title_test_case} {$labels.th_test_case_id}{$tcasePrefix}{$tc_exec.tc_external_id} :: {$labels.version}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
 		      {$labels.has_no_assignment}

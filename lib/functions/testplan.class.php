@@ -2,55 +2,55 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/01/19 17:13:42 $ $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2008/01/26 17:56:22 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
  *
  *
  * 
- * rev :
- *       20080119 - franciscom - improved logic in copy_as to avoid bug due to
- *                               missing methods.
- *       20080114 - franciscom - get_linked_tcversions()
- *       20071205 - franciscom - copy_as() - added reactored code from contribution
- *                               
+ * rev:
+ *     20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
+ *     20080119 - franciscom - improved logic in copy_as to avoid bug due to
+ *                             missing methods.
+ *     20080114 - franciscom - get_linked_tcversions()
+ *     20071205 - franciscom - copy_as() - added reactored code from contribution
  *
- *       20071010 - franciscom - BUGID     MSSQL reserved word problem - open 
- *       20070927 - franciscom - BUGID 1069
- *                               added _natsort_builds() (see natsort info on PHP manual).
- *                               get_builds() add call to _natsort_builds()
- *                               get_builds_for_html_options() add call to natsort()
- *                                                          
+ *     20071010 - franciscom - BUGID     MSSQL reserved word problem - open 
+ *     20070927 - franciscom - BUGID 1069
+ *                             added _natsort_builds() (see natsort info on PHP manual).
+ *                             get_builds() add call to _natsort_builds()
+ *                             get_builds_for_html_options() add call to natsort()
+ *                                                        
  *
- *       20070917 - franciscom - get_linked_tcversions() added version on recordset
- *       20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
- *       20070630 - franciscom - get_linked_tcversions(), added active column
- *                               in output recordset.
+ *     20070917 - franciscom - get_linked_tcversions() added version on recordset
+ *     20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
+ *     20070630 - franciscom - get_linked_tcversions(), added active column
+ *                             in output recordset.
  *
- *                               html_table_of_custom_field_values() 
+ *                             html_table_of_custom_field_values() 
  *
- *       20070519 - franciscom - added Class milestone_mgr
+ *     20070519 - franciscom - added Class milestone_mgr
  *
- *       copy_milestones()- changed date to target_date, because date 
- *                          is an Oracle reverved word.
+ *     copy_milestones()- changed date to target_date, because date 
+ *                        is an Oracle reverved word.
  *
- *       20070501 - franciscom - added localization of custom field labels
- *                               added use of htmlspecialchars() on labels
- *       20070425 - franciscom - added get_linked_and_newest_tcversions() 
- *       20070310 - franciscom - BUGID 731
- *       20070306 - franciscom - 
- *       BUGID 705 - changes in get_linked_tcversions()
+ *     20070501 - franciscom - added localization of custom field labels
+ *                             added use of htmlspecialchars() on labels
+ *     20070425 - franciscom - added get_linked_and_newest_tcversions() 
+ *     20070310 - franciscom - BUGID 731
+ *     20070306 - franciscom - 
+ *     BUGID 705 - changes in get_linked_tcversions()
  *
- *       20070127 - franciscom - added insert_default_priorities()
- *       20070127 - franciscom - custom field management
- *       20070120 - franciscom - added Class build_mgr
+ *     20070127 - franciscom - added insert_default_priorities()
+ *     20070127 - franciscom - custom field management
+ *     20070120 - franciscom - added Class build_mgr
  *
- *       20070120 - franciscom - added active and open argument
- *                               to build functions
- *                               get_builds_for_html_options()
- *                               get_builds()
+ *     20070120 - franciscom - added active and open argument
+ *                             to build functions
+ *                             get_builds_for_html_options()
+ *                             get_builds()
  * 
 */
 
@@ -493,11 +493,23 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
             returns for every test case in a test plan
             the tc version linked and the newest available version 
 
-  args :
+  args: id: testplan id
+        [tcase_id]: default null => all testcases linked to testplan
   
-  returns: 
+  returns: map key: testcase internal id
+           values: map with following keys:
+           
+            [name] 
+            [tc_id] (internal id)
+            [tcversion_id] 
+            [newest_tcversion_id]
+            [tc_external_id]
+            [version] (for humans)
+            [newest_version] (for humans)
+  
 
-  20070425 - franciscom
+  rev: 
+      20080126 - franciscom - added tc_external_id on results
   
 */
 function get_linked_and_newest_tcversions($id,$tcase_id=null)
@@ -517,6 +529,7 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	$sql = " SELECT MAX(NHB.id) AS newest_tcversion_id, " .
 	       "        NHA.parent_id AS tc_id, NHC.name, " .
 	       "        T.tcversion_id AS tcversion_id," .
+	       "        TCVA.tc_external_id AS tc_external_id," .
 	       "        TCVA.version AS version" .
 	       " FROM nodes_hierarchy NHA " .
 	       " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.parent_id " .
@@ -528,7 +541,7 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	       " GROUP BY NHA.parent_id, NHC.name, tcversion_id, TCVA.version  ";
 
 	$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
-	        " SUBQ.tcversion_id, SUBQ.version, " .
+	        " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
 	        " TCV.version AS newest_version" .
 	        " FROM tcversions TCV, ( $sql ) AS SUBQ" .
 	        " WHERE SUBQ.newest_tcversion_id = TCV.id ";

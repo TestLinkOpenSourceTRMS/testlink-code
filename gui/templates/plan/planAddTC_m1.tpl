@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.3 2008/01/14 21:43:23 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.4 2008/01/26 17:55:11 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -116,7 +116,7 @@ added logic to manage active/inactive tcversions
 		    	    {/if}
 			     </td>
 			     
-			     <td class="tcase_id_cell">{lang_get s='th_id'}</td> 
+			     <td>{lang_get s='th_id'}</td> 
 			     <td>{lang_get s='th_test_case'}</td>
 			     <td>{lang_get s='version'}</td>
            {if $ts.linked_testcase_qty gt 0 }

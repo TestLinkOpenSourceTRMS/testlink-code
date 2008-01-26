@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/01/26 09:32:46 $ $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2008/01/26 17:56:22 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080126 - franciscom - BUGID 1313 
@@ -57,9 +57,6 @@ require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
 
-
-// $g_tcImportTypes = array("XML" => "XML", "XLS" => "XLS" );
-// $g_tcExportTypes = array("XML" => "XML","XLS" => "XLS" );
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import')); 
 							
 define("TC_ALL_VERSIONS",0);

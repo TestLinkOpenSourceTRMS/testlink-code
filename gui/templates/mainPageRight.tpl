@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageRight.tpl,v 1.2 2008/01/11 00:57:07 havlat Exp $     
+ $Id: mainPageRight.tpl,v 1.3 2008/01/26 17:55:10 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -98,6 +98,11 @@
 	        
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="{$launcher}?feature=planRemoveTC">{lang_get s='href_remove_test_case'}</a>
+	        <br />
+
+      {* 20080126 - franciscom *}
+			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	   		<a href="{$launcher}?feature=planUpdateTC">{lang_get s='href_update_tplan'}</a>
 	        <br />
 
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />

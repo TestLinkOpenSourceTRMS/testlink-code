@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.251 $
- * @modified $Date: 2008/01/25 11:31:36 $ $Author: havlat $
+ * @version $Revision: 1.252 $
+ * @modified $Date: 2008/01/26 17:57:31 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -36,6 +36,7 @@ $TLS_any 			= "any";
 $TLS_assigned 		= "assigned";
 $TLS_automated 		= "Automated";
 $TLS_automatic 		= "Automatic";
+$TLS_check_uncheck_all = "Toogle all";
 $TLS_unassigned 	= "unassigned";
 $TLS_desc 			= "descending";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
@@ -62,6 +63,7 @@ $TLS_testplan 		= $TLS_test_plan;
 $TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title 			= "Title";
+
 
 $TLS_th_active = "Active";
 $TLS_th_delete = "Delete";
@@ -180,6 +182,7 @@ $TLS_medium_risk = "Medium";
 $TLS_high_importance = "High";
 $TLS_low_importance = "Low";
 $TLS_medium_importance = "Medium";
+
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test Project, <br>".
@@ -912,6 +915,11 @@ $TLS_title_priority = "Define priority rules for Test Plan";
 $TLS_tr_th_importance = "Importance";
 $TLS_tr_th_prio_cba = "Priority (C/B/A)";
 $TLS_tr_th_risk = "Risk/Importance";
+
+// gui/templates/planUpdateTC.tpl
+$TLS_btn_update_testplan_tcversions = "Update Test Plan";
+$TLS_update_to_version = "Update to version";
+
 
 
 

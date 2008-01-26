@@ -1,7 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: newest_tcversions.tpl,v 1.2 2008/01/26 17:55:11 franciscom Exp $
 Purpose: smarty template - 
+rev:
+    20080126 - franciscom - external tcase id
 *}
 
 {include file="inc_head.tpl"}
@@ -10,24 +12,25 @@ Purpose: smarty template -
 {lang_get s='help' var='common_prefix'}
 {assign var="text_hint" value="$common_prefix"}
 
+{lang_get var='labels' 
+          s='testproject,test_plan,th_id,th_test_case,linked_version,newest_version' }
+
 <body>
-{* <h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1> *}
 <h1> {lang_get s='title_newest_tcversions'} 
 {include file="inc_help.tpl" help="newest_tcversions" locale=$locale 
          alt="$text_hint" title="$text_hint"}
 
 
 </h1>
-{* onchange="pre_submit();this.form.submit()"> *}
 <form method="post" id="newest_tcversions.tpl">
   <table>
   <tr>
-   <td>{lang_get s='testproject'}{$smarty.const.TITLE_SEP}</td>
+   <td>{$labels.testproject}{$smarty.const.TITLE_SEP}</td>
    <td>{$tproject_name|escape}</td>
   </tr>
   
   <tr>
-    <td>{lang_get s='test_plan'}</td>
+    <td>{$labels.test_plan}</td>
     <td>
       <select name="tplan_id" id="tplan_id" onchange="this.form.submit()">  
          {html_options options=$tplans selected=$tplan_id}
@@ -42,16 +45,16 @@ Purpose: smarty template -
 
     <table cellspacing="0" style="font-size:small;" width="100%">
       <tr style="background-color:blue;font-weight:bold;color:white">
-		    <td class="tcase_id_cell">{lang_get s='th_id'}</td> 
-		    <td>{lang_get s='th_test_case'}</td>
-		    <td>{lang_get s='linked_version'}</td>
-		    <td>{lang_get s='newest_version'}</td>
+		    <td>{$labels.th_id}</td> 
+		    <td>{$labels.th_test_case}</td>
+		    <td>{$labels.linked_version}</td>
+		    <td>{$labels.newest_version}</td>
 		    <td>&nbsp;</td>
       </tr>   
     
       {foreach from=$testcases item=tc}
       <tr>
-        <td style="align:rigth;"> {$tc.tc_id} </td>  
+        <td style="align:rigth;" > {$tcasePrefix}{$tc.tc_external_id} </td>  
         <td> {$tc.name} </td>  
         <td> {$tc.version} </td>
         <td> {$tc.newest_version} </td>
@@ -61,6 +64,14 @@ Purpose: smarty template -
   </div>
 {else}
 	<h2>{$user_feedback}</h2>
+{/if}
+
+{if $can_manage_testplans == "yes"}  
+   <div class="groupBtn">
+    <form method="post" action="lib/cfields/cfieldsEdit.php?do_action=create">
+      <input type="submit" name="create_cfield" value="{lang_get s='btn_cfields_create'}" />
+    </form>
+  </div>
 {/if}
 
 </body>

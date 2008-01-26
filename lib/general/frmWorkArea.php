@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/01/20 15:39:18 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/01/26 17:56:22 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -43,6 +43,7 @@ $aa_tfp = array(
             'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
             'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
             'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=testSetRemove',
+            'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=updateTC',
             'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
 //            'printTestSet'  => 'lib/print/selectData.php?type=testplan',
@@ -97,7 +98,6 @@ else
   $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
   $smarty->assign('treeframe', $aa_tfp[$showFeature]);
   $smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
-//  $smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
   $smarty->display('frmInner.tpl');
 }
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/26 08:31:44 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -17,32 +17,43 @@ require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
 testlinkInitPage($db);
 
-$idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
-$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-                                               
+$template_dir = 'requirements/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+
+$args=init_args();                                               
 $tproject_mgr = new testproject($db);                                                
 $req_spec_mgr = new requirement_spec_mgr($db); 
 
 //get list of ReqSpec
-$arrReqSpec = $tproject_mgr->getOptionReqSpec($tproject_id);
+$arrReqSpec = $tproject_mgr->getOptionReqSpec($args->tprojectID);
 
 //get first ReqSpec if not defined
-if (!$idSRS && count($arrReqSpec))
+if (!$args->reqSpecID && count($arrReqSpec))
 {
 	reset($arrReqSpec);
-	$idSRS = key($arrReqSpec);
-	tLog('Set a first available SRS ID: ' . $idSRS);
+	$args->reqSpecID = key($arrReqSpec);
+	tLog('Set a first available SRS ID: ' . $args->reqSpecID);
 }
 
 // collect REQ data
-$arrCoverage = $req_spec_mgr->get_coverage($idSRS);
-$arrMetrics = $req_spec_mgr->get_metrics($idSRS);
+$arrCoverage = $req_spec_mgr->get_coverage($args->reqSpecID);
+$arrMetrics = $req_spec_mgr->get_metrics($args->reqSpecID);
 
 $smarty = new TLSmarty();
 $smarty->assign('arrMetrics', $arrMetrics);
 $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);
-$smarty->assign('selectedReqSpec', $idSRS);
+$smarty->assign('selectedReqSpec', $args->reqSpecID);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
-$smarty->display('reqSpecAnalyse.tpl');
+$smarty->display($template_dir . $default_template);
+?>
+
+<?php
+function init_args()
+{
+    $_REQUEST=strings_stripSlashes($_REQUEST);
+    $args->reqSpecID = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUETS['idSRS']) : null;
+    $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    return $args;
+}
 ?>

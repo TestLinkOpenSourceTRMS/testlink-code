@@ -1,0 +1,122 @@
+{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.1 2008/01/26 08:32:03 franciscom Exp $ *}
+{* Purpose: smarty template - Analyse REQ coverage *}
+{include file="inc_head.tpl"}
+
+<body>
+
+<h1>
+ {lang_get s='help' var='common_prefix'}
+ {lang_get s='req_spec' var="xx_alt"}
+ {assign var="text_hint" value="$common_prefix: $xx_alt"}
+ 
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
+
+	  {lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$arrReqSpec[$selectedReqSpec]|escape}
+</h1>
+
+
+<div class="workBack">
+{include file="inc_update.tpl" result=$sqlResult action=$action}
+<h1>{lang_get s='req_title_analyse'}</h1>
+
+<div class="onright">
+<form method="get">{lang_get s='req_spec_change'}<br />
+	<select name="idSRS" onchange="form.submit()">
+	{html_options options=$arrReqSpec selected=$selectedReqSpec}</select>
+	<span class="bold"><a href="lib/req/reqSpecView.php?idSRS={$selectedReqSpec}">{lang_get s='edit'}</a></span>
+</form>
+</div>
+
+{* METRICS *}
+<table class="invisible">
+<tr><td>{lang_get s='req_total_count'}</td><td>{$arrMetrics.expectedTotal}</td></tr>
+<tr><td>{lang_get s='req_title_in_tl'}</td><td>{$arrMetrics.total}</td></tr>
+<tr><td>{lang_get s='req_title_covered'}</td><td>{$arrMetrics.covered}</td></tr>
+<tr><td>{lang_get s='req_title_uncovered'}</td><td>{$arrMetrics.total-$arrMetrics.covered}</td></tr>
+<tr><td>{lang_get s='req_title_not_in_tl'}</td><td>{$arrMetrics.uncovered}</td></tr>
+<tr><td>{lang_get s='req_title_nottestable'}</td><td>{$arrMetrics.notTestable}</td></tr>
+</table>
+
+</div>
+
+
+<div class="workBack">
+<h2>{lang_get s='req_title_covered'} - {$arrMetrics.coveredTestPlan}</h2>
+
+{section name=row loop=$arrCoverage.covered}
+{if $smarty.section.row.first}
+<table class="simple">
+	<tr>
+	
+		<th>{lang_get s="req_doc_id"}</th>
+		<th>{lang_get s="req"}</th>
+		<th>{lang_get s="testcases"}</th>
+	</tr>
+{/if}
+	<tr>
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&amp;idSRS={$selectedReqSpec}">
+			{$arrCoverage.covered[row].req_doc_id|escape}</a></span></td>
+			<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&amp;idSRS={$selectedReqSpec}">
+			{$arrCoverage.covered[row].title|escape}</a></span></td>
+		<td>{section name=subrow loop=$arrCoverage.covered[row].coverage}
+<a href="lib/testcases/archiveData.php?id={$arrCoverage.covered[row].coverage[subrow].id|escape}&amp;edit=testcase&allow_edit=0">{$arrCoverage.covered[row].coverage[subrow].id|escape}</a>:{$arrCoverage.covered[row].coverage[subrow].name|escape}<br />
+		{/section}</td>
+	</tr>
+{if $smarty.section.row.last}
+</table>
+{/if}
+{sectionelse}
+	<p class="bold">{lang_get s='none'}</p>
+{/section}
+</div>
+
+
+<div class="workBack">
+<h2>{lang_get s='req_title_uncovered'} - {$arrMetrics.coveredTestPlan}</h2>
+{section name=row2 loop=$arrCoverage.uncovered}
+{if $smarty.section.row2.first}
+<table class="simple">
+	<tr>
+		<th>{lang_get s="req_doc_id"}</th>
+		<th>{lang_get s="req"}</th>
+	</tr>
+{/if}
+	<tr>
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.uncovered[row2].id}&amp;idSRS={$selectedReqSpec}">{$arrCoverage.uncovered[row2].req_doc_id|escape}</a></span></td>
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.uncovered[row2].id}&amp;idSRS={$selectedReqSpec}">{$arrCoverage.uncovered[row2].title|escape}</a></span></td>
+	</tr>
+{if $smarty.section.row2.last}
+</table>
+{/if}
+{sectionelse}
+	<p class="bold">{lang_get s='none'}</p>
+{/section}
+</div>
+
+<div class="workBack">
+<h2>{lang_get s='req_title_nottestable'}</h2>
+
+{section name=row3 loop=$arrCoverage.nottestable}
+{if $smarty.section.row3.first}
+<table class="simple">
+	<tr>
+		<th>{lang_get s="req"}</th>
+	</tr>
+{/if}
+	<tr>
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.nottestable[row3].id}&amp;idSRS={$selectedReqSpec}">
+			{$arrCoverage.nottestable[row3].title|escape}</a></span></td>
+	</tr>
+{if $smarty.section.row3.last}
+</table>
+{/if}
+{sectionelse}
+	<p class="bold">{lang_get s='none'}</p>
+{/section}
+</div>
+
+
+</body>
+</html>

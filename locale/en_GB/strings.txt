@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.252 $
- * @modified $Date: 2008/01/26 17:57:31 $ $Author: franciscom $
+ * @version $Revision: 1.253 $
+ * @modified $Date: 2008/01/27 16:00:11 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -919,7 +919,8 @@ $TLS_tr_th_risk = "Risk/Importance";
 // gui/templates/planUpdateTC.tpl
 $TLS_btn_update_testplan_tcversions = "Update Test Plan";
 $TLS_update_to_version = "Update to version";
-
+$TLS_update_testcase_versions = "Update Linked Test Case Versions";
+$TLS_no_testcase_checked="There are no checked Test Cases. Nothing will be done";
 
 
 
@@ -1428,6 +1429,8 @@ $TLS_href_print_tc_suite = "Print Test Plan";
 $TLS_href_remove_test_case = "Remove Test Case(s)";
 $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_tc_exec_assignment = "Assign Test Case execution";
+$TLS_href_update_tplan = "Update Linked Test Case Versions";
+
 $TLS_href_upd_mod_tc = "Update modified Test Case(s)";
 $TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
 $TLS_testplan_role = "Test Plan role ";
@@ -1698,16 +1701,9 @@ $TLS_nav_users = "Navigator - Users";
 
 
 // lib/plan/planUpdateTC.php
-$TLS_category_has_changed = "Test Suite has changed";
-$TLS_component_has_changed = "Test Suite has changed";
 $TLS_deleted = "deleted";
 $TLS_different_versions = "Diff. Versions";
 $TLS_plan_update_no_tc_updated = "No Test Cases were updated";
-$TLS_planupdate_tc_deleted1 = "Test Case";
-$TLS_planupdate_tc_deleted2 = "has been deleted.";
-$TLS_planupdate_tc_updated1 = "Test Case";
-$TLS_planupdate_tc_updated2 = "has been updated.";
-$TLS_tcorder_has_changed = "The order of the tc's was changed";
 $TLS_updated = "updated";
 
 

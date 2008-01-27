@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.2 2008/01/26 17:55:11 franciscom Exp $
+$Id: newest_tcversions.tpl,v 1.3 2008/01/27 15:56:06 franciscom Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
@@ -64,14 +64,6 @@ rev:
   </div>
 {else}
 	<h2>{$user_feedback}</h2>
-{/if}
-
-{if $can_manage_testplans == "yes"}  
-   <div class="groupBtn">
-    <form method="post" action="lib/cfields/cfieldsEdit.php?do_action=create">
-      <input type="submit" name="create_cfield" value="{lang_get s='btn_cfields_create'}" />
-    </form>
-  </div>
 {/if}
 
 </body>

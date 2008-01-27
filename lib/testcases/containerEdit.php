@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/01/22 17:50:24 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/01/27 15:56:57 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
@@ -118,8 +118,6 @@ if($get_c_data)
 		$name_ok = 0;
 	}
 }
-
-echo "<pre>debug 20080105 - \ - " . __FUNCTION__ . " --- "; print_r($action); echo "</pre>";
 
 switch($action)
 {

@@ -1,9 +1,13 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.17 2008/01/26 17:56:23 franciscom Exp $ 
+ * @version $Id: planUpdateTC.php,v 1.18 2008/01/27 15:56:57 franciscom Exp $ 
  * 
+ * Author: franciscom
  *
+ * Allows for NON executed test cases linked to a test plan, update of Test Case versions
+ * following user choices.
+ * Test Case Execution assignments will be auto(magically) updated.
  *
  */         
 require('../../config.inc.php');
@@ -16,6 +20,7 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
 
+
 $template_dir='plan/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
@@ -24,37 +29,19 @@ $tcase_cfg=config_get('testcase_cfg');
 
 $testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id);
 $testCasePrefix .= $tcase_cfg->glue_character;
-
-
 $user_feedback='';
 
-$resultString = null;
-$arrData = array();
 
-// echo "<pre>debug 20080126 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
-
-$do_remove=0;
-// ---------------------------------------------------------------------------------------
-if($do_remove)
+switch ($args->doAction)
 {
-  $a_tc = isset($_POST['remove_checked_tc']) ? $_POST['remove_checked_tc'] : null;
-  if(!is_null($a_tc))
-  {
-      // remove without warning
-      $tplan_mgr->unlink_tcversions($args->tplan_id,$a_tc);   
-      
-      $user_feedback=lang_get("tcase_removed_from_tplan");
-      if( count($a_tc) > 1 )
-      {
-        $user_feedback=lang_get("multiple_tcase_removed_from_tplan");
-      }
-  }  
-  else
-  {
-    // 20070225 - BUGID 644
-    $do_remove=0;
-  }
+    case "doUpdate":
+    $user_feedback=doUpdate($db,$args);    
+    break;
+        
+    default:
+    break;  
 }
+
 
 $dummy = null;
 $out = null;
@@ -70,7 +57,7 @@ switch($args->level)
 {
 	case 'testcase':
 		
-		if( $total_tccount > 0 && !$do_remove)
+		if( $total_tccount > 0 )
 		{
   		// build data needed to call gen_spec_view
 	  	$my_path = $tree_mgr->get_path($args->id);
@@ -78,9 +65,9 @@ switch($args->level)
 		  $tsuite_data= $my_path[$idx_ts-1];
 		
 		  $pp = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id, $args->tplan_id);
-		  $linked_items[$id] = $pp[$version_id];
-		  $linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
-		  $linked_items[$id]['tc_id'] = $id;
+		  $linked_items[$args->id] = $pp[$args->version_id];
+		  $linked_items[$args->id]['testsuite_id'] = $tsuite_data['id'];
+		  $linked_items[$args->id]['tc_id'] = $args->id;
 
   		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 	  			                 $linked_items,$map_node_tccount,$args->keyword_id,
@@ -102,7 +89,7 @@ switch($args->level)
 		
 	default:
 		// show instructions
-  	//redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planRemoveTC");
+  	redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planUpdateTC");
 
 	break;
 }
@@ -122,8 +109,6 @@ if( !is_null($out) )
 
 $smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('testPlanName', $args->tplan_name);
-$smarty->assign('refreshTree', $do_remove ? 1 : 0);
-
 $smarty->display($template_dir . $default_template);
 ?>
 
@@ -133,10 +118,16 @@ function init_args()
     $_REQUEST=strings_stripSlashes($_REQUEST);
     
     $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-    $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
+    $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+
+    // Maps with key: test case ID value: tcversion_id
+    $args->fullTestCaseSet = isset($_REQUEST['a_tcid']) ? $_REQUEST['a_tcid'] : null;
+    $args->checkedTestCaseSet = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
+    $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
+
+    $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-    // $do_remove = isset($_POST['do_action']) ? 1 : 0;
 
 
     $args->tplan_id = $_SESSION['testPlanId'];
@@ -148,4 +139,29 @@ function init_args()
     return $args;  
 }
 
+/*
+  function: doUpdate
+
+  args:
+  
+  returns: message
+
+*/
+function doUpdate(&$dbObj,&$argsObj)
+{
+  $msg="";
+  if(!is_null($argsObj->checkedTestCaseSet))
+  {
+      foreach($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID)
+      {
+         $newtcversion=$argsObj->newVersionSet[$tcaseID];
+         $sql="UPDATE testplan_tcversions " .
+              " SET tcversion_id={$newtcversion} " .
+              " WHERE tcversion_id={$tcversionID}";
+         $dbObj->exec_query($sql);  
+      }
+      $msg=lang_get("tplan_updated");
+  }  
+  return $msg;
+}
 ?>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.4 2008/01/26 17:55:11 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.5 2008/01/27 15:56:06 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -21,13 +21,13 @@ added logic to manage active/inactive tcversions
 {include file="inc_jsCheckboxes.tpl"}
 </head>
 <body>
-<h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}
+<h1 class="title">{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}
 </h1>
 
 
 {if $has_tc }
 <form name='addTcForm' id='addTcForm' method='post'>
-   <h1>
+   <h1 class="title">
     {if $full_control eq 1}
       {if $has_linked_items eq 0} 
   		   {lang_get s='title_add_test_to_plan'}
@@ -66,7 +66,7 @@ added logic to manage active/inactive tcversions
 	  
 	
 	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
-	    <h3>{$ts.testsuite.name|escape} 
+	    <h3 class="testlink">{$ts.testsuite.name|escape} 
 	        {if $item_number ==1}
 	          <br />
             <table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 

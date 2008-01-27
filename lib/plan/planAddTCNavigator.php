@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.27 2008/01/26 17:56:23 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.28 2008/01/27 15:56:57 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -23,8 +23,6 @@ testlinkInitPage($db);
 
 $template_dir='plan/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-echo "<pre>debug 20080126 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $args=init_args();
 

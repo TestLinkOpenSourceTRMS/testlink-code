@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.7 2007/11/25 18:57:12 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.8 2008/01/27 15:55:48 franciscom Exp $ 
 //
 //
 // rev :
@@ -88,7 +88,9 @@ function checkOrUncheckAll(ml,bCheck)
 
 /*
   function: checkbox_count_checked 
-
+            given a form id, will return how many checkboxes
+            are checked.
+            
   args : form_id
   
   returns: number

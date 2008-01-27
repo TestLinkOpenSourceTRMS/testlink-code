@@ -1,27 +1,52 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.2 2008/01/26 17:55:11 franciscom Exp $
-Purpose: smarty template - generate a list of TC for adding to Test Plan 
+$Id: planUpdateTC.tpl,v 1.3 2008/01/27 15:56:07 franciscom Exp $
+
+Author: franciscom
+
+Purpose: generate a list of Test Cases linked to Test Plan 
+         that have a newer available version.
+         
 
 *}
-
 {include file="inc_head.tpl" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
+{literal}
+<script type="text/javascript">
+{/literal}
+{lang_get s='warning,no_testcase_checked' var="labels"}
+
+var alert_box_title = "{$labels.warning}";
+var warning_no_testcase_checked = "{$labels.no_testcase_checked}";
+{literal}
+function validateForm(f)
+{
+  if( checkbox_count_checked(f.id) == 0)
+  {
+      alert_message(alert_box_title,warning_no_testcase_checked);
+      return false;
+  } 
+ 
+  return true;
+}
+</script>
+{/literal}
+
 </head>
 
 {lang_get var='labels'
-          s='test_plan,update_testplan,note_keyword_filter,check_uncheck_all,
-            check_uncheck_all_checkboxes,th_id,has_been_executed,
+          s='test_plan,update_testcase_versions,note_keyword_filter,check_uncheck_all,
+            check_uncheck_all_checkboxes,th_id,has_been_executed,show_tcase_spec,
             update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
 
-<body>
-<h1>{$labels.test_plan}{$smarty.const.TITLE_SEP}{$testPlanName|escape}
-</h1>
-
+<body class="testlink">
+<h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1>
 
 {if $has_tc }
-<form name='updateTcForm' id='updateTcForm' method='post'>
-   <h1>{$labels.update_testplan}</h1>
+<form name='updateTcForm' id='updateTcForm' method='post'
+      onSubmit="javascript:return validateForm(this);">
+   <h1 class="title">{$labels.update_testcase_versions}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
   {if $key ne ''}
@@ -44,7 +69,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 	  
 	
 	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
-	    <h3>
+	    <h3 class="testlink">
       {if $item_number ==1}
 	    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
 	               alt="{$labels.check_uncheck_all}" 
@@ -58,77 +83,67 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
      <input type="hidden" name="update_value_{$ts_id}"  id="update_value_{$ts_id}"  value="0" />
             
      {* ------------------------------------------------------------------------- *}      
-     {if ($full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0 }
+     {if $ts.testcase_qty gt 0 || $ts.linked_testcase_qty gt 0 }
         
-        <table cellspacing="0" style="font-size:small;" width="100%">
+        <table border="0" cellspacing="0" cellpading="2" style="font-size:small;" width="100%">
           <tr style="background-color:blue;font-weight:bold;color:white">
-
-			     <td width="5" align="center">
-              {if $full_control || 1==1}
+			     <th class="clickable_icon">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$update_cb}","update_value_{$ts_id}");'
                     title="{$labelscheck_uncheck_all_checkboxes}" />
-    			    {else}
-    			     &nbsp;
-		    	    {/if}
-			     </td>
-			     
-			     <td class="tcase_id_cell">{$labels.th_id}</td> 
-			     <td>{lang_get s='th_test_case'}</td>
-			     <td>{lang_get s='version'}</td>
-			     <td>{$labels.update_to_version}</td>
+			     </th>
+			     <th class="tcase_id_cell">{$labels.th_id}</th> 
+			     <th>{lang_get s='th_test_case'}</th>
+			     <th>{lang_get s='version'}</th>
+			     <th>{$labels.update_to_version}</th>
+			     <th>&nbsp;</th>
           </tr>   
           
           {foreach from=$ts.testcases item=tcase}
             
+            {* some conditional design logic *}
             {assign var='is_active' value=0}
-            {if $tcase.linked_version_id neq 0 }
-               {if $tcase.tcversions_active_status[$tcase.linked_version_id] eq 1}             
+            {assign var='is_linked' value=0}
+            {assign var="draw_update_inputs" value=0}
+            
+            {if $tcase.linked_version_id != 0 }
+               {assign var='is_linked' value=1}
+            {/if}
+            
+            {if $is_linked }
+               {if $tcase.tcversions_active_status[$tcase.linked_version_id] == 1}             
                  {assign var='is_active' value=1}
                {/if}
             {else}
-               {if $tcase.tcversions_qty neq 0}
+               {if $tcase.tcversions_qty != 0}
                  {assign var='is_active' value=1}
                {/if}
             {/if}      
+            {if $tcase.executed == 'no' && $is_active==1} 
+                {assign var="draw_update_inputs" value=1}
+            {/if}    
+            {* ------------------------------------------------ *}
 
-
-            {if $is_active || $tcase.linked_version_id ne 0 }  
-            
-              {assign var="draw_update_inputs" value="0"}
-              {if $tcase.executed == 'no' && $is_active==1} 
-                {assign var="draw_update_inputs" value="1"}
-              {/if}    
-              
-   				    {if $full_control || $tcase.linked_version_id ne 0 }
-    			    <tr {if $tcase.linked_version_id ne 0} 
-    			        style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
+            {if $is_active || $is_linked }  
+   				    {if $is_linked }
+    			    <tr class="testlink">
     			      <td width="20">
-    				
-    				    {if $full_control}
-      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
-      				       &nbsp;&nbsp;
-      				    {else}
+      				    {if $draw_update_inputs }
       				      <input type='checkbox' 
       				             name='{$update_cb}[{$tcase.id}]' 
       				             id='{$update_cb}{$tcase.id}' 
-      				             value='{$tcase.id}'> 
+      				             value='{$tcase.linked_version_id}'> 
       				    {/if}
-      				    
-      				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
-    				    {else}
-    				      &nbsp;&nbsp;
-    				    {/if}
+      				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}' />
     			      </td>
     			      
     			      <td>
     				    {$testCasePrefix}{$tcase.external_id}
     			      </td>
-    			      {* 20070930 - franciscom - REQ - BUGID 1078 *}
-    				    <td title="{lang_get s='show_tcase_spec'}">
+    				    <td title="{$labels.show_tcase_spec}">
      				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
     			      </td>
-    			      
+
                 <td>
          				  <select name="tcversion_for_tcid[{$tcase.id}]"
       			          {if $tcase.linked_version_id ne 0} disabled	{/if}>
@@ -143,19 +158,10 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
          				    </select>
                   {/if}
                 </td>
-        
+       
                 {* ------------------------------------------------------------------------- *}      
                 {if $ts.linked_testcase_qty gt 0 }
-          				<td>&nbsp;</td>
           				<td>
-          				   {if $draw_update_inputs && $tcase.linked_version_id != 0} 
-          						<input type='checkbox' 
-          						       name='{$rm_cb}[{$tcase.id}]' 
-          						       id='{$rm_cb}{$tcase.id}' 
-          				           value='{$tcase.linked_version_id}' />
-          				   {else}
-          						&nbsp;
-          				   {/if}
                      {if $tcase.executed eq 'yes'}
                             &nbsp;&nbsp;&nbsp;{$labels.has_been_executed}
                      {/if}    
@@ -181,13 +187,10 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 </div>
 
   <div class="workBack">   
-      <br /><input type='submit' name='do_action' style="padding-right: 20px;"
-         {if $full_control}
- 	      	   value='{$labels.btn_update_testplan_tcversions}'
-         {else}
- 	      	   value='{$labels.btn_update_testplan_tcversions}'
-		     {/if}
-         />
+      <br/><input type="submit" id="update_btn" name="update_btn" style="padding-right: 20px;"
+ 	      	        value='{$labels.btn_update_testplan_tcversions}'  />
+ 	      	        
+ 	      	 <input type="hidden" name="doAction" id="doAction" value="doUpdate">  
    </div>
 
 </form>

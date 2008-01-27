@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventviewer.tpl,v 1.3 2008/01/27 21:13:20 schlundus Exp $ 
+$Id: eventviewer.tpl,v 1.4 2008/01/27 21:41:54 schlundus Exp $ 
 
 Event Viewer
 
@@ -49,9 +49,18 @@ function showDetailWindow(info)
 	{
 			infoWin = new Ext.Window({
 						el:'eventDetailWindow',
+						modal:true,
+						autoTabs: true,
 						layout:'fit',
 						width:700,
-						height:400,
+						height:500,
+						items: new Ext.TabPanel({
+							el: 'detailTabs',
+							autoTabs:true,
+							activeTab:0,
+							deferredRender:false,
+							border:false
+						}),
 						closeAction:'hide',
 						plain: true,
 						buttons: [{
@@ -142,11 +151,16 @@ fieldset
 			</tr>
 			{/foreach}
 		</table>
-	<div id="eventDetailWindow" class="x-hidden">
-		<div class="x-window-header">Eventdetails</div>
-		<div id="eventDetails" class="x-tab"></div>
-    </div>
 </div>
-
+		<div id="eventDetailWindow" class="x-hidden">
+			<div class="x-window-header">Eventdetails</div>
+			<div id="detailTabs">
+				<div class="x-tab" title="Details">
+					<div id="eventDetails" class="inner-tab">
+						
+					</div>
+				</div>
+			</div>
+		</div>
 </body>
 

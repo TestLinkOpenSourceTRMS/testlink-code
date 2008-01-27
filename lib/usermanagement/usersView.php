@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/25 11:31:37 $ -  $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/01/27 21:13:21 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -57,12 +57,6 @@ switch($operation)
 		$orderByType = $user_order_by;
 		$orderByDir = $order_by_dir;
 		break;
-/*	case 'gen_api_key':
-		$APIKey = new APIKey();
-		$result = $APIKey->addKeyForUser($user_id);
-		if ($result)
-			logAuditEvent(TLS("audit_user_apikey_set"),"CREATE",$user_id,"users");
-		break;*/
 	case 'order_by_role':
 	case 'order_by_login':
 		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
@@ -78,11 +72,8 @@ switch($operation)
 }
 $order_by_clause = get_order_by_clause($orderByType,$orderByDir);
 $users = getAllUsersRoles($db,$order_by_clause);
-//$api_users = APIKey::getAPIKeys($db);
 
 $smarty = new TLSmarty();
-//$smarty->assign('api_users', $api_users);
-//$smarty->assign('api_ui_show', $g_api_ui_show);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_order_by',$user_order_by);
 $smarty->assign('order_by_role_dir',$order_by_dir['order_by_role_dir']);

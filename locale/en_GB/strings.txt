@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.253 $
- * @modified $Date: 2008/01/27 16:00:11 $ $Author: franciscom $
+ * @version $Revision: 1.254 $
+ * @modified $Date: 2008/01/27 21:13:21 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -85,6 +85,7 @@ $TLS_remove 		= "remove";
 
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
+$TLS_btn_apply = "Apply";
 $TLS_btn_add = "Add";
 $TLS_btn_assign	= "Assign";
 $TLS_btn_cancel	= "Cancel";
@@ -1979,4 +1980,18 @@ $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
 $TLS_audit_role_saved = "Role '{%1}' was saved!";
+
+//eventviewer.php
+$TLS_th_errorlevel = "Error level";
+$TLS_th_timestamp = "Timestamp";
+$TLS_th_activity = "Activity";
+$TLS_label_startdate = "Start date";
+$TLS_label_enddate = "End date";
+$TLS_error_level_AUDIT = "AUDIT";
+$TLS_error_level_WARNING = "WARNING";
+$TLS_error_level_INFO = "INFO";
+$TLS_error_level_ERROR = "ERROR";
+$TLS_error_level_DEBUG = "DEBUG";
+$TLS_event_viewer = "Eventviewer";
 ?>
+

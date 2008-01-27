@@ -2,9 +2,9 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/01/24 21:21:31 $ $Author: franciscom $
- * @author 
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/01/27 21:13:21 $ $Author: schlundus $
+ * @author franciscom
  */
 
 //shorthand function for creating meta strings
@@ -19,6 +19,7 @@ class tlMetaStringHelper
 {
 	public $label;
 	public $params;
+	public $bDontLocalize;
 }
 
 class tlMetaString extends tlObject
@@ -36,6 +37,7 @@ class tlMetaString extends tlObject
 	{
 		$this->helper->label = $label;
 		$this->helper->params = $args;
+		$this->bDontLocalize = false;
 	}
 	static public function unserialize($representation)
 	{
@@ -47,6 +49,7 @@ class tlMetaString extends tlObject
 			$helper = new tlMetaStringHelper();
 			$helper->label = $representation;
 			$helper->params = null;
+			$helper->bDontLocalize = true;
 		}
 		
 		$metaString->helper = &$helper;
@@ -65,8 +68,11 @@ class tlMetaString extends tlObject
 	//localize the tlMetaString
 	public function localize($locale = null)
 	{
-		$str = lang_get($this->helper->label,$locale);
-		
+		if ($this->helper->bDontLocalize)
+			$str = $this->helper->label;
+		else
+			$str = lang_get($this->helper->label,$locale);
+			
 		$subjects = array();
 		$replacements = array();
 		$params = $this->helper->params;

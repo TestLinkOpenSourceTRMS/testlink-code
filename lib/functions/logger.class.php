@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/01/27 21:13:21 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -60,13 +60,13 @@ class tlLogger extends tlObject
 	{
 		parent::__destruct();
 	}
-	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1)
+	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
 	{
-		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,$limit);
+		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,$limit,$startTime,$endTime);
 	}
-	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1)
+	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
 	{
-		return $this->eventManager->getEventsFor(null,$objectIDs,$objectTypes,$activityCodes,$limit);
+		return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,$limit,$startTime,$endTime);
 	}
 	/*
 		set the log level filter, only events which matches the filter can pass
@@ -155,9 +155,9 @@ class tlTransaction extends tlDBObject
 	public $startTime = null;
 	public $endTime = null;
 	public $duration = null;
+	public $userID = null;
+	public $sessionID = null;
 	
-	protected $userID = null;
-	protected $sessionID = null;
 	protected $events = null;
 	
 	public function __construct(&$db)
@@ -237,7 +237,7 @@ class tlTransaction extends tlDBObject
 			$this->startTime = $info['start_time'];
 			$this->endTime = $info['end_time'];
 			$this->userID = $info['user_id'];
-			$this->session_id = $info['session_id'];
+			$this->sessionID = $info['session_id'];
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
@@ -320,7 +320,7 @@ class tlEventManager extends tlObjectWithDB
 
         return self::$s_instance;
     }
-	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1)
+	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
 	{
 		$clauses = null;
 		if (!is_null($logLevels))
@@ -347,6 +347,11 @@ class tlEventManager extends tlObjectWithDB
 			$activityCodes = "('".implode("','",$activityCodes)."')";
 			$clauses[] = "activity IN {$activityCodes}";
 		}
+		if (!is_null($startTime))
+			$clauses[] = "fired_at >= {$startTime}";
+		if (!is_null($endTime))
+			$clauses[] = "fired_at <= {$endTime}";
+		
 		$query = "SELECT id FROM events";
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
@@ -440,7 +445,14 @@ class tlEvent extends tlDBObject
 			$this->activityCode = $info['activity'];
 			
 			if ($this->transactionID && $options & self::TLOBJ_O_GET_DETAIL_TRANSACTION)
+			{
 				$this->transaction = tlTransaction::getByID($db,$this->transactionID,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+				if ($this->transaction)
+				{	
+					$this->userID = $this->transaction->userID;
+					$this->sessionID = $this->transaction->sessionID;
+				}
+			}
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}

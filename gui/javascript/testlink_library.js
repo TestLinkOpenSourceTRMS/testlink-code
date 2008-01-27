@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.49 2008/01/18 15:47:31 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.50 2008/01/27 21:13:20 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -706,4 +706,23 @@ function showHideByClass(tagName,className)
             }    
     	} 
     }
+}
+
+function showCal(id,dateField)
+{ 
+	var dp = new Ext.DatePicker({ renderTo:id, format:"m/d/y", idField:dateField });
+	//get the element
+	var el = document.getElementById(dateField);
+	if(el.value != "")
+	{
+		selectedDate = new Date(el.value);
+		dp.setValue(selectedDate);
+	}
+	dp.addListener("select", onSelect);
+}
+function onSelect(datePicker,date)
+{
+	var dt = new Date(date);
+	document.getElementById(datePicker.idField).value = dt.format("m/d/Y");
+	datePicker.destroy();
 }

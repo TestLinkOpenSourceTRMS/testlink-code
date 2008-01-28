@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/03 20:42:26 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
  * Code check: 2007/11/16 schlundus
@@ -24,7 +24,11 @@ if ($id)
 	$attachmentRepository = tlAttachmentRepository::create($db);
 	$attachmentInfo = $attachmentRepository->getAttachmentInfo($id);
 	if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
+	{
 		$bDeleted = $attachmentRepository->deleteAttachment($id,$attachmentInfo);
+		if ($bDeleted)
+			logAuditEvent(TLS("audit_attachment_deleted",$attachmentInfo['title']),"DELETE",$id,"attachments");
+	}
 }
 
 $smarty = new TLSmarty();

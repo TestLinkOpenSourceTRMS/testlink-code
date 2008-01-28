@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/01/27 21:13:20 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -23,7 +23,8 @@ if ($eventID)
 	if ($event->readFromDB($db,tlEvent::TLOBJ_O_GET_DETAIL_TRANSACTION) >= tl::OK)
 	{
 		$user = new tlUser($event->userID);
-		$user->readFromDB($db);
+		if ($user->readFromDB($db) < tl::OK)
+			$user = null;
 	}
 }
 

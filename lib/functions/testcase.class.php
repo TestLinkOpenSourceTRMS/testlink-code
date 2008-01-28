@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.91 $
- * @modified $Date: 2008/01/26 17:56:22 $ $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2008/01/28 21:17:30 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080126 - franciscom - BUGID 1313 
@@ -1458,7 +1458,10 @@ function addKeyword($id,$kw_id)
 	$sql = " INSERT INTO testcase_keywords (testcase_id,keyword_id) " .
 		     " VALUES ($id,$kw_id)";
 
-	return ($this->db->exec_query($sql) ? 1 : 0);
+	$result = ($this->db->exec_query($sql) ? 1 : 0);
+	if ($result)
+		logAuditEvent(TLS("audit_keyword_assigned_tc",$kw['name'],$id),"ASSIGN",$id,"nodes_hierarchy");
+	return $result;
 }
 
 function addKeywords($id,$kw_ids)
@@ -1494,7 +1497,11 @@ function deleteKeywords($tcID,$kwID = null)
 	$sql = " DELETE FROM testcase_keywords WHERE testcase_id = {$tcID} ";
 	if (!is_null($kwID))
 		$sql .= " AND keyword_id = {$kwID}";
-	return $this->db->exec_query($sql);
+	$result = $this->db->exec_query($sql);
+	if ($result)
+		logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$kwID,$tcID),"ASSIGN",$tcID,"nodes_hierarchy");
+	
+	return $result;
 }
 
 // -------------------------------------------------------------------------------

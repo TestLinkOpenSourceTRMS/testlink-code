@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.7 $
-* @modified $Date: 2008/01/19 17:47:48 $ $Author: schlundus $
+* @version $Revision: 1.8 $
+* @modified $Date: 2008/01/28 21:17:31 $ $Author: schlundus $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -61,7 +61,7 @@ else if ($feature == "testplan")
 
 if ($featureID && $bUpdate && $mgr)
 {
-	tLog(TLS("audit_user_assign_changed"),'AUDIT',null,$featureID,$feature."s");
+	logAuditEvent(TLS("audit_user_assignment_changed"),"SAVE",$featureID,$feature."s");
 	$mgr->deleteUserRoles($featureID);			
 	foreach($map_userid_roleid as $user_id => $role_id)
 	{
@@ -79,7 +79,6 @@ if ($bTestproject)
 	$gui_cfg = config_get('gui');
 	$order_by = $gui_cfg->tprojects_combo_order_by;
 	$features = $mgr->get_accessible_for_user($userID,'array_of_map',$order_by);
-
 	// If have no a test project ID, try to figure out which test project to show
 	// Try with session info, if failed go to first test project available. 
 	if (!$featureID)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/01/02 19:34:05 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -200,7 +200,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	protected function deleteAttachmentFromDB($id,$dummy = null)
 	{
 		$attachment = new tlAttachment($id);
-		return $attachment->deleteFromDB($this->$db);
+		return $attachment->deleteFromDB($this->db);
 	}
 		
 	public function deleteAttachment($id,$attachmentInfo = null)

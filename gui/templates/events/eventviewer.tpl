@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventviewer.tpl,v 1.4 2008/01/27 21:41:54 schlundus Exp $ 
+$Id: eventviewer.tpl,v 1.5 2008/01/28 21:17:30 schlundus Exp $ 
 
 Event Viewer
 
@@ -25,8 +25,11 @@ Event Viewer
 
 {literal}
 <script type="text/javascript">
+
+var prgBar = null;
 function showEventDetails(id)
 {
+	prgBar = Ext.Msg.wait("Please wait...");
 	Ext.Ajax.request(
 				{
 					url : 'lib/events/eventinfo.php' , 
@@ -35,7 +38,12 @@ function showEventDetails(id)
 					success: function (result, request)
 							 { 
 								showDetailWindow(result.responseText); 
-							 }
+							 },
+					failure: function (result, request)
+						{
+							if (prgBar)
+								prgBar.hide();
+						},
 				} 
 			);
 }
@@ -44,32 +52,33 @@ function showDetailWindow(info)
 {
 	var item = document.getElementById('eventDetails');
 	item.innerHTML = info;
-	
+	if (prgBar)
+		prgBar.hide();
 	if(!infoWin)
 	{
-			infoWin = new Ext.Window({
-						el:'eventDetailWindow',
-						modal:true,
-						autoTabs: true,
-						layout:'fit',
-						width:700,
-						height:500,
-						items: new Ext.TabPanel({
-							el: 'detailTabs',
-							autoTabs:true,
-							activeTab:0,
-							deferredRender:false,
-							border:false
-						}),
-						closeAction:'hide',
-						plain: true,
-						buttons: [{
-							text: 'Close',
-							handler: function(){
-								infoWin.hide();
-							}
-						}]
-				});
+		infoWin = new Ext.Window({
+					el:'eventDetailWindow',
+					modal:true,
+					autoTabs: true,
+		layout:'fit',
+					width:700,
+					height:500,
+					items: new Ext.TabPanel({
+						el: 'detailTabs',
+						autoTabs:true,
+						activeTab:0,
+						deferredRender:false,
+						border:false
+					}),
+					closeAction:'hide',
+					plain: true,
+					buttons: [{
+						text: 'Close',
+						handler: function(){
+							infoWin.hide();
+						}
+					}]
+			});
 	}
 	infoWin.show(this);
 }
@@ -156,11 +165,5 @@ fieldset
 			<div class="x-window-header">Eventdetails</div>
 			<div id="detailTabs">
 				<div class="x-tab" title="Details">
-					<div id="eventDetails" class="inner-tab">
-						
-					</div>
+					<div id="eventDetails" class="inner-tab"></div>
 				</div>
-			</div>
-		</div>
-</body>
-

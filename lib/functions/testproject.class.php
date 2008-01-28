@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2008/01/20 15:39:17 $  $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2008/01/28 21:17:31 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -701,7 +701,10 @@ function count_testcases($id)
 	{
 		$kw = new tlKeyword();
 		$kw->initialize($testprojectID,$keyword,$notes);
-		return $kw->writeToDB($this->db);
+		$result = $kw->writeToDB($this->db);
+		if ($result >= tl::OK)
+			logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$kw->dbID,"keywords");
+		return $result;
 	}
 	
 	/**
@@ -718,7 +721,10 @@ function count_testcases($id)
 	{
 		$kw = new tlKeyword($id);
 		$kw->initialize($testprojectID,$keyword,$notes);
-		return $kw->writeToDB($this->db);
+		$result = $kw->writeToDB($this->db);
+		if ($result >= tl::OK)
+			logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
+		return $result;
 	}
 
 	/**
@@ -760,7 +766,10 @@ function count_testcases($id)
 	 **/
 	function deleteKeyword($id)
 	{
-		return tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
+		$result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
+		if ($result >= tl::OK)
+			logAuditEvent(TLS("audit_keyword_deleted"),"DELETE",$id,"keywords");
+		return $result;
 	}
 
 	function deleteKeywords($testproject_id)
@@ -841,7 +850,10 @@ function count_testcases($id)
 				$k = new tlKeyword();
 				$k->initialize($testproject_id,NULL,NULL);
 				if ($k->readFromCSV(implode($delim,$data)) >= tl::OK)
-					$k->writeToDB($this->db);
+				{
+					if ($k->writeToDB($this->db) >= tl::OK)
+						logAuditEvent(TLS("audit_keyword_created",$k->name),"CREATE",$k->dbID,"keywords");
+				}
 			}
 			fclose($handle);
 			return tl::OK;
@@ -874,7 +886,10 @@ function count_testcases($id)
 				$k = new tlKeyword();
 				$k->initialize($testproject_id,NULL,NULL);
 				if ($k->readFromSimpleXML($keyword) >= tl::OK)
-					$k->writeToDB($this->db);
+				{
+					if ($k->writeToDB($this->db) >= tl::OK)
+						logAuditEvent(TLS("audit_keyword_created",$k->name),"CREATE",$k->dbID,"keywords");
+				}
 				else
 					return tlKeyword::E_WRONGFORMAT;
 			}

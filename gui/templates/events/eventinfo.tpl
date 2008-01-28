@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: eventinfo.tpl,v 1.1 2008/01/27 21:13:20 schlundus Exp $ *}
+{* $Id: eventinfo.tpl,v 1.2 2008/01/28 21:17:30 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 <div class="workBack">
 	<table class="simple">
@@ -24,7 +24,7 @@
 			<th colspan="2">{lang_get s='th_session_info'}</th>
 	</tr>
 	<tr>
-			<th>{lang_get s='th_user'}</th>
+			<th>{lang_get s='User'}</th>
 			<td>
 				{if $user}
 					{$user->getDisplayName()}

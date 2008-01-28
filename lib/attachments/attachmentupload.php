@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/12/02 17:14:46 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -43,6 +43,9 @@ if ($bPostBack > 2)
 		{
 			$attachmentRepository = tlAttachmentRepository::create($db);
 			$bUploaded = $attachmentRepository->insertAttachment($id,$tableName,$title,$fInfo);
+			if ($bUploaded)
+				logAuditEvent(TLS("audit_attachment_created",$title),"CREATE",$id,"attachments");
+
 		}
 		else
 			$msg  = getFileUploadErrorMessage($fInfo);

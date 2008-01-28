@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.254 $
- * @modified $Date: 2008/01/27 21:13:21 $ $Author: schlundus $
+ * @version $Revision: 1.255 $
+ * @modified $Date: 2008/01/28 20:48:25 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1993,5 +1993,5 @@ $TLS_error_level_INFO = "INFO";
 $TLS_error_level_ERROR = "ERROR";
 $TLS_error_level_DEBUG = "DEBUG";
 $TLS_event_viewer = "Eventviewer";
-?>
 
+?>

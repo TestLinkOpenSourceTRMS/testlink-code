@@ -1,15 +1,23 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.5 2008/01/25 11:31:37 havlat Exp $ *}
+{* $Id: userInfo.tpl,v 1.6 2008/01/29 20:50:42 franciscom Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
+{lang_get var='labels' 
+          s='title_account_settings,warning_empty_pwd,warning_different_pwd,
+             warning_enter_less1,warning_enter_at_least1,warning_enter_at_least2,
+             warning_enter_less2,th_login,th_first_name,th_last_name,
+             th_email,th_locale,btn_save,th_old_passwd,
+             th_new_passwd,th_new_passwd_again,btn_change_passwd,
+             your_password_is_external,user_api_key,btn_apikey_generate'}
+
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
 
-<h1>{lang_get s='title_account_settings'}</h1>
+<h1>{$labels.title_account_settings}</h1>
 
 {include file="inc_update.tpl" result=$msg action="updated" item="user" name=$user->login}
 
@@ -18,12 +26,12 @@
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_pwd = "{lang_get s='warning_empty_pwd'}";
-var warning_different_pwd = "{lang_get s='warning_different_pwd'}";
-var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
-var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
-var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
-var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
+var warning_empty_pwd = "{$labels.warning_empty_pwd}";
+var warning_different_pwd = "{$labels.warning_different_pwd}";
+var warning_enter_less1 = "{$labels.warning_enter_less1}";
+var warning_enter_at_least1 = "{$labels.warning_enter_at_least1}";
+var warning_enter_at_least2 = "{$labels.warning_enter_at_least2}";
+var warning_enter_less2 = "{$labels.warning_enter_less2}";
 var names_max_len={#NAMES_MAXLEN#};
 
 {literal}
@@ -43,26 +51,26 @@ function valAllText(form)
 	<input type="hidden" name="id" value="{$user->dbID}" />
 	<table class="common">
 		<tr>
-			<th>{lang_get s='th_login'}</th>
+			<th>{$labels.th_login}</th>
 			<td>{$user->login}</td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_first_name'}</th>
+			<th>{$labels.th_first_name}</th>
 			<td><input type="text" name="first" value="{$user->firstName|escape}" 
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" /></td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_last_name'}</th>
+			<th>{$labels.th_last_name}</th>
 			<td><input type="text" name="last" value="{$user->lastName|escape}" 
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" /></td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_email'}</th>
+			<th>{$labels.th_email}</th>
 			<td><input type="text" name="email" value="{$user->emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_locale'}</th>
+			<th>{$labels.th_locale}</th>
 			<td>		   
 				<select name="locale">
 				{html_options options=$optLocale selected=$user->locale}
@@ -71,7 +79,7 @@ function valAllText(form)
 		</tr>
 	</table>
 	<div class="groupBtn">	
-		<input type="submit" name="editUser" value="{lang_get s='btn_save'}" />
+		<input type="submit" name="editUser" value="{$labels.btn_save}" />
 	</div>
 </form>
 
@@ -82,19 +90,19 @@ function valAllText(form)
 		onsubmit="return validatePassword(document.changePass);">
 		<input type="hidden" name="id" value="{$user->dbID}" />
 		<table class="common">
-			<tr><th>{lang_get s='th_old_passwd'}</th>
+			<tr><th>{$labels.th_old_passwd}</th>
 				<td><input type="password" name="old" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
-			<tr><th>{lang_get s='th_new_passwd'}</th>
+			<tr><th>{$labels.th_new_passwd}</th>
 				<td><input type="password" name="new1" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
-			<tr><th>{lang_get s='th_new_passwd_again'}</th>
+			<tr><th>{$labels.th_new_passwd_again}</th>
 				<td><input type="password" name="new2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		</table>
 		<div class="groupBtn">	
-			<input type="submit" name="changePasswd" value="{lang_get s='btn_change_passwd'}" />
+			<input type="submit" name="changePasswd" value="{$labels.btn_change_passwd}" />
 		</div>
 	</form>
 {else}
-   <p>{lang_get s='your_password_is_external'}<p>
+   <p>{$labels.your_password_is_external}<p>
 {/if}
 
 {if $api_ui_show eq 1}
@@ -103,9 +111,9 @@ function valAllText(form)
 <div>									
 	<form name="genApi" method="post" action="lib/usermanagement/userinfo.php">
 	<input type="hidden" name="id" value="{$user->dbID}" />
-	<p>{lang_get s='user_api_key'} = {$user->userApiKey|escape}</p>
+	<p>{$labels.user_api_key} = {$user->userApiKey|escape}</p>
 	<div class="groupBtn">	
-		<input type="submit" name="genApi" value="{lang_get s='btn_apikey_generate'}" />
+		<input type="submit" name="genApi" value="{$labels.btn_apikey_generate}" />
 	</div>
 	</form>
 </div>

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.92 $
- * @modified $Date: 2008/01/28 21:17:30 $ $Author: schlundus $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2008/01/29 20:54:34 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080126 - franciscom - BUGID 1313 
@@ -390,7 +390,7 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
                          'refresh_tree' => 'yes', 'disable_edit' => 0,
                          'display_testproject' => 0,'display_parent_testsuite' => 0);
 
-  if( !is_null($viewer_args) )
+  if( !is_null($viewer_args) && is_array($viewer_args) )
   {
       foreach($viewer_defaults as $key => $value)                         
       {

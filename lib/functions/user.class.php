@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/25 11:31:38 $ $Author: havlat $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/01/29 20:52:09 $ $Author: franciscom $
  *
  */
 
@@ -14,6 +14,8 @@
 //SCHLUNDUS: not completed
 class tlUser extends tlDBObject
 {
+  private $object_table="users";
+
 	public $firstName;
 	public $lastName;
 	public $emailAddress;
@@ -101,12 +103,14 @@ class tlUser extends tlDBObject
 	function create()
 	{
 	}
+	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
 		$query = "SELECT id,login,password,first,last,email,role_id,locale, " .
-		         " login AS fullname, active,default_testproject_id, script_key FROM users";
+		         " login AS fullname, active,default_testproject_id, script_key " .
+		         " FROM {$this->object_table}";
 		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
@@ -115,7 +119,8 @@ class tlUser extends tlDBObject
 			$clauses[] = "login = '".$db->prepare_string($this->login)."'";		
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
-		$info = $db->fetchFirstRow($query);			 
+		$info = $db->fetchFirstRow($query);	
+				 
 		if ($info)
 		{
 			$this->dbID = $info['id'];

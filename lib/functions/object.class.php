@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.18 2008/01/21 20:10:54 schlundus Exp $
-* @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.19 2008/01/29 20:51:07 franciscom Exp $
+* @modified $Date: 2008/01/29 20:51:07 $ by $Author: franciscom $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, 
@@ -218,7 +218,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		
 		@return the newly created object on success, or null else
 	*/
-	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,
+	                                          $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if ($id)
 		{

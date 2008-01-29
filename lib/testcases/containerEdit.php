@@ -3,11 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/01/27 15:56:57 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/01/29 18:44:36 $ by $Author: franciscom $
  * @author Martin Havlat
  *
- * 
+ * 20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
  * 20080122 - franciscom - BUGID 1312
  * 20080105 - franciscom - refactoring
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
@@ -512,12 +512,14 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
   
   returns: -
 
+  rev:
+      removed wromg global coupling
 */
 function  doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr,$argsObj)
 {
   
   $nodes_in_order=transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
-	$tree_mgr->change_order_bulk($nodes_in_order);
+	$tprojectMgr->tree_mgr->change_order_bulk($nodes_in_order);
 	if( $args->containerID == $argsObj->tprojectID )
 	{
 	  $objMgr=$tprojectMgr;

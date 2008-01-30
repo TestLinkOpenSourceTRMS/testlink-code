@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_ReqSpecView.tpl,v 1.5 2008/01/26 08:31:31 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.1 2008/01/30 13:05:25 franciscom Exp $
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }

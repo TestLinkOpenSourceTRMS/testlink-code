@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.258 $
- * @modified $Date: 2008/01/30 19:52:23 $ $Author: schlundus $
+ * @version $Revision: 1.259 $
+ * @modified $Date: 2008/01/30 20:37:44 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1511,6 +1511,7 @@ $TLS_desc_mgt_modify_users = "User management";
 $TLS_desc_mgt_view_key = "Keyword view (read only access)";
 $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
+$TLS_desc_mgt_view_events = "Eventviewer (read only access)";
 $TLS_desc_role_management = "Role management";
 $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
@@ -1980,6 +1981,7 @@ $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
 $TLS_audit_role_saved = "Role '{%1}' was saved!";
+$TLS_audit_user_logout = "Logout of '{%1}'"; 
 
 //eventviewer.php
 $TLS_th_errorlevel = "Error level";

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/01/04 20:30:50 $ by $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/01/30 20:37:44 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -117,7 +117,8 @@ $g_rights_cf = array (
 $g_rights_users_global = array (	
 							"mgt_users" => lang_get('desc_mgt_modify_users'),
 							"role_management" => lang_get('desc_role_management'),
-							"user_role_assignment" => lang_get('desc_user_role_assignment')
+							"user_role_assignment" => lang_get('desc_user_role_assignment'),
+							"mgt_view_events" => lang_get('desc_mgt_view_events')
 							); 
 						
 						

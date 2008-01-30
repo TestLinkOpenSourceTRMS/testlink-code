@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/01/30 19:52:23 $ by $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/01/30 20:37:43 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -43,12 +43,16 @@ switch($note)
 			session_start();
 		session_unset();
 		session_destroy();
+		$note = lang_get('session_expired');
+		$reqURI = null;
 		break;
 	case 'first':
 		$note = lang_get('your_first_login');
+		$reqURI = null;
 		break;
 	case 'lost':
 		$note = lang_get('passwd_lost');
+		$reqURI = null;
 		break;
 	default:
 		$note = lang_get('please_login');

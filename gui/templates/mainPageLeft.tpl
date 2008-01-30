@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.5 2008/01/25 09:59:19 havlat Exp $     
+ $Id: mainPageLeft.tpl,v 1.6 2008/01/30 20:37:43 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -43,8 +43,10 @@
             <a href="lib/cfields/cfieldsTprojectAssign.php">{lang_get s='href_cfields_tproject_assign'}</a>
       {/if}
       <br />
-	  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	  <a href="lib/events/eventviewer.php">Eventviewer</a>
+	  {if $rights_mgt_view_events == "yes"}
+		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<a href="lib/events/eventviewer.php">{lang_get s='event_viewer'}</a>
+	  {/if}
     {$smarty.const.MENU_ITEM_CLOSE}
 	{/if}
 

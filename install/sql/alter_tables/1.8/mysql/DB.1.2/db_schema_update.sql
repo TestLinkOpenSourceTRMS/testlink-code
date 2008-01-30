@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.4 $
-$Date: 2008/01/25 09:36:58 $
-$Author: havlat $
+$Revision: 1.5 $
+$Date: 2008/01/30 20:37:44 $
+$Author: schlundus $
 $RCSfile: db_schema_update.sql,v $
 */
 
@@ -50,3 +50,6 @@ CREATE TABLE `user_group_assign` (
 /* mht: new rights */
 INSERT INTO `rights` (id,description) VALUES (19,'system_configuraton');
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,19);
+
+INSERT INTO `rights` (id,description) VALUES (20,'mgt_view_events');
+INSERT INTO `role_rights` (role_id,right_id) VALUES (8,20);

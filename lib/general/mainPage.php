@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.40 $ $Author: franciscom $
- * @modified $Date: 2008/01/30 18:42:32 $
+ * @version $Revision: 1.41 $ $Author: schlundus $
+ * @modified $Date: 2008/01/30 20:37:44 $
  *
  * @author Martin Havlat
  * 
@@ -109,6 +109,7 @@ foreach($rights2check as $key => $the_right)
 	$smarty->assign($the_right, has_rights($db,$the_right));
 }                         
 
+$smarty->assign('rights_mgt_view_events', has_rights($db,"mgt_view_events"));
 $smarty->assign('metrics_dashboard_url','lib/results/metricsDashboard.php');
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
@@ -119,6 +120,7 @@ $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
 $smarty->assign('num_active_tplans', $num_active_tplans);
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
+$smarty->assign('show_filter_tp_by_product',$g_ui_show_check_filter_tp_by_testproject);
 $smarty->assign('sessionProductID',$testprojectID);	
 $smarty->assign('sessionTestPlanID',$testPlanID);
 $smarty->assign('testPlanRole',$testPlanRole);

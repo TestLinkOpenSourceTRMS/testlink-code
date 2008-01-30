@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventviewer.tpl,v 1.5 2008/01/28 21:17:30 schlundus Exp $ 
+$Id: eventviewer.tpl,v 1.6 2008/01/30 17:49:41 schlundus Exp $ 
 
 Event Viewer
 
@@ -12,24 +12,15 @@ Event Viewer
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl"}
-</head>
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-{lang_get var='labels'
-          s='event_viewer,th_loglevel,th_timestamp,th_description'}
-
-
-<body {$body_onload}>
-<h1>{$labels.event_viewer}</h1>
-
-{literal}
 <script type="text/javascript">
-
+var strPleaseWait = "{lang_get s='message_please_wait'|escape:javsscript}";
+var strCloseButton = "{lang_get s='btn_close'|escape:javsscript}";
+{literal}
 var prgBar = null;
 function showEventDetails(id)
 {
-	prgBar = Ext.Msg.wait("Please wait...");
+	prgBar = Ext.Msg.wait(strPleaseWait);
 	Ext.Ajax.request(
 				{
 					url : 'lib/events/eventinfo.php' , 
@@ -73,7 +64,7 @@ function showDetailWindow(info)
 					closeAction:'hide',
 					plain: true,
 					buttons: [{
-						text: 'Close',
+						text: strCloseButton,
 						handler: function(){
 							infoWin.hide();
 						}
@@ -117,8 +108,21 @@ fieldset
 }
 </style>
 {/literal}
+
+</head>
+
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+{lang_get var='labels'
+          s='event_viewer,th_loglevel,th_timestamp,th_description'}
+
+
+<body {$body_onload}>
+<h1>{$labels.event_viewer}</h1>
+
+
 <div class="workBack">
-		<form method="POST" action="lib/events/eventviewer.php">	
+		<form method="post" action="lib/events/eventviewer.php">	
 			<div style="height:125px;">
 			<fieldset class="x-fieldset" style="float:left"><legend>{lang_get s='th_errorlevel'}</legend>		
 				<select size="5" multiple="multiple" name="errorLevel[]">
@@ -148,22 +152,28 @@ fieldset
 		<br/>
 		<table class="common sortable" width="95%" id="eventviewer">
 			<tr>
-				<th>{$sortHintIcon}{lang_get s='th_errorlevel'}</th>
 				<th>{$sortHintIcon}{lang_get s='th_timestamp'}</th>
+				<th>{$sortHintIcon}{lang_get s='th_errorlevel'}</th>
 				<th>{$sortHintIcon}{lang_get s='th_role_description'}</th>
+				<th>{$sortHintIcon}{lang_get s='th_user'}</th>
 			</tr>
 			{foreach from=$events item=event}
+			{assign var=userID value=$event->userID}
 			<tr onClick="showEventDetails({$event->dbID})" class="{$event->getLogLevel()|escape}">
-					<td>{$event->getLogLevel()|escape}</td>
 					<td style="white-space:nowrap">{localize_timestamp ts=$event->timestamp}</td>
-					<td>{$event->description|truncate:190|escape}</td>
+					<td>{$event->getLogLevel()|escape}</td>
+					<td>{$event->description|truncate:130|escape}</td>
+					<td>{$users[$userID]|escape}</td>
 			</tr>
 			{/foreach}
 		</table>
 </div>
-		<div id="eventDetailWindow" class="x-hidden">
-			<div class="x-window-header">Eventdetails</div>
-			<div id="detailTabs">
-				<div class="x-tab" title="Details">
-					<div id="eventDetails" class="inner-tab"></div>
-				</div>
+<div id="eventDetailWindow" class="x-hidden">
+	<div class="x-window-header">{lang_get s='title_eventinfo'}</div>
+	<div id="detailTabs">
+		<div class="x-tab" title="{lang_get s='title_details'}">
+			<div id="eventDetails" class="inner-tab"></div>
+		</div>
+	</div>
+</div>
+</body>

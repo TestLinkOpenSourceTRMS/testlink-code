@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/01/29 18:44:36 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/01/30 17:49:41 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
@@ -518,7 +518,7 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 function  doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr,$argsObj)
 {
   
-  $nodes_in_order=transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
+	$nodes_in_order=transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
 	$tprojectMgr->tree_mgr->change_order_bulk($nodes_in_order);
 	if( $args->containerID == $argsObj->tprojectID )
 	{

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/12/09 17:24:13 $  $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/01/30 17:49:41 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071102 - franciscom - BUGID - Feature 
@@ -910,26 +910,29 @@ class cfield_mgr
     returns: -
   */
 	function update($cf) 
-  {
-    $my_name=$this->db->prepare_string($cf['name']);
-    $my_label=$this->db->prepare_string($cf['label']);
-    $my_pvalues=$this->db->prepare_string($cf['possible_values']);
-    
-    $sql="UPDATE custom_fields " .
-         " SET name='{$my_name}',label='{$my_label}'," .
-         "     type={$cf['type']},possible_values='{$my_pvalues}'," .
-         "     show_on_design={$cf['show_on_design']}," .
-         "     enable_on_design={$cf['enable_on_design']}," . 
-         "     show_on_execution={$cf['show_on_execution']}," .
-         "     enable_on_execution={$cf['enable_on_execution']}" .
-         " WHERE id={$cf['id']}";
-    $result=$this->db->exec_query($sql);
-    
-    $sql="UPDATE cfield_node_types " .
-         " SET node_type_id={$cf['node_type_id']}" .
-         " WHERE field_id={$cf['id']}";
-    $result=$this->db->exec_query($sql);
+	{
+		$my_name = $this->db->prepare_string($cf['name']);
+		$my_label = $this->db->prepare_string($cf['label']);
+		$my_pvalues = $this->db->prepare_string($cf['possible_values']);
 
+		$sql ="UPDATE custom_fields " .
+			 " SET name='{$my_name}',label='{$my_label}'," .
+			 "     type={$cf['type']},possible_values='{$my_pvalues}'," .
+			 "     show_on_design={$cf['show_on_design']}," .
+			 "     enable_on_design={$cf['enable_on_design']}," . 
+			 "     show_on_execution={$cf['show_on_execution']}," .
+			 "     enable_on_execution={$cf['enable_on_execution']}" .
+			 " WHERE id={$cf['id']}";
+		$result = $this->db->exec_query($sql);
+		
+		if ($result)
+		{
+			$sql = "UPDATE cfield_node_types " .
+				" SET node_type_id={$cf['node_type_id']}" .
+				" WHERE field_id={$cf['id']}";
+			$result = $this->db->exec_query($sql);
+		}
+		return $result ? 1 : 0;
   } //function end
 
 
@@ -941,18 +944,17 @@ class cfield_mgr
     returns: -
   */
 	function delete($id) 
-  {
-     $sql="DELETE FROM cfield_node_types ".
-          " WHERE field_id={$id}";
-     $result=$this->db->exec_query($sql);
-     
-     if($result)
-     {
-       $sql="DELETE FROM custom_fields".
-            " WHERE id={$id}";
-       $result=$this->db->exec_query($sql);
-     }     
-  }
+	{
+		$sql="DELETE FROM cfield_node_types WHERE field_id={$id}";
+		$result=$this->db->exec_query($sql);
+
+		if($result)
+		{
+			$sql="DELETE FROM custom_fields WHERE id={$id}";
+			$result=$this->db->exec_query($sql);
+		}     
+		return $result ? 1 : 0;
+	}
 
 
   /*

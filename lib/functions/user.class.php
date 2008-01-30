@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/01/29 20:52:09 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/01/30 17:49:41 $ $Author: schlundus $
  *
  */
 
@@ -14,7 +14,7 @@
 //SCHLUNDUS: not completed
 class tlUser extends tlDBObject
 {
-  private $object_table="users";
+	private $object_table = "users";
 
 	public $firstName;
 	public $lastName;
@@ -89,6 +89,7 @@ class tlUser extends tlDBObject
 			$this->login = null;
 		$this->tprojectRoles = null;
 		$this->tplanRoles = null;
+		$this->userApiKey = null;
 	}
 	
 	static public function isPasswordMgtExternal()
@@ -103,7 +104,6 @@ class tlUser extends tlDBObject
 	function create()
 	{
 	}
-	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -120,7 +120,7 @@ class tlUser extends tlDBObject
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
 		$info = $db->fetchFirstRow($query);	
-				 
+
 		if ($info)
 		{
 			$this->dbID = $info['id'];
@@ -442,14 +442,7 @@ class tlUser extends tlDBObject
 		}
 		return $users ? $users : null;
 	}
-	/*
-    function: 
 
-    args :
-    
-    returns: 
-
-  */
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{

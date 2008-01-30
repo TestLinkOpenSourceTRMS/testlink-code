@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/18 19:30:25 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/30 17:49:41 $ by $Author: schlundus $
  *
  *
  * rev :
@@ -83,6 +83,8 @@ switch ($do_action)
 			$ret = $cfield_mgr->create($cf); 
 			if(!$ret['status_ok'])
 				$result_msg=lang_get("error_creating_cf"); 
+			else
+				logAuditEvent(TLS("audit_cfield_created"),"CREATE",$ret['id'],"custom_fields");
 		}
 		else
 			$result_msg = lang_get("cf_name_exists"); 
@@ -102,6 +104,8 @@ switch ($do_action)
 		{
 			$result_msg = "ok";
 			$ret = $cfield_mgr->update($cf); 
+			if ($ret)
+				logAuditEvent(TLS("audit_cfield_saved"),"SAVE",$cf['id'],"custom_fields");
 		}
 		else
 			$result_msg = lang_get("cf_name_exists"); 
@@ -110,8 +114,9 @@ switch ($do_action)
 	case 'do_delete':
 		$cf = '';  
 		$result_msg = "ok";
-		$cfield_mgr->delete($cfield_id); 
-	  $do_control_combo_display=0;
+		if ($cfield_mgr->delete($cfield_id))
+			logAuditEvent(TLS("audit_cfield_deleted"),"DELETE",$cfield_id,"custom_fields");
+		$do_control_combo_display = 0;
 		break; 
 }
 

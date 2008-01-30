@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.17 2007/02/26 08:01:44 franciscom Exp $
+$Id: inc_update.tpl,v 1.18 2008/01/30 17:49:40 schlundus Exp $
 Purpose: show message after an SQL operation
 *}
 {* 
@@ -29,7 +29,7 @@ Purpose: show message after an SQL operation
   	{else}
      <div class="user_feedback">
   	 {/if}
-       <p>{$user_feedback}</p>
+       <p>{$user_feedback|escape}</p>
      </div>
 
 {else}

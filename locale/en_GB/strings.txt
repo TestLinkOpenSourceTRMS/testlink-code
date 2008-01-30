@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.256 $
- * @modified $Date: 2008/01/28 21:17:31 $ $Author: schlundus $
+ * @version $Revision: 1.257 $
+ * @modified $Date: 2008/01/30 17:49:41 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -144,20 +144,20 @@ $TLS_keywords_file = "Keywords file";
 
 // lostPassword.php
 $TLS_bad_user = "User not found, please try again";
-$TLS_contact_admin = "<br>If you have any further problems please contact your administrator.";
+$TLS_contact_admin = "<br />If you have any further problems please contact your administrator.";
 $TLS_mail_empty_address = "You don't have specified an email address in your user profile! " .
                           " Please contact your TestLink administrator about resetting your password!";
 $TLS_mail_passwd_subject = "Your new TestLink password.";
 $TLS_mail_problems = "Errors in mail setup, please contact your administrator.";
 $TLS_page_title_lost_passwd = "TestLink - Lost password";
 $TLS_your_info_for_passwd = "Enter Your User Information so that your new password can be mailed to you.";
-$TLS_your_password_is = "Your new TestLink password is: <br>";
+$TLS_your_password_is = "Your new TestLink password is: <br />";
 
 
 
 // login.php
 $TLS_bad_user_passwd = "Try again! Wrong login name or password!";
-$TLS_login_msg_session_exists1 = "There is still a valid login for your browser. <br> Please use this link >>> ";
+$TLS_login_msg_session_exists1 = "There is still a valid login for your browser. <br /> Please use this link >>> ";
 $TLS_login_msg_session_exists2 = " <<< at first if you would like to renew your session.";
 $TLS_logout_link = "Logout";
 $TLS_passwd_lost = "Your password has been sent to the email account you specified during " .
@@ -186,20 +186,20 @@ $TLS_medium_importance = "Medium";
 
 
 // resultsGeneral.php 
-$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test Project, <br>".
+$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test Project, <br />".
                                  "then no execution data can exist => no report can be created";
 
 // resultsNavigator.php
 $TLS_title_nav_results="Reports and Metrics";
-$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
+$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br />".
                                "then no execution data can exist => no report can be created";
 
 
-$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
+$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br />".
                                 "then no execution data can exist => no report can be created";
 
 // tcEdit.php
-$TLS_tc_copied = "Test Case %s was successfully copied to <br> Test Suite %s";
+$TLS_tc_copied = "Test Case %s was successfully copied to <br /> Test Suite %s";
 $TLS_tc_created = "Test Case %s was successfully created";
 $TLS_tc_deleted = "Test Case %s was successfully deleted";
 $TLS_tc_updated = "Test Case %s was successfully updated";
@@ -321,21 +321,21 @@ $TLS_th_product_name = "Test Project Name";
 // gui/templates/cfields_edit.tpl
 $TLS_available_on = "Available for";
 $TLS_custom_field = "Custom field";
-$TLS_enable_on_design = "Enable on <br>test specification";
-$TLS_enable_on_exec = "Enable on <br>test execution";
+$TLS_enable_on_design = "Enable on <br />test specification";
+$TLS_enable_on_exec = "Enable on <br />test execution";
 $TLS_label = "Label";
 $TLS_name = "Name";
 $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom field?";
 $TLS_possible_values = "Possible values";
-$TLS_show_on_design = "Display on <br>test specification";
-$TLS_show_on_exec = "Display on <br>test execution";
+$TLS_show_on_design = "Display on <br />test specification";
+$TLS_show_on_exec = "Display on <br />test execution";
 $TLS_testcase = $TLS_test_case;
 $TLS_title_cfields_mgmt = "Custom fields";
 $TLS_type = "Type";
 $TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";
 $TLS_warning_empty_cfield_name = "Please enter the name of this custom field.";
-$TLS_warning_is_in_use = "You can neither delete, either change type <br> " .
-                         "because a value has been assigned to this custom field <br>" .
+$TLS_warning_is_in_use = "You can neither delete, either change type <br /> " .
+                         "because a value has been assigned to this custom field <br />" .
                          "by user on an test specification or execution ";
 
 
@@ -527,7 +527,7 @@ $TLS_req_title_list = "List of requirements";
 $TLS_req_total = "Overwritten count of REQs";
 $TLS_req_reorder = "Reorder requirements";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
-$TLS_warning_delete_req_spec = "You are going to delete: %s <br><br> Are you sure?"; 
+$TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?"; 
 $TLS_title_change_req_order = "Change requirements order";
 
 
@@ -570,7 +570,7 @@ $TLS_testproject = "Test Project";
 // gui/templates/inc_reqView.tpl
 $TLS_Author = "Author";
 $TLS_last_edit = "Last edit by";
-$TLS_warning_delete_requirement= "You are going to delete: %s <br><br> Are you sure?"; 
+$TLS_warning_delete_requirement= "You are going to delete: %s <br /><br /> Are you sure?"; 
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -754,7 +754,7 @@ $TLS_th_login = "Login";
 $TLS_th_role = "Role";
 //$TLS_th_api = "API Key";
 //$TLS_api_gen_key_action = "generate";
-$TLS_warning_delete_user = "You are going to delete: %s <br><br> Are you sure?"; 
+$TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?"; 
 
 
 // gui/templates/login.tpl
@@ -1022,7 +1022,7 @@ $TLS_req_title_assign = "Assign Requirements to Test Case";
 $TLS_req_title_assigned = "Assigned Requirements";
 $TLS_req_title_unassigned = "Available Requirements";
 $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment due to one of these causes:" .
-                                            "<br><ul><li>There are no Requirement Specification document defined</li>" .
+                                            "<br /><ul><li>There are no Requirement Specification document defined</li>" .
                                             "<li>The Requirement Specifications document is empty</ul></li></ul>";
 
 
@@ -1109,7 +1109,7 @@ $TLS_btn_edit_keyword = "Edit";
 $TLS_btn_export_keywords = "Export";
 $TLS_btn_import_keywords = "Import";
 $TLS_th_keyword = "Keyword";
-$TLS_warning_delete_keyword = "You are going to delete: %s <br><br> Are you sure?"; 
+$TLS_warning_delete_keyword = "You are going to delete: %s <br /><br /> Are you sure?"; 
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";
@@ -1350,7 +1350,7 @@ $TLS_delete_role = "Delete role";
 $TLS_no_roles = "No roles";
 $TLS_th_role_description = "Description";
 $TLS_title_roles = "Available roles";
-$TLS_warning_delete_role = "You are going to delete: %s <br><br> Are you sure?"; 
+$TLS_warning_delete_role = "You are going to delete: %s <br /><br /> Are you sure?"; 
 $TLS_warning_users_will_be_reset = "Affected users will get role:";
 
 
@@ -1390,13 +1390,13 @@ $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_title_list = "List of existing Test Plans";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 $TLS_alt_active_testplan = "Active testplan";
-$TLS_warning_delete_testplan = "You are going to delete: %s <br><br> Are you sure?"; 
+$TLS_warning_delete_testplan = "You are going to delete: %s <br /><br /> Are you sure?"; 
 
 
 // gui/templates/mainPage_left.tpl
 $TLS_href_assign_user_roles = "Assign user roles";
 $TLS_href_browse_tc = "Browse Test Case(s)";
-$TLS_href_cfields_management = "Define Custom fields";
+$TLS_href_cfields_management = "Define custom fields";
 $TLS_href_cfields_tproject_assign = "Assign custom fields";
 $TLS_href_edit_tc = "Edit Test Case(s)";
 $TLS_href_keywords_assign = "Assign Keywords";
@@ -1604,16 +1604,16 @@ $TLS_XMLRPC_error_number="XML-RPC Fault number:- ";
 
 // lib/functions/configCheck.php
 $TLS_attachments_dir = "directory for attachments:";
-$TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br> 
-                                Please check your configuration.<br>
+$TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br /> 
+                                Please check your configuration.<br />
                                 Be careful this problem will degrade TestLink performance.";
 $TLS_but_directory_is_not_writable = "The directory is not writable!";
 $TLS_directory_is_writable = "The directory is writable";
 $TLS_does_not_exist = "does not exist";
 $TLS_exists = "exists";
-$TLS_ldap_extension_not_loaded="Login method is configured as LDAP<br>" .
+$TLS_ldap_extension_not_loaded="Login method is configured as LDAP<br />" .
                                "but PHP LDAP extension is not loaded => " .
-                               "You will not be able to login.<br>".
+                               "You will not be able to login.<br />".
                                "Please contact your TestLink administrator";
 $TLS_sec_note_admin_default_pwd = "You should change the default password for the 'admin' account!";
 $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
@@ -1740,7 +1740,7 @@ $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 
 
 // lib/project/projectedit.php
-$TLS_error_product_name_duplicate = "There's already Test Project named %s. <br>Please choose a different name";
+$TLS_error_product_name_duplicate = "There's already Test Project named %s. <br />Please choose a different name";
 $TLS_info_no_more_prods = "No more Test Projects.";
 $TLS_info_product_activated = "The Test Project was activated.";
 $TLS_info_product_inactivated = "The Test Project was deactivated.";
@@ -1904,7 +1904,7 @@ $TLS_error_creating_cf = "The custom field couldn't be created!";
 $TLS_do_update = "updated";
 $TLS_do_delete = "deleted";
 $TLS_do_add = "added";
-$TLS_warning_delete_cf = "You are going to delete: %s <br><br> Are you sure?";
+$TLS_warning_delete_cf = "You are going to delete: %s <br /><br /> Are you sure?";
 
 
 
@@ -2000,4 +2000,6 @@ $TLS_click_on_event_info = "Click on any event to see it's details.";
 $TLS_th_activity_code = "Activity";
 $TLS_th_object_id = "ObjectID";
 $TLS_th_object_type = "ObjectType";
+$TLS_message_please_wait = "Please wait ...";
+
 ?>

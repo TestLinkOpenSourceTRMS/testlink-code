@@ -1,7 +1,7 @@
-h<?php
+<?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIKey.php,v 1.5 2008/01/29 20:50:23 franciscom Exp $
+ * $Id: APIKey.php,v 1.6 2008/01/30 17:49:41 schlundus Exp $
  * 
  * Class that deals with API keys
  *

@@ -1,6 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: eventinfo.tpl,v 1.2 2008/01/28 21:17:30 schlundus Exp $ *}
-{* Purpose: smarty template - show Test Results and Metrics *}
+{* $Id: eventinfo.tpl,v 1.3 2008/01/30 17:49:41 schlundus Exp $ *}
 <div class="workBack">
 	<table class="simple">
 	<tr>

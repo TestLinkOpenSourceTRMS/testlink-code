@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsEdit.tpl,v 1.5 2008/01/13 13:22:38 schlundus Exp $ 
+$Id: cfieldsEdit.tpl,v 1.6 2008/01/30 17:49:40 schlundus Exp $ 
 
 
 Important Development note:
@@ -259,7 +259,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 {if $user_action eq "do_delete"}
   <form method="post" name="cfields_edit" action="lib/cfields/cfieldsView.php">
    <div class="groupBtn">	
-		<input type="submit" name="ok" value="{lang_get s='btn_ok'}"> 
+		<input type="submit" name="ok" value="{lang_get s='btn_ok'}" /> 
 	 </div>  
   </form> 
 
@@ -303,7 +303,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			    {assign var="idx" value=$cf.type}
 			    {$cf_types.$idx}
 			    <input type="hidden" id="hidden_cf_type" 
-			           value={$cf.type} name="cf_type"> 
+			           value={$cf.type} name="cf_type" /> 
 			  {else}
   				<select onchange="cfg_possible_values_display(js_possible_values_cfg,
   				                                              'combo_cf_type',
@@ -413,7 +413,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			    {assign var="idx" value=$cf.node_type_id}
 			    {$cf_allowed_nodes.$idx}
 			    <input type="hidden" id="hidden_cf_node_type_id" 
-			           value={$cf.node_type_id} name="cf_node_type_id"> 
+			           value={$cf.node_type_id} name="cf_node_type_id" /> 
 			  {else}
   				<select onchange="configure_cf_attr('combo_cf_node_type_id',
   				                                    js_enable_on_cfg,

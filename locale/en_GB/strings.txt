@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.257 $
- * @modified $Date: 2008/01/30 17:49:41 $ $Author: schlundus $
+ * @version $Revision: 1.258 $
+ * @modified $Date: 2008/01/30 19:52:23 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2001,5 +2001,8 @@ $TLS_th_activity_code = "Activity";
 $TLS_th_object_id = "ObjectID";
 $TLS_th_object_type = "ObjectType";
 $TLS_message_please_wait = "Please wait ...";
+$TLS_title_event_info = "Eventinformation";
+$TLS_title_event_details = "Eventdetails";
+$TLS_th_user = "User";
 
 ?>

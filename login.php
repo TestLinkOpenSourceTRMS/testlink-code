@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/01/22 21:52:19 $ by $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/01/30 19:52:23 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -50,10 +50,6 @@ switch($note)
 	case 'lost':
 		$note = lang_get('passwd_lost');
 		break;
-	case 'sessionExists':
-		$note = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . 
- 				lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
-		break;
 	default:
 		$note = lang_get('please_login');
 		break;
@@ -64,7 +60,12 @@ if (!is_null($login))
 	unset($_SESSION['basehref']);
 	setPaths();
 	if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)
-		$note = lang_get('bad_user_passwd');
+	{
+		if (!$msg)
+			$note = lang_get('bad_user_passwd');
+		else
+			$note = $msg;
+	}
 	else
 	{
 		logAuditEvent(TLS("audit_login_succeeded",$login,$_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");

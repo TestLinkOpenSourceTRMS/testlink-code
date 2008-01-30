@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/27 21:13:21 $ $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/30 19:52:23 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -518,7 +518,10 @@ class tlDBLogger extends tlObjectWithDB
 	{
 		parent::__construct($db);
 	}
-	
+	public function _clean()
+	{
+		$this->pendingTransaction = null;
+	}
 	public function writeTransaction(&$t)
 	{
 		if (!$this->logLevelFilter)
@@ -538,7 +541,7 @@ class tlDBLogger extends tlObjectWithDB
 		{
 			//the db logger only writes transaction if they have at least one event which should be logged
 			//so we store the transaction for later usage
-			$this->pendingTransaction = &$t;	
+			$this->pendingTransaction = $t;	
 		}
 		return tl::OK;	
 	}
@@ -589,6 +592,10 @@ class tlFileLogger extends tlObject
 	public function __construct()
 	{
 		parent::__construct();
+	}
+	public function _clean()
+	{
+	
 	}
 	//SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
 	public function writeTransaction(&$t)

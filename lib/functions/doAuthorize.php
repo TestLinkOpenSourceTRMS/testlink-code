@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/01/30 19:52:23 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -31,7 +31,6 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 	$msg = 'wrong'; // default problem attribute value
 	
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
-
 	if (!is_null($pwd) && !is_null($login))
 	{
 		$user = new tlUser();
@@ -45,12 +44,18 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 				// 20051007 MHT Solved  0000024 Session confusion 
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
-					$msg = 'sessionExists';
+				{
+					$msg = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . 
+							lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+				}
 				else
 				{ 
 					$_SESSION['filter_tp_by_product'] = 1;
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
+					global $g_tlLogger;
+					$g_tlLogger->endTransaction();
+					$g_tlLogger->startTransaction();
 					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
 					$result = tl::OK;
 				}

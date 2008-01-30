@@ -1,9 +1,10 @@
 /* 
 D:\w3\tl\head_20080119\gui\themes\theme_m2\css\
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.4 2008/01/27 15:56:26 franciscom Exp $ 
+$Id: testlink.css,v 1.5 2008/01/30 11:50:12 franciscom Exp $ 
 Purpose: main css - theme m2
 
+20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
 20080127 - franciscom - need to clone some classes to avoid problems due to ext-js css.
 20071227 - franciscom - input.tl-input
 20070915 - franciscom - exec_test_spec
@@ -281,7 +282,6 @@ a:visited, a:link, a:active {
 /* A link being hovered over is red*/
 a:hover   {
 	color: 			#900; 
-	font-weight:    bold;
 	text-decoration: none;
 } 
 

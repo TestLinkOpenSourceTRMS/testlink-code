@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2008/01/26 09:32:45 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
  *
  * 20071229 - franciscom - refactoring tree colouring and counters config
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -125,10 +125,7 @@ $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
 $smarty->display($template_dir . 'execNavigator.tpl');
-?>
 
-
-<?php
 // schlundus: changed the user_id to the currentUser of the session
 function init_args($exec_cfg)
 {

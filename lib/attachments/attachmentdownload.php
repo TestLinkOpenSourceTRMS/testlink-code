@@ -5,13 +5,11 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/12/16 12:20:58 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
- *
- *  Code check: 2007/11/16 schlundus 
-**/
+ */
 @ob_end_clean();
 require_once('../../config.inc.php');
 require_once('../functions/common.php');

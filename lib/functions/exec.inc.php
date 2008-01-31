@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/12/08 20:34:13 $ $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/01/31 22:15:47 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -501,23 +501,22 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 */
 function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 {
+	// Instead of Check if record exists before inserting, do delete + insert
+	$prep_bug_id = $db->prepare_string($bug_id);
 	
-	// Instead of Check if record exists before inserting,
-	// do delete + insert
-	$prep_bug_id=$db->prepare_string($bug_id);
+	$sql = "DELETE FROM execution_bugs " .
+	       "WHERE execution_id={$exec_id} " .
+	       "AND bug_id='" . $prep_bug_id ."'";
+	$result = $db->exec_query($sql);
 	
-	$sql="DELETE FROM execution_bugs " .
-	     "WHERE execution_id={$exec_id} " .
-	     "AND bug_id='" . $prep_bug_id ."'";
-	$db->exec_query($sql);
-	
-	if( !$just_delete )
+	if(!$just_delete)
 	{
-    	$sql="INSERT INTO execution_bugs " .
-    	     "(execution_id,bug_id) " .
-    	     "VALUES({$exec_id},'" . $prep_bug_id . "')";
-    	$db->exec_query($sql);  	     
+    	$sql = "INSERT INTO execution_bugs " .
+    	      "(execution_id,bug_id) " .
+    	      "VALUES({$exec_id},'" . $prep_bug_id . "')";
+    	$result = $db->exec_query($sql);  	     
 	}
+	return $result ? 1 : 0;
 }
 
 // 20060916 - franciscom

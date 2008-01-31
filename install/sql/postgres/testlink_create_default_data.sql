@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.13 2008/01/02 18:53:44 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.14 2008/01/31 22:15:47 schlundus Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -57,7 +57,8 @@ INSERT INTO rights (id,description) VALUES (15,'user_role_assignment'  );
 INSERT INTO rights (id,description) VALUES (16,'mgt_testplan_create');
 INSERT INTO rights (id,description) VALUES (17,'cfield_view');
 INSERT INTO rights (id,description) VALUES (18,'cfield_management');
-
+INSERT INTO rights (id,description) VALUES (19,'system_configuraton');
+INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 
 --  Rights for Administrator (admin role)
 INSERT INTO role_rights (role_id,right_id) VALUES (8,1 );
@@ -73,16 +74,13 @@ INSERT INTO role_rights (role_id,right_id) VALUES (8,10);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,11);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,12);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,13);
-
--- 20070116 - franciscom
 INSERT INTO role_rights (role_id,right_id) VALUES (8,14);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,15);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,16);
-
--- 20070126 - franciscom
 INSERT INTO role_rights (role_id,right_id) VALUES (8,17);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,18);
-
+INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 
 --  Rights for guest (guest role)
 INSERT INTO role_rights (role_id,right_id) VALUES (5,3 );

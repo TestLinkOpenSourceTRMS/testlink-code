@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventviewer.tpl,v 1.6 2008/01/30 17:49:41 schlundus Exp $ 
+$Id: eventviewer.tpl,v 1.7 2008/01/31 22:15:47 schlundus Exp $ 
 
 Event Viewer
 
@@ -171,7 +171,7 @@ fieldset
 <div id="eventDetailWindow" class="x-hidden">
 	<div class="x-window-header">{lang_get s='title_eventinfo'}</div>
 	<div id="detailTabs">
-		<div class="x-tab" title="{lang_get s='title_details'}">
+		<div class="x-tab" title="{lang_get s='title_eventdetails'}">
 			<div id="eventDetails" class="inner-tab"></div>
 		</div>
 	</div>

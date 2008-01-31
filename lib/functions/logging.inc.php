@@ -17,6 +17,16 @@
 * @author Andreas Morsing : errors in extended level will be shown in red instead of
 * 							inlined as comments
 */
+/*
+	This function fires audit events
+	
+	@param string $message the message which describes the event in a human readable way (best a tlMetaString) is used
+	@param string $activityCode and shorthand activity code describing the event
+	@param int $objectID the id of the object to which the event refers to
+	@param string $objectType the type of the object the event refers to (this should be the name of the database table the objet is stored
+	
+	@return int return tl::OK if all is OK, tl::ERROR else
+*/
 function logAuditEvent($message,$activityCode = null,$objectID = null,$objectType = null)
 {
 	return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
@@ -26,12 +36,15 @@ function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$obje
 {
 	global $g_tlLogger;
 	if (!$g_tlLogger)
-		return;
+		return tl::ERROR;
 	$t = $g_tlLogger->getTransaction();
+	if (!$t)
+		return tl::ERROR;
 	//to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
 	$logLevel = is_string($level) ? tlLogger::$revertedLogLevels[$level] : $level;
 	$t->add($logLevel,$message,$source,$activityCode,$objectID,$objectType);
 	
+	return tl::OK;
 	/*
 		//SCHLUNDUS: could be a special "to page" logger?
 		$bExtendedLogLevel = ($tl_log_levels[$tl_log_level] >= $tl_log_levels['EXTENDED']);

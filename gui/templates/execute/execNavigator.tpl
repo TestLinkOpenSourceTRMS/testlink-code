@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.3 2007/12/20 20:36:35 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.4 2008/01/31 22:15:47 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
@@ -63,11 +63,7 @@ rev :
 			{/if}
 			</td>
 		</tr>
-        <tr>
-			<td colspan = 2>
-				{$design_time_cf}  	
-			</td>
-		</tr>
+        	{$design_time_cf}  	
 		<tr>
 			<td>&nbsp;</td>
 			<td><input type="submit" name="submitOptions" value="{lang_get s='btn_apply_filter'}" style="font-size: 90%;" /></td>

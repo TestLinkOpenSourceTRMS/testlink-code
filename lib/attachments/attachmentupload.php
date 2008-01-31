@@ -5,12 +5,11 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
- *  Code check: 2007/11/16 schlundus
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
@@ -45,7 +44,6 @@ if ($bPostBack > 2)
 			$bUploaded = $attachmentRepository->insertAttachment($id,$tableName,$title,$fInfo);
 			if ($bUploaded)
 				logAuditEvent(TLS("audit_attachment_created",$title),"CREATE",$id,"attachments");
-
 		}
 		else
 			$msg  = getFileUploadErrorMessage($fInfo);

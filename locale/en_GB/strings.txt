@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.259 $
- * @modified $Date: 2008/01/30 20:37:44 $ $Author: schlundus $
+ * @version $Revision: 1.260 $
+ * @modified $Date: 2008/01/31 22:15:48 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1302,7 +1302,8 @@ $TLS_your_password_is_external = "Your password is managed by an external system
                                  "You can not change it using TestLink.";
 $TLS_user_api_key = "Personal API access key";
 $TLS_audit_login_history = "Login history";
-$TLS_audit_last_succesful_logins = "Last succesful logins";
+$TLS_audit_last_succesful_logins = "Last successful logins";
+$TLS_audit_last_failed_logins = "Last failed logins";
 $TLS_result_password_changed = "Your password was changed succesfully";
 $TLS_result_apikey_create_ok = "New API key was generated";
 $TLS_result_user_changed = "Personal data changed";
@@ -2003,8 +2004,8 @@ $TLS_th_activity_code = "Activity";
 $TLS_th_object_id = "ObjectID";
 $TLS_th_object_type = "ObjectType";
 $TLS_message_please_wait = "Please wait ...";
-$TLS_title_event_info = "Eventinformation";
-$TLS_title_event_details = "Eventdetails";
+$TLS_title_eventinfo = "Eventinformation";
+$TLS_title_eventdetails = "Eventdetails";
 $TLS_th_user = "User";
 
 ?>

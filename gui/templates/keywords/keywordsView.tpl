@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.9 2008/01/05 22:00:53 schlundus Exp $
+$Id: keywordsView.tpl,v 1.10 2008/01/31 22:15:47 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
-{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
 
 {lang_get s='warning_delete_keyword' var="warning_msg" }
@@ -23,12 +23,12 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 
 <div class="workBack">
   {if $keywords neq ''}
-	<table class="simple" style="width:80%">
+	<table class="simple sortable" style="width:80%">
 		<tr>
-			<th width="30%">{lang_get s='th_keyword'}</th>
-			<th>{lang_get s='th_notes'}</th>
+			<th width="30%">{$sortHintIcon}{lang_get s='th_keyword'}</th>
+			<th>{$sortHintIcon}{lang_get s='th_notes'}</th>
 			{if $canManage ne ""}
-			<th>{lang_get s='th_delete'}</th>
+			<th>{$sortHintIcon}{lang_get s='th_delete'}</th>
 			{/if}
 		</tr>
 		{section name=myKeyword loop=$keywords}

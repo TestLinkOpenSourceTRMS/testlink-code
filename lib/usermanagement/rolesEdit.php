@@ -5,24 +5,19 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/01/22 21:52:19 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/01/31 22:15:48 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("web_editor.php");
 testlinkInitPage($db);
+init_global_rights_maps();
 
 $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-// 20070901 - BUGID 1016
-// lang_get() is used inside roles.inc.php to translate user right description and needs $_SESSION info.
-// If no _SESSION info is found, then default locale is used.
-// We need to be sure _SESSION info exists before using lang_get(); in any module.
-//
-init_global_rights_maps();
 $args = init_args();
 
 $of = web_editor('notes',$_SESSION['basehref']) ;

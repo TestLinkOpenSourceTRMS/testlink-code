@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: cfieldsView.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/18 19:30:26 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
 
-$template_dir='cfields/';
+$template_dir = 'cfields/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $cfield_mgr = new cfield_mgr($db);

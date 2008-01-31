@@ -5,12 +5,11 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
- * Code check: 2007/11/16 schlundus
-**/
+ */
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');

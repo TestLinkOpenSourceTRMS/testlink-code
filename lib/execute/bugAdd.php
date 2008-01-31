@@ -5,22 +5,15 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/19 17:58:12 $ by $Author: franciscom $
- *
- *
- * rev :
- *      20070304 - franciscom - added new check, if bug id does not exist
- *                              on Bug Tracking System (BTS), we will not
- *                              add on TestLink.
- * 
-**/
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
+ */
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('exec.inc.php');
 testlinkInitPage($db);
 
-$template_dir='execute/';
+$template_dir = 'execute/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $exec_id = isset($_REQUEST['exec_id'])? intval($_REQUEST['exec_id']) : 0;
@@ -32,12 +25,15 @@ if(!is_null($bug_id) && strlen($bug_id) > 0)
 	$msg = lang_get("error_wrong_BugID_format");
 	if ($g_bugInterface->checkBugID($bug_id))
 	{
-	  $msg = lang_get("error_bug_does_not_exist_on_bts");
-    if ($g_bugInterface->checkBugID_existence($bug_id))
-    { 	  
-		  write_execution_bug($db,$exec_id, $bug_id);
-		  $msg = lang_get("bug_added");
-    }
+		$msg = lang_get("error_bug_does_not_exist_on_bts");
+		if ($g_bugInterface->checkBugID_existence($bug_id))
+		{ 	  
+			if (write_execution_bug($db,$exec_id, $bug_id))
+			{
+				$msg = lang_get("bug_added");
+				logAuditEvent(TLS("audit_executionbug_added",$bug_id),"CREATE",$exec_id,"executions");
+			}
+		}
 	}
 }
 

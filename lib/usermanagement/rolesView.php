@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/01/22 21:52:19 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/01/31 22:15:48 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -17,7 +17,6 @@ testlinkInitPage($db);
 $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-// 20070901 - franciscom@gruppotesi.com -BUGID 1016
 init_global_rights_maps();
 $args = init_args();
 
@@ -69,15 +68,4 @@ function init_args()
     return $args;  
 }
 
-function deleteRole(&$db,$roleID)
-{
-	$userFeedback = 'ok';
-	$role = new tlRole($roleID);
-	$role->readFromDb($db);
-	if ($role->deleteFromDB($db) < tl::OK)
-		$userFeedback = lang_get("error_role_deletion");
-	else
-		logAuditEvent(TLS("audit_role_deleted",$role->name),"DELETE",$roleID,"roles");
-    return $userFeedback;
-}
 ?>

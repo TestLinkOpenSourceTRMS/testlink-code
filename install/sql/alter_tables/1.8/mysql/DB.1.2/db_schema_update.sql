@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.5 $
-$Date: 2008/01/30 20:37:44 $
+$Revision: 1.6 $
+$Date: 2008/01/31 22:15:47 $
 $Author: schlundus $
 $RCSfile: db_schema_update.sql,v $
 */
@@ -44,6 +44,29 @@ CREATE TABLE `user_group` (
 CREATE TABLE `user_group_assign` (
   `usergroup_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `events` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `transaction_id` int(10) unsigned NOT NULL default '0',
+  `log_level` smallint(5) unsigned NOT NULL default '0',
+  `source` varchar(45) NULL,
+  `description` text NOT NULL,
+  `fired_at` int(10) unsigned NOT NULL default '0',
+  `activity` varchar(45) NULL,
+  `object_id` int(10) unsigned NULL,
+  `object_type` varchar(45) NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE  `transactions` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `entry_point` varchar(45) NOT NULL default '',
+  `start_time` int(10) unsigned NOT NULL default '0',
+  `end_time` int(10) unsigned NOT NULL default '0',
+  `user_id` int(10) unsigned NOT NULL default '0',
+  `session_id` varchar(45) default NULL,
+  PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

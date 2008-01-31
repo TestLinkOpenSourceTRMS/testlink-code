@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/01/05 22:00:53 $ $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2008/01/31 22:15:48 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -51,9 +51,11 @@ if (isset($_GET['testproject']))
 	// set test project ID for the next session
 	setcookie('lastProductForUser'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
+
 $logo_img = defined('LOGO_NAVBAR') ? LOGO_NAVBAR : '';
 
 $smarty = new TLSmarty();
+$smarty->assign('rights_mgt_view_events', has_rights($db,"mgt_view_events"));
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
 $smarty->assign('user', $currentUser->getDisplayName() . ' '. 

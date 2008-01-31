@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.6 2008/01/30 20:37:43 schlundus Exp $     
+ $Id: mainPageLeft.tpl,v 1.7 2008/01/31 22:15:47 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -42,11 +42,14 @@
          	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
             <a href="lib/cfields/cfieldsTprojectAssign.php">{lang_get s='href_cfields_tproject_assign'}</a>
       {/if}
-      <br />
-	  {if $rights_mgt_view_events == "yes"}
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-		<a href="lib/events/eventviewer.php">{lang_get s='event_viewer'}</a>
-	  {/if}
+	  
+	    {* --- keywords management ---  *}
+	  {if $rights_keywords_view == "yes"}
+			<br />
+	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_manage'}</a>
+	  {/if} {* view_keys_rights *}
+
     {$smarty.const.MENU_ITEM_CLOSE}
 	{/if}
 
@@ -108,9 +111,6 @@
 
 	  {* --- keywords management ---  *}
 	  {if $rights_keywords_view == "yes"}
-			<br />
-	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_manage'}</a>
 	    {if $rights_keywords_edit == "yes"}
 	        <br />
   			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />

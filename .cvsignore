@@ -1,2 +1,4 @@
 config_db.inc.php
+custom_config.inc.php
+gui/template_c/*
 .project

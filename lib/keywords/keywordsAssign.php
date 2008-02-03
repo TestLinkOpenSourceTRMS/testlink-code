@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/12/08 20:34:14 $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/02/03 21:39:01 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -73,7 +73,7 @@ if ($edit == 'testsuite')
 	
 	if (sizeof($tcs))
 	{
-		$can_do=1;
+		$can_do = 1;
 		if ($bAssignTestSuite)
 		{
 			$result = 'ok';
@@ -107,7 +107,7 @@ else if($edit == 'testcase')
 	if (sizeof($tcData))
 	{
 		$tcData = $tcData[0];
-    	$keyword_assignment_subtitle=lang_get('test_case') . TITLE_SEP . $tcData['name'];
+    	$keyword_assignment_subtitle = lang_get('test_case') . TITLE_SEP . $tcData['name'];
 	}
 	if($bAssignTestCase)
 	{

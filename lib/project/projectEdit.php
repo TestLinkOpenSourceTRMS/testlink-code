@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/02/03 18:15:04 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/02/03 21:39:01 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -19,13 +19,13 @@
  * 
  *
 **/
-include('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once('common.php');
 require_once('testproject.class.php');
 require_once("web_editor.php");
 testlinkInitPage($db,true);
 
-$template_dir='project/';
+$template_dir = 'project/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 // current testproject displayed on testproject combo.
@@ -33,126 +33,97 @@ $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojec
 
 // Important: 
 // if != 'no' refresh of navbar frame is done
-//
 $action = 'no';
-$template=null;
-$ui=array('doActionValue' => '', 'buttonValue' => '', 'caption' => '');
+$template = null;
+$ui = array('doActionValue' => '', 'buttonValue' => '', 'caption' => '');
 $user_feedback ='';
-$reloadType='none';
-
-$tlog_msg = "Product [ID: Name]=";
-$tlog_level = 'INFO';
+$reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 
-$of=web_editor('notes',$_SESSION['basehref']) ;
+
+$of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
-if ($session_tproject_id)
-	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
-else
-	$tlog_msg .= $args->tprojectID . ': ' . $args->tprojectName;
-
-$found='yes';
-$status_ok=1;
+$found = 'yes';
+$status_ok = 1;
 
 switch($args->doAction)
 {
 	case 'create':
-		$ui=array();
-    $ui['doActionValue']='doCreate';
-		$ui['buttonValue']=lang_get('btn_create');
-		$ui['caption']=lang_get('caption_new_tproject');
-    $found='yes';
-    $template=$default_template;
-    $args->active=1;
+		$ui = array();
+		$ui['doActionValue'] = 'doCreate';
+		$ui['buttonValue'] = lang_get('btn_create');
+		$ui['caption'] = lang_get('caption_new_tproject');
+		$found = 'yes';
+		$template = $default_template;
+		$args->active = 1;
 		break;	 
-
 	case 'edit':
-	  $ui=edit($args,$tproject_mgr);
-    $template=$default_template;
-    $found='yes';
+		$ui = edit($args,$tproject_mgr);
+		$template = $default_template;
+		$found = 'yes';
 		break;
-		
 	case 'doCreate':
-	  $template=$default_template;
-		$action="do_create";
-	  $op=doCreate($args,$tproject_mgr);
-    if($op->status_ok)
-    {
-        $template=null;
-    }
-    else
-    {
-        $user_feedback=$op->msg; 
-        $status_ok=0;
-        $ui['doActionValue']='doCreate';
-		    $ui['buttonValue']=lang_get('btn_create');
-		    $ui['caption']=lang_get('caption_new_tproject');
-    } 
+		$template = $default_template;
+		$action = "do_create";
+		$op = doCreate($args,$tproject_mgr);
+		if($op->status_ok)
+		{
+			$template = null;
+			logAuditEvent(TLS("audit_testproject_created",$args->tprojectName),"CREATE",$op->id,"testprojects");
+		}
+		else
+		{
+			$user_feedback = $op->msg; 
+			$status_ok = 0;
+			$ui['doActionValue'] = 'doCreate';
+			$ui['buttonValue'] = lang_get('btn_create');
+			$ui['caption'] = lang_get('caption_new_tproject');
+		} 
 		break;
-		
 	case 'doUpdate':
-	  $template=$default_template;
-		$action="do_update";
-	  $op=doUpdate($args,$tproject_mgr);
-    if($op->status_ok)
-    {
-        $template=null;
-		    if( $session_tproject_id == $args->tprojectID)
-		    {
-          $reloadType='reloadNavBar';
-	      }
-    }
-    else
-    {
-        $user_feedback=$op->msg; 
-        $status_ok=0;
-    } 
-  	break;
-	
-	
+		$template = $default_template;
+		$action = "do_update";
+		$op = doUpdate($args,$tproject_mgr);
+		if($op->status_ok)
+		{
+			logAuditEvent(TLS("audit_testproject_saved",$args->tprojectName),"CREATE",$args->tprojectID,"testprojects");
+			$template = null;
+			if($session_tproject_id == $args->tprojectID)
+				$reloadType = 'reloadNavBar';
+		}
+		else
+		{
+			$user_feedback = $op->msg; 
+			$status_ok = 0;
+		} 
+		break;
 	case 'doDelete':
-		$op=$tproject_mgr->delete($args->tprojectID);
-		
+		$op = $tproject_mgr->delete($args->tprojectID);
 		if ($op['status_ok'])
 		{
-		   if( $session_tproject_id == $args->tprojectID)
-		   {
-         $reloadType='reloadNavBar';
-	     }
+			if($session_tproject_id == $args->tprojectID)
+				$reloadType = 'reloadNavBar';
 
-		  $user_feedback = sprintf(lang_get('test_project_deleted'),$args->tprojectName);
-			$tlog_msg .= " was deleted.";
+			$user_feedback = sprintf(lang_get('test_project_deleted'),$args->tprojectName);
+			logAuditEvent(TLS("audit_testproject_deleted",$args->tprojectName),"DELETE",$args->tprojectID,"testprojects");		
 		} 
 		else 
 		{
 			$user_feedback = lang_get('info_product_not_deleted_check_log') . ' ' . $op['msg'];
-			$tlog_msg .=  " wasn't deleted.\t";
-			$tlog_level = 'ERROR';
-      $status_ok=0;
+			$status_ok = 0;
 		}
 		$action = 'delete';
-		break;
-
+	break;
 }
-
-
-// ----------------------------------------------------------------------
-// render GUI
-// ----------------------------------------------------------------------
-
-if($action != 'no')
-	tLog($tlog_msg, $tlog_level);
 
 $smarty = new TLSmarty();
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
-if( !$status_ok )
-{
+if(!$status_ok)
    $args->doAction="ErrorOnAction";  
-}
 
 switch($args->doAction)
 {
@@ -167,7 +138,6 @@ switch($args->doAction)
         $smarty->assign('doAction',$reloadType);
         $smarty->display($template_dir . $template);
     break; 
-    
     case "ErrorOnAction":
     default:
         $of->Value = $args->notes;
@@ -192,10 +162,6 @@ switch($args->doAction)
 
 } 
 
-
-?>
-
-<?php
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.
@@ -233,15 +199,16 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
 	}
 	
-
-  // Special algorithm for notes
-  // 20070206 - BUGID 617
-	if( $args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
+	// Special algorithm for notes
+	// 20070206 - BUGID 617
+	if($args->doAction != 'doUpdate' && $args->doAction != 'doCreate')
 	{
 		if ($args->tprojectID > 0)
 		{
 			$the_data = $tprojectMgr->get_by_id($args->tprojectID);
-			$args->notes = 	$the_data['notes'];
+			$args->notes = $the_data['notes'];
+			if ($args->doAction == 'doDelete')
+				$args->tprojectName = $the_data['name'];
 		}
 		else
 		{
@@ -249,11 +216,10 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		}	
 	}
 
-  $args->userID=isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
  
 	return $args;
 }
-
 
 /*
   function: 
@@ -265,36 +231,38 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 */
 function doCreate($argsObj,&$tprojectMgr)
 {
-    $op->status_ok=0;
-    $op->template='';
-    $op->msg='';  
+    $op->status_ok = 0;
+    $op->template = '';
+    $op->msg = '';  
+	$op->id = 0;
 
-		tLog('Project priority available = '. $argsObj->optPriority);
+	tLog('Project priority available = '. $argsObj->optPriority);
     
-    $check_op=crossChecks($argsObj,$tprojectMgr);
-		if($check_op['status_ok'])
+    $check_op = crossChecks($argsObj,$tprojectMgr);
+	if($check_op['status_ok'])
+	{
+		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
+									 $argsObj->optReq, $argsObj->optPriority, 
+									 $argsObj->optAutomation, $argsObj->notes,
+									 $argsObj->active,$argsObj->tcasePrefix);
+		if (!$new_id)
 		{
-				$new_id=$tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
-				                             $argsObj->optReq, $argsObj->optPriority, 
-				                             $argsObj->optAutomation, $argsObj->notes,
-				                             $argsObj->active,$argsObj->tcasePrefix);
-				if (!$new_id)
-				{
-					$op->msg = lang_get('refer_to_log');
-				}
-				else
-				{
-				  $op->status_ok=1;
-				  $op->template='projectView.tpl';	
-				}	
+			$op->msg = lang_get('refer_to_log');
 		}
 		else
 		{
-		     foreach($check_op['msg'] as $key => $msg)
-		     {
-		        $op->msg .=  $msg . "<br>";   
-		     }
-		}
+			$op->status_ok = 1;
+			$op->template = 'projectView.tpl';	
+			$op->id = $new_id;
+		}	
+	}
+	else
+	{
+		 foreach($check_op['msg'] as $key => $msg)
+		 {
+			$op->msg .=  $msg . "<br>";   
+		 }
+	}
     return $op;
 }
 
@@ -308,31 +276,31 @@ function doCreate($argsObj,&$tprojectMgr)
 */
 function doUpdate($argsObj,&$tprojectMgr)
 {
-    $op->status_ok=0;
-    $op->msg='';  
+    $op->status_ok = 0;
+    $op->msg = '';  
     
-    $check_op=$tprojectMgr->checkName($argsObj->tprojectName);
-    $op->msg=$check_op['msg'];
+    $check_op = $tprojectMgr->checkName($argsObj->tprojectName);
+    $op->msg = $check_op['msg'];
 
-		if ($check_op['status_ok'])
+	if ($check_op['status_ok'])
+	{
+		if (!$tprojectMgr->get_by_name($argsObj->tprojectName,"testprojects.id <> {$argsObj->tprojectID}"))
 		{
-			if (!$tprojectMgr->get_by_name($argsObj->tprojectName,"testprojects.id <> {$argsObj->tprojectID}"))
+			$op->msg = sprintf(lang_get('test_project_update_failed'),$argsObj->tprojectName);
+			if( $tprojectMgr->update($argsObj->tprojectID,$argsObj->tprojectName,$argsObj->color,
+									 $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation, 
+									 $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
 			{
-				$op->msg = sprintf(lang_get('test_project_update_failed'),$argsObj->tprojectName);
-				if( $tprojectMgr->update($argsObj->tprojectID,$argsObj->tprojectName,$argsObj->color,
-				                         $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation, 
-				                         $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
-				{
-				  $op->msg = sprintf(lang_get('test_project_updated'),$argsObj->tprojectName);
-				  $op->status_ok=1;
-				  $tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
-				}
-				
+				$op->msg = sprintf(lang_get('test_project_updated'),$argsObj->tprojectName);
+				$op->status_ok = 1;
+				$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
 			}
-			else
-				$op->msg = lang_get('error_product_name_duplicate');
+			
 		}
-		return $op;
+		else
+			$op->msg = lang_get('error_product_name_duplicate');
+	}
+	return $op;
 }
 
 /*
@@ -347,24 +315,23 @@ function doUpdate($argsObj,&$tprojectMgr)
 */
 function edit(&$argsObj,&$tprojectMgr)
 {
-	  $tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
-       
-    $argsObj->tprojectName=$tprojectInfo['name'];
-	  $argsObj->color=$tprojectInfo['color'];
-	  $argsObj->notes=$tprojectInfo['notes'];
-	  $argsObj->optReq=$tprojectInfo['option_reqs'];
-	  $argsObj->optPriority=$tprojectInfo['option_priority'];
-	  $argsObj->optAutomation=$tprojectInfo['option_automation'];
-	  $argsObj->active=$tprojectInfo['active'];
-	  $argsObj->tcasePrefix=$tprojectInfo['prefix'];
-	  
+	$tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
 
-    $ui=array(); 
+	$argsObj->tprojectName = $tprojectInfo['name'];
+	$argsObj->color = $tprojectInfo['color'];
+	$argsObj->notes = $tprojectInfo['notes'];
+	$argsObj->optReq = $tprojectInfo['option_reqs'];
+	$argsObj->optPriority = $tprojectInfo['option_priority'];
+	$argsObj->optAutomation = $tprojectInfo['option_automation'];
+	$argsObj->active = $tprojectInfo['active'];
+	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
-    $ui['doActionValue']='doUpdate';
-		$ui['buttonValue']=lang_get('btn_save');
-		$ui['caption']=lang_get('caption_edit_tproject');
-		return $ui;
+
+	$ui = array(); 
+	$ui['doActionValue'] = 'doUpdate';
+	$ui['buttonValue'] = lang_get('btn_save');
+	$ui['caption'] = lang_get('caption_edit_tproject');
+	return $ui;
 }
 
 /*
@@ -375,47 +342,40 @@ function edit(&$argsObj,&$tprojectMgr)
   returns: - 
 
 */
-function  crossChecks($argsObj,&$tprojectMgr)
+function crossChecks($argsObj,&$tprojectMgr)
 {
-    $updateAdditionalSQL=null;
-    $op=$tprojectMgr->checkName($argsObj->tprojectName);
+    $updateAdditionalSQL = null;
+    $op = $tprojectMgr->checkName($argsObj->tprojectName);
     
-    $check_op=array();
-    $check_op['msg']=array();
-    $check_op['status_ok']=$op['status_ok'];
+    $check_op = array();
+    $check_op['msg'] = array();
+    $check_op['status_ok'] = $op['status_ok'];
     
-    if( $argsObj->doAction=='doUpdate' )
-    {
-      $updateAdditionalSQL="testprojects.id <> {$argsObj->tprojectID}";
-    }
+    if($argsObj->doAction == 'doUpdate')
+		$updateAdditionalSQL = "testprojects.id <> {$argsObj->tprojectID}";
    
-    if( $check_op['status_ok'] )
+    if($check_op['status_ok'])
     {
-      if( $tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL) )
-      {
-          $check_op['msg'][]=sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
-          $check_op['status_ok']=0;
-      }
-      
-      $sql="SELECT id FROM testprojects " .
-           " WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
-      if( !is_null($updateAdditionalSQL) )
-      {
-          $sql .= " AND {$updateAdditionalSQL} "; 
-      }
-           
-		  
-      $rs=$tprojectMgr->db->get_recordset($sql);
-      if( !is_null($rs) )
-      {
-          $check_op['msg'][]=sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
-          $check_op['status_ok']=0;
-      }
+		if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL))
+		{
+		  $check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+		  $check_op['status_ok'] = 0;
+		}
+
+		$sql = "SELECT id FROM testprojects " .
+			 "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+		if(!is_null($updateAdditionalSQL))
+			$sql .= " AND {$updateAdditionalSQL} "; 
+		   
+		$rs = $tprojectMgr->db->get_recordset($sql);
+		if(!is_null($rs))
+		{
+			$check_op['msg'][] = sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
+			$check_op['status_ok'] = 0;
+		}
     }
     else
-    {
-         $check_op['msg'][]=$op['msg'];
-    }
+         $check_op['msg'][] = $op['msg'];
     return $check_op;
 }
 ?>

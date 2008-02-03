@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.94 $
- * @modified $Date: 2008/02/03 18:45:32 $ $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2008/02/03 21:39:01 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080126 - franciscom - BUGID 1313 
@@ -1462,7 +1462,7 @@ function addKeyword($id,$kw_id)
 	$result = ($this->db->exec_query($sql) ? 1 : 0);
 	
 	if ($result)
-	    logAuditEvent(TLS("audit_keyword_assigned_tc",$kw['name'],$id),"ASSIGN",$id,"nodes_hierarchy");
+	    logAuditEvent(TLS("audit_keyword_assigned_tc",$id),"ASSIGN",$id,"nodes_hierarchy");
 	
 	return $result;
 }

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/30 17:49:41 $ $Author: schlundus $ 
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/02/03 21:39:01 $ $Author: schlundus $ 
  * 
  * @author Martin Havlat
  * 
@@ -91,44 +91,42 @@ switch($args->do_action)
 			$req_spec_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
 			logAuditEvent(TLS("audit_req_spec_created",$args->title),"CREATE",$ret['id'],"req_specs");
 		}
-		$args->scope="";
+		$args->scope = "";
 		break;
+	case "do_update":
+		$smarty->assign('req_spec_id', $args->req_spec_id);
+		$template = $template_dir . 'reqSpecView.tpl';
+		$ret = $req_spec_mgr->update($args->req_spec_id,$args->title,$args->scope,$args->countReq,$args->user_id);
+		$sqlResult = $ret['msg'];
+		if($ret['status_ok'])
+		{
+			$cf_map = $req_spec_mgr->get_linked_cfields($args->req_spec_id);
+			$req_spec_mgr->values_to_db($_REQUEST,$args->req_spec_id,$cf_map);
+			logAuditEvent(TLS("audit_req_spec_saved",$args->title),"SAVE",$args->req_spec_id,"req_specs");
+		} 
 
+		$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
+		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
+	  
+		//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
+		$user = tlUser::getByID($db,$req_spec['author_id']);
+		$req_spec['author'] = null;
+		if ($user)
+			$req_spec['author'] = $user->getDisplayName();
+		$req_spec['modifier'] = null;
+		$user = tlUser::getByID($db,$req_spec['modifier_id']);
+		if ($user)
+			$req_spec['modifier'] = $user->getDisplayName();
 
-  case "do_update":
-	$smarty->assign('req_spec_id', $args->req_spec_id);
-	$template = $template_dir . 'reqSpecView.tpl';
-	$ret = $req_spec_mgr->update($args->req_spec_id,$args->title,$args->scope,$args->countReq,$args->user_id);
-	$sqlResult = $ret['msg'];
-	if($ret['status_ok'])
-	{
-		$cf_map = $req_spec_mgr->get_linked_cfields($args->req_spec_id);
-		$req_spec_mgr->values_to_db($_REQUEST,$args->req_spec_id,$cf_map);
-		logAuditEvent(TLS("audit_req_spec_saved",$args->title),"SAVE",$args->req_spec_id,"req_specs");
-	} 
-
-  $cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
-  $req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-  
-	//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
-	$user = tlUser::getByID($db,$req_spec['author_id']);
-	$req_spec['author'] = null;
-	if ($user)
-		$req_spec['author'] = $user->getDisplayName();
-	$req_spec['modifier'] = null;
-	$user = tlUser::getByID($db,$req_spec['modifier_id']);
-	if ($user)
-		$req_spec['modifier'] = $user->getDisplayName();
-
-	$smarty->assign('req_spec_id', $args->req_spec_id);
-	$smarty->assign('req_spec', $req_spec);
-	break;
+		$smarty->assign('req_spec_id', $args->req_spec_id);
+		$smarty->assign('req_spec', $req_spec);
+		break;
 
 
 	case "do_delete":
 		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 		$req_spec_mgr->delete($args->req_spec_id);
-		logAuditEvent(TLS("audit_req_spec_delete",$args->title),"DELETE",$args->req_spec_id,"req_specs");
+		logAuditEvent(TLS("audit_req_spec_deleted",$args->title),"DELETE",$args->req_spec_id,"req_specs");
 		$template = 'show_message.tpl';
 		$user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
 		$smarty->assign('title', lang_get('delete_req_spec'));

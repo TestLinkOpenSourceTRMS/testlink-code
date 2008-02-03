@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/16 21:48:46 $ $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/02/03 18:15:04 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,15 +14,9 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
+ * 20080203 - franciscom - fixed bug on active management
  * 20080112 - franciscom - adding testcase prefix management
- * 20070725 - franciscom - refactoring to control display of edit/delete tab
- *                         when there are 0 test projects on system.
  * 
- * 20070620 - franciscom - BUGID 914 
- * 20070221 - franciscom - BUGID 652
- * 20070206 - franciscom - BUGID 617
- * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
- * 20050908 - fm - BUGID 0000086
  *
 **/
 include('../../config.inc.php');
@@ -72,6 +66,7 @@ switch($args->doAction)
 		$ui['caption']=lang_get('caption_new_tproject');
     $found='yes';
     $template=$default_template;
+    $args->active=1;
 		break;	 
 
 	case 'edit':
@@ -232,7 +227,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 	
-	$checkbox_keys = array('active' => 1,'optReq' => 0,'optPriority' => 0,'optAutomation' => 0);
+	$checkbox_keys = array('active' => 0,'optReq' => 0,'optPriority' => 0,'optAutomation' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -373,49 +368,7 @@ function edit(&$argsObj,&$tprojectMgr)
 }
 
 /*
-  function: createCrossChecks
-
-  args:
-  
-  returns: - 
-
-*/
-function  createCrossChecks($argsObj,&$tprojectMgr)
-{
-    $op=$tprojectMgr->checkName($argsObj->tprojectName);
-    
-    $check_op=array();
-    $check_op['msg']=array();
-    $check_op['status_ok']=$op['status_ok'];
-    
-    if( $check_op['status_ok'] )
-    {
-      if( $tprojectMgr->get_by_name($argsObj->tprojectName) )
-      {
-          $check_op['msg'][]=sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
-          $check_op['status_ok']=0;
-      }
-      
-      $sql="SELECT id FROM testprojects " .
-           " WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
-		  
-      $rs=$tprojectMgr->db->get_recordset($sql);
-      if( !is_null($rs) )
-      {
-          $check_op['msg'][]=sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
-          $check_op['status_ok']=0;
-      }
-    }
-    else
-    {
-         $check_op['msg'][]=$op['msg'];
-    }
-
-    return $check_op;
-}
-
-/*
-  function: createCrossChecks
+  function: crossChecks
 
   args:
   
@@ -465,6 +418,4 @@ function  crossChecks($argsObj,&$tprojectMgr)
     }
     return $check_op;
 }
-
-
 ?>

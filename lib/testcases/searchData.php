@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.29 2008/01/21 07:42:16 franciscom Exp $
+ * $Id: searchData.php,v 1.30 2008/02/03 18:45:32 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -111,7 +111,7 @@ if(count($map))
 	$tcase_mgr = new testcase($db);   
 	$viewerArgs=array('display_parent_testsuite' => 1);
 	
-	$tcase_mgr->show($smarty, $template_dir,array_keys($map),$args->userID,TC_ALL_VERSIONS,$viewerArgs);
+	$tcase_mgr->show($smarty, $template_dir,array_keys($map),TC_ALL_VERSIONS,$viewerArgs);
 }
 else
 {

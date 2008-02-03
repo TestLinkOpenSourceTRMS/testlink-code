@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.32 2008/01/21 07:42:16 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.33 2008/02/03 18:45:32 franciscom Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
@@ -71,11 +71,7 @@ switch($args->feature)
 		
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachmentsTpl);
-				
-    	
-	  // 20070930 - franciscom - REQ - BUGID 1078
-    // added two arguments on call.
-		$item_mgr->show($smarty,$template_dir,$args->id,$args->user_id,TC_ALL_VERSIONS,$viewerArgs);
+		$item_mgr->show($smarty,$template_dir,$args->id,TC_ALL_VERSIONS,$viewerArgs);
 		break;
 
 	default:

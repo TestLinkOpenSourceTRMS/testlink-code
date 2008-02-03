@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.93 $
- * @modified $Date: 2008/01/29 20:54:34 $ $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2008/02/03 18:45:32 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080126 - franciscom - BUGID 1313 
@@ -362,7 +362,6 @@ function get_all()
   args :
         $smarty: reference to smarty object (controls viewer).
         $id: test case id
-        $user_id: user requesting operation
         [$version_id]: you can work on ONE test case version, or on ALL
                        default: ALL
 
@@ -382,7 +381,7 @@ function get_all()
        added disable_edit argument
 
 */
-function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,$viewer_args=null)
+function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_args=null)
 {
 
   $status_ok=1;
@@ -547,6 +546,8 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 		$result = $this->db->exec_query($sql);
 		$status_ok = $result ? 1: 0;
 	}
+	
+	
 	// keywords
 	// update = delete + insert
 	$this->deleteKeywords($id);   	 
@@ -1459,8 +1460,10 @@ function addKeyword($id,$kw_id)
 		     " VALUES ($id,$kw_id)";
 
 	$result = ($this->db->exec_query($sql) ? 1 : 0);
+	
 	if ($result)
-		logAuditEvent(TLS("audit_keyword_assigned_tc",$kw['name'],$id),"ASSIGN",$id,"nodes_hierarchy");
+	    logAuditEvent(TLS("audit_keyword_assigned_tc",$kw['name'],$id),"ASSIGN",$id,"nodes_hierarchy");
+	
 	return $result;
 }
 
@@ -1498,9 +1501,9 @@ function deleteKeywords($tcID,$kwID = null)
 	if (!is_null($kwID))
 		$sql .= " AND keyword_id = {$kwID}";
 	$result = $this->db->exec_query($sql);
-	if ($result)
-		logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$kwID,$tcID),"ASSIGN",$tcID,"nodes_hierarchy");
 	
+  if ($result)
+	    logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$kwID,$tcID),"ASSIGN",$tcID,"nodes_hierarchy");
 	return $result;
 }
 

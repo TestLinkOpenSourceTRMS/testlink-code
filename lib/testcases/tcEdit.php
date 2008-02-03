@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/01/13 13:29:09 $  by $Author: schlundus $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/02/03 18:45:32 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20080203 - franciscom - changes on $tcase_mgr->show() interface
  * 20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
  *
  * 20071201 - franciscom - new web editor code
@@ -29,6 +30,7 @@ require_once("web_editor.php");
 require_once("opt_transfer.php");
 testlinkInitPage($db);
 
+echo "<pre>debug 20080203 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 $template_dir='testcases/';
 
 $sqlResult="";
@@ -81,6 +83,7 @@ if($args->do_activate_this)
 	$action_result = "activate_this_version";
 }
 
+
 $login_name = $_SESSION['currentUser']->login;
 $version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : 0; 
 
@@ -115,6 +118,8 @@ if($init_opt_transfer)
     $opt_cfg->from->map = $tproject_mgr->get_keywords_map($args->testproject_id);
     $opt_cfg->to->lbl=lang_get('assigned_kword');
 }
+
+
 if($args->do_create || $args->do_update)
 {
 	// BUGID 0000086
@@ -174,6 +179,7 @@ else if($args->do_update)
     
 		// to get the name before the user operation
 		$tc_old = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
+
 						
 		if ($tcase_mgr->update($args->tcase_id,$args->tcversion_id,$args->name,$args->summary,
 		                       $args->steps,$args->expected_results,
@@ -196,9 +202,15 @@ else if($args->do_update)
 			$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tcase_id);
 		}
 	}	
- 	$action_result = 'updated';
-	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id, $args->tcversion_id, 
-	                 $action_result,$msg,$refresh_tree);
+
+  // 20080203 - franciscom 	
+ 	$viewer_args['action'] = 'updated';
+ 	$viewer_args['refresh_tree'] = $refresh_tree;
+ 	$viewer_args['msg_result'] = $msg;
+	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id,$args->tcversion_id,$viewer_args);
+
+  
+
 }
 else if($args->create_tc)
 {
@@ -422,10 +434,14 @@ else if($args->do_copy)
       $user_feedback=sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
     }	
 	  $smarty->assign('refreshTree',$args->do_refresh);
-	  
-	  $do_refresh_yes_no=$args->do_refresh?"yes":"no";
-	  $tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id,$args->tcversion_id,
-	                   $action_result,$msg,$do_refresh_yes_no,$user_feedback);
+
+    // 20080203 - franciscom	  
+	  $viewer_args['action'] = $action_result;
+	  $viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
+  	$viewer_args['msg_result'] = $msg;
+		$viewer_args['user_feedback'] = $user_feedback;
+	  $tcase_mgr->show($smarty,$template_dir,$args->tcase_id,$args->tcversion_id,$viewer_args);
+
 }
 else if($args->do_create_new_version)
 {
@@ -440,15 +456,23 @@ else if($args->do_create_new_version)
 		$msg = 'ok';
 	}
 	
-	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id, TC_ALL_VERSIONS, 
-	                 $action_result,$msg,DONT_REFRESH,$user_feedback);
+	// 20080203 - franciscom 
+	$viewer_args['action'] = $action_result;
+	$viewer_args['refresh_tree']=DONT_REFRESH;
+  $viewer_args['msg_result'] = $msg;
+  $viewer_args['user_feedback'] = $user_feedback;
+
+	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id,TC_ALL_VERSIONS, $viewer_args);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
- 	$msg = null; 
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
-	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id, TC_ALL_VERSIONS,
-	                 $action_result,$msg,DONT_REFRESH);
+
+  // 20080203 - franciscom
+	$viewer_args['action'] = $action_result;
+	$viewer_args['refresh_tree']=DONT_REFRESH;
+	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id,TC_ALL_VERSIONS,$viewer_args);
+
 }
 else
 {

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.37 2008/01/04 20:30:23 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.38 2008/02/03 19:11:56 schlundus Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -22,6 +22,9 @@ Copyright 2003, 2004 Alexander Andrew Butter
 require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
 require_once("installUtils.php");
 require_once("sqlParser.class.php");
+require_once("../lib/functions/object.class.php");
+require_once("../lib/functions/metastring.class.php");
+require_once("../lib/functions/logger.class.php");
 
 if( !isset($_SESSION) )
 { 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/02/03 21:39:01 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/02/04 11:52:14 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -60,11 +60,13 @@ switch($args->doAction)
 		$template = $default_template;
 		$args->active = 1;
 		break;	 
+
 	case 'edit':
 		$ui = edit($args,$tproject_mgr);
 		$template = $default_template;
 		$found = 'yes';
 		break;
+
 	case 'doCreate':
 		$template = $default_template;
 		$action = "do_create";
@@ -72,7 +74,6 @@ switch($args->doAction)
 		if($op->status_ok)
 		{
 			$template = null;
-			logAuditEvent(TLS("audit_testproject_created",$args->tprojectName),"CREATE",$op->id,"testprojects");
 		}
 		else
 		{
@@ -83,6 +84,7 @@ switch($args->doAction)
 			$ui['caption'] = lang_get('caption_new_tproject');
 		} 
 		break;
+
 	case 'doUpdate':
 		$template = $default_template;
 		$action = "do_update";
@@ -92,20 +94,25 @@ switch($args->doAction)
 			logAuditEvent(TLS("audit_testproject_saved",$args->tprojectName),"CREATE",$args->tprojectID,"testprojects");
 			$template = null;
 			if($session_tproject_id == $args->tprojectID)
+		    {
 				$reloadType = 'reloadNavBar';
 		}
+    }
 		else
 		{
 			$user_feedback = $op->msg; 
 			$status_ok = 0;
 		} 
 		break;
+
 	case 'doDelete':
 		$op = $tproject_mgr->delete($args->tprojectID);
 		if ($op['status_ok'])
 		{
 			if($session_tproject_id == $args->tprojectID)
+		   {
 				$reloadType = 'reloadNavBar';
+	     }
 
 			$user_feedback = sprintf(lang_get('test_project_deleted'),$args->tprojectName);
 			logAuditEvent(TLS("audit_testproject_deleted",$args->tprojectName),"DELETE",$args->tprojectID,"testprojects");		
@@ -123,7 +130,9 @@ $smarty = new TLSmarty();
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
 if(!$status_ok)
+{
    $args->doAction="ErrorOnAction";  
+}
 
 switch($args->doAction)
 {
@@ -138,6 +147,7 @@ switch($args->doAction)
         $smarty->assign('doAction',$reloadType);
         $smarty->display($template_dir . $template);
     break; 
+    
     case "ErrorOnAction":
     default:
         $of->Value = $args->notes;
@@ -352,7 +362,9 @@ function crossChecks($argsObj,&$tprojectMgr)
     $check_op['status_ok'] = $op['status_ok'];
     
     if($argsObj->doAction == 'doUpdate')
+    {
 		$updateAdditionalSQL = "testprojects.id <> {$argsObj->tprojectID}";
+    }
    
     if($check_op['status_ok'])
     {
@@ -365,7 +377,10 @@ function crossChecks($argsObj,&$tprojectMgr)
 		$sql = "SELECT id FROM testprojects " .
 			 "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
 		if(!is_null($updateAdditionalSQL))
+      {
 			$sql .= " AND {$updateAdditionalSQL} "; 
+      }
+           
 		   
 		$rs = $tprojectMgr->db->get_recordset($sql);
 		if(!is_null($rs))
@@ -375,7 +390,9 @@ function crossChecks($argsObj,&$tprojectMgr)
 		}
     }
     else
+    {
          $check_op['msg'][] = $op['msg'];
+    }
     return $check_op;
 }
 ?>

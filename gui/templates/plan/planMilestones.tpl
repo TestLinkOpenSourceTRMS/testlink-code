@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planMilestones.tpl,v 1.3 2008/01/13 12:22:52 schlundus Exp $ 
+$Id: planMilestones.tpl,v 1.4 2008/02/04 16:46:06 schlundus Exp $ 
 Purpose: smarty template - edit milestones 
 
 rev :
@@ -81,7 +81,7 @@ function validateForm(f)
 	<form method="post" action="lib/plan/planMilestones.php"
 	      name="milestone_mgr" onSubmit="javascript:return validateForm(this);">
 	<input type="hidden" name="id" value="{$mileStone.id|escape}"/>
-	<table class="common" width="45%">
+	<table class="simple" width="45%">
 		<tr>
 			<td>{lang_get s='th_name'}:</td>
 			<td>

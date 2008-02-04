@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.5 2008/01/06 20:33:54 schlundus Exp $
+$Id: planEdit.tpl,v 1.6 2008/02/04 14:58:17 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -130,7 +130,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		
 		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
 		{if $tplan_id eq 0}
-		  <input type="hidden" name="do_action" value="do_create">
+		  <input type="hidden" name="do_action" value="do_create" />
 		  <input type="submit" name="do_create" value="{lang_get s='btn_testplan_create'}"
 		         onclick="do_action.value='do_create'"/>
 		{else}

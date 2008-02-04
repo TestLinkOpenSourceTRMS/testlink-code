@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/01/14 22:53:26 $ $Author: asielb $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/02/04 14:58:17 $ $Author: schlundus $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -17,14 +17,13 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
-
 testlinkInitPage($db);
 
-$template_dir='plan/';
+$template_dir = 'plan/';
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = $_SESSION['testPlanName'];
 
 $the_builds = $tplan_mgr->get_builds($tplan_id);

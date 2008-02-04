@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.10 2008/01/19 12:19:19 franciscom Exp $ 
+$Id: planView.tpl,v 1.11 2008/02/04 14:58:17 schlundus Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -17,8 +17,8 @@ Rev:
 
 {* Configure Actions *}
 {assign var="managerURL" value="lib/plan/planEdit.php"}
-{assign var="editAction" value="$managerURL?do_action=edit&tplan_id="}
-{assign var="deleteAction" value="$managerURL?do_action=delete&tplan_id="}
+{assign var="editAction" value="$managerURL?do_action=edit&amp;tplan_id="}
+{assign var="deleteAction" value="$managerURL?do_action=do_delete&tplan_id="}
 {assign var="createAction" value="$managerURL?do_action=create"}
 
 

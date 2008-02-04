@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/02/04 11:52:14 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/02/04 14:58:18 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -16,8 +16,6 @@
  *
  * 20080203 - franciscom - fixed bug on active management
  * 20080112 - franciscom - adding testcase prefix management
- * 
- *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -31,8 +29,7 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 // current testproject displayed on testproject combo.
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-// Important: 
-// if != 'no' refresh of navbar frame is done
+// Important: if != 'no' refresh of navbar frame is done
 $action = 'no';
 $template = null;
 $ui = array('doActionValue' => '', 'buttonValue' => '', 'caption' => '');
@@ -74,6 +71,7 @@ switch($args->doAction)
 		if($op->status_ok)
 		{
 			$template = null;
+			logAuditEvent(TLS("audit_testproject_created",$args->tprojectName),"CREATE",$op->id,"testprojects");
 		}
 		else
 		{
@@ -94,10 +92,8 @@ switch($args->doAction)
 			logAuditEvent(TLS("audit_testproject_saved",$args->tprojectName),"CREATE",$args->tprojectID,"testprojects");
 			$template = null;
 			if($session_tproject_id == $args->tprojectID)
-		    {
 				$reloadType = 'reloadNavBar';
 		}
-    }
 		else
 		{
 			$user_feedback = $op->msg; 
@@ -110,9 +106,7 @@ switch($args->doAction)
 		if ($op['status_ok'])
 		{
 			if($session_tproject_id == $args->tprojectID)
-		   {
 				$reloadType = 'reloadNavBar';
-	     }
 
 			$user_feedback = sprintf(lang_get('test_project_deleted'),$args->tprojectName);
 			logAuditEvent(TLS("audit_testproject_deleted",$args->tprojectName),"DELETE",$args->tprojectID,"testprojects");		
@@ -130,9 +124,7 @@ $smarty = new TLSmarty();
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
 if(!$status_ok)
-{
-   $args->doAction="ErrorOnAction";  
-}
+   $args->doAction = "ErrorOnAction";  
 
 switch($args->doAction)
 {
@@ -362,25 +354,20 @@ function crossChecks($argsObj,&$tprojectMgr)
     $check_op['status_ok'] = $op['status_ok'];
     
     if($argsObj->doAction == 'doUpdate')
-    {
 		$updateAdditionalSQL = "testprojects.id <> {$argsObj->tprojectID}";
-    }
    
     if($check_op['status_ok'])
     {
 		if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL))
 		{
-		  $check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
-		  $check_op['status_ok'] = 0;
+			$check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+			$check_op['status_ok'] = 0;
 		}
 
 		$sql = "SELECT id FROM testprojects " .
 			 "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
 		if(!is_null($updateAdditionalSQL))
-      {
 			$sql .= " AND {$updateAdditionalSQL} "; 
-      }
-           
 		   
 		$rs = $tprojectMgr->db->get_recordset($sql);
 		if(!is_null($rs))
@@ -390,9 +377,7 @@ function crossChecks($argsObj,&$tprojectMgr)
 		}
     }
     else
-    {
          $check_op['msg'][] = $op['msg'];
-    }
     return $check_op;
 }
 ?>

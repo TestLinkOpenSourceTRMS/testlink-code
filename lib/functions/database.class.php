@@ -3,27 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/01/21 20:10:54 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/02/04 22:32:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
- * 20071010 - franciscom -  build_sql_create_db()
+ * 20080204 - franciscom -  setting ADODB_FETCH_ASSOC as default fetch mode
  * 20060708 - franciscom -  changed Connect() to NConnect(), to avoid
  *                          problems due to connection reuse, when
  *                          you wanto to connect to more than one database at once
  *                          See ADODB manuals
- *
- *
- * 20060523 - franciscom -  added build_sql_create_db()
- *
- * 20060511 - franciscom - added a couple of functions need to resolve postgres problems
- *                         with insert_id()
- *                       - fixed other minor bugs  
- *
- * 20060218 - franciscom - added get_recordset()
- *                         found bugs regarding calling exec_query in
- *                         class methods
 */
  
  # -------------------------------------------------------------------------------
@@ -37,6 +26,7 @@
  # See the README and LICENSE files for details
  # -------------------------------------------------------------------------------
 
+$ADODB_COUNTRECS=FALSE;
 require_once( dirname(__FILE__). '/../../third_party/adodb/adodb.inc.php' );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
@@ -60,6 +50,7 @@ class database
 	function database($db_type)
 	{
 	  $this->db = NewADOConnection($db_type);
+    $this->db->SetFetchMode(ADODB_FETCH_ASSOC);
 	}
 
 
@@ -152,6 +143,8 @@ class database
 		# mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
 		if( $this->db->databaseType == 'mysql' ) {	
 			$t_array = $p_result->fields;
+			//echo "<pre>debug 20080204 - \ - " . __FUNCTION__ . " --- "; print_r($t_array); echo "</pre>";
+			
  			$p_result->MoveNext();
 			return $t_array;
 		} else { 
@@ -435,9 +428,12 @@ class database
 	 **/
 	public function fetchOneValue($query)
 	{
-		$row = $this->fetchFirstRow($query);
-		if ($row)
-			return $row[0];
+	  $row = $this->fetchFirstRow($query);
+    if ($row)
+    {
+		  $fieldName=array_keys($row);   
+			return $row[$fieldName[0]];
+		}
 		return null;
 	}
 	

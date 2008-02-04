@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2008/01/14 21:43:23 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2008/02/04 22:32:52 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -328,14 +328,13 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 				$node['tcversion_id'] = $tp_tcs[$node['id']]['tcversion_id'];		
 				$node['version'] = $tp_tcs[$node['id']]['version'];		
 
-			  // 20080113 - franciscom
 			  $sql=" SELECT TCV.tc_external_id AS external_id " .
 			       " FROM tcversions TCV " .
 			       " WHERE TCV.id=" . $node['tcversion_id'];
 			     
 			  $result = $db->exec_query($sql);
 			  $myrow = $db->fetch_array($result);
-				$node['external_id'] = $myrow[0]['external_id'];		
+				$node['external_id'] = $myrow['external_id'];		
 
 			}
 		}

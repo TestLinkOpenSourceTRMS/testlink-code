@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.95 $ $Author: schlundus $
- * @modified $Date: 2008/01/21 20:10:54 $
+ * @version $Revision: 1.96 $ $Author: franciscom $
+ * @modified $Date: 2008/02/04 22:32:52 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -720,10 +720,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$a_tcid = array();
 	
 	$tcase_mgr = new testcase($db); 
-	$tree_manager = new tree($db);
 	$tproject_mgr = new testproject($db);
 	
-	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
 	$tcase_node_type = $hash_descr_id['testcase'];
 	$hash_id_descr = array_flip($hash_descr_id);
 
@@ -736,7 +735,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	    switch ($spec_view_type)
 	    {
 			case 'testproject':
-				$tobj_mgr = new testproject($db); 
+				$tobj_mgr = &$tproject_mgr;
 				break;  
 				
 			case 'testplan':
@@ -752,6 +751,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 		    if($node['node_type_id'] == $tcase_node_type && !isset($tck_map[$node['id']]) )
 			   $test_spec[$key]=null;            
 	    }
+	    
+	    // 20080204 - franciscom
+	    $tobj_mgr=null;
 	}
   // ---------------------------------------------------------------------------------------------
   
@@ -797,17 +799,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				$a_tsuite_idx[$tc_id] = $parent_idx;
   				
   				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
-  				
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
-  				
-  				// 20070630 - franciscom
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
-  				
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
-  				             
   				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
   				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
-  				
   				$out[$parent_idx]['write_buttons'] = $write_status;
   				$out[$parent_idx]['testcase_qty']++;
   				$out[$parent_idx]['linked_testcase_qty'] = 0;
@@ -866,10 +862,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  $result['has_linked_items'] = 0;
     if(count($a_tcid))
     {
-      // 20070630 - francisco.mancardi@gruppotesi.com
-  		// $tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS,'ACTIVE');
   		$tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS);
-  		
   		$result['num_tc']=0;
   		$pivot_id=-1;
   		
@@ -882,7 +875,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		    $pivot_id=$tc_id;
   		    $result['num_tc']++;
   		  }
-  		  
   			$parent_idx = $a_tsuite_idx[$tc_id];
   		
         // --------------------------------------------------------------------------
@@ -890,8 +882,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         {       
     			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
-            
-          // 20080114 - franciscom  
           $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
   				  
 		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
@@ -909,12 +899,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
   						($the_item['tcversion_id'] == $the_tc['id']) )
   					{
-  					  // 20070630 - franciscom
        				if( !isset($out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']]) )
        				{
         				$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 0;
-    					  // 20080114 - franciscom
                 $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
 				      }
   						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
@@ -943,7 +931,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	} // !is_null($out[0])
 	
 	// --------------------------------------------------------------------------------------------
-	// 20070707 - franciscom - BUGID 921
+	$out=null;
 	if( count($result['spec_view']) > 0 && $do_prune)
 	{                                                
 	  foreach($result['spec_view'] as $key => $value)
@@ -978,6 +966,14 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function my_array_intersect_keys($array1,$array2)
 {
 	$aresult = array();

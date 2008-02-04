@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/02/03 18:45:32 $  by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/02/04 11:44:43 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -30,7 +30,6 @@ require_once("web_editor.php");
 require_once("opt_transfer.php");
 testlinkInitPage($db);
 
-echo "<pre>debug 20080203 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 $template_dir='testcases/';
 
 $sqlResult="";

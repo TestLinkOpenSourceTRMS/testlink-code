@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.50 2008/01/27 21:13:20 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.51 2008/02/04 19:41:35 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -108,7 +108,7 @@ function ST(id,version)
 */
 function STS(id)
 {
-  action_url=fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+	action_url=fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
 	parent.workframe.location = action_url;
 }
 
@@ -117,8 +117,6 @@ function SP()
 {
   	parent.workframe.location = fRoot+menuUrl;
 }
-
-
 
 /*
   function: EP
@@ -131,15 +129,15 @@ function SP()
 */
 function EP(id)
 {
-  var _FUNCTION_NAME_="EP";
-  
-  // get checkboxes status
+	var _FUNCTION_NAME_="EP";
+
+	// get checkboxes status
 	var pParams = tree_getPrintPreferences();
-	var action_url=fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" + 
-	               "&level=testproject&id="+id+args+"&"+pParams;
-	
-  //alert(_FUNCTION_NAME_ + " " +action_url);
-  parent.workframe.location = action_url;
+	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" + 
+	"&level=testproject&id="+id+args+"&"+pParams;
+
+	//alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
 }
 
 /*
@@ -165,7 +163,6 @@ function ETS(id)
 	
 }
 
-
 /*
   function: Edit Test case
 
@@ -181,11 +178,6 @@ function ET(id,v)
 	var my_location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
 	parent.workframe.location = my_location;
 }
-
-
-
-
-
 
 /*
   function: TPROJECT_PTS
@@ -221,10 +213,6 @@ function TPROJECT_PTC(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=tc&id="+id+args;
 }
-
-
-
-
 
 /*
   function: TPLAN_PTS
@@ -262,11 +250,6 @@ function TPLAN_PTC(id)
 	var my_location = fRoot+menuUrl+"?print_scope=testplan&level=tc&id="+id+args;
 	parent.workframe.location = my_location;
 }
-
-
-
-
-
 
 //==========================================
 // Set DIV ID to hide
@@ -661,7 +644,6 @@ function REQ_MGMT(id)
 */
 function show_hide_column(table_id,col_no) 
 {
-
   var tbl  = document.getElementById(table_id);
   var rows = tbl.getElementsByTagName('tr');
 

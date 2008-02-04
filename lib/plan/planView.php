@@ -5,24 +5,22 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/01/14 21:43:23 $ $Author: franciscom $
- *
- * Purpose:  Add new or edit existing Test Plan 
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/02/04 19:41:35 $ $Author: schlundus $
  *
 */
-require('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db);
 
-$template_dir='plan/';
+$template_dir = 'plan/';
 
-$tproject_mgr = New testproject($db);
-$tplans=null;
-$tproject_id=isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
+$tplans = null;
+$tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
 if($tproject_id)
-{ 
-  $tplans = $tproject_mgr->get_all_testplans($tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
+{
+	$tproject_mgr = new testproject($db);
+	$tplans = $tproject_mgr->get_all_testplans($tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
 }
 
 $smarty = new TLSmarty();

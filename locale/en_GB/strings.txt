@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.263 $
- * @modified $Date: 2008/02/04 16:46:56 $ $Author: schlundus $
+ * @version $Revision: 1.264 $
+ * @modified $Date: 2008/02/04 19:41:36 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2030,7 +2030,9 @@ $TLS_audit_testplan_created = "The Test Plan '{%1}' was created";
 $TLS_audit_milestone_deleted = "A milestone was deleted";
 $TLS_audit_milestone_created = "The Milestone '{%1}' was created";
 $TLS_audit_milestone_saved = "The Milestone '{%1}' was saved";
-
+$TLS_audit_tc_added_to_testplan = "The Test Case '{%1}' was added to Test Plan";
+$TLS_audit_tc_removed_from_testplan = "The Test Case(s) '{%1}' were removed from Test Plan";
+ 
 //eventviewer.php
 $TLS_th_errorlevel = "Error level";
 $TLS_th_timestamp = "Timestamp";

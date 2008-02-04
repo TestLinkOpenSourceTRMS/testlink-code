@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.12 $
-* @modified $Date: 2008/01/25 11:31:37 $
+* @version $Revision: 1.13 $
+* @modified $Date: 2008/02/04 19:41:36 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -63,13 +63,12 @@ else if ($bChangePwd)
 else if ($bGenApi)
 {
 		$api_key = $APIKey->addKeyForUser($userID);
-		if (strlen($api_key)>0)
+		if (strlen($api_key))
 		{
 			logAuditEvent(TLS("audit_user_apikey_set"),"CREATE",$userID,"users");
-			$auditMsg = "audit_user_apikey_set";
 			$user_feedback = lang_get('result_apikey_create_ok');
 		}
-}		
+}
 
 if (($bEdit || $bChangePwd) && $updateResult >= tl::OK)
 {

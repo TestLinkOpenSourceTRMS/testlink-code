@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2008/01/26 17:56:22 $ $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2008/02/04 19:41:35 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -305,14 +305,14 @@ function count_testcases($id)
 */
 function link_tcversions($id,&$items_to_link)
 {
-    $sql="INSERT INTO testplan_tcversions 
-          (testplan_id,tcversion_id)
-          VALUES ({$id},";	
-		// 
-		foreach($items_to_link as $tc => $tcversion)
-		{
-	     $result = $this->db->exec_query($sql . "{$tcversion})");
-		}
+	$sql = "INSERT INTO testplan_tcversions (testplan_id,tcversion_id) VALUES ({$id},";
+	
+	foreach($items_to_link as $tc => $tcversion)
+	{
+		$result = $this->db->exec_query($sql . "{$tcversion})");
+		if ($result)
+			logAuditEvent(TLS("audit_tc_added_to_testplan",$tcversion),"ASSIGN",$id,"testplans");
+	}
 }
 
 
@@ -568,9 +568,10 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 //
 function unlink_tcversions($id,&$items)
 {
-  if( !is_null($items) )
-  {
-	    $in_clause = " AND tcversion_id IN (" . implode(",",$items) . ")";    
+	if(!is_null($items))
+	{
+		$idList = implode(",",$items);
+	    $in_clause = " AND tcversion_id IN (" . $idList . ")";    
 
       // Need to remove all related info:
       // execution_bugs - to be done
@@ -618,6 +619,8 @@ function unlink_tcversions($id,&$items)
       $sql=" DELETE FROM testplan_tcversions 
              WHERE testplan_id={$id} {$in_clause} ";
 	    $result = $this->db->exec_query($sql);
+	
+		logAuditEvent(TLS("audit_tc_removed_from_testplan",$idList),"UNASSIGN",$id,"testplans");
 	}
 } // end function
 

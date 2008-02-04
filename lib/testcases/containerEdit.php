@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/01/30 17:49:41 $ by $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/02/04 19:41:35 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
@@ -27,14 +27,14 @@ $tproject_mgr = new testproject($db);
 $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
 
-$template_dir='testcases/';
+$template_dir = 'testcases/';
 $refreshTree = false;
 $level = null;
 
 // Option Transfer configuration
-$opt_cfg->js_ot_name='ot';
+$opt_cfg->js_ot_name = 'ot';
 
-$args=init_args($opt_cfg);
+$args = init_args($opt_cfg);
 $gui_cfg = config_get('gui');
 $spec_cfg = config_get('spec_cfg');
  
@@ -73,9 +73,8 @@ foreach ($a_actions as $the_key => $the_val)
 {
 	if (isset($_POST[$the_key]) )
 	{
-  
 		$the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
-    $init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
+		$init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
 
 		$action = $the_key;
 		$get_c_data = $the_val;
@@ -90,7 +89,7 @@ $smarty->assign('page_title',lang_get('container_title_' . $level));
 
 if($init_opt_transfer)
 {
-    $opt_cfg=initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
+    $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
 }
 
 // create  web editor objects
@@ -121,13 +120,13 @@ if($get_c_data)
 
 switch($action)
 {
-    case 'edit_testsuite':
+	case 'edit_testsuite':
     case 'new_testsuite':  
-	  keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list); 
-	  $smarty->assign('opt_cfg', $opt_cfg);
-	  $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys, 
-	                               $oWebEditor, $action,$args->containerID, $args->testsuiteID);
-    break;
+		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list); 
+		$smarty->assign('opt_cfg', $opt_cfg);
+		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys, 
+							   $oWebEditor, $action,$args->containerID, $args->testsuiteID);
+		break;
     
     case 'delete_testsuite':
     $refreshTree=deleteTestSuite($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);

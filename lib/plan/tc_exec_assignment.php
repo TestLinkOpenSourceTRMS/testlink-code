@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.17 2008/01/14 21:43:23 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.18 2008/02/04 19:41:35 schlundus Exp $ 
  * 
  * rev :
  *       20080114 - franciscom - added testcase external_id management
@@ -16,10 +16,9 @@ require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 require_once("assignment_mgr.class.php");
 require_once("treeMenu.inc.php");
-
 testlinkInitPage($db);
 
-$tcase_cfg=config_get('testcase_cfg');
+$tcase_cfg = config_get('testcase_cfg');
 
 $tree_mgr = new tree($db); 
 $tsuite_mgr = new testsuite($db); 
@@ -27,7 +26,7 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
 
-$template_dir='plan/';
+$template_dir = 'plan/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $args = init_args();
@@ -39,66 +38,55 @@ $testCasePrefix .= $tcase_cfg->glue_character;
 
 $arrData = array();
 
-// ---------------------------------------------------------------------------------------
 if(!is_null($args->doAction))
 {
-  if(!is_null($args->achecked_tc))
-  {
-      $types_map = $assignment_mgr->get_available_types();
-      $status_map = $assignment_mgr->get_available_status();
-      
-      $task_test_execution = $types_map['testcase_execution']['id'];
-      $open = $status_map['open']['id'];
-      $db_now = $db->db_now();
-      
-      $features2upd = array();
-      $features2ins = array();
-      $features2del = array();
-      
-      foreach($args->achecked_tc as $key_tc => $value_tcversion)
-      {
-        $feature_id = $args->feature_id[$key_tc];
-        
-        if($args->has_prev_assignment[$key_tc] > 0)
-        {
-           if( $args->tester_for_tcid[$key_tc] > 0 )
-           {
-              $features2upd[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
-              $features2upd[$feature_id]['type'] = $task_test_execution;
-              $features2upd[$feature_id]['status'] = $open;
-              $features2upd[$feature_id]['assigner_id'] = $args->user_id;
-           } 
-           else
-           {
-              $features2del[$feature_id] = $feature_id;
-           }
-        }
-        else if($args->tester_for_tcid[$key_tc] > 0)
-        {
-           $features2ins[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
-           $features2ins[$feature_id]['type'] = $task_test_execution;
-           $features2ins[$feature_id]['status'] = $open;
-           $features2ins[$feature_id]['creation_ts'] = $db_now;
-           $features2ins[$feature_id]['assigner_id'] = $args->user_id;
-        }
-      }
-      
-      if( count($features2upd) > 0 )
-      {
-         $assignment_mgr->update($features2upd);      
-      }
-      if( count($features2del) > 0 )
-      {
-         $assignment_mgr->delete_by_feature_id($features2del);      
-      }
-      if( count($features2ins) > 0 )
-      {
-         $assignment_mgr->assign($features2ins);      
-      }
-  }  
+	if(!is_null($args->achecked_tc))
+	{
+		$types_map = $assignment_mgr->get_available_types();
+		$status_map = $assignment_mgr->get_available_status();
+
+		$task_test_execution = $types_map['testcase_execution']['id'];
+		$open = $status_map['open']['id'];
+		$db_now = $db->db_now();
+
+		$features2upd = array();
+		$features2ins = array();
+		$features2del = array();
+
+		foreach($args->achecked_tc as $key_tc => $value_tcversion)
+		{
+			$feature_id = $args->feature_id[$key_tc];
+
+			if($args->has_prev_assignment[$key_tc] > 0)
+			{
+				if($args->tester_for_tcid[$key_tc] > 0)
+				{
+					$features2upd[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
+					$features2upd[$feature_id]['type'] = $task_test_execution;
+					$features2upd[$feature_id]['status'] = $open;
+					$features2upd[$feature_id]['assigner_id'] = $args->user_id;
+				} 
+				else
+					$features2del[$feature_id] = $feature_id;
+			}
+			else if($args->tester_for_tcid[$key_tc] > 0)
+			{
+				$features2ins[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
+				$features2ins[$feature_id]['type'] = $task_test_execution;
+				$features2ins[$feature_id]['status'] = $open;
+				$features2ins[$feature_id]['creation_ts'] = $db_now;
+				$features2ins[$feature_id]['assigner_id'] = $args->user_id;
+			}
+		}
+		if(count($features2upd) > 0)
+			$assignment_mgr->update($features2upd);
+		if(count($features2del) > 0)
+			$assignment_mgr->delete_by_feature_id($features2del);
+		if(count($features2ins) > 0)
+			$assignment_mgr->assign($features2ins);
+	}  
 }
 
-// 20071228 - franciscom
 $users = getUsersForHtmlOptions($db);
 $testers = getTestersForHtmlOptions($db,$args->tplan_id,$args->tproject_id);
 $map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
@@ -126,14 +114,12 @@ switch($args->level)
 				    		            $linked_items,$map_node_tccount,
 							              $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 							           
-    // index 0 contains data for the parent test suite of this test case, 
-    // other elements are not needed.
+		// index 0 contains data for the parent test suite of this test case, 
+		// other elements are not needed.
 		$out=array();
 		$out['spec_view'][0]=$my_out['spec_view'][0];
 		$out['num_tc']=1;
 		break;
-
-
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($args->id);
 		
@@ -143,13 +129,11 @@ switch($args->level)
                          $tplan_linked_tcversions,
                          $map_node_tccount,
                          $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
- break;
-		
-		
+		break;
 	default:
 		// show instructions
-  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=tc_exec_assignment&locale={$_SESSION['locale']}");
-	break;
+		redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=tc_exec_assignment&locale={$_SESSION['locale']}");
+		break;
 }
 
 $smarty = new TLSmarty();
@@ -160,36 +144,26 @@ $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
 $smarty->assign('arrData', $out['spec_view']);
 $smarty->assign('testPlanName', $tplan_name);
 $smarty->display($template_dir . $default_template);
-?>
 
 
-<?php
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
-  $_REQUEST = strings_stripSlashes($_REQUEST);
+	$_REQUEST = strings_stripSlashes($_REQUEST);
 
-  $args->user_id=$_SESSION['userID'];
-  $args->tproject_id = $_SESSION['testprojectID'];
-  $args->tproject_name = $_SESSION['testprojectName'];
+	$args->user_id = $_SESSION['userID'];
+	$args->tproject_id = $_SESSION['testprojectID'];
+	$args->tproject_name = $_SESSION['testprojectName'];
 
-  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 
-  $key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-                  'version_id' => 0, 'keyword_id' => 0, 'has_prev_assignment' => null,
-                  'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
-  foreach($key2loop as $key => $value)
-  {
-    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-  }
+	$key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+		  'version_id' => 0, 'keyword_id' => 0, 'has_prev_assignment' => null,
+		  'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
+	foreach($key2loop as $key => $value)
+	{
+		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+	}
 
-  return $args;
+	return $args;
 }
 ?>

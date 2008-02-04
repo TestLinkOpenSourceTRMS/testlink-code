@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.3 2007/12/29 18:31:00 franciscom Exp $
+*  @version 	$Id: printDocument.php,v 1.4 2008/02/04 19:41:35 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -11,7 +11,7 @@
 *      20070509 - franciscom - added Contribution BUGID
 *
 */
-require('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once("common.php");
 require_once("print.inc.php");
 testlinkInitPage($db);
@@ -47,6 +47,7 @@ $decoding_hash=array('node_id_descr' => $hash_id_descr,
                      'status_descr_code' =>  $status_descr_code,
                      'status_code_descr' =>  $status_code_descr);
 
+
 $test_spec = $tree_manager->get_subtree($args->itemID,
 	                                      array('testplan'=>'exclude me',
 	                                              'requirement_spec'=>'exclude me',
@@ -60,6 +61,7 @@ $tree = null;
 $code = null;					
 
 $item_type=$args->level;
+
 switch ($args->print_scope)
 {
   case 'testproject':

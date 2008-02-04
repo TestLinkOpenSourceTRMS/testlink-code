@@ -1,29 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.5 2008/01/27 15:56:06 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.6 2008/02/04 19:41:35 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
-
-20070630 - franciscom - now tcversions linked to test plan, but set inactive
-                        are displayed.
-                         
-20070408 - franciscom - full_control=1 -> add/remove operations available
-                        full_control=0 -> only remove operation available
-                        
-20070402 - franciscom - BUGID 765
-20070224 - franciscom - BUGID 600
-
-20061105 - franciscom
-added logic to manage active/inactive tcversions
-
 *}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 </head>
 <body>
-<h1 class="title">{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}
-</h1>
-
+<h1 class="title">{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1>
 
 {if $has_tc }
 <form name='addTcForm' id='addTcForm' method='post'>
@@ -66,33 +51,32 @@ added logic to manage active/inactive tcversions
 	  
 	
 	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
-	    <h3 class="testlink">{$ts.testsuite.name|escape} 
+	    <h3 class="testlink">{$ts.testsuite.name|escape}</h3> 
 	        {if $item_number ==1}
 	          <br />
             <table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 
                    width="100%">
             <tr>
-	          <td align="center">
-            {if $full_control }
-	          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-	               alt="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
-                 title="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
-                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
-            {lang_get s='add'}
-            {else} &nbsp;
-            {/if}
-            </td>
-            <td  {if $full_control } align="center" {else} align="left" {/if}>
-	          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-	               alt="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
-                 title="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
-                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
-            {lang_get s='remove'}
-            </td>
+				<td align="center">
+	            {if $full_control }
+		          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+		               alt="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
+	                 title="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
+	                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');" />
+	            {lang_get s='add'}
+	            {else} &nbsp;
+	            {/if}
+	            </td>
+	            <td  {if $full_control } align="center" {else} align="left" {/if}>
+		          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+		               alt="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
+	                 title="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
+	                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');" />
+	            {lang_get s='remove'}
+	            </td>
             </tr>
             </table>
 	        {/if}
-	    </h3> 
    
      {* used as memory for the check/uncheck all checkbox javascript logic *}
      <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  
@@ -149,20 +133,19 @@ added logic to manage active/inactive tcversions
     			    <tr {if $tcase.linked_version_id ne 0} 
     			        style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20">
-    				
     				    {if $full_control}
-      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
-      				       &nbsp;&nbsp;
-      				    {else}
-      				      <input type='checkbox' 
-      				             name='{$add_cb}[{$tcase.id}]' 
-      				             id='{$add_cb}{$tcase.id}' 
-      				             value='{$tcase.id}'> 
-      				    {/if}
+	      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
+	      				       &nbsp;&nbsp;
+	      				    {else}
+	      				      <input type="checkbox" 
+	      				             name="{$add_cb}[{$tcase.id}]" 
+	      				             id="{$add_cb}{$tcase.id}" 
+	      				             value="{$tcase.id}" /> 
+	      				    {/if}
       				    
-      				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
+	      				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
     				    {else}
-    				      &nbsp;&nbsp;
+							&nbsp;&nbsp;
     				    {/if}
     			      </td>
     			      

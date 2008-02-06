@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.155 $
- * @modified $Date: 2008/02/06 07:41:23 $ by $Author: franciscom $
+ * @version $Revision: 1.156 $
+ * @modified $Date: 2008/02/06 19:35:19 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -79,7 +79,7 @@ ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR .
         '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DS . 'functions' . DS);
 
 /** Include database consts (the file is generated automatically by TL installer) */ 
-require_once('config_db.inc.php');
+@include_once('config_db.inc.php');
 
 /** Functions for check request status */
 require_once('configCheck.php');

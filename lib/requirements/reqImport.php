@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/02 11:35:01 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/02/06 19:35:21 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -25,7 +25,7 @@ require_once('requirement_spec_mgr.class.php');
 
 testlinkInitPage($db);
 
-$template_dir="requirements/";
+$template_dir = "requirements/";
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $req_spec_id = isset($_REQUEST['req_spec_id']) ? strings_stripSlashes($_REQUEST['req_spec_id']) : null;
@@ -42,7 +42,7 @@ $fileName = TL_TEMP_PATH . "importReq-".session_id().".csv";
 
 $importResult = null;
 $arrImport = null;
-$file_check=array('status_ok' => 1, 'msg' => 'ok');
+$file_check = array('status_ok' => 1, 'msg' => 'ok');
 
 if ($bUpload)
 {
@@ -51,26 +51,24 @@ if ($bUpload)
 
 	if (($source != 'none') && ($source != '' ))
 	{ 
-	  // 20070904 - franciscom - this check is a failure :(
-	  // $file_check=check_valid_ftype($_FILES['uploadedFile'],$importType);
-    $file_check['status_ok']=1;
-    if( $file_check['status_ok'] )
-    {
-  		if (move_uploaded_file($source, $fileName))
-  		{
-  		   $file_check = check_syntax($fileName,$importType);
-  		   if($file_check['status_ok'])
-  		   {
-  			     $arrImport = doImport($db,$user_id,$req_spec_id,$fileName,
-			                             $importType,$emptyScope,$conflictSolution,false);
+		// 20070904 - franciscom - this check is a failure :(
+		// $file_check=check_valid_ftype($_FILES['uploadedFile'],$importType);
+		$file_check['status_ok']=1;
+		if($file_check['status_ok'])
+		{
+			if (move_uploaded_file($source, $fileName))
+			{
+			   $file_check = check_syntax($fileName,$importType);
+			   if($file_check['status_ok'])
+			   {
+					 $arrImport = doImport($db,$user_id,$req_spec_id,$fileName,
+											 $importType,$emptyScope,$conflictSolution,false);
 			   }
 			}
 		}
 	}
-  else
-  {
-    $file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_req_file'));
-  }	
+	else
+		$file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_req_file'));
 }
 else if ($bExecuteImport)
 {
@@ -80,7 +78,7 @@ else if ($bExecuteImport)
 
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_spec = $req_spec_mgr->get_by_id($req_spec_id);
-$import_types=$req_spec_mgr->get_import_file_types();
+$import_types = $req_spec_mgr->get_import_file_types();
 
 $smarty = new TLSmarty;
 $smarty->assign('file_check',$file_check);  
@@ -96,10 +94,7 @@ $smarty->assign('uploadedFile', $fileName);
 $smarty->assign('importLimit', TL_IMPORT_LIMIT);
 $smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1024));
 $smarty->display($template_dir . $default_template);
-?>
 
-
-<?php
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();

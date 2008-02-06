@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/02 11:35:01 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/02/06 19:35:21 $ by $Author: schlundus $
  *
  * This page this allows users to export requirements. 
  *
@@ -19,19 +19,17 @@ require_once("requirements.inc.php");
 require_once('requirement_spec_mgr.class.php');
 
 testlinkInitPage($db);
-$template_dir="requirements/";
+$template_dir = "requirements/";
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $bExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
 $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 $req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
-$export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
-
+$export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
 
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_spec = $req_spec_mgr->get_by_id($req_spec_id);
-$export_types=$req_spec_mgr->get_export_file_types();
-
+$export_types = $req_spec_mgr->get_export_file_types();
 
 if ($bExport)
 {
@@ -51,7 +49,7 @@ if ($bExport)
 	}
 	if ($pfn)
 	{
-    $fileName = is_null($export_filename) ? $fileName : $export_filename;
+		$fileName = is_null($export_filename) ? $fileName : $export_filename;
 		$content = $pfn($requirements_map);
 		downloadContentsToFile($content,$fileName);
 		exit();

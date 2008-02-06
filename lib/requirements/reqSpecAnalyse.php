@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/26 08:31:44 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/02/06 19:35:21 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -32,7 +32,6 @@ if (!$args->reqSpecID && count($arrReqSpec))
 {
 	reset($arrReqSpec);
 	$args->reqSpecID = key($arrReqSpec);
-	tLog('Set a first available SRS ID: ' . $args->reqSpecID);
 }
 
 // collect REQ data
@@ -46,12 +45,10 @@ $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('selectedReqSpec', $args->reqSpecID);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display($template_dir . $default_template);
-?>
 
-<?php
 function init_args()
 {
-    $_REQUEST=strings_stripSlashes($_REQUEST);
+    $_REQUEST = strings_stripSlashes($_REQUEST);
     $args->reqSpecID = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUETS['idSRS']) : null;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     return $args;

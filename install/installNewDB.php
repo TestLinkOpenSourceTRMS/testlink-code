@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.38 2008/02/03 19:11:56 schlundus Exp $ */
+/* $Id: installNewDB.php,v 1.39 2008/02/06 19:35:20 schlundus Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -19,6 +19,7 @@ Copyright 2003, 2004 Alexander Andrew Butter
 20060523 - franciscom - adding postgres support
 */
 
+require_once("../config.inc.php");
 require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
 require_once("installUtils.php");
 require_once("sqlParser.class.php");

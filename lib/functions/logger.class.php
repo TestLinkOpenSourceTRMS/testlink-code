@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/01/30 19:52:23 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/02/06 19:35:21 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -666,7 +666,7 @@ class tlFileLogger extends tlObject
 	{
 		global $g_log_path;
 		$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-			
+		
 		return $g_log_path . DIRECTORY_SEPARATOR . 'userlog' . $uID . ".log";
 	}
 	/**

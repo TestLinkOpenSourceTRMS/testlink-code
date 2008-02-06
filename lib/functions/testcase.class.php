@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.95 $
- * @modified $Date: 2008/02/03 21:39:01 $ $Author: schlundus $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2008/02/06 07:41:24 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
  * 20080126 - franciscom - BUGID 1313 
  * 20080120 - franciscom - show() interface changes
  * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
@@ -1794,6 +1795,8 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   args :
   
   returns: 
+  
+  rev: 20080206 - franciscom - added externalid
 
 */
 function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$optExport = array())
@@ -1813,12 +1816,15 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 	if (isset($optExport['ROOTELEM']))
 		$rootElem = $optExport['ROOTELEM'];
 	$elemTpl = "\t".'<testcase name="{{NAME}}">'.	
+						'<externalid><![CDATA['."\n||EXTERNALID||\n]]>".'</externalid>'.
 						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
 						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
 						'<expectedresults><![CDATA['."\n||RESULTS||\n]]>".'</expectedresults>'.
 						'||KEYWORDS||</testcase>'."\n";
+						
 	$info = array (
 							"{{NAME}}" => "name",
+							"||EXTERNALID||" => "tc_external_id",
 							"||SUMMARY||" => "summary",
 							"||STEPS||" => "steps",
 							"||RESULTS||" => "expected_results",

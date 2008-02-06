@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.154 $
- * @modified $Date: 2008/01/24 21:21:03 $ by $Author: franciscom $
+ * @version $Revision: 1.155 $
+ * @modified $Date: 2008/02/06 07:41:23 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -289,7 +289,7 @@ $g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 //
 // 'fckeditor'
 // 'tinymce'
-// 'none' -> use plan html textarea input field
+// 'none' -> use plain html textarea input field
 //
 $g_gui->webeditor='fckeditor';
 

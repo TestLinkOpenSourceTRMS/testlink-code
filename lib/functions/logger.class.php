@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/02/06 19:35:21 $ $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/02/06 19:46:55 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -52,7 +52,7 @@ class tlLogger extends tlObject
 		$this->loggers[] = new tlDBLogger($db);
 		$this->loggers[] = new tlFileLogger();
 		
-		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT | self::DEBUG);
+		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT);
 		
 		$this->eventManager = tlEventManager::create($db);
 	}

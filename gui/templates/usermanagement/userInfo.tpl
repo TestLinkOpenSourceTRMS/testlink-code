@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.6 2008/01/29 20:50:42 franciscom Exp $ *}
+{* $Id: userInfo.tpl,v 1.7 2008/02/07 13:54:43 franciscom Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
@@ -47,7 +47,7 @@ function valAllText(form)
 {/literal}
 
 <h2>{lang_get s="title_personal_data"}</h2>
-<form method="post" action="lib/usermanagement/userinfo.php" onsubmit="return valAllText(this)">
+<form method="post" action="lib/usermanagement/userInfo.php" onsubmit="return valAllText(this)">
 	<input type="hidden" name="id" value="{$user->dbID}" />
 	<table class="common">
 		<tr>
@@ -86,7 +86,7 @@ function valAllText(form)
 <hr />
 <h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0 }
-	<form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
+	<form name="changePass" method="post" action="lib/usermanagement/userInfo.php" 
 		onsubmit="return validatePassword(document.changePass);">
 		<input type="hidden" name="id" value="{$user->dbID}" />
 		<table class="common">
@@ -109,7 +109,7 @@ function valAllText(form)
 <hr />
 <h2>{lang_get s="title_api_interface"}</h2>
 <div>									
-	<form name="genApi" method="post" action="lib/usermanagement/userinfo.php">
+	<form name="genApi" method="post" action="lib/usermanagement/userInfo.php">
 	<input type="hidden" name="id" value="{$user->dbID}" />
 	<p>{$labels.user_api_key} = {$user->userApiKey|escape}</p>
 	<div class="groupBtn">	

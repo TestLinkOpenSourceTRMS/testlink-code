@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.25 2008/01/31 22:15:47 schlundus Exp $ 
+	$Id: navBar.tpl,v 1.26 2008/02/07 13:54:43 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -64,7 +64,7 @@
 	{if $rights_mgt_view_events eq "yes"}
 		<a href="lib/events/eventviewer.php" target="mainframe" accesskey="v" tabindex="5">{lang_get s='event_viewer'}</a> |
 	{/if}
-   	<a href='lib/usermanagement/userinfo.php' target="mainframe" accesskey="i" 
+   	<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i" 
       		tabindex="6">{lang_get s='title_edit_personal_data'}</a> |
 	{if $currentTProjectID && $rightViewSpec == "yes"}
 		<form style="display:inline" target="mainframe" name="searchTC" id="searchTC"

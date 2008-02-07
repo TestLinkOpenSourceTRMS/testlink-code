@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsExport.tpl,v 1.2 2008/01/05 22:00:53 schlundus Exp $
+$Id: keywordsExport.tpl,v 1.3 2008/02/07 21:05:26 schlundus Exp $
 Purpose: smarty template - keyword export 
 rev:
 *}
@@ -64,7 +64,7 @@ function validateForm(f)
   	<div class="groupBtn">
   		<input type="submit" name="export" value="{lang_get s='btn_export'}" />
   		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-  			onclick="javascript:history.back();" />
+			onclick="javascript: location.href=fRoot+'lib/keywords/keywordsView.php';" />
   	</div>
   </form>
 </div>

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/01/28 21:17:31 $  $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/02/07 21:05:27 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -766,9 +766,12 @@ function count_testcases($id)
 	 **/
 	function deleteKeyword($id)
 	{
-		$result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
+		$result = tl::ERROR;
+		$keyword = $this->getKeyword($id);
+		if ($keyword)
+			$result = tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
 		if ($result >= tl::OK)
-			logAuditEvent(TLS("audit_keyword_deleted"),"DELETE",$id,"keywords");
+			logAuditEvent(TLS("audit_keyword_deleted",$keyword->name),"DELETE",$id,"keywords");
 		return $result;
 	}
 

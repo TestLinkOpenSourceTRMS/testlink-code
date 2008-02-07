@@ -1,11 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.1 2007/12/07 07:02:59 franciscom Exp $
+$Id: keywordsAssign.tpl,v 1.2 2008/02/07 21:05:26 schlundus Exp $
 Purpose: smarty template - assign keywords to one or more test cases
-Andreas Morsing : changed action to updated 
-
-rev : 
-     20070106 - franciscom - can_do=0 => test suite without test cases
 *}
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -26,11 +22,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 {* improved feedback *}
 <div class="workBack">
-  {if $can_do} 
-     {if $keyword_assignment_subtitle neq ''}
-      <h2> {$keyword_assignment_subtitle}</h2>
-     {/if}
-
     <h1>{lang_get s='title_keywords'}</h1>
     {* tabs *}
     <div class="tabMenu">
@@ -38,9 +29,14 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     			target='mainframe'>{lang_get s='menu_manage_keywords'}</a></span> 
     	<span class="selected">{lang_get s='menu_assign_kw_to_tc'}</span> 
     </div>
+
+	{if $can_do} 
+     {if $keyword_assignment_subtitle neq ''}
+      <h2> {$keyword_assignment_subtitle}</h2>
+     {/if}
     
     {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}
-   
+  
     
     {* data form *}
     <div style="margin-top: 25px;">

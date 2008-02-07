@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.96 $
- * @modified $Date: 2008/02/06 07:41:24 $ $Author: franciscom $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2008/02/07 21:05:26 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
@@ -1463,8 +1463,11 @@ function addKeyword($id,$kw_id)
 	$result = ($this->db->exec_query($sql) ? 1 : 0);
 	
 	if ($result)
-	    logAuditEvent(TLS("audit_keyword_assigned_tc",$id),"ASSIGN",$id,"nodes_hierarchy");
-	
+	{
+		$keyword = tlKeyword::getByID($this->db,$kw_id);
+		if ($keyword)
+			logAuditEvent(TLS("audit_keyword_assigned_tc",$keyword->name,$id),"ASSIGN",$id,"nodes_hierarchy");
+	}
 	return $result;
 }
 
@@ -1502,9 +1505,18 @@ function deleteKeywords($tcID,$kwID = null)
 	if (!is_null($kwID))
 		$sql .= " AND keyword_id = {$kwID}";
 	$result = $this->db->exec_query($sql);
-	
-  if ($result)
-	    logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$kwID,$tcID),"ASSIGN",$tcID,"nodes_hierarchy");
+	if ($result)
+	{
+		if ($kwID)
+		{
+			$keyword = tlKeyword::getByID($this->db,$kwID);
+			if ($keyword)
+				logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$keyword->name,$tcID),"ASSIGN",$tcID,"nodes_hierarchy");
+		}
+		else
+			logAuditEvent(TLS("audit_all_keyword_assignments_removed_tc",$tcID),"ASSIGN",$tcID,"nodes_hierarchy");
+	}
+		
 	return $result;
 }
 

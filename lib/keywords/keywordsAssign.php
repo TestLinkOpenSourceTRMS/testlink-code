@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/02/03 21:39:01 $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/02/07 21:05:28 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -35,22 +35,24 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 
 if ($edit == 'testproject')
 {
-	  // We can NOT assign/remove keywords on a whole test project
-  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=keywordsAssign&locale={$_SESSION['locale']}");
+	 // We can NOT assign/remove keywords on a whole test project
+  	redirect($_SESSION['basehref'] . "lib/general/staticPage.php?key=keywordsAssign");
 	exit();
 }
 
 $smarty = new TLSmarty();
-$result = null;
-$keyword_assignment_subtitle = null;
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
+
+$result = null;
+$keyword_assignment_subtitle = null;
+$can_do = 0;
+$itemID = null;
 
 $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
 $opt_cfg->global_lbl = '';
 $opt_cfg->additional_global_lbl=null;
-
 $opt_cfg->from->lbl = lang_get('available_kword');
 $opt_cfg->to->lbl = lang_get('assigned_kword');
 $opt_cfg->from->map = $tproject_mgr->get_keywords_map($testproject_id);
@@ -63,46 +65,32 @@ if ($edit == 'testsuite')
 {
 	// We are going to walk all test suites contained
 	// in the selected container, and assign/remove keywords on each test case.
-	//
 	$tsuite_mgr = new testsuite($db);
 	$testsuite = $tsuite_mgr->get_by_id($id);
 	$keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 	
 	$tcs = $tsuite_mgr->get_testcases_deep($id,true);
-	$can_do = 0;
-	
 	if (sizeof($tcs))
 	{
 		$can_do = 1;
 		if ($bAssignTestSuite)
 		{
 			$result = 'ok';
-			$tcase_mgr = new testcase($db);
-			$list = trim($right_list);
-			$bListNotEmpty = strlen($list);
-			$a_keywords = null;
-			if ($bListNotEmpty)
-				$a_keywords = explode(",",$list);
+			//$tcase_mgr = new testcase($db);
+			$a_keywords = getKeywordsArray($right_list);
 			for($i = 0;$i < sizeof($tcs);$i++)
 			{
 				$tcID = $tcs[$i];
-				$tcase_mgr->deleteKeywords($tcID);
-				if ($bListNotEmpty)
-				{
-					$tcase_mgr->addKeywords($tcID,$a_keywords);
-				}
+				assignKeywordsToTc($tcase_mgr,$tcID,$a_keywords);
 			}
 		}
-		$opt_cfg->to->map = $tcase_mgr->get_keywords_map($tcs," ORDER BY keyword ASC ");
-	}
-	else
-	{
+		$itemID = $tcs;
 	}
 }
 else if($edit == 'testcase')
 {
 	$can_do = 1;
-	$tcase_mgr = new testcase($db);
+	//$tcase_mgr = new testcase($db);
 	$tcData = $tcase_mgr->get_by_id($id);
 	if (sizeof($tcData))
 	{
@@ -112,20 +100,12 @@ else if($edit == 'testcase')
 	if($bAssignTestCase)
 	{
 		$result = 'ok';
-		$tcase_mgr->deleteKeywords($id);   	 
-		if(strlen(trim($right_list)))
-		{
-			$a_keywords = explode(",",$right_list);
-			$tcase_mgr->addKeywords($id,$a_keywords);
-		}
-		$opt_cfg->to->map = $tcase_mgr->get_keywords_map($id," ORDER BY keyword ASC ");
+		assignKeywordsToTc($tcase_mgr,$id,getKeywordsArray($right_list));
+		$itemID = $id;
 	}
 }
-else
-{
-	tlog("keywordsAssigns> Missing GET/POST arguments.");
-	exit();
-}
+if ($itemID)
+	$opt_cfg->to->map = $tcase_mgr->get_keywords_map($itemID," ORDER BY keyword ASC ");
 keywords_opt_transf_cfg($opt_cfg, $right_list);
 
 $smarty->assign('can_do', $can_do);
@@ -135,4 +115,20 @@ $smarty->assign('level', $edit);
 $smarty->assign('opt_cfg', $opt_cfg);
 $smarty->assign('keyword_assignment_subtitle',$keyword_assignment_subtitle);
 $smarty->display($template_dir . 'keywordsAssign.tpl');
+
+function getKeywordsArray($right_list)
+{
+	$a_keywords = null;
+	$list = trim($right_list);
+	$bListNotEmpty = strlen($list);
+	if ($bListNotEmpty)
+		$a_keywords = explode(",",$list);
+	return $a_keywords;
+}
+function assignKeywordsToTc(&$tcase_mgr,$tcID,$a_keywords)
+{
+	$tcase_mgr->deleteKeywords($tcID);   	 
+	if (sizeof($a_keywords))
+		$tcase_mgr->addKeywords($tcID,$a_keywords);
+}
 ?>

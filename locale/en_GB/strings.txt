@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.264 $
- * @modified $Date: 2008/02/04 19:41:36 $ $Author: schlundus $
+ * @version $Revision: 1.265 $
+ * @modified $Date: 2008/02/07 21:05:35 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2006,11 +2006,14 @@ $TLS_audit_user_deleted = "The user '{%1}' was deleted";
 $TLS_audit_testproject_created = "The Test Project '{%1}' was created";
 $TLS_audit_testproject_saved = "The Test Project '{%1}' was saved";
 $TLS_audit_testproject_deleted = "The Test Project '{%1}' was deleted";
+
 $TLS_audit_keyword_created = "The keyword '{%1}' was created";
 $TLS_audit_keyword_saved = "The keyword '{%1}' was saved";
-$TLS_audit_keyword_deleted = "A keyword was deleted";
-$TLS_audit_keyword_assigned_tc = "A keyword was assigned to the test case with id '{%2}'";
-$TLS_audit_keyword_assignment_removed_tc = "A keyword was unassigned from a test case";
+$TLS_audit_keyword_deleted = "The keyword '{%1}' was deleted";
+$TLS_audit_keyword_assigned_tc = "The keyword '{%1}' was assigned to the test case with id '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "The keyword '{%1}' was unassigned from the test case with id '{%2}'";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the test case with id '{%1}'";
+
 $TLS_audit_executionbug_added = "The bug '{%1}' was added during execution";
 $TLS_audit_executionbug_deleted = "The bug '{%1}' was deleted during execution";
 $TLS_audit_attachment_deleted = "The attachment '{%1}' was deleted";

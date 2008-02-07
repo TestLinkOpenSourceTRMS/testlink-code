@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/01/05 22:00:53 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/02/07 21:05:35 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -56,13 +56,9 @@ switch ($args->doAction)
 } // switch
 
 if($op->status == 1)
-{
 	$template = $op->template;  
-}
 else
-{
 	$msg = getKeywordErrorMessage($op->status);
-}
 
 $keywords = $tprojectMgr->getKeywords($args->testproject_id);
 $keyword = new tlKeyword();
@@ -71,15 +67,12 @@ $export_types = $keyword->getSupportedSerializationInterfaces();
 $smarty->assign('action',$action);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('user_feedback',$msg);
-
 $smarty->assign('canManage',$canManage);
 $smarty->assign('keywords', $keywords);
-
 $smarty->assign('name',$args->keyword);
 $smarty->assign('keyword',$args->keyword);
 $smarty->assign('notes',$args->notes);
 $smarty->assign('keywordID',$args->keyword_id);
-
 $smarty->display($template_dir . $template);
 
 function init_args()
@@ -98,7 +91,6 @@ function init_args()
 
 	return $args;
 }
-
 
 /*
   function: create
@@ -161,8 +153,6 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 	return $ret;
 }
 
-
-
 /*
   function: do_create 
             do operations on db
@@ -186,8 +176,6 @@ function do_create(&$smarty,&$args,&$tproject_mgr)
 	$ret->status = $tproject_mgr->addKeyword($args->testproject_id,$args->keyword,$args->notes);
 	return $ret;
 }
-
-
 
 /*
   function: do_update
@@ -218,7 +206,6 @@ function do_update(&$smarty,&$args,&$tproject_mgr)
 
 	return $ret;
 }
-
 
 /*
   function: do_delete

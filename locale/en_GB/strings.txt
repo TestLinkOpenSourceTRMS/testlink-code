@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.265 $
- * @modified $Date: 2008/02/07 21:05:35 $ $Author: schlundus $
+ * @version $Revision: 1.266 $
+ * @modified $Date: 2008/02/07 22:08:51 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1744,10 +1744,10 @@ $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 // lib/project/projectedit.php
 $TLS_error_product_name_duplicate = "There's already Test Project named %s. <br />Please choose a different name";
 $TLS_info_no_more_prods = "No more Test Projects.";
-$TLS_info_product_activated = "The Test Project was activated.";
-$TLS_info_product_inactivated = "The Test Project was deactivated.";
+$TLS_info_product_activated = "Test Project was activated.";
+$TLS_info_product_inactivated = "Test Project was deactivated.";
 $TLS_info_product_not_deleted_check_log = "Test Project was not deleted. Please check TestLink log.";
-$TLS_info_product_was_deleted = "The Test Project was successfully deleted.";
+$TLS_info_product_was_deleted = "Test Project was successfully deleted.";
 $TLS_refer_to_log = " Please refer to TestLink log for more information.";
 $TLS_test_project_activated = "Test Project %s was successfully activated";
 $TLS_test_project_created = "Test Project %s was successfully created";
@@ -1989,75 +1989,72 @@ $TLS_audit_role_deleted = "Role '{%1}' was deleted";
 $TLS_audit_user_logout = "Logout of '{%1}'"; 
 $TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
 $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
-$TLS_audit_cfield_created = "A Custom field was created";
-$TLS_audit_cfield_saved = "A Custom field was saved";
-$TLS_audit_cfield_deleted = "A Custom field was deleted";
-$TLS_audit_cfield_assigned = "A Custom field was assigned";
-$TLS_audit_cfield_unassigned = "A Custom field was unassigned";
-$TLS_audit_cfield_display_order_changed = "The display order of the custom field was saved";
-$TLS_audit_cfield_activated = "A Custom field was activated";
-$TLS_audit_cfield_deactivated = "A Custom field was deactivated";
-$TLS_audit_user_apikey_set = "An API-Key for '{%1}' was generated"; 
-$TLS_audit_user_saved = "The user '{%1}' was saved";
-$TLS_audit_user_pwd_saved = "The password of user '{%1}' was saved";
-$TLS_audit_user_assignment_changed = "The user assignment was saved";
-$TLS_audit_user_created = "The user '{%1}' was created";
-$TLS_audit_user_deleted = "The user '{%1}' was deleted";
-$TLS_audit_testproject_created = "The Test Project '{%1}' was created";
-$TLS_audit_testproject_saved = "The Test Project '{%1}' was saved";
-$TLS_audit_testproject_deleted = "The Test Project '{%1}' was deleted";
-
-$TLS_audit_keyword_created = "The keyword '{%1}' was created";
-$TLS_audit_keyword_saved = "The keyword '{%1}' was saved";
-$TLS_audit_keyword_deleted = "The keyword '{%1}' was deleted";
-$TLS_audit_keyword_assigned_tc = "The keyword '{%1}' was assigned to the test case with id '{%2}'";
-$TLS_audit_keyword_assignment_removed_tc = "The keyword '{%1}' was unassigned from the test case with id '{%2}'";
+$TLS_audit_cfield_created = "Custom field was created";
+$TLS_audit_cfield_saved = "Custom field was saved";
+$TLS_audit_cfield_deleted = "Custom field was deleted";
+$TLS_audit_cfield_assigned = "Custom field was assigned";
+$TLS_audit_cfield_unassigned = "Custom field was unassigned";
+$TLS_audit_cfield_display_order_changed = "Display order of the custom field was saved";
+$TLS_audit_cfield_activated = "Custom field was activated";
+$TLS_audit_cfield_deactivated = "Custom field was deactivated";
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated"; 
+$TLS_audit_user_saved = "User '{%1}' was saved";
+$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_user_assignment_changed = "User assignment was saved";
+$TLS_audit_user_created = "User '{%1}' was created";
+$TLS_audit_user_deleted = "User '{%1}' was deleted";
+$TLS_audit_testproject_created = "Test Project '{%1}' was created";
+$TLS_audit_testproject_saved = "Test Project '{%1}' was saved";
+$TLS_audit_testproject_deleted = "Test Project '{%1}' was deleted";
+$TLS_audit_keyword_created = "Keyword '{%1}' was created";
+$TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
+$TLS_audit_keyword_deleted = "A keyword was deleted";
+$TLS_audit_keyword_assigned_tc = "A keyword was assigned to the test case with id '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "A keyword was unassigned from a test case";
 $TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the test case with id '{%1}'";
-
-$TLS_audit_executionbug_added = "The bug '{%1}' was added during execution";
-$TLS_audit_executionbug_deleted = "The bug '{%1}' was deleted during execution";
-$TLS_audit_attachment_deleted = "The attachment '{%1}' was deleted";
-$TLS_audit_attachment_created = "The attachment '{%1}' was created";
-$TLS_audit_req_spec_created = "The requirement specification '{%1}' was created";
-$TLS_audit_req_spec_saved = "The requirement specification '{%1}' was saved";
-$TLS_audit_req_spec_deleted = "The requirement specification '{%1}' was deleted";
-$TLS_audit_requirement_created = "The requirement '{%1}' was created";
-$TLS_audit_requirement_saved = "The requirement '{%1}' was saved";
-$TLS_audit_requirement_deleted = "The requirement '{%1}' was deleted";
-$TLS_audit_build_created = "The build '{%1}' was created";
-$TLS_audit_build_saved = "The build '{%1}' was saved";
+$TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+$TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
+$TLS_audit_attachment_created = "Attachment '{%1}' was created";
+$TLS_audit_req_spec_created = "Requirement specification '{%1}' was created";
+$TLS_audit_req_spec_saved = "Requirement specification '{%1}' was saved";
+$TLS_audit_req_spec_deleted = "Requirement specification '{%1}' was deleted";
+$TLS_audit_requirement_created = "Requirement '{%1}' was created";
+$TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
+$TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+$TLS_audit_build_created = "Build '{%1}' was created";
+$TLS_audit_build_saved = "Build '{%1}' was saved";
 $TLS_audit_build_deleted = "A build was deleted";
 $TLS_audit_testplan_deleted = "A Test Plan was deleted";
-$TLS_audit_testplan_saved = "The Test Plan '{%1}' was saved";
-$TLS_audit_testplan_created = "The Test Plan '{%1}' was created";
+$TLS_audit_testplan_saved = "Test Plan '{%1}' was saved";
+$TLS_audit_testplan_created = "Test Plan '{%1}' was created";
 $TLS_audit_milestone_deleted = "A milestone was deleted";
-$TLS_audit_milestone_created = "The Milestone '{%1}' was created";
-$TLS_audit_milestone_saved = "The Milestone '{%1}' was saved";
-$TLS_audit_tc_added_to_testplan = "The Test Case '{%1}' was added to Test Plan";
-$TLS_audit_tc_removed_from_testplan = "The Test Case(s) '{%1}' were removed from Test Plan";
+$TLS_audit_milestone_created = "Milestone '{%1}' was created";
+$TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";
+$TLS_audit_tc_removed_from_testplan = "Test Case(s) '{%1}' were removed from Test Plan";
  
 //eventviewer.php
-$TLS_th_errorlevel = "Error level";
+$TLS_th_loglevel = "Log level";
 $TLS_th_timestamp = "Timestamp";
 $TLS_th_activity = "Activity";
 $TLS_label_startdate = "Start date";
 $TLS_label_enddate = "End date";
-$TLS_error_level_AUDIT = "AUDIT";
-$TLS_error_level_WARNING = "WARNING";
-$TLS_error_level_INFO = "INFO";
-$TLS_error_level_ERROR = "ERROR";
-$TLS_error_level_DEBUG = "DEBUG";
+$TLS_log_level_AUDIT = "AUDIT";
+$TLS_log_level_WARNING = "WARNING";
+$TLS_log_level_INFO = "INFO";
+$TLS_log_level_ERROR = "ERROR";
+$TLS_log_level_DEBUG = "DEBUG";
 $TLS_event_viewer = "Eventviewer";
 $TLS_th_session_info = "Session information";
-$TLS_th_sessionID = "SessionID";
+$TLS_th_sessionID = "Session ID";
 $TLS_th_source = "Source";
 $TLS_click_on_event_info = "Click on any event to see it's details.";
 $TLS_th_activity_code = "Activity";
-$TLS_th_object_id = "ObjectID";
-$TLS_th_object_type = "ObjectType";
+$TLS_th_object_id = "Object ID";
+$TLS_th_object_type = "Object Type";
 $TLS_message_please_wait = "Please wait ...";
-$TLS_title_eventinfo = "Eventinformation";
-$TLS_title_eventdetails = "Eventdetails";
+$TLS_title_eventinfo = "Event information";
+$TLS_title_eventdetails = "Event details";
 $TLS_th_user = "User";
-
 ?>

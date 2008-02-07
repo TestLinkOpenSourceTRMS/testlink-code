@@ -1,21 +1,29 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventviewer.tpl,v 1.7 2008/01/31 22:15:47 schlundus Exp $ 
+$Id: eventviewer.tpl,v 1.8 2008/02/07 22:02:22 franciscom Exp $ 
 
 Event Viewer
+
+rev: 20080207 - franciscom - cleaup
 
 //SCHLUNDUS: i will cleanup this file, when i'm finished
 
 *}
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{lang_get var='labels'
+          s='event_viewer,th_loglevel,th_timestamp,th_description,title_eventdetails,
+             title_eventinfo,label_startdate,label_enddate,btn_apply,click_on_event_info,
+             message_please_wait,btn_close,th_role_description,th_user'}
+
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl"}
 
 <script type="text/javascript">
-var strPleaseWait = "{lang_get s='message_please_wait'|escape:javsscript}";
-var strCloseButton = "{lang_get s='btn_close'|escape:javsscript}";
+var strPleaseWait = "{$labels.message_please_wait|escape:javascript}";
+var strCloseButton = "{$labels.btn_close|escape:javascript}";
 {literal}
 var prgBar = null;
 function showEventDetails(id)
@@ -111,10 +119,6 @@ fieldset
 
 </head>
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-{lang_get var='labels'
-          s='event_viewer,th_loglevel,th_timestamp,th_description'}
 
 
 <body {$body_onload}>
@@ -124,10 +128,10 @@ fieldset
 <div class="workBack">
 		<form method="post" action="lib/events/eventviewer.php">	
 			<div style="height:125px;">
-			<fieldset class="x-fieldset" style="float:left"><legend>{lang_get s='th_errorlevel'}</legend>		
-				<select size="5" multiple="multiple" name="errorLevel[]">
-					{foreach from=$errorLevels item=desc key=value}
-					{if in_array((string)$value,$selectedErrorLevels) neq false}
+			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.th_loglevel}</legend>		
+				<select size="5" multiple="multiple" name="logLevel[]">
+					{foreach from=$logLevels item=desc key=value}
+					{if in_array((string)$value,$selectedLogLevels) neq false}
 						<option selected="selected" value="{$value}">{$desc}</option>
 					{else}	
 						<option value="{$value}">{$desc}</option>
@@ -135,15 +139,15 @@ fieldset
 					{/foreach}
 				</select>
 			</fieldset>
-			<fieldset class="x-fieldset"><legend>{lang_get s='th_timestamp'}</legend>
-			{lang_get s='label_startdate'}:&nbsp;<input type="text" name="date1" id="date1" value="{$startDate}" />
-			<input type="button" style="cursor:pointer" onclick="showCal('date1-cal','date1');" value="^" />
-			<div id="date1-cal" style="position:absolute;"></div>
-			{lang_get s='label_enddate'}:&nbsp;<input type="text" name="date2" id="date2" value="{$endDate}" />
-			<input type="button" style="cursor:pointer" onclick="showCal('date1-cal','date2');" value="^" />
+			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
+			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$startDate}" />
+			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','startDate');" value="^" />
+			<div id="startDate-cal" style="position:absolute;"></div>
+			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$endDate}" />
+			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','endDate');" value="^" />
 			<br /><br />
-			<input type="submit" value="{lang_get s='btn_apply'}"/>
-			<span class="italic">{lang_get s='click_on_event_info'}</span>
+			<input type="submit" value="{$labels.btn_apply}"/>
+			<span class="italic">{$labels.click_on_event_info}</span>
 			</fieldset>
 			<br />
 			</div>
@@ -152,26 +156,26 @@ fieldset
 		<br/>
 		<table class="common sortable" width="95%" id="eventviewer">
 			<tr>
-				<th>{$sortHintIcon}{lang_get s='th_timestamp'}</th>
-				<th>{$sortHintIcon}{lang_get s='th_errorlevel'}</th>
-				<th>{$sortHintIcon}{lang_get s='th_role_description'}</th>
-				<th>{$sortHintIcon}{lang_get s='th_user'}</th>
+				<th>{$sortHintIcon}{$labels.th_timestamp}</th>
+				<th>{$sortHintIcon}{$labels.th_loglevel}</th>
+				<th>{$sortHintIcon}{$labels.th_role_description}</th>
+				<th>{$sortHintIcon}{$labels.th_user}</th>
 			</tr>
 			{foreach from=$events item=event}
 			{assign var=userID value=$event->userID}
 			<tr onClick="showEventDetails({$event->dbID})" class="{$event->getLogLevel()|escape}">
 					<td style="white-space:nowrap">{localize_timestamp ts=$event->timestamp}</td>
 					<td>{$event->getLogLevel()|escape}</td>
-					<td>{$event->description|truncate:130|escape}</td>
+					<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
 					<td>{$users[$userID]|escape}</td>
 			</tr>
 			{/foreach}
 		</table>
 </div>
 <div id="eventDetailWindow" class="x-hidden">
-	<div class="x-window-header">{lang_get s='title_eventinfo'}</div>
+	<div class="x-window-header">{$labels.title_eventinfo}</div>
 	<div id="detailTabs">
-		<div class="x-tab" title="{lang_get s='title_eventdetails'}">
+		<div class="x-tab" title="{$labels.title_eventdetails}">
 			<div id="eventDetails" class="inner-tab"></div>
 		</div>
 	</div>

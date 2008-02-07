@@ -5,8 +5,10 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/30 17:49:41 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/02/07 22:02:41 $ by $Author: franciscom $
+ *
+ * rev: 20080207 - franciscom - refactored
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -15,41 +17,51 @@ testlinkInitPage($db);
 $template_dir = 'events/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-$errorLevels = array(
-			tlLogger::AUDIT => lang_get("error_level_AUDIT"),
-			tlLogger::ERROR => lang_get("error_level_ERROR"),
-			tlLogger::WARNING => lang_get("error_level_WARNING"),
-			tlLogger::INFO => lang_get("error_level_INFO"),
-			tlLogger::DEBUG => lang_get("error_level_DEBUG"),
+$logLevels = array(
+			tlLogger::AUDIT => lang_get("log_level_AUDIT"),
+			tlLogger::ERROR => lang_get("log_level_ERROR"),
+			tlLogger::WARNING => lang_get("log_level_WARNING"),
+			tlLogger::INFO => lang_get("log_level_INFO"),
+			tlLogger::DEBUG => lang_get("log_level_DEBUG"),
 			);
 
-$errorLevel = isset($_POST['errorLevel']) ? $_POST['errorLevel'] : null;
-$startDate = isset($_POST['date1']) ? $_POST['date1'] : null;
-$endDate = isset($_POST['date2']) ? $_POST['date2'] : null;
-
+$args=init_args();
 $startTime = null;
 $endTime = null;
-if (strlen($startDate))
+if (strlen($args->startDate))
 {
-	$startTime = strToTime($startDate);
+	$startTime = strToTime($args->startDate);
 	if (!$startTime)
 		$startTime = null;
 }		
-if (strlen($endDate))
+if (strlen($args->endDate))
 {
-	$endTime = strToTime($endDate) + (24*60*60-1);
+	$endTime = strToTime($args->endDate) + (24*60*60-1);
 	if (!$endTime)
 		$endTime = null;
 }
-$events = $g_tlLogger->getEventsFor($errorLevel,null,null,null,500,$startTime,$endTime);
+$events = $g_tlLogger->getEventsFor($args->logLevel,null,null,null,500,$startTime,$endTime);
 $users = getUsersForHtmlOptions($db,null,false,null);
 
 $smarty = new TLSmarty();
 $smarty->assign('events',$events);
 $smarty->assign('users',$users);
-$smarty->assign('errorLevels',$errorLevels);
-$smarty->assign('selectedErrorLevels',array_values($errorLevel ? $errorLevel : array()));
-$smarty->assign('startDate',$startDate);
-$smarty->assign('endDate',$endDate);
+$smarty->assign('logLevels',$logLevels);
+$smarty->assign('selectedlogLevels',array_values($args->logLevel ? $args->logLevel : array()));
+$smarty->assign('startDate',$args->startDate);
+$smarty->assign('endDate',$args->endDate);
 $smarty->display($template_dir . $default_template);
+
+
+
+function init_args()
+{
+    $_REQUEST=strings_stripSlashes($_REQUEST);
+    $nullable_keys = array('logLevel','startDate','endDate');
+	  foreach($nullable_keys as $value)
+	  {
+		    $args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
+	  }
+    return $args;
+}
 ?>

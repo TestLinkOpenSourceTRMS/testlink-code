@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.156 $
- * @modified $Date: 2008/02/06 19:35:19 $ by $Author: schlundus $
+ * @version $Revision: 1.157 $
+ * @modified $Date: 2008/02/08 08:26:10 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -162,6 +162,9 @@ $g_log_level='ERROR';
 * JIRA      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
 * TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
 * EVENTUM : edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
+* SEAPINE : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
+*
+* DO NOT CONFIGURE HERE, use custom_config.inc.php
 */
 $g_interface_bugs = 'NO';
 

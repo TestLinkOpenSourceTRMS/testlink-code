@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/01/17 21:22:45 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/02/08 08:22:58 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -18,9 +18,9 @@
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
  *
  *
+ * 20080207 - needles - added notation for Seapine's TestTrackPro
  * 20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
- * 20070304 - franciscom
- * 1. added new method checkBugID_existence()
+ * 20070304 - franciscom - added new method checkBugID_existence()
  *
  *
 **/
@@ -37,6 +37,7 @@ $configFiles = array(
 					'TRACKPLUS' => 'trackplus.cfg.php',
 					'EVENTUM' => 'eventum.cfg.php',
 					'TRAC' => 'trac.cfg.php',
+					'SEAPINE' => 'seapine.cfg.php'
 				);
 //This holds the interface defintion file names for the bugtracking interfaces
 //located in the lib/bugtracking diectory
@@ -47,6 +48,7 @@ $interfaceFiles = array(
 					'TRACKPLUS' => 'int_trackplus.php',
 					'EVENTUM' => 'int_eventum.php',
 					'TRAC' => 'int_trac.php',
+					'SEAPINE' => 'int_seapine.php'
 				);
 
 				

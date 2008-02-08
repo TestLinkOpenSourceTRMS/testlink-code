@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.157 $
- * @modified $Date: 2008/02/08 08:26:10 $ by $Author: franciscom $
+ * @version $Revision: 1.158 $
+ * @modified $Date: 2008/02/08 10:09:05 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -16,48 +16,49 @@
  * variables you want change.
  *-----------------------------------------------------------------------------
  *
- * Revisions:
- *           20080124 - franciscom - $g_dashboard_precision
- *           20080118 - franciscom - $g_api_id_format
- * 			     20081011 - asielb	   - $g_api_ui_show
- *           20080110 - franciscom - $g_tree_show_testcase_id
- *           20080109 - franciscom - $g_sort_table_engine
- *           20080105 - franciscom - $g_testsuite_template
- *           20080102 - franciscom - new default for $g_log_path
- *           20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
- *                                   $g_exec_cfg->enable_tree_colouring;
+ * Rev:
+ *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
+ *     20080124 - franciscom - $g_dashboard_precision
+ *     20080118 - franciscom - $g_api_id_format
+ * 		 20081011 - asielb	   - $g_api_ui_show
+ *     20080110 - franciscom - $g_tree_show_testcase_id
+ *     20080109 - franciscom - $g_sort_table_engine
+ *     20080105 - franciscom - $g_testsuite_template
+ *     20080102 - franciscom - new default for $g_log_path
+ *     20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
+ *                             $g_exec_cfg->enable_tree_colouring;
  *
  *
- *           20071227 - franciscom - now default is theme_m2
- *           20071130 - franciscom - $g_gui->webeditor (work in progress)
- *           20071113 - franciscom - $g_exec_cfg->show_history_all_builds
- *           20071112 - franciscom - config changes due to upgrade of Smarty
- *           20071106 - franciscom - BUGID 1165 - $g_testcase_template
+ *     20071227 - franciscom - now default is theme_m2
+ *     20071130 - franciscom - $g_gui->webeditor (work in progress)
+ *     20071113 - franciscom - $g_exec_cfg->show_history_all_builds
+ *     20071112 - franciscom - config changes due to upgrade of Smarty
+ *     20071106 - franciscom - BUGID 1165 - $g_testcase_template
  *
- *           20071104 - franciscom - $g_exec_cfg->enable_test_automation
- *                                   $g_gui->tprojects_combo_order_by (BUGID 498)
- *           20071006 - franciscom - $g_use_ext_js_library
- *           20070930 - franciscom - BUGID 1086 - configure order by in attachment
- *           20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
- *           20070819 - franciscom - $g_default_roleid
- *           20070706 - franciscom - $g_exec_cfg->user_filter_default
- *           20070706 - franciscom - $g_exec_cfg->view_mode->tester
- *                                   $g_exec_cfg->exec_mode->tester
+ *     20071104 - franciscom - $g_exec_cfg->enable_test_automation
+ *                             $g_gui->tprojects_combo_order_by (BUGID 498)
+ *     20071006 - franciscom - $g_use_ext_js_library
+ *     20070930 - franciscom - BUGID 1086 - configure order by in attachment
+ *     20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
+ *     20070819 - franciscom - $g_default_roleid
+ *     20070706 - franciscom - $g_exec_cfg->user_filter_default
+ *     20070706 - franciscom - $g_exec_cfg->view_mode->tester
+ *                             $g_exec_cfg->exec_mode->tester
  *
- *           20070523 - franciscom - $g_user_login_valid_regex
- *           20070523 - franciscom - $g_main_menu_item_bullet_img
- *           20070505 - franciscom - following mantis bug tracking style, if file
- *                                   custom_config.inc.php exists, il will be included
- *                                   allowing users to customize TL configurations
- *                                   managed using global variables, without need
- *                                   of changing this file.
- *                                   
- *           20070429 - franciscom - added contribution by Seweryn Plywaczyk
- *                                   text area custom field
+ *     20070523 - franciscom - $g_user_login_valid_regex
+ *     20070523 - franciscom - $g_main_menu_item_bullet_img
+ *     20070505 - franciscom - following mantis bug tracking style, if file
+ *                             custom_config.inc.php exists, il will be included
+ *                             allowing users to customize TL configurations
+ *                             managed using global variables, without need
+ *                             of changing this file.
+ *                             
+ *     20070429 - franciscom - added contribution by Seweryn Plywaczyk
+ *                             text area custom field
  *
- *           20070415 - franciscom -  added config for drag and drop feature
- *           20070301 - franciscom - 
- *           BUGID 695 - $g_user_self_signup (fawel contribute)
+ *     20070415 - franciscom -  added config for drag and drop feature
+ *     20070301 - franciscom - 
+ *     BUGID 695 - $g_user_self_signup (fawel contribute)
  *
  *-----------------------------------------------------------------------------
  **/

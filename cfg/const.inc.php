@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2008/01/17 02:06:54 $ by $Author: tosikawa $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2008/02/10 22:42:48 $ by $Author: havlat $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -117,8 +117,9 @@ define('TL_LOCALIZE_TAG',"LOCALIZE: ");
 //           NOT by the order of the elements in this array.
 //
 $g_locales = array(	
-	'zh_CN' => 'Chinese Simplified',
 	'en_GB' => 'English (UK)',
+	'zh_CN' => 'Chinese Simplified',
+	'cs_CZ' => 'Czech',
 	'en_US' => 'English (US)',
 	'fr_FR' => 'Fran&ccedil;ais',
 	'de_DE' => 'German',
@@ -140,21 +141,23 @@ $g_timestamp_format = "%d/%m/%Y %H:%M:%S";
 
 $g_locales_date_format = array(
 	'en_GB' => "%d/%m/%Y",
+	'cs_CZ' => "%d.%m.%Y",
 	'en_US' => "%m/%d/%Y",
 	'it_IT' => "%d/%m/%Y",
 	'es_AR' => "%d/%m/%Y",
 	'es_ES' => "%d/%m/%Y",
 	'de_DE' => "%d.%m.%Y",
-	'pl_PL' => "%d.%m.%Y",
 	'fr_FR' => "%d/%m/%Y",
+	'ja_JP' => "%Y/%m/%d",
+	'pl_PL' => "%d.%m.%Y",
 	'pt_BR' => "%d/%m/%Y",
 	'ru_RU' => "%d/%m/%Y",
-	'zh_CN' => "%Y��%m��%d��",
-	'ja_JP' => "%Y/%m/%d"
+	'zh_CN' => "%Y��%m��%d��"
 ); 
 
 $g_locales_timestamp_format = array(
 	'en_GB' => "%d/%m/%Y %H:%M:%S",
+	'cs_CZ' => "%d.%m.%Y %H:%M:%S",
 	'en_US' => "%m/%d/%Y %H:%M:%S",
 	'it_IT' => "%d/%m/%Y %H:%M:%S",
 	'es_AR' => "%d/%m/%Y %H:%M:%S",
@@ -171,6 +174,7 @@ $g_locales_timestamp_format = array(
 // for smarty html_select_date custom function
 $g_locales_html_select_date_field_order = array(
 	'en_GB' => "dmY",
+	'cs_CZ' => "dmY",
 	'en_US' => "mdY",
 	'it_IT' => "dmY",
 	'es_AR' => "dmY",

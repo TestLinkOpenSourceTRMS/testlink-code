@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.18 2008/01/30 17:49:40 schlundus Exp $
+$Id: inc_update.tpl,v 1.19 2008/02/10 11:05:04 franciscom Exp $
 Purpose: show message after an SQL operation
 *}
 {* 
@@ -15,21 +15,21 @@ Purpose: show message after an SQL operation
             the localized strings file, to give a localized feedback
   $feedback_type:
                  used to managed different types of message types.
-                 If empty, the traditional message will be displayed.
-                 You can see a different effect selecting "soft".
+                 
 
   $user_feedback
   
 *}
 
 {if $user_feedback neq ''}
-
     {if $feedback_type eq "soft"}
     	<div class="warning_{$feedback_type}">	
   	{else}
      <div class="user_feedback">
   	 {/if}
-       <p>{$user_feedback|escape}</p>
+		{foreach from=$user_feedback item=msg}
+			<p>{$msg|escape}</p>
+		{/foreach}
      </div>
 
 {else}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/02/04 14:58:18 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/02/10 11:05:54 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,6 +14,7 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
+ * 20080210 - franciscom - increased details on logAudit Messages
  * 20080203 - franciscom - fixed bug on active management
  * 20080112 - franciscom - adding testcase prefix management
 **/
@@ -32,7 +33,13 @@ $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojec
 // Important: if != 'no' refresh of navbar frame is done
 $action = 'no';
 $template = null;
-$ui = array('doActionValue' => '', 'buttonValue' => '', 'caption' => '');
+
+$ui->doActionValue='';
+$ui->buttonValue='';
+$ui->caption='';
+$ui->main_descr=lang_get('title_testproject_management');
+
+
 $user_feedback ='';
 $reloadType = 'none';
 
@@ -49,10 +56,10 @@ $status_ok = 1;
 switch($args->doAction)
 {
 	case 'create':
-		$ui = array();
-		$ui['doActionValue'] = 'doCreate';
-		$ui['buttonValue'] = lang_get('btn_create');
-		$ui['caption'] = lang_get('caption_new_tproject');
+		$ui->doActionValue = 'doCreate';
+		$ui->buttonValue = lang_get('btn_create');
+		$ui->caption = lang_get('caption_new_tproject');
+
 		$found = 'yes';
 		$template = $default_template;
 		$args->active = 1;
@@ -71,15 +78,14 @@ switch($args->doAction)
 		if($op->status_ok)
 		{
 			$template = null;
-			logAuditEvent(TLS("audit_testproject_created",$args->tprojectName),"CREATE",$op->id,"testprojects");
 		}
 		else
 		{
 			$user_feedback = $op->msg; 
 			$status_ok = 0;
-			$ui['doActionValue'] = 'doCreate';
-			$ui['buttonValue'] = lang_get('btn_create');
-			$ui['caption'] = lang_get('caption_new_tproject');
+			$ui->doActionValue = 'doCreate';
+			$ui->buttonValue = lang_get('btn_create');
+			$ui->caption = lang_get('caption_new_tproject');
 		} 
 		break;
 
@@ -89,7 +95,6 @@ switch($args->doAction)
 		$op = doUpdate($args,$tproject_mgr);
 		if($op->status_ok)
 		{
-			logAuditEvent(TLS("audit_testproject_saved",$args->tprojectName),"CREATE",$args->tprojectID,"testprojects");
 			$template = null;
 			if($session_tproject_id == $args->tprojectID)
 				$reloadType = 'reloadNavBar';
@@ -98,6 +103,9 @@ switch($args->doAction)
 		{
 			$user_feedback = $op->msg; 
 			$status_ok = 0;
+ 	    $ui->doActionValue = 'doUpdate';
+	    $ui->buttonValue = lang_get('btn_save');
+	    $ui->caption = sprintf(lang_get('caption_edit_tproject'),$argsObj->tprojectName);
 		} 
 		break;
 
@@ -143,12 +151,15 @@ switch($args->doAction)
     case "ErrorOnAction":
     default:
         $of->Value = $args->notes;
-        
+
+        foreach($ui as $prop => $value)
+        {
+            $smarty->assign($prop,$value);
+        }
+       
         $smarty->assign('api_ui_show',$g_api_ui_show);
-        $smarty->assign('doActionValue',$ui['doActionValue']);
-        $smarty->assign('buttonValue',$ui['buttonValue']);
-        $smarty->assign('caption',$ui['caption']);
         $smarty->assign('user_feedback', $user_feedback);
+        $smarty->assign('feedback_type', 'ultrasoft');
         $smarty->assign('id', $args->tprojectID);
         $smarty->assign('name', $args->tprojectName);
         $smarty->assign('active', $args->active);
@@ -185,7 +196,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
-		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
+		$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
 	}
 	
 	// $intval_keys = array('optReq' => 0, 'tprojectID' => 0);
@@ -233,43 +244,43 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 */
 function doCreate($argsObj,&$tprojectMgr)
 {
+    $key2get=array('status_ok','msg');
     $op->status_ok = 0;
     $op->template = '';
     $op->msg = '';  
-	$op->id = 0;
-
-	tLog('Project priority available = '. $argsObj->optPriority);
+	  $op->id = 0;
     
     $check_op = crossChecks($argsObj,$tprojectMgr);
-	if($check_op['status_ok'])
-	{
-		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color, 
-									 $argsObj->optReq, $argsObj->optPriority, 
-									 $argsObj->optAutomation, $argsObj->notes,
-									 $argsObj->active,$argsObj->tcasePrefix);
-		if (!$new_id)
-		{
-			$op->msg = lang_get('refer_to_log');
-		}
-		else
-		{
-			$op->status_ok = 1;
-			$op->template = 'projectView.tpl';	
-			$op->id = $new_id;
-		}	
-	}
-	else
-	{
-		 foreach($check_op['msg'] as $key => $msg)
-		 {
-			$op->msg .=  $msg . "<br>";   
-		 }
-	}
+    foreach($key2get as $key)
+    {
+        $op->$key=$check_op[$key];
+    }
+
+	  if($op->status_ok)
+	  {
+	  	$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$argsObj->optReq, 
+	  	                               $argsObj->optPriority,$argsObj->optAutomation,$argsObj->notes,
+	  								                 $argsObj->active,$argsObj->tcasePrefix);
+	  	if (!$new_id)
+	  	{
+	  		$op->msg = lang_get('refer_to_log');
+	  	}
+	  	else
+	  	{
+	  		$op->template = 'projectView.tpl';	
+	  		$op->id = $new_id;
+	  	}	
+	  }
+	  
+	  if( $op->status_ok )
+	  {
+	      logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");  
+	  }
     return $op;
 }
 
 /*
-  function: 
+  function: doUpdate
 
   args:
   
@@ -278,32 +289,53 @@ function doCreate($argsObj,&$tprojectMgr)
 */
 function doUpdate($argsObj,&$tprojectMgr)
 {
+    $key2get=array('status_ok','msg');
     $op->status_ok = 0;
     $op->msg = '';  
+    $op->template = '';
     
-    $check_op = $tprojectMgr->checkName($argsObj->tprojectName);
-    $op->msg = $check_op['msg'];
-
-	if ($check_op['status_ok'])
-	{
-		if (!$tprojectMgr->get_by_name($argsObj->tprojectName,"testprojects.id <> {$argsObj->tprojectID}"))
-		{
-			$op->msg = sprintf(lang_get('test_project_update_failed'),$argsObj->tprojectName);
-			if( $tprojectMgr->update($argsObj->tprojectID,$argsObj->tprojectName,$argsObj->color,
-									 $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation, 
-									 $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
+    $check_op = crossChecks($argsObj,$tprojectMgr);
+    foreach($key2get as $key)
+    {
+        $op->$key=$check_op[$key];
+    }
+	  
+	  if($op->status_ok)
+	  {
+	    $objChanges=identifyChanges($argsObj,$tprojectMgr);
+			if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),$argsObj->color,
+									             $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation, 
+									             $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
 			{
-				$op->msg = sprintf(lang_get('test_project_updated'),$argsObj->tprojectName);
-				$op->status_ok = 1;
+				$op->msg = '';
 				$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
-			}
-			
-		}
-		else
-			$op->msg = lang_get('error_product_name_duplicate');
-	}
-	return $op;
+				
+        if( !is_null($objChanges) )
+        {
+          if($objChanges->summary=='renamed')
+          {
+				      logAuditEvent(TLS("audit_testproject_renamed",
+				                        $objChanges->details->tprojectName['old'],$argsObj->tprojectName),
+				                        "UPDATE",$argsObj->tprojectID,"testprojects");
+          }
+          else
+          {
+              foreach($objChanges->details as $property => $value)
+              {
+				          logAuditEvent(TLS("audit_testproject_property_change", $argsObj->tprojectName,
+				                            $property,$value['old'],$value['new']),"UPDATE",
+				                            $argsObj->tprojectID,"testprojects");
+              }
+          }
+        } 
+        						
+				logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",
+				              $argsObj->tprojectID,"testprojects");
+		  }
+    }
+	  return $op;
 }
+
 
 /*
   function: edit
@@ -328,17 +360,19 @@ function edit(&$argsObj,&$tprojectMgr)
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
-
-	$ui = array(); 
-	$ui['doActionValue'] = 'doUpdate';
-	$ui['buttonValue'] = lang_get('btn_save');
-	$ui['caption'] = lang_get('caption_edit_tproject');
+  $ui->main_descr=lang_get('title_testproject_management');
+	$ui->doActionValue = 'doUpdate';
+	$ui->buttonValue = lang_get('btn_save');
+	$ui->caption = sprintf(lang_get('caption_edit_tproject'),$argsObj->tprojectName);
 	return $ui;
 }
 
 /*
   function: crossChecks
-
+            do checks that are common to create and update operations
+            - name is valid ?
+            - name already exists ?
+            - prefix already exits ?
   args:
   
   returns: - 
@@ -354,7 +388,7 @@ function crossChecks($argsObj,&$tprojectMgr)
     $check_op['status_ok'] = $op['status_ok'];
     
     if($argsObj->doAction == 'doUpdate')
-		$updateAdditionalSQL = "testprojects.id <> {$argsObj->tprojectID}";
+		    $updateAdditionalSQL = "testprojects.id <> {$argsObj->tprojectID}";
    
     if($check_op['status_ok'])
     {
@@ -365,7 +399,7 @@ function crossChecks($argsObj,&$tprojectMgr)
 		}
 
 		$sql = "SELECT id FROM testprojects " .
-			 "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+			     "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
 		if(!is_null($updateAdditionalSQL))
 			$sql .= " AND {$updateAdditionalSQL} "; 
 		   
@@ -380,4 +414,61 @@ function crossChecks($argsObj,&$tprojectMgr)
          $check_op['msg'][] = $op['msg'];
     return $check_op;
 }
+
+
+/*
+  function: identifyChanges
+            make comparison between old and new values
+
+  args:
+  
+  returns: null: if nothing has been changed 
+           object with following properties:
+           summary: takes value 'renamed' or ''
+           details: object where exists a property for every value that has changed
+                    property value is an map with 'old', 'new' keys holding old and new values
+                    
+           Example:
+           prefix has been changed
+           
+           obj->summary=''
+           obj->details->tcasePrefix('old'=>'FFX', 'new' => 'UIL6')
+                    
+
+*/
+function identifyChanges($newObjData,&$tprojectMgr)
+{
+    $changes=null;
+    $oldObjData=$tprojectMgr->get_by_id($newObjData->tprojectID);
+    $keyMappings=array('tprojectName' => 'name', 'tcasePrefix' => 'prefix',
+                       'optReq' => 'option_reqs', 'optPriority' => 'option_priority',
+                       'optAutomation' => 'option_automation');
+                       
+    foreach($newObjData as $property => $value)
+    {
+        $mappedKey=isset($keyMappings[$property]) ? $keyMappings[$property] : $property;
+        if( array_key_exists($mappedKey,$oldObjData) )
+        {
+            if( $value != $oldObjData[$mappedKey])
+            {
+                $changes->details->$property=array('old' => $oldObjData[$mappedKey], 'new' => $value);
+            }
+        }
+    }
+    
+    if( !is_null($changes) )
+    {
+        $changes->summary='';
+        foreach($changes->details as $property => $value)
+        {
+            if($property=='tprojectName')
+            {
+                $changes->summary='renamed';
+                break;  
+            }  
+        }
+    }
+    return $changes;
+}
+
 ?>

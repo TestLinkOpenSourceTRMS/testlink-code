@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.9 2008/01/19 17:12:47 franciscom Exp $
+$Id: projectEdit.tpl,v 1.10 2008/02/10 11:05:06 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -65,21 +65,17 @@ function validateForm(f)
 {/literal}
 </head>
 
-
-
 <body>
-<h1>{$labels.title_testproject_management}
-{if $action != "delete"} - {$name|escape}{/if}
-</h1>
+<h1>{$main_descr|escape}</h1>
 <div class="workBack">
 
 {if $user_feedback != ''}
-  {include file="inc_update.tpl" result=$sqlResult item="product" name=$name user_feedback=$user_feedback}
+  {include file="inc_update.tpl" user_feedback=$user_feedback feedback_type=$feedback_type}
 {/if}	
 
 	{* edit product form *}
 	{if $found == "yes"}
-		<h2>{$caption}{$name|escape}</h2>
+		<h2>{$caption|escape}</h2>
 		<div>
 		<form name="edit_testproject" id="edit_testproject"
 		      method="post" action="{$managerURL}"

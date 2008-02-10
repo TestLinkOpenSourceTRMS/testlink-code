@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.9 $
-* @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
+* @version $Revision: 1.10 $
+* @modified $Date: 2008/02/10 18:45:34 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -120,6 +120,7 @@ $smarty->assign('userData', $user);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display($template_dir . $default_template);
+
 
 function init_args($get_hash, $post_hash)
 {

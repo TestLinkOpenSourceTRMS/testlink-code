@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.13 $
-* @modified $Date: 2008/02/04 19:41:36 $
+* @version $Revision: 1.14 $
+* @modified $Date: 2008/02/10 18:45:34 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -19,73 +19,58 @@ testlinkInitPage($db);
 $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-$_REQUEST = strings_stripSlashes($_REQUEST);
-$id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-$first = isset($_REQUEST['first']) ? $_REQUEST['first'] : null;
-$last = isset($_REQUEST['last']) ? $_REQUEST['last'] : null;
-$email = isset($_REQUEST['email']) ? $_REQUEST['email'] : null;
-$locale = isset($_REQUEST['locale']) ? $_REQUEST['locale'] : null;
-$old = isset($_REQUEST['old']) ? $_REQUEST['old'] : null;
-$new = isset($_REQUEST['new1']) ? $_REQUEST['new1'] : null;
-$bEdit = isset($_REQUEST['editUser']) ? 1 : 0;
-$bGenApi = isset($_REQUEST['genApi']) ? 1 : 0;
-$bChangePwd = isset($_REQUEST['changePasswd']) ? 1 : 0;
-$userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0; 
+$args=init_args();
 
-$user = new tlUser($userID);
+$user = new tlUser($args->userID);
 $user->readFromDB($db);
-$APIKey = new APIKey();
 
-$auditMsg = null;
-$updateResult = null;
-$user_feedback = null;
+$op->auditMsg = null;
+$op->user_feedback = null;
+$doUpdate=0;
 
-if ($bEdit)
+$op->status=tl::OK;
+
+switch( $args->doAction)
 {
-	$user->firstName = $first;
-	$user->lastName = $last;
-	$user->emailAddress = $email;
-	$user->locale = $locale;
-	$updateResult = tl::OK;
-	$auditMsg = "audit_user_saved";
-	$user_feedback = lang_get('result_user_changed');
+    case 'editUser':
+    $doUpdate=1;
+    foreach($args->user as $key => $value)
+    {
+        $user->$key=$value;      
+    }    
+	  $op->status = tl::OK;
+	  $op->auditMsg = "audit_user_saved";
+	  $op->user_feedback = lang_get('result_user_changed');
+    break;  
+
+    case 'changePassword':
+    $op=changePassword($args,$user);
+    break;
+    
+    case 'genApiKey':
+    $op=generateApiKey($args);
+    break;
 }
-else if ($bChangePwd)
+
+
+if( $doUpdate)
 {
-	$updateResult = $user->comparePassword($old);
-	if ($updateResult >= tl::OK)
+	$op->status = $user->writeToDB($db);
+	if ($op->status >= tl::OK)
 	{
-		$updateResult = $user->setPassword($new);
-		$user_feedback = lang_get('result_password_changed');
-	}
-	$auditMsg = "audit_user_pwd_saved";
-}
-else if ($bGenApi)
-{
-		$api_key = $APIKey->addKeyForUser($userID);
-		if (strlen($api_key))
-		{
-			logAuditEvent(TLS("audit_user_apikey_set"),"CREATE",$userID,"users");
-			$user_feedback = lang_get('result_apikey_create_ok');
-		}
-}
-
-if (($bEdit || $bChangePwd) && $updateResult >= tl::OK)
-{
-	$updateResult = $user->writeToDB($db);
-	if ($updateResult >= tl::OK)
-	{
-		logAuditEvent(TLS($auditMsg,$user->login),"SAVE",$user->dbID,"users");
+		logAuditEvent(TLS($op->auditMsg,$user->login),"SAVE",$user->dbID,"users");
 		$_SESSION['currentUser'] = $user;
-		setUserSession($db,$user->login, $userID, $user->globalRoleID, $user->emailAddress, $user->locale);
+		setUserSession($db,$user->login, $args->userID, $user->globalRoleID, $user->emailAddress, $user->locale);
 	}
 }
-$failedLogins = $g_tlLogger->getAuditEventsFor($userID,"users","LOGIN_FAILED",10);
-$successfulLogins = $g_tlLogger->getAuditEventsFor($userID,"users","LOGIN",10);
 
-$msg = null;
-if ($updateResult)
-	$msg = getUserErrorMessage($updateResult);
+$loginHistory->failed = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN_FAILED",10);
+$loginHistory->ok = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN",10);
+
+
+if ($op->status != tl::OK)
+	$op->user_feedback = getUserErrorMessage($op->status);
+	
 $user->readFromDB($db);
 
 // set a string if not generated key yet
@@ -95,11 +80,91 @@ if (null == $user->userApiKey)
 $smarty = new TLSmarty();
 $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('user',$user);
-$smarty->assign('msg', $msg);
-$smarty->assign('failedLogins', $failedLogins);
-$smarty->assign('successfulLogins', $successfulLogins);
-$smarty->assign('update_title_bar', $bEdit);
+$smarty->assign('loginHistory', $loginHistory);
 $smarty->assign('api_ui_show', $g_api_ui_show);
-$smarty->assign('user_feedback', $user_feedback);
+$smarty->assign('user_feedback', $op->user_feedback);
 $smarty->display($template_dir . $default_template);
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    
+    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+
+    $key2loop=array('firstName','lastName','emailAddress','locale');
+    foreach($key2loop as $key)
+    {
+       $args->user->$key=isset($_REQUEST[$key]) ? trim($_REQUEST[$key]) : null;
+    }
+    
+    $args->oldpassword = isset($_REQUEST['oldpassword']) ? $_REQUEST['oldpassword'] : null;
+    $args->newpassword = isset($_REQUEST['newpassword']) ? $_REQUEST['newpassword'] : null;
+    
+    $args->doAction=null;
+    $key2loop=array('editUser','genApiKey','changePassword');
+    foreach($key2loop as $key)
+    {
+       if( isset($_REQUEST[$key]) )
+       {
+           $args->doAction=$key;
+           break;
+       }
+    }
+   
+    $args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0; 
+    return $args; 
+}
+
+/*
+  function: changePassword
+
+  args :
+  
+  returns: 
+
+*/
+function changePassword(&$argsObj,&$userMgr)
+{
+    $op->status=$userMgr->comparePassword($argsObj->oldpassword);  
+	  if ($op->status >= tl::OK)
+	  {
+		  $userMgr->setPassword($args->newpassword);
+		  $op->user_feedback = lang_get('result_password_changed');
+	    $op->auditMsg = "audit_user_pwd_saved";
+	  }
+    return $op;
+}
+
+/*
+  function: changePassword
+
+  args :
+  
+  returns: 
+
+*/
+function generateApiKey(&$argsObj)
+{
+    $op->status=tl::OK;
+    $op->user_feedback=null;
+    
+    $APIKey = new APIKey();
+    $api_key = $APIKey->addKeyForUser($argsObj->userID);
+		if (strlen($api_key))
+		{
+			logAuditEvent(TLS("audit_user_apikey_set"),"CREATE",$argsObj->userID,"users");
+			$op->user_feedback = lang_get('result_apikey_create_ok');
+		}
+    return $op;   
+}
+
 ?>

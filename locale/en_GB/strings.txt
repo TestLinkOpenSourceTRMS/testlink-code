@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.267 $
- * @modified $Date: 2008/02/10 11:09:36 $ $Author: franciscom $
+ * @version $Revision: 1.268 $
+ * @modified $Date: 2008/02/10 18:47:45 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1307,6 +1307,7 @@ $TLS_audit_last_failed_logins = "Last failed logins";
 $TLS_result_password_changed = "Your password was changed succesfully";
 $TLS_result_apikey_create_ok = "New API key was generated";
 $TLS_result_user_changed = "Personal data changed";
+$TLS_empty_old_passwd = "Empty Old Password. Please enter your Old Password";
 
 
 // gui/templates/usersassign.tpl
@@ -1531,7 +1532,7 @@ $TLS_mgt_testplan_create = "Test Plan create/edit";
 $TLS_error_creating_req_spec = "Error while creating Requirement Specification document";
 $TLS_info_product_name_empty = "Empty name is not possible.";
 $TLS_keyword_already_exists = "This keyword already exists";
-$TLS_string_contains_bad_chars = "The string contains bad chars which cannot be used";
+$TLS_string_contains_bad_chars = "Name contains bad chars which cannot be used";
 $TLS_warning_duplicate_req_title = "There's already a requirement with this title!";
 
 

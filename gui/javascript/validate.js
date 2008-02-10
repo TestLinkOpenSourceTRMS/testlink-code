@@ -1,7 +1,9 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: validate.js,v 1.3 2006/12/31 16:19:27 franciscom Exp $ 
+// $Id: validate.js,v 1.4 2008/02/10 18:44:21 franciscom Exp $ 
 //
 // Functions for validation of input on client side
+//
+// rev: 20080210 - franciscom - validatePassword() refactoring
 //
 // 20061228 - franciscom - added function get from Eventum Open Source Project
 //
@@ -34,21 +36,16 @@ function valTextLength(fieldName, maxLength,  minLength)
 
 
 // Validate two values of a new password
-function validatePassword(form)
+function validatePassword(newpassword,newpassword_confirm)
 {
-	if (form.new1.value == "")
+  var oid_p=document.getElementById(newpassword);
+  var oid_pconfirm=document.getElementById(newpassword_confirm);
+
+	if (oid_p.value != oid_pconfirm.value)
 	{
-		alert(warning_empty_pwd);
-		form.new1.focus();
-		return false ;
-	}
-	
-	if (form.new1.value != form.new2.value)
-	{
-		alert(warning_different_pwd);
-		form.new1.value = "";
-		form.new2.value = "";
-		form.new1.focus();
+		oid_p.value = "";
+		oid_pconfirm.value = "";
+		oid_p.focus();
 		return false ;
 	}
 	

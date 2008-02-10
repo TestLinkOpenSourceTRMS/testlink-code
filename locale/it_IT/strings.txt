@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/11/03 07:37:19 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/02/10 18:47:45 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1704,4 +1704,65 @@ $TLS_error_creating_cf = "Impossibile creare il campo personalizzato!";
 $TLS_do_update = "aggiornato";
 $TLS_do_delete = "eliminato";
 $TLS_do_add = "creato";
+
+
+//audit log entries
+$TLS_audit_login_succeeded = "Login '{%1}' host '{%2}' ok";
+$TLS_audit_login_failed = "Login  '{%1}' host '{%2}' ko";
+$TLS_audit_role_saved = "Aggiornato Ruolo '{%1}'";
+$TLS_audit_role_created = "Create Ruolo '{%1}'";
+$TLS_audit_role_deleted = "Cancellato Ruolo '{%1}'";
+
+
+$TLS_audit_user_logout = "Logout  '{%1}'"; 
+$TLS_audit_users_self_signup = "Utente '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+$TLS_audit_cfield_created = "Custom field was created";
+$TLS_audit_cfield_saved = "Custom field was saved";
+$TLS_audit_cfield_deleted = "Custom field was deleted";
+$TLS_audit_cfield_assigned = "Custom field was assigned";
+$TLS_audit_cfield_unassigned = "Custom field was unassigned";
+$TLS_audit_cfield_display_order_changed = "Display order of the custom field was saved";
+$TLS_audit_cfield_activated = "Custom field was activated";
+$TLS_audit_cfield_deactivated = "Custom field was deactivated";
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated"; 
+$TLS_audit_user_saved = "Aggiornato utente '{%1}'";
+$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_user_assignment_changed = "User assignment was saved";
+$TLS_audit_user_created = "User '{%1}' was created";
+$TLS_audit_user_deleted = "User '{%1}' was deleted";
+$TLS_audit_testproject_created = "Test Project '{%1}' was created";
+$TLS_audit_testproject_renamed ="Test Project '{%1}' renamed to '{%2}'";
+$TLS_audit_testproject_property_change = "Test Project '{%1}' -  '{%2}' changed : " .
+                                         "old value '{%3}' - new value '{%4}'";
+$TLS_audit_testproject_saved = "Test Project '{%1}' was updated";
+$TLS_audit_testproject_deleted = "Test Project '{%1}' was deleted";
+$TLS_audit_keyword_created = "Keyword '{%1}' was created";
+$TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
+$TLS_audit_keyword_deleted = "A keyword was deleted";
+$TLS_audit_keyword_assigned_tc = "A keyword was assigned to the test case with id '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "A keyword was unassigned from a test case";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the test case with id '{%1}'";
+$TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+$TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
+$TLS_audit_attachment_created = "Attachment '{%1}' was created";
+$TLS_audit_req_spec_created = "Requirement specification '{%1}' was created";
+$TLS_audit_req_spec_saved = "Requirement specification '{%1}' was saved";
+$TLS_audit_req_spec_deleted = "Requirement specification '{%1}' was deleted";
+$TLS_audit_requirement_created = "Requirement '{%1}' was created";
+$TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
+$TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+$TLS_audit_build_created = "Build '{%1}' was created";
+$TLS_audit_build_saved = "Build '{%1}' was saved";
+$TLS_audit_build_deleted = "A build was deleted";
+$TLS_audit_testplan_deleted = "A Test Plan was deleted";
+$TLS_audit_testplan_saved = "Test Plan '{%1}' was saved";
+$TLS_audit_testplan_created = "Test Plan '{%1}' was created";
+$TLS_audit_milestone_deleted = "A milestone was deleted";
+$TLS_audit_milestone_created = "Milestone '{%1}' was created";
+$TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";
+$TLS_audit_tc_removed_from_testplan = "Test Case(s) '{%1}' were removed from Test Plan";
+
 ?>

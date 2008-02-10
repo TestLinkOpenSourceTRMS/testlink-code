@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/01/18 20:40:18 $ $Author: schlundus $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/02/10 18:45:34 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * 20071228 - franciscom - added getTestersForHtmlOptions() 
+ * rev : 20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
+ * 
  */
 require_once("common.php");
 require_once("user.class.php");
@@ -170,33 +171,43 @@ function getUserErrorMessage($code)
 	{
 		case tl::OK:
 			break;
+			
 		case tlUser::E_LOGINLENGTH:
 			$msg = lang_get('error_user_login_length_error');
 			break;
+			
 		case tlUser::E_EMAILLENGTH:
 			$msg = lang_get('empty_email_address');
 			break;
+			
 		case tlUser::E_NOTALLOWED:
 			$msg = lang_get('user_login_valid_regex');
 			break;
+			
 		case tlUser::E_FIRSTNAMELENGTH:
 			$msg = lang_get('empty_first_name');
 			break;
+			
 		case tlUser::E_LOGINALREADYEXISTS:
 			$msg = lang_get('user_name_exists');
 			break;
+			
 		case tlUser::E_LASTNAMELENGTH:
 			$msg = lang_get('empty_last_name');
 			break;
+			
 		case tlUser::E_PWDEMPTY:
 			$msg = lang_get('warning_empty_pwd');
 			break;
+			
 		case tlUser::E_PWDDONTMATCH:
-			$msg = lang_get('passwd_dont_match');
+			$msg = lang_get('wrong_old_password');
 			break;
+			
 		case tlUser::S_PWDMGTEXTERNAL	:
 			$msg = lang_get('password_mgmt_is_external');
 			break;
+			
 		case ERROR:
 		case tlUser::E_DBERROR:
 		default:

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/02/10 11:05:54 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/02/10 18:45:34 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -30,22 +30,15 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 // current testproject displayed on testproject combo.
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-// Important: if != 'no' refresh of navbar frame is done
-$action = 'no';
 $template = null;
-
 $ui->doActionValue='';
 $ui->buttonValue='';
 $ui->caption='';
-$ui->main_descr=lang_get('title_testproject_management');
-
-
 $user_feedback ='';
 $reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
-
 
 $of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
@@ -55,79 +48,42 @@ $status_ok = 1;
 
 switch($args->doAction)
 {
-	case 'create':
-		$ui->doActionValue = 'doCreate';
-		$ui->buttonValue = lang_get('btn_create');
-		$ui->caption = lang_get('caption_new_tproject');
-
-		$found = 'yes';
-		$template = $default_template;
-		$args->active = 1;
-		break;	 
-
-	case 'edit':
-		$ui = edit($args,$tproject_mgr);
-		$template = $default_template;
-		$found = 'yes';
-		break;
-
-	case 'doCreate':
-		$template = $default_template;
-		$action = "do_create";
-		$op = doCreate($args,$tproject_mgr);
-		if($op->status_ok)
-		{
-			$template = null;
-		}
-		else
-		{
-			$user_feedback = $op->msg; 
-			$status_ok = 0;
-			$ui->doActionValue = 'doCreate';
-			$ui->buttonValue = lang_get('btn_create');
-			$ui->caption = lang_get('caption_new_tproject');
-		} 
-		break;
-
-	case 'doUpdate':
-		$template = $default_template;
-		$action = "do_update";
-		$op = doUpdate($args,$tproject_mgr);
-		if($op->status_ok)
-		{
-			$template = null;
-			if($session_tproject_id == $args->tprojectID)
-				$reloadType = 'reloadNavBar';
-		}
-		else
-		{
-			$user_feedback = $op->msg; 
-			$status_ok = 0;
- 	    $ui->doActionValue = 'doUpdate';
-	    $ui->buttonValue = lang_get('btn_save');
-	    $ui->caption = sprintf(lang_get('caption_edit_tproject'),$argsObj->tprojectName);
-		} 
-		break;
-
-	case 'doDelete':
-		$op = $tproject_mgr->delete($args->tprojectID);
-		if ($op['status_ok'])
-		{
-			if($session_tproject_id == $args->tprojectID)
-				$reloadType = 'reloadNavBar';
-
-			$user_feedback = sprintf(lang_get('test_project_deleted'),$args->tprojectName);
-			logAuditEvent(TLS("audit_testproject_deleted",$args->tprojectName),"DELETE",$args->tprojectID,"testprojects");		
-		} 
-		else 
-		{
-			$user_feedback = lang_get('info_product_not_deleted_check_log') . ' ' . $op['msg'];
-			$status_ok = 0;
-		}
-		$action = 'delete';
-	break;
+    case 'create':
+    	$template = $default_template;
+      $ui=create($args);
+    	break;	 
+    
+    case 'edit':
+    	$template = $default_template;
+    	$ui = edit($args,$tproject_mgr);
+    	break;
+    
+    case 'doCreate':
+    	$op = doCreate($args,$tproject_mgr);
+    	$template= $op->status_ok ?  null : $default_template;
+    	$ui=$op->ui;
+    	$status_ok=$op->status_ok;
+    	$user_feedback = $op->msg;
+    	break;
+    
+    case 'doUpdate':
+    	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
+    	$template= $op->status_ok ?  null : $default_template;
+    	$ui=$op->ui;
+    	$status_ok=$op->status_ok;
+    	$user_feedback = $op->msg;
+    	$reloadType=$op->reloadType;
+      break;
+    
+    case 'doDelete':
+      $op = doDelete($args,$tproject_mgr,$session_tproject_id);
+    	$status_ok=$op->status_ok;
+    	$user_feedback = $op->msg;
+    	$reloadType=$op->reloadType;
+      break;
 }
 
+$ui->main_descr=lang_get('title_testproject_management');
 $smarty = new TLSmarty();
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
@@ -167,7 +123,6 @@ switch($args->doAction)
         $smarty->assign('optPriority', $args->optPriority);
         $smarty->assign('optAutomation', $args->optAutomation);
         $smarty->assign('tcasePrefix', $args->tcasePrefix);
-        $smarty->assign('action', $action);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('found', $found);
         $smarty->display($template_dir . $template);
@@ -235,7 +190,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 }
 
 /*
-  function: 
+  function: doCreate
 
   args:
   
@@ -246,9 +201,10 @@ function doCreate($argsObj,&$tprojectMgr)
 {
     $key2get=array('status_ok','msg');
     $op->status_ok = 0;
-    $op->template = '';
+    $op->template = null;
     $op->msg = '';  
 	  $op->id = 0;
+	  $op->ui=null;
     
     $check_op = crossChecks($argsObj,$tprojectMgr);
     foreach($key2get as $key)
@@ -276,6 +232,13 @@ function doCreate($argsObj,&$tprojectMgr)
 	  {
 	      logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");  
 	  }
+		else
+		{
+			$op->ui->doActionValue = 'doCreate';
+			$op->ui->buttonValue = lang_get('btn_create');
+			$op->ui->caption = lang_get('caption_new_tproject');
+		} 
+
     return $op;
 }
 
@@ -287,12 +250,17 @@ function doCreate($argsObj,&$tprojectMgr)
   returns: 
 
 */
-function doUpdate($argsObj,&$tprojectMgr)
+function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
     $key2get=array('status_ok','msg');
     $op->status_ok = 0;
     $op->msg = '';  
-    $op->template = '';
+    $op->template = null;
+    $op->reloadType = 'none';
+    $op->ui=null;
+    
+    $oldObjData=$tprojectMgr->get_by_id($argsObj->tprojectID);
+    $op->oldName=$oldObjData['name'];
     
     $check_op = crossChecks($argsObj,$tprojectMgr);
     foreach($key2get as $key)
@@ -302,7 +270,7 @@ function doUpdate($argsObj,&$tprojectMgr)
 	  
 	  if($op->status_ok)
 	  {
-	    $objChanges=identifyChanges($argsObj,$tprojectMgr);
+	    $objChanges=identifyChanges($argsObj,$oldObjData);
 			if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),$argsObj->color,
 									             $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation, 
 									             $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
@@ -328,11 +296,27 @@ function doUpdate($argsObj,&$tprojectMgr)
               }
           }
         } 
-        						
-				logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",
+      	logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",
 				              $argsObj->tprojectID,"testprojects");
 		  }
-    }
+      else
+      {
+           $op->status_ok=0;  
+      }						
+	  }
+  
+    if($op->status_ok)
+		{
+			if($sessionTprojectID == $argsObj->tprojectID)
+				$op->reloadType = 'reloadNavBar';
+		}
+		else
+		{
+ 	    $op->ui->doActionValue = 'doUpdate';
+	    $op->ui->buttonValue = lang_get('btn_save');
+	    $op->ui->caption = sprintf(lang_get('caption_edit_tproject'),$op->oldName);
+		} 
+    
 	  return $op;
 }
 
@@ -436,10 +420,9 @@ function crossChecks($argsObj,&$tprojectMgr)
                     
 
 */
-function identifyChanges($newObjData,&$tprojectMgr)
+function identifyChanges(&$newObjData,&$oldObjData)
 {
     $changes=null;
-    $oldObjData=$tprojectMgr->get_by_id($newObjData->tprojectID);
     $keyMappings=array('tprojectName' => 'name', 'tcasePrefix' => 'prefix',
                        'optReq' => 'option_reqs', 'optPriority' => 'option_priority',
                        'optAutomation' => 'option_automation');
@@ -469,6 +452,57 @@ function identifyChanges($newObjData,&$tprojectMgr)
         }
     }
     return $changes;
+}
+
+
+/*
+  function: create
+
+  args :
+  
+  returns: 
+
+*/
+function create(&$argsObj)
+{
+    $argsObj->active = 1;
+	  $gui->doActionValue = 'doCreate';
+		$gui->buttonValue = lang_get('btn_create');
+		$gui->caption = lang_get('caption_new_tproject');
+    
+    return $gui;
+}
+
+
+/*
+  function: doDelete
+
+  args :
+  
+  returns: 
+
+*/
+function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
+{
+    
+  	$ope_status = $tprojectMgr->delete($argsObj->tprojectID);
+		$op->status_ok=$ope_status['status_ok'];
+		$op->reloadType='none';
+		
+		if ($ope_status['status_ok'])
+		{
+			if($sessionTprojectID == $argsObj->tprojectID)
+				$op->reloadType = 'reloadNavBar';
+
+			$op->msg = sprintf(lang_get('test_project_deleted'),$argsObj->tprojectName);
+			logAuditEvent(TLS("audit_testproject_deleted",$argsObj->tprojectName),"DELETE",$argsObj->tprojectID,"testprojects");		
+		} 
+		else 
+		{
+			$op->msg = lang_get('info_product_not_deleted_check_log') . ' ' . $ope_status['msg'];
+		}
+ 
+    return $op;
 }
 
 ?>

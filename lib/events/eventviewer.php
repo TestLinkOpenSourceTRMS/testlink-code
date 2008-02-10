@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/02/07 22:02:41 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/02/10 14:55:08 $ by $Author: schlundus $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -52,16 +52,14 @@ $smarty->assign('startDate',$args->startDate);
 $smarty->assign('endDate',$args->endDate);
 $smarty->display($template_dir . $default_template);
 
-
-
 function init_args()
 {
-    $_REQUEST=strings_stripSlashes($_REQUEST);
+    $_REQUEST = strings_stripSlashes($_REQUEST);
     $nullable_keys = array('logLevel','startDate','endDate');
-	  foreach($nullable_keys as $value)
-	  {
-		    $args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
-	  }
+	foreach($nullable_keys as $value)
+	{
+		$args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
+	}
     return $args;
 }
 ?>

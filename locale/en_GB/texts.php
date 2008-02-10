@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: texts.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/01/11 00:54:33 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/02/10 23:30:01 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * Scope: 
@@ -91,24 +91,20 @@ case sensitive. Result include just test cases from actual Test Project.</p>
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['printTestSpec']	= "Print Test Specification"; //printTC.html
 $TLS_htmltext['printTestSpec'] 			= "<h2>Purpose:</h2>
-<p>This functionality allows the user to print Test Cases by either their
-Test Suites or for a whole Test Project or Test Plan.</p>
-
+<p>From here you can print a single test case, all the test cases within a test suite, 
+or all the test cases in a test project or plan.</p>
 <h2>Get Started:</h2>
-
 <ol>
-<li>Click on a required Test Suite, or Test cases to see all of the
-corresponding test cases below it. There will be also Test cases 
-from all sub Test Suites.</li>
-
-<li>The 'Print option' table in navigation pane allows to define a range and
-format of printed data. See <span class=\"help\" 
-onclick=\"javascript:open_popup('./printFilter.html');\">help</span> for more
-information.</li>
-
-<li>Use your browsers print functionality to actually print the test
-cases.<br />
- <i>Note: Make sure to only print the right frame.</i></li>
+<li>
+<p>Select the parts of the test cases you want to display, and then click on a test case, test suite, or the test project.
+A printable page will be displayed.</p>
+</li>
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want the information displayed as HTML or in a 
+Microsoft Word document. See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">help</span> for more information.</p>
+</li>
+<li><p>Use your browser's print functionality to actually print the information.<br />
+ <i>Note: Make sure to only print the right-hand frame.</i></p></li>
 </ol>";
 
 

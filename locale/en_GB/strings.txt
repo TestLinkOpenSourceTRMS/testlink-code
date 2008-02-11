@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.268 $
- * @modified $Date: 2008/02/10 18:47:45 $ $Author: franciscom $
+ * @version $Revision: 1.269 $
+ * @modified $Date: 2008/02/11 19:49:11 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1999,24 +1999,29 @@ $TLS_audit_cfield_unassigned = "Custom field was unassigned";
 $TLS_audit_cfield_display_order_changed = "Display order of the custom field was saved";
 $TLS_audit_cfield_activated = "Custom field was activated";
 $TLS_audit_cfield_deactivated = "Custom field was deactivated";
+
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated"; 
 $TLS_audit_user_saved = "User '{%1}' was saved";
 $TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
-$TLS_audit_user_assignment_changed = "User assignment was saved";
+$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned a role to the Test Project '{%2}'";
+$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned a role to the Test Plan '{%2}'";
+$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan with id '{%1}'";
+$TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
 $TLS_audit_user_created = "User '{%1}' was created";
 $TLS_audit_user_deleted = "User '{%1}' was deleted";
+
+
 $TLS_audit_testproject_created = "Test Project '{%1}' was created";
-$TLS_audit_testproject_renamed ="Test Project '{%1}' renamed to '{%2}'";
-$TLS_audit_testproject_property_change = "Test Project '{%1}' -  '{%2}' changed : " .
-                                         "old value '{%3}' - new value '{%4}'";
-$TLS_audit_testproject_saved = "Test Project '{%1}' was updated";
+$TLS_audit_testproject_saved = "Test Project '{%1}' was saved";
 $TLS_audit_testproject_deleted = "Test Project '{%1}' was deleted";
+
 $TLS_audit_keyword_created = "Keyword '{%1}' was created";
 $TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
-$TLS_audit_keyword_deleted = "A keyword was deleted";
-$TLS_audit_keyword_assigned_tc = "A keyword was assigned to the test case with id '{%2}'";
-$TLS_audit_keyword_assignment_removed_tc = "A keyword was unassigned from a test case";
+$TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the test case with id '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from test case '{%2}'";
 $TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the test case with id '{%1}'";
+
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
 $TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
 $TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
@@ -2045,11 +2050,11 @@ $TLS_th_timestamp = "Timestamp";
 $TLS_th_activity = "Activity";
 $TLS_label_startdate = "Start date";
 $TLS_label_enddate = "End date";
-$TLS_log_level_AUDIT = "AUDIT";
-$TLS_log_level_WARNING = "WARNING";
-$TLS_log_level_INFO = "INFO";
-$TLS_log_level_ERROR = "ERROR";
-$TLS_log_level_DEBUG = "DEBUG";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
 $TLS_event_viewer = "Eventviewer";
 $TLS_th_session_info = "Session information";
 $TLS_th_sessionID = "Session ID";

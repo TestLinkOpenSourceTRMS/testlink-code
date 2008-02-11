@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2008/02/04 19:41:35 $ $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2008/02/11 19:49:11 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -935,7 +935,14 @@ function copy_test_urgency($id,$new_tplan_id)
 function addUserRole($userID,$testPlanID,$roleID)
 {
 	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
-	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+	if ($this->db->exec_query($query))
+	{
+		$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+		if ($user)
+			logAuditEvent(TLS("audit_users_roles_added_testplan",$user->getDisplayName(),$testPlanID),"ASSIGN",$testPlanID,"testplans");
+		return tl::OK;
+	}
+	return tl::ERROR;
 }
 
 /**
@@ -947,7 +954,13 @@ function addUserRole($userID,$testPlanID,$roleID)
 function deleteUserRoles($testPlanID)
 {
 	$query = "DELETE FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
-	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+	if ($this->db->exec_query($query))
+	{
+		logAuditEvent(TLS("audit_all_user_roles_removed_testplan",$testPlanID),"ASSIGN",$testPlanID,"testplans");
+		return tl::OK;
+	}
+	return tl::ERROR;
+	
 }
 
 /*

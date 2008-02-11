@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/02/10 18:45:34 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/02/11 19:49:11 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -14,7 +14,6 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
- * 20080210 - franciscom - increased details on logAudit Messages
  * 20080203 - franciscom - fixed bug on active management
  * 20080112 - franciscom - adding testcase prefix management
 **/
@@ -268,43 +267,19 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         $op->$key=$check_op[$key];
     }
 	  
-	  if($op->status_ok)
-	  {
-	    $objChanges=identifyChanges($argsObj,$oldObjData);
+	 if($op->status_ok)
+	 {
 			if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),$argsObj->color,
 									             $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation, 
 									             $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
 			{
 				$op->msg = '';
-				$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
-				
-        if( !is_null($objChanges) )
-        {
-          if($objChanges->summary=='renamed')
-          {
-				      logAuditEvent(TLS("audit_testproject_renamed",
-				                        $objChanges->details->tprojectName['old'],$argsObj->tprojectName),
-				                        "UPDATE",$argsObj->tprojectID,"testprojects");
-          }
-          else
-          {
-              foreach($objChanges->details as $property => $value)
-              {
-				          logAuditEvent(TLS("audit_testproject_property_change", $argsObj->tprojectName,
-				                            $property,$value['old'],$value['new']),"UPDATE",
-				                            $argsObj->tprojectID,"testprojects");
-              }
-          }
-        } 
-      	logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",
-				              $argsObj->tprojectID,"testprojects");
-		  }
-      else
-      {
-           $op->status_ok=0;  
-      }						
-	  }
-  
+				$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);      
+				logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+	 		}
+			else
+				$op->status_ok=0;  
+	}
     if($op->status_ok)
 		{
 			if($sessionTprojectID == $argsObj->tprojectID)
@@ -398,62 +373,6 @@ function crossChecks($argsObj,&$tprojectMgr)
          $check_op['msg'][] = $op['msg'];
     return $check_op;
 }
-
-
-/*
-  function: identifyChanges
-            make comparison between old and new values
-
-  args:
-  
-  returns: null: if nothing has been changed 
-           object with following properties:
-           summary: takes value 'renamed' or ''
-           details: object where exists a property for every value that has changed
-                    property value is an map with 'old', 'new' keys holding old and new values
-                    
-           Example:
-           prefix has been changed
-           
-           obj->summary=''
-           obj->details->tcasePrefix('old'=>'FFX', 'new' => 'UIL6')
-                    
-
-*/
-function identifyChanges(&$newObjData,&$oldObjData)
-{
-    $changes=null;
-    $keyMappings=array('tprojectName' => 'name', 'tcasePrefix' => 'prefix',
-                       'optReq' => 'option_reqs', 'optPriority' => 'option_priority',
-                       'optAutomation' => 'option_automation');
-                       
-    foreach($newObjData as $property => $value)
-    {
-        $mappedKey=isset($keyMappings[$property]) ? $keyMappings[$property] : $property;
-        if( array_key_exists($mappedKey,$oldObjData) )
-        {
-            if( $value != $oldObjData[$mappedKey])
-            {
-                $changes->details->$property=array('old' => $oldObjData[$mappedKey], 'new' => $value);
-            }
-        }
-    }
-    
-    if( !is_null($changes) )
-    {
-        $changes->summary='';
-        foreach($changes->details as $property => $value)
-        {
-            if($property=='tprojectName')
-            {
-                $changes->summary='renamed';
-                break;  
-            }  
-        }
-    }
-    return $changes;
-}
-
 
 /*
   function: create

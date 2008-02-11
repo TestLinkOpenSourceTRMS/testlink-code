@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/02/07 21:05:27 $  $Author: schlundus $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/02/11 19:49:11 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -1141,7 +1141,12 @@ function count_testcases($id)
 function deleteUserRoles($tproject_id)
 {
 	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$tproject_id}";
-	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+	if ($this->db->exec_query($query))
+	{
+		logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$tproject_id),"ASSIGN",$tproject_id,"testprojects");
+		return tl::OK;
+	}
+	return tl::ERROR;
 }
 
 /**
@@ -1168,9 +1173,17 @@ function getUserRoleIDs($tproject_id)
  **/
 function addUserRole($userID,$tproject_id,$roleID)
 {
-	$query = " INSERT INTO user_testproject_roles " .
-	         " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
-	return ($this->db->exec_query($query) ? tl::OK : tl::ERROR);
+	$query = "INSERT INTO user_testproject_roles " .
+	         "(user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
+	if($this->db->exec_query($query))
+	{
+		$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+		if ($user)
+			logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),$tproject_id),"ASSIGN",$tproject_id,"testprojects");
+		return tl::OK;
+	}
+	
+	return tl::ERROR;
 }
 /*
   function: delete

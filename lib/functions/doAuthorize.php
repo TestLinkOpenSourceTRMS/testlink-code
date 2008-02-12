@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/01/30 19:52:23 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/02/12 20:53:05 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -28,8 +28,6 @@ require_once("roles.inc.php");
 function doAuthorize(&$db,$login,$pwd,&$msg)
 {
     $result = tl::ERROR;
-	$msg = 'wrong'; // default problem attribute value
-	
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
 	if (!is_null($pwd) && !is_null($login))
 	{

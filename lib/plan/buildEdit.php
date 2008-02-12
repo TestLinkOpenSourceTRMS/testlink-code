@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/02/04 14:58:17 $ $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/02/12 20:53:05 $ $Author: schlundus $
  *
  * rev :
  *       20071201 - franciscom - new web editor code
@@ -65,19 +65,20 @@ switch($args->do_action)
 		$button_value = lang_get('btn_create');  
 		break;
 	case 'do_delete':
+		$build = $build_mgr->get_by_id($args->build_id);
 		if (!$build_mgr->delete($args->build_id))
 			$user_feedback = lang_get("cannot_delete_build");
 		else
-			logAuditEvent(TLS("audit_build_deleted"),"DELETE",$args->build_id,"builds");
+			logAuditEvent(TLS("audit_build_deleted",$build['name']),"DELETE",$args->build_id,"builds");
 		break;
 	case 'do_update':
 		$of->Value = $args->notes;
-		$template = "buildNew.tpl";
+		$template = "buildEdit.tpl";
 		$status_ok = false;
 		if ($can_insert_or_update)
 		{
 			$user_feedback = lang_get("cannot_update_build");
-			$template = "buildNew.tpl";
+			$template = "buildEdit.tpl";
 			if ($build_mgr->update($args->build_id,$args->build_name,$args->notes,$args->is_active,$args->is_open))
 			{
 				$user_feedback = '';
@@ -101,12 +102,12 @@ switch($args->do_action)
 		break;
 	case 'do_create':
 		$of->Value = $args->notes;
-		$template = "buildNew.tpl";
+		$template = "buildEdit.tpl";
 		$status_ok = false;
 		if($can_insert_or_update)
 		{
 			$user_feedback = lang_get("cannot_add_build");
-			$template = "buildNew.tpl";
+			$template = "buildEdit.tpl";
 			$buildID = $build_mgr->create($args->tplan_id,$args->build_name,$args->notes,$args->is_active,$args->is_open);
 			if ($buildID)
 			{

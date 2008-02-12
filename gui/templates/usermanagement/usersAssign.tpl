@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.8 2008/01/22 18:00:06 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $ 
 
 rev:
     20070818 - franciscom
@@ -18,32 +18,9 @@ rev:
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>
 {assign var="umgmt" value="lib/usermanagement"}
-{* tabs *}
-<div class="tabMenu">
-{if $mgt_users == "yes"}
-	<span class="unselected"><a href="{$umgmt}/usersEdit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="{$umgmt}/usersView.php">{lang_get s='menu_view_users'}</a></span>
-{/if}
-{if $role_management == "yes"}
-	<span class="unselected"><a href="{$umgmt}/rolesEdit.php">{lang_get s='menu_define_roles'}</a></span> 
-{/if}
-	<span class="unselected"><a href="{$umgmt}/rolesView.php">{lang_get s='menu_view_roles'}</a></span>
-	{if $feature == 'testproject'}
-		{if $tproject_user_role_assignment == "yes"}
-			<span class="selected">{lang_get s='menu_assign_testproject_roles'}</span> 
-		{/if}
-		{if $tp_user_role_assignment == "yes"}
-			<span class="unselected"><a href="{$umgmt}/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
-		{/if}
-	{else}
-		{if $tproject_user_role_assignment == "yes"}
-			<span class="unselected"><a href="{$umgmt}/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
-		{/if}
-		{if $tp_user_role_assignment == "yes"}
-			<span class="selected">{lang_get s='menu_assign_testplan_roles'}</span> 
-		{/if}
-	{/if}
-</div>
+
+{***** TABS *****}
+{include file="usermanagement/tabsmenu.tpl"}
 
 
 <div class="workBack">

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.8 2008/01/22 18:00:41 franciscom Exp $ 
+$Id: usersEdit.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -9,21 +9,29 @@ $Id: usersEdit.tpl,v 1.8 2008/01/22 18:00:41 franciscom Exp $
 {config_load file="input_dimensions.conf" section='login'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
+
+{lang_get var="labels"
+          s='warning_empty_login,warning_empty_first_name,warning,btn_save,
+             warning_empty_pwd,warning_different_pwd,empty_email_address,
+             title_user_mgmt,title_account_settings,menu_edit_user,menu_new_user,
+             menu_view_users,menu_define_roles,menu_view_roles,
+             menu_assign_testproject_roles,warning_empty_last_name,
+             menu_assign_testplan_roles,caption_user_details,
+             th_login,th_first_name,th_last_name,th_password,th_email,
+             th_role,th_locale,th_active,password_mgmt_is_external,
+             btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
 
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_login      = "{lang_get s='warning_empty_login'}";
-var warning_empty_first_name = "{lang_get s='warning_empty_first_name'}";
-var warning_empty_last_name  = "{lang_get s='warning_empty_last_name'}";
-
-var warning_empty_pwd = "{lang_get s='warning_empty_pwd'}";
-var warning_different_pwd = "{lang_get s='warning_different_pwd'}";
-var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
-var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
-var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
-var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
-var warning_empty_email = "{lang_get s='empty_email_address'}";
+var alert_box_title = "{$labels.warning}";
+var warning_empty_login      = "{$labels.warning_empty_login}";
+var warning_empty_first_name = "{$labels.warning_empty_first_name}";
+var warning_empty_last_name  = "{$labels.warning_empty_last_name}";
+var warning_empty_pwd = "{$labels.warning_empty_pwd}";
+var warning_different_pwd = "{$labels.warning_different_pwd}";
+var warning_empty_email = "{$labels.empty_email_address}";
 
 
 {literal}
@@ -31,22 +39,22 @@ function validateForm(f,check_password)
 {
   if (isWhitespace(f.login.value)) 
   {
-      alert(warning_empty_login);
+      alert_message(alert_box_title,warning_empty_login);
       selectField(f, 'login');
       return false;
   }
 
-  if (isWhitespace(f.first.value)) 
+  if (isWhitespace(f.firstName.value)) 
   {
-      alert(warning_empty_first_name);
-      selectField(f, 'first');
+      alert_message(alert_box_title,warning_empty_first_name);
+      selectField(f, 'firstName');
       return false;
   }
   
-  if (isWhitespace(f.last.value)) 
+  if (isWhitespace(f.lastName.value)) 
   {
-      alert(warning_empty_last_name);
-      selectField(f, 'last');
+      alert_message(alert_box_title,warning_empty_last_name);
+      selectField(f, 'lastName');
       return false;
   }
   
@@ -54,16 +62,16 @@ function validateForm(f,check_password)
   {
     if (isWhitespace(f.password.value)) 
     {
-        alert(warning_empty_pwd);
+        alert_message(alert_box_title,warning_empty_pwd);
         selectField(f, 'password');
         return false;
     }
   }
 
-  if (isWhitespace(f.email.value)) 
+  if (isWhitespace(f.emailAddress.value)) 
   {
-      alert(warning_empty_email);
-      selectField(f, 'email');
+      alert_message(alert_box_title,warning_empty_email);
+      selectField(f, 'emailAddress');
       return false;
   }
 
@@ -79,12 +87,14 @@ function validateForm(f,check_password)
 
 <body>
 
-<h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_account_settings'} </h1>
+<h1>{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
 
 {* This check allows us to understand if we are creating a new user *}
 {assign var="user_id" value=''}
 {assign var="user_login" value=''}
 {assign var="check_password" value=1}
+{assign var="operation" value="doCreate"}
+
 {if $external_password_mgmt eq 1 }
   {assign var="check_password" value=0}
 {/if}
@@ -93,30 +103,11 @@ function validateForm(f,check_password)
   {assign var="check_password" value=0}
   {assign var="user_id" value=$userData->dbID}
   {assign var="user_login" value=$userData->login}
+  {assign var="operation" value="doUpdate"}
 {/if}
-
 
 {***** TABS *****}
-<div class="tabMenu">
-{if $mgt_users == "yes"}
-  {if $userData neq null}
-	  <span class="selected">{lang_get s='menu_edit_user'}</span> 
-	{else}
-	  <span class="selected">{lang_get s='menu_new_user'}</span> 
-	{/if}
-	<span class="unselected"><a href="lib/usermanagement/usersView.php">{lang_get s='menu_view_users'}</a></span>
-{/if}
-{if $role_management == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/rolesEdit.php">{lang_get s='menu_define_roles'}</a></span> 
-{/if}	
-	<span class="unselected"><a href="lib/usermanagement/rolesView.php">{lang_get s='menu_view_roles'}</a></span> 
-{if $tproject_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
-{/if}	
-{if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
-{/if}
-</div>
+{include file="usermanagement/tabsmenu.tpl"}
 
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
@@ -129,11 +120,11 @@ function validateForm(f,check_password)
 
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
-  {lang_get s='caption_user_details'}
+  {$labels.caption_user_details}
   </legend>
 	<table class="common">
 		<tr>
-			<th style="background:none;">{lang_get s='th_login'}</th>
+			<th style="background:none;">{$labels.th_login}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 
 			{if $userData neq null}
 				disabled="disabled"
@@ -143,23 +134,23 @@ function validateForm(f,check_password)
 			 </td>
 		</tr>
 		<tr>
-			<th style="background:none;">{lang_get s='th_first_name'}</th>
-			<td><input type="text" name="first" value="{$userData->firstName|escape}" 
+			<th style="background:none;">{$labels.th_first_name}</th>
+			<td><input type="text" name="firstName" value="{$userData->firstName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
-			     {include file="error_icon.tpl" field="first"}
+			     {include file="error_icon.tpl" field="firstName"}
 			</td></tr>
 		<tr>
-			<th style="background:none;">{lang_get s='th_last_name'}</th>
-			<td><input type="text" name="last" value="{$userData->lastName|escape}" 
+			<th style="background:none;">{$labels.th_last_name}</th>
+			<td><input type="text" name="lastName" value="{$userData->lastName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
- 			     {include file="error_icon.tpl" field="last"}
+ 			     {include file="error_icon.tpl" field="lastName"}
 			     </td>
 		</tr>
 
 		{if $userData eq null}
 		     <tr>
 			    {if $external_password_mgmt eq 0 }
- 			      <th style="background:none;">{lang_get s='th_password'}</th>
+ 			      <th style="background:none;">{$labels.th_password}</th>
 		        <td><input type="password" id="password" name="password" 
 		                   size="{#PASSWD_SIZE#}" 
 		                   maxlength="{#PASSWD_SIZE#}" />
@@ -171,14 +162,14 @@ function validateForm(f,check_password)
    
    
 		<tr>
-			<th style="background:none;">{lang_get s='th_email'}</th>
-			<td><input type="text" id="email" name="email" value="{$userData->emailAddress|escape}" 
+			<th style="background:none;">{$labels.th_email}</th>
+			<td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
-          {include file="error_icon.tpl" field="email"}       
+          {include file="error_icon.tpl" field="emailAddress"}       
 			</td>
 		</tr>
 		<tr>
-			<th style="background:none;">{lang_get s='th_role'}</th>
+			<th style="background:none;">{$labels.th_role}</th>
 			<td>
 		  	   {assign var=selected_role value=$userData->globalRoleID}
 			  {if $userData->globalRoleID eq 0}
@@ -195,12 +186,8 @@ function validateForm(f,check_password)
 		</tr>
 
 		<tr>
-			<th style="background:none;">{lang_get s='th_locale'}</th>
+			<th style="background:none;">{$labels.th_locale}</th>
 			<td>		   
-        {* 20060425 - franciscom - better management of default locale 
-           Very important: the locale member that holds the value of TL_DEFAULT_LOCALE
-                           is declared in tlsmarty.inc.php
-        *}
         {assign var=selected_locale value=$userData->locale}
         {if $userData->locale|count_characters eq 0}
            {assign var=selected_locale value=$locale}
@@ -213,27 +200,22 @@ function validateForm(f,check_password)
 		</tr>
 
 		<tr>
-			<th style="background:none;">{lang_get s='th_active'}</th>
+			<th style="background:none;">{$labels.th_active}</th>
 			<td> 
 			  <input type="checkbox"  name="user_is_active" {if $userData->bActive eq 1} checked {/if} />
 			</td>
 		</tr>
 
     {if $external_password_mgmt eq 1 }
-      <td>{lang_get s='password_mgmt_is_external'}</td>    
+      <td>{$labels.password_mgmt_is_external}</td>    
     {/if}
 
 	</table>
 	
 	<div class="groupBtn">	
-	<input type="submit" name="do_update" 
-		     {if $userData neq null}	
-		        value="{lang_get s='btn_upd_user_data'}" />
-	       {else}
-		        value="{lang_get s='btn_add'}" />
-	       {/if}
-	
-		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
+	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}">
+	<input type="submit" name="do_update"   value="{$labels.btn_save}" />
+	<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
 	</div>
@@ -241,9 +223,11 @@ function validateForm(f,check_password)
 </form>
 
 {if $userData neq null and $external_password_mgmt eq 0}
-<br /><form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
-  	<input type="hidden" name="user_id" value="{$user_id}" />
-	<input type="submit" id="do_reset_password" name="do_reset_password" value="{lang_get s='button_reset_password'}" />
+<br />
+<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
+	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword">
+  <input type="hidden" name="user_id" value="{$user_id}" />
+	<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
 </form>
 {/if}
     

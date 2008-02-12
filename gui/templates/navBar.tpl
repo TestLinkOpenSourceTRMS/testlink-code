@@ -1,9 +1,10 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.27 2008/02/08 21:57:31 schlundus Exp $ 
+	$Id: navBar.tpl,v 1.28 2008/02/12 08:08:33 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
+	     20080211 - changes action for user management
 	     20070331 - BUGID 760 - added truncate to fix
 *}
 
@@ -11,6 +12,10 @@
 {include file="inc_head.tpl"}
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{assign var="action_users_view" value="lib/usermanagement/usersView.php"}
+{assign var="action_user_create" value="lib/usermanagement/usersEdit.php?doAction=create"}
+{assign var="action_user_mgmt" value=$action_users_view}
 
 <body>
 <div style="float:left;">{$logo}</div>
@@ -58,7 +63,7 @@
       		tabindex="3">{lang_get s='title_results'}</a> | 
    	{/if}	
    	{if $rightUserAdmin == "yes"}
-   	<a href="lib/usermanagement/usersEdit.php" target="mainframe" accesskey="u" 
+   	<a href="{$action_user_mgmt}" target="mainframe" accesskey="u" 
       		tabindex="4">{lang_get s='title_user_mgmt'}</a> | 
    	{/if}	
 	{if $rights_mgt_view_events eq "yes"}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.8 2008/01/10 07:51:15 franciscom Exp $ 
+$Id: rolesView.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev:
@@ -29,23 +29,8 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 <body {$body_onload}>
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_roles'}</h1>
 
-{* tabs *}
-<div class="tabMenu">
-{if $mgt_users == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersEdit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersView.php">{lang_get s='menu_view_users'}</a></span>
-{/if}
-{if $role_management == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/rolesEdit.php?doAction=create">{lang_get s='menu_define_roles'}</a></span> 
-{/if}
-	<span class="selected">{lang_get s='menu_view_roles'}</span>
-{if $tproject_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
-{/if}
-{if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
-{/if}
-</div>
+{***** TABS *****}
+{include file="usermanagement/tabsmenu.tpl"}
 
 {* show SQL result *}
 {include file="inc_update.tpl" result=$sqlResult item="Role" name=$role.role action="deleted"}

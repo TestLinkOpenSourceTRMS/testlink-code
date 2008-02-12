@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.6 2008/01/25 11:31:37 havlat Exp $
+$Id: usersView.tpl,v 1.7 2008/02/12 08:08:34 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -14,30 +14,23 @@ Purpose: smarty template - users overview
 </script>
 </head>
 
+{assign var="action_create_user" value="lib/usermanagement/usersEdit.php?doAction=create"}
+{assign var="action_assign_users" value="lib/usermanagement/usersAssign.php?feature=testproject"}
+{assign var="action_edit_user" value="lib/usermanagement/usersEdit.php?doAction=edit&user_id="}
+
+{lang_get var="labels"
+          s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
+             th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
+             alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,
+             order_by_login,order_by_login_dir"}
+
 <body {$body_onload}>
 
 {if $mgt_users == "yes"}
 	
-	<h1>{lang_get s='title_user_mgmt'}</h1>
-	
+	<h1>{$labels.title_user_mgmt}</h1>
 	{***** TABS *****}
-	<div class="tabMenu">
-	{if $mgt_users == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/usersEdit.php">{lang_get s='menu_new_user'}</a></span> 
-		<span class="selected">{lang_get s='menu_view_users'}</span>
-	{/if}
-	{if $role_management == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/rolesEdit.php">{lang_get s='menu_define_roles'}</a></span> 
-	{/if}
-		<span class="unselected"><a href="lib/usermanagement/rolesView.php">{lang_get s='menu_view_roles'}</a></span> 
-	{if $tproject_user_role_assignment == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
-	{/if}	
-	{if $tp_user_role_assignment == "yes"}
-		<span class="unselected"><a href="lib/usermanagement/usersAssign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
-	{/if}
-	</div>
-	
+  {include file="usermanagement/tabsmenu.tpl"}
 	
 	{***** existing users form *****}
 	<div class="workBack">
@@ -52,35 +45,35 @@ Purpose: smarty template - users overview
 		<table class="simple" width="95%">
 			<tr>
 				<th {if $user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
-				    {lang_get s='th_login'}
+				    {$labels.th_login}
 				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_login_dir}.gif" 
-				         title="{lang_get s='order_by_login'} {lang_get s=$order_by_login_dir}"
-						 alt="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
+				         title="{$labels.order_by_login} {lang_get s=$order_by_login_dir}"
+						     alt="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
 				         onclick="usersview.operation.value='order_by_login';
 				                  usersview.user_order_by.value='order_by_login'; 
 				                  usersview.submit();" />
 				</th>
 	
-				<th>{lang_get s='th_first_name'}</th>
-				<th>{lang_get s='th_last_name'}</th>
-				<th>{lang_get s='th_email'}</th>
+				<th>{$labels.th_first_name}</th>
+				<th>{$labels.th_last_name}</th>
+				<th>{$labels.th_email}</th>
 				
 				<th {if $user_order_by == 'order_by_role'}style="background-color: #c8dce8;color: black;"{/if}>
-				    {lang_get s='th_role'}
+				    {$labels.th_role}
 	    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_role_dir}.gif" 
-	    			     title="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
-						 alt="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
+	    			     title="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
+						 alt="{$labels.order_by_role_descr} {lang_get s=$order_by_role_dir}"
 	    			     onclick="usersview.operation.value='order_by_role';
 	    			              usersview.user_order_by.value='order_by_role'; 
 	      			            usersview.submit();" />
 				</th>
 				
-				<th>{lang_get s='th_locale'}</th>	
-				<th style="width:50px;">{lang_get s='th_active'}</th>
+				<th>{$labels.th_locale}</th>	
+				<th style="width:50px;">{$labels.th_active}</th>
 				{if $api_ui_show eq 1}
-					<th style="width:50px;">{lang_get s='th_api'}</th>
+					<th style="width:50px;">{$labels.th_api}</th>
 				{/if}
-				<th style="width:50px;">{lang_get s='th_delete'}</th>
+				<th style="width:50px;">{$labels.th_delete}</th>
 			</tr>
 			
 			{section name=row loop=$users start=0}
@@ -90,11 +83,11 @@ Purpose: smarty template - users overview
 				{assign var="userID" value=$user->dbID}
 
 				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
-				<td><a href="lib/usermanagement/usersEdit.php?user_id={$user->dbID}"> 
+				<td><a href="{$action_edit_user}{$user->dbID}"> 
 				    {$user->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
-				      <img title="{lang_get s='alt_edit_user'}" 
-				           alt="{lang_get s='alt_edit_user'}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
+				      <img title="{$labels.alt_edit_user}" 
+				           alt="{$labels.alt_edit_user}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
 				    {/if}       
 				    </a>
 				</td>
@@ -105,17 +98,18 @@ Purpose: smarty template - users overview
 				<td>
 				 {$optLocale[$userLocale]|escape}
 				</td>
-				<td>
+				<td align="center">
 					{if $user->bActive eq 1}
-						{lang_get s='Yes'}
-					{else}
-						{lang_get s='No'}
-					{/if}
+				  		<img style="border:none" title="{$labels.alt_active_user}" 
+  				                             alt="{$labels.alt_active_user}"  src="{$checked_img}"/>
+  			  {else}
+  				    &nbsp;        
+        	{/if}
 				</td>
-				<td>
+				<td align="center">
 				  <img style="border:none;cursor: pointer;"  
-               alt="{lang_get s='alt_delete_user'}"
-					     title="{lang_get s='alt_delete_user'}" 
+               alt="{$labels.alt_delete_user}"
+					     title="{$labels.alt_delete_user}" 
 					     onclick="delete_confirmation({$user->dbID},'{$user->login|escape:'javascript'}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
@@ -142,7 +136,7 @@ Purpose: smarty template - users overview
 	{/literal}
 	{/if}
 {else}
-	{lang_get s='no_permissions_for_action'}<br />
+	{$labels.no_permissions_for_action}<br />
 	<a href="{$base_href}" alt="Home">Home</a>
 {/if}
 </body>

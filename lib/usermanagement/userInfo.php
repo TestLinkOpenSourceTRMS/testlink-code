@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.15 $
-* @modified $Date: 2008/02/12 15:39:41 $
+* @version $Revision: 1.16 $
+* @modified $Date: 2008/02/12 21:50:41 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -45,6 +45,7 @@ switch( $args->doAction)
 
     case 'changePassword':
     $op=changePassword($args,$user);
+    $doUpdate=$op->status >= tl::OK ? 1 : 0;
     break;
     
     case 'genApiKey':
@@ -127,9 +128,12 @@ function init_args()
 /*
   function: changePassword
 
-  args :
+  args:
   
-  returns: 
+  returns: object with properties: 
+           status
+           user_feedback: string message for on screen feedback
+           auditMsg: to be written by logAudid
 
 */
 function changePassword(&$argsObj,&$userMgr)

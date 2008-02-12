@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.11 $
-* @modified $Date: 2008/02/12 08:33:31 $ $Author: franciscom $
+* @version $Revision: 1.12 $
+* @modified $Date: 2008/02/12 21:50:41 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -128,9 +128,11 @@ function doCreate(&$dbHandler,&$argsObj)
 			$op->status = $op->user->writeToDB($dbHandler);
 		}
 		
+		echo "<pre>debug 20080212 - \ - " . __FUNCTION__ . " --- "; print_r($op->user); echo "</pre>";
+		
 		if ($op->status >= tl::OK)
 		{
-			logAuditEvent(TLS("audit_user_created",$user->login),"CREATE",$op->user->dbID,"users");
+			logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
 			$op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
 		}
 		else 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/02/04 22:32:52 $  by $Author: franciscom $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/02/12 15:34:22 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -144,8 +144,6 @@ if($args->edit_tc)
     keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
     
   	$tc_data = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
-    echo "<pre>debug 20080204 - \$tc_data - " . __FUNCTION__ . " --- "; print_r($tc_data); echo "</pre>";
-
   	foreach ($a_oWebEditor_cfg as $key => $value)
    	{
   	  	// Warning:

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.269 $
- * @modified $Date: 2008/02/11 19:49:11 $ $Author: schlundus $
+ * @version $Revision: 1.270 $
+ * @modified $Date: 2008/02/12 11:17:58 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -663,6 +663,7 @@ $TLS_menu_define_roles = "New role";
 $TLS_menu_mod_user = "Modify User";
 $TLS_menu_new_user = "New User";
 $TLS_menu_edit_user = "Edit User";
+$TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field";

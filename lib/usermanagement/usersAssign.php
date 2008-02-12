@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.9 $
-* @modified $Date: 2008/02/11 19:49:11 $ $Author: schlundus $
+* @version $Revision: 1.10 $
+* @modified $Date: 2008/02/12 11:17:26 $ $Author: franciscom $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -46,6 +46,7 @@ $mgr = null;
 
 if ($feature == "testproject")
 {
+  $highlight->assign_users_tproject=1;  
 	$roles_updated = lang_get("test_project_user_roles_updated");
 	$no_features = lang_get("no_test_projects");
 	$bTestproject = true;
@@ -53,6 +54,7 @@ if ($feature == "testproject")
 }
 else if ($feature == "testplan")
 {
+  $highlight->assign_users_tplan=1;  
 	$roles_updated = lang_get("test_plan_user_roles_updated");
 	$no_features = lang_get("no_test_plans");
 	$bTestPlan = true;
@@ -128,6 +130,7 @@ if(is_null($features))
 	$user_feedback = $no_features;
 
 $smarty = new TLSmarty();
+$smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('mgt_users',$can_manage_users);
 $smarty->assign('role_management',has_rights($db,"role_management"));

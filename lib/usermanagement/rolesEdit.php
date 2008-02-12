@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/31 22:15:48 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/02/12 08:31:55 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -29,17 +29,31 @@ $action = null;
 $affectedUsers = null;
 $role = null;
 $action_type = 'edit';
+
 switch($args->doAction)
 {
 	case 'create':
+    $highlight->create_role=1;
 		$action_type = 'doCreate';
 		break;
+
 	case 'edit':
+	  $highlight->edit_role=1;
 		$action_type = 'doEdit';
 		$role = tlRole::getByID($db,$args->roleid);
 		break;
+
 	case 'doCreate': 
 	case 'doEdit': 
+    if( $args->doAction=='doCreate')
+    {
+        $highlight->create_role=1;  
+    }
+    else
+    {
+        $highlight->edit_role=1;  
+    }
+		
 		if(has_rights($db,"role_management"))
 		{
 			$action_type ='edit';
@@ -50,6 +64,7 @@ switch($args->doAction)
 		}
 		break;
 }
+
 
 if($role)
 {
@@ -69,6 +84,7 @@ if($role)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('highlight',$highlight);
 $smarty->assign('action_type',$action_type);
 $smarty->assign('role',$role);
 $smarty->assign('role_management',has_rights($db,"role_management"));

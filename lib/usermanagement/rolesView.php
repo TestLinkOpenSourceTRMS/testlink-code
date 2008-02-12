@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/01/31 22:15:48 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/02/12 08:31:55 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -43,7 +43,9 @@ if($doDelete)
 }
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
+$highlight->view_roles=1;
 $smarty = new TLSmarty();
+$smarty->assign('highlight',$highlight);
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('tp_user_role_assignment', 

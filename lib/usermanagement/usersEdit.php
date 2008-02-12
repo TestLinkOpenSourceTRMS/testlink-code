@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.10 $
-* @modified $Date: 2008/02/10 18:45:34 $ $Author: franciscom $
+* @version $Revision: 1.11 $
+* @modified $Date: 2008/02/12 08:33:31 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -23,93 +23,56 @@ testlinkInitPage($db);
 $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-$args = init_args($_GET,$_POST);
+$args = init_args();
 $user_id = $args->user_id;
-$sessionUserID = $_SESSION['currentUser']->dbID;
+$op->user_feedback = '';
 
-$sqlResult = null;
-$action = null;
-$user_feedback = '';
+switch($args->doAction)
+{
+    case "edit":
+        $highlight->edit_user=1;
+	      $user = new tlUser($args->user_id);
+	      $user->readFromDB($db);
+    break;   
+    
+    
+    case "doCreate":
+        $highlight->create_user=1;
+        $op=doCreate($db,$args);
+        $user=$op->user;
+    break;
+    
+    case "doUpdate":
+        $highlight->edit_user=1;
+        $sessionUserID = $_SESSION['currentUser']->dbID;
+        $op=doUpdate($db,$args,$sessionUserID);
+        $user=$op->user;
+    break;
+    
+    case "resetPassword":
+	      $highlight->edit_user=1;
+	      $user = new tlUser($args->user_id);
+	      $user->readFromDB($db);
+        $op=createNewPassword($db,$args,$user);
+    break;
+    
+    case "create":
+    default:
+        $highlight->create_user=1;
+        $user=null;
+    break;   
+    
+    
+}
 
-if ($args->do_update)
-{
-	if ($args->user_id == 0)
-	{
-		$user = new tlUser();	
-		$sqlResult = $user->setPassword($args->password);
-		if ($sqlResult >= tl::OK)
-		{
-			$user->login = $args->login;
-			$user->emailAddress = $args->email;
-			$user->firstName = $args->first;
-			$user->lastName = $args->last;
-			$user->globalRoleID = $args->rights_id;
-			$user->locale = $args->locale;
-			$user->bActive = $args->user_is_active;
-			
-			$sqlResult = $user->writeToDB($db);
-		}
-		if ($sqlResult >= tl::OK)
-		{
-			logAuditEvent(TLS("audit_user_created",$user->login),"CREATE",$user->dbID,"users");
-			$user_feedback = sprintf(lang_get('user_created'),$args->login);
-		}
-		else 
-			$sqlResult = getUserErrorMessage($sqlResult);
-	}
-	else
-	{
-		$user = new tlUser($args->user_id);
-		$sqlResult = $user->readFromDB($db);
-		if ($sqlResult >= tl::OK)
-		{
-			$user->firstName = $args->first;
-			$user->lastName = $args->last;
-			$user->emailAddress = $args->email;
-			$user->locale = $args->locale;
-			$user->bActive = $args->user_is_active;
-			$user->globalRoleID = $args->rights_id;
-			
-			$sqlResult = $user->writeToDB($db);
-			if ($sqlResult >= tl::OK)
-			{
-				logAuditEvent(TLS("audit_user_saved",$user->login),"SAVE",$user->dbID,"users");
-				if ($sessionUserID == $args->user_id)
-				{
-					$_SESSION['currentUser'] = $user;
-					setUserSession($db,$user->login, $args->user_id, $user->globalRoleID, $user->emailAddress, $user->locale);
-					if (!$args->user_is_active)
-					{
-						header("Location: ../../logout.php");
-						exit();
-					}
-				}
-			}
-			$sqlResult = getUserErrorMessage($sqlResult);
-			$action = "updated";							
-		}
-	}
-}
-else if ($args->do_reset_password && $user_id)
-{
-	$result = resetPassword($db,$user_id,$user_feedback);
-	if ($result >= tl::OK)
-	{
-		logAuditEvent(TLS("audit_pwd_reset_requested",$user->login),"PWD_RESET",$user_id,"users");
-		$user_feedback = lang_get('password_reseted');  		
-	}
-}
-$user = null;
-if ($user_id)
-{
-	$user = new tlUser($user_id);
-	$user->readFromDB($db);
-}	
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();
-$smarty->assign('user_feedback',$user_feedback);
+
+$smarty->assign('highlight',$highlight);
+
+$smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
@@ -117,44 +80,147 @@ $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" :
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
-$smarty->assign('result',$sqlResult);
-$smarty->assign('action',$action);
 $smarty->display($template_dir . $default_template);
 
 
-function init_args($get_hash, $post_hash)
+function init_args()
 {
-	$post_hash = strings_stripSlashes($post_hash);
+	$_REQUEST = strings_stripSlashes($_REQUEST);
 
-	$intval_keys = array('delete' => 0, 'user' => 0,'user_id' => 0);
+	$intval_keys = array('delete' => 0, 'user' => 0,'user_id' => 0, 'rights_id' => TL_ROLES_GUEST);
 	foreach ($intval_keys as $key => $value)
 	{
-		$args->$key = isset($get_hash[$key]) ? intval($get_hash[$key]) : $value;
+		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
 	
-	$intval_keys = array('rights_id' => TL_ROLES_GUEST);
-	if(!isset($get_hash['user_id']))
-	{
-		$intval_keys['user_id'] = 0; 
-	}
 	
-	foreach ($intval_keys as $key => $value)
-	{
-		$args->$key = isset($post_hash[$key]) ? intval($post_hash[$key]) : $value;
-	}
-	
-	$nullable_keys = array('first','last','email','locale','login','password');
+	$nullable_keys = array('doAction','firstName','lastName','emailAddress','locale','login','password');
 	foreach ($nullable_keys as $value)
 	{
-		$args->$value = isset($post_hash[$value]) ? $post_hash[$value] : null;
+		$args->$value = isset($_REQUEST[$value]) ? trim($_REQUEST[$value]) : null;
 	}
  
-	$bool_keys = array('user_is_active','do_update','do_reset_password');
-	foreach ($bool_keys as $value)
+ 	$checkbox_keys = array('user_is_active');
+	foreach ($checkbox_keys as $value)
 	{
-		$args->$value = isset($post_hash[$value]) ? 1 : 0;
+		$args->$value = isset($_REQUEST[$value]) ? 1 : 0;
 	}
   
 	return $args;
+}
+
+
+/*
+  function: doCreate
+
+  args:
+  
+  returns: 
+
+*/
+function doCreate(&$dbHandler,&$argsObj)
+{
+		$op->user = new tlUser();	
+		$op->status = $op->user->setPassword($argsObj->password);
+		if ($op->status >= tl::OK)
+		{
+		  initializeUserProperties($op->user,$argsObj);
+			$op->status = $op->user->writeToDB($dbHandler);
+		}
+		
+		if ($op->status >= tl::OK)
+		{
+			logAuditEvent(TLS("audit_user_created",$user->login),"CREATE",$op->user->dbID,"users");
+			$op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
+		}
+		else 
+			$op->user_feedback = getUserErrorMessage($op->status);
+  
+    return $op;
+}
+
+
+
+
+/*
+  function: doUpdate
+
+  args:
+  
+  returns: 
+
+*/
+function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
+{
+    $op->user_feedback='';
+    $op->user = new tlUser($argsObj->user_id);
+		$op->status = $op->user->readFromDB($dbHandler);
+		if ($op->status >= tl::OK)
+		{
+		  initializeUserProperties($op->user,$argsObj);
+			$op->status = $op->user->writeToDB($dbHandler);
+			if ($op->status >= tl::OK)
+			{
+				logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
+				if ($sessionUserID == $argsObj->user_id)
+				{
+					$_SESSION['currentUser'] = $op->user;
+					setUserSession($dbHandler,$op->user->login, $argsObj->user_id, 
+					               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
+					               
+					if (!$argsObj->user_is_active)
+					{
+						header("Location: ../../logout.php");
+						exit();
+					}
+				}
+			}
+			$op->user_feedback = getUserErrorMessage($op->status);
+		}
+    return $op;
+}
+
+
+/*
+  function: createNewPassword
+
+  args :
+  
+  returns: -
+
+*/
+function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
+{
+    $op->user_feedback='';
+	  $op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
+	  if ( $op->status >= tl::OK)
+	  {
+		    logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
+		    $op->user_feedback = lang_get('password_reseted');  		
+	  }
+    return $op;
+}
+
+
+
+
+
+/*
+  function: initializeUserProperties
+
+  args :
+  
+  returns: -
+
+*/
+function initializeUserProperties(&$userObj,&$argsObj)
+{
+    $userObj->login = $argsObj->login;
+		$userObj->emailAddress = $argsObj->emailAddress;
+		$userObj->firstName = $argsObj->firstName;
+		$userObj->lastName = $argsObj->lastName;
+		$userObj->globalRoleID = $argsObj->rights_id;
+		$userObj->locale = $argsObj->locale;
+		$userObj->bActive = $argsObj->user_is_active;
 }
 ?>

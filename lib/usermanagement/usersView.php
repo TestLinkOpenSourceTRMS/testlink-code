@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/27 21:13:21 $ -  $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/02/12 08:33:31 $ -  $Author: franciscom $
  *
  * This page shows all users
  */
@@ -73,7 +73,9 @@ switch($operation)
 $order_by_clause = get_order_by_clause($orderByType,$orderByDir);
 $users = getAllUsersRoles($db,$order_by_clause);
 
+$highlight->view_users=1;
 $smarty = new TLSmarty();
+$smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_order_by',$user_order_by);
 $smarty->assign('order_by_role_dir',$order_by_dir['order_by_role_dir']);

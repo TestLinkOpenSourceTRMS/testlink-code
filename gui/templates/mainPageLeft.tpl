@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.8 2008/02/12 10:37:28 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.9 2008/02/12 10:39:13 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -27,7 +27,7 @@
         <br />
    		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
         <a href="lib/admin/modules.php">{lang_get s='href_admin_modules'}</a>
-      {/if} {* configuration_rights *}
+      {/if} 
     *}
     
 	  {if $tproject_user_role_assignment == "yes"}

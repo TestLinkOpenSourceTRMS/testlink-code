@@ -5,14 +5,11 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/02/12 20:53:05 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/02/13 01:22:51 $ $Author: franciscom $
  *
  * rev :
- *       20071201 - franciscom - new web editor code
- *       20070122 - franciscom - use build_mgr methods
- *       20070121 - franciscom - active and open management
- *       20061118 - franciscom - added check_build_name_existence()
+ *      20080213 - franciscom - fixed bad template names
  *
 */
 require('../../config.inc.php');
@@ -53,17 +50,21 @@ switch($args->do_action)
 {
 	case 'edit':
 		$button_name = "do_update";
-		$button_value = lang_get('btn_update');  
+		$button_value = lang_get('btn_save');  
 		$my_b_info = $build_mgr->get_by_id($args->build_id);
 		$args->build_name = $my_b_info['name'];
 		$of->Value = $my_b_info['notes'];
 		$args->is_active = $my_b_info['active'];
 		$args->is_open = $my_b_info['is_open'];
 		break;
+		
 	case 'create':
 		$button_name = "do_create";
 		$button_value = lang_get('btn_create');  
+		$args->is_active = 1;
+		$args->is_open = 1;
 		break;
+		
 	case 'do_delete':
 		$build = $build_mgr->get_by_id($args->build_id);
 		if (!$build_mgr->delete($args->build_id))
@@ -71,6 +72,7 @@ switch($args->do_action)
 		else
 			logAuditEvent(TLS("audit_build_deleted",$build['name']),"DELETE",$args->build_id,"builds");
 		break;
+
 	case 'do_update':
 		$of->Value = $args->notes;
 		$template = "buildEdit.tpl";
@@ -91,7 +93,7 @@ switch($args->do_action)
 		if(!$status_ok)
 		{
 			$button_name = "do_update";
-			$button_value = lang_get('btn_update');  
+			$button_value = lang_get('btn_save');  
 
 			$smarty->assign('build_id',$args->build_id);
 			$smarty->assign('build_name',$the_builds[$args->build_id]['name']);
@@ -100,6 +102,7 @@ switch($args->do_action)
 			$smarty->assign('is_open', $args->is_open);
 		}
 		break;
+
 	case 'do_create':
 		$of->Value = $args->notes;
 		$template = "buildEdit.tpl";
@@ -150,6 +153,7 @@ switch($args->do_action)
 		$smarty->assign('the_builds',$the_builds);
 		$smarty->display($template_dir . $template);
 		break; 
+		
 	case "edit":
 	case "create":
 		$template = is_null($template) ? $default_template : $template;

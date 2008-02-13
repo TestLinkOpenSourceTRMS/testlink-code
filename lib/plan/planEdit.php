@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/02/04 14:58:18 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/02/13 01:20:48 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -39,6 +39,9 @@ $cf_smarty = '';
 $of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
+$main_descr=lang_get('testplan_title_tp_management'). " - " . 
+            lang_get('testproject') . ' ' . $args->tproject_name;
+
 // Checks on testplan name, and testplan name<=>testplan id 
 if($args->do_action == "do_create" || $args->do_action == "do_update")
 {
@@ -63,6 +66,7 @@ switch($args->do_action)
 			$bActive = $tpInfo['active'];
 		}
 		break;  
+		
 	case 'do_delete':
 		$tplan_mgr->delete($args->tplan_id);
 		logAuditEvent(TLS("audit_testplan_deleted"),"DELETE",$args->tplan_id,"testplan");
@@ -73,6 +77,7 @@ switch($args->do_action)
 			$_SESSION['testPlanName'] = null;
 		}
 		break;  
+	
 	case 'do_update':
 		$of->Value = $args->notes;
 		$tpName = $args->testplan_name;
@@ -113,6 +118,7 @@ switch($args->do_action)
 			$smarty->assign('notes', $of->CreateHTML());
 		}
 		break;  
+  
   case 'do_create':
 		$template = 'planEdit.tpl';
 		$status_ok = false;
@@ -162,6 +168,7 @@ switch($args->do_action)
 		break;  
 }
 
+$smarty->assign('main_descr',$main_descr);
 $smarty->assign('cf',$cf_smarty);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
@@ -178,6 +185,7 @@ switch($args->do_action)
         $smarty->assign('tplans',$tplans);
         $smarty->display($template_dir . $template);
 		break; 
+		
    case "edit":
    case "create":
         $template= is_null($template) ? 'planEdit.tpl' : $template;

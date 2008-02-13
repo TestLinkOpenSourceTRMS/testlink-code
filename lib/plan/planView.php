@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/04 19:41:35 $ $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/02/13 01:20:16 $ $Author: franciscom $
  *
 */
 require_once('../../config.inc.php');
@@ -17,6 +17,11 @@ $template_dir = 'plan/';
 
 $tplans = null;
 $tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
+$tproject_name = isset($_SESSION['testprojectName']) ? trim($_SESSION['testprojectName']) : '' ;
+
+$main_descr=lang_get('testplan_title_tp_management'). " - " . 
+            lang_get('testproject') . ' ' . $tproject_name;
+
 if($tproject_id)
 {
 	$tproject_mgr = new testproject($db);
@@ -24,6 +29,7 @@ if($tproject_id)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('main_descr',$main_descr);
 $smarty->assign('api_ui_show',$g_api_ui_show);
 $smarty->assign('tplans',$tplans);
 $smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.1 2008/01/20 15:36:15 franciscom Exp $
+$Id: buildEdit.tpl,v 1.2 2008/02/13 01:18:37 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -48,7 +48,7 @@ function validateForm(f)
 
 <div> {* new build form *}
 	{if $build_name ne ""}
-		<h2>{lang_get s='title_build_update'}{$smarty.const.TITLE_SEP_TYPE3}{$build_name|escape}</h2>
+		<h2>{lang_get s='title_build_edit'}{$smarty.const.TITLE_SEP_TYPE3}{$build_name|escape}</h2>
 	{else}
 		<h2>{lang_get s='title_build_create'}</h2>
 	{/if}

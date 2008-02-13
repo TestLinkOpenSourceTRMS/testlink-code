@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.272 $
- * @modified $Date: 2008/02/13 17:31:51 $ $Author: franciscom $
+ * @version $Revision: 1.273 $
+ * @modified $Date: 2008/02/13 20:31:18 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2037,10 +2037,10 @@ $TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
 $TLS_audit_build_created = "Build '{%1}' was created";
 $TLS_audit_build_saved = "Build '{%1}' was saved";
 $TLS_audit_build_deleted = "Build '{%1}' was deleted";
-$TLS_audit_testplan_deleted = "A Test Plan was deleted";
+$TLS_audit_testplan_deleted = "Test Plan '{%1}' was deleted";
 $TLS_audit_testplan_saved = "Test Plan '{%1}' was saved";
 $TLS_audit_testplan_created = "Test Plan '{%1}' was created";
-$TLS_audit_milestone_deleted = "A milestone was deleted";
+$TLS_audit_milestone_deleted = "Milestone '{%1}' was deleted";
 $TLS_audit_milestone_created = "Milestone '{%1}' was created";
 $TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
 $TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";

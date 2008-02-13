@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/02/12 21:51:31 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/02/13 20:31:17 $ $Author: schlundus $
  *
  * rev: 20080212 - franciscom - fixed minor bug on call to logAuditEvent
 **/
@@ -38,9 +38,9 @@ if (strlen($login))
 		$result = resetPassword($db,$userID,$note);
 		if ($result >= tl::OK)
 		{
-		  $user=new tlUser($userID);
-		  $user->readFromDB($db);
-			logAuditEvent(TLS("audit_pwd_reset_requested",$user->login),"PWD_RESET",$userID,"users");
+		  	$user = new tlUser($userID);
+		  	if ($user->readFromDB($db) >= tl::OK)
+		  		logAuditEvent(TLS("audit_pwd_reset_requested",$user->login),"PWD_RESET",$userID,"users");
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
 		}

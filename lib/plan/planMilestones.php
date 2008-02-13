@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/02/04 16:45:15 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/02/13 20:31:18 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -50,10 +50,14 @@ if ($id && !$bDelete && !$bUpdate && !$newMileStone)
 else if ($bDelete && $id)
 {
 	$sqlResult = 'ok';
-	if (!$milestone_mgr->delete($id))
-		$sqlResult = lang_get('milestone_delete_fails'). ' : ' . $db->error_msg();
-	else
-		logAuditEvent(TLS("audit_milestone_deleted"),"DELETE",$id,"milestones");
+	$mStone = $milestone_mgr->get_by_id($id);
+	if ($mStone)
+	{	
+		if (!$milestone_mgr->delete($id))
+			$sqlResult = lang_get('milestone_delete_fails'). ' : ' . $db->error_msg();
+		else
+			logAuditEvent(TLS("audit_milestone_deleted",$mStone[$id]['name']),"DELETE",$id,"milestones");
+	}
 	$action = "deleted";
 }
 else if($newMileStone || $bUpdate)

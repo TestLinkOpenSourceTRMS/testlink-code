@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.16 $
-* @modified $Date: 2008/02/12 21:50:41 $
+* @version $Revision: 1.17 $
+* @modified $Date: 2008/02/13 20:31:18 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -141,12 +141,12 @@ function changePassword(&$argsObj,&$userMgr)
     $op->status=$userMgr->comparePassword($argsObj->oldpassword);
     $op->user_feedback='';
     $op->auditMsg='';  
-	  if ($op->status == tl::OK)
-	  {
-		  $userMgr->setPassword($argsObj->newpassword);
-		  $op->user_feedback = lang_get('result_password_changed');
-	    $op->auditMsg = "audit_user_pwd_saved";
-	  }
+	if ($op->status == tl::OK)
+	{
+		$userMgr->setPassword($argsObj->newpassword);
+		$op->user_feedback = lang_get('result_password_changed');
+		$op->auditMsg = "audit_user_pwd_saved";
+	}
     return $op;
 }
 

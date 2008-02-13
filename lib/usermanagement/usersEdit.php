@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.12 $
-* @modified $Date: 2008/02/12 21:50:41 $ $Author: franciscom $
+* @version $Revision: 1.13 $
+* @modified $Date: 2008/02/13 20:31:18 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -127,8 +127,6 @@ function doCreate(&$dbHandler,&$argsObj)
 		  initializeUserProperties($op->user,$argsObj);
 			$op->status = $op->user->writeToDB($dbHandler);
 		}
-		
-		echo "<pre>debug 20080212 - \ - " . __FUNCTION__ . " --- "; print_r($op->user); echo "</pre>";
 		
 		if ($op->status >= tl::OK)
 		{

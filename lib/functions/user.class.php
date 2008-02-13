@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/01/30 17:49:41 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/02/13 20:31:18 $ $Author: schlundus $
  *
  */
 
@@ -258,7 +258,7 @@ class tlUser extends tlDBObject
 	protected function encryptPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
-			return self::USER_S_PWDMGTEXTERNAL;
+			return self::S_PWDMGTEXTERNAL;
 
 		return md5($pwd);
 	}
@@ -266,7 +266,7 @@ class tlUser extends tlDBObject
 	public function setPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
-			return self::USER_S_PWDMGTEXTERNAL;
+			return self::S_PWDMGTEXTERNAL;
 			
 		if (!strlen($pwd))
 			return self::E_PWDEMPTY;
@@ -282,7 +282,7 @@ class tlUser extends tlDBObject
 	public function comparePassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
-			return self::USER_S_PWDMGTEXTERNAL;
+			return self::S_PWDMGTEXTERNAL;
 
 		if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
 			return tl::OK;

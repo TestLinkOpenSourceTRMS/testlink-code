@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.271 $
- * @modified $Date: 2008/02/12 20:53:05 $ $Author: schlundus $
+ * @version $Revision: 1.272 $
+ * @modified $Date: 2008/02/13 17:31:51 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -486,6 +486,7 @@ $TLS_open = "Open";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Create a new Build";
 $TLS_title_build_update = "Update Build";
+$TLS_title_build_edit = "Edit Build";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 
 
@@ -935,7 +936,7 @@ $TLS_testplan_th_active = "Active";
 $TLS_testplan_th_name = "Name";
 $TLS_testplan_th_notes = "Description";
 $TLS_testplan_title_create = "Create a new Test plan";
-$TLS_testplan_title_edit = "Edit the Test plan";
+$TLS_testplan_title_edit = "Edit " . $TLS_test_plan . " - ";
 $TLS_testplan_title_for_project = "for Test Project ";
 $TLS_testplan_title_tp_management = "Test Plan Management";
 $TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. " .

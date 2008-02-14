@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.273 $
- * @modified $Date: 2008/02/13 20:31:18 $ $Author: schlundus $
+ * @version $Revision: 1.274 $
+ * @modified $Date: 2008/02/14 18:07:58 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -480,8 +480,8 @@ $TLS_title_last_mod = "Last modified on ";
 $TLS_active = "Active";
 $TLS_enter_build = "Title";
 $TLS_enter_build_notes = "Description";
-$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
-                 "Description should include: list of delivered packages, approvals, status,etc.";
+//$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
+//                 "Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_open = "Open";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Create a new Build";
@@ -939,16 +939,14 @@ $TLS_testplan_title_create = "Create a new Test plan";
 $TLS_testplan_title_edit = "Edit " . $TLS_test_plan . " - ";
 $TLS_testplan_title_for_project = "for Test Project ";
 $TLS_testplan_title_tp_management = "Test Plan Management";
-$TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. " .
-                          "It could contain a testing activity for a new version of product " .
-                          "(include hot fixes) or also just simple change request for one customer." .
-                          "<br />Description field serves for links to Project plan and related " .
-                          "documentation, List of features to be tested, risks, etc.<br />" .
-                          "You can create a new Test Plan from an existing one. " .
-                          "The next items are copied: Builds, Test Cases, Priorities, Milestones " .
-                          "and user roles.<br />A Test plan could be deactiveted; i.e. no editing " .
-                          "and no results change is allowed. Such Test Plan is visible only via " .
-                          "'Reporting' and this page.";
+$TLS_testplan_txt_notes = "Test plans should encompass a (set of) clearly defined task(s) with a timeframe and content. " .
+                          "They can be created for everything from simple change requests to new product versions." .
+                          "It is recommended that the description field be used to document links to project plans " .
+                          "and related documentation, lists of features to be tested, risks, etc." .
+                          "You can create a new test plan from an existing one. " .
+                          "The items that are copied include: builds, test cases, priorities, milestones, and user roles." .
+                          "Test plans can be deactivated (i.e., editing and changing of results change are not allowed). " .
+                          "Deactivated test plans are visible only via 'Reporting' and this page.";
 $TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
 
 $TLS_testplan_copy_tcases = "Copy Test Cases";
@@ -1375,14 +1373,14 @@ $TLS_th_description = "Description";
 $TLS_th_open = "Open";
 $TLS_title_build_list = "List of existing builds";
 $TLS_warning_delete_build = "You are going to delete: %s " .
-                            "<br /> <br />All dependant data (test results) will also be deleted." .
+                            "<br /> <br />All dependant data (i.e., test results) will also be deleted!" .
                             "<br /> <br /> Are you sure?";
-                            
-$TLS_builds_description = "Each build is identified via title. It has two attributes:<br /> " .
-                          "Active / Inactive – defines whether the build is available for " .
-                          "TestLink functionality. Inactive build is not listed in both " .
-                          "execution and reports pages." .
-                          "<br /> Opened / Closed – defines if Test Results can be modified for the build.";
+$TLS_builds_description = "A build is identified by its title. Each build is related to the active Test Plan." .
+						  "Description should include: list of delivered packages, fixes or features, approvals, status, etc. " .
+						  "It has two attributes:<br />" .
+                          "Active / Inactive &ndash; defines whether the build can be used. " .
+                          "Inactive builds are not listed on the execution and reports pages.<br />" .
+                          "Open / Closed &ndash; An open build's test results can be modified. A closed build's can not.";
 
 
 

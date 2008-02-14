@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.2 2008/02/13 01:18:37 franciscom Exp $
+$Id: buildEdit.tpl,v 1.3 2008/02/14 17:29:56 havlat Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -88,6 +88,7 @@ function validateForm(f)
 		<input type="hidden" name="do_action" value="{$button_name}" />
 		<input type="submit" name="{$button_name}" value="{$button_value|escape}"
 				   onclick="do_action.value='{$button_name}'"/>
+		<input type="button" name="go_back" value="{lang_get s='cancel'}" onclick="javascript:history.back();"/>
 
 	</div>
 	</form>

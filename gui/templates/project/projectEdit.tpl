@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.10 2008/02/10 11:05:06 franciscom Exp $
+$Id: projectEdit.tpl,v 1.11 2008/02/14 17:28:12 havlat Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -152,8 +152,9 @@ function validateForm(f)
 		<div class="groupBtn">
     {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
                   added hidden   *}
-    <input type="hidden" name="doAction" value="{$doActionValue}" />
-    <input type="submit" name="doActionButton" value="{$buttonValue}" />
+    		<input type="hidden" name="doAction" value="{$doActionValue}" />
+		    <input type="submit" name="doActionButton" value="{$buttonValue}" />
+			<input type="button" name="go_back" value="{lang_get s='cancel'}" onclick="javascript:history.back();"/>
 		</div>
 		{/if}
 

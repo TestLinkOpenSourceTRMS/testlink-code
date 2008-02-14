@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.3 2008/02/14 17:29:56 havlat Exp $
+$Id: buildEdit.tpl,v 1.4 2008/02/14 18:06:18 havlat Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -81,7 +81,7 @@ function validateForm(f)
 
     
 	</table>
-	<p>{lang_get s='msg_build'}</p>
+	<p>{lang_get s='builds_description'}</p>
 	<div class="groupBtn">	
 
     {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}

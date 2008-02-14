@@ -1,11 +1,11 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.274 $
- * @modified $Date: 2008/02/14 18:07:58 $ $Author: havlat $
+ * @version $Revision: 1.275 $
+ * @modified $Date: 2008/02/14 21:26:21 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -15,14 +15,14 @@
  * @author Francisco Mancardi
  *
  * English (en_GB) strings
- * 
+ *
  * 20071102 - franciscom - tcexecute strings
  * 20071101 - franciscom - view_file_format_doc
  * 20070930 - franciscom - show_tcase_spec
  * 20070520 - franciscom - milestones
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  *
- *       
+ *
 **/
 //If this file is coded in UTF-8 then enable the following line
 //$TLS_STRINGFILE_CHARSET = "UTF-8";
@@ -52,7 +52,7 @@ $TLS_reqs 			= "Requirements";
 $TLS_req_spec 		= "Requirements Specification Document";
 $TLS_SRS 			= "SRS";
 $TLS_Role 			= "Role";
-$TLS_sort_table_by_column="Click to change sort order"; 
+$TLS_sort_table_by_column="Click to change sort order";
 $TLS_scope 			= "Scope";
 $TLS_status 		= "Status";
 $TLS_Keyword 		= "Keyword";
@@ -92,7 +92,7 @@ $TLS_btn_cancel	= "Cancel";
 $TLS_btn_close = "Close";
 $TLS_btn_cp = "Copy";
 $TLS_btn_create = "Create";
-$TLS_btn_delete = "Delete"; 
+$TLS_btn_delete = "Delete";
 $TLS_btn_edit	= "Edit";
 $TLS_btn_export = "Export";
 $TLS_btn_find = "Find";
@@ -185,7 +185,7 @@ $TLS_low_importance = "Low";
 $TLS_medium_importance = "Medium";
 
 
-// resultsGeneral.php 
+// resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test Project, <br />".
                                  "then no execution data can exist => no report can be created";
 
@@ -528,7 +528,7 @@ $TLS_req_title_list = "List of requirements";
 $TLS_req_total = "Overwritten count of REQs";
 $TLS_req_reorder = "Reorder requirements";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
-$TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?"; 
+$TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_title_change_req_order = "Change requirements order";
 
 
@@ -571,7 +571,7 @@ $TLS_testproject = "Test Project";
 // gui/templates/inc_reqView.tpl
 $TLS_Author = "Author";
 $TLS_last_edit = "Last edit by";
-$TLS_warning_delete_requirement= "You are going to delete: %s <br /><br /> Are you sure?"; 
+$TLS_warning_delete_requirement= "You are going to delete: %s <br /><br /> Are you sure?";
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -756,7 +756,7 @@ $TLS_th_login = "Login";
 $TLS_th_role = "Role";
 //$TLS_th_api = "API Key";
 //$TLS_api_gen_key_action = "generate";
-$TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?"; 
+$TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?";
 
 
 // gui/templates/login.tpl
@@ -1001,13 +1001,13 @@ $TLS_enable_automation = "Test Automation";
 $TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
 $TLS_notes = "Related Notes";
 
-// Warning!!! - if JS string you must use \\n to get \n                                       
+// Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .
                             "data (including test results, plans, etc.). " .
                             "You can also use to deactivate instead of delete.\\n" .
                             "Recommendation: Execute a dump of database at first.\\n" .
-                            "Are you sure to delete the Test Project?"; 
-                            
+                            "Are you sure to delete the Test Project?";
+
 $TLS_tcase_id_prefix="Test Case ID prefix";
 $TLS_warning_empty_tcase_prefix = "Test Case prefix cannot be empty!";
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
@@ -1109,7 +1109,7 @@ $TLS_btn_edit_keyword = "Edit";
 $TLS_btn_export_keywords = "Export";
 $TLS_btn_import_keywords = "Import";
 $TLS_th_keyword = "Keyword";
-$TLS_warning_delete_keyword = "You are going to delete: %s <br /><br /> Are you sure?"; 
+$TLS_warning_delete_keyword = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";
@@ -1340,7 +1340,7 @@ $TLS_import_was_ok = "The import was ok";
 $TLS_max_size_cvs_file = "Max. size of the file is";
 $TLS_title_upload_attachment = "Upload attachment";
 $TLS_error_file_size_larger_than_maximum_size_check_php_ini = "The size of the file is larger than the configured maximum value in your php.ini!";
-$TLS_error_file_size_larger_than_maximum_size = "The size of the file is larger than the configured maximum value of TestLink!"; 
+$TLS_error_file_size_larger_than_maximum_size = "The size of the file is larger than the configured maximum value of TestLink!";
 $TLS_error_file_upload = "The file couldn't be uploaded!";
 
 // gui/templates/rolesview.tpl
@@ -1352,7 +1352,7 @@ $TLS_delete_role = "Delete role";
 $TLS_no_roles = "No roles";
 $TLS_th_role_description = "Description";
 $TLS_title_roles = "Available roles";
-$TLS_warning_delete_role = "You are going to delete: %s <br /><br /> Are you sure?"; 
+$TLS_warning_delete_role = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_warning_users_will_be_reset = "Affected users will get role:";
 
 
@@ -1392,7 +1392,7 @@ $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_title_list = "List of existing Test Plans";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 $TLS_alt_active_testplan = "Active testplan";
-$TLS_warning_delete_testplan = "You are going to delete: %s <br /><br /> Are you sure?"; 
+$TLS_warning_delete_testplan = "You are going to delete: %s <br /><br /> Are you sure?";
 
 
 // gui/templates/mainPage_left.tpl
@@ -1607,7 +1607,7 @@ $TLS_XMLRPC_error_number="XML-RPC Fault number:- ";
 
 // lib/functions/configCheck.php
 $TLS_attachments_dir = "directory for attachments:";
-$TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br /> 
+$TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br />
                                 Please check your configuration.<br />
                                 Be careful this problem will degrade TestLink performance.";
 $TLS_but_directory_is_not_writable = "The directory is not writable!";
@@ -1988,19 +1988,19 @@ $TLS_audit_role_created = "Role '{%1}' was created";
 $TLS_audit_role_deleted = "Role '{%1}' was deleted";
 
 
-$TLS_audit_user_logout = "Logout of '{%1}'"; 
+$TLS_audit_user_logout = "Logout of '{%1}'";
 $TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
 $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
-$TLS_audit_cfield_created = "Custom field was created";
-$TLS_audit_cfield_saved = "Custom field was saved";
-$TLS_audit_cfield_deleted = "Custom field was deleted";
-$TLS_audit_cfield_assigned = "Custom field was assigned";
-$TLS_audit_cfield_unassigned = "Custom field was unassigned";
-$TLS_audit_cfield_display_order_changed = "Display order of the custom field was saved";
-$TLS_audit_cfield_activated = "Custom field was activated";
-$TLS_audit_cfield_deactivated = "Custom field was deactivated";
+$TLS_audit_cfield_created = "Custom field '{%1}' was created";
+$TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
+$TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
+$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned";
+$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned";
+$TLS_audit_cfield_display_order_changed = "Display order of custom fields was saved";
+$TLS_audit_cfield_activated = "Custom field '{%1}' was activated";
+$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated";
 
-$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated"; 
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
 $TLS_audit_user_saved = "User '{%1}' was saved";
 $TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
 $TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned a role to the Test Project '{%2}'";
@@ -2043,7 +2043,7 @@ $TLS_audit_milestone_created = "Milestone '{%1}' was created";
 $TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
 $TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";
 $TLS_audit_tc_removed_from_testplan = "Test Case(s) '{%1}' were removed from Test Plan";
- 
+
 //eventviewer.php
 $TLS_th_loglevel = "Log level";
 $TLS_th_timestamp = "Timestamp";

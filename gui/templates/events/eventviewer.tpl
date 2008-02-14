@@ -1,6 +1,6 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventviewer.tpl,v 1.8 2008/02/07 22:02:22 franciscom Exp $ 
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: eventviewer.tpl,v 1.9 2008/02/14 21:26:20 schlundus Exp $
 
 Event Viewer
 
@@ -31,19 +31,19 @@ function showEventDetails(id)
 	prgBar = Ext.Msg.wait(strPleaseWait);
 	Ext.Ajax.request(
 				{
-					url : 'lib/events/eventinfo.php' , 
+					url : 'lib/events/eventinfo.php' ,
 					params : { id : id },
 					method: 'POST',
 					success: function (result, request)
-							 { 
-								showDetailWindow(result.responseText); 
+							 {
+								showDetailWindow(result.responseText);
 							 },
 					failure: function (result, request)
 						{
 							if (prgBar)
 								prgBar.hide();
 						},
-				} 
+				}
 			);
 }
 var infoWin;
@@ -86,7 +86,7 @@ function showDetailWindow(info)
 fieldset
 {
 	height:100%;
-	
+
 }
 #eventviewer
 {
@@ -124,16 +124,15 @@ fieldset
 <body {$body_onload}>
 <h1>{$labels.event_viewer}</h1>
 
-
 <div class="workBack">
-		<form method="post" action="lib/events/eventviewer.php">	
+		<form method="post" action="lib/events/eventviewer.php">
 			<div style="height:125px;">
-			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.th_loglevel}</legend>		
+			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.th_loglevel}</legend>
 				<select size="5" multiple="multiple" name="logLevel[]">
 					{foreach from=$logLevels item=desc key=value}
 					{if in_array((string)$value,$selectedLogLevels) neq false}
 						<option selected="selected" value="{$value}">{$desc}</option>
-					{else}	
+					{else}
 						<option value="{$value}">{$desc}</option>
 					{/if}
 					{/foreach}
@@ -151,7 +150,7 @@ fieldset
 			</fieldset>
 			<br />
 			</div>
-		</form>	
+		</form>
 		<br/>
 		<br/>
 		<table class="common sortable" width="95%" id="eventviewer">
@@ -163,13 +162,19 @@ fieldset
 			</tr>
 			{foreach from=$events item=event}
 			{assign var=userID value=$event->userID}
+			{if $event->transactionID neq $transID}
+				{assign var=transID value=$event->transactionID}
+				{assign var=padding value=""}
+			{/if}
+
 			<tr onClick="showEventDetails({$event->dbID})" class="{$event->getLogLevel()|escape}">
-					<td style="white-space:nowrap">{localize_timestamp ts=$event->timestamp}</td>
+					<td style="white-space:nowrap;{$padding}">{localize_timestamp ts=$event->timestamp}</td>
 					<td>{$event->getLogLevel()|escape}</td>
 					<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
 					<td>{$users[$userID]|escape}</td>
 			</tr>
-			{/foreach}
+				{assign var=padding value="padding-left:20px"}
+		{/foreach}
 		</table>
 </div>
 <div id="eventDetailWindow" class="x-hidden">

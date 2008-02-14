@@ -1,6 +1,6 @@
-{* 
-Testlink: smarty template - 
-$Id: cfieldsEdit.tpl,v 1.6 2008/01/30 17:49:40 schlundus Exp $ 
+{*
+Testlink: smarty template -
+$Id: cfieldsEdit.tpl,v 1.7 2008/02/14 21:26:20 schlundus Exp $
 
 
 Important Development note:
@@ -20,10 +20,10 @@ This is done to simplify logic.
 rev :
      20071209 - franciscom - added user feedback to explain
                              why certain changes can not be done.
-                             
+
      20070526 - franciscom - added javascript logic to improve
                              cf enable attr management
-                             
+
      20070128 - franciscom - variable name changes
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -97,14 +97,14 @@ var js_possible_values_cfg = new Array();
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.cf_name.value)) 
+  if (isWhitespace(f.cf_name.value))
   {
       alert(warning_empty_cfield_name);
       selectField(f, 'cf_name');
       return false;
   }
-  
-  if (isWhitespace(f.cf_label.value)) 
+
+  if (isWhitespace(f.cf_label.value))
   {
       alert(warning_empty_cfield_label);
       selectField(f, 'cf_label');
@@ -118,13 +118,13 @@ function validateForm(f)
             depending of node type, custom fields attributes
             will be set to disable, is its value is nonsense
             for node type choosen by user.
-  
-  args : 
+
+  args :
          id_nodetype: id of html input used to choose node type
                       to which apply custom field
-                      
-  
-  returns: - 
+
+
+  returns: -
 
 */
 function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
@@ -134,16 +134,16 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   var o_enable_container=new Array();
   var o_display=new Array();
   var o_display_container=new Array();
-  
-  
+
+
   var oid;
   var keys2loop=new Array();
   var idx;
   var key;
-  
+
   keys2loop[0]='execution';
   keys2loop[1]='design';
-    
+
   // ------------------------------------------------------------
   // Enable on
   // ------------------------------------------------------------
@@ -170,7 +170,7 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
     }
   }
   // ------------------------------------------------------------
-  
+
   // ------------------------------------------------------------
   // Display on
   // ------------------------------------------------------------
@@ -197,9 +197,9 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
     }
   }
   // ------------------------------------------------------------
-  
-  
-  
+
+
+
 } // configure_cf_attr
 
 
@@ -208,19 +208,19 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   function: cfg_possible_values_display
             depending of Custom Field type, Possible Values attribute
             will be displayed or not.
-  
+
   args : cf_type: id of custom field type, choosen by user.
-                      
-         id_possible_values_container : id of html container 
+
+         id_possible_values_container : id of html container
                                         where input for possible values
                                         lives. Used to manage visibility.
-  
-  returns: 
+
+  returns:
 
 */
 function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 {
-  
+
   o_cftype=document.getElementById(id_cftype);
   o_container=document.getElementById(id_possible_values_container);
 
@@ -243,7 +243,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 <h1>
  {lang_get s='help' var='common_prefix'}
  {assign var="text_hint" value="$common_prefix"}
- {include file="inc_help.tpl" help="custom_fields" locale=$locale 
+ {include file="inc_help.tpl" help="custom_fields" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;"}
  {lang_get s='title_cfields_mgmt'} </h1>
 
@@ -258,61 +258,61 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 {if $user_action eq "do_delete"}
   <form method="post" name="cfields_edit" action="lib/cfields/cfieldsView.php">
-   <div class="groupBtn">	
-		<input type="submit" name="ok" value="{lang_get s='btn_ok'}" /> 
-	 </div>  
-  </form> 
+   <div class="groupBtn">
+		<input type="submit" name="ok" value="{lang_get s='btn_ok'}" />
+	 </div>
+  </form>
 
 {else}
-<form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php" 
+<form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php"
       onSubmit="javascript:return validateForm(this);">
   <input type="hidden" id="hidden_id" name="cfield_id" value="{$cf.id}" />
 	<table class="common">
-    <tr> 
-      <td colspan="2"> 
+    <tr>
+      <td colspan="2">
        {lang_get s='help' var='common_prefix'}
        {assign var="text_hint" value="$common_prefix"}
-       {include file="inc_help.tpl" help="custom_fields" locale=$locale 
+       {include file="inc_help.tpl" help="custom_fields" locale=$locale
                 alt="$text_hint" title="$text_hint"  style="float: right;"}
       </td>
-    </tr> 
-	
+    </tr>
+
 	 <tr>
 			<th style="background:none;">{lang_get s='name'}</th>
-			<td><input type="text" name="cf_name" 
-			                       size="{#CFIELD_NAME_SIZE#}" 
-			                       maxlength="{#CFIELD_NAME_MAXLEN#}" 
+			<td><input type="text" name="cf_name"
+			                       size="{#CFIELD_NAME_SIZE#}"
+			                       maxlength="{#CFIELD_NAME_MAXLEN#}"
     			 value="{$cf.name|escape}" />
            {include file="error_icon.tpl" field="cf_name"}
     	</td>
 		</tr>
 		<tr>
 			<th style="background:none;">{lang_get s='label'}</th>
-			<td><input type="text" name="cf_label" 
-			                       size="{#CFIELD_LABEL_SIZE#}" 
-			                       maxlength="{#CFIELD_LABEL_MAXLEN#}" 
+			<td><input type="text" name="cf_label"
+			                       size="{#CFIELD_LABEL_SIZE#}"
+			                       maxlength="{#CFIELD_LABEL_MAXLEN#}"
 			           value="{$cf.label|escape}"/>
 		           {include file="error_icon.tpl" field="cf_label"}
     	</td>
 	  </tr>
-		
+
 		<tr>
 			<th style="background:none;">{lang_get s='type'}</th>
 			<td>
 			  {if $is_used}
 			    {assign var="idx" value=$cf.type}
 			    {$cf_types.$idx}
-			    <input type="hidden" id="hidden_cf_type" 
-			           value={$cf.type} name="cf_type" /> 
+			    <input type="hidden" id="hidden_cf_type"
+			           value={$cf.type} name="cf_type" />
 			  {else}
   				<select onchange="cfg_possible_values_display(js_possible_values_cfg,
   				                                              'combo_cf_type',
   				                                              'possible_values');"
-  				        id="combo_cf_type" 
-  				        name="cf_type"> 
+  				        id="combo_cf_type"
+  				        name="cf_type">
 	  			{html_options options=$cf_types selected=$cf.type}
 		  		</select>
-		  	{/if}	
+		  	{/if}
 			</td>
 		</tr>
 
@@ -326,9 +326,9 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			<td>
 				<input type="text" id="cf_possible_values"
 				                   name="cf_possible_values"
-		                       size="{#CFIELD_POSSIBLE_VALUES_SIZE#}" 
-		                       maxlength="{#CFIELD_POSSIBLE_VALUES_MAXLEN#}" 
-				                   value="{$cf.possible_values}" /> 
+		                       size="{#CFIELD_POSSIBLE_VALUES_SIZE#}"
+		                       maxlength="{#CFIELD_POSSIBLE_VALUES_MAXLEN#}"
+				                   value="{$cf.possible_values}" />
 			</td>
 		</tr>
 
@@ -339,19 +339,19 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     {else}
       {assign var="display_style" value=""}
     {/if}
-		
+
 		<tr id="container_cf_show_on_design" style="display:{$display_style};">
 			<th style="background:none;">{lang_get s='show_on_design'}</th>
 			<td>
 				<select id="cf_show_on_design"
 				        name="cf_show_on_design"
-			        	{$disabled_cf_show_on.design} > 
+			        	{$disabled_cf_show_on.design} >
 				{html_options options=$gsmarty_option_yes_no selected=$cf.show_on_design}
 				</select>
 			</td>
 		</tr>
-		
-		
+
+
 		{if $disabled_cf_enable_on.design}
       {assign var="display_style" value="none"}
     {else}
@@ -362,7 +362,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			<td>
 				<select name="cf_enable_on_design"
 				        id="cf_enable_on_design"
-				        {$disabled_cf_enable_on.design}> 
+				        {$disabled_cf_enable_on.design}>
 				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_design}
 				</select>
 			</td>
@@ -377,17 +377,17 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     {else}
       {assign var="display_style" value=""}
     {/if}
-    
+
 		<tr id="container_cf_show_on_execution" style="display:{$display_style};">
 			<th style="background:none;">{lang_get s='show_on_exec'}</th>
 			<td>
-				<select id="cf_show_on_execution"  name="cf_show_on_execution" 
-				        {$disabled_cf_show_on.execution}> 
+				<select id="cf_show_on_execution"  name="cf_show_on_execution"
+				        {$disabled_cf_show_on.execution}>
 				{html_options options=$gsmarty_option_yes_no selected=$cf.show_on_execution}
 				</select>
 			</td>
 		</tr>
-		
+
 		{if $disabled_cf_enable_on.execution}
       {assign var="display_style" value="none"}
     {else}
@@ -396,9 +396,9 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		<tr id="container_cf_enable_on_execution" style="display:{$display_style};">
 			<th style="background:none;">{lang_get s='enable_on_exec'}</th>
 			<td>
-				<select id="cf_enable_on_execution" 
+				<select id="cf_enable_on_execution"
 				        name="cf_enable_on_execution"
-				        {$disabled_cf_enable_on.execution}> 
+				        {$disabled_cf_enable_on.execution}>
 				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_execution}
 				</select>
 			</td>
@@ -412,38 +412,38 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			  {if $is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$cf.node_type_id}
 			    {$cf_allowed_nodes.$idx}
-			    <input type="hidden" id="hidden_cf_node_type_id" 
-			           value={$cf.node_type_id} name="cf_node_type_id" /> 
+			    <input type="hidden" id="hidden_cf_node_type_id"
+			           value={$cf.node_type_id} name="cf_node_type_id" />
 			  {else}
   				<select onchange="configure_cf_attr('combo_cf_node_type_id',
   				                                    js_enable_on_cfg,
   				                                    js_show_on_cfg);"
-  				        id="combo_cf_node_type_id" 
-  				        name="cf_node_type_id"> 
+  				        id="combo_cf_node_type_id"
+  				        name="cf_node_type_id">
   				{html_options options=$cf_allowed_nodes selected=$cf.node_type_id}
   				</select>
 				{/if}
 			</td>
 		</tr>
 	</table>
-	
-	<div class="groupBtn">	
+
+	<div class="groupBtn">
 	<input type="hidden" name="do_action" value="" />
-	{if $user_action eq 'edit'}
+	{if $user_action eq 'edit'  or $user_action eq 'do_update'}
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
 		       onclick="do_action.value='do_update'"/>
-		       
-		{if $is_used eq 0} 
+
+		{if $is_used eq 0}
   		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
   		       onclick="delete_confirmation({$cf.id},'{$cf.name|escape:'javascript'}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
     {/if}
 
 	{else}
-		<input type="submit" name="do_update" value="{lang_get s='btn_add'}" 
+		<input type="submit" name="do_update" value="{lang_get s='btn_add'}"
 		       onclick="do_action.value='do_add'"/>
 	{/if}
-		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
+		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}"
 			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />
 
 	</div>

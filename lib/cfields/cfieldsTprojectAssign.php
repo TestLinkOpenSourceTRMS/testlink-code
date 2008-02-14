@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/30 17:49:41 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/02/14 21:26:20 $ by $Author: schlundus $
  *
  * rev :
  *      20071218 - franciscom - refactoring
@@ -25,13 +25,11 @@ switch($args->doAction)
 {
     case 'doAssign':
 	    $cfield_ids = array_keys($args->cfield);
-	    $cfield_mgr->link_to_testproject($args->testproject_id,$cfield_ids);  
-		logAuditEvent(TLS("audit_cfield_assigned"),"SAVE",$args->testproject_id,"testprojects");
+	    $cfield_mgr->link_to_testproject($args->testproject_id,$cfield_ids);
 	    break;
     case 'doUnassign':
 	    $cfield_ids = array_keys($args->cfield);
-	    $cfield_mgr->unlink_from_testproject($args->testproject_id,$cfield_ids);  
-		logAuditEvent(TLS("audit_cfield_unassigned"),"SAVE",$args->testproject_id,"testprojects");
+	    $cfield_mgr->unlink_from_testproject($args->testproject_id,$cfield_ids);
 	    break;
     case 'doReorder':
 	    $cfield_ids = array_keys($args->display_order);
@@ -41,14 +39,11 @@ switch($args->doAction)
     case 'doActiveMgmt':
 		$my_cf = array_keys($args->hidden_active_cfield);
 		if(!isset($args->active_cfield))
-		{
-			$cfield_mgr->set_active_for_testproject($args->testproject_id,$my_cf,0);   
-			logAuditEvent(TLS("audit_cfield_activated"),"SAVE",$args->testproject_id,"testprojects");
-		}
+			$cfield_mgr->set_active_for_testproject($args->testproject_id,$my_cf,0);
 		else
 		{
-			$active=null;
-			$inactive=null;
+			$active = null;
+			$inactive = null;
 			foreach($my_cf as $cf_id)
 			{
 				if(isset($args->active_cfield[$cf_id]))
@@ -58,22 +53,16 @@ switch($args->doAction)
 			}
 
 			if(!is_null($active))
-			{
-				$cfield_mgr->set_active_for_testproject($args->testproject_id,$active,1);   
-				logAuditEvent(TLS("audit_cfield_activated"),"SAVE",$args->testproject_id,"testprojects");
-			}
+				$cfield_mgr->set_active_for_testproject($args->testproject_id,$active,1);
 			if(!is_null($inactive))
-			{
-				$cfield_mgr->set_active_for_testproject($args->testproject_id,$inactive,0);   
-				logAuditEvent(TLS("audit_cfield_deactivated"),"SAVE",$args->testproject_id,"testprojects");
-			}
+				$cfield_mgr->set_active_for_testproject($args->testproject_id,$inactive,0);
 		}
 		break;
-    
-    
+
+
     break;
 
-      
+
 }
 
 // Get all available custom fields
@@ -98,9 +87,11 @@ function init_args()
     {
         $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
     }
-  
+	if (!$args->cfield)
+		$args->cfield = array();
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+	
 	return $args;
 }
 ?>

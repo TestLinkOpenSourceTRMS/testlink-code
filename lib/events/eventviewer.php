@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/10 14:55:08 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/02/14 21:26:20 $ by $Author: schlundus $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -33,13 +33,14 @@ if (strlen($args->startDate))
 	$startTime = strToTime($args->startDate);
 	if (!$startTime)
 		$startTime = null;
-}		
+}
 if (strlen($args->endDate))
 {
 	$endTime = strToTime($args->endDate) + (24*60*60-1);
 	if (!$endTime)
 		$endTime = null;
 }
+
 $events = $g_tlLogger->getEventsFor($args->logLevel,null,null,null,500,$startTime,$endTime);
 $users = getUsersForHtmlOptions($db,null,false,null);
 
@@ -47,7 +48,7 @@ $smarty = new TLSmarty();
 $smarty->assign('events',$events);
 $smarty->assign('users',$users);
 $smarty->assign('logLevels',$logLevels);
-$smarty->assign('selectedlogLevels',array_values($args->logLevel ? $args->logLevel : array()));
+$smarty->assign('selectedLogLevels',array_values($args->logLevel ? $args->logLevel : array()));
 $smarty->assign('startDate',$args->startDate);
 $smarty->assign('endDate',$args->endDate);
 $smarty->display($template_dir . $default_template);

@@ -1,5 +1,5 @@
-// TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: validate.js,v 1.4 2008/02/10 18:44:21 franciscom Exp $ 
+// TestLink Open Source Project - http://testlink.sourceforge.net/
+// $Id: validate.js,v 1.5 2008/02/14 21:26:20 schlundus Exp $
 //
 // Functions for validation of input on client side
 //
@@ -10,28 +10,28 @@
 
 // Function validate length of field
 // fieldName = e.g. document.forms[0].login
-function valTextLength(fieldName, maxLength,  minLength) 
-{ 
-    var fieldValue  = fieldName.value; 
-    var fieldLength = fieldValue.length; 
- 
-    var err03 = warning_enter_at_least1 + " " + minLength + " "+warning_enter_at_least2; 
-    var err04 = warning_enter_less1 + " " + maxLength + " " + warning_enter_less2; 
- 
+function valTextLength(fieldName, maxLength,  minLength)
+{
+    var fieldValue  = fieldName.value;
+    var fieldLength = fieldValue.length;
+
+    var err03 = warning_enter_at_least1 + " " + minLength + " "+warning_enter_at_least2;
+    var err04 = warning_enter_less1 + " " + maxLength + " " + warning_enter_less2;
+
  	var bSuccess = false;
     if ( fieldLength < minLength)
-        alert( err03 ); 
+        alert( err03 );
 	else if (( fieldLength > maxLength ) && ( maxLength > 0 ))
-        alert( err04 ); 
+        alert( err04 );
 	else
-		bSuccess = true; 
-		
+		bSuccess = true;
+
     if (!bSuccess)
 	{
-        fieldName.focus(); 
-		fieldName.style.backgroundColor = '#F99'; 
+        fieldName.focus();
+		fieldName.style.backgroundColor = '#F99';
 	}
-	return bSuccess;	
+	return bSuccess;
 }
 
 
@@ -48,7 +48,7 @@ function validatePassword(newpassword,newpassword_confirm)
 		oid_p.focus();
 		return false ;
 	}
-	
+
 	// OK
 	return true ;
 }
@@ -121,7 +121,7 @@ function checkErrorCondition(e, form_name, field_name, old_onchange)
     if ((field.type == 'text') || (field.type == 'textarea') || (field.type == 'password')) {
         if (!isWhitespace(field.value)) {
             errorDetails(f, field_name, false);
-            if (old_onchange != false) {
+            if (old_onchange != undefined) {
                 field.onchange = old_onchange;
                 eval('trash = ' + old_onchange + '(e)');
             }
@@ -129,7 +129,7 @@ function checkErrorCondition(e, form_name, field_name, old_onchange)
     } else if (field.type == 'select-one') {
         if (getSelectedOption(f, field_name) != '-1') {
             errorDetails(f, field_name, false);
-            if (old_onchange != false) {
+            if (old_onchange != undefined) {
                 field.onchange = old_onchange;
                 eval('trash = ' + old_onchange + '(e)');
             }
@@ -137,7 +137,7 @@ function checkErrorCondition(e, form_name, field_name, old_onchange)
     } else if (field.type == 'select-multiple') {
         if (hasOneSelected(f, field_name)) {
             errorDetails(f, field_name, false);
-            if (old_onchange != false) {
+            if (old_onchange != undefined) {
                 field.onchange = old_onchange;
                 eval('trash = ' + old_onchange + '(e)');
             }

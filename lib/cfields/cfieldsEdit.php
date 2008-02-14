@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/02/14 21:26:20 $ by $Author: schlundus $
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
@@ -19,12 +19,11 @@ $do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
 $cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
 $cf_is_used = 0;
 $result_msg = null;
-$cf = '';  
+
 $do_control_combo_display = 1;
 
-$disabled_cf_enable_on=array('execution' => '', 'design' => '');
-$disabled_cf_show_on=array('execution' => '', 'design' => '');
-
+$disabled_cf_enable_on = array('execution' => '', 'design' => '');
+$disabled_cf_show_on = array('execution' => '', 'design' => '');
 
 $cfield_mgr = new cfield_mgr($db);
 $keys2loop = array('execution','design');
@@ -38,17 +37,15 @@ $possible_values_cfg = $cfield_mgr->get_possible_values_cfg();
 $allowed_nodes = $cfield_mgr->get_allowed_nodes();
 $cf_allowed_nodes = array();
 
+
 foreach($allowed_nodes as $verbose_type => $type_id)
 {
 	$cf_allowed_nodes[$type_id] = lang_get($verbose_type);
 }
 
-switch ($do_action)
-{
-	case 'create':
-		$cf = array('id' => $cfield_id,
-		            'name' => ' ', 
-					'label' => ' ', 
+$emptyCF = array('id' => $cfield_id,
+		            'name' => ' ',
+					'label' => ' ',
 					'type' => 0,
 		            'possible_values' => '',
 		            'show_on_design' => 1,
@@ -56,69 +53,83 @@ switch ($do_action)
 		            'show_on_execution' => 1,
 		            'enable_on_execution' => 1,
 		            'node_type_id' => $allowed_nodes['testcase']
-		);    
+		);
+$cf = $emptyCF;
+switch ($do_action)
+{
+	case 'create':
 		break;
-	
+
 	case 'edit':
 		$cf = $cfield_mgr->get_by_id($cfield_id);
-		$cf = $cf[$cfield_id];
-		$cf_is_used = $cfield_mgr->is_used($cfield_id);
+		if ($cf)
+		{
+			$cf = $cf[$cfield_id];
+			$cf_is_used = $cfield_mgr->is_used($cfield_id);
+		}
 		break;
-	
-	case 'do_add':  
+
+	case 'do_add':
 		$cf = request2cf($_REQUEST);
 		$cf['name'] = trim($cf['name']);
 		$cf['label'] = trim($cf['label']);
 		$cf['possible_values'] = trim($cf['possible_values']);
-		
+
 		// Check if name exists
 		$dupcf = $cfield_mgr->get_by_name($cf['name']);
-		if(is_null($dupcf)) 
+		if(is_null($dupcf))
 		{
 			$result_msg = "ok";
-			$ret = $cfield_mgr->create($cf); 
+			$ret = $cfield_mgr->create($cf);
 			if(!$ret['status_ok'])
-				$result_msg=lang_get("error_creating_cf"); 
+				$result_msg = lang_get("error_creating_cf");
 			else
-				logAuditEvent(TLS("audit_cfield_created"),"CREATE",$ret['id'],"custom_fields");
+			{
+				logAuditEvent(TLS("audit_cfield_created",$cf['name']),"CREATE",$ret['id'],"custom_fields");
+				$cf = $emptyCF;
+			}
 		}
 		else
-			$result_msg = lang_get("cf_name_exists"); 
+			$result_msg = lang_get("cf_name_exists");
 		break;
-	
-	case 'do_update':  
+
+	case 'do_update':
 		$cf = request2cf($_REQUEST);
-		
+
 		$cf['id'] = $cfield_id;
 		$cf['name'] = trim($cf['name']);
 		$cf['label'] = trim($cf['label']);
 		$cf['possible_values'] = trim($cf['possible_values']);
-		
+
 		// Check if name exists
-		$is_unique=$cfield_mgr->name_is_unique($cf['id'],$cf['name']);
-		if($is_unique) 
+		$is_unique = $cfield_mgr->name_is_unique($cf['id'],$cf['name']);
+		if($is_unique)
 		{
 			$result_msg = "ok";
-			$ret = $cfield_mgr->update($cf); 
+			$ret = $cfield_mgr->update($cf);
 			if ($ret)
-				logAuditEvent(TLS("audit_cfield_saved"),"SAVE",$cf['id'],"custom_fields");
+				logAuditEvent(TLS("audit_cfield_saved",$cf['name']),"SAVE",$cf['id'],"custom_fields");
 		}
 		else
-			$result_msg = lang_get("cf_name_exists"); 
+			$result_msg = lang_get("cf_name_exists");
 		break;
-	
+
 	case 'do_delete':
-		$cf = '';  
 		$result_msg = "ok";
-		if ($cfield_mgr->delete($cfield_id))
-			logAuditEvent(TLS("audit_cfield_deleted"),"DELETE",$cfield_id,"custom_fields");
+		$cf = $cfield_mgr->get_by_id($cfield_id);
+		if ($cf)
+		{
+			$cf = $cf[$cfield_id];
+			if ($cfield_mgr->delete($cfield_id))
+			{
+				logAuditEvent(TLS("audit_cfield_deleted",$cf['name']),"DELETE",$cfield_id,"custom_fields");
+				$cf = $emptyCF;
+			}
+		}
 		$do_control_combo_display = 0;
-		break; 
+		break;
 }
 
-$smarty = new TLSmarty();
-
-// --------------------------------------------------------------
 // To control combo display
 if( $do_control_combo_display )
 {
@@ -135,8 +146,8 @@ if( $do_control_combo_display )
 $show_possible_values = 0;
 if(isset($cf['type']))
 	$show_possible_values = $possible_values_cfg[$cf['type']];
-// --------------------------------------------------------------
 
+$smarty = new TLSmarty();
 $smarty->assign('result',$result_msg);
 $smarty->assign('user_action',$do_action);
 $smarty->assign('cf_types',$cfield_mgr->get_available_types());
@@ -161,9 +172,9 @@ $smarty->display($template_dir . $default_template);
             If notation is not followed logic will fail.
 
   args: hash
-  
-  returns: hash only with related to custom fields, where 
-           (keys,values) are the original with 'cf_' prefix, but 
+
+  returns: hash only with related to custom fields, where
+           (keys,values) are the original with 'cf_' prefix, but
            in this new hash prefix on key is removed.
 
 */
@@ -177,7 +188,7 @@ function request2cf($hash)
   // To avoid problems (need to be checked), my choice is set to 1
   // *_on_design keys, that right now will not present only for
   // req spec and requirements.
-  // 
+  //
 	$missing_keys = array('show_on_design' => 1,
                       'enable_on_design' => 1,
                       'show_on_execution' => 0,
@@ -193,14 +204,14 @@ function request2cf($hash)
 		if(strncmp($key,$cf_prefix,$len_cfp) == 0)
 		{
 			$dummy = substr($key,$start_pos);
-			$cf[$dummy]=$value;
+			$cf[$dummy] = $value;
 		}
-	} 
-	
+	}
+
 	foreach($missing_keys as $key => $value)
 	{
 		if(!isset($cf[$key]))
-			$cf[$key]=$value;
+			$cf[$key] = $value;
 	}
 
 	return $cf;

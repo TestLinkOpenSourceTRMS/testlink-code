@@ -1,11 +1,11 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+/* TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/02/13 20:31:18 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/02/15 20:26:43 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -52,7 +52,7 @@ else if ($bDelete && $id)
 	$sqlResult = 'ok';
 	$mStone = $milestone_mgr->get_by_id($id);
 	if ($mStone)
-	{	
+	{
 		if (!$milestone_mgr->delete($id))
 			$sqlResult = lang_get('milestone_delete_fails'). ' : ' . $db->error_msg();
 		else
@@ -68,6 +68,7 @@ else if($newMileStone || $bUpdate)
 		"A" => $A,
 		"B" => $B,
 		"C" => $C,
+		"id" => $id ? $id : $pid,
 	);
 	$sqlResult = checkMileStone($name,$date,$A,$B,$C);
 	if (is_null($sqlResult))
@@ -75,26 +76,27 @@ else if($newMileStone || $bUpdate)
 		$sqlResult = 'ok';
 		if ($newMileStone)
 		{
-			if (!$milestone_mgr->create($idPlan,$name,$date,$A,$B,$C))
-				$sqlResult = lang_get("warning_milestone_add_failed") . $db->error_msg();
+			$id = $milestone_mgr->create($idPlan,$name,$date,$A,$B,$C);
+			if (!$id)
+				$sqlResult = lang_get("warning_milestone_add_failed");
 			else
 				logAuditEvent(TLS("audit_milestone_created",$name),"CREATE",$id,"milestones");
 		}
 		else if ($pid)
 		{
 			if (!$milestone_mgr->update($pid,$name,$date,$A,$B,$C))
-				$sqlResult = lang_get("warning_milestone_update_failed") . $db->error_msg();
+				$sqlResult = lang_get("warning_milestone_update_failed");
 			else
 				logAuditEvent(TLS("audit_milestone_saved",$name),"SAVE",$pid,"milestones");
-			
+
 		}
 		if ($sqlResult == 'ok')
 			$mileStone = null;
 	}
-	//reset info, after successful updating	
+
+	//reset info, after successful updating
 	$action = $bUpdate ? "updated" : "do_add";
 }
-
 $mileStones = $milestone_mgr->get_all_by_testplan($idPlan);
 
 $smarty = new TLSmarty();
@@ -120,11 +122,9 @@ function checkMileStone($name,$date,$A,$B,$C)
 	$msg = null;
 	if (preg_match("/\D/",$A) || preg_match("/\D/",$B) || preg_match("/\D/",$C)
 		|| !strlen($A) || !strlen($B) || !strlen($C))
-		$msg = lang_get("warning_invalid_percentage_value");	
+		$msg = lang_get("warning_invalid_percentage_value");
 	else if (intval($A) > 100 || intval($B) > 100 || intval($C) > 100)
-		$msg = lang_get("warning_invalid_percentage_value");	
-	else if ((intval($A) + intval($B) + intval($C)) > 100)
-		$msg = lang_get("warning_percentage_value_higher_than_100");	
+		$msg = lang_get("warning_invalid_percentage_value");
 	else if (strlen($name))
 	{
 		if(strlen($date))
@@ -139,7 +139,7 @@ function checkMileStone($name,$date,$A,$B,$C)
 	}
 	else
 		$msg = lang_get("warning_empty_milestone_name");
-		
+
 	return $msg;
 }
 ?>

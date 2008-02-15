@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/02/14 21:26:21 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -513,7 +513,7 @@ class tlDBLogger extends tlObjectWithDB
 {
 	protected $logLevelFilter = null;
 	protected $pendingTransaction = null;
-
+	protected $bNoLogging = false;
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
@@ -524,8 +524,10 @@ class tlDBLogger extends tlObjectWithDB
 	}
 	public function writeTransaction(&$t)
 	{
+		if ($this->bNoLogging)
+			return tl::OK;
 		if (!$this->logLevelFilter)
-			return;
+			return tl::ERROR;
 		if ($this->checkDBConnection() < tl::OK)
 			return tl::ERROR;
 		//if we get a closed transaction without a dbID then the transaction wasn't stored
@@ -534,7 +536,11 @@ class tlDBLogger extends tlObjectWithDB
 		{
 			$this->pendingTransaction = null;
 			if ($t->dbID)
+			{
+				$this->bNoLogging = true;
 				$t->writeToDb($this->db);
+				$this->bNoLogging = false;
+			}
 			return tl::OK;
 		}
 		else
@@ -547,10 +553,13 @@ class tlDBLogger extends tlObjectWithDB
 	}
 	public function writeEvent(&$e)
 	{
+		if ($this->bNoLogging)
+			return tl::OK;
 		if (!($e->logLevel & $this->logLevelFilter))
-			return;
+			return tl::OK;
 		if ($this->checkDBConnection() < tl::OK)
 			return tl::ERROR;
+		$this->bNoLogging = true;
 		//if we have a pending transaction so we could write it now
 		if ($this->pendingTransaction)
 		{
@@ -558,8 +567,9 @@ class tlDBLogger extends tlObjectWithDB
 			$e->transactionID = $this->pendingTransaction->dbID;
 			$this->pendingTransaction = null;
 		}
-
-		return $e->writeToDb($this->db);
+		$result = $e->writeToDb($this->db);
+		$this->bNoLogging = false;
+		return $result;
 	}
 	public function setLogLevelFilter($filter)
 	{

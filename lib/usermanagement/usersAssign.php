@@ -1,17 +1,17 @@
 <?php
-/** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* This script is distributed under the GNU General Public License 2 or later. 
+/**
+* TestLink Open Source Project - http://testlink.sourceforge.net/
+* This script is distributed under the GNU General Public License 2 or later.
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.10 $
-* @modified $Date: 2008/02/12 11:17:26 $ $Author: franciscom $
-* 
+* @version $Revision: 1.11 $
+* @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
+*
 * Allows assigning users roles to testplans or testprojects
 *
 * rev :
-*      20070819 - franciscom - 
+*      20070819 - franciscom -
 *      refactoring of delete and insert calls
 *      new functions to generate $userFeatureRoles
 *
@@ -46,7 +46,7 @@ $mgr = null;
 
 if ($feature == "testproject")
 {
-  $highlight->assign_users_tproject=1;  
+	$highlight->assign_users_tproject=1;
 	$roles_updated = lang_get("test_project_user_roles_updated");
 	$no_features = lang_get("no_test_projects");
 	$bTestproject = true;
@@ -54,7 +54,7 @@ if ($feature == "testproject")
 }
 else if ($feature == "testplan")
 {
-  $highlight->assign_users_tplan=1;  
+  $highlight->assign_users_tplan=1;
 	$roles_updated = lang_get("test_plan_user_roles_updated");
 	$no_features = lang_get("no_test_plans");
 	$bTestPlan = true;
@@ -63,13 +63,13 @@ else if ($feature == "testplan")
 
 if ($featureID && $bUpdate && $mgr)
 {
-	$mgr->deleteUserRoles($featureID);			
+	$mgr->deleteUserRoles($featureID);
 	foreach($map_userid_roleid as $user_id => $role_id)
 	{
 		if ($role_id)
 			$mgr->addUserRole($user_id,$featureID,$role_id);
 	}
-	$user_feedback = $roles_updated; 
+	$user_feedback = $roles_updated;
 }
 $can_manage_users = has_rights($db,"mgt_users");
 
@@ -81,7 +81,7 @@ if ($bTestproject)
 	$order_by = $gui_cfg->tprojects_combo_order_by;
 	$features = $mgr->get_accessible_for_user($userID,'array_of_map',$order_by);
 	// If have no a test project ID, try to figure out which test project to show
-	// Try with session info, if failed go to first test project available. 
+	// Try with session info, if failed go to first test project available.
 	if (!$featureID)
 	{
 		if ($testprojectID)
@@ -123,7 +123,7 @@ else if($bTestPlan)
 				$featureID = $features[0]['id'];
 		}
 	}
-	
+
 	$userFeatureRoles = get_tplan_effective_role($db,$featureID,$testprojectID);
 }
 if(is_null($features))
@@ -134,9 +134,9 @@ $smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('mgt_users',$can_manage_users);
 $smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment', 
+$smarty->assign('tp_user_role_assignment',
                 $can_manage_users ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', 
+$smarty->assign('tproject_user_role_assignment',
                 $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('tproject_name',$testprojectName);
 $smarty->assign('optRights', tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM));

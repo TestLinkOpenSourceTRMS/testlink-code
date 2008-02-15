@@ -1,9 +1,9 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * 
+/** TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/02/13 18:37:16 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
  * @author schlundus
  */
 
@@ -25,7 +25,7 @@ class tlMetaStringHelper
 class tlMetaString extends tlObject
 {
 	protected $helper;
-	
+
 	public function __construct($label = null,$args = null)
 	{
 		parent::__construct();
@@ -51,7 +51,7 @@ class tlMetaString extends tlObject
 			$helper->params = null;
 			$helper->bDontLocalize = true;
 		}
-		
+
 		$metaString->helper = &$helper;
 		return $metaString;
 	}
@@ -59,7 +59,7 @@ class tlMetaString extends tlObject
 	{
 		return serialize($this->helper);
 	}
-	
+
 	//if a tlMetaString is to be printed we use default localization
 	public function __toString()
 	{
@@ -72,7 +72,7 @@ class tlMetaString extends tlObject
 			$str = $this->helper->label;
 		else
 			$str = lang_get($this->helper->label,$locale);
-			
+
 		$subjects = array();
 		$replacements = array();
 		$params = $this->helper->params;
@@ -81,9 +81,12 @@ class tlMetaString extends tlObject
 			$param = $params[$i];
 			if (is_array($param))
 			{
-				$type = $param[0];
-				$item = $param[1];
-				
+				$item = null;
+				if ($param[0])
+					$type = $param[0];
+				if ($param[1])
+					$item = $param[1];
+
 				//at the moment we ignore the type
 				$param = $item;
 			}
@@ -94,7 +97,7 @@ class tlMetaString extends tlObject
 			$replacements[] = $param;
 		}
 		$str = str_replace($subjects,$replacements,$str);
-				
+
 		return $str;
 	}
 }

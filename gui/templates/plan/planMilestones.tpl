@@ -1,7 +1,7 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planMilestones.tpl,v 1.4 2008/02/04 16:46:06 schlundus Exp $ 
-Purpose: smarty template - edit milestones 
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: planMilestones.tpl,v 1.5 2008/02/15 20:26:43 schlundus Exp $
+Purpose: smarty template - edit milestones
 
 rev :
      20070624 - franciscom - changed access to defined for gsmarty_ vars
@@ -20,7 +20,7 @@ var warning_empty_milestone_name  = "{lang_get s='warning_empty_milestone_name'}
   args : delUrl: url to call if user press OK
          elem_name: name of element to be deleted, used
                     to build warning message
-  
+
   returns: -
 
 */
@@ -37,20 +37,20 @@ function delete_confirmation(delUrl,elem_name) {ldelim}
   function: validateForm
             validate form inputs, doing several checks like:
             - fields that can not be empty
-            
+
             if some check fails:
             1. an alert message is displayed
             2. background color of offending field is changed.
 
   args : f: form object
-  
+
   returns: true  -> all checks ok
            false -> when a check fails
 */
 
 function validateForm(f)
 {
-  if (isWhitespace(f.milestone_name.value)) 
+  if (isWhitespace(f.milestone_name.value))
   {
       alert(warning_empty_milestone_name);
       selectField(f, 'milestone_name');
@@ -85,7 +85,7 @@ function validateForm(f)
 		<tr>
 			<td>{lang_get s='th_name'}:</td>
 			<td>
-				<input type="text" name="milestone_name" size="{#MILESTONE_NAME_SIZE#}" 
+				<input type="text" name="milestone_name" size="{#MILESTONE_NAME_SIZE#}"
         	  	 maxlength="{#MILESTONE_NAME_MAXLEN#}"  value="{$mileStone.name|escape}"/>
 	      {include file="error_icon.tpl" field="milestone_name"}
 			</td>
@@ -95,7 +95,7 @@ function validateForm(f)
 			<td>
       {if $mileStone neq null}
         {assign var="selected_date" value=$mileStone.target_date}
-      {/if} 
+      {/if}
       {html_select_date time=$selected_date
        month_format='%m' start_year="-1" end_year="+1"
        field_order=$gsmarty_html_select_date_field_order}
@@ -125,7 +125,8 @@ function validateForm(f)
 		</tr>
 	</table>
 	<p>
-	{if $mileStone eq null}
+	{$bEdit}
+	{if !$mileStone.id}
 		<input type="submit" name="newMilestone" value="{lang_get s='btn_new_milestone'}" />
 	{else}
 		<input type="submit" name="update" value="{lang_get s='btn_edit_milestone'}" />
@@ -170,9 +171,9 @@ function validateForm(f)
 							</td>
 							<td>
 								<a href="javascript:delete_confirmation(fRoot+'lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}','{$arrMilestone[Row].name}');">
-								<img style="border:none" 
-								     title="{lang_get s='alt_delete_milestone'}" 
-								     alt="{lang_get s='alt_delete_milestone'}" 
+								<img style="border:none"
+								     title="{lang_get s='alt_delete_milestone'}"
+								     alt="{lang_get s='alt_delete_milestone'}"
 								     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 								</a>
 							</td>
@@ -183,7 +184,7 @@ function validateForm(f)
 			{lang_get s='no_milestones'}
 		{/if}
 	</div>
-	
+
 </div>
 
 </body>

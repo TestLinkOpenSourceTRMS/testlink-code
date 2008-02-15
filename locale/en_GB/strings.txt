@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.275 $
- * @modified $Date: 2008/02/14 21:26:21 $ $Author: schlundus $
+ * @version $Revision: 1.276 $
+ * @modified $Date: 2008/02/15 20:26:44 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2003,9 +2003,9 @@ $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated";
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
 $TLS_audit_user_saved = "User '{%1}' was saved";
 $TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
-$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned a role to the Test Project '{%2}'";
-$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned a role to the Test Plan '{%2}'";
-$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan with id '{%1}'";
+$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
+$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
+$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
 $TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
 $TLS_audit_user_created = "User '{%1}' was created";
 $TLS_audit_user_deleted = "User '{%1}' was deleted";

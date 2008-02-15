@@ -1,45 +1,45 @@
-{* 
- Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageRight.tpl,v 1.3 2008/01/26 17:55:10 franciscom Exp $     
- Purpose: smarty template - main page / site map                 
-                                                                 
+{*
+ Testlink Open Source Project - http://testlink.sourceforge.net/
+ $Id: mainPageRight.tpl,v 1.4 2008/02/15 20:26:42 schlundus Exp $
+ Purpose: smarty template - main page / site map
+
  rev :
        20070523 - franciscom - new config constant $smarty.const.TL_ITEM_BULLET_IMG
-       20070508 - franciscom - milestones re-enabled                                                 
-                               improving test plan messaging 
+       20070508 - franciscom - milestones re-enabled
+                               improving test plan messaging
 *}
 
 {* Right Column                             *}
 <div class="vertical_menu" style="float: right">
 	{*** Begin Test Project section ***}
-	
+
 	{if $num_active_tplans > 0}
 	<div class="testproject_title">
  {lang_get s='help' var='common_prefix'}
  {lang_get s='test_plan' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
- {include file="inc_help.tpl" help="testPlan" locale=$locale 
+ {include file="inc_help.tpl" help="testPlan" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;vertical-align: top;"}
 
-    
+
  	  <form name="testplanForm" action="lib/general/mainPage.php">
       {if $show_filter_tp_by_product }
-      	<input type="hidden" name="filter_tp_by_product_hidden" value="0" /> 
-        <input type="checkbox" name="filter_tp_by_product"  value="1" 
+      	<input type="hidden" name="filter_tp_by_product_hidden" value="0" />
+        <input type="checkbox" name="filter_tp_by_product"  value="1"
       	       {if $filter_tp_by_product}
       	         	checked="checked"
-               {/if}  	                     	 
+               {/if}
                onclick="this.form.submit();" />
-      
+
 			  {lang_get s='filter_tp_by_product'}
-			  <br />	
-		  {/if}  	                     	 
-        
+			  <br />
+		  {/if}
+
     {if $countPlans > 0}
 		{lang_get s='title_test_plan'}
 		<select style="display:inline;width:50%;"  name="testplan" onchange="this.form.submit();">
 			{section name=tPlan loop=$arrPlans}
-				<option value="{$arrPlans[tPlan].id}" 
+				<option value="{$arrPlans[tPlan].id}"
 				        {$arrPlans[tPlan].selected}
 				        title="{$arrPlans[tPlan].name|escape}">
 				        {$arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
@@ -55,15 +55,15 @@
 	{else}
     {if $num_active_tplans > 0}
 		{lang_get s='msg_no_rights_for_tp'}
-	{/if}  
+	{/if}
 		{/if}
 	 </form>
 	</div>
   {/if}
 	<br />
   {* ------------------------------------------------------------------------------------------ *}
-  
-  
+
+
 	{* ------------------------------------------------------------------------------------------ *}
   {if $countPlans > 0}
     {$smarty.const.MENU_ITEM_OPEN}
@@ -85,17 +85,17 @@
 	       <a href="{$metrics_dashboard_url}">{lang_get s='href_metrics_dashboard'}</a>
 	  </p>
     {$smarty.const.MENU_ITEM_CLOSE}
-	
-	
+
+
 		{if $testplan_planning == "yes"}
     {$smarty.const.MENU_ITEM_OPEN}
-	  
+
 	    <h3>{lang_get s='title_test_case_suite'}</h3>
 		<p>
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	        <a href="{$launcher}?feature=planAddTC">{lang_get s='href_add_test_case'}</a>
 	        <br />
-	        
+
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="{$launcher}?feature=planRemoveTC">{lang_get s='href_remove_test_case'}</a>
 	        <br />
@@ -108,7 +108,7 @@
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="{$launcher}?feature=newest_tcversions">{lang_get s='href_newest_tcversions'}</a>
 	        <br />
-	        
+
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="{$launcher}?feature=tc_exec_assignment">{lang_get s='href_tc_exec_assignment'}</a>
 	        <br />
@@ -118,7 +118,7 @@
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="{$launcher}?feature=priority">{lang_get s='href_plan_assign_priority'}</a>
 	    <br />
-      *} 
+      *}
 			{*
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="lib/plan/planUpdateTC.php">{lang_get s='href_upd_mod_tc'}</a>
@@ -129,7 +129,7 @@
   {/if}
 
   {* ----------------------------------------------------------------------------------------- *}
-	{if $testplan_planning == "yes" or $testplan_creating == "yes" or 
+	{if $testplan_planning == "yes" or $testplan_creating == "yes" or
 	    $tp_user_role_assignment == "yes" or $testplan_create_build == "yes"}
     {$smarty.const.MENU_ITEM_OPEN}
     <h3>{lang_get s='title_test_plan_mgmt'}</h3>
@@ -140,7 +140,7 @@
 	{if $tp_user_role_assignment == "yes" && $countPlans > 0}
 			<br />
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-    	    <a href="lib/usermanagement/usersassign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
+    	    <a href="lib/usermanagement/usersAssign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
 	{/if}
 	{if $testplan_create_build == "yes" and $countPlans > 0}
 		<br />

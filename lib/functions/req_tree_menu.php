@@ -1,22 +1,22 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: req_tree_menu.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/09 17:24:13 $ by $Author: franciscom $
- * 
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/02/15 20:26:43 $ by $Author: schlundus $
+ *
  * Rev :
  *      20071125 - franciscom - added dtree_render_req_node_open
  *
  **/
 require_once(dirname(__FILE__)."/../../config.inc.php");
 
-//@FMAN: here are functions missing for LAYERSMENU ! 
+//@FMAN: here are functions missing for LAYERSMENU !
 /*
-if (TL_TREE_KIND == 'LAYERSMENU') 
+if (TL_TREE_KIND == 'LAYERSMENU')
 {
 	define('TL_MENU_PATH', TL_ABS_PATH . 'third_party' . DS .'phplayersmenu' . DS);
 	define('TL_MENU_LIB_PATH', TL_MENU_PATH . 'lib' . DS);
@@ -28,20 +28,20 @@ if (TL_TREE_KIND == 'LAYERSMENU')
 }
 */
 
-/** 
+/**
  * generate data for tree menu of Test Specification
  *
  * 20071014 - franciscom - $bForPrinting
- *                         used to choose Javascript function 
+ *                         used to choose Javascript function
  *                         to call when clicking on a tree node
- *                         
+ *
  *
  * 20070922 - franciscom - interface changes added $tplan_id,
  * 20070217 - franciscom - added $exclude_branches
  *
  * 20061105 - franciscom - added $ignore_inactive_testcases
- *                         
- * ignore_inactive_testcases: if all test case versions are inactive, 
+ *
+ * ignore_inactive_testcases: if all test case versions are inactive,
  *                            the test case will ignored.
  *
  * exclude_branches: map key=node_id
@@ -66,11 +66,11 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
-	
-	
+
+
 	$nt2exclude=array('testplan' => 'exclude_me','testsuite' => 'exclude_me');
   $nt2exclude_children=array('testcase' => 'exclude_my_children');
-	
+
   $exclude_branches=null;
 	$req_tree = $tree_manager->get_subtree($tproject_id,
 	                                       $nt2exclude,$nt2exclude_children,
@@ -78,48 +78,48 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
 	                                       NO_NODE_TYPE_TO_FILTER,
 	                                       RECURSIVE_MODE);
 
-	
+
 	// Added root node for requirement specs -> testproject
   $req_tree['name'] = $tproject_name;
 	$req_tree['id'] = $tproject_id;
 	$req_tree['node_type_id'] = $hash_descr_id['testproject'];
   $req_tree['node_type'] = 'testproject';
-	
+
 	$getArguments='';
-	
+
 	if($req_tree)
 	{
-  
+
   	$req_counters = prepare_req_node($db,$req_tree,$decoding_hash,$map_node_req_count);
-   
+
 		foreach($req_counters as $key => $value)
 		{
 		  $test_tree[$key]=$value;
 		}
 
 	  $menustring = render_req_tree_node(1,$req_tree,$getArguments,$hash_id_descr);
-  
+
   } // if($req_tree)
-	
+
   return $menustring;
 }
 
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$status = null)
 {
-  // ------------------------------------------------------------------------------  
+  // ------------------------------------------------------------------------------
   $hash_id_descr=$decoding_info['node_id_descr'];
   $status_descr_code=$decoding_info['status_descr_code'];
   $status_code_descr=$decoding_info['status_code_descr'];
-  
+
   $my_counters=array('requirement_count' => 0);
   foreach($status_descr_code as $status_descr => $status_code)
   {
@@ -129,22 +129,22 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
 
 	$node_type = $hash_id_descr[$node['node_type_id']];
   $my_counters['requirement_count']=0;
-  
+
 	if ($node_type == 'requirement')
 	{
 		foreach($my_counters as $key => $value)
 		{
 		  $my_counters[$key]=0;
 		}
-		
+
 		$tc_status_descr="not_run";
     $init_value=$node ? 1 : 0;
 		$my_counters[$tc_status_descr]=$init_value;
 		$my_counters['requirement_count']=$init_value;
 
-		
+
 	}
-	
+
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = &$node['childNodes'];
@@ -154,17 +154,17 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
 			// I use set an element to null to filter out leaf menu items
 			if(is_null($current))
 				continue;
-        
+
 			$counters_map = prepare_req_node($db,$current,$decoding_info,$map_node_req_count,
 			                                 $status);
-      
-      
+
+
       // -------------------------------------------------
       // 20071111 - franciscom
       foreach($counters_map as $key => $value)
       {
-        $my_counters[$key] += $counters_map[$key];   
-      }  
+        $my_counters[$key] += $counters_map[$key];
+      }
       // -------------------------------------------------
 
 
@@ -172,9 +172,9 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
     foreach($my_counters as $key => $value)
     {
         $node[$key] = $my_counters[$key];
-    }  
-		
-		
+    }
+
+
 		if (isset($node['id']))
 		{
 			$map_node_req_count[$node['id']] = array(	'req_count' => $node['requirement_count'],
@@ -186,16 +186,16 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
 		$map_node_req_count[$node['id']] = array(	'req_count' => 0,
 								                              'name' => $node['name']	  );
 	}
-	
+
 	return $my_counters;
 }
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr,$show_node_id=0)
@@ -206,9 +206,9 @@ function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr,$show_n
 		$menustring = jtree_render_req_node_open($node,$node_type,$show_node_id);
 	else if (TL_TREE_KIND == 'DTREE')
 		$menustring = dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id);
-	else 
+	else
 		$menustring = layersmenu_render_req_node_open($node,$node_type,$linkto,$getArguments,$level,$show_node_id);
-		
+
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = $node['childNodes'];
@@ -218,13 +218,13 @@ function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr,$show_n
 			$current = $childNodes[$idx];
 			if(is_null($current))
 				continue;
-			
+
 			$menustring .= render_req_tree_node($level+1,$current,$getArguments,$hash_id_descr,$show_node_id);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
 		$menustring .= jtree_render_req_node_close($node,$node_type);
-	
+
 	return $menustring;
 }
 
@@ -233,8 +233,8 @@ function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr,$show_n
   function: jtree_render_req_node_open
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function jtree_render_req_node_open($node,$node_type,$show_node_id=0)
@@ -243,8 +243,8 @@ function jtree_render_req_node_open($node,$node_type,$show_node_id=0)
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
 	$pfn = "ET";
-	$item_count = isset($node['requirement_count']) ? $node['requirement_count'] : 0;	
-  
+	$item_count = isset($node['requirement_count']) ? $node['requirement_count'] : 0;
+
   switch($node_type)
   {
 	  case 'testproject':
@@ -259,17 +259,17 @@ function jtree_render_req_node_open($node,$node_type,$show_node_id=0)
 
 	  case 'requirement':
 	  $pfn = "REQ_MGMT";
-	  
+
 	  $label = $name;
 	  if($show_node_id)
 	  {
 		  $label = "<b>" . $node['id'] . "</b>: " . $label;
 	  }
 	  break;
-  } // switch	
-  
+  } // switch
+
 	$menustring = "['{$label}','{$pfn}({$node['id']})',\n";
-			
+
 	return $menustring;
 }
 
@@ -277,16 +277,16 @@ function jtree_render_req_node_open($node,$node_type,$show_node_id=0)
 function jtree_render_req_node_close($node,$node_type)
 {
 	$menustring =  "],";
-	
+
 	return $menustring;
 }
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id)
@@ -295,7 +295,7 @@ function dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id
 
 	$parent_id = isset($node['parent_id']) ? $node['parent_id'] : -1;
 	$name = filterString($node['name']);
-	$item_count = isset($node['requirement_count']) ? $node['requirement_count'] : 0;	
+	$item_count = isset($node['requirement_count']) ? $node['requirement_count'] : 0;
 
   switch($node_type)
   {
@@ -311,23 +311,20 @@ function dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id
 
 	  case 'requirement':
 	  $pfn = "REQ_MGMT";
-	  
+
 	  $label = $name;
 	  if($show_node_id)
 	  {
 		  $label = "<b>" . $node['id'] . "</b>: " . $label;
 	  }
 	  break;
-  } // switch	
+  } // switch
 
 	$myLinkTo = "javascript:{$pfn}({$node['id']})";
 	$menustring = "tlTree.add(" . $dtreeCounter . ",{$parent_id},'" ;
 	$menustring .= $label. "','{$myLinkTo}');\n";
-				   
-	return $menustring;				   
-	
+
+	return $menustring;
+
 }
-
 ?>
-
-

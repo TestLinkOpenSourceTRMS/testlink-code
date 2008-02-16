@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.276 $
- * @modified $Date: 2008/02/15 20:26:44 $ $Author: schlundus $
+ * @version $Revision: 1.277 $
+ * @modified $Date: 2008/02/16 19:09:45 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1994,11 +1994,11 @@ $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
 $TLS_audit_cfield_created = "Custom field '{%1}' was created";
 $TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
 $TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
-$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned";
-$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned";
+$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned to Test Project '{%2}'";
+$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Project '{%2}'";
 $TLS_audit_cfield_display_order_changed = "Display order of custom fields was saved";
-$TLS_audit_cfield_activated = "Custom field '{%1}' was activated";
-$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated";
+$TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
+$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
 $TLS_audit_user_saved = "User '{%1}' was saved";

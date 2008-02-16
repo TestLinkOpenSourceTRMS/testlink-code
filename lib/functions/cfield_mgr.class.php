@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/02/14 21:26:21 $  $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/02/16 19:08:53 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080216 - franciscom - added testproject name to logAudit recorded information
  * 20071102 - franciscom - BUGID - Feature
  *            addition and refactoring of contributed code
  *
@@ -706,6 +707,8 @@ class cfield_mgr
 	{
 		if(is_null($cfield_ids))
 			return;
+
+    $tproject_info=$this->tree_manager->get_node_hierachy_info($tproject_id);				  
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "INSERT INTO cfield_testprojects " .
@@ -716,8 +719,8 @@ class cfield_mgr
 			{
 				$cf = $this->get_by_id($field_id);
 				if ($cf)
-					logAuditEvent(TLS("audit_cfield_assigned",$cf[$field_id]['name']),
-								"ASSIGN",$tproject_id,"testprojects");
+					logAuditEvent(TLS("audit_cfield_assigned",$cf[$field_id]['name'],$tproject_info['name']),
+								            "ASSIGN",$tproject_id,"testprojects");
 			}
 		}
 	} //function end
@@ -739,23 +742,21 @@ class cfield_mgr
   		if(is_null($cfield_ids))
 			return;
 			
+    $tproject_info=$this->tree_manager->get_node_hierachy_info($tproject_id);				  
 		$auditMsg = $active_val ? "audit_cfield_activated" : "audit_cfield_deactivated";
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "UPDATE cfield_testprojects " .
-				" SET active={$active_val} " .
-				" WHERE testproject_id={$tproject_id} " .
-				" AND field_id={$field_id}";
+				     " SET active={$active_val} " .
+				     " WHERE testproject_id={$tproject_id} " .
+				     " AND field_id={$field_id}";
 
 			if ($this->db->exec_query($sql))
 			{
 				$cf = $this->get_by_id($field_id);
 				if ($cf)
-				{
-					logAuditEvent(TLS($auditMsg,$cf[$field_id]['name']),
-								"SAVE",$tproject_id,"testprojects");
-				}
-
+					logAuditEvent(TLS($auditMsg,$cf[$field_id]['name'],$tproject_info['name']),
+								        "SAVE",$tproject_id,"testprojects");
 			}
 		}
 	} //function end
@@ -766,7 +767,7 @@ class cfield_mgr
     function: unlink_from_testproject
 
     args: $tproject_id
-          $cfields_id: array()
+          $cfield_ids: array()
 
     returns: -
   */
@@ -774,10 +775,16 @@ class cfield_mgr
   {
   	if(is_null($cfield_ids))
 		return;
+		
     // Step 1: set to active
     // 20070227 - why ??
-    $this->set_active_for_testproject($tproject_id,$cfield_ids,1);
+    //
+    // 20080216 - seems we do not need this
+    //$this->set_active_for_testproject($tproject_id,$cfield_ids,1);
 
+    // 20080216 - franciscom
+    // what to do with stored values ?
+    
 /*
     // Step 2: get all node id that has been linked
     //         to this cfields at design time
@@ -813,17 +820,19 @@ class cfield_mgr
       }
     }
 	*/
-	$cfields_ids = (array) $cfield_ids;
-	foreach($cfield_ids as $field_id)
-    {
-    	// BUGID 0000677
-    	$sql = "DELETE FROM cfield_testprojects WHERE field_id = {$field_id}" .
-        	   " AND testproject_id = {$tproject_id} ";
-    	if ($this->db->exec_query($sql))
+	// $cfields_ids = (array) $cfield_ids;
+  $tproject_info=$this->tree_manager->get_node_hierachy_info($tproject_id);				  
+  foreach($cfield_ids as $field_id)
+  {
+    // BUGID 0000677
+   	$sql = "DELETE FROM cfield_testprojects WHERE field_id = {$field_id}" .
+       	   " AND testproject_id = {$tproject_id} ";
+   	if ($this->db->exec_query($sql))
 		{
 			$cf = $this->get_by_id($field_id);
 			if ($cf)
-				logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name']),"ASSIGN",$tproject_id,"testprojects");
+				logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name'],$tproject_info['name']),
+				                  "ASSIGN",$tproject_id,"testprojects");
 		}
 	}
   } //function end

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/02/14 21:26:20 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/02/16 19:08:46 $ by $Author: franciscom $
  *
  * rev :
  *      20071218 - franciscom - refactoring
@@ -27,15 +27,18 @@ switch($args->doAction)
 	    $cfield_ids = array_keys($args->cfield);
 	    $cfield_mgr->link_to_testproject($args->testproject_id,$cfield_ids);
 	    break;
+
     case 'doUnassign':
 	    $cfield_ids = array_keys($args->cfield);
 	    $cfield_mgr->unlink_from_testproject($args->testproject_id,$cfield_ids);
 	    break;
+
     case 'doReorder':
 	    $cfield_ids = array_keys($args->display_order);
 	    $cfield_mgr->set_display_order($args->testproject_id,$args->display_order);
-		logAuditEvent(TLS("audit_cfield_display_order_changed"),"SAVE",$args->testproject_id,"testprojects");
+		  logAuditEvent(TLS("audit_cfield_display_order_changed"),"SAVE",$args->testproject_id,"testprojects");
 	    break;
+	    
     case 'doActiveMgmt':
 		$my_cf = array_keys($args->hidden_active_cfield);
 		if(!isset($args->active_cfield))
@@ -58,11 +61,6 @@ switch($args->doAction)
 				$cfield_mgr->set_active_for_testproject($args->testproject_id,$inactive,0);
 		}
 		break;
-
-
-    break;
-
-
 }
 
 // Get all available custom fields

@@ -4,16 +4,19 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/02/16 17:12:37 $ $Author: franciscom $
  *
- * @author Martin Havlat
+ * @author Andreas Morsing
  *
  * Log Functions
  *
  * A great way to debug is through logging. It's even easier if you can leave
  * the log messages through your code and turn them on and off with a single command.
  * To facilitate this we will create a number of logging functions.
+ *
+ * rev: 20080216 - franciscom - limit length of entryPoint
+ *
 **/
 class tlLogger extends tlObject
 {
@@ -25,19 +28,25 @@ class tlLogger extends tlObject
 	*/
 	const ERROR = 1;
 	const WARNING = 2;
-    const INFO = 4;
+  const INFO = 4;
 	const DEBUG = 8;
 	const AUDIT = 16;
 	static $logLevels = null;
 	static $revertedLogLevels = null;
 
+  // must be changed is db field len changes
+  const ENTRYPOINT_MAX_LEN=45;
+  
 	//the one and only logger of TesTLink
 	private static $s_instance;
+	
 	//all transactions, at the moment there is only one transaction supported,
 	//could be extended if we need more
 	protected $transactions = null;
+	
 	//the logger which are controlled
 	protected $loggers = null;
+	
 	//log only event which pass the filter,
 	//SCHLUNDUS: should use $g_log_level
 	protected $logLevelFilter = null;
@@ -114,6 +123,8 @@ class tlLogger extends tlObject
 
 	/*
 		starts a transaction
+		
+		rev: 20080216 - franciscom - entrypoint len limiting
 	*/
 	public function startTransaction($name = "DEFAULT",$entryPoint = null,$userID = null)
 	{
@@ -122,6 +133,25 @@ class tlLogger extends tlObject
 			return tl::ERROR;
 		if (is_null($entryPoint))
 			$entryPoint = $_SERVER['SCRIPT_NAME'];
+			
+		if( strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
+		{
+	    // Important information is at end of string
+		  $entryPoint=substr($entryPoint,-self::ENTRYPOINT_MAX_LEN);
+
+      // After limiting we can get thinks like:
+      //     l18/head_20080216/lib/project/projectEdit.php
+      // in these cases is better (IMHO) write:
+      //     /head_20080216/lib/project/projectEdit.php
+      //		  
+		  // search first /
+		  $mypos=strpos($entryPoint,"/");
+		  if( !($mypos === FALSE) && $mypos > 0)
+		  {
+	       $entryPoint=substr($entryPoint,$mypos);	       
+		  }
+		}
+			
 		if (is_null($userID))
 			$userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
 		$sessionID = $userID ? session_id() : null;
@@ -253,7 +283,8 @@ class tlTransaction extends tlDBObject
 			if (!is_null($this->sessionID))
 				$sessionID = "'".$db->prepare_string($this->sessionID)."'";
 
-			$query = "INSERT INTO transactions (entry_point,start_time,end_time,user_id,session_id) VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
+			$query = "INSERT INTO transactions (entry_point,start_time,end_time,user_id,session_id) " .
+			         "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
 			$result = $db->exec_query($query);
 			if ($result)
 				$this->dbID = $db->insert_id('events');
@@ -320,7 +351,17 @@ class tlEventManager extends tlObjectWithDB
 
         return self::$s_instance;
     }
-	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
+  
+  /*
+    function: 
+
+    args:
+    
+    returns: 
+
+  */
+	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
+	                             $activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
 	{
 		$clauses = null;
 		if (!is_null($logLevels))

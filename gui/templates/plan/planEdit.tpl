@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.7 2008/02/13 01:18:37 franciscom Exp $
+$Id: planEdit.tpl,v 1.8 2008/02/16 19:09:08 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -11,13 +11,21 @@ Bug confirmed on IE
 
 *}
 
+{lang_get var="labels"
+          s="warning,warning_empty_tp_name,testplan_title_edit,
+             testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
+             opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
+             testplan_txt_notes"}
+
+
+
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
-var warning_empty_tp_name = "{lang_get s='warning_empty_tp_name'}";
+var alert_box_title = "{$labels.warning}";
+var warning_empty_tp_name = "{$labels.warning_empty_tp_name}";
 {literal}
 function validateForm(f)
 {
@@ -59,11 +67,9 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
          result=$sqlResult item="TestPlan" action="add"}
 
 	<h2>
-	{if $tplan_id eq 0}
-		{lang_get s='testplan_title_create'}
-		{assign var='form_action' value='create'} 
-	{else}
-		{lang_get s='testplan_title_edit'} {$tpName|escape} 
+	{assign var='form_action' value='create'} 
+	{if $tplan_id neq 0}
+		{$labels.testplan_title_edit} {$tpName|escape} 
 		{assign var='form_action' value='update'} 
 	{/if}
 	</h2>
@@ -75,7 +81,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}" />
 	<table class="common" width="80%">
 	
-		<tr><th style="background:none;">{lang_get s='testplan_th_name'}</th>
+		<tr><th style="background:none;">{$labels.testplan_th_name}</th>
 			<td><input type="text" name="testplan_name" 
 			           size="{#TESTPLAN_NAME_SIZE#}" 
 			           maxlength="{#TESTPLAN_NAME_MAXLEN#}" 
@@ -83,15 +89,15 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
   				{include file="error_icon.tpl" field="testplan_name"}
 			</td>
 		</tr>	
-		<tr><th style="background:none;">{lang_get s='testplan_th_notes'}</th>
+		<tr><th style="background:none;">{$labels.testplan_th_notes}</th>
 			<td >{$notes}</td>
 		</tr>
 		{if $tplan_id eq 0}
-			<tr><th style="background:none;">{lang_get s='testplan_question_create_tp_from'}</th>
+			<tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
 			<td>
 				<select name="copy_from_tplan_id" 
 				        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
-				<option value="0">{lang_get s='opt_no'}</option>
+				<option value="0">{$labels.opt_no}</option>
 				{foreach item=testplan from=$tplans}
 					<option value="{$testplan.id}">{$testplan.name|escape}</option>
 				{/foreach}
@@ -105,7 +111,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 			</tr>
 		{else}
 			<tr><td>
-				{lang_get s='testplan_th_active'}
+				{$labels.testplan_th_active}
 				<input type="checkbox" name="active" 
 				{if $tpActive eq 1}
 					checked="checked"
@@ -131,23 +137,24 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
 		{if $tplan_id eq 0}
 		  <input type="hidden" name="do_action" value="do_create" />
-		  <input type="submit" name="do_create" value="{lang_get s='btn_testplan_create'}"
+		  <input type="submit" name="do_create" value="{$labels.btn_testplan_create}"
 		         onclick="do_action.value='do_create'"/>
 		{else}
 		
 		  <input type="hidden" name="do_action" value="do_update" />
-		  <input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
+		  <input type="submit" name="do_update" value="{$labels.btn_upd}"
 		         onclick="do_action.value='do_update'"/>
 
 		{/if}
 
-		<input type="button" name="go_back" value="{lang_get s='cancel'}"  onclick="javascript:history.back()"/>
+		<input type="button" name="go_back" value="{$labels.cancel}"  
+		                     onclick="javascript: location.href=fRoot+'lib/plan/planView.php';" />
 
 	</div>
 
 	</form>
 
-<p>{lang_get s='testplan_txt_notes'}</p>
+<p>{$labels.testplan_txt_notes}</p>
 	
 </div>
 

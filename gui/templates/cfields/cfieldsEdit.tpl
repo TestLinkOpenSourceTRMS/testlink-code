@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: cfieldsEdit.tpl,v 1.7 2008/02/14 21:26:20 schlundus Exp $
+$Id: cfieldsEdit.tpl,v 1.8 2008/02/17 18:58:24 franciscom Exp $
 
 
 Important Development note:
@@ -29,22 +29,30 @@ rev :
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
+{assign var="managerURL" value="lib/cfields/cfieldsEdit.php"}
+{assign var="viewAction" value="lib/cfields/cfieldsView.php"}
+
+
 {lang_get s='warning_delete_cf' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
+
+{lang_get var="labels"
+          s="warning,warning_empty_cfield_name,warning_empty_cfield_label"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/cfields/cfieldsEdit.php?do_action=do_delete&cfield_id=';
+var del_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
 </script>
 
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_cfield_name = "{lang_get s='warning_empty_cfield_name'}";
-var warning_empty_cfield_label = "{lang_get s='warning_empty_cfield_label'}";
+var alert_box_title = "{$labels.warning}";
+var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name}";
+var warning_empty_cfield_label = "{$labels.warning_empty_cfield_label}";
 
 // -------------------------------------------------------------------------------
 // To manage hide/show combo logic, depending of node type
@@ -69,26 +77,26 @@ js_show_on_cfg['oid_prefix']['container'] = 'container_cf_show_on_';
 js_show_on_cfg['execution'] = new Array();
 js_show_on_cfg['design'] = new Array();
 
-{foreach key=node_type item=cfg_def from=$enable_on_cfg.execution}
+{foreach key=node_type item=cfg_def from=$cfieldCfg->enable_on_cfg.execution}
   js_enable_on_cfg['execution'][{$node_type}]={$cfg_def};
 {/foreach}
 
-{foreach key=node_type item=cfg_def from=$enable_on_cfg.design}
+{foreach key=node_type item=cfg_def from=$cfieldCfg->enable_on_cfg.design}
   js_enable_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 
-{foreach key=node_type item=cfg_def from=$show_on_cfg.execution}
+{foreach key=node_type item=cfg_def from=$cfieldCfg->show_on_cfg.execution}
   js_show_on_cfg['execution'][{$node_type}]={$cfg_def};
 {/foreach}
 
-{foreach key=node_type item=cfg_def from=$show_on_cfg.design}
+{foreach key=node_type item=cfg_def from=$cfieldCfg->show_on_cfg.design}
   js_show_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 // -------------------------------------------------------------------------------
 
 
 var js_possible_values_cfg = new Array();
-{foreach key=cf_type item=cfg_def from=$possible_values_cfg}
+{foreach key=cf_type item=cfg_def from=$cfieldCfg->possible_values_cfg}
   js_possible_values_cfg[{$cf_type}]={$cfg_def};
 {/foreach}
 
@@ -99,14 +107,14 @@ function validateForm(f)
 {
   if (isWhitespace(f.cf_name.value))
   {
-      alert(warning_empty_cfield_name);
+      alert_message(alert_box_title,warning_empty_cfield_name);
       selectField(f, 'cf_name');
       return false;
   }
 
   if (isWhitespace(f.cf_label.value))
   {
-      alert(warning_empty_cfield_label);
+      alert_message(alert_box_title,warning_empty_cfield_label);
       selectField(f, 'cf_label');
       return false;
   }
@@ -247,7 +255,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
           alt="$text_hint" title="$text_hint"  style="float: right;"}
  {lang_get s='title_cfields_mgmt'} </h1>
 
-{include file="inc_update.tpl" result=$result item="custom_field" action="$user_action"}
+<h2>{$operation_descr|escape}</h2>
+{include file="inc_update.tpl" user_feedback=$user_feedback}
 
 {if $is_used}
   <div class="user_feedback">{lang_get s="warning_is_in_use"}</div>
@@ -257,7 +266,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 
 {if $user_action eq "do_delete"}
-  <form method="post" name="cfields_edit" action="lib/cfields/cfieldsView.php">
+  <form method="post" name="cfields_edit" action="{$viewAction}">
    <div class="groupBtn">
 		<input type="submit" name="ok" value="{lang_get s='btn_ok'}" />
 	 </div>
@@ -411,7 +420,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			<td>
 			  {if $is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$cf.node_type_id}
-			    {$cf_allowed_nodes.$idx}
+			    {$cfieldCfg->cf_allowed_nodes.$idx}
 			    <input type="hidden" id="hidden_cf_node_type_id"
 			           value={$cf.node_type_id} name="cf_node_type_id" />
 			  {else}
@@ -420,7 +429,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
   				                                    js_show_on_cfg);"
   				        id="combo_cf_node_type_id"
   				        name="cf_node_type_id">
-  				{html_options options=$cf_allowed_nodes selected=$cf.node_type_id}
+  				{html_options options=$cfieldCfg->cf_allowed_nodes selected=$cf.node_type_id}
   				</select>
 				{/if}
 			</td>

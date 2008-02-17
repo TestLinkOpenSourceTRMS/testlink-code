@@ -5,13 +5,12 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/02/04 14:58:17 $ $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/02/17 16:35:30 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
  *       20070121 - franciscom - active and open management
- *       20061118 - franciscom - added check_build_name_existence()
  *
 */
 require('../../config.inc.php');

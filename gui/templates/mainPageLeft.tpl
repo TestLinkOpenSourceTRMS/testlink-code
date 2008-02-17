@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.9 2008/02/12 10:39:13 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.10 2008/02/17 16:34:45 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -61,7 +61,7 @@
     {$smarty.const.MENU_ITEM_OPEN}
         <h3>{lang_get s='title_user_mgmt'}</h3>
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="lib/usermanagement/usersEdit.php">{lang_get s='href_user_management'}</a>
+        <a href="lib/usermanagement/usersView.php">{lang_get s='href_user_management'}</a>
         <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
         <a href="lib/usermanagement/rolesView.php">{lang_get s='href_roles_management'}</a>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/14 21:26:20 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/02/17 16:35:30 $ by $Author: franciscom $
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
@@ -15,8 +15,6 @@ testlinkInitPage($db);
 $template_dir = 'cfields/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-$do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
-$cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
 $cf_is_used = 0;
 $result_msg = null;
 
@@ -36,36 +34,34 @@ foreach($keys2loop as $ui_mode)
 $possible_values_cfg = $cfield_mgr->get_possible_values_cfg();
 $allowed_nodes = $cfield_mgr->get_allowed_nodes();
 $cf_allowed_nodes = array();
-
-
 foreach($allowed_nodes as $verbose_type => $type_id)
 {
 	$cf_allowed_nodes[$type_id] = lang_get($verbose_type);
 }
 
 $emptyCF = array('id' => $cfield_id,
-		            'name' => ' ',
-					'label' => ' ',
-					'type' => 0,
-		            'possible_values' => '',
-		            'show_on_design' => 1,
-		            'enable_on_design' => 1,
-		            'show_on_execution' => 1,
-		            'enable_on_execution' => 1,
-		            'node_type_id' => $allowed_nodes['testcase']
-		);
+		             'name' => ' ',
+					       'label' => ' ',
+					       'type' => 0,
+		             'possible_values' => '',
+		             'show_on_design' => 1,
+		             'enable_on_design' => 1,
+		             'show_on_execution' => 1,
+		             'enable_on_execution' => 1,
+		             'node_type_id' => $allowed_nodes['testcase']);
+		             
 $cf = $emptyCF;
-switch ($do_action)
+switch ($args->do_action)
 {
 	case 'create':
 		break;
 
 	case 'edit':
-		$cf = $cfield_mgr->get_by_id($cfield_id);
+		$cf = $cfield_mgr->get_by_id($args->cfield_id);
 		if ($cf)
 		{
 			$cf = $cf[$cfield_id];
-			$cf_is_used = $cfield_mgr->is_used($cfield_id);
+			$cf_is_used = $cfield_mgr->is_used($args->cfield_id);
 		}
 		break;
 
@@ -116,11 +112,11 @@ switch ($do_action)
 
 	case 'do_delete':
 		$result_msg = "ok";
-		$cf = $cfield_mgr->get_by_id($cfield_id);
+		$cf = $cfield_mgr->get_by_id($args->cfield_id);
 		if ($cf)
 		{
-			$cf = $cf[$cfield_id];
-			if ($cfield_mgr->delete($cfield_id))
+			$cf = $cf[$args->cfield_id];
+			if ($cfield_mgr->delete($args->cfield_id))
 			{
 				logAuditEvent(TLS("audit_cfield_deleted",$cf['name']),"DELETE",$cfield_id,"custom_fields");
 				$cf = $emptyCF;
@@ -161,6 +157,7 @@ $smarty->assign('enable_on_cfg', $enable_on_cfg);
 $smarty->assign('show_on_cfg', $show_on_cfg);
 $smarty->assign('possible_values_cfg', $possible_values_cfg);
 $smarty->display($template_dir . $default_template);
+
 
 /*
   function: request2cf
@@ -215,5 +212,22 @@ function request2cf($hash)
 	}
 
 	return $cf;
+}
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $_REQUEST=strings_stripSlashes($_REQUEST);
+    
+    $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
+    $args->cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
+    return $args;  
 }
 ?>

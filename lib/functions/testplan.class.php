@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2008/02/17 16:35:30 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080217 - franciscom - interface changes - check_build_name_existence()
  *     20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
  *     20080119 - franciscom - improved logic in copy_as to avoid bug due to
  *                             missing methods.
@@ -64,7 +65,7 @@ class testplan extends tlObjectWithAttachments
 	var $tree_manager;
 	var $assignment_mgr;
   var $cfield_mgr;
-
+  var $builds_table="builds";
 
 	var $assignment_types;
 	var $assignment_status;
@@ -767,7 +768,7 @@ function copy_builds($id,$new_tplan_id)
   {
     foreach($rs as $build)
     {
-      $sql="INSERT builds (name,notes,testplan_id) " .
+      $sql="INSERT {$this->builds_table} (name,notes,testplan_id) " .
            "VALUES ('" . $this->db->prepare_string($build['name']) ."'," .
            "'" . $this->db->prepare_string($build['notes']) ."',{$new_tplan_id})";
 
@@ -986,7 +987,7 @@ function delete($id)
   $this->deleteUserRoles($id);
   $the_sql[]="DELETE FROM milestones WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM testplan_tcversions WHERE testplan_id={$id}";
-  $the_sql[]="DELETE FROM builds WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM {$this->builds_table} WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM test_urgency WHERE testplan_id={$id}";
   $the_sql[]="DELETE FROM cfield_execution_values WHERE testplan_id={$id}";
 
@@ -1040,8 +1041,8 @@ function delete($id)
 */
 function get_builds_for_html_options($id,$active=null,$open=null)
 {
-	$sql = " SELECT builds.id, builds.name " .
-	       " FROM builds WHERE builds.testplan_id = {$id} ";
+	$sql = " SELECT id, name " .
+	       " FROM {$this->builds_table} WHERE testplan_id = {$id} ";
 
 	// 20070120 - franciscom
  	if( !is_null($active) )
@@ -1053,7 +1054,7 @@ function get_builds_for_html_options($id,$active=null,$open=null)
  	   $sql .= " AND is_open=" . intval($open) . " ";
  	}
 
-  $sql .= " ORDER BY builds.name ASC";
+  $sql .= " ORDER BY name ASC";
 
 
 	// BUGID
@@ -1079,8 +1080,9 @@ function get_builds_for_html_options($id,$active=null,$open=null)
 */
 function get_max_build_id($id,$active = null,$open = null)
 {
-	$sql = " SELECT MAX(builds.id) AS maxbuildid
-	         FROM builds WHERE builds.testplan_id = {$id}";
+	$sql = " SELECT MAX(id) AS maxbuildid " .
+	       " FROM {$this->builds_table} " .
+	       " WHERE testplan_id = {$id}";
 
  	if(!is_null($active))
  	{
@@ -1129,7 +1131,7 @@ function get_max_build_id($id,$active = null,$open = null)
 function get_builds($id,$active=null,$open=null)
 {
 	$sql = " SELECT id,testplan_id, name, notes, active, is_open " .
-	       " FROM builds WHERE builds.testplan_id = {$id} " ;
+	       " FROM {$this->builds_table} WHERE testplan_id = {$id} " ;
 
  	if( !is_null($active) )
  	{
@@ -1140,7 +1142,7 @@ function get_builds($id,$active=null,$open=null)
  	   $sql .= " AND is_open=" . intval($open) . " ";
  	}
 
-	$sql .= "  ORDER BY builds.name ASC";
+	$sql .= "  ORDER BY name ASC";
 
  	$recordset = $this->db->fetchRowsIntoMap($sql,'id');
 
@@ -1183,30 +1185,42 @@ function _natsort_builds($builds_map)
 /*
   function: check_build_name_existence
 
-  args :
-        $tplan_id     : test plan id.
+  args:
+       tplan_id: test plan id.
+       build_name
+      [build_id}: default: null
+                  when is not null we add build_id as filter, this is useful
+                  to understand if is really a duplicate when using this method
+                  while managing update operations via GUI
 
-  returns:
+  returns: 1 => name exists
 
-  rev :
+  rev: 20080217 - franciscom - added build_id argument
+  
 */
-function check_build_name_existence($tplan_id,$build_name,$case_sensitive=0)
+function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_sensitive=0)
 {
- 	$sql = " SELECT builds.id, builds.name, builds.notes " .
-	       " FROM builds " .
-	       " WHERE builds.testplan_id = {$tplan_id} ";
+ 	$sql = " SELECT id, name, notes " .
+	       " FROM {$this->builds_table} " .
+	       " WHERE testplan_id = {$tplan_id} ";
 
 
 	if($case_sensitive)
 	{
-	    $sql .= " AND builds.name=";
+	    $sql .= " AND name=";
 	}
 	else
 	{
       $build_name=strtoupper($build_name);
-	    $sql .= " AND UPPER(builds.name)=";
+	    $sql .= " AND UPPER(name)=";
 	}
 	$sql .= "'" . $this->db->prepare_string($build_name) . "'";
+	
+	if( !is_null($build_id) )
+	{
+	    $sql .= " AND id <> " . $this->db->prepare_int($build_id);
+	}
+	
 
   $result = $this->db->exec_query($sql);
   $status= $this->db->num_rows($result) ? 1 : 0;
@@ -1234,7 +1248,7 @@ function check_build_name_existence($tplan_id,$build_name,$case_sensitive=0)
 */
 function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
 {
-	$sql = " INSERT INTO builds (testplan_id,name,notes,active,is_open) " .
+	$sql = " INSERT INTO {$this->builds_table} (testplan_id,name,notes,active,is_open) " .
 	       " VALUES ('". $tplan_id . "','" .
 	                     $this->db->prepare_string($name) . "','" .
 	                     $this->db->prepare_string($notes) . "'," .
@@ -1244,7 +1258,7 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
 	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
-		$new_build_id = $this->db->insert_id('builds');
+		$new_build_id = $this->db->insert_id($this->builds_table);
 	}
 
 	return $new_build_id;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/02/11 19:49:11 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/02/17 16:35:30 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -351,23 +351,23 @@ function crossChecks($argsObj,&$tprojectMgr)
    
     if($check_op['status_ok'])
     {
-		if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL))
-		{
-			$check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
-			$check_op['status_ok'] = 0;
-		}
-
-		$sql = "SELECT id FROM testprojects " .
-			     "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
-		if(!is_null($updateAdditionalSQL))
-			$sql .= " AND {$updateAdditionalSQL} "; 
-		   
-		$rs = $tprojectMgr->db->get_recordset($sql);
-		if(!is_null($rs))
-		{
-			$check_op['msg'][] = sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
-			$check_op['status_ok'] = 0;
-		}
+		    if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL))
+		    {
+		    	$check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
+		    	$check_op['status_ok'] = 0;
+		    }
+        
+		    $sql = "SELECT id FROM testprojects " .
+		    	     "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
+		    if(!is_null($updateAdditionalSQL))
+		    	$sql .= " AND {$updateAdditionalSQL} "; 
+		       
+		    $rs = $tprojectMgr->db->get_recordset($sql);
+		    if(!is_null($rs))
+		    {
+		    	$check_op['msg'][] = sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
+		    	$check_op['status_ok'] = 0;
+		    }
     }
     else
          $check_op['msg'][] = $op['msg'];

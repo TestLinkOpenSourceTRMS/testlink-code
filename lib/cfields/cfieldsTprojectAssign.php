@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/16 19:08:46 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/02/18 20:18:14 $ by $Author: schlundus $
  *
  * rev :
  *      20071218 - franciscom - refactoring
@@ -36,9 +36,8 @@ switch($args->doAction)
     case 'doReorder':
 	    $cfield_ids = array_keys($args->display_order);
 	    $cfield_mgr->set_display_order($args->testproject_id,$args->display_order);
-		  logAuditEvent(TLS("audit_cfield_display_order_changed"),"SAVE",$args->testproject_id,"testprojects");
 	    break;
-	    
+
     case 'doActiveMgmt':
 		$my_cf = array_keys($args->hidden_active_cfield);
 		if(!isset($args->active_cfield))
@@ -89,7 +88,7 @@ function init_args()
 		$args->cfield = array();
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-	
+
 	return $args;
 }
 ?>

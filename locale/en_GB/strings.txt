@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.279 $
- * @modified $Date: 2008/02/17 18:59:29 $ $Author: franciscom $
+ * @version $Revision: 1.280 $
+ * @modified $Date: 2008/02/18 20:18:14 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1989,15 +1989,13 @@ $TLS_audit_role_created = "Role '{%1}' was created";
 $TLS_audit_role_deleted = "Role '{%1}' was deleted";
 
 
-$TLS_audit_user_logout = "Logout of '{%1}'";
-$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
-$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+
 $TLS_audit_cfield_created = "Custom field '{%1}' was created";
 $TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
 $TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
 $TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned to Test Project '{%2}'";
 $TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Project '{%2}'";
-$TLS_audit_cfield_display_order_changed = "Display order of custom fields was saved";
+$TLS_audit_cfield_display_order_changed = "Display order of custom fields from Test Project '{%1}' was saved";
 $TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
 $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
 
@@ -2010,7 +2008,9 @@ $TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned fro
 $TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
 $TLS_audit_user_created = "User '{%1}' was created";
 $TLS_audit_user_deleted = "User '{%1}' was deleted";
-
+$TLS_audit_user_logout = "Logout of '{%1}'";
+$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
 
 $TLS_audit_testproject_created = "Test Project '{%1}' was created";
 $TLS_audit_testproject_saved = "Test Project '{%1}' was saved";
@@ -2019,29 +2019,34 @@ $TLS_audit_testproject_deleted = "Test Project '{%1}' was deleted";
 $TLS_audit_keyword_created = "Keyword '{%1}' was created";
 $TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
 $TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted";
-$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the test case with id '{%2}'";
-$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from test case '{%2}'";
-$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the test case with id '{%1}'";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
 
 $TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
 $TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+
 $TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
 $TLS_audit_attachment_created = "Attachment '{%1}' was created";
+
 $TLS_audit_req_spec_created = "Requirement specification '{%1}' was created";
 $TLS_audit_req_spec_saved = "Requirement specification '{%1}' was saved";
 $TLS_audit_req_spec_deleted = "Requirement specification '{%1}' was deleted";
 $TLS_audit_requirement_created = "Requirement '{%1}' was created";
 $TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
 $TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+
 $TLS_audit_build_created = "Build '{%1}' was created for Test Plan '{%2}'";
 $TLS_audit_build_saved = "Build '{%1}' was saved";
 $TLS_audit_build_deleted = "Build '{%1}' / Test Plan '{%2}' was deleted";
+
 $TLS_audit_testplan_deleted = "Test Plan '{%1}' was deleted";
 $TLS_audit_testplan_saved = "Test Plan '{%1}' was saved";
 $TLS_audit_testplan_created = "Test Plan '{%1}' was created";
 $TLS_audit_milestone_deleted = "Milestone '{%1}' was deleted";
 $TLS_audit_milestone_created = "Milestone '{%1}' was created";
 $TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
+
 $TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";
 $TLS_audit_tc_removed_from_testplan = "Test Case(s) '{%1}' were removed from Test Plan";
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/02/16 19:08:53 $  $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/02/18 20:18:14 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080216 - franciscom - added testproject name to logAudit recorded information
@@ -708,7 +708,7 @@ class cfield_mgr
 		if(is_null($cfield_ids))
 			return;
 
-    $tproject_info=$this->tree_manager->get_node_hierachy_info($tproject_id);				  
+    	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "INSERT INTO cfield_testprojects " .
@@ -741,8 +741,8 @@ class cfield_mgr
 	{
   		if(is_null($cfield_ids))
 			return;
-			
-    $tproject_info=$this->tree_manager->get_node_hierachy_info($tproject_id);				  
+
+    	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
 		$auditMsg = $active_val ? "audit_cfield_activated" : "audit_cfield_deactivated";
 		foreach($cfield_ids as $field_id)
 		{
@@ -771,71 +771,30 @@ class cfield_mgr
 
     returns: -
   */
-  function unlink_from_testproject($tproject_id,$cfield_ids)
-  {
-  	if(is_null($cfield_ids))
-		return;
-		
-    // Step 1: set to active
-    // 20070227 - why ??
-    //
-    // 20080216 - seems we do not need this
-    //$this->set_active_for_testproject($tproject_id,$cfield_ids,1);
-
-    // 20080216 - franciscom
-    // what to do with stored values ?
-    
-/*
-    // Step 2: get all node id that has been linked
-    //         to this cfields at design time
-    if( is_array($cfield_ids) )
-    {
-       $filter=" WHERE field_id IN (" . implode(',',$cfield_ids) . ")";
-    }
-    else
-    {
-       $filter=" WHERE field_id = {$cfield_ids} ";
-    }
-
-    $sql=" SELECT node_id,field_id " .
-         " FROM cfield_design_values {$filter}";
-    $node_map=$this->db->fetchArrayRowsIntoMap($sql,'node_id');
-
-    // now I need to get the path for every node
-    if(!is_null($node_map))
-    {
-      $node_list=array_keys($node_map);
-      $node2del=null;
-      foreach($node_list as $node_id)
-      {
-        $the_path=$this->tree_manager->get_path($node_id);
-        if( !is_null($the_path) )
-        {
-          $root=array_pop($the_path);
-          if($root['parent_id'] == $tproject_id)
-          {
-            $node2del[]=$node_id;
-          }
-        }
-      }
-    }
-	*/
-	// $cfields_ids = (array) $cfield_ids;
-  $tproject_info=$this->tree_manager->get_node_hierachy_info($tproject_id);				  
-  foreach($cfield_ids as $field_id)
-  {
-    // BUGID 0000677
-   	$sql = "DELETE FROM cfield_testprojects WHERE field_id = {$field_id}" .
-       	   " AND testproject_id = {$tproject_id} ";
-   	if ($this->db->exec_query($sql))
+	function unlink_from_testproject($tproject_id,$cfield_ids)
+  	{
+	  	if(is_null($cfield_ids))
+			return;
+	
+		// 20080216 - seems we do not need this
+		//$this->set_active_for_testproject($tproject_id,$cfield_ids,1);
+	
+		// $cfields_ids = (array) $cfield_ids;
+		$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+		foreach($cfield_ids as $field_id)
 		{
-			$cf = $this->get_by_id($field_id);
-			if ($cf)
-				logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name'],$tproject_info['name']),
-				                  "ASSIGN",$tproject_id,"testprojects");
+			// BUGID 0000677
+			$sql = "DELETE FROM cfield_testprojects WHERE field_id = {$field_id}" .
+					" AND testproject_id = {$tproject_id} ";
+			if ($this->db->exec_query($sql))
+			{
+				$cf = $this->get_by_id($field_id);
+				if ($cf)
+					logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name'],$tproject_info['name']),
+		         					 "ASSIGN",$tproject_id,"testprojects");
+			}
 		}
-	}
-  } //function end
+  	} //function end
 
 
 
@@ -1409,15 +1368,20 @@ class cfield_mgr
  */
  function set_display_order($tproject_id, $map_field_id_display_order)
  {
+ 	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
     foreach($map_field_id_display_order as $field_id => $display_order)
     {
-       $sql="UPDATE cfield_testprojects " .
-            " SET display_order=" . intval($display_order) .
-            " WHERE testproject_id={$tproject_id} " .
-            " AND field_id={$field_id} ";
+		$sql = "UPDATE cfield_testprojects " .
+		      " SET display_order=" . intval($display_order) .
+		      " WHERE testproject_id={$tproject_id} " .
+		      " AND field_id={$field_id} ";
+		
+		$this->db->exec_query($sql);
 
-       $this->db->exec_query($sql);
     }
+	if ($tproject_info)
+		logAuditEvent(TLS("audit_cfield_display_order_changed",$tproject_info['name']),"SAVE",$tproject_id,"testprojects");
+
  } // function end
 
 

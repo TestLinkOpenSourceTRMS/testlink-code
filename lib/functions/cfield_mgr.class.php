@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/02/18 20:18:14 $  $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/02/20 21:21:44 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080216 - franciscom - added testproject name to logAudit recorded information
@@ -775,10 +775,10 @@ class cfield_mgr
   	{
 	  	if(is_null($cfield_ids))
 			return;
-	
+
 		// 20080216 - seems we do not need this
 		//$this->set_active_for_testproject($tproject_id,$cfield_ids,1);
-	
+
 		// $cfields_ids = (array) $cfield_ids;
 		$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
@@ -1375,7 +1375,7 @@ class cfield_mgr
 		      " SET display_order=" . intval($display_order) .
 		      " WHERE testproject_id={$tproject_id} " .
 		      " AND field_id={$field_id} ";
-		
+
 		$this->db->exec_query($sql);
 
     }

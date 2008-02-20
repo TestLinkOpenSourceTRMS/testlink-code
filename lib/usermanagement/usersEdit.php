@@ -1,13 +1,13 @@
 <?php
-/** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* This script is distributed under the GNU General Public License 2 or later. 
+/**
+* TestLink Open Source Project - http://testlink.sourceforge.net/
+* This script is distributed under the GNU General Public License 2 or later.
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.13 $
-* @modified $Date: 2008/02/13 20:31:18 $ $Author: schlundus $
-* 
+* @version $Revision: 1.14 $
+* @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
+*
 * rev :  BUGID 918
 *
 *   20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
@@ -30,39 +30,38 @@ $op->user_feedback = '';
 switch($args->doAction)
 {
     case "edit":
-        $highlight->edit_user=1;
-	      $user = new tlUser($args->user_id);
-	      $user->readFromDB($db);
-    break;   
-    
-    
-    case "doCreate":
+		$highlight->edit_user=1;
+		$user = new tlUser($args->user_id);
+		$user->readFromDB($db);
+	break;
+
+	case "doCreate":
         $highlight->create_user=1;
-        $op=doCreate($db,$args);
-        $user=$op->user;
+        $op = doCreate($db,$args);
+        $user = $op->user;
     break;
-    
+
     case "doUpdate":
-        $highlight->edit_user=1;
+        $highlight->edit_user = 1;
         $sessionUserID = $_SESSION['currentUser']->dbID;
-        $op=doUpdate($db,$args,$sessionUserID);
-        $user=$op->user;
+        $op = doUpdate($db,$args,$sessionUserID);
+        $user = $op->user;
     break;
-    
+
     case "resetPassword":
-	      $highlight->edit_user=1;
-	      $user = new tlUser($args->user_id);
-	      $user->readFromDB($db);
-        $op=createNewPassword($db,$args,$user);
+	    $highlight->edit_user = 1;
+	    $user = new tlUser($args->user_id);
+	    $user->readFromDB($db);
+		$op = createNewPassword($db,$args,$user);
     break;
-    
+
     case "create":
     default:
-        $highlight->create_user=1;
-        $user=null;
-    break;   
-    
-    
+        $highlight->create_user = 1;
+        $user = null;
+    break;
+
+
 }
 
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
@@ -92,20 +91,20 @@ function init_args()
 	{
 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
-	
-	
+
+
 	$nullable_keys = array('doAction','firstName','lastName','emailAddress','locale','login','password');
 	foreach ($nullable_keys as $value)
 	{
 		$args->$value = isset($_REQUEST[$value]) ? trim($_REQUEST[$value]) : null;
 	}
- 
+
  	$checkbox_keys = array('user_is_active');
 	foreach ($checkbox_keys as $value)
 	{
 		$args->$value = isset($_REQUEST[$value]) ? 1 : 0;
 	}
-  
+
 	return $args;
 }
 
@@ -114,28 +113,28 @@ function init_args()
   function: doCreate
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function doCreate(&$dbHandler,&$argsObj)
 {
-		$op->user = new tlUser();	
-		$op->status = $op->user->setPassword($argsObj->password);
-		if ($op->status >= tl::OK)
-		{
-		  initializeUserProperties($op->user,$argsObj);
-			$op->status = $op->user->writeToDB($dbHandler);
-		}
-		
-		if ($op->status >= tl::OK)
-		{
-			logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
-			$op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
-		}
-		else 
-			$op->user_feedback = getUserErrorMessage($op->status);
-  
+	$op->user = new tlUser();
+	$op->status = $op->user->setPassword($argsObj->password);
+	if ($op->status >= tl::OK)
+	{
+	  	initializeUserProperties($op->user,$argsObj);
+		$op->status = $op->user->writeToDB($dbHandler);
+	}
+	
+	if ($op->status >= tl::OK)
+	{
+		logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
+		$op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
+	}
+	else
+		$op->user_feedback = getUserErrorMessage($op->status);
+
     return $op;
 }
 
@@ -146,37 +145,37 @@ function doCreate(&$dbHandler,&$argsObj)
   function: doUpdate
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 {
-    $op->user_feedback='';
+    $op->user_feedback = '';
     $op->user = new tlUser($argsObj->user_id);
-		$op->status = $op->user->readFromDB($dbHandler);
+	$op->status = $op->user->readFromDB($dbHandler);
+	if ($op->status >= tl::OK)
+	{
+		initializeUserProperties($op->user,$argsObj);
+		$op->status = $op->user->writeToDB($dbHandler);
 		if ($op->status >= tl::OK)
 		{
-		  initializeUserProperties($op->user,$argsObj);
-			$op->status = $op->user->writeToDB($dbHandler);
-			if ($op->status >= tl::OK)
+			logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
+			if ($sessionUserID == $argsObj->user_id)
 			{
-				logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
-				if ($sessionUserID == $argsObj->user_id)
+				$_SESSION['currentUser'] = $op->user;
+				setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
+				               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
+
+				if (!$argsObj->user_is_active)
 				{
-					$_SESSION['currentUser'] = $op->user;
-					setUserSession($dbHandler,$op->user->login, $argsObj->user_id, 
-					               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
-					               
-					if (!$argsObj->user_is_active)
-					{
-						header("Location: ../../logout.php");
-						exit();
-					}
+					header("Location: ../../logout.php");
+					exit();
 				}
 			}
-			$op->user_feedback = getUserErrorMessage($op->status);
 		}
+		$op->user_feedback = getUserErrorMessage($op->status);
+	}
     return $op;
 }
 
@@ -185,19 +184,19 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
   function: createNewPassword
 
   args :
-  
+
   returns: -
 
 */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
-    $op->user_feedback='';
-	  $op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
-	  if ( $op->status >= tl::OK)
-	  {
-		    logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
-		    $op->user_feedback = lang_get('password_reseted');  		
-	  }
+    $op->user_feedback = '';
+	$op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
+	if ($op->status >= tl::OK)
+	{
+	   logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
+	   $op->user_feedback = lang_get('password_reseted');
+	}
     return $op;
 }
 
@@ -209,18 +208,19 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
   function: initializeUserProperties
 
   args :
-  
+
   returns: -
 
 */
 function initializeUserProperties(&$userObj,&$argsObj)
 {
-    $userObj->login = $argsObj->login;
-		$userObj->emailAddress = $argsObj->emailAddress;
-		$userObj->firstName = $argsObj->firstName;
-		$userObj->lastName = $argsObj->lastName;
-		$userObj->globalRoleID = $argsObj->rights_id;
-		$userObj->locale = $argsObj->locale;
-		$userObj->bActive = $argsObj->user_is_active;
+	if (!is_null($argsObj->login))
+    	$userObj->login = $argsObj->login;
+	$userObj->emailAddress = $argsObj->emailAddress;
+	$userObj->firstName = $argsObj->firstName;
+	$userObj->lastName = $argsObj->lastName;
+	$userObj->globalRoleID = $argsObj->rights_id;
+	$userObj->locale = $argsObj->locale;
+	$userObj->bActive = $argsObj->user_is_active;
 }
 ?>

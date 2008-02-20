@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.9 2008/02/14 21:26:20 schlundus Exp $
+$Id: eventviewer.tpl,v 1.10 2008/02/20 21:21:44 schlundus Exp $
 
 Event Viewer
 
@@ -108,7 +108,8 @@ fieldset
 }
 #eventviewer tr.WARNING
 {
-	color:yellow;
+	color:black;
+	font-weight:bold;
 }
 #eventviewer tr.INFO
 {

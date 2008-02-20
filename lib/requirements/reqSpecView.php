@@ -1,15 +1,15 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/02/20 21:21:45 $ by $Author: schlundus $
  * @author Martin Havlat
- * 
+ *
  * Screen to view existing requirements within a req. specification.
- * 
+ *
  * rev: 20070415 - franciscom - custom field manager
  *      20070415 - franciscom - added reorder feature
  *
@@ -56,7 +56,7 @@ $user = tlUser::getByID($db,$req_spec['modifier_id']);
 if ($user)
 	$req_spec['modifier'] = $user->getDisplayName();
 
-
+var_dump($tproject_id);
 $cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($req_spec_id,$tproject_id);
 $attachments = getAttachmentInfosFrom($req_spec_mgr,$req_spec_id);
 
@@ -67,6 +67,6 @@ $smarty->assign('attachments',$attachments);
 $smarty->assign('req_spec_id', $req_spec_id);
 $smarty->assign('req_spec', $req_spec);
 $smarty->assign('name',$title);
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req"));
 $smarty->display($template_dir . $template);
 ?>

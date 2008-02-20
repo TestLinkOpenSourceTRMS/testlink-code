@@ -1,7 +1,7 @@
 <?php
 /**
-* Now any log messages from the levels ERROR or INFO will be recorded. 
-* DEBUG messages will be ignored. We can have as many log entries as we like. 
+* Now any log messages from the levels ERROR or INFO will be recorded.
+* DEBUG messages will be ignored. We can have as many log entries as we like.
 * They take the form:
 *
 *    tLog("testing level ERROR", 'ERROR');
@@ -19,20 +19,24 @@
 */
 /*
 	This function fires audit events
-	
+
 	@param string $message the message which describes the event in a human readable way (best a tlMetaString) is used
 	@param string $activityCode and shorthand activity code describing the event
 	@param int $objectID the id of the object to which the event refers to
 	@param string $objectType the type of the object the event refers to (this should be the name of the database table the objet is stored
-	
+
 	@return int return tl::OK if all is OK, tl::ERROR else
 */
 function logAuditEvent($message,$activityCode = null,$objectID = null,$objectType = null)
 {
 	return tLog($message,"AUDIT","GUI",$objectID,$objectType,$activityCode);
 }
+function logWarningEvent($message,$activityCode = null,$objectID = null,$objectType = null)
+{
+	return tLog($message,"WARNING","GUI",$objectID,$objectType,$activityCode);
+}
 
-function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$objectType = null, $activityCode = null) 
+function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$objectType = null, $activityCode = null)
 {
 	global $g_tlLogger;
 	if (!$g_tlLogger)
@@ -43,7 +47,7 @@ function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$obje
 	//to avoid transforming old code, we check if we have old string-like logLevel or new tlLogger-LogLevel
 	$logLevel = is_string($level) ? tlLogger::$revertedLogLevels[$level] : $level;
 	$t->add($logLevel,$message,$source,$activityCode,$objectID,$objectType);
-	
+
 	return tl::OK;
 	/*
 		//SCHLUNDUS: could be a special "to page" logger?
@@ -52,12 +56,12 @@ function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$obje
 		{
 			if ($level == 'ERROR')
 				echo "<pre style=\"color:red\">";
-			else 
+			else
 				echo "\n<!--\n";
 			echo $message;
 			if ($level == 'ERROR')
 				echo "</pre>";
-			else 
+			else
 				echo "\n-->\n";
 		}
     	return true;
@@ -65,26 +69,26 @@ function tLog($message, $level = 'DEBUG', $source = "GUI",$objectID = null,$obje
 		*/
 }
 
-/** 
-* Optimization 
+/**
+* Optimization
 *
-* We need a way to test the execution speed of our code before we can easily 
-* perform optimizations. A set of timing functions that utilize microtime() is 
+* We need a way to test the execution speed of our code before we can easily
+* perform optimizations. A set of timing functions that utilize microtime() is
 * the easiest method:
 */
-function tlTimingStart ($name = 'default') 
+function tlTimingStart ($name = 'default')
 {
     global $tlTimingStart;
     $tlTimingStart[$name] = explode(' ', microtime());
 }
 
-function tlTimingStop ($name = 'default') 
+function tlTimingStop ($name = 'default')
 {
     global $tlTimingStop;
     $tlTimingStop[$name] = explode(' ', microtime());
 }
 
-function tlTimingCurrent ($name = 'default') 
+function tlTimingCurrent ($name = 'default')
 {
     global $tlTimingStart, $tlTimingStop;
     if (!isset($tlTimingStart[$name])) {
@@ -102,11 +106,11 @@ function tlTimingCurrent ($name = 'default')
     return $current;
 }
 /**
-* Now we can check the execution time of any code very easily. We can even run 
-* a number of execution time checks simultaneously because we have established 
+* Now we can check the execution time of any code very easily. We can even run
+* a number of execution time checks simultaneously because we have established
 * named timers.
 *
-* See the optimizations section below for the examination of echo versus 
+* See the optimizations section below for the examination of echo versus
 * inline coding for an example of the use of these functions.
 */
 ?>

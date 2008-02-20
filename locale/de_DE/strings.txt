@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/01/17 21:22:45 $ $Author: schlundus $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
+ * @author Christoph Becker
  *
  * German strings
  *
@@ -120,7 +121,7 @@ $TLS_high_importance = "Hoch";
 $TLS_low_importance = "Niedrig";
 $TLS_medium_importance = "Mittel";
 
-// resultsGeneral.php 
+// resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites="Für dieses Projekt sind keine Testsuiten definiert, <br>".
                                  "daher existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
 
@@ -655,16 +656,16 @@ $TLS_title_imp_tc_data = "Testfall Daten importieren";
 
 
 // gui/templates/keywordsimport.tpl
+$TLS_file_type = "Dateiformat";
 $TLS_title_keyword_import_to = "Stichworte importieren nach";
 $TLS_title_keyword_import = "Stichworte importieren";
-
-
+$TLS_view_file_format_doc = "Hinweise zu Dateiformaten (Word-Datei)";
 
 // gui/templates/keywordsexport.tpl
 $TLS_btn_export = "Exportieren";
+$TLS_export_filename = "Dateiname";
+$TLS_export_keywords = "Stichwörter exportieren";
 $TLS_title_req_import_to = "Anforderungen ins Dokument importieren:";
-
-
 
 // gui/templates/cfields_tproject_assign.tpl
 $TLS_btn_assign = "Hinzufügen";
@@ -684,6 +685,7 @@ $TLS_No = "Nein";
 $TLS_Yes = "Ja";
 $TLS_alt_delete_user = "Benutzer löschen?";
 $TLS_alt_edit_user = "Benutzer editieren?";
+$TLS_desc_mgt_view_events = "Ereignismonitor einsehen";
 $TLS_order_by_login = "Nach login sortieren";
 $TLS_order_by_role_descr = "Nach Rollenbeschreibung sortieren";
 $TLS_th_active = "Aktiv";
@@ -695,7 +697,6 @@ $TLS_th_locale = "Sprache";
 $TLS_th_login = "Benutzername";
 $TLS_th_role = "Rolle";
 $TLS_warning_delete_user = "Sind Sie sicher, dass Sie diesen Benutzer wirklich löschen wollen?";
-
 
 
 // gui/templates/login.tpl
@@ -901,7 +902,7 @@ $TLS_color = "Hintergrundfarbe";
 $TLS_enable_requirements = "Anforderungen verwenden?";
 $TLS_info_failed_loc_prod = "Das Projekt konnte nicht gefunden werden!";
 $TLS_notes = "Verwandte Notizen";
-// Warning!!! - if JS string you must use \\n to get \n                                       
+// Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = "Achtung! Diese Aktion löscht unwiderrufbar alle Testprojekt-relevanten Daten (inklusive Testresultat, Pläne, etc.). Sie können das Testprojekt auch deaktivieren anstatt es zu löschen!.\\n Empfehlung: Führen Sie ein Backup ihrer Datenbank durch.\\nSind Sie sicher, dass Sie das Testprojekt löschen wollen?";
 
 
@@ -1175,18 +1176,27 @@ $TLS_user_bulk_assignment = "mehreren Benutzern zuweisen";
 
 
 // gui/templates/userInfo.tpl
+$TLS_audit_login_succeeded = "Erfolgreich angemeldet.";
+$TLS_audit_login_history = "Anmeldeereignisse";
+$TLS_audit_last_succesful_logins = "Erfolgreiche Anmeldungen";
+$TLS_audit_last_failed_logins = "Fehlgeschlagene Anmeldungen";
+$TLS_btn_apikey_generate = "Generiere Schlüssel für API";
 $TLS_btn_change_passwd = "Passwort ändern";
 $TLS_btn_upd_user_data = "Speichern";
+$TLS_result_user_changed = "Benutzerdaten geändert";
 $TLS_th_new_passwd = "Neues Passwort";
 $TLS_th_new_passwd_again = "Passwortwiederholung";
 $TLS_th_old_passwd = "Altes Passwort";
 $TLS_title_account_settings = "Benutzereinstellungen";
+$TLS_title_api_interface = "API Schnittstelle";
 $TLS_title_change_your_passwd = "Passwort ändern";
+$TLS_title_personal_passwd = "Passwort ändern";
+$TLS_title_personal_data = "Persönliche Daten";
+$TLS_user_api_key = "Schlüssel für API";
 $TLS_warning_different_pwd = "Bitte geben Sie Ihr Passwort nochmals ein. Die beiden Passwörter waren verschieden.";
 $TLS_warning_empty_pwd = "Das Passwort darf nicht leer sein!";
 $TLS_your_password_is_external = "Ihr Passwort wird extern verwaltet!<br>".
 								 "Aus diesem Grund kann es nicht in TestLink geändert werden.";
-
 
 // gui/templates/usersassign.tpl
 $TLS_TestProject = "Testprojekt";
@@ -1205,6 +1215,7 @@ $TLS_title_assign_roles = "Rollen zuweisen";
 // gui/templates/usersedit.tpl
 $TLS_button_reset_password = "Passwort zurücksetzen";
 $TLS_caption_user_details = "Benutzerdetails";
+$TLS_error_user_login_length_error = "Benutzername ist zu kurz";
 $TLS_th_password = "Passwort";
 $TLS_warning_empty_first_name = "Bitte geben Sie einen Namen ein";
 $TLS_warning_empty_last_name = "Bitte geben Sie einen Nachnamen ein";
@@ -1280,6 +1291,7 @@ $TLS_href_req_assign = "Anforderungen zuweisen";
 $TLS_href_req_spec = "Anforderungen definieren";
 $TLS_href_roles_management = "Rollen verwalten";
 $TLS_href_search_tc = "Testfälle suchen";
+$TLS_href_tproject_management = "Projektverwaltung";
 $TLS_href_user_management = "Benutzer verwalten";
 $TLS_title_requirements = "Anforderungen";
 $TLS_title_test_spec = "Testfall Definition";
@@ -1472,7 +1484,7 @@ $TLS_stmp_host_unconfigured = "Der SMTP Server ist nicht konfiguriert!";
 
 // lib/functions/configCheck.php
 $TLS_attachments_dir = "Verzeichnis für Anhänge:";
-$TLS_bts_connection_problems = "Verbindung zum Bug Traking System ist fehlgeschlagen:<br> 
+$TLS_bts_connection_problems = "Verbindung zum Bug Tracking System ist fehlgeschlagen:<br>
                                 Bitte überprüfen Sie die Konfiguration.<br>
                                 Bitte beachten Sie, dieses Problem verringert die Testlink Performance.";
 $TLS_but_directory_is_not_writable = "Das Verzeichnis ist nicht beschreibbar!";
@@ -1518,7 +1530,9 @@ $TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Not
 $TLS_kw_delete_fails = "Das Löschen der Stichwörter schlug fehl!";
 $TLS_kw_update_fails = "Das Aktualisieren schlug fehl";
 
-
+// lib/keywords/keywordsEdit.php
+$TLS_keyword_management = "Stichwörter verwalten";
+$TLS_create_keyword = "Stichwort anlegen";
 
 // lib/keywords/keywordsAssign.php
 $TLS_assigned_kword = "Zugewiesene Stichwörter";
@@ -1613,6 +1627,9 @@ $TLS_title_tp_print_navigator = "Navigator - Testplan drucken";
 
 
 // lib/project/projectedit.php
+$TLS_caption_edit_tproject = "Projektdaten ändern";
+$TLS_enable_priority = "Prioritäten?";
+$TLS_enable_automation = "Testautomatisierung?";
 $TLS_error_product_name_duplicate = "Es gibt bereits ein Produkt mit diesem Namen!";
 $TLS_info_no_more_prods = "Keine weiteren Testprojekte.";
 $TLS_info_product_activated = "Das Testprojekt wurde aktiviert.";
@@ -1627,6 +1644,23 @@ $TLS_test_project_inactivated = "Das Testprojekt %s wurde erfolgreich deaktivier
 $TLS_test_project_updated = "Das Testprojekt %s wurde erfolgreich aktualisiert";
 $TLS_test_project_update_failed = "Das Aktualisieren des Testprojekts %s schlug fehl!";
 
+// lib/project/projectView.php
+$TLS_title_testproject_management = "Projektverwaltung";
+$TLS_tcase_id_prefix = "Testfall Prefix";
+$TLS_th_requirement_feature = "Anforderungsverwaltung";
+
+// lib/project/project_req_spec_mgmt.php
+$TLS_btn_new_req_spec = "Neue Spezifikationen";
+$TLS_btn_reorder_req_spec = "Spezifikationen neu ordnen";
+
+
+$TLS_create_req_spec = "Neue Spezifikation anlegen";
+$TLS_edit_req_spec = "Spezifikation Editieren";
+$TLS_req_spec_created = "Spezifikation erstellt";
+$TLS_title_change_req_spec_order = "Spezifikationen neu ordnen";
+
+// lib/requirements/reqSpecListTree.php
+$TLS_title_req_spec = "Spezifikationen definieren";
 
 // lib/results/charts.php
 $TLS_maani_copyright = "Copyright © 2003-2007, maani.us";
@@ -1774,4 +1808,8 @@ $TLS_error_creating_cf = "Das benutzerdefinierte Feld konnte nicht erstellt werd
 $TLS_do_update = "aktualisiert";
 $TLS_do_delete = "gelöscht";
 $TLS_do_add = "erstellt";
+
+//
+
 ?>
+

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
  * @author schlundus
  */
 
@@ -15,16 +15,25 @@ function TLS($label,$params = null)
 	return new tlMetaString($label,$args);
 }
 
+function _TLS($label,$params = null)
+{
+	$args = func_get_args();
+	$mString = call_user_func_array("TLS",$args);
+	$mString->helper->bDontFireEvent = true;
+	return $mString;
+}
+
 class tlMetaStringHelper
 {
 	public $label;
 	public $params;
 	public $bDontLocalize;
+	public $bDontFireEvent;
 }
 
 class tlMetaString extends tlObject
 {
-	protected $helper;
+	public $helper;
 
 	public function __construct($label = null,$args = null)
 	{
@@ -37,7 +46,8 @@ class tlMetaString extends tlObject
 	{
 		$this->helper->label = $label;
 		$this->helper->params = $args;
-		$this->bDontLocalize = false;
+		$this->helper->bDontLocalize = false;
+		$this->helper->bDontFireEvent = false;
 	}
 	static public function unserialize($representation)
 	{
@@ -57,7 +67,7 @@ class tlMetaString extends tlObject
 	}
 	public function serialize()
 	{
-		return serialize($this->helper);
+		return @serialize($this->helper);
 	}
 
 	//if a tlMetaString is to be printed we use default localization
@@ -71,7 +81,7 @@ class tlMetaString extends tlObject
 		if ($this->helper->bDontLocalize)
 			$str = $this->helper->label;
 		else
-			$str = lang_get($this->helper->label,$locale);
+			$str = lang_get($this->helper->label,$locale,$this->helper->bDontFireEvent);
 
 		$subjects = array();
 		$replacements = array();

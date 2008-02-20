@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/02/16 17:12:37 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -28,7 +28,7 @@ class tlLogger extends tlObject
 	*/
 	const ERROR = 1;
 	const WARNING = 2;
-  const INFO = 4;
+  	const INFO = 4;
 	const DEBUG = 8;
 	const AUDIT = 16;
 	static $logLevels = null;
@@ -36,17 +36,17 @@ class tlLogger extends tlObject
 
   // must be changed is db field len changes
   const ENTRYPOINT_MAX_LEN=45;
-  
+
 	//the one and only logger of TesTLink
 	private static $s_instance;
-	
+
 	//all transactions, at the moment there is only one transaction supported,
 	//could be extended if we need more
 	protected $transactions = null;
-	
+
 	//the logger which are controlled
 	protected $loggers = null;
-	
+
 	//log only event which pass the filter,
 	//SCHLUNDUS: should use $g_log_level
 	protected $logLevelFilter = null;
@@ -123,7 +123,7 @@ class tlLogger extends tlObject
 
 	/*
 		starts a transaction
-		
+
 		rev: 20080216 - franciscom - entrypoint len limiting
 	*/
 	public function startTransaction($name = "DEFAULT",$entryPoint = null,$userID = null)
@@ -133,7 +133,7 @@ class tlLogger extends tlObject
 			return tl::ERROR;
 		if (is_null($entryPoint))
 			$entryPoint = $_SERVER['SCRIPT_NAME'];
-			
+
 		if( strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
 		{
 	    // Important information is at end of string
@@ -143,15 +143,15 @@ class tlLogger extends tlObject
       //     l18/head_20080216/lib/project/projectEdit.php
       // in these cases is better (IMHO) write:
       //     /head_20080216/lib/project/projectEdit.php
-      //		  
+      //
 		  // search first /
 		  $mypos=strpos($entryPoint,"/");
 		  if( !($mypos === FALSE) && $mypos > 0)
 		  {
-	       $entryPoint=substr($entryPoint,$mypos);	       
+	       $entryPoint=substr($entryPoint,$mypos);
 		  }
 		}
-			
+
 		if (is_null($userID))
 			$userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
 		$sessionID = $userID ? session_id() : null;
@@ -351,13 +351,13 @@ class tlEventManager extends tlObjectWithDB
 
         return self::$s_instance;
     }
-  
+
   /*
-    function: 
+    function:
 
     args:
-    
-    returns: 
+
+    returns:
 
   */
 	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
@@ -751,6 +751,23 @@ class tlHTMLLogger
 //create the global TestLink Logger, and open the initial default transaction
 $g_tlLogger = tlLogger::create($db);
 $g_tlLogger->startTransaction();
+
+set_error_handler("watchPHPError");
+
+function watchPHPError($errno, $errstr, $errfile, $errline)
+{
+	$errors = array (
+			E_USER_NOTICE => "E_USER_NOTICE",
+			E_USER_WARNING => "E_USER_WARNING",
+			E_USER_NOTICE => "E_USER_NOTICE",
+			E_ERROR => "E_ERROR",
+			E_WARNING => "E_WARNING",
+			E_NOTICE => "E_NOTICE",
+			E_STRICT => "E_STRICT"
+		);
+	if (isset($errors[$errno]))
+		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
+}
 
 //we need a save way to shutdown the logger, or the current transaction will not be closed
 register_shutdown_function("shutdownLogger");

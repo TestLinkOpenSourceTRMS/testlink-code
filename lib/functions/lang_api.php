@@ -1,16 +1,16 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * 
+/** TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/01/16 22:47:58 $ - $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/02/20 21:21:44 $ - $Author: schlundus $
  *
  * rev :
  *       20070501 - franciscom - lang_get_smarty() now accept a list of
  *                               strings to translate.
- * 
+ *
  *       20070501 - franciscom - enabled logic to manage a custom_strings.txt file
- *       
+ *
 */
 
 # Mantis - a php based bugtracking system
@@ -18,15 +18,15 @@
 # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
 # This program is distributed under the terms and conditions of the GPL
 # See the README and LICENSE files for details
-# Cache of localization strings in the language specified by the last                
+# Cache of localization strings in the language specified by the last
 # 20050508 - fm - changes to lang_get_smarty()
 #
-# lang_load call                                                                     
+# lang_load call
 $g_lang_strings = array();
 
-                                                                                     
-# stack for language overrides                                                       
-$g_lang_overrides = array();                                                         
+
+# stack for language overrides
+$g_lang_overrides = array();
 
 # ------------------
 # Retrieves an internationalized string
@@ -34,11 +34,11 @@ $g_lang_overrides = array();
 #    1. The string in the current user's preferred language (if defined)
 #    2. The string in English
 #
-# rev: 
-#      20070501 - franciscom - added TL_LOCALIZE_TAG in order to 
+# rev:
+#      20070501 - franciscom - added TL_LOCALIZE_TAG in order to
 #                              improve label management for custom fields
 #
-function lang_get( $p_string, $p_lang = null)
+function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 {
 	global $TLS_STRINGFILE_CHARSET;
 	$t_lang = $p_lang;
@@ -56,15 +56,18 @@ function lang_get( $p_string, $p_lang = null)
 		$the_str = $g_lang_strings[$t_lang][$p_string];
 		if (!isset($TLS_STRINGFILE_CHARSET))
 			$TLS_STRINGFILE_CHARSET = "ISO-8859-1";
-		$the_str = iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$the_str);	
+		$the_str = iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$the_str);
 	}
 	else
+	{
+		if (!$bDontFireEvents)
+			logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
 		$the_str = TL_LOCALIZE_TAG .$p_string;
-	
+	}
 	return $the_str;
 }
 
-/* 
+/*
 ----------------------------------------------------------------------
 20071225 - franciscom
 When you choose to have translation results assigned to a smarty variable
@@ -113,11 +116,11 @@ function lang_get_smarty($params, &$smarty)
          $myLabels[$str2search]=lang_get($str2search, $myLocale);
        }
     }
-    $smarty->assign($params['var'], $myLabels); 
- 	}  
-  else 
-  {  
-	  $the_ret = lang_get($params['s'], $myLocale);    
+    $smarty->assign($params['var'], $myLabels);
+ 	}
+  else
+  {
+	  $the_ret = lang_get($params['s'], $myLocale);
 	  return $the_ret;
 	}
 }
@@ -135,15 +138,15 @@ function lang_load( $p_lang ) {
 		return;
 	}
 
-	$t_lang_dir = dirname(dirname ( dirname ( __FILE__ ) )) . DIRECTORY_SEPARATOR . 
+	$t_lang_dir = dirname(dirname ( dirname ( __FILE__ ) )) . DIRECTORY_SEPARATOR .
 	              'locale' . DIRECTORY_SEPARATOR . $p_lang . DIRECTORY_SEPARATOR;
 
-				  
+
 	if (file_exists($t_lang_dir . 'strings.txt'))
 		require_once( $t_lang_dir . 'strings.txt' );
 	else
 	{
-		$t_lang_dir = dirname(dirname ( dirname ( __FILE__ ) )) . DIRECTORY_SEPARATOR . 
+		$t_lang_dir = dirname(dirname ( dirname ( __FILE__ ) )) . DIRECTORY_SEPARATOR .
 	              'locale' . DIRECTORY_SEPARATOR . 'en_GB' . DIRECTORY_SEPARATOR;
 		require_once( $t_lang_dir . 'strings.txt' );
 	}
@@ -153,7 +156,7 @@ function lang_load( $p_lang ) {
 	# 20070501 - franciscom
 	$t_custom_strings = $t_lang_dir . 'custom_strings.txt';
 	if ( file_exists( $t_custom_strings ) ) {
-	     require_once( $t_custom_strings ); 
+	     require_once( $t_custom_strings );
 	}
 	$t_vars = get_defined_vars();
 
@@ -181,7 +184,7 @@ function localize_array( $input_array ) {
 	foreach ($input_array as &$value) {
     	$value = lang_get($value);
 	}
-	
+
 	return $input_array;
 }
 ?>

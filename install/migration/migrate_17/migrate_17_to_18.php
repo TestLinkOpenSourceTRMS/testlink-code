@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.1 2008/01/02 11:34:22 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.2 2008/02/20 07:49:13 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -18,7 +18,6 @@ tasks:
 require_once(dirname(__FILE__) . "/../../../config.inc.php");
 require_once(dirname(__FILE__) . '/../../../lib/functions/database.class.php' );
 require_once(dirname(__FILE__) . "/../../../lib/functions/common.php");
-require_once(dirname(__FILE__) . "/../../../lib/functions/assignment_mgr.class.php");
 require_once("../../installUtils.php");
 require_once("../migrate_16_to_17_functions.php");
 require_once("migrate_17_to_18_functions.php");
@@ -93,7 +92,8 @@ $db_cfg['source']=array('db_type' => $_SESSION['databasetype'],
                         'db_server' => $_SESSION['databasehost'],
                         'db_name'   => $_SESSION['source_databasename'],
                         'db_admin_name' => $_SESSION['databaseloginname'],
-                        'db_admin_pass' => $_SESSION['databaseloginpassword']);
+                        'db_admin_pass' => $_SESSION['databaseloginpassword'],
+                        'log_level' => 'NONE');
                         
 echo '<span>Connecting to Testlink 1.7.2 (source) database. - ' .
      $db_cfg['source']['db_name'] . ' - </span>';
@@ -110,11 +110,7 @@ if( is_null($source_db) )
 // -----------------------------------------------------------------------------------
 
 $tree_mgr=New tree($source_db);
-$assignment_mgr=New assignment_mgr($source_db);
-
-$assignment_types=$assignment_mgr->get_available_types(); 
-$assignment_status=$assignment_mgr->get_available_status();
-
+$tproject_mgr=New testproject($source_db);
 define('EMPTY_NOTES','');
 $a_sql=array();
 
@@ -173,13 +169,15 @@ if( checkPreconditions($source_db,$tree_mgr) )
     $oldNew=reqSpecMigration($source_db,$tree_mgr);
     $oldNew=requirementsMigration($source_db,$tree_mgr,$oldNew);
     updateReqInfo($source_db,$tree_mgr,$oldNew);
-    
-    $last_message="Migration process finished! :: " . date("H:i:s");
 }   
 else
 {
-  $last_message='Migration NOT REQUIRED';  
+  $last_message='Requirements Migration NOT REQUIRED';  
 }
+
+updateTProjectInfo($source_db,$tproject_mgr);
+$last_message="Migration process finished! :: " . date("H:i:s");
+
 
 //---FINISHED WITH MIGRATION---
 ?>
@@ -212,7 +210,7 @@ else
 <?php
 function checkPreconditions(&$source_db,&$tree_mgr)
 {
-  $do_action=0; 
+  $do_action=1; 
   $sql="SELECT count(NH.parent_id) AS qta_req_spec " .
        " FROM nodes_hierarchy NH,node_types NT" .
        " WHERE NH.node_type_id=NT.id " .
@@ -232,7 +230,7 @@ function checkPreconditions(&$source_db,&$tree_mgr)
   
   if($qta_req==0 and $qta_req_spec==0)
   {
-    $do_action=1;
+    $do_action=0;
   }
   return $do_action;     
 }

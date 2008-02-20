@@ -1,9 +1,11 @@
 <?php 
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.19 2008/01/02 18:52:50 franciscom Exp $ */
+/* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: newInstallStart_TL.php,v 1.20 2008/02/20 07:49:12 franciscom Exp $
 
-// 20070302 - franciscom - changed link for help
-//
+rev: 20080219 - franciscom - fixed dir permission checking
+*/
+
 require_once("installUtils.php");
 
 if( !isset($_SESSION) )
@@ -89,7 +91,8 @@ $check = check_session();
 $errors += $check['errors'];
 echo $check['msg'];
 
-$check = check_with_feedback();
+$dirs_to_check=array('../gui/templates_c', '../logs');
+$check = check_with_feedback($dirs_to_check);
 echo $check['msg'];
 $errors += $check['errors'];
 

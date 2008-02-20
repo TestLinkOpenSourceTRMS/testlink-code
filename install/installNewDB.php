@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.39 2008/02/06 19:35:20 schlundus Exp $ */
+/* $Id: installNewDB.php,v 1.40 2008/02/20 07:49:12 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -55,23 +55,18 @@ $db_type       = $_SESSION['databasetype'];
 $tl_db_login   = $_SESSION['tl_loginname'];
 $tl_db_passwd  = $_SESSION['tl_loginpassword'];
 
-// 20060523 - franciscom
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
-
-
-// 20060514 - franciscom
 $sql_create_schema[1] = "sql/{$db_type}/testlink_create_tables.sql";
 $sql_default_data [1] = "sql/{$db_type}/testlink_create_default_data.sql";
-
-
-// 20070131 - franciscom
 $a_sql_schema[] = $sql_create_schema;
 $a_sql_data[]   = $sql_default_data;
 
 
 $msg_process_data = "</b><br />Importing StartUp data<b> ";
+$inst_type_verbose=" Installation ";
 if ($inst_type == "upgrade" )
 {
+  $inst_type_verbose=" Upgrade ";
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
   $a_sql_data   = array();
 }
@@ -538,7 +533,7 @@ if ($update_pwd)
 if($sqlParser->install_failed==true) 
 {
 
-	echo "<span class='notok'>Failed!</span></b> - Installation failed!";
+	echo "<span class='notok'>Failed!</span></b> - {$inst_type_verbose} failed!";
 	$errors += 1;
 
   echo "<p />" .
@@ -588,7 +583,7 @@ else
 	echo "<span class='ok'>OK!</span>";
 }
 
-echo "</b><p />" . 'Installation was successful! ' .
+echo "</b><p />" . "{$inst_type_verbose} was successful! " .
      'You can now log into the <a href="../index.php">' .
      'TestLink (using login name:admin / password:admin - Please Click Me!)</a>.';
 $db->close();

@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.2 2008/01/04 20:30:23 franciscom Exp $ 
+$Id: index.php,v 1.3 2008/02/20 07:49:13 franciscom Exp $ 
 Author: franciscom
 
 rev :
@@ -51,12 +51,22 @@ $operation='Migration from 1.7.2 (or greater)';
       <li> <span class="headers">Changes will be made to the 1.7.2 database (source database)<br>
                                  Please Backup DB before start</span></li>
       <li>    
-      Migration process will add requirement specifications and requirements to the nodes hierachy table.
+      Migration process actions:<br>
+      <ul>
+      <li>add requirement specifications and requirements to the nodes hierachy table.</li>
+      <li>create test case prefix for every test project.</li>
+      <li>assign external numeric ID (unique inside every test project) to test cases.</li>
+      </ul>
       </li>    
       </ul>
       <p>
       <li><span class="headers">Please Backup DB before start</span>
-      <li>Click	<a href="migration_start.php"><b>here</b></a> to start the migration.
+      
+      <ul>
+      <li><span class="headers">STEP ONE:</span> Add this page to your bookmarks or save the URL.
+      <li><span class="headers">STEP TWO:</span> Go back to the main installation screen and use Upgrade Database option.
+      <li><span class="headers">STEP THREE:</span> After successful execution of STEP TWO, return to this page and click
+			<a href="migration_start.php"><b>here</b></a> to start data migration/update.
 			</ul>
 		</td>
       </tr>

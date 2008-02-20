@@ -1,10 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.29 2008/01/02 18:52:50 franciscom Exp $ 
+$Id: installUtils.php,v 1.30 2008/02/20 07:49:12 franciscom Exp $ 
 
 
 rev :
+     20080219 - franciscom - improvements on getDirSqlFiles
      20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
      20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
      20070302 - franciscom - changed PHP minimun required versions
@@ -19,8 +20,12 @@ rev :
 // +----------------------------------------------------------------------+
 //
 // rev:
+//     20080219 - franciscom - after having problems with some directories
+//                             added directory to file before using is_dir.
+//                             Hint found on PHP Manual notes.
+//
 //     20071021 - franciscom - get only files with .sql extension
-// 20070131 - franciscom - now returns an array
+//     20070131 - franciscom - now returns an array
 function getDirSqlFiles($dirPath, $add_dirpath=0)
 {
 $aFileSets=array(); 
@@ -35,24 +40,27 @@ foreach( $dirPath as $the_dir)
 
   if ($handle = opendir($the_dir)) 
   {
+      clearstatcache();
       while (false !== ($file = readdir($handle))) 
-      
-      // 20050808 - fm 
-      // added is_dir() to exclude dirs
-      if ($file != "." && $file != ".." && !is_dir($file))
       {
-         // 20071021 - use only is extension sql
-         $file=trim($file);
-         $path_parts=pathinfo($file);
-         if( $path_parts['extension'] == 'sql' )
-         {   
-           $filesArr[] = $my_dir_path . $file;
-         }  
-      }            
+          $is_folder=is_dir($the_dir . $file);
+          // needed because is_dir() cached result. See PHP Manual
+          clearstatcache();
+          
+          if ($file != "." && $file != ".." && !$is_folder)
+          {
+             // 20071021 - use only is extension sql
+             $file=trim($file);
+             $path_parts=pathinfo($file);
+             if( isset($path_parts['extension']) && $path_parts['extension'] == 'sql' )
+             {   
+               $filesArr[] = $my_dir_path . $file;
+             }  
+          } 
+      }
       closedir($handle);
   }  
   
-  // 20050925 - fm
   sort($filesArr);
   reset($filesArr);
   $aFileSets[]=$filesArr;
@@ -360,12 +368,12 @@ exit;
 /*
   function: check_with_feedback()
 
-  args : [$dirs_to_check]
+  args : $dirs_to_check
   
   returns: 
 
 */
-function check_with_feedback($dirs_to_check=null)
+function check_with_feedback($dirs_to_check)
 {
 $errors=0;	
 $final_msg ='';
@@ -376,14 +384,7 @@ $msg_ok = "<span class='ok'>OK!</span>";
 $msg_check_dir_existence = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory exists:<b> ";
 $msg_check_dir_is_w = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory is writable:<b> ";
 
-$awtc = array('../gui/templates_c');
-if(!is_null($dirs_to_check) )
-{
-  $awtc=$dirs_to_check;
-} 
-
-
-foreach ($awtc as $the_d) 
+foreach ($dirs_to_check as $the_d) 
 {
 	
   $final_msg .= str_replace('PLACE_HOLDER',$the_d,$msg_check_dir_existence);

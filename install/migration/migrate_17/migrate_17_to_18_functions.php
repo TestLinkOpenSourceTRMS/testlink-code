@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.1 2008/01/02 11:34:22 franciscom Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.2 2008/02/20 07:49:13 franciscom Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
@@ -41,7 +41,7 @@ function reqSpecMigration(&$source_db,&$treeMgr)
 }
 
 /*
-  function: 
+  function: migrateReqSpecs
 
   args:
   
@@ -68,7 +68,7 @@ function migrateReqSpecs(&$source_db,&$treeMgr,&$rspec)
 
 
 /*
-  function: 
+  function: requirementsMigration
 
   args:
   
@@ -99,7 +99,7 @@ function requirementsMigration(&$source_db,&$treeMgr,&$oldNewMapping)
 }
 
 /*
-  function: 
+  function: migrateRequirements
 
   args:
   
@@ -125,6 +125,14 @@ function migrateRequirements(&$source_db,&$treeMgr,&$req,&$oldNewMapping)
 } // end function
 
 
+/*
+  function: updateReqInfo
+
+  args:
+  
+  returns: 
+
+*/
 function updateReqInfo(&$source_db,&$treeMgr,&$oldNewMapping)
 {
 
@@ -163,6 +171,50 @@ function updateReqInfo(&$source_db,&$treeMgr,&$oldNewMapping)
     } 
         
   
+}
+
+
+/*
+  function: initNewTProjectProperties
+
+  args:
+  
+  returns: 
+
+*/
+function updateTProjectInfo($source_db,&$tprojectMgr)
+{
+    $all_tprojects=$tprojectMgr->get_all();
+    echo "<pre>debug 20080219 - \$all_tprojects - " . __FUNCTION__ . " --- "; print_r($all_tprojects); echo "</pre>"; 
+    
+    if( !is_null($all_tprojects) )
+    {
+        initNewTProjectProperties($all_tprojects,$tprojectMgr);  
+    }
+  
+}
+
+
+/*
+  function: initNewTProjectProperties
+
+  args:
+  
+  returns: 
+
+*/
+function initNewTProjectProperties(&$tprojectMap,&$tprojectMgr)
+{
+    if( !is_null($tprojectMap) )
+    {
+        foreach($tprojectMap as $key => $value)
+        {
+            $tcPrefix=substr($value['name'],0,5) . " (ID={$value['id']}) " ; 
+            echo "<pre>debug 20080219 - \ - " . __FUNCTION__ . " --- "; print_r($value); echo "</pre>";
+            echo "<pre>debug 20080219 - \ - " . __FUNCTION__ . " --- "; print_r($tcPrefix); echo "</pre>";
+             
+        }  
+    }
 }
 
 

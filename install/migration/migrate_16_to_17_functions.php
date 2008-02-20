@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.6 2007/12/13 15:36:21 havlat Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.7 2008/02/20 07:49:12 franciscom Exp $
  *
  * rev :
  *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
@@ -20,7 +20,8 @@
 //         cfg=array('db_type' => 'mysql',
 //                   'db_server' => 'localhost',
 //                   'db_admin_name' => 'root',
-//                   'db_admin_pass' => 'mysqlroot');
+//                   'db_admin_pass' => 'mysqlroot',
+//                   'log_level' => );
 //
 //
 // returns: 
@@ -28,6 +29,8 @@
 //          if connection KO -> null
 //
 // rev :
+//      20080219 - franciscom - added log_level
+//
 //      20061203 - franciscom
 //      removed warning due to constant redefinition
 //
@@ -46,7 +49,13 @@ if(strlen(trim($cfg['db_name']))== 0)
 }
 else
 {  
+  $logLevel = isset($cfg['log_level']) ? $cfg['log_level'] : null;
   $db = new database($cfg['db_type']);
+  $db->setLogLevel($logLevel);
+  
+  //echo "<pre>debug 20080219 - \$db - " . __FUNCTION__ . " --- "; print_r($db); echo "</pre>";
+  //die("hghdsgajdgsa");
+  
   @$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
                                       $cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
   

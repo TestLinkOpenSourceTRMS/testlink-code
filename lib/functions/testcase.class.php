@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.98 $
- * @modified $Date: 2008/02/18 20:18:14 $ $Author: schlundus $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2008/02/21 20:25:55 $ $Author: havlat $
  * @author franciscom
  *
  * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
@@ -184,7 +184,7 @@ function create($parent_id,$name,$summary,$steps,
                 $tc_order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='generate_new',
-                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
+                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 {
 	$first_version = 1;
 	$status_ok = 1;
@@ -200,7 +200,7 @@ function create($parent_id,$name,$summary,$steps,
 		}
 
 		$op = $this->create_tcversion($ret['id'],$ret['external_id'],$first_version,$summary,$steps,
-		                              $expected_results,$author_id,$execution_type);
+		                              $expected_results,$author_id,$execution_type,$importance);
 
 		$ret['msg']=$op['msg'];
 	}
@@ -294,17 +294,17 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
 */
 function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
                           $expected_results,$author_id,
-                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
+                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 {
 	// get a new id
 	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 
 	$sql = "INSERT INTO {$this->tcversions_table} " .
-	       " (id,tc_external_id,version,summary,steps,expected_results,author_id,creation_ts,execution_type)" .
-  	     " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .  $this->db->prepare_string($summary) . "'," .
-	  	   "'" . $this->db->prepare_string($steps) . "'," .
-	  	   "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
-               $this->db->db_now() . ", {$execution_type} )";
+	     " (id,tc_external_id,version,summary,steps,expected_results,author_id,creation_ts," .
+  	     "execution_type,importance) VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .  
+  	     $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
+	  	 "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
+         $this->db->db_now() . ", {$execution_type},{$importance} )";
 	$result = $this->db->exec_query($sql);
 	$ret['msg']='ok';
 	$ret['id']=$tcase_version_id;
@@ -497,7 +497,7 @@ function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_arg
 	$smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
 
 	$smarty->assign('tprojectName',$tprojectName);
-  $smarty->assign('parentTestSuiteName',$parentTestSuiteName);
+  	$smarty->assign('parentTestSuiteName',$parentTestSuiteName);
 
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
@@ -524,7 +524,7 @@ function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_arg
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
                 $expected_results,$user_id,$keywords_id='',
-                $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL)
+                $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=2)
 {
 	$status_ok = 0;
 
@@ -541,7 +541,7 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 				   " steps='" . $this->db->prepare_string($steps) . "'," .
 				   " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
 				   " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
-				   " execution_type={$execution_type} " .
+				   " execution_type={$execution_type}, importance={$importance} " .
 				   " WHERE tcversions.id = {$tcversion_id}";
 
 		$result = $this->db->exec_query($sql);

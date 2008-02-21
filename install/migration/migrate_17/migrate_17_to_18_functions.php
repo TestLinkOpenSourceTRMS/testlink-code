@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.2 2008/02/20 07:49:13 franciscom Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.3 2008/02/21 07:50:56 franciscom Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
@@ -175,21 +175,20 @@ function updateReqInfo(&$source_db,&$treeMgr,&$oldNewMapping)
 
 
 /*
-  function: initNewTProjectProperties
+  function: updateTProjectInfo
 
   args:
   
   returns: 
 
 */
-function updateTProjectInfo($source_db,&$tprojectMgr)
+function updateTProjectInfo(&$source_db,&$tprojectMgr)
 {
     $all_tprojects=$tprojectMgr->get_all();
-    echo "<pre>debug 20080219 - \$all_tprojects - " . __FUNCTION__ . " --- "; print_r($all_tprojects); echo "</pre>"; 
-    
     if( !is_null($all_tprojects) )
     {
-        initNewTProjectProperties($all_tprojects,$tprojectMgr);  
+        initNewTProjectProperties($source_db,$all_tprojects,$tprojectMgr);  
+        updateTestCaseExternalID($source_db,$all_tprojects,$tprojectMgr);
     }
   
 }
@@ -203,20 +202,63 @@ function updateTProjectInfo($source_db,&$tprojectMgr)
   returns: 
 
 */
-function initNewTProjectProperties(&$tprojectMap,&$tprojectMgr)
+function initNewTProjectProperties(&$db,&$tprojectMap,&$tprojectMgr)
 {
     if( !is_null($tprojectMap) )
     {
+        // test case prefix
         foreach($tprojectMap as $key => $value)
         {
-            $tcPrefix=substr($value['name'],0,5) . " (ID={$value['id']}) " ; 
-            echo "<pre>debug 20080219 - \ - " . __FUNCTION__ . " --- "; print_r($value); echo "</pre>";
-            echo "<pre>debug 20080219 - \ - " . __FUNCTION__ . " --- "; print_r($tcPrefix); echo "</pre>";
-             
+            $tcPrefix=trim(substr($value['name'],0,5) . " (ID={$value['id']})"); 
+            $sql="UPDATE testprojects " .
+                 "SET prefix='" . $db->prepare_string($tcPrefix) ."', " . 
+                 "    tc_counter=0 " .
+                 "WHERE id={$value['id']}";
+            $db->exec_query($sql);     
         }  
     }
 }
 
 
+/*
+  function: updateTestCaseExternalID
 
+  args:
+  
+  returns: 
+
+*/ 
+function updateTestCaseExternalID(&$db,&$all_tprojects,&$tprojectMgr)
+{
+    if( !is_null($all_tprojects) )
+    {
+        foreach($all_tprojects as $tproject_key => $tproject_value)
+        {
+            $tcaseSet=$tprojectMgr->get_all_testcases_id($tproject_value['id']);
+            echo "Working on Test Project {$tproject_value['name']}<br>";
+            ob_flush();flush();
+
+            if( !is_null($tcaseSet) && ($numtc=count($tcaseSet)) > 0 )
+            {
+               echo "Test Cases to process: {$numtc}<br><br>";
+               ob_flush();flush();
+
+               foreach($tcaseSet as $tckey => $tcvalue)
+               {
+                   $eid=$tckey+1;
+                   $sql="UPDATE tcversions " .
+                        "SET tc_external_id={$eid} " .
+                        "WHERE id IN (SELECT id FROM nodes_hierarchy WHERE parent_id={$tcvalue})";
+                    $db->exec_query($sql);
+               }         
+ 
+               $sql="UPDATE testprojects " .
+                    "SET tc_counter={$eid} " .
+                    "WHERE id={$tproject_value['id']}";
+               $db->exec_query($sql);
+            }
+        }
+    }
+  
+}
 ?>

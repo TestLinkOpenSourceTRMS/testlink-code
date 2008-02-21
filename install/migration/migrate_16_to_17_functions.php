@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.7 2008/02/20 07:49:12 franciscom Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.8 2008/02/21 07:50:50 franciscom Exp $
  *
  * rev :
  *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
@@ -49,13 +49,7 @@ if(strlen(trim($cfg['db_name']))== 0)
 }
 else
 {  
-  $logLevel = isset($cfg['log_level']) ? $cfg['log_level'] : null;
   $db = new database($cfg['db_type']);
-  $db->setLogLevel($logLevel);
-  
-  //echo "<pre>debug 20080219 - \$db - " . __FUNCTION__ . " --- "; print_r($db); echo "</pre>";
-  //die("hghdsgajdgsa");
-  
   @$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
                                       $cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
   

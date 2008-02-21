@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.2 2008/02/20 07:49:13 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.3 2008/02/21 07:50:52 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -162,6 +162,9 @@ if( $do_it== 0 )
 
 
 // ---STARTING MIGRATION---
+$start_message="Migration process STARTED :: " . date("H:i:s");
+echo '<span class="headers">' . $start_message . "</span></b><br><br>";
+ob_flush();flush();
 
 if( checkPreconditions($source_db,$tree_mgr) )
 {

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/02/20 21:21:45 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/02/21 20:59:50 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -169,7 +169,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   {
   	$sql = " SELECT * FROM {$this->object_table} WHERE id = {$id}";
   	$recordset = $this->db->get_recordset($sql);
-	var_dump($sql,$recordset);
   	return ($recordset ? $recordset[0] : null);
   }
 
@@ -639,13 +638,12 @@ function get_linked_cfields($id,$parent_id=null)
 	$enabled = 1;
 	if (!is_null($id) && $id > 0)
 	{
-	  $req_spec_info = $this->get_by_id($id);
-	  var_dump($id,$req_spec_info);
-	  $tproject_id = $req_spec_info['testproject_id'];
+		$req_spec_info = $this->get_by_id($id);
+		$tproject_id = $req_spec_info['testproject_id'];
 	}
 	else
 	{
-	  $tproject_id = $parent_id;
+		$tproject_id = $parent_id;
 	}
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
 	                                                          'requirement_spec',$id);

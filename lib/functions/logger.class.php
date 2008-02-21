@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/02/21 19:03:31 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -34,8 +34,9 @@ class tlLogger extends tlObject
 	static $logLevels = null;
 	static $revertedLogLevels = null;
 
-  // must be changed is db field len changes
-  const ENTRYPOINT_MAX_LEN=45;
+	protected $bNoLogging;
+ 	// must be changed is db field len changes
+ 	const ENTRYPOINT_MAX_LEN = 45;
 
 	//the one and only logger of TesTLink
 	private static $s_instance;
@@ -91,6 +92,16 @@ class tlLogger extends tlObject
 		}
 		return tl::OK;
 	}
+
+	public function disableLogging()
+	{
+			$this->bNoLogging = true;
+	}
+	
+	public function enableLogging()
+	{
+		$this->bNoLogging = false;
+	}
 	/*
 		returns the transaction with the specified name, null else
 	*/
@@ -134,22 +145,20 @@ class tlLogger extends tlObject
 		if (is_null($entryPoint))
 			$entryPoint = $_SERVER['SCRIPT_NAME'];
 
-		if( strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
+		if(strlen($entryPoint) > self::ENTRYPOINT_MAX_LEN)
 		{
-	    // Important information is at end of string
-		  $entryPoint=substr($entryPoint,-self::ENTRYPOINT_MAX_LEN);
-
-      // After limiting we can get thinks like:
-      //     l18/head_20080216/lib/project/projectEdit.php
-      // in these cases is better (IMHO) write:
-      //     /head_20080216/lib/project/projectEdit.php
-      //
-		  // search first /
-		  $mypos=strpos($entryPoint,"/");
-		  if( !($mypos === FALSE) && $mypos > 0)
-		  {
-	       $entryPoint=substr($entryPoint,$mypos);
-		  }
+			// Important information is at end of string
+			$entryPoint = substr($entryPoint,-self::ENTRYPOINT_MAX_LEN);
+	
+			// After limiting we can get thinks like:
+			//     l18/head_20080216/lib/project/projectEdit.php
+			// in these cases is better (IMHO) write:
+			//     /head_20080216/lib/project/projectEdit.php
+			//
+			// search first /
+			$mypos=strpos($entryPoint,"/");
+			if(($mypos !== FALSE) && $mypos)
+				$entryPoint = substr($entryPoint,$mypos);
 		}
 
 		if (is_null($userID))

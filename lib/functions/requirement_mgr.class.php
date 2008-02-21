@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/02/20 21:21:45 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/02/21 20:59:50 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -23,7 +23,7 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $nodes_hierarchy_table="nodes_hierarchy";
 
 	var $my_node_type;
-
+	var $tree_mgr;
 
   /*
     function: requirement_mgr
@@ -39,8 +39,8 @@ class requirement_mgr extends tlObjectWithAttachments
 		$this->db = &$db;
 		$this->cfield_mgr=new cfield_mgr($this->db);
 
-		$tree_mgr =  new tree($this->db);
-		$node_types_descr_id=$tree_mgr->get_available_node_types();
+		$this->tree_mgr =  new tree($this->db);
+		$node_types_descr_id= $this->tree_mgr->get_available_node_types();
 		$node_types_id_descr=array_flip($node_types_descr_id);
 		$this->my_node_type=$node_types_descr_id['requirement'];
 
@@ -103,11 +103,9 @@ class requirement_mgr extends tlObjectWithAttachments
 	  if($result['status_ok'])
 	  {
 
-      $tree_mgr=New tree($this->db);
-
- 		  $parent_id=$srs_id;
+     	  $parent_id=$srs_id;
 		  $name=$title;
-		  $req_id = $tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		  $req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
 
 		  $db_now = $this->db->db_now();
 		  $sql = " INSERT INTO {$this->object_table} " .
@@ -430,12 +428,11 @@ class requirement_mgr extends tlObjectWithAttachments
   function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   {
     $tcase_mgr = new testcase($this->db);
-    $tree_mgr=New tree($this->db);
 
   	$g_req_cfg = config_get('req_cfg');
   	$g_field_size = config_get('field_size');
   	$auto_testsuite_name = $g_req_cfg->default_testsuite_name;
-    $node_descr_type=$tree_mgr->get_available_node_types();
+    $node_descr_type=$this->tree_mgr->get_available_node_types();
     $empty_steps='';
     $empty_results='';
 
@@ -526,25 +523,29 @@ class requirement_mgr extends tlObjectWithAttachments
   	if ($testcase_id && $req_id)
   	{
   		$sql = " SELECT COUNT(*) AS num_cov FROM {$this->req_coverage_table} " .
-  		       " WHERE req_id={$req_id}  AND testcase_id={$testcase_id}";
+  		       " WHERE req_id={$req_id}  AND testcase_id = {$testcase_id}";
   		$result = $this->db->exec_query($sql);
+		if ($result)
+		{
+	      	$row = $this->db->fetch_array($result);
+	  		if ($row['num_cov'] == 0)
+	  		{
+	  			// create coverage dependency
+	  			$sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
+	  			       "VALUES ({$req_id},{$testcase_id})";
 
-      $row = $this->db->fetch_array($result);
-  		if ($row['num_cov'] == 0)
-  		{
-  			// create coverage dependency
-  			$sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
-  			       "VALUES ({$req_id},{$testcase_id})";
-
-  			$result = $this->db->exec_query($sql);
-  			if ($this->db->affected_rows() == 1)
-  			{
+	  			$result = $this->db->exec_query($sql);
+	  			if ($this->db->affected_rows() == 1)
+	  			{
+	  				$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
+					$reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
+					if($tcInfo && $reqInfo)
+						logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),"ASSIGN",$this->object_table);
+					$output = 1;
+	  			}
+	  		}
+			else
   				$output = 1;
-  			}
-  		}
-  		else
-  		{
-  			$output = 1;
   		}
   	}
 
@@ -560,21 +561,25 @@ class requirement_mgr extends tlObjectWithAttachments
     returns:
 
   */
-  function unassign_from_tcase($req_id,$testcase_id)
-  {
-  	$output = 0;
-  	$sql = " DELETE FROM {$this->req_coverage_table} " .
-  	       " WHERE req_id={$req_id} " .
-  	       " AND testcase_id={$testcase_id}";
-
-  	$result = $this->db->exec_query($sqlReqCov);
-
-  	if ($this->db->affected_rows() == 1)
-  	{
-  		$output = 1;
-  	}
-  	return $output;
-  }
+	function unassign_from_tcase($req_id,$testcase_id)
+	{
+		$output = 0;
+		$sql = " DELETE FROM {$this->req_coverage_table} " .
+		     " WHERE req_id={$req_id} " .
+		     " AND testcase_id={$testcase_id}";
+	
+		$result = $this->db->exec_query($sql);
+	
+		if ($result && $this->db->affected_rows() == 1)
+		{
+			$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
+			$reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
+			if($tcInfo && $reqInfo)
+				logAuditEvent(TLS("audit_req_assignment_removed_tc",$reqInfo['name'],$tcInfo['name']),"ASSIGN",$this->object_table);
+			$output = 1;
+		}
+		return $output;
+	}
 
 
   /*

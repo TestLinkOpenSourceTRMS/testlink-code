@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/02/21 19:03:31 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/02/21 20:59:50 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -97,7 +97,7 @@ class tlLogger extends tlObject
 	{
 			$this->bNoLogging = true;
 	}
-	
+
 	public function enableLogging()
 	{
 		$this->bNoLogging = false;
@@ -149,7 +149,7 @@ class tlLogger extends tlObject
 		{
 			// Important information is at end of string
 			$entryPoint = substr($entryPoint,-self::ENTRYPOINT_MAX_LEN);
-	
+
 			// After limiting we can get thinks like:
 			//     l18/head_20080216/lib/project/projectEdit.php
 			// in these cases is better (IMHO) write:
@@ -209,7 +209,7 @@ class tlTransaction extends tlDBObject
 		$this->loggers = $logger;
 		$this->name = $name;
 		$this->entryPoint = $entryPoint;
-		$this->startTime = gmmktime();
+		$this->startTime = time();
 		$this->userID = $userID;
 		$this->sessionID = $sessionID;
 		$this->writeTransaction($this);
@@ -239,7 +239,7 @@ class tlTransaction extends tlDBObject
 	*/
 	public function close()
 	{
-		$this->endTime = gmmktime();
+		$this->endTime = time();
 		tlTimingStop($this->name);
 		$this->duration = tlTimingCurrent($this->name);
 		$result = $this->writeTransaction($this);
@@ -285,7 +285,7 @@ class tlTransaction extends tlDBObject
 		if (!$this->dbID)
 		{
 			$entryPoint = $db->prepare_string($this->entryPoint);
-			$startTime = $db->prepare_int(gmmktime());
+			$startTime = $db->prepare_int(time());
 			$endTime = $db->prepare_int(0);
 			$userID = $db->prepare_int($this->userID);
 			$sessionID = "NULL";
@@ -300,7 +300,7 @@ class tlTransaction extends tlDBObject
 		}
 		else
 		{
-			$endTime = $db->prepare_int(gmmktime());
+			$endTime = $db->prepare_int(time());
 			$query = "UPDATE transactions SET end_time = {$endTime} WHERE id = {$this->dbID}";
 			$result = $db->exec_query($query);
 		}
@@ -457,7 +457,7 @@ class tlEvent extends tlDBObject
 	}
 	public function initialize($transactionID,$userID,$sessionID,$logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
-		$this->timestamp = gmmktime();
+		$this->timestamp = time();
 
 		$this->transactionID = $transactionID;
 		$this->userID = $userID;

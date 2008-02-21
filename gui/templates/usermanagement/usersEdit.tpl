@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $ 
+$Id: usersEdit.tpl,v 1.10 2008/02/21 07:50:26 franciscom Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -127,7 +127,7 @@ function validateForm(f,check_password)
 			<th style="background:none;">{$labels.th_login}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 
 			{if $userData neq null}
-				disabled="disabled"
+				readonly="readonly"
 			{/if}
 			 value="{$userData->login|escape}" />
       {include file="error_icon.tpl" field="login"}

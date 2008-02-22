@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/02/22 12:05:23 $ $Author: kmielke $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -138,8 +138,8 @@ $TLS_report_tplan_has_no_tcases="Testplan hat keine verlinkten Testfälle, <br>".
 // tcEdit.php
 $TLS_tc_copied = "Testfall %s wurde erfolgreich in <br> Test Suite %s kopiert";
 $TLS_tc_created = "Testfall %s wurde erfolgreich erstellt.";
-$TLS_tc_deleted = "Testfall %s wurde erfolgreich erstellt.";
-$TLS_tc_updated = "Testfall %s wurde erfolgreich erstellt.";
+$TLS_tc_deleted = "Testfall %s wurde erfolgreich gelöscht.";
+$TLS_tc_updated = "Testfall %s wurde erfolgreich aktualisert.";
 $TLS_tc_update_failed = "Aktualisierung von Testfall %s fehlgeschlagen!";
 $TLS_tc_new_version = "Testfall-Version %d wurde erfolgreich erstellt";
 $TLS_tc_version_deleted = "Testfall %s Version %d wurde erfolgreich gelöscht";
@@ -1603,7 +1603,7 @@ $TLS_title_test_plan_navigator = "TestPlan - Navigator";
 
 // lib/plan/testSetRemove.php
 $TLS_tcase_removed_from_tplan = "Der Testfall wurde vom Testplan entfernt";
-$TLS_multiple_tcase_removed_from_tplan = "De Testfälle wurden vom Testplan entfernt";
+$TLS_multiple_tcase_removed_from_tplan = "Die Testfälle wurden vom Testplan entfernt";
 
 
 // lib/plan/planEdit.php
@@ -1791,7 +1791,7 @@ $TLS_test_plan_user_roles_updated = "Rolle aktualisiert.";
 
 // lib/usermanagement/usersedit.php
 $TLS_user_created = "Benutzer %s wurde erfolgreich erstellt.";
-$TLS_user_deleted = "Benutzer %s wurde erfolgreich erstellt.";
+$TLS_user_deleted = "Benutzer %s wurde erfolgreich gelöscht.";
 $TLS_user_not_added = "Der Benutzer konnte nicht hinzugefügt werden!";
 
 

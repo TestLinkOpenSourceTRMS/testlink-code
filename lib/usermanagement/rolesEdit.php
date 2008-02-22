@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/02/12 08:31:55 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/02/22 19:25:15 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -33,32 +33,31 @@ $action_type = 'edit';
 switch($args->doAction)
 {
 	case 'create':
-    $highlight->create_role=1;
+    	$highlight->create_role=1;
 		$action_type = 'doCreate';
 		break;
 
 	case 'edit':
-	  $highlight->edit_role=1;
+	  	$highlight->edit_role=1;
 		$action_type = 'doEdit';
 		$role = tlRole::getByID($db,$args->roleid);
 		break;
 
-	case 'doCreate': 
-	case 'doEdit': 
-    if( $args->doAction=='doCreate')
-    {
-        $highlight->create_role=1;  
-    }
-    else
-    {
-        $highlight->edit_role=1;  
-    }
-		
+	case 'doCreate':
+	case 'doEdit':
+	    if($args->doAction == 'doCreate')
+        	$highlight->create_role = 1;
+	    else
+	        $highlight->edit_role = 1;
+
 		if(has_rights($db,"role_management"))
 		{
-			$action_type ='edit';
-			$op = doCreate($db,$args); 
+			$op = doCreate($db,$args);
 			$role = $op->role;
+			if ($role->dbID)
+				$action_type = 'doEdit';
+			else
+				$action_type = 'doCreate';
 			$action = $op->action;
 			$userFeedback = $op->userFeedback;
 		}
@@ -77,9 +76,9 @@ if($role)
 	    	$checkboxStatus[$right->name] = "checked=\"checked\"";
 	    }
 	}
-	
 	//get all users which are affected by changing the role definition
-	$affectedUsers = $role->getAllUsersWithRole($db);
+	if ($role->dbID)
+		$affectedUsers = $role->getAllUsersWithRole($db);
 	$of->Value = $role->description;
 }
 
@@ -122,11 +121,11 @@ function doCreate(&$db,$args)
 {
 	$rights = implode("','",array_keys($args->grant));
  	$op->role = new tlRole();
-  	$op->role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
+	$op->role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
 	$op->role->name = $args->rolename;
 	$op->role->description = $args->notes;
 	$op->role->dbID = $args->roleid;
-	
+
 	if ($args->roleid == 0)
 	{
 		$op->action =  "do_add";
@@ -144,7 +143,7 @@ function doCreate(&$db,$args)
 		logAuditEvent(TLS($auditMsg,$args->rolename),$activity,$op->role->dbID,"roles");
 
 	$op->userFeedback = getRoleErrorMessage($result);
- 
+
 	return $op;
 }
 ?>

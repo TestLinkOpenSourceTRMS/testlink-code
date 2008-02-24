@@ -4,8 +4,12 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2008/01/26 09:32:45 $ $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2008/02/24 17:54:59 $ $Author: franciscom $
+ *
+ * 20080224 - franciscom - to avoid performance problems
+ *                         clicking on root node will NOT try to display
+ *                         all testcases in testplan.
  *
  * 20080104 - franciscom - REQ 1232 - web editor on execution notes
  *                         added createExecNotesWebEditor()
@@ -30,13 +34,9 @@ testlinkInitPage($db);
 
 $template_dir = 'execute/';
 
-$exec_cfg = config_get('exec_cfg');
-$gui_cfg = config_get('gui');
-$tc_status = config_get('tc_status'); 
-$testcase_cfg = config_get('testcase_cfg'); 
+$cfg=init_config();
 
 $tcversion_id = null;
-
 $PID_NOT_NEEDED = null;
 $SHOW_ON_EXECUTION = 1;
 $testdata = array();
@@ -54,13 +54,14 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
 $build_info = $build_mgr->get_by_id($args->build_id);
 
-$exec_mode = initializeExecMode($db,$exec_cfg,$args->user,$args->tproject_id,$args->tplan_id);
+$exec_mode = initializeExecMode($db,$cfg->exec_cfg,$args->user,$args->tproject_id,$args->tplan_id);
 $has_exec_right = (has_rights($db,"testplan_execute")=="yes" ? 1 : 0);
 
-if (!strlen($args->level))
+$do_show_instructions=(strlen($args->level) == 0 || $args->level=='testproject') ? 1 : 0;
+if ($do_show_instructions)
 {
-  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=executeTest&locale={$_SESSION['locale']}");
-	exit();
+    show_instructions();
+	  exit();
 }
 
 $ownerDisplayName = null;
@@ -74,7 +75,7 @@ if ($args->filter_assigned_to)
 $the_builds = $tplan_mgr->get_builds_for_html_options($args->tplan_id);
 $build_name = isset($the_builds[$args->build_id]) ? $the_builds[$args->build_id] : '';
 
-$history_on = manage_history_on($_REQUEST,$_SESSION,$exec_cfg,'btn_history_on','btn_history_off','history_on');
+$history_on = manage_history_on($_REQUEST,$_SESSION,$cfg->exec_cfg,'btn_history_on','btn_history_off','history_on');
 $_SESSION['history_on'] = $history_on;
 
 $history_status_btn_name = $history_on ? 'btn_history_off' : 'btn_history_on';
@@ -89,7 +90,7 @@ $tcAttachments = null;
 $tSuiteAttachments = null;
 
 $get_mode = GET_ONLY_EXECUTED;
-if(is_null($args->filter_status) || $args->filter_status == $tc_status['not_run'])
+if(is_null($args->filter_status) || $args->filter_status == $cfg->tc_status['not_run'])
 	$get_mode = GET_ALSO_NOT_EXECUTED;
 
 // ---------------------------------------------------------
@@ -119,11 +120,13 @@ if($args->doExec == 1)
 	}
 }	
 // -----------------------------------------------------------
+// 20080224 - franciscom - BUGID 1056
 // 20070306 - franciscom - BUGID 705
 // 20070914 - jbarchibald - added $cf_selected parameter
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc_id,$args->keyword_id,$get_mode,
                                                        $args->filter_assigned_to,
-                                                       $args->filter_status,$args->build_id,$args->cf_selected);
+                                                       $args->filter_status,$args->build_id,
+                                                       $args->cf_selected,$args->include_unassigned);
 
 $tcase_id = 0;
 
@@ -135,6 +138,8 @@ $testplan_cf = $tplan_mgr->html_table_of_custom_field_values($args->tplan_id,'ex
 // $testproject_id=$rs['parent_id'];
 $smarty->assign('tplan_notes',$rs['notes']);
 $smarty->assign('tplan_cf',$testplan_cf);
+
+$smarty->assign('include_unassigned',$args->include_unassigned);
 
 $attachmentRepository = tlAttachmentRepository::create($db);
 if(!is_null($linked_tcversions))
@@ -152,7 +157,7 @@ if(!is_null($linked_tcversions))
   		$tcAttachments[$args->id] = getAttachmentInfos($attachmentRepository,$args->id,'nodes_hierarchy',1);
       $tcasePrefix=$tcase_mgr->getPrefix($tcase_id);
       
-  		if($gui_cfg->enable_custom_fields)
+  		if($cfg->gui_cfg->enable_custom_fields)
   		{
   			$cf_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_values($args->id,'design',$SHOW_ON_EXECUTION);
   			
@@ -212,7 +217,7 @@ if(!is_null($linked_tcversions))
 			  		 $tcAttachments[$item['tc_id']] = getAttachmentInfos($attachmentRepository,$item['tc_id'],'nodes_hierarchy',true,1);
         
 		         // --------------------------------------------------------------------------------------
-			       if($gui_cfg->enable_custom_fields)
+			       if($cfg->gui_cfg->enable_custom_fields)
 			       {
 			  				$cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
 			  				                                                                        'design',$SHOW_ON_EXECUTION);
@@ -258,20 +263,20 @@ if(!is_null($linked_tcversions))
     // --------------------------------------------------------------------------------------------
     
     $map_last_exec_any_build = null;
-    if( $exec_cfg->show_last_exec_any_build )
+    if( $cfg->exec_cfg->show_last_exec_any_build )
     {
         $map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
                                                                   ANY_BUILD,GET_NO_EXEC);
     }
     
-    $exec_id_order = $exec_cfg->history_order;
+    $exec_id_order = $cfg->exec_cfg->history_order;
     $other_execs = null;
     $attachmentInfos = null;
     if($history_on)
     {
       // 20071113 - Contribution
       $build_id_filter=$args->build_id;
-      if($exec_cfg->show_history_all_builds )
+      if($cfg->exec_cfg->show_history_all_builds )
       {
         $build_id_filter=ANY_BUILD;
       }  
@@ -326,7 +331,7 @@ if( is_array($tcversion_id) )
 $execNotesInputs=createExecNotesWebEditor($map_last_exec,$_SESSION['basehref']);
 
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
-$smarty->assign('tcasePrefix',$tcasePrefix . $testcase_cfg->glue_character);
+$smarty->assign('tcasePrefix',$tcasePrefix . $cfg->testcase_cfg->glue_character);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 $smarty->assign('exec_notes_editors', $execNotesInputs);
 $smarty->assign('exec_mode', $exec_mode);
@@ -337,8 +342,8 @@ $smarty->assign('build_is_open', ($build_info['is_open'] == 1 ? 1 : 0));
 $smarty->assign('tpn_view_status',$args->tpn_view_status);
 $smarty->assign('bn_view_status',$args->bn_view_status);
 $smarty->assign('bc_view_status',$args->bc_view_status);
-$smarty->assign('enable_custom_field',$gui_cfg->enable_custom_fields);
-$smarty->assign('can_delete_execution',$exec_cfg->can_delete_execution);
+$smarty->assign('enable_custom_field',$cfg->gui_cfg->enable_custom_fields);
+$smarty->assign('can_delete_execution',$cfg->exec_cfg->can_delete_execution);
 $smarty->assign('default_status',config_get('tc_status_for_ui_default'));
 $smarty->assign('alluserInfo',tlUser::getAll($db,null,'id'));
 $smarty->assign('tcAttachments',$tcAttachments);
@@ -348,12 +353,12 @@ $smarty->assign('id',$args->id);
 $smarty->assign('has_exec_right', $has_exec_right);
 $smarty->assign('map_last_exec', $map_last_exec);
 $smarty->assign('other_exec', $other_execs);
-$smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
+$smarty->assign('show_last_exec_any_build', $cfg->exec_cfg->show_last_exec_any_build);
 $smarty->assign('history_on',$history_on);
 $smarty->assign('history_status_btn_name',$history_status_btn_name);
-$smarty->assign('att_model',$exec_cfg->att_model);
-$smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
-$smarty->assign('show_history_all_builds', $exec_cfg->show_history_all_builds);
+$smarty->assign('att_model',$cfg->exec_cfg->att_model);
+$smarty->assign('show_last_exec_any_build', $cfg->exec_cfg->show_last_exec_any_build);
+$smarty->assign('show_history_all_builds', $cfg->exec_cfg->show_history_all_builds);
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
 $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $args->filter_assigned_to);
@@ -399,6 +404,8 @@ function init_args()
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
 	}
 
+  // Checkbox
+  $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
 	$args->tproject_id = $_SESSION['testprojectID'];
 	$args->tplan_id = $_SESSION['testPlanId'];
@@ -809,5 +816,35 @@ function createExecNotesWebEditor(&$tcversions,$basehref)
     return $editors;
 }
 
+/*
+  function: show_instructions 
+
+  args :
+  
+  returns: 
+
+*/
+function show_instructions()
+{
+  	redirect($_SESSION['basehref'] . "lib/general/staticPage.php?key=executeTest");
+}
+
+
+/*
+  function: init_config 
+
+  args :
+  
+  returns: 
+
+*/
+function init_config()
+{
+    $cfg->exec_cfg = config_get('exec_cfg');
+    $cfg->gui_cfg = config_get('gui');
+    $cfg->tc_status = config_get('tc_status'); 
+    $cfg->testcase_cfg = config_get('testcase_cfg'); 
+    return $cfg;
+}
 
 ?>																																

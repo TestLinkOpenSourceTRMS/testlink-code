@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.51 2008/02/04 19:41:35 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.52 2008/02/24 17:52:34 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -108,14 +108,23 @@ function ST(id,version)
 */
 function STS(id)
 {
-	action_url=fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+	var action_url=fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
 	parent.workframe.location = action_url;
 }
 
 
+/*
+  function: SP 
+
+  args :
+  
+  returns: 
+
+*/
 function SP()
 {
-  	parent.workframe.location = fRoot+menuUrl;
+    var action_url=fRoot+menuUrl;
+  	parent.workframe.location = action_url;
 }
 
 /*

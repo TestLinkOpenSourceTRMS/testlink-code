@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/02/15 20:26:43 $  $Author: schlundus $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/02/24 17:54:59 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -34,7 +34,8 @@ class testproject extends tlObjectWithAttachments
 {
   const RECURSIVE_MODE=true;
   const EXCLUDE_TESTCASES=true;
-  const TESTCASE_PREFIX_MAXLEN=3; // must be changed if field dimension changes
+  const INCLUDE_TESTCASES=false;
+  const TESTCASE_PREFIX_MAXLEN=16; // must be changed if field dimension changes
 
 
 	private $object_table='testprojects';
@@ -382,7 +383,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
         [recursive_mode]: default false
         [exclude_testcases]: default: false
         [exclude_branches]
-        [and_not_in_clause]
+        [and_not_in_clause]:
 
 
   returns: map
@@ -394,14 +395,11 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
                      $exclude_branches=null, $and_not_in_clause='')
 {
-
-	// 20080104 - franciscom
   $exclude_node_types=$this->nt2exclude;
   if($exclude_testcases)
   {
     $exclude_node_types['testcase']='exclude me';
   }
-
 	$subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,
 	                                                $this->nt2exclude_children,
 	                                                $exclude_branches,
@@ -409,10 +407,6 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
 	                                                $recursive_mode);
   return $subtree;
 }
-
-
-
-
 
 
 /**

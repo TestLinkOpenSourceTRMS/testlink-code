@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.10 2008/01/26 09:31:18 franciscom Exp $
+$Id: execSetResults.tpl,v 1.11 2008/02/24 17:53:05 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes
@@ -39,7 +39,7 @@ Rev:
              test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
-	           execution_type_manual,execution_type_auto,run_mode,
+	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
 
 
@@ -104,7 +104,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	
 	{if $ownerDisplayName != ""}
 	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$ownerDisplayName|escape}  
+	  {if $include_unassigned}
+	    {$labels.or_unassigned_test_cases}
+	  {/if}
 	{/if}
+	
 </h1>
 
 

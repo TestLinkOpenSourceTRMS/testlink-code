@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/02/17 16:35:30 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/02/24 17:54:59 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -387,7 +387,7 @@ function create(&$argsObj)
     $argsObj->active = 1;
 	  $gui->doActionValue = 'doCreate';
 		$gui->buttonValue = lang_get('btn_create');
-		$gui->caption = lang_get('caption_new_tproject');
+		$gui->caption = ""; //lang_get('caption_new_tproject');
     
     return $gui;
 }

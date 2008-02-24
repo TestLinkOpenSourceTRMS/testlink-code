@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.4 2008/01/31 22:15:47 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.5 2008/02/24 17:53:05 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
+     20080224 - franciscom - BUGID 1056
      20070225 - franciscom - fixed auto-bug BUGID 642
      20070212 - franciscom - name changes on html inputs
                              use input_dimensions.conf
@@ -63,6 +64,16 @@ rev :
 			{/if}
 			</td>
 		</tr>
+  	<tr>
+   		<td>{lang_get s='include_unassigned_testcases'}</td>
+  		<td>
+  		   <input type="checkbox" 
+  		           id="include_unassigned" name="include_unassigned"
+  		           value="1"
+  		           {if $include_unassigned} checked {/if}>
+  		</td>
+  	</tr>
+
         	{$design_time_cf}  	
 		<tr>
 			<td>&nbsp;</td>

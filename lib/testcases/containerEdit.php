@@ -3,18 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/02/23 17:30:04 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/02/24 17:55:00 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20080223 - franciscom - BUGID 1408 
  * 20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
  * 20080122 - franciscom - BUGID 1312
- * 20080105 - franciscom - refactoring
- * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
- *                         refresh tree logic
- *
- * xxxxxxxx - Added the Test Project as the FIRST Container where is possible to copy
 */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -67,7 +62,6 @@ $a_init_opt_transfer=array('edit_testsuite' => 1,
 					                 'new_testsuite'  => 1,
 					                 'add_testsuite'  => 1,
                            'update_testsuite' => 1);
-
 
 $the_tpl = null;
 foreach ($a_actions as $the_key => $the_val)

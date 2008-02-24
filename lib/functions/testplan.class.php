@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2008/02/17 16:35:30 $ $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2008/02/24 17:54:59 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080224 - franciscom - get_linked_tcversions() interface changes
  *     20080217 - franciscom - interface changes - check_build_name_existence()
  *     20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
  *     20080119 - franciscom - improved logic in copy_as to avoid bug due to
@@ -343,6 +344,10 @@ function link_tcversions($id,&$items_to_link)
 
          [cf_hash]: default null => do not filter by Custom Fields values
 
+         [include_unassigned]: has effects only if [assigned_to] <> null.
+                               default: false
+                               true: also testcase not assigned will be retreived
+
 
   returns: map
            key: testcase id
@@ -364,7 +369,7 @@ function link_tcversions($id,&$items_to_link)
 */
 function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
                                $assigned_to=null,$exec_status=null,$build_id=0,
-                               $cf_hash = null)
+                               $cf_hash = null, $include_unassigned=false)
 {
   $tc_status=config_get('tc_status');
   $status_not_run=$tc_status['not_run'];
@@ -464,10 +469,17 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	     "      OR UA.type IS NULL) " . $executions_filter;
 
 
-  // 20070306 - franciscom - added condition
 	if (!is_null($assigned_to) && $assigned_to > 0)
 	{
-		$sql .= " AND UA.user_id = {$assigned_to}";
+    // 20080224 - franciscom
+	  $sql .= " AND ";
+	  $sql_unassigned="";
+	  if( $include_unassigned )
+	  {
+		    $sql .= "(";
+		    $sql_unassigned=" OR UA.user_id IS NULL)";
+		}    
+		$sql .= " UA.user_id = {$assigned_to} " . $sql_unassigned;
 	}
 
 	$sql .=$sql_subquery;
@@ -476,6 +488,8 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// BUGID 989 -
 	// added NHB.node_order
 	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
+
+  //  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 

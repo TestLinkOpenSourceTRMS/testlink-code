@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/01/05 17:53:45 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/02/24 17:54:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20080105 - franciscom - new method change_child_order()
@@ -710,6 +710,9 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
                                            $exclude_children_of=null,
                                            $exclude_branches=null)
 {
+   
+    //if( is_null($exclude_branches) )
+    //  echo "NO EXCLUTION REQUIRED <br>";
 
   	$sql = " SELECT * from nodes_hierarchy
     	       WHERE parent_id = {$node_id}  {$and_not_in_clause} ORDER BY node_order,id";
@@ -723,9 +726,9 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
   
     while ( $row = $this->db->fetch_array($result) )
     {
-
       if( !isset($exclude_branches[$row['id']]) )
       {  
+          
         	$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
           $node_list[] = array('id'        => $row['id'],
                                'parent_id' => $row['parent_id'],

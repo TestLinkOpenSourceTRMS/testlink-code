@@ -2,14 +2,14 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.23 2008/01/08 19:50:44 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.24 2008/02/24 17:55:00 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
-* 	This page generates tree menu with test specification. It builds the
-*	  javascript tree that allows the user to choose required container
-*	  or test case.
+* 	Generates tree menu with test specification. 
+*   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
-*   20070217 - franciscom - added test suite filter
+*   rev: 20080223 - franciscom -
+*        20070217 - franciscom - added test suite filter
 */
 require_once('../../config.inc.php');
 require_once("common.php");
@@ -104,7 +104,6 @@ function tsuite_filter_mgmt(&$db,$tproject_id,$tsuites_to_show)
              'exclude_branches' => null);
              
   $fl_tsuites=$tproject_mgr->get_first_level_test_suites($tproject_id,'smarty_html_options');
-  
   if( $tsuites_to_show > 0 )
   {
      foreach($fl_tsuites as $tsuite_id => $name)
@@ -126,6 +125,15 @@ function tsuite_filter_mgmt(&$db,$tproject_id,$tsuites_to_show)
   return($ret);
 }
 
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function manage_tcspec($hash_REQUEST,$hash_SESSION,$key2check,$hidden_name,$default)
 {
     if (isset($hash_REQUEST[$hidden_name]))

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2008/02/04 22:32:52 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2008/02/24 17:54:59 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,7 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20080223 - franciscom - fixed call to get_subtree() on generateTestSpecTree()
  *      20080114 - franciscom - changes to *_renderExecTreeNode*
  *
  *      20080113 - franciscom - changes to *_renderTestSpec* functions
@@ -158,7 +159,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                               $getArguments = '',$keyword_id = 0,
                               $ignore_inactive_testcases=0,$exclude_branches=null)
 {
-	
 	$showTestCaseID=config_get('tree_show_testcase_id');
 	$menustring = null;
 
@@ -177,8 +177,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                        'status_code_descr' =>  $status_code_descr);
 	
 	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id);
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE,
-												                  $exclude_branches,NO_NODE_TYPE_TO_FILTER);
+	$test_spec = $tproject_mgr->get_subtree($tproject_id,
+	                                        testproject::RECURSIVE_MODE,
+	                                        testproject::INCLUDE_TESTCASES,
+												                  $exclude_branches);
 												                  
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
@@ -190,6 +192,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	
 	DEFINE('DONT_FILTER_BY_TESTER',0);
 	DEFINE('DONT_FILTER_BY_EXEC_STATUS',null);
+	
 	
 	if($test_spec)
 	{
@@ -208,14 +211,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 		                                 DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
 		                                 $ignore_inactive_testcases);
 
-		
 		foreach($testcase_counters as $key => $value)
 		{
 		  $test_spec[$key]=$testcase_counters[$key];
 		}
-		
-		// 20080113 - franciscom - added $tcase_prefix
-    // 20080110 - franciscom - added $showTestCaseID
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
 		                             $tc_action_enabled,$linkto,$tcase_prefix,
 		                             $bForPrinting,$showTestCaseID);
@@ -283,7 +282,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
                      $ignore_inactive_testcases=0,$show_tc_id=1)
 {
   
-  // ------------------------------------------------------------------------------  
   $hash_id_descr=$decoding_info['node_id_descr'];
   $status_descr_code=$decoding_info['status_descr_code'];
   $status_code_descr=$decoding_info['status_code_descr'];
@@ -293,7 +291,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
   {
     $tcase_counters[$status_descr]=0;
   }
-  // ------------------------------------------------------------------------------
 
 	$node_type = $hash_id_descr[$node['node_type_id']];
   $tcase_counters['testcase_count']=0;
@@ -301,7 +298,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	if ($node_type == 'testcase')
 	{
     $viewType=is_null($tp_tcs) ? 'testSpecTree' : 'executionTree';
-    
 		if (!is_null($tck_map))
 		{
 			if (!isset($tck_map[$node['id']]))
@@ -311,15 +307,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	  if ($node && $viewType=='executionTree')
 		{
 		  // We are buildind a execution tree.
-			if (!isset($tp_tcs[$node['id']]))
-			{
-				$node = null;
-			}
-			else if ($assignedTo && ($tp_tcs[$node['id']]['user_id'] != $assignedTo))
-			{
-				$node = null;
-			}
-			else if ($status && ($tp_tcs[$node['id']]['exec_status'] != $status))
+			if ( !isset($tp_tcs[$node['id']]) ||
+			     ($assignedTo && ($tp_tcs[$node['id']]['user_id'] != $assignedTo)) ||
+			     ($status && ($tp_tcs[$node['id']]['exec_status'] != $status)) )
 			{
 				$node = null;
 			}
@@ -376,7 +366,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			}
 		}
 		
-		// 20080113 - franciscom
 		if ($node && $viewType=='testSpecTree')
 		{
 			  $sql=" SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
@@ -387,7 +376,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		    $result = $db->exec_query($sql);
 			  $myrow = $db->fetch_array($result);
 				$node['external_id'] = $myrow['external_id'];		
-			  
 		}
 		
 		foreach($tcase_counters as $key => $value)
@@ -405,11 +393,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
     $init_value=$node ? 1 : 0;
 		$tcase_counters[$tc_status_descr]=$init_value;
 		$tcase_counters['testcase_count']=$init_value;
-
 		
 		if ($bHideTCs)
 			$node = null;
 	}
+	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = &$node['childNodes'];
@@ -424,24 +412,16 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			                            $tck_map,$tp_tcs,$bHideTCs,
 			                            $assignedTo,$status,
  			                            $ignore_inactive_testcases,$show_tc_id);
-      
-      
-      // -------------------------------------------------
-      // 20071111 - franciscom
       foreach($counters_map as $key => $value)
       {
         $tcase_counters[$key] += $counters_map[$key];   
       }  
-      // -------------------------------------------------
-
 
 		}
-		// $node['testcase_count'] = $nTestCases;
     foreach($tcase_counters as $key => $value)
     {
         $node[$key] = $tcase_counters[$key];
     }  
-		
 		
 		if (isset($node['id']))
 		{
@@ -728,6 +708,8 @@ function jtree_renderTestSpecTreeNodeOnClose($node,$node_type)
 *            and changes how the URL's are build.
 *
 * rev :
+*      20080224 - franciscom - added include_unassigned
+*
 *      added $useCounters and $useColors
 * 
 */
@@ -736,7 +718,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $getArguments, $keyword_id = 0,$tc_id = 0, 
                           $bHideTCs = false,
 			                    $assignedTo = 0, $status = null, $cf_hash = null,
-			                    $useCounters=1,$useColors=1)
+			                    $useCounters=1,$useColors=1,$include_unassigned=false)
 {
   $showTestCaseID=config_get('tree_show_testcase_id');
 	$menustring = null;
@@ -767,7 +749,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
   // 20070306 - franciscom - BUGID 705   
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
 	                                            null,$assignedTo,$status,$build_id,
-                                                $cf_hash);
+                                              $cf_hash,$include_unassigned);
 
      
 	if (is_null($tp_tcs))
@@ -792,6 +774,14 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		//        till first optional, are mandatory.
 		// This was not this ways before this change.
 		//
+		
+		// 20080224 - franciscom - 
+		// After reviewing code, seems that assignedTo has no sense because tp_tcs
+		// has been filtered.
+		// Then to avoid changes to prepareNode() due to include_unassigned,
+		// seems enough to set assignedTo to 0, if include_unassigned==true
+		$assignedTo= $include_unassigned ? 0 :$assignedTo;
+		
 		// 20071014 - franciscom
 		$bForPrinting=$bHideTCs;
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,

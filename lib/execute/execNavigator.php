@@ -5,18 +5,15 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2008/02/24 17:54:59 $ by $Author: franciscom $
  *
+ * 20080224 - franciscom - BUGID 1056 
  * 20071229 - franciscom - refactoring tree colouring and counters config
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20070912 - jbarchibald - custom field search BUGID - 1051
  * 20070630 - franciscom - set default value for filter_assigned_to
  * 20070607 - franciscom - BUGID 887 - problem with builds
- * 20070212 - franciscom - name changes on html inputs
- * 20070123 - franciscom - 
- * 	1. added logic to only show ACTIVE BUILDS
- * 	2. removed deprecated functions
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -26,7 +23,6 @@ require_once('builds.inc.php');
 testlinkInitPage($db);
 
 $template_dir = 'execute/';
-
 $gui_cfg = config_get('gui');
 $exec_cfg = config_get('exec_cfg');
 $args = init_args($exec_cfg);
@@ -86,15 +82,15 @@ $getArguments=initializeGetArguments($args,$cf_selected);
 if ($args->optResultSelected == 'all')
 	$args->optResultSelected = null;
 
-// 20071229 - franciscom - tree colouring and counters config
 $useCounters = $exec_cfg->enable_tree_testcase_counters;
 $useColours = $exec_cfg->enable_tree_colouring;
 
+// 20080224 - franciscom - $args->include_unassigned
 // 20070914 - jbarchibald - added $cf_selected parameter
 $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,$args->tplan_id,$args->tplan_name,
                           $args->buildSelected,$getArguments,$args->keyword_id,$args->tc_id,false,
                           $args->filter_assigned_to,$args->optResultSelected,$cf_selected,
-                          $useCounters,$useColours);
+                          $useCounters,$useColours,$args->include_unassigned);
 
 
 // link to load frame named 'workframe' when the update button is pressed
@@ -103,6 +99,7 @@ if(isset($_REQUEST['submitOptions']))
 	$src_workframe = $_SESSION['basehref'].$menuUrl . "?level=testproject&id={$args->tproject_id}" . $getArguments;
                      
 $smarty = new TLSmarty();
+$smarty->assign('include_unassigned',$args->include_unassigned); 
 $smarty->assign('design_time_cf',$cf_smarty); 
 $smarty->assign('disable_filter_assigned_to',$disable_filter_assigned_to);
 $smarty->assign('assigned_to_user',$assigned_to_user);
@@ -126,7 +123,16 @@ $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
 $smarty->display($template_dir . 'execNavigator.tpl');
 
-// schlundus: changed the user_id to the currentUser of the session
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+  schlundus: changed the user_id to the currentUser of the session
+*/
 function init_args($exec_cfg)
 {
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -145,6 +151,7 @@ function init_args($exec_cfg)
     	case 'logged_user':
     		$user_filter_default = $args->user->dbID;
     		break;  
+
     	case 'none':
     	default:
     		break;  
@@ -152,17 +159,24 @@ function init_args($exec_cfg)
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;             
     $args->buildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
 
+    // Checkbox
+    $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+
     return $args;
 }    
 
 
 /*
-  function: 
+  function: initializeGetArguments
+            build arguments that will be passed to execSetResults.php
+            with a http call 
 
   args:
   
   returns: 
 
+  rev: 20080224 - franciscom - added include_unassigned
+  
 */
 function initializeGetArguments($argsObj,$customFieldSelected)
 {
@@ -179,6 +193,8 @@ function initializeGetArguments($argsObj,$customFieldSelected)
     
     if ($argsObj->optResultSelected != 'all')
     	$settings .= '&filter_status='.$argsObj->optResultSelected;
+  
+  	$settings .= '&include_unassigned=' . $argsObj->include_unassigned;
     	
     if ($customFieldSelected)
     	$settings .= '&cfields='. serialize($customFieldSelected);

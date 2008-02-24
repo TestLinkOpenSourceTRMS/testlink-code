@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.282 $
- * @modified $Date: 2008/02/21 20:59:51 $ $Author: schlundus $
+ * @version $Revision: 1.283 $
+ * @modified $Date: 2008/02/24 17:57:13 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -359,6 +359,7 @@ $TLS_current_build = "Current build";
 $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
 $TLS_filter_tcID = "Test Case ID";
+$TLS_include_unassigned_testcases="include unassigned ";
 $TLS_keyword = "Keyword";
 $TLS_test_status_all_status = $TLS_test_status_all;
 
@@ -837,6 +838,7 @@ $TLS_just_last_execution_for_this_build = "Last execution for build";
 $TLS_last_execution = "Last execution";
 $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to="Only Test Cases assigned to";
+$TLS_or_unassigned_test_cases=" Or without tester assignment";
 $TLS_run_mode="Run mode";
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";

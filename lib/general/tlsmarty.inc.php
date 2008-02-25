@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/01/25 16:13:50 $ $Author: havlat $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/02/25 20:36:30 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -69,7 +69,14 @@ class TLSmarty extends Smarty
 			$this->debugging = true;
 			tLog("Smarty debug ok.");
 		}
-		
+		$this->assign('title',null);
+		$this->assign('SP_html_help_file',null);
+		$this->assign('menuUrl',null);
+		$this->assign('args',null);
+		$this->assign('css_only',null);
+		$this->assign('body_onload',null);
+		$this->assign('tplan_name',null);
+
 		$this->assign('basehref', $basehref);
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
 		$this->assign('css', $basehref . TL_TESTLINK_CSS);
@@ -139,12 +146,12 @@ class TLSmarty extends Smarty
     $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
     $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
 
-    $msg=lang_get('show_hide_api_info');    
+    $msg=lang_get('show_hide_api_info');
     
     // $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
     //                      " onclick=\"show_hide_column('item_view',0);event.stopPropagation();\" " .
     //                      " src=\"{$api_info_img}\" align=\"left\" />";
-       
+
     $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
                          " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
                          " src=\"{$api_info_img}\" align=\"left\" />";

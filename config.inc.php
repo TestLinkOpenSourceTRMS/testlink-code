@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.158 $
- * @modified $Date: 2008/02/08 10:09:05 $ by $Author: franciscom $
+ * @version $Revision: 1.159 $
+ * @modified $Date: 2008/02/25 20:36:29 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -195,7 +195,6 @@ $g_ldap_bind_passwd	= ''; // Left empty if you LDAP server allows anonymous bind
 
 // ----------------------------------------------------------------------------
 /** [GUI] */
-
 /** some maxima related to importing stuff in TL */
 // Maximum uploadfile size 
 // Also check your PHP settings (default is usually 2MBs)

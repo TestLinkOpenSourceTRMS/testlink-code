@@ -1,7 +1,7 @@
-{* 
+{*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.18 2008/01/16 22:09:20 havlat Exp $
-Purpose: smarty template - HTML Common Header 
+$Id: inc_head.tpl,v 1.19 2008/02/25 20:36:30 schlundus Exp $
+Purpose: smarty template - HTML Common Header
 
 rev :
      20080109 - franciscom - added sort table engine management

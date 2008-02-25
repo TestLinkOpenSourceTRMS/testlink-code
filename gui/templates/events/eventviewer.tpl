@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.10 2008/02/20 21:21:44 schlundus Exp $
+$Id: eventviewer.tpl,v 1.11 2008/02/25 20:36:30 schlundus Exp $
 
 Event Viewer
 
@@ -161,6 +161,7 @@ fieldset
 				<th>{$sortHintIcon}{$labels.th_role_description}</th>
 				<th>{$sortHintIcon}{$labels.th_user}</th>
 			</tr>
+			{assign var=transID value="-1"}
 			{foreach from=$events item=event}
 			{assign var=userID value=$event->userID}
 			{if $event->transactionID neq $transID}

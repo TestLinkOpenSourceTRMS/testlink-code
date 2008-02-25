@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.283 $
- * @modified $Date: 2008/02/24 17:57:13 $ $Author: franciscom $
+ * @version $Revision: 1.284 $
+ * @modified $Date: 2008/02/25 20:36:30 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1639,7 +1639,7 @@ $TLS_no_testplans_available = "I'm sorry there are no Test Plans available";
 
 
 // lib/general/tlsmarty.inc.php
-
+$TLS_show_hide_api_info = "Show / Hide API Info";
 
 
 // lib/keywords/keywords.inc.php

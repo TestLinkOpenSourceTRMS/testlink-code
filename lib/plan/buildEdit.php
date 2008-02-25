@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/17 16:35:30 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/02/25 20:40:32 $ $Author: schlundus $
  *
  * rev :
  *      20080217 - franciscom - refactoring
@@ -20,11 +20,14 @@ require_once("web_editor.php");
 
 testlinkInitPage($db);
 
+$templateCfg = new stdClass();
 $templateCfg->template_dir = 'plan/';
 $templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 $templateCfg->template = null;
 
+$op = new stdClass();
 $op->user_feedback = '';
+$op->buttonCfg = new stdClass();
 $op->buttonCfg->name = "";
 $op->buttonCfg->value = "";  
 
@@ -90,7 +93,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of);
 */
 function init_args($request_hash, $session_hash)
 {
-	$args = null;
+	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
 
 	$nullable_keys = array('notes','do_action','build_name');
@@ -286,6 +289,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 */
 function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 {
+	$op = new stdClass();
     $op->operation_descr='';
     $op->user_feedback='';
     $op->template = "buildEdit.tpl";
@@ -333,6 +337,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 */
 function crossChecks($argsObj,&$tplanMgr)
 {
+	$op = new stdClass();
   $op->user_feedback = '';
   $op->status_ok=1;    
   $buildID=($argsObj->do_action == 'do_update') ? $argsObj->build_id : null;

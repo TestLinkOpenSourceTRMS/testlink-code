@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/02/21 20:59:50 $ $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/02/25 20:36:30 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -761,9 +761,9 @@ class tlHTMLLogger
 $g_tlLogger = tlLogger::create($db);
 $g_tlLogger->startTransaction();
 
-set_error_handler("watchPHPError");
+set_error_handler("watchPHPErrors");
 
-function watchPHPError($errno, $errstr, $errfile, $errline)
+function watchPHPErrors($errno, $errstr, $errfile, $errline)
 {
 	$errors = array (
 			E_USER_NOTICE => "E_USER_NOTICE",
@@ -775,7 +775,11 @@ function watchPHPError($errno, $errstr, $errfile, $errline)
 			E_STRICT => "E_STRICT"
 		);
 	if (isset($errors[$errno]))
+	{
+		if ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false)
+			return;
 		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
+	}
 }
 
 //we need a save way to shutdown the logger, or the current transaction will not be closed

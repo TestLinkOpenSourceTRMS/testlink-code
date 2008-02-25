@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/02 11:35:01 $  $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/02/25 09:18:18 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -28,9 +28,7 @@ $tproject_mgr=new testproject($db);
 $req_spec_mgr=new requirement_spec_mgr($db);
 $req_mgr=new requirement_mgr($db);
 
-
-$action = null;
-$sqlResult = null;
+$user_feedback = null;
 $arrAssignedReq = null;
 $arrUnassignedReq = null;
 $tcTitle = null;
@@ -52,12 +50,9 @@ $tmpResult = null;
 if ($doAssign || $doUnassign)
 {
   $req_ids=array_keys($_REQUEST['req_id']);
-	
-	//$pfn="unassignTc2Req";
 	$pfn="unassign_from_tcase";
 	if ($doAssign)
 	{
-	  // $pfn="assignTc2Req";
 	  $pfn="assign_to_tcase";
 	}
 	
@@ -70,18 +65,11 @@ if ($doAssign || $doUnassign)
 			if (!$result)
 				$tmpResult .= $idOneReq . ', ';
 		}
-		if (empty($tmpResult))
-			$sqlResult = 'ok';
-		else
-			$sqlResult = lang_get('req_msg_notupdated_coverage') . $tmpResult;
-		
-		if ($doAssign)
-			$action = 'assigned';
-		else if ($doUnassign)
-			$action = 'unassigned';
+		if (!empty($tmpResult))
+			$user_feedback = lang_get('req_msg_notupdated_coverage') . $tmpResult;
 	}
 	else
-		$sqlResult = lang_get('req_msg_noselect');
+		$user_feedback = lang_get('req_msg_noselect');
 }
 
 // redirect if a user doesn't choose test case 
@@ -130,8 +118,7 @@ else
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('sqlResult', $sqlResult);
-$smarty->assign('action', $action);
+$smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('tcTitle',$tcTitle);
 $smarty->assign('arrUnassignedReq', $arrUnassignedReq);
 $smarty->assign('arrReqSpec', $arrReqSpec);
@@ -139,4 +126,19 @@ $smarty->assign('arrAssignedReq', $arrAssignedReq);
 $smarty->assign('selectedReqSpec', $idReqSpec);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display($template_dir . $default_template);
+
+
+/*
+  function: init_args()
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    return $args;
+}
 ?>

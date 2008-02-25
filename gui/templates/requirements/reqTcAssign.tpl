@@ -11,20 +11,29 @@ Purpose: smarty template - assign REQ to one test case
 2. added control via javascrit on quantity of checked checkboxes
 
 *}
+{lang_get var="labels"
+          s="please_select_a_req,test_case,req_title_assign,
+             warning_req_tc_assignment_impossible,req_spec,warning,
+             req_title_assigned,check_uncheck_all_checkboxes,
+             req_msg_norequirement,btn_unassign,req_title_unassigned,
+             check_uncheck_all_checkboxes,req_msg_norequirement,btn_assign"}
+          
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
 
 {literal}
 <script type="text/javascript">
 {/literal}
-var please_select_a_req="{lang_get s='please_select_a_req'}";
+var please_select_a_req="{$labels.please_select_a_req}";
+var alert_box_title = "{$labels.warning}";
 {literal}
 
 function check_action_precondition(form_id,action)
 {
 	if(checkbox_count_checked(form_id) <= 0)
 	{
-		alert(please_select_a_req);
+		alert_message(alert_box_title,please_select_a_req);
 		return false;
 	}
 	return true;
@@ -42,31 +51,28 @@ function check_action_precondition(form_id,action)
 
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;"}
- {lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
+ {$labels.test_case}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
 </h1>
 
 
 <div class="workBack">
-<h1>{lang_get s='req_title_assign'}</h1>
+<h1>{$labels.req_title_assign}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult action=$action item="requirement"}
+{include file="inc_update.tpl" user_feedback=$user_feedback}
 
 {if $arrReqSpec eq "" }
-
-   {lang_get s='warning_req_tc_assignment_impossible'}
-
-
+   {$labels.warning_req_tc_assignment_impossible}
 {else}
 
   <form id="SRS_switch" name="SRS_switch" method="post">
-    <p><span class="labelHolder">{lang_get s='req_spec'}</span>
+    <p><span class="labelHolder">{$labels.req_spec}</span>
   	<select name="idSRS" onchange="form.submit()">
   	{html_options options=$arrReqSpec selected=$selectedReqSpec}</select>
   </form>
   </div>
 
   <div class="workBack">
-  <h2>{lang_get s='req_title_assigned'}</h2>
+  <h2>{$labels.req_title_assigned}</h2>
   {if $arrAssignedReq ne ""}
     <form id="reqList" method="post">
     <div id="div_assigned_req">
@@ -80,7 +86,7 @@ function check_action_precondition(form_id,action)
       		<th align="center"  style="width: 5px;background-color:#005498;">
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
       		             onclick='cs_all_checkbox_in_div("div_assigned_req","assigned_req","memory_assigned_req");'
-      		             title="{lang_get s='check_uncheck_all_checkboxes'}" />
+      		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
     		<th>{lang_get s="req_doc_id"}</th>
     		<th>{lang_get s="req"}</th>
@@ -96,14 +102,14 @@ function check_action_precondition(form_id,action)
     		<td>{$arrAssignedReq[row].scope|strip_tags|strip|truncate:30}</td>
     	</tr>
     	{sectionelse}
-    	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
+    	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
     	{/section}
     </table>
    	</div>
 
     {if $smarty.section.row.total > 0}
     	<div class="groupBtn">
-    		<input type="submit" name="unassign" value="{lang_get s='btn_unassign'}"
+    		<input type="submit" name="unassign" value="{$labels.btn_unassign}"
     		       onclick="return check_action_precondition('reqList','unassign');"/>
     	</div>
     {/if}
@@ -115,7 +121,7 @@ function check_action_precondition(form_id,action)
 
     {if $arrUnassignedReq ne ""}
       <div class="workBack">
-      <h2>{lang_get s='req_title_unassigned'}</h2>
+      <h2>{$labels.req_title_unassigned}</h2>
       <form id="reqList2" method="post">
 
        <div id="div_free_req">
@@ -130,7 +136,7 @@ function check_action_precondition(form_id,action)
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
       		             onclick='cs_all_checkbox_in_div("div_free_req",
       		                                             "free_req","memory_free_req");'
-      		             title="{lang_get s='check_uncheck_all_checkboxes'}" />
+      		             title="{$labels.check_uncheck_all_checkboxes}" />
       		</th>
       		<th>{lang_get s="req_doc_id"}</th>
       		<th>{lang_get s="req"}</th>
@@ -148,12 +154,12 @@ function check_action_precondition(form_id,action)
       		<td>{$arrUnassignedReq[row2].scope|strip_tags|strip|truncate:30}</td>
       	</tr>
       	{sectionelse}
-      	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement66'}</span></td></tr>
+      	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement66}</span></td></tr>
       	{/section}
       </table>
 	  </div>
       <div class="groupBtn">
-      	<input type="submit" name="assign" value="{lang_get s='btn_assign'}"
+      	<input type="submit" name="assign" value="{$labels.btn_assign}"
      		       onclick="return check_action_precondition('reqList2','assign');"/>
       </div>
       </form>

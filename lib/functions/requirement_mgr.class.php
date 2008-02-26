@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/02/21 20:59:50 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/02/26 22:33:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -21,6 +21,7 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $requirement_spec_table='req_specs';
 	var $req_coverage_table="req_coverage";
 	var $nodes_hierarchy_table="nodes_hierarchy";
+  private $tcversions_table="tcversions";
 
 	var $my_node_type;
 	var $tree_mgr;
@@ -287,14 +288,20 @@ class requirement_mgr extends tlObjectWithAttachments
   /** collect coverage of Requirement
    * @param string $req_id ID of req.
    * @return assoc_array list of test cases [id, title]
+   *
+   * rev: 20080226 - franciscom - get test case external id
    */
   function get_coverage($id)
   {
-  	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
-  	       " FROM {$this->nodes_hierarchy_table} nodes_hierarchy, " .
-  	       "      {$this->req_coverage_table} req_coverage " .
-  			   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
-  			   " AND  req_coverage.req_id={$id}";
+  	$sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
+  	       " FROM {$this->nodes_hierarchy_table} NHA, " .
+  	       "      {$this->nodes_hierarchy_table} NHB, " .
+  	       "      {$this->tcversions_table} TCV, " .
+  	       "      {$this->req_coverage_table} RC " .
+  			   " WHERE RC.testcase_id = NHA.id " .
+  			   " AND  NHB.parent_id=NHA.id " .
+  			   " AND  TCV.id=NHB.id " .
+  			   " AND  RC.req_id={$id}";
   	return $this->db->get_recordset($sql);
   }
 

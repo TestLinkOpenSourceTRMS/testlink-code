@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.31 2008/01/21 20:13:04 schlundus Exp $
+# $Id: testlink_create_tables.sql,v 1.32 2008/02/26 22:33:18 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+# 20080226 - franciscom - removed autoincrement id on req_spec, requirements
 # 20080119 - franciscom - testprojects.option_automation
 #	20080117 - schlundus - added table for events and transactions
 # 20080117 - franciscom - prefix size increased (16)
@@ -188,7 +189,7 @@ CREATE TABLE `req_coverage` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 
 CREATE TABLE `req_specs` (
-  `id` int(10) unsigned NOT NULL auto_increment,
+  `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
   `scope` text,
@@ -203,7 +204,7 @@ CREATE TABLE `req_specs` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
 CREATE TABLE `requirements` (
-  `id` int(10) unsigned NOT NULL auto_increment,
+  `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
   `req_doc_id` varchar(32) default NULL,
   `title` varchar(100) NOT NULL,

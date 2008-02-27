@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/02/17 16:35:30 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/02/27 20:16:42 $ by $Author: schlundus $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -46,7 +46,6 @@ $main_descr=lang_get('testplan_title_tp_management'). " - " .
 if($args->do_action == "do_create" || $args->do_action == "do_update")
 {
 	$tpName = $args->testplan_name;
-	$user_feedback = lang_get("warning_duplicate_tplan_name");
 	$name_exists = $tproject_mgr->check_tplan_name_existence($args->tproject_id,$tpName);
 	$name_id_rel_ok = (isset($tplans[$args->tplan_id]) && $tplans[$args->tplan_id]['name'] == $tpName);
 }
@@ -94,7 +93,7 @@ switch($args->do_action)
 		{
 			if(!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,$bActive))
 			{
-				$user_feedback = lang_get('update_tp_failed1'). $tpName . lang_get('update_tp_failed2').": " . 
+				$user_feedback = lang_get('update_tp_failed1'). $tpName . lang_get('update_tp_failed2').": " .
 				                 $db->error_msg() . "<br />";
 			}
 			else
@@ -112,7 +111,10 @@ switch($args->do_action)
 				$status_ok = true;  
 				$template = null;
 			}
-		}  
+		}
+		else
+			$user_feedback = lang_get("warning_duplicate_tplan_name");
+
 		if(!$status_ok)
 		{
 			$smarty->assign('tplan_id',$args->tplan_id);
@@ -160,6 +162,8 @@ switch($args->do_action)
 				}
 			}
 		}
+		else
+			$user_feedback = lang_get("warning_duplicate_tplan_name");
 
 		if(!$status_ok)
 		{
@@ -185,14 +189,14 @@ switch($args->do_action)
    case "list":
         $tplans = $tproject_mgr->get_all_testplans($args->tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
 
-        $template= is_null($template) ? 'planView.tpl' : $template;
+        $template = is_null($template) ? 'planView.tpl' : $template;
         $smarty->assign('tplans',$tplans);
         $smarty->display($template_dir . $template);
 		break; 
 		
    case "edit":
    case "create":
-        $template= is_null($template) ? 'planEdit.tpl' : $template;
+        $template = is_null($template) ? 'planEdit.tpl' : $template;
 
         $smarty->assign('tplans',$tplans);
       	$smarty->assign('tplan_id',$args->tplan_id);
@@ -220,10 +224,9 @@ switch($args->do_action)
 */
 function init_args($request_hash, $session_hash)
 {
-  
-	$args = null;
+  	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
-	
+
 	$nullable_keys = array('testplan_name','notes','rights','active','do_action');
 	foreach($nullable_keys as $value)
 	{
@@ -255,4 +258,3 @@ function init_args($request_hash, $session_hash)
 	return $args;
 }
 ?>
- 

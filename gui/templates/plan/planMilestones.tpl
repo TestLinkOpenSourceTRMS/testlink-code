@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestones.tpl,v 1.5 2008/02/15 20:26:43 schlundus Exp $
+$Id: planMilestones.tpl,v 1.6 2008/02/27 20:16:41 schlundus Exp $
 Purpose: smarty template - edit milestones
 
 rev :
@@ -93,6 +93,7 @@ function validateForm(f)
 		<tr>
 			<td>{lang_get s='th_date_format'}:</td>
 			<td>
+	  {assign var="selected_date" value=""}
       {if $mileStone neq null}
         {assign var="selected_date" value=$mileStone.target_date}
       {/if}
@@ -125,7 +126,6 @@ function validateForm(f)
 		</tr>
 	</table>
 	<p>
-	{$bEdit}
 	{if !$mileStone.id}
 		<input type="submit" name="newMilestone" value="{lang_get s='btn_new_milestone'}" />
 	{else}

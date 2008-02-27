@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.12 2008/02/13 01:18:37 franciscom Exp $ 
+$Id: planView.tpl,v 1.13 2008/02/27 20:16:41 schlundus Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -45,9 +45,9 @@ var del_action=fRoot+'{$deleteAction}';
 <body {$body_onload}>
 
 <h1>{$main_descr|escape}</h1>
-{if $editResult ne ""}
+{if $user_feedback ne ""}
 	<div>
-		<p class="info">{$editResult}</p>
+		<p class="info">{$user_feedback}</p>
 	</div>
 {/if}
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.11 2008/02/25 20:36:30 schlundus Exp $
+$Id: eventviewer.tpl,v 1.12 2008/02/27 20:16:40 schlundus Exp $
 
 Event Viewer
 
@@ -173,7 +173,13 @@ fieldset
 					<td style="white-space:nowrap;{$padding}">{localize_timestamp ts=$event->timestamp}</td>
 					<td>{$event->getLogLevel()|escape}</td>
 					<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
-					<td>{$users[$userID]|escape}</td>
+					<td>
+					{if in_array($userID,$users)}
+						{$users[$userID]|escape}
+					{else}
+						&nbsp;
+					{/if}
+					</td>
 			</tr>
 				{assign var=padding value="padding-left:20px"}
 		{/foreach}

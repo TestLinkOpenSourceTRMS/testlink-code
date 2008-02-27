@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/02/25 20:36:30 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/02/27 20:16:42 $ by $Author: schlundus $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -25,7 +25,7 @@ $logLevels = array(
 			tlLogger::DEBUG => lang_get("log_level_DEBUG"),
 			);
 
-$args=init_args();
+$args = init_args();
 $startTime = null;
 $endTime = null;
 if (strlen($args->startDate))
@@ -47,7 +47,7 @@ $smarty = new TLSmarty();
 $smarty->assign('events',$events);
 $smarty->assign('users',$users);
 $smarty->assign('logLevels',$logLevels);
-$smarty->assign('selectedLogLevels',array_values($args->logLevel) ? $args->logLevel : TL_DEFAULT_EVENTVIEWER_LOGLEVELS);
+$smarty->assign('selectedLogLevels',$args->logLevel ? array_values($args->logLevel) : array());
 $smarty->assign('startDate',$args->startDate);
 $smarty->assign('endDate',$args->endDate);
 $smarty->display($template_dir . $default_template);

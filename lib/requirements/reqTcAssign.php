@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/02/25 09:18:18 $  $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/02/28 22:16:22 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -32,35 +32,30 @@ $user_feedback = null;
 $arrAssignedReq = null;
 $arrUnassignedReq = null;
 $tcTitle = null;
-
-$tc_id = isset($_GET['id']) ? intval($_GET['id']) : null;
-$edit = isset($_GET['edit']) ? strings_stripSlashes($_GET['edit']) : null;
-
-$idReq = isset($_POST['req']) ? intval($_POST['req']) : null;
-$idReqSpec = isset($_POST['idSRS']) ? intval($_POST['idSRS']) : null;
-
-$doAssign = isset($_POST['assign']);
-$doUnassign = isset($_POST['unassign']);
-
-$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
 $tmpResult = null;
+$args=init_args();
 
 // add or remove dependencies TC - REQ
-if ($doAssign || $doUnassign)
+switch($args->doAction)
 {
-  $req_ids=array_keys($_REQUEST['req_id']);
-	$pfn="unassign_from_tcase";
-	if ($doAssign)
-	{
-	  $pfn="assign_to_tcase";
-	}
-	
+    case 'assign':
+    $pfn="assign_to_tcase";
+    break;  
+
+    case 'unassign':
+    $pfn="unassign_from_tcase";
+    break;  
+    
+}
+
+if (!is_null($args->doAction))
+{
+  $req_ids=array_keys($args->reqIdSet);
 	if (count($req_ids))
 	{
 		foreach ($req_ids as $idOneReq)
 		{
-			$result = $req_mgr->$pfn($idOneReq,$tc_id);
+			$result = $req_mgr->$pfn($idOneReq,$args->tc_id);
 
 			if (!$result)
 				$tmpResult .= $idOneReq . ', ';
@@ -72,40 +67,41 @@ if ($doAssign || $doUnassign)
 		$user_feedback = lang_get('req_msg_noselect');
 }
 
+
 // redirect if a user doesn't choose test case 
-if ($edit == 'testproject' || $edit == 'testsuite')
+if ($args->edit == 'testproject' || $args->edit == 'testsuite')
 {
- 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=assignReqs&locale={$_SESSION['locale']}");
+  show_instructions('assignReqs');
 	exit();
 } 
-else if($edit == 'testcase')
+else if($args->edit == 'testcase')
 {
 	//get list of ReqSpec (not_empty)
 	$get_not_empty=1;
-	$arrReqSpec = $tproject_mgr->getOptionReqSpec($tproject_id,$get_not_empty);
+	$arrReqSpec = $tproject_mgr->getOptionReqSpec($args->tproject_id,$get_not_empty);
 
   $SRS_qty=count($arrReqSpec);
   
   if( $SRS_qty > 0 )
   {
   	$tc_mgr = new testcase($db);
-  	$arrTc = $tc_mgr->get_by_id($tc_id);
+  	$arrTc = $tc_mgr->get_by_id($args->tc_id);
   	if ($arrTc)
   	{
   		$tcTitle = $arrTc[0]['name'];
   	
   		//get first ReqSpec if not defined
-  		if (!$idReqSpec && $SRS_qty > 0)
+  		if (!$args->idReqSpec && $SRS_qty > 0)
   		{
   			reset($arrReqSpec);
-  			$idReqSpec = key($arrReqSpec);
-  			tLog('Set first SRS ID: ' . $idReqSpec);
+  			$args->idReqSpec = key($arrReqSpec);
+  			tLog('Set first SRS ID: ' . $args->idReqSpec);
   		}
   		
-  		if ($idReqSpec)
+  		if ($args->idReqSpec)
   		{
-  			$arrAssignedReq = $req_spec_mgr->get_requirements($idReqSpec, 'assigned', $tc_id);
-  			$arrAllReq = $req_spec_mgr->get_requirements($idReqSpec);
+  			$arrAssignedReq = $req_spec_mgr->get_requirements($args->idReqSpec, 'assigned', $args->tc_id);
+  			$arrAllReq = $req_spec_mgr->get_requirements($args->idReqSpec);
   			$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);
   		}
   	}
@@ -123,7 +119,7 @@ $smarty->assign('tcTitle',$tcTitle);
 $smarty->assign('arrUnassignedReq', $arrUnassignedReq);
 $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('arrAssignedReq', $arrAssignedReq);
-$smarty->assign('selectedReqSpec', $idReqSpec);
+$smarty->assign('selectedReqSpec', $args->idReqSpec);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display($template_dir . $default_template);
 
@@ -139,6 +135,18 @@ $smarty->display($template_dir . $default_template);
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
+    $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+    $args->edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
+    $args->idReq = isset($_REQUEST['req']) ? intval($_REQUEST['req']) : null;
+    $args->idReqSpec = isset($_REQUEST['idSRS']) ? intval($_REQUEST['idSRS']) : null;
+    $args->reqIdSet = isset($_REQUEST['req_id']) ? $_REQUEST['req_id'] : null;
+    $args->doAction = isset($_REQUEST['assign']) ? 'assign' : null;
+    if( is_null($args->doAction) )
+    {
+        $args->doAction = isset($_REQUEST['unassign']) ? 'unassign' : null;
+    } 
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
     return $args;
 }
 ?>

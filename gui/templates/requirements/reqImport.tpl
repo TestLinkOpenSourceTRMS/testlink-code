@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.2 2007/11/22 07:32:56 franciscom Exp $
+$Id: reqImport.tpl,v 1.3 2008/02/28 22:15:39 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat 
 
@@ -17,7 +17,6 @@ rev:
 {assign var="req_module" value=$smarty.const.REQ_MODULE}
 {assign var="url_args" value="reqSpecView.php?req_spec_id="}
 {assign var="req_spec_view_url" value="$basehref$req_module$url_args$req_spec_id"}
-
 <body>
 <h1>{lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$reqSpec.title|escape}</h1>
 
@@ -123,7 +122,7 @@ rev:
   		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
   		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
   		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-  			onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?req_spec_id={$reqSpec.id}';" />
+  			onclick="javascript: location.href='{$req_spec_view_url}';" />
   	</div>
   </form>
   {$fsyntax_msg}

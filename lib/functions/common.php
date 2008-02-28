@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.96 $ $Author: franciscom $
- * @modified $Date: 2008/02/04 22:32:52 $
+ * @version $Revision: 1.97 $ $Author: franciscom $
+ * @modified $Date: 2008/02/28 22:16:22 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -1230,5 +1230,18 @@ function getFileUploadErrorMessage($fInfo)
 		}
 	}
 	return $msg;
+}
+
+/*
+  function: show_instructions 
+
+  args :
+  
+  returns: 
+
+*/
+function show_instructions($key)
+{
+  	redirect($_SESSION['basehref'] . "lib/general/staticPage.php?key={$key}");
 }
 ?>

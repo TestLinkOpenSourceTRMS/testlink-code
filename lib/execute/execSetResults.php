@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/02/24 17:54:59 $ $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/02/28 22:16:22 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -60,7 +60,7 @@ $has_exec_right = (has_rights($db,"testplan_execute")=="yes" ? 1 : 0);
 $do_show_instructions=(strlen($args->level) == 0 || $args->level=='testproject') ? 1 : 0;
 if ($do_show_instructions)
 {
-    show_instructions();
+    show_instructions('executeTest');
 	  exit();
 }
 
@@ -816,18 +816,6 @@ function createExecNotesWebEditor(&$tcversions,$basehref)
     return $editors;
 }
 
-/*
-  function: show_instructions 
-
-  args :
-  
-  returns: 
-
-*/
-function show_instructions()
-{
-  	redirect($_SESSION['basehref'] . "lib/general/staticPage.php?key=executeTest");
-}
 
 
 /*

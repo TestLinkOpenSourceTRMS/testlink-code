@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/02/26 22:33:45 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/02/28 22:16:22 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -33,7 +33,6 @@ $template_dir="requirements/";
 $template = 'reqSpecView.tpl';
 
 $args=init_args();
-
 $req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 
 //SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php

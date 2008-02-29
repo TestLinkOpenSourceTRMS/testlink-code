@@ -1,11 +1,11 @@
-#<?php
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.285 $
- * @modified $Date: 2008/02/29 23:19:29 $ $Author: schlundus $
+ * @version $Revision: 1.286 $
+ * @modified $Date: 2008/02/29 23:20:31 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.

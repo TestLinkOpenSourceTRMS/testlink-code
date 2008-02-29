@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/02/07 21:05:35 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/02/29 23:19:29 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -26,6 +26,7 @@ $smarty = new TLSmarty();
 
 $template_dir = 'keywords/';
 $template = 'keywordsEdit.tpl';
+$op = new stdClass();
 $op->status = 0;
 $msg = '';
 
@@ -33,9 +34,6 @@ $args = init_args();
 $canManage = has_rights($db,"mgt_modify_key");
 
 $tprojectMgr = new testproject($db);
-$sqlResult = null;
-$action = null;
-
 switch ($args->doAction)
 {
 	case "create":
@@ -53,10 +51,10 @@ switch ($args->doAction)
 	case "do_delete":
 		$op = do_delete($smarty,$args,$tprojectMgr);
 		break;
-} // switch
+}
 
 if($op->status == 1)
-	$template = $op->template;  
+	$template = $op->template;
 else
 	$msg = getKeywordErrorMessage($op->status);
 
@@ -64,8 +62,6 @@ $keywords = $tprojectMgr->getKeywords($args->testproject_id);
 $keyword = new tlKeyword();
 $export_types = $keyword->getSupportedSerializationInterfaces();
 
-$smarty->assign('action',$action);
-$smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('user_feedback',$msg);
 $smarty->assign('canManage',$canManage);
 $smarty->assign('keywords', $keywords);
@@ -79,6 +75,7 @@ function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
+	$args = new stdClass();
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
 	$args->keyword_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
@@ -104,16 +101,14 @@ function init_args()
 */
 function create(&$smarty,&$args)
 {
+	$ret = new stdClass();
 	$ret->template = 'keywordsEdit.tpl';
 	$ret->status = 1;
 
-	$main_descr = lang_get('keyword_management');
-	$action_descr = lang_get('create_keyword');
-
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_create');
-	$smarty->assign('main_descr',$main_descr);
-	$smarty->assign('action_descr',$action_descr);
+	$smarty->assign('main_descr',lang_get('keyword_management'));
+	$smarty->assign('action_descr',lang_get('create_keyword'));
 
 	return $ret;
 }
@@ -131,12 +126,11 @@ function create(&$smarty,&$args)
 */
 function edit(&$smarty,&$args,&$tproject_mgr)
 {
+	$ret = new stdClass();
 	$ret->template = 'keywordsEdit.tpl';
 	$ret->status = 1;
 
-	$main_descr = lang_get('keyword_management');
 	$action_descr = lang_get('edit_keyword');
-	
 	$keyword = $tproject_mgr->getKeyword($args->keyword_id);
 	if ($keyword)
 	{
@@ -147,7 +141,7 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 	
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_update');
-	$smarty->assign('main_descr',$main_descr);
+	$smarty->assign('main_descr',lang_get('keyword_management'));
 	$smarty->assign('action_descr',$action_descr);
 
 	return $ret;
@@ -164,11 +158,8 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 */
 function do_create(&$smarty,&$args,&$tproject_mgr)
 {
-	$main_descr = lang_get('keyword_management');
-	$action_descr = lang_get('create_keyword');
-
-	$smarty->assign('main_descr',$main_descr);
-	$smarty->assign('action_descr',$action_descr);
+	$smarty->assign('main_descr',lang_get('keyword_management'));
+	$smarty->assign('action_descr',lang_get('create_keyword'));
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_create');
 
@@ -188,8 +179,6 @@ function do_create(&$smarty,&$args,&$tproject_mgr)
 */
 function do_update(&$smarty,&$args,&$tproject_mgr)
 {
-	$main_descr = lang_get('keyword_management');
-
 	$action_descr = lang_get('edit_keyword');
 	$keyword = $tproject_mgr->getKeyword($args->keyword_id);
 	if ($keyword)
@@ -197,10 +186,11 @@ function do_update(&$smarty,&$args,&$tproject_mgr)
 
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_update');
-	$smarty->assign('main_descr',$main_descr);
+	$smarty->assign('main_descr',lang_get('keyword_management'));
 	$smarty->assign('action_descr',$action_descr);
 
-	$ret->template='keywordsView.tpl';
+	$ret = new stdClass();
+	$ret->template = 'keywordsView.tpl';
 	$ret->status = $tproject_mgr->updateKeyword($args->testproject_id,$args->keyword_id,
 										  $args->keyword,$args->notes);
 
@@ -219,15 +209,16 @@ function do_update(&$smarty,&$args,&$tproject_mgr)
 function do_delete(&$smarty,&$args,&$tproject_mgr)
 {
 	$main_descr = lang_get('testproject') . TITLE_SEP . $args->testproject_name;
-	$action_descr = lang_get('edit_keyword');
 
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_update');
 	$smarty->assign('main_descr',$main_descr);
-	$smarty->assign('action_descr',$action_descr);
+	$smarty->assign('action_descr',lang_get('edit_keyword'));
 
+	$ret = new stdClass();
 	$ret->template = 'keywordsView.tpl';
 	$ret->status = $tproject_mgr->deleteKeyword($args->keyword_id);
+
 	return $ret;
 }
 

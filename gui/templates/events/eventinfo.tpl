@@ -1,13 +1,13 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventinfo.tpl,v 1.4 2008/02/10 18:46:42 franciscom Exp $ 
+$Id: eventinfo.tpl,v 1.5 2008/02/29 23:19:29 schlundus Exp $ 
 
-rev: 
+rev:
 *}
-{lang_get var="labels" 
+{lang_get var="labels"
           s='th_loglevel,th_timestamp,th_source,th_description,
              th_session_info,User,th_sessionID,th_activity_code,
-             th_object_id,th_object_type'}
+             th_object_id,th_object_type,th_activity'}
              
 <div class="workBack">
 	<table class="simple">

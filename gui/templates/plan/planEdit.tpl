@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.8 2008/02/16 19:09:08 franciscom Exp $
+$Id: planEdit.tpl,v 1.9 2008/02/29 23:19:29 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -147,7 +147,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 
 		{/if}
 
-		<input type="button" name="go_back" value="{$labels.cancel}"  
+		<input type="button" name="go_back" value="{$labels.cancel}"
 		                     onclick="javascript: location.href=fRoot+'lib/plan/planView.php';" />
 
 	</div>

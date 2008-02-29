@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.4 2007/12/16 12:20:58 schlundus Exp $
+$Id: keywordsEdit.tpl,v 1.5 2008/02/29 23:19:29 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
 {assign var="url_args" value="lib/keywords/keywordsEdit.php"}
@@ -14,7 +14,7 @@ var warning_empty_keyword = "{lang_get s='warning_empty_keyword'}";
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.keyword.value)) 
+  if (isWhitespace(f.keyword.value))
   {
       alert(warning_empty_keyword);
       selectField(f, 'keyword');
@@ -58,9 +58,10 @@ function validateForm(f)
   	</table>
   	<div class="groupBtn">	
   	<input type="hidden" name="doAction" value="" />
-    <input type="submit" name="create_req" value="{$submit_button_label}" 
+    <input type="submit" name="create_req" value="{$submit_button_label}"
 	         onclick="doAction.value='{$submit_button_action}'" />
-  	
+  	<input type="button" value="{lang_get s='btn_cancel'}"
+	         onclick="javascript:location.href=fRoot+'lib/keywords/keywordsView.php'" />
   	</div>
   	</form>
   </div>

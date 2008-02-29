@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: opt_transfer.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/01/17 20:47:55 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/02/29 23:19:29 $
  *
  * Manage Option Transfer (double select box)
  *
@@ -53,7 +53,7 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 {
 	$opt_cfg->size = 8;
 	$opt_cfg->style = "width: 98%;";
-	
+
 	$opt_cfg->js_events->all_right_click = "";
 	$opt_cfg->js_events->left2right_click = "";
 	$opt_cfg->js_events->right2left_click = "";
@@ -83,16 +83,19 @@ function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
 
 function opt_transf_empty_cfg()
 {
+	$opt_cfg = new stdClass();
 	$opt_cfg->js_ot_name = "";
 	$opt_cfg->size = 8;
 	$opt_cfg->style = "width: 300px;";
-	
+
+	$opt_cfg->js_events = new stdClass();
 	$opt_cfg->js_events->all_right_click = "";
 	$opt_cfg->js_events->left2right_click = "";
 	$opt_cfg->js_events->right2left_click = "";
 	$opt_cfg->js_events->all_left_click = "";
 	
 	$opt_cfg->global_lbl = 'Option Transfer';
+	$opt_cfg->from = new stdClass();
 	$opt_cfg->from->lbl = 'from';
 	$opt_cfg->from->name = "from_select_box";
 	$opt_cfg->from->map = array();
@@ -103,8 +106,10 @@ function opt_transf_empty_cfg()
 	$opt_cfg->from->desc_html_content = true;
 	$opt_cfg->from->required = false;
 	$opt_cfg->from->show_id_in_desc = true;
+	$opt_cfg->from->js_events = new stdClass;
 	$opt_cfg->from->js_events->ondblclick = "";
-	
+
+	$opt_cfg->to = new stdClass();
 	$opt_cfg->to->lbl = 'to';
 	$opt_cfg->to->name = "to_select_box";
 	$opt_cfg->to->map = array();
@@ -115,6 +120,7 @@ function opt_transf_empty_cfg()
 	$opt_cfg->to->desc_html_content = true;
 	$opt_cfg->to->required = false;
 	$opt_cfg->to->show_id_in_desc = true;
+	$opt_cfg->to->js_events = new stdClass();
 	$opt_cfg->to->js_events->ondblclick = "";
 	
 	return $opt_cfg;

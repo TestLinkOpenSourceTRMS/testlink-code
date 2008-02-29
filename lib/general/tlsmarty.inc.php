@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/02/25 20:36:30 $ $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/02/29 23:19:29 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -76,7 +76,7 @@ class TLSmarty extends Smarty
 		$this->assign('css_only',null);
 		$this->assign('body_onload',null);
 		$this->assign('tplan_name',null);
-
+		$this->assign('name',null);
 		$this->assign('basehref', $basehref);
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
 		$this->assign('css', $basehref . TL_TESTLINK_CSS);
@@ -124,7 +124,8 @@ class TLSmarty extends Smarty
 		$this->assign('user_feedback', null);
 		$this->assign('feedback_type', 'soft');
 		$this->assign('refresh', 'no');
-	
+		$this->assign('result', null);
+
 		$this->assign('optLocale',$g_locales);
 
     $this->assign('gsmarty_href_keywordsView',

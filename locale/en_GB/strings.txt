@@ -1,11 +1,11 @@
-<?php
+#<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.284 $
- * @modified $Date: 2008/02/25 20:36:30 $ $Author: schlundus $
+ * @version $Revision: 1.285 $
+ * @modified $Date: 2008/02/29 23:19:29 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1955,7 +1955,7 @@ $TLS_created_on_testsuite="Test Cases will be created on Test Suite %s";
 $TLS_keyword_management="Keyword management";
 $TLS_create_keyword="Create keyword";
 $TLS_edit_keyword="Edit keyword";
-
+$TLS_warning_empty_keyword = "Keyword must not be empty!";
 
 // api/TestlinkXMLRPCServerErrors.php
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";

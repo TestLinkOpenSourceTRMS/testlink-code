@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.159 $
- * @modified $Date: 2008/02/25 20:36:29 $ by $Author: schlundus $
+ * @version $Revision: 1.160 $
+ * @modified $Date: 2008/03/01 21:41:18 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -398,19 +398,19 @@ $g_attachments->allow_empty_title = TRUE;
 // 'use_filename' -> use filename as title
 //$g_attachments->action_on_save_empty_title='use_filename';
 //
-$g_attachments->action_on_save_empty_title='none';
+$g_attachments->action_on_save_empty_title = 'none';
 
 // Remember that title is used as link description for download
 // then if title is empty, what the system has to do when displaying ?
 // 'show_icon'  -> the $g_attachments->access_icon will be used.
 // 'show_label' -> the value of $g_attachments->access_string will be used .
-$g_attachments->action_on_display_empty_title='show_icon';
+$g_attachments->action_on_display_empty_title = 'show_icon';
 
-$g_attachments->access_icon='<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none">';
-$g_attachments->access_string="[*]";
+$g_attachments->access_icon = '<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none">';
+$g_attachments->access_string = "[*]";
 
 // Set display order of uploaded files - BUGID 1086
-$g_attachments->order_by=" ORDER BY date_added DESC ";
+$g_attachments->order_by = " ORDER BY date_added DESC ";
 
 // ----------------------------------------------------------------------------
 /** [Requirements] */

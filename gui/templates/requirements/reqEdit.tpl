@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.5 2007/12/08 18:10:26 franciscom Exp $
+$Id: reqEdit.tpl,v 1.6 2008/03/01 21:41:19 schlundus Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -53,49 +53,46 @@ function validateForm(f)
 
 
 <form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this);">
-  <input type="hidden" name="req_spec_id" value="{$req_spec_id}">
-  <input type="hidden" name="requirement_id" value="{$req_id}">
+	<input type="hidden" name="req_spec_id" value="{$req_spec_id}" />
+	<input type="hidden" name="requirement_id" value="{$req_id}" />
 
-  <div class="labelHolder"> <label for="reqDocId">{lang_get s='req_doc_id'}</label></div> 
-	<div><input type="text" name="reqDocId" 
-  		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}" 
+  	<div class="labelHolder"> <label for="reqDocId">{lang_get s='req_doc_id'}</label></div>
+	<div><input type="text" name="reqDocId"
+  		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
   		        value="{$req.req_doc_id}" />
   				{include file="error_icon.tpl" field="reqDocId"}
-  </div>
-  <br />
-  <div class="labelHolder"> <label for="req_title">{lang_get s='title'}</label></div>
-  <div><input type="text" name="req_title" 
-  		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}" 
+  	</div>
+ 	<br />
+ 	<div class="labelHolder"> <label for="req_title">{lang_get s='title'}</label></div>
+  	<div><input type="text" name="req_title"
+  		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
   		        value="{$req.title}" />
   		    {include file="error_icon.tpl" field="req_title"}
-  </div>
-  <br />
-  <div class="labelHolder"> <label for="scope">{lang_get s='scope'}</label></div>
+ 	 </div>
+  	<br />
+  	<div class="labelHolder"> <label for="scope">{lang_get s='scope'}</label></div>
 	<div>{$scope}</div>
-  <br />
-  <div class="labelHolder"> <label for="reqStatus">{lang_get s='status'}</label>
-     <select name="reqStatus">
+ 	<br />
+  	<div class="labelHolder"> <label for="reqStatus">{lang_get s='status'}</label>
+     	<select name="reqStatus">
   			{html_options options=$selectReqStatus selected=$req.status}
   		</select>
-  </div>
-  <br />
-   {* Custom fields *}
-   {if $cf neq ""}
-     <div class="custom_field_container">
-     {$cf}
-     </div>
+  	</div>
+  	<br />
+   	{* Custom fields *}
+   	{if $cf neq ""}
+    	<div class="custom_field_container">
+    	{$cf}
+     	</div>
      <br />
-   {/if}
+  	{/if}
 
-<div class="groupBtn">
-<input type="hidden" name="do_action" value="">
-
-<input type="submit" name="create_req" value="{$submit_button_label}" 
+	<div class="groupBtn">
+		<input type="hidden" name="do_action" value="" />
+		<input type="submit" name="create_req" value="{$submit_button_label}"
 	       onclick="do_action.value='{$submit_button_action}'"/>
-</div>
+	</div>
 </form>
-
-</div>
 
 </div>
 

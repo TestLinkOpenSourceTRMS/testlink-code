@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/02/03 21:39:01 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/03/01 21:41:27 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -127,59 +127,57 @@ switch($args->do_action)
 		$smarty->assign('refresh_tree','yes');
 		$smarty->assign('result','ok');
 		break;
-  
-  case "reorder":
-  $template = $template_dir .  'reqReorder.tpl';
-  $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
-  $all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
-  $smarty->assign('req_spec_id', $args->req_spec_id);
-  $smarty->assign('req_spec_name', $req_spec['title']);
-  $smarty->assign('arrReqs', $all_reqs);
-  break;
 
-  case "do_reorder":
-	$template = $template_dir .  'reqSpecView.tpl';
-	$nodes_in_order = transform_nodes_order($args->nodes_order);
+	case "reorder":
+		$template = $template_dir .  'reqReorder.tpl';
+		$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
+		$all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
+		$smarty->assign('req_spec_id', $args->req_spec_id);
+		$smarty->assign('req_spec_name', $req_spec['title']);
+		$smarty->assign('arrReqs', $all_reqs);
+		break;
 
-	// need to remove first element, is req_spec_id
-	$args->req_spec_id=array_shift($nodes_in_order);
-	$req_mgr->set_order($nodes_in_order);
+  	case "do_reorder":
+		$template = $template_dir .  'reqSpecView.tpl';
+		$nodes_in_order = transform_nodes_order($args->nodes_order);
 
-	$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
+		// need to remove first element, is req_spec_id
+		$args->req_spec_id=array_shift($nodes_in_order);
+		$req_mgr->set_order($nodes_in_order);
 
-	//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
-	$user = tlUser::getByID($db,$req_spec['author_id']);
-	$req_spec['author'] = null;
-	if ($user)
-		$req_spec['author'] = $user->getDisplayName();
-	$req_spec['modifier'] = null;
-	$user = tlUser::getByID($db,$req_spec['modifier_id']);
-	if ($user)
-		$req_spec['modifier'] = $user->getDisplayName();
+		$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
 
-	$smarty->assign('req_spec', $req_spec);
-	$smarty->assign('refresh_tree', 'yes');
-	break;
+		//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
+		$user = tlUser::getByID($db,$req_spec['author_id']);
+		$req_spec['author'] = null;
+		if ($user)
+			$req_spec['author'] = $user->getDisplayName();
+		$req_spec['modifier'] = null;
+		$user = tlUser::getByID($db,$req_spec['modifier_id']);
+		if ($user)
+			$req_spec['modifier'] = $user->getDisplayName();
 
-  case "create_tcases":
-  case "do_create_tcases":
-  $template = $template_dir .  'reqCreateTestCases.tpl';
-  $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
-  $main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$smarty->assign('req_spec', $req_spec);
+		$smarty->assign('refresh_tree', 'yes');
+		break;
 
-  $all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
-  $smarty->assign('req_spec_id', $args->req_spec_id);
-  $smarty->assign('req_spec_name', $req_spec['title']);
-  $smarty->assign('arrReqs', $all_reqs);
-  
-  if( $args->do_action=='do_create_tcases')
-  {
-    $feedback=$req_mgr->create_tc_from_requirement($args->arrReqIds,$args->req_spec_id,$args->user_id);  
-    $smarty->assign('array_of_msg', $feedback);
-  }
-  break;
-
-
+	case "create_tcases":
+	case "do_create_tcases":
+		$template = $template_dir .  'reqCreateTestCases.tpl';
+		$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
+		$main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+	
+		$all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
+		$smarty->assign('req_spec_id', $args->req_spec_id);
+		$smarty->assign('req_spec_name', $req_spec['title']);
+		$smarty->assign('arrReqs', $all_reqs);
+	
+		if( $args->do_action=='do_create_tcases')
+		{
+			$feedback=$req_mgr->create_tc_from_requirement($args->arrReqIds,$args->req_spec_id,$args->user_id);
+			$smarty->assign('array_of_msg', $feedback);
+		}
+		break;
 } // switch
 
 $smarty->assign('cf',$cf_smarty);
@@ -193,43 +191,42 @@ $smarty->assign('name',$args->title);
 $smarty->assign('selectReqStatus', $arrReqStatus);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 
-$of=web_editor('scope',$_SESSION['basehref']) ;
-$of->Value="";
+$of = web_editor('scope',$_SESSION['basehref']) ;
+$of->Value = "";
 if (!is_null($args->scope))
-{
-	$of->Value=$args->scope;
-}
+	$of->Value = $args->scope;
 
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
 
 function init_args()
 {
-  $args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : null;
-  $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
-  $args->reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;
-  $args->title = isset($_REQUEST['req_title']) ? trim($_REQUEST['req_title']) : null;
-  $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
-  $args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;
-  $args->reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
-  $args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
-
+	$args = new stdClass();
+	$args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : null;
+	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
+	$args->reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;
+	$args->title = isset($_REQUEST['req_title']) ? trim($_REQUEST['req_title']) : null;
+	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
+	$args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;
+	$args->reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
+	$args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
+	
 	$args->arrReqIds = isset($_POST['req_id_cbox']) ? $_POST['req_id_cbox'] : null;
+	
+	
+	$args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
+	$args->do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
+	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+	$args->do_create_tc_from_req = isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
+	$args->do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
+	$args->reorder = isset($_REQUEST['req_reorder']) ? 1 : 0;
+	$args->do_req_reorder = isset($_REQUEST['do_req_reorder']) ? 1 : 0;
+	
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
 
-
-  $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
-  $args->do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
-  $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-  $args->do_create_tc_from_req = isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
-  $args->do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
-  $args->reorder = isset($_REQUEST['req_reorder']) ? 1 : 0;
-  $args->do_req_reorder = isset($_REQUEST['do_req_reorder']) ? 1 : 0;
-
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
-  $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-  $args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
-  
   return $args;
 }
 ?>

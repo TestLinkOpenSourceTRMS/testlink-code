@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.4 2007/12/27 09:30:24 franciscom Exp $
+$Id: reqView.tpl,v 1.5 2008/03/01 21:41:21 schlundus Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
@@ -30,7 +30,7 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&
 		<th>{lang_get s='req'}{$smarty.const.TITLE_SEP}{$req.title|escape}</th>
 	</tr>
   <tr>
-  <td>{lang_get s='req_doc_id'}{$smarty.const.TITLE_SEP}{$req.req_doc_id}</td>
+  <td>{lang_get s='req_doc_id'}{$smarty.const.TITLE_SEP}{$req.req_doc_id|escape}</td>
   </tr>
 
   <tr>
@@ -81,6 +81,7 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&
   {/if}
 </table>
 
+{assign var="bDownloadOnly" value=false}
 {if $modify_req_rights neq 'yes'}
 	{assign var="bDownloadOnly" value=true}
 {/if}

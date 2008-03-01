@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/02/29 23:19:29 $ $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2008/03/01 21:41:27 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -81,7 +81,12 @@ class TLSmarty extends Smarty
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
 		$this->assign('css', $basehref . TL_TESTLINK_CSS);
 		$this->assign('locale', $my_locale);
-		
+		$this->assign('tableStyles',null);
+		$this->assign('tableClassName',null);
+		$this->assign('inheritStyle',null);
+		$this->assign('show_upload_btn',null);
+		$this->assign('show_title',null);
+
 		$this->assign('gsmarty_tc_status',$g_tc_status);
 		$this->assign('gsmarty_tc_status_css',$g_tc_status_css);
 		$this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);

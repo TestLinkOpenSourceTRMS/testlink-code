@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.19 2007/12/09 02:15:19 havlat Exp $ 
+* $Id: resultsAllBuilds.php,v 1.20 2008/03/03 18:53:17 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -18,19 +18,17 @@ testlinkInitPage($db);
 
 $template_dir='results/';
 
+$args = init_args();
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$tplan_id=$_REQUEST['tplan_id'];
-$tproject_id=$_SESSION['testprojectID'];
 
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
 $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
-$arrData = null;
 $do_report=array();
 $do_report['status_ok']=1;
 $do_report['msg']='';
@@ -51,20 +49,23 @@ if( is_null($topLevelSuites) )
   $do_report['msg']=lang_get('report_tspec_has_no_tsuites');
 }
 
+$results=null;
 if( $do_report['status_ok'] )
 {
-  $arrDataBuilds = $re->getAggregateBuildResults();
-  $i = 0;
-  if ($arrDataBuilds != null) {
-    while ($buildId = key($arrDataBuilds)) {
-     $arr = $arrDataBuilds[$buildId];
-     //% not run := 100 - percentage completed
-     $arr[9] = 100 - $arr[9]; 
-     $arrData[$i] = $arr;
-     $i++;
-     next($arrDataBuilds);
-    }
-  }
+  $results = $re->getAggregateBuildResults();
+  if ($results != null) 
+  {
+      $dummy=current($results);
+      $colDefinition=$dummy['details'];
+      
+      // Get labels
+      $labels=config_get('tc_status_verbose_labels');
+      foreach($colDefinition as $status_verbose => $value)
+      {
+            $colDefinition[$status_verbose]['qty']=lang_get($labels[$status_verbose]);
+            $colDefinition[$status_verbose]['percentage']='[%]';
+      }
+  }    
 }  
 
 $smarty = new TLSmarty;
@@ -73,9 +74,28 @@ $smarty->assign('tcs_css', $g_tc_status_css);
 $smarty->assign('title', lang_get('title_metrics_x_build'));
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tplan_name', $tplan_name);
-$smarty->assign('arrData', $arrData);
+$smarty->assign('colDefinition', $colDefinition);
+$smarty->assign('results',$results);
 
-$format = isset($_GET['format']) ? intval($_GET['format']) : null;
-displayReport($template_dir . 'resultsAllBuilds', $smarty, $format);
+displayReport($template_dir . 'resultsAllBuilds', $smarty, $args->format);
 
+
+
+/*
+  function: init_args 
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    $args=new stdClass();
+    $args->tplan_id=$_REQUEST['tplan_id'];
+    $args->tproject_id=$_SESSION['testprojectID'];
+    $args->format = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
+    return $args;
+}
 ?>

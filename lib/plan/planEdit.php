@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/02/27 20:16:42 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/03/03 18:53:17 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -149,8 +149,11 @@ switch($args->do_action)
 
 				$status_ok = true;
 				$template = null;
-				$user_feedback = lang_get('testplan_created_ok');
-
+				
+				// no need to disturb user
+				// $user_feedback = lang_get('testplan_created_ok');
+        $user_feedback ='';
+        
 				if($args->rights == 'on')
 					$result = insertTestPlanUserRight($db, $tplan_id,$args->user_id);
 

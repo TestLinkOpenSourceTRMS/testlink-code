@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/12/09 02:15:20 $ by $Author: havlat $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/03/03 18:53:17 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -29,25 +29,32 @@ testlinkInitPage($db);
 
 $template_dir='results/';
 
+$args=init_args();
 $arrDataPriority=array();
 $arrDataSuite=array();
-$arrDataOwner2=array();
-$arrDataKeys2=array();
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$tplan_id=$_REQUEST['tplan_id'];
-$tproject_id=$_SESSION['testprojectID'];
-
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
 $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
+
+
+$tc_status_labels=config_get('tc_status_verbose_labels');
+
+$columnsDefinition = new stdClass();
+$statistics = new stdClass();
+
+$columnsDefinition->keywords=null;
+$columnsDefinition->testers=null;
+$statistics->keywords=null;
+$statistics->testers=null;
 
 
 /** 
@@ -66,86 +73,122 @@ if( is_null($topLevelSuites) )
 
 if( $do_report['status_ok'] )
 {
+  $tc_status_for_ui=config_get('tc_status_for_ui');
+
   $mapOfAggregate = $re->getAggregateMap();
   $arrDataSuite = null;
   $arrDataSuiteIndex = 0;
-  if (is_array($topLevelSuites)) {
-  while ($i = key($topLevelSuites)) {
-  	$pairArray = $topLevelSuites[$i];
-  	$currentSuiteId = $pairArray['id'];
-  	$currentSuiteName = $pairArray['name'];
-  	$resultArray = $mapOfAggregate[$currentSuiteId];	
-  	$total = $resultArray['total'];
-  	$notRun = $resultArray['notRun'];
-  	if ($total > 0) {
-  	   $percentCompleted = (($total - $notRun) / $total) * 100;
-  	}
-  	else {
-  	   $percentCompleted = 0;
-  	}
-  	$percentCompleted = number_format($percentCompleted,2);
-  	$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],
-  	                                          $resultArray['fail'],$resultArray['blocked'],
-  	                                          $notRun,$percentCompleted);
-  	$arrDataSuiteIndex++;
-  	next($topLevelSuites);
-  } 
+  
+  if (is_array($topLevelSuites)) 
+  {
+      foreach($topLevelSuites as $key => $suiteNameID)
+      {
+      	$results = $mapOfAggregate[$suiteNameID['id']];	
+
+      	if ($results['total'] > 0) {
+      	   $percentCompleted = (($results['total'] - $results['not_run']) / $results['total']) * 100;
+      	}
+      	else {
+      	   $percentCompleted = 0;
+      	}
+      	$percentCompleted = number_format($percentCompleted,2);
+      	
+      	$element['tsuite_name']=$suiteNameID['name'];
+      	$element['total_tc']=$results['total'];
+      	$element['percentage_completed']=$percentCompleted;
+
+
+        foreach($tc_status_for_ui as $key => $value)
+        {
+      	    $element['details'][$key]['qty']=$results[$key];
+      	}
+      	$element['details']['not_run']['qty']=$results['not_run'];
+      	
+      	$arrDataSuite[$arrDataSuiteIndex] = $element;
+      	$arrDataSuiteIndex++;
+      } 
+      $statistics->testsuites=$arrDataSuite;
+
+      // Get labels
+      $dummy=current($statistics->testsuites);
+      foreach($dummy['details'] as $status_verbose => $value)
+      {
+          $dummy['details'][$status_verbose]['qty']=lang_get($tc_status_labels[$status_verbose]);
+      }
+      $columnsDefinition->testsuites=$dummy['details'];
   } // end if 
+  
   /**
   * PRIORITY REPORT
   */
   $arrDataPriority = null;
+
+
   
   /**
-  * KEYWORDS REPORT
+  * Keywords report
   */
-  $arrDataKeys = $re->getAggregateKeywordResults();
-  $i = 0;
-  $arrDataKeys2 = null;
-  
-  if ($arrDataKeys != null) {
-     while ($keywordId = key($arrDataKeys)) {
-        $arr = $arrDataKeys[$keywordId];
-        $arrDataKeys2[$i] = $arr;
-        $i++;
-        next($arrDataKeys);
-     }
-  }
-  
-  /** 
-  * OWNERS REPORT 
-  */
-  $arrDataOwner = $re->getAggregateOwnerResults();
-  
-  $i = 0;
-  $arrDataOwner2 = null;
-  if ($arrDataOwner != null) {
-     while ($ownerId = key($arrDataOwner)) {
-       $arr = $arrDataOwner[$ownerId];
-       $arrDataOwner2[$i] = $arr;
-       $i++;
-       next($arrDataOwner);
-     }
+  $items2loop=array('keywords' => 'getAggregateKeywordResults',
+                    'testers' => 'getAggregateOwnerResults');
+                    
+  foreach($items2loop as $item => $aggregateMethod)
+  {
+      $statistics->$item = $re->$aggregateMethod();
+      if( !is_null($statistics->$item) )
+      {
+
+          // Get labels
+          $dummy=current($statistics->$item);
+          foreach($dummy['details'] as $status_verbose => $value)
+          {
+              $dummy['details'][$status_verbose]['qty']=lang_get($tc_status_labels[$status_verbose]);
+              $dummy['details'][$status_verbose]['percentage']="[%]";
+              
+              // This statement generates an error:
+              // $columnsDefinition->$item[$status_verbose]['percentage']="[%]";   
+              // Fatal error: Cannot use string offset as an array in
+              // That I do not understand.
+          }
+          $columnsDefinition->$item=$dummy['details'];
+      } 
   }
 } //!is_null()
 
 $smarty = new TLSmarty;
-
 $smarty->assign('do_report', $do_report);
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tplan_name', $tplan_name);
 $smarty->assign('arrDataPriority', $arrDataPriority);
-$smarty->assign('arrDataSuite', $arrDataSuite);
-$smarty->assign('arrDataOwner', $arrDataOwner2);
-$smarty->assign('arrDataKeys', $arrDataKeys2);
+$smarty->assign('columnsDefinition', $columnsDefinition);
+$smarty->assign('statistics', $statistics);
 
-$format = isset($_GET['format']) ? intval($_GET['format']) : null;
-if (!isset($_GET['format']))
+
+if (is_null($args->format))
 {
 	tlog('$_GET["format"] is not defined', 'ERROR');
 	exit();
 }
 
-displayReport($template_dir . 'resultsGeneral', $smarty, $format);
+displayReport($template_dir . 'resultsGeneral', $smarty, $args->format);
+
+
+
+/*
+  function: init_args 
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    $args=new stdClass();
+    $args->tplan_id=$_REQUEST['tplan_id'];
+    $args->tproject_id=$_SESSION['testprojectID'];
+    $args->format = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
+    return $args;
+}
 
 ?>

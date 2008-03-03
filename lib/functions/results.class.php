@@ -6,10 +6,15 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
+ * @modified $Date: 2008/03/03 18:53:17 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20080302 - franciscom - refactored of tally* functions, to manage
+ *                         user defined test case statuses.
+ *                         created tallyResults() method to remove
+ *                         duplicated code. (may be can have performance side effects).
  *
  * 20071101 - franciscom - import_file_types, export_file_types
  * 20071013 - franciscom - changes in prepareNode() call
@@ -50,6 +55,7 @@ class results
 	private	$tprojectID = -1;
 	
 	private $map_tc_status;
+  private $tc_status_for_statistics;
   
 	/**
 	* KL - 20061225 - creating map specifically for owner and keyword
@@ -107,13 +113,13 @@ class results
 	private $mapOfLastResult = null;
  
 	/** 
-	* map test suite id's to array of [total, pass, fail, block, notRun]
+	* map test suite id's to array of [total, passed, failed, blocked, not_run, other user defined]
 	* for cases in that suite
 	*/ 
 	private $mapOfSuiteSummary = null;
 
 	/**
-	* map test suite id's to array of [total, pass, fail, block, notRun]
+	* map test suite id's to array of [total, passed, failed, blocked, not_run, other user defined]
 	* for cases in that suite and in all child suites  
 	*/
 	private $mapOfAggregate = null;
@@ -147,19 +153,19 @@ class results
 
 	/** 
 	* TO-DO check this description of this object
-	* map of keywordIds to Array (total, passed, failed, blocked, notRun) 
+	* map of keywordIds
 	*/
 	private $aggregateKeyResults = null;
 
 	/** 
 	* TO-DO check this description of this object    
-	* map of ownerIds to Array (total, passed, failed, blocked, notRun) 
+	* map of ownerIds 
 	*/
 	private $aggregateOwnerResults = null;
     
 	/** 
 	* TO-DO check this description of this object    
-	* map of buildsIds to Array (total, passed, failed, blocked, notRun) 
+	* map of buildsIds 
 	*/
 	private $aggregateBuildResults = null;
 
@@ -192,6 +198,22 @@ class results
 		$this->db = $db;	
 	  $this->tp = $tplan_mgr;  
     $this->map_tc_status=config_get('tc_status');  
+    $dummy=config_get('tc_status_for_ui');
+    
+    // TestLink standard configuration is not_run not available at user interface level on
+    // execution feature as choice.
+    // if( !isset($dummy['not_run']) )
+    // {
+    //     $dummy['not_run']=$this->map_tc_status['not_run'];    
+    // }
+    
+    // This will be used to create dynamically counters if user add new status
+    foreach($dummy as $tc_status_verbose => $label)
+    {
+        $this->tc_status_for_statistics[$tc_status_verbose]=$this->map_tc_status[$tc_status_verbose];  
+    }
+
+    
     $this->suitesSelected = $suitesSelected;  	
     
     $this->tprojectID = $tproject_info['id'];
@@ -261,7 +283,8 @@ class results
 			// child suites into account
 			$this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
 
-			$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
+			// $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
+      $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild, 
@@ -302,180 +325,184 @@ class results
      return $this->import_file_types;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
-	* tallyKeywordResults(parameter1, parameter2)
+	* tallyKeywordResults($keywordResults, $keywordIdNamePairs)
 	*   
-	* parameter1 format:
+	* keywordResultsformat:
 	* Array ([keyword id] => Array ( [test case id] => result ))
+	*
 	* example:  
 	* Array ( [128] => Array ( [14308] => p [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ) 
 	*			 [11] => Array ( [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ))
 	*
-	* @return Array ( [keyword id] => Array ( total, passed, failed, blocked, not run))       
+	* @return map indexed using Keyword ID, where each element is a map with following structure:
+	*
+	*          [keyword_name] => K1
+  *          [total_tc] => 2
+  *          [percentage_completed] => 100.00
+  *          [details] => Array
+  *              (
+  *                  [passed] => Array
+  *                      (
+  *                          [qty] => 1
+  *                          [percentage] => 50.00
+  *                      )
+  *
+  *                  [failed] => Array
+  *                      (
+  *                          [qty] => 1
+  *                          [percentage] => 50.00
+  *                      )
+  *
+  *                  [blocked] => Array
+  *                      (
+  *                          [qty] => 0
+  *                          [percentage] => 0.00
+  *                      )
+  *
+  *                  [unknown] => Array
+  *                      (
+  *                          [qty] => 0
+  *                          [percentage] => 0.00
+  *                      )
+  *
+  *                  [not_run] => Array
+  *                      (
+  *                          [qty] => 0
+  *                          [percentage] => 0.00
+  *                      )
+  *              )
+  *      )
+	*
+	*      IMPORTANT:
+	*                keys on details map dependends of configuration map $g_tc_status_for_ui
+	*
 	*/
-	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs) {
-		if ($keywordResults == null) {
-			return;
+	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs) 
+	{
+		if ($keywordResults == null) 
+		{
+			return null;
 		}
+
+	  // OK go ahead
 		$rValue = null;
-		while ($keywordId = key($keywordResults)) {
-			$arrResults = $keywordResults[$keywordId];
-			$totalCases = sizeOf($arrResults);
-			$totalPass =0;
-			$totalFail =0;
-			$totalBlocked =0;
-			$totalNotRun =0;
-			while ($testcaseId = key($arrResults)) {
-				if ($arrResults[$testcaseId] == $this->map_tc_status['passed']) {
-					$totalPass++;
-				}
-				elseif($arrResults[$testcaseId] == $this->map_tc_status['failed']) {
-					$totalFail++;
-				}
-				elseif($arrResults[$testcaseId] == $this->map_tc_status['blocked']) {
-					$totalBlocked++;
-				}
-				next($arrResults);
-			} // end $testcaseId while
-			$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-			$percentCompleted = 0;
-			if ($totalCases > 0 ) {
-				$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
-			}
-			$percentCompleted = number_format($percentCompleted,2);		
-			$rArray = array($keywordIdNamePairs[$keywordId], $totalCases, $totalPass, 
-			                $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
-			$rValue[$keywordId] = $rArray;
-			next($keywordResults);
-		} // end $keywordId while
+	  foreach($keywordResults as $keywordId => $results)
+	  {
+	    $item_name='keyword_name'; 
+      $element=$this->tallyResults($results,sizeOf($results),$item_name); 
+		  $element[$item_name]=$keywordIdNamePairs[$keywordId];
+			$rValue[$keywordId] = $element;
+		} // foreach
+
 		return $rValue;
 	} // end function 
 
+
+
 	/**
-	* tallyOwnerResults(parameter1, parameter2)
-	*   returns keyword results
-	* parameter1 format:
+	* tallyOwnerResults($ownerResults, $ownerIdNamePairs) 
+	*   returns testers results
+	*
+	* ownerResults format:
 	* Array ([owner id] => Array ( [test case id] => result ))
+	*
 	* output format :
-	* Array ( [owner id] => Array ( total, passed, failed, blocked, not run))       
+	*          [tester_name] => johndoe
+  *          [total_tc] => 2
+  *          [percentage_completed] => 100.00
+  *          [details] => Array
+  *              (
+  *                  [passed] => Array
+  *                      (
+  *                          [qty] => 1
+  *                          [percentage] => 50.00
+  *                      )
+  *
+  *                  [failed] => Array
+  *                      (
+  *                          [qty] => 1
+  *                          [percentage] => 50.00
+  *                      )
+  *
+  *                  [blocked] => Array
+  *                      (
+  *                          [qty] => 0
+  *                          [percentage] => 0.00
+  *                      )
+  *
+  *                  [unknown] => Array
+  *                      (
+  *                          [qty] => 0
+  *                          [percentage] => 0.00
+  *                      )
+  *
+  *                  [not_run] => Array
+  *                      (
+  *                          [qty] => 0
+  *                          [percentage] => 0.00
+  *                      )
+  *              )
+  *      )
+	*
+	*      IMPORTANT:
+	*                keys on details map dependends of configuration map $g_tc_status_for_ui
+	*
 	*/
-	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs) {
+	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs) 
+	{
 		if ($ownerResults == null) {
 			return;
 		}
+
+	  // OK go ahead
+	  $no_tester_assigned=lang_get('unassigned');
 		$rValue = null;
-		while ($ownerId = key($ownerResults)) {
-			$arrResults = $ownerResults[$ownerId];
-			$totalCases = sizeOf($arrResults);
-			$totalPass =0;
-			$totalFail =0;
-			$totalBlocked =0;
-			$totalNotRun =0;
-			while ($testcaseId = key($arrResults)) {
-				if ($arrResults[$testcaseId] == $this->map_tc_status['passed']) {
-					$totalPass++;
-				}
-				elseif($arrResults[$testcaseId] == $this->map_tc_status['failed']) {
-					$totalFail++;
-				}
-				elseif($arrResults[$testcaseId] == $this->map_tc_status['blocked']) {
-					$totalBlocked++;
-				}
-				next($arrResults);
-			} // end $testcaseId while
-			$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-			$percentCompleted = 0;
-			if ($totalCases > 0) {
-				$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
-			}
-			$percentCompleted = number_format($percentCompleted,2);		
-			if ($ownerId == -1) {
-				$name = lang_get('unassigned');
-			}
-			else
-			{
-				$name = $ownerIdNamePairs[$ownerId];
-			}
-			$rArray = array($name, $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
-			$rValue[$ownerId] = $rArray;
-			next($ownerResults);
-		} // end $ownerId while
+    foreach($ownerResults as $ownerId => $results)
+    {
+	    $item_name='tester_name'; 
+      $element=$this->tallyResults($results,sizeOf($results),$item_name); 
+		  $element[$item_name]= ($ownerId == -1) ? $no_tester_assigned : $ownerIdNamePairs[$ownerId];
+			$rValue[$ownerId] = $element;
+		} 
+		
 		return $rValue;
 	} // end function
 
+
 	/**
-	* tallyBuildResults(parameter1, parameter2, parameter3)
-	*   returns keyword results
+	* tallyBuildResults()
+	*   
 	* parameter1 format:
 	* Array ([owner id] => Array ( [test case id] => result ))
+	*
 	* output format :
 	* Array ( [owner id] => Array ( total, passed, failed, blocked, not run))       
 	*/
-	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults) {
-		$totalCases = $finalResults['total'];
-		if ($buildResults == null) {
-			return;
+	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults) 
+	{
+		if ($buildResults == null) 
+		{
+			return null;
 		}
+	  
+	  // OK go ahead
+		$totalCases = $finalResults['total'];
 		$rValue = null;
-		while ($buildId = key($arrBuilds)) {
-			if (array_key_exists($buildId, $buildResults)) {
-			   $arrResults = $buildResults[$buildId];
-			}
-			else {
-				$arrResults = array();
-			}
-			$totalPass =0;
-			$totalFail =0;
-			$totalBlocked =0;
-			$totalNotRun =0;
-			while ($testcaseId = key($arrResults)) {
-				if ($arrResults[$testcaseId] == $this->map_tc_status['passed']) {
-					$totalPass++;
-				}
-				elseif($arrResults[$testcaseId] == $this->map_tc_status['failed']) {
-					$totalFail++;
-				}
-				elseif($arrResults[$testcaseId] == $this->map_tc_status['blocked']) {
-					$totalBlocked++;
-				}
-				next($arrResults);
-			} //end $testcaseId while
-			$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-			$percentCompleted = 0;
-			if ($totalCases != 0) {
-				$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
-			}
-			$percentCompleted = number_format($percentCompleted,2);		
-			$percentPass = 0;
-			$percentFail = 0;
-			$percentBlocked = 0;
-			if ($totalCases != 0) {
-				$percentPass = (($totalPass) / $totalCases) * 100;
-				$percentFail = (($totalFail) / $totalCases) * 100;
-				$percentBlocked = (($totalBlocked) / $totalCases) * 100;
-			}	
-			$percentFail = number_format($percentFail,2);			
-			$percentPass = number_format($percentPass,2);			
-			$percentBlocked = number_format($percentBlocked,2);		
-			$rArray = array($arrBuilds[$buildId], $totalCases, $totalPass, $percentPass, $totalFail, $percentFail, $totalBlocked, $percentBlocked, $totalNotRun, $percentCompleted);
-			$rValue[$buildId] = $rArray;
-			next($arrBuilds);
-		} // end $buildId while
+		foreach($arrBuilds as $buildId => $buildName)
+		{  
+	    $item_name='build_name'; 
+		  $results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
+      $element=$this->tallyResults($results,$totalCases,$item_name); 
+		  $element[$item_name]=$arrBuilds[$buildId];
+			$rValue[$buildId] = $element;
+		} // end  foreach
+		
 		return $rValue;
 	} // end function
-	
+
+
+
 	/**
 	* returns total / pass / fail / blocked / not run results for each keyword id
 	* @return array
@@ -558,6 +585,90 @@ class results
 	public function getFlatArray(){
 		return $this->flatArray;
 	}
+
+  /*
+    function: tallyResults
+
+    args :
+          results: map: key tc_id
+                        value status_code
+    
+    returns: map with following keys
+    
+
+  */
+
+	private function tallyResults($results,$totalCases,$item_name=null)
+	{
+		if ($results == null) 
+		{
+			return null;
+		}
+	  
+	  // OK go ahead
+	  $code_verbose=array_flip($this->tc_status_for_statistics);
+		$element = null;
+		foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+		{
+		    $total[$status_verbose]=0;
+		    $percentage[$status_verbose]=0;
+		}
+		
+		$dummy=0;
+		foreach($results as $tc_id => $result_code)
+		{
+        
+	      $status_verbose=$code_verbose[$result_code];
+
+        // Check if user has configured and add not_run.
+        // Standard TestLink behavior:
+        // 1. do not show not_run as a choice on execute pages
+        // 2. do not save on DB not_run executions
+        //
+        if( $status_verbose !='' && $status_verbose != 'not_run')
+        {
+		      $total[$status_verbose]++;
+          $dummy++;
+        }
+  	} 
+  	
+    // not_run is an special status
+		$total['not_run'] = abs($totalCases - $dummy);
+    $percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);  
+		
+		$percentCompleted = 0;
+		if ($totalCases != 0) 
+		{
+			$percentCompleted = (($totalCases - $total['not_run']) / $totalCases) * 100;
+
+		  foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+		  {
+		      $percentage[$status_verbose]=(($total[$status_verbose]) / $totalCases) * 100;  
+		      $percentage[$status_verbose]=number_format($percentage[$status_verbose],2);
+		  }
+		}	
+		$percentCompleted = number_format($percentCompleted,2);		
+		
+		// Because I want to have this as first key on map, just for easy reading.
+		// Value will be setted by caller.
+		if( !is_null($item_name) )
+		{
+		    $element[$item_name]='';
+		}
+		$element['total_tc']=$totalCases;
+    $element['percentage_completed']=$percentCompleted;
+    
+    $element['details']=array();
+    foreach($total as $status_verbose => $counter)
+    {
+         $element['details'][$status_verbose]['qty']=$counter;
+         $element['details'][$status_verbose]['percentage']=$percentage[$status_verbose];
+    }
+		
+		return $element;
+	} // end function
+
+
 
 	/**
 	* function addLastResultToMap()
@@ -660,35 +771,32 @@ class results
 	*  Creates statistics on each suite
 	*  @return void
 	*/
-	private function createMapOfSuiteSummary(&$mapOfLastResult) {
-		if ($mapOfLastResult) {
-			while ($suiteId = key($mapOfLastResult)) {
-				$totalCasesInSuite = count($mapOfLastResult[$suiteId]);  		
-				$totalPass = 0;
-				$totalFailed = 0;
-				$totalBlocked = 0;
-				$totalNotRun = 0;  		
-				while ($testcase_id = key ($mapOfLastResult[$suiteId])) {
-					$currentResult =  $mapOfLastResult[$suiteId][$testcase_id]['result'];
-					if ($currentResult == $this->map_tc_status['passed']){
-						$totalPass++;
-					} 	
-					elseif($currentResult == $this->map_tc_status['failed']){
-						$totalFailed++;
-					} 	
-					elseif($currentResult == $this->map_tc_status['blocked']){
-						$totalBlocked++;
-					} 	
-					elseif($currentResult == $this->map_tc_status['not_run']){
-						$totalNotRun++;
-					}  			
-					$this->mapOfSuiteSummary[$suiteId] =  array('total' => $totalCasesInSuite, 
-	  			                                            'pass' => $totalPass, 'fail' => $totalFailed, 
-	  			                                            'blocked' => $totalBlocked, 'notRun' => $totalNotRun);
-					next($mapOfLastResult[$suiteId]);
-				} // end $testcase_id while  		
-				next($mapOfLastResult);
-			} // end $suiteId while
+	private function createMapOfSuiteSummary(&$mapOfLastResult) 
+	{
+		if ($mapOfLastResult) 
+		{
+	    $code_verbose=array_flip($this->tc_status_for_statistics);
+      $code_verbose[$this->map_tc_status['not_run']]='not_run';
+      
+			foreach($mapOfLastResult as $suiteId => $tcaseResults)
+			{
+
+		    foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+		    {
+		        $total[$status_verbose]=0;
+		    }
+	      $total['not_run']=0;
+	
+        foreach($tcaseResults as $testcase_id => $value)
+        {			
+					$currentResult =  $tcaseResults[$testcase_id]['result'];
+  		    $status_verbose=$code_verbose[$currentResult];
+	   	    $total[$status_verbose]++;
+				} 
+				
+				$total['total'] = count($tcaseResults);
+				$this->mapOfSuiteSummary[$suiteId] =  $total;
+			} 
 		} // end if  	
 	} // end function
   
@@ -698,89 +806,112 @@ class results
 	*  ex : if suite A contains suites A.1 and A.2, this function
 	*  adds up A.1, A.2, and test cases within A
 	*/
-	private function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary) {  
-  		for ($i = 0; $i < count($suiteStructure); $i++ ) {  			  			
+	private function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary) 
+	{  
+	    $loop_qty=count($suiteStructure);
+  		for ($idx = 0; $idx < $loop_qty; $idx++ ) 
+  		{  			  			
   			$suiteId = 0;
-  			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
-  				
-  			}	  			
-  			elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  					
+  		  $tpos=$idx % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE;
+  			if ($tpos ==  $this->ID_IN_SUITE_STRUCTURE)
+  			{  					
   				// register a suite that we will use to increment aggregate results for
-  				$suiteId = $suiteStructure[$i];
+  				$suiteId = $suiteStructure[$idx];
   				array_push($this->aggSuiteList, $suiteId);
  				
- 				if ($mapOfSuiteSummary && array_key_exists($suiteId, $mapOfSuiteSummary)) {
- 					$summaryArray = $mapOfSuiteSummary[$suiteId];
- 					$this->addResultsToAggregate($summaryArray['total'], 
- 					                             $summaryArray['pass'], 
- 					                             $summaryArray['fail'], 
- 					                             $summaryArray['blocked'], 
- 					                             $summaryArray['notRun']);
- 				}
- 			} 
-			elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE) {
-  				if (is_array($suiteStructure[$i])){
+ 				  if ($mapOfSuiteSummary && array_key_exists($suiteId, $mapOfSuiteSummary)) 
+ 				  {
+ 					  $summaryArray = $mapOfSuiteSummary[$suiteId];
+ 					  $this->addResultsToAggregate($summaryArray);
+ 				  }
+ 			  } 
+			  elseif ($tpos ==  $this->ARRAY_IN_SUITE_STRUCTURE) 
+			  {
+  				if (is_array($suiteStructure[$idx]))
+  				{
   					// go get child totals
-  					$newSuiteStructure = $suiteStructure[$i];
+  					$newSuiteStructure = $suiteStructure[$idx];
   					$this->createAggregateMap($newSuiteStructure, $mapOfSuiteSummary);
-				}  	
-				// it's very important to pop a suite off the list at this point
-				// and only this point
-				array_pop($this->aggSuiteList);
+				  }  	
+				
+				  // it's very important to pop a suite off the list at this point
+				  // and only this point
+				  array_pop($this->aggSuiteList);
   			}
+  			
   		} // end for   		
 	} // end function
   
 	/**
 	* iterates over top level suites and adds up totals using data from mapOfAggregate
 	*/
-	private function createTotalsForPlan() {
-		$total_sum = 0;
-		$pass_sum = 0;
-		$fail_sum = 0;
-		$blocked_sum = 0;
-		$notRun_sum = 0;
-		for ($i = 0 ; $i < count($this->suiteStructure) ; $i++) {  		
-			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
-				$suiteId = $this->suiteStructure[$i];
-				$resultsForSuite = isset($this->mapOfAggregate[$suiteId]) ? $this->mapOfAggregate[$suiteId] : 0;
-				$total_sum += $resultsForSuite['total'];
-				$pass_sum += $resultsForSuite['pass'];
-				$fail_sum += $resultsForSuite['fail'];
-				$blocked_sum += $resultsForSuite['blocked'];
-				$notRun_sum += $resultsForSuite['notRun'];
+	private function createTotalsForPlan($suiteStructure) 
+	{
+	  $counters['total']=0;
+	  $counters['not_run']=0;
+    foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+    {
+        $counters[$status_verbose]=0;
+    }
+	  
+		// $loop_qty=count($this->suiteStructure);
+		$loop_qty=count($suiteStructure);
+		for ($idx = 0 ; $idx < $loop_qty ; $idx++) 
+		{  		
+			if (($idx % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) 
+			{  			
+			  
+				$suiteId = $suiteStructure[$idx];
+				$resultsForSuite = isset($this->mapOfAggregate[$suiteId]) ? $this->mapOfAggregate[$suiteId] : null;
+		    if( !is_null($resultsForSuite) )
+		    {
+		        foreach($counters as $code_verbose => $value)
+		        {
+		            $counters[$code_verbose]+=$resultsForSuite[$code_verbose]; 
+		        }
+		    }
 			} // end if
 		}
-		return array("total" => $total_sum, "pass" => $pass_sum, "fail" => $fail_sum, 
-  	             "blocked" => $blocked_sum, "notRun" => $notRun_sum); 	
+		
+		return $counters;
 	} // end function
   
 	/**
 	* 
+	*
+	* results: map with following keys:
+	*          'total','not_run', other keys depends of status configured by user
+	*          If users leave untouched TestLink Factory configuration:
+	*          'total','not_run','passed','failed','blocked'
 	*/
-	private function addResultsToAggregate($t, $p, $f, $b, $nr) 
+	private function addResultsToAggregate($results)
 	{
-		for ($i = 0 ; $i < count($this->aggSuiteList); $i++){
-			$suiteId = $this->aggSuiteList[$i];
+	  $loop_qty=count($this->aggSuiteList);
+	  
+	  
+		for ($idx = 0 ; $idx < $loop_qty ; $idx++)
+		{
+			$suiteId = $this->aggSuiteList[$idx];
 			$currentSuite = null;  
-			$total = 0;
-			$pass = 0;
-			$fail = 0;
-			$blocked = 0;
-			$notRun = 0;	
-			if ($this->mapOfAggregate && array_key_exists($suiteId, $this->mapOfAggregate)) {
+			if ($this->mapOfAggregate && array_key_exists($suiteId, $this->mapOfAggregate)) 
+			{
 				$currentSuite = $this->mapOfAggregate[$suiteId];
-				$total =  $currentSuite['total'] + $t;
-				$pass = $currentSuite['pass'] + $p;
-				$fail = $currentSuite['fail'] + $f;
-				$blocked = $currentSuite['blocked'] + $b;
-				$notRun = $currentSuite['notRun'] + $nr ;  		
-	  			$currentSuite = array('total' => $total, 'pass' => $pass, 'fail' => $fail, 
-  			                      'blocked' => $blocked, 'notRun' => $notRun);	
 			}
-			else {
-				$currentSuite = array('total' => $t, 'pass' => $p, 'fail' => $f, 'blocked' => $b, 'notRun' => $nr);	
+			else 
+			{
+ 			    $currentSuite['total'] = 0;
+		      foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+		      {
+		          $currentSuite[$status_verbose]=0;
+		      }
+			    $currentSuite['not_run'] = 0;
 			}  	  	
+      
+      foreach($currentSuite as $key => $value)
+      {
+          $currentSuite[$key] += $results[$key];
+      } 
+			
 			$this->mapOfAggregate[$suiteId] = $currentSuite;
 		} // end for loop  	 	
 	} // end function

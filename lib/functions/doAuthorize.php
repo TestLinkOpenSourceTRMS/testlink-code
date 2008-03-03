@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/02/12 20:53:05 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/03/03 11:48:57 $ by $Author: franciscom $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -76,6 +76,7 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 function auth_does_password_match(&$user,$cleartext_password)
 {
 	$login_method = config_get('login_method');
+  $ret = new stdClass();
 	$ret->status_ok = true;
 	$ret->msg = 'ok';
 	if ('LDAP' == $login_method) 

@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.16 $
-$Date: 2007/12/17 00:18:30 $ by $Author: tosikawa $
+$Revision: 1.17 $
+$Date: 2008/03/03 07:47:12 $ by $Author: franciscom $
 -------------------------------------------------------------------------
  
  
@@ -54,7 +54,7 @@ Localization
 	
 * Italian
   Walter Giaquinto/Alessandro Lia	
-  bruno.busco@gmail.com
+  bruno.busco
 
 * Russian
 

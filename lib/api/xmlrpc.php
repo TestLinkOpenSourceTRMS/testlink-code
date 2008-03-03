@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/15 20:30:40 $ by $Author: havlat $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/03/03 17:26:19 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -943,13 +943,20 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$testplan_id =	$this->args[self::$tpidParamName];
 		$tcversion_id =	$this->tcVersionID;
 		$db_now=$this->dbObj->db_now();
-		
+		if($this->_isNotePresent())
+		{
+			$notes = $this->dbObj->prepare_string($this->args[self::$notesParamName]);
+		}
+		else
+		{
+			$notes = "";
+		}
 		$execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
 		
 		$query = "INSERT INTO {$this->executions_table} (build_id, tester_id, execution_ts, status, " .
-				     "testplan_id, tcversion_id, execution_type) " .
+				     "testplan_id, tcversion_id, execution_type, notes) " .
 				     "VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
-				     "{$tcversion_id},{$execution_type})";
+				     "{$tcversion_id},{$execution_type},{$notes})";
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id();		
 	}

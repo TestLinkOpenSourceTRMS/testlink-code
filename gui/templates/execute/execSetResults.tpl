@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.11 2008/02/24 17:53:05 franciscom Exp $
+$Id: execSetResults.tpl,v 1.12 2008/03/04 07:30:40 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes
@@ -177,6 +177,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {assign var="draw_submit_button" value=true}
 
 
+        {if $cfg->exec_cfg->show_testsuite_contents}
         {lang_get s='bulk_tc_status_management' var='title'}
         {assign var="div_id" value='bulk_controls'}
         {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
@@ -197,6 +198,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       		  <input type="submit" id="do_bulk_save" name="do_bulk_save" 
       		         value="{lang_get s='btn_save_all_tests_results'}"/>
         </div>
+        {/if}
     	{/if}
       
       <hr />

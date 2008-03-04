@@ -4,14 +4,14 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/03/01 21:41:27 $ $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/03/04 07:30:53 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
- * 
+ * 20080303 - franciscom - changed default value for feedback_type 
  * 20080109 - franciscom - added some *_img for URL to common used images.
  *
  * 20070624 - franciscom - g_locales_html_select_date_field_order
@@ -127,7 +127,9 @@ class TLSmarty extends Smarty
 		// user feedback variables (used in inc_update.tpl)
 		$this->assign('action', 'updated');
 		$this->assign('user_feedback', null);
-		$this->assign('feedback_type', 'soft');
+		// $this->assign('feedback_type', 'soft');
+		$this->assign('feedback_type', '');
+		
 		$this->assign('refresh', 'no');
 		$this->assign('result', null);
 

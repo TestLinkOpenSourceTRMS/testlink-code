@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/02/18 20:18:14 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/03/04 07:30:53 $ by $Author: franciscom $
  *
  * rev :
  *      20071218 - franciscom - refactoring
@@ -78,17 +78,18 @@ $smarty->display($template_dir . $default_template);
 function init_args()
 {
   	$_REQUEST = strings_stripSlashes($_REQUEST);
-
+    $args = new stdClass();
+     
     $my_keys = array('doAction','cfield','display_order','hidden_active_cfield','active_cfield');
     foreach($my_keys as $key)
     {
         $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
     }
-	if (!$args->cfield)
-		$args->cfield = array();
-	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+	  if (!$args->cfield)
+		  $args->cfield = array();
+	  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	  $args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
 
-	return $args;
+	  return $args;
 }
 ?>

@@ -5,13 +5,16 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/02/18 20:18:14 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/03/04 07:30:52 $ by $Author: franciscom $
+ *
+ * rev: 20080303 - franciscom - stdClass
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
-
+            
+$templateCfg = new stdClass();            
 $templateCfg->template_dir = 'cfields/';
 $templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 $templateCfg->template = null;
@@ -175,6 +178,7 @@ function request2cf($hash)
 function init_args()
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
+    $args = new stdClass();
     $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
     $args->cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
     $args->cf_name = isset($_REQUEST['cf_name']) ? $_REQUEST['cf_name']:null;
@@ -191,6 +195,7 @@ function init_args()
 */
 function edit(&$argsObj,&$cfieldMgr)
 {
+    $op = new stdClass();
     $op->cf = null;
     $op->cf_is_used = 0;
     $op->user_feedback = '';
@@ -218,6 +223,7 @@ function edit(&$argsObj,&$cfieldMgr)
 */
 function doCreate(&$hash_request,&$cfieldMgr)
 {
+    $op = new stdClass();
    	$op->template = "cfieldsEdit.tpl";
     $op->user_feedback='';
 	$op->cf = request2cf($hash_request);
@@ -257,10 +263,11 @@ function doCreate(&$hash_request,&$cfieldMgr)
 */
 function doUpdate(&$hash_request,&$argsObj,&$cfieldMgr)
 {
+    $op = new stdClass();
     $op->template = "cfieldsEdit.tpl";
     $op->user_feedback='';
-	$op->cf = request2cf($hash_request);
-	$op->cf['id'] = $argsObj->cfield_id;
+	  $op->cf = request2cf($hash_request);
+	  $op->cf['id'] = $argsObj->cfield_id;
 
     $oldObjData=$cfieldMgr->get_by_id($argsObj->cfield_id);
     $oldname=$oldObjData[$argsObj->cfield_id]['name'];
@@ -301,19 +308,20 @@ function doUpdate(&$hash_request,&$argsObj,&$cfieldMgr)
 */
 function doDelete(&$argsObj,&$cfieldMgr)
 {
-	$op->user_feedback='';
-	$op->cf = null;
-	$op->template = null;
-	$op->operation_descr = '';
-
-	$cf = $cfieldMgr->get_by_id($argsObj->cfield_id);
-	if ($cf)
-	{
-		$cf = $cf[$argsObj->cfield_id];
-		if ($cfieldMgr->delete($argsObj->cfield_id))
-			logAuditEvent(TLS("audit_cfield_deleted",$cf['name']),"DELETE",$argsObj->cfield_id,"custom_fields");
-	}
-	return $op;
+    $op = new stdClass();
+	  $op->user_feedback='';
+	  $op->cf = null;
+	  $op->template = null;
+	  $op->operation_descr = '';
+    
+	  $cf = $cfieldMgr->get_by_id($argsObj->cfield_id);
+	  if ($cf)
+	  {
+	  	$cf = $cf[$argsObj->cfield_id];
+	  	if ($cfieldMgr->delete($argsObj->cfield_id))
+	  		logAuditEvent(TLS("audit_cfield_deleted",$cf['name']),"DELETE",$argsObj->cfield_id,"custom_fields");
+	  }
+	  return $op;
 }
 
 
@@ -331,6 +339,7 @@ function doDelete(&$argsObj,&$cfieldMgr)
 */
 function cfieldCfgInit($cfieldMgr)
 {
+    $cfg = new stdClass();
     $cfg->disabled_cf_enable_on = array('execution' => '', 'design' => '');
     $cfg->disabled_cf_show_on = array('execution' => '', 'design' => '');
 

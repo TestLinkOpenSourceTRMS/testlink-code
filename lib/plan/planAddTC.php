@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.41 2008/02/04 19:41:35 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.42 2008/03/04 07:30:53 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -108,5 +108,22 @@ if($do_display)
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);
 	$smarty->display($template_dir .  'planAddTC_m1.tpl');
+}
+
+
+/*
+  function: init_args
+            creates a sort of namespace
+            
+  args:
+  
+  returns: object with some REQUEST and SESSION values as members
+
+*/
+function init_args()
+{
+	$args = new stdClass();
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	return $args;
 }
 ?>

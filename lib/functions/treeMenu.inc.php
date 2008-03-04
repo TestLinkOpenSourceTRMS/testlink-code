@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2008/02/24 17:54:59 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2008/03/04 07:30:53 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,7 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20080304 - franciscom - added management of exec_cfg->show_testsuite_contents
  *      20080223 - franciscom - fixed call to get_subtree() on generateTestSpecTree()
  *      20080114 - franciscom - changes to *_renderExecTreeNode*
  *
@@ -889,6 +890,8 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
                                              $showTestCaseID=1,$testCasePrefix)
 {
 	$cfg=config_get('testcase_cfg');
+	$exec_cfg=config_get('testcase_cfg');
+	
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
@@ -944,7 +947,14 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 	  break;
 
 	  case "testsuite":
-		$pfn = $bForPrinting ? 'TPLAN_PTS' : 'STS';
+	  if( $bForPrinting )
+	  {
+	      $pfn = 'TPLAN_PTS';
+	  }
+	  else
+	  {
+	     $pfn = $exec_cfg->show_testsuite_contents ? 'STS' : null; 
+	  }
 		$create_counters=1;
 	  break;
 
@@ -974,7 +984,9 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 	
 
 	$myLinkTo = $linkto."?level={$node_type}&id={$node['id']}".$versionID.$getArguments;
-	if ($buildLinkTo)
+
+  // 20080303 - franciscom
+	if ($buildLinkTo && !is_null($pfn))
 		$myLinkTo = "javascript:{$pfn}({$node['id']},{$versionID})";
 	else	
 		$myLinkTo = ' ';
@@ -1004,6 +1016,8 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
                                         $showTestCaseID=1,$testCasePrefix)
 {
  	$cfg=config_get('testcase_cfg');
+	$exec_cfg=config_get('testcase_cfg');
+ 	
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
@@ -1032,7 +1046,6 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 	  	$status_code = $tcase_node[$node['id']]['exec_status'];
   	  $status_descr=$status_code_descr[$status_code];
   		
-  	  // 20071229 - franciscom - added title and $useColors	
       $css_class= $useColors ? (" class=\"{$status_descr}\" ") : '';   
 		  $label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 		  
@@ -1044,8 +1057,6 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
             $testCasePrefix .= $cfg->glue_character;
          }
   	     $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-
-		     
 		  } 
 		  $label .= $name . "</span>";
 		         
@@ -1056,8 +1067,15 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 			break;
 	
 	    default:		  
+	    if( $bForPrinting )
+	    {
+	        $pfn = 'TPLAN_PTS';
+	    }
+	    else
+	    {
+	       $pfn = $exec_cfg->show_testsuite_contents ? 'STS' : "void"; 
+	    }
 		  $create_counters=1;
-		  $pfn = $bForPrinting ? 'TPLAN_PTS' : 'STS';
 		  break;
 	
 	} // switch
@@ -1116,6 +1134,8 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
                                         $showTestCaseID=1,$testCasePrefix)
 {
  	$cfg=config_get('testcase_cfg');
+	$exec_cfg=config_get('testcase_cfg');
+	 	
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
 	$status_verbose=config_get('tc_status_verbose_labels');
@@ -1135,8 +1155,15 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	  break;
 
 	  case 'testsuite':
-		$pfn = $bForPrinting ? 'TPLAN_PTS' : 'STS';
 		$label =  $name . " (" . $testcase_count . ")";	
+	  if( $bForPrinting )
+	  {
+	      $pfn = 'TPLAN_PTS';
+	  }
+	  else
+	  {
+	     $pfn = $exec_cfg->show_testsuite_contents ? 'STS' : "void"; 
+	  }
 	  break;
 
 	  case 'testcase':

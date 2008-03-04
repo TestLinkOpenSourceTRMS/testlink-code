@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: req_tree_menu.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/15 20:26:43 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/03/04 07:30:53 $ by $Author: franciscom $
  *
  * Rev :
  *      20071125 - franciscom - added dtree_render_req_node_open
@@ -15,18 +15,18 @@
 require_once(dirname(__FILE__)."/../../config.inc.php");
 
 //@FMAN: here are functions missing for LAYERSMENU !
-/*
-if (TL_TREE_KIND == 'LAYERSMENU')
-{
-	define('TL_MENU_PATH', TL_ABS_PATH . 'third_party' . DS .'phplayersmenu' . DS);
-	define('TL_MENU_LIB_PATH', TL_MENU_PATH . 'lib' . DS);
-	define('TL_MENU_WWW', 'third_party/phplayersmenu/');
 
-	require_once TL_MENU_LIB_PATH . 'PHPLIB.php';
-	require_once TL_MENU_LIB_PATH . 'layersmenu-common.inc.php';
-	require_once TL_MENU_LIB_PATH . 'treemenu.inc.php';
-}
-*/
+// if (TL_TREE_KIND == 'LAYERSMENU')
+// {
+// 	define('TL_MENU_PATH', TL_ABS_PATH . 'third_party' . DS .'phplayersmenu' . DS);
+// 	define('TL_MENU_LIB_PATH', TL_MENU_PATH . 'lib' . DS);
+// 	define('TL_MENU_WWW', 'third_party/phplayersmenu/');
+// 
+// 	require_once TL_MENU_LIB_PATH . 'PHPLIB.php';
+// 	require_once TL_MENU_LIB_PATH . 'layersmenu-common.inc.php';
+// 	require_once TL_MENU_LIB_PATH . 'treemenu.inc.php';
+// }
+
 
 /**
  * generate data for tree menu of Test Specification
@@ -62,7 +62,6 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
   $status_descr_code=config_get('tc_status');
   $status_code_descr=array_flip($status_descr_code);
 
-  //
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
@@ -89,7 +88,6 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
 
 	if($req_tree)
 	{
-
   	$req_counters = prepare_req_node($db,$req_tree,$decoding_hash,$map_node_req_count);
 
 		foreach($req_counters as $key => $value)
@@ -108,7 +106,7 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
 /*
   function:
 
-  args :
+  args:
 
   returns:
 
@@ -157,17 +155,10 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
 
 			$counters_map = prepare_req_node($db,$current,$decoding_info,$map_node_req_count,
 			                                 $status);
-
-
-      // -------------------------------------------------
-      // 20071111 - franciscom
       foreach($counters_map as $key => $value)
       {
         $my_counters[$key] += $counters_map[$key];
       }
-      // -------------------------------------------------
-
-
 		}
     foreach($my_counters as $key => $value)
     {
@@ -193,7 +184,7 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
 /*
   function:
 
-  args :
+  args:
 
   returns:
 
@@ -284,7 +275,7 @@ function jtree_render_req_node_close($node,$node_type)
 /*
   function:
 
-  args :
+  args:
 
   returns:
 
@@ -325,6 +316,57 @@ function dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id
 	$menustring .= $label. "','{$myLinkTo}');\n";
 
 	return $menustring;
-
 }
+
+/*
+  function:
+
+  args:
+
+  returns:
+
+*/
+//$node,$node_type,$linkto,$getArguments,$level,$tc_action_enabled,$bForPrinting,$showTestCaseID,$testCasePrefix)
+
+function layersmenu_render_req_node_open($node,$node_type,$linkto,$getArguments,$level,$show_node_id)
+{
+	$cfg=config_get('testcase_cfg');
+	$name = filterString($node['name']);
+	$icon = "";
+	$dots  = str_repeat('.',$level);
+	$item_count = isset($node['requirement_count']) ? $node['requirement_count'] : 0;
+
+	
+  switch($node_type)
+  {
+	  case 'testproject':
+		$pfn = 'TPROJECT_REQ_SPEC_MGMT';
+		$label = $name . " ({$item_count})";
+		$dots = ".";
+    break;
+
+	  case 'requirement_spec':
+		$pfn = 'REQ_SPEC_MGMT';
+		$label = $name . " ({$item_count})";
+	  break;
+
+	  case 'requirement':
+		$icon = "gnome-starthere-mini.png";
+	  $pfn = "REQ_MGMT";
+
+	  $label = $name;
+	  if($show_node_id)
+	  {
+		  $label = "<b>" . $node['id'] . "</b>: " . $label;
+	  }
+	  break;
+	}	
+	
+	$myLinkTo = "javascript:{$pfn}({$node['id']})";
+	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$node_type}". 
+		           "|{$icon}||\n";
+		
+	return $menustring;				
+}
+
 ?>

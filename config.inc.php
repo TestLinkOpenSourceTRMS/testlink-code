@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.160 $
- * @modified $Date: 2008/03/01 21:41:18 $ by $Author: schlundus $
+ * @version $Revision: 1.161 $
+ * @modified $Date: 2008/03/04 07:30:25 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
+ *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
  *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
  *     20080124 - franciscom - $g_dashboard_precision
  *     20080118 - franciscom - $g_api_id_format
@@ -650,6 +651,17 @@ $g_exec_cfg->enable_tree_testcase_counters=1;
 // 1 -> test cases and test case counters will be coluored
 //      according to test case status
 $g_exec_cfg->enable_tree_colouring=1;
+
+
+// 20080303 - franciscom
+// This can help to avoid performance problems.
+// Controls what happens on right frame when user clicks on a testsuite on tree.
+// 1 -> old BEHAVIOUR
+//      show all test cases presents on test suite and children test suite.
+//
+// 0 -> nothing happens, to execute a test case you need to click on test case
+//      
+$g_exec_cfg->show_testsuite_contents=0;
 
 
 /** [Test case specification] */

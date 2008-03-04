@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/02/28 22:16:22 $ $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/03/04 07:30:53 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -331,6 +331,7 @@ if( is_array($tcversion_id) )
 $execNotesInputs=createExecNotesWebEditor($map_last_exec,$_SESSION['basehref']);
 
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+$smarty->assign('cfg',$cfg);
 $smarty->assign('tcasePrefix',$tcasePrefix . $cfg->testcase_cfg->glue_character);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 $smarty->assign('exec_notes_editors', $execNotesInputs);
@@ -821,13 +822,14 @@ function createExecNotesWebEditor(&$tcversions,$basehref)
 /*
   function: init_config 
 
-  args :
+  args:
   
   returns: 
 
 */
 function init_config()
 {
+    $cfg = new stdClass();
     $cfg->exec_cfg = config_get('exec_cfg');
     $cfg->gui_cfg = config_get('gui');
     $cfg->tc_status = config_get('tc_status'); 

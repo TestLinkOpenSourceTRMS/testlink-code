@@ -1,13 +1,19 @@
 /* 
-$Revision: 1.8 $
-$Date: 2008/02/20 07:49:13 $
-$Author: franciscom $
+$Revision: 1.9 $
+$Date: 2008/03/04 08:57:52 $
+$Author: havlat $
 $RCSfile: db_schema_update.sql,v $
 */
 
 /* Step 1 - Drops if needed */
 DROP TABLE IF EXISTS `priorities`;
 DROP TABLE IF EXISTS `risk_assignments`;
+DROP TABLE IF EXISTS `events`;
+DROP TABLE IF EXISTS `transactions`;
+DROP TABLE IF EXISTS `text_templates`;
+DROP TABLE IF EXISTS `test_urgency`;
+DROP TABLE IF EXISTS `user_group`;
+DROP TABLE IF EXISTS `user_group_assign`;
 
 
 /* Step 2 - new tables */
@@ -57,6 +63,8 @@ CREATE TABLE `user_group` (
   `id` int(10) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` text,
+  `owner_id` int(10) unsigned NOT NULL,
+  `testproject_id` int(10) unsigned NOT NULL,
   UNIQUE KEY (`title`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -70,6 +78,7 @@ CREATE TABLE `user_group_assign` (
 /* tcversions */
 ALTER TABLE tcversions ADD COLUMN execution_type tinyint(1) default '1' COMMENT '1 -> manual, 2 -> automated';
 ALTER TABLE tcversions ADD COLUMN `tc_external_id` int(10) unsigned NOT NULL; 
+ALTER TABLE tcversions ADD COLUMN `importance` smallint(5) unsigned NOT NULL default '2';
 ALTER TABLE tcversions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
 
 /* testprojects */
@@ -93,11 +102,12 @@ ALTER TABLE executions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
 
 
 
-
-
 /* data update */
 INSERT INTO `rights` (id,description) VALUES (19,'system_configuraton');
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,19);
 
 INSERT INTO `rights` (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,20);
+
+INSERT INTO `rights` (id,description) VALUES (21,'mgt_view_usergroups');
+INSERT INTO `role_rights` (role_id,right_id) VALUES (8,21);

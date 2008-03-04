@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/03/03 18:53:17 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/03/04 18:45:14 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -228,36 +228,36 @@ switch($args->do_action)
 function init_args($request_hash, $session_hash)
 {
   	$args = new stdClass();
-	$request_hash = strings_stripSlashes($request_hash);
-
-	$nullable_keys = array('testplan_name','notes','rights','active','do_action');
-	foreach($nullable_keys as $value)
-	{
-		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
-	}
-	
-	$intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
-	foreach($intval_keys as $key => $value)
-	{
-		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
-	}
-	$args->source_tpid = $args->copy_from_tplan_id;
-	$args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
-	
-	$args->copy_options=array();
-	$boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0, 
-	                      'copy_milestones' => 0, 'copy_user_roles' => 0, 'copy_builds' => 0);
-	
-	foreach($boolean_keys as $key => $value)
-	{
-	  $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
-	}
-	
-	$args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
-	$args->tproject_id = $session_hash['testprojectID'];
-	$args->tproject_name = $session_hash['testprojectName'];
-	$args->user_id = $session_hash['userID'];
-	
-	return $args;
+	  $request_hash = strings_stripSlashes($request_hash);
+    
+	  $nullable_keys = array('testplan_name','notes','rights','active','do_action');
+	  foreach($nullable_keys as $value)
+	  {
+	  	$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
+	  }
+	  
+	  $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
+	  foreach($intval_keys as $key => $value)
+	  {
+	  	$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+	  }
+	  $args->source_tpid = $args->copy_from_tplan_id;
+	  $args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
+	  
+	  $args->copy_options=array();
+	  $boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0, 
+	                        'copy_milestones' => 0, 'copy_user_roles' => 0, 'copy_builds' => 0);
+	  
+	  foreach($boolean_keys as $key => $value)
+	  {
+	    $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
+	  }
+	  
+	  $args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
+	  $args->tproject_id = $session_hash['testprojectID'];
+	  $args->tproject_name = $session_hash['testprojectName'];
+	  $args->user_id = $session_hash['userID'];
+	  
+	  return $args;
 }
 ?>

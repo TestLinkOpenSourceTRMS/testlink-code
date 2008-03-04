@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.42 2008/03/04 07:30:53 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.43 2008/03/04 18:46:30 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -32,8 +32,8 @@ $tproject_name = $_SESSION['testprojectName'];
 $testCasePrefix = $tproject_mgr->getTestCasePrefix($tproject_id);
 $testCasePrefix .= $tcase_cfg->glue_character;
 
-$tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tplan_name = $tplan_info['name'];
 
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
@@ -52,7 +52,7 @@ if($_GET['edit'] == 'testsuite')
 
     $tsuite_data = $tsuite_mgr->get_by_id($object_id);
 
-    $tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,
+    $tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,DONT_FILTER_BY_TCASE_ID,
                                                                $keyword_id,ANY_EXEC_STATUS,ANY_OWNER);
 
     $out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
@@ -74,21 +74,21 @@ if(isset($_POST['do_action']))
 		  $atc = $_POST['achecked_tc'];
 		  $atcversion = $_POST['tcversion_for_tcid'];
 		  $items_to_link = my_array_intersect_keys($atc,$atcversion);
-		  $tplan_mgr->link_tcversions($tplan_id,$items_to_link);
+		  $tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
 	}
 	
 	if(isset($_POST['remove_checked_tc']))
 	{
 		// remove without warning
 		$rtc = $_POST['remove_checked_tc'];
-		$tplan_mgr->unlink_tcversions($tplan_id,$rtc);      
+		$tplan_mgr->unlink_tcversions($args->tplan_id,$rtc);      
 	}
 
 	$map_node_tccount = get_testproject_nodes_testcount($db,$tproject_id, $tproject_name,
 											   $keyword_id);
 	$tsuite_data = $tsuite_mgr->get_by_id($object_id);
 	// BUGID 905
-	$tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id);
+	$tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id);
 
 	$out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
 		   $tplan_linked_tcversions,
@@ -124,6 +124,7 @@ function init_args()
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 	return $args;
 }
 ?>

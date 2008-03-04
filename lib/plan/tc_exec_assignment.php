@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.18 2008/02/04 19:41:35 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.19 2008/03/04 21:43:39 franciscom Exp $ 
  * 
  * rev :
  *       20080114 - franciscom - added testcase external_id management
@@ -16,6 +16,8 @@ require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 require_once("assignment_mgr.class.php");
 require_once("treeMenu.inc.php");
+require("specview.php");
+
 testlinkInitPage($db);
 
 $tcase_cfg = config_get('testcase_cfg');

@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.3 2008/01/14 21:43:23 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.4 2008/03/04 21:43:39 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -16,6 +16,7 @@
  */         
 require('../../config.inc.php');
 require_once("common.php");
+require("specview.php");
 
 testlinkInitPage($db);
 

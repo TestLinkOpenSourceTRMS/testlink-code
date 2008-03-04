@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: printDocOptions.php,v 1.3 2007/12/29 18:31:00 franciscom Exp $
+* @version 	$Id: printDocOptions.php,v 1.4 2008/03/04 21:43:39 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * Navigator for print/export functionality. 
@@ -86,12 +86,26 @@ else if ($type == 'testplan')
 {
 	$tp = new testplan($db);
 	$latestBuild = $tp->get_max_build_id($tplan_id);
+	
+	$filters = new stdClass();
+  $additionalInfo = new stdClass();
+
+	$filters->keyword_id = FILTER_BY_KEYWORD_OFF;
+  $filters->tc_id = FILTER_BY_TC_OFF;
+  $filters->build_id = $latestBuild;
+  $filters->hide_testcases=HIDE_TESTCASES;
+  $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+  $filters->status = FILTER_BY_TC_STATUS_OFF;
+  $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+  $filters->include_unassigned=1;
+  $filters->show_testsuite_contents=1;
+  
+  $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+  $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+
+	
 	$treeString = generateExecTree($db,$workPath,$tproject_id,$tproject_name,
-	                               $tplan_id,$tplan_name,$latestBuild,$args,
-	                               FILTER_BY_KEYWORD_OFF,FILTER_BY_TC_OFF,
-	                               HIDE_TESTCASES,FILTER_BY_ASSIGNED_TO_OFF,FILTER_BY_TC_STATUS_OFF,
-                                 SEARCH_BY_CUSTOM_FIELDS_OFF,CREATE_TC_STATUS_COUNTERS_OFF,
-                                 COLOR_BY_TC_STATUS_OFF);
+	                               $tplan_id,$tplan_name,$args,$filters,$additionalInfo);
                                  
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	

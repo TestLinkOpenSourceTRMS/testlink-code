@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.18 2008/01/27 15:56:57 franciscom Exp $ 
+ * @version $Id: planUpdateTC.php,v 1.19 2008/03/04 21:43:39 franciscom Exp $ 
  * 
  * Author: franciscom
  *
@@ -12,6 +12,7 @@
  */         
 require('../../config.inc.php');
 require_once("common.php");
+require("specview.php");
 
 testlinkInitPage($db);
 

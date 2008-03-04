@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.45 2008/03/04 19:49:12 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.46 2008/03/04 21:43:39 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -15,6 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 require_once('../../config.inc.php');
 require_once("common.php");
+require("specview.php");
 
 testlinkInitPage($db);
 

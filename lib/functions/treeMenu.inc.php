@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2008/03/04 07:30:53 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2008/03/04 21:43:39 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -454,23 +454,25 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 //
 //
 function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
-                        $tc_action_enabled,$linkto,
-                        $testCasePrefix,
+                        $tc_action_enabled,$linkto,$testCasePrefix,
                         $bForPrinting=0,$showTestCaseID)
 {
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
 		$menustring = jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
-		                                                 $bForPrinting,$showTestCaseID,$testCasePrefix);
+		                                                 $bForPrinting,$showTestCaseID,
+		                                                 $testCasePrefix);
 	else if (TL_TREE_KIND == 'DTREE')
 		$menustring = dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
 		                                                 $getArguments,$tc_action_enabled,
-		                                                 $bForPrinting,$showTestCaseID,$testCasePrefix);
+		                                                 $bForPrinting,$showTestCaseID,
+		                                                 $testCasePrefix);
 	else 
 		$menustring = layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArguments,
 		                                                      $level,$tc_action_enabled,
-		                                                      $bForPrinting,$showTestCaseID,$testCasePrefix);
+		                                                      $bForPrinting,$showTestCaseID,
+		                                                      $testCasePrefix);
 		
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -714,16 +716,32 @@ function jtree_renderTestSpecTreeNodeOnClose($node,$node_type)
 *      added $useCounters and $useColors
 * 
 */
+// function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
+//                           $tplan_name,$build_id,
+//                           $getArguments, $keyword_id = 0,$tc_id = 0, 
+//                           $bHideTCs = false,
+// 			                    $assignedTo = 0, $status = null, $cf_hash = null,
+// 			                    $useCounters=1,$useColors=1,$include_unassigned=false)
+
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                          $tplan_name,$build_id,
-                          $getArguments, $keyword_id = 0,$tc_id = 0, 
-                          $bHideTCs = false,
-			                    $assignedTo = 0, $status = null, $cf_hash = null,
-			                    $useCounters=1,$useColors=1,$include_unassigned=false)
+                          $tplan_name,$getArguments,$filters,$additionalInfo) 
 {
-  $showTestCaseID=config_get('tree_show_testcase_id');
-	$menustring = null;
-	$any_exec_status=null;
+    $showTestCaseID=config_get('tree_show_testcase_id');
+	  $menustring = null;
+	  $any_exec_status=null;
+    
+    $keyword_id = $filters->keyword_id;
+    $tc_id = $filters->tc_id; 
+    $build_id = $filters->build_id; 
+    $bHideTCs = $filters->hide_testcases;
+    $assignedTo = $filters->assignedTo; 
+    $status = $filters->status;
+    $cf_hash = $filters->cf_hash;
+    $include_unassigned = $filters->include_unassigned;
+    $show_testsuite_contents = $filters->show_testsuite_contents;
+    
+    $useCounters=$additionalInfo->useCounters;
+    $useColors=$additionalInfo->useColors;
 
 	$tplan_mgr = new testplan($db);
 	$tproject_mgr = new testproject($db);
@@ -800,7 +818,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  //
 		$menustring = renderExecTreeNode(1,$test_spec,$tp_tcs,$getArguments,$hash_id_descr,1,
 		                                 $menuUrl,$bHideTCs,$useCounters,$useColors,
-		                                 $showTestCaseID,$tcase_prefix);
+		                                 $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
 	}
 	return $menustring;
 }
@@ -826,28 +844,28 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
         added $useCounters,$useColors
 */
 function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_descr,
-                            $tc_action_enabled,$linkto,$bHideTCs,
-                            $useCounters,$useColors,$showTestCaseID,$testCasePrefix)
+                            $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
+                            $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
 {
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
 		$menustring = jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 		                                             $tc_action_enabled,$bHideTCs,
-		                                             $useCounters,$useColors,
-		                                             $showTestCaseID,$testCasePrefix);
+		                                             $useCounters,$useColors,$showTestCaseID,
+		                                             $testCasePrefix,$showTestSuiteContents);
 	else if (TL_TREE_KIND == 'DTREE')
 		$menustring = dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 		                                             $linkto,$getArguments,
 		                                             $tc_action_enabled,$bHideTCs,
-		                                             $useCounters,$useColors,
-		                                             $showTestCaseID,$testCasePrefix);
+		                                             $useCounters,$useColors,$showTestCaseID,
+		                                             $testCasePrefix,$showTestSuiteContents);
 	else 
 		$menustring = layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 		                                                  $linkto,$getArguments,$level,
 		                                                  $tc_action_enabled,$bHideTCs,
-		                                                  $useCounters,$useColors,
-		                                                  $showTestCaseID,$testCasePrefix);
+		                                                  $useCounters,$useColors,$showTestCaseID,
+		                                                  $testCasePrefix,$showTestSuiteContents);
 		                                                  
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -863,7 +881,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 			                                  $getArguments,$hash_id_descr,
 			                                  $tc_action_enabled,$linkto,$bHideTCs,
 			                                  $useCounters,$useColors,$showTestCaseID,
-			                                  $testCasePrefix);
+			                                  $testCasePrefix,$showTestSuiteContents);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
@@ -886,11 +904,10 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 */
 function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,$level,
                                              $tc_action_enabled,$bForPrinting,
-                                             $useCounters=1,$useColors=1,
-                                             $showTestCaseID=1,$testCasePrefix)
+                                             $useCounters=1,$useColors=1,$showTestCaseID=1,
+                                             $testCasePrefix,$showTestSuiteContents=1)
 {
 	$cfg=config_get('testcase_cfg');
-	$exec_cfg=config_get('testcase_cfg');
 	
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
@@ -953,7 +970,7 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 	  }
 	  else
 	  {
-	     $pfn = $exec_cfg->show_testsuite_contents ? 'STS' : null; 
+	     $pfn = $showTestSuiteContents ? 'STS' : null; 
 	  }
 		$create_counters=1;
 	  break;
@@ -1012,11 +1029,10 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 */
 function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,
                                         $tc_action_enabled,$bForPrinting,
-                                        $useCounters=1,$useColors=1,
-                                        $showTestCaseID=1,$testCasePrefix)
+                                        $useCounters=1,$useColors=1,$showTestCaseID=1,
+                                        $testCasePrefix,$showTestSuiteContents=1)
 {
  	$cfg=config_get('testcase_cfg');
-	$exec_cfg=config_get('testcase_cfg');
  	
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
@@ -1073,7 +1089,7 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 	    }
 	    else
 	    {
-	       $pfn = $exec_cfg->show_testsuite_contents ? 'STS' : "void"; 
+	       $pfn = $showTestSuiteContents ? 'STS' : "void"; 
 	    }
 		  $create_counters=1;
 		  break;
@@ -1131,10 +1147,9 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 */
 function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,
                                         $bForPrinting,$useCounters=1,$useColors=1,
-                                        $showTestCaseID=1,$testCasePrefix)
+                                        $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
  	$cfg=config_get('testcase_cfg');
-	$exec_cfg=config_get('testcase_cfg');
 	 	
 	$status_descr_code=config_get('tc_status');
 	$status_code_descr=array_flip($status_descr_code);
@@ -1162,7 +1177,7 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	  }
 	  else
 	  {
-	     $pfn = $exec_cfg->show_testsuite_contents ? 'STS' : "void"; 
+	     $pfn = $showTestSuiteContents ? 'STS' : "void"; 
 	  }
 	  break;
 
@@ -1171,8 +1186,8 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 		if (!$buildLinkTo)
 			$pfn = "void";
 
-	$status_code = $tcase_node[$node['id']]['exec_status'];
-	$status_descr = $status_code_descr[$status_code];
+	  $status_code = $tcase_node[$node['id']]['exec_status'];
+	  $status_descr = $status_code_descr[$status_code];
 
     $css_class= $useColors ? (" class=\"{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';

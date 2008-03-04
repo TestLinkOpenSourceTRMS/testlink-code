@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2008/02/24 17:54:59 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2008/03/04 21:43:38 $ by $Author: franciscom $
  *
  * 20080224 - franciscom - BUGID 1056 
  * 20071229 - franciscom - refactoring tree colouring and counters config
@@ -82,15 +82,37 @@ $getArguments=initializeGetArguments($args,$cf_selected);
 if ($args->optResultSelected == 'all')
 	$args->optResultSelected = null;
 
-$useCounters = $exec_cfg->enable_tree_testcase_counters;
-$useColours = $exec_cfg->enable_tree_colouring;
+//$useCounters = $exec_cfg->enable_tree_testcase_counters;
+//$useColours = $exec_cfg->enable_tree_colouring;
 
 // 20080224 - franciscom - $args->include_unassigned
 // 20070914 - jbarchibald - added $cf_selected parameter
-$sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,$args->tplan_id,$args->tplan_name,
-                          $args->buildSelected,$getArguments,$args->keyword_id,$args->tc_id,false,
-                          $args->filter_assigned_to,$args->optResultSelected,$cf_selected,
-                          $useCounters,$useColours,$args->include_unassigned);
+// $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,$args->tplan_id,$args->tplan_name,
+//                           $args->buildSelected,$getArguments,$args->keyword_id,$args->tc_id,false,
+//                           $args->filter_assigned_to,$args->optResultSelected,$cf_selected,
+//                           $useCounters,$useColours,$args->include_unassigned);
+
+
+//
+$filters = new stdClass();
+$additionalInfo = new stdClass();
+
+$filters->keyword_id = $args->keyword_id;
+$filters->tc_id = $args->tc_id;
+$filters->build_id = $args->buildSelected;
+$filters->assignedTo = $args->filter_assigned_to;
+$filters->status = $args->optResultSelected;
+$filters->cf_hash = $cf_selected;
+$filters->include_unassigned = $args->include_unassigned;
+$filters->hide_testcases = false;
+$filters->show_testsuite_contents = $exec_cfg->show_testsuite_contents;
+
+$additionalInfo->useCounters=$exec_cfg->enable_tree_testcase_counters;
+$additionalInfo->useColours=$exec_cfg->enable_tree_colouring;
+
+$sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
+                          $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
+
 
 
 // link to load frame named 'workframe' when the update button is pressed
@@ -135,6 +157,8 @@ $smarty->display($template_dir . 'execNavigator.tpl');
 */
 function init_args($exec_cfg)
 {
+    $args = new stdClass();
+     
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
     $args->user = $_SESSION['currentUser'];

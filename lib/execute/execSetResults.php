@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/03/04 07:30:53 $ $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/03/04 21:43:39 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -29,6 +29,7 @@ require_once('exec.inc.php');
 require_once("builds.inc.php");
 require_once("attachments.inc.php");
 require_once("web_editor.php");
+require("specview.php");
 
 testlinkInitPage($db);
 

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.97 $ $Author: franciscom $
- * @modified $Date: 2008/02/28 22:16:22 $
+ * @version $Revision: 1.98 $ $Author: franciscom $
+ * @modified $Date: 2008/03/04 21:43:39 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -39,6 +39,7 @@ require_once(dirname(__FILE__)."/role.class.php");
 require_once(dirname(__FILE__)."/keyword.class.php");
 require_once(dirname(__FILE__)."/attachment.class.php");
 require_once(dirname(__FILE__)."/user.class.php");
+
 /** @TODO use the next include only if it is used -> must be removed*/
 require_once(dirname(__FILE__)."/testproject.class.php");
 require_once(dirname(__FILE__)."/testplan.class.php");
@@ -704,7 +705,7 @@ added new data on output: [tcversions_qty]
                                           
        
 */
-function gen_spec_view(&$db,$spec_view_type='testproject',
+function gen_spec_viewOLD(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,

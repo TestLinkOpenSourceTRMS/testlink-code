@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: planTCNavigator.php,v 1.3 2008/01/26 17:56:23 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.4 2008/03/04 21:43:39 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -13,6 +13,9 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
+
+$filters = new stdClass();
+$additionalInfo = new stdClass();
 
 $template_dir='plan/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
@@ -44,28 +47,28 @@ switch($args->feature)
   case 'updateTC':
 	$menuUrl = "lib/plan/planUpdateTC.php";
 	$title = lang_get('title_test_plan_navigator');
-	$hide_tc = 0;
+	$filters->hide_testcases=0;
 	$help_file = "";
   break;
   
   case 'removeTC':
 	$menuUrl = "lib/plan/planTCRemove.php";
 	$title = lang_get('title_test_plan_navigator');
-	$hide_tc = 0;
+	$filters->hide_testcases=0;
 	$help_file = "testSetRemove.html";
   break;
   
   case 'plan_risk_assignment':
 	$menuUrl = "lib/plan/plan_risk_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
-	$hide_tc = 1;
+	$filters->hide_testcases=1;
 	$help_file = "priority.html";
   break;
 
   case 'tc_exec_assignment':
 	$menuUrl = "lib/plan/tc_exec_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
-	$hide_tc = 0;
+	$filters->hide_testcases=0;
 	$help_file = "planOwnerAndPriority.html";
   break;
   
@@ -76,30 +79,29 @@ switch($args->feature)
 	
 }
 
-
-// workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
-//                                   "?help={$help_topic}&locale={$_SESSION['locale']}";
-// 
-
-
 $getArguments = '&tplan_id=' . $args->tplan_id;
 if ($args->keyword_id)
 {
 	$getArguments .= '&keyword_id='.$args->keyword_id;
 }
 
-// 20071229 - franciscom - added arguments to avoid counters and coloring
+$filters->keyword_id = $args->keyword_id;
+$filters->tc_id = FILTER_BY_TC_OFF;
+$filters->build_id = FILTER_BY_BUILD_OFF;
+$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+$filters->status = FILTER_BY_TC_STATUS_OFF;
+$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+$filters->include_unassigned=$args->include_unassigned;
+$filters->show_testsuite_contents=1;
+
+$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+
 $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
-                          $args->tplan_id,$args->tplan_name,
-                          FILTER_BY_BUILD_OFF,$getArguments,$args->keyword_id,FILTER_BY_TC_OFF,
-                          $hide_tc,FILTER_BY_ASSIGNED_TO_OFF,FILTER_BY_TC_STATUS_OFF,
-                          SEARCH_BY_CUSTOM_FIELDS_OFF,
-                          CREATE_TC_STATUS_COUNTERS_OFF,COLOR_BY_TC_STATUS_OFF);
+                          $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
 
 $tree = invokeMenu($sMenu,'',null);
-
 $smarty = new TLSmarty();  
-
 $smarty->assign('workframe',$args->workframe);
 $smarty->assign('args',$getArguments);
 $smarty->assign('tplan_id',$args->tplan_id);

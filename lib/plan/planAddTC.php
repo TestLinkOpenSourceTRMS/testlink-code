@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.44 2008/03/04 18:49:35 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.45 2008/03/04 19:49:12 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -14,7 +14,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 require_once('../../config.inc.php');
-require_once(dirname(__FILE__)."/../functions/common.php");
+require_once("common.php");
+
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db); 
@@ -24,6 +25,7 @@ $tproject_mgr = new testproject($db);
 
 $template_dir = 'plan/';
 
+$args=init_args();
 $tcase_cfg = config_get('testcase_cfg');
 $do_display = 0;
 

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2008/03/03 18:53:17 $ by $Author: franciscom $
+ * @modified $Date: 2008/03/04 07:40:47 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -798,6 +798,7 @@ class results
 				$this->mapOfSuiteSummary[$suiteId] =  $total;
 			} 
 		} // end if  	
+		echo "<pre>debug 20080303 - \$this->mapOfSuiteSummary - " . __FUNCTION__ . " --- "; print_r($this->mapOfSuiteSummary); echo "</pre>";
 	} // end function
   
 	/**

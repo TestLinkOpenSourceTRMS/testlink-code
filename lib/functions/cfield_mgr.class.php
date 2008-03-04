@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/02/20 21:21:44 $  $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/03/04 18:37:08 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080304 - franciscom - prepare_string() before insert
  * 20080216 - franciscom - added testproject name to logAudit recorded information
  * 20071102 - franciscom - BUGID - Feature
  *            addition and refactoring of contributed code
@@ -571,11 +572,12 @@ class cfield_mgr
            $value = substr($value,0,$this->max_length_value);
         }
 
+        $safe_value=$this->db->prepare_string($value);
         if($this->db->num_rows( $result ) > 0 )
         {
 
           $sql = "UPDATE cfield_design_values " .
-                 " SET value='{$value}' " .
+                 " SET value='{$safe_value}' " .
     		 			   " WHERE field_id={$field_id} AND	node_id={$node_id}";
         }
         else
@@ -586,7 +588,7 @@ class cfield_mgr
   		    #  values stored with a bug must not change
   		    $sql = "INSERT INTO cfield_design_values " .
   					     " ( field_id, node_id, value ) " .
-  				       " VALUES	( {$field_id}, {$node_id}, '{$value}' )";
+  				       " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
   		  }
         $this->db->exec_query($sql);
       } //foreach($cfield
@@ -1202,6 +1204,7 @@ class cfield_mgr
         {
            $value = substr($value,0,$this->max_length_value);
         }
+        $safe_value=$this->db->prepare_string($value);
 
         # Remark got from Mantis code:
   		  # Always store the value, even if it's the dafault value
@@ -1209,7 +1212,7 @@ class cfield_mgr
   		  #  values stored with a bug must not change
   		  $sql = "INSERT INTO cfield_execution_values " .
   				     " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
-  			       " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$value}' )";
+  			       " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
 
         $this->db->exec_query($sql);
       } //foreach($cfield

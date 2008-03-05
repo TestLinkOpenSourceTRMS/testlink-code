@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/02/24 17:55:00 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/03/05 22:22:39 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20080223 - franciscom - BUGID 1408 
@@ -300,6 +300,7 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
 */
 function init_args($optionTransferCfg)
 {
+   	$args = new stdClass();
     $_REQUEST=strings_stripSlashes($_REQUEST);
     
     $args->tprojectID = $_SESSION['testprojectID'];

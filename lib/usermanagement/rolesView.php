@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/02/12 08:31:55 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/03/05 22:22:39 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -31,6 +31,7 @@ switch ($args->doAction)
 		$affectedUsers = $role->getAllUsersWithRole($db);
 		$doDelete = (sizeof($affectedUsers) == 0);
 		break;  
+
 	case 'confirmDelete':
 		$doDelete = 1;
 		break;  
@@ -61,9 +62,10 @@ $smarty->display($template_dir . $default_template);
 
 function init_args()
 {
+    $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 	
-	$args->roleid = isset($_REQUEST['roleid']) ? intval($_REQUEST['roleid']) : 0;
+	  $args->roleid = isset($_REQUEST['roleid']) ? intval($_REQUEST['roleid']) : 0;
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
     $args->userID = $_SESSION['currentUser']->dbID;
 

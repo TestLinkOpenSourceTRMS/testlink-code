@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/02/22 19:25:15 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/03/05 22:22:39 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -107,6 +107,7 @@ $smarty->display($template_dir . $default_template);
 
 function init_args()
 {
+  $args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$key2loop = array('doAction' => null,'rolename' => null , 'roleid' => 0, 'notes' => '', 'grant' => null);
@@ -117,9 +118,19 @@ function init_args()
 	return $args;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function doCreate(&$db,$args)
 {
 	$rights = implode("','",array_keys($args->grant));
+
+  $op = new stdClass();
  	$op->role = new tlRole();
 	$op->role->rights = tlRight::getAll($db,"WHERE description IN ('{$rights}')");
 	$op->role->name = $args->rolename;

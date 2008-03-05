@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.33 2008/02/03 18:45:32 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.34 2008/03/05 22:22:39 franciscom Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
@@ -83,6 +83,9 @@ switch($args->feature)
 <?php
 function init_args()
 {
+	  $args = new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     $args->feature = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
     $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/02/28 22:16:22 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -69,19 +69,21 @@ $smarty->display($template_dir . $template);
 */
 function init_args()
 {
-   $_REQUEST = strings_stripSlashes($_REQUEST);
-   $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
-   $args->title = isset($_REQUEST['title']) ? trim($_REQUEST['title']) : null;
-   
-   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
-   $args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;
-   $args->reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
-   $args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
-   
-   $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-  
-   return $args;
+    $args = new stdClass();
+
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
+    $args->title = isset($_REQUEST['title']) ? trim($_REQUEST['title']) : null;
+    
+    $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
+    $args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;
+    $args->reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
+    $args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
+    
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+    
+    return $args;
 }
 
 

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchForm.php,v 1.14 2008/01/20 15:39:18 franciscom Exp $
+ * $Id: searchForm.php,v 1.15 2008/03/05 22:22:39 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
 **/
@@ -26,11 +26,19 @@ $smarty->assign('mainCaption',$mainCaption);
 $smarty->assign('keywords', $tproject_mgr->getKeywords($args->tprojectID));
 $smarty->assign('design_cf', $cf_map_for_tcases);
 $smarty->display($template_dir . 'tcSearchForm.tpl');
-?>
 
-<?php
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function init_args()
-{
+{              
+  	$args = new stdClass();
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
     return $args;

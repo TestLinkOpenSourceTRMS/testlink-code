@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2008/03/04 21:43:38 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
  *
  * 20080224 - franciscom - BUGID 1056 
  * 20071229 - franciscom - refactoring tree colouring and counters config
@@ -108,7 +108,7 @@ $filters->hide_testcases = false;
 $filters->show_testsuite_contents = $exec_cfg->show_testsuite_contents;
 
 $additionalInfo->useCounters=$exec_cfg->enable_tree_testcase_counters;
-$additionalInfo->useColours=$exec_cfg->enable_tree_colouring;
+$additionalInfo->useColors=$exec_cfg->enable_tree_colouring;
 
 $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
                           $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);

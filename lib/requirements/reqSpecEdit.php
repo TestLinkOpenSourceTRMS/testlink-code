@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/02/03 21:39:01 $ $Author: schlundus $ 
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/03/05 22:22:38 $ $Author: franciscom $ 
  * 
  * @author Martin Havlat
  * 
@@ -176,7 +176,11 @@ $smarty->display($template);
 
 function init_args()
 {
-  $args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
+
+	$args = new stdClass();  
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	
+	$args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
   $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
   $args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
   $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;

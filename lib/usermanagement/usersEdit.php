@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.14 $
-* @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
+* @version $Revision: 1.15 $
+* @modified $Date: 2008/03/05 22:22:39 $ $Author: franciscom $
 *
 * rev :  BUGID 918
 *
@@ -25,6 +25,10 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 
 $args = init_args();
 $user_id = $args->user_id;
+
+$op = new stdClass();
+$highlight = new stdClass();
+
 $op->user_feedback = '';
 
 switch($args->doAction)
@@ -33,35 +37,33 @@ switch($args->doAction)
 		$highlight->edit_user=1;
 		$user = new tlUser($args->user_id);
 		$user->readFromDB($db);
-	break;
+	  break;
 
-	case "doCreate":
-        $highlight->create_user=1;
-        $op = doCreate($db,$args);
-        $user = $op->user;
+	  case "doCreate":
+    $highlight->create_user=1;
+    $op = doCreate($db,$args);
+    $user = $op->user;
     break;
 
     case "doUpdate":
-        $highlight->edit_user = 1;
-        $sessionUserID = $_SESSION['currentUser']->dbID;
-        $op = doUpdate($db,$args,$sessionUserID);
-        $user = $op->user;
+    $highlight->edit_user = 1;
+    $sessionUserID = $_SESSION['currentUser']->dbID;
+    $op = doUpdate($db,$args,$sessionUserID);
+    $user = $op->user;
     break;
 
     case "resetPassword":
-	    $highlight->edit_user = 1;
-	    $user = new tlUser($args->user_id);
-	    $user->readFromDB($db);
+	  $highlight->edit_user = 1;
+	  $user = new tlUser($args->user_id);
+	  $user->readFromDB($db);
 		$op = createNewPassword($db,$args,$user);
     break;
 
     case "create":
     default:
-        $highlight->create_user = 1;
-        $user = null;
+    $highlight->create_user = 1;
+    $user = null;
     break;
-
-
 }
 
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
@@ -83,7 +85,8 @@ $smarty->display($template_dir . $default_template);
 
 
 function init_args()
-{
+{               
+  $args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$intval_keys = array('delete' => 0, 'user' => 0,'user_id' => 0, 'rights_id' => TL_ROLES_GUEST);

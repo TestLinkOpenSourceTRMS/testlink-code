@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2008/03/04 21:43:39 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -711,18 +711,9 @@ function jtree_renderTestSpecTreeNodeOnClose($node,$node_type)
 *            and changes how the URL's are build.
 *
 * rev :
+*      20080305 - franciscom - interface refactoring
 *      20080224 - franciscom - added include_unassigned
-*
-*      added $useCounters and $useColors
-* 
 */
-// function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-//                           $tplan_name,$build_id,
-//                           $getArguments, $keyword_id = 0,$tc_id = 0, 
-//                           $bHideTCs = false,
-// 			                    $assignedTo = 0, $status = null, $cf_hash = null,
-// 			                    $useCounters=1,$useColors=1,$include_unassigned=false)
-
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$getArguments,$filters,$additionalInfo) 
 {
@@ -743,32 +734,33 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $useCounters=$additionalInfo->useCounters;
     $useColors=$additionalInfo->useColors;
 
-	$tplan_mgr = new testplan($db);
-	$tproject_mgr = new testproject($db);
-	
-	$tree_manager = $tplan_mgr->tree_manager;
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
 
-  $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
-
-
-
-  // 20080114 - franciscom
- 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+    $tplan_mgr = new testplan($db);
+	  $tproject_mgr = new testproject($db);
+	  
+	  $tree_manager = $tplan_mgr->tree_manager;
+	  $tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	  $hash_descr_id = $tree_manager->get_available_node_types();
+	  $hash_id_descr = array_flip($hash_descr_id);
+    $status_descr_code=config_get('tc_status');
+    $status_code_descr=array_flip($status_descr_code);
+    
+    $decoding_hash=array('node_id_descr' => $hash_id_descr,
+                         'status_descr_code' =>  $status_descr_code,
+                         'status_code_descr' =>  $status_code_descr);
 
 
-  // 20071002 - jbarchibald - BUGID 1051
-  // 20070306 - franciscom - BUGID 705   
-	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
-	                                            null,$assignedTo,$status,$build_id,
-                                              $cf_hash,$include_unassigned);
+
+    // 20080114 - franciscom
+ 	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
+	  $test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+
+
+    // 20071002 - jbarchibald - BUGID 1051
+    // 20070306 - franciscom - BUGID 705   
+	  $tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
+	                                              null,$assignedTo,$status,$build_id,
+                                                $cf_hash,$include_unassigned);
 
      
 	if (is_null($tp_tcs))
@@ -949,16 +941,12 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 
 		if($showTestCaseID)
 		{
-		   // $label .= "<b>{$node['id']}</b>:";
 		   if( strlen(trim($testCasePrefix)) > 0 )
        {
             $testCasePrefix .= $cfg->glue_character;
        }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-
 		} 
-
-
 		$label .= $name . "</span>";
 		$versionID = $node['tcversion_id'];
 	  break;
@@ -980,39 +968,20 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
   if($create_counters)
   {
 		$label = $name ." (" . $testcase_count . ")";
-
     if($useCounters)
     {
-		    // Created counters info
-		    $keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
-		                        'failed' =>'failed' ,'blocked' =>'blocked');
-		    $add_html='';
-		    foreach($keys2display as $key => $value)
-		    {
-          if( isset($node[$key]) )
-          {
-		        $add_html .='<span class="' . $key . '">' . $node[$key] . "</span>,";
-		      }
-		    }
-	      $add_html = "(" . rtrim($add_html,",") . ")"; 
+        $add_html=create_counters_info($node,$useColors);
 		    $label .= $add_html; 
-   }
+    }
   }
-	
 
 	$myLinkTo = $linkto."?level={$node_type}&id={$node['id']}".$versionID.$getArguments;
-
-  // 20080303 - franciscom
 	if ($buildLinkTo && !is_null($pfn))
 		$myLinkTo = "javascript:{$pfn}({$node['id']},{$versionID})";
 	else	
 		$myLinkTo = ' ';
 
-	
-	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$node_type}". 
-		           "|{$icon}||\n";
-	
-	
+	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$node_type}|{$icon}||\n";
 	return $menustring;				
 }
 
@@ -1067,7 +1036,6 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 		  
 		  if($showTestCaseID)
 		  {
-		     // $label .= "<b>{$node['id']}</b>:";
 		     if( strlen(trim($testCasePrefix)) > 0 )
          {
             $testCasePrefix .= $cfg->glue_character;
@@ -1099,25 +1067,9 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
   if($create_counters)
   {
 		$label = $name ." (" . $testcase_count . ")";
-
     if($useCounters)
     {
-  	    // ----------------------------------------------------------------------------
-		    // Created counters info
-		    $keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
-		                        'failed' =>'failed' ,'blocked' =>'blocked');
-		    $add_html='';
-		    foreach($keys2display as $key => $value)
-		    {
-          if( isset($node[$key]) )
-          {
-            $css_class= $useColors ? (" class=\"{$key}\" ") : '';   
-            $add_html .= "<span {$css_class} " . ' title="' . lang_get($status_verbose[$key]) . '">' . 
-                         $node[$key] . "</span>,";
-		      }
-		    }
-	      $add_html = "(" . rtrim($add_html,",") . ")"; 
-		    // ----------------------------------------------------------------------------
+        $add_html=create_counters_info($node,$useColors);
 	      $label .= $add_html; 
 	  }
   }
@@ -1160,16 +1112,19 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	$buildLinkTo = 1;
 	$pfn = "ST";
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
+	$create_counters=0;
 	$versionID = 0;
 	
   switch($node_type)
   {
 	  case 'testproject':
+ 		$create_counters=1;
 		$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
 		$label =  $name . " (" . $testcase_count . ")";
 	  break;
 
 	  case 'testsuite':
+		$create_counters=1;
 		$label =  $name . " (" . $testcase_count . ")";	
 	  if( $bForPrinting )
 	  {
@@ -1194,18 +1149,33 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 		
 		if($showTestCaseID)
 		{
-		   //$label .= "<b>{$node['id']}</b>:";
  		   if( strlen(trim($testCasePrefix)) > 0 )
        {
             $testCasePrefix .= $cfg->glue_character;
        }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-
 		} 
 		$label .= $name . "</span>";
 		$versionID = $node['tcversion_id'];
     break;
 	}
+
+  // -------------------------------------------------------------------------------
+  // 20080305 - franciscom
+  if($create_counters)
+  {
+		$label = $name ." (" . $testcase_count . ")";
+    if($useCounters)
+    {
+        $add_html=create_counters_info($node,$useColors);
+	      $label .= $add_html; 
+	  }
+  }
+  // -------------------------------------------------------------------------------
+	
+	//echo "<pre>debug 20080305 - \$useColors - " . __FUNCTION__ . " --- "; print_r($useColors); echo "</pre>";
+	//echo "<pre>debug 20080305 - \$useCounters - " . __FUNCTION__ . " --- "; print_r($useCounters); echo "</pre>";
+	
 	$menustring = "['{$label}','{$pfn}({$node['id']},{$versionID})',\n";
 			
 	return $menustring;
@@ -1321,6 +1291,44 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 }
 
 
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function create_counters_info(&$node,$useColors)
+{
+	  $status_verbose=config_get('tc_status_verbose_labels');
+
+    // $keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
+    //                     'failed' =>'failed' ,'blocked' =>'blocked');
+    // $add_html='';
+    // foreach($keys2display as $key => $value)
+    // {
+    //   if( isset($node[$key]) )
+    //   {
+    //     $add_html .='<span class="' . $key . '">' . $node[$key] . "</span>,";
+    //   }
+    // }
+    // $add_html = "(" . rtrim($add_html,",") . ")"; 
 
 
+		$keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
+		                    'failed' =>'failed' ,'blocked' =>'blocked');
+		$add_html='';
+		foreach($keys2display as $key => $value)
+		{
+      if( isset($node[$key]) )
+      {
+        $css_class= $useColors ? (" class=\"{$key}\" ") : '';   
+        $add_html .= "<span {$css_class} " . ' title="' . lang_get($status_verbose[$key]) . '">' . 
+                     $node[$key] . "</span>,";
+		  }
+		}
+	  $add_html = "(" . rtrim($add_html,",") . ")"; 
+    return $add_html;
+}
 ?>

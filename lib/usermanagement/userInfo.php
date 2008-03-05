@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.17 $
-* @modified $Date: 2008/02/13 20:31:18 $
+* @version $Revision: 1.18 $
+* @modified $Date: 2008/03/05 22:22:39 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -24,6 +24,7 @@ $args=init_args();
 $user = new tlUser($args->userID);
 $user->readFromDB($db);
 
+$op=new stdClass();
 $op->auditMsg = null;
 $op->user_feedback = null;
 $doUpdate=0;
@@ -97,6 +98,7 @@ $smarty->display($template_dir . $default_template);
 */
 function init_args()
 {
+    $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
     
     $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;

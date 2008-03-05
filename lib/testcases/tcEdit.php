@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2008/02/12 15:34:22 $  by $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2008/03/05 22:22:39 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -562,54 +562,57 @@ function read_file($file_name)
 
 */
 function init_args($spec_cfg)
-{
-  $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-  $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
-  $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
-
-  $args->name 		= isset($_REQUEST['testcase_name']) ? strings_stripSlashes($_REQUEST['testcase_name']) : null;
-  $args->summary 	= isset($_REQUEST['summary']) ? strings_stripSlashes($_REQUEST['summary']) : null;
-  $args->steps 		= isset($_REQUEST['steps']) ? strings_stripSlashes($_REQUEST['steps']) : null;
-  $args->expected_results 	= isset($_REQUEST['expected_results']) ? strings_stripSlashes($_REQUEST['expected_results']) : null;
-  $args->new_container_id = isset($_REQUEST['new_container']) ? intval($_REQUEST['new_container']) : 0;
-  $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
-
-  $args->has_been_executed=isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
-                                                                                                              
-  $args->exec_type=isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
-
-
-  $args->edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
-  $args->delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
-  $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
-  $args->move_copy_tc = isset($_REQUEST['move_copy_tc']) ? 1 : 0;
-  $args->delete_tc_version = isset($_REQUEST['delete_tc_version']) ? 1 : 0;
-
-
-  $args->do_create = isset($_REQUEST['do_create']) ? 1 : 0;
-  $args->do_update = isset($_REQUEST['do_update']) ? 1 : 0;
-  $args->do_move   = isset($_REQUEST['do_move']) ? 1 : 0;
-  $args->do_copy   = isset($_REQUEST['do_copy']) ? 1 : 0;
-  $args->do_delete = isset($_REQUEST['do_delete']) ? 1 : 0;
-  
-  $args->do_create_new_version = isset($_REQUEST['do_create_new_version']) ? 1 : 0;
-  $args->do_delete_tc_version = isset($_REQUEST['do_delete_tc_version']) ? 1 : 0;
-  $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
-  $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
-
-  $args->target_position=isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
-
-
-  // from session
-  $args->testproject_id = $_SESSION['testprojectID'];
-  $args->user_id = $_SESSION['userID'];
-  $args->do_refresh=$spec_cfg->automatic_tree_refresh;
-  if( isset($_SESSION['tcspec_refresh_on_action']) )
-  {
-    $args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
-  }
-
-
-  return $args;
+{              
+    $args = new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    
+    $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+    $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
+    $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
+    
+    $args->name 		= isset($_REQUEST['testcase_name']) ? strings_stripSlashes($_REQUEST['testcase_name']) : null;
+    $args->summary 	= isset($_REQUEST['summary']) ? strings_stripSlashes($_REQUEST['summary']) : null;
+    $args->steps 		= isset($_REQUEST['steps']) ? strings_stripSlashes($_REQUEST['steps']) : null;
+    $args->expected_results 	= isset($_REQUEST['expected_results']) ? strings_stripSlashes($_REQUEST['expected_results']) : null;
+    $args->new_container_id = isset($_REQUEST['new_container']) ? intval($_REQUEST['new_container']) : 0;
+    $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
+    
+    $args->has_been_executed=isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
+                                                                                                                
+    $args->exec_type=isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
+    
+    
+    $args->edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
+    $args->delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
+    $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
+    $args->move_copy_tc = isset($_REQUEST['move_copy_tc']) ? 1 : 0;
+    $args->delete_tc_version = isset($_REQUEST['delete_tc_version']) ? 1 : 0;
+    
+    
+    $args->do_create = isset($_REQUEST['do_create']) ? 1 : 0;
+    $args->do_update = isset($_REQUEST['do_update']) ? 1 : 0;
+    $args->do_move   = isset($_REQUEST['do_move']) ? 1 : 0;
+    $args->do_copy   = isset($_REQUEST['do_copy']) ? 1 : 0;
+    $args->do_delete = isset($_REQUEST['do_delete']) ? 1 : 0;
+    
+    $args->do_create_new_version = isset($_REQUEST['do_create_new_version']) ? 1 : 0;
+    $args->do_delete_tc_version = isset($_REQUEST['do_delete_tc_version']) ? 1 : 0;
+    $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
+    $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
+    
+    $args->target_position=isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
+    
+    
+    // from session
+    $args->testproject_id = $_SESSION['testprojectID'];
+    $args->user_id = $_SESSION['userID'];
+    $args->do_refresh=$spec_cfg->automatic_tree_refresh;
+    if( isset($_SESSION['tcspec_refresh_on_action']) )
+    {
+      $args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
+    }
+    
+    
+    return $args;
 }
 ?>

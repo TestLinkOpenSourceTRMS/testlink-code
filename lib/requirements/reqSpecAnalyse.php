@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/26 22:33:45 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -27,6 +27,7 @@ $tcasecfg=config_get('testcase_cfg');
 $tcprefix=$tproject_mgr->getTestCasePrefix($args->tprojectID) . $tcasecfg->glue_character;
 
 // get list of ReqSpec
+$ns = new stdClass();
 $ns->reqSpec = $tproject_mgr->getOptionReqSpec($args->tprojectID);
 
 //get first ReqSpec if not defined
@@ -63,6 +64,7 @@ $smarty->display($template_dir . $default_template);
 */
 function init_args()
 {
+  	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args->reqSpecID = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : 0;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;

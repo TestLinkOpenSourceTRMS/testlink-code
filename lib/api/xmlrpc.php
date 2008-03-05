@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/03/03 18:47:15 $ by $Author: asielb $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/03/05 22:21:21 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,8 +22,9 @@
  * 
  *
  * rev :
+ *      20080305 - franciscom - minor code refactoring
  *      20080103 - franciscom - fixed minor bugs due to refactoring
- * 		20080115 - havlatm - 0001296: API table refactoring 
+ * 		  20080115 - havlatm - 0001296: API table refactoring 
  */
 
 /** 
@@ -65,7 +66,6 @@ class TestlinkXMLRPCServer extends IXR_Server
   private $executions_table="executions";  
   private $testplan_tcversions_table="testplan_tcversions";
   
-
 	
 	/**
 	 * The DB object used throughout the class
@@ -98,13 +98,11 @@ class TestlinkXMLRPCServer extends IXR_Server
  	 */
 	public static $devKeyParamName = "devKey";
 	public static $tcidParamName = "tcid";
-	
-	//TODO: fix this to be clear on either test plan or test project (currently testplan)
-	public static $tpidParamName = "tpid";
+	public static $testPlanIDParamName = "tpid";
 	public static $testProjectIDParamName = "testprojectid";
 	public static $testSuiteIDParamName = "testsuiteid";
 	public static $statusParamName = "status";
-	public static $buildidParamName = "buildid";
+	public static $buildIDParamName = "buildid";
 	public static $noteParamName = "notes";
 	public static $timeStampParamName = "timestamp";
 	public static $guessParamName = "guess";
@@ -167,7 +165,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{		
 		if(GENERAL_ERROR_CODE != $buildID)
 		{			
-			$this->args[self::$buildidParamName] = $buildID;			
+			$this->args[self::$buildIDParamName] = $buildID;			
 			return true;
 		}
 		else
@@ -185,7 +183,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */ 
 	private function _setBuildIDFromTPID()
 	{
-		$result = $this->_setBuildID($this->getLatestBuildForTestPlan($this->args[self::$tpidParamName]));
+		$result = $this->_setBuildID($this->getLatestBuildForTestPlan($this->args[self::$testPlanIDParamName]));
 		return $result;
 	}	
 		
@@ -216,26 +214,26 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
     protected function authenticate()
     {        	
-		// check that the key was given as part of the args
-		if(!$this->_isDevKeyPresent())
-		{
-			$this->errors[] = new IXR_ERROR(NO_DEV_KEY, NO_DEV_KEY_STR);
-			return false;
-		}
-		else
-		{
-			$this->devKey = $this->args[self::$devKeyParamName];
-		}
-		// make sure the key we have is valid
-		if(!$this->_isDevKeyValid($this->devKey))
-		{
-			$this->errors[] = new IXR_Error(INVALID_AUTH, INVALID_AUTH_STR);
-			return false;			
-		}
-		else
-		{
-			return true;
-		}				
+		    // check that the key was given as part of the args
+		    if(!$this->_isDevKeyPresent())
+		    {
+		    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, NO_DEV_KEY_STR);
+		    	return false;
+		    }
+		    else
+		    {
+		    	$this->devKey = $this->args[self::$devKeyParamName];
+		    }
+		    // make sure the key we have is valid
+		    if(!$this->_isDevKeyValid($this->devKey))
+		    {
+		    	$this->errors[] = new IXR_Error(INVALID_AUTH, INVALID_AUTH_STR);
+		    	return false;			
+		    }
+		    else
+		    {
+		    	return true;
+		    }				
     }
 
 	/**
@@ -248,18 +246,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */        
     protected function checkTestCaseName()
     {
-    	if(!$this->_isTestCaseNamePresent())
-    	{
-    		$this->errors[] = new IXR_Error(NO_TESTCASENAME, NO_TESTCASENAME_STR);
-    		return false;
-    	}
-    	$testCaseName = $this->args[self::$testCaseNameParamName];
-    	if(!is_string($testCaseName))
-    	{
-    		$this->errors[] = new IXR_Error(TESTCASENAME_NOT_STRING, TESTCASENAME_NOT_STRING_STR);
-    		return false;
-    	}
-    	return true;
+    	  if(!$this->_isTestCaseNamePresent())
+    	  {
+    	  	$this->errors[] = new IXR_Error(NO_TESTCASENAME, NO_TESTCASENAME_STR);
+    	  	return false;
+    	  }
+    	  $testCaseName = $this->args[self::$testCaseNameParamName];
+    	  if(!is_string($testCaseName))
+    	  {
+    	  	$this->errors[] = new IXR_Error(TESTCASENAME_NOT_STRING, TESTCASENAME_NOT_STRING_STR);
+    	  	return false;
+    	  }
+    	  return true;
     }
     
 	/**
@@ -272,18 +270,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkStatus()
     {
-		if(!$this->_isStatusPresent())
-		{
-			$this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
-			return false;
-		}
-		$status = $this->args[self::$statusParamName];
-		if(!$this->_isStatusValid($status))
-		{
-			$this->errors[] = new IXR_Error(INVALID_STATUS, INVALID_STATUS_STR);
-			return false;
-		}    	
-		return true;
+		    if(!$this->_isStatusPresent())
+		    {
+		    	$this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
+		    	return false;
+		    }
+		    $status = $this->args[self::$statusParamName];
+		    if(!$this->_isStatusValid($status))
+		    {
+		    	$this->errors[] = new IXR_Error(INVALID_STATUS, INVALID_STATUS_STR);
+		    	return false;
+		    }    	
+		    return true;
     }       
     
 	/**
@@ -296,18 +294,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTCID()
     {
-		if(!$this->_isTCIDPresent())
-		{
-			$this->errors[] = new IXR_Error(NO_TCID, NO_TCID_STR);
-			return false;
-		}
-		$tcid = $this->args[self::$tcidParamName];
-		if(!$this->_isTCIDValid($tcid))
-		{
-			$this->errors[] = new IXR_Error(INVALID_TCID, INVALID_TCID_STR);
-			return false;
-		}    	
-		return true;
+		    if(!$this->_isTCIDPresent())
+		    {
+		    	$this->errors[] = new IXR_Error(NO_TCID, NO_TCID_STR);
+		    	return false;
+		    }
+		    $tcid = $this->args[self::$tcidParamName];
+		    if(!$this->_isTCIDValid($tcid))
+		    {
+		    	$this->errors[] = new IXR_Error(INVALID_TCID, INVALID_TCID_STR);
+		    	return false;
+		    }    	
+		    return true;
     }
     
 	/**
@@ -320,38 +318,38 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTPID()
     {
-    	if(!$this->_isTPIDPresent())
-    	{
-    		$this->errors[] = new IXR_Error(NO_TPID, NO_TPID_STR);
-    		return false;
-    	}
-    	else
-    	{    		
-    		// See if this TPID exists in the db
-			$tpid = $this->dbObj->prepare_int($this->args[self::$tpidParamName]);
-        	$query = "SELECT id FROM {$this->testplans_table} WHERE id={$tpid}";
-        	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
-        	if(null == $result)
-        	{
-        		$this->errors[] = new IXR_Error(INVALID_TPID, INVALID_TPID_STR);
-        		return false;        		
-        	}
-			// tpid exists and its valid
-        	else
-        	{
-        		// try to guess the buildid if it isn't already set
-		    	if(!$this->_isBuildIDPresent())
-		    	{
-			    	// can only set the build id for the test plan if guessing is enabled
-    				if(true == $this->checkGuess())
-    				{
-    					$result = $this->_setBuildIDFromTPID();
-    					return $result;    						
-    				}
-		    	}
-        		return true;
-        	}    		    		    	
-    	}
+    	  if(!$this->_isTPIDPresent())
+    	  {
+    	  	$this->errors[] = new IXR_Error(NO_TPID, NO_TPID_STR);
+    	  	return false;
+    	  }
+    	  else
+    	  {    		
+    	  	  // See if this TPID exists in the db
+			      $tpid = $this->dbObj->prepare_int($this->args[self::$testPlanIDParamName]);
+          	$query = "SELECT id FROM {$this->testplans_table} WHERE id={$tpid}";
+          	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
+          	if(null == $result)
+          	{
+          		  $this->errors[] = new IXR_Error(INVALID_TPID, INVALID_TPID_STR);
+          		  return false;        		
+          	}
+			      // tpid exists and its valid
+          	else
+          	{
+          		  // try to guess the buildid if it isn't already set
+		      	    if(!$this->_isBuildIDPresent())
+		      	    {
+			      	      // can only set the build id for the test plan if guessing is enabled
+    	  			      if(true == $this->checkGuess())
+    	  			      {
+    	  			      	$result = $this->_setBuildIDFromTPID();
+    	  			      	return $result;    						
+    	  			      }
+		      	    }
+          		  return true;
+          	}    		    		    	
+    	  }
     } 
     
 	/**
@@ -364,28 +362,25 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestProjectID()
     {
+      $status=true;
     	if(!$this->_isTestProjectIDPresent())
     	{
-    		$this->errors[] = new IXR_Error(NO_TESTPROJECTID, NO_TESTPROJECTID_STR);
-    		return false;
+    		  $this->errors[] = new IXR_Error(NO_TESTPROJECTID, NO_TESTPROJECTID_STR);
+    		  $status=false;
     	}
     	else
     	{    		
-    		// See if this Test Project ID exists in the db
-			$testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
+    		  // See if this Test Project ID exists in the db
+			    $testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
         	$query = "SELECT id FROM {$this->testprojects_table} WHERE id={$testprojectid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
         		$this->errors[] = new IXR_Error(INVALID_TESTPROJECTID, INVALID_TESTPROJECTID_STR);
-        		return false;        		
+        		$status=false;        		
         	}
-			// testproject exists and its valid
-        	else
-        	{
-        		return true;
-        	}    		    		    	
     	}
+    	return $status;
     }  
 
 	/**
@@ -398,28 +393,25 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestSuiteID()
     {
+      $status=true;
     	if(!$this->_isTestSuiteIDPresent())
     	{
     		$this->errors[] = new IXR_Error(NO_TESTSUITEID, NO_TESTSUITEID_STR);
-    		return false;
+    		$status=false;
     	}
     	else
     	{    		
-    		// See if this Test Suite ID exists in the db
-			$testsuiteid = $this->dbObj->prepare_int($this->args[self::$testSuiteIDParamName]);
+    		  // See if this Test Suite ID exists in the db
+			    $testsuiteid = $this->dbObj->prepare_int($this->args[self::$testSuiteIDParamName]);
         	$query = "SELECT id FROM {$this->testsuites_table} WHERE id={$testsuiteid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
         		$this->errors[] = new IXR_Error(INVALID_TESTSUITEID, INVALID_TESTSUITEID_STR);
-        		return false;
-        	}
-			// testsuite exists and its valid
-        	else
-        	{
-        		return true;
+        		$status=false;
         	}
     	}
+      return $status;
     }          
 
 	/**
@@ -448,31 +440,37 @@ class TestlinkXMLRPCServer extends IXR_Server
     protected function checkBuildID()
     {
 	   	// buildid isn't already set
+	   	$status=true;
 	   	if(!$this->_isBuildIDPresent())
 	   	{
-			// this means we aren't supposed to guess the buildid
-			if(false == $this->checkGuess())   		
-			{
-				$this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
-				$this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);				
-    			return false;
-			}
-			else
-			{
-				$setBuildResult = $this->_setBuildIDFromTPID();
-				if(false == $setBuildResult)
-				{
-					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPID, NO_BUILD_FOR_TPID_STR);
-					return false;
-				}
-			}
+			    // this means we aren't supposed to guess the buildid
+			    if(false == $this->checkGuess())   		
+			    {
+			    	  $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
+			    	  $this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);				
+    	    		$status=false;
+			    }
+			    else
+			    {
+			    	$setBuildResult = $this->_setBuildIDFromTPID();
+			    	if(false == $setBuildResult)
+			    	{
+			    		$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPID, NO_BUILD_FOR_TPID_STR);
+			    		$status=false;
+			    	}
+			    }
 	   	}
 	   	
-	   	// actually check that the buildID thats set is valid
-	   	$buildID = $this->dbObj->prepare_int($this->args[self::$buildidParamName]);
-        $query = "SELECT id FROM {$this->builds_table} WHERE id={$buildID}";
-        $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
-        return (null == $result ? false : true);
+	   	if( $status)
+	   	{
+	   	    // actually check that the buildID thats set is valid
+	   	    $buildID = $this->dbObj->prepare_int($this->args[self::$buildIDParamName]);
+          $query = "SELECT id FROM {$this->builds_table} WHERE id={$buildID}";
+          $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
+          $status=(null == $result ? false : true);
+      }
+      
+      return $status;
     }
      
 
@@ -517,7 +515,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     private function _isBuildIDPresent()
     {
-    	return (isset($this->args[self::$buildidParamName]) ? true : false);
+    	return (isset($this->args[self::$buildIDParamName]) ? true : false);
     }
     
 	/**
@@ -572,7 +570,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     private function _isTPIDPresent()
     {    	
-    	return (isset($this->args[self::$tpidParamName]) ? true : false);    	
+    	return (isset($this->args[self::$testPlanIDParamName]) ? true : false);    	
     }
 
     /**
@@ -744,7 +742,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */            
     private function _checkTCIDAndTPIDValid()
     {  	
-    	$tpid = $this->args[self::$tpidParamName];
+    	$tpid = $this->args[self::$testPlanIDParamName];
     	$tcid = $this->args[self::$tcidParamName];
     	
     	// get all versions of the testcase in the nodes_hierarchy    	
@@ -937,11 +935,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */			
 	private function _insertResultToDB()
 	{
-		$build_id = 	$this->args[self::$buildidParamName];
+		$build_id = 	$this->args[self::$buildIDParamName];
 		$tester_id = 	$this->userID;
 		$status = 		$this->args[self::$statusParamName];
-		$testplan_id =	$this->args[self::$tpidParamName];
+		$testplan_id =	$this->args[self::$testPlanIDParamName];
 		$tcversion_id =	$this->tcVersionID;
+		
+		// echo "<pre>debug 20080305 - \$build_id - " . __FUNCTION__ . " --- "; print_r($build_id); echo "</pre>";
+		
 		$db_now=$this->dbObj->db_now();
 		if($this->_isNotePresent())
 		{
@@ -970,7 +971,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private function _insertBuildToDB()
 	{		
 		$name = 		$this->args[self::$buildNameParamName];		
-		$testplan_id =	$this->args[self::$tpidParamName];		
+		$testplan_id =	$this->args[self::$testPlanIDParamName];		
 		if($this->_isBuildNotePresent())
 		{			
 			$notes = $this->dbObj->prepare_string($this->args[self::$buildNotesParamName]);
@@ -1291,11 +1292,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["devKey"]
 	 * @param int $args["tcid"]
 	 * @param int $args["tpid"] 
-     * @param string $args["status"] - status is {@link $validStatusList}
-     * @param int $args["buildid"] - optional
-     * @param string $args["notes"] - optional
-     * @param bool $args["guess"] - optional definiing whether to guess optinal params or require them 
-     * 								explicitly default is true (guess by default)
+   * @param string $args["status"] - status is {@link $validStatusList}
+   * @param int $args["buildid"] - optional
+   * @param string $args["notes"] - optional
+   * @param bool $args["guess"] - optional definiing whether to guess optinal params or require them 
+   * 								explicitly default is true (guess by default)
 	 * @return mixed $resultInfo 
 	 * 				[status]	=> true/false of success
 	 * 				[id]		=> result id or error code

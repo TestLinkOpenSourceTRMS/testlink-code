@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/02/28 22:16:22 $  $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/03/05 22:22:38 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -134,6 +134,7 @@ $smarty->display($template_dir . $default_template);
 */
 function init_args()
 {
+    $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
     $args->edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;

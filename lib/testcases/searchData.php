@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.30 2008/02/03 18:45:32 franciscom Exp $
+ * $Id: searchData.php,v 1.31 2008/03/05 22:22:39 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -118,12 +118,18 @@ else
 	$the_tpl = config_get('tpl');
 	$smarty->display($template_dir . $the_tpl['tcView']);
 }
-?>
 
+/*
+  function: 
 
-<?php
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {
+   	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
   
     $strnull=array('name','summary','steps','expected_results','custom_field_value','targetTestCase');

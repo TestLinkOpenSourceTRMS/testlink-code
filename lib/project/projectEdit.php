@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/02/24 17:54:59 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/03/05 22:22:38 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -30,6 +30,7 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 $template = null;
+$ui = new stdClass();
 $ui->doActionValue='';
 $ui->buttonValue='';
 $ui->caption='';
@@ -146,6 +147,7 @@ switch($args->doAction)
 */
 function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
+  $args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
@@ -198,6 +200,8 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 */
 function doCreate($argsObj,&$tprojectMgr)
 {
+    $op = new stdClass();
+
     $key2get=array('status_ok','msg');
     $op->status_ok = 0;
     $op->template = null;
@@ -251,6 +255,7 @@ function doCreate($argsObj,&$tprojectMgr)
 */
 function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
+    $op = new stdClass();
     $key2get=array('status_ok','msg');
     $op->status_ok = 0;
     $op->msg = '';  
@@ -319,6 +324,7 @@ function edit(&$argsObj,&$tprojectMgr)
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
+  $ui = new stdClass();
   $ui->main_descr=lang_get('title_testproject_management');
 	$ui->doActionValue = 'doUpdate';
 	$ui->buttonValue = lang_get('btn_save');
@@ -339,6 +345,7 @@ function edit(&$argsObj,&$tprojectMgr)
 */
 function crossChecks($argsObj,&$tprojectMgr)
 {
+    $op = new stdClass();
     $updateAdditionalSQL = null;
     $op = $tprojectMgr->checkName($argsObj->tprojectName);
     
@@ -385,6 +392,8 @@ function crossChecks($argsObj,&$tprojectMgr)
 function create(&$argsObj)
 {
     $argsObj->active = 1;
+
+    $gui = new stdClass();
 	  $gui->doActionValue = 'doCreate';
 		$gui->buttonValue = lang_get('btn_create');
 		$gui->caption = ""; //lang_get('caption_new_tproject');
@@ -405,6 +414,7 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
     
   	$ope_status = $tprojectMgr->delete($argsObj->tprojectID);
+    $op = new stdClass();
 		$op->status_ok=$ope_status['status_ok'];
 		$op->reloadType='none';
 		

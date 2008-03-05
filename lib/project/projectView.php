@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectView.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/02/04 19:41:35 $ $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/03/05 22:22:38 $ $Author: franciscom $
  *
  * Display list of test projects
  *
@@ -40,6 +40,8 @@ $smarty->display($template_dir . $default_template);
 
 function init_args()
 {
+    $args = new stdClass();
+   
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0 ;
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'list' ;

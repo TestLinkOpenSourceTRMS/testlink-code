@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.161 $
- * @modified $Date: 2008/03/04 07:30:25 $ by $Author: franciscom $
+ * @version $Revision: 1.162 $
+ * @modified $Date: 2008/03/06 13:12:21 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -454,9 +454,10 @@ $g_field_size->requirement_title=100;
 define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
+# Configure using custom_config.inc.php
 $g_tl_admin_email     = 'tl_admin@127.0.0.1';         # for problem/error notification 
 $g_from_email         = 'testlink_system@127.0.0.1';  # email sender
-$g_return_path_email  = 'no_replay@127.0.0.1';
+$g_return_path_email  = 'no_reply@127.0.0.1';
 
 # Urgent = 1, Not Urgent = 5, Disable = 0
 $g_mail_priority = 5;   

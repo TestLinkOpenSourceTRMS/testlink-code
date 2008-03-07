@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.2 2008/03/07 11:05:12 franciscom Exp $
+ * $Id: APIErrors.php,v 1.3 2008/03/07 22:51:15 franciscom Exp $
  */
 
 /** 
@@ -36,18 +36,18 @@ define('NOT_YET_IMPLEMENTED_STR', lang_get('API_NOT_YET_IMPLEMENTED'));
 define('NO_DEV_KEY', 100);
 define('NO_DEV_KEY_STR', lang_get('API_NO_DEV_KEY'));
 
-define('NO_TCID', 110);
-define('NO_TCID_STR', lang_get('API_NO_TCID'));
+define('NO_TCASEID', 110);
+define('NO_TCASEID_STR', lang_get('API_NO_TCASEID'));
+
+define('NO_TCASEEXTERNALID', 110);
+define('NO_TCASEEXTERNALID_STR', lang_get('API_NO_TCASEEXTERNALID'));
+
 
 define('NO_TPLANID', 120);
 define('NO_TPLANID_STR', lang_get('API_NO_TPLANID'));
 
 define('NO_BUILDID', 130);
 define('NO_BUILDID_STR', lang_get('API_NO_BUILDID'));
-
-define('WRONG_BUILDID', 131);
-define('WRONG_BUILDID_STR', lang_get('API_WRONG_BUILDID'));
-
 
 define('NO_TEST_MODE', 140);
 define('NO_TEST_MODE_STR', lang_get('API_NO_TEST_MODE'));
@@ -78,12 +78,12 @@ define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH'));
  */
 define('INVALID_TPLANID', 3000);
 define('INVALID_TPLANID_STR', lang_get('API_INVALID_TPLANID'));
-define('TPID_NOT_INTEGER', 3010);
-define('TPID_NOT_INTEGER_STR', lang_get('API_TPLANID_NOT_INTEGER'));
+define('TPLANID_NOT_INTEGER', 3010);
+define('TPLANID_NOT_INTEGER_STR', lang_get('API_TPLANID_NOT_INTEGER'));
 define('NO_BUILD_FOR_TPLANID', 3020);
 define('NO_BUILD_FOR_TPLANID_STR', lang_get('API_NO_BUILD_FOR_TPLANID'));
-define('TCID_NOT_IN_TPLANID', 3030);
-define('TCID_NOT_IN_TPLANID_STR', lang_get('API_TCID_NOT_IN_TPLANID'));
+define('TCASEID_NOT_IN_TPLANID', 3030);
+define('TCASEID_NOT_IN_TPLANID_STR', lang_get('API_TCASEID_NOT_IN_TPLANID'));
 
 /**
  * 4000 level - Build errors
@@ -95,17 +95,22 @@ define('BUILDID_NOT_INTEGER_STR', lang_get('API_BUILDID_NOT_INTEGER'));
 define('BUILDID_NOGUESS', 4020);
 define('BUILDID_NOGUESS_STR', lang_get('API_BUILDID_NOGUESS'));
 
+
 /**
  * 5000 level - Test Case errors
  */
-define('INVALID_TCID', 5000);
-define('INVALID_TCID_STR' , lang_get('API_INVALID_TCID'));
-define('TCID_NOT_INTEGER', 5010);
-define('TCID_NOT_INTEGER_STR', lang_get('API_TCID_NOT_INTEGER'));
+define('INVALID_TCASEID', 5000);
+define('INVALID_TCASEID_STR' , lang_get('API_INVALID_TCASEID'));
+define('TCASEID_NOT_INTEGER', 5010);
+define('TCASEID_NOT_INTEGER_STR', lang_get('API_TCASEID_NOT_INTEGER'));
 define('TESTCASENAME_NOT_STRING', 5020);
 define('TESTCASENAME_NOT_STRING_STR', lang_get('API_TESTCASENAME_NOT_STRING'));
 define('NO_TESTCASE_BY_THIS_NAME', 5030);
 define('NO_TESTCASE_BY_THIS_NAME_STR', lang_get('API_NO_TESTCASE_BY_THIS_NAME'));
+define('INVALID_TESTCASE_EXTERNAL_ID', 5040);
+define('INVALID_TESTCASE_EXTERNAL_ID_STR', lang_get('API_INVALID_TESTCASE_EXTERNAL_ID'));
+
+
 
 /**
  * 6000 level - Status errors

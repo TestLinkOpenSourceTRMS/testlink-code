@@ -29,62 +29,84 @@ $tcaseStatusCode['blocked']='b';
 $tcaseStatusCode['failed']='f';
 
 // Substitute for tcid and tpid that apply to your project
+$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
 $testPlanID=95;
-$testCaseID=86;
+$testCaseID=83;
+$testCaseExternalID=null;
 $buildID=5;
+$exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status= {$tcaseStatusCode['blocked']}";
+//$exec_notes=null;
 
-$debug=true;
-//$debug=false;
-$response = reportResult($testCaseID,$testPlanID,$buildID,null,$tcaseStatusCode['passed'],$debug);
+//$debug=true;
+$debug=false;
+echo $unitTestDescription;
+$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,
+                         $buildID,null,$tcaseStatusCode['blocked'],$exec_notes,$debug);
 
-echo "result was: ";
+echo "<br> Result was: ";
 // Typically you'd want to validate the result here and probably do something more useful with it
 // print_r($response);
 new dBug($response);
+echo "<br>";
 
 
 // Now do a wrong build call
+$unitTestDescription="Test - Call with at least one NON EXISTENT parameters: testPlanID,testCaseID,buildID";
 $testPlanID=95;
 $testCaseID=86;
+$testCaseExternalID=null;
 $buildID=50;
+$exec_notes="";
 
-$debug=true;
-//$debug=false;
-$response = reportResult($testCaseID,$testPlanID,$buildID,null,$tcaseStatusCode['passed'],$debug);
+//$debug=true;
+$debug=false;
+echo $unitTestDescription;
+$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,
+                         $buildID,null,$tcaseStatusCode['passed'],$exec_notes,$debug);
 
-echo "result was: ";
-// Typically you'd want to validate the result here and probably do something more useful with it
-// print_r($response);
+echo "<br> Result was: ";
 new dBug($response);
+echo "<br>";
 
+// ----------------------------------------------------------------------------------------
 // Now do a build name call
+$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildName";
 $testPlanID=95;
-$testCaseID=86;
+$testCaseID=83;
+$testCaseExternalID='';
 $buildName="Spock";
+$exec_notes="Call using all Build by name ({$testCaseID})";
 
-$debug=true;
-//$debug=false;
-$response = reportResult($testCaseID,$testPlanID,null,$buildName,$tcaseStatusCode['passed'],$debug);
+//$debug=true;
+$debug=false;
+echo $unitTestDescription;
+$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,null,
+                         $buildName,$tcaseStatusCode['blocked'],$exec_notes,$debug);
 
-echo "result was: ";
-// Typically you'd want to validate the result here and probably do something more useful with it
-// print_r($response);
+echo "<br> Result was: ";
 new dBug($response);
+echo "<br>";
+// ----------------------------------------------------------------------------------------
 
 
 // Now do a build name call
+$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseExternalID,buildName";
 $testPlanID=95;
-$testCaseID=86;
-$buildName="";
+$testCaseID=null;
+$testCaseExternalID='ESP-3';
+$buildName="Spock";
+// $exec_notes="Call using Test Case External ID and Build by Name";
+$exec_notes=null;
 
-$debug=true;
-//$debug=false;
-$response = reportResult($testCaseID,$testPlanID,null,$buildName,$tcaseStatusCode['passed'],$debug);
+//$debug=true;
+$debug=false;
+echo $unitTestDescription;
+$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,null,
+                         $buildName,$tcaseStatusCode['failed'],$exec_notes,$debug);
 
-echo "result was: ";
-// Typically you'd want to validate the result here and probably do something more useful with it
-// print_r($response);
+echo "<br> Result was: ";
 new dBug($response);
+echo "<br>";
 
 
 
@@ -96,7 +118,8 @@ new dBug($response);
   returns: 
 
 */
-function reportResult($tcaseid, $tplanid, $buildid=null, $buildname=null, $status,$debug=false)
+function reportResult($tcaseid=null, $tcaseexternalid=null,
+                      $tplanid, $buildid=null, $buildname=null, $status,$notes=null,$debug=false)
 {
 
 	$client = new IXR_Client(SERVER_URL);
@@ -105,8 +128,16 @@ function reportResult($tcaseid, $tplanid, $buildid=null, $buildname=null, $statu
   
 	$data = array();
 	$data["devKey"] = constant("DEV_KEY");
-	$data["testcaseid"] = $tcaseid;
 	$data["testplanid"] = $tplanid;
+
+  if( !is_null($tcaseid) )
+  {
+	    $data["testcaseid"] = $tcaseid;
+	}
+	else if( !is_null($tcaseexternalid) )
+	{
+	    $data["testcaseexternalid"] = $tcaseexternalid;
+	}
 	
 	if( !is_null($buildid) )
 	{
@@ -117,9 +148,14 @@ function reportResult($tcaseid, $tplanid, $buildid=null, $buildname=null, $statu
 	      $data["buildname"] = $buildname;
 	}
 	
+	if( !is_null($notes) )
+	{
+	   $data["notes"] = $notes;  
+	}
 	$data["status"] = $status;
 
-  echo "<pre>debug 20080306 - \ - " . __FUNCTION__ . " --- "; print_r($data); echo "</pre>";
+  new dBug($data);
+
 	if(!$client->query('tl.reportTCResult', $data))
 	{
 		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			

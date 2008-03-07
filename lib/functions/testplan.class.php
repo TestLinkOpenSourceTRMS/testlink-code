@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2008/02/24 17:54:59 $ $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2008/03/07 11:05:37 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -1168,6 +1168,35 @@ function get_builds($id,$active=null,$open=null)
 	return $recordset;
 }
 
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function get_build_by_name($id,$build_name)
+{
+  $safe_build_name=$this->db->prepare_string(trim($build_name));
+  
+	$sql = " SELECT id,testplan_id, name, notes, active, is_open " .
+	       " FROM {$this->builds_table} " . 
+	       " WHERE testplan_id = {$id} AND name='{$safe_build_name}'";
+
+ 	
+ 	$recordset = $this->db->get_recordset($sql);
+  $rs=null;
+  if( !is_null($recordset) )
+  {
+     $rs=$recordset[0];
+  }
+  return $rs;
+}
+
+
+
 /*
   function:
 
@@ -1779,6 +1808,7 @@ class build_mgr
   	$myrow = $this->db->fetch_array($result);
   	return $myrow;
   }
+
 
 } // end class build_mgr
 

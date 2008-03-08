@@ -5,18 +5,13 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/01/06 20:33:54 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/03/08 10:24:58 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
  * Check configuration functions
  *
- * 20071010 - franciscom - 
- * 20070725 - franciscom - check_schema_version() - added control for db schema 1.7.0 RC 3
- * 20070626 - franciscom - getSecurityNotes() - added LDAP checks
- * 20060429 - franciscom - added checkForRepositoryDir()
- * 20060103 - scs - ADOdb changes
  **/
 // ---------------------------------------------------------------------------------------------------
 require_once('plan.core.inc.php');
@@ -159,6 +154,14 @@ function checkForAdminDefaultPwd(&$db)
 	return $bDefaultPwd;
 }
 
+/*
+  function: checkForLDAPExtension
+
+  args :
+  
+  returns: 
+
+*/
 function checkForLDAPExtension(&$bLDAPEnabled)
 {
 	$login_method = config_get('login_method');
@@ -168,6 +171,7 @@ function checkForLDAPExtension(&$bLDAPEnabled)
 		return true;
 	return 	false;
 }
+
 /**
  * builds the security notes while checking some security issues
  * these notes should be displayed!
@@ -208,7 +212,7 @@ function getSecurityNotes(&$db)
 
 	// 20070121 - needed when schemas change has been done
 	// This call can be removed when release is stable
-	$msg = check_schema_version($db);
+	$msg = checkSchemaVersion($db);
 	if(strlen($msg))
 		$securityNotes[] = $msg;
 	
@@ -217,6 +221,15 @@ function getSecurityNotes(&$db)
 	if(strlen($msg))
 		$securityNotes[] = $msg;
 	
+	// 20080308 - franciscom
+	$msg = checkEmailConfig();
+	if(!is_null($msg))
+	{
+	  foreach($msg as $detail)
+	  {
+		   $securityNotes[] = $detail;
+		}   
+	}
 	checkForExtensions($securityNotes);
   
 	return $securityNotes;
@@ -313,14 +326,14 @@ function checkForRepositoryDir($the_dir)
 
 
 /*
-  function: check_schema_version
+  function: checkSchemaVersion
 
   args :
   
   returns: 
 
 */
-function check_schema_version(&$db)
+function checkSchemaVersion(&$db)
 {
 	$last_version = 'DB 1.2';  // 20080102 - franciscom
 	// $last_version = 'DB 1.1';
@@ -382,6 +395,33 @@ function checkForTestPlansWithoutTestProjects(&$db)
 		}
 	}	
 	return $msg;
+}
+
+
+/*
+  function: checkEmailConfig 
+
+  args :
+  
+  returns: 
+
+*/
+function checkEmailConfig()
+{
+  $common[]=lang_get('check_email_config');
+  $msg=null;
+  $idx=1;
+	$key2get=array('tl_admin_email','from_email','return_path_email','smtp_host');
+	
+	foreach($key2get as $cfg_key)
+	{  
+	   $cfg_param=config_get($cfg_key);
+	   if( strlen(trim($cfg_param)) == 0 || strpos($cfg_param,'not_configured') > 0 )
+	   {
+    	    $msg[$idx++] = $cfg_key;
+	   }  
+	}
+	return is_null($msg) ? null : $common+$msg; 
 }
 
 ?>

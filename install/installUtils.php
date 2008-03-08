@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.30 2008/02/20 07:49:12 franciscom Exp $ 
+$Id: installUtils.php,v 1.31 2008/03/08 10:24:57 franciscom Exp $ 
 
 
 rev :
@@ -1277,5 +1277,23 @@ function _mssql_set_passwd($db,$login,$passwd)
   
 
 } // function end
+
+
+/*
+  function: important_reminder()
+
+  args :
+  
+  returns: 
+
+*/
+function important_reminder()
+{
+echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a fully functional installation 
+       You need to configure mail server settings, following this steps<br>
+       <ul>
+       <li>copy from config.inc.php, [SMTP] Section into custom_config.inc.php.</li>
+       <li>complete correct data regarding email addresses and mail server.</li></ul><p>';
+}  /* Function ends */
 
 ?>

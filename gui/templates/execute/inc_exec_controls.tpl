@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.2 2008/01/04 16:17:49 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.3 2008/03/08 10:24:57 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -19,7 +19,7 @@ Rev:
     				
     				<div class="resultBox">
                   {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-    						<input type="radio" {$args_input_enabled_disabled} name="status[{$args_tcversion_id}]" 
+    						<input type="radio" {$args_input_enable_mgmt} name="status[{$args_tcversion_id}]" 
     							value="{$gsmarty_tc_status.$verbose_status}"
     							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.$default_status}
     							checked="checked" 
@@ -27,7 +27,7 @@ Rev:
     					 {/foreach}		
     					<br />		
     		 			<input type="submit" name="save_results[{$args_tcversion_id}]" 
-    		 			       {$args_input_enabled_disabled}
+    		 			       {$args_input_enable_mgmt}
     		 			       value="{$args_labels.btn_save_tc_exec_results}" />
     				</div>
     			</td>

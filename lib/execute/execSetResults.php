@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/03/04 21:43:39 $ $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/03/08 10:24:57 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -332,6 +332,11 @@ if( is_array($tcversion_id) )
 $execNotesInputs=createExecNotesWebEditor($map_last_exec,$_SESSION['basehref']);
 
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+
+// To silence smarty errors
+//  future must be initialized in a right way
+$smarty->assign('test_automation_enabled',0);
+
 $smarty->assign('cfg',$cfg);
 $smarty->assign('tcasePrefix',$tcasePrefix . $cfg->testcase_cfg->glue_character);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
@@ -384,6 +389,7 @@ $smarty->display($template_dir . $g_tpl['execSetResults']);
 */
 function init_args()
 {
+  $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;

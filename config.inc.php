@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.162 $
- * @modified $Date: 2008/03/06 13:12:21 $ by $Author: franciscom $
+ * @version $Revision: 1.163 $
+ * @modified $Date: 2008/03/08 10:24:57 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
+ *     20080308 - franciscom - changed initial values for email settings
  *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
  *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
  *     20080124 - franciscom - $g_dashboard_precision
@@ -455,15 +456,15 @@ define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
 # Configure using custom_config.inc.php
-$g_tl_admin_email     = 'tl_admin@127.0.0.1';         # for problem/error notification 
-$g_from_email         = 'testlink_system@127.0.0.1';  # email sender
-$g_return_path_email  = 'no_reply@127.0.0.1';
+$g_tl_admin_email     = '[testlink_sysadmin_email_not_configured]'; # for problem/error notification 
+$g_from_email         = '[from_email_not_configured]';  # email sender
+$g_return_path_email  = '[return_path_email_not_configured]';
 
 # Urgent = 1, Not Urgent = 5, Disable = 0
 $g_mail_priority = 5;   
 
 // SMTP Configuration
-$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
+$g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured  
 
 // Configure only if SMTP server requires authentication
 $g_smtp_username    = '';  # user  

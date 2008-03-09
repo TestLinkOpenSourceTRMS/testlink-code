@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.19 2008/01/19 17:47:47 schlundus Exp $
+$Id: login.tpl,v 1.20 2008/03/09 18:38:18 franciscom Exp $
 Purpose: smarty template - login page 
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
@@ -8,12 +8,14 @@ Purpose: smarty template - login page
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 {literal}
 <script type="text/javascript">
-window.onload=function(){
+window.onload=function()
+{
  Nifty("div#login_div","big");
  Nifty("div.warning_message","normal");
  Nifty("div.login_warning_message","normal");
- if (document.forms[0])
-	document.forms[0].elements[0].focus();
+ 
+ // set focus on login text box
+ focusInputField('login');
 }
 </script>
 {/literal}
@@ -24,12 +26,12 @@ window.onload=function(){
 <div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
 <div class="forms" id="login_div">
 
-	<form method="post" action="login.php">
+	<form method="post" name="login_form" action="login.php">
     {if $login_disabled eq 0}		
   	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
-		<input type="hidden" name="reqURI" value="{$reqURI}"/>
+		  <input type="hidden" name="reqURI" value="{$reqURI}"/>
   		<p class="label">{lang_get s='login_name'}<br />
-			<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
+			<input type="text" name="login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
 		</p>
   		<p class="label">{lang_get s='password'}<br />
 			<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />

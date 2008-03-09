@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/03/05 22:22:38 $ $Author: franciscom $ 
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/03/09 18:44:47 $ $Author: franciscom $ 
  * 
  * @author Martin Havlat
  * 
@@ -93,6 +93,7 @@ switch($args->do_action)
 		}
 		$args->scope = "";
 		break;
+
 	case "do_update":
 		$smarty->assign('req_spec_id', $args->req_spec_id);
 		$template = $template_dir . 'reqSpecView.tpl';
@@ -107,17 +108,6 @@ switch($args->do_action)
 
 		$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-	  
-		//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
-		$user = tlUser::getByID($db,$req_spec['author_id']);
-		$req_spec['author'] = null;
-		if ($user)
-			$req_spec['author'] = $user->getDisplayName();
-		$req_spec['modifier'] = null;
-		$user = tlUser::getByID($db,$req_spec['modifier_id']);
-		if ($user)
-			$req_spec['modifier'] = $user->getDisplayName();
-
 		$smarty->assign('req_spec_id', $args->req_spec_id);
 		$smarty->assign('req_spec', $req_spec);
 		break;

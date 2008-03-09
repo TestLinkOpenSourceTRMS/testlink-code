@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.4 2008/03/04 21:43:39 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.5 2008/03/09 18:44:47 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -37,12 +37,11 @@ $tproject_name =  $_SESSION['testprojectName'];
 $testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($tproject_id);
 $testCasePrefix .= $tcase_cfg->glue_character;
 
-
 $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
 $version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
 $keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-$do_remove = isset($_POST['do_action']) ? 1 : 0;
+$do_remove = isset($_REQUEST['do_action']) ? 1 : 0;
 $user_feedback='';
 
 $resultString = null;
@@ -137,6 +136,5 @@ if( !is_null($out) )
 $smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('testPlanName', $tplan_name);
 $smarty->assign('refreshTree', $do_remove ? 1 : 0);
-
 $smarty->display($template_dir . 'planRemoveTC_m1.tpl');
 ?>

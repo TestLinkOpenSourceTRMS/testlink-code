@@ -1,14 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqReorder.tpl,v 1.1 2007/11/28 08:15:41 franciscom Exp $
+$Id: reqReorder.tpl,v 1.2 2008/03/09 18:38:18 franciscom Exp $
 *}
 
-{assign var="req_module" value=$smarty.const.REQ_MODULE}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 
-{assign var="req_module" value=$smarty.const.REQ_MODULE}
+{assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqEdit.php?do_action=do_reorder"}
 {assign var="action_url" value="$basehref$req_module$url_args"}
 

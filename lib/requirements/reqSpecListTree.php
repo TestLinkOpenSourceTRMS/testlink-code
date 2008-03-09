@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.3 2008/02/06 19:35:21 schlundus Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.4 2008/03/09 18:44:47 franciscom Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -28,8 +28,8 @@ $tree = null;
 if (strlen($treeString))
 	$tree = invokeMenu($treeString,"",null);
 
-$req_spec_manager_url = $req_cfg->module . "reqSpecView.php";
-$req_manager_url = $req_cfg->module . "reqView.php";
+$req_spec_manager_url = "lib/requirements/reqSpecView.php";
+$req_manager_url = "lib/requirements/reqView.php";
 		
 $smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);

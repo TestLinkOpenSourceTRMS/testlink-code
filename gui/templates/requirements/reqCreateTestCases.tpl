@@ -1,18 +1,17 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.1 2007/12/02 17:24:45 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.2 2008/03/09 18:38:18 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
    rev: 
 *}
-
-{assign var="req_module" value=$smarty.const.REQ_MODULE}
+{assign var="req_module" value='lib/requirements/'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{lang_get s='cant_delete_req_nothing_sel' var="check_msg"}
+{lang_get s='select_at_least_one_req' var="check_msg"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -20,6 +19,9 @@ $Id: reqCreateTestCases.tpl,v 1.1 2007/12/02 17:24:45 franciscom Exp $
 
 {literal}
 <script type="text/javascript">
+{/literal}
+var alert_box_title = "{lang_get s='warning'}";
+{literal}
 /*
   function: check_action_precondition
 
@@ -46,7 +48,7 @@ function check_action_precondition(form_id,action,msg)
  }
  else
  {
-    confirm(msg);
+    alert_message(alert_box_title,msg);
     return false; 
  }  
 }
@@ -72,7 +74,7 @@ function check_action_precondition(form_id,action,msg)
 
 
 <div class="workBack">
-  <h2>{lang_get s="req_title_list"}</h2>
+  <h2>{$action_descr}</h2>
   
   {if $array_of_msg != ''}
     <br />

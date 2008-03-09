@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/02/21 20:59:50 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/03/09 18:44:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  *
- * 20060908 - franciscom -
+ * 20080309 - franciscom - changed return value for get_by_id()
 */
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
@@ -167,9 +167,28 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   */
   function get_by_id($id)
   {
-  	$sql = " SELECT * FROM {$this->object_table} WHERE id = {$id}";
+  	$sql = " SELECT *, '' AS author, '' AS modifier " .
+  	       " FROM {$this->object_table} WHERE id = {$id}";
   	$recordset = $this->db->get_recordset($sql);
-  	return ($recordset ? $recordset[0] : null);
+  	
+    $rs=null;
+    if( !is_null($recordset) )
+    {
+        // Decode users
+        $rs=$recordset[0];
+        if( strlen(trim($rs['author_id'])) > 0 )
+        {
+            $user = tlUser::getByID($this->db,$rs['author_id']);
+            $rs['author'] = $user->getDisplayName();
+        }
+      
+        if( strlen(trim($rs['modifier_id'])) > 0 )
+        {
+            $user = tlUser::getByID($this->db,$rs['modifier_id']);
+            $rs['modifier'] = $user->getDisplayName();
+        }
+    }  	
+  	return ($rs);
   }
 
 

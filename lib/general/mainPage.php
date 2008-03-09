@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.42 $ $Author: schlundus $
- * @modified $Date: 2008/01/31 22:15:48 $
+ * @version $Revision: 1.43 $ $Author: franciscom $
+ * @modified $Date: 2008/03/09 18:44:47 $
  *
  * @author Martin Havlat
  * 
@@ -119,7 +119,6 @@ $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
 $smarty->assign('num_active_tplans', $num_active_tplans);
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
-$smarty->assign('show_filter_tp_by_product',$g_ui_show_check_filter_tp_by_testproject);
 $smarty->assign('sessionProductID',$testprojectID);	
 $smarty->assign('sessionTestPlanID',$testPlanID);
 $smarty->assign('testPlanRole',$testPlanRole);

@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.9 $
-$Date: 2008/03/04 08:57:52 $
-$Author: havlat $
+$Revision: 1.10 $
+$Date: 2008/03/09 18:40:40 $
+$Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 */
 
@@ -100,6 +100,11 @@ ALTER TABLE executions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
 ALTER TABLE db_version ADD COLUMN notes  text;
 ALTER TABLE executions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
 
+/* requirements */
+ALTER TABLE `requirements` CHANGE COLUMN   `id` int(10) unsigned NOT NULL;
+
+/* req_specs */
+ALTER TABLE `req_specs` CHANGE COLUMN   `id` int(10) unsigned NOT NULL;
 
 
 /* data update */

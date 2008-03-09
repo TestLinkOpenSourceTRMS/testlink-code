@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/03/01 21:41:27 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -64,6 +64,7 @@ switch($args->do_action)
 		$smarty->assign('submit_button_label',lang_get('btn_save'));
 		$smarty->assign('submit_button_action','do_create');
 		break;
+
 	case "edit":
 		$template = $template_dir . 'reqEdit.tpl';
 		$req = $req_mgr->get_by_id($args->req_id);
@@ -75,6 +76,7 @@ switch($args->do_action)
 		$smarty->assign('submit_button_action','do_update');
 		$smarty->assign('req', $req); 
 		break;
+
 	case "do_create":
 		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 		$main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
@@ -97,6 +99,7 @@ switch($args->do_action)
 		$smarty->assign('submit_button_label',lang_get('btn_save'));
 		$smarty->assign('submit_button_action','do_create');
 		break;
+
 	case "do_update":
 		$template = $template_dir . 'reqView.tpl';
 		$ret = $req_mgr->update($args->req_id,trim($args->reqDocId),$args->title,
@@ -113,6 +116,7 @@ switch($args->do_action)
 		$smarty->assign('req', $req); 
 		$main_descr = lang_get('req') . TITLE_SEP . $req['title'];
 		break;
+
   case "do_delete":
 		$template = 'show_message.tpl';
 		$req = $req_mgr->get_by_id($args->req_id);
@@ -144,18 +148,7 @@ switch($args->do_action)
 		// need to remove first element, is req_spec_id
 		$args->req_spec_id=array_shift($nodes_in_order);
 		$req_mgr->set_order($nodes_in_order);
-
 		$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
-
-		//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
-		$user = tlUser::getByID($db,$req_spec['author_id']);
-		$req_spec['author'] = null;
-		if ($user)
-			$req_spec['author'] = $user->getDisplayName();
-		$req_spec['modifier'] = null;
-		$user = tlUser::getByID($db,$req_spec['modifier_id']);
-		if ($user)
-			$req_spec['modifier'] = $user->getDisplayName();
 
 		$smarty->assign('req_spec', $req_spec);
 		$smarty->assign('refresh_tree', 'yes');
@@ -166,7 +159,8 @@ switch($args->do_action)
 		$template = $template_dir .  'reqCreateTestCases.tpl';
 		$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
 		$main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
-	
+		$action_descr=lang_get('create_testcase_from_req');
+		
 		$all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
 		$smarty->assign('req_spec_id', $args->req_spec_id);
 		$smarty->assign('req_spec_name', $req_spec['title']);

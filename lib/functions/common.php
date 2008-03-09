@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.98 $ $Author: franciscom $
- * @modified $Date: 2008/03/04 21:43:39 $
+ * @version $Revision: 1.99 $ $Author: franciscom $
+ * @modified $Date: 2008/03/09 18:44:46 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -391,6 +391,9 @@ function localize_timestamp_smarty($params, &$smarty)
 */
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 {
+  // to supress E_STRICT messages
+  setlocale(LC_ALL, TL_DEFAULT_LOCALE);
+
 	$format = config_get($what);
 	if (!is_numeric($value))
 		$value = strtotime($value);
@@ -537,7 +540,6 @@ function set_dt_formats()
 function config_get($config_id)
 {
 	$my = "g_" . $config_id;
-
 	return $GLOBALS[$my];
 }
 

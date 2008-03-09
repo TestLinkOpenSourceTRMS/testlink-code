@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/02/29 23:19:29 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -54,6 +54,8 @@ $smarty->display($template_dir . 'keywordsExport.tpl');
 
 function init_args()
 {
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;

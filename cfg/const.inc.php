@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2008/02/10 22:42:48 $ by $Author: havlat $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2008/03/09 18:37:19 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,28 +16,11 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
- *           20071014 - franciscom -  $g_company_name,$g_company_logo,
- *                                    $g_copyright,$g_confidential
- *
- *           20070905 - franciscom - version updated
- *           20070902 - franciscom - localisation jp_JP
- *                                   $g_reports_cfg
- *
- *           20070822 - franciscom - localisation ru_RU
- *           20070818 - franciscom - $g_default_roleid
- *           20070705 - franciscom - config of $g_req_status.
- *           20070624 - franciscom - $g_title_sep*
+ *           20080309 - franciscom - removed PHP E_STRICT warnings
  *           20070607 - franciscom 
  *           to solve BUGID: 887
  *           GET_ACTIVE_BUILD, GET_INACTIVE_BUILD
  *           GET_OPEN_BUILD,GET_CLOSED_BUILD
- *
- *           20070523 - franciscom
- *           MENU_ITEM_OPEN, MENU_ITEM_CLOSE
- *
- *           20070519 - franciscom
- *           $g_locales_html_select_date_field_order
- *
  *-------------------------------------------------------------------
 **/
 
@@ -204,6 +187,9 @@ define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
 // Two models to manage attachment interface in the execution screen
 // $att_model_m1 ->  shows upload button and title 
 //
+$att_model_m1 = new stdClass();
+$att_model_m2 = new stdClass();
+
 $att_model_m1->show_upload_btn = true;
 $att_model_m1->show_title = true;
 $att_model_m1->num_cols = 4;
@@ -309,6 +295,8 @@ $g_tc_status_for_ui_default="blocked";
 // 1. report generation must be changed to manage new statuses
 // 2. Display order = order in array
 //
+$g_reports_cfg = new stdClass();
+
 $g_reports_cfg->tc_status = array(
     "passed"  => "test_status_passed",
     "failed"  => "test_status_failed",
@@ -450,12 +438,12 @@ $g_role_colour = array (
 );
 
 
-/** magic numbers: three levels for priority */
-$gtl_const_3levels = array(
-	1 => 'low', 
-	2 => 'medium', 
-	3 => 'high'
-);
+/** three levels for priority */
+// $gtl_const_3levels = array(
+// 	1 => 'low', 
+// 	2 => 'medium', 
+// 	3 => 'high'
+// );
 
 // use when componing an title using several strings
 $g_title_sep=' : ';
@@ -494,9 +482,7 @@ $g_req_status=array(TL_REQ_STATUS_VALID => 'req_state_valid',
 					          TL_REQ_STATUS_NOT_TESTABLE => 'req_state_not_testable');
 
 
-// 20071101 - franciscom
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
-
 
 // 
 // [FUNCTION MAGIC NUMBERS] [DON'T BOTHER ABOUT]

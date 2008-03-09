@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.4 2008/02/15 20:26:42 schlundus Exp $
+ $Id: mainPageRight.tpl,v 1.5 2008/03/09 18:38:18 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -23,18 +23,6 @@
 
 
  	  <form name="testplanForm" action="lib/general/mainPage.php">
-      {if $show_filter_tp_by_product }
-      	<input type="hidden" name="filter_tp_by_product_hidden" value="0" />
-        <input type="checkbox" name="filter_tp_by_product"  value="1"
-      	       {if $filter_tp_by_product}
-      	         	checked="checked"
-               {/if}
-               onclick="this.form.submit();" />
-
-			  {lang_get s='filter_tp_by_product'}
-			  <br />
-		  {/if}
-
     {if $countPlans > 0}
 		{lang_get s='title_test_plan'}
 		<select style="display:inline;width:50%;"  name="testplan" onchange="this.form.submit();">

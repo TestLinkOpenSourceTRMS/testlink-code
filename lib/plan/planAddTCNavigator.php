@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.28 2008/01/27 15:56:57 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.29 2008/03/09 18:44:47 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -109,6 +109,7 @@ $smarty->display($template_dir . $default_template);
 <?php
 function init_args()
 {
+    $args = new stdClass();
     $_REQUEST=strings_stripSlashes($_REQUEST);
 
 

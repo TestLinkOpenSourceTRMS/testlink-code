@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: class-IXR.php,v 1.3 2008/01/08 07:53:49 franciscom Exp $
+ * $Id: class-IXR.php,v 1.4 2008/03/09 18:50:11 franciscom Exp $
  */
 
 /*
@@ -285,6 +285,7 @@ class IXR_Server {
             $data = $HTTP_RAW_POST_DATA;
         }
         $this->message = new IXR_Message($data);
+        // echo "<pre>debug 20080305 - \ - " . __FUNCTION__ . " --- "; print_r($this->message); echo "</pre>";
         if (!$this->message->parse()) {
             $this->error(-32700, 'parse error. not well formed');
         }
@@ -462,9 +463,11 @@ class IXR_Client {
     var $response;
     var $message = false;
     var $debug = false;
-	var $timeout;
+	  var $timeout;
+    
     // Storage place for an error message
     var $error = false;
+    
     function IXR_Client($server, $path = false, $port = 80, $timeout = false) {
         if (!$path) {
             // Assume we have been given a URL instead
@@ -482,8 +485,9 @@ class IXR_Client {
             $this->port = $port;
         }
         $this->useragent = 'Incutio XML-RPC';
-		$this->timeout = $timeout;
+		    $this->timeout = $timeout;
     }
+    
     function query() {
         $args = func_get_args();
         $method = array_shift($args);
@@ -497,6 +501,7 @@ class IXR_Client {
         $request .= "User-Agent: {$this->useragent}$r";
         $request .= "Content-length: {$length}$r$r";
         $request .= $xml;
+    
         // Now send the request
         if ($this->debug) {
             echo '<pre>'.htmlspecialchars($request)."\n</pre>\n\n";
@@ -514,6 +519,7 @@ class IXR_Client {
         $contents = '';
         $gotFirstLine = false;
         $gettingHeaders = true;
+        
         while (!feof($fp)) {
             $line = fgets($fp, 4096);
             if (!$gotFirstLine) {
@@ -536,6 +542,8 @@ class IXR_Client {
         }
         // Now parse what we've got back
         $this->message = new IXR_Message($contents);
+        //echo "<pre>debug 20080305 - \ - " . __FUNCTION__ . " --- "; print_r($this->message); echo "</pre>";
+        
         if (!$this->message->parse()) {
             // XML error
             $this->error = new IXR_Error(-32700, 'parse error. not well formed');

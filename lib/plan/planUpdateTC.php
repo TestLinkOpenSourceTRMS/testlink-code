@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.19 2008/03/04 21:43:39 franciscom Exp $ 
+ * @version $Id: planUpdateTC.php,v 1.20 2008/03/09 18:44:47 franciscom Exp $ 
  * 
  * Author: franciscom
  *
@@ -117,7 +117,7 @@ $smarty->display($template_dir . $default_template);
 function init_args()
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
-    
+    $args = new stdClass();
     $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
     $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;

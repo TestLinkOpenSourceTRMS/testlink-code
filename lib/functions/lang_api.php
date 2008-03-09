@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/02/20 21:21:44 $ - $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/03/09 18:44:46 $ - $Author: franciscom $
  *
  * rev :
  *       20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -12,6 +12,8 @@
  *       20070501 - franciscom - enabled logic to manage a custom_strings.txt file
  *
 */
+
+// require_once("metastring.class.php");
 
 # Mantis - a php based bugtracking system
 # Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
@@ -60,8 +62,10 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 	}
 	else
 	{
-		if (!$bDontFireEvents)
-			logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
+		// if (!$bDontFireEvents )
+		// {   
+		//     logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
+		// }
 		$the_str = TL_LOCALIZE_TAG .$p_string;
 	}
 	return $the_str;

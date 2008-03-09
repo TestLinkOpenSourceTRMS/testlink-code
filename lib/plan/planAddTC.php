@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.46 2008/03/04 21:43:39 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.47 2008/03/09 18:44:47 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -44,8 +44,9 @@ $smarty->assign('testPlanName', $tplan_name);
 define('DONT_FILTER_BY_TCASE_ID',null);
 define('ANY_EXEC_STATUS',null);
 
-if($_GET['edit'] == 'testsuite')
+switch($args->item_level)
 {
+    case 'testsuite':
     $map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
                                                         $args->keyword_id);
 
@@ -58,28 +59,31 @@ if($_GET['edit'] == 'testsuite')
                          $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,DONT_FILTER_BY_TCASE_ID);
                        
     $do_display = 1;  
-}
-else if($_GET['edit'] == 'testproject')
-{
-	redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planAddTC");
-	exit();
+    break;
+    
+    case 'testproject':
+    show_instructions('planAddTC');    
+    exit();
+    break;  
 }
 
-if(isset($_POST['do_action']))
+
+
+if($args->doAction)
 {
 	// Remember:  checkboxes exist only if are checked
-	if(isset($_POST['achecked_tc']))
+	if(!is_null($args->testcases2add))
 	{
-		  $atc = $_POST['achecked_tc'];
-		  $atcversion = $_POST['tcversion_for_tcid'];
+		  $atc = $args->testcases2add;
+		  $atcversion = $args->tcversion_for_tcid;
 		  $items_to_link = my_array_intersect_keys($atc,$atcversion);
 		  $tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
 	}
 	
-	if(isset($_POST['remove_checked_tc']))
+	if(!is_null($args->testcases2remove))
 	{
 		// remove without warning
-		$rtc = $_POST['remove_checked_tc'];
+		$rtc = $args->testcases2remove;
 		$tplan_mgr->unlink_tcversions($args->tplan_id,$rtc);      
 	}
 
@@ -96,6 +100,7 @@ if(isset($_POST['do_action']))
 
 if($do_display)
 {
+  
 	// full_control, controls the operations planAddTC_m1.tpl will allow
 	// 1 => add/remove
 	// 0 => just remove
@@ -105,6 +110,7 @@ if($do_display)
 	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);
+	$smarty->assign('key', '');
 	$smarty->display($template_dir .  'planAddTC_m1.tpl');
 }
 
@@ -125,11 +131,18 @@ function init_args()
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 	$args->keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
   $args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+  $args->item_level=isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
 
+  $args->doAction=isset($_REQUEST['do_action']) ? 1 : 0;
 	
 	$args->tproject_id = $_SESSION['testprojectID'];
   $args->tproject_name = $_SESSION['testprojectName'];
 
+  $args->testcases2add=isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
+  $args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
+  $args->testcases2remove=isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
+  
+  
 	return $args;
 }
 ?>

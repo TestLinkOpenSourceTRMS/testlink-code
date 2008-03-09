@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.289 $
- * @modified $Date: 2008/03/08 10:24:58 $ $Author: franciscom $
+ * @version $Revision: 1.290 $
+ * @modified $Date: 2008/03/09 18:49:18 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -276,12 +276,11 @@ $TLS_title_move_cp = "Move/Copy";
 
 
 
-// gui/templates/reqCreate.tpl
 $TLS_req_create = "Create requirement";
 $TLS_req_doc_id = "Document ID";
 $TLS_warning_empty_req_title = "Requirement title cannot be empty!";
 $TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
-
+$TLS_create_testcase_from_req="Create Test Cases from Requirements";
 
 
 // gui/templates/containerOrder.tpl
@@ -529,6 +528,7 @@ $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
 $TLS_req_total = "Overwritten count of REQs";
 $TLS_req_reorder = "Reorder requirements";
+$TLS_select_at_least_one_req = "Please select a requirement!";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
 $TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_title_change_req_order = "Change requirements order";
@@ -1950,7 +1950,8 @@ $TLS_req_deleted = "Requirement: %s was successfully deleted";
 $TLS_title_change_req_spec_order="Change Requirement Specifications order";
 
 // requirement_mgr
-$TLS_created_on_testsuite="Test Cases will be created on Test Suite %s";
+$TLS_created_on_testsuite="Test Cases has been created on Test Suite %s";
+$TLS_testsuite_name_created="Test Suite %s has been created";
 
 // keywordsEdit.php
 $TLS_keyword_management="Keyword management";

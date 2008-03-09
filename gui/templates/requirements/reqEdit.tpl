@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.6 2008/03/01 21:41:19 schlundus Exp $
+$Id: reqEdit.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -36,12 +36,21 @@ function validateForm(f)
 }
 </script>
 {/literal}
+
+
+{literal}
+<script type="text/javascript">
+window.onload=function()
+{
+ focusInputField('reqDocId');
+}
+</script>
+{/literal}
 </head>
 
 
-<body onload="document.forms[0].elements[0].focus()">
+<body>
 <h1>{$main_descr|escape}</h1>
-
 
 <div class="workBack">
 {if $action_descr != ''}
@@ -57,7 +66,7 @@ function validateForm(f)
 	<input type="hidden" name="requirement_id" value="{$req_id}" />
 
   	<div class="labelHolder"> <label for="reqDocId">{lang_get s='req_doc_id'}</label></div>
-	<div><input type="text" name="reqDocId"
+	<div><input type="text" name="reqDocId" id="reqDocId"
   		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
   		        value="{$req.req_doc_id}" />
   				{include file="error_icon.tpl" field="reqDocId"}

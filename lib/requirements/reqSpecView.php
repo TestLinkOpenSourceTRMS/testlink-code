@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -34,17 +34,6 @@ $template = 'reqSpecView.tpl';
 
 $args=init_args();
 $req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-
-//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
-$user = tlUser::getByID($db,$req_spec['author_id']);
-$req_spec['author'] = null;
-if ($user)
-	$req_spec['author'] = $user->getDisplayName();
-$req_spec['modifier'] = null;
-$user = tlUser::getByID($db,$req_spec['modifier_id']);
-if ($user)
-	$req_spec['modifier'] = $user->getDisplayName();
-
 $cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 $attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
 

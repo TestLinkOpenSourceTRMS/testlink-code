@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.19 2008/03/04 21:43:39 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.20 2008/03/09 18:44:47 franciscom Exp $ 
  * 
  * rev :
  *       20080114 - franciscom - added testcase external_id management
@@ -151,7 +151,7 @@ $smarty->display($template_dir . $default_template);
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-
+  $args = new stdClass();
 	$args->user_id = $_SESSION['userID'];
 	$args->tproject_id = $_SESSION['testprojectID'];
 	$args->tproject_name = $_SESSION['testprojectName'];

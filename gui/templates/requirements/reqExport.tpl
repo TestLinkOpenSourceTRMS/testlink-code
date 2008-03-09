@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.2 2008/02/28 22:15:39 franciscom Exp $ *}
+{* $Id: reqExport.tpl,v 1.3 2008/03/09 18:38:18 franciscom Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
@@ -10,7 +10,7 @@
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{assign var="req_module" value=$smarty.const.REQ_MODULE}
+{assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqExport.php"}
 {assign var="req_export_url" value="$req_module$url_args"}
 

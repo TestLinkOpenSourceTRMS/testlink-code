@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginLost.tpl,v 1.6 2007/04/02 08:12:10 franciscom Exp $ 
+$Id: loginLost.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $ 
 Purpose: smarty template - lost password page 
 
 rev :
@@ -15,7 +15,8 @@ rev :
 window.onload=function(){
  Nifty("div#login_div","big");
  Nifty("div.warning_message","normal");
- document.forms[0].elements[0].focus();
+ // set focus on login text box
+ focusInputField('login');
 }
 </script>
 {/literal}
@@ -33,7 +34,8 @@ window.onload=function(){
  		  <div class="warning_message" style="text-align:center;">{$note|escape}</div>
     	
     	<p class="label">{lang_get s='login_name'}<br />
-    	<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
+    	<input type="text" name="login" id="login" 
+    	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
     	<p><input type="submit" name="editUser" value="{lang_get s='btn_send'}" /></p>
     </form>
     

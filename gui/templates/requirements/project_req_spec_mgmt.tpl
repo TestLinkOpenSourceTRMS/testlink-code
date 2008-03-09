@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.3 2007/11/28 08:15:24 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.4 2008/03/09 18:38:18 franciscom Exp $
 *}
 
-{assign var="req_module" value=$smarty.const.REQ_MODULE}
+{assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqSpecEdit.php?do_action=create&tproject_id="}
 {assign var="req_spec_new_url" value="$basehref$req_module$url_args$$tproject_id"}
 

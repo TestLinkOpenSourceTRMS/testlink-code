@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2008/03/09 18:44:46 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -733,7 +733,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     
     $useCounters=$additionalInfo->useCounters;
     $useColors=$additionalInfo->useColors;
-
 
     $tplan_mgr = new testplan($db);
 	  $tproject_mgr = new testproject($db);

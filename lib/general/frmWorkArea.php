@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/01/26 17:56:22 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -46,12 +46,11 @@ $aa_tfp = array(
             'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=updateTC',
             'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-//            'printTestSet'  => 'lib/print/selectData.php?type=testplan',
             'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',
             'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',
             'showMetrics' => 'lib/results/resultsNavigator.php',
-            'reqSpecMgmt' => $req_cfg->module . 'reqSpecListTree.php');
+            'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php');
 
 $full_screen = array('newest_tcversions' => 1);
 

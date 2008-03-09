@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.5 2008/03/01 21:41:21 schlundus Exp $
+$Id: reqView.tpl,v 1.6 2008/03/09 18:38:18 franciscom Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
@@ -16,7 +16,7 @@ rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&requirement_id=';
+var del_action=fRoot+'lib/requirements/reqEdit.php?do_action=do_delete&requirement_id=';
 </script>
 </head>
 

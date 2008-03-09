@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.1 2008/01/30 13:05:25 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.2 2008/03/09 18:38:18 franciscom Exp $
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 <div class="groupBtn">
-  <form id="req_spec" name="req_spec" action="{$smarty.const.REQ_MODULE}reqSpecEdit.php" method="post">
+  <form id="req_spec" name="req_spec" action="{$req_module}reqSpecEdit.php" method="post">
   	<input type="hidden" name="req_spec_id" value="{$req_spec_id}" />
   	<input type="hidden" name="do_action" value="" />
   	
@@ -21,10 +21,10 @@ $Id: inc_btn_reqSpecView.tpl,v 1.1 2008/01/30 13:05:25 franciscom Exp $
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
 
   	<input type="button" name="print_req_spec" value="{lang_get s='btn_print'}"
-  		onclick="javascript: window.open('{$basehref}{$smarty.const.REQ_MODULE}reqSpecPrint.php?req_spec_id={$req_spec.id}', 
+  		onclick="javascript: window.open('{$basehref}{$req_module}reqSpecPrint.php?req_spec_id={$req_spec.id}', 
   		        '_blank','left=100,top=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=650');" />
   	<input type="button" name="analyse" value="{lang_get s='btn_analyse'}"
-  		onclick="javascript: location.href=fRoot+'{$smarty.const.REQ_MODULE}reqSpecAnalyse.php?req_spec_id={$req_spec.id}';" />
+  		onclick="javascript: location.href=fRoot+'{$req_module}reqSpecAnalyse.php?req_spec_id={$req_spec.id}';" />
   	{/if}
 
   	

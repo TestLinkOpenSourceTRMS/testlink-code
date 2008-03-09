@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.5 2008/01/26 17:56:23 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.6 2008/03/09 18:44:47 franciscom Exp $ 
  * 
  *
  * rev :
@@ -85,6 +85,9 @@ $smarty->display($template_dir . $default_template);
 <?php
 function init_args()
 {
+	  $_REQUEST = strings_stripSlashes($_REQUEST);
+    
+    $args = new stdClass();
     $args->user_id=$_SESSION['userID'];
     $args->tproject_id =  $_SESSION['testprojectID'];
     $args->tproject_name =  $_SESSION['testprojectName'];

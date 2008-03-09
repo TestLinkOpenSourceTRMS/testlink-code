@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.9 2007/06/27 05:53:43 franciscom Exp $
+$Id: loginFirst.tpl,v 1.10 2008/03/09 18:38:18 franciscom Exp $
 Purpose: smarty template - first login
 *}
 
@@ -12,7 +12,8 @@ Purpose: smarty template - first login
 window.onload=function(){
  Nifty("div#login_div","big");
  Nifty("div.warning_message","normal");
- document.forms[0].elements[0].focus();
+ // set focus on login text box
+ focusInputField('loginName');
 }
 </script>
 {/literal}
@@ -29,7 +30,8 @@ window.onload=function(){
 <form method="post" action="firstLogin.php">
 
 	<p class="label">{lang_get s='login_name'}<br />
-	<input type="text" name="loginName" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$login|escape}"/></p>
+	<input type="text" name="loginName" id=loginName" 
+	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$login|escape}"/></p>
 
   {if $external_password_mgmt eq 0}
   	<p class="label">{lang_get s='password'}<br />

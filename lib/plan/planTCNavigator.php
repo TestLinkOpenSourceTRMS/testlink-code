@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: planTCNavigator.php,v 1.4 2008/03/04 21:43:39 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.5 2008/03/09 18:44:47 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -91,7 +91,7 @@ $filters->build_id = FILTER_BY_BUILD_OFF;
 $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
 $filters->status = FILTER_BY_TC_STATUS_OFF;
 $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-$filters->include_unassigned=$args->include_unassigned;
+$filters->include_unassigned=1;
 $filters->show_testsuite_contents=1;
 
 $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
@@ -126,6 +126,7 @@ function init_args(&$tplanMgr)
 {
     $_REQUEST=strings_stripSlashes($_REQUEST);
 
+    $args = new stdClass();   
     $args->user_id=$_SESSION['userID'];
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';

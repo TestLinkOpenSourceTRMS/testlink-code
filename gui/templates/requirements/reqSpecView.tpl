@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.13 2008/01/30 13:03:50 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.14 2008/03/09 18:38:18 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -15,7 +15,7 @@
 {assign var="bn" value=$smarty.template|basename}
 {assign var="buttons_template" value=$smarty.template|replace:"$bn":"inc_btn_$bn"}
 
-{assign var="req_module" value=$smarty.const.REQ_MODULE}
+{assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqEdit.php?do_action=create&req_spec_id="}
 {assign var="req_edit_url" value="$basehref$req_module$url_args$req_spec_id"}
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.6 2008/02/04 19:41:35 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -26,7 +26,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
     </h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
-  {if $key ne ''}
+  {if $key != ''}
 	  <div style="margin-left: 20px; font-size: smaller;">
 		  <br />{lang_get s='note_keyword_filter'}{$key|escape}</p>
 	  </div>

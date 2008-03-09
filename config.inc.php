@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.163 $
- * @modified $Date: 2008/03/08 10:24:57 $ by $Author: franciscom $
+ * @version $Revision: 1.164 $
+ * @modified $Date: 2008/03/09 18:37:50 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -180,11 +180,10 @@ $g_interface_bugs = 'NO';
  */ 
 $g_login_method				= 'MD5';
 
-// LDAP authentication are developed by mantis project (www.mantisbt.org)
+// LDAP authentication was developed by mantis project (www.mantisbt.org)
 // Example: 
 //	$g_ldap_bind_dn			= 'my_bind_user';
 //	$g_ldap_bind_passwd	= 'my_bind_password';
-
 $g_ldap_server			= 'localhost';
 $g_ldap_port			= '389';
 $g_ldap_root_dn			= 'dc=mycompany,dc=com';
@@ -254,16 +253,6 @@ define('TL_TESTPROJECT_COLORING','none');
  **/
 $g_fckeditor_toolbar = "TL_Medium_2";
 
-/* 
-TRUE -> user can enable/disable test plan filter by 
-        product (term used on TL < 1.7) / test project (term used on TL>= 1.7)
-        At user interface level a check box is displayed over
-        the test plan combo box.
-FALSE -> user can do nothing, no changes at UI.
-         Test Plan always filtered by product
-*/
-$g_ui_show_check_filter_tp_by_testproject = FALSE;
-
 // Display name and surename in all user lists 
 // $g_show_realname=TRUE; -> build a human readable displayname
 //                           using $g_username_format
@@ -289,9 +278,7 @@ $g_gui->show_icon_edit=false;
 // 
 $g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 
-
-// 20071130 - franciscom 
-//
+// Choose what kind of webeditor you want to use.
 // 'fckeditor'
 // 'tinymce'
 // 'none' -> use plain html textarea input field
@@ -305,8 +292,6 @@ $g_api_ui_show = TRUE;
 // used to display API ID info in the *View pages 
 $g_api_id_format	= "[ID: %s ]";
 
-
-// 20080124 - franciscom
 // used to round percentages on metricsDashboard.php
 $g_dashboard_precision=2;
 
@@ -339,7 +324,6 @@ $g_tree_node_ordering->default_testcase_order=100;
 $g_tree_node_ordering->default_testsuite_order=1;
 
 
-// 20080110 - franciscom
 // 0 -> do not show testcase id on tree
 $g_tree_show_testcase_id=1;
 
@@ -389,7 +373,6 @@ $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 define("TL_REPOSITORY_MAXFILESIZE_MB", 1);
 define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*TL_REPOSITORY_MAXFILESIZE_MB); // don't change
 
-
 // TRUE -> when you upload a file you can give no title
 $g_attachments->allow_empty_title = TRUE;
 
@@ -435,8 +418,6 @@ $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 //
 $g_req_cfg->reqdoc_id->is_system_wide=false;
-
-$g_req_cfg->module='lib/requirements/';
 
 // Used to force the max len of this field, during the automatic creation
 // of requirements
@@ -859,14 +840,8 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
   }
 }
 
-// 20071130 - franciscom
 // simplifies use on smarty template
 define('WEBEDITOR',$g_gui->webeditor);
-
-// 20071118 - franciscom
-define('REQ_MODULE',$g_req_cfg->module);
-// define('USERMANAGEMENT_MODULE','lib/usermanagement');
-
 
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE',$g_logo_login_page);

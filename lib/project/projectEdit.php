@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/03/05 22:22:38 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/03/09 18:44:47 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -31,9 +31,12 @@ $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojec
 
 $template = null;
 $ui = new stdClass();
+
 $ui->doActionValue='';
 $ui->buttonValue='';
 $ui->caption='';
+$ui->main_descr=lang_get('title_testproject_management');
+
 $user_feedback ='';
 $reloadType = 'none';
 
@@ -55,7 +58,7 @@ switch($args->doAction)
     
     case 'edit':
     	$template = $default_template;
-    	$ui = edit($args,$tproject_mgr);
+    	$ui=edit($args,$tproject_mgr);
     	break;
     
     case 'doCreate':
@@ -70,6 +73,7 @@ switch($args->doAction)
     	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
     	$template= $op->status_ok ?  null : $default_template;
     	$ui=$op->ui;
+    	
     	$status_ok=$op->status_ok;
     	$user_feedback = $op->msg;
     	$reloadType=$op->reloadType;
@@ -200,14 +204,15 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 */
 function doCreate($argsObj,&$tprojectMgr)
 {
-    $op = new stdClass();
-
     $key2get=array('status_ok','msg');
+
+    $op = new stdClass();
+	  $op->ui= new stdClass();
+
     $op->status_ok = 0;
     $op->template = null;
     $op->msg = '';  
 	  $op->id = 0;
-	  $op->ui=null;
     
     $check_op = crossChecks($argsObj,$tprojectMgr);
     foreach($key2get as $key)
@@ -255,13 +260,15 @@ function doCreate($argsObj,&$tprojectMgr)
 */
 function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
-    $op = new stdClass();
     $key2get=array('status_ok','msg');
+
+    $op = new stdClass();
+    $op->ui=new stdClass();
+
     $op->status_ok = 0;
     $op->msg = '';  
     $op->template = null;
     $op->reloadType = 'none';
-    $op->ui=null;
     
     $oldObjData=$tprojectMgr->get_by_id($argsObj->tprojectID);
     $op->oldName=$oldObjData['name'];

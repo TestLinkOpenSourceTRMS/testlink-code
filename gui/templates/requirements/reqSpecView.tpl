@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.14 2008/03/09 18:38:18 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.15 2008/03/10 14:12:43 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -41,7 +41,7 @@
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqSpecEdit.php?do_action=do_delete&req_spec_id=';
+var del_action=fRoot+'{$req_module}reqSpecEdit.php?do_action=do_delete&req_spec_id=';
 </script>
 </head>
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/03/10 14:12:43 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -86,7 +86,7 @@ switch($args->do_action)
 		$cf_smarty = $req_mgr->html_table_of_custom_field_inputs(null,$args->tproject_id);
 		$smarty->assign('cf',$cf_smarty);
 		$ret = $req_mgr->create($args->req_spec_id,$args->reqDocId,$args->title,$args->scope,$args->user_id,
-				$args->reqStatus,$args->reqType);
+				                    $args->reqStatus,$args->reqType);
 		$user_feedback = $ret['msg'];	                                 
 		if($ret['status_ok'])
 		{

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.164 $
- * @modified $Date: 2008/03/09 18:37:50 $ by $Author: franciscom $
+ * @version $Revision: 1.165 $
+ * @modified $Date: 2008/03/10 14:12:43 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -671,10 +671,6 @@ $g_spec_cfg->automatic_tree_refresh=1;
 // all: all test cases.
 // assigned_to_me: test cases assigned to logged user.
 // assigned_to_me_or_free: test cases assigned to logged user or not assigned
-//
-// Important: 
-//            this setting has effects and precedence over 
-//            $g_exec_cfg->restrictions->tester->exec_mode.
 //
 $g_exec_cfg->view_mode->tester='assigned_to_me';
 

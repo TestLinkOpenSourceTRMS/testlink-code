@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/03/08 10:24:57 $ $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/03/10 14:12:43 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -665,7 +665,7 @@ function do_remote_execution(&$db,$tc_versions)
 function initializeExecMode(&$db,$exec_cfg,$user,$tproject_id,$tplan_id)
 {
     $effective_role = $user->getEffectiveRole($db,$tproject_id,$tplan_id);
-	  
+    
 	  // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
 	  // 20080104 - franciscom - Please explain why do you think will not work ok ?
 	  //                         do you prefer to check for exec right ?
@@ -673,7 +673,17 @@ function initializeExecMode(&$db,$exec_cfg,$user,$tproject_id,$tplan_id)
 	  // SCHLUNDUS: jep, exactly. If a user defines it own roles than a check for the tester
 	  // role will not do the desired effect of putting the logged in user in tester-view-mode
 	  // instead we must check for presence (and or absence) the right(s) which mades a user a tester 
-	  return ($effective_role->dbID == TL_ROLES_TESTER) ?  $exec_cfg->exec_mode->tester : 'all';
+	  //
+	  // 20080310 - franciscom - 
+	  // Role is considered tester if:
+	  // role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
+	  //
+	  //
+	  $can_execute = $effective_role->hasRight('testplan_execute');
+	  $can_manage = $effective_role->hasRight('testplan_planning');
+	  $use_exec_cfg = $effective_role->dbID == TL_ROLES_TESTER || ($can_execute && !$can_manage);
+
+	  return  $use_exec_cfg ? $exec_cfg->exec_mode->tester : 'all';
 } // function end
 
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/02/26 22:33:45 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/03/10 14:12:43 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -66,7 +66,25 @@ class requirement_mgr extends tlObjectWithAttachments
   	       " WHERE REQ.srs_id = REQ_SPEC.id " .
   	       " AND REQ.id = {$id}";
   	$recordset = $this->db->get_recordset($sql);
-  	return ($recordset ? $recordset[0] : null);
+  	
+    $rs=null;
+    if( !is_null($recordset) )
+    {
+        // Decode users
+        $rs=$recordset[0];
+        if( strlen(trim($rs['author_id'])) > 0 )
+        {
+            $user = tlUser::getByID($this->db,$rs['author_id']);
+            $rs['author'] = $user->getDisplayName();
+        }
+      
+        if( strlen(trim($rs['modifier_id'])) > 0 )
+        {
+            $user = tlUser::getByID($this->db,$rs['modifier_id']);
+            $rs['modifier'] = $user->getDisplayName();
+        }
+    }  	
+  	return ($rs);
   }
 
   /*

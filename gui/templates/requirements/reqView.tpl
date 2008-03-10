@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.6 2008/03/09 18:38:18 franciscom Exp $
+$Id: reqView.tpl,v 1.7 2008/03/10 14:12:43 franciscom Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
@@ -93,7 +93,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?do_action=do_delete&requireme
 
   {* ----------------------------------------------------------------------------------------- *}
   <div class="groupBtn">
-    <form id="req" name="req" action="{$smarty.const.REQ_MODULE}reqEdit.php" method="post">
+    <form id="req" name="req" action="lib/requirements/reqEdit.php" method="post">
     	<input type="hidden" name="requirement_id" value="{$req_id}" />
     	<input type="hidden" name="do_action" value="" />
     	

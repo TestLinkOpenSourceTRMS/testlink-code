@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.15 $
-* @modified $Date: 2008/03/05 22:22:39 $ $Author: franciscom $
+* @version $Revision: 1.16 $
+* @modified $Date: 2008/03/10 14:12:43 $ $Author: franciscom $
 *
 * rev :  BUGID 918
 *
@@ -20,8 +20,10 @@ require_once('users.inc.php');
 require_once('email_api.php');
 testlinkInitPage($db);
 
-$template_dir = 'usermanagement/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = new stdClass();            
+$templateCfg->template_dir = 'usermanagement/';
+$templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg->template = null;
 
 $args = init_args();
 $user_id = $args->user_id;
@@ -43,6 +45,7 @@ switch($args->doAction)
     $highlight->create_user=1;
     $op = doCreate($db,$args);
     $user = $op->user;
+    $templateCfg->template=$op->template;
     break;
 
     case "doUpdate":
@@ -81,9 +84,18 @@ $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" :
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {               
   $args = new stdClass();
@@ -117,27 +129,35 @@ function init_args()
 
   args:
 
-  returns:
+  returns: object with following members
+           user: tlUser object
+           status: 
+           template: will be used by viewer logic.
+                     null -> viewer logic will choose template
+                     other value -> viever logic will use this template.
+           
+          
 
 */
 function doCreate(&$dbHandler,&$argsObj)
 {
-	$op->user = new tlUser();
-	$op->status = $op->user->setPassword($argsObj->password);
-	if ($op->status >= tl::OK)
-	{
-	  	initializeUserProperties($op->user,$argsObj);
-		$op->status = $op->user->writeToDB($dbHandler);
-	}
+    $op = new stdClass(); 
+	  $op->user = new tlUser();
+	  $op->status = $op->user->setPassword($argsObj->password);
+	  $op->template='usersEdit.tpl';
+	  
+	  if ($op->status >= tl::OK)
+	  {
+	    	initializeUserProperties($op->user,$argsObj);
+	  	  $op->status = $op->user->writeToDB($dbHandler);
+	  	  $op->template=null;
 	
-	if ($op->status >= tl::OK)
-	{
-		logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
-		$op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
-	}
-	else
-		$op->user_feedback = getUserErrorMessage($op->status);
-
+	  	  logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
+	  	  $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
+	  }
+	  else
+	  	$op->user_feedback = getUserErrorMessage($op->status);
+    
     return $op;
 }
 
@@ -154,31 +174,32 @@ function doCreate(&$dbHandler,&$argsObj)
 */
 function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 {
+    $op=new stdClass();
     $op->user_feedback = '';
     $op->user = new tlUser($argsObj->user_id);
-	$op->status = $op->user->readFromDB($dbHandler);
-	if ($op->status >= tl::OK)
-	{
-		initializeUserProperties($op->user,$argsObj);
-		$op->status = $op->user->writeToDB($dbHandler);
-		if ($op->status >= tl::OK)
-		{
-			logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
-			if ($sessionUserID == $argsObj->user_id)
-			{
-				$_SESSION['currentUser'] = $op->user;
-				setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
-				               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
-
-				if (!$argsObj->user_is_active)
-				{
-					header("Location: ../../logout.php");
-					exit();
-				}
-			}
-		}
-		$op->user_feedback = getUserErrorMessage($op->status);
-	}
+	  $op->status = $op->user->readFromDB($dbHandler);
+	  if ($op->status >= tl::OK)
+	  {
+	  	initializeUserProperties($op->user,$argsObj);
+	  	$op->status = $op->user->writeToDB($dbHandler);
+	  	if ($op->status >= tl::OK)
+	  	{
+	  		logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
+	  		if ($sessionUserID == $argsObj->user_id)
+	  		{
+	  			$_SESSION['currentUser'] = $op->user;
+	  			setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
+	  			               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
+    
+	  			if (!$argsObj->user_is_active)
+	  			{
+	  				header("Location: ../../logout.php");
+	  				exit();
+	  			}
+	  		}
+	  	}
+	  	$op->user_feedback = getUserErrorMessage($op->status);
+	  }
     return $op;
 }
 
@@ -193,13 +214,14 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
+    $op=new stdClass();
     $op->user_feedback = '';
-	$op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
-	if ($op->status >= tl::OK)
-	{
-	   logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
-	   $op->user_feedback = lang_get('password_reseted');
-	}
+	  $op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
+	  if ($op->status >= tl::OK)
+	  {
+	     logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
+	     $op->user_feedback = lang_get('password_reseted');
+	  }
     return $op;
 }
 

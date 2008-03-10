@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/02/12 08:33:31 $ -  $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/03/10 21:52:00 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -64,7 +64,7 @@ switch($operation)
 		$orderByDir = $order_by_dir;
 		$user_order_by = $operation;
 		$the_k = $operation . "_dir";
-		$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc'; 
+		$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc';
 		break;
 	default:
 		$order_by_dir['order_by_login_dir'] = 'desc';
@@ -73,7 +73,9 @@ switch($operation)
 $order_by_clause = get_order_by_clause($orderByType,$orderByDir);
 $users = getAllUsersRoles($db,$order_by_clause);
 
-$highlight->view_users=1;
+$highlight = new stdClass();
+$highlight->view_users = 1;
+
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
@@ -95,7 +97,7 @@ $smarty->display($template_dir . $g_tpl['usersview']);
 
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
-	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 
+	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc';
 	return $obm;
 }
 

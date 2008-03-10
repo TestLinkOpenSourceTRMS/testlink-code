@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.11 $
-* @modified $Date: 2008/02/15 20:26:43 $ $Author: schlundus $
+* @version $Revision: 1.12 $
+* @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -43,6 +43,7 @@ $roles_updated = '';
 $bTestproject = false;
 $bTestPlan = false;
 $mgr = null;
+$highlight = new stdClass();
 
 if ($feature == "testproject")
 {

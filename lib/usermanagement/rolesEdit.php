@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/03/05 22:22:39 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/03/10 21:52:00 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -29,6 +29,7 @@ $action = null;
 $affectedUsers = null;
 $role = null;
 $action_type = 'edit';
+$highlight = new stdClass();
 
 switch($args->doAction)
 {
@@ -119,11 +120,11 @@ function init_args()
 }
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function doCreate(&$db,$args)

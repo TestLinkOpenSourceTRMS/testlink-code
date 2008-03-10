@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.13 2008/02/29 23:19:29 schlundus Exp $
+$Id: eventviewer.tpl,v 1.14 2008/03/10 21:52:00 schlundus Exp $
 
 Event Viewer
 
@@ -174,7 +174,7 @@ fieldset
 					<td>{$event->getLogLevel()|escape}</td>
 					<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
 					<td>
-					{if isset($userID,$users) neq false}
+					{if $users[$userID] neq false}
 						{$users[$userID]|escape}
 					{else}
 						&nbsp;

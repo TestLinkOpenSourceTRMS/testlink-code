@@ -1,6 +1,6 @@
-{* 
+#{* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.12 2008/03/04 07:30:40 franciscom Exp $
+$Id: execSetResults.tpl,v 1.13 2008/03/10 21:52:00 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071231 - franciscom - new show/hide section to show exec notes

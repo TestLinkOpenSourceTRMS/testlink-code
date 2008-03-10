@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectView.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/03/09 18:44:47 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
  *
  * Display list of test projects
  *
@@ -34,7 +34,6 @@ if(count($tprojects) == 0)
 else
     $smarty->assign('tprojects',$tprojects);
 
-$smarty->assign('api_ui_show', $g_api_ui_show);
 $smarty->assign('doAction', $args->doAction);
 $smarty->display($template_dir . $default_template);
 

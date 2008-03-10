@@ -1,12 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.15 2008/03/10 14:12:43 franciscom Exp $ *}
-{* 
+{* $Id: reqSpecView.tpl,v 1.16 2008/03/10 21:52:00 schlundus Exp $ *}
+{*
    Purpose: smarty template - view a requirement specification
-   Author: Martin Havlat 
+   Author: Martin Havlat
 
    rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
         20071106 - franciscom - added ext js library
-        20070102 - franciscom - added javascript validation of checked requirements 
+        20070102 - franciscom - added javascript validation of checked requirements
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -16,7 +16,7 @@
 {assign var="buttons_template" value=$smarty.template|replace:"$bn":"inc_btn_$bn"}
 
 {assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqEdit.php?do_action=create&req_spec_id="}
+{assign var="url_args" value="reqEdit.php?do_action=create&amp;req_spec_id="}
 {assign var="req_edit_url" value="$basehref$req_module$url_args$req_spec_id"}
 
 {assign var="url_args" value="reqImport.php?req_spec_id="}
@@ -25,10 +25,10 @@
 {assign var="url_args" value="reqExport.php?req_spec_id="}
 {assign var="req_export_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
-{assign var="url_args" value="reqEdit.php?do_action=reorder&req_spec_id="}
+{assign var="url_args" value="reqEdit.php?do_action=reorder&amp;req_spec_id="}
 {assign var="req_reorder_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
-{assign var="url_args" value="reqEdit.php?do_action=create_tcases&req_spec_id="}
+{assign var="url_args" value="reqEdit.php?do_action=create_tcases&amp;req_spec_id="}
 {assign var="req_create_tc_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
 
@@ -49,11 +49,11 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?do_action=do_delete&req_spec_
 <body {$body_onload}>
 
 <div class="workBack">
-<h1> 
+<h1>
  {lang_get s='help' var='common_prefix'}
  {lang_get s='req_spec' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;"}
 	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$req_spec.title|escape}
 </h1>
@@ -79,7 +79,7 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?do_action=do_delete&req_spec_
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
-	
+
 	<tr>
 	  <td>
   	{$cf}

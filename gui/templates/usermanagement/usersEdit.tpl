@@ -1,6 +1,6 @@
-{* 
-Testlink: smarty template - 
-$Id: usersEdit.tpl,v 1.10 2008/02/21 07:50:26 franciscom Exp $ 
+{*
+Testlink: smarty template -
+$Id: usersEdit.tpl,v 1.11 2008/03/10 21:52:00 schlundus Exp $
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -37,30 +37,30 @@ var warning_empty_email = "{$labels.empty_email_address}";
 {literal}
 function validateForm(f,check_password)
 {
-  if (isWhitespace(f.login.value)) 
+  if (isWhitespace(f.login.value))
   {
       alert_message(alert_box_title,warning_empty_login);
       selectField(f, 'login');
       return false;
   }
 
-  if (isWhitespace(f.firstName.value)) 
+  if (isWhitespace(f.firstName.value))
   {
       alert_message(alert_box_title,warning_empty_first_name);
       selectField(f, 'firstName');
       return false;
   }
-  
-  if (isWhitespace(f.lastName.value)) 
+
+  if (isWhitespace(f.lastName.value))
   {
       alert_message(alert_box_title,warning_empty_last_name);
       selectField(f, 'lastName');
       return false;
   }
-  
+
   if( check_password )
   {
-    if (isWhitespace(f.password.value)) 
+    if (isWhitespace(f.password.value))
     {
         alert_message(alert_box_title,warning_empty_pwd);
         selectField(f, 'password');
@@ -68,7 +68,7 @@ function validateForm(f,check_password)
     }
   }
 
-  if (isWhitespace(f.emailAddress.value)) 
+  if (isWhitespace(f.emailAddress.value))
   {
       alert_message(alert_box_title,warning_empty_email);
       selectField(f, 'emailAddress');
@@ -114,7 +114,7 @@ function validateForm(f,check_password)
 <div class="workBack">
 <form method="post" action="lib/usermanagement/usersEdit.php" class="x-form"
       name="useredit" onSubmit="javascript:return validateForm(this,{$check_password});">
-      
+
 	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 
@@ -125,7 +125,7 @@ function validateForm(f,check_password)
 	<table class="common">
 		<tr>
 			<th style="background:none;">{$labels.th_login}</th>
-			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 
+			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
 			{if $userData neq null}
 				readonly="readonly"
 			{/if}
@@ -135,13 +135,13 @@ function validateForm(f,check_password)
 		</tr>
 		<tr>
 			<th style="background:none;">{$labels.th_first_name}</th>
-			<td><input type="text" name="firstName" value="{$userData->firstName|escape}" 
+			<td><input type="text" name="firstName" value="{$userData->firstName|escape}"
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
 			     {include file="error_icon.tpl" field="firstName"}
 			</td></tr>
 		<tr>
 			<th style="background:none;">{$labels.th_last_name}</th>
-			<td><input type="text" name="lastName" value="{$userData->lastName|escape}" 
+			<td><input type="text" name="lastName" value="{$userData->lastName|escape}"
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
  			     {include file="error_icon.tpl" field="lastName"}
 			     </td>
@@ -151,21 +151,21 @@ function validateForm(f,check_password)
 		     <tr>
 			    {if $external_password_mgmt eq 0 }
  			      <th style="background:none;">{$labels.th_password}</th>
-		        <td><input type="password" id="password" name="password" 
-		                   size="{#PASSWD_SIZE#}" 
+		        <td><input type="password" id="password" name="password"
+		                   size="{#PASSWD_SIZE#}"
 		                   maxlength="{#PASSWD_SIZE#}" />
-		            {include file="error_icon.tpl" field="password"}       
+		            {include file="error_icon.tpl" field="password"}
 		        </td>
-		      {/if}      
+		      {/if}
 		     </tr>
    {/if}
-   
-   
+
+
 		<tr>
 			<th style="background:none;">{$labels.th_email}</th>
-			<td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}" 
+			<td><input type="text" id="email" name="emailAddress" value="{$userData->emailAddress|escape}"
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
-          {include file="error_icon.tpl" field="emailAddress"}       
+          {include file="error_icon.tpl" field="emailAddress"}
 			</td>
 		</tr>
 		<tr>
@@ -173,9 +173,9 @@ function validateForm(f,check_password)
 			<td>
 		  	   {assign var=selected_role value=$userData->globalRoleID}
 			  {if $userData->globalRoleID eq 0}
-        	  {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}	  
+        	  {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}
 			  {/if}
-				<select name="rights_id"> 
+				<select name="rights_id">
 				{foreach key=role_id item=role from=$optRights}
 		        <option value="{$role_id}"{if $role_id == $selected_role} selected="selected" {/if}>
 					{$role->name|escape}
@@ -187,35 +187,35 @@ function validateForm(f,check_password)
 
 		<tr>
 			<th style="background:none;">{$labels.th_locale}</th>
-			<td>		   
+			<td>
         {assign var=selected_locale value=$userData->locale}
         {if $userData->locale|count_characters eq 0}
            {assign var=selected_locale value=$locale}
         {/if}
-	
+
 				<select name="locale">
 				{html_options options=$optLocale selected=$selected_locale}
-				</select>	
+				</select>
 			</td>
 		</tr>
 
 		<tr>
 			<th style="background:none;">{$labels.th_active}</th>
-			<td> 
+			<td>
 			  <input type="checkbox"  name="user_is_active" {if $userData->bActive eq 1} checked {/if} />
 			</td>
 		</tr>
 
     {if $external_password_mgmt eq 1 }
-      <td>{$labels.password_mgmt_is_external}</td>    
+      <td>{$labels.password_mgmt_is_external}</td>
     {/if}
 
 	</table>
-	
-	<div class="groupBtn">	
+
+	<div class="groupBtn">
 	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}">
 	<input type="submit" name="do_update"   value="{$labels.btn_save}" />
-	<input type="button" name="cancel" value="{$labels.btn_cancel}" 
+	<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />
 
 	</div>
@@ -225,12 +225,12 @@ function validateForm(f,check_password)
 {if $userData neq null and $external_password_mgmt eq 0}
 <br />
 <form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
-	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword">
+	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
   <input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
 </form>
 {/if}
-    
+
 </div>
 
 </body>

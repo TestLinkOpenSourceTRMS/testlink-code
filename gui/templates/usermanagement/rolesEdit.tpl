@@ -1,11 +1,11 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $
-Purpose: smarty template - create/edit user role 
+$Id: rolesEdit.tpl,v 1.10 2008/03/10 21:52:00 schlundus Exp $
+Purpose: smarty template - create/edit user role
 
 rev :
      20071227 - franciscom - look and feel.
-     
+
      20070725 - franciscom
      - added js check on role name
      - use of input_dimensions.conf
@@ -30,7 +30,7 @@ var warning_error_role_no_rights = "{$labels.error_role_no_rights}";
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.rolename.value)) 
+  if (isWhitespace(f.rolename.value))
   {
       alert_message(alert_box_title,warning_empty_role_name);
       selectField(f, 'rolename');
@@ -41,8 +41,8 @@ function validateForm(f)
   {
       alert_message(alert_box_title,warning_error_role_no_rights);
       return false;
-  } 
- 
+  }
+
   return true;
 }
 </script>
@@ -66,19 +66,19 @@ function validateForm(f)
 {* Create Form *}
 <div class="workBack">
 
-	<form name="rolesedit" id="rolesedit" 
-		method="post" action="lib/usermanagement/rolesEdit.php" 
+	<form name="rolesedit" id="rolesedit"
+		method="post" action="lib/usermanagement/rolesEdit.php"
 	{if $role_management == "yes"}
-	  onSubmit="javascript:return validateForm(this);"	
-	{else}	
-		onsubmit="return false" 
+	  onSubmit="javascript:return validateForm(this);"
+	{else}
+		onsubmit="return false"
 	{/if}
 	>
 	<input type="hidden" name="roleid" value="{$role->dbID}" />
 	<table class="common">
 		<tr><th>{lang_get s='th_rolename'}</th></tr>
 		<tr><td>
-			   <input type="text" name="rolename" 
+			   <input type="text" name="rolename"
 			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$role->name|escape}"/>
  				 {include file="error_icon.tpl" field="rolename"}
 		    </td></tr>
@@ -146,11 +146,11 @@ function validateForm(f)
 
 	</table>
 	{if $role_management == "yes" && $role->dbID != $noRightsRole}
-	
-		<div class="groupBtn">	
+
+		<div class="groupBtn">
 		<input type="hidden" name="doAction" value="{$action_type}" />
-		<input type="submit" name="role_mgmt" value="{lang_get s='btn_save'}" 
-		         {if $role != 0 && $affectedUsers neq null} onClick="return modifyRoles_warning()"{/if} 
+		<input type="submit" name="role_mgmt" value="{lang_get s='btn_save'}"
+		         {if $role != null && $affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
 		/>
 	{/if}
 	</div>
@@ -166,7 +166,7 @@ function validateForm(f)
 		</table>
 	{/if}
 	</form>
-	
+
 </div>
 
 </body>

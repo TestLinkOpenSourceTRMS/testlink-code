@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/03/09 18:44:47 $ $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -137,7 +137,6 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	$result = $user->readFromDB($db);
 	if ($result >= tl::OK)
 	{
-	  echo "<pre>debug 20080306 - \ - " . __FUNCTION__ . " --- "; print_r($user); echo "</pre>";
 		if (strlen($user->emailAddress))
 		{
 			$newPassword = md5(uniqid(rand(),1));

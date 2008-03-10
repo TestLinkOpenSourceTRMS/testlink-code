@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.290 $
- * @modified $Date: 2008/03/09 18:49:18 $ $Author: franciscom $
+ * @version $Revision: 1.291 $
+ * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -756,10 +756,12 @@ $TLS_th_last_name = "Last  Name";
 $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
-//$TLS_th_api = "API Key";
+$TLS_th_api = "API Key";
 //$TLS_api_gen_key_action = "generate";
 $TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?";
-
+$TLS_order_by_login_dir = "Order by login";
+$TLS_order_by_role_dir = "Order by role";
+$TLS_alt_active_user = "Active user";
 
 // gui/templates/login.tpl
 $TLS_btn_login = "Login";
@@ -1614,7 +1616,7 @@ $TLS_bts_connection_problems = "Connection to your Bug Tracking System has faile
                                 Please check your configuration.<br />
                                 Be careful this problem will degrade TestLink performance.";
 $TLS_but_directory_is_not_writable = "The directory is not writable!";
-$TLS_check_email_config="Check following parameters of email feature:"; 
+$TLS_check_email_config="Check following parameters of email feature:";
 $TLS_directory_is_writable = "The directory is writable";
 $TLS_does_not_exist = "does not exist";
 $TLS_exists = "exists";

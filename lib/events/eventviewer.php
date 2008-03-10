@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/02/27 20:16:42 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/03/10 21:52:00 $ by $Author: schlundus $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -42,6 +42,7 @@ if (strlen($args->endDate))
 }
 $events = $g_tlLogger->getEventsFor($args->logLevel,null,null,null,500,$startTime,$endTime);
 $users = getUsersForHtmlOptions($db,null,false,null);
+$users[0] = false;
 
 $smarty = new TLSmarty();
 $smarty->assign('events',$events);

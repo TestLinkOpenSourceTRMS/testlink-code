@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/03/09 18:44:47 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -117,7 +117,6 @@ switch($args->doAction)
             $smarty->assign($prop,$value);
         }
        
-        $smarty->assign('api_ui_show',$g_api_ui_show);
         $smarty->assign('user_feedback', $user_feedback);
         $smarty->assign('feedback_type', 'ultrasoft');
         $smarty->assign('id', $args->tprojectID);

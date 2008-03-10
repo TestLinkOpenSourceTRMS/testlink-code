@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/02/13 01:20:16 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
  *
 */
 require_once('../../config.inc.php');
@@ -30,7 +30,6 @@ if($tproject_id)
 
 $smarty = new TLSmarty();
 $smarty->assign('main_descr',$main_descr);
-$smarty->assign('api_ui_show',$g_api_ui_show);
 $smarty->assign('tplans',$tplans);
 $smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
 $smarty->display($template_dir . 'planView.tpl');

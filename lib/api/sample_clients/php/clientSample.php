@@ -22,11 +22,14 @@ require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
 define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080303/lib/api/xmlrpc.php");
 
 // substitute your Dev Key Here
-define("DEV_KEY", "f2a979d533cdd9761434bba60a88e4d8");
+// define("DEV_KEY", "f2a979d533cdd9761434bba60a88e4d8");
+define("DEV_KEY", "11111111111111111111111111111111");
 
 $tcaseStatusCode['passed']='p';
 $tcaseStatusCode['blocked']='b';
 $tcaseStatusCode['failed']='f';
+$tcaseStatusCode['wrong']='w';
+
 
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";

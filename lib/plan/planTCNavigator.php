@@ -1,12 +1,13 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: planTCNavigator.php,v 1.5 2008/03/09 18:44:47 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.6 2008/03/11 18:40:58 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
 *
 * rev :
+*      20080311 - franciscom - BUGID 1427 - first developments
 *      20070925 - franciscom - added management of workframe
 */ 	
 require('../../config.inc.php');
@@ -22,6 +23,21 @@ $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']))
 
 $tplan_mgr = new testplan($db);
 $args=init_args($tplan_mgr);
+
+$testers=null;
+
+$filters->keyword_id = $args->keyword_id;
+$filters->tc_id = FILTER_BY_TC_OFF;
+$filters->build_id = FILTER_BY_BUILD_OFF;
+$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+$filters->status = FILTER_BY_TC_STATUS_OFF;
+$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+$filters->include_unassigned=0;
+$filters->show_testsuite_contents=1;
+
+$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+
 
 // filter using user roles 
 $tplans=getAccessibleTestPlans($db,$args->tproject_id,$args->user_id,1);
@@ -66,6 +82,8 @@ switch($args->feature)
   break;
 
   case 'tc_exec_assignment':
+  $testers = getTestersForHtmlOptions($db,$args->tplan_id,$args->tproject_id);
+  $filters->assignedTo = $args->filter_assigned_to;
 	$menuUrl = "lib/plan/tc_exec_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
 	$filters->hide_testcases=0;
@@ -85,18 +103,6 @@ if ($args->keyword_id)
 	$getArguments .= '&keyword_id='.$args->keyword_id;
 }
 
-$filters->keyword_id = $args->keyword_id;
-$filters->tc_id = FILTER_BY_TC_OFF;
-$filters->build_id = FILTER_BY_BUILD_OFF;
-$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-$filters->status = FILTER_BY_TC_STATUS_OFF;
-$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-$filters->include_unassigned=1;
-$filters->show_testsuite_contents=1;
-
-$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
-$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
-
 $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
                           $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
 
@@ -107,6 +113,8 @@ $smarty->assign('args',$getArguments);
 $smarty->assign('tplan_id',$args->tplan_id);
 $smarty->assign('map_tplans',$map_tplans);
 
+$smarty->assign('testers', $testers);
+$smarty->assign('filter_assigned_to',$filters->assignedTo);
 
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
@@ -146,6 +154,7 @@ function init_args(&$tplanMgr)
                          "?help={$args->help_topic}&locale={$_SESSION['locale']}";
     }
 
+    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : 0;             
 
     // 20070120 - franciscom - 
     // is possible to call this page using a Test Project that have no test plans

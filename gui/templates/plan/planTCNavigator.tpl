@@ -1,8 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.2 2008/03/11 18:40:34 franciscom Exp $
 show test plan tree 
+
+rev : 20080311 - franciscom - BUGID 1427 - first developments
 *}
+
+{lang_get var="labels" 
+          s='filter_owner,TestPlan'}
+
 
 {include file="inc_head.tpl" jsTree="yes" OpenHead="yes"}
 <script type="text/javascript">
@@ -45,6 +51,17 @@ function pre_submit()
 				</select>
 			</td>
 		</tr>
+
+    {if $testers }
+		<tr>
+			<td>{$labels.filter_owner}</td>
+			<td>
+				<select name="filter_assigned_to">
+					{html_options options=$testers selected=$filter_assigned_to}
+				</select>
+			</td>	
+		</tr>
+    {/if}
 		<tr>
 			<td>
 			<input type="submit" value="{lang_get s='btn_update_menu'}" name="filter" />

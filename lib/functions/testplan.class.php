@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2008/03/07 11:05:37 $ $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2008/03/11 07:43:55 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080310 - sbouffard - contribution added NHB.name to recordset (useful for API methods).  
  *     20080224 - franciscom - get_linked_tcversions() interface changes
  *     20080217 - franciscom - interface changes - check_build_name_existence()
  *     20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
@@ -353,14 +354,13 @@ function link_tcversions($id,&$items_to_link)
            key: testcase id
            value: map with following keys:
 
-
-
            Notice:
            executed field: will take the following values
                            NULL if the tc version has not been executed in THIS test plan
                            tcversion_id if has executions
 
  rev :
+       20080309 - sbouffard - added NHB.name to recordset
        20080114 - franciscom - added external_id in output
      	 20070825 - franciscom - added NHB.node_order on ORDER BY
        20070630 - franciscom - added active tcversion status in output recorset
@@ -450,7 +450,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// 20070917 - added version
 	//
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
-	     "        NHA.parent_id AS tc_id, NHB.node_order AS z," .
+	     "        NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
 	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
 	     "        TCV.version AS version, TCV.active,TCV.tc_external_id AS external_id," .
 	     "        E.id AS exec_id, " .

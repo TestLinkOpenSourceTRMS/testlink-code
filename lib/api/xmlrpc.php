@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/03/07 22:51:15 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/03/11 07:42:55 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
  *      20080307 - franciscom - now is possible to use test case external or internal ID
  *                              when calling reportTCResult()
  *      20080306 - franciscom - BUGID 1421
@@ -102,7 +103,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private $tcaseMgr=null;
 	
 	/**#@+
-	 * string for parameter names are all definied statically
+	 * string for parameter names are all defined statically
 	 * @static
  	 */
 	public static $devKeyParamName = "devKey";
@@ -122,6 +123,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $buildNotesParamName = "buildnotes";
 	public static $automatedParamName = "automated";
 	public static $testCaseNameParamName = "testcasename";
+	public static $keywordIDParamName = "keywordid";
+	public static $executedParamName = "executed";
+	public static $assignedToParamName = "assignedto";
+	public static $executeStatusParamName = "executestatus";
 	/**#@-*/
 	
 	/**
@@ -148,6 +153,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.createBuild'				=> 'this:createBuild',
 			'tl.getTestSuitesForTestPlan' 	=> 'this:getTestSuitesForTestPlan',
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
+			'tl.getTestCasesForTestPlan' 	=> 'this:getTestCasesForTestPlan',
 			'tl.getTestCaseIDByName'		=> 'this:getTestCaseIDByName',
 			'tl.createTestCase'				=> 'this:createTestCase',
 			'tl.about'						=> 'this:about',
@@ -298,18 +304,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkStatus()
     {
-		    if(!$this->_isStatusPresent())
+		    if( ($status=$this->_isStatusPresent()) )
 		    {
-		    	$this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
-		    	return false;
-		    }
-		    $status = $this->args[self::$statusParamName];
-		    if(!$this->_isStatusValid($status))
-		    {
-		    	$this->errors[] = new IXR_Error(INVALID_STATUS, INVALID_STATUS_STR);
-		    	return false;
-		    }    	
-		    return true;
+		        if( !($status=$this->_isStatusValid($this->args[self::$statusParamName])))
+		        {
+		        	$this->errors[] = new IXR_Error(INVALID_STATUS, INVALID_STATUS_STR);
+		        }    	
+        }
+        else
+        {
+            $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
+        }
+        return $status;
     }       
     
 	/**
@@ -392,11 +398,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestProjectID()
     {
-      $status=true;
-    	if(!$this->_isTestProjectIDPresent())
+    	if(!($status=$this->_isTestProjectIDPresent()))
     	{
     		  $this->errors[] = new IXR_Error(NO_TESTPROJECTID, NO_TESTPROJECTID_STR);
-    		  $status=false;
     	}
     	else
     	{    		
@@ -423,11 +427,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestSuiteID()
     {
-      $status=true;
-    	if(!$this->_isTestSuiteIDPresent())
+    	if(!($status=$this->_isTestSuiteIDPresent()))
     	{
     		$this->errors[] = new IXR_Error(NO_TESTSUITEID, NO_TESTSUITEID_STR);
-    		$status=false;
     	}
     	else
     	{    		
@@ -526,6 +528,17 @@ class TestlinkXMLRPCServer extends IXR_Server
       return $status;
     }
      
+
+    /**
+	 * Helper method to see if a param is present
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */  	     
+	 private function _isParamPresent($pname)
+	 {
+		    return (isset($this->args[$pname]) ? true : false);
+	 }
 
     /**
 	 * Helper method to see if the status provided is valid 
@@ -967,6 +980,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 	}
 	
+	/**
+	 * Run all the necessary checks to see if ...
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
 	private function _checkGetTestCasesForTestSuiteRequest()
 	{
 		if(!$this->authenticate())
@@ -1511,7 +1530,94 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }
 		    return $status;
     }
-}
+
+	 /**
+	 * getTestCasesForTestPlan
+	 * List test cases linked to a test plan
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testplanid"]
+	 * @param int $args["testcaseid"] - optional
+	 * @param int $args["buildid"] - optional
+	 * @param int $args["keywordid"] - optional
+	 * @param boolean $args["executed"] - optional
+	 * @param int $args["$assignedto"] - optional
+	 * @param string $args["executestatus"] - optional
+	 * @return mixed $resultInfo
+	 */
+	 public function getTestCasesForTestPlan($args)
+	 {
+
+    // Optional parameters
+    $opt=array(self::$testCaseIDParamName => null,
+               self::$buildIDParamName => null,
+               self::$keywordIDParamName => null,
+               self::$executedParamName => null,
+               self::$assignedToParamName => null,
+               self::$executeStatusParamName => null,);
+	 	
+   	$this->_setArgs($args);
+   	$this->errors[]=$opt;
+		//echo "<pre>debug 20080310 - \ - " . __FUNCTION__ . " --- "; print_r($this); echo "</pre>";
+		//die();
+		
+		
+		// Test Case ID, Build ID are checked if present
+		if(!$this->_checkGetTestCasesForTestPlanRequest())
+		{
+			return $this->errors;
+		}
+		
+		$tplanid=$this->args[self::$testPlanIDParamName];
+		foreach($opt as $key => $value)
+		{
+		    if($this->_isParamPresent($key))
+		    {
+		        $opt[$key]=$this->args[$key];      
+		    }   
+		}
+		$testplan = new testplan($this->dbObj);
+		$recordset=$testplan->get_linked_tcversions($tplanid,
+		                                            $opt[self::$testCaseIDParamName],
+                                                $opt[self::$keywordIDParamName],
+		                                            $opt[self::$executedParamName],
+                                                $opt[self::$assignedToParamName],
+                                                $opt[self::$executeStatusParamName],
+	 	                                            $opt[self::$buildIDParamName]);
+		return $recordset;
+	 }
+
+
+	/**
+	 * Run all the necessary checks to see if ...
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
+	private function _checkGetTestCasesForTestPlanRequest()
+	{
+		$status=$this->authenticate();
+		
+		if($status)
+		{
+	    $status &=$this->checkTestPlanID();
+	    
+	    if($status && $this->_isTestCaseIDPresent())
+	    {
+	        $status &=$this->_checkTCIDAndTPIDValid();
+	    }
+	    if($status && $this->_isBuildIDPresent())  
+	    {
+	        $status &=$this->checkBuildID();
+	    }
+		}
+		return $status;
+	}
+
+
+
+} // class end
 
 /**
  * Where the Server object is initialized

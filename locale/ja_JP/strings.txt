@@ -9,7 +9,7 @@
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * @author Francisco Mancardi
  *
@@ -42,7 +42,7 @@
  * Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
  * Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2008/01/17 02:06:55 $ $Author: tosikawa $
+ * @modified $Date: 2008/03/12 18:14:27 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -1460,8 +1460,8 @@ $TLS_req_import_format_description1 = " - CSV は以下の３つの列が必要�
 $TLS_req_import_format_description2 = " - DOORS からの CSV エクスポートにはヘッダが必要です";
 $TLS_req_import_result_overwritten = "上書き!";
 $TLS_req_import_result_skipped = "スキップ";
-$TLS_req_state_not_testable = "テストできない";
-$TLS_req_state_valid = "有効";
+$TLS_req_status_not_testable = "テストできない";
+$TLS_req_status_valid = "有効";
 $TLS_the_format_req_xml_import = "要件のインポート用のXMLフォーマットが不正です";
 $TLS_warning_duplicate_reqdoc_id = "ドキュメントIDが重複しています";
 

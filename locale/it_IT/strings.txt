@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/02/10 18:47:45 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/03/12 18:14:27 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1352,8 +1352,8 @@ $TLS_req_import_format_description1 = " - CSV richiede due campi per ciascuna ri
 $TLS_req_import_format_description2 = " - CSV esportato da DOORS richiede una riga di testata.";
 $TLS_req_import_result_overwritten = "I risultati sono stati sovrascritti!";
 $TLS_req_import_result_skipped = "I risultati sono stati ignorati";
-$TLS_req_state_not_testable = "Non testabile";
-$TLS_req_state_valid = "Valido";
+$TLS_req_status_not_testable = "Non testabile";
+$TLS_req_status_valid = "Valido";
 $TLS_the_format_req_xml_import = "LOCALIZE: TLS_the_format_req_xml_import";
 $TLS_warning_duplicate_reqdoc_id = "ID documento duplicato";
 

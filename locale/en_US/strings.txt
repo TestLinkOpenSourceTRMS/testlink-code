@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/03/07 22:56:02 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/03/12 18:14:27 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1378,8 +1378,8 @@ $TLS_req_import_format_description1 = " - CSV type requires three fields for eac
 $TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
-$TLS_req_state_not_testable = "Not testable";
-$TLS_req_state_valid = "Valid";
+$TLS_req_status_not_testable = "Not testable";
+$TLS_req_status_valid = "Valid";
 $TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITLE</title><description>DESCRIPTION</description></requirement> ... </requirements>");
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
 

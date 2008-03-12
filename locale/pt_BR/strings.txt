@@ -8,7 +8,7 @@
  * Initial contributor (TL 1.6):  Leonardo Molinari 
  * @authors Allan Herbert Medeiros and Manoel da Fonte
  *
- * @version $Revision: 1.16 $ (update to TL 1.7.1)
+ * @version $Revision: 1.17 $ (update to TL 1.7.1)
  * @modified $Date: 2007/11/08 10:00:00
  * 
  *
@@ -1437,8 +1437,8 @@ $TLS_req_import_format_description1 = " - tipo CSV requer três campos para cada 
 $TLS_req_import_format_description2 = " - CSV exportado de DOORS requer cabeçalho da linha.";
 $TLS_req_import_result_overwritten = "sobrescrito!";
 $TLS_req_import_result_skipped = "Omitido";
-$TLS_req_state_not_testable = "Não testável";
-$TLS_req_state_valid = "Válido";
+$TLS_req_status_not_testable = "Não testável";
+$TLS_req_status_valid = "Válido";
 $TLS_the_format_req_xml_import = "Formato de XML inválido para importação de requisito";
 $TLS_warning_duplicate_reqdoc_id = "id do documento duplicado";
 

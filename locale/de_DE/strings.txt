@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2008/02/22 12:05:23 $ $Author: kmielke $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2008/03/12 18:14:26 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1428,8 +1428,8 @@ $TLS_req_import_format_description1 = " - CSV Typ erfordert zwei Spalten pro Zei
 $TLS_req_import_format_description2 = " - CSV mittels DOORS exportiert erfordert eine Header-Zeile.";
 $TLS_req_import_result_overwritten = "Die Ergebnisse wurden überschrieben";
 $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
-$TLS_req_state_not_testable = "Nicht testbar";
-$TLS_req_state_valid = "Gültig";
+$TLS_req_status_not_testable = "Nicht testbar";
+$TLS_req_status_valid = "Gültig";
 $TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITEL</title><description>BESCHREIBUNG</description></requirement> ... </requirements>");
 $TLS_warning_duplicate_reqdoc_id = "Doppelte Dok. ID";
 

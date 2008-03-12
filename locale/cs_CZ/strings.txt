@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/02/10 22:42:48 $ $Author: havlat $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/03/12 18:14:26 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1516,8 +1516,8 @@ $TLS_req_import_format_description1 = " - Typ CSV vužaduje tři položky na ka�
 $TLS_req_import_format_description2 = " - CSV exportované z DOORS vyžaduje řádku s hlavičkou (seznam sloupců).";
 $TLS_req_import_result_overwritten = "přepsáno!";
 $TLS_req_import_result_skipped = "vynecháno";
-$TLS_req_state_not_testable = "Netestovatelné";
-$TLS_req_state_valid = "Validní";
+$TLS_req_status_not_testable = "Netestovatelné";
+$TLS_req_status_valid = "Validní";
 $TLS_the_format_req_xml_import = "Chybný formát XML pro import požadavků";
 $TLS_warning_duplicate_reqdoc_id = "Duplicitní ID dokumentu";
 

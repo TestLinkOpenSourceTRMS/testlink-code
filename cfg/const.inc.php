@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2008/03/12 16:25:46 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2008/03/12 18:13:54 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -17,6 +17,7 @@
  *-------------------------------------------------------------------
  * Revisions: 
  *           20080312 - franciscom - BUGID 1427
+ *                                   added new req status
  *           20080309 - franciscom - removed PHP E_STRICT warnings
  *           20070607 - franciscom 
  *           to solve BUGID: 887
@@ -470,6 +471,23 @@ define('MENU_ITEM_CLOSE','</div><br />');
 // moved from requirements.inc.php
 define('TL_REQ_STATUS_VALID', 'V');
 define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
+define('TL_REQ_STATUS_DRAFT', 'D');
+define('TL_REQ_STATUS_APPROVED', 'A');
+define('TL_REQ_STATUS_OBSOLETE', 'O');
+define('TL_REQ_STATUS_TODO', 'T');
+define('TL_REQ_STATUS_CHANGED', 'M');
+
+// key: status
+// value: label
+$g_req_status=array(TL_REQ_STATUS_VALID => 'req_status_valid', 
+					          TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+					          TL_REQ_STATUS_DRAFT => 'req_status_draft',
+					          TL_REQ_STATUS_APPROVED => 'req_status_approved',
+					          TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
+					          TL_REQ_STATUS_TODO => 'req_status_todo',
+					          TL_REQ_STATUS_CHANGED => 'req_status_changed');
+
+
 
 // 20071117 - franciscom
 // need ask Martin what are possible types
@@ -479,8 +497,6 @@ define('TL_REQ_TYPE_1', 'V');
 define('TL_REQ_TYPE_2', 'N');
 
 
-$g_req_status=array(TL_REQ_STATUS_VALID => 'req_state_valid', 
-					          TL_REQ_STATUS_NOT_TESTABLE => 'req_state_not_testable');
 
 
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');

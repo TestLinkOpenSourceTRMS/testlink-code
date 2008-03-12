@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: planTCNavigator.php,v 1.6 2008/03/11 18:40:58 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.7 2008/03/12 08:18:30 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -32,7 +32,7 @@ $filters->build_id = FILTER_BY_BUILD_OFF;
 $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
 $filters->status = FILTER_BY_TC_STATUS_OFF;
 $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-$filters->include_unassigned=0;
+$filters->include_unassigned=1;
 $filters->show_testsuite_contents=1;
 
 $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
@@ -82,9 +82,12 @@ switch($args->feature)
   break;
 
   case 'tc_exec_assignment':
+  // BUGID 1427
   $testers = getTestersForHtmlOptions($db,$args->tplan_id,$args->tproject_id);
   $filters->assignedTo = $args->filter_assigned_to;
-	$menuUrl = "lib/plan/tc_exec_assignment.php";
+  $filters->include_unassigned=0;	
+  
+  $menuUrl = "lib/plan/tc_exec_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
 	$filters->hide_testcases=0;
 	$help_file = "planOwnerAndPriority.html";
@@ -97,12 +100,18 @@ switch($args->feature)
 	
 }
 
+// Build arguments that will be passed from tree menu to lauched
+// pages, when user do some action on tree (example clicks on a folder)
 $getArguments = '&tplan_id=' . $args->tplan_id;
 if ($args->keyword_id)
 {
-	$getArguments .= '&keyword_id='.$args->keyword_id;
+	  $getArguments .= '&keyword_id='.$args->keyword_id;
 }
-
+// BUGID 1427
+if( $filters->assignedTo > 0 )
+{
+    $getArguments .= '&assigned_to=' . $filters->assignedTo;     
+}
 $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
                           $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
 

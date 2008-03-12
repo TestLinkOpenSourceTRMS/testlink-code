@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2008/03/11 07:43:55 $ $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2008/03/12 16:25:57 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -335,7 +335,7 @@ function link_tcversions($id,&$items_to_link)
                                      get only executed tcversions
 
          [assigned_to]: default NULL => do not filter by user assign.
-                        numeric      => filter by user id
+                        numeric > 0     => filter by user id
 
          [exec_status]: default NULL => do not filter by execution status
                         character    => filter by execution status=character

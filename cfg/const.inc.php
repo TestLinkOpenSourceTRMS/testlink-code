@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2008/03/09 18:37:19 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2008/03/12 16:25:46 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20080312 - franciscom - BUGID 1427
  *           20080309 - franciscom - removed PHP E_STRICT warnings
  *           20070607 - franciscom 
  *           to solve BUGID: 887
@@ -527,6 +528,7 @@ define('WRITE_BUTTON_ONLY_IF_LINKED',1);
 
 // moved from tc_exec_assignment.php
 define('FILTER_BY_TC_OFF',null); 
+define('FILTER_BY_EXECUTE_STATUS_OFF',null); 
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
 

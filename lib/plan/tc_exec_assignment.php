@@ -1,9 +1,10 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.20 2008/03/09 18:44:47 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.21 2008/03/12 16:25:57 franciscom Exp $ 
  * 
  * rev :
+ *       20080312 - franciscom - BUGID 1427
  *       20080114 - franciscom - added testcase external_id management
  *       20071228 - franciscom - BUG build combo of users using only users
  *                               that can execute test cases in testplan.
@@ -21,7 +22,6 @@ require("specview.php");
 testlinkInitPage($db);
 
 $tcase_cfg = config_get('testcase_cfg');
-
 $tree_mgr = new tree($db); 
 $tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
@@ -122,17 +122,22 @@ switch($args->level)
 		$out['spec_view'][0]=$my_out['spec_view'][0];
 		$out['num_tc']=1;
 		break;
+		
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($args->id);
 		
 		// BUGID 1041
-		$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($args->tplan_id,FILTER_BY_TC_OFF,$args->keyword_id);
+		$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($args->tplan_id,FILTER_BY_TC_OFF,
+		                                                           $args->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
+		                                                           $args->assigned_to);
 		$out = gen_spec_view($db,'testplan',$args->tplan_id,$args->id,$tsuite_data['name'],
                          $tplan_linked_tcversions,
                          $map_node_tccount,
                          $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		break;
+
 	default:
+	  // @ MUST BE REFACTORED
 		// show instructions
 		redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=tc_exec_assignment&locale={$_SESSION['locale']}");
 		break;
@@ -159,8 +164,8 @@ function init_args()
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 
 	$key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-		  'version_id' => 0, 'keyword_id' => 0, 'has_prev_assignment' => null,
-		  'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
+		              'version_id' => 0, 'keyword_id' => 0, 'has_prev_assignment' => null,
+		              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'assigned_to' => 0);
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;

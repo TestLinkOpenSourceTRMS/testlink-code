@@ -1,17 +1,17 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- *  
+ *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/03/09 18:44:47 $ $Author: franciscom $ 
- * 
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/03/12 21:27:38 $ $Author: schlundus $
+ *
  * @author Martin Havlat
- * 
+ *
  * View existing and create a new req. specification.
- * 
+ *
  * rev : 20071106 - franciscom - custom field management
- * 
+ *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -21,22 +21,19 @@ require_once('requirement_spec_mgr.class.php');
 require_once("web_editor.php");
 testlinkInitPage($db);
 
+$args = init_args();
+
 $sqlResult = null;
 $action = null;
 $main_descr = null;
 $action_descr = null;
 $cf_smarty = null;
 $user_feedback = null;
-
-$_REQUEST = strings_stripSlashes($_REQUEST);
-$args = init_args();
-
 $req_spec_mgr = new requirement_spec_mgr($db);
 $smarty = new TLSmarty();
 
 $template_dir = "requirements/";
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
 
 switch($args->do_action)
 {
@@ -47,31 +44,31 @@ switch($args->do_action)
 
 		// get custom fields
 		$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs(null,$args->tproject_id);
+		$smarty->assign('req_spec_id',null);
+		$smarty->assign('req_spec_title',null);
+		$smarty->assign('total_req_counter',null);
 		$smarty->assign('submit_button_label',lang_get('btn_save'));
 		$smarty->assign('submit_button_action','do_create');
 		break;
 
+	case "edit":
+		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
+		$main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$action_descr = lang_get('edit_req_spec');
 
-  case "edit":
-  $req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-  $main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
-  $action_descr=lang_get('edit_req_spec');
+		$template = $template_dir . $default_template;
 
-  $template = $template_dir . $default_template;
-  
-  $args->scope=$req_spec['scope'];			
-	
-	$smarty->assign('req_spec_id',$args->req_spec_id);	
-	$smarty->assign('req_spec_title',$req_spec['title']);	
-  	
-  $smarty->assign('total_req_counter',$req_spec['total_req']);	
-  $smarty->assign('submit_button_label',lang_get('btn_save'));
-  $smarty->assign('submit_button_action','do_update');
-  
-	// get custom fields
-	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs($args->req_spec_id,$args->tproject_id);
-  break;
+		$args->scope = $req_spec['scope'];
 
+		$smarty->assign('req_spec_id',$args->req_spec_id);
+		$smarty->assign('req_spec_title',$req_spec['title']);
+		$smarty->assign('total_req_counter',$req_spec['total_req']);
+		$smarty->assign('submit_button_label',lang_get('btn_save'));
+		$smarty->assign('submit_button_action','do_update');
+
+		// get custom fields
+		$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs($args->req_spec_id,$args->tproject_id);
+		break;
 
 	case "do_create":
 		$main_descr = lang_get('testproject') . TITLE_SEP . $args->tproject_name;
@@ -83,7 +80,7 @@ switch($args->do_action)
 		$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs(null,$args->tproject_id);
 		$ret = $req_spec_mgr->create($args->tproject_id,$args->title,$args->scope,$args->countReq,$args->user_id);
 
-		$user_feedback = $ret['msg'];	                                 
+		$user_feedback = $ret['msg'];
 		if($ret['status_ok'])
 		{
 			$user_feedback = sprintf(lang_get('req_spec_created'),$args->title);
@@ -104,14 +101,13 @@ switch($args->do_action)
 			$cf_map = $req_spec_mgr->get_linked_cfields($args->req_spec_id);
 			$req_spec_mgr->values_to_db($_REQUEST,$args->req_spec_id,$cf_map);
 			logAuditEvent(TLS("audit_req_spec_saved",$args->title),"SAVE",$args->req_spec_id,"req_specs");
-		} 
+		}
 
 		$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 		$smarty->assign('req_spec_id', $args->req_spec_id);
 		$smarty->assign('req_spec', $req_spec);
 		break;
-
 
 	case "do_delete":
 		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
@@ -127,61 +123,55 @@ switch($args->do_action)
 		$smarty->assign('result','ok');
 		break;
 
+	case "reorder":
+		$template = $template_dir .  'reqSpecReorder.tpl';
+		$order_by = ' ORDER BY NH.node_order,REQ_SPEC.id ';
+		$all_req_spec = $req_spec_mgr->get_all_in_testproject($args->tproject_id,$order_by);
+		$smarty->assign('arrReqSpecs', $all_req_spec);
+		break;
 
-  case "reorder":
-  $template = $template_dir .  'reqSpecReorder.tpl';
-  $order_by=' ORDER BY NH.node_order,REQ_SPEC.id ';
-  $all_req_spec=$req_spec_mgr->get_all_in_testproject($args->tproject_id,$order_by);
-  $smarty->assign('tproject_id', $args->tproject_id);
-  $smarty->assign('tproject_name', $args->tproject_name);
-  $smarty->assign('arrReqSpecs', $all_req_spec);
-  break;
-
-  case "do_reorder":
-  $nodes_in_order = transform_nodes_order($args->nodes_order);
-
-  // need to remove first element, is testproject
-  array_shift($nodes_in_order);
-	$req_spec_mgr->set_order($nodes_in_order);
-  $template = $template_dir .  'project_req_spec_mgmt.tpl';
-  $smarty->assign('refresh_tree', 'yes');
-  break;
+  	case "do_reorder":
+		$nodes_in_order = transform_nodes_order($args->nodes_order);
+		// need to remove first element, is testproject
+		array_shift($nodes_in_order);
+		$req_spec_mgr->set_order($nodes_in_order);
+		$template = $template_dir .  'project_req_spec_mgmt.tpl';
+		$smarty->assign('refresh_tree', 'yes');
+		break;
 }
-
-$of=web_editor('scope',$_SESSION['basehref']) ;
-$of->Value="";
+$of = web_editor('scope',$_SESSION['basehref']) ;
+$of->Value = "";
 if($args->scope)
-{
-  $of->Value = $args->scope;
-}
+	$of->Value = $args->scope;
 
+$smarty->assign('tproject_id', $args->tproject_id);
+$smarty->assign('tproject_name', $args->tproject_name);
 $smarty->assign('cf', $cf_smarty);
 $smarty->assign('action_descr',$action_descr);
 $smarty->assign('main_descr',$main_descr);
 $smarty->assign('name',$args->title);
 $smarty->assign('user_feedback',$user_feedback );
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req"));
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
 
 function init_args()
 {
-
-	$args = new stdClass();  
+	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-	
+
 	$args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
-  $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
-  $args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
-  $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;
+	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
+	$args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
+	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;
 
-  $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
-  $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
-  $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-  $args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
+	$args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
+	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
 
-  return $args;
+	return $args;
 }
 ?>
 

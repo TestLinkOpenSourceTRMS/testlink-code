@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2008/03/10 21:52:00 $ by $Author: schlundus $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2008/03/12 21:27:37 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -57,7 +57,8 @@ function printSRS(&$db,&$tproject,$srs_id, $prodName, $testproject_id, $user_id,
 
 	$title = $arrSpec[0]['title'];
 	$output =  printHeader($title,$base_href);
-	$output .= printFirstPage($db,$title,$prodName,'',$user_id);
+	$tprojectInfo = $tproject->get_by_id($testproject_id);
+	$output .= printFirstPage($db,$title,$prodName,$tprojectInfo,$user_id);
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
 	$output .= printRequirements($db,$srs_id);
 	$output .= "\n</body>\n</html>";
@@ -210,7 +211,7 @@ function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
 // 20061014 - franciscom
 function getReqDocIDs(&$db,$srs_id)
 {
-  	$req_spec_mgr= new requirement_spec_mgr($db);
+  	$req_spec_mgr = new requirement_spec_mgr($db);
 
 	$arrCurrentReq = $req_spec_mgr->get_requirements($srs_id);
 	$result = null;

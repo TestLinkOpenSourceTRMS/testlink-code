@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.292 $
- * @modified $Date: 2008/03/12 18:14:27 $ $Author: franciscom $
+ * @version $Revision: 1.293 $
+ * @modified $Date: 2008/03/12 21:27:38 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1264,7 +1264,7 @@ $TLS_tr_td_show_as = "Show as";
 // gui/templates/tcReorder.tpl
 $TLS_no_tc_to_reorder = "There are no Test Cases to reorder!";
 $TLS_title_change_tc_order = "Change this Test Suite's Test Case order.";
-
+$TLS_drag_and_drop_to_reorder = "Drag and drop items to reorder them";
 
 
 // gui/templates/tcTree.tpl
@@ -1558,7 +1558,7 @@ $TLS_req_status_not_testable = "Not testable";
 $TLS_req_status_valid = "Valid";
 $TLS_req_status_draft = 'Draft';
 $TLS_req_status_approved = 'Approved';
-$TLS_req_status_obsolete='Obsolete'; 
+$TLS_req_status_obsolete='Obsolete';
 $TLS_req_status_todo='To do';
 $TLS_req_status_changed='Modified';
 

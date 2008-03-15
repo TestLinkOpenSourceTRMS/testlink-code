@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/03/15 21:23:28 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/03/15 21:24:42 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -809,7 +809,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 		{
 			return;
 		}
-		if (strpos($errfil,"Smarty_Compiler.class.php") !== false)
+		if (strpos($errfile,"Smarty_Compiler.class.php") !== false)
 			return;
 		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
 	}

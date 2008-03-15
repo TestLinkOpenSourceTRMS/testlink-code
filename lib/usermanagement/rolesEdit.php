@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/03/15 18:53:12 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/03/15 21:23:28 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -35,12 +35,12 @@ $highlight = initialize_tabsmenu();
 switch($args->doAction)
 {
 	case 'create':
-    $highlight->create_role=1;
+    	$highlight->create_role=1;
 		$action_type = 'doCreate';
 		break;
 
 	case 'edit':
-	  $highlight->edit_role=1;
+	  	$highlight->edit_role=1;
 		$action_type = 'doEdit';
 		$role = tlRole::getByID($db,$args->roleid);
 		break;

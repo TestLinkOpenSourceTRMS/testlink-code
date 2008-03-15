@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.17 $
-* @modified $Date: 2008/03/15 18:53:12 $ $Author: franciscom $
+* @version $Revision: 1.18 $
+* @modified $Date: 2008/03/15 21:23:28 $ $Author: schlundus $
 *
 * rev :  BUGID 918
 *
@@ -20,7 +20,7 @@ require_once('users.inc.php');
 require_once('email_api.php');
 testlinkInitPage($db);
 
-$templateCfg = new stdClass();            
+$templateCfg = new stdClass();
 $templateCfg->template_dir = 'usermanagement/';
 $templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 $templateCfg->template = null;
@@ -41,26 +41,26 @@ switch($args->doAction)
 		$user->readFromDB($db);
 	  break;
 
-	  case "doCreate":
-    $highlight->create_user=1;
-    $op = doCreate($db,$args);
-    $user = $op->user;
-    $templateCfg->template=$op->template;
-    break;
+	case "doCreate":
+		$highlight->create_user=1;
+		$op = doCreate($db,$args);
+		$user = $op->user;
+		$templateCfg->template=$op->template;
+		break;
 
     case "doUpdate":
-    $highlight->edit_user = 1;
-    $sessionUserID = $_SESSION['currentUser']->dbID;
-    $op = doUpdate($db,$args,$sessionUserID);
-    $user = $op->user;
-    break;
+	    $highlight->edit_user = 1;
+	    $sessionUserID = $_SESSION['currentUser']->dbID;
+	    $op = doUpdate($db,$args,$sessionUserID);
+	    $user = $op->user;
+   	 	break;
 
     case "resetPassword":
-	  $highlight->edit_user = 1;
-	  $user = new tlUser($args->user_id);
-	  $user->readFromDB($db);
+		$highlight->edit_user = 1;
+		$user = new tlUser($args->user_id);
+		$user->readFromDB($db);
 		$op = createNewPassword($db,$args,$user);
-    break;
+		break;
 
     case "create":
     default:
@@ -89,15 +89,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function init_args()
-{               
+{
   $args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -131,33 +131,33 @@ function init_args()
 
   returns: object with following members
            user: tlUser object
-           status: 
+           status:
            template: will be used by viewer logic.
                      null -> viewer logic will choose template
                      other value -> viever logic will use this template.
-           
-          
+
+
 
 */
 function doCreate(&$dbHandler,&$argsObj)
 {
-    $op = new stdClass(); 
+    $op = new stdClass();
 	  $op->user = new tlUser();
 	  $op->status = $op->user->setPassword($argsObj->password);
 	  $op->template='usersEdit.tpl';
-	  
+
 	  if ($op->status >= tl::OK)
 	  {
 	    	initializeUserProperties($op->user,$argsObj);
 	  	  $op->status = $op->user->writeToDB($dbHandler);
 	  	  $op->template=null;
-	
+
 	  	  logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
 	  	  $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
 	  }
 	  else
 	  	$op->user_feedback = getUserErrorMessage($op->status);
-    
+
     return $op;
 }
 
@@ -190,7 +190,7 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 	  			$_SESSION['currentUser'] = $op->user;
 	  			setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
 	  			               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
-    
+
 	  			if (!$argsObj->user_is_active)
 	  			{
 	  				header("Location: ../../logout.php");
@@ -214,15 +214,15 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
-    $op=new stdClass();
-    $op->user_feedback = '';
-	  $op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
-	  if ($op->status >= tl::OK)
-	  {
-	     logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
-	     $op->user_feedback = lang_get('password_reseted');
-	  }
-    return $op;
+	$op = new stdClass();
+	$op->user_feedback = '';
+	$op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
+	if ($op->status >= tl::OK)
+	{
+		logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
+		$op->user_feedback = lang_get('password_reseted');
+	}
+	return $op;
 }
 
 

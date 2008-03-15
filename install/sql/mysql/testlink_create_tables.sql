@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.32 2008/02/26 22:33:18 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.33 2008/03/15 18:52:18 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -79,15 +79,6 @@
 # --------------------------------------------------------
 #
 #
-CREATE TABLE `api_developer_keys` (
-  `id` int(10) NOT NULL auto_increment,
-  `developer_key` varchar(32) NOT NULL,
-  `user_id` int(10) NOT NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='authentication keys for using the api';
-
-
 CREATE TABLE `builds` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
@@ -323,7 +314,7 @@ CREATE TABLE `testprojects` (
   `option_priority` tinyint(1) NOT NULL default '0',
   `option_automation` tinyint(1) NOT NULL default '0',  
   `prefix` varchar(16) NOT NULL,
-  `tc_counter` int(10) unsigned NULL default '0',
+  `tc_counter` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `id_active` (`id`,`active`),
   UNIQUE KEY `prefix` (`prefix`)

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/02/25 20:36:30 $ $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/03/15 18:53:11 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -15,7 +15,9 @@
  * the log messages through your code and turn them on and off with a single command.
  * To facilitate this we will create a number of logging functions.
  *
- * rev: 20080216 - franciscom - limit length of entryPoint
+ * rev: 20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
+ *                              watchPHPErrors() - added new error to suppress
+ *      20080216 - franciscom - limit length of entryPoint
  *
 **/
 class tlLogger extends tlObject
@@ -28,13 +30,15 @@ class tlLogger extends tlObject
 	*/
 	const ERROR = 1;
 	const WARNING = 2;
-  	const INFO = 4;
+ 	const INFO = 4;
 	const DEBUG = 8;
 	const AUDIT = 16;
+
 	static $logLevels = null;
 	static $revertedLogLevels = null;
 
 	protected $bNoLogging;
+
  	// must be changed is db field len changes
  	const ENTRYPOINT_MAX_LEN = 45;
 
@@ -58,9 +62,8 @@ class tlLogger extends tlObject
 	{
 		parent::__construct();
 
-		//the database logger
-		$this->loggers[] = new tlDBLogger($db);
-		$this->loggers[] = new tlFileLogger();
+		$this->loggers['db'] = new tlDBLogger($db);
+		$this->loggers['file'] = new tlFileLogger();
 
 		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT);
 
@@ -70,13 +73,17 @@ class tlLogger extends tlObject
 	{
 		parent::__destruct();
 	}
-	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
+	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,
+	                                  $activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
 	{
-		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,$limit,$startTime,$endTime);
+		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,
+		                                         $limit,$startTime,$endTime);
 	}
-	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,$activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
+	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
+	                             $activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
 	{
-		return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,$limit,$startTime,$endTime);
+		return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,
+		                                          $limit,$startTime,$endTime);
 	}
 	/*
 		set the log level filter, only events which matches the filter can pass
@@ -86,9 +93,14 @@ class tlLogger extends tlObject
 	{
 		$this->logLevelFilter = $filter;
 		//propagate the filter to the controlled loggers
-		for($i = 0;$i < sizeof($this->loggers);$i++)
+		// for($i = 0;$i < sizeof($this->loggers);$i++)
+		// {
+		// 	$this->loggers[$i]->setLogLevelFilter($filter);
+		// }
+		
+		foreach($this->loggers as $key => $loggerObj)
 		{
-			$this->loggers[$i]->setLogLevelFilter($filter);
+			$this->loggers[$key]->setLogLevelFilter($filter);
 		}
 		return tl::OK;
 	}
@@ -102,6 +114,7 @@ class tlLogger extends tlObject
 	{
 		$this->bNoLogging = false;
 	}
+	
 	/*
 		returns the transaction with the specified name, null else
 	*/
@@ -183,6 +196,7 @@ class tlLogger extends tlObject
 		unset($this->transactions[$name]);
 	}
 }
+
 //the transaction class
 class tlTransaction extends tlDBObject
 {
@@ -280,6 +294,7 @@ class tlTransaction extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+	
 	public function writeToDB(&$db)
 	{
 		if (!$this->dbID)
@@ -296,7 +311,7 @@ class tlTransaction extends tlDBObject
 			         "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
 			$result = $db->exec_query($query);
 			if ($result)
-				$this->dbID = $db->insert_id('events');
+				$this->dbID = $db->insert_id('transactions');
 		}
 		else
 		{
@@ -306,6 +321,7 @@ class tlTransaction extends tlDBObject
 		}
 		return $result ? tl::OK : tl::ERROR;
 	}
+	
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
@@ -313,18 +329,22 @@ class tlTransaction extends tlDBObject
 
 	protected function writeEvent(&$e)
 	{
-		for($i = 0;$i < sizeof($this->loggers);$i++)
+		// for($i = 0;$i < sizeof($this->loggers);$i++)
+		// {
+		// 	$this->loggers[$i]->writeEvent($e);
+		// }
+		foreach($this->loggers as $key => $loggerObj)
 		{
-			$this->loggers[$i]->writeEvent($e);
+			$this->loggers[$key]->writeEvent($e);
 		}
 		return tl::OK;
 	}
 
 	protected function writeTransaction(&$t)
 	{
-		for($i = 0;$i < sizeof($this->loggers);$i++)
+		foreach($this->loggers as $key => $loggerObj)
 		{
-			$this->loggers[$i]->writeTransaction($t);
+			$this->loggers[$key]->writeTransaction($t);
 		}
 		return tl::OK;
 	}
@@ -342,6 +362,7 @@ class tlTransaction extends tlDBObject
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 }
+
 class tlEventManager extends tlObjectWithDB
 {
 	private static $s_instance;
@@ -533,7 +554,11 @@ class tlEvent extends tlDBObject
 			$firedAt = $db->prepare_int($this->timestamp);
 			$transactionID = $db->prepare_int($this->transactionID);
 
-			$query = "INSERT INTO events (transaction_id,log_level,description,source,fired_at,object_id,object_type,activity) VALUES ({$transactionID},{$logLevel},'{$description}',{$source},{$firedAt},{$objectID},{$objectType},{$activityCode})";
+			$query = "INSERT INTO events (transaction_id,log_level,description,source," .
+			         "fired_at,object_id,object_type,activity) " .
+			         "VALUES ({$transactionID},{$logLevel},'{$description}',{$source}," .
+			         "{$firedAt},{$objectID},{$objectType},{$activityCode})";
+			         
 			$result = $db->exec_query($query);
 			if ($result)
 				$this->dbID = $db->insert_id('events');
@@ -568,16 +593,20 @@ class tlDBLogger extends tlObjectWithDB
 	{
 		parent::__construct($db);
 	}
+	
 	public function _clean()
 	{
 		$this->pendingTransaction = null;
 	}
+	
 	public function writeTransaction(&$t)
 	{
 		if ($this->bNoLogging)
 			return tl::OK;
+			
 		if (!$this->logLevelFilter)
 			return tl::ERROR;
+			
 		if ($this->checkDBConnection() < tl::OK)
 			return tl::ERROR;
 		//if we get a closed transaction without a dbID then the transaction wasn't stored
@@ -601,6 +630,7 @@ class tlDBLogger extends tlObjectWithDB
 		}
 		return tl::OK;
 	}
+	
 	public function writeEvent(&$e)
 	{
 		if ($this->bNoLogging)
@@ -653,10 +683,12 @@ class tlFileLogger extends tlObject
 	{
 		parent::__construct();
 	}
+	
 	public function _clean()
 	{
 
 	}
+	
 	//SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
 	public function writeTransaction(&$t)
 	{
@@ -763,6 +795,14 @@ $g_tlLogger->startTransaction();
 
 set_error_handler("watchPHPErrors");
 
+/*
+    function: watchPHPErrors
+
+    args:
+    
+    returns: 
+
+*/
 function watchPHPErrors($errno, $errstr, $errfile, $errline)
 {
 	$errors = array (
@@ -774,10 +814,16 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 			E_NOTICE => "E_NOTICE",
 			E_STRICT => "E_STRICT"
 		);
+		
 	if (isset($errors[$errno]))
 	{
-		if ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false)
+	  // suppress some kind of errors 
+	  // added strftime()
+		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
+		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) )
+		{
 			return;
+		}
 		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
 	}
 }

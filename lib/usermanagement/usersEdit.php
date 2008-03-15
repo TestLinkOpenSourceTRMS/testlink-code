@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.16 $
-* @modified $Date: 2008/03/10 14:12:43 $ $Author: franciscom $
+* @version $Revision: 1.17 $
+* @modified $Date: 2008/03/15 18:53:12 $ $Author: franciscom $
 *
 * rev :  BUGID 918
 *
@@ -29,7 +29,7 @@ $args = init_args();
 $user_id = $args->user_id;
 
 $op = new stdClass();
-$highlight = new stdClass();
+$highlight = initialize_tabsmenu();
 
 $op->user_feedback = '';
 

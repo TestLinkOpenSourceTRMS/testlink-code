@@ -3,10 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/02/04 22:32:52 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/03/15 18:53:11 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20080315 - franciscom -  due to problems with PostGres with $ADODB_COUNTRECS=FALSE;
+ *                          return to default mode ($ADODB_COUNTRECS=TRUE;)
  *
  * 20080204 - franciscom -  setting ADODB_FETCH_ASSOC as default fetch mode
  * 20060708 - franciscom -  changed Connect() to NConnect(), to avoid
@@ -26,7 +29,12 @@
  # See the README and LICENSE files for details
  # -------------------------------------------------------------------------------
 
-$ADODB_COUNTRECS=FALSE;
+// 20080315 - francisco
+// As stated on ADODB documentation this set will improve performance but have a side
+// effect, for DBMS like POSTGRES method num_rows() will return ALWAYS -1, causing problems
+//
+// $ADODB_COUNTRECS=FALSE;
+$ADODB_COUNTRECS=TRUE;
 require_once( dirname(__FILE__). '/../../third_party/adodb/adodb.inc.php' );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
@@ -37,6 +45,7 @@ class database
 	var $is_connected=false;
 	var $nQuery = 0;
 	var $overallDuration = 0;
+  private $logEnabled=0;
 	
   
 	# ------------------------------------------------------
@@ -50,6 +59,8 @@ class database
 	function database($db_type)
 	{
 	  $this->db = NewADOConnection($db_type);
+    
+    // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
     $this->db->SetFetchMode(ADODB_FETCH_ASSOC);
 	}
 
@@ -94,7 +105,7 @@ class database
 	{
 		$this->nQuery++;
 		$t_start = $this->microtime_float();
-		
+   		
 		if ( ( $p_limit != -1 ) || ( $p_offset != -1 ) ) {
 			$t_result = $this->db->SelectLimit( $p_query, $p_limit, $p_offset );
 		} else {
@@ -118,13 +129,15 @@ class database
 			$message .= "\nQuery failed: errorcode[" . $ec . "]". "\n\terrormsg:".$emsg;
 			$logLevel = 'ERROR';
 		}
-		tLog($message,$logLevel,"DATABASE");
+		if( $this->logEnabled )
+		{
+		    tLog($message,$logLevel,"DATABASE");
+		}
 		array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 
 		if ( !$t_result ) {
 			echo "ERROR ON exec_query() - database.class.php <br>" . $this->error($p_query) . "<br>";
       echo "<br> THE MESSAGE :: $message <br>";			
-
 			return false;
 		} else {
 			return $t_result;
@@ -143,7 +156,6 @@ class database
 		# mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
 		if( $this->db->databaseType == 'mysql' ) {	
 			$t_array = $p_result->fields;
-			//echo "<pre>debug 20080204 - \ - " . __FUNCTION__ . " --- "; print_r($t_array); echo "</pre>";
 			
  			$p_result->MoveNext();
 			return $t_array;
@@ -155,15 +167,25 @@ class database
 	}
 
 	# --------------------
+  # 20080315 - franciscom
+  # Got new code from Mantis, that manages FETCH_MODE_ASSOC
+  #
 	function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
 
 		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) {
-			$p_result->Move($p_index1);
+			$p_result->Move( $p_index1 );
 			$t_result = $p_result->GetArray();
-			return $t_result[0][$p_index2];
-		} else {
-			return false;
+
+			if ( isset( $t_result[0][$p_index2] ) ) {
+				return $t_result[0][$p_index2];
+			}
+
+			// The numeric index doesn't exist. FETCH_MODE_ASSOC may have been used.
+			// Get 2nd dimension and make it numerically indexed
+			$t_result = array_values( $t_result[0] );
+			return $t_result[$p_index2];
 		}
+		return false;
 	}
 
 	# --------------------

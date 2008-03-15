@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/03/10 21:52:00 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/03/15 18:53:12 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -45,8 +45,7 @@ if($doDelete)
 }
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
-$highlight = new stdClass();
-$highlight->view_roles = 1;
+$highlight = initialize_tabsmenu();
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);

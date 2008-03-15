@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/03/15 18:53:11 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * rev : 20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
+ * rev :20080315 - franciscom - added initalize_tabsmenu() 
+ *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
  * 
  */
 require_once("common.php");
@@ -247,11 +248,35 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
 {
     $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID);
     $userFilter = array();
-	foreach($users_roles as $keyUserID => $roleInfo)
+	  foreach($users_roles as $keyUserID => $roleInfo)
     {
-		if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
-			$userFilter[$keyUserID] = $roleInfo['user'];
+		    if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
+			     $userFilter[$keyUserID] = $roleInfo['user'];
     } 
-	return buildUserMap($userFilter,true);
+	  return buildUserMap($userFilter,true);
 }
-?>
+
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function initialize_tabsmenu()
+{
+    $hl=new stdClass();  
+    $hl->view_roles=0;          
+    $hl->create_role=0;          
+	  $hl->edit_role=0;            
+	  
+	  $hl->view_users=0;
+	  $hl->create_user=0;
+	  $hl->edit_user=0;            
+
+   	$hl->assign_users_tproject=0;
+    $hl->assign_users_tplan=0;
+	  return $hl;
+}?>

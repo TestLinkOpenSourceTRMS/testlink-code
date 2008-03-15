@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.41 2008/03/08 10:24:57 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.42 2008/03/15 18:52:18 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -25,7 +25,16 @@ require_once("installUtils.php");
 require_once("sqlParser.class.php");
 require_once("../lib/functions/object.class.php");
 require_once("../lib/functions/metastring.class.php");
-require_once("../lib/functions/logger.class.php");
+
+// 20080315 - franciscom
+// Better to avoid use of logger during installation
+// because we do not have control on what kind of logger (db, file)
+// to create.
+// This produce the situation:dog eats dog, i.e.:
+// I do not have db created, but an error rise, then logger try to write on events table
+// but this table do not still yet !!.
+//
+// require_once("../lib/functions/logger.class.php");
 
 if( !isset($_SESSION) )
 { 
@@ -139,7 +148,7 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
-$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -176,7 +185,7 @@ $db=null;
 // ------------------------------------------------------------------------------------------------
 // Connect to the Database (if Succesful -> database exists)
 $db = new database($db_type);
-$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
+@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -456,10 +465,7 @@ switch($db_type)
     
     
 }
-  
-  
 // --------------------------------------------------------------------------------------------
-// 20070216 - franciscom
 if( $inst_type=='new' && $conn_result['status'] != 0 )
 {
   // Drop tables

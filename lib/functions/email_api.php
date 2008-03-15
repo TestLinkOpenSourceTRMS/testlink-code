@@ -1,13 +1,13 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * 
+/** TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
  * @filesource $RCSfile: email_api.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/11/05 07:28:29 $  $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/03/15 21:23:27 $  $Author: schlundus $
  * @author franciscom
  *
  * rev:
- *     
+ *
  *
 **/
 
@@ -44,21 +44,22 @@ $g_phpMailer_smtp = null;
 # @@@@ (thraxisp) $p_header doesn't work as expected, it adds a list of names to the bcc list, rather than headers
 #         this is ok for now as nothing uses it
 # 20070107 - KL - modified signature to allow caller to specify htmlFormat = true if they so choose
-function email_send( $p_from, $p_recipient, $p_subject, $p_message, 
+function email_send( $p_from, $p_recipient, $p_subject, $p_message,
                      $p_cc='', $p_category='', $p_exit_on_error=false, $htmlFormat = 'false' ) {
-                     	
+
 	global $g_phpMailer_smtp;
 
-  $op->status_ok=true;
-  $op->msg='ok';
+	$op = new stdClass();
+	$op->status_ok = true;
+ 	$op->msg = 'ok';
 
   // Check fatal Error
-  if ( is_blank( config_get( 'smtp_host' ) ) ) 
+  if ( is_blank( config_get( 'smtp_host' ) ) )
   {
     $op->status_ok=false;
     $op->msg=lang_get('stmp_host_unconfigured');
 
-    return ($op);  // >>>----->	
+    return ($op);  // >>>----->
 	}
 
 
@@ -69,7 +70,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 
 	# short-circuit if no recipient is defined, or email disabled
 	# note that this may cause signup messages not to be sent
-  
+
 	# for debugging only
 	#PRINT $t_recipient.'<br />'.$t_subject.'<br />'.$t_message.'<br />'.$t_headers;
 	#exit;
@@ -79,16 +80,16 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 	#PRINT nl2br($t_message).'<br />';
 	#exit;
 
-   
+
 	# Visit http://phpmailer.sourceforge.net
 	# if you have problems with phpMailer
 	$mail = new PHPMailer;
 
-    
+
 	$mail->PluginDir = PHPMAILER_PATH;
-  $mail->SetLanguage( lang_get( 'phpmailer_language'), 
+  $mail->SetLanguage( lang_get( 'phpmailer_language'),
 	                    PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
-   
+
 	# Select the method to send mail
 	switch ( config_get( 'phpMailer_method' ) ) {
 		case 0: $mail->IsMail();
@@ -119,25 +120,25 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 
 
 	$mail->IsHTML($htmlFormat);    # set email format to plain text
-	$mail->WordWrap = 80;    
+	$mail->WordWrap = 80;
 	$mail->Priority = config_get( 'mail_priority' );   # Urgent = 1, Not Urgent = 5, Disable = 0
-	
+
 	$mail->CharSet = lang_get( 'charset');
 	$mail->Host     = config_get( 'smtp_host' );
 
-  
-  $mail->From     = config_get( 'from_email' );	
-	if ( !is_blank( $p_from ) ) 
+
+  $mail->From     = config_get( 'from_email' );
+	if ( !is_blank( $p_from ) )
 	{
 	  $mail->From     = $p_from;
-	}	
+	}
 
-	
+
 	$mail->Sender   = config_get( 'return_path_email' );
 	$mail->FromName = '';
 
-  
-	
+
+
 	if ( !is_blank( config_get( 'smtp_username' ) ) ) {     # Use SMTP Authentication
 		$mail->SMTPAuth = true;
 		$mail->Username = config_get( 'smtp_username' );
@@ -149,7 +150,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 	$t_debug_to = '';
 	# add to the Recipient list
 	$t_recipient_list = split(',', $t_recipient);
-	
+
 	while ( list( , $t_recipient ) = each( $t_recipient_list ) ) {
 		if ( !is_blank( $t_recipient ) ) {
 				$mail->AddAddress( $t_recipient, '' );
@@ -173,19 +174,19 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 				$mail->AddCC( $t_cc, '' );
 		}
 	}
-  
+
 	$mail->Subject = $t_subject;
 	$mail->Body    = make_lf_crlf( "\n".$t_message );
 
-   
+
 	if ( !$mail->Send() ) {
-    
+
 		if ( $p_exit_on_error )  {
 		  PRINT "PROBLEMS SENDING MAIL TO: $p_recipient<br />";
 		  PRINT 'Mailer Error: '. $mail->ErrorInfo.'<br />';
 			exit;
-		} 
-		else 
+		}
+		else
 		{
 		  $op->status_ok=false;
       $op->msg = $mail->ErrorInfo;

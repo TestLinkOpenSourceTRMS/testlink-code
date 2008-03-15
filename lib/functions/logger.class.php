@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/03/15 18:53:11 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/03/15 21:23:28 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -62,8 +62,9 @@ class tlLogger extends tlObject
 	{
 		parent::__construct();
 
-		$this->loggers['db'] = new tlDBLogger($db);
-		$this->loggers['file'] = new tlFileLogger();
+		//the database logger
+		$this->loggers[] = new tlDBLogger($db);
+		$this->loggers[] = new tlFileLogger();
 
 		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT);
 
@@ -93,14 +94,9 @@ class tlLogger extends tlObject
 	{
 		$this->logLevelFilter = $filter;
 		//propagate the filter to the controlled loggers
-		// for($i = 0;$i < sizeof($this->loggers);$i++)
-		// {
-		// 	$this->loggers[$i]->setLogLevelFilter($filter);
-		// }
-		
-		foreach($this->loggers as $key => $loggerObj)
+		for($i = 0;$i < sizeof($this->loggers);$i++)
 		{
-			$this->loggers[$key]->setLogLevelFilter($filter);
+			$this->loggers[$i]->setLogLevelFilter($filter);
 		}
 		return tl::OK;
 	}
@@ -114,7 +110,6 @@ class tlLogger extends tlObject
 	{
 		$this->bNoLogging = false;
 	}
-	
 	/*
 		returns the transaction with the specified name, null else
 	*/
@@ -196,7 +191,6 @@ class tlLogger extends tlObject
 		unset($this->transactions[$name]);
 	}
 }
-
 //the transaction class
 class tlTransaction extends tlDBObject
 {
@@ -294,7 +288,6 @@ class tlTransaction extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
-	
 	public function writeToDB(&$db)
 	{
 		if (!$this->dbID)
@@ -321,7 +314,6 @@ class tlTransaction extends tlDBObject
 		}
 		return $result ? tl::OK : tl::ERROR;
 	}
-	
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
@@ -329,22 +321,18 @@ class tlTransaction extends tlDBObject
 
 	protected function writeEvent(&$e)
 	{
-		// for($i = 0;$i < sizeof($this->loggers);$i++)
-		// {
-		// 	$this->loggers[$i]->writeEvent($e);
-		// }
-		foreach($this->loggers as $key => $loggerObj)
+		for($i = 0;$i < sizeof($this->loggers);$i++)
 		{
-			$this->loggers[$key]->writeEvent($e);
+			$this->loggers[$i]->writeEvent($e);
 		}
 		return tl::OK;
 	}
 
 	protected function writeTransaction(&$t)
 	{
-		foreach($this->loggers as $key => $loggerObj)
+		for($i = 0;$i < sizeof($this->loggers);$i++)
 		{
-			$this->loggers[$key]->writeTransaction($t);
+			$this->loggers[$i]->writeTransaction($t);
 		}
 		return tl::OK;
 	}
@@ -362,7 +350,6 @@ class tlTransaction extends tlDBObject
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 }
-
 class tlEventManager extends tlObjectWithDB
 {
 	private static $s_instance;
@@ -603,10 +590,8 @@ class tlDBLogger extends tlObjectWithDB
 	{
 		if ($this->bNoLogging)
 			return tl::OK;
-			
 		if (!$this->logLevelFilter)
 			return tl::ERROR;
-			
 		if ($this->checkDBConnection() < tl::OK)
 			return tl::ERROR;
 		//if we get a closed transaction without a dbID then the transaction wasn't stored
@@ -817,13 +802,15 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 		
 	if (isset($errors[$errno]))
 	{
-	  // suppress some kind of errors 
-	  // added strftime()
+		// suppress some kind of errors 
+		// added strftime()
 		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) )
 		{
 			return;
 		}
+		if (strpos($errfil,"Smarty_Compiler.class.php") !== false)
+			return;
 		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
 	}
 }

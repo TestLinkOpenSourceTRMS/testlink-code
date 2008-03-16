@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/03/16 18:50:04 $ $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/03/16 18:55:22 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -69,8 +69,8 @@ class tlLogger extends tlObject
 		parent::__construct();
 
 		//the database logger
-		$this->loggers[] = new tlDBLogger($db);
-		$this->loggers[] = new tlFileLogger();
+		$this->loggers['db'] = new tlDBLogger($db);
+		$this->loggers['file'] = new tlFileLogger();
 
 		$this->setLogLevelFilter(self::ERROR | self::WARNING | self::AUDIT);
 
@@ -100,10 +100,9 @@ class tlLogger extends tlObject
 	public function setLogLevelFilter($filter)
 	{
 		$this->logLevelFilter = $filter;
-		//propagate the filter to the controlled loggers
-		for($i = 0;$i < sizeof($this->loggers);$i++)
+		foreach($this->loggers as $key => $loggerObj)
 		{
-			$this->loggers[$i]->setLogLevelFilter($filter);
+			$this->loggers[$key]->setLogLevelFilter($filter);
 		}
 		return tl::OK;
 	}
@@ -257,7 +256,6 @@ class tlLogger extends tlObject
   transaction class 
 
 */
-=======
 class tlTransaction extends tlDBObject
 {
 	//the attached loggers
@@ -388,18 +386,18 @@ class tlTransaction extends tlDBObject
 
 	protected function writeEvent(&$e)
 	{
-		for($i = 0;$i < sizeof($this->loggers);$i++)
+		foreach($this->loggers as $key => $loggerObj)
 		{
-			$this->loggers[$i]->writeEvent($e);
+			$this->loggers[$key]->writeEvent($e);
 		}
 		return tl::OK;
 	}
 
 	protected function writeTransaction(&$t)
 	{
-		for($i = 0;$i < sizeof($this->loggers);$i++)
+		foreach($this->loggers as $key => $loggerObj)
 		{
-			$this->loggers[$i]->writeTransaction($t);
+			$this->loggers[$key]->writeTransaction($t);
 		}
 		return tl::OK;
 	}

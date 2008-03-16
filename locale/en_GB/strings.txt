@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.293 $
- * @modified $Date: 2008/03/12 21:27:38 $ $Author: schlundus $
+ * @version $Revision: 1.294 $
+ * @modified $Date: 2008/03/16 18:41:31 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2026,6 +2026,10 @@ $TLS_audit_user_deleted = "User '{%1}' was deleted";
 $TLS_audit_user_logout = "Logout of '{%1}'";
 $TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
 $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+$TLS_audit_user_role_changed="User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_active_status_changed="User '{%1}' active status changed old='{%2}' new='{%3}'";
+
+
 
 $TLS_audit_testproject_created = "Test Project '{%1}' was created";
 $TLS_audit_testproject_saved = "Test Project '{%1}' was saved";

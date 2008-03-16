@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.42 2008/03/15 18:52:18 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.43 2008/03/16 18:41:31 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -28,13 +28,12 @@ require_once("../lib/functions/metastring.class.php");
 
 // 20080315 - franciscom
 // Better to avoid use of logger during installation
-// because we do not have control on what kind of logger (db, file)
-// to create.
+// because we do not have control on what kind of logger (db, file) to create.
 // This produce the situation:dog eats dog, i.e.:
 // I do not have db created, but an error rise, then logger try to write on events table
 // but this table do not still yet !!.
 //
-// require_once("../lib/functions/logger.class.php");
+require_once("../lib/functions/logger.class.php");
 
 if( !isset($_SESSION) )
 { 
@@ -69,6 +68,9 @@ $sql_create_schema[1] = "sql/{$db_type}/testlink_create_tables.sql";
 $sql_default_data [1] = "sql/{$db_type}/testlink_create_default_data.sql";
 $a_sql_schema[] = $sql_create_schema;
 $a_sql_data[]   = $sql_default_data;
+
+global $g_tlLogger;
+$g_tlLogger->disableLogging('db');
 
 
 $msg_process_data = "</b><br />Importing StartUp data<b> ";

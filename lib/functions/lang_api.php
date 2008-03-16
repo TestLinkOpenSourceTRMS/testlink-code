@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/03/09 18:53:17 $ - $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/03/16 18:41:31 $ - $Author: franciscom $
  *
  * rev :
  *       20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -62,10 +62,10 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 	}
 	else
 	{
-		if (!$bDontFireEvents )
-		{   
-		    logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
-		}
+		// if (!$bDontFireEvents )
+		// {   
+		//     logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
+		// }
 		$the_str = TL_LOCALIZE_TAG .$p_string;
 	}
 	return $the_str;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.165 $
- * @modified $Date: 2008/03/10 14:12:43 $ by $Author: franciscom $
+ * @version $Revision: 1.166 $
+ * @modified $Date: 2008/03/16 18:41:30 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
+ *     20080316 - franciscom - 
  *     20080308 - franciscom - changed initial values for email settings
  *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
  *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
@@ -151,6 +152,15 @@ $g_log_path=TL_ABS_PATH . 'logs' . DS ;
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 $g_log_level='ERROR';
+
+// Configure if individual loggers are enabled of disabled
+// Possibile values to identify loggers: 'db','file'
+//
+// $g_loggerCfg['db']['enabled']=true/false;
+// $g_loggerCfg['file']['enabled']=true/false;
+// default=null => all loggers anabled
+//
+$g_loggerCfg=null;
 
 // ----------------------------------------------------------------------------
 /** [Bug Tracking systems] */
@@ -859,6 +869,7 @@ require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php');
 
 /** logging functions */
 require_once('logging.inc.php');
+
 
 /** user right checking */
 require_once(TL_ABS_PATH . 'lib/functions/roles.inc.php');

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/03/15 21:24:42 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/03/16 18:50:04 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -15,7 +15,12 @@
  * the log messages through your code and turn them on and off with a single command.
  * To facilitate this we will create a number of logging functions.
  *
- * rev: 20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
+ * rev: 20080316 - franciscom - added getEnableLoggingStatus() methods
+ *                              refactored access to enable logging status info.
+ *                              refactored enable/disable logging
+ *                              Added code to configure individual loggers using new config $g_loggerCfg
+ *
+ *      20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
  *                              watchPHPErrors() - added new error to suppress
  *      20080216 - franciscom - limit length of entryPoint
  *
@@ -37,7 +42,8 @@ class tlLogger extends tlObject
 	static $logLevels = null;
 	static $revertedLogLevels = null;
 
-	protected $bNoLogging;
+  // to enable/disable loggin for all loggers
+	protected $doLogging=true;
 
  	// must be changed is db field len changes
  	const ENTRYPOINT_MAX_LEN = 45;
@@ -70,6 +76,7 @@ class tlLogger extends tlObject
 
 		$this->eventManager = tlEventManager::create($db);
 	}
+
 	public function __destruct()
 	{
 		parent::__destruct();
@@ -101,15 +108,68 @@ class tlLogger extends tlObject
 		return tl::OK;
 	}
 
-	public function disableLogging()
+  /*
+    function: disableLogging
+
+    args: [$logger]: default null => all loggers
+                     string representing a list of keys to access loggers map.
+    
+    returns: 
+
+  */
+	public function disableLogging($logger=null)
 	{
-			$this->bNoLogging = true;
+	    if( is_null($logger) )
+	    {
+			    $this->doLogging = false;
+			}
+			else
+			{
+			    $loggerSet=explode(",",$logger);
+			    foreach($loggerSet as $idx => $loggerKey)
+			    {
+			        $this->loggers[$loggerKey]->disableLogging();  
+			    }    
+			}
 	}
 
-	public function enableLogging()
+  /*
+    function: enableLogging
+
+    args: [$logger]: default null => all loggers
+                     string representing a list of keys to access loggers map.
+    
+    returns: 
+
+  */
+	public function enableLogging($logger=null)
 	{
-		$this->bNoLogging = false;
+	    if( is_null($logger) )
+	    {
+			    $this->doLogging = false;
+			}
+			else
+			{
+			    $loggerSet=explode(",",$logger);
+			    foreach($loggerSet as $idx => $loggerKey)
+			    {
+			        $this->loggers[$loggerKey]->enableLogging();  
+			    }    
+			}
 	}
+	
+	public function getEnableLoggingStatus($logger=null)
+	{
+	  if( is_null($logger) )
+	  {
+		    return $this->doLogging;
+		}
+		else
+		{
+		    return $this->loggers[$logger]->getEnableLoggingStatus();
+		}
+	}
+
 	/*
 		returns the transaction with the specified name, null else
 	*/
@@ -191,7 +251,13 @@ class tlLogger extends tlObject
 		unset($this->transactions[$name]);
 	}
 }
-//the transaction class
+
+/*
+
+  transaction class 
+
+*/
+=======
 class tlTransaction extends tlDBObject
 {
 	//the attached loggers
@@ -261,7 +327,8 @@ class tlTransaction extends tlDBObject
 	public function add($logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
 		$e = new tlEvent();
-		$e->initialize($this->dbID,$this->userID,$this->sessionID,$logLevel,$description,$source,$activityCode,$objectID,$objectType);
+		$e->initialize($this->dbID,$this->userID,$this->sessionID,$logLevel,$description,
+		               $source,$activityCode,$objectID,$objectType);
 		$this->writeEvent($e);
 		$this->events[] = $e;
 
@@ -345,7 +412,8 @@ class tlTransaction extends tlDBObject
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
@@ -414,7 +482,8 @@ class tlEventManager extends tlObjectWithDB
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
 		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
-		return tlEvent::createObjectsFromDBbySQL($this->db,$query,'id',"tlEvent",true,tlEvent::TLOBJ_O_GET_DETAIL_FULL,$limit);
+		return tlEvent::createObjectsFromDBbySQL($this->db,$query,'id',"tlEvent",true,
+		                                         tlEvent::TLOBJ_O_GET_DETAIL_FULL,$limit);
 	}
 }
 
@@ -463,7 +532,9 @@ class tlEvent extends tlDBObject
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 	}
-	public function initialize($transactionID,$userID,$sessionID,$logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
+	
+	public function initialize($transactionID,$userID,$sessionID,$logLevel,$description,
+	                           $source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
 		$this->timestamp = time();
 
@@ -480,7 +551,8 @@ class tlEvent extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = " SELECT id,transaction_id,log_level,source,description,fired_at,object_id,object_type,activity FROM events ";
+		$query = " SELECT id,transaction_id,log_level,source,description,fired_at,object_id,object_type,activity " .
+		         " FROM events ";
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "id = {$this->dbID}";
@@ -514,6 +586,7 @@ class tlEvent extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+	
 	public function writeToDB(&$db)
 	{
 		if (!$this->dbID)
@@ -551,31 +624,39 @@ class tlEvent extends tlDBObject
 				$this->dbID = $db->insert_id('events');
 		}
 	}
+	
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
+	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlEvent::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
+	
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 
 }
 
-//class for logging events to datebase event tables
+// ********************************************************
+// class for logging events to datebase event tables
+//
 class tlDBLogger extends tlObjectWithDB
 {
 	protected $logLevelFilter = null;
 	protected $pendingTransaction = null;
-	protected $bNoLogging = false;
+	protected $doLogging = true;
+	
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
@@ -586,9 +667,25 @@ class tlDBLogger extends tlObjectWithDB
 		$this->pendingTransaction = null;
 	}
 	
+	public function disableLogging()
+	{
+			$this->doLogging = false;
+	}
+
+	public function enableLogging()
+	{
+		$this->doLogging = true;
+	}
+
+	public function getEnableLoggingStatus()
+	{
+		return $this->doLogging;
+	}
+
+	
 	public function writeTransaction(&$t)
 	{
-		if ($this->bNoLogging)
+	  if ($this->getEnableLoggingStatus() == false)
 			return tl::OK;
 		if (!$this->logLevelFilter)
 			return tl::ERROR;
@@ -601,9 +698,9 @@ class tlDBLogger extends tlObjectWithDB
 			$this->pendingTransaction = null;
 			if ($t->dbID)
 			{
-				$this->bNoLogging = true;
+			  $this->disableLogging();
 				$t->writeToDb($this->db);
-				$this->bNoLogging = false;
+			  $this->enableLogging();
 			}
 			return tl::OK;
 		}
@@ -618,13 +715,16 @@ class tlDBLogger extends tlObjectWithDB
 	
 	public function writeEvent(&$e)
 	{
-		if ($this->bNoLogging)
+		if (!$this->doLogging)
 			return tl::OK;
 		if (!($e->logLevel & $this->logLevelFilter))
 			return tl::OK;
 		if ($this->checkDBConnection() < tl::OK)
 			return tl::ERROR;
-		$this->bNoLogging = true;
+
+    // to avoid log, writes related to log logic
+		$this->disableLogging();
+		
 		//if we have a pending transaction so we could write it now
 		if ($this->pendingTransaction)
 		{
@@ -633,14 +733,16 @@ class tlDBLogger extends tlObjectWithDB
 			$this->pendingTransaction = null;
 		}
 		$result = $e->writeToDb($this->db);
-		$this->bNoLogging = false;
+		$this->enableLogging();
 		return $result;
 	}
+
 	public function setLogLevelFilter($filter)
 	{
 		//we should never log DEBUG to db
 		$this->logLevelFilter = $filter & ~tlLogger::DEBUG;
 	}
+
 	public function checkDBConnection()
 	{
 		//check if the DB connection is still valid before writing log entries and try to reattach
@@ -656,6 +758,7 @@ class tlDBLogger extends tlObjectWithDB
 	}
 
 }
+
 //class for logging events to file
 class tlFileLogger extends tlObject
 {
@@ -663,6 +766,9 @@ class tlFileLogger extends tlObject
 	static protected $openTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime]\n";
 	static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime][%endTime][took %duration secs]\n";
 	protected $logLevelFilter = null;
+
+	protected $doLogging=true;
+
 
 	public function __construct()
 	{
@@ -674,11 +780,32 @@ class tlFileLogger extends tlObject
 
 	}
 	
+	public function disableLogging()
+	{
+			$this->doLogging = false;
+	}
+
+	public function enableLogging()
+	{
+		$this->doLogging = true;
+	}
+
+	public function getEnableLoggingStatus()
+	{
+		return $this->doLogging;
+	}
+
+	
+	
 	//SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
 	public function writeTransaction(&$t)
 	{
+	  if ($this->getEnableLoggingStatus() == false)
+			return tl::OK;
+
 		if (!$this->logLevelFilter)
 			return;
+
 		//build the logfile entry
 		$subjects = array("%prefix","%transactionID","%name","%entryPoint","%startTime","%endTime","%duration");
 		$bFinished = $t->endTime ? 1 : 0;
@@ -775,7 +902,17 @@ class tlHTMLLogger
 
 }
 //create the global TestLink Logger, and open the initial default transaction
+global $g_loggerCfg;
 $g_tlLogger = tlLogger::create($db);
+if( !is_null($g_loggerCfg) )
+{
+    foreach($g_loggerCfg as $loggerKey => $cfgValue)
+    {
+        $pfn=$cfgValue['enable'] ? 'enableLogging' : 'disableLogging'; 
+        $g_tlLogger->$pfn($loggerKey);
+    }  
+}
+
 $g_tlLogger->startTransaction();
 
 set_error_handler("watchPHPErrors");

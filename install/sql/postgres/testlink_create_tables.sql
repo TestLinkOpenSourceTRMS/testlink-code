@@ -1,12 +1,13 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.16 2008/03/15 18:52:18 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.17 2008/03/18 20:12:14 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20080318 - franciscom - tcversions.tc_external_id
 --      20080315 - franciscom - updated testproject table structure
 --                              added events and transactions tables
 --
@@ -329,7 +330,7 @@ CREATE INDEX "req_coverage_req_testcase" ON "req_coverage" ("req_id","testcase_i
 -- Table structure for table "req_specs"
 --
 CREATE TABLE "req_specs" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" BIGINT NOT NULL ,
   "testproject_id" BIGINT NOT NULL DEFAULT '0',
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
@@ -348,7 +349,7 @@ CREATE INDEX "req_specs_testproject_id" ON "req_specs" ("testproject_id");
 -- Table structure for table "requirements"
 --
 CREATE TABLE "requirements" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" BIGINT NOT NULL,
   "srs_id" BIGINT NOT NULL DEFAULT '0',
   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
   "title" VARCHAR(100) NOT NULL DEFAULT '',
@@ -420,6 +421,7 @@ CREATE TABLE "roles" (
 --
 CREATE TABLE "tcversions" (  
   "id" BIGSERIAL NOT NULL ,
+  "tc_external_id" INT NULL,
   "version" INTEGER NOT NULL DEFAULT '1',
   "summary" TEXT NULL DEFAULT NULL,
   "steps" TEXT NULL DEFAULT NULL,

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/03/16 18:55:22 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/03/18 20:13:20 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -938,14 +938,17 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 	if (isset($errors[$errno]))
 	{
 		// suppress some kind of errors 
-		// added strftime()
+		// strftime(),strtotime(),date()
 		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
-		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) )
+		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
+		    ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
+		    ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||
+		    (strpos($errfile,"Smarty_Compiler.class.php") !== false)
+		    )
 		{
 			return;
 		}
-		if (strpos($errfile,"Smarty_Compiler.class.php") !== false)
-			return;
+
 		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
 	}
 }

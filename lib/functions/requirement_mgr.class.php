@@ -5,12 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/03/10 14:12:43 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/03/18 20:13:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
+ *
+ * rev : 20080318 - franciscom - thanks to Postgres have found code that must be removed
+ *                               after requirements get it's id from nodes hierarchy
 */
 class requirement_mgr extends tlObjectWithAttachments
 {
@@ -121,8 +124,7 @@ class requirement_mgr extends tlObjectWithAttachments
 	  $result = $this->check_basic_data($srs_id,$title,$reqdoc_id);
 	  if($result['status_ok'])
 	  {
-
-     	  $parent_id=$srs_id;
+     	$parent_id=$srs_id;
 		  $name=$title;
 		  $req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
 
@@ -140,7 +142,7 @@ class requirement_mgr extends tlObjectWithAttachments
 		  }
 		  else
 		  {
-			  $result['id']=$this->db->insert_id($this->object_table);
+			  $result['id']=$req_id;
   	    $result['status_ok'] = 1;
 	      $result['msg'] = 'ok';
 		  }

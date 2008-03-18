@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/03/09 18:44:46 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/03/18 20:13:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  *
- * 20080309 - franciscom - changed return value for get_by_id()
+ * rev : 20080318 - franciscom - thanks to Postgres have found code that must be removed
+ *                               after req_specs get it's id from nodes hierarchy
+ * 
+ *       20080309 - franciscom - changed return value for get_by_id()
 */
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
@@ -102,6 +105,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
              msg -> some simple message, useful when status_ok ==0
              id -> id of requirement specification
 
+    rev : 20080318 - franciscom - removed code to get last inserted id
 
   */
 	function create($tproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
@@ -139,7 +143,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 			}
 			else
 			{
-			  $result['id']=$this->db->insert_id($this->object_table);
+			  $result['id']=$req_spec_id;
         $result['status_ok'] = 1;
 		    $result['msg'] = 'ok';
 			}
@@ -150,9 +154,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 		}
 		return $result;
 	}
-
-
-
 
 
   /*

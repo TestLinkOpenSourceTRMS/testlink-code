@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/02/29 23:19:29 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/03/18 20:11:24 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  *
@@ -25,7 +25,8 @@ testlinkInitPage($db);
 $smarty = new TLSmarty();
 
 $template_dir = 'keywords/';
-$template = 'keywordsEdit.tpl';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+
 $op = new stdClass();
 $op->status = 0;
 $msg = '';
@@ -54,7 +55,7 @@ switch ($args->doAction)
 }
 
 if($op->status == 1)
-	$template = $op->template;
+	$default_template = $op->template;
 else
 	$msg = getKeywordErrorMessage($op->status);
 
@@ -69,8 +70,17 @@ $smarty->assign('name',$args->keyword);
 $smarty->assign('keyword',$args->keyword);
 $smarty->assign('notes',$args->notes);
 $smarty->assign('keywordID',$args->keyword_id);
-$smarty->display($template_dir . $template);
+$smarty->display($template_dir . $default_template);
 
+
+/*
+  function: init_args
+
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
@@ -163,6 +173,7 @@ function do_create(&$smarty,&$args,&$tproject_mgr)
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_create');
 
+	$ret = new stdClass();
 	$ret->template = 'keywordsView.tpl';
 	$ret->status = $tproject_mgr->addKeyword($args->testproject_id,$args->keyword,$args->notes);
 	return $ret;
@@ -222,6 +233,14 @@ function do_delete(&$smarty,&$args,&$tproject_mgr)
 	return $ret;
 }
 
+/*
+  function: getKeywordErrorMessage
+
+  args:
+  
+  returns: 
+
+*/
 function getKeywordErrorMessage($code)
 {
 	switch($code)
@@ -229,16 +248,20 @@ function getKeywordErrorMessage($code)
 			case tlKeyword::E_NAMENOTALLOWED:
 				$msg = lang_get('keywords_char_not_allowed'); 
 				break;
+
 			case tlKeyword::E_NAMELENGTH:
 				$msg = lang_get('empty_keyword_no');
 				break;
+
 			case tlKeyword::E_DBERROR:
 			case ERROR: 
 				$msg = lang_get('kw_update_fails');
 				break;
+
 			case tlKeyword::E_NAMEALREADYEXISTS:
 				$msg = lang_get('keyword_already_exists');
 				break;
+
 			default:
 				$msg = 'ok';
   }

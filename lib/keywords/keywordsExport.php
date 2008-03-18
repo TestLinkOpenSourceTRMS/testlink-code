@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/03/18 20:11:26 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -25,6 +25,7 @@ require_once("keyword.class.php");
 testlinkInitPage($db);
 
 $template_dir = 'keywords/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $args = init_args();
 
@@ -50,7 +51,7 @@ $smarty->assign('export_filename',$fileName);
 $smarty->assign('main_descr',$main_descr);
 $smarty->assign('action_descr', lang_get('export_keywords'));
 $smarty->assign('exportTypes',$exportTypes);
-$smarty->display($template_dir . 'keywordsExport.tpl');
+$smarty->display($template_dir . $default_template);
 
 function init_args()
 {

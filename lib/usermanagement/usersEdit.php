@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.19 $
-* @modified $Date: 2008/03/18 16:51:21 $ $Author: franciscom $
+* @version $Revision: 1.20 $
+* @modified $Date: 2008/03/18 19:01:14 $ $Author: schlundus $
 *
 * rev :  BUGID 918
 *
@@ -184,11 +184,13 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 	  	$op->status = $op->user->writeToDB($dbHandler);
 	  	if ($op->status >= tl::OK)
 	  	{
-	  	  foreach($changes as $key => $value)
+	  		logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");	
+	  		/*
+	  	  	foreach($changes as $key => $value)
 	  		{
 	  		    logAuditEvent($value['msg'],$value['activity'],$op->user->dbID,"users");
 	  		}
-	  		
+	  		*/
 	  		if ($sessionUserID == $argsObj->user_id)
 	  		{
 	  			$_SESSION['currentUser'] = $op->user;

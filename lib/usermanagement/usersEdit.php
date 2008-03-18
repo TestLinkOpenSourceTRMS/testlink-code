@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.18 $
-* @modified $Date: 2008/03/15 21:23:28 $ $Author: schlundus $
+* @version $Revision: 1.19 $
+* @modified $Date: 2008/03/18 16:51:21 $ $Author: franciscom $
 *
 * rev :  BUGID 918
 *
@@ -73,9 +73,7 @@ $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();
-
 $smarty->assign('highlight',$highlight);
-
 $smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
@@ -180,11 +178,17 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 	  $op->status = $op->user->readFromDB($dbHandler);
 	  if ($op->status >= tl::OK)
 	  {
+	  	$changes=checkUserPropertiesChanges($dbHandler,$op->user,$argsObj);
+
 	  	initializeUserProperties($op->user,$argsObj);
 	  	$op->status = $op->user->writeToDB($dbHandler);
 	  	if ($op->status >= tl::OK)
 	  	{
-	  		logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
+	  	  foreach($changes as $key => $value)
+	  		{
+	  		    logAuditEvent($value['msg'],$value['activity'],$op->user->dbID,"users");
+	  		}
+	  		
 	  		if ($sessionUserID == $argsObj->user_id)
 	  		{
 	  			$_SESSION['currentUser'] = $op->user;
@@ -230,22 +234,105 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 
 
 /*
+  function: checkUserPropertiesChanges
+            do checks on selected properties and return information
+            about changed members useful for audit log porpuses. 
+           
+  args: dbHandler
+        userObj: data read from DB
+        argsObj: data entry from User Interface
+
+  returns: null or array where each element is a map with following structure:
+
+           ['property']= property name, just for debug usage
+           ['msg']= message for logAudit call
+           ['activity']= activityCode for logAudit call
+  
+*/
+function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
+{
+ 
+  $idx=0;    
+  $key2compare=array();
+  $key2compare['numeric'][]=array('old' => 'globalRoleID',
+                                  'new' => 'rights_id',
+                                  'decode' => 'decodeRoleId',
+                                  'label' => 'audit_user_role_changed');
+                                  
+  $key2compare['numeric'][]=array('old' => 'bActive',
+                                  'new' => 'user_is_active', 
+                                  'label' => 'audit_user_active_status_changed');
+
+   
+  foreach($key2compare['numeric'] as $key => $value)
+  {
+      $old=$value['old'];
+      $new=$value['new'];
+      $oldValue=$userObj->$old;
+      $newValue=$argsObj->$new;
+      
+      if( $oldValue != $newValue )
+      {
+          if( isset($value['decode']) )
+          {
+              $oldValue=$value['decode']($dbHandler,$userObj->$old);
+              $newValue=$value['decode']($dbHandler,$argsObj->$new);
+          }
+          $changes[$idx]['property']=$old;
+          $changes[$idx]['msg']=TLS($value['label'],$userObj->login,$oldValue,$newValue);
+          $changes[$idx]['activity']='CHANGE';
+          $idx++;
+      }      
+  }
+
+  // Add general message only if no important change registered
+  if( $idx == 0 )
+  {
+      $changes[$idx]['property']='general';
+      $changes[$idx]['msg']=TLS('audit_user_saved',$userObj->login);
+      $changes[$idx]['activity']='SAVE';
+  }
+
+	return $changes;
+}
+
+
+
+/*
   function: initializeUserProperties
+            initialize members for a user object.
 
-  args :
+  args: userObj: data read from DB
+        argsObj: data entry from User Interface
 
-  returns: -
+  returns: - 
 
 */
 function initializeUserProperties(&$userObj,&$argsObj)
 {
 	if (!is_null($argsObj->login))
     	$userObj->login = $argsObj->login;
+
 	$userObj->emailAddress = $argsObj->emailAddress;
 	$userObj->firstName = $argsObj->firstName;
 	$userObj->lastName = $argsObj->lastName;
 	$userObj->globalRoleID = $argsObj->rights_id;
 	$userObj->locale = $argsObj->locale;
 	$userObj->bActive = $argsObj->user_is_active;
+}
+
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function decodeRoleId(&$dbHandler,$roleID)
+{
+    $roleInfo=tlRole::getByID($dbHandler,$roleID);
+    return $roleInfo->name; 
 }
 ?>

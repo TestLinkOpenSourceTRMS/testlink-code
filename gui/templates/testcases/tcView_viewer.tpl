@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.7 2008/01/21 07:42:05 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.8 2008/03/18 21:05:27 schlundus Exp $
 viewer for test case in test specification
 
 20080113 - franciscom - changed format for test case id + name
@@ -31,7 +31,7 @@ viewer for test case in test specification
 {/if}
 	{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
  	{assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
-  
+
 {if $args_can_edit == "yes" }
 
   {assign var="edit_enabled" value=0}
@@ -40,67 +40,66 @@ viewer for test case in test specification
   {assign var="active_status_op_enabled" value=1}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
-  {if $args_status_quo eq null or 
+  {if $args_status_quo eq null or
       $args_status_quo[$args_testcase.id].executed eq null}
-      
+
       {assign var="edit_enabled" value=1}
       {* {assign var="active_status_op_enabled" value=1}  *}
       {assign var="warning_edit_msg" value=""}
-  
-  {else} 
+
+  {else}
      {if $args_tcase_cfg->can_edit_executed eq 1}
        {assign var="edit_enabled" value=1}
        {assign var="has_been_executed" value=1}
        {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
-     {/if}  
+     {/if}
   {/if}
 
 
-	<div class="groupBtn">
+<div class="groupBtn">
 	<form method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-	  
-	<input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
-    
-    {assign var="go_newline" value=""}
-    {if $edit_enabled}
- 	    <input type="submit" name="edit_tc"   value="{lang_get s='btn_edit'}" />
-    {/if}
+	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
 
-	  {if $args_can_delete_testcase == "yes" }
-		   <input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
-    {/if}
+	    {assign var="go_newline" value=""}
+	    {if $edit_enabled}
+	 	    <input type="submit" name="edit_tc" value="{lang_get s='btn_edit'}" />
+	    {/if}
+	
+		{if $args_can_delete_testcase == "yes" }
+			<input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
+	    {/if}
+	
+	    {if $args_can_move_copy == "yes" }
+	   		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
+	    	<br />
+	     	{assign var="go_newline" value="<br />"}
+	    {/if}
+	
+	    {$go_newline}
+	 	{if $args_can_delete_version == "yes" }
+			 <input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
+	    {/if}
+	
+		{* --------------------------------------------------------------------------------------- *}
+		{if $active_status_op_enabled eq 1}
+	        {if $args_testcase.active eq 0}
+				{assign var="act_deact_btn" value="activate_this_tcversion"}
+				{assign var="act_deact_value" value="activate_this_tcversion"}
+				{assign var="version_title_class" value="inactivate_version"}
+	      	{else}
+				{assign var="act_deact_btn" value="deactivate_this_tcversion"}
+				{assign var="act_deact_value" value="deactivate_this_tcversion"}
+				{assign var="version_title_class" value="activate_version"}
+	      	{/if}
+	      	<input type="submit" name="{$act_deact_btn}"
+	                           value="{lang_get s=$act_deact_value}" />
+	    {/if}
+	 	{* --------------------------------------------------------------------------------------- *}
+   	&nbsp;&nbsp;
+   		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 
-    {if $args_can_move_copy == "yes" }
-   		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
-     <br />
-     {assign var="go_newline" value="<br />"}
-    {/if}		                     
-	   
-    {$go_newline}
- 	  {if $args_can_delete_version == "yes" }
-		  <input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
-    {/if}
-	
-	 {* --------------------------------------------------------------------------------------- *} 
-	  {if $active_status_op_enabled eq 1}
-        {if $args_testcase.active eq 0}
-         {assign var="act_deact_btn" value="activate_this_tcversion"}
-         {assign var="act_deact_value" value="activate_this_tcversion"}
-         {assign var="version_title_class" value="inactivate_version"}
-      {else}
-         {assign var="act_deact_btn" value="deactivate_this_tcversion"}
-         {assign var="act_deact_value" value="deactivate_this_tcversion"}
-         {assign var="version_title_class" value="activate_version"}
-      {/if}
-      <input type="submit" name="{$act_deact_btn}" 
-                           value="{lang_get s=$act_deact_value}" />
-    {/if}
-	 {* --------------------------------------------------------------------------------------- *} 
-   &nbsp;&nbsp;
-   <input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
-	
 	</form>
 	<form method="post" action="lib/testcases/tcExport.php" name="tcexport">
 		<br/>
@@ -108,25 +107,27 @@ viewer for test case in test specification
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc"   value="{lang_get s='btn_export'}" />
 		{* 20071102 - franciscom *}
-		{* 
-		<input type="button" name="tstButton" value="{lang_get s='btn_execute_automatic_testcase'}" 
+		{*
+		<input type="button" name="tstButton" value="{lang_get s='btn_execute_automatic_testcase'}"
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
-		*}       
+		*}
 	</form>
 
 	{* 20071102 - franciscom *}
 	{*
 	<div id="inProgress"></div>
-  *}
-  
-  {if $warning_edit_msg neq ""}
-    <p><div class="warning_message" align="center">{$warning_edit_msg}</div>
-  {/if}
-	</div>	
+  	*}
+
+  	{if $warning_edit_msg neq ""}
+    	<p><div class="warning_message" align="center">{$warning_edit_msg}</div>
+  	{/if}
+	{*
+	</div>
+	*}
 {/if}
 
   {if $args_testcase.active eq 0}
-    <p><div class="warning_message" align="center">{lang_get s='tcversion_is_inactive_msg'}</div>
+    <br /><div class="warning_message" align="center">{lang_get s='tcversion_is_inactive_msg'}</div>
   {/if}
 	<div id="executionResults"></div>
 
@@ -136,18 +137,18 @@ viewer for test case in test specification
 			<th  colspan="2">
 			{$args_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$args_testcase.name|escape}</th>
 		</tr>
-    {/if} 
-    
-    
-    
-    
+    {/if}
+
+
+
+
     {if $args_show_version == "yes"}
 		<tr>
-			<td class="bold" colspan="2">{lang_get s='version'} 
+			<td class="bold" colspan="2">{lang_get s='version'}
 			{$args_testcase.version|escape}</td>
 		</tr>
 		{/if}
-		
+
 		<tr>
 			<td class="bold" colspan="2">{lang_get s='summary'}</td>
 		</tr>
@@ -171,12 +172,12 @@ viewer for test case in test specification
 			                {$execution_types[$args_testcase.execution_type]}</td>
 		</tr>
 
-		<tr> 
+		<tr>
 			<td colspan="2">{if $args_cf neq ''}
 			                 <div class="custom_field_container">{$args_cf}</div>
 			                {else}
 			                   &nbsp;
-			                {/if} 
+			                {/if}
 			 </td>
 		</tr>
 
@@ -193,17 +194,17 @@ viewer for test case in test specification
 						{/foreach}
 					</td>
 				</tr>
-				</table>	
+				</table>
 			</td>
 		</tr>
-		
-		
+
+
 	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
 		<tr>
 		  	<td colspan="2">
   				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>
-       			  <td colspan="2"><span><a href="{$hrefReqSpecMgmt}" 
+       			  <td colspan="2"><span><a title="{lang_get s='requirement_spec'}" href="{$hrefReqSpecMgmt}"
       				target="mainframe" class="bold">{lang_get s='Requirements'}</a>
       				: &nbsp;</span>
       			  </td>
@@ -218,7 +219,7 @@ viewer for test case in test specification
       			  </td>
     		    </tr>
     		  </table>
-    		</td>    	  
+    		</td>
 		</tr>
 	{/if}
 
@@ -242,4 +243,4 @@ viewer for test case in test specification
     </tr>
   {/if}
 	</table>
-	
+

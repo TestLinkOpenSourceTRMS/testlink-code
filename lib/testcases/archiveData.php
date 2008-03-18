@@ -1,26 +1,26 @@
 <?php
-/** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
- * @version $Id: archiveData.php,v 1.34 2008/03/05 22:22:39 franciscom Exp $
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * @version $Id: archiveData.php,v 1.35 2008/03/18 21:05:27 schlundus Exp $
  * @author Martin Havlat
- *  
+ *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
  *      20080120 - franciscom - show() method for test cases - interface changes
  *      20070930 - franciscom - REQ - BUGID 1078
- * 
+ *
  */
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("attachments.inc.php");
 testlinkInitPage($db);
 
-$template_dir='testcases/';
-$args=init_args();
+$template_dir = 'testcases/';
+$args = init_args();
 
 // load data and show template
 $smarty = new TLSmarty();
@@ -32,7 +32,7 @@ switch($args->feature)
 		$smarty->assign('id',$args->id);
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
-   	$item_mgr->show($smarty,$template_dir,$args->id);
+   		$item_mgr->show($smarty,$template_dir,$args->id);
 		break;
 
 	case 'testsuite':
@@ -40,35 +40,32 @@ switch($args->feature)
 		$item_mgr = new testsuite($db);
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
-		
-    $_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
+   		$_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
 		$item_mgr->show($smarty,$template_dir,$args->id);
 		break;
 
 	case 'testcase':
 		$spec_cfg = config_get('spec_cfg');
-    $viewerArgs=array('action' => '', 'msg_result' => '','user_feedback' => '');
-    $viewerArgs['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
-    if(isset($_SESSION['tcspec_refresh_on_action']))
-    {
+		$viewerArgs = array('action' => '', 'msg_result' => '','user_feedback' => '');
+		$viewerArgs['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
+		if(isset($_SESSION['tcspec_refresh_on_action']))
 			$viewerArgs['refresh_tree']=$_SESSION['tcspec_refresh_on_action'];
-    }
-    $viewerArgs['disable_edit'] = !$args->allow_edit;
+		$viewerArgs['disable_edit'] = !$args->allow_edit;
 
 		$item_mgr = new testcase($db);
-    if( !is_null($args->targetTestCase) )
-    {
-	     $viewerArgs['display_testproject'] = 1;
-	     $viewerArgs['display_parent_testsuite'] = 1;
-
-       // need to get internal Id from External ID
-       $cfg = config_get('testcase_cfg');
-       $args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character); 
-    }
+		if(!is_null($args->targetTestCase))
+		{
+			$viewerArgs['display_testproject'] = 1;
+			$viewerArgs['display_parent_testsuite'] = 1;
+	
+			// need to get internal Id from External ID
+			$cfg = config_get('testcase_cfg');
+			$args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+		}
 
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$attachmentsTpl[$args->id] = $attachments;
-		
+
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachmentsTpl);
 		$item_mgr->show($smarty,$template_dir,$args->id,TC_ALL_VERSIONS,$viewerArgs);
@@ -78,12 +75,10 @@ switch($args->feature)
 		tLog('$_GET["edit"] has invalid value: ' . $args->feature , 'ERROR');
 		trigger_error($_SESSION['currentUser']->login.'> $_GET["edit"] has invalid value.', E_USER_ERROR);
 }
-?>
 
-<?php
 function init_args()
 {
-	  $args = new stdClass();
+	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
@@ -91,6 +86,7 @@ function init_args()
     $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
     $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
-    return $args;  
+
+    return $args;
 }
 ?>

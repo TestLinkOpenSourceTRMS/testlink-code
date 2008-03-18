@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.295 $
- * @modified $Date: 2008/03/17 08:14:02 $ $Author: franciscom $
+ * @version $Revision: 1.296 $
+ * @modified $Date: 2008/03/18 21:05:28 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -132,7 +132,8 @@ $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers
 $TLS_warning_empty_pwd = "Your password should not be empty!";
 $TLS_your_info_please = "Enter Your User Information";
 
-
+//archiveData.php
+$TLS_container_title_testcase = $TLS_test_case;
 
 // index.php
 $TLS_main_page_title = "TestLink ::: Main Page";
@@ -232,7 +233,7 @@ $TLS_title_delete_attachment = "Delete attachment";
 
 // gui/templates/containerDelete.tpl
 $TLS_btn_yes_del_comp = "Yes, delete Test Suite";
-$TLS_container_title_testsuite =$TLS_test_suite;
+$TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed="Linked to one or more Test Plan, but not executed";
 $TLS_question_del = "Really delete";
 $TLS_th_link_exec_status = "Link and execution status";

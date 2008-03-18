@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.99 $
- * @modified $Date: 2008/02/21 20:25:55 $ $Author: havlat $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2008/03/18 21:05:27 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
@@ -68,9 +68,9 @@ define("TC_COPY_KEYWORDS",0);
 
 class testcase extends tlObjectWithAttachments
 {
-  private $tcversions_table="tcversions";
-	private $testprojects_table="testprojects";
-	private $nodes_hierarchy_table="nodes_hierarchy";
+	private $tcversions_table = "tcversions";
+	private $testprojects_table = "testprojects";
+	private $nodes_hierarchy_table = "nodes_hierarchy";
 
 	var $db;
 	var $tree_manager;
@@ -79,16 +79,16 @@ class testcase extends tlObjectWithAttachments
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
-
-  var $assignment_mgr;
-  var $assignment_types;
-  var $assignment_status;
-
-  var $cfield_mgr;
-
-  var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
-  var $export_file_types = array("XML" => "XML");
-  var $execution_types = array();
+	
+	var $assignment_mgr;
+	var $assignment_types;
+	var $assignment_status;
+	
+	var $cfield_mgr;
+	
+	var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
+	var $export_file_types = array("XML" => "XML");
+	var $execution_types = array();
 
 	function testcase(&$db)
 	{
@@ -301,7 +301,7 @@ function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
 
 	$sql = "INSERT INTO {$this->tcversions_table} " .
 	     " (id,tc_external_id,version,summary,steps,expected_results,author_id,creation_ts," .
-  	     "execution_type,importance) VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .  
+  	     "execution_type,importance) VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
   	     $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
 	  	 "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
          $this->db->db_now() . ", {$execution_type},{$importance} )";
@@ -382,10 +382,10 @@ function get_all()
        added disable_edit argument
 
 */
-function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_args=null)
+function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_args = null)
 {
 
-  $status_ok=1;
+  $status_ok = 1;
   $viewer_defaults=array('action' => '', 'msg_result' => '','user_feedback' => '',
                          'refresh_tree' => 'yes', 'disable_edit' => 0,
                          'display_testproject' => 0,'display_parent_testsuite' => 0);
@@ -458,12 +458,9 @@ function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_arg
 		if (!$tc_array)
 			continue;
 
-
-  	$tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
-
+	  	$tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
 		//get the status quo of execution and links of tc versions
 		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
-
 		$keywords_map[] = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
 		$tc_array[0]['keywords'] = $keywords_map;
 
@@ -471,23 +468,17 @@ function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_arg
 
 		$qta_versions = count($tc_array);
 		if($qta_versions > 1)
-		{
 			$tc_other_versions[] = array_slice($tc_array,1);
-		}
 		else
-		{
 			$tc_other_versions[] = null;
-		}
 
 		// get assigned REQs
-    $arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
-
+		$arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
+		
 		// custom fields
-		$cf_smarty=null;
-		if( $gui_cfg->enable_custom_fields )
-		{
-		  $cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
-		}
+		$cf_smarty = null;
+		if($gui_cfg->enable_custom_fields)
+			$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
 		$smarty->assign('cf',$cf_smarty);
  	}
 
@@ -495,10 +486,8 @@ function show(&$smarty,$template_dir,$id,$version_id=TC_ALL_VERSIONS,$viewer_arg
 	$smarty->assign('sqlResult',$viewer_defaults['msg_result']);
 	$smarty->assign('action',$viewer_defaults['action']);
 	$smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
-
 	$smarty->assign('tprojectName',$tprojectName);
   	$smarty->assign('parentTestSuiteName',$parentTestSuiteName);
-
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('users',tlUser::getAll($this->db,null,'id'));
@@ -2171,8 +2160,8 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-	      // 20070501 - franciscom
-        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+	      		// 20070501 - franciscom
+        		$label = $cf_info['label'];
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/03/22 17:43:00 $ $Author: franciscom $
  *
 */
 require_once('../../config.inc.php');
@@ -25,7 +25,7 @@ $main_descr=lang_get('testplan_title_tp_management'). " - " .
 if($tproject_id)
 {
 	$tproject_mgr = new testproject($db);
-	$tplans = $tproject_mgr->get_all_testplans($tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
+	$tplans = $tproject_mgr->get_all_testplans($tproject_id);
 }
 
 $smarty = new TLSmarty();

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/02/24 17:54:59 $  $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/03/22 17:43:00 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080322 - franciscom - interface changes get_all_testplans()
  * 20080112 - franciscom - changed methods to manage prefix field
  *                         new methods getTestCasePrefix()
  *
@@ -106,7 +107,6 @@ function create($name,$color,$optReq,$optPriority,$optAutomation,$notes,$active=
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
-
 	$tcprefix=$this->formatTcPrefix($tcasePrefix);
 
 	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority," .
@@ -1441,37 +1441,62 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
 
   args : $testproject_id
 
-         [$get_tp_without_tproject_id]
-         used just for backward compatibility (TL 1.5)
-         default: 0 -> 1.6 and up behaviour
+         [$filters]: optional map, with optional keys
+                     [$get_tp_without_tproject_id]
+                     used just for backward compatibility (TL 1.5)
+                     default: 0 -> 1.6 and up behaviour
 
-         [$plan_status]
-         default: null -> no filter on test plan status
-                  1 -> active test plans
-                  0 -> inactive test plans
+                     [$plan_status]
+                     default: null -> no filter on test plan status
+                              1 -> active test plans
+                              0 -> inactive test plans
+
+                     [$exclude_tplans]: null -> do not apply exclusion
+                                        id -> test plan id to exclude
 
   returns:
 
 */
-function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_status=null)
+// $get_tp_without_tproject_id=0,$plan_status=null)
+function get_all_testplans($testproject_id,$filters=null)
 {
-	$sql = " SELECT nodes_hierarchy.id, nodes_hierarchy.name,
-	                notes,active, testproject_id
-	         FROM {$this->nodes_hierarchy_table},{$this->testplans_table}";
-	$where = " WHERE nodes_hierarchy.id=testplans.id ";
+	$sql = " SELECT NH.id,NH.name,notes,active,testproject_id " .
+	       " FROM {$this->nodes_hierarchy_table} NH,{$this->testplans_table} TPLAN";
+	       
+	$where = " WHERE NH.id=TPLAN.id ";
   $where .= ' AND (testproject_id = ' . $testproject_id . " ";
+   
+  if( !is_null($filters) )
+  {
+      $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,
+                       'tplan2exclude' => null);
+      
+      foreach($key2check as $varname => $defValue)
+      {
+          $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
+      }                
+      
+      if($get_tp_without_tproject_id)
+	    {
+	    		$where .= " OR testproject_id = 0 ";
+	    }
+	    $where .= " ) ";
 
-	if($get_tp_without_tproject_id)
-	{
-			$where .= " OR testproject_id = 0 ";
-	}
-	$where .= " ) ";
+	    if(!is_null($plan_status))
+	    {
+	    	$my_active = to_boolean($plan_status);
+	    	$where .= " AND active = " . $my_active;
+	    }
 
-	if(!is_null($plan_status))
-	{
-		$my_active = to_boolean($plan_status);
-		$where .= " AND active = " . $my_active;
-	}
+	    if(!is_null($tplan2exclude))
+	    {
+	    	$where .= " AND TPLAN.id != {$tplan2exclude} ";
+	    }
+  }
+  else
+  {
+      $where .=")";  
+  }	
 	$sql .= $where . " ORDER BY name";
 
 	$map = $this->db->fetchRowsIntoMap($sql,'id');

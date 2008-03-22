@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.43 $ $Author: franciscom $
- * @modified $Date: 2008/03/09 18:44:47 $
+ * @version $Revision: 1.44 $ $Author: franciscom $
+ * @modified $Date: 2008/03/22 17:43:00 $
  *
  * @author Martin Havlat
  * 
@@ -17,6 +17,7 @@
  * There is also some javascript that handles the form information.
  *
  * rev :
+ *       20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
  *       20080120 - franciscom - added logic to enable/disable test case search link
  *       20070725 - franciscom - refactoring of rights checking 
  *       20070509 - franciscom - improving test plan availabilty checking
@@ -85,8 +86,9 @@ else
 $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
-// ----- Test Plan Section ----------------------------------  
-$num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,0,ACTIVE));
+// ----- Test Plan Section ----------------------------------
+$filters=array('plan_status' => ACTIVE);
+$num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
 
 // get Test Plans available for the user 
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$userID,$filter_tp_by_product);

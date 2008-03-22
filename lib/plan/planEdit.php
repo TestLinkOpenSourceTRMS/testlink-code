@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/03/04 18:45:14 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/03/22 17:43:00 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -30,7 +30,8 @@ $args = init_args($_REQUEST,$_SESSION);
 $gui_cfg = config_get('gui');
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
-$tplans = $tproject_mgr->get_all_testplans($args->tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
+// $tplans = $tproject_mgr->get_all_testplans($args->tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
+$tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
 
 $tpName = null;
 $bActive = 0;
@@ -190,7 +191,7 @@ switch($args->do_action)
    case "do_delete":
    case "do_update":
    case "list":
-        $tplans = $tproject_mgr->get_all_testplans($args->tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
+        $tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
 
         $template = is_null($template) ? 'planView.tpl' : $template;
         $smarty->assign('tplans',$tplans);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/02/27 20:16:42 $ $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/03/22 17:43:00 $ $Author: franciscom $
  *
  * rev :
  *      20080217 - franciscom - refactoring
@@ -67,6 +67,7 @@ switch($args->do_action)
 		$of->Value = $op->notes;
 		$templateCfg->template = $op->template;
 		break;
+
 }  
 
 
@@ -108,7 +109,7 @@ function init_args($request_hash, $session_hash)
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 
-	$bool_keys = array('is_active' => 0,'is_open' => 0);
+	$bool_keys = array('is_active' => 0,'is_open' => 0, 'copy_to_all_tplans' => 0);
 	foreach($bool_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -210,26 +211,29 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor)
     	case "do_create":
     	case "do_delete":
     	case "do_update":
-        	$doRender = true;
+       	$doRender = true;
     		$tpl = is_null($templateCfg->template) ? 'buildView.tpl' : $templateCfg->template;
     		break;
     		
     	case "edit":
     	case "create":
-        	$doRender = true;
+        $doRender = true;
     		$tpl = is_null($templateCfg->template) ? $templateCfg->default_template : $templateCfg->template;
     		break;
     }
     
     if($doRender)
     {
-		$my_builds = $tplanMgr->get_builds($argsObj->tplan_id);
+      $enable_copy=($argsObj->do_action == 'create' || $argsObj->do_action == 'do_create') ? 1 : 0; 
+
+		  $my_builds = $tplanMgr->get_builds($argsObj->tplan_id);
    		$smartyObj->assign('the_builds',$my_builds);
     	$smartyObj->assign('build_id',$argsObj->build_id);
     	$smartyObj->assign('build_name', $argsObj->build_name);
     	$smartyObj->assign('is_active', $argsObj->is_active);
     	$smartyObj->assign('is_open', $argsObj->is_open);
     	$smartyObj->assign('notes', $owebeditor->CreateHTML());
+    	$smartyObj->assign('enable_copy', $enable_copy);
 
   		$smartyObj->display($templateCfg->template_dir . $tpl);
     }
@@ -247,37 +251,41 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor)
 */
 function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 {
-	$op = new stdClass();
+	  $op = new stdClass();
     $op->operation_descr = '';
     $op->user_feedback = '';
     $op->template = "buildEdit.tpl";
-	$op->notes = $argsObj->notes;
-	$op->status_ok = false;
+	  $op->notes = $argsObj->notes;
+	  $op->status_ok = false;
     $op->buttonCfg = null;
 
-	$check = crossChecks($argsObj,$tplanMgr);
-
-	if($check->status_ok)
-	{
-		$user_feedback = lang_get("cannot_add_build");
-		$buildID = $buildMgr->create($argsObj->tplan_id,$argsObj->build_name,
-		                             $argsObj->notes,$argsObj->is_active,$argsObj->is_open);
-		if ($buildID)
-		{
-			$op->user_feedback = '';
-			$op->notes = '';
-			$op->template = null;
-			$op->status_ok = true;
-			logAuditEvent(TLS("audit_build_created",$argsObj->build_name,$argsObj->tplan_name),
-			              "CREATE",$buildID,"builds");
-		} 	
-	}
-	if(!$op->status_ok)
-	{
-		$op->buttonCfg->name = "do_create";
-		$op->buttonCfg->value = lang_get('btn_create');
-	  	$op->user_feedback=$check->user_feedback;
-	}
+	  $check = crossChecks($argsObj,$tplanMgr);
+    
+	  if($check->status_ok)
+	  {
+	  	$user_feedback = lang_get("cannot_add_build");
+	  	$buildID = $buildMgr->create($argsObj->tplan_id,$argsObj->build_name,
+	  	                             $argsObj->notes,$argsObj->is_active,$argsObj->is_open);
+	  	if ($buildID)
+	  	{
+	  		$op->user_feedback = '';
+	  		$op->notes = '';
+	  		$op->template = null;
+	  		$op->status_ok = true;
+	  		logAuditEvent(TLS("audit_build_created",$argsObj->build_name,$argsObj->tplan_name),
+	  		              "CREATE",$buildID,"builds");
+	  	} 	
+	  }
+	  if(!$op->status_ok)
+	  {
+	  	  $op->buttonCfg->name = "do_create";
+	  	  $op->buttonCfg->value = lang_get('btn_create');
+	    	$op->user_feedback=$check->user_feedback;
+	  }
+    elseif($argsObj->copy_to_all_tplans)
+    {
+        doCopyToTestPlans($argsObj,$buildMgr,$tplanMgr);    
+    }
     return $op;
 }
     
@@ -292,38 +300,39 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 */
 function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 {
-	$op = new stdClass();
+	  $op = new stdClass();
     $op->operation_descr='';
     $op->user_feedback='';
     $op->template = "buildEdit.tpl";
-	$op->notes = $argsObj->notes;
-	$op->status_ok = false;
+	  $op->notes = $argsObj->notes;
+	  $op->status_ok = false;
     $op->buttonCfg = null;
 
     $oldObjData=$buildMgr->get_by_id($argsObj->build_id);
     $oldname=$oldObjData['name'];
     
-	$check = crossChecks($argsObj,$tplanMgr);
-	if($check->status_ok)
-	{
-		$user_feedback = lang_get("cannot_update_build");
-		if ($buildMgr->update($argsObj->build_id,$argsObj->build_name,
-		                      $argsObj->notes,$argsObj->is_active,$argsObj->is_open))
-		{
-			$op->user_feedback = '';
-			$op->notes = '';
-			$op->template = null;
-			$op->status_ok = true;
-			logAuditEvent(TLS("audit_build_saved",$argsObj->build_name),"SAVE",$argsObj->build_id,"builds");
-		} 	
-	}
-	if(!$op->status_ok)
-	{
-		$op->operation_descr=lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $oldname;
-		$op->buttonCfg->name = "do_update";
-		$op->buttonCfg->value = lang_get('btn_save');
-		$op->user_feedback=$check->user_feedback;
-	}
+	  $check = crossChecks($argsObj,$tplanMgr);
+	  if($check->status_ok)
+	  {
+	  	$user_feedback = lang_get("cannot_update_build");
+	  	if ($buildMgr->update($argsObj->build_id,$argsObj->build_name,
+	  	                      $argsObj->notes,$argsObj->is_active,$argsObj->is_open))
+	  	{
+	  		$op->user_feedback = '';
+	  		$op->notes = '';
+	  		$op->template = null;
+	  		$op->status_ok = true;
+	  		logAuditEvent(TLS("audit_build_saved",$argsObj->build_name),"SAVE",$argsObj->build_id,"builds");
+	  	} 	
+	  }
+	  
+	  if(!$op->status_ok)
+	  {
+	  	$op->operation_descr=lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $oldname;
+	  	$op->buttonCfg->name = "do_update";
+	  	$op->buttonCfg->value = lang_get('btn_save');
+	  	$op->user_feedback=$check->user_feedback;
+	  }
     return $op;
 }
 
@@ -350,5 +359,38 @@ function crossChecks($argsObj,&$tplanMgr)
 	    $op->status_ok = 0;
 	}   
 	return $op;
+}
+
+
+
+
+/*
+  function: doCopyToTestPlans
+            copy do checks that are common to create and update operations
+            - name already exists in this testplan?
+  args:
+  
+  returns: - 
+
+*/
+function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
+{
+    $tprojectMgr= new testproject($tplanMgr->db);
+    
+    // exclude this testplan
+    $filters=array('tplan2exclude' => $argsObj->tplan_id);
+    $tplanset = $tprojectMgr->get_all_testplans($argsObj->testprojectID,$filters);
+    
+    if( !is_null($tplanset) )
+    {
+        foreach($tplanset as $id => $info)
+        {
+            if( !$tplanMgr->check_build_name_existence($id,$argsObj->build_name) )
+            {
+                $buildMgr->create($id,$argsObj->build_name,$argsObj->notes,
+                                  $argsObj->is_active,$argsObj->is_open);
+            }
+        }  
+    }
 }
 ?>

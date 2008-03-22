@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.297 $
- * @modified $Date: 2008/03/22 15:45:41 $ $Author: franciscom $
+ * @version $Revision: 1.298 $
+ * @modified $Date: 2008/03/22 17:44:04 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -478,7 +478,7 @@ $TLS_title_last_mod = "Last modified on ";
 
 
 
-// gui/templates/buildNew.tpl
+// gui/templates/buildEdit.tpl
 $TLS_active = "Active";
 $TLS_enter_build = "Title";
 $TLS_enter_build_notes = "Description";
@@ -490,6 +490,7 @@ $TLS_title_build_create = "Create a new Build";
 $TLS_title_build_update = "Update Build";
 $TLS_title_build_edit = "Edit Build";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
+$TLS_copy_to_all_tplans = "Copy to all Test Plans";
 
 
 
@@ -662,7 +663,7 @@ $TLS_caption_define_role = "Define role";
 $TLS_caption_possible_affected_users = "Possibly affected users by role delete operation";
 $TLS_enter_role_notes = "Role description";
 $TLS_menu_assign_product_roles = "Assign Test Project roles";
-$TLS_menu_assign_testplan_roles = "Assign test plan roles";
+$TLS_menu_assign_testplan_roles = "Assign Test Plan roles";
 $TLS_menu_define_roles = "New role";
 $TLS_menu_mod_user = "Modify User";
 $TLS_menu_new_user = "New User";
@@ -1386,13 +1387,17 @@ $TLS_warning_delete_build = "You are going to delete: %s " .
                             "<br /> <br />All dependant data (i.e., test results) will also be deleted!" .
                             "<br /> <br /> Are you sure?";
 $TLS_builds_description = "A build is identified by its title. Each build is related to the active Test Plan." .
-						  "Description should include: list of delivered packages, fixes or features, approvals, status, etc. " .
-						  "It has two attributes:<br />" .
+						              "<br />Description should include:&nbsp;" .
+						              "list of delivered packages, fixes or features, approvals, status, etc.<br />" .
+						              "A build has two attributes:<br />" .
                           "Active / Inactive &ndash; defines whether the build can be used. " .
                           "Inactive builds are not listed on the execution and reports pages.<br />" .
-                          "Open / Closed &ndash; An open build's test results can be modified. A closed build's can not.";
+                          "Open / Closed &ndash; Only for open builds, test results can be modified.";
 
-
+$TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+                     "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
+                     "and if name does not exist, build will be created."; 
+ 
 
 // gui/templates/planView.tpl
 $TLS_testplan_alt_delete_tp = "Delete test plan?";

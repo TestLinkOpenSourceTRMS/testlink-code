@@ -1,14 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.2 2008/02/26 22:32:59 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.3 2008/03/22 23:47:03 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
           s="req_spec,req_title_analyse,req_spec_change,edit,req_total_count,req_title_in_tl,
              req_title_covered,req_title_uncovered,req_title_not_in_tl,
-             req_title_nottestable,req_title_covered,req_doc_id,req,testcases,none"}      
+             req_title_nottestable,req_title_covered,req_doc_id,req,testcases,none"}
 
 {assign var="action_reqspec_view" value="lib/requirements/reqSpecView.php"}
-{assign var="action_req_view" value="lib/requirements/reqView.php?item=requirement&requirement_id="}
+{assign var="action_req_view" value="lib/requirements/reqView.php?item=requirement&amp;requirement_id="}
 
 
 {include file="inc_head.tpl"}
@@ -19,8 +19,8 @@
  {lang_get s='help' var='common_prefix'}
  {lang_get s='req_spec' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
- 
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;"}
 
 	  {$labels.req_spec}{$smarty.const.TITLE_SEP}{$reqSpec[$selectedReqSpec]|escape}
@@ -61,7 +61,7 @@
 {if $smarty.section.row.first}
 <table class="simple">
 	<tr>
-	
+
 		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="req"}</th>
 		<th>{lang_get s="testcases"}</th>

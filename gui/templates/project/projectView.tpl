@@ -1,14 +1,14 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: projectView.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $ 
-Purpose: smarty template - edit / delete Test Plan 
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: projectView.tpl,v 1.8 2008/03/22 23:47:03 schlundus Exp $
+Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
      some variables smarty and javascript are created on the inc_*.tpl files.
-     
+
 Rev :
-    20080116 - franciscom - added option to show/hide id useful for API 
-     
+    20080116 - franciscom - added option to show/hide id useful for API
+
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -16,7 +16,7 @@ Rev :
 {* Configure Actions *}
 {assign var="managerURL" value="lib/project/projectEdit.php"}
 {assign var="deleteAction" value="$managerURL?doAction=doDelete&tprojectID="}
-{assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
+{assign var="editAction" value="$managerURL?doAction=edit&amp;tprojectID="}
 {assign var="createAction" value="$managerURL?doAction=create"}
 
 {lang_get s='popup_product_delete' var="warning_msg" }
@@ -60,13 +60,13 @@ var del_action=fRoot+'{$deleteAction}';
 		{foreach item=testproject from=$tprojects}
 		<tr>
 			<td><span class="api_info" style='display:none'>{$smarty.const.TL_API_ID_FORMAT|replace:"%s":$testproject.id}</span>
-			    <a href="{$editAction}{$testproject.id}"> 
-				     {$testproject.name|escape} 
+			    <a href="{$editAction}{$testproject.id}">
+				     {$testproject.name|escape}
 				     {if $gsmarty_gui->show_icon_edit}
- 				         <img title="{$labels.testproject_alt_edit}" 
- 				              alt="{$labels.testproject_alt_edit}" 
+ 				         <img title="{$labels.testproject_alt_edit}"
+ 				              alt="{$labels.testproject_alt_edit}"
  				              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
- 				     {/if}  
+ 				     {/if}
  				  </a>
 			</td>
 			<td>
@@ -76,30 +76,30 @@ var del_action=fRoot+'{$deleteAction}';
 				{$testproject.prefix}
 			</td>
 			<td class="clickable_icon">
-				{if $testproject.option_reqs eq 1} 
-  					<img style="border:none" 
-  				            title="{$labels.testproject_alt_requirement_feature}" 
-  				            alt="{$labels.testproject_alt_requirement_feature}" 
+				{if $testproject.option_reqs eq 1}
+  					<img style="border:none"
+  				            title="{$labels.testproject_alt_requirement_feature}"
+  				            alt="{$labels.testproject_alt_requirement_feature}"
   				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
   				{else}
-  					&nbsp;        
+  					&nbsp;
   				{/if}
 			</td>
 			<td class="clickable_icon">
-				{if $testproject.active eq 1} 
-  					<img style="border:none" 
-  				            title="{$labels.testproject_alt_active}" 
-  				            alt="{$labels.testproject_alt_active}" 
+				{if $testproject.active eq 1}
+  					<img style="border:none"
+  				            title="{$labels.testproject_alt_active}"
+  				            alt="{$labels.testproject_alt_active}"
   				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
   				{else}
-  					&nbsp;        
+  					&nbsp;
   				{/if}
 			</td>
 			{if $canManage == "yes"}
 			<td class="clickable_icon">
-				  <img style="border:none;cursor: pointer;" 
+				  <img style="border:none;cursor: pointer;"
 				       alt="{$labels.testproject_alt_delete}"
-					   title="{$labels.testproject_alt_delete}" 
+					   title="{$labels.testproject_alt_delete}"
 					   onclick="delete_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
 				     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>

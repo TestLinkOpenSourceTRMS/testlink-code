@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.8 2008/03/18 21:05:27 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.9 2008/03/22 23:47:03 schlundus Exp $
 viewer for test case in test specification
 
 20080113 - franciscom - changed format for test case id + name
@@ -66,22 +66,22 @@ viewer for test case in test specification
 	    {if $edit_enabled}
 	 	    <input type="submit" name="edit_tc" value="{lang_get s='btn_edit'}" />
 	    {/if}
-	
+
 		{if $args_can_delete_testcase == "yes" }
 			<input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
 	    {/if}
-	
+
 	    {if $args_can_move_copy == "yes" }
 	   		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
 	    	<br />
 	     	{assign var="go_newline" value="<br />"}
 	    {/if}
-	
+
 	    {$go_newline}
 	 	{if $args_can_delete_version == "yes" }
 			 <input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
 	    {/if}
-	
+
 		{* --------------------------------------------------------------------------------------- *}
 		{if $active_status_op_enabled eq 1}
 	        {if $args_testcase.active eq 0}
@@ -243,4 +243,4 @@ viewer for test case in test specification
     </tr>
   {/if}
 	</table>
-
+</div>

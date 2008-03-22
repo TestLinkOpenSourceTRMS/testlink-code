@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/03/10 21:52:00 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/03/22 23:47:04 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -97,7 +97,7 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 	{
 	  $output .= '<h1 id="doctitle">' . lang_get('testplan') . htmlspecialchars($tplan_info['name']);
 	}
-	$output .= "<br>yy" . htmlspecialchars($my_title) . "xx</h1>\n";
+	$output .= "<br>" . htmlspecialchars($my_title) . "</h1>\n";
 
 
 	$output .= '<div id="summary">' .

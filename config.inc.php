@@ -1,15 +1,15 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.167 $
- * @modified $Date: 2008/03/22 15:45:39 $ by $Author: franciscom $
+ * @version $Revision: 1.168 $
+ * @modified $Date: 2008/03/22 23:47:02 $ by $Author: schlundus $
  *
  * SCOPE:
- * Constants and configuration parameters used throughout TestLink 
+ * Constants and configuration parameters used throughout TestLink
  * are defined within this file.
  * To adapt it to your environment you can made changes here (not recomended)
  * or create custom_config.inc.php and reassign there the configuration
@@ -55,12 +55,12 @@
  *                             allowing users to customize TL configurations
  *                             managed using global variables, without need
  *                             of changing this file.
- *                             
+ *
  *     20070429 - franciscom - added contribution by Seweryn Plywaczyk
  *                             text area custom field
  *
  *     20070415 - franciscom -  added config for drag and drop feature
- *     20070301 - franciscom - 
+ *     20070301 - franciscom -
  *     BUGID 695 - $g_user_self_signup (fawel contribute)
  *
  *-----------------------------------------------------------------------------
@@ -79,10 +79,10 @@ define('TL_TEMP_PATH', TL_ABS_PATH . 'gui' . DS . 'templates_c' . DS);
 require_once(dirname(__FILE__) . DS . 'cfg' . DS . 'const.inc.php');
 
 /** Setting up the global include path for testlink */
-ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
+ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR .
         '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DS . 'functions' . DS);
 
-/** Include database consts (the file is generated automatically by TL installer) */ 
+/** Include database consts (the file is generated automatically by TL installer) */
 @include_once('config_db.inc.php');
 
 /** Functions for check request status */
@@ -103,15 +103,15 @@ define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 // Your first/suggested choice for default locale.
 // This must be one of $g_locales (see cfg/const.inc.php).
-// An attempt will be done to stablish the default locale 
+// An attempt will be done to stablish the default locale
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
-$g_default_language = 'en_GB'; 
+$g_default_language = 'en_GB';
 
 
 /** root of testlink directory location seen through the web server */
-/*  20070106 - franciscom - this statement it's not 100% right      
-    better use $_SESSION['basehref'] in the scripts. */      
-define('TL_BASE_HREF', get_home_url()); 
+/*  20070106 - franciscom - this statement it's not 100% right
+    better use $_SESSION['basehref'] in the scripts. */
+define('TL_BASE_HREF', get_home_url());
 
 // ----------------------------------------------------------------------------
 /** [GLOBAL] */
@@ -164,12 +164,12 @@ $g_loggerCfg=null;
 
 // ----------------------------------------------------------------------------
 /** [Bug Tracking systems] */
-/** 
-* TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
+/**
+* TestLink uses bugtracking systems to check if displayed bugs resolved, verified,
 * and closed bugs. If they are it will strike through them
 *
 * @var STRING g_interface_bugs = ['NO', 'BUGZILLA', 'MANTIS', 'JIRA','TRACKPLUS', 'EVENTUM']
-* NO        : no bug tracking system integration 
+* NO        : no bug tracking system integration
 * BUGZILLA  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
 * MANTIS    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
 * JIRA      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
@@ -182,16 +182,16 @@ $g_loggerCfg=null;
 $g_interface_bugs = 'NO';
 
 // ----------------------------------------------------------------------------
-/** [authentication] */                 
+/** [authentication] */
 
 /** Login authentication
  * possible values: '' or 'MD5' => use password stored on db
  *                   'LDAP'      => use password from LDAP Server
- */ 
+ */
 $g_login_method				= 'MD5';
 
 // LDAP authentication was developed by mantis project (www.mantisbt.org)
-// Example: 
+// Example:
 //	$g_ldap_bind_dn			= 'my_bind_user';
 //	$g_ldap_bind_passwd	= 'my_bind_password';
 $g_ldap_server			= 'localhost';
@@ -199,15 +199,15 @@ $g_ldap_port			= '389';
 $g_ldap_root_dn			= 'dc=mycompany,dc=com';
 $g_ldap_organization	= '';    # e.g. '(organizationname=*Traffic)'
 $g_ldap_uid_field		= 'uid'; # Use 'sAMAccountName' for Active Directory
-$g_ldap_bind_dn			= ''; // Left empty if you LDAP server allows anonymous binding 
-$g_ldap_bind_passwd	= ''; // Left empty if you LDAP server allows anonymous binding 
+$g_ldap_bind_dn			= ''; // Left empty if you LDAP server allows anonymous binding
+$g_ldap_bind_passwd	= ''; // Left empty if you LDAP server allows anonymous binding
 
 
 
 // ----------------------------------------------------------------------------
 /** [GUI] */
 /** some maxima related to importing stuff in TL */
-// Maximum uploadfile size 
+// Maximum uploadfile size
 // Also check your PHP settings (default is usually 2MBs)
 define('TL_IMPORT_LIMIT', '204800'); // in bytes
 
@@ -215,7 +215,7 @@ define('TL_IMPORT_LIMIT', '204800'); // in bytes
 define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 
 /** Configure frmWorkArea navigator width */
-define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
+define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%");
 
 /** CSS themes - modify if you create own*/
 define('TL_THEME_BASE_DIR','gui/themes/theme_m2/');
@@ -238,11 +238,11 @@ define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css
 define('TL_THEME_IMG_DIR',TL_THEME_BASE_DIR . 'images');
 
 // logo for login page
-$g_logo_login_page='<img alt="TestLink" title="TestLink" src="' . 
+$g_logo_login_page='<img alt="TestLink" title="TestLink" src="' .
                     TL_THEME_IMG_DIR . '/company_logo.png" />';
 
 // logo for navbar page
-$g_logo_navbar= '<img alt="TestLink" title="TestLink" src="' . 
+$g_logo_navbar= '<img alt="TestLink" title="TestLink" src="' .
                  TL_THEME_IMG_DIR . '/company_logo.png" />';
 
 // image for main menu item bullet (just filename)
@@ -252,18 +252,18 @@ $g_main_menu_item_bullet_img='slide_gripper.gif';
 // 'background'  -> standard behaviour for 1.6.x you can have a different
 //                  background colour for every test project.
 //
-// 'none'        -> new behaviour no background color change 
+// 'none'        -> new behaviour no background color change
 //
 // define('TL_TESTPROJECT_COLORING','background');
 define('TL_TESTPROJECT_COLORING','none');
 
-/** fckeditor Toolbar 
+/** fckeditor Toolbar
  * modify which icons will be available in html edit pages
- * refer to fckeditor configuration file 
+ * refer to fckeditor configuration file
  **/
 $g_fckeditor_toolbar = "TL_Medium_2";
 
-// Display name and surename in all user lists 
+// Display name and surename in all user lists
 // $g_show_realname=TRUE; -> build a human readable displayname
 //                           using $g_username_format
 $g_show_realname = FALSE;
@@ -285,7 +285,7 @@ $g_gui->show_icon_edit=false;
 // Order to use when building a testproject combobox
 // 'ORDER BY name'
 // 'ORDER_BY BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
-// 
+//
 $g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 
 // Choose what kind of webeditor you want to use.
@@ -297,9 +297,9 @@ $g_gui->webeditor='fckeditor';
 
 // 20080111 - asielb
 // Is API related functionality visible in the UI
-$g_api_ui_show = TRUE; 
+$g_api_ui_show = TRUE;
 
-// used to display API ID info in the *View pages 
+// used to display API ID info in the *View pages
 $g_api_id_format	= "[ID: %s ]";
 
 // used to round percentages on metricsDashboard.php
@@ -308,16 +308,16 @@ $g_dashboard_precision=2;
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */
 
-/** 
- * TREE MENU 
+/**
+ * TREE MENU
  *	Definition of tree menu component: dTree, jTree or phplayersmenu.
- *	jTree has the best performance but others have a better functionality  
+ *	jTree has the best performance but others have a better functionality
  *	[LAYERSMENU, DTREE, JTREE]
  */
 
 // can be redefined using custom_config.inc.php
 $g_tree_type='JTREE';
- 
+
 
 // When creating an node in the tree, you can choose if:
 //
@@ -327,7 +327,7 @@ $g_tree_type='JTREE';
 // An useful alternative is maintain, inside of a container two groups:
 // one for test cases, and one for test suites.
 // This can be achived assigned a default order different for every type of node.
-//                 
+//
 // These values must be >= 0
 //
 $g_tree_node_ordering->default_testcase_order=100;
@@ -365,14 +365,14 @@ $g_attachments->enabled = TRUE;
  **/
 $g_repositoryType = TL_REPOSITORY_TYPE_FS;
 
-/** 
+/**
  * TL_REPOSITORY_TYPE_FS: the where the filesystem repository should be located
- * We recommend to change the directory for security reason. 
+ * We recommend to change the directory for security reason.
  **/
 $g_repositoryPath = TL_ABS_PATH . "upload_area" . DS;
 
-/** 
- * compression used within the repository 
+/**
+ * compression used within the repository
  * TL_REPOSITORY_COMPRESSIONTYPE_NONE => no compression
  * TL_REPOSITORY_COMPRESSIONTYPE_GZIP => gzip compression
  */
@@ -387,8 +387,8 @@ define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*TL_REPOSITORY_MAXFILESIZE_MB); // 
 $g_attachments->allow_empty_title = TRUE;
 
 // $g_attachments->allow_empty_title == TRUE, you can ask the system
-// to do something 
-// 
+// to do something
+//
 // 'none'         -> just write on db an empty title
 // 'use_filename' -> use filename as title
 //$g_attachments->action_on_save_empty_title='use_filename';
@@ -401,7 +401,7 @@ $g_attachments->action_on_save_empty_title = 'none';
 // 'show_label' -> the value of $g_attachments->access_string will be used .
 $g_attachments->action_on_display_empty_title = 'show_icon';
 
-$g_attachments->access_icon = '<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none">';
+$g_attachments->access_icon = '<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
 // Set display order of uploaded files - BUGID 1086
@@ -413,10 +413,10 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 /** Test Case generation from Requirements
 
 	- use_req_spec_as_testsuite_name
-  	FALSE -> test cases are created and assigned to a test suite 
+  	FALSE -> test cases are created and assigned to a test suite
   	         with name $g_req_cfg->default_testsuite_name
-  	         
-  	TRUE  -> REQuirement Specification Title is used as testsuite name     
+
+  	TRUE  -> REQuirement Specification Title is used as testsuite name
 */
 $g_req_cfg->use_req_spec_as_testsuite_name = TRUE;
 $g_req_cfg->default_testsuite_name = "Test suite created by Requirement - Auto";
@@ -447,19 +447,19 @@ define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
 # Configure using custom_config.inc.php
-$g_tl_admin_email     = '[testlink_sysadmin_email_not_configured]'; # for problem/error notification 
+$g_tl_admin_email     = '[testlink_sysadmin_email_not_configured]'; # for problem/error notification
 $g_from_email         = '[from_email_not_configured]';  # email sender
 $g_return_path_email  = '[return_path_email_not_configured]';
 
 # Urgent = 1, Not Urgent = 5, Disable = 0
-$g_mail_priority = 5;   
+$g_mail_priority = 5;
 
 // SMTP Configuration
-$g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured  
+$g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured
 
 // Configure only if SMTP server requires authentication
-$g_smtp_username    = '';  # user  
-$g_smtp_password    = '';  # password 
+$g_smtp_username    = '';  # user
+$g_smtp_password    = '';  # password
 
 
 
@@ -472,21 +472,21 @@ $g_smtp_password    = '';  # password
  **/
 $g_check_names_for_duplicates = TRUE;
 
-/** 
+/**
  * Action for duplication check (only if $g_check_names_for_duplicates=TRUE)
  * 'allow_repeat' => allow the name to be repeated (backward compatibility)
  * 'generate_new' => generate a new name using $g_prefix_name_for_copy
- * 'block'        => return with an error 
- **/    
+ * 'block'        => return with an error
+ **/
 $g_action_on_duplicate_name = 'generate_new';
 
-/** Used when creating a Test Suite using copy 
+/** Used when creating a Test Suite using copy
    and you have choose  $g_action_on_duplicate_name = 'generate_new'
    if the name exist.
  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
-        
-/** 
+
+/**
 BUGID 0000086: Using "|" in the testsuite name causes malformed URLs
 regexp used to check for chars not allowed in:
 test project, test suite and testcase names.
@@ -497,9 +497,9 @@ $g_ereg_forbidden = "[|]";
 // Get from MANTIS Bugtracking system
 // Regular expression to use when validating new user login names
 // This default regular expression: '/^[\w \-]+$/'
-// allows a-z, A-z, 0-9, as well as space and underscore.  
+// allows a-z, A-z, 0-9, as well as space and underscore.
 // IMPORTANT: If you change this, you may want to update the
-//            $TLS_valid_user_name_format 
+//            $TLS_valid_user_name_format
 //            string in the language files to explain the rules you are using on your site
 //
 $g_user_login_valid_regex='/^[\w \-]+$/';
@@ -513,8 +513,8 @@ $g_show_tp_without_tproject_id = FALSE;
 // obsolete (use $g_show_tp_without_tproject_id)
 $g_show_tp_without_prodid = $g_show_tp_without_tproject_id;
 
-// TRUE  -> you can create multiple time the same keyword 
-//           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) 
+// TRUE  -> you can create multiple time the same keyword
+//           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7)
 // FALSE ->   [STANDARD BEHAIVOUR]
 $g_allow_duplicate_keywords = FALSE;
 
@@ -524,11 +524,11 @@ $g_allow_duplicate_keywords = FALSE;
 $g_gui->enable_custom_fields = TRUE;
 
 // Applied to HTML inputs created to get/show custom field contents
-// 
+//
 // For string,numeric,float,email: size & maxlenght of the input type text.
 // For list,email size of the select input.
 //
-$g_gui->custom_fields->sizes = array( 
+$g_gui->custom_fields->sizes = array(
 	'string' => 50,
 	'numeric'=> 10,
 	'float'  => 10,
@@ -605,7 +605,7 @@ $g_exec_cfg->history_order='DESC';
 $g_exec_cfg->history_on=FALSE;
 
 
-// TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
+// TRUE  ->  test case VERY LAST (i.e. in any build) execution status
 //           will be displayed
 // FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
 $g_exec_cfg->show_last_exec_any_build=FALSE;
@@ -618,8 +618,8 @@ $g_exec_cfg->show_history_all_builds=FALSE;
 
 
 // different models for the attachments management on execution page
-// $att_model_m1 ->  shows upload button and title 
-//   
+// $att_model_m1 ->  shows upload button and title
+//
 // $att_model_m2 ->  hides upload button and title
 //
 $g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
@@ -653,10 +653,10 @@ $g_exec_cfg->enable_tree_colouring=1;
 //      show all test cases presents on test suite and children test suite.
 //
 // 0 -> nothing happens, to execute a test case you need to click on test case
-//      
+//
 $g_exec_cfg->show_testsuite_contents=0;
 
-// 
+//
 // 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
 // 0 -> no edit allowed [STANDARD BEHAVIOUR]
 $g_exec_cfg->edit_notes=0;
@@ -665,7 +665,7 @@ $g_exec_cfg->edit_notes=0;
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
-//                   
+//
 $g_spec_cfg->steps_results_layout='horizontal';
 //$g_spec_cfg->steps_results_layout='vertical';
 
@@ -697,7 +697,7 @@ $g_exec_cfg->exec_mode->tester='assigned_to_me';
 
 
 // logged_user -> combo will be set to logged user
-// none        -> no filter applied by default 
+// none        -> no filter applied by default
 $g_exec_cfg->user_filter_default='logged_user';
 
 
@@ -705,7 +705,7 @@ $g_exec_cfg->user_filter_default='logged_user';
 // Important
 // object members has SAME NAME that FCK editor objects.
 // the logic present on tcEdit.php is dependent of this rule.
-// 
+//
 // summary
 // steps
 // expected_results
@@ -713,21 +713,21 @@ $g_exec_cfg->user_filter_default='logged_user';
 // every member contains an object with following members:
 // type
 // value
-// 
-// Possible values for type member: 
+//
+// Possible values for type member:
 // none: template will not be used, default will be a clean editor screen.
 //
 // string: value of value member is assigned to FCK object
 //
-// string_id: value member is used in a lang_get() call, and return value 
+// string_id: value member is used in a lang_get() call, and return value
 //            is assigned to FCK object.
-//            Configure string_id on custom_strings.txt            
+//            Configure string_id on custom_strings.txt
 //
 // file: value member is used as file name.
 //       file is readed and it's contains assigned to FCK object
 //
 // any other value for type, results on '' assigned to FCK object
-//        
+//
 //
 $g_testcase_template->summary->type='none';
 $g_testcase_template->summary->value='';
@@ -743,19 +743,19 @@ $g_testcase_template->expected_results->value='';
 // Important
 // object members has SAME NAME that FCK editor objects.
 // the logic present on tcEdit.php is dependent of this rule.
-// 
+//
 // every member contains an object with following members:
 // type
 // value
-// 
-// Possible values for type member: 
+//
+// Possible values for type member:
 // none: template will not be used, default will be a clean editor screen.
 //
 // string: value of value member is assigned to FCK object
 //
-// string_id: value member is used in a lang_get() call, and return value 
+// string_id: value member is used in a lang_get() call, and return value
 //            is assigned to FCK object.
-//            Configure string_id on custom_strings.txt            
+//            Configure string_id on custom_strings.txt
 //
 // file: value member is used as file name.
 //       file is readed and it's contains assigned to FCK object
@@ -764,7 +764,7 @@ $g_testcase_template->expected_results->value='';
 //               $g_testsuite_template->details->value='D:\w3\tl\head_20080103\logs\tsuite.txt';
 //
 // any other value for type, results on '' assigned to Web Editor object.
-//        
+//
 //
 $g_testsuite_template->details->type='none';
 $g_testsuite_template->details->value='';
@@ -777,7 +777,7 @@ $g_testsuite_template->details->value='';
 // TRUE => allow [STANDARD BEHAVIOUR]
 // FALSE => disallow
 //
-$g_user_self_signup = TRUE; 
+$g_user_self_signup = TRUE;
 // ----- End of Config ------------------------------------------------
 
 // --------------------------------------------------------------------
@@ -785,9 +785,9 @@ $g_user_self_signup = TRUE;
 // --------------------------------------------------------------------
 $custom_config_file = TL_ABS_PATH . 'custom_config.inc.php';
 clearstatcache();
-if ( file_exists( $custom_config_file ) ) 
+if ( file_exists( $custom_config_file ) )
 {
-  require_once( $custom_config_file ); 
+  require_once( $custom_config_file );
 }
 
 define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
@@ -828,7 +828,7 @@ $serverLanguage = false;
 // check for !== false because getenv() returns false on error
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-	
+
 if(false !== $serverLanguage)
 {
 	if (array_key_exists($serverLanguage,$g_locales))
@@ -868,8 +868,8 @@ if ($g_interface_bugs != 'NO')
 
 
 /** Testlink Smarty class sets up the default smarty settings for testlink */
-require_once(TL_ABS_PATH . 'third_party/smarty/libs/Smarty.class.php'); 
-require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php'); 
+require_once(TL_ABS_PATH . 'third_party/smarty/libs/Smarty.class.php');
+require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php');
 
 /** logging functions */
 require_once('logging.inc.php');

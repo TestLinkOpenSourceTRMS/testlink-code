@@ -1,22 +1,19 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.2 2008/03/11 18:40:34 franciscom Exp $
-show test plan tree 
+$Id: planTCNavigator.tpl,v 1.3 2008/03/22 23:47:03 schlundus Exp $
+show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
 *}
+{lang_get var="labels" s='filter_owner,TestPlan'}
 
-{lang_get var="labels" 
-          s='filter_owner,TestPlan'}
-
-
-{include file="inc_head.tpl" jsTree="yes" OpenHead="yes"}
+{include file="inc_head.tpl" jsTree="yes" openHead="yes"}
 <script type="text/javascript">
 {literal}
 function pre_submit()
 {
- document.getElementById('called_url').value=parent.workframe.location;
- return true;
+	document.getElementById('called_url').value = parent.workframe.location;
+	return true;
 }
 </script>
 {/literal}
@@ -26,8 +23,8 @@ function pre_submit()
 <h1>{lang_get s='title_navigator'} {lang_get s='TestPlan'} {$additional_string|escape}</h1>
 <div style="margin: 3px;">
 <form method="post" id="testSetNavigator" onSubmit="javascript:return pre_submit();">
-  <input type="hidden" id="called_by_me" name="called_by_me" value="1">
-  <input type="hidden" id="called_url" name="called_url" value="">
+	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
+	<input type="hidden" id="called_url" name="called_url" value="" />
 
 	<table class="smallGrey" style="width:100%;">
 		<caption>
@@ -59,7 +56,7 @@ function pre_submit()
 				<select name="filter_assigned_to">
 					{html_options options=$testers selected=$filter_assigned_to}
 				</select>
-			</td>	
+			</td>
 		</tr>
     {/if}
 		<tr>

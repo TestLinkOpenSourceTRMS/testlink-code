@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2008/03/12 16:25:57 $ $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2008/03/22 23:47:04 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -478,7 +478,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	  {
 		    $sql .= "(";
 		    $sql_unassigned=" OR UA.user_id IS NULL)";
-		}    
+		}
 		$sql .= " UA.user_id = {$assigned_to} " . $sql_unassigned;
 	}
 
@@ -1170,22 +1170,22 @@ function get_builds($id,$active=null,$open=null)
 
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function get_build_by_name($id,$build_name)
 {
   $safe_build_name=$this->db->prepare_string(trim($build_name));
-  
+
 	$sql = " SELECT id,testplan_id, name, notes, active, is_open " .
-	       " FROM {$this->builds_table} " . 
+	       " FROM {$this->builds_table} " .
 	       " WHERE testplan_id = {$id} AND name='{$safe_build_name}'";
 
- 	
+
  	$recordset = $this->db->get_recordset($sql);
   $rs=null;
   if( !is_null($recordset) )
@@ -1239,7 +1239,7 @@ function _natsort_builds($builds_map)
   returns: 1 => name exists
 
   rev: 20080217 - franciscom - added build_id argument
-  
+
 */
 function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_sensitive=0)
 {
@@ -1258,12 +1258,12 @@ function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_s
 	    $sql .= " AND UPPER(name)=";
 	}
 	$sql .= "'" . $this->db->prepare_string($build_name) . "'";
-	
+
 	if( !is_null($build_id) )
 	{
 	    $sql .= " AND id <> " . $this->db->prepare_int($build_id);
 	}
-	
+
 
   $result = $this->db->exec_query($sql);
   $status= $this->db->num_rows($result) ? 1 : 0;

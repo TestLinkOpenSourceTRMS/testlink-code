@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.298 $
- * @modified $Date: 2008/03/22 17:44:04 $ $Author: franciscom $
+ * @version $Revision: 1.299 $
+ * @modified $Date: 2008/03/22 23:47:05 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -932,8 +932,8 @@ $TLS_tr_th_risk = "Risk/Importance";
 $TLS_btn_update_testplan_tcversions = "Update Test Plan";
 $TLS_update_to_version = "Update to version";
 $TLS_update_testcase_versions = "Update Linked Test Case Versions";
-$TLS_no_testcase_checked="There are no checked Test Cases. Nothing will be done";
-
+$TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
+$TLS_tplan_updated = "Test Plan was updated";
 
 
 // gui/templates/planEdit.tpl
@@ -1396,8 +1396,8 @@ $TLS_builds_description = "A build is identified by its title. Each build is rel
 
 $TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
                      "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
-                     "and if name does not exist, build will be created."; 
- 
+                     "and if name does not exist, build will be created.";
+
 
 // gui/templates/planView.tpl
 $TLS_testplan_alt_delete_tp = "Delete test plan?";

@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/03/22 17:43:00 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/03/22 23:47:04 $ $Author: schlundus $
  *
  * rev :
  *      20080217 - franciscom - refactoring
@@ -29,7 +29,7 @@ $op = new stdClass();
 $op->user_feedback = '';
 $op->buttonCfg = new stdClass();
 $op->buttonCfg->name = "";
-$op->buttonCfg->value = "";  
+$op->buttonCfg->value = "";
 
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
@@ -47,11 +47,11 @@ switch($args->do_action)
 	  $op=edit($args,$build_mgr);
 		$of->Value = $op->notes;
 		break;
-		
+
 	case 'create':
 	  $op=create($args);
 		break;
-		
+
 	case 'do_delete':
 	  $op=doDelete($args,$build_mgr);
 		break;
@@ -68,7 +68,7 @@ switch($args->do_action)
 		$templateCfg->template = $op->template;
 		break;
 
-}  
+}
 
 
 $smarty->assign('main_descr',$main_descr);
@@ -86,7 +86,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of);
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
- *  
+ *
  * @parameter hash request_hash the $_REQUEST
  * @parameter hash session_hash the $_SESSION
  * @return    object with html values tranformed and other
@@ -120,41 +120,43 @@ function init_args($request_hash, $session_hash)
 	$args->testprojectID   = $session_hash['testprojectID'];
 	$args->testprojectName = $session_hash['testprojectName'];
 	$args->userID          = $session_hash['userID'];
-	
+
 	return $args;
 }
 
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function edit(&$argsObj,&$buildMgr)
 {
  		$binfo = $buildMgr->get_by_id($argsObj->build_id);
+		$op = new stdClass();
+		$op->buttonCfg = new stdClass();
  		$op->buttonCfg->name = "do_update";
-		$op->buttonCfg->value = lang_get('btn_save');  
+		$op->buttonCfg->value = lang_get('btn_save');
 		$op->notes = $binfo['notes'];
 		$op->user_feedback = '';
-		
+
 		$argsObj->build_name = $binfo['name'];
 		$argsObj->is_active = $binfo['active'];
 		$argsObj->is_open = $binfo['is_open'];
 		$op->operation_descr=lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $argsObj->build_name;
- 
-    return $op;      
+
+    return $op;
 }
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function create(&$argsObj)
@@ -167,15 +169,15 @@ function create(&$argsObj)
 	$argsObj->is_active = 1;
 	$argsObj->is_open = 1;
 
-    return $op;      
+    return $op;
 }
 
 /*
-  function: doDelete 
+  function: doDelete
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function doDelete(&$argsObj,&$buildMgr)
@@ -192,15 +194,15 @@ function doDelete(&$argsObj,&$buildMgr)
 		logAuditEvent(TLS("audit_build_deleted",$build['name'],$argsObj->tplan_name),
 		              "DELETE",$argsObj->build_id,"builds");
 
-    return $op;      
+    return $op;
 }
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor)
@@ -214,17 +216,17 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor)
        	$doRender = true;
     		$tpl = is_null($templateCfg->template) ? 'buildView.tpl' : $templateCfg->template;
     		break;
-    		
+
     	case "edit":
     	case "create":
         $doRender = true;
     		$tpl = is_null($templateCfg->template) ? $templateCfg->default_template : $templateCfg->template;
     		break;
     }
-    
+
     if($doRender)
     {
-      $enable_copy=($argsObj->do_action == 'create' || $argsObj->do_action == 'do_create') ? 1 : 0; 
+      $enable_copy=($argsObj->do_action == 'create' || $argsObj->do_action == 'do_create') ? 1 : 0;
 
 		  $my_builds = $tplanMgr->get_builds($argsObj->tplan_id);
    		$smartyObj->assign('the_builds',$my_builds);
@@ -245,8 +247,8 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor)
   function: doCreate
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
@@ -260,7 +262,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
     $op->buttonCfg = null;
 
 	  $check = crossChecks($argsObj,$tplanMgr);
-    
+
 	  if($check->status_ok)
 	  {
 	  	$user_feedback = lang_get("cannot_add_build");
@@ -274,7 +276,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 	  		$op->status_ok = true;
 	  		logAuditEvent(TLS("audit_build_created",$argsObj->build_name,$argsObj->tplan_name),
 	  		              "CREATE",$buildID,"builds");
-	  	} 	
+	  	}
 	  }
 	  if(!$op->status_ok)
 	  {
@@ -284,18 +286,18 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 	  }
     elseif($argsObj->copy_to_all_tplans)
     {
-        doCopyToTestPlans($argsObj,$buildMgr,$tplanMgr);    
+        doCopyToTestPlans($argsObj,$buildMgr,$tplanMgr);
     }
     return $op;
 }
-    
+
 
 /*
   function: doUpdate
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
@@ -310,7 +312,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 
     $oldObjData=$buildMgr->get_by_id($argsObj->build_id);
     $oldname=$oldObjData['name'];
-    
+
 	  $check = crossChecks($argsObj,$tplanMgr);
 	  if($check->status_ok)
 	  {
@@ -323,9 +325,9 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 	  		$op->template = null;
 	  		$op->status_ok = true;
 	  		logAuditEvent(TLS("audit_build_saved",$argsObj->build_name),"SAVE",$argsObj->build_id,"builds");
-	  	} 	
+	  	}
 	  }
-	  
+
 	  if(!$op->status_ok)
 	  {
 	  	$op->operation_descr=lang_get('title_build_edit') . TITLE_SEP_TYPE3 . $oldname;
@@ -343,8 +345,8 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
             do checks that are common to create and update operations
             - name already exists in this testplan?
   args:
-  
-  returns: - 
+
+  returns: -
 
 */
 function crossChecks($argsObj,&$tplanMgr)
@@ -357,7 +359,7 @@ function crossChecks($argsObj,&$tplanMgr)
 	{
 	    $op->user_feedback = lang_get("warning_duplicate_build") . TITLE_SEP_TYPE3 . $argsObj->build_name;
 	    $op->status_ok = 0;
-	}   
+	}
 	return $op;
 }
 
@@ -369,18 +371,18 @@ function crossChecks($argsObj,&$tplanMgr)
             copy do checks that are common to create and update operations
             - name already exists in this testplan?
   args:
-  
-  returns: - 
+
+  returns: -
 
 */
 function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
 {
     $tprojectMgr= new testproject($tplanMgr->db);
-    
+
     // exclude this testplan
     $filters=array('tplan2exclude' => $argsObj->tplan_id);
     $tplanset = $tprojectMgr->get_all_testplans($argsObj->testprojectID,$filters);
-    
+
     if( !is_null($tplanset) )
     {
         foreach($tplanset as $id => $info)
@@ -390,7 +392,7 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
                 $buildMgr->create($id,$argsObj->build_name,$argsObj->notes,
                                   $argsObj->is_active,$argsObj->is_open);
             }
-        }  
+        }
     }
 }
 ?>

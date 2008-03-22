@@ -1,7 +1,7 @@
 {*
-Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_attachments.tpl,v 1.13 2008/03/01 21:41:18 schlundus Exp $
-Generic attachment management 
+Testlink Open Source Project - http://testlink.sourceforge.net/
+$Id: inc_attachments.tpl,v 1.14 2008/03/22 23:47:03 schlundus Exp $
+Generic attachment management
 
 Input:
 	$attachmentsInfos
@@ -37,7 +37,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
 {if $gsmarty_attachments->enabled eq FALSE}
  	  <div class="warning_message">{lang_get s='attachment_feature_disabled'}<p>
-    {$gsmarty_attachments->disabled_msg}	
+    {$gsmarty_attachments->disabled_msg}
     </div>
 {/if}
 
@@ -70,7 +70,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 				<a href="javascript:deleteAttachment_onClick({$info.id});">
 				<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
 				                         title="{lang_get s='alt_delete_attachment'}"
-				                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
+				                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" /></a>
 				{/if}
 			</td>
 		</tr>
@@ -81,6 +81,6 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
   	<td colspan="2"><input type="button" value="{lang_get s='button_upload'}..." onclick="openFileUploadWindow({$id},'{$tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
   </tr>
   {/if}
-  
+
 </table>
 {/if}

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.52 2008/02/24 17:52:34 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.53 2008/03/22 15:45:40 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -22,22 +22,13 @@
 //
 // ----------------------------------------------------------------------------
 //
+//
+// 20080322 - franciscom - openExecNotesWindow() 
 // 20080118 - franciscom - showHideByClass()
-// 20080115 - franciscom - added show_hide_column()
-// 20071118 - franciscom - requirement functions added.
-// 20071014 - franciscom - removed deleteRole_onClick(),deleteBuild_onClick()
-//                                 deleteUser_onClick()
-//
 // 20070930 - franciscom - REQ - BUGID 1078 - openTCaseWindow()
-//
 // 20070509 - franciscom - changes in tree_getPrintPreferences()
 //                         to support new options (Contribution)
 // 
-// 20070220 - franciscom - changes in ET(), and tree_getPrintPreferences()
-// 20070129 - franciscom - changes in SP() 
-// 20070107 - franciscom - subtle bug deleteUser_onClick()
-// 20061223 - franciscom - added open_show_notes_window()
-// 20060603 - franciscom - added confirm_and_submit()
 //
 /*
   function: focusInputField
@@ -167,7 +158,7 @@ function ETS(id)
 	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
 	               "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
 	
-	//alert(_FUNCTION_NAME_ + " " +action_url);
+	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 	
 }
@@ -532,16 +523,16 @@ function planRemoveTC(warning_msg)
 }
 
 /*
-  function: open_show_notes_window
+  function: openExecNotesWindow
 
   args :
   
   returns: 
 
 */
-function open_show_notes_window(exec_id)
+function openExecNotesWindow(exec_id)
 {
-	window.open(fRoot+"lib/execute/show_exec_notes.php?exec_id="+exec_id,
+	window.open(fRoot+"lib/execute/execNotes.php?doAction=edit&exec_id="+exec_id,
 	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes");
 }
 

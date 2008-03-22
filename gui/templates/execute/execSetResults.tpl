@@ -1,8 +1,10 @@
-#{* 
+{* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.13 2008/03/10 21:52:00 schlundus Exp $
+$Id: execSetResults.tpl,v 1.14 2008/03/22 15:45:41 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+    20080322 - franciscom - feature: allow edit of execution notes
+                            minor refactoring.
     20071231 - franciscom - new show/hide section to show exec notes
     20071103 - franciscom - BUGID 700
     20071101 - franciscom - added test automation code
@@ -10,7 +12,7 @@ Rev:
     20070519 - franciscom - 
     BUGID 856: Guest user can execute test case
     
-    20070211 - franciscom - addede delete logic
+    20070211 - franciscom - added delete logic
     20070205 - franciscom - display test plan custom fields.
     20070125 - franciscom - management of closed build
     20070104 - franciscom - custom field management for test cases
@@ -18,6 +20,7 @@ Rev:
 *}	
 
 
+{assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}
 {assign var="title_sep_type3"  value=$smarty.const.TITLE_SEP_TYPE3}
 
@@ -32,7 +35,7 @@ Rev:
 {lang_get s='build' var='build_title'} 
 
 {lang_get var='labels'
-          s='build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
+          s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
              th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
              version,has_no_assignment,assigned_to,execution_history,exec_notes,
              last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
@@ -170,7 +173,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {if $map_last_exec eq ""}
      <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
   {else}
-      {if $has_exec_right == 1 and $build_is_open == 1}
+      {if $rights->execute == 1 and $build_is_open == 1}
         {assign var="input_enabled_disabled" value=""}
         {assign var="att_download_only" value=false}
         {assign var="enable_custom_fields" value=true}
@@ -255,7 +258,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         </div>
 		  {/if}
 		  
-  		{if $tSuiteAttachments[$tc_id] neq null}
+		  {* 20080322 - undefined index bug *}
+  		{if $tSuiteAttachments != null && $tSuiteAttachments[$tc_exec.tsuite_id] != null}
   		  <br />
 		    {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
 			        	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
@@ -278,7 +282,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {/if}  
     </div>
 
- 		{if $show_last_exec_any_build}
+ 		{if $cfg->exec_cfg->show_last_exec_any_build}
    		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
  		  {assign var="my_build_name" value=$abs_last_exec.build_name|escape}
  		  {assign var="show_current_build" value=1}
@@ -290,7 +294,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   		<div class="exec_history_title">
   		{if $history_on}
   		    {$labels.execution_history} {$title_sep_type3}
-  		    {if !$show_history_all_builds} 
+  		    {if !$cfg->exe_cfg->show_history_all_builds} 
   		      {$exec_build_title}
   		    {/if}  
   		{else}
@@ -301,7 +305,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   		</div>
 
 		{* The very last execution for any build of this test plan *}
-		{if $show_last_exec_any_build && $history_on==0}
+		{if $cfg->exec_cfg->show_last_exec_any_build && $history_on==0}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			
 			    {assign var="status_code" value=$abs_last_exec.status}
     
@@ -334,15 +338,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 			 <tr>
 				<th style="text-align:left">{$labels.date_time_run}</th>
         {* 20071103 - BUGID 700 *}
-				{if $history_on == 0 || $show_history_all_builds}
+				{if $history_on == 0 || $cfg->exe_cfg->show_history_all_builds}
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}  
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:center">{$labels.exec_status}</th>
 			
-				{if $att_model->show_upload_column && !$att_download_only}
+				{if $attachment_model->show_upload_column && !$att_download_only}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
-            {assign var="my_colspan" value=$att_model->num_cols}
+            {assign var="my_colspan" value=$attachment_model->num_cols}
         {/if}
 
 				{if $g_bugInterfaceOn}
@@ -350,7 +354,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
         
-				{if $can_delete_execution}
+				{if $rights->delete_execution}
           <th style="text-align:left">{$labels.delete}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
@@ -369,7 +373,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
    			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
   				
-				  {if $history_on == 0 || $show_history_all_builds}
+				  {if $history_on == 0 || $cfg->exe_cfg->show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}
   				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
   				    {$tc_old_exec.build_name|escape}
@@ -381,7 +385,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
             
-          {if $att_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
+          {if $attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}" 
@@ -397,7 +401,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
           {/if}
 
 
-    			{if $can_delete_execution}
+    			{if $rights->delete_execution}
        		  	<td align="center">
              	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
@@ -427,9 +431,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         title: {/literal}'{$labels.exec_notes}'{literal},
         collapsible:true,
         collapsed: true,
-        /*style: 'padding:2px 1px 1px 2px;', */
         baseCls: 'x-tl-panel',
-        /* contentEl: {/literal}'imo{$tc_old_exec.execution_id}'{literal}, */
         renderTo: {/literal}'exec_notes_container_{$tc_old_exec.execution_id}'{literal},
         width:'100%',
         html:''
@@ -445,7 +447,17 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   			     style="padding:5px 5px 5px 5px;">
   			</td>
    			</tr>
- 			  {/if $tc_old_exec.execution_notes neq ""}
+ 			  {/if} 
+  			
+  			{* 20080322 - franciscom - edit execution notes *}
+  			{if $rights->edit_exec_notes }
+  			<tr>
+  			<td colspan="{$my_colspan}">
+  		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
+  		         onclick="javascript: openExecNotesWindow({$tc_old_exec.execution_id});">
+  			</td>
+  			</tr>
+ 			  {/if}
     
   			{* 20070105 - Custom field values  *}
   			<tr>
@@ -467,8 +479,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				{include file="inc_attachments.tpl" 
   				         attachmentInfos=$attach_info 
   				         id=$execID tableName="executions"
-  				         show_upload_btn=$att_model->show_upload_btn
-  				         show_title=$att_model->show_title 
+  				         show_upload_btn=$attachment_model->show_upload_btn
+  				         show_title=$attachment_model->show_title 
   				         downloadOnly=$att_download_only
   				         }
   			</td>

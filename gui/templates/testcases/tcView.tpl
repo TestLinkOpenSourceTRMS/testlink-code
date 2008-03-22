@@ -1,7 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.3 2008/01/21 07:42:05 franciscom Exp $
+$Id: tcView.tpl,v 1.4 2008/03/22 15:45:41 franciscom Exp $
 Purpose: smarty template - view test case in test specification
+rev: 20080322 - franciscom - php errors clean up
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -26,8 +27,11 @@ Purpose: smarty template - view test case in test specification
 {if $testcase_curr_version}
 {section name=idx loop=$testcase_curr_version}
     {* Current active version *}
+    
     {if $testcase_other_versions[idx] neq null}
         {assign var="my_delete_version" value="yes"}
+    {else}
+        {assign var="my_delete_version" value="no"}
     {/if}
 
     {* added args_cf *}

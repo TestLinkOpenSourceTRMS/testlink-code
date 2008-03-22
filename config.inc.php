@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.166 $
- * @modified $Date: 2008/03/16 18:41:30 $ by $Author: franciscom $
+ * @version $Revision: 1.167 $
+ * @modified $Date: 2008/03/22 15:45:39 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,7 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
- *     20080316 - franciscom - 
+ *     20080322 - franciscom - $g_exec_cfg->edit_notes
  *     20080308 - franciscom - changed initial values for email settings
  *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
  *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
@@ -656,6 +656,10 @@ $g_exec_cfg->enable_tree_colouring=1;
 //      
 $g_exec_cfg->show_testsuite_contents=0;
 
+// 
+// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
+// 0 -> no edit allowed [STANDARD BEHAVIOUR]
+$g_exec_cfg->edit_notes=0;
 
 /** [Test case specification] */
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2008/03/10 14:12:43 $ $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2008/03/22 15:45:41 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -56,7 +56,7 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $build_info = $build_mgr->get_by_id($args->build_id);
 
 $exec_mode = initializeExecMode($db,$cfg->exec_cfg,$args->user,$args->tproject_id,$args->tplan_id);
-$has_exec_right = (has_rights($db,"testplan_execute")=="yes" ? 1 : 0);
+$rights = initializeRights($db,$args->user->dbID,$args->tproject_id,$args->tplan_id);
 
 $do_show_instructions=(strlen($args->level) == 0 || $args->level=='testproject') ? 1 : 0;
 if ($do_show_instructions)
@@ -163,7 +163,7 @@ if(!is_null($linked_tcversions))
   			$cf_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_values($args->id,'design',$SHOW_ON_EXECUTION);
   			
         // BUGID 856: Guest user can execute test case
-  			if($has_exec_right)
+  			if($rights->execute)
   			{
   			   $cfexec_smarty[$args->id] = $tcase_mgr->html_table_of_custom_field_inputs($args->id,$PID_NOT_NEEDED,
   			                                                                       'execution',"_{$args->id}");
@@ -224,7 +224,7 @@ if(!is_null($linked_tcversions))
 			  				                                                                        'design',$SHOW_ON_EXECUTION);
 			  				                                                                        
                // BUGID 856: Guest user can execute test case
-        			 if($has_exec_right)
+        			 if($rights->execute)
   		  	     {
 			  				$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
 			  				                                                            $PID_NOT_NEEDED,'execution',
@@ -317,7 +317,7 @@ if( !is_null($map_last_exec) )
   $map_last_exec=setTesterAssignment($db,$map_last_exec,$tcase_mgr,$args->tplan_id);
 
   // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
-  $can_execute=$has_exec_right && ($build_info['is_open']==1);
+  $can_execute=$rights->execute && ($build_info['is_open']==1);
   $map_last_exec=setCanExecute($map_last_exec,$exec_mode,$can_execute,$args->user->dbID);
 }
 
@@ -350,22 +350,21 @@ $smarty->assign('tpn_view_status',$args->tpn_view_status);
 $smarty->assign('bn_view_status',$args->bn_view_status);
 $smarty->assign('bc_view_status',$args->bc_view_status);
 $smarty->assign('enable_custom_field',$cfg->gui_cfg->enable_custom_fields);
-$smarty->assign('can_delete_execution',$cfg->exec_cfg->can_delete_execution);
+
 $smarty->assign('default_status',config_get('tc_status_for_ui_default'));
 $smarty->assign('alluserInfo',tlUser::getAll($db,null,'id'));
 $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('attachments',$attachmentInfos);
+
 $smarty->assign('tSuiteAttachments',$tSuiteAttachments);
 $smarty->assign('id',$args->id);
-$smarty->assign('has_exec_right', $has_exec_right);
+$smarty->assign('rights', $rights);
 $smarty->assign('map_last_exec', $map_last_exec);
 $smarty->assign('other_exec', $other_execs);
-$smarty->assign('show_last_exec_any_build', $cfg->exec_cfg->show_last_exec_any_build);
+
 $smarty->assign('history_on',$history_on);
 $smarty->assign('history_status_btn_name',$history_status_btn_name);
-$smarty->assign('att_model',$cfg->exec_cfg->att_model);
-$smarty->assign('show_last_exec_any_build', $cfg->exec_cfg->show_last_exec_any_build);
-$smarty->assign('show_history_all_builds', $cfg->exec_cfg->show_history_all_builds);
+
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
 $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $args->filter_assigned_to);
@@ -655,7 +654,7 @@ function do_remote_execution(&$db,$tc_versions)
 
 
 /*
-  function: 
+  function: initializeExecMode 
 
   args:
   
@@ -688,7 +687,7 @@ function initializeExecMode(&$db,$exec_cfg,$user,$tproject_id,$tplan_id)
 
 
 /*
-  function: 
+  function: setTesterAssignment 
 
   args:
   
@@ -738,7 +737,7 @@ function reorderExecutions(&$tcversion_id,&$exec_info)
 }
 
 /*
-  function: 
+  function: setCanExecute 
 
   args:
   
@@ -854,4 +853,39 @@ function init_config()
     return $cfg;
 }
 
+
+/*
+  function: initializeRights 
+            create object with rights useful for this feature 
+  
+  args:
+       dbHandler: reference to db object
+       user_id:
+       tproject_id:
+       tplan_id
+  
+       Warning: this is right interface for this function, but
+                has_rights() can works in a mode (that i consider a dirty one)
+                using SESSION to achieve global coupling.
+                 
+  returns: 
+
+*/
+function initializeRights(&$dbHandler,$user_id,$tproject_id,$tplan_id)
+{
+    $exec_cfg=config_get('exec_cfg');
+    $grants = new stdClass();
+    $grants->execute = (has_rights($dbHandler,"testplan_execute")=="yes" ? 1 : 0);
+    
+    // may be in the future this can be converted to a role right
+    $grants->delete_execution=$exec_cfg->can_delete_execution;
+    
+    
+    // may be in the future this can be converted to a role right
+    // Important:
+    // Execution right must be present to consider this configuration option.
+    $grants->edit_exec_notes=$grants->execute && $exec_cfg->edit_notes;
+    
+    return $grants;
+}
 ?>																																

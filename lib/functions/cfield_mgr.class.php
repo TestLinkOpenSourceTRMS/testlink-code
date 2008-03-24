@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/03/04 18:37:08 $  $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/03/24 20:07:03 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080304 - franciscom - prepare_string() before insert
@@ -132,8 +132,11 @@ class cfield_mgr
 	{
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
-    $gui_cfg=config_get('gui');
-    $this->sizes=$gui_cfg->custom_fields->sizes;
+
+		global $tlCfg;
+
+		$gui_cfg = $tlCfg->gui;
+		$this->sizes = $gui_cfg->custom_fields->sizes;
 	}
 
   /*

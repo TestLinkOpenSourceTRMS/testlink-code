@@ -1,18 +1,18 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.101 $ $Author: havlat $
- * @modified $Date: 2008/03/24 19:33:27 $
+ * @version $Revision: 1.102 $ $Author: schlundus $
+ * @modified $Date: 2008/03/24 20:07:03 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
  *
  * Common functions: database connection, session and data initialization,
- * maintain $_SESSION data, redirect page, log, etc. 
+ * maintain $_SESSION data, redirect page, log, etc.
  *
  * @var array $_SESSION
- * - user related data are adjusted via doAuthorize.php and here (product & test plan)  
+ * - user related data are adjusted via doAuthorize.php and here (product & test plan)
  * - has next values: valid (yes/no), user (login name), role (e.g. admin),
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
@@ -20,7 +20,7 @@
  * 20080114 - franciscom - gen_spec_view(): adde external_id management.
  * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
  *                         string_api.php, also from Mantis.
- * 
+ *
  * 20071002 - jbarchibald - BUGID 1051
  * 20070707 - franciscom - BUGID 921 - changes to gen_spec_view()
  * 20070705 - franciscom - init_labels()
@@ -28,7 +28,7 @@
  * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
- **/ 
+ **/
 
 /** library for localization */
 require_once("lang_api.php");
@@ -40,8 +40,8 @@ require_once("database.class.php");
 require_once("roles.inc.php");
 
 /** Testlink Smarty class sets up the default smarty settings for testlink */
-require_once(TL_ABS_PATH . 'third_party'.DS.'smarty'.DS.'libs'.DS.'Smarty.class.php'); 
-require_once(TL_ABS_PATH . 'lib'.DS.'general'.DS.'tlsmarty.inc.php'); 
+require_once(TL_ABS_PATH . 'third_party'.DS.'smarty'.DS.'libs'.DS.'Smarty.class.php');
+require_once(TL_ABS_PATH . 'lib'.DS.'general'.DS.'tlsmarty.inc.php');
 
 /** logging functions */
 require_once('logging.inc.php');
@@ -81,7 +81,7 @@ require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpc_wrap
 /** $db is a global used throughout the code when accessing the db. */
 $db = 0;
 
-/** 
+/**
 * TestLink connects to the database
 *
 * @return assoc array
@@ -89,13 +89,13 @@ $db = 0;
 *         aa['dbms_msg''] = 'ok', or $db->error_msg().
 *
 * 20050416 - fm
-* 
+*
 */
 function doDBConnect(&$db)
 {
 	global $tlCfg;
 	$result = array('status' => 1, 'dbms_msg' => 'ok');
-	
+
 	$db = new database(DB_TYPE);
 	$result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
@@ -118,7 +118,7 @@ function doDBConnect(&$db)
 	global $g_tlLogger;
 	$g_tlLogger->endTransaction();
 	$g_tlLogger->startTransaction();
-	
+
  	return $result;
 }
 
@@ -127,13 +127,13 @@ function setSessionTestProject($tproject_info)
 	if ($tproject_info)
 	{
 		/** @todo check if the session product is updated when its modified per projectedit.php  */
-		$_SESSION['testprojectID'] = $tproject_info['id']; 
+		$_SESSION['testprojectID'] = $tproject_info['id'];
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
 		$_SESSION['testprojectOptReqs'] = isset($tproject_info['option_reqs']) ? $tproject_info['option_reqs'] : null;
 		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
 		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
-		
+
 		tLog("Product was adjusted to [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
 		tLog("Product features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
 	}
@@ -154,7 +154,7 @@ function setSessionTestPlan($tplan_info)
 	{
 		$_SESSION['testPlanId'] = $tplan_info['id'];
 		$_SESSION['testPlanName'] = $tplan_info['name'];
-		
+
 		tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
 	}
 	else
@@ -168,7 +168,7 @@ function setSessionTestPlan($tplan_info)
  * Function set paths
  * @todo solve problems after session expires
  */
-// MHT 20050712 create extra function for this; 
+// MHT 20050712 create extra function for this;
 function setPaths()
 {
 	tLog('test ' . getenv('SCRIPT_NAME'));
@@ -176,15 +176,15 @@ function setPaths()
 		$_SESSION['basehref'] = get_home_url();
 
 	$my_locale = isset($_SESSION['locale']) ?  $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-	
+
 	global $g_rpath;
 	$g_rpath = array ( 'help' => TL_HELP_RPATH . $my_locale,
 	                   'instructions' => TL_HELP_RPATH . $my_locale);
-	
+
 	global $g_apath;
 	foreach ($g_rpath as $key => $value)
 	    $g_apath[$key] = TL_ABS_PATH . $value;
-	
+
 	return 1;
 }
 
@@ -199,7 +199,7 @@ function checkSessionValid(&$db)
 		$requestURI = null;
 		if (strlen($_SERVER['REQUEST_URI']))
 			$requestURI = "&req=".urlencode($_SERVER['REQUEST_URI']);
-		
+
 		for($i = 0;$i < 5;$i++)
 		{
 			if (file_exists($fName))
@@ -219,7 +219,7 @@ function checkSessionValid(&$db)
 	}
 }
 
-/** 
+/**
 * Function adjust Product and Test Plan to $_SESSION
 *
 */
@@ -241,32 +241,33 @@ function doSessionStart()
 		session_start();
 }
 
-/** 
-* General page initialization procedure 
+/**
+* General page initialization procedure
 *
-* @param boolean $initProduct (optional) Set true if adjustment of Product or  
+* @param boolean $initProduct (optional) Set true if adjustment of Product or
 * 		Test Plan is required; default is FALSE
 * @param boolean $bDontCheckSession (optional) Set to true if no session should be
 * 		 started
 */
 function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 {
+	global $g_repositoryType;
+	global $g_attachments;
+	global $g_repositoryPath;
+
 	doSessionStart();
 	doDBConnect($db);
-	
-	
+
 	setPaths();
 	set_dt_formats();
-	
+
 	if (!$bDontCheckSession)
 		checkSessionValid($db);
 
 	checkUserRights($db);
-		
+
 	if ($initProduct)
 		doInitSelection($db) or die("Could not set session variables");
-		
-
 
 	// used to disable the attachment feature if there are problems with repository path
 	$g_attachments->disabled_msg = "";
@@ -286,10 +287,10 @@ function checkUserRights(&$db)
 {
 	//bypassed as long roles and rights aren't fully defined
 	return;
-	
+
 	// global $g_userRights;
 	$g_userRights = config_get('userRights');
-	
+
 	$self = strtolower($_SERVER['SCRIPT_FILENAME']);
 	$fName = str_replace(strtolower(str_replace("\\","/",TL_ABS_PATH)),"",$self);
 
@@ -311,7 +312,7 @@ function checkUserRights(&$db)
  *
  * @param   string   URL of required page
  * @param   string   Browser location - use for redirection or refresh of another frame
- * 					 Default: 'location'  
+ * 					 Default: 'location'
  */
 function redirect($path, $level = 'location')
 {
@@ -323,11 +324,11 @@ function redirect($path, $level = 'location')
 }
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function strings_stripSlashes($parameter,$bGPC = true)
@@ -345,7 +346,7 @@ function strings_stripSlashes($parameter,$bGPC = true)
 				if (is_array($value))
 					$retParameter[$key] = strings_stripSlashes($value,$bGPC);
 				else
-					$retParameter[$key] = stripslashes($value);		
+					$retParameter[$key] = stripslashes($value);
 			}
 		}
 		return $retParameter;
@@ -357,37 +358,37 @@ function strings_stripSlashes($parameter,$bGPC = true)
 function to_boolean($alt_boolean)
 {
 	$the_val = 1;
-	
+
 	if (is_numeric($alt_boolean) && !intval($alt_boolean))
 	{
 		$the_val = 0;
-	}  	
+	}
 	else
-	{ 
+	{
 		$a_bool	= array ("on" => 1, "y" => 1, "off" => 0, "n" => 0);
-		$alt_boolean = strtolower($alt_boolean);	
+		$alt_boolean = strtolower($alt_boolean);
 		if(isset($a_bool[$alt_boolean]))
 		{
 			$the_val = $a_bool[$alt_boolean];
-		}  
+		}
 	}
-	
+
 	return $the_val;
 }
 
 
-/* 
+/*
 -------------------------------------------------------------------------------------------
 20050708 - fm
 Modified to cope with situation where you need to assign a Smarty Template variable instead
 of generate output.
 Now you can use this function in both situatuons.
 
-if the key 'var' is found in the associative array instead of return a value, 
+if the key 'var' is found in the associative array instead of return a value,
 this value is assigned to $params['var`]
 
 usage: Important: if registered as localize_date()
-       {localize_date d='the date to localize'} 
+       {localize_date d='the date to localize'}
 ------------------------------------------------------------------------------------------
 */
 function localize_date_smarty($params, &$smarty)
@@ -396,11 +397,11 @@ function localize_date_smarty($params, &$smarty)
 }
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function localize_timestamp_smarty($params, &$smarty)
@@ -409,19 +410,19 @@ function localize_timestamp_smarty($params, &$smarty)
 }
 
 /*
-  function: 
+  function:
 
   args :
          $params: used only if you call this from an smarty template
                   or a wrapper in an smarty function.
-                  
+
          $smarty: when not used in an smarty template, pass NULL.
          $what: give info about what kind of value is contained in value.
                 possible values: timestamp_format
                                  date_format
-         $value: must be a date or time stamp in ISO format 
-  
-  returns: 
+         $value: must be a date or time stamp in ISO format
+
+  returns:
 
 */
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
@@ -432,7 +433,7 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 	$format = config_get($what);
 	if (!is_numeric($value))
 		$value = strtotime($value);
-	$retVal = strftime($format, $value);	
+	$retVal = strftime($format, $value);
 	if(isset($params['var']))
 		$smarty->assign($params['var'],$retVal);
 	return $retVal;
@@ -443,20 +444,20 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
  *
  * @param string $str2check
  * @param string  $ereg_forbidden_chars: regular expression
- * 
+ *
  * @return  1: check ok, 0:check KO
  */
 function check_string($str2check, $ereg_forbidden_chars)
 {
 	$status_ok = 1;
-	
+
 	if( $ereg_forbidden_chars != '' && !is_null($ereg_forbidden_chars))
 	{
 		if (eregi($ereg_forbidden_chars, $str2check))
 		{
-			$status_ok=0;	
-		} 	
-	}	
+			$status_ok=0;
+		}
+	}
 	return $status_ok;
 }
 
@@ -484,19 +485,19 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	else if ( isset($hash_user_sel['filter_tp_by_product_hidden']) )
 	{
 	  $filter_tp_by_product = 0;
-	} 
+	}
 	// ------------------------------------------------------------------
 	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
 	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
 	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
 
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	
+
 	// test project is Test Plan container, then we start checking the container
 	if( $user_sel["tproject_id"] != 0 )
 	{
 		$tproject_id = $user_sel["tproject_id"];
-	} 
+	}
 	$tproject_data = $tproject->get_by_id($tproject_id);
 
 	// We need to do checks before updating the SESSION
@@ -506,7 +507,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 		if ($all_tprojects)
 		{
 			$tproject_data = $all_tprojects[0];
-		}	
+		}
 	}
 	setSessionTestProject($tproject_data);
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -520,27 +521,27 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	$tplan_data = getAccessibleTestPlans($db,$tproject_id,
 	                                     $_SESSION['userID'],$filter_tp_by_product,$tplan_id);
 	if(!is_null($tplan_data))
-	{ 
+	{
 		$tplan_data = $tplan_data[0];
 		setSessionTestPlan($tplan_data);
 		return;
 	}
-  
+
 	//get the first accessible TestPlan
 	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],$filter_tp_by_product,null);
 	if(!is_null($tplan_data))
 		$tplan_data = $tplan_data[0];
-		
+
 	setSessionTestPlan($tplan_data);
 }
 
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function set_dt_formats()
@@ -565,11 +566,11 @@ function set_dt_formats()
 
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function config_get($config_id)
@@ -626,14 +627,14 @@ function downloadContentsToFile($content,$fileName)
   function: translate_tc_status
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function translate_tc_status($status_code)
 {
 	$map_tc_status = array_flip(config_get('tc_status'));
-	
+
 	$verbose = lang_get('test_status_not_run');
 	if( $status_code != '')
 	{
@@ -648,13 +649,13 @@ function translate_tc_status($status_code)
   function: translate_tc_status_smarty
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function translate_tc_status_smarty($params, &$smarty)
 {
-	$the_ret = translate_tc_status($params['s']);  
+	$the_ret = translate_tc_status($params['s']);
 	if(	isset($params['var']) )
 	{
 		$smarty->assign($params['var'], $the_ret);
@@ -667,11 +668,11 @@ function translate_tc_status_smarty($params, &$smarty)
 
 
 /*
-  function: 
+  function:
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function my_array_intersect_keys($array1,$array2)
@@ -682,17 +683,17 @@ function my_array_intersect_keys($array1,$array2)
 		if(isset($array2[$key]))
 		{
 			$aresult[$key] = $array2[$key];
-		} 	
-	}	
-	return($aresult);	
+		}
+	}
+	return($aresult);
 }
 
 /*
-  function: 
+  function:
             for performance timing
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function microtime_float()
@@ -707,8 +708,8 @@ function microtime_float()
 
   args : map key=a code
              value: string_to_translate, that can be found in strings.txt
-             
-  
+
+
   returns: map key=a code
                value: lang_get(string_to_translate)
 
@@ -753,11 +754,11 @@ function ini_get_bool( $p_name ) {
 
 
 /**
-* Initiate the execution of a testcase through XML Server RPCs. 
-* All the object instantiations are done here. 
-* XML-RPC Server Settings need to be configured using the custom fields feature. 
+* Initiate the execution of a testcase through XML Server RPCs.
+* All the object instantiations are done here.
+* XML-RPC Server Settings need to be configured using the custom fields feature.
 * Three fields each for testcase level and testsuite level are required.
-* The fields are: server_host, server_port and server_path. 
+* The fields are: server_host, server_port and server_path.
 * Precede 'tc_' for custom fields assigned to testcase level.
 *
 * @param $testcase_id: The testcase id of the testcase to be executed
@@ -773,10 +774,10 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
 
 	//Fetching required params from the entire node hierarchy
 	$server_params = $cfield_manager->getXMLServerParams($testcase_id);
-  
-  $ret=array('result'=>AUTOMATION_RESULT_KO, 
+
+  $ret=array('result'=>AUTOMATION_RESULT_KO,
              'notes'=>AUTOMATION_NOTES_KO, 'message'=>'');
- 
+
 	$server_host = "";
 	$server_port = "";
 	$server_path = "";
@@ -785,29 +786,29 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
 		$server_host = $server_params["xml_server_host"];
 		$server_port = $server_params["xml_server_port"];
 		$server_path = $server_params["xml_server_path"];
-	  $do_it=true; 
+	  $do_it=true;
 	}
 
   if($do_it)
   {
-  	// Make an object to represent our server. 
-  	// If server config objects are null, it returns an array with appropriate values 
+  	// Make an object to represent our server.
+  	// If server config objects are null, it returns an array with appropriate values
   	// (-1 for executions results, and fault code and error message for message.
   	$xmlrpc_client = new xmlrpc_client($server_path,$server_host,$server_port);
-  
+
   	$tc_info = $tree_manager->get_node_hierachy_info($testcase_id);
   	$testcase_name = $tc_info['name'];
-  	
+
   	//Create XML-RPC Objects to pass on to the the servers
   	$myVar1 = new xmlrpcval($testcase_name,'string');
   	$myvar2 = new xmlrpcval($testcase_id,'string');
-  	
+
   	$messageToServer = new xmlrpcmsg('ExecuteTest', array($myVar1,$myvar2));
   	$serverResp = $xmlrpc_client->send($messageToServer);
-  	
+
   	$myResult=AUTOMATION_RESULT_KO;
   	$myNotes=AUTOMATION_NOTES_KO;
-  	
+
   	if(!$serverResp) {
   		$message = lang_get('test_automation_server_conn_failure');
   	} elseif ($serverResp->faultCode()) {
@@ -820,13 +821,13 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
   		$myNotes = $arrayVal->arraymem(1)->scalarval();
   	}
   	$ret = array('result'=>$myResult, 'notes'=>$myNotes, 'message'=>$message);
-  } //$do_it 
+  } //$do_it
 
 	return $ret;
 } // function end
 
 
-// MHT: I'm not able find a simple SQL (subquery is not supported 
+// MHT: I'm not able find a simple SQL (subquery is not supported
 // in MySQL 4.0.x); probably temporary table should be used instead of the next
 function array_diff_byId ($arrAll, $arrPart)
 {
@@ -835,7 +836,7 @@ function array_diff_byId ($arrAll, $arrPart)
 	{
 		return(null);
 	}
-	if (!count($arrPart) || is_null($arrPart)) 
+	if (!count($arrPart) || is_null($arrPart))
 	{
 		return $arrAll;
 	}
@@ -850,10 +851,10 @@ function array_diff_byId ($arrAll, $arrPart)
 	foreach ($arrPart as $penny) {
 		$arrTemp2[$penny['id']] = $penny;
 	}
-	
+
 	// exec diff
 	$arrTemp3 = array_diff_assoc($arrTemp, $arrTemp2);
-	
+
 	$arrTemp4 = null;
 	// convert to numbered array
 	foreach ($arrTemp3 as $penny) {
@@ -863,7 +864,7 @@ function array_diff_byId ($arrAll, $arrPart)
 }
 
 
-/** 
+/**
  * trim string and limit to N chars
  * @param string
  * @param int [len]: how many chars return
@@ -882,14 +883,14 @@ function trim_and_limit($s, $len=100)
 	return($s);
 }
 
-// 
+//
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
-//                      
+//
 function transform_nodes_order($nodes_order,$node_to_exclude=null)
 {
   $fa = explode(',',$nodes_order);
-  
+
   foreach($fa as $key => $value)
   {
 	// $value= X-Y
@@ -898,16 +899,16 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
 	if( is_null($node_to_exclude) || $fb[0] != $node_to_exclude)
   {
      $nodes_id[]=$fb[0];
-  } 
   }
-  
+  }
+
   return $nodes_id;
-}	
+}
 /*
 *	Checks $_FILES for errors while uploading
 *
 *	 @param array $fInfo an array used by uploading files ($_FILES)
-* 	
+*
 *	returns string containing  an error message (if any)
 */
 function getFileUploadErrorMessage($fInfo)
@@ -933,11 +934,11 @@ function getFileUploadErrorMessage($fInfo)
 }
 
 /*
-  function: show_instructions 
+  function: show_instructions
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function show_instructions($key)

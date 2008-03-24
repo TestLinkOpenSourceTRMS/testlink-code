@@ -1,18 +1,18 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/03/15 18:53:11 $ $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/03/24 20:07:03 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
- * rev :20080315 - franciscom - added initalize_tabsmenu() 
+ * rev :20080315 - franciscom - added initalize_tabsmenu()
  *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
- * 
+ *
  */
 require_once("common.php");
 require_once("user.class.php");
@@ -23,8 +23,8 @@ if('LDAP' == config_get('login_method') )
  * set session data after modification or authorization
  *
  * @param type $db [ref] documentation
- * @param type $user 
- * @param type $id 
+ * @param type $user
+ * @param type $id
  * @param type $roleID documentation
  * @param type $email documentation
  * @param type $locale [default = null] documentation
@@ -35,7 +35,7 @@ if('LDAP' == config_get('login_method') )
 function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null)
 {
 	tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
-	
+
 	$_SESSION['userID']	= $id;
 	$_SESSION['testprojectID'] = null;
 	$_SESSION['s_lastAttachmentList'] = null;
@@ -44,14 +44,14 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	{
 		$_SESSION['locale'] = $locale;
 		set_dt_formats();
-	} 
-		
+	}
+
 	$tproject_mgr = new testproject($db);
 
 	$gui_cfg = config_get('gui');
 	$order_by = $gui_cfg->tprojects_combo_order_by;
 	$arrProducts = $tproject_mgr->get_accessible_for_user($id,'map',$order_by);
-	
+
 	 // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
     $cookedProduct = 'lastProductForUser'. $id;
     if (isset($_COOKIE[$cookedProduct]))
@@ -69,7 +69,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
     		$tpID = key($arrProducts);
    		$_SESSION['testprojectID'] = $tpID;
 	}
-	
+
 	return 1;
 }
 
@@ -80,9 +80,9 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
         [whereClause]:
         [add_blank_option]:
         [active_filter]:
-  
-  returns: map 
-         
+
+  returns: map
+
   rev :
        20071228 - franciscom - added active_filter
 */
@@ -90,7 +90,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 {
 	$users_map = null;
 	$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-	
+
 	$the_users=$users;
 	if ($users)
 	{
@@ -127,8 +127,8 @@ function buildUserMap($users,$add_blank_option = false)
   function: resetPassword
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function resetPassword(&$db,$userID,&$errorMsg)
@@ -144,8 +144,8 @@ function resetPassword(&$db,$userID,&$errorMsg)
 			$result = $user->setPassword($newPassword);
 			if ($result >= tl::OK)
 			{
-				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');  
-				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,  
+				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');
+				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,
 		                       lang_get('mail_passwd_subject'), $msgBody);
 				if ($mail_op->status_ok)
 					$result = $user->writeToDB($db);
@@ -161,9 +161,9 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	}
 	if (!strlen($errorMsg))
 		$errorMsg = getUserErrorMessage($result);
-	
+
 	return $result;
-} 
+}
 
 function getUserErrorMessage($code)
 {
@@ -172,43 +172,43 @@ function getUserErrorMessage($code)
 	{
 		case tl::OK:
 			break;
-			
+
 		case tlUser::E_LOGINLENGTH:
 			$msg = lang_get('error_user_login_length_error');
 			break;
-			
+
 		case tlUser::E_EMAILLENGTH:
 			$msg = lang_get('empty_email_address');
 			break;
-			
+
 		case tlUser::E_NOTALLOWED:
 			$msg = lang_get('user_login_valid_regex');
 			break;
-			
+
 		case tlUser::E_FIRSTNAMELENGTH:
 			$msg = lang_get('empty_first_name');
 			break;
-			
+
 		case tlUser::E_LOGINALREADYEXISTS:
 			$msg = lang_get('user_name_exists');
 			break;
-			
+
 		case tlUser::E_LASTNAMELENGTH:
 			$msg = lang_get('empty_last_name');
 			break;
-			
+
 		case tlUser::E_PWDEMPTY:
 			$msg = lang_get('warning_empty_pwd');
 			break;
-			
+
 		case tlUser::E_PWDDONTMATCH:
 			$msg = lang_get('wrong_old_password');
 			break;
-			
+
 		case tlUser::S_PWDMGTEXTERNAL	:
 			$msg = lang_get('password_mgmt_is_external');
 			break;
-			
+
 		case ERROR:
 		case tlUser::E_DBERROR:
 		default:
@@ -222,15 +222,15 @@ function getUserErrorMessage($code)
   function: getAllUsersRoles
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function getAllUsersRoles(&$db,$order_by = null)
 {
 	$query = "SELECT users.id FROM users LEFT OUTER JOIN roles ON users.role_id = roles.id ";
 	$query .= is_null($order_by) ? " ORDER BY login " : $order_by;
-	
+
 	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser");
 	return $users;
 }
@@ -239,8 +239,8 @@ function getAllUsersRoles(&$db,$order_by = null)
   function: getTestersForHtmlOptions
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 //SCHLUNDUS: removed the SQL queries by using the objects
@@ -252,31 +252,32 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
     {
 		    if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
 			     $userFilter[$keyUserID] = $roleInfo['user'];
-    } 
+    }
 	  return buildUserMap($userFilter,true);
 }
 
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function initialize_tabsmenu()
 {
-    $hl=new stdClass();  
-    $hl->view_roles=0;          
-    $hl->create_role=0;          
-	  $hl->edit_role=0;            
-	  
-	  $hl->view_users=0;
-	  $hl->create_user=0;
-	  $hl->edit_user=0;            
+	$hl = new stdClass();
+	$hl->view_roles = 0;
+	$hl->create_role = 0;
+	$hl->edit_role = 0;
 
-   	$hl->assign_users_tproject=0;
-    $hl->assign_users_tplan=0;
-	  return $hl;
-}?>
+	$hl->view_users = 0;
+	$hl->create_user = 0;
+	$hl->edit_user = 0;
+
+	$hl->assign_users_tproject = 0;
+	$hl->assign_users_tplan = 0;
+	return $hl;
+}
+?>

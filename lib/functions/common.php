@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.102 $ $Author: schlundus $
- * @modified $Date: 2008/03/24 20:07:03 $
+ * @version $Revision: 1.103 $ $Author: havlat $
+ * @modified $Date: 2008/03/24 21:27:18 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -270,6 +270,9 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		doInitSelection($db) or die("Could not set session variables");
 
 	// used to disable the attachment feature if there are problems with repository path
+	global $g_repositoryType;
+	global $g_attachments;
+	global $g_repositoryPath;
 	$g_attachments->disabled_msg = "";
 	if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 	{
@@ -280,7 +283,6 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		  $g_attachments->disabled_msg = $ret['msg'];
 	  }
 	}
-
 }
 
 function checkUserRights(&$db)
@@ -576,7 +578,16 @@ function set_dt_formats()
 function config_get($config_id)
 {
 	$my = "g_" . $config_id;
-	return $GLOBALS[$my];
+
+	if (isset($GLOBALS[$my]))
+	{
+		$res = $GLOBALS[$my];
+	} else {
+		global $tlCfg;	
+		eval ('$res = $tlCfg->' . $config_id . ';');
+	}
+	tlog('config_get global var with key ['.$config_id.'] is ' . $res);
+	return $res;
 }
 
 

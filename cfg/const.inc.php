@@ -5,37 +5,30 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2008/03/12 18:13:54 $ by $Author: franciscom $
- * @author Martin Havlát
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2008/03/24 19:33:28 $ by $Author: havlat $
+ * @author Martin Havlat
  *
  * SCOPE:
  * Global Constants used throughout TestLink 
- * Script is included via config.inc.php
- * There should be changed for your environment
+ * The script is included via config.inc.php
  * 
- *-------------------------------------------------------------------
- * Revisions: 
- *           20080312 - franciscom - BUGID 1427
- *                                   added new req status
- *           20080309 - franciscom - removed PHP E_STRICT warnings
- *           20070607 - franciscom 
- *           to solve BUGID: 887
- *           GET_ACTIVE_BUILD, GET_INACTIVE_BUILD
- *           GET_OPEN_BUILD,GET_CLOSED_BUILD
- *-------------------------------------------------------------------
+ * 
+ * No revisions logged here but each parameter must be described!
+ *
 **/
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 /** [GLOBAL] */
+
+/** TestLink Release (MUST BE changed before the release day) */
+define('TL_VERSION', '1.8.0 BETA1'); 
 
 // ----------------------------------------------------------------------------
 /** [GUI] */
 
-/* Release MUST BE changed at the release day */
-define('TL_VERSION', '1.8.0 DEVELOPMENT'); 
-define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
-
+// havlatm: @todo remove (must be solved via css)
 // planAddTC_m1-tpl
 define('TL_STYLE_FOR_ADDED_TC', "background-color:yellow;");
 
@@ -51,34 +44,13 @@ $g_tpl = array(
 	'tcEdit' 		=> "tcEdit.tpl",
 	'tcNew' 		=> "tcNew.tpl",
 	'execSetResults' => "execSetResults.tpl",
-	'tcView' 		=> "tcView.tpl",
 	'tcSearchView' 	=> "tcView.tpl",
 	'usersview' 	=> "usersView.tpl"
 );
 
-
-
-// -------------------------------------------------------------------
-/** [LDAP authentication errors */
-// 
-// Based on mantis issue tracking system code
-// ERROR_LDAP_*
-define( 'ERROR_LDAP_AUTH_FAILED',				1400 );
-define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
-define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
-define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
-define( 'ERROR_LDAP_BIND_FAILED',				1404 );
-
-
-
-// Leave them empty if you would not to use.
-$g_company_name = 'Testlink Development Team [configure using $g_company_name]';
-$g_company_logo = '<img alt="TestLink logo" title="configure using $g_company_logo" ' .
-                  'src="%BASE_HREF%' . 'gui/themes/theme_m1/images/company_logo.png" />';
-
-$g_copyright='copyright - Testlink Development Team [configure using $g_copyright]';
-$g_confidential='this document is not confidential [configure using $g_confidential]';
-
+define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
+define('TL_HELP_RPATH','gui/help/');
+define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 
 // ----------------------------------------------------------------------------
@@ -206,8 +178,6 @@ $att_model_m2->show_upload_column = true;
 
 
 // -------------------------------------------------------------------
-/** [MISC] */
-
 /** [Test Case Status] */
 
 // $g_tc_status
@@ -288,7 +258,6 @@ $g_tc_status_for_ui = array(
 $g_tc_status_for_ui_default="blocked";
 
 // -------------------------------------------------------------------------------
-
 /** [Reports] */
 
 
@@ -391,9 +360,7 @@ $g_reports_list['list_problems'] = array(
 
 
 // -------------------------------------------------------------------------------
-
-
-/** [Roles] */
+/** [Users & Roles] */
 define("TL_ROLES_TESTER",7);
 define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);
@@ -405,23 +372,6 @@ define("TL_ROLES_INHERITED",0);
 // Roles with id > to this role can be deleted from user interface
 define("TL_LAST_SYSTEM_ROLE",9);
 
-
-// you can change the default role used for new users:
-// - created from the login page.
-// - created using user management features
-//
-// use custom_config.inc.php instead of doing changes here
-$g_default_roleid=TL_ROLES_GUEST;
-
-// when a role is deleted, a new role must be assigned to all users
-// having role to be deleted
-// A right choice seems to be using $g_default_roleid.
-// You can change this adding a config line in custom_config.inc.php
-$g_role_replace_for_deleted_roles=$g_default_roleid;
-
-
-// used to mark up inactive objects (test projects, etc)
-define("TL_INACTIVE_MARKUP","* ");
 
 // used on user management page to give different colour 
 // to different roles.
@@ -440,32 +390,73 @@ $g_role_colour = array (
 );
 
 
-/** three levels for priority */
-// $gtl_const_3levels = array(
-// 	1 => 'low', 
-// 	2 => 'medium', 
-// 	3 => 'high'
-// );
+// -------------------------------------------------------------------
+/** [LDAP authentication errors */
+// 
+// Based on mantis issue tracking system code
+// ERROR_LDAP_*
+define( 'ERROR_LDAP_AUTH_FAILED',				1400 );
+define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
+define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
+define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
+define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
-// use when componing an title using several strings
-$g_title_sep=' : ';
-$g_title_sep_type2=' >> ';
-$g_title_sep_type3=' - ';
-$g_title_sep_type4=' :: ';
+
+
+// -------------------------------------------------------------------
+/** [MISC] */
+
+// used to mark up inactive objects (test projects, etc)
+define("TL_INACTIVE_MARKUP","* ");
+
+
+/** [Risk, Priority, Importance] */
+// item_id => item_label (must be defined in strings.txt file)
+$g_risk=array( '1' => 'high_risk',
+               '2' => 'medium_risk',
+               '3' => 'low_risk');
+
+$g_importance=array( '1' => 'high_importance',
+                     '2' => 'medium_importance',
+                     '3' => 'low_importance');
+
+$g_priority=array( '1' => 'high_priority',
+                   '2' => 'medium_priority',
+                   '3' => 'low_priority');
+
+
 
 
 // used when created a test suite path, concatenating test suite names
 $g_testsuite_sep='/';
 
-
-// [Main page]
-// define('MENU_ITEM_OPEN','<div class="module-grey"><div><div><div>');
-// define('MENU_ITEM_CLOSE','</div></div></div></div>');
-
 // using niftycorners
 define('MENU_ITEM_OPEN','<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE','</div><br />');
 
+
+// -------------------------------------------------------------------
+/** [Requirements] */
+// key: status
+// value: text label
+$g_req_status=array(TL_REQ_STATUS_VALID => 'req_status_valid', 
+					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+					TL_REQ_STATUS_DRAFT => 'req_status_draft',
+					TL_REQ_STATUS_APPROVED => 'req_status_approved',
+					TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
+					TL_REQ_STATUS_TODO => 'req_status_todo',
+					TL_REQ_STATUS_CHANGED => 'req_status_changed');
+
+// 20071117 - franciscom
+// need ask Martin what are possible types
+// MHT: the later solution could include status: draft, valid(final,reviewed and approved), obsolete, todo, future
+//	so REQ review process could be apllied. The current solution is simple, but enough from testing point of view
+// havlatm 200804: need to simplify the next three definitions into one
+define('TL_REQ_TYPE_1', 'V');
+define('TL_REQ_TYPE_2', 'N');
+
+define('NON_TESTABLE_REQ','n');
+define('VALID_REQ','v');
 
 
 // moved from requirements.inc.php
@@ -477,36 +468,33 @@ define('TL_REQ_STATUS_OBSOLETE', 'O');
 define('TL_REQ_STATUS_TODO', 'T');
 define('TL_REQ_STATUS_CHANGED', 'M');
 
-// key: status
-// value: label
-$g_req_status=array(TL_REQ_STATUS_VALID => 'req_status_valid', 
-					          TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
-					          TL_REQ_STATUS_DRAFT => 'req_status_draft',
-					          TL_REQ_STATUS_APPROVED => 'req_status_approved',
-					          TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
-					          TL_REQ_STATUS_TODO => 'req_status_todo',
-					          TL_REQ_STATUS_CHANGED => 'req_status_changed');
-
-
-
-// 20071117 - franciscom
-// need ask Martin what are possible types
-// MHT: the later solution could include status: draft, valid(final,reviewed and approved), obsolete, todo, future
-//	so REQ review process could be apllied. The current solution is simple, but enough from testing point of view
-define('TL_REQ_TYPE_1', 'V');
-define('TL_REQ_TYPE_2', 'N');
-
-
-
-
+// havlatm: @TODO remove
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
-// 
-// [FUNCTION MAGIC NUMBERS] [DON'T BOTHER ABOUT]
+// Used to force the max len of this field, during the automatic creation of requirements
+$g_field_size->testsuite_name = 100;
 
-// From Mantis
-define( 'ON',	1 );
-define( 'OFF',	0 );
+// requirements and req_spec tables field sizes
+$g_field_size->req_docid=32;
+$g_field_size->req_title=100;
+$g_field_size->requirement_title=100;
+
+
+
+// -------------------------------------------------------------------
+/** [GENERAL MAGIC NUMBERS] */
+
+// Basicly true/false
+define('ON',	1 );
+define('OFF',	0 );
+define('ACTIVE',1);
+define('INACTIVE',0);
+define('OPEN',1);
+define('CLOSED',0);
+define('DO_LANG_GET',1);
+define('DONT_DO_LANG_GET',0);
+define('OK',1);
+define('ERROR',0);
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS',0);
@@ -514,18 +502,11 @@ define('TP_ALL_STATUS',null);
 define('FILTER_BY_PRODUCT',1);
 define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE',1);
-define('NON_TESTABLE_REQ','n');
-define('VALID_REQ','v');
+
 
 define('DSN',FALSE);  // for method connect() of database.class
 define('ANY_BUILD',null);
 define('GET_NO_EXEC',1);
-
-
-define('ACTIVE',1);
-define('INACTIVE',0);
-define('OPEN',1);
-define('CLOSED',0);
 
 // planTCNavigator.php
 define('FILTER_BY_BUILD_OFF',0);
@@ -537,8 +518,6 @@ define('SEARCH_BY_CUSTOM_FIELDS_OFF',null);
 define('COLOR_BY_TC_STATUS_OFF',0);
 define('CREATE_TC_STATUS_COUNTERS_OFF',0);
 
-
-
 // moved from testSetRemove.php
 define('WRITE_BUTTON_ONLY_IF_LINKED',1);
 
@@ -547,11 +526,6 @@ define('FILTER_BY_TC_OFF',null);
 define('FILTER_BY_EXECUTE_STATUS_OFF',null); 
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
-
-
-
-define('DO_LANG_GET',1);
-define('DONT_DO_LANG_GET',0);
 
 // 
 define('FILTER_BY_SHOW_ON_EXECUTION',1);
@@ -603,8 +577,6 @@ define('AUTOMATION_NOTES_KO', -1);
 define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
-define('OK',1);
-define('ERROR',0);
 
 define('AUTOMATIC_ID',0);
 define('ENABLED',1);

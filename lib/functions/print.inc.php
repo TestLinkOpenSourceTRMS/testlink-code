@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/03/22 23:47:04 $ by $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/03/24 19:33:27 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -22,15 +22,18 @@ require_once("requirement_mgr.class.php");
  * print HTML header
  * Standard: HTML 4.01 trans (because is more flexible to bugs in user data)
  */
-function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
+function printHeader($title, $base_href)
 {
+	global $tlCfg;
+
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
-	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.TL_TPL_CHARSET.'" />';
+	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.$tlCfg->charset.'" />'.
+		"\n<base href=\"".$base_href."\"/>\n";
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
-	$output .= '<link type="text/css" rel="stylesheet" href="' . $base_href . $cssTemplate . '" />';
+	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href.$tlCfg->css_print_doc .'" />';
 	$output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';
-	$output .= "\n</head>\n<body>\n";
+	$output .= "\n</head>\n";
 
 	return $output;
 }
@@ -40,6 +43,7 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 */
 function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_info=null)
 {
+	global $tlCfg;
 	$g_date_format = config_get('date_format');
 	$tproject_name = htmlspecialchars($tproject_info['name']);
 	$tproject_notes = $tproject_info['notes'];
@@ -50,44 +54,27 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 		$author = htmlspecialchars($user->getDisplayName());
 	$title = htmlspecialchars($title);
 
-	$output = '<div>';
+	$output = "<body>\n<div>";
 	$output .= '<div class="groupBtn" style="text-align:right">' .
 	           '<input class="notprintable" type="button" name="print" value="' .
 	           lang_get('btn_print').'" onclick="javascript: print();" style="margin-left:2px;" /></div>';
 
-	$output .= '<div class="pageheader">'. lang_get('testproject') . ' ' . $tproject_name ."</div>\n";
+  	if ($tlCfg->company_name != '' )
+		$output .= '<div style="float:right;">' . htmlspecialchars($tlCfg->company_name) ."</div>\n";
+	$output .= '<div>'. $tproject_name ."</div><hr />\n";
 
-	if (TL_DOC_COMPANY != '' ||  TL_DOC_COMPANY_LOGO != '' )
+
+  	if ($tlCfg->company_logo_image != '' )
 	{
-		$output .= '<br /><center><table class="company">';
-
-	  	if (TL_DOC_COMPANY != '' )
-	  	{
-			$output .= '<tr><td id="company_name">'. htmlspecialchars(TL_DOC_COMPANY) ."</td></tr>";
-		}
-		$output .= '<tr><td/></tr>';
-
-	  	if (TL_DOC_COMPANY_LOGO != '' )
-		{
-			$output .= '<tr><td id="company_logo">'.
-		    		str_replace('%BASE_HREF%',$_SESSION['basehref'],TL_DOC_COMPANY_LOGO) ."</td></tr>";
-		}
-		$output .= "</table></center>\n";
+		$output .= '<p style="text-align: center;"><img alt="TestLink logo" title="configure using $tlCfg->company_logo_image"'.
+        	' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $tlCfg->company_logo_image . '" /></p>';
 	}
 
 	$output .= "</div>\n";
 
-	$my_title ='';
-	$output .= '<h1 id="doctitle">';
 
-	$my_title = lang_get('testproject') . ' ' . $tproject_name;
-	if($title != '')
-	{
-		// $my_title = lang_get('testsuite') . ' ' . $title;
-		//SCHLUNDUS: SRS titles should be localized. Needs  a deeper look
-		$my_title = lang_get($item_type) . ' -' . $title;
-	}
-
+	/* Print title */
+	$output .= '<div class="doc_title">';
 
 	if( is_null($tplan_info) )
 	{
@@ -95,24 +82,34 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 	}
 	else
 	{
-	  $output .= '<h1 id="doctitle">' . lang_get('testplan') . htmlspecialchars($tplan_info['name']);
+	  $output .= lang_get('testplan') . ' ' . htmlspecialchars($tplan_info['name']);
 	}
-	$output .= "<br>" . htmlspecialchars($my_title) . "</h1>\n";
+
+	if($title != '')
+	{
+		// $my_title = lang_get('testsuite') . ' ' . $title;
+		//SCHLUNDUS: SRS titles should be localized. Needs  a deeper look
+		$output = '<p>'.lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
+	}
+	$output .= "</div>\n";
 
 
-	$output .= '<div id="summary">' .
-		         '<p id="prodname">'. lang_get('testproject') .": " . $tproject_name . "</p>\n";
-	if (strlen($tproject_notes))
-		$output .= '<p id="prodnotes">'. $tproject_notes . "</p>\n";
+	// Print summary on the first page
+	$output .= '<div class="summary">' .
+		         '<p id="prodname">'. lang_get('project') .": " . $tproject_name . "</p>\n";
 
 	$output .= '<p id="author">' . lang_get('author').": " . $author . "</p>\n" .
 		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
 		         strftime($g_date_format, time()) . "</p></div>\n";
 
-	if (TL_DOC_COPYRIGHT != '')
-		$output .= '<div class="pagefooter" id="copyright">' . htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
-	if (TL_DOC_CONFIDENT != '')
-		$output .= '<div class="pagefooter" id="confidential">' . htmlspecialchars(TL_DOC_CONFIDENT)."</div>\n";
+	if ($tlCfg->company_copyright != '')
+		$output .= '<div class="pagefooter" id="copyright">' . htmlspecialchars($tlCfg->company_copyright)."</div>\n";
+	if ($tlCfg->company_confident != '')
+		$output .= '<div class="pagefooter" id="confidential">' . htmlspecialchars($tlCfg->company_confident)."</div>\n";
+
+	if (strlen($tproject_notes))
+		$output .= '<h1>'.lang_get('introduction').'</h1><p id="prodnotes">'. $tproject_notes . "</p>\n";
+
 
 	return $output;
 }

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.4 2008/03/22 15:45:41 franciscom Exp $
+$Id: tcView.tpl,v 1.5 2008/03/24 19:33:28 havlat Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}
@@ -18,6 +18,8 @@ rev: 20080322 - franciscom - php errors clean up
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
 
+<h1>{lang_get s='title_test_case'}{$gsmarty_title_sep} {$testcase_curr_version[0][0].name|escape} </h1>
+
 <div class="workBack">
 {include file="inc_update.tpl" result=$sqlResult action=$action item="test_case" 
          user_feedback=$user_feedback refresh=$refresh_tree}
@@ -27,7 +29,6 @@ rev: 20080322 - franciscom - php errors clean up
 {if $testcase_curr_version}
 {section name=idx loop=$testcase_curr_version}
     {* Current active version *}
-    
     {if $testcase_other_versions[idx] neq null}
         {assign var="my_delete_version" value="yes"}
     {else}

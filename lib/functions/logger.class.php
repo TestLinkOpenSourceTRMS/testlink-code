@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/03/18 20:13:20 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/03/24 19:33:27 $ $Author: havlat $
  *
  * @author Andreas Morsing
  *
@@ -771,6 +771,7 @@ class tlFileLogger extends tlObject
 	public function __construct()
 	{
 		parent::__construct();
+		
 	}
 	
 	public function _clean()
@@ -866,11 +867,12 @@ class tlFileLogger extends tlObject
 	 **/
 	static public function getLogFileName()
 	{
-		global $g_log_path;
+		global $tlCfg;
 		$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
-		return $g_log_path . DIRECTORY_SEPARATOR . 'userlog' . $uID . ".log";
+		return $tlCfg->log_path . 'userlog' . $uID . ".log";
 	}
+
 	/**
 	 * get the file which should be used audit logging
 	 *
@@ -878,10 +880,10 @@ class tlFileLogger extends tlObject
 	 **/
 	static public function getAuditLogFileName()
 	{
-		global $g_log_path;
-
-		return $g_log_path . DIRECTORY_SEPARATOR . "audits.log";
+		global $tlCfg;
+		return $tlCfg->log_path . "audits.log";
 	}
+
 	/*
 	* You can empty the log at any time with:
 	*  resetLogFile

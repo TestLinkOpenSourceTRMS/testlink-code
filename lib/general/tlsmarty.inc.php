@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/03/24 19:33:28 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
+ * 20080424 - havlatm - added $tlCfg
  * 20080303 - franciscom - changed default value for feedback_type
  * 20080109 - franciscom - added some *_img for URL to common used images.
  *
@@ -30,46 +31,44 @@ class TLSmarty extends Smarty
 {
     function TLSmarty()
 	{
+		global $tlCfg;
+		global $g_attachments;
+		global $g_spec_cfg;
 		global $g_tc_status;
 		global $g_tc_status_css;
 		global $g_bugInterfaceOn;
+		global $g_interface_bugs;
 		global $g_tc_status_for_ui;
 		global $g_tc_status_verbose_labels;
-		global $g_attachments;
 		global $g_locales;
-		global $g_gui;
-		global $g_spec_cfg;
-		global $g_interface_bugs;
 	    global $g_locales_html_select_date_field_order;
     	global $g_locales_date_format;
     	global $g_locales_timestamp_format;
-    	global $g_log_level;
-		global $g_api_ui_show;
 
 
-
-	  $this->Smarty();
-	  $this->template_dir = TL_ABS_PATH . 'gui/templates/';
-	  $this->compile_dir = TL_TEMP_PATH;
+	  	$this->Smarty();
+	  	$this->template_dir = TL_ABS_PATH . 'gui/templates/';
+	  	$this->compile_dir = TL_TEMP_PATH;
 		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
 
-		$testprojectColor = TL_BACKGROUND_DEFAULT;
+		$testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
 		if (isset($_SESSION['testprojectColor']))
-    {
+    	{
 			$testprojectColor =  $_SESSION['testprojectColor'];
      	if (!strlen($testprojectColor))
-        		$testprojectColor = TL_BACKGROUND_DEFAULT;
+        		$testprojectColor = $tlCfg->gui->background_color;
 		}
 		$this->assign('testprojectColor', $testprojectColor);
 
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
 
-		if ($g_log_level == 'DEBUG' || $g_log_level == 'EXTENDED')
+		if ($tlCfg->smarty_debug)
 		{
 			$this->debugging = true;
-			tLog("Smarty debug ok.");
+			tLog("Smarty debug window = ON");
 		}
+
 		$this->assign('title',null);
 		$this->assign('SP_html_help_file',null);
 		$this->assign('menuUrl',null);
@@ -88,33 +87,32 @@ class TLSmarty extends Smarty
 		$this->assign('show_upload_btn',null);
 		$this->assign('show_title',null);
 
+		// -----------------------------------------------------------------------------
+		// load configuration
+		$this->assign('tlCfg',$tlCfg);
+		$this->assign('gsmarty_gui',$tlCfg->gui);
+    	$this->assign('gsmarty_spec_cfg',$g_spec_cfg);
+		$this->assign('gsmarty_attachments',$g_attachments);
+
+		// obsolete - use gsmarty_gui->title_sep_x in templates
+		$this->assign('gsmarty_title_sep', $tlCfg->gui->title_sep_1);
+		$this->assign('gsmarty_title_sep_type2', $tlCfg->gui->title_sep_2);
+		$this->assign('gsmarty_title_sep_type3', $tlCfg->gui->title_sep_3);
+
+		$this->assign('pageCharset',$tlCfg->charset);
+		$this->assign('tlVersion',TL_VERSION);
+
 		$this->assign('gsmarty_tc_status',$g_tc_status);
 		$this->assign('gsmarty_tc_status_css',$g_tc_status_css);
 		$this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
 		$this->assign('gsmarty_tc_status_verbose_labels',$g_tc_status_verbose_labels);
 
-
 		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
 		$this->assign('gsmarty_interface_bugs',$g_interface_bugs);
 
-
-		$this->assign('gsmarty_attachments',$g_attachments);
-
-		$this->assign('gsmarty_gui',$g_gui);
-    $this->assign('gsmarty_spec_cfg',$g_spec_cfg);
-
-
-		$this->assign('gsmarty_title_sep',TITLE_SEP);
-		$this->assign('gsmarty_title_sep_type2',TITLE_SEP_TYPE2);
-		$this->assign('gsmarty_title_sep_type3',TITLE_SEP_TYPE3);
-
+		// -----------------------------------------------------------------------------
 		// define a select structure for {html_options ...}
 		$this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
-
-
-
-		$this->assign('pageCharset',TL_TPL_CHARSET);
-		$this->assign('tlVersion',TL_VERSION);
 
 		// this allows unclosed <head> tag to add more information and link; see inc_head.tpl
 		$this->assign('openHead', 'no');
@@ -124,7 +122,6 @@ class TLSmarty extends Smarty
 		$this->assign('jsValidate', null);
 		$this->assign('jsTree', null);
 		$this->assign('sqlResult', null);
-
 		// user feedback variables (used in inc_update.tpl)
 		$this->assign('action', 'updated');
 		$this->assign('user_feedback', null);
@@ -136,67 +133,63 @@ class TLSmarty extends Smarty
 
 		$this->assign('optLocale',$g_locales);
 
-    $this->assign('gsmarty_href_keywordsView',
+    	$this->assign('gsmarty_href_keywordsView',
                   ' "lib/keywords/keywordsView.php" ' .
 		          	  ' target="mainframe" class="bold" ' .
 				          ' title="' . lang_get('menu_manage_keywords') . '"');
 
 
-    $this->assign('gsmarty_html_select_date_field_order',
+    	$this->assign('gsmarty_html_select_date_field_order',
                    $g_locales_html_select_date_field_order[$my_locale]);
-    $this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
-    $this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
+    	$this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
+    	$this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
 
-    // Some common images
-    $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
-    $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
+		// -----------------------------------------------------------------------------
+    	// Some common images
+    	$sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
+    	$api_info_img = TL_THEME_IMG_DIR . "/brick.png";
 
-    $this->assign("sort_img",$sort_img);
-    $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
-    $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
+    	$this->assign("sort_img",$sort_img);
+    	$this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
+    	$this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
 
-    $msg = lang_get('show_hide_api_info');
- 	$this->assign('api_ui_show', $g_api_ui_show);
+    	$msg = lang_get('show_hide_api_info');
+ 		$this->assign('api_ui_show', $tlCfg->api_enabled);
 
-    // $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
-    //                      " onclick=\"show_hide_column('item_view',0);event.stopPropagation();\" " .
-    //                      " src=\"{$api_info_img}\" align=\"left\" />";
-
-    $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
+	    $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
                          " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
                          " src=\"{$api_info_img}\" align=\"left\" />";
 
+	    $this->assign("toogle_api_info_img",$toogle_api_info_img);
 
-    $this->assign("toogle_api_info_img",$toogle_api_info_img);
 
-
-    // Some useful values for Sort Table Engine
-    switch (TL_SORT_TABLE_ENGINE)
-    {
-        case 'kryogenix.org':
-        $sort_table_by_column=lang_get('sort_table_by_column');
-        $sortHintIcon="<img title=\"{$sort_table_by_column}\" " .
+	    // Some useful values for Sort Table Engine
+    	switch (TL_SORT_TABLE_ENGINE)
+    	{
+        	case 'kryogenix.org':
+        		$sort_table_by_column=lang_get('sort_table_by_column');
+        		$sortHintIcon="<img title=\"{$sort_table_by_column}\" " .
                       " alt=\"{$sort_table_by_column}\" " .
                       " src=\"{$sort_img}\" align=\"left\" />";
 
-        $this->assign("sortHintIcon",$sortHintIcon);
-        $this->assign("noSortableColumnClass","sorttable_nosort");
-        break;
+        		$this->assign("sortHintIcon",$sortHintIcon);
+        		$this->assign("noSortableColumnClass","sorttable_nosort");
+ 	       break;
 
-        default:
-        $this->assign("sortHintIcon",'');
-        $this->assign("noSortableColumnClass",'');
-        break;
-    }
+	        default:
+ 		       $this->assign("sortHintIcon",'');
+ 		       $this->assign("noSortableColumnClass",'');
+ 	       break;
+	    }
 
-    // Registered functions
-	  $this->register_function("lang_get", "lang_get_smarty");
-	  $this->register_function("localize_date", "localize_date_smarty");
-	  $this->register_function("localize_timestamp", "localize_timestamp_smarty");
-    $this->register_function("localize_tc_status","translate_tc_status_smarty");
+    	// Register functions
+	  	$this->register_function("lang_get", "lang_get_smarty");
+	  	$this->register_function("localize_date", "localize_date_smarty");
+	  	$this->register_function("localize_timestamp", "localize_timestamp_smarty");
+    	$this->register_function("localize_tc_status","translate_tc_status_smarty");
 
-    $this->register_modifier("basename","basename");
-    $this->register_modifier("dirname","dirname");
+    	$this->register_modifier("basename","basename");
+    	$this->register_modifier("dirname","dirname");
 	}
 }
 ?>

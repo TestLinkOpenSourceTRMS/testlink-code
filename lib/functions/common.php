@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.100 $ $Author: franciscom $
- * @modified $Date: 2008/03/16 18:41:31 $
+ * @version $Revision: 1.101 $ $Author: havlat $
+ * @modified $Date: 2008/03/24 19:33:27 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -29,34 +29,54 @@
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/ 
+
+/** library for localization */
+require_once("lang_api.php");
+
+/** library of database wrapper */
 require_once("database.class.php");
+
+/** user right checking */
 require_once("roles.inc.php");
 
-require_once(dirname(__FILE__)."/object.class.php");
-require_once(dirname(__FILE__)."/metastring.class.php");
-require_once(dirname(__FILE__)."/logger.class.php");
-require_once(dirname(__FILE__)."/role.class.php");
-require_once(dirname(__FILE__)."/keyword.class.php");
-require_once(dirname(__FILE__)."/attachment.class.php");
-require_once(dirname(__FILE__)."/user.class.php");
+/** Testlink Smarty class sets up the default smarty settings for testlink */
+require_once(TL_ABS_PATH . 'third_party'.DS.'smarty'.DS.'libs'.DS.'Smarty.class.php'); 
+require_once(TL_ABS_PATH . 'lib'.DS.'general'.DS.'tlsmarty.inc.php'); 
+
+/** logging functions */
+require_once('logging.inc.php');
+
+if ($g_interface_bugs != 'NO')
+  require_once(TL_ABS_PATH.'lib'.DS.'bugtracking'.DS.'int_bugtracking.php');
+
+
+require_once("object.class.php");
+require_once("metastring.class.php");
+require_once("logger.class.php");
+require_once("role.class.php");
+require_once("attachment.class.php");
 
 /** @TODO use the next include only if it is used -> must be removed*/
-require_once(dirname(__FILE__)."/testproject.class.php");
-require_once(dirname(__FILE__)."/testplan.class.php");
-require_once(dirname(__FILE__)."/testcase.class.php");
-require_once(dirname(__FILE__)."/testsuite.class.php");
-require_once(dirname(__FILE__)."/tree.class.php");
-require_once(dirname(__FILE__)."/treeMenu.inc.php");
-require_once(dirname(__FILE__)."/cfield_mgr.class.php");
-require_once(dirname(__FILE__)."/exec_cfield_mgr.class.php");
+require_once("user.class.php");
+require_once("keyword.class.php");
+require_once("testproject.class.php");
+require_once("testplan.class.php");
+require_once("testcase.class.php");
+require_once("testsuite.class.php");
+require_once("tree.class.php");
+require_once("treeMenu.inc.php");
+require_once("cfield_mgr.class.php");
+require_once("exec_cfield_mgr.class.php");
+require_once("plan.core.inc.php");
+/** load the php4 to php5 domxml wrapper if the php5 is used and the domxml extension is not loaded **/
+if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
+	require_once(TL_ABS_PATH . 'third_party'.DS.'domxml-php4-to-php5.php');
 
 // Contributed code - manish
-require_once(dirname(__FILE__) . "../../../third_party/phpxmlrpc/lib/xmlrpc.inc");
-require_once(dirname(__FILE__) . "../../../third_party/phpxmlrpc/lib/xmlrpcs.inc");
-require_once(dirname(__FILE__) . "../../../third_party/phpxmlrpc/lib/xmlrpc_wrappers.inc");
+require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpc.inc');
+require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpcs.inc');
+require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpc_wrappers.inc');
 
-
-require_once("plan.core.inc.php");
 
 /** $db is a global used throughout the code when accessing the db. */
 $db = 0;
@@ -73,8 +93,9 @@ $db = 0;
 */
 function doDBConnect(&$db)
 {
-	$result = array('status' => 1, 
-					        'dbms_msg' => 'ok');
+	global $tlCfg;
+	$result = array('status' => 1, 'dbms_msg' => 'ok');
+	
 	$db = new database(DB_TYPE);
 	$result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
@@ -86,15 +107,13 @@ function doDBConnect(&$db)
   	}
   	else
 	{
-		if (DB_SUPPORTS_UTF8)
+		if((DB_TYPE == 'mysql') && ($tlCfg->charset == 'UTF-8'))
 		{
-			if(DB_TYPE == 'mysql')
-			{
 				$r = $db->exec_query("SET CHARACTER SET utf8");
 				$r = $db->exec_query("SET collation_connection = 'utf8_general_ci'");
-			}
 		}
 	}
+
 	//if we establish a DB connection, we reopen the session, to attach the db connection
 	global $g_tlLogger;
 	$g_tlLogger->endTransaction();
@@ -246,6 +265,21 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		
 	if ($initProduct)
 		doInitSelection($db) or die("Could not set session variables");
+		
+
+
+	// used to disable the attachment feature if there are problems with repository path
+	$g_attachments->disabled_msg = "";
+	if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
+	{
+	  $ret = checkForRepositoryDir($g_repositoryPath);
+	  if(!$ret['status_ok'])
+	  {
+		  $g_attachments->enabled = FALSE;
+		  $g_attachments->disabled_msg = $ret['msg'];
+	  }
+	}
+
 }
 
 function checkUserRights(&$db)
@@ -577,9 +611,11 @@ function is_blank( $p_var ) {
 **/
 function downloadContentsToFile($content,$fileName)
 {
+	global $tlCfg;
+
 	ob_get_clean();
 	header('Pragma: public' );
-	header('Content-Type: text/plain; charset='.TL_TPL_CHARSET.'; name=' . $fileName );
+	header('Content-Type: text/plain; charset='. $tlCfg->charset .'; name=' . $fileName );
 	header('Content-Transfer-Encoding: BASE64;' );
 	header('Content-Disposition: attachment; filename="' . $fileName .'"');
 	echo $content;

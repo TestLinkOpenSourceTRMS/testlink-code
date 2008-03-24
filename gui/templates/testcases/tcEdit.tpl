@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.2 2008/01/13 13:22:38 schlundus Exp $ *}
+{* $Id: tcEdit.tpl,v 1.3 2008/03/24 19:33:28 havlat Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -37,9 +37,10 @@ function validateForm(f)
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
-<h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tc.name|escape}</h1> 
+<h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP}{$tc.name|escape}
+	{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
+
 <div class="workBack" style="width:97%;">
-<h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
 
 {if $has_been_executed}
     {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
@@ -54,18 +55,20 @@ function validateForm(f)
 	<input type="hidden" name="version" value="{$tc.version}" />
 	
 
-	<div style="margin-right:5px;float: right;">
+	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_save'}" />
+		<input type="button" name="go_back" value="{lang_get s='cancel'}" 
+		       onclick="javascript: history.back();"/>
 	</div>	
 
 	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
     
-    <br />
-	<div style="margin-right:5px;float: right;">
-		<input id="do_update_bottom" type="submit" name="do_update" value="{lang_get s='btn_save'}"/>
+	<div class="groupBtn">
+		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_save'}" />
+		<input type="button" name="go_back" value="{lang_get s='cancel'}" 
+		       onclick="javascript: history.back();"/>
 	</div>	
-	<br/>
 </form>
 
 <script type="text/javascript" defer="1">

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: staticPage.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/13 12:06:02 $  $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/03/24 19:33:28 $  $Author: havlat $
  * @author 	Martin Havlat
  *
  * manage launch of static pages (help, instructions).
@@ -21,7 +21,7 @@ if (isset($_REQUEST['key'])) {
 	exit ("Error: Invalid page parameter.");
 }
 // link appropriate definition file and default to en_GB if not present in the current language
-$locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : $g_default_language;
+$locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : $tlCfg->default_language;
 if (file_exists('../../locale/'.$locale.'/texts.php'))
 	include('../../locale/'.$locale.'/texts.php');
 else

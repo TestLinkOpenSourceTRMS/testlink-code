@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/02/13 20:31:18 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/03/24 19:33:27 $ $Author: havlat $
  *
  */
 
@@ -58,6 +58,8 @@ class tlUser extends tlDBObject
 	
 	function __construct($dbID = null)
 	{
+		global $tlCfg;
+		
 		parent::__construct($dbID);
 		
 		$this->showRealname = config_get('show_realname');
@@ -66,8 +68,8 @@ class tlUser extends tlDBObject
 		$this->maxLoginLength = 30; 
 		$this->loginMethod = config_get('login_method');
 		
-		$this->globalRoleID = TL_DEFAULT_ROLEID;
-		$this->locale =  TL_DEFAULT_LOCALE;
+		$this->globalRoleID = $tlCfg->default_roleid;
+		$this->locale = $tlCfg->default_language;
 		$this->bActive = 1;
 		$this->tprojectRoles = null;
 		$this->tplanRoles = null;

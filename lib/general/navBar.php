@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/01/31 22:15:48 $ $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/03/24 19:33:28 $ $Author: havlat $
  *
  * This file manages the navigation bar. 
  *
@@ -22,9 +22,7 @@ $curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID
 $currentUser = $_SESSION['currentUser'];
 $userID = $currentUser->dbID;
 
-$gui_cfg = config_get('gui');
-$order_by = $gui_cfg->tprojects_combo_order_by;
-$role_separator = config_get('role_separator');
+$order_by = $tlCfg->gui->tprojects_combo_order_by;
 
 $tproject_mgr = new testproject($db);
 $arr_tprojects = $tproject_mgr->get_accessible_for_user($userID,'map', $order_by);
@@ -36,7 +34,7 @@ $testprojectRole = null;
 if ($curr_tproject_id && isset($currentUser->tprojectRoles[$curr_tproject_id]))
 {
 	$role = $currentUser->tprojectRoles[$curr_tproject_id];
-	$testprojectRole = $role_separator->open . $role->name . $role_separator->close;
+	$testprojectRole = $tlCfg->gui->role_separator_open . $role->name . $tlCfg->gui->role_separator_close;
 }	                   
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 
@@ -52,14 +50,12 @@ if (isset($_GET['testproject']))
 	setcookie('lastProductForUser'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
-$logo_img = defined('LOGO_NAVBAR') ? LOGO_NAVBAR : '';
-
 $smarty = new TLSmarty();
 $smarty->assign('rights_mgt_view_events', has_rights($db,"mgt_view_events"));
-$smarty->assign('logo', $logo_img);
+$smarty->assign('logo', $tlCfg->gui->html_logo);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
-$smarty->assign('user', $currentUser->getDisplayName() . ' '. 
-                        lang_get('Role'). " :: {$role_separator->open} {$currentUser->globalRole->name} {$role_separator->close}");
+$smarty->assign('user', $currentUser->getDisplayName() . ' '. lang_get('Role'). 
+	" :: {$tlCfg->gui->role_separator_open} {$currentUser->globalRole->name} {$tlCfg->gui->role_separator_close}");
 $smarty->assign('testprojectRole',$testprojectRole);
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
 $smarty->assign('rightExecute', has_rights($db,"testplan_execute"));

@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.28 2008/02/12 08:08:33 franciscom Exp $ 
+	$Id: navBar.tpl,v 1.29 2008/03/24 19:33:28 havlat Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -18,7 +18,7 @@
 {assign var="action_user_mgmt" value=$action_users_view}
 
 <body>
-<div style="float:left;">{$logo}</div>
+<div style="float:left; height: 100%"><a href="index.php" target="_parent">{$logo}</a></div>
 
 <div class="menu_title">
 
@@ -33,16 +33,13 @@
   		    {$tp_name|truncate:#TESTPROJECT_TRUNCATE_SIZE#|escape}</option>
   		{/foreach}
 		</select>
-		{if $countProjects == 1}
-			<input type="button" value="{lang_get s='btn_ok'}" onclick="this.form.submit();"/>
-		{/if}
 		</form>
 	</div>
 	{/if}
 
 	<div class="bold" style="padding: 5px 10px 5px 25px;">TestLink {$tlVersion|escape} : {$user|escape}
 	{if $testprojectRole  neq null}	
-		- {lang_get s='product_role'} {$testprojectRole|escape}
+		- {$testprojectRole|escape}
 	{/if}
 	</div>
 

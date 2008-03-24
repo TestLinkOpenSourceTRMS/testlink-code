@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.44 $ $Author: franciscom $
- * @modified $Date: 2008/03/22 17:43:00 $
+ * @version $Revision: 1.45 $ $Author: havlat $
+ * @modified $Date: 2008/03/24 19:33:28 $
  *
  * @author Martin Havlat
  * 
@@ -24,9 +24,11 @@
  *       20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
  *
 **/
+
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('configCheck.php');
+tlog("mainPage.php: Memory after common> Usage: ".memory_get_usage()." | Peak: ".memory_get_peak_usage() , 'DEBUG');
+
 testlinkInitPage($db,TRUE);
 
 $smarty = new TLSmarty();
@@ -70,6 +72,7 @@ $smarty->assign('rights_keywords_edit', has_rights($db,"mgt_modify_key"));
 // User has test project rights
 $smarty->assign('rights_project_edit', $can_manage_tprojects);
 $smarty->assign('rights_configuration', has_rights($db,"system_configuraton"));
+$smarty->assign('rights_usergroups', has_rights($db,"mgt_view_usergroups"));
 
 
 // ----- Test Statistics Section --------------------------
@@ -97,9 +100,8 @@ $testPlanRole = null;
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 if ($testPlanID && isset($currentUser->tplanRoles[$testPlanID]))
 {
-	$role_separator = config_get('role_separator');
 	$role = $currentUser->tplanRoles[$testPlanID];
-	$testPlanRole = $role_separator->open . $role->name . $role_separator->close;
+	$testPlanRole = $tlCfg->gui->role_separator_open . $role->name . $tlCfg->gui->role_separator_close;
 }
 
 $rights2check = array('testplan_execute','testplan_create_build',

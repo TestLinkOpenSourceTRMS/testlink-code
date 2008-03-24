@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.19 2008/02/25 20:36:30 schlundus Exp $
+$Id: inc_head.tpl,v 1.20 2008/03/24 19:33:28 havlat Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -26,9 +26,7 @@ rev :
 	{if $smarty.const.TL_JOMLA_1_CSS neq ''}
   	<style media="all" type="text/css">@import "{$basehref}{$smarty.const.TL_JOMLA_1_CSS}";</style>
 	{/if}
-	{if $smarty.const.TL_TESTPROJECT_COLORING eq 'background'}
-	  <style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
-	{/if}
+	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>

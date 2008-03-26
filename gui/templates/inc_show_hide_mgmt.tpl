@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_show_hide_mgmt.tpl,v 1.2 2008/03/18 21:05:27 schlundus Exp $
+$Id: inc_show_hide_mgmt.tpl,v 1.3 2008/03/26 20:39:31 schlundus Exp $
 Purpose: manage show/hide contanier logics
 Author : franciscom
 
@@ -21,7 +21,7 @@ Rev:
 	<div class="x-tool x-tool-toggle" style="background-position:0 -75px; float:left;"
 		onclick="show_hide('{$args_container_id}',
 	              '{$args_container_view_status_id}',
-	              document.getElementById('{$args_container_id}').style.display=='none')"/>
+	              document.getElementById('{$args_container_id}').style.display=='none')">
 	</div>
 	<span style="padding:2px;">{$args_container_title|escape}</span>
 </div>

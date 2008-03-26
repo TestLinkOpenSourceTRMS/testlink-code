@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/03/24 19:33:27 $ $Author: havlat $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/03/26 20:39:32 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -112,24 +112,22 @@ class tlLogger extends tlObject
 
     args: [$logger]: default null => all loggers
                      string representing a list of keys to access loggers map.
-    
-    returns: 
+
+    returns:
 
   */
-	public function disableLogging($logger=null)
+	public function disableLogging($logger = null)
 	{
-	    if( is_null($logger) )
-	    {
-			    $this->doLogging = false;
-			}
-			else
+	    if(is_null($logger))
+	    	$this->doLogging = false;
+		else
+		{
+			$loggerSet = explode(",",$logger);
+			foreach($loggerSet as $idx => $loggerKey)
 			{
-			    $loggerSet=explode(",",$logger);
-			    foreach($loggerSet as $idx => $loggerKey)
-			    {
-			        $this->loggers[$loggerKey]->disableLogging();  
-			    }    
+			   $this->loggers[$loggerKey]->disableLogging();
 			}
+		}
 	}
 
   /*
@@ -137,36 +135,30 @@ class tlLogger extends tlObject
 
     args: [$logger]: default null => all loggers
                      string representing a list of keys to access loggers map.
-    
-    returns: 
+
+    returns:
 
   */
 	public function enableLogging($logger=null)
 	{
-	    if( is_null($logger) )
-	    {
-			    $this->doLogging = false;
-			}
-			else
-			{
-			    $loggerSet=explode(",",$logger);
-			    foreach($loggerSet as $idx => $loggerKey)
-			    {
-			        $this->loggers[$loggerKey]->enableLogging();  
-			    }    
-			}
-	}
-	
-	public function getEnableLoggingStatus($logger=null)
-	{
-	  if( is_null($logger) )
-	  {
-		    return $this->doLogging;
-		}
+	    if(is_null($logger))
+	 	    $this->doLogging = false;
 		else
 		{
-		    return $this->loggers[$logger]->getEnableLoggingStatus();
+		    $loggerSet = explode(",",$logger);
+		    foreach($loggerSet as $idx => $loggerKey)
+		    {
+		        $this->loggers[$loggerKey]->enableLogging();
+		    }
 		}
+	}
+
+	public function getEnableLoggingStatus($logger=null)
+	{
+		if(is_null($logger))
+			return $this->doLogging;
+		else
+			return $this->loggers[$logger]->getEnableLoggingStatus();
 	}
 
 	/*
@@ -253,7 +245,7 @@ class tlLogger extends tlObject
 
 /*
 
-  transaction class 
+  transaction class
 
 */
 class tlTransaction extends tlDBObject
@@ -530,7 +522,7 @@ class tlEvent extends tlDBObject
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 	}
-	
+
 	public function initialize($transactionID,$userID,$sessionID,$logLevel,$description,
 	                           $source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
@@ -584,7 +576,7 @@ class tlEvent extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
-	
+
 	public function writeToDB(&$db)
 	{
 		if (!$this->dbID)
@@ -616,28 +608,28 @@ class tlEvent extends tlDBObject
 			         "fired_at,object_id,object_type,activity) " .
 			         "VALUES ({$transactionID},{$logLevel},'{$description}',{$source}," .
 			         "{$firedAt},{$objectID},{$objectType},{$activityCode})";
-			         
+
 			$result = $db->exec_query($query);
 			if ($result)
 				$this->dbID = $db->insert_id('events');
 		}
 	}
-	
+
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
-	
+
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlEvent::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
-	
+
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
-	
+
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
@@ -654,17 +646,17 @@ class tlDBLogger extends tlObjectWithDB
 	protected $logLevelFilter = null;
 	protected $pendingTransaction = null;
 	protected $doLogging = true;
-	
+
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
 	}
-	
+
 	public function _clean()
 	{
 		$this->pendingTransaction = null;
 	}
-	
+
 	public function disableLogging()
 	{
 			$this->doLogging = false;
@@ -680,7 +672,7 @@ class tlDBLogger extends tlObjectWithDB
 		return $this->doLogging;
 	}
 
-	
+
 	public function writeTransaction(&$t)
 	{
 	  if ($this->getEnableLoggingStatus() == false)
@@ -710,7 +702,7 @@ class tlDBLogger extends tlObjectWithDB
 		}
 		return tl::OK;
 	}
-	
+
 	public function writeEvent(&$e)
 	{
 		if (!$this->doLogging)
@@ -722,7 +714,7 @@ class tlDBLogger extends tlObjectWithDB
 
     // to avoid log, writes related to log logic
 		$this->disableLogging();
-		
+
 		//if we have a pending transaction so we could write it now
 		if ($this->pendingTransaction)
 		{
@@ -771,14 +763,14 @@ class tlFileLogger extends tlObject
 	public function __construct()
 	{
 		parent::__construct();
-		
+
 	}
-	
+
 	public function _clean()
 	{
 
 	}
-	
+
 	public function disableLogging()
 	{
 			$this->doLogging = false;
@@ -794,8 +786,8 @@ class tlFileLogger extends tlObject
 		return $this->doLogging;
 	}
 
-	
-	
+
+
 	//SCHLUNDUS: maybe i dont' write the transaction stuff to the file?
 	public function writeTransaction(&$t)
 	{
@@ -908,9 +900,9 @@ if( !is_null($g_loggerCfg) )
 {
     foreach($g_loggerCfg as $loggerKey => $cfgValue)
     {
-        $pfn=$cfgValue['enable'] ? 'enableLogging' : 'disableLogging'; 
+        $pfn=$cfgValue['enable'] ? 'enableLogging' : 'disableLogging';
         $g_tlLogger->$pfn($loggerKey);
-    }  
+    }
 }
 
 $g_tlLogger->startTransaction();
@@ -921,8 +913,8 @@ set_error_handler("watchPHPErrors");
     function: watchPHPErrors
 
     args:
-    
-    returns: 
+
+    returns:
 
 */
 function watchPHPErrors($errno, $errstr, $errfile, $errline)
@@ -936,10 +928,10 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 			E_NOTICE => "E_NOTICE",
 			E_STRICT => "E_STRICT"
 		);
-		
+
 	if (isset($errors[$errno]))
 	{
-		// suppress some kind of errors 
+		// suppress some kind of errors
 		// strftime(),strtotime(),date()
 		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||

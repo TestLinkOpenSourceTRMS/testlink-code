@@ -1,11 +1,11 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/03/12 18:14:26 $ $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/03/26 20:39:32 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1809,7 +1809,32 @@ $TLS_do_update = "aktualisiert";
 $TLS_do_delete = "gelöscht";
 $TLS_do_add = "erstellt";
 
-//
+
+$TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
+
+//eventviewer.php
+$TLS_th_loglevel = "Log level";
+$TLS_th_timestamp = "Timestamp";
+$TLS_th_activity = "Activity";
+$TLS_label_startdate = "Start date";
+$TLS_label_enddate = "End date";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "Eventviewer";
+$TLS_th_session_info = "Session information";
+$TLS_th_sessionID = "Session ID";
+$TLS_th_source = "Source";
+$TLS_click_on_event_info = "Click on any event to see it's details.";
+$TLS_th_activity_code = "Activity";
+$TLS_th_object_id = "Object ID";
+$TLS_th_object_type = "Object Type";
+$TLS_message_please_wait = "Please wait ...";
+$TLS_title_eventinfo = "Event information";
+$TLS_title_eventdetails = "Event details";
+$TLS_th_user = "User";
 
 ?>
 

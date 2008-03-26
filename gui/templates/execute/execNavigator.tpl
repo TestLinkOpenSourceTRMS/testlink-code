@@ -1,7 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.5 2008/02/24 17:53:05 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.6 2008/03/26 20:39:31 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
-{* 
+{*
 rev :
      20080224 - franciscom - BUGID 1056
      20070225 - franciscom - fixed auto-bug BUGID 642
@@ -15,7 +15,7 @@ rev :
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='TestPlan'} {$tplan_id|escape} {$tplan_name|escape}</h1> 
+<h1>{lang_get s='TestPlan'} {$tplan_id|escape} {$tplan_name|escape}</h1>
 
 {* $filterForm *}
 <div style="margin: 3px;">
@@ -67,14 +67,14 @@ rev :
   	<tr>
    		<td>{lang_get s='include_unassigned_testcases'}</td>
   		<td>
-  		   <input type="checkbox" 
+  		   <input type="checkbox"
   		           id="include_unassigned" name="include_unassigned"
   		           value="1"
-  		           {if $include_unassigned} checked {/if}>
+  		           {if $include_unassigned} checked="checked" {/if} />
   		</td>
   	</tr>
 
-        	{$design_time_cf}  	
+        	{$design_time_cf}
 		<tr>
 			<td>&nbsp;</td>
 			<td><input type="submit" name="submitOptions" value="{lang_get s='btn_apply_filter'}" style="font-size: 90%;" /></td>

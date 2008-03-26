@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.300 $
- * @modified $Date: 2008/03/24 19:33:27 $ $Author: havlat $
+ * @version $Revision: 1.301 $
+ * @modified $Date: 2008/03/26 20:39:32 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1010,6 +1010,11 @@ $TLS_enable_priority = "Priority Management";
 $TLS_enable_automation = "Test Automation";
 $TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
 $TLS_notes = "Related Notes";
+$TLS_testproject_alt_delete = "Delete Test Project";
+$TLS_testproject_alt_active = "Active";
+$TLS_testproject_alt_requirement_feature = "Requirements enabled";
+$TLS_testproject_alt_edit = "Edit Test Project";
+$TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
 
 // Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .

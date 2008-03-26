@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2008/03/26 20:39:31 $ by $Author: schlundus $
  *
- * 20080224 - franciscom - BUGID 1056 
+ * 20080224 - franciscom - BUGID 1056
  * 20071229 - franciscom - refactoring tree colouring and counters config
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20070912 - jbarchibald - custom field search BUGID - 1051
@@ -34,7 +34,7 @@ $cf_selected = null;
 $cf_smarty = null;
 if($gui_cfg->enable_custom_fields)
 {
-	  $cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
+	$cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
     $cf_selected = $exec_cfield_mgr->get_set_values();
 }
 
@@ -50,7 +50,7 @@ switch ($exec_view_mode)
 {
 	case 'all':
 		break;
-		
+
 	case 'assigned_to_me':
 		$args->filter_assigned_to = $args->user->dbID;
 		$assigned_to_user = $args->user->getDisplayName();
@@ -119,10 +119,10 @@ $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
 $src_workframe = null;
 if(isset($_REQUEST['submitOptions']))
 	$src_workframe = $_SESSION['basehref'].$menuUrl . "?level=testproject&id={$args->tproject_id}" . $getArguments;
-                     
+
 $smarty = new TLSmarty();
-$smarty->assign('include_unassigned',$args->include_unassigned); 
-$smarty->assign('design_time_cf',$cf_smarty); 
+$smarty->assign('include_unassigned',$args->include_unassigned);
+$smarty->assign('design_time_cf',$cf_smarty);
 $smarty->assign('disable_filter_assigned_to',$disable_filter_assigned_to);
 $smarty->assign('assigned_to_user',$assigned_to_user);
 $smarty->assign('src_workframe',$src_workframe);
@@ -134,7 +134,7 @@ $smarty->assign('treeColored', $args->treeColored);
 $smarty->assign('optBuild', $optBuild);
 $smarty->assign('optBuildSelected', $args->buildSelected);
 $smarty->assign('optResult', createResultsMenu());
-$smarty->assign('optResultSelected', $args->optResultSelected); 
+$smarty->assign('optResultSelected', $args->optResultSelected);
 $smarty->assign('filter_assigned_to', $args->filter_assigned_to);
 $smarty->assign('keywords_map', $keywords_map);
 $smarty->assign('keyword_id', $args->keyword_id);
@@ -147,18 +147,18 @@ $smarty->display($template_dir . 'execNavigator.tpl');
 
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
   schlundus: changed the user_id to the currentUser of the session
 */
 function init_args($exec_cfg)
 {
     $args = new stdClass();
-     
+
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
     $args->user = $_SESSION['currentUser'];
@@ -166,7 +166,7 @@ function init_args($exec_cfg)
     $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tc_id = isset($_REQUEST['tcID']) ? intval($_REQUEST['tcID']) : null;
-    $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;             
+    $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : 'all';
 
     $user_filter_default = 0;
@@ -174,52 +174,52 @@ function init_args($exec_cfg)
     {
     	case 'logged_user':
     		$user_filter_default = $args->user->dbID;
-    		break;  
+    		break;
 
     	case 'none':
     	default:
-    		break;  
+    		break;
     }
-    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;             
+    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
     $args->buildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
 
     // Checkbox
     $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
     return $args;
-}    
+}
 
 
 /*
   function: initializeGetArguments
             build arguments that will be passed to execSetResults.php
-            with a http call 
+            with a http call
 
   args:
-  
-  returns: 
+
+  returns:
 
   rev: 20080224 - franciscom - added include_unassigned
-  
+
 */
 function initializeGetArguments($argsObj,$customFieldSelected)
 {
     $settings = '&build_id=' . $argsObj->buildSelected;
-    
+
     if ($argsObj->keyword_id)
     	$settings .= '&keyword_id='.$argsObj->keyword_id;
-    
+
     if ($argsObj->tc_id)
     	$settings .= '&tc_id='.$argsObj->tc_id;
-    
+
     if ($argsObj->filter_assigned_to)
     	$settings .= '&filter_assigned_to='.$argsObj->filter_assigned_to;
-    
+
     if ($argsObj->optResultSelected != 'all')
     	$settings .= '&filter_status='.$argsObj->optResultSelected;
-  
+
   	$settings .= '&include_unassigned=' . $argsObj->include_unassigned;
-    	
+
     if ($customFieldSelected)
     	$settings .= '&cfields='. serialize($customFieldSelected);
 

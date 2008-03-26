@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/03/24 19:33:28 $ $Author: havlat $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/03/26 21:07:23 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -29,18 +29,18 @@
 **/
 class TLSmarty extends Smarty
 {
-    function TLSmarty()
+  function TLSmarty()
 	{
-		global $tlCfg;
-		global $g_attachments;
-		global $g_spec_cfg;
-		global $g_tc_status;
-		global $g_tc_status_css;
-		global $g_bugInterfaceOn;
-		global $g_interface_bugs;
-		global $g_tc_status_for_ui;
-		global $g_tc_status_verbose_labels;
-		global $g_locales;
+		  global $tlCfg;
+		  global $g_attachments;
+		  global $g_spec_cfg;
+		  global $g_tc_status;
+		  global $g_tc_status_css;
+		  global $g_bugInterfaceOn;
+		  global $g_interface_bugs;
+		  global $g_tc_status_for_ui;
+		  global $g_tc_status_verbose_labels;
+		  global $g_locales;
 	    global $g_locales_html_select_date_field_order;
     	global $g_locales_date_format;
     	global $g_locales_timestamp_format;
@@ -49,16 +49,19 @@ class TLSmarty extends Smarty
 	  	$this->Smarty();
 	  	$this->template_dir = TL_ABS_PATH . 'gui/templates/';
 	  	$this->compile_dir = TL_TEMP_PATH;
-		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
+		  $this->config_dir = TL_ABS_PATH . 'gui/templates/';
 
-		$testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
-		if (isset($_SESSION['testprojectColor']))
-    	{
-			$testprojectColor =  $_SESSION['testprojectColor'];
-     	if (!strlen($testprojectColor))
-        		$testprojectColor = $tlCfg->gui->background_color;
-		}
-		$this->assign('testprojectColor', $testprojectColor);
+		  $testproject_coloring=$tlCfg->gui->testproject_coloring;
+		  $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
+		  if (isset($_SESSION['testprojectColor']))
+      {
+		   	$testprojectColor =  $_SESSION['testprojectColor'];
+       	if (!strlen($testprojectColor))
+           		$testprojectColor = $tlCfg->gui->background_color;
+		  }
+		  $this->assign('testprojectColor', $testprojectColor);
+		  
+
 
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/03/24 20:07:03 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/03/26 21:07:23 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -22,6 +22,9 @@ require_once('common.php');
 require_once('testproject.class.php');
 require_once("web_editor.php");
 testlinkInitPage($db,true);
+
+
+$gui_cfg=config_get('gui');
 
 $template_dir = 'project/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
@@ -89,6 +92,7 @@ switch($args->doAction)
 
 $ui->main_descr=lang_get('title_testproject_management');
 $smarty = new TLSmarty();
+$smarty->assign('gui_cfg',$gui_cfg);
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 
 if(!$status_ok)
@@ -116,7 +120,6 @@ switch($args->doAction)
         {
             $smarty->assign($prop,$value);
         }
-
         $smarty->assign('user_feedback', $user_feedback);
         $smarty->assign('feedback_type', 'ultrasoft');
         $smarty->assign('id', $args->tprojectID);

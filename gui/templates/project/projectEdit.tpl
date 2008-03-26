@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.11 2008/02/14 17:28:12 havlat Exp $
+$Id: projectEdit.tpl,v 1.12 2008/03/26 21:05:48 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -33,7 +33,7 @@ rev:
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
-{if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
+{if $gui_cfg->testproject_coloring neq 'none'}
   {include file="inc_jsPicker.tpl"}
 {/if}
 
@@ -97,7 +97,7 @@ function validateForm(f)
 		  <td width="80%">{$notes}</td>
 	   </tr>
 	   
-	   {if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
+	   {if $gui_cfg->testproject_coloring neq 'none'}
 			<tr>
 				<th style="background:none;">{$labels.color}</th>
 				<td>

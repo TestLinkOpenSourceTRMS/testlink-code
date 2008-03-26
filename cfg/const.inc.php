@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2008/03/24 19:33:28 $ by $Author: havlat $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/03/26 21:04:39 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -48,7 +48,7 @@ $g_tpl = array(
 	'usersview' 	=> "usersView.tpl"
 );
 
-define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
+define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 define('TL_HELP_RPATH','gui/help/');
 define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
@@ -437,15 +437,23 @@ define('MENU_ITEM_CLOSE','</div><br />');
 
 // -------------------------------------------------------------------
 /** [Requirements] */
+define('TL_REQ_STATUS_VALID', 'V');
+define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
+define('TL_REQ_STATUS_DRAFT', 'D');
+define('TL_REQ_STATUS_APPROVED', 'A');
+define('TL_REQ_STATUS_OBSOLETE', 'O');
+define('TL_REQ_STATUS_TODO', 'T');
+define('TL_REQ_STATUS_CHANGED', 'M');
+
 // key: status
 // value: text label
 $g_req_status=array(TL_REQ_STATUS_VALID => 'req_status_valid', 
-					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
-					TL_REQ_STATUS_DRAFT => 'req_status_draft',
-					TL_REQ_STATUS_APPROVED => 'req_status_approved',
-					TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
-					TL_REQ_STATUS_TODO => 'req_status_todo',
-					TL_REQ_STATUS_CHANGED => 'req_status_changed');
+					          TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+					          TL_REQ_STATUS_DRAFT => 'req_status_draft',
+					          TL_REQ_STATUS_APPROVED => 'req_status_approved',
+					          TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
+					          TL_REQ_STATUS_TODO => 'req_status_todo',
+					          TL_REQ_STATUS_CHANGED => 'req_status_changed');
 
 // 20071117 - franciscom
 // need ask Martin what are possible types
@@ -459,19 +467,12 @@ define('NON_TESTABLE_REQ','n');
 define('VALID_REQ','v');
 
 
-// moved from requirements.inc.php
-define('TL_REQ_STATUS_VALID', 'V');
-define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
-define('TL_REQ_STATUS_DRAFT', 'D');
-define('TL_REQ_STATUS_APPROVED', 'A');
-define('TL_REQ_STATUS_OBSOLETE', 'O');
-define('TL_REQ_STATUS_TODO', 'T');
-define('TL_REQ_STATUS_CHANGED', 'M');
 
 // havlatm: @TODO remove
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
 // Used to force the max len of this field, during the automatic creation of requirements
+$g_field_size=new stdClass();
 $g_field_size->testsuite_name = 100;
 
 // requirements and req_spec tables field sizes

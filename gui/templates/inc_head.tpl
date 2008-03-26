@@ -1,9 +1,10 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.20 2008/03/24 19:33:28 havlat Exp $
+$Id: inc_head.tpl,v 1.21 2008/03/26 21:05:48 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
+     20080326 - franciscom - restored $testproject_coloring logic
      20080109 - franciscom - added sort table engine management
      20071201 - franciscom - tinymce support
 *}
@@ -26,7 +27,10 @@ rev :
 	{if $smarty.const.TL_JOMLA_1_CSS neq ''}
   	<style media="all" type="text/css">@import "{$basehref}{$smarty.const.TL_JOMLA_1_CSS}";</style>
 	{/if}
-	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
+	{if $testproject_coloring eq 'background'}
+  	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
+  {/if}
+  
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>

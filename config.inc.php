@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.169 $
- * @modified $Date: 2008/03/24 19:02:11 $ by $Author: havlat $
+ * @version $Revision: 1.170 $
+ * @modified $Date: 2008/03/26 21:04:39 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,8 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
+ *     20080326 - franciscom - restored configuration parameters removed without reasons.
+ *
  * 	   20080423 - havlatm - added $tlCfg as standard configuration holder
  *     20080322 - franciscom - $g_exec_cfg->edit_notes
  *     20080308 - franciscom - changed initial values for email settings
@@ -87,6 +89,8 @@ require_once(TL_ABS_PATH . 'cfg' . DS . 'const.inc.php');
 
 
 // ----------------------------------------------------------------------------
+$tlCfg=new stdClass();
+
 /** [LOCALIZATION] */
 
 // Your first/suggested choice for default locale.
@@ -238,6 +242,13 @@ $tlCfg->gui->html_logo = '<img alt="TestLink" title="TestLink" style="width: 115
 
 /** Image for main menu item bullet (just filename) */
 $g_main_menu_item_bullet_img='slide_gripper.gif'; // arrow_org.gif/slide_gripper.gif
+
+// 'background'  -> standard behaviour for 1.6.x you can have a different
+//                  background colour for every test project.
+//
+// 'none'        -> new behaviour no background color change 
+//
+$tlCfg->gui->testproject_coloring='none';
 
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';

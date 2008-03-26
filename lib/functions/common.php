@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.103 $ $Author: havlat $
- * @modified $Date: 2008/03/24 21:27:18 $
+ * @version $Revision: 1.104 $ $Author: franciscom $
+ * @modified $Date: 2008/03/26 21:07:23 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20080326 - franciscom - config_get() - refactored removed eval()
  * 20080114 - franciscom - gen_spec_view(): adde external_id management.
  * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
  *                         string_api.php, also from Mantis.
@@ -568,11 +569,14 @@ function set_dt_formats()
 
 
 /*
-  function:
+  function: config_get
 
   args :
 
   returns:
+  
+  rev:
+      20080326 - franciscom - removed eval
 
 */
 function config_get($config_id)
@@ -582,9 +586,11 @@ function config_get($config_id)
 	if (isset($GLOBALS[$my]))
 	{
 		$res = $GLOBALS[$my];
-	} else {
-		global $tlCfg;	
-		eval ('$res = $tlCfg->' . $config_id . ';');
+	} 
+	else 
+	{
+	  $cfg=$GLOBALS['tlCfg'];
+  	$res = $cfg->$config_id;
 	}
 	tlog('config_get global var with key ['.$config_id.'] is ' . $res);
 	return $res;

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.3 2008/01/17 21:56:50 schlundus Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.4 2008/03/27 08:16:20 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
@@ -25,7 +25,7 @@ rev :
   {assign var="build_qty" value={#BUILDS_COMBO_NUM_ITEMS#} }
 {/if}
 
-{if $testsuite_qty > #TESTSUITES_COMBO_NUM_ITEMS# }
+{if $testsuite_qty > #TSUITES_COMBO_NUM_ITEMS# }
   {assign var="testsuite_qty" value=#TSUITES_COMBO_NUM_ITEMS# }
 {/if}
 

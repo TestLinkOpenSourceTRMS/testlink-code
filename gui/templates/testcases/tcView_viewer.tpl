@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.10 2008/03/24 19:33:28 havlat Exp $
+$Id: tcView_viewer.tpl,v 1.11 2008/03/27 10:03:49 havlat Exp $
 viewer for test case in test specification
 
 20080113 - franciscom - changed format for test case id + name
@@ -172,11 +172,19 @@ viewer for test case in test specification
 	</tr>
 </table>
 
+    {if $session['testprojectOptAutomation']}
     <div>
-		<td colspan="2"><span class="labelHolder">{lang_get s='execution_type'}</span>
-        {$smarty.const.TITLE_SEP}
-		{$execution_types[$args_testcase.execution_type]}</td>
+		<span class="labelHolder">{lang_get s='execution_type'} {$smarty.const.TITLE_SEP}</span>
+		{$execution_types[$args_testcase.execution_type]}
 	</div>
+	{/if}
+
+    {if $session['testprojectOptPriority']}
+    <div>
+		<span class="labelHolder">{lang_get s='test_importance'} {$smarty.const.TITLE_SEP}</span>
+		{$gsmarty_option_importance[$args_testcase.importance]}
+	</div>
+	{/if}
 
 	{if $args_cf neq ''}
 	<div>

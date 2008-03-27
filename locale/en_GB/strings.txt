@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.301 $
- * @modified $Date: 2008/03/26 20:39:32 $ $Author: schlundus $
+ * @version $Revision: 1.302 $
+ * @modified $Date: 2008/03/27 10:02:40 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -135,6 +135,15 @@ $TLS_your_info_please = "Enter Your User Information";
 
 //archiveData.php
 $TLS_container_title_testcase = $TLS_test_case;
+$TLS_high_priority = "High";
+$TLS_medium_priority = "Medium";
+$TLS_low_priority = "Low";
+$TLS_high_importance = "High";
+$TLS_medium_importance = "Medium";
+$TLS_low_importance = "Low";
+$TLS_high_risk = "High";
+$TLS_medium_risk = "Medium";
+$TLS_low_risk = "Low";
 
 // index.php
 $TLS_main_page_title = "TestLink ::: Main Page";

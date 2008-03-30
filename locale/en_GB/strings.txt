@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.302 $
- * @modified $Date: 2008/03/27 10:02:40 $ $Author: havlat $
+ * @version $Revision: 1.303 $
+ * @modified $Date: 2008/03/30 17:16:27 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -65,6 +65,8 @@ $TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title 			= "Title";
 
+$TLS_select_at_least_one_testcase = "Please select a Test Case!";
+$TLS_no_testcases_available="No Test Cases available";
 
 $TLS_th_active = "Active";
 $TLS_th_delete = "Delete";
@@ -284,6 +286,7 @@ $TLS_defined_exclam = "defined !";
 $TLS_include_nested = "Including nested data (copy only).";
 $TLS_sorry_further = "I'm sorry there are no further ";
 $TLS_title_move_cp = "Move/Copy";
+$TLS_title_move_cp_testcases = "Move/Copy Test Cases";
 
 
 
@@ -319,6 +322,7 @@ $TLS_btn_export_testsuite = "Export Test Suite";
 $TLS_btn_import_tc = "Import Test Case(s)";
 $TLS_btn_import_testsuite = "Import Test Suite";
 $TLS_btn_move_cp_com = "Move/Copy";
+$TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
 $TLS_btn_new_cat = "New Test Suite";
 $TLS_btn_new_com = "New Test Suite";
 $TLS_btn_new_tc = "Create Test Case(s)";

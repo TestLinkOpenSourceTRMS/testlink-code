@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/02/24 17:54:59 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/03/30 17:16:27 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20080330 - franciscom - change_parent() modified to allow bulk operation.
  * 20080105 - franciscom - new method change_child_order()
  * 20071110 - franciscom - solved (auto)bug when refactoring get_path
  * 20071024 - franciscom - DTREE bug
@@ -407,14 +408,30 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
   function: change_parent
             change node parent, using this method you implement move operation.
 
-  args : node_id: node that needs to changed
+  args : node_id: node/nodes that need(s) to changed.
+                  mixed type: single id or array containing set of id.
+                  
          parent_id: new parent
   
   returns: 1 -> operation OK
+  
+  rev : 20080330 - franciscom - changed node_id type, to allow bulk operation.
+  
 */
 function change_parent($node_id, $parent_id) 
 {
-  $sql = "UPDATE nodes_hierarchy SET parent_id = {$parent_id} WHERE id = {$node_id}";
+  
+  if( is_array($node_id) )
+  {
+ 			$id_list = implode(",",$node_id);
+			$where_clause = " WHERE id IN ($id_list) ";
+  }
+  else
+  {
+      $where_clause=" WHERE id = {$node_id}";
+  }
+  $sql = "UPDATE nodes_hierarchy SET parent_id = {$parent_id} {$where_clause}";
+
   $result = $this->db->exec_query($sql);
  
   return $result ? 1 : 0;

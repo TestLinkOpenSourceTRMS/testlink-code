@@ -3,13 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/03/05 22:22:39 $ by $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/03/30 17:16:27 $ by $Author: franciscom $
  * @author Martin Havlat
  *
- * 20080223 - franciscom - BUGID 1408 
- * 20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
- * 20080122 - franciscom - BUGID 1312
+ * rev:
+ *     20080329 - franciscom - added contribution by Eugenia Drosdezki
+ *                             Move/copy testcases
+ *
+ *     20080223 - franciscom - BUGID 1408 
+ *     20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
+ *     20080122 - franciscom - BUGID 1312
 */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -39,12 +43,10 @@ $smarty = new TLSmarty();
 $a_keys['testsuite'] = array('details');
 
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
-                /* 'add_testsuite' => 'containerNew.tpl', */
                 'delete_testsuite' => 'containerDelete.tpl',
-                /* 'reorder_testsuites' => 'drag-drop-folder-tree.html',*/
                 'reorder_testsuites' => 'containerOrderDnD.tpl',  /* DnD -> Drag and Drop */ 
                 'updateTCorder' => 'containerView.tpl',
-				); 
+                'move_testcases_viewer' => 'containerMoveTC.tpl'); 
 
 $a_actions = array ('edit_testsuite' => 0,
 					          'new_testsuite' => 0,
@@ -56,7 +58,9 @@ $a_actions = array ('edit_testsuite' => 0,
                     'add_testsuite' => 1,
 					          'move_testsuite_viewer' => 0,
 					          'update_testsuite' => 1,
-				           );
+                    'move_testcases_viewer' => 0,
+	                  'do_move_tcase_set' => 0,
+                    'do_copy_tcase_set' => 0 );
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,
 					                 'new_testsuite'  => 1,
@@ -115,7 +119,7 @@ if($get_c_data)
 
 switch($action)
 {
-	case 'edit_testsuite':
+	  case 'edit_testsuite':
     case 'new_testsuite':  
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list); 
 		$smarty->assign('opt_cfg', $opt_cfg);
@@ -130,6 +134,11 @@ switch($action)
     case 'move_testsuite_viewer':
     moveTestSuiteViewer($smarty,$tproject_mgr,$args);
     break;
+
+    case 'move_testcases_viewer':
+    moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args);
+    break;
+
 
     case 'reorder_testsuites':
     $ret=reorderTestSuiteViewer($smarty,$tree_mgr,$args);
@@ -182,6 +191,15 @@ switch($action)
 	  
 	  $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys, $oWebEditor, $action,
 	                               $args->containerID, null,$msg,$messages['user_feedback']);
+    break;
+    
+    
+    case 'do_move_tcase_set':
+    moveTestCases($smarty,$template_dir,$tsuite_mgr,$tree_mgr,$args);
+    break;	
+    
+    case 'do_copy_tcase_set':
+    copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
     break;
     
     
@@ -308,22 +326,27 @@ function init_args($optionTransferCfg)
     $args->userID = $_SESSION['userID'];
 
 
+    $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,'target_position' => 'bottom');
+    foreach($keys2loop as $key => $value)
+    {
+       $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+    }
+
+
     $args->tsuite_name = isset($_REQUEST['testsuiteName']) ? $_REQUEST['testsuiteName'] : null;
-    $args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
     $args->bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
-
-    $args->target_position=isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
-
     $rl_html_name = $optionTransferCfg->js_ot_name . "_newRight";
     $args->assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
     
+    // integer values
     $keys2loop=array('testsuiteID' => null, 'containerID' => null, 
                      'objectID' => null, 'copyKeywords' => 0);
     foreach($keys2loop as $key => $value)
     {
        $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
     }
+    
     if(is_null($args->containerID))
     {
     	$args->containerID = $args->tprojectID;	
@@ -452,8 +475,9 @@ function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj)
 	// Added the Test Project as the FIRST Container where is possible to copy
 	$testsuites = array($argsObj->tprojectID => $argsObj->tprojectName) + $testsuites;
   
-	$smartyObj->assign('old_containerID', $argsObj->tprojectID); // original container
-	$smartyObj->assign('arraySelect', $testsuites);
+  // original container (need to comment this better)
+	$smartyObj->assign('old_containerID', $argsObj->tprojectID);
+	$smartyObj->assign('containers', $testsuites);
 	$smartyObj->assign('objectID', $argsObj->testsuiteID);
 	$smartyObj->assign('object_name', $argsObj->tsuite_name);
   $smartyObj->assign('top_checked','checked=checked');
@@ -620,5 +644,116 @@ function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
       $opt_cfg->to->map=$tsuiteMgr->get_keywords_map($argsObj->testsuiteID," ORDER BY keyword ASC ");
     }
     return $opt_cfg;
+}
+
+
+/*
+  function: moveTestCasesViewer
+            prepares smarty variables to display move testcases viewer
+            
+  args:
+  
+  returns: -
+
+*/
+function  moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$argsObj)
+{  	
+	
+	$testcase_cfg=config_get('testcase_cfg');
+	$glue=$testcase_cfg->glue_character;
+	
+	$testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID,
+	                                                  array($argsObj->testsuiteID => 'exclude'));
+  
+  $tcasePrefix= $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
+  
+  
+  $sql= "SELECT NHA.id AS TCID, NHA.name AS TCNAME, NHA.node_order AS TCORDER," .
+        " MAX(TCV.version) AS TCLASTVERSION, TCV.tc_external_id TCEXTERNALID" .
+        " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, node_types NT, tcversions TCV " .
+        " WHERE NHB.parent_id=NHA.id " .
+        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
+        " AND NHA.parent_id={$argsObj->testsuiteID} " . 
+        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
+        " ORDER BY TCORDER,TCNAME";
+ 
+  $children = $dbHandler->get_recordset($sql);
+  
+  // check if operation can be done
+  $user_feedback='';
+  if( !is_null($children) && (sizeof($children) > 0) )
+  {
+      $op_ok=true;  
+  }
+  else
+  {  
+      $children = null;
+      $op_ok=false;
+      $user_feedback=lang_get('no_testcases_available');  
+  }
+  
+  $smartyObj->assign('op_ok', $op_ok);
+  $smartyObj->assign('user_feedback', $user_feedback);
+  
+
+  $smartyObj->assign('tcprefix', $tcasePrefix);
+	$smartyObj->assign('testcases', $children);
+	$smartyObj->assign('old_containerID', $argsObj->tprojectID); //<<<<-- check if is needed
+	$smartyObj->assign('containers', $testsuites);
+	$smartyObj->assign('objectID', $argsObj->testsuiteID);
+	$smartyObj->assign('object_name', $argsObj->tsuite_name);
+  $smartyObj->assign('top_checked','checked=checked');
+  $smartyObj->assign('bottom_checked','');
+
+}
+
+
+/*
+  function: copyTestCases
+            copy a set of choosen test cases.
+            
+  args:
+  
+  returns: -
+
+*/
+function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj)
+{
+    if(sizeof($argsObj->tcaseSet) > 0)
+    {
+        $check_names_for_duplicates_cfg = config_get('check_names_for_duplicates');
+        $action_on_duplicate_name_cfg = config_get('action_on_duplicate_name');
+        
+        foreach($argsObj->tcaseSet as $key => $tcaseid)
+        {
+            $op=$tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID,
+	                                 $argsObj->copyKeywords,$check_names_for_duplicates_cfg,
+	                                 $action_on_duplicate_name_cfg);
+        }
+        $tsuiteMgr->show($smartyObj,$template_dir,$argsObj->objectID);
+    }
+
+}
+
+
+/*
+  function: moveTestCases
+            move a set of choosen test cases.
+            
+  args:
+  
+  returns: -
+
+*/
+function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
+{
+    if(sizeof($argsObj->tcaseSet) > 0)
+    {
+        $status_ok = $treeMgr->change_parent($argsObj->tcaseSet,$argsObj->containerID);
+        $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');
+        
+        // objectID - original container
+        $tsuiteMgr->show($smartyObj,$template_dir,$argsObj->objectID,$user_feedback);
+    }
 }
 ?>

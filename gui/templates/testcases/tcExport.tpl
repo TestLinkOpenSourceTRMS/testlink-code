@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcExport.tpl,v 1.2 2008/01/05 22:00:53 schlundus Exp $ *}
+{* $Id: tcExport.tpl,v 1.3 2008/03/30 17:16:26 franciscom Exp $ *}
 {* Purpose: smarty template - keyword export initial page *}
 {* rev:
        20071013 - franciscom - file name management
@@ -73,7 +73,7 @@ function validateForm(f)
   		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
   		<input type="submit" name="export" value="{lang_get s='btn_export'}" />
   		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-  			onclick="javascript:history.back();" />
+  			                   onclick="javascript:history.back();" />
   	</div>
   </form>
 {else}

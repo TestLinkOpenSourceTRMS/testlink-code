@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.170 $
- * @modified $Date: 2008/03/26 21:04:39 $ by $Author: franciscom $
+ * @version $Revision: 1.171 $
+ * @modified $Date: 2008/03/30 17:16:25 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
+ *     20080330 - franciscom -  
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
  *
  * 	   20080423 - havlatm - added $tlCfg as standard configuration holder
@@ -573,14 +574,17 @@ $g_spec_cfg->show_tsuite_filter=1;
 // 0 -> tree will not be updated, user can update it manually.
 $g_spec_cfg->automatic_tree_refresh=1;
 
+
+$tlCfg->testcase_cfg=new stdClass();
+
 // 1 -> user can edit executed tc versions
 // 0 -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
-$g_testcase_cfg->can_edit_executed=0;
+$tlCfg->testcase_cfg->can_edit_executed=0;
 
 // used to create full external id in this way:
 // testCasePrefix . g_testcase_cfg->glue_character . external_id
 // CAN NOT BE EMPTY
-$g_testcase_cfg->glue_character='-';
+$tlCfg->testcase_cfg->glue_character='-';
 
 /** Used when creating a Test Suite using copy 
    and you have choose  $g_action_on_duplicate_name = 'generate_new'

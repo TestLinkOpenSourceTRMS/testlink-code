@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/01/07 07:55:24 $ - $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/03/30 17:16:26 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -595,7 +595,6 @@ function get_subtree($id,$recursive_mode=false)
 */
 function get_testcases_deep($id,$bIdsOnly = false)
 {
-  // 20071111 - franciscom 
 	$subtree = $this->get_subtree($id);
 	             					      
 	$testcases = null;
@@ -617,6 +616,7 @@ function get_testcases_deep($id,$bIdsOnly = false)
 	
 	return $testcases; 
 }
+
 
 
 /*

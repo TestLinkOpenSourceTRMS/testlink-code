@@ -1,14 +1,40 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.5 2007/12/27 09:30:24 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.6 2008/03/30 17:16:26 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
 rev :
+      20080329 - franciscom - added contribution by Eugenia Drosdezki
+                              choose testcases to move/copy inside a testsuite 
       20071102 - franciscom - added contribution
       
       20070216 - franciscom
       moved parameters from GET to hidden
 *}
+{lang_get var='labels'
+          s='btn_new_com,btn_reorder_cat,btn_import_testsuite,
+             btn_export_all_testsuites,btn_execute_automatic_testcases,
+             th_product_name,edit_testproject_basic_data,th_notes,
+             btn_edit_com,alt_edit_com,btn_del_com,alt_del_com,btn_move_cp_com,
+             alt_move_cp_com,btn_move_cp_testcases,
+             alt_move_cp_tc_com,btn_reorder_cat,btn_export_testsuite,btn_new_cat,
+             btn_import_testsuite,btn_new_tc,btn_import_tc,btn_export_tc,btn_execute_automatic_testcases'}
+
+{assign var="container_id" value=$container_data.id}
+
+{assign var="tcImportAction" 
+        value="lib/testcases/tcImport.php?containerID=$container_id"}
+
+{assign var="importToTProjectAction"  value="$basehref$tcImportAction&bIntoProject=1&bRecursive=1&"}
+{assign var="importToTSuiteAction"  value="$basehref$tcImportAction&bRecursive=1&"}
+
+{assign var="tcExportAction" 
+        value="lib/testcases/tcExport.php?containerID=$container_id"}
+
+{assign var="tsuiteExportAction" value="$basehref$tcExportAction&bRecursive=1"}
+
+		 
+
 {include file="inc_head.tpl" openHead="yes"}
 {assign var="ext_version" value="-2.0"}
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
@@ -30,15 +56,16 @@ rev :
 	{if $modify_tc_rights == 'yes'}
 		<div>
 			<form method="post" action="lib/testcases/containerEdit.php">
-				<input type="hidden" name="containerID" value={$container_data.id}>
-				<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_com'}" />
-			  <input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
-			  <input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?bIntoProject=1&bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
-			 <input type="button" onclick="location='{$basehref}lib/testcases/tcExport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_all_testsuites'}" />  			  
+				<input type="hidden" name="containerID" value="{$container_data.id}">
+				<input type="submit" name="new_testsuite" value="{$labels.btn_new_com}" />
+			  <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder_cat}" />
+			  <input type="button" onclick="location='{$importToTProjectAction}'" 
+			                       value="{$labels.btn_import_testsuite}" />  
+			  <input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />  			  
 			 
 			 {* 20071102 - franciscom *}
 			 {*
-			 <input type="button" name="execButton" value="{lang_get s='btn_execute_automatic_testcases'}" 
+			 <input type="button" name="execButton" value="{$labels.btn_execute_automatic_testcases}" 
 			        onclick="javascript: startExecution({$container_data.id},'testproject');" />
 			 *}       
 			</form>
@@ -47,20 +74,20 @@ rev :
 
 	<table width="90%" class="simple">
 		<tr>
-			<th>{lang_get s='th_product_name'}</th>
+			<th>{$labels.th_product_name}</th>
 		</tr>
 		<tr>
 			<td>
 	    {if $mgt_modify_product eq 'yes'}
 			  <a href="lib/project/projectedit.php"  target="mainframe"
-			          title="{lang_get s='edit_testproject_basic_data'}">{$container_data.name|escape}</a>
+			          title="{$labels.edit_testproject_basic_data}">{$container_data.name|escape}</a>
 			{else}
 			   {$container_data.name|escape}
 			{/if}        
 			</td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_notes'}</th>
+			<th>{$labels.th_notes}</th>
 		</tr>
 		<tr>
 			<td>{$container_data.notes}</td>
@@ -76,20 +103,26 @@ rev :
 	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
 {elseif $level == 'testsuite'}
 
-	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
+	{if $modify_tc_rights == 'yes' || $sqlResult neq ''}
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php">
 		  <input type="hidden" name="testsuiteID" value="{$container_data.id}">
 			<input type="hidden" name="testsuiteName" value="{$container_data.name|escape}" />
 
-			<input type="submit" name="edit_testsuite" value="{lang_get s='btn_edit_com'}"
-				     alt="{lang_get s='alt_edit_com'}" />
-			<input type="submit" name="delete_testsuite" value="{lang_get s='btn_del_com'}" 
-				     alt="{lang_get s='alt_del_com'}" />
-			<input type="submit" name="move_testsuite_viewer" value="{lang_get s='btn_move_cp_com'}" 
-				     alt="{lang_get s='alt_move_cp_com'}" />
-			<input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcExport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_testsuite'}" />  
+			<input type="submit" name="edit_testsuite" value="{$labels.btn_edit_com}"
+				     title="{$labels.alt_edit_com}" />
+
+			<input type="submit" name="delete_testsuite" value="{$labels.btn_del_com}" 
+				     title="{$labels.alt_del_com}" />
+
+			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_com}" 
+				     title="{$labels.alt_move_cp_com}" />
+
+      <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
+             title="{$labels.move_cp_testcases}" />
+
+			<input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder_cat}" />
+			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />  
 		</form>
 		</div>
 		<br/>	
@@ -98,8 +131,8 @@ rev :
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php">
 			<input type="hidden" name="containerID" value={$container_data.id}>
-			<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_cat'}" />
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
+			<input type="submit" name="new_testsuite" value="{$labels.btn_new_cat}" />
+			<input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />  
 		</form>
 		</div>
 		<br/>	
@@ -108,13 +141,13 @@ rev :
 		<div>
 		<form method="post" action="lib/testcases/tcEdit.php">
 		  <input type="hidden" name="containerID" value="{$container_data.id}">
-			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?containerID={$container_data.id}'" value="{lang_get s='btn_import_tc'}" />  
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcExport.php?containerID={$container_data.id}'" value="{lang_get s='btn_export_tc'}" />  
+			<input type="submit" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />  
+			<input type="button" onclick="location='{$tcImportAction}'" value="{$labels.btn_import_tc}" />  
+			<input type="button" onclick="location='{$tcExportAction}'" value="{$labels.btn_export_tc}" />  
 
 		  {* 20071102 - franciscom *}
 		  {*
-			<input type="button" name="execButton" value="{lang_get s='btn_execute_automatic_testcases'}" 
+			<input type="button" name="execButton" value="{$labels.btn_execute_automatic_testcases}" 
 			       onclick="javascript: startExecution({$container_data.id},'testsuite');" />
 			*}       
 		</form>
@@ -133,7 +166,7 @@ rev :
 	{/if}
 	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
 
-	{/if}
+{/if}
 
 </div>
 {if $refreshTree}

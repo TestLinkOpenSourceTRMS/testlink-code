@@ -1,12 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: tcImport.tpl,v 1.2 2008/03/30 17:16:26 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
-*}
-{include file="inc_head.tpl"}
 
+rev: 20080329 - franciscom - lang_get() refactoring
+*}
+
+{lang_get var="labels"
+          s='file_type,view_file_format_doc,local_file,
+             max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
+             btn_cancel,title_imp_tc_data'}
+
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+{include file="inc_head.tpl"}
 <body>
-{config_load file="input_dimensions.conf" section="tcImport"} {* Constant definitions *}
 
 <h1>{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
 
@@ -18,32 +27,32 @@ Purpose: smarty template - manage import of test cases and test suites
 
   <table>
   <tr>
-  <td> {lang_get s='file_type'} </td>
+  <td> {$labels.file_type} </td>
   <td> <select name="importType">
          {html_options options=$importTypes}
 	     </select>
-	<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+	<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
 	</td>
 	</tr>
-	<tr><td>{lang_get s='local_file'} </td>
+	<tr><td>{$labels.local_file} </td>
 	    <td><input type="file" name="uploadedFile" 
 	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
 	</tr>
 	</table>
-	<p>{lang_get s='max_size_cvs_file1'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</p>
+	<p>{$labels.max_size_cvs_file1} {$importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
 		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
 		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
-		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
-		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-			onclick="javascript: location.href=fRoot+'lib/testcases/tcImport.php';" />
+		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
+		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
+			                   onclick="javascript:history.back();" />
 	</div>
 </form>
 {else}
 	{foreach item=result from=$resultMap}
-		{lang_get s='title_imp_tc_data'} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
+		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
 	{include file="inc_refreshTree.tpl"}
 {/if}

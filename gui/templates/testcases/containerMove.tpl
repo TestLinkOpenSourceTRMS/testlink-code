@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerMove.tpl,v 1.3 2008/01/05 17:50:47 franciscom Exp $
+$Id: containerMove.tpl,v 1.4 2008/03/30 17:16:26 franciscom Exp $
 Purpose: smarty template - form for move/copy container in test specification 
 
 rev :
@@ -11,7 +11,8 @@ rev :
 {include file="inc_head.tpl"}
 {assign var='parent' value='container'}
 {lang_get var="labels" 
-          s="cont_move_first,cont_copy_first,cont_move_second,cont_copy_second,choose_target,
+          s="cont_move_first,sorry_further,cont_copy_first,defined_exclam,
+             cont_move_second,cont_copy_second,choose_target,
              btn_move,btn_cp,as_first_testsuite,as_last_testsuite"}
 
 <body>
@@ -21,8 +22,8 @@ rev :
 <div class="workBack">
 <h1>{lang_get s='title_move_cp'}</h1>
 
-{if $arraySelect eq ''}
-	{lang_get s='sorry_further'} {$parent}s {lang_get s='defined_exclam'} 
+{if $containers eq ''}
+	{$labels.sorry_further} {$parent} {$labels.defined_exclam} 
 {else}
 	<form method="post" action="lib/testcases/containerEdit.php?objectID={$objectID|escape}">
 		<p>
@@ -31,7 +32,7 @@ rev :
 		</p>
 		<p>{$labels.choose_target} {$parent|escape}:
 			<select name="containerID">
-				{html_options options=$arraySelect}
+				{html_options options=$containers}
 			</select>
 		</p>
 	

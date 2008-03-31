@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/03/30 17:16:27 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/03/31 06:41:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -32,6 +32,7 @@ $refreshTree = false;
 $level = null;
 
 // Option Transfer configuration
+$opt_cfg=new stdClass(); 
 $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($opt_cfg);

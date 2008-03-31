@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/03/26 21:04:39 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/03/31 19:23:20 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -410,22 +410,11 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 define("TL_INACTIVE_MARKUP","* ");
 
 
-/** [Risk, Priority, Importance] */
-// item_id => item_label (must be defined in strings.txt file)
-$g_risk=array( '1' => 'high_risk',
-               '2' => 'medium_risk',
-               '3' => 'low_risk');
-
-$g_importance=array( '1' => 'high_importance',
-                     '2' => 'medium_importance',
-                     '3' => 'low_importance');
-
-$g_priority=array( '1' => 'high_priority',
-                   '2' => 'medium_priority',
-                   '3' => 'low_priority');
-
-
-
+/** [Priority, Risk, Importance] */
+// Priority = Importance x Risk
+$g_test_priority = array( 1 => 6, // high priority include 6 and more
+                   	 2 => 3,
+                     3 => 1);
 
 // used when created a test suite path, concatenating test suite names
 $g_testsuite_sep='/';
@@ -448,12 +437,12 @@ define('TL_REQ_STATUS_CHANGED', 'M');
 // key: status
 // value: text label
 $g_req_status=array(TL_REQ_STATUS_VALID => 'req_status_valid', 
-					          TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
-					          TL_REQ_STATUS_DRAFT => 'req_status_draft',
-					          TL_REQ_STATUS_APPROVED => 'req_status_approved',
-					          TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
-					          TL_REQ_STATUS_TODO => 'req_status_todo',
-					          TL_REQ_STATUS_CHANGED => 'req_status_changed');
+					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+					TL_REQ_STATUS_DRAFT => 'req_status_draft',
+					TL_REQ_STATUS_APPROVED => 'req_status_approved',
+					TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
+					TL_REQ_STATUS_TODO => 'req_status_todo',
+					TL_REQ_STATUS_CHANGED => 'req_status_changed');
 
 // 20071117 - franciscom
 // need ask Martin what are possible types

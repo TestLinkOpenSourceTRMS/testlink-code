@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/03/26 21:07:23 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/03/31 19:21:41 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -29,18 +29,18 @@
 **/
 class TLSmarty extends Smarty
 {
-  function TLSmarty()
+    function TLSmarty()
 	{
-		  global $tlCfg;
-		  global $g_attachments;
-		  global $g_spec_cfg;
-		  global $g_tc_status;
-		  global $g_tc_status_css;
-		  global $g_bugInterfaceOn;
-		  global $g_interface_bugs;
-		  global $g_tc_status_for_ui;
-		  global $g_tc_status_verbose_labels;
-		  global $g_locales;
+		global $tlCfg;
+		global $g_attachments;
+		global $g_spec_cfg;
+		global $g_tc_status;
+		global $g_tc_status_css;
+		global $g_bugInterfaceOn;
+		global $g_interface_bugs;
+		global $g_tc_status_for_ui;
+		global $g_tc_status_verbose_labels;
+		global $g_locales;
 	    global $g_locales_html_select_date_field_order;
     	global $g_locales_date_format;
     	global $g_locales_timestamp_format;
@@ -49,19 +49,17 @@ class TLSmarty extends Smarty
 	  	$this->Smarty();
 	  	$this->template_dir = TL_ABS_PATH . 'gui/templates/';
 	  	$this->compile_dir = TL_TEMP_PATH;
-		  $this->config_dir = TL_ABS_PATH . 'gui/templates/';
+		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
 
-		  $testproject_coloring=$tlCfg->gui->testproject_coloring;
-		  $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
-		  if (isset($_SESSION['testprojectColor']))
-      {
-		   	$testprojectColor =  $_SESSION['testprojectColor'];
-       	if (!strlen($testprojectColor))
-           		$testprojectColor = $tlCfg->gui->background_color;
-		  }
-		  $this->assign('testprojectColor', $testprojectColor);
-		  
-
+		$testproject_coloring=$tlCfg->gui->testproject_coloring;
+		$testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
+		if (isset($_SESSION['testprojectColor']))
+    	{
+			$testprojectColor =  $_SESSION['testprojectColor'];
+     	if (!strlen($testprojectColor))
+        		$testprojectColor = $tlCfg->gui->background_color;
+		}
+		$this->assign('testprojectColor', $testprojectColor);
 
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
@@ -92,6 +90,9 @@ class TLSmarty extends Smarty
 
 		// -----------------------------------------------------------------------------
 		// load configuration
+		$this->assign('session',$_SESSION);
+
+		// load configuration
 		$this->assign('tlCfg',$tlCfg);
 		$this->assign('gsmarty_gui',$tlCfg->gui);
     	$this->assign('gsmarty_spec_cfg',$g_spec_cfg);
@@ -116,6 +117,9 @@ class TLSmarty extends Smarty
 		// -----------------------------------------------------------------------------
 		// define a select structure for {html_options ...}
 		$this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
+		$this->assign('gsmarty_option_priority', array(3 => lang_get('high_priority'), 2 => lang_get('medium_priority'), 1 => lang_get('low_priority')));
+		$this->assign('gsmarty_option_importance', array(3 => lang_get('high_importance'), 2 => lang_get('medium_importance'), 1 => lang_get('low_importance')));
+		$this->assign('gsmarty_option_risk', array(3 => lang_get('high_risk'), 2 => lang_get('medium_risk'), 1 => lang_get('low_risk')));
 
 		// this allows unclosed <head> tag to add more information and link; see inc_head.tpl
 		$this->assign('openHead', 'no');

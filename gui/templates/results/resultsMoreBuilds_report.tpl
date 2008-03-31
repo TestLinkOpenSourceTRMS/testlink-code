@@ -1,11 +1,11 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.1 2007/12/02 17:21:19 franciscom Exp $
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: resultsMoreBuilds_report.tpl,v 1.2 2008/03/31 20:08:04 schlundus Exp $
 
 rev :
      20070902 - franciscom - refactoring
 *}
-{include file="inc_head.tpl" openHead='yes'} 
+{include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 		var bAllShown = false;
@@ -17,8 +17,8 @@ rev :
 <body>
 
 <h1> {lang_get s='query_metrics_report'}</h1>
-{include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
+{include file="inc_result_tproject_tplan.tpl"
+         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}
 
 {if $show_query_params}
 	<h2>{lang_get s="caption_user_selected_query_parameters"}</h2>
@@ -26,7 +26,7 @@ rev :
 		<tr>
 			<th>{lang_get s="th_test_plan"}</th>
 			<th>{lang_get s="th_builds"}</th>
-			<th>{lang_get s="th_test_suites"}</th> 
+			<th>{lang_get s="th_test_suites"}</th>
 			<th>{lang_get s="th_keyword"}</th>
 			<th>{lang_get s="assigned_to"}</th>
 			<th>{lang_get s="th_last_result"}</th>
@@ -34,7 +34,7 @@ rev :
 			<th>{lang_get s="th_end_time"}</th>
 			<th>{lang_get s="th_executor"}</th>
 			<th>{lang_get s="th_search_notes_string"}</th>
-		</tr> 
+		</tr>
 		<tr>
 			<td>
 				{$tplan_name|escape}
@@ -49,14 +49,14 @@ rev :
 				{foreach key=x item=array from=$testsuitesSelected}
 						{$testsuitesSelected[$x]|escape} <br />
 				{/foreach}
-			</td> 
+			</td>
 			<td>
 				{foreach key=keywordrow item=array from=$keywordsSelected}
 					{assign var=keywordid value=$keywordsSelected[$keywordrow]}
 					{$arrKeywords[$keywordid]}	<br />
 				{/foreach}
 			</td>
-			
+
 			<td>
 			  {if $ownerSelected == ''}
 			    {lang_get s="any"|escape}
@@ -83,7 +83,7 @@ rev :
 			</td>
 			<td>{$search_notes_string}</td>
 		</tr>
-	</table>		
+	</table>
 {/if}
 {if $show_totals}
 	<table class="simple" style="color: blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
@@ -93,7 +93,7 @@ rev :
 			<th>{lang_get s="th_total_fail"}</th>
 			<th>{lang_get s="th_total_block"}</th>
 			<th>{lang_get s="th_total_not_run"}</th>
-		</tr> 
+		</tr>
 		<tr>
 			<td>{$totals.total}</td>
 			<td>{$totals.pass}</td>
@@ -101,7 +101,7 @@ rev :
 			<td>{$totals.blocked}</td>
 			<td>{$totals.notRun}</td>
 		</tr>
-	</table>		
+	</table>
 {/if}
 	{if !$show_summaries}
 		<table class="simple" style="color:blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
@@ -113,15 +113,15 @@ rev :
 				<th>{lang_get s='th_status'}</th>
 				<th>{lang_get s='th_notes'}</th>
 				<th>{lang_get s='th_bugs'}</th>
-			</tr> 
-	
-	{/if}	
+			</tr>
+
+	{/if}
 <!-- KL - 20061021 - comment out until I can figure out how to fix
 	<a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
 
 	<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />{lang_get s="caption_show_collapse"}</h2>
 	-->
-	<!-- KL - 20061021 - don't think we need this 
+	<!-- KL - 20061021 - don't think we need this
 	<div class="workBack">
 -->
 	{foreach key=id item=array from=$flatArray}
@@ -133,13 +133,13 @@ rev :
 			{assign var=currentSuiteId value=$flatArray[$id]}
 
 			<!-- KL - 20061021 - make sure  suite is even in mapOfSuiteSummary -->
-			{if ($depthChange == 0) && ($mapOfSuiteSummary[$currentSuiteId])}	
+			{if ($depthChange == 0) && ($mapOfSuiteSummary[$currentSuiteId])}
 <!--				<div class="workBack">
 				DIV -->
 				<!-- KL - 20061021 - comment out until I can figure out how to fix
 				<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />
 				{lang_get s="caption_show_collapse"}</h2>
-				-->		
+				-->
 			{elseif ($depthChange gt 0) && ($mapOfSuiteSummary[$currentSuiteId])}
 				{section name="loopOutDivs" loop="$flatArray" max="$depthChange"}
 				{if $show_summaries}
@@ -149,7 +149,7 @@ rev :
 				<h2 onClick="plusMinus_onClick(this);">
 				<img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />
 				{lang_get s="caption_show_collapse"}</h2>
-				-->	
+				-->
 				{/section}
 			{elseif ($depthChange == -1) && ($mapOfSuiteSummary[$currentSuiteId])}
 					</div>
@@ -167,13 +167,13 @@ rev :
 			{/if}
 
 			{assign var=previousDepth value=$depth}
-			{if $mapOfSuiteSummary[$currentSuiteId]} 
+			{if $mapOfSuiteSummary[$currentSuiteId]}
 			<!-- KL 20061021 - Only display title of category if it has test cases in the test plan -->
 			<!-- not a total fix - I need to adjust results.class.php to not pass suite names in
 				which are not in the plan -->
-			
+
 			{if $show_summaries}
-			<h2>{$suiteNameText}</h2>			
+			<h2>{$suiteNameText}</h2>
 
 			<table class="simple" style="color:blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
 				<tr>
@@ -182,7 +182,7 @@ rev :
 					<th>{lang_get s="th_total_fail"}</th>
 					<th>{lang_get s="th_total_block"}</th>
 					<th>{lang_get s="th_total_not_run"}</th>
-				</tr> 
+				</tr>
 				<tr>
 					<td>{$mapOfSuiteSummary[$currentSuiteId].total}</td>
 					<td>{$mapOfSuiteSummary[$currentSuiteId].pass}</td>
@@ -190,18 +190,18 @@ rev :
 					<td>{$mapOfSuiteSummary[$currentSuiteId].blocked}</td>
 					<td>{$mapOfSuiteSummary[$currentSuiteId].notRun}</td>
 				</tr>
-			</table>		
+			</table>
 			{/if}
 			{else}
-				<!-- 
+				<!--
 				{lang_get s='not_yet_executed'}
 				-->
 				{if $show_summaries}
 					</div>
 				{/if}
-			{/if}	
+			{/if}
 	{foreach key=suiteId item=array from=$suiteList}
-				{* probably can be done better. If suiteId in $suiteList matches the current 
+				{* probably can be done better. If suiteId in $suiteList matches the current
 				suite id - print that suite's information *}
 				{if ($suiteId == $currentSuiteId)}
 				{* test to make sure there are test cases to diplay before
@@ -219,7 +219,7 @@ rev :
 						<th>{lang_get s='th_status'}</th>
 						<th>{lang_get s='th_notes'}</th>
 						<th>{lang_get s='th_bugs'}</th>
-					</tr> 
+					</tr>
 					{/if}
 					{foreach key=executionInstance item=array from=$suiteList[$suiteId]}
 						{assign var=inst value=$suiteList[$suiteId][$executionInstance]}
@@ -227,59 +227,58 @@ rev :
 						<tr>
 						<!--	<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
 							<td>{$inst.execute_link}</td>
-							<td></td> 
+							<td></td>
 							<td></td>
 							<td></td>
 							<td style="color: grey; font-weight: bold;">{lang_get s='test_status_not_run'}</td>
-							<td></td> 
-							<td></td> 
+							<td></td>
+							<td></td>
 						</tr>
 						{elseif $displayPassedRows && $inst.status == 'p'}
 							<tr>
 						<!--	<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
 							<td>{$inst.execute_link}</td>
-							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
+							<td>{$mapBuilds[$inst.build_id]|escape}</td>
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
-							<td>{$inst.execution_ts|escape} </td>
+							<td>{$inst.execution_ts|strip_tags|escape} </td>
 							<td style="color: green; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							<td>{$inst.notes|escape}&nbsp;</td> 
-							<td>{$inst.bugString}&nbsp;</td> 
+							<td>{$inst.notes}&nbsp;</td>
+							<td>{$inst.bugString}&nbsp;</td>
 						</tr>
 						{elseif $displayFailedRows && $inst.status == 'f'}
 							<tr>
-							<!--
-							<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
+							<!--	<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
 							<td>{$inst.execute_link}</td>
-							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
+							<td>{$mapBuilds[$inst.build_id]|escape}</td>
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
-							<td>{$inst.execution_ts|escape} </td>
+							<td>{$inst.execution_ts|strip_tags|escape} </td>
 							<td style="color: red; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							<td>{$inst.notes|escape}&nbsp;</td> 
-							<td>{$inst.bugString}&nbsp;</td> 
+							<td>{$inst.notes|strip_tags}&nbsp;</td>
+							<td>{$inst.bugString}&nbsp;</td>
 						</tr>
 						{elseif $displayBlockedRows && $inst.status == 'b'}
 							<tr>
 							<!--
 							<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
 							<td>{$inst.execute_link}</td>
-							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
+							<td>{$mapBuilds[$inst.build_id]|escape}</td>
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
-							<td>{$inst.execution_ts|escape} </td>
+							<td>{$inst.execution_ts|strip_tags|escape} </td>
 							<td style="color: blue; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							<td>{$inst.notes|escape}&nbsp;</td> 
-							<td>{$inst.bugString}&nbsp;</td> 
+							<td>{$inst.notes}&nbsp;</td>
+							<td>{$inst.bugString}&nbsp;</td>
 						</tr>
-						{/if}				
-					{/foreach}	
-					{if $show_summaries}				
+						{/if}
+					{/foreach}
+					{if $show_summaries}
 						</table>
 					{/if}
 				{/if}
 				{/if}
-			{/foreach}											
+			{/foreach}
 		{/if}
 	{/foreach}
-	
+
 		{if !$show_summaries}
 			</table>
 		{/if}

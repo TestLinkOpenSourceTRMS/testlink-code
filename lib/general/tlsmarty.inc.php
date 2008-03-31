@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/03/31 19:21:41 $ $Author: havlat $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/03/31 20:08:04 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -113,7 +113,7 @@ class TLSmarty extends Smarty
 
 		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
 		$this->assign('gsmarty_interface_bugs',$g_interface_bugs);
-
+		$this->assign('testproject_coloring',null);
 		// -----------------------------------------------------------------------------
 		// define a select structure for {html_options ...}
 		$this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.33 2008/03/15 18:52:18 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.34 2008/03/31 16:58:31 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+# 20080331 - franciscom - testplan_tcversions added node_order
 # 20080226 - franciscom - removed autoincrement id on req_spec, requirements
 # 20080119 - franciscom - testprojects.option_automation
 #	20080117 - schlundus - added table for events and transactions
@@ -290,6 +291,7 @@ CREATE TABLE `testplan_tcversions` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `node_order` int(10) unsigned default 0,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_tcversion` (`testplan_id`,`tcversion_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

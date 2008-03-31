@@ -1,12 +1,13 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.17 2008/03/18 20:12:14 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.18 2008/03/31 17:01:12 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20080331 - franciscom - testplan_tcversions added node_order
 --      20080318 - franciscom - tcversions.tc_external_id
 --      20080315 - franciscom - updated testproject table structure
 --                              added events and transactions tables
@@ -455,7 +456,8 @@ CREATE TABLE "testcase_keywords" (
 CREATE TABLE "testplan_tcversions" (  
  "id" BIGSERIAL NOT NULL ,
  "testplan_id" BIGINT NOT NULL DEFAULT '0',
- "tcversion_id" BIGINT NOT NULL DEFAULT '0',  
+ "tcversion_id" BIGINT NOT NULL DEFAULT '0',
+ "node_order" BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","tcversion_id")
 ); 

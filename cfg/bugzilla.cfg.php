@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: bugzilla.cfg.php,v 1.7 2007/11/23 16:50:22 franciscom Exp $ 
+* $Id: bugzilla.cfg.php,v 1.8 2008/03/31 14:04:30 franciscom Exp $ 
 * 
 * Currently the only bug tracking system is bugzilla. 
 * TestLink uses bugzilla to check if displayed bugs resolved, verified, 
@@ -16,12 +16,16 @@ define('BUG_TRACK_DB_HOST', '[CONFIGURE_BUG_TRACK_DB_HOST]');
 /** name of the database that contains the Bugzilla tables */
 define('BUG_TRACK_DB_NAME', '[CONFIGURE_BUG_TRACK_DB_NAME]');
 
+/** useful if you have several schemas see BUGID 1444*/
+// define('BUG_TRACK_DB_SCHEMA', '[CONFIGURE_BUG_TRACK_DB_SCHEMA]');
+
 /** DB type used for the bugtracking db */
 define('BUG_TRACK_DB_TYPE','[CONFIGURE_BUG_TRACK_DB_TYPE]');
 
 /** DB user and password to use for connecting to the Bugzilla db */
 define('BUG_TRACK_DB_USER', '[CONFIGURE_BUG_TRACK_DB_USER]');
 define('BUG_TRACK_DB_PASS', '[CONFIGURE_BUG_TRACK_DB_USER_PASS]');
+
 
 
 /** link of the web server */

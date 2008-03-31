@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/03/31 14:04:45 $ $Author: franciscom $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, 
  *                                         corrected getBugStatusString($id)
@@ -15,6 +15,8 @@
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * rev: 
+ * 20080321 - franciscom - BUGID 1444 - user contribution pvmeerbe
  * 20051202 - scs - added returning null in some cases
  * 20051229 - scs - added ADOdb support
 **/
@@ -29,8 +31,21 @@ class bugzillaInterface extends bugtrackingInterface
 	var $dbUser = BUG_TRACK_DB_USER;
 	var $dbPass = BUG_TRACK_DB_PASS;
 	var $dbType = BUG_TRACK_DB_TYPE;
+  var $dbSchema = BUG_TRACK_DB_NAME;  // BUGID 1444
 	var $showBugURL = BUG_TRACK_HREF;
 	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	/*
+	   BUGID 1444
+	
+	*/
+	function bugzillaInterface()
+    {
+ 	    parent::bugtrackingInterface();
+ 	    if (defined ('BUG_TRACK_DB_SCHEMA')) 
+ 	    {
+	    	$this->dbSchema = BUG_TRACK_DB_SCHEMA;
+	    }
+    }
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -61,7 +76,7 @@ class bugzillaInterface extends bugtrackingInterface
 			return null;
 	
 		$status = null;
-		$query = "SELECT bug_status FROM {$this->dbName}.bugs WHERE bug_id='" . $id."'";
+		$query = "SELECT bug_status FROM {$this->dbSchema}.bugs WHERE bug_id='" . $id."'";
 		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
@@ -94,7 +109,7 @@ class bugzillaInterface extends bugtrackingInterface
     }
     
 		$status = null;
-		$query = "SELECT short_desc FROM {$this->dbName}.bugs WHERE bug_id='" . $id."'";
+		$query = "SELECT short_desc FROM {$this->dbSchema}.bugs WHERE bug_id='" . $id."'";
 		
 		$result = $this->dbConnection->exec_query($query);
 		$summary = null;
@@ -103,7 +118,10 @@ class bugzillaInterface extends bugtrackingInterface
 			$summary = $this->dbConnection->fetch_array($result);
 			if ($summary)
 			{
-				$summary = $summary[0];
+                // BUGID 1444
+				// $summary = $summary[0];
+				$summary = array_pop ($summary);
+			
 				if(strlen($summary) > 45)
 				{
 					$summary = substr($summary, 0, 42) . "...";

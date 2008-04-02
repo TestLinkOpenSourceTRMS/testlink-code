@@ -1,11 +1,11 @@
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: tl_doc_basic.css,v 1.1 2007/12/27 18:04:44 franciscom Exp $ */
+/* $Id: tl_doc_basic.css,v 1.2 2008/04/02 18:54:34 havlat Exp $ */
 /* Purpose: Basic schema for print documentation css */
 /*******************************************************************/
 
 body {
-	font-family : 	Arial, Helvetica, sans-serif;
-	font-size : 	smaller;
+	font-family : 		Arial, Helvetica, sans-serif;
+	font-size : 		smaller;
 	padding:		15px;
 }
 
@@ -21,43 +21,44 @@ a:visited, a:link, a:active {
 /*A link being hovered over is red*/
 a:hover   {
 	color: 			#900; 
-	text-decoration: none;
-	font-weight:    bold;
+	text-decoration: 	none;
+	font-weight:    	bold;
 } 
 
 h1 {
-	text-align: 	center;
-	font-size:		120%;
-	margin: 		150px 20px; 
+	text-align: 		left;
+	font-size:		130%;
+	margin: 		50px 0px;
+	border-bottom: 		1px solid grey; 
 }
 
 h2 {
-	font-size:		115%;
-	text-indent:	5px;
+	font-size:		120%;
+	text-indent:		5px;
 }
 
 h3 {
 	font-size:		110%;
-	background: 	#CCC;
-	text-indent:	10px;
+	background: 		#CCC;
+	text-indent:		10px;
 }
 
 h4 {
 	font-size:		105%;
-	text-indent:	15px;
+	text-indent:		15px;
 }
 
 
 p.important {
 	font-size:		110%;
 	color:			red;
-	font-weight:    bold;
+	font-weight:    	bold;
 }
 
 
 table, td, th {
-	border: 1px solid black;
-	border-collapse:collapse;
+	border: 		1px solid black;
+	border-collapse:	collapse;
 }
 
 table, div {
@@ -65,20 +66,30 @@ table, div {
 }
 
 th {
-    font-weight:    bold;
-	background:     #EEE;
+    font-weight:    		bold;
+	background:     	#EEE;
 	text-align:		left;
 }
 
 div.pageheader {
-	border-bottom: 	1px solid grey; 
+	border-bottom: 		1px solid grey; 
 	font-size: 		110%; 
-	font-weight: 	bold;
+	font-weight: 		bold;
 	padding: 		5px; 
 }
 
 div.pagefooter {
 	border: 		1px solid grey;
 	font-size: 		90%; 
+}
+
+div.summary {
+	margin-top:		400px;
+}
+
+div.doc_title {
+	margin: 		100px 0px; 
+	text-align: 		center; 
+	font-size:		200%;
 }
 

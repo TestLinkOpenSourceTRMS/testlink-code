@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2008/03/09 18:44:46 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2008/04/03 06:53:09 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -752,9 +752,23 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
     // 20080114 - franciscom
  	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
-	  $test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+	  // $test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 
+    $nt2exclude=array('testplan' => 'exclude_me',
+	                    'requirement_spec'=> 'exclude_me',
+	                    'requirement'=> 'exclude_me');
+    
+    $nt2exclude_children=array('testcase' => 'exclude_my_children',
+												       'requirement_spec'=> 'exclude_my_children');
 
+   
+    $order_cfg=array("type" =>'exec_order',"tplan_id" => $tplan_id);
+	  $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
+	                                          null,'',RECURSIVE_MODE,$order_cfg);
+    
+	  //$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+
+    
     // 20071002 - jbarchibald - BUGID 1051
     // 20070306 - franciscom - BUGID 705   
 	  $tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
@@ -762,56 +776,56 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                                 $cf_hash,$include_unassigned);
 
      
-	if (is_null($tp_tcs))
-		$tp_tcs = array();
-	
-	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	$map_node_tccount = array();
-
-	if($test_spec)
-	{
-		$tck_map = null;
-		if($keyword_id)
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		
-		
-		// 20061112 - interface changes:
-		// 1. added $db as first argument
-		// 2. mandatory and optional arguments are grouped:
-		//    i.e. mandatory arguments start with first argument, and all arguments
-		//        till first optional, are mandatory.
-		// This was not this ways before this change.
-		//
-		
-		// 20080224 - franciscom - 
-		// After reviewing code, seems that assignedTo has no sense because tp_tcs
-		// has been filtered.
-		// Then to avoid changes to prepareNode() due to include_unassigned,
-		// seems enough to set assignedTo to 0, if include_unassigned==true
-		$assignedTo= $include_unassigned ? 0 :$assignedTo;
-		
-		// 20071014 - franciscom
-		$bForPrinting=$bHideTCs;
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tp_tcs,$bHideTCs,$assignedTo,$status);
-
-		foreach($testcase_counters as $key => $value)
-		{
-		  $test_spec[$key]=$testcase_counters[$key];
-		}
-		
-	  // 20071111 - franciscom
-	  // added map $tp_tcs.
-	  // key -> testcase id.
-	  // value -> map with info about execution status
-	  //
-		$menustring = renderExecTreeNode(1,$test_spec,$tp_tcs,$getArguments,$hash_id_descr,1,
-		                                 $menuUrl,$bHideTCs,$useCounters,$useColors,
-		                                 $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-	}
-	return $menustring;
+	  if (is_null($tp_tcs))
+	  	$tp_tcs = array();
+	  
+	  $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
+	  $test_spec['id'] = $tproject_id;
+	  $test_spec['node_type_id'] = $hash_descr_id['testproject'];
+	  $map_node_tccount = array();
+    
+	  if($test_spec)
+	  {
+	  	$tck_map = null;
+	  	if($keyword_id)
+	  		$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
+	  	
+	  	
+	  	// 20061112 - interface changes:
+	  	// 1. added $db as first argument
+	  	// 2. mandatory and optional arguments are grouped:
+	  	//    i.e. mandatory arguments start with first argument, and all arguments
+	  	//        till first optional, are mandatory.
+	  	// This was not this ways before this change.
+	  	//
+	  	
+	  	// 20080224 - franciscom - 
+	  	// After reviewing code, seems that assignedTo has no sense because tp_tcs
+	  	// has been filtered.
+	  	// Then to avoid changes to prepareNode() due to include_unassigned,
+	  	// seems enough to set assignedTo to 0, if include_unassigned==true
+	  	$assignedTo= $include_unassigned ? 0 :$assignedTo;
+	  	
+	  	// 20071014 - franciscom
+	  	$bForPrinting=$bHideTCs;
+	  	$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
+	  	                                 $tck_map,$tp_tcs,$bHideTCs,$assignedTo,$status);
+    
+	  	foreach($testcase_counters as $key => $value)
+	  	{
+	  	  $test_spec[$key]=$testcase_counters[$key];
+	  	}
+	  	
+	    // 20071111 - franciscom
+	    // added map $tp_tcs.
+	    // key -> testcase id.
+	    // value -> map with info about execution status
+	    //
+	  	$menustring = renderExecTreeNode(1,$test_spec,$tp_tcs,$getArguments,$hash_id_descr,1,
+	  	                                 $menuUrl,$bHideTCs,$useCounters,$useColors,
+	  	                                 $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+	  }
+	  return $menustring;
 }
 
 

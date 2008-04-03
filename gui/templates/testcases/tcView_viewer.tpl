@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.11 2008/03/27 10:03:49 havlat Exp $
+$Id: tcView_viewer.tpl,v 1.12 2008/04/03 06:52:33 franciscom Exp $
 viewer for test case in test specification
 
 20080113 - franciscom - changed format for test case id + name
@@ -15,11 +15,8 @@ viewer for test case in test specification
 
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?requirement_id="}
 {assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
-
-
-
-	{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
- 	{assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
+{assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
 
 {if $args_show_title == "yes"}
     {if $args_tproject_name != ''}

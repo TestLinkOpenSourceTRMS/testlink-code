@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.1 $ $Author: franciscom $
- * @modified $Date: 2008/03/04 21:43:49 $
+ * @version $Revision: 1.2 $ $Author: franciscom $
+ * @modified $Date: 2008/04/03 06:53:06 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -111,6 +111,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	$test_spec = $tproject_mgr->get_subtree($id);
+	     
+	//echo "<pre>debug 20080331 - \$test_spec - " . __FUNCTION__ . " --- "; print_r($test_spec); echo "</pre>";
 	     
 	// ---------------------------------------------------------------------------------------------
   // filters
@@ -267,6 +269,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
     			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
           $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+  	      
+  	      // 20080401 - franciscom
+  	      $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = 1;
+   
   				  
 		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
@@ -274,7 +280,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
         }
         // --------------------------------------------------------------------------
-              
+        //echo "<pre>debug 20080331 - \ - " . __FUNCTION__ . " --- "; print_r($linked_items); echo "</pre>";      
         // --------------------------------------------------------------------------
   			if(!is_null($linked_items))
   			{
@@ -291,6 +297,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				      }
   						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
               
+              // 20080401 - franciscom
+              $exec_order= isset($the_item['execution_order'])? $the_item['execution_order']:0;
+              echo "<pre>debug 20080401 - \$exec_order - " . __FUNCTION__ . " --- "; print_r($exec_order); echo "</pre>";
+              $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $exec_order;
               
   						$out[$parent_idx]['write_buttons'] = 'yes';
   						$out[$parent_idx]['linked_testcase_qty']++;
@@ -346,6 +356,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	}
 	// --------------------------------------------------------------------------------------------
 
+  echo "<pre>debug 20080401 - \$result - " . __FUNCTION__ . " --- "; print_r($result); echo "</pre>";
 	return $result;
 }
 ?>

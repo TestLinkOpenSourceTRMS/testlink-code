@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.8 2008/04/03 06:52:32 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
+
+{config_load file="input_dimensions.conf" section="planAddTC"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -103,6 +105,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 			     <td>{lang_get s='th_id'}</td> 
 			     <td>{lang_get s='th_test_case'}</td>
 			     <td>{lang_get s='version'}</td>
+           <td>{lang_get s='execution_order'}</td>
            {if $ts.linked_testcase_qty gt 0 }
 				    <td>&nbsp;</td>
 				    <td>
@@ -130,8 +133,8 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
             {if $is_active || $tcase.linked_version_id ne 0 }  
    				    {if $full_control || $tcase.linked_version_id ne 0 }
-    			    <tr {if $tcase.linked_version_id ne 0} 
-    			        style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
+    			    <tr {if $tcase.linked_version_id ne 0}
+    			         style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20">
     				    {if $full_control}
 	      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
@@ -163,6 +166,20 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
          				      {html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
          				  </select>
                 </td>
+
+                <td style="text-align:center;">
+                  <input type="text" name="exec_order[{$tcase.id}]"
+                         style="text-align:right;"
+                  			 size="{#EXECUTION_ORDER_SIZE#}" 
+ 			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
+                         value="{$tcase.execution_order}">
+                  
+                  {if $tcase.linked_version_id ne 0}          
+                    <input type="hidden" name="linked_exec_order[{$tcase.id}]"
+                                         value="{$tcase.id}">
+                  {/if}
+                </td>
+
         
                 {* ------------------------------------------------------------------------- *}      
                 {if $ts.linked_testcase_qty gt 0 }
@@ -201,7 +218,10 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 </div>
 
   <div class="workBack">   
-      <br /><input type='submit' name='do_action' style="padding-right: 20px;"
+      <input type="hidden" name="doAction" id="doAction" value="default">
+      
+      <br /><input type="submit" name="doAddRemove" style="padding-right: 20px;"
+                   onclick="doAction.value=this.name"
          {if $full_control}
   		     {if $has_linked_items eq 0}
   	      	   value='{lang_get s='btn_add_selected_tc'}'
@@ -212,6 +232,9 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
                value='{lang_get s='btn_remove_selected_tc'}' 
 		     {/if}
          />
+      		<input type="submit" name="doReorder" value="{lang_get s='btn_save_exec_order'}" 
+                 onclick="doAction.value=this.name"/>
+
    </div>
 
 </form>

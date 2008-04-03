@@ -5,9 +5,13 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/03/30 17:16:27 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/04/03 06:53:09 $ by $Author: franciscom $
  * @author Francisco Mancardi
+ *
+ * 20080331 - franciscom - changes in get_subtree(),_get_subtree_rec(),_get_subtree()
+ *                         to support a different order for test cases
+ *                         on test plan that order assigned on specification.
  *
  * 20080330 - franciscom - change_parent() modified to allow bulk operation.
  * 20080105 - franciscom - new method change_child_order()
@@ -683,9 +687,9 @@ function getBottomOrder($parentID)
   returns: array or map
 
 */
-function get_subtree($node_id,$exclude_node_types=null,
-                              $exclude_children_of=null,
-                              $exclude_branches=null, $and_not_in_clause='',$bRecursive = false)
+function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
+                              $exclude_branches=null,$and_not_in_clause='',
+                              $bRecursive = false,$order_cfg=array("type" =>'spec_order'))
 {
  		$the_subtree=array();
  		
@@ -703,12 +707,10 @@ function get_subtree($node_id,$exclude_node_types=null,
     
 	if ($bRecursive)
 	    $this->_get_subtree_rec($node_id,$the_subtree,$not_in_clause,
-	                                          $exclude_children_of,
-	                                          $exclude_branches);
+	                            $exclude_children_of,$exclude_branches,$order_cfg);
 	else
 	    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
-	                                          $exclude_children_of,
-	                                          $exclude_branches);
+	                        $exclude_children_of,$exclude_branches,$order_cfg);
 
 
   return ($the_subtree);
@@ -725,14 +727,41 @@ function get_subtree($node_id,$exclude_node_types=null,
 //
 function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
                                            $exclude_children_of=null,
-                                           $exclude_branches=null)
+                                           $exclude_branches=null,
+                                           $order_cfg=array("type" =>'spec_order'))
 {
    
-    //if( is_null($exclude_branches) )
-    //  echo "NO EXCLUTION REQUIRED <br>";
-
-  	$sql = " SELECT * from nodes_hierarchy
-    	       WHERE parent_id = {$node_id}  {$and_not_in_clause} ORDER BY node_order,id";
+    switch($order_cfg['type'] )
+    {
+        case 'spec_order':
+  	    $sql = " SELECT * from {$this->obj_table} " .
+  	           " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
+		           " ORDER BY node_order,id";
+		    break;
+		    
+		    case 'exec_order':
+        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
+             "                NH.name, NH.node_type_id" .
+             "                FROM nodes_hierarchy NH,node_types NT" .
+             "                WHERE parent_id = {$node_id}" .
+             "                AND NH.node_type_id=NT.id" .
+             "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
+             "                UNION" .
+             "                SELECT NHA.node_order AS spec_order, " .
+             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
+             "                       NHA.name, NHA.node_type_id" .
+             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
+             "                     testplan_tcversions T,node_types NT" .
+             "                WHERE NHA.id=NHB.parent_id " .
+             "                AND NHA.node_type_id=NT.id" .
+             "                AND NHB.id=T.tcversion_id " .
+             "                AND NT.description = 'testcase'" .
+             "                AND NHA.parent_id = {$node_id}" .
+             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
+             "                ORDER BY node_order,spec_order,id";
+		    break;
+    }
  
     $result = $this->db->exec_query($sql);
   
@@ -773,7 +802,7 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
         	  $this->_get_subtree($row['id'],$node_list,
         	                                 $and_not_in_clause,
         	                                 $exclude_children_of,
-        	                                 $exclude_branches);	
+        	                                 $exclude_branches,$order_cfg);	
          	  
         	}
     	}
@@ -785,10 +814,41 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
 // 
 function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                                            $exclude_children_of = null,
-                                           $exclude_branches = null)
+                                           $exclude_branches = null,
+                                           $order_cfg=array("type" =>'spec_order'))
 {
-  	$sql = " SELECT * from {$this->obj_table} WHERE parent_id = {$node_id} {$and_not_in_clause}" .
-		       " ORDER BY node_order,id";
+    switch($order_cfg['type'] )
+    {
+        case 'spec_order':
+  	    $sql = " SELECT * from {$this->obj_table} " .
+  	           " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
+		           " ORDER BY node_order,id";
+		    break;
+		    
+		    case 'exec_order':
+        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
+             "                NH.name, NH.node_type_id" .
+             "                FROM nodes_hierarchy NH,node_types NT" .
+             "                WHERE parent_id = {$node_id}" .
+             "                AND NH.node_type_id=NT.id" .
+             "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
+             "                UNION" .
+             "                SELECT NHA.node_order AS spec_order, " .
+             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
+             "                       NHA.name, NHA.node_type_id" .
+             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
+             "                     testplan_tcversions T,node_types NT" .
+             "                WHERE NHA.id=NHB.parent_id " .
+             "                AND NHA.node_type_id=NT.id" .
+             "                AND NHB.id=T.tcversion_id " .
+             "                AND NT.description = 'testcase'" .
+             "                AND NHA.parent_id = {$node_id}" .
+             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
+             "                ORDER BY node_order,spec_order,id";
+		    break;
+    }
+
  
     $result = $this->db->exec_query($sql);
     while($row = $this->db->fetch_array($result))
@@ -826,7 +886,8 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
   				$this->_get_subtree_rec($rowID,$node,
                                   $and_not_in_clause,
                                   $exclude_children_of,
-                                  $exclude_branches);	
+                                  $exclude_branches,
+                                  $order_cfg);	
         }
   			
   			$pnode['childNodes'][] = $node;

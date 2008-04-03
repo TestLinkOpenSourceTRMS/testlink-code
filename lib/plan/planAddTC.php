@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.48 2008/03/22 23:47:04 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.49 2008/04/03 06:53:09 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -130,13 +130,15 @@ function init_args()
 	$args->keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 	$args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->item_level = isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
-	$args->doAction = isset($_REQUEST['do_action']) ? 1 : 0;
+	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : "default";
 	$args->tproject_id = $_SESSION['testprojectID'];
 	$args->tproject_name = $_SESSION['testprojectName'];
 	$args->testcases2add = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
 	$args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
 	$args->testcases2remove = isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
 
+  // 20080331 -franciscom
+	$args->testcases2order = isset($_REQUEST['exec_order']) ? $_REQUEST['exec_order'] : null;
 	return $args;
 }
 ?>

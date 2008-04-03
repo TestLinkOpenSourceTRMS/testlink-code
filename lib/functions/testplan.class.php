@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2008/03/22 23:47:04 $ $Author: schlundus $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2008/04/03 06:53:09 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -68,6 +68,7 @@ class testplan extends tlObjectWithAttachments
 	var $assignment_mgr;
   var $cfield_mgr;
   var $builds_table="builds";
+  var $testplan_tcversions_table="testplan_tcversions";
 
 	var $assignment_types;
 	var $assignment_status;
@@ -320,6 +321,35 @@ function link_tcversions($id,&$items_to_link)
 
 
 /*
+  function: setExecutionOrder
+
+
+  args :
+        $id: test plan id
+        $executionOrder: assoc array key=tcversion_id value=order
+                         passed by reference for speed
+
+  returns: -
+
+*/
+function setExecutionOrder($id,&$executionOrder)
+{
+  foreach($executionOrder as $tcVersion => $execOrder)
+  {
+      $execOrder=intval($execOrder);
+      $sql="UPDATE {$testplan_tcversions_table} " .
+           "SET node_order={$execOrder} " .
+           "WHERE testplan_id={$id} " .
+           "AND tcversion_id={$tcversion_id}";
+		  
+		  $result = $this->db->exec_query($sql);
+  }
+}
+
+
+
+
+/*
   function: get_linked_tcversions
             get information about testcases linked to a testplan.
 
@@ -449,9 +479,11 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	//
 	// 20070917 - added version
 	//
+	// 20080331 - added T.node_order
+	//
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
-	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
+	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id, T.node_order AS execution_order," .
 	     "        TCV.version AS version, TCV.active,TCV.tc_external_id AS external_id," .
 	     "        E.id AS exec_id, " .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .

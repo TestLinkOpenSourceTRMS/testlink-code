@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.2 $ $Author: franciscom $
- * @modified $Date: 2008/04/03 06:53:06 $
+ * @version $Revision: 1.3 $ $Author: franciscom $
+ * @modified $Date: 2008/04/03 22:07:56 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -111,9 +111,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	$test_spec = $tproject_mgr->get_subtree($id);
-	     
-	//echo "<pre>debug 20080331 - \$test_spec - " . __FUNCTION__ . " --- "; print_r($test_spec); echo "</pre>";
-	     
+     
 	// ---------------------------------------------------------------------------------------------
   // filters
 	if($keyword_id)
@@ -254,8 +252,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		
   		foreach($tcase_set as $the_k => $the_tc)
     	{
-			$tc_id = $the_tc['testcase_id'];
-  			
+			  $tc_id = $the_tc['testcase_id'];
   		  if($pivot_id != $tc_id )
   		  {
   		    $pivot_id=$tc_id;
@@ -266,22 +263,25 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         // --------------------------------------------------------------------------
         if($the_tc['active'] == 1)
         {       
-    			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
-  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
-          $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
   	      
-  	      // 20080401 - franciscom
-  	      $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = 1;
-   
+  	      // 20080403 - franciscom
+  	      if( !isset($out[$parent_idx]['testcases'][$tc_id]['execution_order']) )
+  	      {
+              // Doing this I will set 1 as order for test cases that still are not linked.
+              // But Because I loop over all version (linked and not) if I write always
+              // I will overwrite rigth execution order of linked tcversion.
+              //
+  	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = 1;
+    			    $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+  				    $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
+              $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+          } 
   				  
 		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
 			    else
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
         }
-        // --------------------------------------------------------------------------
-        //echo "<pre>debug 20080331 - \ - " . __FUNCTION__ . " --- "; print_r($linked_items); echo "</pre>";      
-        // --------------------------------------------------------------------------
   			if(!is_null($linked_items))
   			{
   				foreach($linked_items as $the_item)
@@ -299,7 +299,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
               
               // 20080401 - franciscom
               $exec_order= isset($the_item['execution_order'])? $the_item['execution_order']:0;
-              echo "<pre>debug 20080401 - \$exec_order - " . __FUNCTION__ . " --- "; print_r($exec_order); echo "</pre>";
               $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $exec_order;
               
   						$out[$parent_idx]['write_buttons'] = 'yes';
@@ -356,7 +355,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	}
 	// --------------------------------------------------------------------------------------------
 
-  echo "<pre>debug 20080401 - \$result - " . __FUNCTION__ . " --- "; print_r($result); echo "</pre>";
 	return $result;
 }
 ?>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.8 2008/04/03 06:52:32 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.9 2008/04/03 22:06:50 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -174,9 +174,12 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
  			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
                          value="{$tcase.execution_order}">
                   
-                  {if $tcase.linked_version_id ne 0}          
+                  {if $tcase.linked_version_id != 0}  
+                    <input type="hidden" name="linked_version[{$tcase.id}]"
+                                         value="{$tcase.linked_version_id}">
+                          
                     <input type="hidden" name="linked_exec_order[{$tcase.id}]"
-                                         value="{$tcase.id}">
+                                         value="{$tcase.execution_order}">
                   {/if}
                 </td>
 

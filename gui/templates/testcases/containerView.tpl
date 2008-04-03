@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.6 2008/03/30 17:16:26 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.7 2008/04/03 22:06:50 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
 rev :
+      20080403 - franciscom - BUGID  - problems with IE 7 and incomplete URL
       20080329 - franciscom - added contribution by Eugenia Drosdezki
                               choose testcases to move/copy inside a testsuite 
       20071102 - franciscom - added contribution
@@ -27,10 +28,13 @@ rev :
 
 {assign var="importToTProjectAction"  value="$basehref$tcImportAction&bIntoProject=1&bRecursive=1&"}
 {assign var="importToTSuiteAction"  value="$basehref$tcImportAction&bRecursive=1&"}
+{assign var="importTestCasesAction"  value="$basehref$tcImportAction"}
+
 
 {assign var="tcExportAction" 
         value="lib/testcases/tcExport.php?containerID=$container_id"}
 
+{assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
 {assign var="tsuiteExportAction" value="$basehref$tcExportAction&bRecursive=1"}
 
 		 
@@ -142,8 +146,8 @@ rev :
 		<form method="post" action="lib/testcases/tcEdit.php">
 		  <input type="hidden" name="containerID" value="{$container_data.id}">
 			<input type="submit" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />  
-			<input type="button" onclick="location='{$tcImportAction}'" value="{$labels.btn_import_tc}" />  
-			<input type="button" onclick="location='{$tcExportAction}'" value="{$labels.btn_export_tc}" />  
+			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />  
+			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />  
 
 		  {* 20071102 - franciscom *}
 		  {*

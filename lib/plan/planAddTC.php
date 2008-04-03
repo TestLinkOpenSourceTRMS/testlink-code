@@ -1,11 +1,12 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.49 2008/04/03 06:53:09 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.50 2008/04/03 22:07:57 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20080404 - franciscom - reorder logic
 //      20080114 - franciscom - added testCasePrefix management
 //      20070930 - franciscom - BUGID
 //      20070912 - franciscom - BUGID 905
@@ -68,9 +69,10 @@ switch($args->item_level)
 }
 
 
-
-if($args->doAction)
+switch($args->doAction)
 {
+	
+	case 'doAddRemove':
 	// Remember:  checkboxes exist only if are checked
 	if(!is_null($args->testcases2add))
 	{
@@ -78,6 +80,10 @@ if($args->doAction)
 		$atcversion = $args->tcversion_for_tcid;
 		$items_to_link = my_array_intersect_keys($atc,$atcversion);
 		$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
+		
+		// 20080403 - franciscom
+		//$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
+		
 	}
 
 	if(!is_null($args->testcases2remove))
@@ -87,29 +93,44 @@ if($args->doAction)
 		$tplan_mgr->unlink_tcversions($args->tplan_id,$rtc);
 	}
 
-	$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,$args->keyword_id);
-	$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
-	// BUGID 905
-	$tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,DONT_FILTER_BY_TCASE_ID,$args->keyword_id);
-
-	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-		   $tplan_linked_tcversions,
-		   $map_node_tccount,$args->keyword_id,DONT_FILTER_BY_TCASE_ID);
+  doReorder($args,$tplan_mgr);
 	$do_display = 1;
+	break;
+	
+	case 'doReorder':
+	doReorder($args,$tplan_mgr);
+	$do_display = 1;
+	break;
+	
+  default:
+	break;
 }
+
 
 if($do_display)
 {
-	// full_control, controls the operations planAddTC_m1.tpl will allow
-	// 1 => add/remove
-	// 0 => just remove
-	$smarty->assign('full_control', 1);
-	$smarty->assign('testCasePrefix', $testCasePrefix);
-	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
-	$smarty->assign('arrData', $out['spec_view']);
-	$smarty->assign('has_linked_items',$out['has_linked_items']);
-	$smarty->assign('key', '');
-	$smarty->display($template_dir .  'planAddTC_m1.tpl');
+	  $map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
+	                                                      $args->keyword_id);
+	  $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
+	  
+	  // BUGID 905
+	  $tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,DONT_FILTER_BY_TCASE_ID,
+	                                                               $args->keyword_id);
+    
+	  $out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
+	  	                   $tplan_linked_tcversions, $map_node_tccount,$args->keyword_id,DONT_FILTER_BY_TCASE_ID);
+    
+    
+	  // full_control, controls the operations planAddTC_m1.tpl will allow
+	  // 1 => add/remove
+	  // 0 => just remove
+	  $smarty->assign('full_control', 1);
+	  $smarty->assign('testCasePrefix', $testCasePrefix);
+	  $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
+	  $smarty->assign('arrData', $out['spec_view']);
+	  $smarty->assign('has_linked_items',$out['has_linked_items']);
+	  $smarty->assign('key', '');
+	  $smarty->display($template_dir .  'planAddTC_m1.tpl');
 }
 
 /*
@@ -139,6 +160,52 @@ function init_args()
 
   // 20080331 -franciscom
 	$args->testcases2order = isset($_REQUEST['exec_order']) ? $_REQUEST['exec_order'] : null;
+	$args->linkedOrder = isset($_REQUEST['linked_exec_order']) ? $_REQUEST['linked_exec_order'] : null;
+	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
 	return $args;
 }
+
+
+
+/*
+  function: doSaveOrder
+            
+
+  args:
+
+  returns: 
+
+*/
+function doReorder(&$argsObj,&$tplanMgr)
+{
+    $mapo=null;
+    if(!is_null($argsObj->linkedVersion))
+    {
+        // Using memory of linked test case, try to get order
+        foreach($argsObj->linkedVersion as $tcid => $tcversion_id)
+        {
+            if($argsObj->linkedOrder[$tcid] != $argsObj->testcases2order[$tcid] )
+            { 
+                $mapo[$tcversion_id]=$argsObj->testcases2order[$tcid];
+            }    
+        }
+    }
+    
+    // Now add info for new liked test cases if any
+    if(!is_null($argsObj->testcases2add))
+    {
+        foreach($argsObj->testcases2add as $tcid)
+        {
+            $tcversion_id=$argsObj->tcversion_for_tcid[$tcid];
+            $mapo[$tcversion_id]=$argsObj->testcases2order[$tcid];
+        }
+    }  
+    
+    if( !is_null($mapo) )
+    {
+        $tplanMgr->setExecutionOrder($argsObj->tplan_id,$mapo);  
+    }
+    
+}
+
 ?>

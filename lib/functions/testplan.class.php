@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2008/04/03 22:07:56 $ $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2008/04/04 17:37:10 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -342,9 +342,6 @@ function setExecutionOrder($id,&$executionOrder)
            "SET node_order={$execOrder} " .
            "WHERE testplan_id={$id} " .
            "AND tcversion_id={$tcVersionID}";
-		  
-		    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 		  $result = $this->db->exec_query($sql);
   }
 }

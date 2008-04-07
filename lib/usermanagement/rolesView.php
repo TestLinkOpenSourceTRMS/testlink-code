@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/03/15 18:53:12 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/04/07 07:07:00 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -49,12 +49,16 @@ $highlight = initialize_tabsmenu();
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
-$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
-$smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment',
-                has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment',
-                has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
+$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+
+// $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+// $smarty->assign('role_management',has_rights($db,"role_management"));
+// $smarty->assign('tp_user_role_assignment',
+//                 has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
+// $smarty->assign('tproject_user_role_assignment',
+//                 has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
 $smarty->assign('roles',$roles);
 $smarty->assign('id',$args->roleid);
 $smarty->assign('sqlResult',$userFeedback);

@@ -1,6 +1,7 @@
 {assign var="action_create_role" value="lib/usermanagement/rolesEdit.php?doAction=create"}
 {assign var="action_view_roles" value="lib/usermanagement/rolesView.php"}
 
+
 {assign var="action_create_user" value="lib/usermanagement/usersEdit.php?doAction=create"}
 {assign var="action_edit_user" value="lib/usermanagement/usersEdit.php?doAction=edit&user_id="}
 {assign var="action_view_users" value="lib/usermanagement/usersView.php"}
@@ -13,16 +14,20 @@
              menu_edit_role,menu_view_roles,menu_assign_testproject_roles,menu_assign_testplan_roles"}
 
 <div class="tabMenu">
-{if $mgt_users == "yes"}
+{if $grants->user_mgmt == "yes"}
   {assign var="closure" value=""}
   {if $highlight->edit_user}
 	   <span class="selected">{$labels.menu_edit_user}
-	{else} 
+	{else}
 	   {if $highlight->create_user}
 	       <span class="selected">{$labels.menu_new_user}  
+
+    {*
 	   {else}
 	       <span class="unselected"><a href="{$action_create_user}">{$labels.menu_new_user}
 	       {assign var="closure" value="</a>"}
+	   *}
+
 	   {/if}
 	{/if}
 	{$closure}</span> 
@@ -37,7 +42,7 @@
 	{$labels.menu_view_users}{$closure}</span> 
 {/if}
 
-{if $role_management == "yes"}
+{if $grants->role_mgmt == "yes"}
   {assign var="closure" value=""}
   {if $highlight->edit_role}
 	   <span class="selected">{$labels.menu_edit_role}
@@ -62,7 +67,7 @@
 {$labels.menu_view_roles}{$closure}</span> 
 
 
-{if $tproject_user_role_assignment == "yes"}
+{if $grants->tproject_user_role_assignment == "yes"}
   {assign var="closure" value=""}
   {if $highlight->assign_users_tproject}
 	   <span class="selected">
@@ -74,7 +79,7 @@
 {/if}	
 
 
-{if $tp_user_role_assignment == "yes"}
+{if $grants->tplan_user_role_assignment == "yes"}
   {assign var="closure" value=""}
   {if $highlight->assign_users_tplan}
 	   <span class="selected">

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.13 $
-* @modified $Date: 2008/03/15 18:53:12 $ $Author: franciscom $
+* @version $Revision: 1.14 $
+* @modified $Date: 2008/04/07 07:07:00 $ $Author: franciscom $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -133,12 +133,16 @@ if(is_null($features))
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
-$smarty->assign('mgt_users',$can_manage_users);
-$smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment',
-                $can_manage_users ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment',
-                $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
+$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+
+// $smarty->assign('mgt_users',$can_manage_users);
+// $smarty->assign('role_management',has_rights($db,"role_management"));
+// $smarty->assign('tp_user_role_assignment',
+//                 $can_manage_users ? "yes" : has_rights($db,"testplan_user_role_assignment"));
+// $smarty->assign('tproject_user_role_assignment',
+//                 $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
 $smarty->assign('tproject_name',$testprojectName);
 $smarty->assign('optRights', tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM));
 $smarty->assign('userData',tlUser::getAll($db));

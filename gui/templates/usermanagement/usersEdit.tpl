@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.12 2008/03/24 19:33:28 havlat Exp $
+$Id: usersEdit.tpl,v 1.13 2008/04/07 07:06:51 franciscom Exp $
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -89,22 +89,34 @@ function validateForm(f,check_password)
 
 <h1>{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
 
-{* This check allows us to understand if we are creating a new user *}
 {assign var="user_id" value=''}
 {assign var="user_login" value=''}
-{assign var="check_password" value=1}
-{assign var="operation" value="doCreate"}
+{assign var="user_login_readonly" value=''}
+{assign var="reset_password_enabled" value=0}
+{assign var="show_password_field" value=1}
+
+
+{if $operation == 'doCreate' }
+   {assign var="check_password" value=1}
+   {if $userData neq null}
+       {assign var="user_login" value=$userData->login}
+   {/if}
+{else}
+   {assign var="check_password" value=0}
+   {assign var="user_id" value=$userData->dbID}
+   {assign var="user_login" value=$userData->login}
+   {assign var="user_login_readonly" value='readonly="readonly"'}
+   {assign var="reset_password_enabled" value=1}
+   {assign var="show_password_field" value=0}
+{/if}
 
 {if $external_password_mgmt eq 1 }
   {assign var="check_password" value=0}
+  {assign var="reset_password_enabled" value=0}
+  {assign var="show_password_field" value=0}
 {/if}
 
-{if $userData neq null}
-  {assign var="check_password" value=0}
-  {assign var="user_id" value=$userData->dbID}
-  {assign var="user_login" value=$userData->login}
-  {assign var="operation" value="doUpdate"}
-{/if}
+
 
 {***** TABS *****}
 {include file="usermanagement/tabsmenu.tpl"}
@@ -126,10 +138,7 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_login}</th>
 			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}"
-			{if $userData neq null}
-				readonly="readonly"
-			{/if}
-			 value="{$userData->login|escape}" />
+			{$user_login_readonly} value="{$userData->login|escape}" />
       {include file="error_icon.tpl" field="login"}
 			 </td>
 		</tr>
@@ -147,7 +156,7 @@ function validateForm(f,check_password)
 			     </td>
 		</tr>
 
-		{if $userData eq null}
+		{if $show_password_field}
 		     <tr>
 			    {if $external_password_mgmt eq 0 }
  			      <th style="background:none;">{$labels.th_password}</th>
@@ -221,7 +230,7 @@ function validateForm(f,check_password)
 </fieldset>
 </form>
 
-{if $userData neq null and $external_password_mgmt eq 0}
+{if $reset_password_enabled}
 <br />
 <form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
 	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/03/15 18:53:12 $ -  $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/04/07 07:07:00 $ -  $Author: franciscom $
  *
  * This page shows all users
  */
@@ -21,19 +21,16 @@ $sqlResult = null;
 $action = null;
 $user_feedback = '';
 
-$operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : '';
-$user_order_by = isset($_REQUEST['user_order_by']) ? $_REQUEST['user_order_by'] : 'order_by_login';
-$order_by_dir['order_by_role_dir'] = isset($_REQUEST['order_by_role_dir']) ? $_REQUEST['order_by_role_dir'] : 'asc';
-$order_by_dir['order_by_login_dir'] = isset($_REQUEST['order_by_login_dir']) ? $_REQUEST['order_by_login_dir'] : 'asc';
-$user_id = isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
+$orderBy=new stdClass();
+$orderBy->type = 'order_by_login';
+$orderBy->dir = array('order_by_login_dir' => 'asc');
 
-$orderByType = 'order_by_login';
-$orderByDir = array('order_by_login_dir' => 'asc');
+$args=init_args();
 
-switch($operation)
+switch($args->operation)
 {
 	case 'delete':
-		$user = new tlUser($user_id);
+		$user = new tlUser($args->user_id);
 		$sqlResult = $user->readFromDB($db);
 		if ($sqlResult >= tl::OK)
 		{
@@ -41,9 +38,9 @@ switch($operation)
 			$sqlResult = $user->deleteFromDB($db);
 			if ($sqlResult >= tl::OK)
 			{
-				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$user_id,"users");
+				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
 				//if the users deletes itself then logout
-				if ($user_id == $_SESSION['currentUser']->dbID)
+				if ($args->user_id == $_SESSION['currentUser']->dbID)
 				{
 					header("Location: ../../logout.php");
 					exit();
@@ -54,23 +51,26 @@ switch($operation)
 		if ($sqlResult != tl::OK)
 			$user_feedback = lang_get('error_user_not_deleted');
 
-		$orderByType = $user_order_by;
-		$orderByDir = $order_by_dir;
+		$orderBy->type = $args->user_order_by;
+		$orderBy->dir = $args->order_by_dir;
 		break;
+
 	case 'order_by_role':
 	case 'order_by_login':
-		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
-		$orderByType = $operation;
-		$orderByDir = $order_by_dir;
-		$user_order_by = $operation;
-		$the_k = $operation . "_dir";
-		$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc';
+		$orderBy->type = $args->operation;
+		$orderBy->dir = $args->order_by_dir;
+		$args->user_order_by = $args->operation;
+		$order_by_clause = get_order_by_clause($orderBy);
+		
+		$the_k = $args->operation . "_dir";
+		$args->order_by_dir[$the_k] = $args->order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc';
 		break;
+
 	default:
 		$order_by_dir['order_by_login_dir'] = 'desc';
 		break;
 }
-$order_by_clause = get_order_by_clause($orderByType,$orderByDir);
+$order_by_clause = get_order_by_clause($orderBy);
 $users = getAllUsersRoles($db,$order_by_clause);
 
 $highlight = initialize_tabsmenu();
@@ -78,14 +78,19 @@ $highlight = initialize_tabsmenu();
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
-$smarty->assign('user_order_by',$user_order_by);
-$smarty->assign('order_by_role_dir',$order_by_dir['order_by_role_dir']);
-$smarty->assign('order_by_login_dir',$order_by_dir['order_by_login_dir']);
+$smarty->assign('user_order_by',$args->user_order_by);
+$smarty->assign('order_by_role_dir',$args->order_by_dir['order_by_role_dir']);
+$smarty->assign('order_by_login_dir',$args->order_by_dir['order_by_login_dir']);
 $smarty->assign('role_colour',config_get('role_colour'));
-$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
-$smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
+$grants=getGrantsForUserMgmt($db,$_SESSION['currentUser']);
+$smarty->assign('grants',$grants);
+
+// $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+// $smarty->assign('role_management',has_rights($db,"role_management"));
+// $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
+// $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
 $smarty->assign('update_title_bar',0);
 $smarty->assign('reload',0);
 $smarty->assign('users',$users);
@@ -94,23 +99,67 @@ $smarty->assign('action',$action);
 $smarty->assign('base_href', $_SESSION['basehref']);
 $smarty->display($template_dir . $g_tpl['usersview']);
 
+
+
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
 	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc';
 	return $obm;
 }
 
-function get_order_by_clause($order_by_type,$order_by_dir)
+
+/*
+  function: get_order_by_clause()
+            get order by SQL clause to use to order user info
+
+  args:
+
+  returns: string
+
+*/
+function get_order_by_clause($order)
 {
-	switch($order_by_type)
+	switch($order->type)
 	{
 		case 'order_by_role':
-			$order_by_clause = " ORDER BY description " . $order_by_dir['order_by_role_dir'];
+			$order_by_clause = " ORDER BY description " . $order->dir['order_by_role_dir'];
 			break;
+			
 		case 'order_by_login':
-			$order_by_clause = " ORDER BY login " . $order_by_dir['order_by_login_dir'];
+			$order_by_clause = " ORDER BY login " . $order->dir['order_by_login_dir'];
 			break;
 	}
 	return $order_by_clause;
+}
+
+
+/*
+  function: init_args()
+            get info from request and session
+
+  args:
+
+  returns: object
+
+*/
+function init_args()
+{
+    $args = new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+
+    $key2loop=array('operation' => '', 'user_order_by' => 'order_by_login');
+    foreach($key2loop as $key => $value)
+    {
+        $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+    }
+   
+    $key2loop=array('order_by_role_dir' => 'asc', 'order_by_login_dir' => 'asc');
+    foreach($key2loop as $key => $value)
+    {
+        $args->order_by_dir[$key]=isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+    }
+    $args->user_id = isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
+
+    return $args;  
 }
 ?>

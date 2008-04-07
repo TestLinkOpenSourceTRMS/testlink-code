@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/03/24 20:07:03 $ $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/04/07 07:07:00 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * rev :20080315 - franciscom - added initalize_tabsmenu()
+ * rev: 20080405 - franciscom - getGrantsForUserMgmt()
+ *      20080315 - franciscom - added initalize_tabsmenu()
  *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
  *
  */
@@ -279,5 +280,35 @@ function initialize_tabsmenu()
 	$hl->assign_users_tproject = 0;
 	$hl->assign_users_tplan = 0;
 	return $hl;
+}
+
+
+/*
+  function: getGrantsForUserMgmt 
+            utility function used on all user and role pages
+            to pass grants to smarty templates
+
+  args:
+  
+  returns: 
+
+*/
+function getGrantsForUserMgmt(&$dbHandler,&$userObj)
+{
+    $grants = new stdClass();
+    $grants->user_mgmt=$userObj->hasRight($dbHandler,"mgt_users");
+    $grants->role_mgmt=$userObj->hasRight($dbHandler,"role_management");
+    
+    if($grants->user_mgmt == 'yes')
+    {
+        $grants->tplan_user_role_assignment='yes';
+        $grants->tproject_user_role_assignment='yes';  
+    }
+    else
+    {
+        $grants->tplan_user_role_assignment=$userObj->hasRight($dbHandler,"testplan_user_role_assignment");
+        $grants->tproject_user_role_assignment=$userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
+    }
+    return $grants;
 }
 ?>

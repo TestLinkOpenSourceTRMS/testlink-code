@@ -5,12 +5,13 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.20 $
-* @modified $Date: 2008/03/18 19:01:14 $ $Author: schlundus $
+* @version $Revision: 1.21 $
+* @modified $Date: 2008/04/07 07:07:00 $ $Author: franciscom $
 *
-* rev :  BUGID 918
-*
-*   20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
+* rev:
+*     fixed missing checks on doCreate()  
+*     BUGID 918
+*     20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
 *
 * Allows editing a user
 */
@@ -30,59 +31,72 @@ $user_id = $args->user_id;
 
 $op = new stdClass();
 $highlight = initialize_tabsmenu();
-
 $op->user_feedback = '';
+
+$actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
+                       'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                       'resetPassword' => 'doUpdate');
 
 switch($args->doAction)
 {
     case "edit":
-		$highlight->edit_user=1;
-		$user = new tlUser($args->user_id);
-		$user->readFromDB($db);
+		   $highlight->edit_user=1;
+		   $user = new tlUser($args->user_id);
+		   $user->readFromDB($db);
 	  break;
 
-	case "doCreate":
-		$highlight->create_user=1;
-		$op = doCreate($db,$args);
-		$user = $op->user;
-		$templateCfg->template=$op->template;
+	  case "doCreate":
+		    $highlight->create_user=1;
+		    $op = doCreate($db,$args);
+		    $user = $op->user;
+		    $templateCfg->template=$op->template;
 		break;
 
     case "doUpdate":
-	    $highlight->edit_user = 1;
-	    $sessionUserID = $_SESSION['currentUser']->dbID;
-	    $op = doUpdate($db,$args,$sessionUserID);
-	    $user = $op->user;
-   	 	break;
+	      $highlight->edit_user = 1;
+	      $sessionUserID = $_SESSION['currentUser']->dbID;
+	      $op = doUpdate($db,$args,$sessionUserID);
+	      $user = $op->user;
+   	break;
 
     case "resetPassword":
-		$highlight->edit_user = 1;
-		$user = new tlUser($args->user_id);
-		$user->readFromDB($db);
-		$op = createNewPassword($db,$args,$user);
+		    $highlight->edit_user = 1;
+		    $user = new tlUser($args->user_id);
+		    $user->readFromDB($db);
+		    $op = createNewPassword($db,$args,$user);
 		break;
 
     case "create":
     default:
-    $highlight->create_user = 1;
-    $user = null;
+        $highlight->create_user = 1;
+        $user = null;
     break;
 }
+
+$op->operation = $actionOperation[$args->doAction];
 
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
+
+$smarty->assign('operation',$op->operation);
 $smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
-$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
-$smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
+$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+
+//$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+//$smarty->assign('role_management',has_rights($db,"role_management"));
+//$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
+//$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+renderGui($smarty,$args,$templateCfg);
+// $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 
@@ -143,19 +157,28 @@ function doCreate(&$dbHandler,&$argsObj)
 	  $op->user = new tlUser();
 	  $op->status = $op->user->setPassword($argsObj->password);
 	  $op->template='usersEdit.tpl';
+    $op->operation=''; 
 
+    $statusOk=false;    
 	  if ($op->status >= tl::OK)
 	  {
 	    	initializeUserProperties($op->user,$argsObj);
 	  	  $op->status = $op->user->writeToDB($dbHandler);
-	  	  $op->template=null;
-
-	  	  logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
-	  	  $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
+	  	  if( $op->status >= tl::OK)
+	  	  {
+	  	      $statusOk=true;
+	  	      $op->template=null;
+	  	      logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
+	  	      $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
+	      }
 	  }
-	  else
-	  	$op->user_feedback = getUserErrorMessage($op->status);
-
+	  
+	  if (!$statusOk)
+	  {
+	      $op->operation='create';
+	      $op->user_feedback = getUserErrorMessage($op->status);
+    }
+    
     return $op;
 }
 
@@ -336,5 +359,47 @@ function decodeRoleId(&$dbHandler,$roleID)
 {
     $roleInfo=tlRole::getByID($dbHandler,$roleID);
     return $roleInfo->name; 
+}
+
+/*
+  function: renderGui
+
+  args :
+
+  returns:
+
+*/
+function renderGui(&$smartyObj,&$argsObj,$templateCfg)
+{
+    $doRender=false;
+    switch($argsObj->doAction)
+    {
+        case "edit":
+        case "create":
+        case "resetPassword":
+        $doRender=true;
+    		$tpl = $templateCfg->default_template;
+    		break;
+
+	      case "doCreate":
+        case "doUpdate":
+        if( !is_null($templateCfg->template) )
+        {
+            $doRender=true;  
+            $tpl = $templateCfg->template;
+        }
+        else
+        {
+ 	  				header("Location: usersView.php");
+	  				exit();
+        }
+    		break;
+
+    }
+
+    if($doRender)
+    {
+		    $smartyObj->display($templateCfg->template_dir . $tpl);
+	  }
 }
 ?>

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.8 2008/03/10 21:52:00 schlundus Exp $
+$Id: usersView.tpl,v 1.9 2008/04/07 07:06:51 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -14,19 +14,19 @@ Purpose: smarty template - users overview
 </script>
 </head>
 
-{assign var="action_create_user" value="lib/usermanagement/usersEdit.php?doAction=create"}
-{assign var="action_assign_users" value="lib/usermanagement/usersAssign.php?feature=testproject"}
-{assign var="action_edit_user" value="lib/usermanagement/usersEdit.php?doAction=edit&amp;user_id="}
+{assign var="userActionMgr" value="lib/usermanagement/usersEdit.php"}
+{assign var="createUserAction" value="$userActionMgr?doAction=create"}
+{assign var="editUserAction" value="$userActionMgr?doAction=edit&user_id="}
 
 {lang_get var="labels"
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
-             alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,
+             alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
              order_by_login,order_by_login_dir,alt_active_user"}
 
 <body {$body_onload}>
 
-{if $mgt_users == "yes"}
+{if $grants->user_mgmt == "yes"}
 
 	<h1>{$labels.title_user_mgmt}</h1>
 	{***** TABS *****}
@@ -80,7 +80,7 @@ Purpose: smarty template - users overview
 				{assign var="userID" value=$user->dbID}
 
 				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
-				<td><a href="{$action_edit_user}{$user->dbID}">
+				<td><a href="{$editUserAction}{$user->dbID}">
 				    {$user->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
 				      <img title="{$labels.alt_edit_user}"
@@ -115,6 +115,12 @@ Purpose: smarty template - users overview
 			{/section}
 		</table>
 		</form>
+	</div>
+
+	<div class="groupBtn">
+	<form method="post" action="{$createUserAction}" name="launch_create">
+	<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+  </form>
 	</div>
 
 	{*  BUGID 0000103: Localization is changed but not strings *}

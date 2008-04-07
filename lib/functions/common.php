@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.104 $ $Author: franciscom $
- * @modified $Date: 2008/03/26 21:07:23 $
+ * @version $Revision: 1.105 $ $Author: schlundus $
+ * @modified $Date: 2008/04/07 17:09:12 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -30,6 +30,8 @@
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/
+require_once("object.class.php");
+require_once("metastring.class.php");
 
 /** library for localization */
 require_once("lang_api.php");
@@ -50,9 +52,6 @@ require_once('logging.inc.php');
 if ($g_interface_bugs != 'NO')
   require_once(TL_ABS_PATH.'lib'.DS.'bugtracking'.DS.'int_bugtracking.php');
 
-
-require_once("object.class.php");
-require_once("metastring.class.php");
 require_once("logger.class.php");
 require_once("role.class.php");
 require_once("attachment.class.php");

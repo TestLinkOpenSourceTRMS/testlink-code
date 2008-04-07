@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/03/18 21:05:27 $  by $Author: schlundus $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/04/07 15:29:24 $  by $Author: havlat $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -173,10 +173,10 @@ else if($args->do_update)
 		$tc_old = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
 
 
-		if ($tcase_mgr->update($args->tcase_id,$args->tcversion_id,$args->name,$args->summary,
-		                       $args->steps,$args->expected_results,
-		                       $args->user_id,$assigned_keywords_list,
-		                       TC_DEFAULT_ORDER,$args->exec_type) )
+		if ($tcase_mgr->update($args->tcase_id, $args->tcversion_id, $args->name, $args->summary,
+		                       $args->steps, $args->expected_results,
+		                       $args->user_id, $assigned_keywords_list,
+		                       TC_DEFAULT_ORDER, $args->exec_type, $args->importance) )
 		{
 			$status_ok = 1;
 		}
@@ -541,6 +541,7 @@ function init_args($spec_cfg)
     $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
     $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
     $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
+    $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : TL_DEFAULT_IMPORTANCE;
     $args->edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
     $args->delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
     $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;

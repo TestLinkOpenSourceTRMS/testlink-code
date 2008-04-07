@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/03/31 19:23:20 $ by $Author: havlat $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/04/07 15:29:24 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -23,7 +23,7 @@
 /** [GLOBAL] */
 
 /** TestLink Release (MUST BE changed before the release day) */
-define('TL_VERSION', '1.8.0 BETA1'); 
+define('TL_VERSION', '1.8.0 BETA2'); 
 
 // ----------------------------------------------------------------------------
 /** [GUI] */
@@ -415,6 +415,9 @@ define("TL_INACTIVE_MARKUP","* ");
 $g_test_priority = array( 1 => 6, // high priority include 6 and more
                    	 2 => 3,
                      3 => 1);
+define('TL_DEFAULT_IMPORTANCE',2);
+define('TL_DEFAULT_RISK',2);
+
 
 // used when created a test suite path, concatenating test suite names
 $g_testsuite_sep='/';

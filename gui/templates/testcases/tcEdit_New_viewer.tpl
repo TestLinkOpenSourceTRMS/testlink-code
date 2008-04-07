@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.4 2008/04/02 18:51:56 havlat Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.5 2008/04/07 15:29:23 havlat Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
@@ -52,7 +52,7 @@ Purpose: smarty template - create new testcase
 	    {if $session['testprojectOptPriority']}
     	<div>
 			<span class="labelHolder">{lang_get s='test_importance'}</span>
-			<select name="exec_type">
+			<select name="importance">
     	  	{html_options options=$gsmarty_option_importance selected=$tc.importance}
 	    	</select>
 		</div>

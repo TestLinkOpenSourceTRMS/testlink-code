@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.100 $
- * @modified $Date: 2008/03/18 21:05:27 $ $Author: schlundus $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2008/04/07 15:29:23 $ $Author: havlat $
  * @author franciscom
  *
  * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
@@ -513,9 +513,10 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
                 $expected_results,$user_id,$keywords_id='',
-                $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=2)
+                $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=TL_DEFAULT_IMPORTANCE)
 {
 	$status_ok = 0;
+	tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 
 	$sql = " UPDATE nodes_hierarchy SET name='" .
 	         $this->db->prepare_string($name) . "' WHERE id= {$id}";

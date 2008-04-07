@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.14 2008/03/10 21:52:00 schlundus Exp $
+$Id: eventviewer.tpl,v 1.15 2008/04/07 17:40:01 schlundus Exp $
 
 Event Viewer
 
@@ -26,6 +26,7 @@ var strPleaseWait = "{$labels.message_please_wait|escape:javascript}";
 var strCloseButton = "{$labels.btn_close|escape:javascript}";
 {literal}
 var prgBar = null;
+
 function showEventDetails(id)
 {
 	prgBar = Ext.Msg.wait(strPleaseWait);
@@ -34,7 +35,7 @@ function showEventDetails(id)
 					url : 'lib/events/eventinfo.php' ,
 					params : { id : id },
 					method: 'POST',
-					success: function (result, request)
+					success: function(result, request)
 							 {
 								showDetailWindow(result.responseText);
 							 },
@@ -42,7 +43,7 @@ function showEventDetails(id)
 						{
 							if (prgBar)
 								prgBar.hide();
-						},
+						}
 				}
 			);
 }
@@ -59,7 +60,7 @@ function showDetailWindow(info)
 					el:'eventDetailWindow',
 					modal:true,
 					autoTabs: true,
-		layout:'fit',
+					layout:'fit',
 					width:700,
 					height:500,
 					items: new Ext.TabPanel({
@@ -79,7 +80,7 @@ function showDetailWindow(info)
 					}]
 			});
 	}
-	infoWin.show(this);
+	infoWin.show();
 }
 </script>
 <style type="text/css">

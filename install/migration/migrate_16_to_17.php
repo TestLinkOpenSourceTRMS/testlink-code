@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.21 2008/01/14 18:13:54 asielb Exp $ 
+$Id: migrate_16_to_17.php,v 1.22 2008/04/09 12:49:36 havlat Exp $ 
 
 20070515 - franciscom - 
 improved controls on source db version
@@ -20,7 +20,8 @@ require_once("Migrator.php");
 define('ADODB_ERROR_LOG_TYPE',3); 
 
 // 20080114 - asielb - fix for bug 1244
-if (PHP_OS == "Windows")
+// 200804 - havlatm fixed wrong compare
+if (lowercase(substr(PHP_OS, 0, 3)) == "win")
 {
 	define('ADODB_ERROR_LOG_DEST','C:/testlink_errors.log');
 }

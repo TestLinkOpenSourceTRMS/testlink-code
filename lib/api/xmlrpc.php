@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/03/11 07:42:55 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/04/09 16:06:39 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,13 +22,14 @@
  * 
  *
  * rev :
+ * 		20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
  *      20080307 - franciscom - now is possible to use test case external or internal ID
  *                              when calling reportTCResult()
  *      20080306 - franciscom - BUGID 1421
  *      20080305 - franciscom - minor code refactoring
  *      20080103 - franciscom - fixed minor bugs due to refactoring
- * 		  20080115 - havlatm - 0001296: API table refactoring 
+ * 		20080115 - havlatm - 0001296: API table refactoring 
  */
 
 /** 
@@ -127,6 +128,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $executedParamName = "executed";
 	public static $assignedToParamName = "assignedto";
 	public static $executeStatusParamName = "executestatus";
+	public static $testSuiteNameParamName = "testsuitename";
 	/**#@-*/
 	
 	/**
@@ -718,7 +720,18 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
       $status=isset($this->args[self::$guessParamName]) ? true : false;
 		  return $status;
-    }  
+    }
+    
+    /**
+	 * Helper method to see if the testsuitename param is given as one of the arguments 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */
+    private function _isTestSuiteNamePresent()
+    {
+		return (isset($this->args[self::$testSuiteNameParamName]) ? true : false);
+    }    
     
 	/**
 	 * Helper method to see if the deep param is given as one of the arguments 
@@ -1346,9 +1359,19 @@ class TestlinkXMLRPCServer extends IXR_Server
 		if($this->_checkGetTestCaseByIDNameRequest())
 		{			
 			$testCaseName = $this->args[self::$testCaseNameParamName];
-			#return "hello $testCaseName";
+
 	 		$testCaseObj = new testcase($this->dbObj);
-	 		$result = $testCaseObj->get_by_name($testCaseName);
+	 		// see if we are using the testsuitename param
+	 		if($this->_isTestSuiteNamePresent())
+	 		{
+				$testSuiteName = $this->args[self::$testSuiteNameParamName];
+		 		$result = $testCaseObj->get_by_name($testCaseName, $testSuiteName);
+			}
+			else
+			{
+		 		$result = $testCaseObj->get_by_name($testCaseName);
+	 		}
+	 			 		
 			if(0 == sizeof($result))
 			{
 				$this->errors[] = new IXR_ERROR(NO_TESTCASE_BY_THIS_NAME, NO_TESTCASE_BY_THIS_NAME_STR);

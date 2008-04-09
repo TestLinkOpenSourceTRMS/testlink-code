@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.8 2008/02/21 07:50:50 franciscom Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.9 2008/04/09 12:51:50 havlat Exp $
  *
  * rev :
  *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
@@ -126,9 +126,17 @@ function migrate_keywords(&$source_db,&$target_db,&$products,&$prod_keyword_tc,&
           {
             foreach($keyword_tc[$the_kw] as $tcid)
             {
-              $xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
+              $xsql="SELECT count(*) AS cnt FROM testcase_keywords WHERE keyword_id={$value['id']} AND testcase_id={$tcid}";
+              $asgn_exist = $target_db->fetchFirstRowSingleColumn($xsql,'cnt');     
+			  if( $asgn_exist )
+			  {
+	          	echo "<pre>   Skipped doubled keywords assignment {$value['id']} to TC {$tcid}</pre>";
+			  } else {
+              	$xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
                     " VALUES({$value['id']},{$tcid}) ";
-              $target_db->exec_query($xsql);     
+              	$target_db->exec_query($xsql);
+	          	echo "<pre>   Added keywords assignment {$value['id']} to TC {$tcid}</pre>";
+			  }     
             }
           }
           echo "<pre>   {$value['keyword']} migrated</pre>";

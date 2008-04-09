@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.10 2008/03/10 21:52:00 schlundus Exp $
+$Id: rolesEdit.tpl,v 1.11 2008/04/09 06:26:14 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -68,7 +68,7 @@ function validateForm(f)
 
 	<form name="rolesedit" id="rolesedit"
 		method="post" action="lib/usermanagement/rolesEdit.php"
-	{if $role_management == "yes"}
+	{if $grants->role_mgmt == "yes"}
 	  onSubmit="javascript:return validateForm(this);"
 	{else}
 		onsubmit="return false"
@@ -145,7 +145,7 @@ function validateForm(f)
 		</tr>
 
 	</table>
-	{if $role_management == "yes" && $role->dbID != $noRightsRole}
+	{if $grants->role_mgmt == "yes" && $role->dbID != $noRightsRole}
 
 		<div class="groupBtn">
 		<input type="hidden" name="doAction" value="{$action_type}" />

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.101 $
- * @modified $Date: 2008/04/07 15:29:23 $ $Author: havlat $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2008/04/09 15:55:00 $ $Author: asielb $
  * @author franciscom
  *
+ * 20080409 - azl - added optional testSuite param to get_by_name function
  * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
  * 20080126 - franciscom - BUGID 1313
  * 20080120 - franciscom - show() interface changes
@@ -320,17 +321,29 @@ function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
 /*
   function: get_by_name
 
-  args: $name
+  args: $name, [$testSuite]
 
   returns: hash
 */
-function get_by_name($name)
+function get_by_name($name, $testSuite='')
 {
-	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name
-	         FROM nodes_hierarchy
-	         WHERE nodes_hierarchy.node_type_id = {$this->my_node_type}
-	         AND nodes_hierarchy.name = '" .
-	         $this->db->prepare_string($name) . "'";
+	if($testSuite!='')
+	{
+		$sql = " SELECT distinct nh.id, nh.name, nh.parent_id
+						 FROM nodes_hierarchy nh, node_types nt
+		         WHERE nh.node_type_id = {$this->my_node_type}
+		         AND nh.name = '" . $this->db->prepare_string($name) . "'
+						 AND nh.parent_id in (select nh2.id from nodes_hierarchy nh2 where nh2.name = '" . 
+	  				 $this->db->prepare_string($testSuite) . "')";
+	}
+	else
+	{
+		$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name 
+		         FROM nodes_hierarchy 
+		         WHERE nodes_hierarchy.node_type_id = {$this->my_node_type}
+		         AND nodes_hierarchy.name = '" . 
+	  $this->db->prepare_string($name) . "'";
+	}
 
   $recordset = $this->db->get_recordset($sql);
 

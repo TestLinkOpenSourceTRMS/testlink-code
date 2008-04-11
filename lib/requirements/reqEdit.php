@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/03/12 21:27:38 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/04/11 16:14:02 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
- * rev: 20070415 - franciscom - custom field manager
+ * rev: 20080411 - franciscom - BUGID 1476
+ *      20070415 - franciscom - custom field manager
  *      20070415 - franciscom - added reorder feature
  *
 **/
@@ -69,6 +70,7 @@ switch($args->do_action)
 		$template = $template_dir . 'reqEdit.tpl';
 		$req = $req_mgr->get_by_id($args->req_id);
 		$main_descr = lang_get('req') . TITLE_SEP . $req['title'];
+		$args->scope=$req['scope'];
 		$action_descr =lang_get('edit_req');
 
 		$cf_smarty = $req_mgr->html_table_of_custom_field_inputs($args->req_id,$args->tproject_id);

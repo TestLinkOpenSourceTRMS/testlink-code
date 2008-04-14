@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/03/31 20:08:04 $ $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/04/14 19:19:22 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -90,7 +90,7 @@ class TLSmarty extends Smarty
 
 		// -----------------------------------------------------------------------------
 		// load configuration
-		$this->assign('session',$_SESSION);
+		$this->assign('session',$_SESSION ? $_SESSION : null);
 
 		// load configuration
 		$this->assign('tlCfg',$tlCfg);

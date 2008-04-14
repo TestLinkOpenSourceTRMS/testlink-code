@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.102 $
- * @modified $Date: 2008/04/09 15:55:00 $ $Author: asielb $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2008/04/14 19:19:22 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080409 - azl - added optional testSuite param to get_by_name function
@@ -80,13 +80,13 @@ class testcase extends tlObjectWithAttachments
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
-	
+
 	var $assignment_mgr;
 	var $assignment_types;
 	var $assignment_status;
-	
+
 	var $cfield_mgr;
-	
+
 	var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
 	var $export_file_types = array("XML" => "XML");
 	var $execution_types = array();
@@ -333,15 +333,15 @@ function get_by_name($name, $testSuite='')
 						 FROM nodes_hierarchy nh, node_types nt
 		         WHERE nh.node_type_id = {$this->my_node_type}
 		         AND nh.name = '" . $this->db->prepare_string($name) . "'
-						 AND nh.parent_id in (select nh2.id from nodes_hierarchy nh2 where nh2.name = '" . 
+						 AND nh.parent_id in (select nh2.id from nodes_hierarchy nh2 where nh2.name = '" .
 	  				 $this->db->prepare_string($testSuite) . "')";
 	}
 	else
 	{
-		$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name 
-		         FROM nodes_hierarchy 
+		$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name
+		         FROM nodes_hierarchy
 		         WHERE nodes_hierarchy.node_type_id = {$this->my_node_type}
-		         AND nodes_hierarchy.name = '" . 
+		         AND nodes_hierarchy.name = '" .
 	  $this->db->prepare_string($name) . "'";
 	}
 
@@ -487,7 +487,7 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 
 		// get assigned REQs
 		$arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
-		
+
 		// custom fields
 		$cf_smarty = null;
 		if($gui_cfg->enable_custom_fields)
@@ -2113,7 +2113,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
-			$label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,TL_TPL_CHARSET));
+			$label = $cf_info['label'];
 			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
 				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
 						"</td></tr>\n";
@@ -2174,8 +2174,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-	      		// 20070501 - franciscom
-        		$label = $cf_info['label'];
+	      		$label = $cf_info['label'];
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .

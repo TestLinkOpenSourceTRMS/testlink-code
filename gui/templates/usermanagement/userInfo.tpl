@@ -1,11 +1,11 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.8 2008/02/10 18:45:01 franciscom Exp $ *}
-{* 
+{* $Id: userInfo.tpl,v 1.9 2008/04/14 19:19:22 schlundus Exp $ *}
+{*
 *}
 {assign var="cfg_section" value="login" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{lang_get var='labels' 
+{lang_get var='labels'
           s='title_account_settings,warning_empty_pwd,warning_different_pwd,never_logged,
              warning_enter_less1,warning_enter_at_least1,warning_enter_at_least2,
              warning_enter_less2,th_login,th_first_name,th_last_name,
@@ -41,27 +41,27 @@ var warning_empty_email_address = "{$labels.empty_email_address}";
 {literal}
 function validatePersonalData(f)
 {
-  if (isWhitespace(f.firstName.value)) 
+  if (isWhitespace(f.firstName.value))
   {
       alert_message(alert_box_title,warning_empty_name);
       selectField(f, 'firstName');
       return false;
   }
 
-  if (isWhitespace(f.lastName.value)) 
+  if (isWhitespace(f.lastName.value))
   {
       alert_message(alert_box_title,warning_empty_last);
       selectField(f, 'lastName');
       return false;
   }
-  
-  if (isWhitespace(f.emailAddress.value)) 
+
+  if (isWhitespace(f.emailAddress.value))
   {
       alert_message(alert_box_title,warning_empty_email_address);
       selectField(f, 'emailAddress');
       return false;
   }
-  
+
   return true;
 }
 
@@ -69,13 +69,13 @@ function checkPasswords(oldp,newp,newp_check)
 {
 
     var oldvalue=document.getElementById(oldp).value;
-    
-    if (isWhitespace(oldvalue)) 
+
+    if (isWhitespace(oldvalue))
     {
         alert_message(alert_box_title,warning_empty_old_password);
         return false;
     }
-   
+
     if( !validatePassword(newp,newp_check) )
     {
       alert_message(alert_box_title,warning_passwd_dont_match);
@@ -91,7 +91,7 @@ function checkPasswords(oldp,newp,newp_check)
 
 <h1>{$labels.title_account_settings}</h1>
 
-{include file="inc_update.tpl" user_feeback=$user_feeback}
+{include file="inc_update.tpl" user_feedback=$user_feedback}
 
 <div class="workBack">
 
@@ -106,35 +106,35 @@ function checkPasswords(oldp,newp,newp_check)
 		</tr>
 		<tr>
 			<th>{$labels.th_first_name}</th>
-			<td><input type="text" name="firstName" value="{$user->firstName|escape}" 
+			<td><input type="text" name="firstName" value="{$user->firstName|escape}"
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" />
 			  				{include file="error_icon.tpl" field="firstName"}
 			</td>
 		</tr>
 		<tr>
 			<th>{$labels.th_last_name}</th>
-			<td><input type="text" name="lastName" value="{$user->lastName|escape}" 
+			<td><input type="text" name="lastName" value="{$user->lastName|escape}"
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" />
 						  	 {include file="error_icon.tpl" field="lastName"}
 			</td>
 		</tr>
 		<tr>
 			<th>{$labels.th_email}</th>
-			<td><input type="text" name="emailAddress" value="{$user->emailAddress|escape}" 
+			<td><input type="text" name="emailAddress" value="{$user->emailAddress|escape}"
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
 						  	 {include file="error_icon.tpl" field="emailAddress"}
 			</td>
 		</tr>
 		<tr>
 			<th>{$labels.th_locale}</th>
-			<td>		   
+			<td>
 				<select name="locale">
 				{html_options options=$optLocale selected=$user->locale}
-				</select>	
+				</select>
 			</td>
 		</tr>
 	</table>
-	<div class="groupBtn">	
+	<div class="groupBtn">
 		<input type="submit" name="editUser" value="{$labels.btn_save}" />
 	</div>
 </form>
@@ -142,7 +142,7 @@ function checkPasswords(oldp,newp,newp_check)
 <hr />
 <h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0 }
-	<form name="changePass" method="post" action="{$action_mgmt}" 
+	<form name="changePass" method="post" action="{$action_mgmt}"
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
 		<input type="hidden" name="id" value="{$user->dbID}" />
 		<table class="common">
@@ -153,10 +153,10 @@ function checkPasswords(oldp,newp,newp_check)
 				<td><input type="password" name="newpassword" id="newpassword"
 				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 			<tr><th>{$labels.th_new_passwd_again}</th>
-				<td><input type="password" name="newpassword_check" id="newpassword_check" 
+				<td><input type="password" name="newpassword_check" id="newpassword_check"
 				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		</table>
-		<div class="groupBtn">	
+		<div class="groupBtn">
 			<input type="submit" name="changePassword" value="{$labels.btn_change_passwd}" />
 		</div>
 	</form>
@@ -167,11 +167,11 @@ function checkPasswords(oldp,newp,newp_check)
 {if $api_ui_show eq 1}
 <hr />
 <h2>{lang_get s="title_api_interface"}</h2>
-<div>									
+<div>
 	<form name="genApi" method="post" action="{$action_mgmt}">
 	<input type="hidden" name="id" value="{$user->dbID}" />
 	<p>{$labels.user_api_key} = {$user->userApiKey|escape}</p>
-	<div class="groupBtn">	
+	<div class="groupBtn">
 		<input type="submit" name="genApiKey" value="{$labels.btn_apikey_generate}" />
 	</div>
 	</form>
@@ -183,7 +183,7 @@ function checkPasswords(oldp,newp,newp_check)
 <h2>{$labels.audit_login_history}</h2>
 <div>
 	<h3>{$labels.audit_last_succesful_logins}</h3>
-	{if $loginHistory->ok != ''} 
+	{if $loginHistory->ok != ''}
 	{foreach from=$loginHistory->ok item=event}
 	<span>{localize_timestamp ts=$event->timestamp}</span>
 	<span>{$event->description|escape}</span>
@@ -192,11 +192,11 @@ function checkPasswords(oldp,newp,newp_check)
 	{else}
 	  {$labels.never_logged}
 	{/if}
-	
-	
+
+
 </div>
 <div>
-  {if $loginHistory->failed != ''} 
+  {if $loginHistory->failed != ''}
 	  <h3>{$labels.audit_last_failed_logins}</h3>
 	  {foreach from=$loginHistory->failed item=event}
 	  <span>{localize_timestamp ts=$event->timestamp}</span>

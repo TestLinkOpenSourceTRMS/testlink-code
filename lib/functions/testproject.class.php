@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/03/22 17:43:00 $  $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/04/14 09:59:05 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080322 - franciscom - interface changes get_all_testplans()
@@ -395,6 +395,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
                      $exclude_branches=null, $and_not_in_clause='')
 {
+  
   $exclude_node_types=$this->nt2exclude;
   if($exclude_testcases)
   {

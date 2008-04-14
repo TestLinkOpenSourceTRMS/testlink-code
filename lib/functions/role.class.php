@@ -5,8 +5,10 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/01/18 20:40:18 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/04/14 09:59:05 $ $Author: franciscom $
+ *
+ * rev: 20080412 - franciscom - typo error
  */
 class tlRole extends tlDBObject
 {
@@ -15,10 +17,11 @@ class tlRole extends tlDBObject
 	public $rights;
 	
 	protected $replacementRoleID;
+	
 	//options
 	const ROLE_O_SEARCH_BYNAME = 2;
 	
-	//detail leveles
+	//detail levels
 	const TLOBJ_O_GET_DETAIL_RIGHTS = 1;
 		
 	const E_DBERROR = -2;	
@@ -32,15 +35,17 @@ class tlRole extends tlDBObject
 		
 		$this->replacementRoleID = config_get('role_replace_for_deleted_roles');
 	}
+
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
-		$this->descriptions = null;
+		$this->description = null;
 		$this->rights = null;
 		if (!($options & self::ROLE_O_SEARCH_BYNAME))
 			$this->name = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 	}
+	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{

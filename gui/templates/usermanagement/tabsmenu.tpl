@@ -21,13 +21,6 @@
 	{else}
 	   {if $highlight->create_user}
 	       <span class="selected">{$labels.menu_new_user}  
-
-    {*
-	   {else}
-	       <span class="unselected"><a href="{$action_create_user}">{$labels.menu_new_user}
-	       {assign var="closure" value="</a>"}
-	   *}
-
 	   {/if}
 	{/if}
 	{$closure}</span> 
@@ -43,6 +36,7 @@
 {/if}
 
 {if $grants->role_mgmt == "yes"}
+{* 
   {assign var="closure" value=""}
   {if $highlight->edit_role}
 	   <span class="selected">{$labels.menu_edit_role}
@@ -55,6 +49,7 @@
 	   {/if}
 	{/if}   
 	{$closure}</span> 
+*}	
 {/if}
 
 {assign var="closure" value=""}

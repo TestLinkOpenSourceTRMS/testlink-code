@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.105 $ $Author: schlundus $
- * @modified $Date: 2008/04/07 17:09:12 $
+ * @version $Revision: 1.106 $ $Author: franciscom $
+ * @modified $Date: 2008/04/14 09:59:04 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20080412 - franciscom - templateConfiguration()
  * 20080326 - franciscom - config_get() - refactored removed eval()
  * 20080114 - franciscom - gen_spec_view(): adde external_id management.
  * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
@@ -80,6 +81,12 @@ require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpc_wrap
 
 /** $db is a global used throughout the code when accessing the db. */
 $db = 0;
+
+
+function __autoload($class_name) {
+   require_once $class_name . '.class.php';
+}
+
 
 /**
 * TestLink connects to the database
@@ -961,4 +968,26 @@ function show_instructions($key)
 {
   	redirect($_SESSION['basehref'] . "lib/general/staticPage.php?key={$key}");
 }
+
+/*
+  function: templateConfiguration
+
+  args :
+
+  returns:
+
+*/
+function templateConfiguration()
+{
+    $path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
+    $last_part=array_pop($path_parts);
+    
+    $tcfg = new stdClass();
+    $tcfg->template_dir = "{$last_part}/";
+    $tcfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+    $tcfg->template = null;
+    return $tcfg;
+}
+
+
 ?>

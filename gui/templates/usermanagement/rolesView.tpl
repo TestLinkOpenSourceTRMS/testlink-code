@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $ 
+$Id: rolesView.tpl,v 1.10 2008/04/14 09:56:40 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev:
@@ -10,6 +10,15 @@ rev:
       -  bug 1000  - Testplan User Role Assignments
 
 *}
+{assign var="roleActionMgr" value="lib/usermanagement/rolesEdit.php"}
+{assign var="createRoleAction" value="$roleActionMgr?doAction=create"}
+{assign var="editRoleAction" value="$roleActionMgr?doAction=edit&roleid="}
+
+{lang_get var="labels"
+          s="btn_create,title_user_mgmt,title_roles,delete_role,caption_possible_affected_users,
+             warning_users_will_be_reset,btn_confirm_delete,btn_cancel,no_roles,
+             th_roles,th_role_description,th_delete,alt_edit_role,alt_delete_role,N_A"}
+
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -27,56 +36,57 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 </head>
 
 <body {$body_onload}>
-<h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_roles'}</h1>
+<h1>{$labels.title_user_mgmt} - {$labels.title_roles}</h1>
 
 {***** TABS *****}
 {include file="usermanagement/tabsmenu.tpl"}
 
-{* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="Role" name=$role.role action="deleted"}
+{include file="inc_update.tpl" result=$sqlResult}
 
-
+{assign var="draw_create_btn" value="1"}
 <div class="workBack">
 {if $affectedUsers neq null}
+  {assign var="draw_create_btn" value="0"}
+
   {* show user list of users having role he/she want to delete *}
-  <h1>{lang_get s='delete_role'} {$roles[$id]->name|escape}</h1>
+  <h1>{$labels.delete_role} {$roles[$id]->name|escape}</h1>
   
 	<table class="common" style="width:50%">
-	<caption>{lang_get s='caption_possible_affected_users'}</caption>
+	<caption>{$labels.caption_possible_affected_users}</caption>
 	{foreach from=$affectedUsers item=user}
 	<tr>
 		<td>{$user->getDisplayName()|escape}</td>
 	</tr>
 	{/foreach}
 	</table>
-	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} => {$roles[$role_id_replacement]->name|escape}</div><br />
+	<div class="legend_container">{$labels.warning_users_will_be_reset} => {$roles[$role_id_replacement]->name|escape}</div><br />
 	<div class="groupBtn">	
-		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" 
+		<input type="submit" name="confirmed" value="{$labels.btn_confirm_delete}" 
 		       onclick="location='lib/usermanagement/rolesView.php?doAction=confirmDelete&roleid={$id}'"/>
-		<input type="submit" value="{lang_get s='btn_cancel'}" 
+		<input type="submit" value="{$labels.btn_cancel}" 
 		       onclick="location='lib/usermanagement/rolesView.php'" />
 	</div>
 {else}
 	{if $roles eq ''}
-		{lang_get s='no_roles'}
+		{$labels.no_roles}
 	{else}
 		{* data table *}
 		<table class="common sortable" width="50%">
 			<tr>
-				<th width="30%">{$sortHintIcon}{lang_get s='th_roles'}</th>
-				<th class="{$noSortableColumnClass}">{lang_get s='th_role_description'}</th>
-				<th class="{$noSortableColumnClass}">{lang_get s='th_delete'}</th>
+				<th width="30%">{$sortHintIcon}{$labels.th_roles}</th>
+				<th class="{$noSortableColumnClass}">{$labels.th_role_description}</th>
+				<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
 			</tr>
 			{foreach from=$roles item=role}
 			{if $role->dbID neq $smarty.const.TL_ROLES_INHERITED}
 			<tr>
 				<td>
-					<a href="lib/usermanagement/rolesEdit.php?doAction=edit&amp;roleid={$role->dbID}">
+					<a href="{$editRoleAction}{$role->dbID}">
 						{$role->name|escape}
 						{if $gsmarty_gui->show_icon_edit}
- 						  <img title="{lang_get s='alt_edit_role'}" 
- 						       alt="{lang_get s='alt_edit_role'}" 
- 						       title="{lang_get s='alt_edit_role'}" 
+ 						  <img title="{$labels.alt_edit_role}" 
+ 						       alt="{$labels.alt_edit_role}" 
+ 						       title="{$labels.alt_edit_role}" 
  						       src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png" />
  						{/if}       
 					</a>
@@ -87,13 +97,13 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 				<td>
 					{if $role->dbID > $smarty.const.TL_LAST_SYSTEM_ROLE}
 				       <img style="border:none;cursor: pointer;" 
-		  				            title="{lang_get s='alt_delete_role'}" 
-		  				            alt="{lang_get s='alt_delete_role'}" 
+		  				            title="{$labels.alt_delete_role}" 
+		  				            alt="{$labels.alt_delete_role}" 
 		 					            onclick="delete_confirmation({$role->dbID},'{$role->name|escape:'javascript'}',
 		 					                                         '{$del_msgbox_title}','{$warning_msg}');"
 		  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 					{else}
-						{lang_get s='N_A'}
+						{$labels.N_A}
 					{/if}
 				</td>
 			</tr>
@@ -103,5 +113,11 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 	{/if}
 {/if}
 </div>
-
+{if $draw_create_btn}
+<div class="groupBtn">
+<form method="post" action="{$createRoleAction}" name="launch_create">
+<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+</form>
+</div>
+{/if}
 </body>

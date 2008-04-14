@@ -1,11 +1,15 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.9 2008/04/07 07:06:51 franciscom Exp $
+$Id: usersView.tpl,v 1.10 2008/04/14 09:56:40 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
+
+{assign var="userActionMgr" value="lib/usermanagement/usersEdit.php"}
+{assign var="createUserAction" value="$userActionMgr?doAction=create"}
+{assign var="editUserAction" value="$userActionMgr?doAction=edit&user_id="}
 
 {lang_get s='warning_delete_user' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title" }
@@ -14,9 +18,6 @@ Purpose: smarty template - users overview
 </script>
 </head>
 
-{assign var="userActionMgr" value="lib/usermanagement/usersEdit.php"}
-{assign var="createUserAction" value="$userActionMgr?doAction=create"}
-{assign var="editUserAction" value="$userActionMgr?doAction=edit&user_id="}
 
 {lang_get var="labels"
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,

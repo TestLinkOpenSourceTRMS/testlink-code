@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/12/02 17:08:16 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/04/14 09:59:51 $ by $Author: franciscom $
  * @author kevinlevy
  * 
  * rev :
+ *      20080413 - franciscom - refactoring + BUGID 1477 
  *      20070827 - franciscom - BUGID 994
  */
 
@@ -19,7 +20,8 @@ require_once("lang_api.php");
 require_once('displayMgr.php');
 testlinkInitPage($db);
 
-$template_dir='results/';
+$templateCfg = templateConfiguration();
+$args = init_args();
 
 $openBugs = array();
 $resolvedBugs = array();
@@ -28,22 +30,11 @@ $arrData = array();
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$tplan_id=$_REQUEST['tplan_id'];
-$tproject_id=$_SESSION['testprojectID'];
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($tproject_id);
-
-$tplan_name=$tplan_info['name'];
-$tproject_info =$tproject_info['name'];
-
-
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
-                  ALL_TEST_SUITES,ALL_BUILDS);
-
-$arrBuilds = $tplan_mgr->get_builds($tpID); 
-
-
+$arrBuilds = $tplan_mgr->get_builds($args->tplan_id); 
 $executionsMap = $re->getSuiteList();
 
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
@@ -109,8 +100,8 @@ $totalCasesWithBugs = count($arrData);
 
 
 $smarty = new TLSmarty;
-$smarty->assign('tproject_name', $tproject_name);
-$smarty->assign('tplan_name', $tplan_name );
+$smarty->assign('tproject_name', $tproject_info['name']);
+$smarty->assign('tplan_name', $tplan_info['name'] );
 $smarty->assign('title', lang_get('link_report_total_bugs'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
@@ -119,8 +110,7 @@ $smarty->assign('totalOpenBugs', $totalOpenBugs);
 $smarty->assign('totalResolvedBugs', $totalResolvedBugs);
 $smarty->assign('totalBugs', $totalBugs);
 $smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
-
-$smarty->display($template_dir .'resultsBugs.tpl');
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>
 
 
@@ -198,5 +188,24 @@ function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 		}
 	}
 	return $bugString;
+}
+
+
+/*
+  function: init_args()
+
+  args :
+  
+  returns: 
+
+*/
+function init_args()
+{
+	$args = new stdClass();
+  $_REQUEST = strings_stripSlashes($_REQUEST);
+  
+  $args->tplan_id=$_REQUEST['tplan_id'];
+  $args->tproject_id=$_SESSION['testprojectID'];
+  return $args;
 }
 ?>

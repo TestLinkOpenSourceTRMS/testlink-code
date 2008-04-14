@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/03/26 20:53:56 $ by $Author: schlundus $
+ * @modified $Date: 2008/04/14 09:59:04 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20080413 - franciscom - refactoring
  * 20080302 - franciscom - refactored of tally* functions, to manage
  *                         user defined test case statuses.
  *                         created tallyResults() method to remove
@@ -50,7 +51,7 @@ class results
 
 	// class references passed in by constructor
 	private $db = null;
-	private $tp = null;
+	private $tplanMgr = null;
 	private $testPlanID = -1;
 	private	$tprojectID = -1;
 
@@ -196,7 +197,7 @@ class results
 							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
 		$this->db = $db;
-	  $this->tp = $tplan_mgr;
+	  $this->tplanMgr = $tplan_mgr;
     $this->map_tc_status=config_get('tc_status');
     $dummy=config_get('tc_status_for_ui');
 
@@ -215,7 +216,6 @@ class results
 
 
     $this->suitesSelected = $suitesSelected;
-
     $this->tprojectID = $tproject_info['id'];
     $this->testPlanID = $tplan_info['id'];
 		$this->tplanName  = $tplan_info['name'];
@@ -1219,7 +1219,7 @@ class results
 	private function generateExecTree(&$db,$keyword_id = 0, $owner = null) {
 
 	  $RECURSIVE_MODE=true;
-		$tplan_mgr = $this->tp;
+		$tplan_mgr = $this->tplanMgr;
 		$tproject_mgr = new testproject($this->db);
 		$tree_manager = $tplan_mgr->tree_manager;
 		$tcase_node_type = $tree_manager->node_descr_id['testcase'];
@@ -1245,8 +1245,7 @@ class results
 	  //                                         array('testcase'=>'exclude my children',
 	  //                                               'requirement_spec'=>'exclude my children'),
 	  //                                               null,null,true);
-
-		$test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
+ 	  $test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
 
 
 

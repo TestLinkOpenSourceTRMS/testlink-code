@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.21 $
-* @modified $Date: 2008/04/07 07:07:00 $ $Author: franciscom $
+* @version $Revision: 1.22 $
+* @modified $Date: 2008/04/14 09:58:34 $ $Author: franciscom $
 *
 * rev:
 *     fixed missing checks on doCreate()  
@@ -86,18 +86,10 @@ $smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
 
 $smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
-
-//$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
-//$smarty->assign('role_management',has_rights($db,"role_management"));
-//$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-//$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
-
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
 
 renderGui($smarty,$args,$templateCfg);
-// $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
 
 
 /*

@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.11 2008/04/09 06:26:14 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.12 2008/04/14 09:56:40 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
+     20080412 - franciscom - refactoring - reducing coupling with  php script
+     20080409 - franciscom - refactoring
      20071227 - franciscom - look and feel.
 
      20070725 - franciscom
@@ -14,6 +16,7 @@ rev :
       -  bug 1000  - Testplan User Role Assignments
 *}
 
+
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -21,7 +24,12 @@ rev :
 {literal}
 <script type="text/javascript">
 {/literal}
-{lang_get s='warning,warning_modify_role,warning_empty_role_name,error_role_no_rights' var="labels"}
+{lang_get var="labels"
+          s='btn_save,warning,warning_modify_role,warning_empty_role_name,th_rights,
+             error_role_no_rights,caption_possible_affected_users,enter_role_notes,
+             title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
+             th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,
+             th_rolename,th_tp_rights'}
 
 var alert_box_title = "{$labels.warning}";
 var warning_modify_role = "{$labels.warning_modify_role}";
@@ -55,82 +63,80 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
-<h1>{lang_get s='title_user_mgmt'} - {lang_get s='caption_define_role'}</h1>
+<h1>{$labels.title_user_mgmt} - {$labels.caption_define_role}</h1>
 
 {***** TABS *****}
-{include file="usermanagement/tabsmenu.tpl"}
+{include file="usermanagement/tabsmenu.tpl" grants=$gui->grants highlight=$gui->highlight}
 
-{* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="Role" name=$role->name action="$action"}
+{include file="inc_update.tpl" user_feedback=$gui->userFeedback}
 
-{* Create Form *}
 <div class="workBack">
 
 	<form name="rolesedit" id="rolesedit"
 		method="post" action="lib/usermanagement/rolesEdit.php"
-	{if $grants->role_mgmt == "yes"}
+	{if $gui->grants->role_mgmt == "yes"}
 	  onSubmit="javascript:return validateForm(this);"
 	{else}
 		onsubmit="return false"
 	{/if}
 	>
-	<input type="hidden" name="roleid" value="{$role->dbID}" />
+	<input type="hidden" name="roleid" value="{$gui->role->dbID}" />
 	<table class="common">
-		<tr><th>{lang_get s='th_rolename'}</th></tr>
+		<tr><th>{$labels.th_rolename}</th></tr>
 		<tr><td>
 			   <input type="text" name="rolename"
-			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$role->name|escape}"/>
+			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$gui->role->name|escape}"/>
  				 {include file="error_icon.tpl" field="rolename"}
 		    </td></tr>
-		<tr><th>{lang_get s='th_rights'}</th></tr>
+		<tr><th>{$labels.th_rights}</th></tr>
 		<tr>
 			<td>
 				<table>
 				<tr>
-					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_tp_rights'}</legend>
-							{foreach from=$tpRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]}/>{$id}<br />
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_tp_rights}</legend>
+							{foreach from=$gui->rightsCfg->tplan_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]}/>{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
 					<td>
-						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_mgttc_rights'}</legend>
-						{foreach from=$tcRights item=id key=k}
-						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
+						<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_mgttc_rights}</legend>
+						{foreach from=$gui->rightsCfg->tcase_mgmt item=id key=k}
+						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
-						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_req_rights'}</legend>
-						{foreach from=$reqRights item=id key=k}
-						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
+						<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_req_rights}</legend>
+						{foreach from=$gui->rightsCfg->req_mgmt item=id key=k}
+						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 					<td>
-						<fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_product_rights'}</legend>
-						{foreach from=$pRights item=id key=k}
-						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
+						<fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_product_rights}</legend>
+						{foreach from=$gui->rightsCfg->tproject_mgmt item=id key=k}
+						<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
 				</tr>
 				<tr>
-					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_user_rights'}</legend>
-							{foreach from=$uRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_user_rights}</legend>
+							{foreach from=$gui->rightsCfg->user_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
-					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_kw_rights'}</legend>
-							{foreach from=$kwRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_kw_rights}</legend>
+							{foreach from=$gui->rightsCfg->kword_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
-					<td><fieldset class="x-fieldset x-form-label-left"><legend >{lang_get s='th_cf_rights'}</legend>
-							{foreach from=$cfRights item=id key=k}
-							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$checkboxStatus[$k]} />{$id}<br />
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_cf_rights}</legend>
+							{foreach from=$gui->rightsCfg->cfield_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>
 					</td>
@@ -139,26 +145,26 @@ function validateForm(f)
 			</table>
 			</td>
 		</tr>
-		<tr><th>{lang_get s='enter_role_notes'}</th></tr>
+		<tr><th>{$labels.enter_role_notes}</th></tr>
 		<tr>
-			<td width="80%">{$notes}</td>
+			<td width="80%">{$gui->notes}</td>
 		</tr>
 
 	</table>
-	{if $grants->role_mgmt == "yes" && $role->dbID != $noRightsRole}
+	{if $gui->grants->role_mgmt == "yes" && $gui->role->dbID != $smarty.const.TL_ROLES_NONE}
 
 		<div class="groupBtn">
-		<input type="hidden" name="doAction" value="{$action_type}" />
-		<input type="submit" name="role_mgmt" value="{lang_get s='btn_save'}"
-		         {if $role != null && $affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
+		<input type="hidden" name="doAction" value="{$gui->operation}" />
+		<input type="submit" name="role_mgmt" value="{$labels.btn_save}"
+		         {if $gui->role != null && $gui->affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
 		/>
 	{/if}
 	</div>
 	<br />
-	{if $affectedUsers neq null}
+	{if $gui->affectedUsers neq null}
 		<table class="common" style="width:50%">
-		<caption>{lang_get s='caption_possible_affected_users'}</caption>
-		{foreach from=$affectedUsers item=user}
+		<caption>{$labels.caption_possible_affected_users}</caption>
+		{foreach from=$gui->affectedUsers item=user}
 		<tr>
 			<td>{$user->getDisplayName()|escape}</td>
 		</tr>

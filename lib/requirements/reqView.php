@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/03/10 14:12:43 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/04/15 06:44:32 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -18,27 +18,22 @@ require_once('requirement_mgr.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-$template_dir = "requirements/";
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
+$templateCfg = templateConfiguration();
 $req_mgr = new requirement_mgr($db);
-$req_id = isset($_REQUEST['requirement_id']) ? intval($_REQUEST['requirement_id']) : null;
 
-$req = $req_mgr->get_by_id($req_id);
-$main_descr = lang_get('req') . TITLE_SEP . $req['title'];
-$req['coverage'] = $req_mgr->get_coverage($req_id);
+$gui=new stdClass();
+$gui->grants=new stdClass();
+$gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
 
-$cf_smarty = $req_mgr->html_table_of_custom_field_values($req_id);
-$attachments = getAttachmentInfosFrom($req_mgr,$req_id);
+$gui->req_id = isset($_REQUEST['requirement_id']) ? intval($_REQUEST['requirement_id']) : null;
+$gui->req = $req_mgr->get_by_id($gui->req_id);
+$gui->req['coverage'] = $req_mgr->get_coverage($gui->req_id);
+$gui->main_descr = lang_get('req') . TITLE_SEP . $gui->req['title'];
+$gui->cfields = $req_mgr->html_table_of_custom_field_values($gui->req_id);
+$gui->attachments = getAttachmentInfosFrom($req_mgr,$gui->req_id);
+$gui->reqStatus=init_labels(config_get('req_status'));
 
 $smarty = new TLSmarty();
-$smarty->assign('main_descr',$main_descr);
-$smarty->assign('cf',$cf_smarty);
-$smarty->assign('req_id',$req_id);
-$smarty->assign('title', $req['title']);
-$smarty->assign('req', $req);
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
-$smarty->assign('selectReqStatus', $arrReqStatus);
-$smarty->assign('attachments',$attachments);
-$smarty->display($template_dir . $default_template);
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

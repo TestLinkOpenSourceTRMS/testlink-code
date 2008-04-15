@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecReorder.tpl,v 1.4 2008/03/12 21:27:37 schlundus Exp $
+$Id: reqSpecReorder.tpl,v 1.5 2008/04/15 06:44:22 franciscom Exp $
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -8,7 +8,7 @@ $Id: reqSpecReorder.tpl,v 1.4 2008/03/12 21:27:37 schlundus Exp $
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 
 {assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqSpecEdit.php?do_action=do_reorder"}
+{assign var="url_args" value="reqSpecEdit.php?doAction=doReorder"}
 {assign var="action_url" value="$basehref$req_module$url_args"}
 
 {assign var="tree_id" value="req_tree"}
@@ -41,12 +41,12 @@ $Id: reqSpecReorder.tpl,v 1.4 2008/03/12 21:27:37 schlundus Exp $
 	<form method="post" name="{$form_id}" id="{$form_id}" action="{$action_url}">
 
 	  <input type="hidden" name="nodes_order" />
-	  <input type="hidden" name="do_reorder" disabled="disabled" />
+	  <input type="hidden" name="doReorder" disabled="disabled" />
 
 		<div style="padding: 3px;">
 			<input type="button" id="btn_save"
 			       name="btn_save"
-			       onclick="dnd_save_tree('{$form_id}','nodes_order','do_reorder');"
+			       onclick="dnd_save_tree('{$form_id}','nodes_order','doReorder');"
 			       value="{lang_get s='btn_save'}" />
 		</div>
 	</form>

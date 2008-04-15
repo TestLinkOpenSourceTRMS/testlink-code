@@ -1,10 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.7 2008/03/10 14:12:43 franciscom Exp $
+$Id: reqView.tpl,v 1.8 2008/04/15 06:44:22 franciscom Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
 *}
+
+{lang_get var="labels"
+          s="req,req_doc_id,scope,status,coverage,req_msg_notestcase,
+             title_created,by,title_last_mod,btn_edit,btn_delete"}
+             
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -16,40 +21,40 @@ rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/requirements/reqEdit.php?do_action=do_delete&requirement_id=';
+var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement_id=';
 </script>
 </head>
 
 <body {$body_onload}>
 
 <div class="workBack">
-<h1> {$main_descr|escape}</h1>
+<h1>{$gui->main_descr|escape}</h1>
 
 <table class="simple" style="width: 90%">
 	<tr>
-		<th>{lang_get s='req'}{$smarty.const.TITLE_SEP}{$req.title|escape}</th>
+		<th>{$gui->main_descr|escape}</th>
 	</tr>
   <tr>
-  <td>{lang_get s='req_doc_id'}{$smarty.const.TITLE_SEP}{$req.req_doc_id|escape}</td>
+  <td>{$labels.req_doc_id}{$smarty.const.TITLE_SEP}{$gui->req.req_doc_id|escape}</td>
   </tr>
 
   <tr>
 		<td>
-			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='scope'}</legend>
-			{$req.scope}
+			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.scope}</legend>
+			{$gui->req.scope}
 			</fieldset>
 		</td>
   </tr>
   <tr>
-  <td>{lang_get s='status'}{$smarty.const.TITLE_SEP}{$selectReqStatus[$req.status]}</td>
+  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$gui->reqStatus[$gui->req.status]}</td>
   </tr>
   <tr>
 		<td>
-			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='coverage'}</legend>
-					  {section name=row loop=$req.coverage}
-			  <span>{$req.coverage[row].name}</span><br />
+			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
+					  {section name=row loop=$gui->req.coverage}
+			  <span>{$gui->req.coverage[row].name}</span><br />
 		   {sectionelse}
-			<span>{lang_get s='req_msg_notestcase'}</span>
+			<span>{$labels.req_msg_notestcase}</span>
 		  {/section}
 
 			</fieldset>
@@ -61,32 +66,32 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?do_action=do_delete&requireme
 	
 	<tr>
 	  <td>
-  	{$cf}
+  	{$cfields}
   	</td>
 	</tr>
 
   <tr class="time_stamp_creation">
   <td colspan="2">
-      {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$req.creation_ts }&nbsp;
-      		{lang_get s='by'}&nbsp;{$req.author|escape}
+      {$labels.title_created}&nbsp;{localize_timestamp ts=$gui->req.creation_ts }&nbsp;
+      		{$labels.by}&nbsp;{$gui->req.author|escape}
   </td>
   </tr>
-  {if $req.modifier ne ""}
+  {if $gui->req.modifier != ""}
     <tr class="time_stamp_creation">
     <td colspan="2">
-    {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$req.modification_ts}
-		  &nbsp;{lang_get s='by'}&nbsp;{$req.modifier|escape}
+    {$labels.title_last_mod}&nbsp;{localize_timestamp ts=$gui->req.modification_ts}
+		  &nbsp;{$labels.by}&nbsp;{$gui->req.modifier|escape}
     </td>
     </tr>
   {/if}
 </table>
 
-{assign var="bDownloadOnly" value=false}
-{if $modify_req_rights neq 'yes'}
-	{assign var="bDownloadOnly" value=true}
+{assign var="bDownloadOnly" value=true}
+{if $gui->grants->req_mgmt == 'yes'}
+  {assign var="bDownloadOnly" value=false}
 {/if}
-{include file="inc_attachments.tpl" id=$req.id  tableName="requirements"
-         attachmentInfos=$attachments  downloadOnly=$bDownloadOnly}
+{include file="inc_attachments.tpl" id=$gui->req.id  tableName="requirements"
+         attachmentInfos=$gui->attachments  downloadOnly=$bDownloadOnly}
 
 
 
@@ -94,17 +99,17 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?do_action=do_delete&requireme
   {* ----------------------------------------------------------------------------------------- *}
   <div class="groupBtn">
     <form id="req" name="req" action="lib/requirements/reqEdit.php" method="post">
-    	<input type="hidden" name="requirement_id" value="{$req_id}" />
-    	<input type="hidden" name="do_action" value="" />
+    	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
+    	<input type="hidden" name="doAction" value="" />
     	
-    	{if $modify_req_rights == "yes"}
+    	{if $gui->grants->req_mgmt == "yes"}
     	<input type="submit" name="edit_req" 
-    	       value="{lang_get s='btn_edit'}" 
-    	       onclick="do_action.value='edit'"/>
+    	       value="{$labels.btn_edit}" 
+    	       onclick="doAction.value='edit'"/>
     	
     	
-    	<input type="button" name="delete_req" value="{lang_get s='btn_delete'}"
-    	       onclick="delete_confirmation({$req.id},'{$req.title|escape:'javascript'}',
+    	<input type="button" name="delete_req" value="{$labels.btn_delete}"
+    	       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'}',
  					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
     	{/if}
     </form>

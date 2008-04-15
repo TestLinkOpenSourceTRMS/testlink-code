@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/04/15 06:44:32 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -28,24 +28,27 @@ testlinkInitPage($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
 
-$user_feedback='';
-$template_dir="requirements/";
-$template = 'reqSpecView.tpl';
+$templateCfg = templateConfiguration();
 
 $args=init_args();
-$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
-$attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
+
+$gui=new stdClass();
+$gui->grants=new stdClass();
+$gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
+
+$gui->req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
+$gui->req_spec_id = $args->req_spec_id;
+$gui->tproject_name=$args->tproject_name;
+$gui->name=$args->title;
+$gui->main_descr= lang_get('req_spec') . TITLE_SEP . $gui->req_spec['title'];
+
+$gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
+$gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
 
 $smarty = new TLSmarty();
-$smarty->assign('tproject_name',$args->tproject_name);
-$smarty->assign('cf',$cf_smarty);
-$smarty->assign('attachments',$attachments);
-$smarty->assign('req_spec_id', $args->req_spec_id);
-$smarty->assign('req_spec', $req_spec);
-$smarty->assign('name',$args->title);
-$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req"));
-$smarty->display($template_dir . $template);
+$smarty->assign('gui',$gui);
+
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*

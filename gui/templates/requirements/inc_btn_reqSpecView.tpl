@@ -1,34 +1,31 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.2 2008/03/09 18:38:18 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.3 2008/04/15 06:44:21 franciscom Exp $
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 <div class="groupBtn">
   <form id="req_spec" name="req_spec" action="{$req_module}reqSpecEdit.php" method="post">
-  	<input type="hidden" name="req_spec_id" value="{$req_spec_id}" />
-  	<input type="hidden" name="do_action" value="" />
+  	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+  	<input type="hidden" name="doAction" value="" />
   	
-  	{if $modify_req_rights == "yes"}
+  	{if $gui->grants->req_mgmt == "yes"}
   	<input type="submit" name="edit_req_spec" 
   	       value="{lang_get s='btn_edit_spec'}" 
-  	       onclick="do_action.value='edit'"/>
+  	       onclick="doAction.value='edit'"/>
   	
   	
   	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
-  	       onclick="delete_confirmation({$req_spec.id},'{$req_spec.title|escape:'javascript'}',
+  	       onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'}',
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
 
   	<input type="button" name="print_req_spec" value="{lang_get s='btn_print'}"
-  		onclick="javascript: window.open('{$basehref}{$req_module}reqSpecPrint.php?req_spec_id={$req_spec.id}', 
+  		onclick="javascript: window.open('{$basehref}{$req_module}reqSpecPrint.php?req_spec_id={$gui->req_spec.id}', 
   		        '_blank','left=100,top=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=650');" />
   	<input type="button" name="analyse" value="{lang_get s='btn_analyse'}"
-  		onclick="javascript: location.href=fRoot+'{$req_module}reqSpecAnalyse.php?req_spec_id={$req_spec.id}';" />
-  	{/if}
+  		onclick="javascript: location.href=fRoot+'{$req_module}reqSpecAnalyse.php?req_spec_id={$gui->req_spec.id}';" />
 
-  	
-  	{if $modify_req_rights == "yes"}
   	<br />
   	&nbsp;
   	<br />

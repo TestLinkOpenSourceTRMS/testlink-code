@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.4 2008/03/12 21:27:37 schlundus Exp $
+$Id: reqSpecEdit.tpl,v 1.5 2008/04/15 06:44:22 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20071120 - franciscom - added ext js alert message box
@@ -87,9 +87,9 @@ function validateForm(f)
    {/if}
 
 <div class="groupBtn">
-	<input type="hidden" name="do_action" value="" />
+	<input type="hidden" name="doAction" value="" />
 	<input type="submit" name="createSRS" value="{$submit_button_label}"
-	       onclick="do_action.value='{$submit_button_action}'" />
+	       onclick="doAction.value='{$submit_button_action}'" />
 </div>
 
  </form>

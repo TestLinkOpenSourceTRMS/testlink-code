@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $
+$Id: reqEdit.tpl,v 1.8 2008/04/15 06:44:22 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -58,7 +58,7 @@ window.onload=function()
     <br />
  {/if}
 
-{include file="inc_update.tpl" result=$sqlResult item="Requirement" name=$name action=$action}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
 
 <form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this);">
@@ -68,38 +68,38 @@ window.onload=function()
   	<div class="labelHolder"> <label for="reqDocId">{lang_get s='req_doc_id'}</label></div>
 	<div><input type="text" name="reqDocId" id="reqDocId"
   		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
-  		        value="{$req.req_doc_id}" />
+  		        value="{$gui->req.req_doc_id}" />
   				{include file="error_icon.tpl" field="reqDocId"}
   	</div>
  	<br />
  	<div class="labelHolder"> <label for="req_title">{lang_get s='title'}</label></div>
   	<div><input type="text" name="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
-  		        value="{$req.title}" />
+  		        value="{$gui->req.title}" />
   		    {include file="error_icon.tpl" field="req_title"}
  	 </div>
   	<br />
   	<div class="labelHolder"> <label for="scope">{lang_get s='scope'}</label></div>
-	<div>{$scope}</div>
+	<div>{$gui->scope}</div>
  	<br />
   	<div class="labelHolder"> <label for="reqStatus">{lang_get s='status'}</label>
      	<select name="reqStatus">
-  			{html_options options=$selectReqStatus selected=$req.status}
+  			{html_options options=$gui->reqStatus selected=$gui->req.status}
   		</select>
   	</div>
   	<br />
    	{* Custom fields *}
-   	{if $cf neq ""}
+   	{if $gui->cfields != ""}
     	<div class="custom_field_container">
-    	{$cf}
+    	{$gui->cfields}
      	</div>
      <br />
   	{/if}
 
 	<div class="groupBtn">
-		<input type="hidden" name="do_action" value="" />
-		<input type="submit" name="create_req" value="{$submit_button_label}"
-	       onclick="do_action.value='{$submit_button_action}'"/>
+		<input type="hidden" name="doAction" value="" />
+		<input type="submit" name="create_req" value="{$gui->submit_button_label}"
+	         onclick="doAction.value='{$gui->operation}'"/>
 	</div>
 </form>
 

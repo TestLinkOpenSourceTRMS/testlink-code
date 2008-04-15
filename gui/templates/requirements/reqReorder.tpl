@@ -1,14 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqReorder.tpl,v 1.3 2008/03/12 21:27:37 schlundus Exp $
+$Id: reqReorder.tpl,v 1.4 2008/04/15 06:44:22 franciscom Exp $
 *}
+
+{lang_get var="labels"
+          s="req_spec,title_change_req_order,btn_save"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 
 {assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqEdit.php?do_action=do_reorder"}
+{assign var="url_args" value="reqEdit.php?doAction=doReorder"}
 {assign var="action_url" value="$basehref$req_module$url_args"}
 
 {assign var="tree_id" value="req_tree"}
@@ -18,21 +21,21 @@ $Id: reqReorder.tpl,v 1.3 2008/03/12 21:27:37 schlundus Exp $
 
 
 <body onload="init_drag_and_drop('{$basehref}','{$tree_id}');">
-<h1>{lang_get s="req_spec"}{$smarty.const.TITLE_SEP}{$req_spec_name|escape}</h1>
+<h1>{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_change_req_order'}</h1>
+<h1>{$labels.title_change_req_order}</h1>
 
 <div>
  	<ul id="{$tree_id}" class="dhtmlgoodies_tree">
-		<li id="{$req_spec_id}" noDrag="true" noSiblings="true" noDelete="true" noRename="true">
-		    <a href="dummy#" onclick="return false;">{$req_spec_name|escape}</a>
+		<li id="{$gui->req_spec_id}" noDrag="true" noSiblings="true" noDelete="true" noRename="true">
+		    <a href="dummy#" onclick="return false;">{$gui->req_spec_name|escape}</a>
 	   		<ul>
-			{section name=idx loop=$arrReqs}
-				<li id="{$arrReqs[idx].id}" isLeaf="true"
+			{section name=idx loop=$gui->all_reqs}
+				<li id="{$gui->all_reqs[idx].id}" isLeaf="true"
 				    noRename="true" noDelete="true" noChildren="true">
 	  				<a href="dummy#" onclick="return false;" title="{$hint_drag_and_drop}">
-	 					  {$arrReqs[idx].title|escape}</a></li>
+	 					  {$gui->all_reqs[idx].title|escape}</a></li>
 			{/section}
 	    	</ul>
   		 </li>
@@ -41,13 +44,13 @@ $Id: reqReorder.tpl,v 1.3 2008/03/12 21:27:37 schlundus Exp $
 	<form method="post" name="{$form_id}" id="{$form_id}" action="{$action_url}">
 
 		<input type="hidden" name="nodes_order" />
-		<input type="hidden" name="do_reorder" disabled="disabled" />
+		<input type="hidden" name="doReorder" disabled="disabled" />
 	
 		<div style="padding: 3px;">
 			<input type="button" id="btn_save"
 				       name="btn_save"
-				       onclick="dnd_save_tree('{$form_id}','nodes_order','do_reorder');"
-				       value="{lang_get s='btn_save'}" />
+				       onclick="dnd_save_tree('{$form_id}','nodes_order','doReorder');"
+				       value="{$labels.btn_save}" />
 		</div>
 	</form>
 

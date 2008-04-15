@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.16 2008/03/10 21:52:00 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.17 2008/04/15 06:44:22 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -16,20 +16,20 @@
 {assign var="buttons_template" value=$smarty.template|replace:"$bn":"inc_btn_$bn"}
 
 {assign var="req_module" value='lib/requirements/'}
-{assign var="url_args" value="reqEdit.php?do_action=create&amp;req_spec_id="}
-{assign var="req_edit_url" value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="url_args" value="reqEdit.php?doAction=create&amp;req_spec_id="}
+{assign var="req_edit_url" value="$basehref$req_module$url_args$gui->req_spec_id"}
 
 {assign var="url_args" value="reqImport.php?req_spec_id="}
-{assign var="req_import_url"  value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="req_import_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
 
 {assign var="url_args" value="reqExport.php?req_spec_id="}
-{assign var="req_export_url"  value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="req_export_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
 
-{assign var="url_args" value="reqEdit.php?do_action=reorder&amp;req_spec_id="}
-{assign var="req_reorder_url"  value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="url_args" value="reqEdit.php?doAction=reorder&amp;req_spec_id="}
+{assign var="req_reorder_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
 
-{assign var="url_args" value="reqEdit.php?do_action=create_tcases&amp;req_spec_id="}
-{assign var="req_create_tc_url"  value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="url_args" value="reqEdit.php?doAction=create_tcases&amp;req_spec_id="}
+{assign var="req_create_tc_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
 
 
 {* used on inc_btn_reqSpecView.tpl *}
@@ -41,7 +41,7 @@
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$req_module}reqSpecEdit.php?do_action=do_delete&req_spec_id=';
+var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
 </script>
 </head>
 
@@ -55,25 +55,25 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?do_action=do_delete&req_spec_
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;"}
-	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$req_spec.title|escape}
+	{$gui->main_descr|escape}
 </h1>
 <br />
 {include file="$buttons_template"}
 
 <table class="simple" style="width: 90%">
 	<tr>
-		<th>{lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$req_spec.title|escape}</th>
+		<th>{$gui->main_descr|escape}</th>
 	</tr>
 	<tr>
 		<td>
 			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='scope'}</legend>
-			{$req_spec.scope}
+			{$gui->req_spec.scope}
 			</fieldset>
 		</td>
 	</tr>
-  {if $req_spec.total_req neq "0"}
+  {if $gui->req_spec.total_req != 0}
   <tr>
-  <td>{lang_get s='req_total'}{$smarty.const.TITLE_SEP}{$req_spec.total_req}</td>
+  <td>{lang_get s='req_total'}{$smarty.const.TITLE_SEP}{$gui->req_spec.total_req}</td>
    </tr>
   {/if}
 	<tr>
@@ -82,35 +82,36 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?do_action=do_delete&req_spec_
 
 	<tr>
 	  <td>
-  	{$cf}
+  	{$gui->cfields}
   	</td>
 	</tr>
 
  <tr class="time_stamp_creation">
   <td colspan="2">
-      {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$req_spec.creation_ts }&nbsp;
-      		{lang_get s='by'}&nbsp;{$req_spec.author|escape}
+      {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$gui->req_spec.creation_ts }&nbsp;
+      		{lang_get s='by'}&nbsp;{$gui->req_spec.author|escape}
   </td>
   </tr>
-  {if $req_spec.modifier ne ""}
+  {if $gui->req_spec.modifier != ""}
     <tr class="time_stamp_creation">
     <td colspan="2">
-    {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$req_spec.modification_ts}
-		  &nbsp;{lang_get s='by'}&nbsp;{$req_spec.modifier|escape}
+    {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$gui->req_spec.modification_ts}
+		  &nbsp;{lang_get s='by'}&nbsp;{$gui->req_spec.modifier|escape}
     </td>
     </tr>
   {/if}
 
 </table>
 
-{if $modify_req_rights neq 'yes'}
-	{assign var="bDownloadOnly" value=true}
+{assign var="bDownloadOnly" value=true}
+{if $gui->grants->req_mgmt == 'yes'}
+	{assign var="bDownloadOnly" value=false}
 {/if}
-{include file="inc_attachments.tpl" id=$req_spec.id  tableName="req_specs"
-         attachmentInfos=$attachments  downloadOnly=$bDownloadOnly}
+{include file="inc_attachments.tpl" id=$gui->req_spec.id  tableName="req_specs"
+         attachmentInfos=$gui->attachments  downloadOnly=$bDownloadOnly}
 
 </div>
-{if $refresh_tree}
+{if $gui->refresh_tree}
    {include file="inc_refreshTree.tpl"}
 {/if}
 </body>

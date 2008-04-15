@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.3 2008/03/30 17:16:26 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.4 2008/04/15 06:44:22 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -82,7 +82,7 @@ function check_action_precondition(form_id,action,msg)
   {/if}
   
   <form id="frmReqList" enctype="multipart/form-data" method="post">
-    <input type="hidden" name="do_action"  id="do_action"  value="do_create_tcases" />
+    <input type="hidden" name="doAction"  id="doAction"  value="do_create_tcases" />
     <input type="hidden" name="req_spec_id"  id="req_spec_id"  value="{$req_spec_id}" />
  
  

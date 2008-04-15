@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2008/03/12 21:27:37 $ by $Author: schlundus $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/04/15 06:44:32 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -25,8 +25,8 @@ require_once("print.inc.php");
 require_once("requirement_spec_mgr.class.php");
 require_once("requirement_mgr.class.php");
 
-// 20070705 - franciscom
-$arrReqStatus = init_labels(config_get('req_status'));
+// 20080414 - franciscom
+// $arrReqStatus = init_labels(config_get('req_status'));
 
 $g_reqFormatStrings = array (
 							"csv" => lang_get('req_import_format_description1'),

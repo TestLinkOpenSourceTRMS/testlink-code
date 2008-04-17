@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.29 2008/03/24 19:33:28 havlat Exp $ 
+	$Id: navBar.tpl,v 1.30 2008/04/17 08:24:00 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -9,6 +9,10 @@
 *}
 
 {*******************************************************************}
+{lang_get var="labels"
+          s="testproject,title_specification,title_execute,
+             search_testcase,title_results,title_user_mgmt"}
+
 {include file="inc_head.tpl"}
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -25,7 +29,7 @@
 	{if $arrayProducts ne ""}
 	<div style="float: right; padding: 2px;">
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 
-		<span style="font-size: 80%">{lang_get s='product'} </span>
+		<span style="font-size: 80%">{$labels.testproject'} </span>
 		<select class="menu_combo" name="testproject" onchange="this.form.submit();">
       	{foreach key=tp_id item=tp_name from=$arrayProducts}
   		  <option value="{$tp_id}" title="{$tp_name|escape}"
@@ -49,19 +53,19 @@
    	<a href="index.php" target="_parent" accesskey="h" tabindex="1">{lang_get s='home'}</a> | 
    	{if $currentTProjectID && $rightViewSpec == "yes"}
    	<a href="lib/general/frmWorkArea.php?feature=editTc" target="mainframe" accesskey="s" 
-      		tabindex="2">{lang_get s='title_specification'}</a> | 
+      		tabindex="2">{$labels.title_specification}</a> | 
    	{/if}	
    	{if $rightExecute == "yes" and $countPlans > 0}
    	<a href="lib/general/frmWorkArea.php?feature=executeTest" target="mainframe" accesskey="e" 
-     		tabindex="3">{lang_get s='title_execute'}</a> | 
+     		tabindex="3">{$labels.title_execute}</a> | 
    	{/if}	
    	{if $rightMetrics == "yes" and $countPlans > 0}
    	<a href="lib/general/frmWorkArea.php?feature=showMetrics" target="mainframe" accesskey="r" 
-      		tabindex="3">{lang_get s='title_results'}</a> | 
+      		tabindex="3">{$labels.title_results}</a> | 
    	{/if}	
    	{if $rightUserAdmin == "yes"}
    	<a href="{$action_user_mgmt}" target="mainframe" accesskey="u" 
-      		tabindex="4">{lang_get s='title_user_mgmt'}</a> | 
+      		tabindex="4">{$labels.title_user_mgmt}</a> | 
    	{/if}	
 	{if $rights_mgt_view_events eq "yes"}
 		<a href="lib/events/eventviewer.php" target="mainframe" accesskey="v" tabindex="5">{lang_get s='event_viewer'}</a> |
@@ -73,7 +77,7 @@
 		      action="lib/testcases/archiveData.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
 		<input style="font-size: 80%; width: 50px;" type="text" 
-		       title="{lang_get s='search_testcase'}" name="targetTestCase" value="" /> 
+		       title="{$labels.search_testcase}" name="targetTestCase" value="" /> 
 		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png" 
 		     title="{lang_get s='search_testcase'}"
 			 alt="{lang_get s='search_testcase'}"

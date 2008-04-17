@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/03/18 20:13:20 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20080318 - franciscom - thanks to Postgres have found code that must be removed
+ * rev : 20080416 - franciscom - update() - fixed bug on return type 
+ *       20080318 - franciscom - thanks to Postgres have found code that must be removed
  *                               after requirements get it's id from nodes hierarchy
 */
 class requirement_mgr extends tlObjectWithAttachments
@@ -165,7 +166,7 @@ class requirement_mgr extends tlObjectWithAttachments
           [skip_controls]
 
 
-    returns: message string
+    returns: map: keys : status_ok, msg
 
   */
 
@@ -216,10 +217,11 @@ class requirement_mgr extends tlObjectWithAttachments
     } // 	  if($chk['status_ok'] || $skip_controls)
 	  else
 	  {
+	    $result['status_ok']=$chk['status_ok'];
 	    $result['msg']=$chk['msg'];
 	  }
 
-	  return $result['msg'];
+	  return $result;
   } //function end
 
 

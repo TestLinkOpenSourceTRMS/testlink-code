@@ -5,17 +5,19 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/04/07 07:07:00 $ -  $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/04/17 08:24:10 $ -  $Author: franciscom $
  *
- * This page shows all users
+ * shows all users
+ *
+ * rev: 20080416 - franciscom - getRoleColourCfg()
+ *
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
 testlinkInitPage($db);
 
-$template_dir = 'usermanagement/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 $sqlResult = null;
 $action = null;
@@ -81,15 +83,13 @@ $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_order_by',$args->user_order_by);
 $smarty->assign('order_by_role_dir',$args->order_by_dir['order_by_role_dir']);
 $smarty->assign('order_by_login_dir',$args->order_by_dir['order_by_login_dir']);
-$smarty->assign('role_colour',config_get('role_colour'));
+// $smarty->assign('role_colour',config_get('role_colour'));
+$smarty->assign('role_colour',getRoleColourCfg($db));
 
 $grants=getGrantsForUserMgmt($db,$_SESSION['currentUser']);
-$smarty->assign('grants',$grants);
 
-// $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
-// $smarty->assign('role_management',has_rights($db,"role_management"));
-// $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
-// $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+
+$smarty->assign('grants',$grants);
 
 $smarty->assign('update_title_bar',0);
 $smarty->assign('reload',0);
@@ -97,7 +97,7 @@ $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('base_href', $_SESSION['basehref']);
-$smarty->display($template_dir . $g_tpl['usersview']);
+$smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
 
 
 
@@ -162,4 +162,35 @@ function init_args()
 
     return $args;  
 }
+
+/*
+  function: getRoleColourCfg
+            using configuration parameter ($g_role_colour)
+            creates a map with following structure:
+            key: role name
+            value: colour 
+            
+            If name is not defined on $g_role_colour (this normally
+            happens for user defined roles), will be added with '' as colour (means default colour).
+
+  args: db: reference to db object
+
+  returns: map
+
+*/
+function getRoleColourCfg(&$dbHandler)
+{
+    $role_colour=config_get('role_colour');
+    $roles = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+    unset($roles[TL_ROLES_UNDEFINED]);
+    foreach($roles as $roleObj)
+    {
+        if( !isset($role_colour[$roleObj->name]) )
+        {
+            $role_colour[$roleObj->name]='';  
+        }  
+    }    
+    return $role_colour;
+}
+
 ?>

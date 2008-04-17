@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/04/15 06:44:32 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -45,9 +45,6 @@ $template = 'reqSpecView.tpl';
 
 $templateCfg = templateConfiguration();
 
-$cf_smarty = null;
-$req = null;
-
 $args = init_args();
 $gui = initialize_gui();
 
@@ -83,16 +80,6 @@ switch($args->doAction)
 		break;
 
   case "doReorder":
-		// $template = $template_dir .  'reqSpecView.tpl';
-		// $nodes_in_order = transform_nodes_order($args->nodes_order);
-    // 
-		// // need to remove first element, is req_spec_id
-		// $args->req_spec_id=array_shift($nodes_in_order);
-		// $req_mgr->set_order($nodes_in_order);
-		// $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
-    // 
-		// $smarty->assign('req_spec', $req_spec);
-		// $smarty->assign('refresh_tree', 'yes');
 		$op=$commandMgr->doReorder($args);
 		break;
 
@@ -115,16 +102,6 @@ switch($args->doAction)
 		}
 		break;
 } // switch
-
-// $smarty->assign('cf',$cf_smarty);
-// $smarty->assign('action_descr',$action_descr);
-// $smarty->assign('main_descr',$main_descr);
-// $smarty->assign('req_id', $args->req_id);
-// $smarty->assign('req_spec_id', $args->req_spec_id);
-// $smarty->assign('action', $action);
-// $smarty->assign('name',$args->title);
-// $smarty->assign('selectReqStatus', $arrReqStatus);
-// $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req"));
 
 renderGui($smarty,$args,$gui,$op,$templateCfg);
 
@@ -156,8 +133,6 @@ function init_args()
 	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 	$args->do_create_tc_from_req = isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
 	$args->do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
-	// $args->reorder = isset($_REQUEST['req_reorder']) ? 1 : 0;
-	// $args->do_req_reorder = isset($_REQUEST['do_req_reorder']) ? 1 : 0;
 
   $args->basehref=$_SESSION['basehref'];
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -187,7 +162,7 @@ function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
     $owebEditor->Value = $argsObj->scope;
 	  $guiObj->scope=$owebEditor->CreateHTML();
       
-    $doRender=false;
+    $renderType='none';
     switch($argsObj->doAction)
     {
         case "edit":
@@ -195,7 +170,7 @@ function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
         case "reorder":
         case "doDelete":
         case "doReorder":
-            $doRender=true;
+            $renderType='template';
             $key2loop=get_object_vars($opObj);
             foreach($key2loop as $key => $value)
             {
@@ -209,23 +184,43 @@ function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
 
 	      case "doCreate":
 	      case "doUpdate":
-            $doRender=true;  
+            $renderType='template';
             $key2loop=get_object_vars($opObj);
             foreach($key2loop as $key => $value)
             {
                 $guiObj->$key=$value;
             }
             $guiObj->operation = $actionOperation[$argsObj->doAction];
+            
             $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
-            $tpl = $templateCfg->template_dir . $tpl;
+            $pos = strpos($tpl, '.php');
+            if( $pos === false )
+            {
+                $tpl = $templateCfg->template_dir . $tpl;      
+            }
+            else
+            {
+                $renderType='redirect';  
+            }
     		break;
     }
 
-    if($doRender)
+    switch($renderType)
     {
- 		    $smartyObj->assign('gui',$guiObj);
-		    $smartyObj->display($tpl);
-	  }
+        case 'template':
+ 		        $smartyObj->assign('gui',$guiObj);
+		        $smartyObj->display($tpl);
+        break;  
+ 
+        case 'redirect':
+		        header("Location: {$tpl}");
+	  		    exit();
+        break;
+
+        default:
+        break;
+    }
+
 }
 
 /*

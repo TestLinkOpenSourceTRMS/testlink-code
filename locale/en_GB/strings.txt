@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.305 $
- * @modified $Date: 2008/04/14 19:19:22 $ $Author: schlundus $
+ * @version $Revision: 1.306 $
+ * @modified $Date: 2008/04/17 08:24:20 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -61,6 +61,7 @@ $TLS_test_case 		= "Test Case";
 $TLS_testcase 		= $TLS_test_case;
 $TLS_test_plan 		= "Test Plan";
 $TLS_testplan 		= $TLS_test_plan;
+$TLS_testproject = "Test Project";
 $TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title 			= "Title";
@@ -583,7 +584,6 @@ $TLS_testcases = "Test Cases";
 
 // gui/templates/reqSpecCreate.tpl
 $TLS_action_create_srs = "Create Requirement Specification document";
-$TLS_testproject = "Test Project";
 
 
 
@@ -1550,7 +1550,7 @@ $TLS_desc_mgt_modify_users = "User management";
 $TLS_desc_mgt_view_key = "Keyword view (read only access)";
 $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
-$TLS_desc_mgt_view_events = "Eventviewer (read only access)";
+$TLS_desc_mgt_view_events = "Event viewer (read only access)";
 $TLS_desc_role_management = "Role management";
 $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
@@ -2116,7 +2116,7 @@ $TLS_log_level_WARNING = "Warning";
 $TLS_log_level_INFO = "Info";
 $TLS_log_level_ERROR = "Error";
 $TLS_log_level_DEBUG = "Debug";
-$TLS_event_viewer = "Eventviewer";
+$TLS_event_viewer = "Event viewer";
 $TLS_th_session_info = "Session information";
 $TLS_th_sessionID = "Session ID";
 $TLS_th_source = "Source";

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/04/15 06:46:23 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -16,14 +16,14 @@ class reqCommands
   private $db;
   private $reqSpecMgr;
   private $reqMgr;
-  private $reqStatus;
+  private $reqStatusDomain;
 
 	function __construct(&$db)
 	{
 	    $this->db=$db;
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
-	    $this->reqStatus=init_labels(config_get('req_status'));
+	    $this->reqStatusDomain=init_labels(config_get('req_status'));
 	}
 
   /*
@@ -36,15 +36,16 @@ class reqCommands
   */
 	function create(&$argsObj)
 	{
+	    $obj=new stdClass();
 		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-
-      $obj=new stdClass();
+      
 		  $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
 		  $obj->action_descr = lang_get('create_req');
 		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
       $obj->template = 'reqEdit.tpl';
 		  $obj->submit_button_label=lang_get('btn_save');
-      $obj->reqStatus=$this->reqStatus;
+      $obj->reqStatusDomain=$this->reqStatusDomain;
+ 		  $obj->req_spec_id = $argsObj->req_spec_id;
       return $obj;	
 	}
 
@@ -63,12 +64,14 @@ class reqCommands
 		  $obj->req = $this->reqMgr->get_by_id($argsObj->req_id);
 		  $argsObj->scope=$obj->req['scope'];
 
-		  $obj->main_descr = lang_get('req') . TITLE_SEP . $req['title'];
+		  $obj->main_descr = lang_get('req') . TITLE_SEP . $obj->req['title'];
 		  $obj->action_descr =lang_get('edit_req');
 		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
       $obj->template = 'reqEdit.tpl';
 		  $obj->submit_button_label=lang_get('btn_save');
-      $obj->reqStatus=$this->reqStatus;
+      $obj->reqStatusDomain=$this->reqStatusDomain;
+ 		  $obj->req_spec_id = $argsObj->req_spec_id;
+ 		  $obj->req_id = $argsObj->req_id;
 
       return $obj;	
 	}
@@ -91,7 +94,8 @@ class reqCommands
 		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
 		  $obj->submit_button_label=lang_get('btn_save');
 		  $obj->template = null;
-      $obj->reqStatus=$this->reqStatus;
+      $obj->reqStatusDomain=$this->reqStatusDomain;
+ 		  $obj->req_spec_id = $argsObj->req_spec_id;
 	
 		  $ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
 		                               $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,$argsObj->reqType);
@@ -104,6 +108,7 @@ class reqCommands
 		  	$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
 		  	$this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
   		  $obj->template = 'reqEdit.tpl';
+  		  $obj->req_id = $ret['id'];
 		  }
 		  $argsObj->scope = '';
       return $obj;	
@@ -120,25 +125,39 @@ class reqCommands
   */
 	function doUpdate(&$argsObj,$request)
 	{
+      $obj=new stdClass();
+	    $descr_prefix = lang_get('req') . TITLE_SEP;
+
+	    // Old Data
+	    $old_req = $this->reqMgr->get_by_id($argsObj->req_id);
+	    
 		  $ret = $this->reqMgr->update($argsObj->req_id,trim($argsObj->reqDocId),$argsObj->title,
 		  				                     $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,$argsObj->reqType);
-      
-      
-      $obj=new stdClass();
-		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
-		  $obj->req = $this->reqMgr->get_by_id($argsObj->req_id);
-		  $obj->main_descr = lang_get('req') . TITLE_SEP . $req['title'];
-		  $obj->action_descr='';
-		  $obj->template = null;
-      $obj->reqStatus=$this->reqStatus;
 
+      $obj=$this->edit($argsObj);
       $obj->user_feedback = $ret['msg'];
+		  $obj->template = null;
+
 		  if($ret['status_ok'])
 		  {
-          $obj->template = 'reqView.tpl';
+          $obj->main_descr = $descr_prefix . $req['title'];
+		      $obj->action_descr='';
+          $obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
 		  	  logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
 		  	  $cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
 		  	  $this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
+		  }
+		  else
+		  {
+		      // Action has failed => no change done on DB.
+		      // Preserve input done by user, to display again at UI level, and
+		      // allow corrections.
+          // $obj->req=$old_req;
+          // $obj->req['title']=$argsObj->title;
+          // $obj->req['reqStatus']=$argsObj->reqStatus;
+          // $obj->req['req_doc_id']=trim($argsObj->reqDocId);
+          // 
+          $obj->main_descr = $descr_prefix . $old_req['title'];
 		  }
       return $obj;	
   }

@@ -1,11 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.5 2008/04/15 06:44:22 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.6 2008/04/17 08:24:00 franciscom Exp $
 Purpose: smarty template - create a new req document
 
-rev: 20071120 - franciscom - added ext js alert message box
+rev: 20080415 - franciscom - refactoring
+     20071120 - franciscom - added ext js alert message box
 
 *}
+
+{lang_get var="labels"
+          s='warning,warning_empty_req_spec_title,title,scope,req_total'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -13,8 +17,8 @@ rev: 20071120 - franciscom - added ext js alert message box
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
-var warning_empty_req_spec_title = "{lang_get s='warning_empty_req_spec_title'}";
+var alert_box_title = "{$labels.warning}";
+var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title}";
 {literal}
 function validateForm(f)
 {
@@ -41,55 +45,55 @@ function validateForm(f)
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
           alt="$text_hint" title="$text_hint"  style="float: right;"}
- {$main_descr|escape}
+ {$gui->main_descr|escape}
 </h1>
 
-{if $modify_req_rights == "yes"}
+{if $gui->grants->req_mgmt == "yes"}
   <div class="workBack">
-    {if $action_descr != ''}
-    <h1>{$action_descr|escape}</h1>
+    {if $gui->action_descr != ''}
+    <h1>{gui->action_descr|escape}</h1>
     <br />
     {/if}
 
-    {include file="inc_update.tpl" user_feedback=$user_feedback}
+    {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
     <form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
-    <input type="hidden" name="req_spec_id" value="{$req_spec_id}" />
+    <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 
-   <div class="labelHolder"><label for="req_spec_title">{lang_get s='title'}</label></div>
+   <div class="labelHolder"><label for="req_spec_title">{$labels.title}</label></div>
    <div>
     <input type="text" id="req_spec_title" name="req_spec_title"
            size="{#REQ_SPEC_TITLE_SIZE#}"
     		   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
-           value="{$req_spec_title}" />
+           value="{$gui->req_spec_title}" />
   				{include file="error_icon.tpl" field="req_spec_title"}
    </div>
    <br />
 	 <div class="labelHolder">
-		<label for="scope">{lang_get s='scope'}</label>
+		<label for="scope">{$labels.scope}</label>
 		</div>
 		<div>
-		{$scope}
+		{$gui->scope}
    </div>
    <br />
-   <div class="labelHolder"><label for="countReq">{lang_get s='req_total'}</label>
+   <div class="labelHolder"><label for="countReq">{$labels.req_total}</label>
 	 <input type="text" name="countReq"
 		      size="{#REQ_COUNTER_SIZE#}" maxlength="{#REQ_COUNTER_MAXLEN#}"
-			    value="{$total_req_counter}" />
+			    value="{$gui->total_req_counter}" />
 	 </div>
      <br />
    {* Custom fields *}
-   {if $cf neq ""}
+   {if $gui->cfields neq ""}
      <div class="custom_field_container">
-     {$cf}
+     {$gui->cfields}
      </div>
      <br />
    {/if}
 
 <div class="groupBtn">
 	<input type="hidden" name="doAction" value="" />
-	<input type="submit" name="createSRS" value="{$submit_button_label}"
-	       onclick="doAction.value='{$submit_button_action}'" />
+	<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
+	       onclick="doAction.value='{$gui->operation}'" />
 </div>
 
  </form>

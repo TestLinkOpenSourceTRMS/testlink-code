@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.17 2008/04/15 06:44:22 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.18 2008/04/17 08:24:00 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -15,21 +15,22 @@
 {assign var="bn" value=$smarty.template|basename}
 {assign var="buttons_template" value=$smarty.template|replace:"$bn":"inc_btn_$bn"}
 
+{assign var="reqSpecID" value=$gui->req_spec_id}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqEdit.php?doAction=create&amp;req_spec_id="}
-{assign var="req_edit_url" value="$basehref$req_module$url_args$gui->req_spec_id"}
+{assign var="req_edit_url" value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqImport.php?req_spec_id="}
-{assign var="req_import_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
+{assign var="req_import_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqExport.php?req_spec_id="}
-{assign var="req_export_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
+{assign var="req_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqEdit.php?doAction=reorder&amp;req_spec_id="}
-{assign var="req_reorder_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
+{assign var="req_reorder_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqEdit.php?doAction=create_tcases&amp;req_spec_id="}
-{assign var="req_create_tc_url"  value="$basehref$req_module$url_args$gui->req_spec_id"}
+{assign var="req_create_tc_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 
 {* used on inc_btn_reqSpecView.tpl *}

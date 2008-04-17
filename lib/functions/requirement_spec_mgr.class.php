@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/03/18 20:13:20 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -667,7 +667,6 @@ function get_linked_cfields($id,$parent_id=null)
 	}
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
 	                                                          'requirement_spec',$id);
-
 	return $cf_map;
 }
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.8 2008/04/15 06:44:22 franciscom Exp $
+$Id: reqEdit.tpl,v 1.9 2008/04/17 08:24:00 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -50,11 +50,11 @@ window.onload=function()
 
 
 <body>
-<h1>{$main_descr|escape}</h1>
+<h1>{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
-{if $action_descr != ''}
-    <h1>{$action_descr|escape}</h1>
+{if $gui->action_descr != ''}
+    <h1>{$gui->action_descr|escape}</h1>
     <br />
  {/if}
 
@@ -62,8 +62,8 @@ window.onload=function()
 
 
 <form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this);">
-	<input type="hidden" name="req_spec_id" value="{$req_spec_id}" />
-	<input type="hidden" name="requirement_id" value="{$req_id}" />
+	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 
   	<div class="labelHolder"> <label for="reqDocId">{lang_get s='req_doc_id'}</label></div>
 	<div><input type="text" name="reqDocId" id="reqDocId"
@@ -84,7 +84,7 @@ window.onload=function()
  	<br />
   	<div class="labelHolder"> <label for="reqStatus">{lang_get s='status'}</label>
      	<select name="reqStatus">
-  			{html_options options=$gui->reqStatus selected=$gui->req.status}
+  			{html_options options=$gui->reqStatusDomain selected=$gui->req.status}
   		</select>
   	</div>
   	<br />

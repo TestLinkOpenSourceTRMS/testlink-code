@@ -3,14 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/03/24 19:33:27 $ by $Author: havlat $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/04/18 15:31:10 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
  * rev :
+ *      20080418 - franciscom - document_generation configuration .
+ *                              removed tlCfg global coupling
+ *
  *      20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
  *      20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  */
@@ -24,14 +27,17 @@ require_once("requirement_mgr.class.php");
  */
 function printHeader($title, $base_href)
 {
-	global $tlCfg;
+	
+  $charset = config_get('charset');
+  $css_print_doc = config_get('css_print_doc');
+  
 
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
-	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.$tlCfg->charset.'" />'.
+	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.$charset.'" />'.
 		"\n<base href=\"".$base_href."\"/>\n";
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
-	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href.$tlCfg->css_print_doc .'" />';
+	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $css_print_doc .'" />';
 	$output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';
 	$output .= "\n</head>\n";
 
@@ -43,7 +49,8 @@ function printHeader($title, $base_href)
 */
 function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_info=null)
 {
-	global $tlCfg;
+	$docCfg=config_get('document_generation');
+	
 	$g_date_format = config_get('date_format');
 	$tproject_name = htmlspecialchars($tproject_info['name']);
 	$tproject_notes = $tproject_info['notes'];
@@ -59,15 +66,15 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 	           '<input class="notprintable" type="button" name="print" value="' .
 	           lang_get('btn_print').'" onclick="javascript: print();" style="margin-left:2px;" /></div>';
 
-  	if ($tlCfg->company_name != '' )
-		$output .= '<div style="float:right;">' . htmlspecialchars($tlCfg->company_name) ."</div>\n";
+  	if ($docCfg->company->name != '' )
+		$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company->name) ."</div>\n";
 	$output .= '<div>'. $tproject_name ."</div><hr />\n";
 
 
-  	if ($tlCfg->company_logo_image != '' )
+  	if ($docCfg->company->logo_image != '' )
 	{
-		$output .= '<p style="text-align: center;"><img alt="TestLink logo" title="configure using $tlCfg->company_logo_image"'.
-        	' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $tlCfg->company_logo_image . '" /></p>';
+		$output .= '<p style="text-align: center;"><img alt="TestLink logo" title="configure using $docCfg->company->logo_image"'.
+        	' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company->logo_image . '" /></p>';
 	}
 
 	$output .= "</div>\n";
@@ -102,10 +109,13 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
 		         strftime($g_date_format, time()) . "</p></div>\n";
 
-	if ($tlCfg->company_copyright != '')
-		$output .= '<div class="pagefooter" id="copyright">' . htmlspecialchars($tlCfg->company_copyright)."</div>\n";
-	if ($tlCfg->company_confident != '')
-		$output .= '<div class="pagefooter" id="confidential">' . htmlspecialchars($tlCfg->company_confident)."</div>\n";
+	if ($docCfg->company->copyright_msg != '')
+		$output .= '<div class="pagefooter" id="copyright">' . 
+		           htmlspecialchars($docCfg->company->copyright_msg)."</div>\n";
+		           
+	if ($docCfg->company->confidential_msg != '')
+		$output .= '<div class="pagefooter" id="confidential">' . 
+		           htmlspecialchars($docCfg->company->confident_msg)."</div>\n";
 
 	if (strlen($tproject_notes))
 		$output .= '<h1>'.lang_get('introduction').'</h1><p id="prodnotes">'. $tproject_notes . "</p>\n";

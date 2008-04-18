@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.171 $
- * @modified $Date: 2008/03/30 17:16:25 $ by $Author: franciscom $
+ * @version $Revision: 1.172 $
+ * @modified $Date: 2008/04/18 15:31:46 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Rev:
+ *     20080418 - franciscom -  new document_generation
  *     20080330 - franciscom -  
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
  *
@@ -354,11 +355,15 @@ $g_sort_table_engine='kryogenix.org';
  * Texts for printed documents
  * Leave them empty if you would not to use.
  */
-$tlCfg->company_name = 'Testlink Community [configure using $tlCfg->company_name]';
+$tlCfg->document_generation=new stdClass();
+$tlCfg->document_generation->company=new stdClass();
+
+$tlCfg->document_generation->company->name = 'Testlink Community [configure using $tlCfg->company_name]';
 /** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
-$tlCfg->company_logo_image = 'company_logo.png'; 
-$tlCfg->company_copyright = '2008 (c) Testlink Community';
-$tlCfg->company_confident = '';
+
+$tlCfg->document_generation->company->logo_image = 'company_logo.png'; 
+$tlCfg->document_generation->company->copyright_msg = '2008 (c) Testlink Community';
+$tlCfg->document_generation->company->confidential_msg = '';
 
 /** CSS used in printed html documents */
 $tlCfg->css_print_doc = TL_THEME_CSS_DIR . 'tl_doc_basic.css';

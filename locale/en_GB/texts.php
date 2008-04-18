@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: texts.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/04/14 19:19:23 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/04/18 16:44:07 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * Scope:
@@ -338,6 +338,37 @@ $TLS_htmltext['planRemoveTC'] 		= "<h2>Purpose:</h2>
 	<li>Click on a Test suite to show all its test cases or a single Test Case</li>
 	<li>Set checkbox.</li>
 	<li>Submit the page.</li>
+</ol>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['tc_exec_assignment']	= "Assign Testers to test execution";
+$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
+<p>This page allows test leaders to assign users to particular tests within the Test Plan.</p>
+
+<h2>Get Started</h2>
+<ol>
+	<li>Choose a Test case or Test Suite to test.</li>
+	<li>Select a planned tester.</li>
+	<li>Press button to submit assignement.</li>
+	<li>Open execution page to verify assignment. You can set-up a filter for users.</li>
+</ol>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
+$TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
+<p>This page allows update Test case to a newer (different) version in  the case that Test
+Specification is changed. It often happens that some functionality is clarified during testing." .
+		" User modifies Test Specification, but changes needs to propagate to Test Plan too. Otherwise Test" .
+		" plan holds original version to be sure, that results refer to the correct text of a Test case.</p>
+
+<h2>Get Started</h2>
+<ol>
+	<li>Choose a Test case or Test Suite to test.</li>
+	<li>Choose a new version from bombo boxmenu for particular Test case.</li>
+	<li>Press button 'Update Test plan' to submit changes.</li>
+	<li>To verify: Open execution page to view text of the test case(s).</li>
 </ol>";
 
 

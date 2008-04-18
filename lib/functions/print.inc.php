@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/04/18 15:31:10 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/04/18 15:46:30 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -18,6 +18,7 @@
  *      20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  */
 
+require_once("exec.inc.php");
 require_once("requirement_mgr.class.php");
 
 
@@ -66,19 +67,17 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 	           '<input class="notprintable" type="button" name="print" value="' .
 	           lang_get('btn_print').'" onclick="javascript: print();" style="margin-left:2px;" /></div>';
 
-  	if ($docCfg->company->name != '' )
+  if ($docCfg->company->name != '' )
 		$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company->name) ."</div>\n";
-	$output .= '<div>'. $tproject_name ."</div><hr />\n";
+	$output .= '<div>'. $tproject_name . "</div><hr />\n";
 
 
-  	if ($docCfg->company->logo_image != '' )
+  if ($docCfg->company->logo_image != '' )
 	{
-		$output .= '<p style="text-align: center;"><img alt="TestLink logo" title="configure using $docCfg->company->logo_image"'.
-        	' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company->logo_image . '" /></p>';
+		$output .= '<p style="text-align: center;"><img alt="TestLink logo" title="configure using $tlCfg->company->logo_image"'.
+        	     ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company->logo_image . '" /></p>';
 	}
-
 	$output .= "</div>\n";
-
 
 	/* Print title */
 	$output .= '<div class="doc_title">';
@@ -96,7 +95,7 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 	{
 		// $my_title = lang_get('testsuite') . ' ' . $title;
 		//SCHLUNDUS: SRS titles should be localized. Needs  a deeper look
-		$output = '<p>'.lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
+		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
 	}
 	$output .= "</div>\n";
 

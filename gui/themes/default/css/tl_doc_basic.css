@@ -1,5 +1,5 @@
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: tl_doc_basic.css,v 1.1 2008/04/19 21:52:21 havlat Exp $ */
+/* $Id: tl_doc_basic.css,v 1.2 2008/04/19 23:10:22 havlat Exp $ */
 /* Purpose: Basic schema for print documentation css */
 /*******************************************************************/
 
@@ -57,12 +57,12 @@ p.important {
 
 
 table, td, th {
-	border: 		1px solid black;
+	border: 		1px solid grey;
 	border-collapse:	collapse;
 }
 
-table, div {
-	margin:			0px 15px;
+table {
+	margin:			5px 0px;
 }
 
 th {

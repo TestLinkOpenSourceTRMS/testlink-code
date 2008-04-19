@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -127,10 +127,6 @@ class reqCommands
 	{
       $obj=new stdClass();
 	    $descr_prefix = lang_get('req') . TITLE_SEP;
-
-	    // Old Data
-	    $old_req = $this->reqMgr->get_by_id($argsObj->req_id);
-	    
 		  $ret = $this->reqMgr->update($argsObj->req_id,trim($argsObj->reqDocId),$argsObj->title,
 		  				                     $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,$argsObj->reqType);
 
@@ -140,24 +136,21 @@ class reqCommands
 
 		  if($ret['status_ok'])
 		  {
-          $obj->main_descr = $descr_prefix . $req['title'];
+          // $obj->main_descr = $descr_prefix . $argsObj->title;
+          $obj->main_descr = '';
 		      $obj->action_descr='';
           $obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
-		  	  logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
 		  	  $cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
 		  	  $this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
+
+		  	  logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
 		  }
 		  else
 		  {
 		      // Action has failed => no change done on DB.
-		      // Preserve input done by user, to display again at UI level, and
-		      // allow corrections.
-          // $obj->req=$old_req;
-          // $obj->req['title']=$argsObj->title;
-          // $obj->req['reqStatus']=$argsObj->reqStatus;
-          // $obj->req['req_doc_id']=trim($argsObj->reqDocId);
-          // 
-          $obj->main_descr = $descr_prefix . $old_req['title'];
+	        $old = $this->reqMgr->get_by_id($argsObj->req_id);
+	        $obj->main_descr = $descr_prefix . $req['title'];
+          $obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
 		  }
       return $obj;	
   }
@@ -236,5 +229,48 @@ class reqCommands
       $obj->refresh_tree='yes';
 	    return $obj;
   }
+  
+  /*
+    function: createTestCases
+
+    args:
+    
+    returns: 
+
+  */
+	function createTestCases(&$argsObj)
+	{
+      $guiObj=new stdClass();
+		  $guiObj->template = 'reqCreateTestCases.tpl';
+		  $req_spec=$this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		  $guiObj->main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		  $guiObj->action_descr=lang_get('create_testcase_from_req');
+      
+		  $guiObj->all_reqs=$this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
+		  $guiObj->req_spec_id=$argsObj->req_spec_id;
+		  $guiObj->req_spec_name=$req_spec['title'];
+		  $guiObj->array_of_msg='';
+		  
+	    return $guiObj;
+  }
+  
+  /*
+    function: doCreateTestCases
+
+    args:
+    
+    returns: 
+
+  */
+	function doCreateTestCases(&$argsObj)
+	{
+      $guiObj=$this->createTestCases($argsObj);
+      echo "<pre>debug 20080419 - \ - " . __FUNCTION__ . " --- "; print_r($argsObj); echo "</pre>";
+	    $guiObj->array_of_msg=$this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
+	                                                                    $argsObj->user_id);
+	    return $guiObj;
+  }
+
+  
 }
 ?>

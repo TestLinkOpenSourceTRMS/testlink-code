@@ -5,22 +5,28 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  *
- * rev : 20080318 - franciscom - thanks to Postgres have found code that must be removed
+ * rev : 20080419 - franciscom - bug on update(), no control for duplicate.
+ *
+ *       20080318 - franciscom - thanks to Postgres have found code that must be removed
  *                               after req_specs get it's id from nodes hierarchy
  * 
  *       20080309 - franciscom - changed return value for get_by_id()
 */
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
+  const CASE_SENSITIVE=0;
+  const CASE_INSENSITIVE=1;
+  
 	var $db;
   var $cfield_mgr;
+  var $tree_mgr;
 
   var $object_table="req_specs";
   var $requirements_table="requirements";
@@ -48,8 +54,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 		$this->db = &$db;
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
-		$tree_mgr =  new tree($this->db);
-		$node_types_descr_id=$tree_mgr->get_available_node_types();
+		$this->tree_mgr =  new tree($this->db);
+		$node_types_descr_id=$this->tree_mgr->get_available_node_types();
 		$node_types_id_descr=array_flip($node_types_descr_id);
 		$this->my_node_type=$node_types_descr_id['requirement_spec'];
 
@@ -120,13 +126,12 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
     $title=trim($title);
 
-    $chk=$this->check_title($title,$tproject_id,$ignore_case);
+    $chk=$this->check_title($title,$tproject_id);
 		if ($chk['status_ok'])
 		{
-      $tree_mgr =  new tree($this->db);
 		  $parent_id=$tproject_id;
 		  $name=$title;
-		  $req_spec_id = $tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		  $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
 
 			$sql = "INSERT INTO {$this->object_table} " .
 			       " (id, testproject_id, title, scope, type, total_req, author_id, creation_ts) " .
@@ -346,41 +351,51 @@ function get_metrics($id)
              msg -> some simple message, useful when status_ok ==0
 
   */
-  function update($id,$title, $scope, $countReq, $user_id,
-                  $type = TL_REQ_STATUS_NOT_TESTABLE)
+  function update($id,$title, $scope, $countReq, $user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
   {
 	  $result['status_ok'] = 1;
 	  $result['msg'] = 'ok';
 
     $title=trim_and_limit($title);
-
-	  $db_now = $this->db->db_now();
-		$sql = " UPDATE {$this->object_table} SET title='" . $this->db->prepare_string($title) . "', " .
-		       " scope='" . $this->db->prepare_string($scope) . "', " .
-		       " type='" . $this->db->prepare_string($type) . "', " .
-		       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
-		       " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";
-
-
-
-		if (!$this->db->exec_query($sql))
+     
+    $nhinfo = $this->tree_mgr->get_node_hierachy_info($id); 
+    $chk=$this->check_title($title,$nhinfo['parent_id'],$id);
+    
+		if ($chk['status_ok'])
 		{
-			$result['msg']=lang_get('error_updating_reqspec');
-  	  $result['status_ok'] = 0;
-	  }
-
-    if( $result['status_ok'] )
-    {
-  	  // need to update node on tree
-  		$sql = " UPDATE {$this->nodes_hierarchy_table} " .
-  		       " SET name='" . $this->db->prepare_string($title) . "'" .
-  		       " WHERE id={$id}";
-
-  		if (!$this->db->exec_query($sql))
-  		{
-  			$result['msg']=lang_get('error_updating_reqspec');
-    	  $result['status_ok'] = 0;
-  	  }
+	      $db_now = $this->db->db_now();
+		    $sql = " UPDATE {$this->object_table} SET title='" . $this->db->prepare_string($title) . "', " .
+		           " scope='" . $this->db->prepare_string($scope) . "', " .
+		           " type='" . $this->db->prepare_string($type) . "', " .
+		           " total_req ='" . $this->db->prepare_string($countReq) . "', " .
+		           " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";
+        
+        
+        
+		    if (!$this->db->exec_query($sql))
+		    {
+		    	$result['msg']=lang_get('error_updating_reqspec');
+  	      $result['status_ok'] = 0;
+	      }
+        
+        if( $result['status_ok'] )
+        {
+  	      // need to update node on tree
+  	    	$sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  	    	       " SET name='" . $this->db->prepare_string($title) . "'" .
+  	    	       " WHERE id={$id}";
+        
+  	    	if (!$this->db->exec_query($sql))
+  	    	{
+  	    		$result['msg']=lang_get('error_updating_reqspec');
+        	  $result['status_ok'] = 0;
+  	      }
+	      }
+	  }    
+	  else
+	  {
+	    $result['status_ok']=$chk['status_ok'];
+	    $result['msg']=$chk['msg'];
 	  }
 	  return $result;
   }
@@ -403,7 +418,6 @@ function get_metrics($id)
   */
   function delete($id)
   {
-    $tree_mgr =  new tree($this->db);
     $req_mgr = new requirement_mgr($this->db);
 
     // Delete Custom fields
@@ -421,7 +435,7 @@ function get_metrics($id)
     }
 
   	// Delete tree structure (from node_hierarchy)
-    $tree_mgr->delete_subtree($id);
+    $this->tree_mgr->delete_subtree($id);
 
   	// delete specification itself
   	$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
@@ -488,8 +502,8 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 
     args : title: req spec title
            [tproject_id]
-           [ignore_case]: control case sensitive search.
-                          default 0 -> case sensivite search
+           [case_analysis]: control case sensitive search.
+                            default 0 -> case sensivite search
 
     returns: map.
              key: req spec id
@@ -505,7 +519,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
                     modifier_id
                     modification_ts
   */
-  function get_by_title($title,$tproject_id=null,$ignore_case=0)
+  function get_by_title($title,$tproject_id=null,$case_analysis=self::CASE_SENSITIVE)
   {
   	$output=null;
   	$title=trim($title);
@@ -514,14 +528,17 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 
   	$sql = "SELECT * FROM {$this->object_table} ";
 
-  	if($ignore_case)
-  	{
-  	  $sql .= " WHERE UPPER(title)='" . strtoupper($the_title) . "'";
-  	}
-  	else
-  	{
-  	   $sql .= " WHERE title='{$the_title}'";
-  	}
+    switch ($case_analysis)
+    {
+        case self::CASE_SENSITIVE:
+            $sql .= " WHERE title='{$the_title}'";
+        break;
+
+        case self::CASE_INSENSITIVE:
+            $sql .= " WHERE UPPER(title)='" . strtoupper($the_title) . "'";    
+        break;
+    }
+
   	if( !is_null($tproject_id) )
   	{
   	  $sql .= " AND testproject_id={$tproject_id}";
@@ -544,13 +561,14 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
                                           system wide.
                           valid id: only inside testproject with this id.
 
-           [ignore_case]: control case sensitive search.
-                          default 0 -> case sensivite search
+           [id] 
+           [case_analysis]: control case sensitive search.
+                            default 0 -> case sensivite search
 
     returns:
 
   */
-  function check_title($title,$tproject_id=null,$ignore_case=0)
+  function check_title($title,$tproject_id=null,$id=null,$case_analysis=self::CASE_SENSITIVE)
   {
     $ret['status_ok']=1;
     $ret['msg']='';
@@ -566,11 +584,11 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   	if($ret['status_ok'])
   	{
   	  $ret['msg']='ok';
-      $rs=$this->get_by_title($title,$tproject_id,$ignore_case);
+      $rs=$this->get_by_title($title,$tproject_id,$case_analysis);
 
-      if( !is_null($rs) )
+  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
       {
-  		  $ret['msg']=lang_get("warning_duplicate_req_title");
+  		  $ret['msg']=sprintf(lang_get("warning_duplicate_req_title"),$title);
         $ret['status_ok']=0;
   	  }
   	}

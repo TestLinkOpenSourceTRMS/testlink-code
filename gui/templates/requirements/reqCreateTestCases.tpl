@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.4 2008/04/15 06:44:22 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.5 2008/04/19 16:12:33 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -68,26 +68,26 @@ function check_action_precondition(form_id,action,msg)
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
           alt="$text_hint" title="$text_hint"  style="float: right;"}
- {$main_descr|escape}   
+ {$gui->main_descr|escape}   
 </h1>
 
 
 
 <div class="workBack">
-  <h2>{$action_descr}</h2>
+  <h2>{$gui->action_descr}</h2>
   
-  {if $array_of_msg != ''}
+  {if $gui->array_of_msg != ''}
     <br />
- 	  {include file="inc_msg_from_array.tpl" array_of_msg=$array_of_msg arg_css_class="warning_message"}
+ 	  {include file="inc_msg_from_array.tpl" array_of_msg=$gui->array_of_msg arg_css_class="warning_message"}
   {/if}
   
   <form id="frmReqList" enctype="multipart/form-data" method="post">
-    <input type="hidden" name="doAction"  id="doAction"  value="do_create_tcases" />
-    <input type="hidden" name="req_spec_id"  id="req_spec_id"  value="{$req_spec_id}" />
+    <input type="hidden" name="doAction"  id="doAction"  value="doCreateTestCases" />
+    <input type="hidden" name="req_spec_id"  id="req_spec_id"  value="{$gui->req_spec_id}" />
  
  
   {* ------------------------------------------------------------------------------------------ *}
-  {if $arrReqs ne ''}  
+  {if $gui->all_reqs ne ''}  
 
      <div id="req_div"  style="margin:0px 0px 0px 0px;">
         {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -96,7 +96,7 @@ function check_action_precondition(form_id,action,msg)
 
      <table class="simple">
     	 <tr>
-    		{if $modify_req_rights == "yes"}
+    		{if $gui->grants->req_mgmt == "yes"}
     		<th style="width: 15px;">
     						    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
                          onclick='cs_all_checkbox_in_div("req_div","req_id_cbox","toogle_req");'
@@ -107,18 +107,16 @@ function check_action_precondition(form_id,action,msg)
     		<th>{lang_get s="title"}</th>
     		<th>{lang_get s="scope"}</th>
     	 </tr>
-    	{section name=row loop=$arrReqs}
-
-
+    	{section name=row loop=$gui->all_reqs}
     	<tr>
     	  {* 20060110 - fm - managing checkboxes as array and added value *}
-    		{if $modify_req_rights == "yes"}
-    		<td><input type="checkbox" id="req_id_cbox{$arrReqs[row].id}"
-    		           name="req_id_cbox[{$arrReqs[row].id}]" 
-    		                                           value="{$arrReqs[row].id}"/></td>{/if}
-    		<td><span class="bold">{$arrReqs[row].req_doc_id|escape}</span></td>
-    		<td><span class="bold">{$arrReqs[row].title|escape}</a></span></td>
-    		<td>{$arrReqs[row].scope|strip_tags|strip|truncate:100}</td>
+    		{if $gui->grants->req_mgmt == "yes"}
+    		<td><input type="checkbox" id="req_id_cbox{$gui->all_reqs[row].id}"
+    		           name="req_id_cbox[{$gui->all_reqs[row].id}]" 
+    		                                           value="{$gui->all_reqs[row].id}"/></td>{/if}
+    		<td><span class="bold">{$gui->all_reqs[row].req_doc_id|escape}</span></td>
+    		<td><span class="bold">{$gui->all_reqs[row].title|escape}</a></span></td>
+    		<td>{$gui->all_reqs[row].scope|strip_tags|strip|truncate:100}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
@@ -128,7 +126,7 @@ function check_action_precondition(form_id,action,msg)
      {* ------------------------------------------------------------------------------------------ *}
     
      {* ------------------------------------------------------------------------------------------ *}
-     {if $modify_req_rights == "yes"}
+     {if $gui->grants->req_mgmt == "yes"}
       <div class="groupBtn">
        <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" 
               onclick="return check_action_precondition('frmReqList','create','{$check_msg}');"/>
@@ -140,11 +138,5 @@ function check_action_precondition(form_id,action,msg)
   {* ------------------------------------------------------------------------------------------ *}
 </form>
 </div>
-
-{if $js_msg neq ""}
-<script type="text/javascript">
-alert("{$js_msg}");
-</script>
-{/if}
 </body>
 </html>

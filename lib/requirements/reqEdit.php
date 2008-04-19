@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -28,29 +28,9 @@ require_once("web_editor.php");
 require_once("configCheck.php");
 testlinkInitPage($db);
 
-$req_spec_mgr = new requirement_spec_mgr($db);
-$req_mgr = new requirement_mgr($db);
-
-$get_cfield_values = array();
-$get_cfield_values['req_spec'] = 0;
-$get_cfield_values['req'] = 0;
-
-$user_feedback = '';
-$sqlResult = null;
-$action = null;
-$sqlItem = 'SRS';
-$arrReq = array();
-$template_dir = "requirements/";
-$template = 'reqSpecView.tpl';
-
 $templateCfg = templateConfiguration();
-
 $args = init_args();
-$gui = initialize_gui();
-
-$tproject = new testproject($db);
-$smarty = new TLSmarty();
-
+$gui = initialize_gui($db);
 $commandMgr=new reqCommands($db);
 
 switch($args->doAction)
@@ -83,27 +63,16 @@ switch($args->doAction)
 		$op=$commandMgr->doReorder($args);
 		break;
 
-	case "create_tcases":
-	case "doCreate_tcases":
-		$template = $template_dir .  'reqCreateTestCases.tpl';
-		$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
-		$main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
-		$action_descr=lang_get('create_testcase_from_req');
-
-		$all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
-		$smarty->assign('req_spec_id', $args->req_spec_id);
-		$smarty->assign('req_spec_name', $req_spec['title']);
-		$smarty->assign('arrReqs', $all_reqs);
-
-		if( $args->doAction=='doCreate_tcases')
-		{
-			$feedback=$req_mgr->create_tc_from_requirement($args->arrReqIds,$args->req_spec_id,$args->user_id);
-			$smarty->assign('array_of_msg', $feedback);
-		}
+	case "createTestCases":
+		$op=$commandMgr->createTestCases($args);
+		break;
+	
+	case "doCreateTestCases":
+		$op=$commandMgr->doCreateTestCases($args);
 		break;
 } // switch
 
-renderGui($smarty,$args,$gui,$op,$templateCfg);
+renderGui($args,$gui,$op,$templateCfg);
 
 
 /*
@@ -152,10 +121,13 @@ function init_args()
   returns:
 
 */
-function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
 {
+    $smartyObj = new TLSmarty();
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
                            'doDelete' => '', 'doReorder' => '', 'reorder' => '',
+                           'createTestCases' => 'doCreateTestCases',
+                           'doCreateTestCases' => 'doCreateTestCases',
                            'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
     $owebEditor = web_editor('scope',$argsObj->basehref) ;
@@ -170,6 +142,8 @@ function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
         case "reorder":
         case "doDelete":
         case "doReorder":
+        case "createTestCases":
+        case "doCreateTestCases":
             $renderType='template';
             $key2loop=get_object_vars($opObj);
             foreach($key2loop as $key => $value)
@@ -231,13 +205,16 @@ function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
   returns:
 
 */
-function initialize_gui()
+function initialize_gui(&$dbHandler)
 {
     $gui=new stdClass();
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;
+
+    $gui->grants=new stdClass();
+    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
+
     return $gui;
 }
-
 ?>

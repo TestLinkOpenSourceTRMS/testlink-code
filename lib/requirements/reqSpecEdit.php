@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/04/17 08:24:10 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/04/19 16:12:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -21,20 +21,14 @@ require_once('requirement_spec_mgr.class.php');
 require_once("web_editor.php");
 testlinkInitPage($db);
 
-
-$sqlResult = null;
-$action = null;
-$main_descr = null;
-$action_descr = null;
-$cf_smarty = null;
-$user_feedback = null;
-$req_spec_mgr = new requirement_spec_mgr($db);
-$smarty = new TLSmarty();
-
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($db);
 $commandMgr=new reqSpecCommands($db);
+
+$auditContext=new stdClass();
+$auditContext->tproject=$args->tproject_name;
+$commandMgr->setAuditContext($auditContext);
 
 switch($args->doAction)
 {
@@ -55,38 +49,19 @@ switch($args->doAction)
 		break;
 
 	case "doDelete":
-		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-		$req_spec_mgr->delete($args->req_spec_id);
-		logAuditEvent(TLS("audit_req_spec_deleted",$args->title),"DELETE",$args->req_spec_id,"req_specs");
-		$template = 'show_message.tpl';
-		$user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
-		$smarty->assign('title', lang_get('delete_req_spec'));
-		$smarty->assign('item_type', lang_get('requirement_spec'));
-		$smarty->assign('item_name', $req_spec['title']);
-		$smarty->assign('user_feedback',$user_feedback );
-		$smarty->assign('refresh_tree','yes');
-		$smarty->assign('result','ok');
+	  $op=$commandMgr->doDelete($args);
 		break;
 
 	case "reorder":
-		$template = $templateCfg->template_dir .  'reqSpecReorder.tpl';
-		$order_by = ' ORDER BY NH.node_order,REQ_SPEC.id ';
-		$all_req_spec = $req_spec_mgr->get_all_in_testproject($args->tproject_id,$order_by);
-		$smarty->assign('arrReqSpecs', $all_req_spec);
+	  $op=$commandMgr->reorder($args);
 		break;
 
-  	case "doReorder":
-		$nodes_in_order = transform_nodes_order($args->nodes_order);
-		// need to remove first element, is testproject
-		array_shift($nodes_in_order);
-		$req_spec_mgr->set_order($nodes_in_order);
-		$template = $templateCfg->template_dir .  'project_req_spec_mgmt.tpl';
-		$smarty->assign('refresh_tree', 'yes');
+  case "doReorder":
+		$op=$commandMgr->doReorder($args);
 		break;
 }
 
-
-renderGui($smarty,$args,$gui,$op,$templateCfg);
+renderGui($args,$gui,$op,$templateCfg);
 
 /*
   function: init_args
@@ -127,8 +102,9 @@ function init_args()
   returns:
 
 */
-function renderGui(&$smartyObj,&$argsObj,$guiObj,$opObj,$templateCfg)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
 {
+    $smartyObj = new TLSmarty();
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
                            'doDelete' => '', 'doReorder' => '', 'reorder' => '',
                            'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
@@ -219,6 +195,4 @@ function initialize_gui(&$dbHandler)
 
     return $gui;
 }
-
 ?>
-

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/04/18 15:46:30 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -114,7 +114,7 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 		           
 	if ($docCfg->company->confidential_msg != '')
 		$output .= '<div class="pagefooter" id="confidential">' . 
-		           htmlspecialchars($docCfg->company->confident_msg)."</div>\n";
+		           htmlspecialchars($docCfg->company->confidential_msg)."</div>\n";
 
 	if (strlen($tproject_notes))
 		$output .= '<h1>'.lang_get('introduction').'</h1><p id="prodnotes">'. $tproject_notes . "</p>\n";

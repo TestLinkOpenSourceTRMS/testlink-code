@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.172 $
- * @modified $Date: 2008/04/18 15:31:46 $ by $Author: franciscom $
+ * @version $Revision: 1.173 $
+ * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -358,7 +358,7 @@ $g_sort_table_engine='kryogenix.org';
 $tlCfg->document_generation=new stdClass();
 $tlCfg->document_generation->company=new stdClass();
 
-$tlCfg->document_generation->company->name = 'Testlink Community [configure using $tlCfg->company_name]';
+$tlCfg->document_generation->company->name = 'Testlink Community [configure using $tlCfg->company->name]';
 /** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
 
 $tlCfg->document_generation->company->logo_image = 'company_logo.png'; 

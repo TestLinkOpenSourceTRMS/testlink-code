@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.8 2008/04/15 06:44:22 franciscom Exp $
+$Id: reqView.tpl,v 1.9 2008/04/19 16:12:33 franciscom Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
@@ -66,7 +66,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 	
 	<tr>
 	  <td>
-  	{$cfields}
+  	{$gui->cfields}
   	</td>
 	</tr>
 

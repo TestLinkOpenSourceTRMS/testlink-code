@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.6 2008/04/17 08:24:00 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.7 2008/04/19 16:12:33 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -51,7 +51,7 @@ function validateForm(f)
 {if $gui->grants->req_mgmt == "yes"}
   <div class="workBack">
     {if $gui->action_descr != ''}
-    <h1>{gui->action_descr|escape}</h1>
+    <h1>{$gui->action_descr|escape}</h1>
     <br />
     {/if}
 

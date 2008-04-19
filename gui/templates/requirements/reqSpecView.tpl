@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.18 2008/04/17 08:24:00 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.19 2008/04/19 16:12:33 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -29,7 +29,7 @@
 {assign var="url_args" value="reqEdit.php?doAction=reorder&amp;req_spec_id="}
 {assign var="req_reorder_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqEdit.php?doAction=create_tcases&amp;req_spec_id="}
+{assign var="url_args" value="reqEdit.php?doAction=createTestCases&amp;req_spec_id="}
 {assign var="req_create_tc_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 

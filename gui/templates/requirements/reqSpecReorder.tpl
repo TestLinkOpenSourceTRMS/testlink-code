@@ -1,6 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecReorder.tpl,v 1.5 2008/04/15 06:44:22 franciscom Exp $
+$Id: reqSpecReorder.tpl,v 1.6 2008/04/19 16:12:33 franciscom Exp $
+
+rev: 20080419 - franciscom - interface refactoring
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -18,21 +20,21 @@ $Id: reqSpecReorder.tpl,v 1.5 2008/04/15 06:44:22 franciscom Exp $
 
 
 <body onload="init_drag_and_drop('{$basehref}','{$tree_id}');">
-<h1>{lang_get s="testproject"}{$smarty.const.TITLE_SEP}{$tproject_name|escape}</h1>
+<h1>{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_change_req_spec_order'}</h1>
+<h1>{$gui->action_descr|escape}</h1>
 
 <div>
  	<ul id="{$tree_id}" class="dhtmlgoodies_tree">
-		<li id="{$tproject_id}" noDrag="true" noSiblings="true" noDelete="true" noRename="true">
-		    <a href="dummy#" onclick="return false;">{$tproject_name|escape}</a>
+		<li id="{$gui->tproject_id}" noDrag="true" noSiblings="true" noDelete="true" noRename="true">
+		    <a href="dummy#" onclick="return false;">{$gui->tproject_name|escape}</a>
     <ul>
-		{section name=idx loop=$arrReqSpecs}
-			<li id="{$arrReqSpecs[idx].id}" isLeaf="true"
+		{section name=idx loop=$gui->all_req_spec}
+			<li id="{$gui->all_req_spec[idx].id}" isLeaf="true"
 			    noRename="true" noDelete="true" noChildren="true">
   				<a href="dummy#" onclick="return false;" title="{$hint_drag_and_drop}">
- 					  {$arrReqSpecs[idx].title|escape}</a></li>
+ 					  {$gui->all_req_spec[idx].title|escape}</a></li>
 		{/section}
     </ul>
    </li>

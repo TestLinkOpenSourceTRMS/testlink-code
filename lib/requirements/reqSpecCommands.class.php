@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -18,6 +18,8 @@ class reqSpecCommands
   private $reqMgr;
   private $reqStatus;
   private $defaultTemplate='reqSpecEdit.tpl';
+  private $submit_button_label;
+  private $auditContext;
 
 	function __construct(&$db)
 	{
@@ -25,7 +27,14 @@ class reqSpecCommands
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
 	    $this->reqStatus=init_labels(config_get('req_status'));
+		  $this->submit_button_label=lang_get('btn_save');
 	}
+
+	function setAuditContext($auditContext)
+	{
+	    $this->auditContext=$auditContext;
+	}
+
 
   /*
     function: create
@@ -37,19 +46,18 @@ class reqSpecCommands
   */
 	function create(&$argsObj)
 	{
-      $obj=new stdClass();
-		  $obj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
-		  $obj->action_descr = lang_get('create_req_spec');
+      $guiObj=new stdClass();
+		  $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+		  $guiObj->action_descr = lang_get('create_req_spec');
 
-		  $obj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-      $obj->template = $this->defaultTemplate;
-		  $obj->submit_button_label=lang_get('btn_save');
- 	    $obj->req_spec_id=null;
-		  $obj->req_spec_title=null;
-		  $obj->total_req_counter=null;
-      echo "<pre>debug 20080416 - \ - " . __FUNCTION__ . " --- "; print_r($obj); echo "</pre>";
+		  $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+      $guiObj->template = $this->defaultTemplate;
+		  $guiObj->submit_button_label=$this->submit_button_label;
+ 	    $guiObj->req_spec_id=null;
+		  $guiObj->req_spec_title=null;
+		  $guiObj->total_req_counter=null;
 
-      return $obj;	
+      return $guiObj;	
 	}
 
   /*
@@ -62,22 +70,21 @@ class reqSpecCommands
   */
 	function edit(&$argsObj)
 	{
-      $obj=new stdClass();
+      $guiObj=new stdClass();
 
-		  $obj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		  $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $obj->req_spec['title'];
-		  $obj->action_descr = lang_get('edit_req_spec');
-      $obj->template = $this->defaultTemplate;
-		  $obj->submit_button_label=lang_get('btn_save');
+		  $guiObj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		  $guiObj->main_descr = lang_get('req_spec') . TITLE_SEP . $guiObj->req_spec['title'];
+		  $guiObj->action_descr = lang_get('edit_req_spec');
+      $guiObj->template = $this->defaultTemplate;
+ 		  $guiObj->submit_button_label=$this->submit_button_label;
       
-		  $argsObj->scope = $obj->req_spec['scope'];
-      
-		  $obj->req_spec_id=$argsObj->req_spec_id;
-		  $obj->req_spec_title=$obj->req_spec['title'];
-		  $obj->total_req_counter=$obj->req_spec['total_req'];
-		  $obj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs($argsObj->req_spec_id,$argsObj->tproject_id);
+		  $guiObj->req_spec_id=$argsObj->req_spec_id;
+		  $guiObj->req_spec_title=$guiObj->req_spec['title'];
+		  $guiObj->total_req_counter=$guiObj->req_spec['total_req'];
+		  $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs($argsObj->req_spec_id,$argsObj->tproject_id);
 
-      return $obj;	
+		  $argsObj->scope = $guiObj->req_spec['scope'];
+      return $guiObj;	
 	}
 
   /*
@@ -90,28 +97,37 @@ class reqSpecCommands
   */
 	function doCreate(&$argsObj,$request)
 	{
-      $obj=new stdClass();
+      $guiObj=new stdClass();
 
-		  $obj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
-		  $obj->action_descr = lang_get('create_req_spec');
-		  $obj->submit_button_label=lang_get('btn_save');
-		  $obj->submit_button_label=lang_get('btn_save');
+		  $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+		  $guiObj->action_descr = lang_get('create_req_spec');
+ 		  $guiObj->submit_button_label=$this->submit_button_label;
+      $guiObj->template = $this->defaultTemplate;
+      $guiObj->req_spec_id=null;
+		  $guiObj->req_spec_title=null;
+		  $guiObj->total_req_counter=null;
 
-		  $obj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		  $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
 		  $ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->title,$argsObj->scope,
 		                                   $argsObj->countReq,$argsObj->user_id);
       
-		  $obj->user_feedback = $ret['msg'];
+		  $guiObj->user_feedback = $ret['msg'];
 		  if($ret['status_ok'])
 		  {
-		  	$obj->user_feedback = sprintf(lang_get('req_spec_created'),$argsObj->title);
+		  	$guiObj->user_feedback = sprintf(lang_get('req_spec_created'),$argsObj->title);
 		  	$cf_map = $this->reqSpecMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
 		  	$this->reqSpecMgr->values_to_db($request,$ret['id'],$cf_map);
-		  	logAuditEvent(TLS("audit_req_spec_created",$argsObj->title),"CREATE",$ret['id'],"req_specs");
+		  	logAuditEvent(TLS("audit_req_spec_created",$this->auditContext->tproject,$argsObj->title),
+		  	              "CREATE",$ret['id'],"req_specs");
 		  }
+      else
+      {
+		      $guiObj->req_spec_title=$guiObj->req_spec['title'];
+		      $guiObj->total_req_counter=$guiObj->req_spec['total_req'];
+      }
+		  
 		  $argsObj->scope = "";
-
-      return $obj;	
+      return $guiObj;	
   }
 
 
@@ -125,27 +141,49 @@ class reqSpecCommands
   */
 	function doUpdate(&$argsObj,$request)
 	{
-      $obj=new stdClass();
+	    $descr_prefix = lang_get('req_spec') . TITLE_SEP;
 
-		  $obj->req_spec_id = $argsObj->req_spec_id;
-		  $obj->submit_button_label=lang_get('btn_save');
+      $guiObj=new stdClass();
+ 		  $guiObj->submit_button_label=$this->submit_button_label;
+	    $guiObj->template = null;
+		  $guiObj->req_spec_id = $argsObj->req_spec_id;
+
+		  $guiObj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+
 		  $ret = $this->reqSpecMgr->update($argsObj->req_spec_id,$argsObj->title,
 		                                   $argsObj->scope,$argsObj->countReq,$argsObj->user_id);
-	    $obj->template = null;
-		  $obj->user_feedback = $ret['msg'];
+		  $guiObj->user_feedback = $ret['msg'];
+
+
 		  if($ret['status_ok'])
 		  {
-        $obj->template = "reqSpecView.php?req_spec_id={$obj->req_spec_id}";
+        $guiObj->main_descr = '';
+	      $guiObj->action_descr='';
+        $guiObj->template = "reqSpecView.php?req_spec_id={$guiObj->req_spec_id}";
 		  	$cf_map = $this->reqSpecMgr->get_linked_cfields($argsObj->req_spec_id);
 		  	$this->reqSpecMgr->values_to_db($request,$argsObj->req_spec_id,$cf_map);
-		  	logAuditEvent(TLS("audit_req_spec_saved",$argsObj->title),"SAVE",$argsObj->req_spec_id,"req_specs");
-		  }
-      
-		  $obj->cfields = $this->reqSpecMgr->html_table_of_custom_field_values($argsObj->req_spec_id,$argsObj->tproject_id);
-		  $obj->req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		  $obj->req_spec_id = $argsObj->req_spec_id;
 
-      return $obj;	
+		  	if( $argsObj->title == $guiObj->req_spec['title'] )
+		  	{
+		  	    $audit_msg= TLS("audit_req_spec_saved",$this->auditContext->tproject,$argsObj->title);
+		  	}    
+		  	else
+		  	{
+		  	    $audit_msg= TLS("audit_req_spec_renamed",$this->auditContext->tproject,
+		  	                                             $guiObj->req_spec['title'],$argsObj->title);
+		  	}
+  	    logAuditEvent($audit_msg,"SAVE",$argsObj->req_spec_id,"req_specs");
+		  }
+      else
+      {
+  	     // Action has failed => no change done on DB.
+         $guiObj->main_descr = $descr_prefix . $guiObj->req_spec['title'];
+   		   $guiObj->action_descr = lang_get('edit_req_spec');
+         $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_values($argsObj->req_spec_id,$argsObj->tproject_id);
+      }
+
+
+      return $guiObj;	
   }
 
 
@@ -159,10 +197,25 @@ class reqSpecCommands
   */
 	function doDelete(&$argsObj)
 	{
-      $obj=new stdClass();
+      $guiObj=new stdClass();
 
-      return $obj;	
+		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		  $this->reqSpecMgr->delete($argsObj->req_spec_id);
+		  logAuditEvent(TLS("audit_req_spec_deleted",$this->auditContext->tproject,$req_spec['title']),
+		               "DELETE",$argsObj->req_spec_id,"req_specs");
+		  
+		  $guiObj->template = 'show_message.tpl';
+		  $guiObj->template_dir='';
+      $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+		  $guiObj->title=lang_get('delete_req_spec');
+
+		  $guiObj->user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
+		  $guiObj->refresh_tree='yes';
+		  $guiObj->result='ok';  // needed to enable refresh_tree logic
+      return $guiObj;	
+      
   }
+  
   
   /*
     function: reorder
@@ -174,10 +227,18 @@ class reqSpecCommands
   */
 	function reorder(&$argsObj)
 	{
-      $obj=new stdClass();
+      $guiObj=new stdClass();
+  		$guiObj->template = 'reqSpecReorder.tpl';
+		  $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+		  $guiObj->action_descr = lang_get('title_change_req_spec_order');
 
-      return $obj;	
+		  $order_by = ' ORDER BY NH.node_order,REQ_SPEC.id ';
+		  $guiObj->all_req_spec = $this->reqSpecMgr->get_all_in_testproject($argsObj->tproject_id,$order_by);
+      $guiObj->tproject_name=$argsObj->tproject_name;
+      $guiObj->tproject_id=$argsObj->tproject_id;
+	    return $guiObj;
   }
+
 
 
   /*
@@ -190,9 +251,19 @@ class reqSpecCommands
   */
 	function doReorder(&$argsObj)
 	{
-      $obj=new stdClass();
+      $guiObj=new stdClass();
+      $guiObj->tproject_name=$argsObj->tproject_name;
+      $guiObj->tproject_id=$argsObj->tproject_id;
+  		$guiObj->template = 'project_req_spec_mgmt.tpl';
+  		$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+  		
+		  $nodes_in_order = transform_nodes_order($argsObj->nodes_order);
 
-      return $obj;	
+		  // need to remove first element, is testproject
+		  array_shift($nodes_in_order);
+		  $this->reqSpecMgr->set_order($nodes_in_order);
+      $guiObj->refresh_tree='yes';
+	    return $guiObj;
   }
 }
 ?>

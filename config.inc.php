@@ -4,19 +4,29 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- *
- * @version $Revision: 1.173 $
- * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
+ * @version $Revision: 1.174 $
+ * @modified $Date: 2008/04/19 21:52:20 $ by $Author: havlat $
  *
  * SCOPE:
- * Constants and configuration parameters used throughout TestLink 
- * are defined within this file.
- * To adapt it to your environment you can made changes here (not recomended)
- * or create custom_config.inc.php and reassign there the configuration
- * variables you want change.
- *-----------------------------------------------------------------------------
+ * 		Constants and configuration parameters used throughout TestLink 
+ * 
+ * 		There are included extra files: 
+ * 			- your settings - custom_config.inc.php
+ * 			- DB access - config_db.inc.php
+ * 			- constants - const.inc.php
+ * 			- basic checking - configCheck.php
+ * 
+ * IMPORTANT: 
+ * 		To adapt values in the file but create/modify custom_config.inc.php and   
+ * 		replace values of TestLink configuration variables. It saves your changes
+ * 		for the next upgrade in one extra file.
+ * 
+ * 
+ *  -----------------------------------------------------------------------------
  *
- * Rev:
+ * Revisions:
+ * 
+ * 		20080419 - havlatm - documentation update; minor refactorization
  *     20080418 - franciscom -  new document_generation
  *     20080330 - franciscom -  
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
@@ -72,38 +82,32 @@
 
 // ----------------------------------------------------------------------------
 /** [INITIALIZATION] - DO NOT CHANGE THE SECTION */
-/** The root dir for the testlink installation with trailing slash */
-define('DS', DIRECTORY_SEPARATOR);
-define('TL_ABS_PATH', dirname(__FILE__) . DS);
 
-/** Dir for temporary files and compiled templates */
-define('TL_TEMP_PATH', TL_ABS_PATH . 'gui' . DS . 'templates_c' . DS);
+/** @global array Global configuration class */
+$tlCfg = new stdClass();
 
-/** Setting up the global include path for testlink */
-ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-        '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DS . 'functions' . DS);
-
-/** Include database consts (the file is generated automatically by TL installer) */ 
+/** Include database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
 
-/** Include constants and magic numbers*/
-require_once(TL_ABS_PATH . 'cfg' . DS . 'const.inc.php');
+/** The root dir for the testlink installation with trailing slash */
+define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+
+/** Include constants and magic numbers (users should not change it)*/
+require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 
 // ----------------------------------------------------------------------------
-$tlCfg=new stdClass();
-
 /** [LOCALIZATION] */
 
-// Your first/suggested choice for default locale.
-// This must be one of $g_locales (see cfg/const.inc.php).
-// An attempt will be done to stablish the default locale 
+/** Default localization for users */
+// This must be available in $g_locales (see cfg/const.inc.php).
+// Note: An attempt will be done to stablish the default locale 
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
 $tlCfg->default_language = 'en_GB'; 
 
 
 // ----------------------------------------------------------------------------
-/** [ENVIRONMENT] */
+/** [SERVER ENVIRONMENT] */
 
 /** Error reporting - do we want php errors to show up for users */
 error_reporting(E_ALL);
@@ -132,7 +136,7 @@ error_reporting(E_ALL);
  * 'ISO-8859-1' could be set for backward compatability
  * other charsets requires experienced admin
  **/
-$tlCfg->charset =  'UTF-8';
+$tlCfg->charset = 'UTF-8';
 
 
 // ----------------------------------------------------------------------------
@@ -182,11 +186,12 @@ $g_bugInterface = null;
 
 
 // ----------------------------------------------------------------------------
-/** [Authentication] */                 
+/** [User Authentication] */                 
 
-/** Login authentication
- * possible values: '' or 'MD5' => use password stored on db
- *                   'LDAP'      => use password from LDAP Server
+/** 
+ * Login authentication method:
+ * 		'MD5' => use password stored on db
+ *      'LDAP'      => use password from LDAP Server
  */ 
 $g_login_method				= 'MD5';
 
@@ -208,7 +213,7 @@ $g_ldap_bind_passwd	= ''; // 'my_bind_password' / Left empty if you LDAP server 
 $g_user_login_valid_regex='/^[\w \-]+$/';
 
 /** Enable/disable Users to create accounts with default role by "new user" link on login page */
-// TRUE => allow [STANDARD BEHAVIOUR]
+// TRUE => allow feature [STANDARD BEHAVIOUR]
 $g_user_self_signup = TRUE; 
 
 
@@ -219,7 +224,7 @@ $g_user_self_signup = TRUE;
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 /** CSS themes - modify if you create own*/
-define('TL_THEME_BASE_DIR','gui/themes/theme_m2/');
+define('TL_THEME_BASE_DIR','gui/themes/default/');
 
 define('TL_THEME_CSS_DIR',TL_THEME_BASE_DIR . 'css/');
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
@@ -250,7 +255,7 @@ $g_main_menu_item_bullet_img='slide_gripper.gif'; // arrow_org.gif/slide_gripper
 //
 // 'none'        -> new behaviour no background color change 
 //
-$tlCfg->gui->testproject_coloring='none';
+$tlCfg->gui->testproject_coloring = 'background'; // Francisco, do not change it!
 
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';
@@ -355,12 +360,12 @@ $g_sort_table_engine='kryogenix.org';
  * Texts for printed documents
  * Leave them empty if you would not to use.
  */
-$tlCfg->document_generation=new stdClass();
-$tlCfg->document_generation->company=new stdClass();
+$tlCfg->document_generation = new stdClass();
+$tlCfg->document_generation->company = new stdClass();
 
 $tlCfg->document_generation->company->name = 'Testlink Community [configure using $tlCfg->company->name]';
-/** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
 
+/** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
 $tlCfg->document_generation->company->logo_image = 'company_logo.png'; 
 $tlCfg->document_generation->company->copyright_msg = '2008 (c) Testlink Community';
 $tlCfg->document_generation->company->confidential_msg = '';
@@ -625,15 +630,15 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 // any other value for type, results on '' assigned to FCK object
 //        
 //
-$g_testcase_template->summary->type='none';
+$g_testcase_template->summary->type = 'none';
 $g_testcase_template->summary->value='';
 
 
-$g_testcase_template->steps->type='none';
-$g_testcase_template->steps->value='';
+$g_testcase_template->steps->type = 'none';
+$g_testcase_template->steps->value = '';
 
-$g_testcase_template->expected_results->type='none';
-$g_testcase_template->expected_results->value='';
+$g_testcase_template->expected_results->type = 'none';
+$g_testcase_template->expected_results->value = '';
 
 
 // Important
@@ -776,7 +781,7 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
   require_once( TL_ABS_PATH . 'custom_config.inc.php' ); 
 
 /** Support for localization */
-// @TODO move the code out of config
+// martin: @TODO move the code out of config
 $serverLanguage = false;
 // check for !== false because getenv() returns false on error
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))

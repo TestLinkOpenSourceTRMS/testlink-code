@@ -6,7 +6,7 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2007/12/09 02:15:20 $ by $Author: havlat $
+ * @modified $Date: 2008/04/19 21:52:21 $ by $Author: havlat $
  *
  * Scope:
  * This class is encapsulates most functionality necessary to query the database
@@ -17,7 +17,8 @@
  * Revisions:
  *
  **/
-require_once("../../config.inc.php");
+require_once('../../config.inc.php');
+require_once('../../cfg/reports.cfg.php');
 require_once('common.php');
 
 
@@ -38,6 +39,8 @@ class tlReports
 	/** class constructor */    
 	public function tlReports(&$db, &$tplanId = null)
 	{
+//		global $tlCfg;
+
 		$this->db = $db;	
 //	  $this->tp = $tplan_mgr;  
 
@@ -55,10 +58,10 @@ class tlReports
 	 **/
 	public function get_list_reports($bug_interface_on,$req_mgmt_enabled, $format)
 	{
-		global $g_reports_list;
+		global $tlCfg;
 		$arrItems = array();
 
-		foreach ($g_reports_list as &$reportItem) {
+		foreach ($tlCfg->reports_list as &$reportItem) {
 
 			// check validity of report		
 			if (($reportItem['enabled'] == 'all') || (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||

@@ -1,0 +1,54 @@
+/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
+/* $Id: tl_treemenu.css,v 1.1 2008/04/19 21:52:21 havlat Exp $ */
+/* css for phplayerstreemenu (based on third_party/phplayersmenu/layerstreemenu.css) */
+/*******************************************************************/
+
+.treemenudiv	{
+	display: block;
+	white-space: nowrap;
+}
+
+.phplmnormal, a.phplmnormal:hover, a.phplm:link, a.phplm:visited, a.phplm:hover,
+a.phplm:active, a.phplmselected:link, a.phplmselected:visited, a.phplmselected:hover,
+a.phplmselected:active
+{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 10px;
+	text-decoration: none;
+}
+
+.phplmnormal	{
+	color: #000000;
+}
+a.phplmnormal:hover	{
+	color: #000000;
+}
+a.phplm:link	{
+	color: #003300;
+}
+a.phplm:visited	{
+	color: #000000;
+}
+a.phplm:hover	{
+	color: #841212;
+	background-color: #fff0c0;
+}
+a.phplm:active	{
+	color: #ff0000;
+}
+a.phplmselected:link	{
+	color: #dd0000;
+    	background-color: BLUE;
+}
+a.phplmselected:visited	{
+	color: #dd0000;
+	background-color: #ffdd76;
+}
+
+a.phplmselected:hover	{
+	color: #841212;
+	background-color: #fff0c0;
+}
+a.phplmselected:active	{
+	color: #ff0000;
+}

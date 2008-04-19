@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.43 2008/01/10 23:57:51 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.44 2008/04/19 21:52:21 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -72,12 +72,13 @@ if($do_report['status_ok'])
   	if (isset($_GET['format']))
 	  $selectedReportType = intval($_GET['format']);
   	else
-	  $selectedReportType = sizeof($g_reports_cfg->formats) ? key($g_reports_cfg->formats) : null;
+	  $selectedReportType = sizeof($tlCfg->reports_formats) ? key($tlCfg->reports_formats) : null;
 
 	// create a list or reports
-	$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs'], $g_reports_cfg->formats[$selectedReportType]);
+	$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs'], 
+		$tlCfg->reports_formats[$selectedReportType]);
 
-	$tplans = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],1);
+	$tplans = getAccessibleTestPlans($db, $tproject_id, $_SESSION['userID'], 1);
 	foreach($tplans as $key => $value)
 	{
   		$map_tplans[$value['id']]=$value['name'];
@@ -92,7 +93,8 @@ $smarty->assign('workframe', $workframe);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('arrData', $href_map);
 $smarty->assign('tplans', $map_tplans);
-$smarty->assign('arrReportTypes', $g_reports_cfg->formats);
+//$smarty->assign('arrReportTypes', $reports_magic->get_list_report_formats());
+$smarty->assign('arrReportTypes', $tlCfg->reports_formats);
 
 $smarty->assign('tplan_id', $tplan_id);
 $smarty->assign('selectedReportType', $selectedReportType);

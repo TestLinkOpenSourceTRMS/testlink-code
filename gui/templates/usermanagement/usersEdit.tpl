@@ -1,9 +1,9 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.13 2008/04/07 07:06:51 franciscom Exp $
+$Id: usersEdit.tpl,v 1.14 2008/04/19 16:28:37 franciscom Exp $
 
-20070829 - jbarchibald
-      -  bug 1000  - Testplan User Role Assignments
+20080419 - franciscom - BUGID 1496
+         -  bug 1000  - Testplan User Role Assignments
 *}
 
 {config_load file="input_dimensions.conf" section='login'}
@@ -180,12 +180,13 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_role}</th>
 			<td>
-		  	   {assign var=selected_role value=$userData->globalRoleID}
+		  	{assign var=selected_role value=$userData->globalRoleID}
 			  {if $userData->globalRoleID eq 0}
+ 			      {assign var=selected_role value=$tlCfg->default_roleid}
 			  {/if}
 				<select name="rights_id">
 				{foreach key=role_id item=role from=$optRights}
-		        <option value="{$role_id}"{if $role_id == $tlCfg->default_roleid} selected="selected" {/if}>
+		        <option value="{$role_id}" {if $role_id == $selected_role} selected="selected" {/if}>
 					{$role->name|escape}
 				</option>
 				{/foreach}

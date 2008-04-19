@@ -1,21 +1,26 @@
 <?php
 /** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: printDocOptions.php,v 1.4 2008/03/04 21:43:39 franciscom Exp $
-* @author 	Martin Havlat
-* 
-* Navigator for print/export functionality. 
-*	It builds the javascript tree that allow the user select a required part 
-*	test specification.
-*
-* rev :
-*      20070509 - franciscom - added contribution BUGID
-*
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
+ *  
+ * @filesource $RCSfile: printDocOptions.php,v $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/04/19 22:18:59 $ $Author: havlat $
+ * @author 	Martin Havlat
+ * 
+ *  Settings for generated documents
+ * 	- Structure of a document 
+ *	- It builds the javascript tree that allow the user select a required part 
+ *		Test specification/ Test plan.
+ *
+ * rev :
+ *      20070509 - franciscom - added contribution BUGID
+ *
+ */
+ 
 require('../../config.inc.php');
-require_once("common.php");
+require("common.php");
 require_once("treeMenu.inc.php");
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
@@ -74,7 +79,8 @@ $workPath = 'lib/results/printDocument.php';
 $args = "&type=" . $type;
 $smarty = new TLSmarty();
 
-// generate tree 
+
+// generate tree for Test Specification
 if ($type == 'testspec')
 {
   // 20071014 - franciscom 
@@ -82,28 +88,29 @@ if ($type == 'testspec')
 	                                   FOR_PRINTING,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,$args);
 	$smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
+
+// generate tree for Test Plan/Test Report
 else if ($type == 'testplan')
 {
 	$tp = new testplan($db);
 	$latestBuild = $tp->get_max_build_id($tplan_id);
 	
 	$filters = new stdClass();
-  $additionalInfo = new stdClass();
+  	$additionalInfo = new stdClass();
 
 	$filters->keyword_id = FILTER_BY_KEYWORD_OFF;
-  $filters->tc_id = FILTER_BY_TC_OFF;
-  $filters->build_id = $latestBuild;
-  $filters->hide_testcases=HIDE_TESTCASES;
-  $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-  $filters->status = FILTER_BY_TC_STATUS_OFF;
-  $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-  $filters->include_unassigned=1;
-  $filters->show_testsuite_contents=1;
+  	$filters->tc_id = FILTER_BY_TC_OFF;
+  	$filters->build_id = $latestBuild;
+  	$filters->hide_testcases=HIDE_TESTCASES;
+  	$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+  	$filters->status = FILTER_BY_TC_STATUS_OFF;
+  	$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+  	$filters->include_unassigned=1;
+  	$filters->show_testsuite_contents=1;
   
-  $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
-  $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
 
-	
 	$treeString = generateExecTree($db,$workPath,$tproject_id,$tproject_name,
 	                               $tplan_id,$tplan_name,$args,$filters,$additionalInfo);
                                  
@@ -124,6 +131,5 @@ $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $args);
 $smarty->assign('type', $type);
-$smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/printTestSet.html");
 $smarty->display('results/printDocOptions.tpl');
 ?>

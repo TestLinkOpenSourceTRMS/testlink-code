@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/04/21 08:30:03 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -144,18 +144,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
         case "doReorder":
         case "createTestCases":
         case "doCreateTestCases":
-            $renderType='template';
-            $key2loop=get_object_vars($opObj);
-            foreach($key2loop as $key => $value)
-            {
-                $guiObj->$key=$value;
-            }
-            $guiObj->operation = $actionOperation[$argsObj->doAction];
-    		    $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
-            $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
-            $tpl = $tpd . $tpl;
-    		break;
-
 	      case "doCreate":
 	      case "doUpdate":
             $renderType='template';

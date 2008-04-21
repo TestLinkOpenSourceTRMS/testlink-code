@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.307 $
- * @modified $Date: 2008/04/19 16:14:34 $ $Author: franciscom $
+ * @version $Revision: 1.308 $
+ * @modified $Date: 2008/04/21 08:30:33 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1619,7 +1619,7 @@ $TLS_testnotes = "Test Notes";
 
 
 // lib/functions/testcase.class.php
-$TLS_testcase_name_already_exists = "There's already a Test Case with this title!";
+$TLS_testcase_name_already_exists = "There's already a Test Case with this title (%s)";
 $TLS_the_format_tc_xml_import = "";
 
 

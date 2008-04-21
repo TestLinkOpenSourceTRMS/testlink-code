@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.12 2008/04/03 06:52:33 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.13 2008/04/21 08:29:50 franciscom Exp $
 viewer for test case in test specification
 
 20080113 - franciscom - changed format for test case id + name
@@ -62,10 +62,13 @@ viewer for test case in test specification
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+	  <input type="hidden" name="doAction" value="" />
+
 
 	    {assign var="go_newline" value=""}
 	    {if $edit_enabled}
-	 	    <input type="submit" name="edit_tc" value="{lang_get s='btn_edit'}" />
+	 	    <input type="submit" name="edit_tc" 
+	 	           onclick="doAction.value='edit'" value="{lang_get s='btn_edit'}" />
 	    {/if}
 	
 		{if $args_can_delete_testcase == "yes" }

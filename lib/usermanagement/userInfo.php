@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.20 $
-* @modified $Date: 2008/03/26 20:39:32 $
+* @version $Revision: 1.21 $
+* @modified $Date: 2008/04/21 08:30:03 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -84,6 +84,7 @@ $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('user',$user);
 $smarty->assign('loginHistory', $loginHistory);
 $smarty->assign('user_feedback', $op->user_feedback);
+$smarty->assign('update_title_bar',0);
 $smarty->display($template_dir . $default_template);
 
 /*

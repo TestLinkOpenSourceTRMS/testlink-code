@@ -1,7 +1,17 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.3 2008/03/24 19:33:28 havlat Exp $ *}
-{* Purpose: smarty template - edit test specification: test case *}
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: tcEdit.tpl,v 1.4 2008/04/21 08:29:50 franciscom Exp $ 
+Purpose: smarty template - edit test specification: test case
+
+rev: 20080420 - franciscom - improved user feedback
+*}
+
+{lang_get var="labels"
+          s="warning,warning_empty_tc_title,btn_save,cancel"}
+
+
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
@@ -18,13 +28,14 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_testcase_name = "{lang_get s='warning_empty_tc_title'}";
+var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
+var alert_box_title = "{$labels.warning}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.testcase_name.value)) 
   {
-      alert(warning_empty_testcase_name);
+      alert_message(alert_box_title,warning_empty_testcase_name);
       selectField(f, 'testcase_name');
       return false;
   }
@@ -53,11 +64,13 @@ function validateForm(f)
 	<input type="hidden" name="testcase_id" value="{$tc.testcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$tc.id}" />
 	<input type="hidden" name="version" value="{$tc.version}" />
-	
+	<input type="hidden" name="doAction" value="" />
 
 	<div class="groupBtn">
-		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_save'}" />
-		<input type="button" name="go_back" value="{lang_get s='cancel'}" 
+		<input id="do_update" type="submit" name="do_update" 
+		       onclick="doAction.value='doUpdate'"  value="{$labels.btn_save}" />
+		
+		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: history.back();"/>
 	</div>	
 
@@ -65,8 +78,9 @@ function validateForm(f)
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
     
 	<div class="groupBtn">
-		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_save'}" />
-		<input type="button" name="go_back" value="{lang_get s='cancel'}" 
+		<input id="do_update" type="submit" name="do_update" 
+		       onclick="doAction.value='doUpdate'"   value="{$labels.btn_save}" />
+		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: history.back();"/>
 	</div>	
 </form>

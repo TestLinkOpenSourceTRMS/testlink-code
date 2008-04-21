@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/04/17 08:24:10 $ -  $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/04/21 08:30:03 $ -  $Author: franciscom $
  *
  * shows all users
  *
@@ -83,7 +83,6 @@ $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_order_by',$args->user_order_by);
 $smarty->assign('order_by_role_dir',$args->order_by_dir['order_by_role_dir']);
 $smarty->assign('order_by_login_dir',$args->order_by_dir['order_by_login_dir']);
-// $smarty->assign('role_colour',config_get('role_colour'));
 $smarty->assign('role_colour',getRoleColourCfg($db));
 
 $grants=getGrantsForUserMgmt($db,$_SESSION['currentUser']);

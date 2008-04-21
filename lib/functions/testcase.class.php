@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.103 $
- * @modified $Date: 2008/04/14 19:19:22 $ $Author: schlundus $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2008/04/21 08:30:02 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20080420 - franciscom - update() added controls to avoid duplicate name,
+ *                                  changed return type
  *
  * 20080409 - azl - added optional testSuite param to get_by_name function
  * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
@@ -341,8 +344,7 @@ function get_by_name($name, $testSuite='')
 		$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name
 		         FROM nodes_hierarchy
 		         WHERE nodes_hierarchy.node_type_id = {$this->my_node_type}
-		         AND nodes_hierarchy.name = '" .
-	  $this->db->prepare_string($name) . "'";
+		         AND nodes_hierarchy.name = '" .  $this->db->prepare_string($name) . "'";
 	}
 
   $recordset = $this->db->get_recordset($sql);
@@ -500,7 +502,7 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 	$smarty->assign('action',$viewer_defaults['action']);
 	$smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
 	$smarty->assign('tprojectName',$tprojectName);
-  	$smarty->assign('parentTestSuiteName',$parentTestSuiteName);
+  $smarty->assign('parentTestSuiteName',$parentTestSuiteName);
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('users',tlUser::getAll($this->db,null,'id'));
@@ -528,41 +530,89 @@ function update($id,$tcversion_id,$name,$summary,$steps,
                 $expected_results,$user_id,$keywords_id='',
                 $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=TL_DEFAULT_IMPORTANCE)
 {
-	$status_ok = 0;
+	$ret['status_ok'] = 1;
+	$ret['msg'] = '';
+	
+	
 	tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 
-	$sql = " UPDATE nodes_hierarchy SET name='" .
-	         $this->db->prepare_string($name) . "' WHERE id= {$id}";
+  // Check if new name will be create a duplicate testcase under same parent
+  $ret = $this->check_name_is_unique($id,$name);
 
-	$result = $this->db->exec_query($sql);
-	$status_ok = $result ? 1: 0;
+  if($ret['status_ok'])
+  {    
+      $sql=array();
+	    $sql[] = " UPDATE nodes_hierarchy SET name='" .
+	               $this->db->prepare_string($name) . "' WHERE id= {$id}";
 
-	if( $status_ok)
-	{
-		// test case version
-		$sql = " UPDATE tcversions SET summary='" . $this->db->prepare_string($summary) . "'," .
-				   " steps='" . $this->db->prepare_string($steps) . "'," .
-				   " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
-				   " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
-				   " execution_type={$execution_type}, importance={$importance} " .
-				   " WHERE tcversions.id = {$tcversion_id}";
+	    // test case version
+	    $sql[] = " UPDATE tcversions SET summary='" . $this->db->prepare_string($summary) . "'," .
+	    		     " steps='" . $this->db->prepare_string($steps) . "'," .
+	    		     " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
+	    		     " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
+	    		     " execution_type={$execution_type}, importance={$importance} " .
+	    		     " WHERE tcversions.id = {$tcversion_id}";
 
-		$result = $this->db->exec_query($sql);
-		$status_ok = $result ? 1: 0;
-	}
-
-
-	// keywords
-	// update = delete + insert
-	$this->deleteKeywords($id);
-	if(strlen(trim($keywords_id)))
-	{
-		$a_keywords = explode(",",$keywords_id);
-		$this->addKeywords($id,$a_keywords);
-	}
-
-	return $status_ok;
+      foreach($sql as $stm)
+      {
+          $result = $this->db->exec_query($stm);
+          if( !$result )
+          {
+	    	      $ret['status_ok'] = 0;
+	    	      $ret['msg'] = $this->db->error_msg;
+              break;
+          }
+      }
+      if( $ret['status_ok'] )
+      {      
+	        // keywords
+	        // update = delete + insert
+	        $this->deleteKeywords($id);
+	        if(strlen(trim($keywords_id)))
+	        {
+	        	$a_keywords = explode(",",$keywords_id);
+	        	$this->addKeywords($id,$a_keywords);
+	        }
+	    }
+  }
+      
+	return $ret;
 }
+
+/*
+  function: check_name_is_unique
+
+  args:
+  
+  returns: 
+
+*/
+function check_name_is_unique($id,$name)
+{
+		$ret['status_ok'] = 1;
+		$ret['msg'] = '';
+    
+    $sql = " SELECT count(*) AS qty FROM {$this->nodes_hierarchy_table} NHA " .
+		       " WHERE NHA.name = '" . $this->db->prepare_string($name) . "'" .
+		       " AND NHA.node_type_id = {$this->my_node_type} " .
+		       " AND NHA.id <> {$id} " .
+		       " AND NHA.parent_id=" .
+		       " (SELECT NHB.parent_id " .
+		       "  FROM {$this->nodes_hierarchy_table} NHB" .
+		       "  WHERE NHB.id = {$id}) ";
+		       
+		$result = $this->db->exec_query($sql);
+		$myrow = $this->db->fetch_array($result);
+		if( $myrow['qty'] > 0)
+		{
+				$ret['status_ok'] = 0;
+				$ret['msg'] = sprintf(lang_get('testcase_name_already_exists'),$name);
+		}
+    return $ret;
+
+} // function end
+
+
 
 /*
   function: check_link_and_exec_status

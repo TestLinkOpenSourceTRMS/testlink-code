@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.30 2008/04/17 08:24:00 franciscom Exp $ 
+	$Id: navBar.tpl,v 1.31 2008/04/21 11:16:38 havlat Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -41,10 +41,8 @@
 	</div>
 	{/if}
 
-	<div class="bold" style="padding: 5px 10px 5px 25px;">TestLink {$tlVersion|escape} : {$user|escape}
-	{if $testprojectRole  neq null}	
-		- {$testprojectRole|escape}
-	{/if}
+	<div class="bold" style="padding: 5px 10px 5px 25px;">
+		TestLink {$tlVersion|escape} : {$user|escape}
 	</div>
 
 </div>

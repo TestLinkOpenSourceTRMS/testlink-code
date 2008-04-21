@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/03/24 19:33:28 $ $Author: havlat $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/04/21 11:16:37 $ $Author: havlat $
  *
  * This file manages the navigation bar. 
  *
@@ -30,12 +30,18 @@ $arr_tprojects = $tproject_mgr->get_accessible_for_user($userID,'map', $order_by
 if ($curr_tproject_id)
 	getAccessibleTestPlans($db,$curr_tproject_id,$userID,1,$tpID);
 	
-$testprojectRole = null;
 if ($curr_tproject_id && isset($currentUser->tprojectRoles[$curr_tproject_id]))
 {
+	// project specific role applied
 	$role = $currentUser->tprojectRoles[$curr_tproject_id];
-	$testprojectRole = $tlCfg->gui->role_separator_open . $role->name . $tlCfg->gui->role_separator_close;
-}	                   
+	$testprojectRole = $role->name;
+}
+else
+{
+	// general role applied
+	$testprojectRole = $currentUser->globalRole->name;
+}	
+                   
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 
 // only when the user has changed the product using the combo
@@ -54,9 +60,8 @@ $smarty = new TLSmarty();
 $smarty->assign('rights_mgt_view_events', has_rights($db,"mgt_view_events"));
 $smarty->assign('logo', $tlCfg->gui->html_logo);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
-$smarty->assign('user', $currentUser->getDisplayName() . ' '. lang_get('Role'). 
-	" :: {$tlCfg->gui->role_separator_open} {$currentUser->globalRole->name} {$tlCfg->gui->role_separator_close}");
-$smarty->assign('testprojectRole',$testprojectRole);
+$smarty->assign('user', $currentUser->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open . 
+	$testprojectRole . $tlCfg->gui->role_separator_close);
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
 $smarty->assign('rightExecute', has_rights($db,"testplan_execute"));
 $smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));

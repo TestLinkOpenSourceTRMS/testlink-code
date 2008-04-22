@@ -2,11 +2,16 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.3 $ $Author: franciscom $
- * @modified $Date: 2008/04/03 22:07:56 $
+ * @version $Revision: 1.4 $ $Author: franciscom $
+ * @modified $Date: 2008/04/22 07:01:47 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
+ * rev:
+ *     20080422 - franciscom - BUGID 1497
+ *     Suggested by Martin Havlat execution order will be set to external_id * 10
+ *     for test cases not linked yet
+ *           
  **/ 
 
 /*
@@ -271,7 +276,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
               // But Because I loop over all version (linked and not) if I write always
               // I will overwrite rigth execution order of linked tcversion.
               //
-  	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = 1;
+              // N.B.:
+              // As suggested by Martin Havlat order will be set to external_id * 10
+  	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $the_tc['tc_external_id']*10;
     			    $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				    $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
               $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];

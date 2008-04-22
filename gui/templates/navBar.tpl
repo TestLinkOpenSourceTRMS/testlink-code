@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.31 2008/04/21 11:16:38 havlat Exp $ 
+	$Id: navBar.tpl,v 1.32 2008/04/22 07:01:54 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -29,7 +29,7 @@
 	{if $arrayProducts ne ""}
 	<div style="float: right; padding: 2px;">
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 
-		<span style="font-size: 80%">{$labels.testproject'} </span>
+		<span style="font-size: 80%">{$labels.testproject} </span>
 		<select class="menu_combo" name="testproject" onchange="this.form.submit();">
       	{foreach key=tp_id item=tp_name from=$arrayProducts}
   		  <option value="{$tp_id}" title="{$tp_name|escape}"

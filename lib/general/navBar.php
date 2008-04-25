@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/04/21 11:16:37 $ $Author: havlat $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/04/25 18:08:16 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
@@ -17,60 +17,79 @@ require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db,true);
 
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
-$curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$currentUser = $_SESSION['currentUser'];
-$userID = $currentUser->dbID;
+$tproject_mgr = new testproject($db);
+
+$guiCfg = config_get('gui');
+
+$gui = new stdClass();
+$gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$user = $_SESSION['currentUser'];
+$userID = $user->dbID;
 
 $order_by = $tlCfg->gui->tprojects_combo_order_by;
+$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map', $order_by);
+$gui->TestProjectCount = sizeof($gui->TestProjects);
+$gui->TestPlanCount = getNumberOfAccessibleTestPlans($db,$gui->tprojectID, $_SESSION['filter_tp_by_product'],null);
+$gui->logo =$guiCfg->html_logo;
 
-$tproject_mgr = new testproject($db);
-$arr_tprojects = $tproject_mgr->get_accessible_for_user($userID,'map', $order_by);
 
-if ($curr_tproject_id)
-	getAccessibleTestPlans($db,$curr_tproject_id,$userID,1,$tpID);
-	
-if ($curr_tproject_id && isset($currentUser->tprojectRoles[$curr_tproject_id]))
+if ($gui->tprojectID)
 {
-	// project specific role applied
-	$role = $currentUser->tprojectRoles[$curr_tproject_id];
+  $tplanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+	getAccessibleTestPlans($db,$gui->tprojectID,$userID,1,$tplanID);
+}	
+
+if ($gui->tprojectID && isset($user->tprojectRoles[$gui->tprojectID]))
+{
+	// test project specific role applied
+	$role = $user->tprojectRoles[$gui->currentTprojectID];
 	$testprojectRole = $role->name;
 }
 else
 {
 	// general role applied
-	$testprojectRole = $currentUser->globalRole->name;
+	$testprojectRole = $user->globalRole->name;
 }	
+$gui->whoami =$user->getDisplayName() . ' ' . $guiCfg->role_separator_open . 
+	            $testprojectRole . $guiCfg->role_separator_close;
                    
-$countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 
 // only when the user has changed the product using the combo
 // the _GET has this key.
 // Use this clue to launch a refresh of other frames present on the screen
 // using the onload HTML body attribute
-$updateMainPage = 0;
+$gui->updateMainPage = 0;
 if (isset($_GET['testproject']))
 {
-	$updateMainPage = 1;
+	$gui->updateMainPage = 1;
 	// set test project ID for the next session
 	setcookie('lastProductForUser'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
+$gui->grants=getGrants($db);
+
 $smarty = new TLSmarty();
-$smarty->assign('rights_mgt_view_events', has_rights($db,"mgt_view_events"));
-$smarty->assign('logo', $tlCfg->gui->html_logo);
-$smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
-$smarty->assign('user', $currentUser->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open . 
-	$testprojectRole . $tlCfg->gui->role_separator_close);
-$smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
-$smarty->assign('rightExecute', has_rights($db,"testplan_execute"));
-$smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));
-$smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
-$smarty->assign('countPlans', $countPlans);
-$smarty->assign('countProjects',sizeof($arr_tprojects));
-$smarty->assign('arrayProducts', $arr_tprojects);
-$smarty->assign('currentProduct', $curr_tproject_id);
-$smarty->assign('updateMainPage', $updateMainPage); 
-$smarty->assign('currentTProjectID',$curr_tproject_id);
+$smarty->assign('gui',$gui);
 $smarty->display('navBar.tpl');
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function getGrants($dbHandler)
+{
+    $grants = new stdClass();
+    $grants->view_events_mgmt = has_rights($db,"mgt_view_events");
+    $grants->view_testcases = has_rights($db,"mgt_view_tc");
+    $grants->view_testcase_spec = has_rights($db,"mgt_view_tc");
+    $grants->testplan_execute = has_rights($db,"testplan_execute");
+    $grants->testplan_metrics = has_rights($db,"testplan_metrics");
+    $grants->user_mgmt = has_rights($db,"mgt_users");
+    return $grants;  
+}
 ?>

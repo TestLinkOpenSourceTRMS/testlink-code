@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/04/14 19:19:22 $ $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/04/25 18:08:16 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -31,16 +31,16 @@ class TLSmarty extends Smarty
 {
     function TLSmarty()
 	{
-		global $tlCfg;
-		global $g_attachments;
-		global $g_spec_cfg;
-		global $g_tc_status;
-		global $g_tc_status_css;
-		global $g_bugInterfaceOn;
-		global $g_interface_bugs;
-		global $g_tc_status_for_ui;
-		global $g_tc_status_verbose_labels;
-		global $g_locales;
+		  global $tlCfg;
+		  global $g_attachments;
+		  global $g_spec_cfg;
+		  global $g_tc_status;
+		  global $g_tc_status_css;
+		  global $g_bugInterfaceOn;
+		  global $g_interface_bugs;
+		  global $g_tc_status_for_ui;
+		  global $g_tc_status_verbose_labels;
+		  global $g_locales;
 	    global $g_locales_html_select_date_field_order;
     	global $g_locales_date_format;
     	global $g_locales_timestamp_format;
@@ -49,7 +49,7 @@ class TLSmarty extends Smarty
 	  	$this->Smarty();
 	  	$this->template_dir = TL_ABS_PATH . 'gui/templates/';
 	  	$this->compile_dir = TL_TEMP_PATH;
-		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
+		  $this->config_dir = TL_ABS_PATH . 'gui/templates/';
 
 		$testproject_coloring=$tlCfg->gui->testproject_coloring;
 		$testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
@@ -95,7 +95,7 @@ class TLSmarty extends Smarty
 		// load configuration
 		$this->assign('tlCfg',$tlCfg);
 		$this->assign('gsmarty_gui',$tlCfg->gui);
-    	$this->assign('gsmarty_spec_cfg',$g_spec_cfg);
+    $this->assign('gsmarty_spec_cfg',$g_spec_cfg);
 		$this->assign('gsmarty_attachments',$g_attachments);
 
 		// obsolete - use gsmarty_gui->title_sep_x in templates
@@ -114,6 +114,7 @@ class TLSmarty extends Smarty
 		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
 		$this->assign('gsmarty_interface_bugs',$g_interface_bugs);
 		$this->assign('testproject_coloring',null);
+		
 		// -----------------------------------------------------------------------------
 		// define a select structure for {html_options ...}
 		$this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
@@ -129,6 +130,7 @@ class TLSmarty extends Smarty
 		$this->assign('jsValidate', null);
 		$this->assign('jsTree', null);
 		$this->assign('sqlResult', null);
+		
 		// user feedback variables (used in inc_update.tpl)
 		$this->assign('action', 'updated');
 		$this->assign('user_feedback', null);

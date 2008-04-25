@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.104 $
- * @modified $Date: 2008/04/21 08:30:02 $ $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2008/04/25 18:08:16 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20080425 - franciscom - replacing DEFINE with const
+ *                         new internat method updateKeywordAssignment()
  *
  * 20080420 - franciscom - update() added controls to avoid duplicate name,
  *                                  changed return type
@@ -75,7 +78,17 @@ class testcase extends tlObjectWithAttachments
 	private $tcversions_table = "tcversions";
 	private $testprojects_table = "testprojects";
 	private $nodes_hierarchy_table = "nodes_hierarchy";
+	private $keywords_table = "keywords";
 
+
+  const AUTOMATIC_ID=0;
+  const DEFAULT_ORDER=0;
+  const ALL_VERSIONS=0;
+  const LATEST_VERSION=-1;
+  const AUDIT_OFF=0;
+  const AUDIT_ON=1;
+    
+  
 	var $db;
 	var $tree_manager;
 	var $tproject_mgr;
@@ -185,13 +198,14 @@ class testcase extends tlObjectWithAttachments
 //
 function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
-                $tc_order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
+                $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='generate_new',
                 $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 {
 	$first_version = 1;
 	$status_ok = 1;
+	
 	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
                                   $check_duplicate_name,
                                   $action_on_duplicate_name);
@@ -230,17 +244,19 @@ return:
        $ret['msg'] = 'ok';
 	     $ret['new_name']
 */
-function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
+function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                            $check_duplicate_name=0,
                            $action_on_duplicate_name='generate_new')
 {
+  // debug
+  echo "<pre>debug 20080425 - \ - " . __FUNCTION__ . " --- ";echo "</pre>";
   $ret['id'] = -1;
   $ret['external_id']=0;
   $ret['status_ok'] = 1;
   $ret['msg'] = 'ok';
 	$ret['new_name'] = '';
 
-
+  
  	if ($check_duplicate_name)
 	{
     $sql = " SELECT count(*) AS qty FROM nodes_hierarchy " .
@@ -276,6 +292,7 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
     $tprojectID=$path2root[0]['parent_id'];
     $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tprojectID);
 
+    echo "<pre>debug 20080425 - \ - " . __FUNCTION__ . " --- "; print_r('f'); echo "</pre>";
     $tcase_id = $this->tree_manager->new_node($parent_id,
                                                $this->my_node_type,$name,$order,$id);
     $ret['id'] = $tcase_id;
@@ -397,9 +414,10 @@ function get_all()
        added disable_edit argument
 
 */
-function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_args = null)
+function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewer_args = null)
 {
-
+  $gui = new stdClass();
+  
   $status_ok = 1;
   $viewer_defaults=array('action' => '', 'msg_result' => '','user_feedback' => '',
                          'refresh_tree' => 'yes', 'disable_edit' => 0,
@@ -423,7 +441,7 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
   $tprojectName='';
   $parentTestSuiteName='';
   $requirements_feature=null;
-	$tc_current_version = array();
+	$gui->tc_current_version = array();
 	$tc_other_versions = array();
 	$status_quo_map = array();
 	$keywords_map = array();
@@ -473,13 +491,13 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 		if (!$tc_array)
 			continue;
 
-	  	$tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
+	  $tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
 		//get the status quo of execution and links of tc versions
 		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
 		$keywords_map[] = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
 		$tc_array[0]['keywords'] = $keywords_map;
 
-		$tc_current_version[] = array($tc_array[0]);
+		$gui->tc_current_version[] = array($tc_array[0]);
 
 		$qta_versions = count($tc_array);
 		if($qta_versions > 1)
@@ -491,12 +509,11 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 		$arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
 
 		// custom fields
-		$cf_smarty = null;
-		if($gui_cfg->enable_custom_fields)
-			$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
+		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
 		$smarty->assign('cf',$cf_smarty);
  	}
 
+	$smarty->assign('gui',$gui);
 	$smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
 	$smarty->assign('sqlResult',$viewer_defaults['msg_result']);
 	$smarty->assign('action',$viewer_defaults['action']);
@@ -510,7 +527,6 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 	$smarty->assign('can_delete_testcase',$can_edit);
 	$smarty->assign('can_delete_version',$can_edit);
 	$smarty->assign('status_quo',$status_quo_map);
-	$smarty->assign('testcase_curr_version',$tc_current_version);
 	$smarty->assign('testcase_other_versions',$tc_other_versions);
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req"));
@@ -528,7 +544,7 @@ function show(&$smarty,$template_dir,$id,$version_id = TC_ALL_VERSIONS,$viewer_a
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
                 $expected_results,$user_id,$keywords_id='',
-                $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=TL_DEFAULT_IMPORTANCE)
+                $tc_order=self::DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=TL_DEFAULT_IMPORTANCE)
 {
 	$ret['status_ok'] = 1;
 	$ret['msg'] = '';
@@ -563,21 +579,82 @@ function update($id,$tcversion_id,$name,$summary,$steps,
               break;
           }
       }
+      
       if( $ret['status_ok'] )
       {      
-	        // keywords
-	        // update = delete + insert
-	        $this->deleteKeywords($id);
-	        if(strlen(trim($keywords_id)))
-	        {
-	        	$a_keywords = explode(",",$keywords_id);
-	        	$this->addKeywords($id,$a_keywords);
-	        }
+	        $this->updateKeywordAssignment($id,$keywords_id);
 	    }
   }
       
 	return $ret;
 }
+
+
+/*
+  function: updateKeywordAssignment
+
+  args:
+  
+  returns: 
+
+*/
+private function updateKeywordAssignment($id,$keywords_id)
+{
+
+// To avoid false loggings, check is delete is needed
+$items=array();
+$items['stored']=$this->get_keywords_map($id);
+$items['stored']=is_null($items['stored']) ? array() : $items['stored'];
+$items['requested']=array();
+
+$hasRequestOfAssignment=strlen(trim($keywords_id));
+
+if($hasRequestOfAssignment)
+{
+  $a_keywords = explode(",",trim($keywords_id));
+  $sql=" SELECT id,keyword " .
+       " FROM {$this->keywords_table} " .
+       " WHERE id IN (" . implode(',',$a_keywords) . ")";
+       
+  $items['requested'] = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
+}
+
+$items['common']=array_intersect_assoc($items['stored'],$items['requested']);
+$items['new']=array_diff_assoc($items['requested'],$items['common']);
+$items['todelete']=array_diff_assoc($items['stored'],$items['common']);   
+
+if(!is_null($items['todelete']) && count($items['todelete']) > 0)
+{
+   $this->deleteKeywords($id,array_keys($items['todelete']),self::AUDIT_ON);
+}
+
+if(!is_null($items['new']) && count($items['new']) > 0)
+{
+	$this->addKeywords($id,array_keys($items['new']),self::AUDIT_ON);
+}
+
+}
+
+/*
+  function: logKeywordChanges
+
+  args:
+  
+  returns: 
+
+*/
+function logKeywordChanges($old,$new)
+{
+
+   // try to understand the really new
+  
+}
+
+
+
+
+
+
 
 /*
   function: check_name_is_unique
@@ -658,10 +735,10 @@ function check_link_and_exec_status($id)
 
 
 /* 20060326 - franciscom - interface changed */
-function delete($id,$version_id = TC_ALL_VERSIONS)
+function delete($id,$version_id = self::ALL_VERSIONS)
 {
   $children=null;
-  if($version_id == TC_ALL_VERSIONS)
+  if($version_id == self::ALL_VERSIONS)
   {
     // I'm trying to speedup the next deletes
     $sql="SELECT nodes_hierarchy.id FROM nodes_hierarchy ";
@@ -795,11 +872,11 @@ function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 	rev:
 	     20070602 - franciscom - delete attachments
 */
-function _blind_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
+function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 {
     $sql = array();
 
-    if( $version_id == TC_ALL_VERSIONS)
+    if( $version_id == self::ALL_VERSIONS)
     {
 	    $sql[]="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
 	    $sql[]="DELETE FROM req_coverage WHERE testcase_id = {$id}";
@@ -842,10 +919,10 @@ Delete the following info:
 	executions
   cfield_execution_values
 */
-function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
+function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 {
 	  $sql = array();
-		if( $version_id	== TC_ALL_VERSIONS )
+		if( $version_id	== self::ALL_VERSIONS )
 		{
 	    $children_list=implode(',',$children);
     	$sql[]="DELETE FROM execution_bugs
@@ -954,7 +1031,7 @@ function copy_to($id,$parent_id,$user_id,
 	if ($tcase_info)
 	{
 		$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
-		                                   $tcase_info[0]['node_order'],TC_AUTOMATIC_ID,
+		                                   $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
                                        $check_duplicate_name,
                                        'generate_new');
 		if ($new_tc['status_ok'])
@@ -1087,7 +1164,7 @@ function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$
   returns:
 
 */
-function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
+function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_open=0)
 {
 	$where_clause="";
 	$where_clause_names="";
@@ -1181,13 +1258,13 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
 
   args : id: can be a single testcase id or an array od testcase id.
 
-         [version_id]: default TC_ALL_VERSIONS => all versions
+         [version_id]: default self::ALL_VERSIONS => all versions
                        can be an array.
                        Useful to retrieve only a subset of versions.
 
          [active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
                           has effect for the following version_id values:
-                          TC_ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array
+                          self::ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array
 
          [open_status]: default 'ALL'
                         currently not used.
@@ -1196,7 +1273,7 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
 
 
 */
-function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open_status='ALL')
+function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$open_status='ALL')
 {
 	$tcid_list = '';
 	$where_clause = '';
@@ -1219,7 +1296,7 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open
 	}
 	else
 	{
-		if($version_id != TC_ALL_VERSIONS && $version_id != TC_LATEST_VERSION)
+		if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
 		{
 			$where_clause .= " AND tcversions.id = {$version_id} ";
 		}
@@ -1248,7 +1325,7 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open
          ORDER BY tcversions.version DESC";
 
 
-	if ($version_id != TC_LATEST_VERSION)
+	if ($version_id != self::LATEST_VERSION)
 		$recordset = $this->db->get_recordset($sql);
 	else
 		$recordset = array($this->db->fetchFirstRow($sql));
@@ -1505,7 +1582,15 @@ function get_keywords_map($id,$order_by_clause='')
 	return $map_keywords;
 }
 
-function addKeyword($id,$kw_id)
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function addKeyword($id,$kw_id,$audit=self::AUDIT_ON)
 {
 	$kw = $this->getKeywords($id,$kw_id);
 	if (sizeof($kw))
@@ -1519,19 +1604,27 @@ function addKeyword($id,$kw_id)
 	{
 		$tcInfo = $this->tree_manager->get_node_hierachy_info($id);
 		$keyword = tlKeyword::getByID($this->db,$kw_id);
-		if ($keyword && $tcInfo)
+		if ($keyword && $tcInfo && $audit == self::AUDIT_ON)
 			logAuditEvent(TLS("audit_keyword_assigned_tc",$keyword->name,$tcInfo['name']),"ASSIGN",$id,"nodes_hierarchy");
 	}
 	return $result;
 }
 
-function addKeywords($id,$kw_ids)
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function addKeywords($id,$kw_ids,$audit=self::AUDIT_ON)
 {
 	$bSuccess = 1;
 	$num_kws = sizeof($kw_ids);
 	for($idx = 0; $idx < $num_kws; $idx++)
 	{
-		$bSuccess = $bSuccess && $this->addKeyword($id,$kw_ids[$idx]);
+		$bSuccess = $bSuccess && $this->addKeyword($id,$kw_ids[$idx],$audit);
 	}
 
 	return $bSuccess;
@@ -1552,26 +1645,50 @@ function copyKeywordsTo($id,$destID)
 	return $bSuccess;
 }
 
+/*
+  function: 
 
-function deleteKeywords($tcID,$kwID = null)
+  args :
+  
+  returns: 
+
+*/
+function deleteKeywords($tcID,$kwID = null,$audit=self::AUDIT_ON)
 {
 	$sql = " DELETE FROM testcase_keywords WHERE testcase_id = {$tcID} ";
 	if (!is_null($kwID))
-		$sql .= " AND keyword_id = {$kwID}";
+	{
+	  if( is_array($kwID) )
+	  {
+		    $sql .= " AND keyword_id IN (" . implode(',',$kwID) . ")";
+		    $key4log=$kwID;
+		}
+		else
+		{
+		    $sql .= " AND keyword_id = {$kwID}";
+		    $key4log=array($kwID);
+		}    
+	}	
+  else
+  {
+      $key4log=array_keys($this->get_keywords_map($tcID));
+  }
+		
 	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
 		$tcInfo = $this->tree_manager->get_node_hierachy_info($tcID);
 		if ($tcInfo)
 		{
-			if ($kwID)
+			foreach($key4log as $key2get)
 			{
-				$keyword = tlKeyword::getByID($this->db,$kwID);
-				if ($keyword)
-					logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$keyword->name,$tcInfo['name']),"ASSIGN",$tcID,"nodes_hierarchy");
+				$keyword = tlKeyword::getByID($this->db,$key2get);
+				if ($keyword && $audit==self::AUDIT_ON)
+				{
+					logAuditEvent(TLS("audit_keyword_assignment_removed_tc",$keyword->name,$tcInfo['name']),
+					              "ASSIGN",$tcID,"nodes_hierarchy");
+				}	
 			}
-			else
-				logAuditEvent(TLS("audit_all_keyword_assignments_removed_tc",$tcInfo['name']),"ASSIGN",$tcID,"nodes_hierarchy");
 		}
 	}
 
@@ -1662,7 +1779,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 	}
 	else
 	{
-			if($version_id != TC_ALL_VERSIONS)
+			if($version_id != self::ALL_VERSIONS)
 			{
 				$where_clause  .= " AND tcversions.id = {$version_id} ";
 			}
@@ -1783,7 +1900,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 	}
 	else
 	{
-			if($version_id != TC_ALL_VERSIONS)
+			if($version_id != self::ALL_VERSIONS)
 			{
 				$where_clause_1 = $where_clause . " AND NHA.id = {$version_id} ";
 				$where_clause_2 = $where_clause . " AND tcversions.id = {$version_id} ";

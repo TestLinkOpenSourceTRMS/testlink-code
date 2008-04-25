@@ -1,6 +1,6 @@
-/* 
+/*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.22 2007/01/23 18:27:50 franciscom Exp $
+$Id: testlink.css,v 1.23 2008/04/25 22:10:53 schlundus Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new warning classes
@@ -31,7 +31,7 @@ div.menu_title {
 
 div.menu_bar {
 	background: 	#CDE;
-	background-image: url(../../icons/navbar.gif); 
+	background-image: url(../../icons/navbar.gif);
 	border-style:	groove;
 	border-width:	thin;
 	padding: 		2px 5px;
@@ -52,7 +52,7 @@ select.menu_combo {
 div.vertical_menu {
 	background: 	#EEE;
 	font-size:      90%;
-	margin: 		3px; 
+	margin: 		3px;
 	padding: 		2px;
 	padding-bottom:	30px;
 	width:			26%;
@@ -124,7 +124,7 @@ div.workBack {
 	text-align: 	left;
 	margin: 		3px;
 	background: 	#CDE;
-	padding: 		15px; 
+	padding: 		15px;
 	border-style:	groove;
 	border-width:	thin;
 }
@@ -186,7 +186,7 @@ div.warning_soft
 	font-weight:    bold;
 	padding: 		2px;
 }
-	
+
 
 
 .title {
@@ -220,24 +220,24 @@ img.help {
 /* This allows link help from text e.g. instruction
  * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">Test Specification</span>
  */
-span.help 
+span.help
 {
 	cursor: 		help;
-	text-decoration: underline; 
+	text-decoration: underline;
 }
 
 /***** Links **************************************/
 
 /* A Visited link is still blue */
 a:visited, a:link, a:active {
-	color: 			#059; 
+	color: 			#059;
 	text-decoration: none;
-} 
+}
 /* A link being hovered over is red*/
 a:hover   {
-	color: 			#900; 
+	color: 			#900;
 	text-decoration: none;
-} 
+}
 
 
 /***** tabbed menu ***********************************/
@@ -270,9 +270,9 @@ span.unselected a, span.unselected a:visited {
 
 
 /***** Tables *****************************************
-* 
+*
 * Standard table classes:
-* 
+*
 * "common" - view tables
 * "simple" - forms
 * "smallGrey" - options / filters
@@ -370,7 +370,7 @@ a.tlButton {
 
 a.tlButton:hover {
 	background:     #EEE;
-} 
+}
 
 
 
@@ -479,7 +479,7 @@ div.exec_history {
 
 .warning_message {
 background-color:#990000;
-color:white; 
+color:white;
 }
 
 
@@ -488,7 +488,7 @@ div.title {
 	text-align: center;
 	width: 100%;
 	background: #CCDDEE;
-	margin: 0px; 
+	margin: 0px;
 	padding-bottom: 5px;
 	padding-top: 5px;
 	font-stretch: expanded;
@@ -503,7 +503,7 @@ div.forms {
 	margin: 20%;
 	margin-top: 20px;
 	background: #CCDDEE;
-	padding: 25px; 
+	padding: 25px;
 	border: 1px;
 }
 
@@ -556,9 +556,9 @@ div.test_exec,table.test_exec {
 	width: 100%;
 }
 
-/* 
+/*
 20061112 - franciscom - to manage status
-*/   
+*/
 .passed {
 	color: 			white;
 	background:		green;

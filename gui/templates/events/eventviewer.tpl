@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.15 2008/04/07 17:40:01 schlundus Exp $
+$Id: eventviewer.tpl,v 1.16 2008/04/25 22:10:53 schlundus Exp $
 
 Event Viewer
 
@@ -128,6 +128,8 @@ fieldset
 
 <div class="workBack">
 		<form method="post" action="lib/events/eventviewer.php">
+			<input type="hidden" name="object_id" value="{$object_id}"/>
+			<input type="hidden" name="object_type" value="{$object_type|escape}"/>
 			<div style="height:125px;">
 			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.th_loglevel}</legend>
 				<select size="5" multiple="multiple" name="logLevel[]">

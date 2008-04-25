@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/04/25 17:58:30 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/04/25 22:10:53 $ by $Author: schlundus $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -42,7 +42,7 @@ if (strlen($args->endDate))
 	if (!$endTime)
 		$endTime = null;
 }
-$events = $g_tlLogger->getEventsFor($args->logLevel,null,null,null,500,$startTime,$endTime);
+$events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id,$args->object_type,null,500,$startTime,$endTime);
 $users = getUsersForHtmlOptions($db,null,false,null);
 $users[0] = false;
 
@@ -50,6 +50,8 @@ $smarty = new TLSmarty();
 $smarty->assign('events',$events);
 $smarty->assign('users',$users);
 $smarty->assign('logLevels',$logLevels);
+$smarty->assign('object_id',$args->object_id);
+$smarty->assign('object_type',$args->object_type);
 $smarty->assign('selectedLogLevels',$args->logLevel ? array_values($args->logLevel) : array());
 $smarty->assign('startDate',$args->startDate);
 $smarty->assign('endDate',$args->endDate);
@@ -59,7 +61,7 @@ function init_args()
 {
 	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
-    $nullable_keys = array('logLevel','startDate','endDate');
+    $nullable_keys = array('logLevel','startDate','endDate','object_id',"object_type");
 	foreach($nullable_keys as $value)
 	{
 		$args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;

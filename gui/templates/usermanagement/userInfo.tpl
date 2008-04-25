@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.9 2008/04/14 19:19:22 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.10 2008/04/25 22:10:53 schlundus Exp $ *}
 {*
 *}
 {assign var="cfg_section" value="login" }
@@ -13,7 +13,7 @@
              th_new_passwd,th_new_passwd_again,btn_change_passwd,audit_last_failed_logins,
              your_password_is_external,user_api_key,btn_apikey_generate,empty_email_address,
              audit_last_succesful_logins,warning,warning_empty_first_name,
-             warning_empty_last_name,passwd_dont_match,empty_old_passwd,'}
+             warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history'}
 
 {assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
 
@@ -83,6 +83,8 @@ function checkPasswords(oldp,newp,newp_check)
     }
     return true;
 }
+
+
 </script>
 {/literal}
 </head>
@@ -180,7 +182,7 @@ function checkPasswords(oldp,newp,newp_check)
 
 
 <hr />
-<h2>{$labels.audit_login_history}</h2>
+<h2>{$labels.audit_login_history}<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/></h2>
 <div>
 	<h3>{$labels.audit_last_succesful_logins}</h3>
 	{if $loginHistory->ok != ''}
@@ -207,7 +209,6 @@ function checkPasswords(oldp,newp,newp_check)
 </div>
 
 </div>
-
 {if $update_title_bar == 1}
 {literal}
 <script type="text/javascript">

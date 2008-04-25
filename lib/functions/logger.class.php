@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/03/26 20:39:32 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/04/25 22:10:53 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -43,7 +43,7 @@ class tlLogger extends tlObject
 	static $revertedLogLevels = null;
 
   // to enable/disable loggin for all loggers
-	protected $doLogging=true;
+	protected $doLogging = true;
 
  	// must be changed is db field len changes
  	const ENTRYPOINT_MAX_LEN = 45;
@@ -215,7 +215,7 @@ class tlLogger extends tlObject
 			//     /head_20080216/lib/project/projectEdit.php
 			//
 			// search first /
-			$mypos=strpos($entryPoint,"/");
+			$mypos = strpos($entryPoint,"/");
 			if(($mypos !== FALSE) && $mypos)
 				$entryPoint = substr($entryPoint,$mypos);
 		}
@@ -313,7 +313,6 @@ class tlTransaction extends tlDBObject
 	}
 
 	//add an event to the transaction the last arguments are proposed for holding information about the objects
-	//SCHLUNDUS: toDO
 	public function add($logLevel,$description,$source = null,$activityCode = null,$objectID = null,$objectType = null)
 	{
 		$e = new tlEvent();

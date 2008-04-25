@@ -1,7 +1,7 @@
-/* 
+/*
 D:\w3\tl\head_20080119\gui\themes\theme_m2\css\
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.1 2008/04/19 21:52:21 havlat Exp $ 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: testlink.css,v 1.2 2008/04/25 22:10:53 schlundus Exp $
 Purpose: main css - theme m2
 
 20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
@@ -11,14 +11,14 @@ Purpose: main css - theme m2
 20070826 - franciscom - exec_tc_title, split of div.test_exec and table.test_exec
 
 20070401 - franciscom -  added padding to:
-                        .login_warning_message, .warning_message 
+                        .login_warning_message, .warning_message
 20070311 - franciscom - corrected path to navbar.gif
 20070224 - franciscom - added div.user_feedback
-                  
+
 20060819 - franciscom - minor adjustemnts
                         changes in class names
                         div.menu -> div.menu_bar
-                  
+
 
 IMPORTANT:
 NiftyCube rounding package has problems with I.E. 6 if background color is
@@ -26,14 +26,14 @@ assigned using name (example: white) instead of code (example: #FFF)
 
 */
 body {
-	background:  #EEE; /*#9BD;*/ 
+	background:  #EEE; /*#9BD;*/
 	font-family: 'Trebuchet MS', Verdana, Arial, sans-serif;
 	font-size: small;
   margin:			0px;
 }
 
 body.testlink {
-	background:  #EEE; /*#9BD;*/ 
+	background:  #EEE; /*#9BD;*/
 	font-family: 'Trebuchet MS', Verdana, Arial, sans-serif;
 	font-size: small;
   margin:			0px;
@@ -53,7 +53,7 @@ div.menu_title {
 
 div.menu_bar {
 	background: 	#CDE;
-	background-image: url(../images/navbar.gif); 
+	background-image: url(../images/navbar.gif);
 	border-style:	groove;
 	border-width:	thin;
 	padding: 		1px 5px;
@@ -73,7 +73,7 @@ select.menu_combo {
 div.vertical_menu {
 	background: #EEE;
 	font-size:      90%;
-	margin: 		3px; 
+	margin: 		3px;
 	padding: 		2px;
 	padding-bottom:	1px;
 	width:			26%;
@@ -145,7 +145,7 @@ div.workBack {
 	text-align: 	left;
 	margin: 		3px 3px 3px 3px;
 	background: 	#CDE;
-	padding: 		5px 5px 5px 5px; 
+	padding: 		5px 5px 5px 5px;
 	border-style:	groove;
 	border-width:	thin;
 	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
@@ -266,24 +266,24 @@ img.help {
 /* This allows link help from text e.g. instruction
  * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">Test Specification</span>
  */
-span.help 
+span.help
 {
 	cursor: 		help;
-	text-decoration: underline; 
+	text-decoration: underline;
 }
 
 /***** Links **************************************/
 
 /* A Visited link is still blue */
 a:visited, a:link, a:active {
-	color: 			#059; 
+	color: 			#059;
 	text-decoration: none;
-} 
+}
 /* A link being hovered over is red*/
 a:hover   {
-	color: 			#900; 
+	color: 			#900;
 	text-decoration: none;
-} 
+}
 
 
 /***** tabbed menu ***********************************/
@@ -316,9 +316,9 @@ span.unselected a, span.unselected a:visited {
 
 
 /***** Tables *****************************************
-* 
+*
 * Standard table classes:
-* 
+*
 * "common" - view tables
 * "simple" - forms
 * "smallGrey" - options / filters
@@ -416,7 +416,7 @@ a.tlButton {
 
 a.tlButton:hover {
 	background:     #EEE;
-} 
+}
 
 
 
@@ -528,7 +528,7 @@ padding:4px;
 
 .login_warning_message {
 background-color:#059;
-color:white; 
+color:white;
 padding:4px;
 }
 
@@ -536,7 +536,7 @@ padding:4px;
 /* 20070204 - franciscom */
 .red_alert {
 background-color:#990000;
-color:white; 
+color:white;
 }
 
 
@@ -545,7 +545,7 @@ div.title {
 	text-align: center;
 	width: 100%;
 	background: #CCDDEE;
-	margin: 0px; 
+	margin: 0px;
 	padding-bottom: 5px;
 	padding-top: 5px;
 	font-stretch: expanded;
@@ -560,7 +560,7 @@ div.forms {
 	margin: 20%;
 	margin-top: 20px;
 	background: #CCDDEE;
-	padding: 25px; 
+	padding: 25px;
 	border: 1px;
 }
 
@@ -629,9 +629,9 @@ table.test_exec {
 }
 
 
-/* 
+/*
 20061112 - franciscom - to manage status
-*/   
+*/
 .passed {
 	color: 			white;
 	background:		green;
@@ -713,7 +713,7 @@ div.menu_bubble {
 div.menu_bubble h3{
   margin: 0px 0px 8px 8px;
   /* border-bottom: 1px solid #005498; */
-}  
+}
 
 
 .clickable_icon
@@ -761,7 +761,7 @@ div.menu_bubble h3{
 
 /* 20071227 - franciscom - to avoid problems
    with third party css
-*/    
+*/
 input.tl-input{
   margin:2px;
   padding:2px;
@@ -794,6 +794,11 @@ td.testlink {
   marging: 1px;
 }
 
+.clickable
+{
+	cursor:hand;
+	cursor:pointer;
+}
 
 /* ----------------------------------------------------------------------------- */
 

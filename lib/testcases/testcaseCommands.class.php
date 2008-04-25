@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/04/21 08:30:03 $  by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/04/25 18:01:27 $  by $Author: franciscom $
  * testcases commands
  *
  *
@@ -86,23 +86,27 @@ class testcaseCommands
 		                               $argsObj->user_id, $argsObj->assigned_keywords_list,
 		                               TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
+      $smartyObj->assign('attachments',null);
 		  if($ret['status_ok'])
 		  {
-		    $msg = 'ok';
+		    $refresh_tree='yes';
+		    $msg = '';
   			$ENABLED = 1;
 	  		$NO_FILTER_SHOW_ON_EXEC = null;
 		  	$cf_map=$this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
 			                                                                  $ENABLED,$NO_FILTER_SHOW_ON_EXEC,'testcase') ;
 			  $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcase_id);
-
+         
+        $attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
+        $smartyObj->assign('attachments',$attachments);
 		  }
 		  else
 		  {
+		      $refresh_tree='no';
 		     	$msg = $ret['msg'];
 		  }
-
-	    // $viewer_args['action'] = 'updated';
- 	    $viewer_args['refresh_tree'] = $refresh_tree;
+	
+	    $viewer_args['refresh_tree'] = $refresh_tree;
  	    $viewer_args['user_feedback'] = $msg;
 
       $smartyObj->assign('has_been_executed',$argsObj->has_been_executed);

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/04/21 08:30:03 $  by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/04/25 18:01:03 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -146,11 +146,11 @@ else if($args->do_create)
 	if ($name_ok)
 	{
 		$user_feedback = lang_get('error_tc_add');
-	    $sqlResult = 'ko';
+    $sqlResult = 'ko';
 		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->steps,
-		                          $args->expected_results,$args->user_id,$args->assigned_keywords_list,
-		                          $cfg->order_ordering->default_testcase_order,AUTOMATIC_ID,
-		                          config_get('check_names_for_duplicates'),'block',$args->exec_type);
+		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
+		                            $cfg->node_ordering->default_testcase_order,testcase::AUTOMATIC_ID,
+		                            config_get('check_names_for_duplicates'),'block',$args->exec_type);
 
 		if($tcase['status_ok'])
 		{
@@ -200,7 +200,7 @@ else if($args->delete_tc)
 	$smarty->assign('title', lang_get('title_del_tc'));
 	$smarty->assign('testcase_name', $tcinfo[0]['name']);
 	$smarty->assign('testcase_id', $args->tcase_id);
-	$smarty->assign('tcversion_id', TC_ALL_VERSIONS);
+	$smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
 	$smarty->assign('delete_message', $msg);
 	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
@@ -260,7 +260,7 @@ else if($args->do_delete)
 	$the_title = lang_get('title_del_tc') . htmlspecialchars($tcinfo[0]['name']);
   	$refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
 
-	if($args->tcversion_id != TC_ALL_VERSIONS)
+	if($args->tcversion_id != testcase::ALL_VERSIONS)
 	{
 		$the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
 		$refresh_tree = "no";
@@ -375,14 +375,14 @@ else if($args->do_create_new_version)
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
 
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,TC_ALL_VERSIONS, $viewer_args);
+	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS, $viewer_args);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;
 	$viewer_args['refresh_tree']=DONT_REFRESH;
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,TC_ALL_VERSIONS,$viewer_args);
+	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS,$viewer_args);
 }
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
@@ -459,6 +459,8 @@ function read_file($file_name)
 */
 function init_args($spec_cfg,$otName)
 {
+    $tc_importance_default=config_get('testcase_importance_default');
+    
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -479,7 +481,7 @@ function init_args($spec_cfg,$otName)
     $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
     $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
     $args->exec_type = isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
-    $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : TL_DEFAULT_IMPORTANCE;
+    $args->importance = isset($_REQUEST['importance']) ? $_REQUEST['importance'] : $tc_importance_default;
     
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
     

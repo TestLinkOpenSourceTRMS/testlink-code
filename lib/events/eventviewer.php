@@ -5,13 +5,15 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/03/10 21:52:00 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/04/25 17:58:30 $ by $Author: franciscom $
  *
  * rev: 20080207 - franciscom - refactored
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once("users.inc.php");
+
 testlinkInitPage($db);
 
 $template_dir = 'events/';

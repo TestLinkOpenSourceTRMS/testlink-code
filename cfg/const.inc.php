@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/04/19 21:52:21 $ by $Author: havlat $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/04/25 17:47:09 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -431,15 +431,13 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 /** [Priority, Risk, Importance] */
 // Priority = Importance x Risk
 $tlCfg->priority_levels = array( 
-	HIGH => 6, // high priority include 6 and more
+	  HIGH => 6, // high priority include 6 and more
     MEDIUM => 3,
     LOW => 1
 );
 
 $tlCfg->testcase_importance_default = MEDIUM;
 $tlCfg->testcase_risk_default = MEDIUM;
-//define('TL_DEFAULT_IMPORTANCE', MEDIUM);
-//define('TL_DEFAULT_RISK', 2);
 
 
 // -------------------------------------------------------------------

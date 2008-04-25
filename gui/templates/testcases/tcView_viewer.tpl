@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.13 2008/04/21 08:29:50 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.14 2008/04/25 17:49:23 franciscom Exp $
 viewer for test case in test specification
 
+20080425 - franciscom - removed php notice
 20080113 - franciscom - changed format for test case id + name
 20071204 - franciscom - display execution_type
 20070628 - franciscom - active_status_op_enabled always true
@@ -16,7 +17,10 @@ viewer for test case in test specification
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?requirement_id="}
 {assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
-{assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+{assign var="updater_userinfo" value=""}
+{if $args_testcase.updater_id != ''}
+  {assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+{/if}
 
 {if $args_show_title == "yes"}
     {if $args_tproject_name != ''}
@@ -171,7 +175,6 @@ viewer for test case in test specification
 		<td>{$args_testcase.expected_results}</td>
 	</tr>
 </table>
-
     {if $session['testprojectOptAutomation']}
     <div>
 		<span class="labelHolder">{lang_get s='execution_type'} {$smarty.const.TITLE_SEP}</span>

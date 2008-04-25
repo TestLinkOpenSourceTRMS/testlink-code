@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.14 2008/03/22 23:47:03 schlundus Exp $
+$Id: inc_attachments.tpl,v 1.15 2008/04/25 17:49:23 franciscom Exp $
 Generic attachment management
 
 Input:
@@ -13,6 +13,7 @@ Input:
 Smarty global variables:
 $gsmarty_attachments
 
+20080425 - franciscom -
 20070826 - franciscom - added inheritStyle
 20070307 - franciscom - BUGID 722
 
@@ -78,7 +79,9 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
   {if $my_show_upload_btn && !$downloadOnly}
   <tr>
-  	<td colspan="2"><input type="button" value="{lang_get s='button_upload'}..." onclick="openFileUploadWindow({$id},'{$tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
+  	<td colspan="2">
+  	<input type="button" value="{lang_get s='button_upload'}" 
+  	       onclick="openFileUploadWindow({$id},'{$tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
   </tr>
   {/if}
 

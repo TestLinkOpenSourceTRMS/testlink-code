@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.174 $
- * @modified $Date: 2008/04/19 21:52:20 $ by $Author: havlat $
+ * @version $Revision: 1.175 $
+ * @modified $Date: 2008/04/25 17:47:09 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -255,7 +255,10 @@ $g_main_menu_item_bullet_img='slide_gripper.gif'; // arrow_org.gif/slide_gripper
 //
 // 'none'        -> new behaviour no background color change 
 //
-$tlCfg->gui->testproject_coloring = 'background'; // Francisco, do not change it!
+// $tlCfg->gui->testproject_coloring = 'background'; // Francisco, do not change it!
+$tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring using coloring is a pain
+                                            // and useless
+
 
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';

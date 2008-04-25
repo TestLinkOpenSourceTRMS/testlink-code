@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.5 2008/03/24 19:33:28 havlat Exp $
+$Id: tcView.tpl,v 1.6 2008/04/25 17:49:23 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}
@@ -14,20 +14,19 @@ rev: 20080322 - franciscom - php errors clean up
 
 </head>
 
-{lang_get s='other_versions,version' var='labels'}
+{lang_get var='labels' 
+          s='no_records_found,other_versions,version,title_test_case'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
-
-<h1>{lang_get s='title_test_case'}{$gsmarty_title_sep} {$testcase_curr_version[0][0].name|escape} </h1>
+<h1>{$labels.title_test_case}{$gsmarty_title_sep} {$gui->tc_current_version[0][0].name|escape} </h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult action=$action item="test_case" 
-         user_feedback=$user_feedback refresh=$refresh_tree}
+{include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
 
 {assign var=this_template_dir value=$smarty.template|dirname}
 
-{if $testcase_curr_version}
-{section name=idx loop=$testcase_curr_version}
+{if $gui->tc_current_version}
+{section name=idx loop=$gui->tc_current_version}
     {* Current active version *}
     {if $testcase_other_versions[idx] neq null}
         {assign var="my_delete_version" value="yes"}
@@ -37,7 +36,7 @@ rev: 20080322 - franciscom - php errors clean up
 
     {* added args_cf *}
 		{include file="$this_template_dir/tcView_viewer.tpl" 
-		         args_testcase=$testcase_curr_version[idx][0]
+		         args_testcase=$gui->tc_current_version[idx][0]
 		         args_keywords_map=$keywords_map[idx] 
 		         args_reqs=$arrReqs[idx] 
 		         args_status_quo=$status_quo[idx]
@@ -59,7 +58,7 @@ rev: 20080322 - franciscom - php errors clean up
 		         args_tsuite_name=$parentTestSuiteName
 		         }
 		
-		{assign var="tcID" value=$testcase_curr_version[idx][0].testcase_id}
+		{assign var="tcID" value=$gui->tc_current_version[idx][0].testcase_id}
 		{assign var="bDownloadOnly" value=false}
 		{if $can_edit neq 'yes'}
 			{assign var="bDownloadOnly" value=true}
@@ -69,7 +68,7 @@ rev: 20080322 - franciscom - php errors clean up
 
     {* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
-        {assign var="vid" value=$testcase_curr_version[idx][0].id}
+        {assign var="vid" value=$gui->tc_current_version[idx][0].id}
         {assign var="div_id" value=vers_$vid}
         {assign var="memstatus_id" value=mem_$div_id}
   
@@ -135,7 +134,7 @@ rev: 20080322 - franciscom - php errors clean up
     {/if}
 {/section}
 {else}
-	{lang_get s='no_records_found'}
+	{$labels.no_records_found}
 {/if}
 
 </div>

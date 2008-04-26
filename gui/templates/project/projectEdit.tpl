@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.13 2008/04/25 22:10:53 schlundus Exp $
+$Id: projectEdit.tpl,v 1.14 2008/04/26 18:29:13 schlundus Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
@@ -75,7 +75,11 @@ function validateForm(f)
 
 	{* edit product form *}
 	{if $found == "yes"}
-		<h2>{$caption|escape}<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$id}','testprojects')" alt="{$labels.show_event_history}" title="{lang_get s='show_event_history'}"/></h2>
+		<h2>{$caption|escape}
+		{if $mgt_view_events eq "yes"}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$id}','testprojects')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+		{/if}
+		</h2>
 		<div>
 		<form name="edit_testproject" id="edit_testproject"
 		      method="post" action="{$managerURL}"

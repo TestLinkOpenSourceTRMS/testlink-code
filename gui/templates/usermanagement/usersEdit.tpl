@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.14 2008/04/19 16:28:37 franciscom Exp $
+$Id: usersEdit.tpl,v 1.15 2008/04/26 18:29:13 schlundus Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -105,7 +105,7 @@ function validateForm(f,check_password)
    {assign var="check_password" value=0}
    {assign var="user_id" value=$userData->dbID}
    {assign var="user_login" value=$userData->login}
-   {assign var="user_login_readonly" value='readonly="readonly"'}
+   {assign var="user_login_readonly" value='readonly="readonly" disabled="disabled"'}
    {assign var="reset_password_enabled" value=1}
    {assign var="show_password_field" value=0}
 {/if}
@@ -133,6 +133,9 @@ function validateForm(f,check_password)
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
+  {if $mgt_view_events eq "yes"}
+	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user_id}','users')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/></h2>
+	{/if}
   </legend>
 	<table class="common">
 		<tr>

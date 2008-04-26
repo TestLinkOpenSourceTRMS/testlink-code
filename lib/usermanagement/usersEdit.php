@@ -5,11 +5,11 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.22 $
-* @modified $Date: 2008/04/14 09:58:34 $ $Author: franciscom $
+* @version $Revision: 1.23 $
+* @modified $Date: 2008/04/26 18:29:14 $ $Author: schlundus $
 *
 * rev:
-*     fixed missing checks on doCreate()  
+*     fixed missing checks on doCreate()
 *     BUGID 918
 *     20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
 *
@@ -84,7 +84,7 @@ $smarty->assign('highlight',$highlight);
 $smarty->assign('operation',$op->operation);
 $smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
-
+$smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
 $smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
@@ -149,9 +149,9 @@ function doCreate(&$dbHandler,&$argsObj)
 	  $op->user = new tlUser();
 	  $op->status = $op->user->setPassword($argsObj->password);
 	  $op->template='usersEdit.tpl';
-    $op->operation=''; 
+    $op->operation='';
 
-    $statusOk=false;    
+    $statusOk=false;
 	  if ($op->status >= tl::OK)
 	  {
 	    	initializeUserProperties($op->user,$argsObj);
@@ -164,13 +164,13 @@ function doCreate(&$dbHandler,&$argsObj)
 	  	      $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
 	      }
 	  }
-	  
+
 	  if (!$statusOk)
 	  {
 	      $op->operation='create';
 	      $op->user_feedback = getUserErrorMessage($op->status);
     }
-    
+
     return $op;
 }
 
@@ -199,7 +199,7 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 	  	$op->status = $op->user->writeToDB($dbHandler);
 	  	if ($op->status >= tl::OK)
 	  	{
-	  		logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");	
+	  		logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
 	  		/*
 	  	  	foreach($changes as $key => $value)
 	  		{
@@ -253,8 +253,8 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 /*
   function: checkUserPropertiesChanges
             do checks on selected properties and return information
-            about changed members useful for audit log porpuses. 
-           
+            about changed members useful for audit log porpuses.
+
   args: dbHandler
         userObj: data read from DB
         argsObj: data entry from User Interface
@@ -264,30 +264,30 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
            ['property']= property name, just for debug usage
            ['msg']= message for logAudit call
            ['activity']= activityCode for logAudit call
-  
+
 */
 function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
 {
- 
-  $idx=0;    
+
+  $idx=0;
   $key2compare=array();
   $key2compare['numeric'][]=array('old' => 'globalRoleID',
                                   'new' => 'rights_id',
                                   'decode' => 'decodeRoleId',
                                   'label' => 'audit_user_role_changed');
-                                  
+
   $key2compare['numeric'][]=array('old' => 'bActive',
-                                  'new' => 'user_is_active', 
+                                  'new' => 'user_is_active',
                                   'label' => 'audit_user_active_status_changed');
 
-   
+
   foreach($key2compare['numeric'] as $key => $value)
   {
       $old=$value['old'];
       $new=$value['new'];
       $oldValue=$userObj->$old;
       $newValue=$argsObj->$new;
-      
+
       if( $oldValue != $newValue )
       {
           if( isset($value['decode']) )
@@ -299,7 +299,7 @@ function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
           $changes[$idx]['msg']=TLS($value['label'],$userObj->login,$oldValue,$newValue);
           $changes[$idx]['activity']='CHANGE';
           $idx++;
-      }      
+      }
   }
 
   // Add general message only if no important change registered
@@ -322,7 +322,7 @@ function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
   args: userObj: data read from DB
         argsObj: data entry from User Interface
 
-  returns: - 
+  returns: -
 
 */
 function initializeUserProperties(&$userObj,&$argsObj)
@@ -340,17 +340,17 @@ function initializeUserProperties(&$userObj,&$argsObj)
 
 
 /*
-  function: 
+  function:
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function decodeRoleId(&$dbHandler,$roleID)
 {
     $roleInfo=tlRole::getByID($dbHandler,$roleID);
-    return $roleInfo->name; 
+    return $roleInfo->name;
 }
 
 /*
@@ -377,7 +377,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
         case "doUpdate":
         if( !is_null($templateCfg->template) )
         {
-            $doRender=true;  
+            $doRender=true;
             $tpl = $templateCfg->template;
         }
         else

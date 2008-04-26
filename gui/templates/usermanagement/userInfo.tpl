@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.10 2008/04/25 22:10:53 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.11 2008/04/26 18:29:13 schlundus Exp $ *}
 {*
 *}
 {assign var="cfg_section" value="login" }
@@ -182,7 +182,10 @@ function checkPasswords(oldp,newp,newp_check)
 
 
 <hr />
-<h2>{$labels.audit_login_history}<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/></h2>
+<h2>{$labels.audit_login_history}
+{if $mgt_view_events eq "yes"}
+	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/></h2>
+{/if}
 <div>
 	<h3>{$labels.audit_last_succesful_logins}</h3>
 	{if $loginHistory->ok != ''}

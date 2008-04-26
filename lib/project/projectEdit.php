@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/03/26 21:07:23 $ $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/04/26 18:29:14 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -56,12 +56,11 @@ switch($args->doAction)
 {
     case 'create':
     	$template = $default_template;
-      $ui=create($args);
+      	$ui = create($args);
     	break;
-
     case 'edit':
     	$template = $default_template;
-    	$ui=edit($args,$tproject_mgr);
+    	$ui = edit($args,$tproject_mgr);
     	break;
 
     case 'doCreate':
@@ -94,6 +93,7 @@ $ui->main_descr=lang_get('title_testproject_management');
 $smarty = new TLSmarty();
 $smarty->assign('gui_cfg',$gui_cfg);
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
+$smarty->assign('mgt_view_events', has_rights($db,"mgt_view_events"));
 
 if(!$status_ok)
    $args->doAction = "ErrorOnAction";
@@ -208,13 +208,13 @@ function doCreate($argsObj,&$tprojectMgr)
 {
     $key2get=array('status_ok','msg');
 
-    $op = new stdClass();
-	  $op->ui= new stdClass();
-
-    $op->status_ok = 0;
-    $op->template = null;
-    $op->msg = '';
-	  $op->id = 0;
+	$op = new stdClass();
+	$op->ui = new stdClass();
+	
+	$op->status_ok = 0;
+	$op->template = null;
+	$op->msg = '';
+	$op->id = 0;
 
     $check_op = crossChecks($argsObj,$tprojectMgr);
     foreach($key2get as $key)

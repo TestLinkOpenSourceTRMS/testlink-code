@@ -5,145 +5,52 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2008/03/26 20:39:31 $ by $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2008/04/27 17:35:45 $ by $Author: franciscom $
  *
- * 20080224 - franciscom - BUGID 1056
- * 20071229 - franciscom - refactoring tree colouring and counters config
- * 20071006 - franciscom - changes on exec_cfield_mgr() call
- * 20070912 - jbarchibald - custom field search BUGID - 1051
- * 20070630 - franciscom - set default value for filter_assigned_to
- * 20070607 - franciscom - BUGID 887 - problem with builds
+ * rev: 20080224 - franciscom - refactoring
+ *      20080224 - franciscom - BUGID 1056
+ *      20071229 - franciscom - refactoring tree colouring and counters config
+ *      20071006 - franciscom - changes on exec_cfield_mgr() call
+ *      20070912 - jbarchibald - custom field search BUGID - 1051
+ *      20070630 - franciscom - set default value for filter_assigned_to
+ *      20070607 - franciscom - BUGID 887 - problem with builds
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
+require_once("users.inc.php");
 require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
 testlinkInitPage($db);
 
-$template_dir = 'execute/';
-$gui_cfg = config_get('gui');
-$exec_cfg = config_get('exec_cfg');
-$args = init_args($exec_cfg);
+$tplan_mgr = new testplan($db);
 
+$templateCfg = templateConfiguration();
+
+$cfg=getCfg();
+$args = init_args($cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
-// jbarchibald 20070911 - adding custom field filtering
-$cf_selected = null;
-$cf_smarty = null;
-if($gui_cfg->enable_custom_fields)
-{
-	$cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
-    $cf_selected = $exec_cfield_mgr->get_set_values();
-}
 
-$tplan_mgr = new testplan($db);
-$disable_filter_assigned_to = false;
-$assigned_to_user = '';
-$effective_role = $args->user->getEffectiveRole($db,$args->tproject_id,$args->tplan_id);
+$gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
+buildAssigneeFilter($db,$gui,$args,$cfg);
+$gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
 
-//SCHLUNDUS: hmm, for user defined roles, this wont work correctly
-// Need to check right no role
-$exec_view_mode = ($effective_role->dbID == TL_ROLES_TESTER) ? $exec_cfg->view_mode->tester : 'all';
-switch ($exec_view_mode)
-{
-	case 'all':
-		break;
-
-	case 'assigned_to_me':
-		$args->filter_assigned_to = $args->user->dbID;
-		$assigned_to_user = $args->user->getDisplayName();
-		$disable_filter_assigned_to = true;
-		break;
-}
-
-// 20070123 - franciscom -  only active builds no matter user role
-$optBuild = $tplan_mgr->get_builds_for_html_options($args->tplan_id,ACTIVE);
-
-// 20070607 - franciscom - BUGID 887
-$maxBuildID = $tplan_mgr->get_max_build_id($args->tplan_id,GET_ACTIVE_BUILD, GET_OPEN_BUILD);
-$args->buildSelected = $args->buildSelected > 0 ? $args->buildSelected : $maxBuildID;
-if (!$args->buildSelected && sizeof($optBuild))
-	$$args->buildSelected = key($optBuild);
-
-$keywords_map = $tplan_mgr->get_keywords_map($args->tplan_id,' order by keyword ');
-if(!is_null($keywords_map))
-{
-	// add the blank option
-	// 0 -> id for no keyword
-	$blank_map[0] = '';
-	$keywords_map = $blank_map + $keywords_map;
-}
-$menuUrl = 'lib/execute/execSetResults.php';
-
-$getArguments=initializeGetArguments($args,$cf_selected);
-
-if ($args->optResultSelected == 'all')
-	$args->optResultSelected = null;
-
-//$useCounters = $exec_cfg->enable_tree_testcase_counters;
-//$useColours = $exec_cfg->enable_tree_colouring;
-
-// 20080224 - franciscom - $args->include_unassigned
-// 20070914 - jbarchibald - added $cf_selected parameter
-// $sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,$args->tplan_id,$args->tplan_name,
-//                           $args->buildSelected,$getArguments,$args->keyword_id,$args->tc_id,false,
-//                           $args->filter_assigned_to,$args->optResultSelected,$cf_selected,
-//                           $useCounters,$useColours,$args->include_unassigned);
-
-
-//
-$filters = new stdClass();
-$additionalInfo = new stdClass();
-
-$filters->keyword_id = $args->keyword_id;
-$filters->tc_id = $args->tc_id;
-$filters->build_id = $args->buildSelected;
-$filters->assignedTo = $args->filter_assigned_to;
-$filters->status = $args->optResultSelected;
-$filters->cf_hash = $cf_selected;
-$filters->include_unassigned = $args->include_unassigned;
-$filters->hide_testcases = false;
-$filters->show_testsuite_contents = $exec_cfg->show_testsuite_contents;
-
-$additionalInfo->useCounters=$exec_cfg->enable_tree_testcase_counters;
-$additionalInfo->useColors=$exec_cfg->enable_tree_colouring;
-
-$sMenu = generateExecTree($db,$menuUrl,$args->tproject_id,$args->tproject_name,
-                          $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
-
-
-
-// link to load frame named 'workframe' when the update button is pressed
-$src_workframe = null;
-if(isset($_REQUEST['submitOptions']))
-	$src_workframe = $_SESSION['basehref'].$menuUrl . "?level=testproject&id={$args->tproject_id}" . $getArguments;
-
+                      
 $smarty = new TLSmarty();
-$smarty->assign('include_unassigned',$args->include_unassigned);
-$smarty->assign('design_time_cf',$cf_smarty);
-$smarty->assign('disable_filter_assigned_to',$disable_filter_assigned_to);
-$smarty->assign('assigned_to_user',$assigned_to_user);
-$smarty->assign('src_workframe',$src_workframe);
-$smarty->assign('tplan_name',$args->tplan_name);
-$smarty->assign('tplan_id', $args->tplan_id);
-$smarty->assign('users',getUsersForHtmlOptions($db,null,true));
-$smarty->assign('treeKind', TL_TREE_KIND);
-$smarty->assign('treeColored', $args->treeColored);
-$smarty->assign('optBuild', $optBuild);
-$smarty->assign('optBuildSelected', $args->buildSelected);
-$smarty->assign('optResult', createResultsMenu());
-$smarty->assign('optResultSelected', $args->optResultSelected);
-$smarty->assign('filter_assigned_to', $args->filter_assigned_to);
-$smarty->assign('keywords_map', $keywords_map);
-$smarty->assign('keyword_id', $args->keyword_id);
-$smarty->assign('tcID', intval($args->tc_id) > 0 ? $args->tc_id : '');
-$smarty->assign('tree', invokeMenu($sMenu,null,null));
-$smarty->assign('menuUrl',$menuUrl);
-$smarty->assign('args',$getArguments);
+$smarty->assign('gui',$gui);
+
+// Warning: 
+// the following variable names CAN NOT BE Changed,
+// because there is global coupling on template logic
+//
+$smarty->assign('treeKind',$gui->treeKind);
+$smarty->assign('menuUrl',$gui->menuUrl);
+$smarty->assign('args',$gui->args);
+
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
-$smarty->display($template_dir . 'execNavigator.tpl');
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
@@ -155,22 +62,29 @@ $smarty->display($template_dir . 'execNavigator.tpl');
 
   schlundus: changed the user_id to the currentUser of the session
 */
-function init_args($exec_cfg)
+function init_args($cfgObj)
 {
     $args = new stdClass();
 
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user = $_SESSION['currentUser'];
     $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
     $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
-    $args->tc_id = isset($_REQUEST['tcID']) ? intval($_REQUEST['tcID']) : null;
+    $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-    $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : 'all';
+    
+    $args->doUpdateTree=isset($_REQUEST['submitOptions']) ? 1 : 0;
+    
+    $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : null;
+    if ($args->optResultSelected == $cfgObj->results['status_code']['all'])
+    {
+	     $args->optResultSelected = null;
+    }
 
     $user_filter_default = 0;
-    switch($exec_cfg->user_filter_default)
+    switch($cfgObj->exec->user_filter_default)
     {
     	case 'logged_user':
     		$user_filter_default = $args->user->dbID;
@@ -181,7 +95,7 @@ function init_args($exec_cfg)
     		break;
     }
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
-    $args->buildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
+    $args->optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
 
     // Checkbox
     $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
@@ -199,30 +113,226 @@ function init_args($exec_cfg)
 
   returns:
 
-  rev: 20080224 - franciscom - added include_unassigned
+  rev: 20080427 - franciscom - added cfgObj arguments
+       20080224 - franciscom - added include_unassigned
 
 */
-function initializeGetArguments($argsObj,$customFieldSelected)
+function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 {
-    $settings = '&build_id=' . $argsObj->buildSelected;
+    $settings = '&build_id=' . $argsObj->optBuildSelected .
+  	            '&include_unassigned=' . $argsObj->include_unassigned;
 
-    if ($argsObj->keyword_id)
-    	$settings .= '&keyword_id='.$argsObj->keyword_id;
+    if($argsObj->keyword_id)
+    	  $settings .= '&keyword_id='.$argsObj->keyword_id;
 
-    if ($argsObj->tc_id)
-    	$settings .= '&tc_id='.$argsObj->tc_id;
+    if($argsObj->tcase_id)
+        $settings .= '&tc_id='.$argsObj->tcase_id;
 
-    if ($argsObj->filter_assigned_to)
-    	$settings .= '&filter_assigned_to='.$argsObj->filter_assigned_to;
-
-    if ($argsObj->optResultSelected != 'all')
-    	$settings .= '&filter_status='.$argsObj->optResultSelected;
-
-  	$settings .= '&include_unassigned=' . $argsObj->include_unassigned;
+    if($argsObj->filter_assigned_to)
+    	  $settings .= '&filter_assigned_to='.$argsObj->filter_assigned_to;
+    
+    if($argsObj->optResultSelected != $cfgObj->results['status_code']['all'])
+        $settings .= '&filter_status='.$argsObj->optResultSelected;
+    
 
     if ($customFieldSelected)
-    	$settings .= '&cfields='. serialize($customFieldSelected);
+    	 $settings .= '&cfields='. serialize($customFieldSelected);
 
     return $settings;
 }
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function getCfg()
+{
+    $cfg=new stdClass();
+    $cfg->gui = config_get('gui');
+    $cfg->exec = config_get('exec_cfg');
+    $cfg->results = config_get('results');
+    return $cfg;
+}
+
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
+{
+    $guiObj->disable_filter_assigned_to = false;
+    $guiObj->assigned_to_user = '';
+    
+    $effective_role = $argsObj->user->getEffectiveRole($dbHandler,$argsObj->tproject_id,$argsObj->tplan_id);
+    
+    // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
+    // Need to check right no role
+    $exec_view_mode = ($effective_role->dbID == TL_ROLES_TESTER) ? $cfgObj->exec->view_mode->tester : 'all';
+    
+    switch ($exec_view_mode)
+    {
+    	case 'all':
+ 		    $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
+    		break;
+    
+    	case 'assigned_to_me':
+    		$guiObj->disable_filter_assigned_to = true;
+    		$argsObj->filter_assigned_to = $argsObj->user->dbID;
+        $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
+
+    		$guiObj->assigned_to_user = $argsObj->user->getDisplayName();
+    		break;
+    }
+    
+    
+}
+
+
+/*
+  function: initBuildInfo
+            only active builds no matter user role
+
+  args :
+  
+  returns: 
+
+*/
+function initBuildInfo(&$dbHandler,&$guiObj,&$argsObj,&$tplanMgr)
+{
+    // 20070607 - franciscom - BUGID 887
+    $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id,
+                                              testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+    $argsObj->optBuildSelected = $argsObj->optBuildSelected > 0 ? $argsObj->optBuildSelected : $maxBuildID;
+    if (!$argsObj->optBuildSelected && sizeof($guiObj->optBuild))
+    {
+    	$argsObj->optBuildSelected = key($guiObj->optBuild);
+    }
+    
+    return $argsObj->optBuildSelected;
+}
+
+
+
+
+/*
+  function: initKeywordInfo
+
+  args :
+  
+  returns: 
+
+*/
+function initKeywordInfo($tplanID,&$tplanMgr)
+{
+    $kmap = $tplanMgr->get_keywords_map($tplanID,' order by keyword ');
+    if(!is_null($kmap))
+    {
+    	// add the blank option
+    	// 0 -> id for no keyword
+    	$blank_map[0] = '';
+    	$kmap = $blank_map + $kmap;
+    }
+    return $kmap;
+}
+
+
+
+
+/*
+  function: buildTree
+
+  args :
+  
+  returns: 
+
+*/
+function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
+{
+    $filters = new stdClass();
+    $additionalInfo = new stdClass();
+
+    $filters->keyword_id = $guiObj->keyword_id;
+    $filters->include_unassigned = $guiObj->include_unassigned;
+    
+    $filters->tc_id = $argsObj->tcase_id;
+    $filters->build_id = $argsObj->optBuildSelected;
+    $filters->assignedTo = $guiObj->filter_assigned_to;
+    $filters->status = $guiObj->optResultSelected;
+    
+    $filters->hide_testcases = false;
+    $filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
+     
+    $filters->cf_hash = $exec_cfield_mgr->get_set_values();
+    $guiObj->args=initializeGetArguments($argsObj,$cfgObj,$filters->cf_hash);
+    
+    //
+    $additionalInfo->useCounters=$cfgObj->exec->enable_tree_testcase_counters;
+    $additionalInfo->useColors=$cfgObj->exec->enable_tree_colouring;
+
+
+    // link to load frame named 'workframe' when the update button is pressed
+    if($argsObj->doUpdateTree)
+    {
+	     $guiObj->src_workframe = $_SESSION['basehref']. $guiObj->menuUrl . 
+	                              "?level=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
+    }
+       
+    $treeString = generateExecTree($dbHandler,$guiObj->menuUrl,
+                                   $argsObj->tproject_id,$argsObj->tproject_name,
+                                   $argsObj->tplan_id,$argsObj->tplan_name,
+                                   $guiObj->args,$filters,$additionalInfo);
+   
+    return (invokeMenu($treeString,null,null));
+}
+
+
+/*
+  function: initializeGui
+
+  args :
+  
+  returns: 
+
+*/
+function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
+{
+    $gui = new stdClass();
+    $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs();
+    $gui->menuUrl = 'lib/execute/execSetResults.php';
+    $gui->src_workframe=null;    
+    $gui->getArguments=null;
+    
+    $gui->treeColored=$argsObj->treeColored;
+    $gui->tplan_name=$argsObj->tplan_name;
+    $gui->tplan_id=$argsObj->tplan_id;
+    $gui->keyword_id=$argsObj->keyword_id;
+    $gui->optResultSelected=$argsObj->optResultSelected;
+    $gui->include_unassigned=$argsObj->include_unassigned;
+    
+    
+    // Only active builds no matter user role
+    $gui->optBuild = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
+    $gui->optBuildSelected=initBuildInfo($dbHandler,$guiObj,$argsObj,$tplanMgr); 
+       
+    $gui->keywords_map=initKeywordInfo($argsObj->tplan_id,$tplanMgr);
+
+    $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
+    $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
+    $gui->treeKind=TL_TREE_KIND;
+    $gui->optResult=createResultsMenu();
+ 
+    return $gui;
+}
+
 ?>

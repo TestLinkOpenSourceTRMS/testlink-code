@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/03/22 15:45:41 $ $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -31,6 +31,8 @@ require_once("attachments.inc.php");
 require_once("web_editor.php");
 require("specview.php");
 
+// require_once ("../../third_party/dBug/dBug.php");
+
 testlinkInitPage($db);
 
 $template_dir = 'execute/';
@@ -45,6 +47,8 @@ $ts_cf_smarty = '';
 $submitResult = null;
 
 $args = init_args();
+
+// echo "<pre>debug 20080427 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -128,6 +132,8 @@ $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc
                                                        $args->filter_assigned_to,
                                                        $args->filter_status,$args->build_id,
                                                        $args->cf_selected,$args->include_unassigned);
+
+// new dBug($linked_tcversions);
 
 $tcase_id = 0;
 
@@ -245,7 +251,11 @@ if(!is_null($linked_tcversions))
     
     
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,$args->build_id,GET_NO_EXEC);
+    $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
+                                                    $args->build_id,GET_NO_EXEC);
+
+//    new dBug($map_last_exec);
+//    die();
     
     // --------------------------------------------------------------------------------------------
     // Results to DB
@@ -848,8 +858,12 @@ function init_config()
     $cfg = new stdClass();
     $cfg->exec_cfg = config_get('exec_cfg');
     $cfg->gui_cfg = config_get('gui');
-    $cfg->tc_status = config_get('tc_status'); 
+    
+    $results = config_get('results');
+    $cfg->tc_status = $results['status_code'];
+     
     $cfg->testcase_cfg = config_get('testcase_cfg'); 
+    
     return $cfg;
 }
 

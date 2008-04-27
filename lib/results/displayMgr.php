@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: displayMgr.php,v 1.9 2007/12/09 02:15:19 havlat Exp $ 
+* $Id: displayMgr.php,v 1.10 2008/04/27 17:35:46 franciscom Exp $ 
 *
 * @author	Kevin Levy
 * 
@@ -13,26 +13,24 @@ require_once('info.inc.php');
 
 function displayReport($template_file, &$smarty, $report_type, $buildName = null)
 {
-	global $g_reports_cfg;	
 
-	// default report is HTML
-	// if ($report_type == key($g_reports_cfg->formats['HTML'])) do nothing
+  $reports_cfg = config_get('reportsCfg');
+	
 
 	// excel report
-	if ($g_reports_cfg->formats[$report_type] == 'MS Excel') //1
+	if ($reports_cfg->formats[$report_type] == 'MS Excel') //1
 	{
 		sendXlsHeader();
 	}
 	
 	// msword report
-	if ($g_reports_cfg->formats[$report_type] == 'MS Word')
+	if ($reports_cfg->formats[$report_type] == 'MS Word')
 	{
 		sendMsWordHeader();
 	}
 
 	// html email report
-	if ($g_reports_cfg->formats[$report_type] == 'Email')
-//	else if ($report_type == '2')
+	if ($reports_cfg->formats[$report_type] == 'Email')
 	{
 		$template_file = $template_file . ".tpl";
 		$html_report = $smarty->fetch($template_file);
@@ -57,7 +55,7 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 	}
 
 	// PDF report
-	if ($g_reports_cfg->formats[$report_type] == 'PDF')
+	if ($reports_cfg->formats[$report_type] == 'PDF')
 	{
 		sendPdfHeader();
 	}

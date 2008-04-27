@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/04/25 17:47:09 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/04/27 17:35:03 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -315,7 +315,7 @@ $att_model_m2->show_upload_column = true;
 //                   lang_get($g_tc_status_verbose_labels["passed"]);
 //
 //
-$tlCfg->results['statuses'] = array (
+$tlCfg->results['status_code'] = array (
 	"failed"        => 'f',
 	"blocked"       => 'b',
 	"passed"        => 'p',
@@ -325,10 +325,14 @@ $tlCfg->results['statuses'] = array (
 	"all"           => 'a'
 ); 
 
-// Please if you add an status you need to add a corresponding CSS Class
-// in the CSS files (see the gui directory)
+// IMPORTANT:
+// is used for two applications.
+// 1. To map code to CSS, Please if you add an status you need to add a corresponding CSS Class
+//    in the CSS files (see the gui directory)
+// 2. to decode from code to some more human oriented to use in code
+//
 /** Revered list of Test Case execution results */
-$tlCfg->results['statuses_rev'] = array_flip($tlCfg->results['statuses']);
+$tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 
 
 /** 
@@ -342,17 +346,36 @@ $tlCfg->results['status_label'] = array(
 	"passed"   		=> "test_status_passed",
 	"failed"   		=> "test_status_failed",
 	"blocked"  		=> "test_status_blocked",
-//	"all"      		=> "test_status_all_status",
+// "all"      		=> "test_status_all_status",
 //	"not_available" => "test_status_not_available",
 //	"unknown"       => "test_status_unknown"
+);
+
+// Is RIGHT to have this DIFFERENT from $tlCfg->results['status_label'],
+// because you must choose to not allow some of previous status be available
+// on execution page.
+// See this as a subset of $tlCfg->results['status_label']
+//
+//
+// Used to generate radio and buttons at user interface level.
+// Order is important, because this will be display order on User Interface
+//
+// key   => verbose status as defined in $g_tc_status
+// value => string id defined in the strings.txt file, 
+//          used to localize the strings.
+//
+$tlCfg->results['status_for_exec_ui'] = array(
+	"passed"  => "test_status_passed",
+	"failed"  => "test_status_failed",
+	"blocked" => "test_status_blocked"
 );
 
 /** Selected execution result by default. Values is key from $tlCfg->results['status_label'] */
 $tlCfg->results['default_status_label'] = "passed";
 
 // backward comaptibility; @TODO remove
-$g_tc_status = $tlCfg->results['statuses'];
-$g_tc_status_css = $tlCfg->results['statuses_rev'];
+$g_tc_status = $tlCfg->results['status_code'];
+$g_tc_status_css = $tlCfg->results['code_status'];
 $g_tc_status_verbose_labels = $tlCfg->results['status_label'];
 $g_tc_status_for_ui = $tlCfg->results['status_label']; // @todo replace by $tlCfg->results['status_label']
 $g_tc_status_for_ui_default = $tlCfg->results['default_status_label'];
@@ -363,7 +386,9 @@ $g_tc_status_for_ui_default = $tlCfg->results['default_status_label'];
 
 /** Displayed execution statuses to use on reports (ordered). */
 // Note: report generation must be changed to manage new statuses
-$tlCfg->reports_exec_status = array(
+$tlCfg->reportsCfg=new stdClass();
+
+$tlCfg->reportsCfg->exec_status = array(
     "passed"  => "test_status_passed",
     "failed"  => "test_status_failed",
     "blocked" => "test_status_blocked",
@@ -373,19 +398,11 @@ $tlCfg->reports_exec_status = array(
 
 // Offset in seconds, to substract from current date to create start date on
 // reports that have start / end dates
-$tlCfg->reports_start_date_offset = (7*24*60*60); // one week
-
-// backward compatibility
-$g_reports_cfg = new stdClass();
-//$g_reports_cfg->formats = $tlCfg->reports_formats;
-$g_reports_cfg->tc_status = $tlCfg->reports_exec_status;
-$g_reports_cfg->start_date_offset = $tlCfg->reports_start_date_offset;
-//$g_reports_list = $tlCfg->reports_list;
+$tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 
 // -------------------------------------------------------------------------------
 /** [Users & Roles] */
-
 define("TL_ROLES_TESTER", 7);
 define("TL_ROLES_GUEST", 5);
 define("TL_ROLES_NONE", 3);

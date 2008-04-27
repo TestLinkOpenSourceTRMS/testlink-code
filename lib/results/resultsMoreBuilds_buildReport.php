@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.55 2007/12/21 22:57:18 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.56 2008/04/27 17:35:46 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -34,7 +34,7 @@ $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
 
-$reports_cfg=config_get('reports_cfg');
+$reports_cfg=config_get('reportsCfg');
 $tc_status_verbose_code=config_get('tc_status');   
 $tc_status_verbose_labels=config_get('tc_status_verbose_labels');   
 
@@ -56,7 +56,7 @@ $tc_status_code_verbose=array_flip($tc_status_verbose_code);
 // same key that tcstatus_verbose_code
 $displayTCRows=array();
 $lastStatus_localized=array();
-foreach($reports_cfg->tc_status as $verbose => $label)
+foreach($reports_cfg->exec_status as $verbose => $label)
 {
   $displayTCRows[$verbose]=false;
 }

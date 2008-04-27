@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.15 2008/03/26 20:39:31 schlundus Exp $
+$Id: execSetResults.tpl,v 1.16 2008/04/27 17:35:23 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20080322 - franciscom - feature: allow edit of execution notes
@@ -18,7 +18,6 @@ Rev:
     20070104 - franciscom - custom field management for test cases
     20070101 - franciscom - custom field management for test suite div
 *}
-
 
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}

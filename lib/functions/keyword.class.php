@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.13 2008/01/17 21:22:45 schlundus Exp $
-* @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.14 2008/04/27 17:35:45 franciscom Exp $
+* @modified $Date: 2008/04/27 17:35:45 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 **/
@@ -84,6 +84,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);
@@ -111,6 +112,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		}
 		return $result;
 	}
+
 	public function checkDetails(&$db)
 	{
 		$this->name = trim($this->name);
@@ -124,6 +126,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			
 		return $result;
 	}
+
 	public function deleteFromDB(&$db)
 	{
 		$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $this->dbID;
@@ -140,14 +143,17 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		}
 		return $result ? tl::OK : tl::ERROR;	
 	}
+
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlKeyword::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
+
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
+
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);

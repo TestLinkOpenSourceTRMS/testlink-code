@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2008/04/04 17:37:10 $ $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -64,6 +64,13 @@ require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 class testplan extends tlObjectWithAttachments
 {
+  const GET_ALL=null;
+  const GET_ACTIVE_BUILD=1;
+  const GET_INACTIVE_BUILD=0;
+  const GET_OPEN_BUILD=1;
+  const GET_CLOSED_BUILD=0;
+
+
 	var $db;
 	var $tree_manager;
 	var $assignment_mgr;

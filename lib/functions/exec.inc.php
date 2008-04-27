@@ -4,14 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/01/31 22:15:47 $ $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
- *
+ * 20080427 - franciscom
  * 20051119  - scs - added fix for 227
  * 20060311 - kl - some modifications to SQL queries dealing with 1.7
  *                 builds table in order to comply with new 1.7 schema
@@ -125,7 +125,9 @@ function createResultsMenu()
   $tc_status_for_ui = config_get('tc_status_for_ui');
   
   // Fixed values, that has to be added always
-	$menu_data[$map_verbose_status_code['all']] = lang_get($tc_status_verbose_labels['all']);
+  $my_all= isset($tc_status_verbose_labels['all'])?$tc_status_verbose_labels['all']:'';
+  $menu_data[$map_verbose_status_code['all']] = $my_all;
+	
 	$menu_data[$map_verbose_status_code['not_run']] = lang_get($tc_status_verbose_labels['not_run']);
 	
 	// loop over tc_status_for_ui, because these are the statuses

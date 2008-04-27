@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.60 2008/03/31 20:08:04 schlundus Exp $
+* $Id: resultsMoreBuilds.php,v 1.61 2008/04/27 17:35:46 franciscom Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -68,7 +68,7 @@ $build = isset($_GET['build']) ? intval($_GET['build']) : null;
 $smarty->assign('build', $build);
 $smarty->assign('report_type', $format);
 
-$reports_cfg = config_get('reports_cfg');
+$reports_cfg = config_get('reportsCfg');
 $startDate = time() - ($reports_cfg->start_date_offset);
 $smarty->assign('selected_start_date', $startDate);
 $smarty->assign('selected_start_time', '00:00');

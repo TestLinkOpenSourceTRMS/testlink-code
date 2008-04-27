@@ -1,95 +1,97 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.6 2008/03/26 20:39:31 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.7 2008/04/27 17:35:23 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+     20080427 - franciscom - refactoring
      20080224 - franciscom - BUGID 1056
      20070225 - franciscom - fixed auto-bug BUGID 642
      20070212 - franciscom - name changes on html inputs
                              use input_dimensions.conf
 
 *}
+{lang_get var="labels"
+          s="filter_result,caption_nav_filter_settings,filter_owner,
+             btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases"}
+          
 {include file="inc_head.tpl" jsTree="yes"}
 
 <body>
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='TestPlan'} {$tplan_id|escape} {$tplan_name|escape}</h1>
+<h1>{lang_get s='TestPlan'} {$gui->tplan_id|escape} {$gui->tplan_name|escape}</h1>
 
-{* $filterForm *}
 <div style="margin: 3px;">
 <form method="post">
-
 	<table class="smallGrey" width="100%">
 		<caption>
-			{lang_get s='caption_nav_filter_settings'}
+			{$labels.caption_nav_filter_settings}
 			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
 		</caption>
 		<tr>
-			<td>{lang_get s='filter_tcID'}</td>
-			<td><input type="text" name="tcID" value="{$tcID}" maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
+			<td>{$labels.filter_tcID}</td>
+			<td><input type="text" name="tcase_id" value="{$gui->tcase_id}" maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
 		</tr>
 		<tr>
-			<td>{lang_get s='keyword'}</td>
+			<td>{$labels.keyword}</td>
 			<td><select name="keyword_id">
-			    {html_options options=$keywords_map selected=$keyword_id}
+			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
 			</td>
 		</tr>
 		<tr>
-				<td>{lang_get s='filter_result'}</td>
+				<td>{$labels.filter_result}</td>
 			<td>
 			  <select name="filter_status">
-			  {html_options options=$optResult selected=$optResultSelected}
+			  {html_options options=$gui->optResult selected=$gui->optResultSelected}
 			  </select>
 			</td>
 		</tr>
 		<tr>
-			<td>{lang_get s='build'}</td>
+			<td>{$labels.build}</td>
 			<td><select name="build_id">
-				{html_options options=$optBuild selected=$optBuildSelected}
+				{html_options options=$gui->optBuild selected=$gui->optBuildSelected}
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td>{lang_get s='filter_owner'}</td>
+			<td>{$labels.filter_owner}</td>
 			<td>
- 			{if $disable_filter_assigned_to}
-			  {$assigned_to_user}
+ 			{if $gui->disable_filter_assigned_to}
+			  {$gui->assigned_to_user}
 			{else}
 				<select name="filter_assigned_to">
-					{html_options options=$users selected=$filter_assigned_to}
+					{html_options options=$gui->users selected=$gui->filter_assigned_to}
 				</select>
 			{/if}
 			</td>
 		</tr>
   	<tr>
-   		<td>{lang_get s='include_unassigned_testcases'}</td>
+   		<td>{$labels.include_unassigned_testcases}</td>
   		<td>
   		   <input type="checkbox"
   		           id="include_unassigned" name="include_unassigned"
   		           value="1"
-  		           {if $include_unassigned} checked="checked" {/if} />
+  		           {if $gui->include_unassigned} checked="checked" {/if} />
   		</td>
   	</tr>
-
-        	{$design_time_cf}
+        	{$gui->design_time_cfields}
 		<tr>
 			<td>&nbsp;</td>
-			<td><input type="submit" name="submitOptions" value="{lang_get s='btn_apply_filter'}" style="font-size: 90%;" /></td>
+			<td><input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" style="font-size: 90%;" /></td>
 		</tr>
 	</table>
 </form>
 </div>
 
 <div class="tree" id="tree">
-{$tree}
+{$gui->tree}
 </div>
 
-{if $src_workframe != ''}
+{if $gui->src_workframe != ''}
 <script type="text/javascript">
-	parent.workframe.location='{$src_workframe}';
+	parent.workframe.location='{$gui->src_workframe}';
 </script>
 {/if}
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.105 $
- * @modified $Date: 2008/04/25 18:08:16 $ $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080425 - franciscom - replacing DEFINE with const
@@ -1876,7 +1876,6 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 */
 function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executions=0)
 {
-
 	$build_id_filter='';
 	$where_clause_1 = '';
 	$where_clause_2= '';
@@ -1968,7 +1967,6 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
         LEFT OUTER JOIN users ON e.tester_id = users.id
         $where_clause_2
         ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
-
 
 
   $recordset = $this->db->fetchRowsIntoMap($sql,'id');

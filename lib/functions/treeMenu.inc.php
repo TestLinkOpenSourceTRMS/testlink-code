@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2008/04/03 06:53:09 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2008/04/27 17:35:45 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -717,6 +717,7 @@ function jtree_renderTestSpecTreeNodeOnClose($node,$node_type)
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$getArguments,$filters,$additionalInfo) 
 {
+
     $showTestCaseID=config_get('tree_show_testcase_id');
 	  $menustring = null;
 	  $any_exec_status=null;
@@ -740,6 +741,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  $tree_manager = $tplan_mgr->tree_manager;
 	  $tcase_node_type = $tree_manager->node_descr_id['testcase'];
 	  $hash_descr_id = $tree_manager->get_available_node_types();
+
 	  $hash_id_descr = array_flip($hash_descr_id);
     $status_descr_code=config_get('tc_status');
     $status_code_descr=array_flip($status_descr_code);
@@ -752,7 +754,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
     // 20080114 - franciscom
  	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
-	  // $test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 
     $nt2exclude=array('testplan' => 'exclude_me',
 	                    'requirement_spec'=> 'exclude_me',
@@ -760,14 +761,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     
     $nt2exclude_children=array('testcase' => 'exclude_my_children',
 												       'requirement_spec'=> 'exclude_my_children');
-
    
     $order_cfg=array("type" =>'exec_order',"tplan_id" => $tplan_id);
 	  $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
 	                                          null,'',RECURSIVE_MODE,$order_cfg);
-    
-	  //$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
-
     
     // 20071002 - jbarchibald - BUGID 1051
     // 20070306 - franciscom - BUGID 705   

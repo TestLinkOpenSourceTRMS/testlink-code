@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2008/04/29 07:05:35 $ $Author: franciscom $
  *
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
@@ -48,7 +48,7 @@ $submitResult = null;
 
 $args = init_args();
 
-// echo "<pre>debug 20080427 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+//echo "<pre>debug 20080427 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -405,7 +405,7 @@ function init_args()
 	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
 
-	$key2loop = array('id' => 0,'build_id' =>0, 'keyword_id' => 0, 'exec_to_delete' => 0, 
+	$key2loop = array('id' => 0,'build_id' =>0, 'exec_to_delete' => 0, 
 				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0, 
 				            'save_results' => 0, 'do_bulk_save' => 0,
 				            'tc_id' => null, 'filter_assigned_to' => null, 'filter_status' => null);
@@ -414,6 +414,21 @@ function init_args()
 	{
 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
+
+  // 20080428 - franciscom
+  if( isset($_REQUEST['keyword_id']) )
+  {
+     // can be a list
+     $args->keyword_id=explode(',',$_REQUEST['keyword_id']);
+     if( count($args->keyword_id) == 1)
+     {
+         $args->keyword_id=$args->keyword_id[0]; 
+     }
+  }
+  else
+  {
+      $args->keyword_id=0;  
+  }
 
 	$key2loop = array('level' => '','status' => null);
 	foreach($key2loop as $key => $value)

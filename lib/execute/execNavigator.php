@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2008/04/27 17:35:45 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2008/04/29 07:05:35 $ by $Author: franciscom $
  *
- * rev: 20080224 - franciscom - refactoring
+ * rev: 20080428 - franciscom - keyword filter can be done on multiple keywords
+ *      20080224 - franciscom - refactoring
  *      20080224 - franciscom - BUGID 1056
  *      20071229 - franciscom - refactoring tree colouring and counters config
  *      20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -32,7 +33,7 @@ $cfg=getCfg();
 $args = init_args($cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
-
+// echo "<pre>debug 20080427 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 $gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
 buildAssigneeFilter($db,$gui,$args,$cfg);
 $gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
@@ -119,12 +120,21 @@ function init_args($cfgObj)
 */
 function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 {
+    $kl='';
     $settings = '&build_id=' . $argsObj->optBuildSelected .
   	            '&include_unassigned=' . $argsObj->include_unassigned;
 
-    if($argsObj->keyword_id)
+    // 20080428 - franciscom  
+    if( is_array($argsObj->keyword_id) )
+    {
+       $kl=implode(',',$argsObj->keyword_id);
+       $settings .= '&keyword_id=' . $kl;
+    }
+    else if($argsObj->keyword_id > 0)
+    {
     	  $settings .= '&keyword_id='.$argsObj->keyword_id;
-
+    }
+    
     if($argsObj->tcase_id)
         $settings .= '&tc_id='.$argsObj->tcase_id;
 
@@ -238,10 +248,11 @@ function initKeywordInfo($tplanID,&$tplanMgr)
     $kmap = $tplanMgr->get_keywords_map($tplanID,' order by keyword ');
     if(!is_null($kmap))
     {
+       
     	// add the blank option
     	// 0 -> id for no keyword
-    	$blank_map[0] = '';
-    	$kmap = $blank_map + $kmap;
+    	//$blank_map[0] = '';
+    	//$kmap = $blank_map + $kmap;
     }
     return $kmap;
 }

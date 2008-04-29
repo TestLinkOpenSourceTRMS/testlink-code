@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2008/04/29 07:05:35 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,9 @@
  *
  *
  * rev:
+ *     20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
+ *                             (based on contribution by Eugenia Drosdezki)
+ *
  *     20080403 - franciscom - setExecutionOrder()
  *     20080310 - sbouffard - contribution added NHB.name to recordset (useful for API methods).  
  *     20080224 - franciscom - get_linked_tcversions() interface changes
@@ -419,12 +422,31 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	$sql_subquery='';
   $build_filter = " ";
 
-
-	if($keyword_id > 0)
+  // Based on work by Eugenia Drosdezki
+  if( is_array($keyword_id) )
+  {
+    	// 0 -> no keyword, remove it
+    	if( $keyword_id[0] == 0 )
+    	{
+    	   array_shift($keyword_id);
+    	}
+ 
+      if( (count($keyword_id) > 0) )
+    	{
+          $keywords_filter = " AND TK.keyword_id IN (" . implode(',',$keyword_id) . ")";          	
+    	}  
+  }
+  else if($keyword_id > 0)
 	{
-	    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";
 	    $keywords_filter = " AND TK.keyword_id = {$keyword_id} ";
 	}
+	
+  if( strlen(trim($keywords_filter)) > 0 )
+  {
+	    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";
+	}
+	
+	
 	if (!is_null($tcase_id) )
 	{
 	   if( is_array($tcase_id) )

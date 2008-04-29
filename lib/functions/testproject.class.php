@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/04/14 09:59:05 $  $Author: franciscom $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/04/29 07:05:35 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080322 - franciscom - get_keywords_tcases() - keyword_id can be array
  * 20080322 - franciscom - interface changes get_all_testplans()
  * 20080112 - franciscom - changed methods to manage prefix field
  *                         new methods getTestCasePrefix()
@@ -1410,6 +1411,7 @@ function get_all_testcases_id($id)
   args :testproject_id
         [keyword_id]= 0 -> no filter
                       <> 0 -> look only for this keyword
+                      can be an array.
 
 
 
@@ -1421,10 +1423,15 @@ function get_all_testcases_id($id)
 function get_keywords_tcases($testproject_id, $keyword_id=0)
 {
     $keyword_filter= '' ;
-    if( $keyword_id > 0 )
+    if( is_array($keyword_id) )
     {
-       $keyword_filter = " AND keyword_id = {$keyword_id} ";
+        $keywords_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
     }
+    else if( $keyword_id > 0 )
+    {
+        $keyword_filter = " AND keyword_id = {$keyword_id} ";
+    }
+		
 		$map_keywords = null;
 		$sql = " SELECT testcase_id,keyword_id,keyword
 		         FROM {$this->keywords_table} K, {$this->testcase_keywords_table}

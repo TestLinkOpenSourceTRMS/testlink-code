@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.7 2008/04/27 17:35:23 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.8 2008/04/29 07:05:21 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -35,7 +35,7 @@ rev :
 		</tr>
 		<tr>
 			<td>{$labels.keyword}</td>
-			<td><select name="keyword_id">
+			<td><select name="keyword_id[]" multiple="multiple" size=3>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
 			</td>

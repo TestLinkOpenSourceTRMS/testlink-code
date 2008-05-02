@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.50 2008/04/03 22:07:57 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.51 2008/05/02 07:09:36 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -80,10 +80,7 @@ switch($args->doAction)
 		$atcversion = $args->tcversion_for_tcid;
 		$items_to_link = my_array_intersect_keys($atc,$atcversion);
 		$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
-		
-		// 20080403 - franciscom
-		//$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
-		
+	
 	}
 
 	if(!is_null($args->testcases2remove))

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2008/04/29 07:05:35 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2008/05/02 07:09:36 $ by $Author: franciscom $
  *
  * rev: 20080428 - franciscom - keyword filter can be done on multiple keywords
  *      20080224 - franciscom - refactoring
@@ -315,6 +315,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
   
   returns: 
 
+  rev: 20080429 - franciscom
 */
 function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
 {
@@ -336,7 +337,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
     $gui->optBuild = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
     $gui->optBuildSelected=initBuildInfo($dbHandler,$guiObj,$argsObj,$tplanMgr); 
        
+    $gui->keywordsFilterItemQty=0;
     $gui->keywords_map=initKeywordInfo($argsObj->tplan_id,$tplanMgr);
+    
+    if( !is_null($gui->keywords_map) )
+    {
+        $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
+    }
 
     $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';

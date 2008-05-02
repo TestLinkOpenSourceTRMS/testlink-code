@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: cfieldsEdit.tpl,v 1.8 2008/02/17 18:58:24 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.9 2008/05/02 07:09:23 franciscom Exp $
 
 
 Important Development note:
@@ -252,7 +252,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
  {lang_get s='help' var='common_prefix'}
  {assign var="text_hint" value="$common_prefix"}
  {include file="inc_help.tpl" help="custom_fields" locale=$locale
-          alt="$text_hint" title="$text_hint"  style="float: right;"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
  {lang_get s='title_cfields_mgmt'} </h1>
 
 <h2>{$operation_descr|escape}</h2>

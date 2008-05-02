@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: bugAdd.tpl,v 1.1 2007/12/19 17:59:33 franciscom Exp $ *}
+{* $Id: bugAdd.tpl,v 1.2 2008/05/02 07:09:23 franciscom Exp $ *}
 {* Purpose: smarty template - the template for the attachment upload dialog 
 
 rev :
@@ -17,7 +17,7 @@ rev :
 <h1>
  {lang_get s='title_bug_add'} 
  {include file="inc_help.tpl" help="bug_add" locale=$locale 
-          alt="$text_hint" title="$text_hint"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"}
 </h1>
 
 {include file="inc_update.tpl" user_feedback=$msg}

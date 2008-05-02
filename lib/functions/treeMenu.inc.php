@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2008/04/27 17:35:45 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2008/05/02 07:09:36 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -138,6 +138,8 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
+ * 20080501 - franciscom - keyword_id can be an array
+ *
  * 20071014 - franciscom - $bForPrinting
  *                         used to choose Javascript function 
  *                         to call when clicking on a tree node
@@ -198,6 +200,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	if($test_spec)
 	{
 		$tck_map = null;  // means no filter
+
 		if($keyword_id)
 		{
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
@@ -206,7 +209,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 			  $tck_map=array();  // means filter everything
 			}
 		}
-
+    
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcs,$bHideTCs,
 		                                 DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,

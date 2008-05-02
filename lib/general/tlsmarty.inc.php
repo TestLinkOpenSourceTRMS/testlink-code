@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2008/05/02 07:09:36 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -91,6 +91,12 @@ class TLSmarty extends Smarty
 		  $this->assign('inheritStyle',null);
 		  $this->assign('show_upload_btn',null);
 		  $this->assign('show_title',null);
+
+      // inc_help.tpl
+      $this->assign('inc_help_alt',null);
+      $this->assign('inc_help_title',null);
+      $this->assign('inc_help_style',null);
+
   
       $this->assign('tplan_name',null);
 		  $this->assign('name',null);

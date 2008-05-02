@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.8 2008/04/29 07:05:21 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.9 2008/05/02 07:09:23 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -13,6 +13,12 @@ rev :
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,
              btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases"}
+       
+       
+{assign var="keywordsFilterDisplayStyle" value=""}
+{if $gui->keywordsFilterItemQty == 0}
+    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
+{/if}
           
 {include file="inc_head.tpl" jsTree="yes"}
 
@@ -33,9 +39,9 @@ rev :
 			<td>{$labels.filter_tcID}</td>
 			<td><input type="text" name="tcase_id" value="{$gui->tcase_id}" maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
 		</tr>
-		<tr>
+		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>
-			<td><select name="keyword_id[]" multiple="multiple" size=3>
+			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
 			</td>

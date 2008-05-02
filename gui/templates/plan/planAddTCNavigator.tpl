@@ -1,8 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.2 2008/05/02 07:09:23 franciscom Exp $
 show test specification tree 
+
+rev: 20080429 - franciscom - keyword filter multiselect
 *}
+
+{lang_get var="labels" 
+          s='btn_update_menu,title_navigator,keyword,test_plan,keyword,caption_nav_filter_settings'}
+
+{assign var="keywordsFilterDisplayStyle" value=""}
+{if $gui->keywordsFilterItemQty == 0}
+    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
+{/if}
 
 {include file="inc_head.tpl" jsTree="yes" OpenHead="yes"}
 <script type="text/javascript">
@@ -17,7 +27,7 @@ function pre_submit()
 </head>
 <body>
 
-<h1>{lang_get s='title_navigator'}</h1>
+<h1>{$labels.title_navigator}</h1>
 <div style="margin: 3px;">
 <form method="post" id="planAddTCNavigator" onSubmit="javascript:return pre_submit();">
   <input type="hidden" id="called_by_me" name="called_by_me" value="1">
@@ -25,28 +35,27 @@ function pre_submit()
 
 	<table class="smallGrey" width="100%">
 		<caption>
-			{lang_get s='caption_nav_filter_settings'}
+			{$labels.caption_nav_filter_settings}
 			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
 		</caption>
 		<tr>
-			<td>{lang_get s='test_plan'}</td>
+			<td>{$labels.test_plan}</td>
 			<td>
 				<select name="tplan_id" onchange="pre_submit();this.form.submit()">
-			    {html_options options=$map_tplans selected=$tplan_id}
+			    {html_options options=$gui->map_tplans selected=$gui->tplan_id}
+				</select>
+			</td>
+		</tr>
+		<tr style="{$keywordsFilterDisplayStyle}">
+			<td>{$labels.keyword}</td>
+			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td>{lang_get s='keyword'}</td>
 			<td>
-				<select name="keyword_id">
-			    {html_options options=$keywords_map selected=$keyword_id}
-				</select>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<input type="submit" value="{lang_get s='btn_update_menu'}" name="filter" />
+				<input type="submit" value="{$labels.btn_update_menu}" name="doUpdateTree" />
 			</td>
 		</tr>
 	</table>
@@ -54,21 +63,18 @@ function pre_submit()
 </div>
 
 <div class="tree" id="tree">
-	{$tree}
+	{$gui->tree}
 </div>
 
 {* 20061030 - update the right pane *}
 <script type="text/javascript">
-{if $src_workframe != ''}
-	parent.workframe.location='{$src_workframe}';
+{if $gui->src_workframe != ''}
+	parent.workframe.location='{$gui->src_workframe}';
 {else}
-  {if $do_reload}
+  {if $gui->do_reload}
 	  parent.workframe.location.reload();
   {/if}
 {/if}
 </script>
-  
-
-
 </body>
 </html>

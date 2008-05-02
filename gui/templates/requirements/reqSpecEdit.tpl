@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.7 2008/04/19 16:12:33 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.8 2008/05/02 07:09:23 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -44,7 +44,7 @@ function validateForm(f)
  {lang_get s='req_spec' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          alt="$text_hint" title="$text_hint"  style="float: right;"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
  {$gui->main_descr|escape}
 </h1>
 

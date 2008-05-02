@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.29 2008/03/09 18:44:47 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.30 2008/05/02 07:09:36 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -10,6 +10,7 @@
 *	Test specification. Keywords should be used for filter.
 * 
 * rev :
+*      20080501 - franciscom - keyword filter now is multiselect
 *      20080126 - franciscom - refactoring
 *      20070920 - franciscom - REQ - BUGID test plan combo box
 * 
@@ -21,92 +22,33 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
-$template_dir='plan/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
+$templateCfg = templateConfiguration();
 $args=init_args();
+$gui = initializeGui($db,$args);
+$gui->tree=buildTree($db,$gui,$args);
 
-$src_workframe=null;
-$do_reload=0;
-
-$tproject_mgr = new testproject($db);
-$keywords_map = $tproject_mgr->get_keywords_map($args->tproject_id); 
-if(!is_null($keywords_map))
-{
-  $keywords_map = array( 0 => '') + $keywords_map;
-}
-
-// filter using user roles 
-$tplans=getAccessibleTestPlans($db,$args->tproject_id,$args->user_id,1);
-$map_tplans=array();
-foreach($tplans as $key => $value)
-{
-  $map_tplans[$value['id']]=$value['name'];
-}
-
-
-// generate tree 
-$workPath = 'lib/plan/planAddTC.php';
-$treeArgs = '&tplan_id=' . $args->tplan_id;
-if ($args->keyword_id)
-{
-	$treeArgs .= '&keyword_id=' . $args->keyword_id;
-}
-
-// link to load frame named 'workframe' when the update button is pressed
-if(isset($_REQUEST['filter']))
-{
-	$src_workframe = $_SESSION['basehref']. $workPath . "?edit=testproject&id={$args->tproject_id}" . $treeArgs;
-}
-else if ( isset($_REQUEST['called_by_me']) )
-{
-  // Algorithm based on field order on URL call
-  $dummy=explode('?',$_REQUEST['called_url']);
-  $qs=explode('&',$dummy[1]);
-  if($qs[0] == 'edit=testsuite')
-  {
-    $src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $qs[1];
-  }
-  else
-  {   
-    $src_workframe = $_SESSION['basehref'].$workPath . "?edit=testproject&id={$args->tproject_id}";
-  }
-  $src_workframe .= $treeArgs;  
-}
-
-// added $tplan_id
-$treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,  
-                                   $workPath,NOT_FOR_PRINTING,
-                                   HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
-                                   $treeArgs, $args->keyword_id,IGNORE_INACTIVE_TESTCASES);
-
-
-
-                                   
-$tree = invokeMenu($treeString,'',null);
 $smarty = new TLSmarty();
+$smarty->assign('gui', $gui);
 
-$smarty->assign('tplan_id',$args->tplan_id);
-$smarty->assign('map_tplans',$map_tplans);
-$smarty->assign('do_reload',$do_reload);
-
-$smarty->assign('src_workframe',$src_workframe);
-
-$smarty->assign('treeKind', TL_TREE_KIND);
-$smarty->assign('tree', $tree);
-$smarty->assign('keywords_map', $keywords_map);
-$smarty->assign('keyword_id', $args->keyword_id);
-$smarty->assign('menuUrl', $workPath);
-
+// IMPORTANT:
+//
 // A javascript variable 'args' will be initialized with this value
 // using inc_head.tpl template.
-$smarty->assign('args', $treeArgs);
+// 
+$smarty->assign('treeKind', TL_TREE_KIND);
+$smarty->assign('args', $gui->args);
+$smarty->assign('menuUrl', $gui->menuUrl);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-$smarty->display($template_dir . $default_template);
-?>
 
+/*
+  function: 
 
-<?php
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {
     $args = new stdClass();
@@ -119,8 +61,117 @@ function init_args()
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user_id=$_SESSION['userID'];
+    
+    $args->doUpdateTree=isset($_REQUEST['doUpdateTree']) ? 1 : 0;
 
-  
+    $args->called_by_me = isset($_REQUEST['called_by_me']) ? 1 : 0;
+    $args->called_url= isset($_REQUEST['called_url']) ? $_REQUEST['called_url'] : null;
+ 
     return $args;
 }
+
+
+/*
+  function: initializeGui
+
+  args :
+  
+  returns: 
+
+  rev: 20080429 - franciscom
+*/
+function initializeGui(&$dbHandler,&$argsObj)
+{
+    $gui = new stdClass();
+    $tprojectMgr = new testproject($dbHandler);
+
+    $gui->do_reload=0;
+    $gui->src_workframe=null;
+    
+    $gui->keywordsFilterItemQty=0;
+    $gui->keyword_id=$argsObj->keyword_id; 
+    $gui->keywords_map=$tprojectMgr->get_keywords_map($argsObj->tproject_id); 
+    if( !is_null($gui->keywords_map) )
+    {
+        $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
+    }
+
+    // filter using user roles
+    $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id,1);
+    $gui->map_tplans = array();
+    foreach($tplans as $key => $value)
+    {
+    	$gui->map_tplans[$value['id']] = $value['name'];
+    }
+
+    $gui->tplan_id=$argsObj->tplan_id;
+
+    $gui->menuUrl = 'lib/plan/planAddTC.php';
+    $gui->args = '&tplan_id=' . $gui->tplan_id;
+    if( is_array($argsObj->keyword_id) )
+    {
+       $kl=implode(',',$argsObj->keyword_id);
+       $gui->args .= '&keyword_id=' . $kl;
+    }
+    else if($argsObj->keyword_id > 0)
+    {
+   	   $gui->args .= '&keyword_id='.$argsObj->keyword_id;
+    }
+
+
+    return $gui;
+}
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function buildTree(&$dbHandler,&$guiObj,&$argsObj)
+{
+
+    $my_workframe = $_SESSION['basehref']. $guiObj->menuUrl .                      
+                    "?edit=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
+
+    if($argsObj->doUpdateTree)
+    {
+	     $guiObj->src_workframe = $my_workframe; 
+	                              
+    }
+    else if( $argsObj->called_by_me )
+    {
+       // Warning:
+       // Algorithm based on field order on URL call
+       $dummy=explode('?',$argsObj->called_url);
+       $qs=explode('&',$dummy[1]);
+       if($qs[0] == 'edit=testsuite')
+       {
+         $guiObj->src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $guiObj->args;
+       }
+       else
+       {   
+         $guiObj->src_workframe = $my_workframe; 
+       }
+    }
+    
+    // added $tplan_id
+    $treeString = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
+                                       $guiObj->menuUrl,NOT_FOR_PRINTING,
+                                       HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
+                                       $guiObj->args, $argsObj->keyword_id,IGNORE_INACTIVE_TESTCASES);
+                                       
+    return (invokeMenu($treeString,'',null));
+
+}
+
+
+
+
+
+
+
 ?>

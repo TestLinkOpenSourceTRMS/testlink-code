@@ -50,7 +50,7 @@ function check_action_precondition(form_id,action)
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
 
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          alt="$text_hint" title="$text_hint"  style="float: right;"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
  {$labels.test_case}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
 </h1>
 

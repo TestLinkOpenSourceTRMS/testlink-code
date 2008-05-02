@@ -1,11 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.3 2008/03/22 23:47:03 schlundus Exp $
+$Id: planTCNavigator.tpl,v 1.4 2008/05/02 07:09:23 franciscom Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
 *}
-{lang_get var="labels" s='filter_owner,TestPlan'}
+{lang_get var="labels" 
+          s='btn_update_menu,keyword,
+             filter_owner,TestPlan,test_plan,caption_nav_filter_settings'}
+
+{assign var="keywordsFilterDisplayStyle" value=""}
+{if $gui->keywordsFilterItemQty == 0}
+    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
+{/if}
 
 {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
 <script type="text/javascript">
@@ -28,40 +35,40 @@ function pre_submit()
 
 	<table class="smallGrey" style="width:100%;">
 		<caption>
-			{lang_get s='caption_nav_filter_settings'}
+			{$labels.caption_nav_filter_settings}
 			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
 		</caption>
-    {if $map_tplans != '' }
+    {if $gui->map_tplans != '' }
 		<tr>
-			<td>{lang_get s='test_plan'}</td>
+			<td>{$labels.test_plan}</td>
 			<td>
 				<select name="tplan_id" onchange="pre_submit();this.form.submit()">
-			    {html_options options=$map_tplans selected=$tplan_id}
+			    {html_options options=$gui->map_tplans selected=$gui->tplan_id}
 				</select>
 			</td>
 		</tr>
 		{/if}
-		<tr>
-			<td>{lang_get s='keyword'}</td>
-			<td><select name="keyword_id">
-			    {html_options options=$keywords_map selected=$keyword_id}
+		<tr style="{$keywordsFilterDisplayStyle}">
+			<td>{$labels.keyword}</td>
+			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
 			</td>
 		</tr>
 
-    {if $testers }
+    {if $gui->testers }
 		<tr>
 			<td>{$labels.filter_owner}</td>
 			<td>
 				<select name="filter_assigned_to">
-					{html_options options=$testers selected=$filter_assigned_to}
+					{html_options options=$gui->testers selected=$gui->filter_assigned_to}
 				</select>
 			</td>
 		</tr>
     {/if}
 		<tr>
 			<td>
-			<input type="submit" value="{lang_get s='btn_update_menu'}" name="filter" />
+			<input type="submit" value="{$labels.btn_update_menu}" name="doUpdateTree" />
 			</td>
 		</tr>
 	</table>
@@ -69,13 +76,13 @@ function pre_submit()
 </div>
 
 <div class="tree" id="tree">
-	{$tree}
+	{$gui->tree}
 </div>
 
 {* 20070925 *}
 <script type="text/javascript">
-{if $workframe != ''}
-	parent.workframe.location='{$workframe}';
+{if $gui->src_workframe != ''}
+	parent.workframe.location='{$gui->src_workframe}';
 {/if}
 </script>
 

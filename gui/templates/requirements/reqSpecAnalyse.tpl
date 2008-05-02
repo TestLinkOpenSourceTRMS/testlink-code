@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.3 2008/03/22 23:47:03 schlundus Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.4 2008/05/02 07:09:23 franciscom Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
@@ -21,7 +21,7 @@
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
 
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          alt="$text_hint" title="$text_hint"  style="float: right;"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
 
 	  {$labels.req_spec}{$smarty.const.TITLE_SEP}{$reqSpec[$selectedReqSpec]|escape}
 </h1>

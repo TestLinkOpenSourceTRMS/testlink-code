@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.76 $
- * @modified $Date: 2008/04/29 07:05:35 $  $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2008/05/02 07:09:36 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080501 - franciscom - typo erro bug in get_keywords_tcases()
  * 20080322 - franciscom - get_keywords_tcases() - keyword_id can be array
  * 20080322 - franciscom - interface changes get_all_testplans()
  * 20080112 - franciscom - changed methods to manage prefix field
@@ -1425,7 +1426,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
     $keyword_filter= '' ;
     if( is_array($keyword_id) )
     {
-        $keywords_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
+        $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
     }
     else if( $keyword_id > 0 )
     {
@@ -1440,6 +1441,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
 		         {$keyword_filter}
 			       ORDER BY keyword ASC ";
 		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+
 		return($map_keywords);
 } //end function
 

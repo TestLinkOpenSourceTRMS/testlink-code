@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.5 2008/03/09 18:38:18 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.6 2008/05/02 07:09:23 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -8,6 +8,16 @@
        20070508 - franciscom - milestones re-enabled
                                improving test plan messaging
 *}
+{lang_get var="labels"
+          s="title_test_plan,ok,testplan_role,msg_no_rights_for_tp,
+             title_test_execution,href_execute_test,href_rep_and_metrics,
+             href_update_tplan,href_newest_tcversions,
+             href_tc_exec_assignment,href_plan_assign_priority,
+             href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
+             href_plan_management,href_assign_user_roles,
+             href_build_new,href_plan_mstones,href_plan_define_priority,
+             href_metrics_dashboard,href_add_test_case,href_remove_test_case"}
+
 
 {* Right Column                             *}
 <div class="vertical_menu" style="float: right">
@@ -19,12 +29,13 @@
  {lang_get s='test_plan' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="testPlan" locale=$locale
-          alt="$text_hint" title="$text_hint"  style="float: right;vertical-align: top;"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"  
+          inc_help_style="float: right;vertical-align: top;"}
 
 
  	  <form name="testplanForm" action="lib/general/mainPage.php">
     {if $countPlans > 0}
-		{lang_get s='title_test_plan'}
+		{$labels.title_test_plan}
 		<select style="display:inline;width:50%;"  name="testplan" onchange="this.form.submit();">
 			{section name=tPlan loop=$arrPlans}
 				<option value="{$arrPlans[tPlan].id}"
@@ -35,14 +46,14 @@
 			{/section}
 			</select>
 		{if $countPlans == 1}
-			<input type="button" onclick="this.form.submit();" value="{lang_get s='ok'}"/>
+			<input type="button" onclick="this.form.submit();" value="{$labels.ok}"/>
 		{/if}
 		{if $testPlanRole neq null}
-			<br />{lang_get s='testplan_role'} {$testPlanRole|escape}
+			<br />{$labels.testplan_role} {$testPlanRole|escape}
 		{/if}
 	{else}
     {if $num_active_tplans > 0}
-		{lang_get s='msg_no_rights_for_tp'}
+		{$labels.msg_no_rights_for_tp}
 	{/if}
 		{/if}
 	 </form>
@@ -55,22 +66,22 @@
 	{* ------------------------------------------------------------------------------------------ *}
   {if $countPlans > 0}
     {$smarty.const.MENU_ITEM_OPEN}
-	  <h3>{lang_get s='title_test_execution'}</h3>
+	  <h3>{$labels.title_test_execution}</h3>
 		<p>
 		{if $testplan_execute == "yes" }
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	        <a href="{$launcher}?feature=executeTest">{lang_get s='href_execute_test'}</a>
+	        <a href="{$launcher}?feature=executeTest">{$labels.href_execute_test}</a>
 		{/if} {* testplan_execute *}
 
 
   	{if $testplan_metrics == "yes"}
 	        <br />
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	        <a href="{$launcher}?feature=showMetrics">{lang_get s='href_rep_and_metrics'}</a>
+	        <a href="{$launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
 		{/if} {* testplan_metrics *}
  	  <br />
  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	       <a href="{$metrics_dashboard_url}">{lang_get s='href_metrics_dashboard'}</a>
+	       <a href="{$metrics_dashboard_url}">{$labels.href_metrics_dashboard}</a>
 	  </p>
     {$smarty.const.MENU_ITEM_CLOSE}
 
@@ -78,38 +89,38 @@
 		{if $testplan_planning == "yes"}
     {$smarty.const.MENU_ITEM_OPEN}
 
-	    <h3>{lang_get s='title_test_case_suite'}</h3>
+	    <h3>{$labels.title_test_case_suite}</h3>
 		<p>
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	        <a href="{$launcher}?feature=planAddTC">{lang_get s='href_add_test_case'}</a>
+	        <a href="{$launcher}?feature=planAddTC">{$labels.href_add_test_case}</a>
 	        <br />
 
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=planRemoveTC">{lang_get s='href_remove_test_case'}</a>
+	   		<a href="{$launcher}?feature=planRemoveTC">{$labels.href_remove_test_case}</a>
 	        <br />
 
       {* 20080126 - franciscom *}
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=planUpdateTC">{lang_get s='href_update_tplan'}</a>
+	   		<a href="{$launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
 	        <br />
 
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=newest_tcversions">{lang_get s='href_newest_tcversions'}</a>
+	   		<a href="{$launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
 	        <br />
 
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=tc_exec_assignment">{lang_get s='href_tc_exec_assignment'}</a>
+	   		<a href="{$launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
 	        <br />
 
       {* 20070204 - franciscom *}
 	    {*
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=priority">{lang_get s='href_plan_assign_priority'}</a>
+	   		<a href="{$launcher}?feature=priority">{$labels.href_plan_assign_priority}</a>
 	    <br />
       *}
 			{*
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="lib/plan/planUpdateTC.php">{lang_get s='href_upd_mod_tc'}</a>
+	   		<a href="lib/plan/planUpdateTC.php">{$labels.href_upd_mod_tc}</a>
 	    *}
 		</p>
     {$smarty.const.MENU_ITEM_CLOSE}
@@ -120,29 +131,29 @@
 	{if $testplan_planning == "yes" or $testplan_creating == "yes" or
 	    $tp_user_role_assignment == "yes" or $testplan_create_build == "yes"}
     {$smarty.const.MENU_ITEM_OPEN}
-    <h3>{lang_get s='title_test_plan_mgmt'}</h3>
+    <h3>{$labels.title_test_plan_mgmt}</h3>
 	{if $testplan_creating == "yes"}
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-   		<a href="lib/plan/planView.php">{lang_get s='href_plan_management'}</a>
+   		<a href="lib/plan/planView.php">{$labels.href_plan_management}</a>
 	{/if}
 	{if $tp_user_role_assignment == "yes" && $countPlans > 0}
 			<br />
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-    	    <a href="lib/usermanagement/usersAssign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
+    	    <a href="lib/usermanagement/usersAssign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{$labels.href_assign_user_roles}</a>
 	{/if}
 	{if $testplan_create_build == "yes" and $countPlans > 0}
 		<br />
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-       	<a href="lib/plan/buildView.php">{lang_get s='href_build_new'}</a>
+       	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
     {/if} {* testplan_create_build *}
 		{if $countPlans > 0 and $testplan_planning == "yes"}
 	        <br />
 	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
+	       	<a href="lib/plan/planMilestones.php">{$labels.href_plan_mstones}</a>
 			<br />
  		<!-- KL 20070222 - Priority are currently not supported in 1.7
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
+	       	<a href="lib/plan/planPriority.php">{$labels.href_plan_define_priority}</a>
 	   	-->
 		{/if}
     {$smarty.const.MENU_ITEM_CLOSE}

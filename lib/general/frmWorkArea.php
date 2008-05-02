@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/03/09 18:44:47 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/05/02 07:09:36 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
- * 20060809 - franciscom - changes in validateBuildAvailability()
+ * rev: 20080501 - franciscom -
+ *      20060809 - franciscom - changes in validateBuildAvailability()
  *
 **/
 require_once('../../config.inc.php');
@@ -43,7 +44,7 @@ $aa_tfp = array(
             'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
             'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
             'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=testSetRemove',
-            'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=updateTC',
+            'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
             'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
             'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.3 2008/01/27 15:56:06 franciscom Exp $
+$Id: newest_tcversions.tpl,v 1.4 2008/05/02 07:09:23 franciscom Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
@@ -18,7 +18,7 @@ rev:
 <body>
 <h1> {lang_get s='title_newest_tcversions'} 
 {include file="inc_help.tpl" help="newest_tcversions" locale=$locale 
-         alt="$text_hint" title="$text_hint"}
+         inc_help_alt="$text_hint" inc_help_title="$text_hint"}
 
 
 </h1>

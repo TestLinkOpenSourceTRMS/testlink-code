@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/03/31 06:41:33 $ by $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/05/04 10:33:34 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
+ *     20080504 - franciscom - removed references to gui->enable_custom_fields
  *     20080329 - franciscom - added contribution by Eugenia Drosdezki
  *                             Move/copy testcases
  *
@@ -161,7 +162,7 @@ switch($action)
     case 'update_testsuite':
 	  if ($name_ok)
 	  {
-        $msg=updateTestSuite($tsuite_mgr,$args,$c_data,$gui_cfg->enable_custom_fields,$_REQUEST);
+        $msg=updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     }
     $tsuite_mgr->show($smarty,$template_dir,$args->testsuiteID,$msg);
     break;
@@ -172,7 +173,7 @@ switch($action)
 	  
 	  if ($name_ok)
 	  {
-	      $messages=addTestSuite($tsuite_mgr,$args,$c_data,$gui_cfg->enable_custom_fields,$_REQUEST);
+	      $messages=addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
 	      $msg=$messages['msg'];
 	  }
     else
@@ -436,7 +437,7 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
   returns: messages map
 
 */
-function	addTestSuite(&$tsuiteMgr,&$argsObj,$container,$cf_enabled,&$hash)
+function	addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
 		$ret =$tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
 								             config_get('check_names_for_duplicates'),config_get('action_on_duplicate_name'));
@@ -451,10 +452,7 @@ function	addTestSuite(&$tsuiteMgr,&$argsObj,$container,$cf_enabled,&$hash)
       {
          $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));   	 
       }   
-      if( $cf_enabled )
-      {
-          writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
-      }  
+      writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
 		}                 
 		return $messages;            
 }
@@ -559,7 +557,7 @@ function  doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr
   returns: 
 
 */
-function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,$cf_enabled,&$hash)
+function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
 	$msg = 'ok';
 	if ($tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details'])) 
@@ -569,11 +567,7 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,$cf_enabled,&$hash)
     {
        $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));   	 
     }
-
-    if( $cf_enabled )
-    {
-      writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
-    }  
+    writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
   }   
   else
 	{ 

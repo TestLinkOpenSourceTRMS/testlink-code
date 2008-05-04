@@ -1,10 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.3 2008/02/20 07:49:13 franciscom Exp $ 
+$Id: index.php,v 1.4 2008/05/04 10:31:14 franciscom Exp $ 
 Author: franciscom
 
 rev :
+     20080504 - franciscom - added warning about php.ini settings
      20080103 - franciscom - fixed path to images
 
 */
@@ -60,14 +61,27 @@ $operation='Migration from 1.7.2 (or greater)';
       </li>    
       </ul>
       <p>
-      <li><span class="headers">Please Backup DB before start</span>
-      
-      <ul>
-      <li><span class="headers">STEP ONE:</span> Add this page to your bookmarks or save the URL.
-      <li><span class="headers">STEP TWO:</span> Go back to the main installation screen and use Upgrade Database option.
+      <span class="headers">Please Backup DB before start</span>
+            <ul>
+      <li><span class="headers">STEP ONE:</span> Add this page to your bookmarks or save the URL.</li>
+      <li><span class="headers">STEP TWO:</span> Go back to the main installation screen and use Upgrade Database option.</li>
       <li><span class="headers">STEP THREE:</span> After successful execution of STEP TWO, return to this page and click
-			<a href="migration_start.php"><b>here</b></a> to start data migration/update.
+			<a href="migration_start.php"><b>here</b></a> to start data migration/update.</li>
 			</ul>
+      
+      <p>
+      <span class="headers">Warning: Know problems related to PHP settings </span>
+      <div>
+      <pre>
+      Some users have reported problems due to insufficiente settings for:
+      max_execution_time, max_input_time,memory_limit on php.ini <br>
+      Here one set of suggested values used for migration of about 1600 Test cases:
+      (contribution by fkueppers)<br>
+      max_execution_time = 120
+      max_input_time = 120
+      memory_limit = 64M
+      </pre>
+      </div>
 		</td>
       </tr>
     </table></td>

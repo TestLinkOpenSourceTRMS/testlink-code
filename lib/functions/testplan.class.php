@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2008/04/29 07:05:35 $ $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -550,7 +550,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// added NHB.node_order
 	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
 
-  //  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 

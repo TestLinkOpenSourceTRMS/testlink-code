@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/05/04 10:33:33 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -230,12 +230,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 		if ($tcInfo)
 			$tcInfo=$tcInfo[0];
 	}
+	
+	/* Need to be refactored - franciscom - 20080504
 	if($printingOptions['passfail'])
 	{
 		$resultTC['tcid'] = $versionID;
 		$tcResultInfo = createTestInput($db,$resultTC,$build_id, $tplan_id);
 	}
-
+  */
+  
 	if ($printingOptions['toc'])
 	{
 	  $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' .

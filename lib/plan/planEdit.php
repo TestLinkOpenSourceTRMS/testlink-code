@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/03/22 17:43:00 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/05/04 10:33:34 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -27,7 +27,6 @@ $user_feedback = '';
 $template = null;
 $args = init_args($_REQUEST,$_SESSION);
 
-$gui_cfg = config_get('gui');
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 // $tplans = $tproject_mgr->get_all_testplans($args->tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
@@ -51,8 +50,7 @@ if($args->do_action == "do_create" || $args->do_action == "do_update")
 	$name_id_rel_ok = (isset($tplans[$args->tplan_id]) && $tplans[$args->tplan_id]['name'] == $tpName);
 }
 
-if($gui_cfg->enable_custom_fields )
-	$cf_smarty = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->tproject_id);
+$cf_smarty = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->tproject_id);
 
 switch($args->do_action)
 {
@@ -100,11 +98,8 @@ switch($args->do_action)
 			else
 			{
 				logAuditEvent(TLS("audit_testplan_saved",$args->testplan_name),"SAVE",$args->tplan_id,"testplans");
-				if($gui_cfg->enable_custom_fields)
-				{
-					$cf_map = $tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
-					$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
-				}  
+				$cf_map = $tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
+				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
 
 				if(isset($_SESSION['testPlanId']) && ($args->tplan_id == $_SESSION['testPlanId']))
 					$_SESSION['testPlanName'] = $args->testplan_name;
@@ -142,11 +137,8 @@ switch($args->do_action)
 			else
 			{
 				logAuditEvent(TLS("audit_testplan_created",$args->testplan_name),"CREATED",$tplan_id,"testplans");
-				if($gui_cfg->enable_custom_fields)
-				{
-					$cf_map = $tplan_mgr->get_linked_cfields_at_design($tplan_id);
-					$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tplan_id,$cf_map);
-				}  
+				$cf_map = $tplan_mgr->get_linked_cfields_at_design($tplan_id);
+				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tplan_id,$cf_map);
 
 				$status_ok = true;
 				$template = null;

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.16 2008/04/27 17:35:23 franciscom Exp $
+$Id: execSetResults.tpl,v 1.17 2008/05/04 10:30:39 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20080322 - franciscom - feature: allow edit of execution notes
@@ -29,7 +29,7 @@ Rev:
 {assign var="draw_submit_button" value=false}
 
 {assign var="show_current_build" value=0}
-{assign var="my_build_name" value=$build_name|escape}
+{assign var="my_build_name" value=$gui->build_name|escape}
 
 {lang_get s='build' var='build_title'}
 
@@ -42,6 +42,7 @@ Rev:
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
+	           no_data_available,import_xml_results,btn_save_all_tests_results,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
 
 
@@ -60,7 +61,7 @@ Rev:
 
 <script language="JavaScript" type="text/javascript">
 var msg="{lang_get s='warning_delete_execution'}";
-var import_xml_results="{lang_get s='import_xml_results'}";
+var import_xml_results="{$labels.import_xml_results}";
 </script>
 
 {if $smarty.const.USE_EXT_JS_LIBRARY}
@@ -87,9 +88,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 {assign var="bulk_controls_view_memory_id" value="bc_view_status"}
 
 
-<body onLoad="show_hide('tplan_notes','{$tplan_notes_view_memory_id}',{$tpn_view_status});
-              show_hide('build_notes','{$build_notes_view_memory_id}',{$bn_view_status});
-              show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$bc_view_status});
+<body onLoad="show_hide('tplan_notes','{$tplan_notes_view_memory_id}',{$gui->tpn_view_status});
+              show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
+              show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$gui->bc_view_status});
               multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
                                  '{$tsd_val_for_hidden_list}');
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
@@ -100,13 +101,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 <h1>
  {lang_get s='help' var='text_hint'}
  {include file="inc_help.tpl" help="execMain" locale=$locale
-          alt="$text_hint" title="$text_hint"  style="float: right;"}
+          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
 
 	{$labels.title_t_r_on_build} {$my_build_name}
 
-	{if $ownerDisplayName != ""}
-	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$ownerDisplayName|escape}
-	  {if $include_unassigned}
+	{if $gui->ownerDisplayName != ""}
+	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$gui->ownerDisplayName|escape}
+	  {if $gui->include_unassigned}
 	    {$labels.or_unassigned_test_cases}
 	  {/if}
 	{/if}
@@ -114,11 +115,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 </h1>
 
 {* show echo about update if applicable *}
-{$updated}
+{*  deprecated ??? *}
+{* {$updated} *}
 
 
 <div id="main_content" class="workBack">
-  {if $build_is_open == 0}
+  {if $gui->build_is_open == 0}
   <div class="warning_message" style="align:center;">
      {$labels.build_is_closed}<br />
      {$labels.test_cases_cannot_be_executed}
@@ -134,18 +136,20 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* -------------------------------------------------------------------------------- *}
   {* Test Plan notes show/hide management                                             *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='test_plan_notes' var='title'}
+  {lang_get s='test_plan_notes' var='container_title'}
   {assign var="div_id" value='tplan_notes'}
   {assign var="memstatus_id" value=$tplan_notes_view_memory_id}
 
   {include file="inc_show_hide_mgmt.tpl"
-           args_container_title=$title
-           args_container_id=$div_id
-           args_container_view_status_id=$memstatus_id}
+           show_hide_container_title=$container_title
+           show_hide_container_id=$div_id
+           show_hide_container_draw=false
+           show_hide_container_class='exec_additional_info'
+           show_hide_container_view_status_id=$memstatus_id}
 
   <div id="{$div_id}" class="exec_additional_info">
-    {$tplan_notes}
-    {if $tplan_cf neq ''} <div class="custom_field_container">{$tplan_cf}</div>{/if}
+    {$gui->testplan_notes}
+    {if $gui->testplan_cfields neq ''} <div class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
 
   {* -------------------------------------------------------------------------------- *}
@@ -153,25 +157,25 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   {* -------------------------------------------------------------------------------- *}
   {* Build notes show/hide management                                                 *}
   {* -------------------------------------------------------------------------------- *}
-  {lang_get s='builds_notes' var='title'}
+  {lang_get s='builds_notes' var='container_title'}
   {assign var="div_id" value='build_notes'}
   {assign var="memstatus_id" value=$build_notes_view_memory_id}
 
   {include file="inc_show_hide_mgmt.tpl"
-           args_container_title=$title
-           args_container_id=$div_id
-           args_container_view_status_id=$memstatus_id
-           args_container_draw=true
-           args_container_class='exec_additional_info'
-           args_container_html=$build_notes}
+           show_hide_container_title=$container_title
+           show_hide_container_id=$div_id
+           show_hide_container_view_status_id=$memstatus_id
+           show_hide_container_draw=true
+           show_hide_container_class='exec_additional_info'
+           show_hide_container_html=$gui->build_notes}
   {* -------------------------------------------------------------------------------- *}
 
 
 
-  {if $map_last_exec eq ""}
-     <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
+  {if $gui->map_last_exec eq ""}
+     <div class="warning_message" style="text-align:center"> {$labels.no_data_available}</div>
   {else}
-      {if $rights->execute == 1 and $build_is_open == 1}
+      {if $gui->grants->execute == 1 and $gui->build_is_open == 1}
         {assign var="input_enabled_disabled" value=""}
         {assign var="att_download_only" value=false}
         {assign var="enable_custom_fields" value=true}
@@ -179,26 +183,28 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
         {if $cfg->exec_cfg->show_testsuite_contents}
-        {lang_get s='bulk_tc_status_management' var='title'}
-        {assign var="div_id" value='bulk_controls'}
-        {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
-
-        {include file="inc_show_hide_mgmt.tpl"
-                 args_container_title=$title
-                 args_container_id=$div_id
-                 args_container_view_status_id=$memstatus_id}
-
-        <div id="{$div_id}" name="{$div_id}">
-        	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-        	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
-        	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
-        	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
-        	{/foreach}
-          <br />
-          <br />
-      		  <input type="submit" id="do_bulk_save" name="do_bulk_save"
-      		         value="{lang_get s='btn_save_all_tests_results'}"/>
-        </div>
+            {lang_get s='bulk_tc_status_management' var='container_title'}
+            {assign var="div_id" value='bulk_controls'}
+            {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
+            
+            {include file="inc_show_hide_mgmt.tpl"
+                     show_hide_container_title=$container_title
+                     show_hide_container_id=$div_id
+                     show_hide_container_draw=false
+                     show_hide_container_class='exec_additional_info'
+                     show_hide_container_view_status_id=$memstatus_id}
+            
+            <div id="{$div_id}" name="{$div_id}">
+            	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
+            	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
+            	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
+            	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
+            	{/foreach}
+              <br />
+              <br />
+      	    	  <input type="submit" id="do_bulk_save" name="do_bulk_save"
+      	    	         value="{$labels.btn_save_all_tests_results}"/>
+            </div>
         {/if}
     	{/if}
 
@@ -207,10 +213,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     		  <input type="button" name="print" value="{lang_get s='btn_print'}"
     		         onclick="javascript:window.print();" />
     		  <input type="submit" id="toggle_history_on_off"
-    		         name="{$history_status_btn_name}"
-    		         value="{lang_get s=$history_status_btn_name}" />
+    		         name="{$gui->history_status_btn_name}"
+    		         value="{lang_get s=$gui->history_status_btn_name}" />
     		  <input type="button" id="pop_up_import_button" name="import_xml_button"
-    		         value="{lang_get s='import_xml_results'}"
+    		         value="{$labels.import_xml_results}"
     		         onclick="javascript: openImportResult(import_xml_results);" />
 
 		      {if $test_automation_enabled}
@@ -218,29 +224,31 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		             value="{lang_get s='execute_and_save_results'}"/>
 		      {/if}
     		  <input type="hidden" id="history_on"
-    		         name="history_on" value="{$history_on}" />
+    		         name="history_on" value="{$gui->history_on}" />
       </div>
     <hr />
 
 	{/if}
 
- 	{foreach item=tc_exec from=$map_last_exec}
+ 	{foreach item=tc_exec from=$gui->map_last_exec}
 
     {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
 
     {* ------------------------------------------------------------------------------------ *}
-    {lang_get s='th_testsuite' var='title'}
+    {lang_get s='th_testsuite' var='container_title'}
     {assign var="div_id" value=tsdetails_$tc_id}
     {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
     {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name|escape}
-    {assign var="title" value="$title$title_sep$ts_name"}
+    {assign var="container_title" value="$container_title$title_sep$ts_name"}
 
     {include file="inc_show_hide_mgmt.tpl"
-             args_container_title=$title
-             args_container_id=$div_id
-             args_container_view_status_id=$memstatus_id}
+             show_hide_container_title=$container_title
+             show_hide_container_id=$div_id
+             show_hide_container_draw=false
+             show_hide_container_class='exec_additional_info'
+             show_hide_container_view_status_id=$memstatus_id}
 
 		<div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
       <br />
@@ -256,14 +264,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         </div>
 		  {/if}
 
-		  {* 20080322 - undefined index bug *}
-  		{if $tSuiteAttachments != null && $tSuiteAttachments[$tc_exec.tsuite_id] != null}
+  		{if $gui->tSuiteAttachments != null && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
   		  <br />
-		    {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true
-			        	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id]
-			        	 inheritStyle=1
-			        	 tableClassName="none"
-				         tableStyles="background-color:#ffffcc;width:100%" }
+		    {include file="inc_attachments.tpl" 
+		             attach_tableName="nodes_hierarchy" 
+		             attach_downloadOnly=true
+			        	 attach_attachmentInfos=$gui->tSuiteAttachments[$tc_exec.tsuite_id]
+			        	 attach_inheritStyle=1
+			        	 attach_tableClassName="none"
+				         attach_tableStyles="background-color:#ffffcc;width:100%" }
 	    {/if}
 	    <br />
     </div>
@@ -271,7 +280,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 		<div class="exec_tc_title">
 		{* 20080126 - franciscom - external id - $tc_exec.testcase_id *}
-		{$labels.title_test_case} {$labels.th_test_case_id}{$tcasePrefix}{$tc_exec.tc_external_id} :: {$labels.version}: {$tc_exec.version}<br />
+		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix}{$tc_exec.tc_external_id} :: {$labels.version}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
 		      {$labels.has_no_assignment}
@@ -290,9 +299,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
-  		{if $history_on}
+  		{if $gui->history_on}
   		    {$labels.execution_history} {$title_sep_type3}
-  		    {if !$cfg->exe_cfg->show_history_all_builds}
+  		    {if !$cfg->exec_cfg->show_history_all_builds}
   		      {$exec_build_title}
   		    {/if}
   		{else}
@@ -303,14 +312,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   		</div>
 
 		{* The very last execution for any build of this test plan *}
-		{if $cfg->exec_cfg->show_last_exec_any_build && $history_on==0}
+		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on==0}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}
 			    {assign var="status_code" value=$abs_last_exec.status}
 
      			<div class="{$gsmarty_tc_status_css.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
-     			{$labels.test_exec_by} {$title_sep} {$alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape}
+     			{$labels.test_exec_by} {$title_sep} {$gui->alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape}
      			{$title_sep_type3}
      			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
      			{$title_sep_type3}
@@ -324,8 +333,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {/if}
 
     {* -------------------------------------------------------------------------------------------------- *}
-    {if $other_exec.$tcversion_id}
-      {if $history_on == 0 && $show_current_build}
+    {if $gui->other_execs.$tcversion_id}
+      {if $gui->history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
   			    {$labels.last_execution} {$labels.exec_current_build}
   			    {$title_sep_type3} {$exec_build_title}
@@ -336,7 +345,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 			 <tr>
 				<th style="text-align:left">{$labels.date_time_run}</th>
         {* 20071103 - BUGID 700 *}
-				{if $history_on == 0 || $cfg->exe_cfg->show_history_all_builds}
+				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
@@ -352,7 +361,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
 
-				{if $rights->delete_execution}
+				{if $gui->grants->delete_execution}
           <th style="text-align:left">{$labels.delete}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
@@ -365,20 +374,20 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 			 </tr>
 
 			{* ----------------------------------------------------------------------------------- *}
-			{foreach item=tc_old_exec from=$other_exec.$tcversion_id}
+			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
   	     {assign var="tc_status_code" value=$tc_old_exec.status}
 
    			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
 
-				  {if $history_on == 0 || $cfg->exe_cfg->show_history_all_builds}
+				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}
   				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
   				    {$tc_old_exec.build_name|escape}
   				</td>
   				{/if}
 
-  				<td>{$alluserInfo[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
+  				<td>{$gui->alluserInfo[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}" style="text-align:center">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
@@ -399,7 +408,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
           {/if}
 
 
-    			{if $rights->delete_execution}
+    			{if $gui->grants->delete_execution}
        		  	<td align="center">
              	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
@@ -448,7 +457,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
  			  {/if}
 
   			{* 20080322 - franciscom - edit execution notes *}
-  			{if $rights->edit_exec_notes }
+  			{if $gui->grants->edit_exec_notes }
   			<tr>
   			<td colspan="{$my_colspan}">
   		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
@@ -461,7 +470,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   			<tr>
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
-  				{assign var="cf_value_info" value=$other_exec_cfexec[$execID]}
+  				{assign var="cf_value_info" value=$gui->other_exec_cfields[$execID]}
           {$cf_value_info}
   			</td>
   			</tr>
@@ -473,23 +482,26 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
 
-  				{assign var="attach_info" value=$attachments[$execID]}
+  				{assign var="attach_info" value=$gui->attachments[$execID]}
   				{include file="inc_attachments.tpl"
-  				         attachmentInfos=$attach_info
-  				         id=$execID tableName="executions"
-  				         show_upload_btn=$attachment_model->show_upload_btn
-  				         show_title=$attachment_model->show_title
-  				         downloadOnly=$att_download_only
-  				         }
+  				         attach_attachmentInfos=$attach_info
+  				         attach_id=$execID 
+  				         attach_tableName="executions"
+  				         attach_show_upload_btn=$attachment_model->show_upload_btn
+  				         attach_show_title=$attachment_model->show_title
+  				         attach_downloadOnly=$att_download_only 
+  				         attach_tableClassName=null
+                   attach_inheritStyle=0
+                   attach_tableStyles=null}
   			</td>
   			</tr>
 
         {* Execution Bugs (if any) *}
-        {if $bugs_for_exec[$execID] neq ""}
+        {if $gui->bugs[$execID] neq ""}
    		<tr>
    			<td colspan="{$my_colspan}">
    				{include file="inc_show_bug_table.tpl"
-   			         bugs_map=$bugs_for_exec[$execID]
+   			         bugs_map=$gui->bugs[$execID]
    			         can_delete=true
    			         exec_id=$execID}
    			</td>
@@ -509,18 +521,18 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels
-             args_enable_custom_field=$enable_custom_field
-             args_execution_time_cf=$execution_time_cf
-             args_design_time_cf=$design_time_cf
-             args_execution_types=$execution_types
-             args_tcAttachments=$tcAttachments }
+             args_enable_custom_field=$enable_custom_fields
+             args_execution_time_cf=$gui->execution_time_cfields
+             args_design_time_cf=$gui->design_time_cfields
+             args_execution_types=$gui->execution_types
+             args_tcAttachments=$gui->tcAttachments }
 
 
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
                args_input_enable_mgmt=$input_enabled_disabled
                args_tcversion_id=$tcversion_id
-               args_webeditor=$exec_notes_editors[$tc_id]
+               args_webeditor=$gui->exec_notes_editors[$tc_id]
                args_labels=$labels}
 	  {/if}
  	  {if $tc_exec.active eq 0}

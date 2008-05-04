@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.175 $
- * @modified $Date: 2008/04/25 17:47:09 $ by $Author: franciscom $
+ * @version $Revision: 1.176 $
+ * @modified $Date: 2008/05/04 10:30:00 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,7 +26,8 @@
  *
  * Revisions:
  * 
- * 		20080419 - havlatm - documentation update; minor refactorization
+ *     20080504 - franciscmo - removed gui->enable_custom_fields
+ * 		 20080419 - havlatm - documentation update; minor refactorization
  *     20080418 - franciscom -  new document_generation
  *     20080330 - franciscom -  
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
@@ -245,7 +246,7 @@ define('TL_THEME_IMG_DIR', TL_THEME_BASE_DIR . 'images/');
 
 /** Company logo (used for navbar/login page page) */
 $tlCfg->gui->html_logo = '<img alt="TestLink" title="TestLink" style="width: 115px; height: 53px;" src="' . 
-                 TL_THEME_IMG_DIR . 'company_logo.png" />';
+                          TL_THEME_IMG_DIR . 'company_logo.png" />';
 
 /** Image for main menu item bullet (just filename) */
 $g_main_menu_item_bullet_img='slide_gripper.gif'; // arrow_org.gif/slide_gripper.gif
@@ -499,44 +500,45 @@ $g_show_tp_without_prodid = $g_show_tp_without_tproject_id;
 
 // ----------------------------------------------------------------------------
 /** [Test Executions] */
+$tlCfg->exec_cfg = new stdClass();
 
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
-$g_exec_cfg->history_order='DESC';
+$tlCfg->exec_cfg->history_order='DESC';
 
 // TRUE  -> the whole execution history for the choosen build will be showed
 // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
-$g_exec_cfg->history_on=FALSE;
+$tlCfg->exec_cfg->history_on=FALSE;
 
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status will be displayed
 // FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
-$g_exec_cfg->show_last_exec_any_build=FALSE;
+$tlCfg->exec_cfg->show_last_exec_any_build=FALSE;
 
 // TRUE  ->  History for all builds will be shown
 // FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]
-$g_exec_cfg->show_history_all_builds=FALSE;
+$tlCfg->exec_cfg->show_history_all_builds=FALSE;
 
 // different models for the attachments management on execution page
 // $att_model_m1 ->  shows upload button and title 
 // $att_model_m2 ->  hides upload button and title
-$g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
+$tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 
 // 1 -> User can delete an execution result
 // 0 -> User can not.  [STANDARD BEHAVIOUR]
-$g_exec_cfg->can_delete_execution=0;
+$tlCfg->exec_cfg->can_delete_execution=0;
 
 // 1 -> enable XML-RPC calls to external test automation server
 //      new buttons will be displayed on execution pages
 // 0 -> disable
-$g_exec_cfg->enable_test_automation=0;
+$tlCfg->exec_cfg->enable_test_automation=0;
 
 // 1 -> enable testcase counters by status on tree
-$g_exec_cfg->enable_tree_testcase_counters=1;
+$tlCfg->exec_cfg->enable_tree_testcase_counters=1;
 
 // 1 -> test cases and test case counters will be coluored
 //      according to test case status
-$g_exec_cfg->enable_tree_colouring=1;
+$tlCfg->exec_cfg->enable_tree_colouring=1;
 
 // 20080303 - franciscom
 // This can help to avoid performance problems.
@@ -544,30 +546,30 @@ $g_exec_cfg->enable_tree_colouring=1;
 // 1 -> old BEHAVIOUR
 //      show all test cases presents on test suite and children test suite.
 // 0 -> nothing happens, to execute a test case you need to click on test case
-$g_exec_cfg->show_testsuite_contents=0;
+$tlCfg->exec_cfg->show_testsuite_contents=0;
 
 // 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
 // 0 -> no edit allowed [STANDARD BEHAVIOUR]
-$g_exec_cfg->edit_notes=0;
+$tlCfg->exec_cfg->edit_notes=0;
 
 // Filter Test cases a user with tester role can VIEW depending on
 // test execution assignment.
 // all: all test cases.
 // assigned_to_me: test cases assigned to logged user.
 // assigned_to_me_or_free: test cases assigned to logged user or not assigned
-$g_exec_cfg->view_mode->tester='assigned_to_me';
+$tlCfg->exec_cfg->view_mode->tester='assigned_to_me';
 
 // Filter Test cases a user with tester role can EXECUTE depending on
 // test execution assignment.
 // all: all test cases.
 // assigned_to_me: test cases assigned to logged user.
 // assigned_to_me_or_free: test cases assigned to logged user or not assigned
-$g_exec_cfg->exec_mode->tester='assigned_to_me';
+$tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 
 
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default 
-$g_exec_cfg->user_filter_default='logged_user';
+$tlCfg->exec_cfg->user_filter_default='logged_user';
 
 
 // ----------------------------------------------------------------------------
@@ -719,11 +721,6 @@ $g_action_on_duplicate_name = 'generate_new';
 // FALSE ->   [STANDARD BEHAIVOUR]
 // havlatm: remove the possibility duplicate it (have no sense)
 $g_allow_duplicate_keywords = FALSE;
-
-/** Custom fields availability */
-// TRUE   -> custom field logic will be executed  [STANDARD BEHAVIOUR]
-// FALSE  -> no possibility to use custom fields
-$tlCfg->gui->enable_custom_fields = TRUE;
 
 // Applied to HTML inputs created to get/show custom field contents
 // For string,numeric,float,email: size & maxlenght of the input type text.

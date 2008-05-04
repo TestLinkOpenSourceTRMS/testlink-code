@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.8 2008/04/14 19:19:21 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.9 2008/05/04 10:30:40 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -102,7 +102,10 @@ rev :
 	<div id="executionResults"></div>
   	*}
 
-	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
+	{include file="inc_attachments.tpl" 
+	         attach_id=$id 
+	         attach_tableName="nodes_hierarchy" 
+	         attach_downloadOnly=$bDownloadOnly}
 {elseif $level == 'testsuite'}
 
 	{if $modify_tc_rights == 'yes' || $sqlResult neq ''}

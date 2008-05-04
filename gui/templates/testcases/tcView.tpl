@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.7 2008/04/27 17:35:23 franciscom Exp $
+$Id: tcView.tpl,v 1.8 2008/05/04 10:30:40 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}
@@ -63,8 +63,11 @@ rev: 20080322 - franciscom - php errors clean up
 		{if $can_edit neq 'yes'}
 			{assign var="bDownloadOnly" value=true}
 		{/if}
-		{include file="inc_attachments.tpl" id=$tcID  tableName="nodes_hierarchy"
-		         attachmentInfos=$attachments[$tcID]  downloadOnly=$bDownloadOnly}
+		{include file="inc_attachments.tpl" 
+		         attach_id=$tcID  
+		         attach_tableName="nodes_hierarchy"
+		         attach_attachmentInfos=$attachments[$tcID]  
+		         attach_downloadOnly=$bDownloadOnly}
 
     {* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
@@ -73,9 +76,11 @@ rev: 20080322 - franciscom - php errors clean up
         {assign var="memstatus_id" value=mem_$div_id}
   
         {include file="inc_show_hide_mgmt.tpl" 
-                 args_container_title=$labels.other_versions
-                 args_container_id=$div_id
-                 args_container_view_status_id=$memstatus_id}
+                 show_hide_container_title=$labels.other_versions
+                 show_hide_container_id=$div_id
+                 show_hide_container_draw=false
+                 show_hide_container_class='exec_additional_info'
+                 show_hide_container_view_status_id=$memstatus_id}
                
         <div id="vers_{$vid}" class="workBack">
         
@@ -91,9 +96,11 @@ rev: 20080322 - franciscom - php errors clean up
             {assign var="memstatus_id" value=mem_$div_id}
            
             {include file="inc_show_hide_mgmt.tpl" 
-                     args_container_title=$title
-                     args_container_id=$div_id
-                     args_container_view_status_id=$memstatus_id}
+                     show_hide_container_title=$title
+                     show_hide_container_id=$div_id
+                     show_hide_container_draw=false
+                     show_hide_container_class='exec_additional_info'
+                     show_hide_container_view_status_id=$memstatus_id}
  
   	          <div id="{$div_id}" class="workBack">
 				      {include file="$this_template_dir/tcView_viewer.tpl" 

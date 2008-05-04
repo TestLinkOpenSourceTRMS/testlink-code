@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.20 2008/05/02 07:09:23 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.21 2008/05/04 10:30:39 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -108,8 +108,11 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id
 {if $gui->grants->req_mgmt == 'yes'}
 	{assign var="bDownloadOnly" value=false}
 {/if}
-{include file="inc_attachments.tpl" id=$gui->req_spec.id  tableName="req_specs"
-         attachmentInfos=$gui->attachments  downloadOnly=$bDownloadOnly}
+{include file="inc_attachments.tpl" 
+         attach_id=$gui->req_spec.id  
+         attach_tableName="req_specs"
+         attach_attachmentInfos=$gui->attachments  
+         attach_downloadOnly=$bDownloadOnly}
 
 </div>
 {if $gui->refresh_tree}

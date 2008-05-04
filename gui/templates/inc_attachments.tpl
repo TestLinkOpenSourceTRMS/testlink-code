@@ -1,14 +1,19 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.15 2008/04/25 17:49:23 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.16 2008/05/04 10:30:39 franciscom Exp $
 Generic attachment management
 
 Input:
-	$attachmentsInfos
-	$id
-	$tableName
-	$show_upload_btn
-	$downloadOnly
+	$attach_attachmentsInfos
+	$attach_id
+	$attach_tableName
+	$attach_show_upload_btn
+	$attach_downloadOnly
+  $attach_tableClassName
+  $attach_inheritStyle
+  $attach_tableStyles
+
+	
 
 Smarty global variables:
 $gsmarty_attachments
@@ -18,6 +23,7 @@ $gsmarty_attachments
 20070307 - franciscom - BUGID 722
 
 *}
+
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -26,16 +32,6 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 </script>
 {/literal}
 
-{* -------------------------------------------------------------------------------------- *}
-{* Manage missing arguments                                                               *}
-{assign var="my_show_title"  value=$show_title|default:true}
-{assign var="my_show_upload_btn"  value=$show_upload_btn|default:true}
-{assign var="downloadOnly"  value=$downloadOnly|default:false}
-{assign var="tableClassName"  value=$tableClassName|default:"simple"}
-{assign var="tableStyles"  value=$tableStyles|default:"font-size:12px"}
-{assign var="inheritStyle"  value=$inheritStyle|default:0}
-{* -------------------------------------------------------------------------------------- *}
-
 {if $gsmarty_attachments->enabled eq FALSE}
  	  <div class="warning_message">{lang_get s='attachment_feature_disabled'}<p>
     {$gsmarty_attachments->disabled_msg}
@@ -43,17 +39,17 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 {/if}
 
 
-{if $gsmarty_attachments->enabled && ($attachmentInfos neq "" || $my_show_upload_btn) }
+{if $gsmarty_attachments->enabled && ($attach_attachmentInfos neq "" || $attach_show_upload_btn) }
 
-<table class="{$tableClassName}" {if $inheritStyle == 0}style="{$tableStyles}" {/if}>
+<table class="{$attach_tableClassName}" {if $attach_inheritStyle == 0} style="{$attach_tableStyles}" {/if}>
 
- 	{if $my_show_title}
+ 	{if $attach_show_title}
 	<tr>
 		<td class="bold">{lang_get s="attached_files"}:</td>
 	</tr>
  	{/if}
 
-	{foreach from=$attachmentInfos item=info}
+	{foreach from=$attach_attachmentInfos item=info}
 		{if $info.title eq ""}
 			{if $gsmarty_attachments->action_on_display_empty_title == 'show_icon'}
 				{assign var="my_link" value=$gsmarty_attachments->access_icon }
@@ -67,7 +63,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 	  	<tr>
 			<td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
 			{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
-				{if !$downloadOnly}
+				{if !$attach_downloadOnly}
 				<a href="javascript:deleteAttachment_onClick({$info.id});">
 				<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
 				                         title="{lang_get s='alt_delete_attachment'}"
@@ -77,11 +73,11 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 		</tr>
 	{/foreach}
 
-  {if $my_show_upload_btn && !$downloadOnly}
+  {if $attach_show_upload_btn && !$attach_downloadOnly}
   <tr>
   	<td colspan="2">
   	<input type="button" value="{lang_get s='button_upload'}" 
-  	       onclick="openFileUploadWindow({$id},'{$tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
+  	       onclick="openFileUploadWindow({$attach_id},'{$attach_tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
   </tr>
   {/if}
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/05/02 07:09:36 $ $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -71,7 +71,9 @@ class TLSmarty extends Smarty
 		  }
       
       // -------------------------------------------------------------------------------------
-      // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable
+      // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
+      // This means that optional/missing parameters on include can not be used.
+      //
 		  // Good refactoring must be done in future, to create group of this variable
 		  // with clear names that must be a hint for developers, to understand where this
 		  // variables are used.
@@ -86,11 +88,12 @@ class TLSmarty extends Smarty
 		  $this->assign('body_onload',null);
 	
 	    // inc_attachments.tpl
-		  $this->assign('tableStyles',null);
-		  $this->assign('tableClassName',null);
-		  $this->assign('inheritStyle',null);
-		  $this->assign('show_upload_btn',null);
-		  $this->assign('show_title',null);
+		  $this->assign('attach_tableStyles',"font-size:12px");
+		  $this->assign('attach_tableClassName',"simple");
+		  $this->assign('attach_inheritStyle',0);
+		  $this->assign('attach_show_upload_btn',1);
+		  $this->assign('attach_show_title',1);
+      $this->assign('attach_downloadOnly',false);
 
       // inc_help.tpl
       $this->assign('inc_help_alt',null);
@@ -110,7 +113,7 @@ class TLSmarty extends Smarty
 		  
 		  // -----------------------------------------------------------------------------
 		  // load configuration
-		  $this->assign('session',$_SESSION ? $_SESSION : null);
+		  $this->assign('session',isset($_SESSION) ? $_SESSION : null);
       
 		  // load configuration
 		  $this->assign('tlCfg',$tlCfg);
@@ -123,7 +126,7 @@ class TLSmarty extends Smarty
       
 		  $this->assign('gsmarty_tc_status',$tlCfg->results['status_code']);
 		  $this->assign('gsmarty_tc_status_css',$tlCfg->results['code_status']);
-		  $this->assign('gsmarty_tc_status_for_ui',$tlCfg->results['status_for_exec_ui']);
+		  $this->assign('gsmarty_tc_status_for_ui',$tlCfg->results['status_label_for_exec_ui']);
 		  $this->assign('gsmarty_tc_status_verbose_labels',$tlCfg->results['status_label']);
       
 		  $this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);

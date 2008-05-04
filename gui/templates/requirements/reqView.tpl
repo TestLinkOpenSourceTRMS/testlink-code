@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.9 2008/04/19 16:12:33 franciscom Exp $
+$Id: reqView.tpl,v 1.10 2008/05/04 10:30:39 franciscom Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
@@ -90,8 +90,11 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 {if $gui->grants->req_mgmt == 'yes'}
   {assign var="bDownloadOnly" value=false}
 {/if}
-{include file="inc_attachments.tpl" id=$gui->req.id  tableName="requirements"
-         attachmentInfos=$gui->attachments  downloadOnly=$bDownloadOnly}
+{include file="inc_attachments.tpl" 
+         attach_id=$gui->req.id  
+         attach_tableName="requirements"
+         attach_attachmentInfos=$gui->attachments  
+         attach_downloadOnly=$bDownloadOnly}
 
 
 

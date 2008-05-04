@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2008/04/27 17:35:03 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/05/04 10:30:00 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -37,6 +37,10 @@ ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR .
 /** Other TestLink file paths */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 define('TL_HELP_RPATH','gui/help/');
+
+// 20080504 - franciscom -
+// May be will be removed, but now is needed to suppress logger errors
+define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 
 // -------------------------------------------------------------------
@@ -166,7 +170,7 @@ $g_tpl = array(
 	'tcSearchView' 	=> "tcSearchView.tpl",
 	'tcEdit' 		=> "tcEdit.tpl",
 	'tcNew' 		=> "tcNew.tpl",
-	'execSetResults' => "execSetResults.tpl",
+	// 'execSetResults' => "execSetResults.tpl",
 	'tcSearchView' 	=> "tcView.tpl",
 	'usersview' 	=> "usersView.tpl"
 );
@@ -364,21 +368,21 @@ $tlCfg->results['status_label'] = array(
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
 //
-$tlCfg->results['status_for_exec_ui'] = array(
+$tlCfg->results['status_label_for_exec_ui'] = array(
 	"passed"  => "test_status_passed",
 	"failed"  => "test_status_failed",
 	"blocked" => "test_status_blocked"
 );
 
 /** Selected execution result by default. Values is key from $tlCfg->results['status_label'] */
-$tlCfg->results['default_status_label'] = "passed";
+$tlCfg->results['default_status'] = "passed";
 
 // backward comaptibility; @TODO remove
 $g_tc_status = $tlCfg->results['status_code'];
 $g_tc_status_css = $tlCfg->results['code_status'];
 $g_tc_status_verbose_labels = $tlCfg->results['status_label'];
 $g_tc_status_for_ui = $tlCfg->results['status_label']; // @todo replace by $tlCfg->results['status_label']
-$g_tc_status_for_ui_default = $tlCfg->results['default_status_label'];
+$g_tc_status_for_ui_default = $tlCfg->results['default_status'];
 
 // -------------------------------------------------------------------------------
 /** [Reports] */

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/03/30 17:16:26 $ - $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2008/05/04 10:33:33 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -332,7 +332,6 @@ function get_all()
  **/
 function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
-	$gui_cfg = config_get('gui');
 	$cf_smarty = '';
   
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
@@ -350,19 +349,14 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
-	// 20061224 - franciscom
-	// Custom field management 
-	if( $gui_cfg->enable_custom_fields ) 
-	{
-		$cf_smarty = $this->html_table_of_custom_field_values($id);
-	}
+	$cf_smarty = $this->html_table_of_custom_field_values($id);
   
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
 	$attachmentInfos = getAttachmentInfosFrom($this,$id);
 	
 	$smarty->assign('attachmentInfos',$attachmentInfos);
 	$smarty->assign('id',$id);
-  	$smarty->assign('page_title',lang_get('testsuite'));
+ 	$smarty->assign('page_title',lang_get('testsuite'));
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);
@@ -399,7 +393,6 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
 function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action, $parent_id, 
                          $id=null, $result_msg=null, $user_feedback=null, $userTemplateCfg=null)
 {
-  $gui_cfg=config_get('gui');
   $cf_smarty=-2;
 
   $pnode_info=$this->tree_manager->get_node_hierachy_info($parent_id);
@@ -428,10 +421,7 @@ function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action,
   $webEditorData = $the_data;
 	
   // Custom fields
-  if( $gui_cfg->enable_custom_fields ) 
-  {
-    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
-  }
+  $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
   $smarty->assign('cf',$cf_smarty);	
 	
 	// webeditor

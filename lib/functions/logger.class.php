@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/04/25 22:10:53 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -915,6 +915,7 @@ set_error_handler("watchPHPErrors");
 
     returns:
 
+    rev: 20080504 - franciscom - added xmlrpc.inc,xmlrpcs.inc,xmlrpc_wrappers.inc in exclude set
 */
 function watchPHPErrors($errno, $errstr, $errfile, $errline)
 {
@@ -936,12 +937,14 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||
+        ($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||
+        ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
+        ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
 		    (strpos($errfile,"Smarty_Compiler.class.php") !== false)
 		    )
 		{
 			return;
 		}
-
 		logWarningEvent($errors[$errno]."\n".$errstr." - in ".$errfile." - Line ".$errline,"PHP");
 	}
 }

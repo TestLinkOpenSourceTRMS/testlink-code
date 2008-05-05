@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.34 2008/05/05 09:11:18 franciscom Exp $ 
+	$Id: navBar.tpl,v 1.35 2008/05/05 15:01:37 havlat Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -35,12 +35,12 @@
 {assign var="action_user_mgmt" value=$action_users_view}
 
 <body>
-<div style="float:left; height: 100%"><a href="index.php" target="_parent">{$gui->logo}</a></div>
+<div style="float:left; height: 100%;"><a href="index.php" target="_parent">{$gui->logo}</a></div>
 
 <div class="menu_title">
 
 	{if $gui->TestProjects != ""}
-	<div style="float: right; padding: 2px;">
+	<span style="float: right; padding: 2px;">
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 
 		<span style="font-size: 80%">{$labels.testproject} </span>
 		<select class="menu_combo" name="testproject" onchange="this.form.submit();">
@@ -51,17 +51,24 @@
   		{/foreach}
 		</select>
 		</form>
-	</div>
+	</span>
 	{/if}
 
-	<div class="bold" style="padding: 5px 10px 5px 25px;">
+	<span class="bold">
 		TestLink {$tlVersion|escape} : {$gui->whoami|escape}
-	 | <a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
-	</div>
+	</span>
 
 </div>
 
 <div class="menu_bar">
+
+	<span style="float: right;">
+   		<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i" 
+      		tabindex="6">{$labels.title_edit_personal_data}</a>
+	 | 	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
+	</span>
+
+	<span>
    	<a href="index.php" target="_parent" accesskey="h" tabindex="1">{$labels.home}</a> | 
    	{if $gui->tprojectID && $gui->grants->view_testcase_spec == "yes"}
    	<a href="lib/general/frmWorkArea.php?feature=editTc" target="mainframe" accesskey="s" 
@@ -83,8 +90,6 @@
 		<a href="lib/events/eventviewer.php" target="mainframe" 
 		   accesskey="v" tabindex="5">{$labels.title_events}</a> |
 	{/if}
-   	<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i" 
-      		tabindex="6">{$labels.title_edit_personal_data}</a> |
 
 	{if $gui->tprojectID && $gui->grants->view_testcase_spec == "yes"}
 		<form style="display:inline" target="mainframe" name="searchTC" id="searchTC"
@@ -110,6 +115,7 @@
         {/if}
     </select>
    </form>
+   </span>
 
 </div>
 

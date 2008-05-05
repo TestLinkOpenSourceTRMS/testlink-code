@@ -1,20 +1,32 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.33 2008/04/25 17:49:23 franciscom Exp $ 
+	$Id: navBar.tpl,v 1.34 2008/05/05 09:11:18 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
+       20080504 - layout changes to add access to local documentation
 	     20080211 - changes action for user management
 	     20070331 - BUGID 760 - added truncate to fix
 *}
 
 {*******************************************************************}
 {lang_get var="labels"
-          s="event_viewer,home,testproject,title_specification,title_execute,
-             title_edit_personal_data,th_tcid,link_logout,
+          s="title_events,event_viewer,home,testproject,title_specification,title_execute,
+             title_edit_personal_data,th_tcid,link_logout,navbar_user_management,
              search_testcase,title_results,title_user_mgmt"}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
+{literal}
+<script type="text/javascript">
+    function get_docs(name, server_name){
+        if (name != 'leer') {
+            var w = window.open();
+            w.location = server_name + '/docs/' + name;
+        }
+    }
+</script>
+{/literal}
+</head>
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -44,6 +56,7 @@
 
 	<div class="bold" style="padding: 5px 10px 5px 25px;">
 		TestLink {$tlVersion|escape} : {$gui->whoami|escape}
+	 | <a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
 	</div>
 
 </div>
@@ -64,11 +77,11 @@
    	{/if}	
    	{if $gui->grants->user_mgmt == "yes"}
    	<a href="{$action_user_mgmt}" target="mainframe" accesskey="u" 
-      		tabindex="4">{$labels.title_user_mgmt}</a> | 
+      		tabindex="4">{$labels.navbar_user_management}</a> | 
    	{/if}	
 	{if $gui->grants->view_events_mgmt eq "yes"}
 		<a href="lib/events/eventviewer.php" target="mainframe" 
-		   accesskey="v" tabindex="5">{$labels.event_viewer}</a> |
+		   accesskey="v" tabindex="5">{$labels.title_events}</a> |
 	{/if}
    	<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i" 
       		tabindex="6">{$labels.title_edit_personal_data}</a> |
@@ -86,7 +99,18 @@
 		<input type="hidden" name="allow_edit" value="0"/>
 		</form>
 	{/if}
-	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
+  <form style="display:inline;">
+    <select class="menu_combo" style="font-weight:normal;" name="docs" size="1" 
+            onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, '{$basehref}');" >
+        <option value="leer"> -{lang_get s='access_doc'}-</option>
+        {if $gui->docs}
+            {foreach from=$gui->docs item=doc}
+                <option value="{$doc}">{$doc}</option>
+            {/foreach}
+        {/if}
+    </select>
+   </form>
+
 </div>
 
 {if $gui->updateMainPage == 1}

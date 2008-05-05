@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/02/06 19:35:21 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
  * Supported: simple CSV, Doors CSV, XML
  * 
+ * 20080504 - franciscom - removed tmp file after import
  * 20061014 - franciscom - added check on file mime type
  *                         using check_valid_ftype()
  *
@@ -25,26 +26,15 @@ require_once('requirement_spec_mgr.class.php');
 
 testlinkInitPage($db);
 
-$template_dir = "requirements/";
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-$req_spec_id = isset($_REQUEST['req_spec_id']) ? strings_stripSlashes($_REQUEST['req_spec_id']) : null;
-$importType = isset($_REQUEST['importType']) ? strings_stripSlashes($_REQUEST['importType']) : null;
-$emptyScope = isset($_REQUEST['noEmpty']) ? strings_stripSlashes($_REQUEST['noEmpty']) : null;
-$conflictSolution = isset($_REQUEST['conflicts']) ? strings_stripSlashes($_REQUEST['conflicts']) : null;
-$bUpload = isset($_REQUEST['UploadFile']) ? 1 : 0;
-$bExecuteImport = isset($_REQUEST['executeImport']);
-
-$tproject_id = $_SESSION['testprojectID'];
-$user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-
-$fileName = TL_TEMP_PATH . "importReq-".session_id().".csv";
+$templateCfg = templateConfiguration();
+$args = init_args();
+$fileName = TL_TEMP_PATH . "importReq-" . session_id() . ".tmp";
 
 $importResult = null;
 $arrImport = null;
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
-if ($bUpload)
+if ($args->bUpload)
 {
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
 	$arrImport = array();
@@ -52,17 +42,16 @@ if ($bUpload)
 	if (($source != 'none') && ($source != '' ))
 	{ 
 		// 20070904 - franciscom - this check is a failure :(
-		// $file_check=check_valid_ftype($_FILES['uploadedFile'],$importType);
 		$file_check['status_ok']=1;
 		if($file_check['status_ok'])
 		{
 			if (move_uploaded_file($source, $fileName))
 			{
-			   $file_check = check_syntax($fileName,$importType);
+			   $file_check = check_syntax($fileName,$args->importType);
 			   if($file_check['status_ok'])
 			   {
-					 $arrImport = doImport($db,$user_id,$req_spec_id,$fileName,
-											 $importType,$emptyScope,$conflictSolution,false);
+					 $arrImport = doImport($db,$args->user_id,$args->req_spec_id,$fileName,
+											           $args->importType,$args->emptyScope,$args->conflictSolution,false);
 			   }
 			}
 		}
@@ -70,31 +59,74 @@ if ($bUpload)
 	else
 		$file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_req_file'));
 }
-else if ($bExecuteImport)
+else if ($args->bExecuteImport)
 {
-	$arrImport = doImport($db,$user_id,$req_spec_id,$fileName,$importType,$emptyScope,$conflictSolution,true);
+	$arrImport = doImport($db,$args->user_id,$args->req_spec_id,$fileName,$args->importType,
+	                      $args->emptyScope,$args->conflictSolution,true);
+	unlink($fileName);
 	$importResult = lang_get('req_import_finished');
 }
 
 $req_spec_mgr = new requirement_spec_mgr($db);
-$req_spec = $req_spec_mgr->get_by_id($req_spec_id);
+$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 $import_types = $req_spec_mgr->get_import_file_types();
 
 $smarty = new TLSmarty;
+$smarty->assign('try_upload',$args->bUpload);
+$smarty->assign('importType', $args->importType);
+$smarty->assign('req_spec_id', $args->req_spec_id);
+
 $smarty->assign('file_check',$file_check);  
-$smarty->assign('try_upload',$bUpload);
 $smarty->assign('reqFormatStrings',$g_reqFormatStrings);
 $smarty->assign('importTypes',$import_types);
-$smarty->assign('req_spec_id', $req_spec_id);
 $smarty->assign('reqSpec', $req_spec);
 $smarty->assign('arrImport', $arrImport);
 $smarty->assign('importResult', $importResult);
-$smarty->assign('importType', $importType);
 $smarty->assign('uploadedFile', $fileName);
 $smarty->assign('importLimit', TL_IMPORT_LIMIT);
 $smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1024));
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $args = new stdClass();
+    $request=strings_stripSlashes($_REQUEST);
+      
+    $args->req_spec_id = isset($request['req_spec_id']) ? $request['req_spec_id'] : null;
+    $args->importType = isset($request['importType']) ? $request['importType'] : null;
+    $args->emptyScope = isset($request['noEmpty']) ? $request['noEmpty'] : null;
+    $args->conflictSolution = isset($request['conflicts']) ? $request['conflicts'] : null;
+    $args->bUpload = isset($request['UploadFile']) ? 1 : 0;
+    $args->bExecuteImport = isset($request['executeImport']);
+    
+    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+    
+    return $args;
+}
+
+
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/04/15 06:44:32 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -370,6 +370,14 @@ function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflic
 	return $arrImport;
 }
 
+/*
+  function:
+
+  args :
+
+  returns:
+
+*/
 function exportReqDataToCSV($reqData)
 {
 	$sKeys = array(

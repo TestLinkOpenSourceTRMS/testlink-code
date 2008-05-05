@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.176 $
- * @modified $Date: 2008/05/04 10:30:00 $ by $Author: franciscom $
+ * @version $Revision: 1.177 $
+ * @modified $Date: 2008/05/05 09:11:07 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -150,7 +150,7 @@ $tlCfg->log_level = 'ERROR';
 $tlCfg->smarty_debug = false;
 
 /** Path to store logs */
-$tlCfg->log_path = TL_ABS_PATH . 'logs' . DS ;
+$tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
 
 /** 
  * Configure if individual logging data stores are enabled of disabled
@@ -394,7 +394,7 @@ $g_repositoryType = TL_REPOSITORY_TYPE_FS;
  * TL_REPOSITORY_TYPE_FS: the where the filesystem repository should be located
  * We recommend to change the directory for security reason. 
  **/
-$g_repositoryPath = TL_ABS_PATH . "upload_area" . DS;
+$g_repositoryPath = TL_ABS_PATH . "upload_area" . DIRECTORY_SEPARATOR;
 
 /** 
  * compression used within the repository 

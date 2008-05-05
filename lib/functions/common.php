@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.107 $ $Author: franciscom $
- * @modified $Date: 2008/04/25 18:00:30 $
+ * @version $Revision: 1.108 $ $Author: franciscom $
+ * @modified $Date: 2008/05/05 09:11:43 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -31,6 +31,11 @@
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/
+
+$third_party_path=TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR;
+$phpxmlrpc = $third_party_path . DIRECTORY_SEPARATOR . 'phpxmlrpc' . 
+             DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
+
 require_once("object.class.php");
 require_once("metastring.class.php");
 
@@ -43,16 +48,19 @@ require_once("database.class.php");
 /** user right checking */
 require_once("roles.inc.php");
 
+
 /** Testlink Smarty class sets up the default smarty settings for testlink */
-require_once(TL_ABS_PATH . 'third_party'.DS.'smarty'.DS.'libs'.DS.'Smarty.class.php');
-require_once(TL_ABS_PATH . 'lib'.DS.'general'.DS.'tlsmarty.inc.php');
+require_once( $third_party_path . 'smarty'.  DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'Smarty.class.php');
+require_once(TL_ABS_PATH . 'lib'. DIRECTORY_SEPARATOR . 'general'. DIRECTORY_SEPARATOR . 'tlsmarty.inc.php');
 
 /** logging functions */
 require_once('logging.inc.php');
 
 if ($g_interface_bugs != 'NO')
-  require_once(TL_ABS_PATH.'lib'.DS.'bugtracking'.DS.'int_bugtracking.php');
-
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
 require_once("logger.class.php");
 require_once("role.class.php");
 require_once("attachment.class.php");
@@ -62,8 +70,8 @@ require_once("user.class.php");
 require_once("keyword.class.php");
 require_once("testproject.class.php");
 require_once("testplan.class.php");
-//require_once("testcase.class.php");
-require_once("testsuite.class.php");
+// require_once("testcase.class.php");
+// require_once("testsuite.class.php");
 require_once("tree.class.php");
 require_once("treeMenu.inc.php");
 require_once("cfield_mgr.class.php");
@@ -71,12 +79,15 @@ require_once("exec_cfield_mgr.class.php");
 require_once("plan.core.inc.php");
 /** load the php4 to php5 domxml wrapper if the php5 is used and the domxml extension is not loaded **/
 if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
-	require_once(TL_ABS_PATH . 'third_party'.DS.'domxml-php4-to-php5.php');
+{
+	require_once($third_party_path . 'domxml-php4-to-php5.php');
+}
 
+             
 // Contributed code - manish
-require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpc.inc');
-require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpcs.inc');
-require_once(TL_ABS_PATH . 'third_party'.DS.'phpxmlrpc'.DS.'lib'.DS.'xmlrpc_wrappers.inc');
+require_once($phpxmlrpc . 'xmlrpc.inc');
+require_once($phpxmlrpc . 'xmlrpcs.inc');
+require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
 
 
 /** $db is a global used throughout the code when accessing the db. */

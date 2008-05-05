@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.5 2008/03/15 21:23:27 schlundus Exp $
+$Id: reqImport.tpl,v 1.6 2008/05/05 09:11:18 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -126,7 +126,8 @@ rev:
   			onclick="javascript: location.href='{$req_spec_view_url}';" />
   	</div>
   </form>
-  {$fsyntax_msg}
+  
+  {* must understand if must be removed - franciscom - {$fsyntax_msg} *}
 
   {if $file_check.status_ok eq 0}
     <script>

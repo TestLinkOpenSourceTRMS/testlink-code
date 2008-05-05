@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/05/04 10:30:00 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/05/05 09:11:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -25,14 +25,20 @@
 /** TestLink Release (MUST BE changed before the release day) */
 define('TL_VERSION', '1.8.0 BETA2'); 
 
-define('DS', DIRECTORY_SEPARATOR);
+// needed to avoid problems in install scripts that do not include config.inc.php
+if (!defined('TL_ABS_PATH')) 
+{
+    // want to point to root install dir, need to remove fixed part
+    define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
+}
+
 
 /** Dir for temporary files and compiled templates */
-define('TL_TEMP_PATH', TL_ABS_PATH . 'gui' . DS . 'templates_c' . DS);
+define('TL_TEMP_PATH', TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . DIRECTORY_SEPARATOR);
 
 /** Setting up the global include path for testlink */
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-        '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DS . 'functions' . DS);
+        '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR);
 
 /** Other TestLink file paths */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');

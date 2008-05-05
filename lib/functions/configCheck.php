@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/03/08 10:24:58 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/05/05 09:11:43 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -123,7 +123,7 @@ function checkForExtensions(&$msg)
  **/
 function checkForInstallDir()
 {
-	$installer_dir = TL_ABS_PATH. DS . "install"  . DS;
+	$installer_dir = TL_ABS_PATH. DIRECTORY_SEPARATOR . "install"  . DIRECTORY_SEPARATOR;
 	clearstatcache();
 	$bPresent = false;
 	if(is_dir($installer_dir))

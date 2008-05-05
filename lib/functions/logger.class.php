@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/05/05 09:11:43 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -940,7 +940,8 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
         ($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||
         ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
         ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
-		    (strpos($errfile,"Smarty_Compiler.class.php") !== false)
+		    (strpos($errfile,"Smarty_Compiler.class.php") !== false) ||
+        ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false)
 		    )
 		{
 			return;

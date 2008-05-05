@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/04/14 19:19:22 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/05/05 09:11:43 $ $Author: franciscom $
  *
  * rev :
  *      20080217 - franciscom - refactoring
@@ -192,7 +192,7 @@ function doDelete(&$argsObj,&$buildMgr)
 	if (!$buildMgr->delete($argsObj->build_id))
 		$op->user_feedback = lang_get("cannot_delete_build");
 	else
-		logAuditEvent(TLS("audit_build_deleted",$build['name'],$argsObj->tplan_name),
+		logAuditEvent(TLS("audit_build_deleted",$argsObj->testprojectName,$argsObj->tplan_name,$build['name']),
 		              "DELETE",$argsObj->build_id,"builds");
 
     return $op;
@@ -275,7 +275,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 			$op->notes = '';
 			$op->template = null;
 			$op->status_ok = true;
-			logAuditEvent(TLS("audit_build_created",$argsObj->build_name,$argsObj->tplan_name),
+			logAuditEvent(TLS("audit_build_created",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
 							"CREATE",$buildID,"builds");
 		}
 	}
@@ -326,7 +326,8 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 			$op->notes = '';
 			$op->template = null;
 			$op->status_ok = true;
-			logAuditEvent(TLS("audit_build_saved",$argsObj->build_name),"SAVE",$argsObj->build_id,"builds");
+			logAuditEvent(TLS("audit_build_saved",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
+			              "SAVE",$argsObj->build_id,"builds");
 		}
 	}
 

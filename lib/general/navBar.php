@@ -4,12 +4,15 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/04/25 18:08:16 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/05/05 09:11:43 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
  * rev :
+ *       20080504 - franciscom - add code based on contribution by Eugenia Drosdezki
+ *                               get files present on docs directory, and pass to template.
+ *
  *       20070505 - franciscom - use of role_separator configuration
  *
 **/
@@ -30,6 +33,7 @@ $order_by = $tlCfg->gui->tprojects_combo_order_by;
 $gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map', $order_by);
 $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = getNumberOfAccessibleTestPlans($db,$gui->tprojectID, $_SESSION['filter_tp_by_product'],null);
+$gui->docs = getUserDocumentation();
 $gui->logo =$guiCfg->html_logo;
 
 
@@ -91,5 +95,36 @@ function getGrants($dbHandler)
     $grants->testplan_metrics = has_rights($db,"testplan_metrics");
     $grants->user_mgmt = has_rights($db,"mgt_users");
     return $grants;  
+}
+
+/*
+  function: getUserDocumentation
+            based on contribution by Eugenia Drosdezki
+  args :
+  
+  returns: 
+
+*/
+function getUserDocumentation()
+{
+    $target_dir='..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'docs';
+    $documents=null;
+    
+    if ($handle = opendir($target_dir)) 
+    {
+        while (false !== ($file = readdir($handle))) 
+        {
+            clearstatcache();
+            if ( ($file != ".") && ($file != "..")  ) 
+            {
+               if (is_file($target_dir . DIRECTORY_SEPARATOR . $file) )
+               {
+                   $documents[] = $file;
+               }    
+            }
+        }
+        closedir($handle);
+    }
+    return $documents;
 }
 ?>

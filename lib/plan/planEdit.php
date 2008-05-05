@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/05/04 10:33:34 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -21,7 +21,8 @@ require_once("web_editor.php");
 require_once('testplan.class.php');
 testlinkInitPage($db);
 
-$template_dir = 'plan/';
+$templateCfg = templateConfiguration();
+
 $smarty = new TLSmarty();
 $user_feedback = '';
 $template = null;
@@ -29,7 +30,6 @@ $args = init_args($_REQUEST,$_SESSION);
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
-// $tplans = $tproject_mgr->get_all_testplans($args->tproject_id,FILTER_BY_PRODUCT,TP_ALL_STATUS);
 $tplans = $tproject_mgr->get_all_testplans($args->tproject_id);
 
 $tpName = null;
@@ -70,7 +70,7 @@ switch($args->do_action)
 		if ($tpInfo)
 		{
 			$tplan_mgr->delete($args->tplan_id);
-			logAuditEvent(TLS("audit_testplan_deleted",$tpInfo['name']),"DELETE",$args->tplan_id,"testplan");
+			logAuditEvent(TLS("audit_testplan_deleted",$args->tproject_name,$tpInfo['name']),"DELETE",$args->tplan_id,"testplan");
 		}
 		//unset the session tp if its deleted
 		if (isset($_SESSION['testPlanId']) && ($_SESSION['testPlanId'] = $args->tplan_id))
@@ -97,7 +97,7 @@ switch($args->do_action)
 			}
 			else
 			{
-				logAuditEvent(TLS("audit_testplan_saved",$args->testplan_name),"SAVE",$args->tplan_id,"testplans");
+				logAuditEvent(TLS("audit_testplan_saved",$args->tproject_name,$args->testplan_name),"SAVE",$args->tplan_id,"testplans");
 				$cf_map = $tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
 				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
 
@@ -136,7 +136,7 @@ switch($args->do_action)
 				$user_feedback = $db->error_msg();
 			else
 			{
-				logAuditEvent(TLS("audit_testplan_created",$args->testplan_name),"CREATED",$tplan_id,"testplans");
+				logAuditEvent(TLS("audit_testplan_created",$args->tproject_name,$args->testplan_name),"CREATED",$tplan_id,"testplans");
 				$cf_map = $tplan_mgr->get_linked_cfields_at_design($tplan_id);
 				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tplan_id,$cf_map);
 
@@ -187,7 +187,7 @@ switch($args->do_action)
 
         $template = is_null($template) ? 'planView.tpl' : $template;
         $smarty->assign('tplans',$tplans);
-        $smarty->display($template_dir . $template);
+        $smarty->display($templateCfg->template_dir . $template);
 		break; 
 		
    case "edit":
@@ -200,7 +200,7 @@ switch($args->do_action)
       	$smarty->assign('tpActive', $bActive);
       	$smarty->assign('tproject_name', $args->tproject_name);
       	$smarty->assign('notes', $of->CreateHTML());
-        $smarty->display($template_dir . $template);
+        $smarty->display($templateCfg->template_dir . $template);
 		break;
 }
 

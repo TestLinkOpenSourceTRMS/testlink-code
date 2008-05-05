@@ -1,7 +1,7 @@
 /*
 D:\w3\tl\head_20080119\gui\themes\theme_m2\css\
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.2 2008/04/25 22:10:53 schlundus Exp $
+$Id: testlink.css,v 1.3 2008/05/05 15:00:00 havlat Exp $
 Purpose: main css - theme m2
 
 20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
@@ -25,30 +25,34 @@ NiftyCube rounding package has problems with I.E. 6 if background color is
 assigned using name (example: white) instead of code (example: #FFF)
 
 */
-body {
-	background:  #EEE; /*#9BD;*/
-	font-family: 'Trebuchet MS', Verdana, Arial, sans-serif;
-	font-size: small;
-  margin:			0px;
-}
 
-body.testlink {
-	background:  #EEE; /*#9BD;*/
-	font-family: 'Trebuchet MS', Verdana, Arial, sans-serif;
-	font-size: small;
-  margin:			0px;
+/* ***** GLOBAL HTML ************************************************ */
+body, body.testlink{
+	background:  	#EEE; /*#9BD;*/
+	font-family: 	'Trebuchet MS', Verdana, Arial, sans-serif;
+	font-size: 		small;
+	margin:			0px;
 }
-
 
 img {
 	border: 		none;
 }
 
-/* ----------------------------------------------------------------- */
-/*    Title + Menu bar                                               */
+pre
+{
+	font-family : 	Arial, Helvetica, sans-serif;
+}
+
+span, div {
+	margin: 		0px;
+	padding:		0px;
+}
+
+
+/* ***** Menu bar specific ******************************************* */
 div.menu_title {
-	font-stretch:	wider;
-	padding:		1px;
+	margin-left:	135px;
+	padding:		3px;
 }
 
 div.menu_bar {
@@ -57,6 +61,7 @@ div.menu_bar {
 	border-style:	groove;
 	border-width:	thin;
 	padding: 		1px 5px;
+	margin:			0px 5px 0px 135px;
 }
 
 select.menu_combo {
@@ -65,13 +70,11 @@ select.menu_combo {
 	font-size:	 	smaller;
 	font-weight:    bold;
 }
-/* ----------------------------------------------------------------- */
 
 
-/* ----------------------------------------------------------------- */
-/*    main page                                                      */
+/* ***** Main page specific ***************************************** */
 div.vertical_menu {
-	background: #EEE;
+	background: 	#EEE;
 	font-size:      90%;
 	margin: 		3px;
 	padding: 		2px;
@@ -85,7 +88,6 @@ div.vertical_menu h2 {
 	color:			black;
 	font-weight:    bold;
 }
-
 
 div.vertical_menu a {
 	font-weight:    normal;
@@ -112,7 +114,7 @@ table.mainTable td th {
 }
 
 table.mainTable th {
-	background:     #FFFFCC;
+	background:     #FFC;
 }
 
 table.link_and_exec {
@@ -122,13 +124,12 @@ table.link_and_exec {
 	margin-right:	0px;
 }
 
-
 table.link_and_exec th {
 	background:     #CCC;
 }
 
 
-/***** general styles **************************************/
+/* **** general classes ************************************* */
 
 /* this is obsolete - use <h1> instead of this */
 div.pagetitle {
@@ -137,49 +138,38 @@ div.pagetitle {
 	font-size:		85%;
 	font-weight:    bold;
 	padding: 		2px 2px 2px 5px;
-	margin:			5px 0px 0px 0px;
+	margin-top:		5px;
 }
 
 /* background for working area (tables and forms) */
 div.workBack {
 	text-align: 	left;
-	margin: 		3px 3px 3px 3px;
+	margin: 		3px;
 	background: 	#CDE;
-	padding: 		5px 5px 5px 5px;
+	padding: 		5px;
 	border-style:	groove;
 	border-width:	thin;
-	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
 }
 
 /* for tree menu */
 div.tree {
 	background: 	#EEE;
 	padding: 		3px;
-	border: 		1px solid grey;
+	border: 		1px solid #808080;
 	margin:			2px;
-	overflow: auto; /* BUGID: SF1243287 */
+	overflow: 		auto; /* BUGID: SF1243287 */
 }
 
-h1 {
+/* h1.title - To avoid problems with ext js css */
+h1, h1.title {
 	background:		#059;
 	border: 		1px solid black;
 	color:			white;
-	font-size:		85%;
 	margin-bottom:	4px;
 	padding: 		2px;
 	text-align: 	left;
 }
 
-/* To avoid problems with ext js css */
-h1.title {
-	background:		#059;
-	border: 		1px solid black;
-	color:			white;
-	font-size:		85%;
-	margin-bottom:	4px;
-	padding: 		2px;
-	text-align: 	left;
-}
 
 h2 {
 	font-size:		80%;
@@ -190,26 +180,29 @@ h3.testlink {
 	padding: 		2px;
 }
 
-
-
 div.groupBtn {
-/*	border-bottom: 1px solid grey; */
 	padding:		0px;
 }
 
-/*
-div.groupBtn input {
-	background:		#059;
-	color:			white;
+.title {
 	font-weight:    bold;
 	font-size:		85%;
-	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
-
-	padding:		2px 11px;
-	margin:			2px 5px;
 }
-*/
 
+.bold {
+	font-weight:    bold;
+}
+
+.italic {
+	font-style: 	italic;
+}
+
+.onright {
+	float: 	right;
+}
+
+
+/* ***** Messages ************************************************ */
 /* show results of SQL actions or important information for user */
 div.error, .info {
 	font-size:		110%;
@@ -229,7 +222,6 @@ div.warning_soft
 	padding: 		2px;
 }
 
-
 div.user_feedback{
 	font-size:		110%;
 	text-align:		center;
@@ -239,25 +231,7 @@ div.user_feedback{
 }
 
 
-
-.title {
-	font-weight:    bold;
-	font-size:		85%;
-}
-
-.bold {
-	font-weight:    bold;
-}
-
-.italic {
-	font-style: 	italic;
-}
-
-.onright {
-	float: 	right;
-}
-
-/***** links to help files **************************/
+/* ***** Links to help files ******************************** */
 img.help {
 	vertical-align: top;
 	float:			right;
@@ -272,7 +246,7 @@ span.help
 	text-decoration: underline;
 }
 
-/***** Links **************************************/
+/* ***** Links *********************************************** */
 
 /* A Visited link is still blue */
 a:visited, a:link, a:active {
@@ -319,10 +293,10 @@ span.unselected a, span.unselected a:visited {
 *
 * Standard table classes:
 *
-* "common" - view tables
-* "simple" - forms
-* "smallGrey" - options / filters
-* "invisible" - no borders
+* "common" 		- view tables
+* "simple" 		- forms
+* "smallGrey" 	- options / filters
+* "invisible" 	- no borders
 */
 
 /* Common */
@@ -334,14 +308,13 @@ table.common {
 }
 
 table.common th, table.simple th{
-  overflow:hidden;
-  zoom:1;
-  color:#15428b;
-  font:bold 11px tahoma,arial,verdana,sans-serif;
-  padding:5px 3px 4px 5px;
-  border:1px solid #99bbe8;
-  line-height:15px;
-  background:transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;
+  	overflow:		hidden;
+  	color:			#15428b;
+  	font:			bold 11px tahoma,arial,verdana,sans-serif;
+  	padding:		5px 3px 4px 5px;
+  	border:			1px solid #99bbe8;
+  	line-height:	15px;
+  	background:		transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;
 }
 
 table.common td, table.simple td, th{
@@ -405,10 +378,76 @@ table.exec_history th {
 }
 
 
-/***** Special button *****/
+
+
+/* ***** Execution & Results ****************************************** */
+div.passed, div.failed, div.blocked, div.not_run {
+	color: 			white;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: 	center;
+}
+
+div.passed {
+	background:		#006400; /* darkgreen */
+}
+
+div.failed {
+	background:		#B22222; /* firebrick (red) */
+}
+
+div.blocked {
+	background:		#00008B; /* darkblue */
+}
+
+div.not_run {
+	background:		black;
+}
+
+/* ***** render test result status ************************* */
+.passed {
+	color: 			white;
+	background:		#006400; /* darkgreen */
+}
+
+.failed {
+	color: 			white;
+	background:		#B22222; /* firebrick (red) */
+}
+
+.blocked {
+	color: 			white;
+	background:		#00008B; /* darkblue */
+}
+
+.not_run {
+	color: 			white;
+	background:		black;
+}
+
+.not_available {
+	color: 			black;
+	background:		#DAA520; /* goldenyellow */
+}
+
+.unknown {
+	color: 			black;
+	background:		#00FFFF; /* cyan; */
+}
+
+
+/* 20070826 - franciscom */
+div.exec_history {
+	background:		#FFF;
+	padding: 		0px 3px;
+}
+
+/* ***** MISC ********************************************* */
+
+/***** Special button (obsolete?) *****/
 a.tlButton {
 	background:		#CDE;
-	border: 		2px outset grey;
+	border: 		2px outset #808080;
 	font-weight:    bold;
 	padding:		2px;
 	margin:			2px;
@@ -418,14 +457,10 @@ a.tlButton:hover {
 	background:     #EEE;
 }
 
-
-
-
-
 /* execution boxes (result, test scenario, notes) */
 div.resultBox {
 	background: 	white;
-	border: 		medium solid grey;
+	border: 		medium solid #808080;
 	color: 			black;
 	margin: 		0px 12px 12px 12px;
 	padding: 		12px;
@@ -433,7 +468,7 @@ div.resultBox {
 
 textarea.tcDesc {
 	background: 	white;
-	border: 		medium solid grey;
+	border: 		medium solid #808080;
 }
 
 div.notesBox,table.notesBox {
@@ -455,13 +490,6 @@ img.arrow {
 	height: 		9px;
 }
 
-
-pre
-{
-	font-family : 	Arial, Helvetica, sans-serif;
-}
-
-
 /* 20060328 - franciscom - I must to comment this better later :( */
 span.type1 {
 	background:		#059;
@@ -471,48 +499,6 @@ span.type1 {
 	margin-bottom:	4px;
 	padding: 		2px;
 	text-align: 	left;
-}
-
-
-/* 20060819 - franciscom */
-/* ----------------------------------------------------------------------------- */
-/* Execution & Results */
-div.passed {
-	color: 			white;
-	background:		green;
-	margin: 		8px;
-	padding: 		6px;
-	text-align: center;
-}
-
-div.failed {
-	color: 			white;
-	background:		red;
-	margin: 		8px;
-	padding: 		6px;
-	text-align: center;
-}
-
-div.blocked {
-	color: 			white;
-	background:		blue;
-	margin: 		8px;
-	padding: 		6px;
-	text-align: center;
-}
-
-div.not_run {
-	color: 			white;
-	background:		black;
-	margin: 		8px;
-	padding: 		6px;
-	text-align: center;
-}
-
-/* 20070826 - franciscom */
-div.exec_history {
-	background:		#FFF;
-	padding: 		0px 3px 0px 3px;
 }
 
 /* 20060819 - franciscom */
@@ -548,7 +534,6 @@ div.title {
 	margin: 0px;
 	padding-bottom: 5px;
 	padding-top: 5px;
-	font-stretch: expanded;
 	font-weight : bold;
 	font-variant : small-caps;
 	letter-spacing: 5px;
@@ -580,30 +565,30 @@ p.title  {
 
 
 div.show_hide_title {
-	font-weight : bold;
+	font-weight:	bold;
 }
 
 /* 20070826 - added padding to allow good effect with Nifty */
 div.exec_history_title {
-	font-weight : bold;
+	font-weight:	bold;
 	padding: 		2px;
 }
 
 div.notes{
-	background: 	whitesmoke;
+	background: 	#F5F5F5; 	/* whitesmoke */
 	border: 		1px solid black;
 	color: 			black;
 	margin: 		1px;
 	padding: 		1px;
-	width: 100%;
+	width: 			100%;
 }
 
 td.checkbox_cell{
-	width: 1px;
+	width: 			1px;
 }
 
 td.tcase_id_cell{
-	width: 25px;
+	width: 			25px;
 }
 
 div.test_exec {
@@ -611,7 +596,7 @@ div.test_exec {
 	border: 		thin dashed black;
 	color: 			black;
 	padding: 		12px;
-	width: 100%;
+	width: 			100%;
 }
 
 div.exec_test_spec {
@@ -625,42 +610,9 @@ table.test_exec {
 	background: 	#FFC;
 	color: 			black;
 	padding: 		12px;
-	width: 100%;
+	width: 			100%;
 }
 
-
-/*
-20061112 - franciscom - to manage status
-*/
-.passed {
-	color: 			white;
-	background:		green;
-}
-
-.failed {
-	color: 			white;
-	background:		red;
-}
-
-.blocked {
-	color: 			white;
-	background:		blue;
-}
-
-.not_run {
-	color: 			white;
-	background:		black;
-}
-
-.not_available {
-	color: 			black;
-	background:		yellow;
-}
-
-.unknown {
-	color: 			black;
-	background:		cyan;
-}
 
 
 /* 20061230 - franciscom */
@@ -718,17 +670,17 @@ div.menu_bubble h3{
 
 .clickable_icon
 {
-  padding: 2px;
-  width: 5px;
-  text-align: center;
-  vertical-align: center;
+  padding: 			2px;
+  width: 			5px;
+  text-align: 		center;
+  vertical-align: 	middle;
 }
 
 .icon_cell
 {
-  width: 5px;
-  text-align: center;
-  vertical-align: center;
+  width: 		5px;
+  text-align: 		center;
+  vertical-align: 	middle;
 }
 
 
@@ -746,16 +698,16 @@ div.menu_bubble h3{
 }
 
 .exec_additional_info{
-	background-color: 	#F0F4F0; // whitesmoke=F0F4F0, #FFC
+	background-color: 	#F0F4F0; /* whitesmoke=F0F4F0, #FFC*/
 	color: 			black;
-	margin: 		0px 0px 10px 0px;
-	padding: 		0px 0px 0px 10px;
-	width: 98%;
+	margin-bottom:	10px;
+	padding-left:	10px;
+	width: 			98%;
 }
 
 .exec_testsuite_details {
-  border: thin solid black;
-  padding: 5px;
+  border: 			thin solid black;
+  padding: 			5px;
 }
 
 
@@ -769,7 +721,6 @@ input.tl-input{
 
 table.mainTable-x th {
   overflow:hidden;
-  zoom:1;
   color:#15428b;
   font:bold 11px tahoma,arial,verdana,sans-serif;
   padding:5px 3px 4px 5px;
@@ -779,24 +730,14 @@ table.mainTable-x th {
 }
 
 /* 20080127 - franciscom - to avoid problem with ext-js css */
-th.testlink {
+th.testlink, td.testlink, tr.testlink td {
   padding: 1px;
-  marging: 1px;
-}
-
-tr.testlink td {
-  padding: 1px;
-  marging: 1px;
-}
-
-td.testlink {
-  padding: 1px;
-  marging: 1px;
+  margin: 1px;
 }
 
 .clickable
 {
-	cursor:hand;
+/* What's that???	cursor:hand; */
 	cursor:pointer;
 }
 
@@ -805,7 +746,7 @@ td.testlink {
 /* ----------------------------------------------------------------------------- */
 /* Taken from ext js 2.0, and adapted                                            */
 .x-tl-panel{border-style:solid;border-color:#99bbe8;border-width:0;}
-.x-tl-panel-header{overflow:hidden;zoom:1;color:#15428b;font:bold 11px tahoma,arial,verdana,sans-serif;
+.x-tl-panel-header{overflow:hidden;color:#15428b;font:bold 11px tahoma,arial,verdana,sans-serif;
                    padding:2px 1px 1px 2px;border:1px solid #99bbe8;line-height:15px;
                    background:transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;}
 .x-tl-panel-body{border:1px solid #99bbe8;border-top:0 none;overflow:hidden;background:white;}
@@ -814,33 +755,32 @@ td.testlink {
 .x-tl-panel-tbar-noheader .x-toolbar,.x-tl-panel-mc .x-tl-panel-tbar .x-toolbar{border-top:1px solid #99bbe8;
                                                                           border-bottom:0 none;}
 .x-tl-panel-body-noheader,.x-tl-panel-mc .x-tl-panel-body{border-top:1px solid #99bbe8;}
-.x-tl-panel-header{overflow:hidden;zoom:1;}
+.x-tl-panel-header{overflow:hidden;}
 .x-tl-panel-tl .x-tl-panel-header{color:#15428b;font:bold 11px tahoma,arial,verdana,sans-serif;
                                padding:5px 0 4px 0;border:0 none;background:transparent;}
 .x-tl-panel-tl .x-tl-panel-icon,.x-window-tl .x-tl-panel-icon{padding-left:20px!important;background-repeat:no-repeat;
-                                                        background-position:0 4px;zoom:1;}
+                                                        background-position:0 4px;}
 .x-tl-panel-inline-icon{width:16px;height:16px;background-repeat:no-repeat;background-position:0 0;
                         vertical-align:middle;margin-right:4px;margin-top:-1px;margin-bottom:-1px;}
 .x-tl-panel-tc{background:transparent url(../images/top-bottom.gif) repeat-x 0 0;overflow:hidden;}
 .x-tl-panel-tl{background:transparent url(../images/corners-sprite.gif) no-repeat 0 0;
-               padding-left:6px;zoom:1;border-bottom:1px solid #99bbe8;}
+               padding-left:6px;border-bottom:1px solid #99bbe8;}
 .x-tl-panel-tr{background:transparent url(../images/corners-sprite.gif) no-repeat right 0;
-               zoom:1;padding-right:6px;}
-.x-tl-panel-bc{background:transparent url(../images/top-bottom.gif) repeat-x 0 bottom;zoom:1;}
-.x-tl-panel-bc .x-tl-panel-footer{zoom:1;}
+               padding-right:6px;}
+.x-tl-panel-bc{background:transparent url(../images/top-bottom.gif) repeat-x 0 bottom;}
 .x-tl-panel-bl{background:transparent url(../images/corners-sprite.gif) no-repeat 0 bottom;
-               padding-left:6px;zoom:1;}
+               padding-left:6px;}
 .x-tl-panel-br{background:transparent url(../images/corners-sprite.gif) no-repeat right bottom;
-               padding-right:6px;zoom:1;}
+               padding-right:6px;}
 .x-tl-panel-mc{border:0 none;padding:0;margin:0;font:normal 11px tahoma,arial,helvetica,sans-serif;
                padding-top:6px;background:#dfe8f6;}
 .x-tl-panel-mc .x-tl-panel-body{background:transparent;border:0 none;}
-.x-tl-panel-ml{background:#fff url(../images/left-right.gif) repeat-y 0 0;padding-left:6px;zoom:1;}
+.x-tl-panel-ml{background:#fff url(../images/left-right.gif) repeat-y 0 0;padding-left:6px;}
 .x-tl-panel-mr{background:transparent url(../images/left-right.gif) repeat-y right 0;
-               padding-right:6px;zoom:1;}
+               padding-right:6px;}
 .x-tl-panel-bc .x-tl-panel-footer{padding-bottom:6px;}
 .x-tl-panel-nofooter .x-tl-panel-bc{height:6px;font-size:0;line-height:0;}
-.x-tl-panel-bwrap{overflow:hidden;zoom:1;}
-.x-tl-panel-body{overflow:hidden;zoom:1;}
+.x-tl-panel-bwrap{overflow:hidden;}
+.x-tl-panel-body{overflow:hidden;}
 .x-tl-panel-collapsed .x-resizable-handle{display:none;}
 /* ----------------------------------------------------------------------------- */

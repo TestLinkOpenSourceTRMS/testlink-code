@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.10 2008/03/09 18:38:18 franciscom Exp $
+$Id: loginFirst.tpl,v 1.11 2008/05/06 11:54:51 havlat Exp $
 Purpose: smarty template - first login
 *}
 
@@ -23,7 +23,8 @@ window.onload=function(){
 <body>
 
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-<div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
+<div class="fullpage_head">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
+
 <div class="forms" id="login_div">
 <div class="warning_message" style="text-align:center;">{$message}</div>
 
@@ -54,8 +55,7 @@ window.onload=function(){
 	<br /><input type="submit" name="editUser" value="{lang_get s='btn_add_user_data'}" />
 </form>
 <hr />
-<br />
-<a href="login.php">{lang_get s='link_back_to_login'}</a>
+<p><a href="login.php">{lang_get s='link_back_to_login'}</a></p>
 </div>
 </body>
 </html>

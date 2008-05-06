@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.20 2008/03/09 18:38:18 franciscom Exp $
+$Id: login.tpl,v 1.21 2008/05/06 11:54:51 havlat Exp $
 Purpose: smarty template - login page 
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
@@ -23,7 +23,7 @@ window.onload=function()
 </head>
 <body>
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-<div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
+<div class="fullpage_head"><p>{$login_logo}<br />TestLink {$tlVersion|escape}</p></div>
 <div class="forms" id="login_div">
 
 	<form method="post" name="login_form" action="login.php">

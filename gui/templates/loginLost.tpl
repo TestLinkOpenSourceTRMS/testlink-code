@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginLost.tpl,v 1.7 2008/03/09 18:38:18 franciscom Exp $ 
+$Id: loginLost.tpl,v 1.8 2008/05/06 11:54:51 havlat Exp $ 
 Purpose: smarty template - lost password page 
 
 rev :
@@ -25,9 +25,9 @@ window.onload=function(){
 <body>
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
 
-<div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
+<div class="fullpage_head">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
 <div class="forms" id="login_div">
-{if $external_password_mgmt eq 0}
+	{if $external_password_mgmt eq 0}
     <p class="title">{lang_get s='password_reset'}</p>
 
     <form method="post" action="lostPassword.php">
@@ -39,11 +39,13 @@ window.onload=function(){
     	<p><input type="submit" name="editUser" value="{lang_get s='btn_send'}" /></p>
     </form>
     
-    <hr />
-{else}
+	{else}
      <p>{lang_get s='password_mgmt_is_external'}<p>
-{/if}
-<p><a href="login.php">{lang_get s='link_back_to_login'}</a></p>
+	{/if}
+
+    <hr />
+	<p><a href="login.php">{lang_get s='link_back_to_login'}</a></p>
+
 </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqReorder.tpl,v 1.4 2008/04/15 06:44:22 franciscom Exp $
+$Id: reqReorder.tpl,v 1.5 2008/05/06 06:26:09 franciscom Exp $
 *}
 
 {lang_get var="labels"
@@ -21,10 +21,10 @@ $Id: reqReorder.tpl,v 1.4 2008/04/15 06:44:22 franciscom Exp $
 
 
 <body onload="init_drag_and_drop('{$basehref}','{$tree_id}');">
-<h1>{$gui->main_descr|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
-<h1>{$labels.title_change_req_order}</h1>
+<h1 class="title">{$labels.title_change_req_order}</h1>
 
 <div>
  	<ul id="{$tree_id}" class="dhtmlgoodies_tree">

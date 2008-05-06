@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.9 2008/02/12 08:08:34 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.10 2008/05/06 06:26:13 franciscom Exp $ 
 
 rev:
     20070818 - franciscom
@@ -16,7 +16,7 @@ rev:
 </head>
 <body>
 
-<h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>
+<h1 class="title">{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>
 {assign var="umgmt" value="lib/usermanagement"}
 
 {***** TABS *****}

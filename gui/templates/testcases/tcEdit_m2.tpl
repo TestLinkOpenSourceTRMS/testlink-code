@@ -1,12 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit_m2.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ *}
+{* $Id: tcEdit_m2.tpl,v 1.2 2008/05/06 06:26:13 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl"}
 
 <body>
 
 <div class="workBack" style="font-weight: bold;">
-<h1>{lang_get s='title_edit_tc'} {$tc.id|escape}</h1> 
+<h1 class="title">{lang_get s='title_edit_tc'} {$tc.id|escape}</h1> 
 <form method="post" action="lib/testcases/tcEdit.php?testcaseID={$testcaseID}">
 
 	<div style="float: right;">

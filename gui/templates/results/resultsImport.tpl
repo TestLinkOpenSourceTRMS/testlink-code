@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.1 2007/12/02 17:21:18 franciscom Exp $
+$Id: resultsImport.tpl,v 1.2 2008/05/06 06:26:11 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 *}
 {include file="inc_head.tpl"}
@@ -8,10 +8,10 @@ Purpose: smarty template - manage import of test cases and test suites
 <body>
 {config_load file="input_dimensions.conf" section="tcImport"} {* Constant definitions *}
 
-<h1>{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
+<h1 class="title">{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
 
 <div class="workBack">
-<h1>{$import_title}</h1>
+<h1 class="title">{$import_title}</h1>
 
 {if $resultMap eq null}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">

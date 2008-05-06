@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.2 2008/03/30 17:16:26 franciscom Exp $
+$Id: tcImport.tpl,v 1.3 2008/05/06 06:26:13 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20080329 - franciscom - lang_get() refactoring
@@ -17,10 +17,10 @@ rev: 20080329 - franciscom - lang_get() refactoring
 {include file="inc_head.tpl"}
 <body>
 
-<h1>{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
+<h1 class="title">{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
 
 <div class="workBack">
-<h1>{$import_title}</h1>
+<h1 class="title">{$import_title}</h1>
 
 {if $resultMap eq null}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">

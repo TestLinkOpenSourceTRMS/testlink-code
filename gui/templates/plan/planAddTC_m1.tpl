@@ -1,8 +1,34 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.9 2008/04/03 22:06:50 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.10 2008/05/06 06:26:07 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
+
+{lang_get var="labels" 
+          s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
+             th_id,th_test_case,version,execution_order,
+             no_testcase_available,
+             has_been_executed,inactive_testcase,btn_save_exec_order,
+             check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
+             check_uncheck_all_checkboxes_for_rm'}
+
+             
+			     
+
+
+{if $gui->full_control eq 1}
+  {if $gui->has_linked_items eq 0} 
+	   {lang_get s='title_add_test_to_plan' var="actionTitle"}
+  	 {lang_get s='btn_add_selected_tc' var="buttonValue"}
+  {else}
+	   {lang_get s='title_add_remove_test_to_plan' var="actionTitle"}
+	   {lang_get s='btn_add_remove_selected_tc' var="buttonValue"}
+  {/if}     
+{else}
+   {lang_get s='title_remove_test_from_plan' var="actionTitle"}
+   {lang_get s='btn_remove_selected_tc' var="buttonValue"}
+{/if}    
+
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 
@@ -10,27 +36,16 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 {include file="inc_jsCheckboxes.tpl"}
 </head>
 <body>
-<h1 class="title">{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1>
+<h1 class="title">{$gui->pageTitle|escape}</h1>
 
-{if $has_tc }
+{if $gui->has_tc }
 <form name='addTcForm' id='addTcForm' method='post'>
-   <h1 class="title">
-    {if $full_control eq 1}
-      {if $has_linked_items eq 0} 
-  		   {lang_get s='title_add_test_to_plan'}
-      {else}
-  		   {lang_get s='title_add_remove_test_to_plan'}
-      {/if}     
-    {else}
-  	   {lang_get s='title_remove_test_from_plan'}
-    {/if}    
-    
-    </h1>
+   <h1 class="title">{$actionTitle}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
-  {if $key != ''}
+  {if $gui->keywords_filter != ''}
 	  <div style="margin-left: 20px; font-size: smaller;">
-		  <br />{lang_get s='note_keyword_filter'}{$key|escape}</p>
+		  <br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
 	  </div>
   {/if}
   
@@ -45,7 +60,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
   <input type="hidden" name="add_all_value"  id="add_all_value"  value="0" />
   <input type="hidden" name="rm_all_value"  id="rm_all_value" value="0" />
   
-	{foreach from=$arrData item=ts}
+	{foreach from=$gui->items item=ts}
 	  {assign var="item_number" value=$item_number+1}
 	
 	  {assign var="ts_id" value=$ts.testsuite.id}
@@ -60,19 +75,19 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
                    width="100%">
             <tr>
 				<td align="center">
-	            {if $full_control }
+	            {if $gui->full_control }
 		          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-		               alt="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
-	                 title="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
+		               alt="{$labels.check_uncheck_all_checkboxes_for_add}" 
+	                 title="{$labels.check_uncheck_all_checkboxes_for_add}" 
 	                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');" />
 	            {lang_get s='add'}
 	            {else} &nbsp;
 	            {/if}
 	            </td>
-	            <td  {if $full_control } align="center" {else} align="left" {/if}>
+	            <td  {if $gui->full_control } align="center" {else} align="left" {/if}>
 		          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-		               alt="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
-	                 title="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
+		               alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
+	                 title="{$labels.check_uncheck_all_checkboxes_for_rm}" 
 	                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');" />
 	            {lang_get s='remove'}
 	            </td>
@@ -81,38 +96,36 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 	        {/if}
    
      {* used as memory for the check/uncheck all checkbox javascript logic *}
-     <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  
-            value="0" />
-     <input type="hidden" name="rm_value_{$ts_id}"  id="rm_value_{$ts_id}"  
-            value="0" />
+     <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
+     <input type="hidden" name="rm_value_{$ts_id}"  id="rm_value_{$ts_id}"  value="0" />
             
      {* ------------------------------------------------------------------------- *}      
-     {if ($full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0 }
+     {if ($gui->full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0 }
         
         <table cellspacing="0" style="font-size:small;" width="100%">
           <tr style="background-color:blue;font-weight:bold;color:white">
 
 			     <td width="5" align="center">
-              {if $full_control}
+              {if $gui->full_control}
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
-                    title="{lang_get s='check_uncheck_all_checkboxes'}" />
+                    title="{$labels.check_uncheck_all_checkboxes}" />
     			    {else}
     			     &nbsp;
 		    	    {/if}
 			     </td>
 			     
-			     <td>{lang_get s='th_id'}</td> 
-			     <td>{lang_get s='th_test_case'}</td>
-			     <td>{lang_get s='version'}</td>
-           <td>{lang_get s='execution_order'}</td>
+			     <td>{$labels.th_id}</td> 
+			     <td>{$labels.th_test_case}</td>
+			     <td>{$labels.version}</td>
+           <td>{$labels.execution_order}</td>
            {if $ts.linked_testcase_qty gt 0 }
 				    <td>&nbsp;</td>
 				    <td>
 				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
                  onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
-                 title="{lang_get s='check_uncheck_all_checkboxes'}" />
-				    {lang_get s='remove_tc'}
+                 title="{$labels.check_uncheck_all_checkboxes}" />
+				    {$labels.remove_tc}
 				    </td>
            {/if}
           </tr>   
@@ -132,11 +145,11 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 
             {if $is_active || $tcase.linked_version_id ne 0 }  
-   				    {if $full_control || $tcase.linked_version_id ne 0 }
+   				    {if $gui->full_control || $tcase.linked_version_id ne 0 }
     			    <tr {if $tcase.linked_version_id ne 0}
     			         style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20">
-    				    {if $full_control}
+    				    {if $gui->full_control}
 	      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
 	      				       &nbsp;&nbsp;
 	      				    {else}
@@ -153,10 +166,10 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
     			      </td>
     			      
     			      <td>
-    				    {$testCasePrefix}{$tcase.external_id}
+    				    {$gui->testCasePrefix}{$tcase.external_id}
     			      </td>
     			      {* 20070930 - franciscom - REQ - BUGID 1078 *}
-    				    <td title="{lang_get s='show_tcase_spec'}">
+    				    <td title="{$labels.show_tcase_spec}">
      				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
     			      </td>
     			      
@@ -197,10 +210,10 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
           						&nbsp;
           				   {/if}
                      {if $tcase.executed eq 'yes'}
-                            &nbsp;&nbsp;&nbsp;{lang_get s='has_been_executed'}
+                            &nbsp;&nbsp;&nbsp;{$labels.has_been_executed}
                      {/if}    
                      {if $is_active eq 0}
-                           &nbsp;&nbsp;&nbsp;{lang_get s='inactive_testcase'}
+                           &nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}
                      {/if}
           				</td>
                 {/if}
@@ -224,18 +237,8 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
       <input type="hidden" name="doAction" id="doAction" value="default">
       
       <br /><input type="submit" name="doAddRemove" style="padding-right: 20px;"
-                   onclick="doAction.value=this.name"
-         {if $full_control}
-  		     {if $has_linked_items eq 0}
-  	      	   value='{lang_get s='btn_add_selected_tc'}'
-  		     {else}
-               value='{lang_get s='btn_add_remove_selected_tc'}' 
-  		     {/if}
-		     {else}
-               value='{lang_get s='btn_remove_selected_tc'}' 
-		     {/if}
-         />
-      		<input type="submit" name="doReorder" value="{lang_get s='btn_save_exec_order'}" 
+                   onclick="doAction.value=this.name" value="{$buttonValue}" />
+      		<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
                  onclick="doAction.value=this.name"/>
 
    </div>
@@ -243,14 +246,14 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 </form>
 
 {else}
-	<h2>{lang_get s='no_testcase_available'}</h2>
+	<h2>{$labesl.no_testcase_available}</h2>
 {/if}
 
 {* 
  refresh is useful when operating in full_control=0 => just remove,
  because tree is test plan tree.
 *}
-{if $refreshTree}
+{if $gui->refreshTree}
    {include file="inc_refreshTree.tpl"}
 {/if}
 

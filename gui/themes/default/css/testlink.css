@@ -1,7 +1,7 @@
 /*
 D:\w3\tl\head_20080119\gui\themes\theme_m2\css\
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.3 2008/05/05 15:00:00 havlat Exp $
+$Id: testlink.css,v 1.4 2008/05/06 06:27:05 franciscom Exp $
 Purpose: main css - theme m2
 
 20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
@@ -637,23 +637,6 @@ table.test_exec {
 
 table.srs_view td {
 	border: 		1px solid black;
-}
-
-/* 20070203 - franciscom */
-.xx {
-	background:		#059;
-	color:			white;
-	font-weight:    bold;
-	padding: 		2px 12px 2px 5px;
-	margin:			5px 0px 0px 0px;
-}
-
-.yy {
-	background:		red;
-	color:			white;
-	font-weight:    bold;
-	padding: 		2px 2px 2px 0px;
-	margin:			5px 0px 0px 0px;
 }
 
 /* 20070523 */

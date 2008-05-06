@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.12 2008/02/29 23:19:29 schlundus Exp $
+$Id: keywordsView.tpl,v 1.13 2008/05/06 06:26:06 franciscom Exp $
 Purpose: smarty template - View all keywords 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -19,7 +19,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='menu_manage_keywords'}</h1>
+<h1 class="title">{lang_get s='menu_manage_keywords'}</h1>
 
 <div class="workBack">
   {if $keywords neq ''}

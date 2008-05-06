@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.2 2008/02/07 21:05:26 schlundus Exp $
+$Id: keywordsAssign.tpl,v 1.3 2008/05/06 06:26:06 franciscom Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 *}
 {include file="inc_head.tpl" openHead='yes'}
@@ -22,7 +22,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 {* improved feedback *}
 <div class="workBack">
-    <h1>{lang_get s='title_keywords'}</h1>
+    <h1 class="title">{lang_get s='title_keywords'}</h1>
     {* tabs *}
     <div class="tabMenu">
     	<span class="unselected"><a href="lib/keywords/keywordsView.php"

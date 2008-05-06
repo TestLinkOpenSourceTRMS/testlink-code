@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestones.tpl,v 1.6 2008/02/27 20:16:41 schlundus Exp $
+$Id: planMilestones.tpl,v 1.7 2008/05/06 06:26:07 franciscom Exp $
 Purpose: smarty template - edit milestones
 
 rev :
@@ -66,7 +66,7 @@ function validateForm(f)
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='title_milestones'} {$tpName|escape}</h1>
+<h1 class="title">{lang_get s='title_milestones'} {$tpName|escape}</h1>
 
 {* product was added *}
 {if $sqlResult ne ""}

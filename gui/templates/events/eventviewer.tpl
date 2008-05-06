@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.16 2008/04/25 22:10:53 schlundus Exp $
+$Id: eventviewer.tpl,v 1.17 2008/05/06 06:25:57 franciscom Exp $
 
 Event Viewer
 
@@ -124,7 +124,7 @@ fieldset
 
 
 <body {$body_onload}>
-<h1>{$labels.event_viewer}</h1>
+<h1 class="title">{$labels.event_viewer}</h1>
 
 <div class="workBack">
 		<form method="post" action="lib/events/eventviewer.php">

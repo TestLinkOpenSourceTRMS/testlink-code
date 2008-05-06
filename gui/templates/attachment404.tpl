@@ -1,10 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachment404.tpl,v 1.1 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: attachment404.tpl,v 1.2 2008/05/06 06:25:28 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='title_downloading_attachment'}</h1>
+<h1 class="title">{lang_get s='title_downloading_attachment'}</h1>
 <p class='info'>
 	{lang_get s='error_attachment_not_found'}
 </p>

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.2 2008/03/31 20:08:04 schlundus Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $
 
 rev :
      20070902 - franciscom - refactoring
@@ -16,7 +16,7 @@ rev :
 </head>
 <body>
 
-<h1> {lang_get s='query_metrics_report'}</h1>
+<h1 class="title"> {lang_get s='query_metrics_report'}</h1>
 {include file="inc_result_tproject_tplan.tpl"
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}
 

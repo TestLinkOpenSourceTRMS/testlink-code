@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: show_exec_notes.tpl,v 1.1 2007/12/02 17:02:26 franciscom Exp $
+$Id: show_exec_notes.tpl,v 1.2 2008/05/06 06:26:06 franciscom Exp $
 Purpose: smarty template - template for show execution notes 
 *}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>{lang_get s='title_execution_notes'}</h1>
+<h1 class="title">{lang_get s='title_execution_notes'}</h1>
 <div class="workBack">
 	<form method="post">
 	<table border="0" width="100%">

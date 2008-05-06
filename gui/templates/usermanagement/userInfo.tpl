@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.11 2008/04/26 18:29:13 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.12 2008/05/06 06:26:13 franciscom Exp $ *}
 {*
 *}
 {assign var="cfg_section" value="login" }
@@ -91,7 +91,7 @@ function checkPasswords(oldp,newp,newp_check)
 
 <body>
 
-<h1>{$labels.title_account_settings}</h1>
+<h1 class="title">{$labels.title_account_settings}</h1>
 
 {include file="inc_update.tpl" user_feedback=$user_feedback}
 

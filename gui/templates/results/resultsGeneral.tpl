@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.2 2008/03/03 18:51:59 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -14,7 +14,7 @@ Revisions:
 
 <body>
 
-<h1>{lang_get s='title_gen_test_rep'} </h1>
+<h1 class="title">{lang_get s='title_gen_test_rep'} </h1>
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 

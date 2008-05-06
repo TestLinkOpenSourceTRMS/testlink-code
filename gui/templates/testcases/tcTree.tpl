@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ *}
+{* $Id: tcTree.tpl,v 1.2 2008/05/06 06:26:13 franciscom Exp $ *}
 {* Purpose: smarty template - show test specification tree menu *}
 {*
 	20070217 - franciscom - added test suite filter
@@ -10,7 +10,7 @@
 
 <body>
 
-<h1>{$treeHeader}</h1>
+<h1 class="title">{$treeHeader}</h1>
 
 
 <div style="margin: 3px;">

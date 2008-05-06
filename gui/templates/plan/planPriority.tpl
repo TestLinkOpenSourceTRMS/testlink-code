@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planPriority.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $ 
+$Id: planPriority.tpl,v 1.2 2008/05/06 06:26:07 franciscom Exp $ 
 Purpose: smarty template - define priority rules
 
 20060908 - franciscom - added test plan name to title
@@ -10,11 +10,11 @@ Purpose: smarty template - define priority rules
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testplan_name|escape}</h1>
+<h1 class="title">{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testplan_name|escape}</h1>
 
 <div class="workBack">
 {include file="inc_update.tpl" result=$sqlResult item="Priority" }
-<h1>{lang_get s='title_priority'}</h1>
+<h1 class="title">{lang_get s='title_priority'}</h1>
 
 
 	<form method="post">

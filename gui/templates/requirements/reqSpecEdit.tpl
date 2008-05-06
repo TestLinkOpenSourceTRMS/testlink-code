@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.8 2008/05/02 07:09:23 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.9 2008/05/06 06:26:10 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -39,7 +39,7 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <body>
-<h1>
+<h1 class="title">
  {lang_get s='help' var='common_prefix'}
  {lang_get s='req_spec' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
@@ -51,7 +51,7 @@ function validateForm(f)
 {if $gui->grants->req_mgmt == "yes"}
   <div class="workBack">
     {if $gui->action_descr != ''}
-    <h1>{$gui->action_descr|escape}</h1>
+    <h1 class="title">{$gui->action_descr|escape}</h1>
     <br />
     {/if}
 

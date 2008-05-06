@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsView.tpl,v 1.2 2007/12/18 19:30:02 franciscom Exp $ 
+$Id: cfieldsView.tpl,v 1.3 2008/05/06 06:25:57 franciscom Exp $ 
 rev :
      20070128 - franciscom - variable name changes
 *}
@@ -11,7 +11,7 @@ rev :
 
 <body>
 
-<h1>{lang_get s='title_cfields_mgmt'}</h1>
+<h1 class="title">{lang_get s='title_cfields_mgmt'}</h1>
 
 <div class="workBack">
 

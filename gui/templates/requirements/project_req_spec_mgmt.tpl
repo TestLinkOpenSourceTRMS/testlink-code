@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.8 2008/04/19 16:12:33 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.9 2008/05/06 06:26:08 franciscom Exp $
 
 rev: 20080415 - franciscom - refactoring
 *}
@@ -17,7 +17,7 @@ rev: 20080415 - franciscom - refactoring
 
 <body>
 <div class="workBack">
-<h1>{$gui->main_descr|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 	<div>
 		<form method="post">
 			<input type="button" id="new_req_spec" name="new_req_spec"

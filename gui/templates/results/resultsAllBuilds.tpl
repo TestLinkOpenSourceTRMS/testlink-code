@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsAllBuilds.tpl,v 1.2 2008/03/03 18:51:59 franciscom Exp $ 
+$Id: resultsAllBuilds.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $ 
 Purpose: smarty template - show Test Results and Metrics 
 Rev: 20080302 - franciscom - refactoring to manage dynamic qty of columns
 *}
 {include file="inc_head.tpl"}
 <body>
-<h1>{$title|escape}</h1>
+<h1 class="title">{$title|escape}</h1>
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 

@@ -1,9 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: printDocOptions.tpl,v 1.1 2007/12/09 02:17:08 havlat Exp $ *}
+{* $Id: printDocOptions.tpl,v 1.2 2008/05/06 06:26:10 franciscom Exp $ *}
 {* Purpose: smarty template - show test specification tree *}
 {include file="inc_head.tpl" jsTree="yes"}
 <body>
-<h1>{$title|escape}</h1>
+<h1 class="title">{$title|escape}</h1>
 
 <div style="margin: 10px;">
 <form method="post" action="lib/results/printDocument.php?type={$type}">

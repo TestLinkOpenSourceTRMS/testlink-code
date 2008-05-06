@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsSend.tpl,v 1.1 2007/12/02 17:21:19 franciscom Exp $ *}
+{* $Id: resultsSend.tpl,v 1.2 2008/05/06 06:26:12 franciscom Exp $ *}
 {* Purpose: smarty template - send Test Report *}
 {include file="inc_head.tpl"}
 {*
@@ -7,7 +7,7 @@
 *}
 <body>
 
-<h1>{$tpName|escape} {lang_get s='send_test_report'}</h1>
+<h1 class="title">{$tpName|escape} {lang_get s='send_test_report'}</h1>
 
 {if $message != "" }
 	<p class='info'>{$message}</p>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.4 2008/01/20 15:37:38 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.5 2008/05/06 06:26:13 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
@@ -18,7 +18,7 @@ rev :
 {include file="inc_head.tpl"}
 <body>
 
-<h1>{$mainCaption}</h1>
+<h1 class="title">{$mainCaption}</h1>
 
 <div style="margin: 1px;">
 <form method="post" action="lib/testcases/searchData.php" target="workframe">

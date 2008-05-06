@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.12 2008/04/14 09:56:40 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.13 2008/05/06 06:26:13 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -63,7 +63,7 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
-<h1>{$labels.title_user_mgmt} - {$labels.caption_define_role}</h1>
+<h1 class="title">{$labels.title_user_mgmt} - {$labels.caption_define_role}</h1>
 
 {***** TABS *****}
 {include file="usermanagement/tabsmenu.tpl" grants=$gui->grants highlight=$gui->highlight}

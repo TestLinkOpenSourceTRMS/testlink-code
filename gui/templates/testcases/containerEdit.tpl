@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.2 2007/12/07 07:03:45 franciscom Exp $
+$Id: containerEdit.tpl,v 1.3 2008/05/06 06:26:12 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
@@ -42,10 +42,10 @@ function validateForm(f)
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
 {config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
-<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$name|escape}</h1> 
+<h1 class="title">{lang_get s=$level}{$smarty.const.TITLE_SEP}{$name|escape}</h1> 
 
 <div class="workBack">
-  <h1>{lang_get s='title_edit_level'} {lang_get s=$level}</h1> 
+  <h1 class="title">{lang_get s='title_edit_level'} {lang_get s=$level}</h1> 
 	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
 	      name="container_edit" id="container_edit"
         onSubmit="javascript:return validateForm(this);">

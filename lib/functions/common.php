@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.108 $ $Author: franciscom $
- * @modified $Date: 2008/05/05 09:11:43 $
+ * @version $Revision: 1.109 $ $Author: franciscom $
+ * @modified $Date: 2008/05/06 06:27:25 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -975,9 +975,15 @@ function getFileUploadErrorMessage($fInfo)
   returns:
 
 */
-function show_instructions($key)
+function show_instructions($key,$refreshTree=0)
 {
-  	redirect($_SESSION['basehref'] . "lib/general/staticPage.php?key={$key}");
+    $myURL=$_SESSION['basehref'] . "lib/general/staticPage.php?key={$key}";
+    
+    if( $refreshTree )
+    {
+        $myURL .= "&refreshTree=1";  
+    }
+  	redirect($myURL);
 }
 
 /*

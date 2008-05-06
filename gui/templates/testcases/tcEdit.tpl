@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.4 2008/04/21 08:29:50 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.5 2008/05/06 06:26:13 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20080420 - franciscom - improved user feedback
@@ -48,7 +48,7 @@ function validateForm(f)
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
-<h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP}{$tc.name|escape}
+<h1 class="title">{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP}{$tc.name|escape}
 	{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
 
 <div class="workBack" style="width:97%;">

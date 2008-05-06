@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcExport.tpl,v 1.3 2008/03/30 17:16:26 franciscom Exp $ *}
+{* $Id: tcExport.tpl,v 1.4 2008/05/06 06:26:13 franciscom Exp $ *}
 {* Purpose: smarty template - keyword export initial page *}
 {* rev:
        20071013 - franciscom - file name management
@@ -30,10 +30,10 @@ function validateForm(f)
 
 
 <body>
-<h1>{$container_description}{$smarty.const.TITLE_SEP}{$object_name|escape}</h1>
+<h1 class="title">{$container_description}{$smarty.const.TITLE_SEP}{$object_name|escape}</h1>
 
 <div class="workBack">
-<h1>{$page_title}</h1>
+<h1 class="title">{$page_title}</h1>
 
 {if $do_it eq 1}
   <form method="post" id="export_xml" enctype="multipart/form-data" 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.2 2008/05/02 07:09:23 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.3 2008/05/06 06:26:07 franciscom Exp $
 show test specification tree 
 
 rev: 20080429 - franciscom - keyword filter multiselect
@@ -27,7 +27,7 @@ function pre_submit()
 </head>
 <body>
 
-<h1>{$labels.title_navigator}</h1>
+<h1 class="title">{$labels.title_navigator}</h1>
 <div style="margin: 3px;">
 <form method="post" id="planAddTCNavigator" onSubmit="javascript:return pre_submit();">
   <input type="hidden" id="called_by_me" name="called_by_me" value="1">

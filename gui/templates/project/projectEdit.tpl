@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.14 2008/04/26 18:29:13 schlundus Exp $
+$Id: projectEdit.tpl,v 1.15 2008/05/06 06:26:08 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
@@ -66,7 +66,7 @@ function validateForm(f)
 </head>
 
 <body>
-<h1>{$main_descr|escape}</h1>
+<h1 class="title">{$main_descr|escape}</h1>
 <div class="workBack">
 
 {if $user_feedback != ''}

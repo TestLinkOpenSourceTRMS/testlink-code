@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.10 2008/05/04 10:30:39 franciscom Exp $
+$Id: reqView.tpl,v 1.11 2008/05/06 06:26:10 franciscom Exp $
 
 rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
 
@@ -28,7 +28,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 <body {$body_onload}>
 
 <div class="workBack">
-<h1>{$gui->main_descr|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
 <table class="simple" style="width: 90%">
 	<tr>

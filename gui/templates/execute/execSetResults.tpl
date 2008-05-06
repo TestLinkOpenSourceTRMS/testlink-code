@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.17 2008/05/04 10:30:39 franciscom Exp $
+$Id: execSetResults.tpl,v 1.18 2008/05/06 06:26:06 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20080322 - franciscom - feature: allow edit of execution notes
@@ -98,7 +98,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_EXEC_HISTORY# }Nifty('div.exec_history');{/if}
               {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}">
 
-<h1>
+<h1 class="title">
  {lang_get s='help' var='text_hint'}
  {include file="inc_help.tpl" help="execMain" locale=$locale
           inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
@@ -536,7 +536,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                args_labels=$labels}
 	  {/if}
  	  {if $tc_exec.active eq 0}
- 	   <h1><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
+ 	   <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
  	  {/if}
 	<hr />
 	</div>

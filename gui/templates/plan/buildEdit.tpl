@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.5 2008/02/17 16:34:45 franciscom Exp $
+$Id: buildEdit.tpl,v 1.6 2008/05/06 06:26:07 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -50,7 +50,7 @@ function validateForm(f)
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{$main_descr|escape}</h1>
+<h1 class="title">{$main_descr|escape}</h1>
 
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$user_feedback 

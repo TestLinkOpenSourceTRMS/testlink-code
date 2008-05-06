@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.10 2008/02/04 14:58:17 schlundus Exp $
+$Id: buildView.tpl,v 1.11 2008/05/06 06:26:07 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -41,7 +41,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 <body {$body_onload}>
 
-<h1>{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
+<h1 class="title">{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
 
 <div class="workBack">
 {include file="inc_update.tpl" result=$sqlResult item="build"}

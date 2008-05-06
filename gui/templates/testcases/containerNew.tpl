@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.2 2007/12/07 07:03:45 franciscom Exp $
+$Id: containerNew.tpl,v 1.3 2008/05/06 06:26:12 franciscom Exp $
 Purpose: smarty template - create containers
 
 20070214 - franciscom -
@@ -45,10 +45,10 @@ function validateForm(f)
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
 {config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
 
-<h1>{$parent_info.description}{$smarty.const.TITLE_SEP}{$parent_info.name|escape}</h1>
+<h1 class="title">{$parent_info.description}{$smarty.const.TITLE_SEP}{$parent_info.name|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_create'} {lang_get s=$level}</h1>
+<h1 class="title">{lang_get s='title_create'} {lang_get s=$level}</h1>
 	
 {include file="inc_update.tpl" result=$sqlResult 
                                user_feedback=$user_feedback

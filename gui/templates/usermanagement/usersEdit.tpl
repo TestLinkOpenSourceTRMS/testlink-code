@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.15 2008/04/26 18:29:13 schlundus Exp $
+$Id: usersEdit.tpl,v 1.16 2008/05/06 06:26:14 franciscom Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -87,7 +87,7 @@ function validateForm(f,check_password)
 
 <body>
 
-<h1>{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
+<h1 class="title">{$labels.title_user_mgmt} - {$labels.title_account_settings} </h1>
 
 {assign var="user_id" value=''}
 {assign var="user_login" value=''}

@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: cfieldsEdit.tpl,v 1.9 2008/05/02 07:09:23 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.10 2008/05/06 06:25:57 franciscom Exp $
 
 
 Important Development note:
@@ -248,7 +248,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 <body {$body_onload}>
 
-<h1>
+<h1 class="title">
  {lang_get s='help' var='common_prefix'}
  {assign var="text_hint" value="$common_prefix"}
  {include file="inc_help.tpl" help="custom_fields" locale=$locale

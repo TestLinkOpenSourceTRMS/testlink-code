@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.9 2008/04/17 08:24:00 franciscom Exp $
+$Id: reqEdit.tpl,v 1.10 2008/05/06 06:26:09 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -50,11 +50,11 @@ window.onload=function()
 
 
 <body>
-<h1>{$gui->main_descr|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
 {if $gui->action_descr != ''}
-    <h1>{$gui->action_descr|escape}</h1>
+    <h1 class="title">{$gui->action_descr|escape}</h1>
     <br />
  {/if}
 

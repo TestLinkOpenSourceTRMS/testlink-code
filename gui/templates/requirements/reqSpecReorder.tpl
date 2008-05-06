@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecReorder.tpl,v 1.6 2008/04/19 16:12:33 franciscom Exp $
+$Id: reqSpecReorder.tpl,v 1.7 2008/05/06 06:26:10 franciscom Exp $
 
 rev: 20080419 - franciscom - interface refactoring
 *}
@@ -20,10 +20,10 @@ rev: 20080419 - franciscom - interface refactoring
 
 
 <body onload="init_drag_and_drop('{$basehref}','{$tree_id}');">
-<h1>{$gui->main_descr|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
-<h1>{$gui->action_descr|escape}</h1>
+<h1 class="title">{$gui->action_descr|escape}</h1>
 
 <div>
  	<ul id="{$tree_id}" class="dhtmlgoodies_tree">

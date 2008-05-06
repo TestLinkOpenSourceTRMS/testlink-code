@@ -44,7 +44,7 @@ function check_action_precondition(form_id,action)
 
 <body>
 
-<h1>
+<h1 class="title">
  {lang_get s='help' var='common_prefix'}
  {lang_get s='req_spec' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
@@ -56,7 +56,7 @@ function check_action_precondition(form_id,action)
 
 
 <div class="workBack">
-<h1>{$labels.req_title_assign}</h1>
+<h1 class="title">{$labels.req_title_assign}</h1>
 
 {include file="inc_update.tpl" user_feedback=$user_feedback}
 

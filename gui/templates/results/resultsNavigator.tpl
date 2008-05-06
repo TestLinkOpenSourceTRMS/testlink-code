@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.3 2007/12/09 02:17:08 havlat Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.4 2008/05/06 06:26:11 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -29,7 +29,7 @@ function pre_submit()
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='title_nav_results'}</h1>
+<h1 class="title">{lang_get s='title_nav_results'}</h1>
 
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
 <div class="menu_bar">

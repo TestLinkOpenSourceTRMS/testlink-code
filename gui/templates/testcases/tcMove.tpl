@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcMove.tpl,v 1.3 2008/01/04 20:29:59 franciscom Exp $ 
+$Id: tcMove.tpl,v 1.4 2008/05/06 06:26:13 franciscom Exp $ 
 Purpose: smarty template - move/copy test case 
 
 rev:20080104 - franciscom - added radio to choose position 
@@ -15,10 +15,10 @@ rev:20080104 - franciscom - added radio to choose position
           s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
              choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp"}
 <body>
-<h1>{$labels.test_case}{$smarty.const.TITLE_SEP}{$name|escape}</h1>
+<h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$name|escape}</h1>
 
 <div class="workBack">
-<h1>{$labels.title_mv_cp_tc}</h1>
+<h1 class="title">{$labels.title_mv_cp_tc}</h1>
 
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$testcase_id}">
   <p>

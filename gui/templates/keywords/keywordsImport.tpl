@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsImport.tpl,v 1.1 2007/12/08 15:44:36 franciscom Exp $ *}
+{* $Id: keywordsImport.tpl,v 1.2 2008/05/06 06:26:06 franciscom Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
    20051231 - scs - fixed incorrect cancel button link
@@ -7,10 +7,10 @@
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='testproject'}{$smarty.const.TITLE_SEP}{$tproject_name|escape}</h1>
+<h1 class="title">{lang_get s='testproject'}{$smarty.const.TITLE_SEP}{$tproject_name|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_keyword_import'}</h1>
+<h1 class="title">{lang_get s='title_keyword_import'}</h1>
 
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
   <table>

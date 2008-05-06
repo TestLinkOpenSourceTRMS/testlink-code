@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.1 2007/12/02 17:21:18 franciscom Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.2 2008/05/06 06:26:11 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070826 - franciscom - localization
@@ -9,7 +9,7 @@
 <body>
 
 {if $printDate == ''}
-<h1>{$title|escape}</h1>
+<h1 class="title">{$title|escape}</h1>
 
 {else}{* print data to excel *}
 <table style="font-size: larger;font-weight: bold;">

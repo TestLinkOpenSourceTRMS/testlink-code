@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.10 2008/04/14 09:56:40 franciscom Exp $ 
+$Id: rolesView.tpl,v 1.11 2008/05/06 06:26:13 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev:
@@ -36,7 +36,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 </head>
 
 <body {$body_onload}>
-<h1>{$labels.title_user_mgmt} - {$labels.title_roles}</h1>
+<h1 class="title">{$labels.title_user_mgmt} - {$labels.title_roles}</h1>
 
 {***** TABS *****}
 {include file="usermanagement/tabsmenu.tpl"}
@@ -49,7 +49,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
   {assign var="draw_create_btn" value="0"}
 
   {* show user list of users having role he/she want to delete *}
-  <h1>{$labels.delete_role} {$roles[$id]->name|escape}</h1>
+  <h1 class="title">{$labels.delete_role} {$roles[$id]->name|escape}</h1>
   
 	<table class="common" style="width:50%">
 	<caption>{$labels.caption_possible_affected_users}</caption>

@@ -1,13 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.2 2008/03/31 20:08:04 schlundus Exp $
+$Id: resultsByStatus.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $
 Purpose: show Test Results and Metrics
 *}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>{$title|escape}</h1>
+<h1 class="title">{$title|escape}</h1>
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl"

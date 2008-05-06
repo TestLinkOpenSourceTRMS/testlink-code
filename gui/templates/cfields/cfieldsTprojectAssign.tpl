@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.3 2008/01/30 17:49:40 schlundus Exp $
+$Id: cfieldsTprojectAssign.tpl,v 1.4 2008/05/06 06:25:57 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
@@ -16,7 +16,7 @@ rev :
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>
+<h1 class="title">
 {lang_get s='cfields_tproject_assign'}{$smarty.const.TITLE_SEP_TYPE2}{lang_get s="testproject"}{$smarty.const.TITLE_SEP}{$tproject_name|escape}
 </h1>
 

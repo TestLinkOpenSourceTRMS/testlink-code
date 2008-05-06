@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.2 2008/03/18 21:05:27 schlundus Exp $
+$Id: tcDelete.tpl,v 1.3 2008/05/06 06:26:13 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
@@ -14,10 +14,10 @@ rev :
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$testcase_name|escape}</h1>
+<h1 class="title">{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$testcase_name|escape}</h1>
 
 <div class="workBack">
-<h1>{$title}</h1>
+<h1 class="title">{$title}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult action=$action item="test case"
          refresh=$smarty.session.tcspec_refresh_on_action}

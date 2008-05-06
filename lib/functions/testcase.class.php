@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.106 $
- * @modified $Date: 2008/04/27 17:35:45 $ $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2008/05/06 06:27:26 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080425 - franciscom - replacing DEFINE with const
@@ -248,8 +248,6 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
                            $check_duplicate_name=0,
                            $action_on_duplicate_name='generate_new')
 {
-  // debug
-  echo "<pre>debug 20080425 - \ - " . __FUNCTION__ . " --- ";echo "</pre>";
   $ret['id'] = -1;
   $ret['external_id']=0;
   $ret['status_ok'] = 1;
@@ -292,7 +290,6 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
     $tprojectID=$path2root[0]['parent_id'];
     $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tprojectID);
 
-    echo "<pre>debug 20080425 - \ - " . __FUNCTION__ . " --- "; print_r('f'); echo "</pre>";
     $tcase_id = $this->tree_manager->new_node($parent_id,
                                                $this->my_node_type,$name,$order,$id);
     $ret['id'] = $tcase_id;

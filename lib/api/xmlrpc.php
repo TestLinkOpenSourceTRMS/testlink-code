@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/04/09 16:06:39 $ by $Author: asielb $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/05/06 06:27:25 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,14 +22,14 @@
  * 
  *
  * rev :
- * 		20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
+ * 		  20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
  *      20080307 - franciscom - now is possible to use test case external or internal ID
  *                              when calling reportTCResult()
  *      20080306 - franciscom - BUGID 1421
  *      20080305 - franciscom - minor code refactoring
  *      20080103 - franciscom - fixed minor bugs due to refactoring
- * 		20080115 - havlatm - 0001296: API table refactoring 
+ * 		  20080115 - havlatm - 0001296: API table refactoring 
  */
 
 /** 

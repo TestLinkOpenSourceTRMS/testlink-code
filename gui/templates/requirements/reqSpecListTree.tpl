@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $ 
+$Id: reqSpecListTree.tpl,v 1.2 2008/05/06 06:26:10 franciscom Exp $ 
 show requirement specifications tree menu
 *}
 {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
@@ -12,7 +12,7 @@ var req_manager_url = '{$req_manager_url}';
 
 <body>
 
-<h1>{$treeHeader}</h1>
+<h1 class="title">{$treeHeader}</h1>
 <div style="margin: 3px;">
   <form>
   	<table class="smallGrey" width="100%">

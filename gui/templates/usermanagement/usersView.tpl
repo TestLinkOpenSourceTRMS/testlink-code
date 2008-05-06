@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.10 2008/04/14 09:56:40 franciscom Exp $
+$Id: usersView.tpl,v 1.11 2008/05/06 06:26:14 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -29,7 +29,7 @@ Purpose: smarty template - users overview
 
 {if $grants->user_mgmt == "yes"}
 
-	<h1>{$labels.title_user_mgmt}</h1>
+	<h1 class="title">{$labels.title_user_mgmt}</h1>
 	{***** TABS *****}
   {include file="usermanagement/tabsmenu.tpl"}
 

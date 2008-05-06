@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/05/04 10:33:33 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/05/06 06:27:26 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
  * rev :
+ *      20080505 - franciscom - renderTestCaseForPrinting() - added custom fields
  *      20080418 - franciscom - document_generation configuration .
  *                              removed tlCfg global coupling
  *
@@ -212,11 +213,11 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0)
 {
+	$tc_mgr = new testcase($db);
  	$id = $node['id'];
 	$name = htmlspecialchars($node['name']);
 
 	$code = null;
-  $tc_mgr = null;
   $tcInfo = null;
   $tcResultInfo = null;
 
@@ -225,11 +226,18 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	if( $printingOptions['body'] || $printingOptions['summary'] ||
 	    $printingOptions['author'] || $printingOptions['keyword'])
 	{
-		$tc_mgr = new testcase($db);
-    	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
+    $tcInfo = $tc_mgr->get_by_id($id,$versionID);
 		if ($tcInfo)
 			$tcInfo=$tcInfo[0];
 	}
+	$cfields = $tc_mgr->html_table_of_custom_field_values($id);
+
+  if(strlen(trim($cfields)) > 0 )
+  {
+      $cfields=str_replace('<td class="labelHolder">','<td>',$cfields);  
+      $cfields=str_replace('<table>','',$cfields);
+      $cfields=str_replace('</table>','',$cfields);
+  }
 	
 	/* Need to be refactored - franciscom - 20080504
 	if($printingOptions['passfail'])
@@ -280,6 +288,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
 	   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
 	}
+  
+  $code .= $cfields;
 
 	// collect REQ for TC
 	// MHT: based on contribution by JMU (1045)
@@ -299,7 +309,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 		}
 		else
 		{
-			$code .= lang_get('none');
+			$code .= '&nbsp;' . lang_get('none') . '<br>';
 		}
 		$code .= "</td></tr>";
 	}
@@ -319,12 +329,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 		}
 		else
 		{
-			$code .= lang_get('none');
+			$code .= '&nbsp;' . lang_get('none') . '<br>';
 		}
 		$code .= "</td></tr>";
 	}
 
-	$code .= "</table></div>";
+	$code .= "</table></div><p><p>";
 
   if( !is_null($tc_mgr) )
 	{

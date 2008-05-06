@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrderDnD.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ 
+$Id: containerOrderDnD.tpl,v 1.2 2008/05/06 06:26:12 franciscom Exp $ 
 Purpose: smarty template - reorder container contents using JS Drag and drop
 
 rev :
@@ -48,10 +48,10 @@ function saveMyTree_byForm()
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 
 <body onload="init_drag_drop('{$basehref}','{$tree_id}');">
-<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$object_name|escape}</h1>
+<h1 class="title">{lang_get s=$level}{$smarty.const.TITLE_SEP}{$object_name|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_change_node_order'}</h1>
+<h1 class="title">{lang_get s='title_change_node_order'}</h1>
 
 <div>	
 	{if $arraySelect eq ''}

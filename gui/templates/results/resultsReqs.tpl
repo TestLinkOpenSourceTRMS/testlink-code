@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.4 2008/05/02 07:09:24 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.5 2008/05/06 06:26:11 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -9,7 +9,7 @@ Author : Martin Havlat
 
 <body>
 
-<h1>
+<h1 class="title">
  {lang_get s='help' var='common_prefix'}
  {lang_get s='req_spec' var="xx_alt"}
  {assign var="text_hint" value="$common_prefix: $xx_alt"}

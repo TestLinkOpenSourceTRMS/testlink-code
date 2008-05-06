@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.5 2008/03/09 18:44:47 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.6 2008/05/06 06:27:27 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -25,41 +25,33 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
 
-$template_dir='plan/';
+$templateCfg = templateConfiguration();
 
-$tplan_id = $_SESSION['testPlanId'];
-$tplan_name = $_SESSION['testPlanName'];
+
+$args = init_args();
+$gui = new stdClass();
 
 $tcase_cfg=config_get('testcase_cfg');
-$tproject_id =  $_SESSION['testprojectID'];
-$tproject_name =  $_SESSION['testprojectName'];
+$gui->pageTitle = lang_get('test_plan') . $guiCfg->title_sep_1 . $tplan_info['name'];
 
-$testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($tproject_id);
-$testCasePrefix .= $tcase_cfg->glue_character;
-
-$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-$version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
-$level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
-$keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-$do_remove = isset($_REQUEST['do_action']) ? 1 : 0;
-$user_feedback='';
-
-$resultString = null;
-$arrData = array();
+$gui->testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id);
+$gui->testCasePrefix .= $tcase_cfg->glue_character;
+$gui->user_feedback='';
 
 // ---------------------------------------------------------------------------------------
-if($do_remove)
+if($args->doAction == 'doAddRemove')
 {
+  $do_remove=1;
   $a_tc = isset($_POST['remove_checked_tc']) ? $_POST['remove_checked_tc'] : null;
   if(!is_null($a_tc))
   {
       // remove without warning
-      $tplan_mgr->unlink_tcversions($tplan_id,$a_tc);   
+      $tplan_mgr->unlink_tcversions($args->tplan_id,$a_tc);   
       
-      $user_feedback=lang_get("tcase_removed_from_tplan");
+      $gui->user_feedback=lang_get("tcase_removed_from_tplan");
       if( count($a_tc) > 1 )
       {
-        $user_feedback=lang_get("multiple_tcase_removed_from_tplan");
+        $gui->user_feedback=lang_get("multiple_tcase_removed_from_tplan");
       }
   }  
   else
@@ -69,34 +61,32 @@ if($do_remove)
   }
 }
 
-$dummy = null;
 $out = null;
-$map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id,$tproject_name,
-                                                     $tplan_id,$tplan_name,$keyword_id);
+$map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id,$args->tproject_name,
+                                                     $args->tplan_id,$args->tplan_name,$keyword_id);
 $total_tccount=0;
 foreach($map_node_tccount as $elem)
 {
   $total_tccount +=$elem['testcount'];
 }		
 
-switch($level)
+switch($args->level)
 {
 	case 'testcase':
-		
 		if( $total_tccount > 0 && !$do_remove)
 		{
   		// build data needed to call gen_spec_view
-	  	$my_path = $tree_mgr->get_path($id);
+	  	$my_path = $tree_mgr->get_path($args->id);
 		  $idx_ts = count($my_path)-1;
 		  $tsuite_data= $my_path[$idx_ts-1];
 		
-		  $pp = $tcase_mgr->get_versions_status_quo($id, $version_id, $tplan_id);
-		  $linked_items[$id] = $pp[$version_id];
+		  $pp = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id, $args->tplan_id);
+		  $linked_items[$id] = $pp[$args->version_id];
 		  $linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
-		  $linked_items[$id]['tc_id'] = $id;
+		  $linked_items[$id]['tc_id'] = $args->id;
 
-  		$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-	  			                 $linked_items,$map_node_tccount,$keyword_id,
+  		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+	  			                 $linked_items,$map_node_tccount,$args->keyword_id,
 	  			                 FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		}
 	  break;
@@ -104,37 +94,69 @@ switch($level)
 	case 'testsuite':
 		if( $total_tccount > 0 )
 		{
-  		$tsuite_data = $tsuite_mgr->get_by_id($id);
+  		$tsuite_data = $tsuite_mgr->get_by_id($args->id);
 
-	  	$out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
-                           $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
+	  	$out = gen_spec_view($db,'testplan',$args->tplan_id,$args->id,$tsuite_data['name'],
+                           $tplan_mgr->get_linked_tcversions($args->tplan_id,FILTER_BY_TC_OFF,$args->keyword_id),
                            $map_node_tccount,
-                           $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+                           $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
     }                       
 		break;
 		
 	default:
-		// show instructions
-  	redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planRemoveTC");
-
+  show_instructions('planRemoveTC');
+	exit();
 	break;
 }
 
-
-$smarty = new TLSmarty();
-
-$smarty->assign('has_tc', 1);
-$smarty->assign('arrData',null);
-$smarty->assign('testCasePrefix', $testCasePrefix);
-
-if( !is_null($out) )
+$gui->refreshTree=($do_remove ? 1 : 0);
+$gui->items=null;
+$gui->has_tc=1;
+if(is_null($out) )
 {
-  $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
-  $smarty->assign('arrData', $out['spec_view']);
+  show_instructions('planRemoveTC',1);
+	exit();
+}
+else
+{
+  $gui->has_tc=($out['num_tc'] > 0 ? 1:0);
+  $gui->items=$out['spec_view'];
 }
 
-$smarty->assign('user_feedback', $user_feedback);
-$smarty->assign('testPlanName', $tplan_name);
-$smarty->assign('refreshTree', $do_remove ? 1 : 0);
-$smarty->display($template_dir . 'planRemoveTC_m1.tpl');
+$smarty = new TLSmarty();
+$smarty->assign('gui', $gui);
+$smarty->display($templateCfg->template_dir . 'planRemoveTC_m1.tpl');
+
+
+/*
+  function: init_args
+            creates a sort of namespace
+
+  args:
+
+  returns: object with some REQUEST and SESSION values as members
+
+*/
+function init_args()
+{
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+
+	$args = new stdClass();
+
+  $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+  $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
+  $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
+  $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+  $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+
+
+  $args->tplan_id = $_SESSION['testPlanId'];
+  $args->tplan_name = $_SESSION['testPlanName'];
+  $args->tproject_id =  $_SESSION['testprojectID'];
+  $args->tproject_name =  $_SESSION['testprojectName'];
+
+	return $args;
+}
+
 ?>
+

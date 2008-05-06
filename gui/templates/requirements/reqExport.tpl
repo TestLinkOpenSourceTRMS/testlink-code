@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.3 2008/03/09 18:38:18 franciscom Exp $ *}
+{* $Id: reqExport.tpl,v 1.4 2008/05/06 06:26:09 franciscom Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
@@ -41,10 +41,10 @@ function validateForm(f)
 </head>
 
 <body>
-<h1>{lang_get s='req_spec'} {$smarty.const.TITLE_SEP} {$req_spec.title|escape}</h1>
+<h1 class="title">{lang_get s='req_spec'} {$smarty.const.TITLE_SEP} {$req_spec.title|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_req_export'}</h1>
+<h1 class="title">{lang_get s='title_req_export'}</h1>
 
 <form method="post" enctype="multipart/form-data" action="{$req_export_url}"
       onSubmit="javascript:return validateForm(this);">

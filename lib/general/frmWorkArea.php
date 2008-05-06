@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/05/02 07:09:36 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/05/06 06:27:26 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -43,7 +43,7 @@ $aa_tfp = array(
             'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
             'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
             'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
-            'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=testSetRemove',
+            'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
             'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
             'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',

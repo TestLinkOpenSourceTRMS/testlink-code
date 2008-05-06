@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.4 2008/05/02 07:09:23 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.5 2008/05/06 06:26:08 franciscom Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
@@ -27,7 +27,7 @@ function pre_submit()
 </head>
 <body>
 
-<h1>{lang_get s='title_navigator'} {lang_get s='TestPlan'} {$additional_string|escape}</h1>
+<h1 class="title">{lang_get s='title_navigator'} {lang_get s='TestPlan'} {$additional_string|escape}</h1>
 <div style="margin: 3px;">
 <form method="post" id="testSetNavigator" onSubmit="javascript:return pre_submit();">
 	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />

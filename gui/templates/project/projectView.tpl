@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.8 2008/03/22 23:47:03 schlundus Exp $
+$Id: projectView.tpl,v 1.9 2008/05/06 06:26:08 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
@@ -39,7 +39,7 @@ var del_action=fRoot+'{$deleteAction}';
 
 <body {$body_onload}>
 
-<h1>{$labels.title_testproject_management}</h1>
+<h1 class="title">{$labels.title_testproject_management}</h1>
 <div class="workBack">
 <div id="testproject_management_list">
 {if $tprojects eq ''}

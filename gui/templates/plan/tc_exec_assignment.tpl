@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.5 2008/01/14 21:43:23 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.6 2008/05/06 06:26:08 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -16,7 +16,7 @@ rev :
 </head>
 <body>
 
-<h1>{lang_get s='title_tc_exec_assignment'}  {$testPlanName|escape}</h1>
+<h1 class="title">{lang_get s='title_tc_exec_assignment'}  {$testPlanName|escape}</h1>
 
 
 {if $has_tc }

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.8 2007/11/09 20:04:57 schlundus Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.9 2008/05/06 06:25:29 franciscom Exp $ *}
 {* Purpose: smarty template - template for attachment upload dialog 
 
    rev :
@@ -11,7 +11,7 @@
 <body onunload="attachmentDlg_onUnload()" onload="attachmentDlg_onLoad()">
 {config_load file="input_dimensions.conf" section="attachmentupload"} {* Constant definitions *}
 
-<h1>{lang_get s='title_upload_attachment'}</h1>
+<h1 class="title">{lang_get s='title_upload_attachment'}</h1>
 {if $bUploaded == 1}
 	{lang_get s='attachment_upload_ok' var=user_feedback}
   {include file="inc_update.tpl" user_feedback=$user_feedback}

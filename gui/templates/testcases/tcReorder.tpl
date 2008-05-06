@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcReorder.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: tcReorder.tpl,v 1.2 2008/05/06 06:26:13 franciscom Exp $
 Purpose: reorder testcases 
 20051015 - fm - BUGID 181 - data -> categoryID
 *}
@@ -9,7 +9,7 @@ Purpose: reorder testcases
 <body>
 <div class="workBack">
 
-<h1>{lang_get s='title_change_tc_order'}</h1>
+<h1 class="title">{lang_get s='title_change_tc_order'}</h1>
 
 <div>	
 

@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.51 2008/05/02 07:09:36 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.52 2008/05/06 06:27:27 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -25,22 +25,32 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$template_dir = 'plan/';
+$templateCfg = templateConfiguration();
 
 $args = init_args();
+$gui = new stdClass();
+$guiCfg = config_get('gui');
 $tcase_cfg = config_get('testcase_cfg');
 $do_display = 0;
 
-$testCasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-$testCasePrefix .= $tcase_cfg->glue_character;
+$gui->testCasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+$gui->testCasePrefix .= $tcase_cfg->glue_character;
+$gui->keywords_filter = '';
+$gui->has_tc=0;
+$gui->items=null;
+$gui->has_linked_items=false;
+
+// full_control, controls the operations planAddTC_m1.tpl will allow
+// 1 => add/remove
+// 0 => just remove
+$gui->full_control=1;
 
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-$tplan_name = $tplan_info['name'];
-
+$gui->pageTitle = lang_get('test_plan') . $guiCfg->title_sep_1 . $tplan_info['name'];
+$gui->refreshTree=false;
 
 $smarty = new TLSmarty();
-$smarty->assign('testPlanName', $tplan_name);
 
 define('DONT_FILTER_BY_TCASE_ID',null);
 define('ANY_EXEC_STATUS',null);
@@ -118,16 +128,12 @@ if($do_display)
 	  	                   $tplan_linked_tcversions, $map_node_tccount,$args->keyword_id,DONT_FILTER_BY_TCASE_ID);
     
     
-	  // full_control, controls the operations planAddTC_m1.tpl will allow
-	  // 1 => add/remove
-	  // 0 => just remove
-	  $smarty->assign('full_control', 1);
-	  $smarty->assign('testCasePrefix', $testCasePrefix);
-	  $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
-	  $smarty->assign('arrData', $out['spec_view']);
-	  $smarty->assign('has_linked_items',$out['has_linked_items']);
-	  $smarty->assign('key', '');
-	  $smarty->display($template_dir .  'planAddTC_m1.tpl');
+	  $gui->has_tc=($out['num_tc'] > 0 ? 1 : 0);
+	  $gui->items=$out['spec_view'];
+	  $gui->has_linked_items=$out['has_linked_items'];
+
+    $smarty->assign('gui', $gui);
+	  $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
 
 /*

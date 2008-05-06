@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/01/28 21:17:30 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/05/06 06:27:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
 */
@@ -15,13 +15,13 @@ require_once( dirname(__FILE__) . '/attachment.class.php' );
 
 class tlAttachmentRepository extends tlObjectWithDB
 {
-	//the one and only attachment repository object
-	private static $s_instance;
+	  //the one and only attachment repository object
+	  private static $s_instance;
 	
     private $repositoryType;
-	private $repositoryCompressionType;
+	  private $repositoryCompressionType;
    	protected $repositoryPath;
-	protected $attachmentCfg;
+	  protected $attachmentCfg;
 
 	
 	function __construct(&$db)
@@ -31,8 +31,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 		global $g_repositoryPath;
 
 		tlObjectWithDB::__construct($db);
-    	$this->repositoryType = $g_repositoryType;
-    	$this->repositoryCompressionType = $g_repositoryCompressionType;
+    $this->repositoryType = $g_repositoryType;
+    $this->repositoryCompressionType = $g_repositoryCompressionType;
 		$this->repositoryPath = $g_repositoryPath;
 		$this->attachmentCfg = config_get('attachments');
 	}

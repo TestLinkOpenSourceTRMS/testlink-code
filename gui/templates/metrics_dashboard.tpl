@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metrics_dashboard.tpl,v 1.2 2007/12/19 20:27:18 schlundus Exp $     
+ $Id: metrics_dashboard.tpl,v 1.3 2008/05/06 06:25:29 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                   
@@ -9,7 +9,7 @@
 
 <body>
 <div class="workBack">
-<h1>{lang_get s='testproject'} {$smarty.const.TITLE_SEP} {$tproject_name}</h1>
+<h1 class="title">{lang_get s='testproject'} {$smarty.const.TITLE_SEP} {$tproject_name}</h1>
 
 <table class="mainTable" style="width: 100%">
   <tr>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: workAreaSimple.tpl,v 1.3 2006/08/10 07:10:42 franciscom Exp $
+$Id: workAreaSimple.tpl,v 1.4 2008/05/06 06:25:30 franciscom Exp $
 Purpose: show workarea with simple structure title + content + link
 *}
 {include file="inc_head.tpl"}
@@ -8,7 +8,7 @@ Purpose: show workarea with simple structure title + content + link
 <body>
 
 {if $title ne ''}
-	<h1>{$title|escape}</h1>
+	<h1 class="title">{$title|escape}</h1>
 {/if}
 
 <div class="workBack">

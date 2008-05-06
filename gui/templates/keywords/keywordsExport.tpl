@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsExport.tpl,v 1.3 2008/02/07 21:05:26 schlundus Exp $
+$Id: keywordsExport.tpl,v 1.4 2008/05/06 06:26:06 franciscom Exp $
 Purpose: smarty template - keyword export 
 rev:
 *}
@@ -30,10 +30,10 @@ function validateForm(f)
 
 
 <body>
-<h1>{$main_descr|escape}</h1>
+<h1 class="title">{$main_descr|escape}</h1>
 
 <div class="workBack">
-<h1>{$action_descr|escape}</h1>
+<h1 class="title">{$action_descr|escape}</h1>
 
   <form method="post" id="export_xml" enctype="multipart/form-data" 
         action="{$action_url}"

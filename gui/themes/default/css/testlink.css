@@ -1,9 +1,10 @@
 /*
-D:\w3\tl\head_20080119\gui\themes\theme_m2\css\
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.4 2008/05/06 06:27:05 franciscom Exp $
-Purpose: main css - theme m2
+$Id: testlink.css,v 1.5 2008/05/06 14:23:55 havlat Exp $
 
+Purpose: Default TestLink CSS
+
+20080502 - havlatm - remove invalid attributes, refactorization (valid standard CSS 2.1)
 20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
 20080127 - franciscom - need to clone some classes to avoid problems due to ext-js css.
 20071227 - franciscom - input.tl-input
@@ -48,6 +49,41 @@ span, div {
 	padding:		0px;
 }
 
+/* h1.title - To avoid problems with ext js css */
+h1, h1.title {
+	background:		#059;
+	border: 		1px solid black;
+	color:			white;
+	margin-bottom:	4px;
+	padding: 		3px;
+	text-align: 	left;
+	font-size:		120%;
+	font-weight:    bold;
+}
+
+
+h2 {
+	font-size:		110%;
+	font-weight:    bold;
+}
+
+h3, h3.testlink {
+	font-size:		105%;
+	margin-bottom:	2px;
+	padding: 		2px;
+}
+
+/* ***** Links ***** */
+/* A Visited link is still blue */
+a:visited, a:link, a:active {
+	color: 			#059;
+	text-decoration: none;
+}
+/* A link being hovered over is red*/
+a:hover   {
+	color: 			#900;
+	text-decoration: none;
+}
 
 /* ***** Menu bar specific ******************************************* */
 div.menu_title {
@@ -131,22 +167,12 @@ table.link_and_exec th {
 
 /* **** general classes ************************************* */
 
-/* this is obsolete - use <h1> instead of this */
-div.pagetitle {
-	background:		#059;
-	color:			white;
-	font-size:		85%;
-	font-weight:    bold;
-	padding: 		2px 2px 2px 5px;
-	margin-top:		5px;
-}
-
 /* background for working area (tables and forms) */
 div.workBack {
 	text-align: 	left;
 	margin: 		3px;
 	background: 	#CDE;
-	padding: 		5px;
+	padding: 		3px;
 	border-style:	groove;
 	border-width:	thin;
 }
@@ -160,36 +186,12 @@ div.tree {
 	overflow: 		auto; /* BUGID: SF1243287 */
 }
 
-/* h1.title - To avoid problems with ext js css */
-h1, h1.title {
-	background:		#059;
-	border: 		1px solid black;
-	color:			white;
-	margin-bottom:	4px;
-	padding: 		2px;
-	text-align: 	left;
-}
-
-
-h2 {
-	font-size:		80%;
-}
-
-h3.testlink {
-	margin-bottom:	2px;
-	padding: 		2px;
-}
-
 div.groupBtn {
-	padding:		0px;
+	padding:		5px;
 }
 
-.title {
-	font-weight:    bold;
-	font-size:		85%;
-}
-
-.bold {
+/* .label is used to magnify label for active objects */
+.bold, .label {
 	font-weight:    bold;
 }
 
@@ -202,7 +204,24 @@ div.groupBtn {
 }
 
 
-/* ***** Messages ************************************************ */
+
+/* ***** Links to help files ******************************************* */
+img.help {
+	vertical-align: top;
+	float:			right;
+}
+/* This allows link help from text e.g. instruction
+ * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">Test Specification</span>
+ */
+span.help
+{
+	cursor: 		help;
+	text-decoration: underline;
+}
+
+
+
+/* ***** Messages ******************************************************* */
 /* show results of SQL actions or important information for user */
 div.error, .info {
 	font-size:		110%;
@@ -230,37 +249,41 @@ div.user_feedback{
 	padding: 		2px;
 }
 
-
-/* ***** Links to help files ******************************** */
-img.help {
-	vertical-align: top;
-	float:			right;
+div.notesBox, table.notesBox {
+	background: 	#FFC;
+	border: 		thin dashed black;
+	color: 			black;
+	margin: 		12px;
+	padding: 		12px;
+	width: 97%;
 }
 
-/* This allows link help from text e.g. instruction
- * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">Test Specification</span>
- */
-span.help
-{
-	cursor: 		help;
-	text-decoration: underline;
+textarea.tcDesc {
+	background: 	white;
+	border: 		medium solid #808080;
 }
 
-/* ***** Links *********************************************** */
-
-/* A Visited link is still blue */
-a:visited, a:link, a:active {
-	color: 			#059;
-	text-decoration: none;
+.warning_message {
+background-color:#059;
+color:white;
+padding:4px;
 }
-/* A link being hovered over is red*/
-a:hover   {
-	color: 			#900;
-	text-decoration: none;
+
+.login_warning_message {
+background-color:#059;
+color:white;
+padding:4px;
 }
 
 
-/***** tabbed menu ***********************************/
+/* 20070204 - franciscom */
+.red_alert {
+background-color:#990000;
+color:white;
+}
+
+
+/***** tabbed menu *********************************************** */
 /* add under h1 tag */
 
 div.tabMenu {
@@ -289,7 +312,8 @@ span.unselected a, span.unselected a:visited {
 }
 
 
-/***** Tables *****************************************
+
+/***** Tables **********************************************************
 *
 * Standard table classes:
 *
@@ -328,13 +352,13 @@ table.common caption, table.smallGrey caption {
 	font-weight:    bold;
 }
 
-/* Simple */
+/* Simple Table (often used to show data) */
 table.simple {
 	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
-	margin:			20px;
-	width:			90%;
+	margin:			5px 0px;
+	width:			auto;
 }
 
 table.simple caption {
@@ -358,7 +382,8 @@ table.smallGrey {
 table.invisible {
 	border: 		0px none;
 	font-size:		90%;
-	margin:			20px;
+	margin:			5px 0px;
+	width:			auto;
 }
 
 
@@ -375,6 +400,32 @@ table.exec_history th {
 	background:     #CCC;
 	border-bottom:	1px solid black;
 	padding:		2px;
+}
+
+/* Martin: @TODO REMOVE! do not use tables to structure page */
+table.notesBox td
+{
+	vertical-align: top;
+}
+
+
+td.checkbox_cell{
+	width: 			1px;
+}
+
+td.tcase_id_cell{
+	width: 			25px;
+}
+
+table.srs_view td {
+	border: 		1px solid black;
+}
+
+table.test_exec {
+	background: 	#FFC;
+	color: 			black;
+	padding: 		12px;
+	width: 			100%;
 }
 
 
@@ -436,26 +487,8 @@ div.not_run {
 }
 
 
-/* 20070826 - franciscom */
-div.exec_history {
-	background:		#FFF;
-	padding: 		0px 3px;
-}
 
 /* ***** MISC ********************************************* */
-
-/***** Special button (obsolete?) *****/
-a.tlButton {
-	background:		#CDE;
-	border: 		2px outset #808080;
-	font-weight:    bold;
-	padding:		2px;
-	margin:			2px;
-}
-
-a.tlButton:hover {
-	background:     #EEE;
-}
 
 /* execution boxes (result, test scenario, notes) */
 div.resultBox {
@@ -466,28 +499,15 @@ div.resultBox {
 	padding: 		12px;
 }
 
-textarea.tcDesc {
-	background: 	white;
-	border: 		medium solid #808080;
-}
-
-div.notesBox,table.notesBox {
-	background: 	#FFC;
-	border: 		thin dashed black;
-	color: 			black;
-	margin: 		12px;
-	padding: 		12px;
-	width: 97%;
-}
-
-table.notesBox td
-{
-	vertical-align: top;
-}
-
 img.arrow {
 	width: 			16px;
 	height: 		9px;
+}
+
+/* 20070826 - franciscom */
+div.exec_history {
+	background:		#FFF;
+	padding: 		0px 3px;
 }
 
 /* 20060328 - franciscom - I must to comment this better later :( */
@@ -501,41 +521,16 @@ span.type1 {
 	text-align: 	left;
 }
 
-/* 20060819 - franciscom */
-.label {
-	font-weight:    bold;
-}
-
-.warning_message {
-background-color:#059;
-color:white;
-padding:4px;
-}
-
-.login_warning_message {
-background-color:#059;
-color:white;
-padding:4px;
-}
-
-
-/* 20070204 - franciscom */
-.red_alert {
-background-color:#990000;
-color:white;
-}
-
-
 /* 20060820 - franciscom - moved here from tl_login.css */
-div.title {
-	text-align: center;
-	width: 100%;
-	background: #CCDDEE;
-	margin: 0px;
-	padding-bottom: 5px;
-	padding-top: 5px;
-	font-weight : bold;
-	font-variant : small-caps;
+/* used as title in login pages */
+div.fullpage_head {
+	text-align: 	center;
+	width: 			100%;
+	background: 	#CDE;
+	margin: 		0px;
+	padding: 		5px 0px;
+	font-weight : 	bold;
+	font-variant : 	small-caps;
 	letter-spacing: 5px;
 }
 
@@ -549,23 +544,13 @@ div.forms {
 	border: 1px;
 }
 
-p.title  {
-	text-align: center;
-	width: 100%;
-	font-weight : bold;
-}
-
-.time_stamp_creation  {
+.hint, .time_stamp_creation, .time_stamp_last_change  {
 	font-style: 	italic;
 }
 
-.time_stamp_last_change  {
-	font-style: 	italic;
-}
-
-
-div.show_hide_title {
-	font-weight:	bold;
+/* Martin: @TODO clean-up required ; use .label */
+.legend_container, .labelHolder, div.show_hide_title {
+	font-weight: bold;
 }
 
 /* 20070826 - added padding to allow good effect with Nifty */
@@ -583,14 +568,6 @@ div.notes{
 	width: 			100%;
 }
 
-td.checkbox_cell{
-	width: 			1px;
-}
-
-td.tcase_id_cell{
-	width: 			25px;
-}
-
 div.test_exec {
 	background: 	#FFC;
 	border: 		thin dashed black;
@@ -606,23 +583,6 @@ div.exec_test_spec {
 }
 
 
-table.test_exec {
-	background: 	#FFC;
-	color: 			black;
-	padding: 		12px;
-	width: 			100%;
-}
-
-
-
-/* 20061230 - franciscom */
-.labelHolder {
-	font-weight: bold;
-}
-
-.legend_container {
-	font-weight: bold;
-}
 
 .custom_field_container {
   border: thin solid white;
@@ -635,10 +595,6 @@ table.test_exec {
 }
 
 
-table.srs_view td {
-	border: 		1px solid black;
-}
-
 /* 20070523 */
 div.menu_bubble {
   background:#c8dce8;
@@ -650,7 +606,6 @@ div.menu_bubble h3{
   /* border-bottom: 1px solid #005498; */
 }
 
-
 .clickable_icon
 {
   padding: 			2px;
@@ -661,16 +616,11 @@ div.menu_bubble h3{
 
 .icon_cell
 {
-  width: 		5px;
+  width: 			5px;
   text-align: 		center;
   vertical-align: 	middle;
 }
 
-
-.hint
-{
-	font-style: 	italic;
-}
 
 .exec_tc_title {
 	background:		#059;
@@ -720,14 +670,13 @@ th.testlink, td.testlink, tr.testlink td {
 
 .clickable
 {
-/* What's that???	cursor:hand; */
 	cursor:pointer;
 }
 
-/* ----------------------------------------------------------------------------- */
 
-/* ----------------------------------------------------------------------------- */
+/* ***************************************************************************** */
 /* Taken from ext js 2.0, and adapted                                            */
+
 .x-tl-panel{border-style:solid;border-color:#99bbe8;border-width:0;}
 .x-tl-panel-header{overflow:hidden;color:#15428b;font:bold 11px tahoma,arial,verdana,sans-serif;
                    padding:2px 1px 1px 2px;border:1px solid #99bbe8;line-height:15px;

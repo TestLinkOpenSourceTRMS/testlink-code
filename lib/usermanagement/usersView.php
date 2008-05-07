@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/05/07 13:13:26 $ -  $Author: havlat $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/05/07 13:22:47 $ -  $Author: havlat $
  *
  * shows all users
  *
@@ -36,7 +36,6 @@ switch($args->operation)
 		//user cannot delete itself
 		if ($args->user_id != $_SESSION['currentUser']->dbID)
 		{
-			
 			$user = new tlUser($args->user_id);
 			$sqlResult = $user->readFromDB($db);
 			if ($sqlResult >= tl::OK)
@@ -48,14 +47,11 @@ switch($args->operation)
 					logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
 					$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
 				}
-				else {
-					$user_feedback = lang_get('error_user_not_deleted');
-				}
+			}
 		}
-		else
-		{
+		
+		if ($sqlResult != tl::OK)
 			$user_feedback = lang_get('error_user_not_deleted');
-		}
 
 		$orderBy->type = $args->user_order_by;
 		$orderBy->dir = $args->order_by_dir;

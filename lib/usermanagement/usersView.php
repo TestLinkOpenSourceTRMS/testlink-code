@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/04/21 08:30:03 $ -  $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/05/07 13:13:26 $ -  $Author: havlat $
  *
  * shows all users
  *
@@ -32,26 +32,30 @@ $args=init_args();
 switch($args->operation)
 {
 	case 'delete':
-		$user = new tlUser($args->user_id);
-		$sqlResult = $user->readFromDB($db);
-		if ($sqlResult >= tl::OK)
+
+		//user cannot delete itself
+		if ($args->user_id != $_SESSION['currentUser']->dbID)
 		{
-			$userLogin = $user->login;
-			$sqlResult = $user->deleteFromDB($db);
+			
+			$user = new tlUser($args->user_id);
+			$sqlResult = $user->readFromDB($db);
 			if ($sqlResult >= tl::OK)
 			{
-				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
-				//if the users deletes itself then logout
-				if ($args->user_id == $_SESSION['currentUser']->dbID)
+				$userLogin = $user->login;
+				$sqlResult = $user->deleteFromDB($db);
+				if ($sqlResult >= tl::OK)
 				{
-					header("Location: ../../logout.php");
-					exit();
+					logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
+					$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
 				}
-				$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
-			}
+				else {
+					$user_feedback = lang_get('error_user_not_deleted');
+				}
 		}
-		if ($sqlResult != tl::OK)
+		else
+		{
 			$user_feedback = lang_get('error_user_not_deleted');
+		}
 
 		$orderBy->type = $args->user_order_by;
 		$orderBy->dir = $args->order_by_dir;

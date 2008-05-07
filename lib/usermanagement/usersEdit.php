@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.23 $
-* @modified $Date: 2008/04/26 18:29:14 $ $Author: schlundus $
+* @version $Revision: 1.25 $
+* @modified $Date: 2008/05/07 20:07:41 $ $Author: schlundus $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -33,44 +33,44 @@ $op = new stdClass();
 $highlight = initialize_tabsmenu();
 $op->user_feedback = '';
 
-$actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
+$actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                        'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
                        'resetPassword' => 'doUpdate');
 
 switch($args->doAction)
 {
-    case "edit":
-		   $highlight->edit_user=1;
-		   $user = new tlUser($args->user_id);
-		   $user->readFromDB($db);
-	  break;
-
-	  case "doCreate":
-		    $highlight->create_user=1;
-		    $op = doCreate($db,$args);
-		    $user = $op->user;
-		    $templateCfg->template=$op->template;
+	case "edit":
+		$highlight->edit_user = 1;
+		$user = new tlUser($args->user_id);
+		$user->readFromDB($db);
+		break;
+	
+	case "doCreate":
+		$highlight->create_user = 1;
+		$op = doCreate($db,$args);
+		$user = $op->user;
+		$templateCfg->template = $op->template;
+		break;
+	
+	case "doUpdate":
+		$highlight->edit_user = 1;
+		$sessionUserID = $_SESSION['currentUser']->dbID;
+		$op = doUpdate($db,$args,$sessionUserID);
+		$user = $op->user;
 		break;
 
-    case "doUpdate":
-	      $highlight->edit_user = 1;
-	      $sessionUserID = $_SESSION['currentUser']->dbID;
-	      $op = doUpdate($db,$args,$sessionUserID);
-	      $user = $op->user;
-   	break;
-
-    case "resetPassword":
-		    $highlight->edit_user = 1;
-		    $user = new tlUser($args->user_id);
-		    $user->readFromDB($db);
-		    $op = createNewPassword($db,$args,$user);
+	case "resetPassword":
+		$highlight->edit_user = 1;
+		$user = new tlUser($args->user_id);
+		$user->readFromDB($db);
+		$op = createNewPassword($db,$args,$user);
 		break;
-
-    case "create":
-    default:
-        $highlight->create_user = 1;
-        $user = null;
-    break;
+	
+	case "create":
+		default:
+		$highlight->create_user = 1;
+		$user = new tlUser();
+		break;
 }
 
 $op->operation = $actionOperation[$args->doAction];
@@ -80,11 +80,10 @@ unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
-
 $smarty->assign('operation',$op->operation);
 $smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('external_password_mgmt', tlUser::isPasswordMgtExternal());
-$smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
+$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 $smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
@@ -102,7 +101,7 @@ renderGui($smarty,$args,$templateCfg);
 */
 function init_args()
 {
-  $args = new stdClass();
+  	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$intval_keys = array('delete' => 0, 'user' => 0,'user_id' => 0, 'rights_id' => TL_ROLES_GUEST);
@@ -110,7 +109,6 @@ function init_args()
 	{
 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
-
 
 	$nullable_keys = array('doAction','firstName','lastName','emailAddress','locale','login','password');
 	foreach ($nullable_keys as $value)
@@ -145,31 +143,31 @@ function init_args()
 */
 function doCreate(&$dbHandler,&$argsObj)
 {
-    $op = new stdClass();
-	  $op->user = new tlUser();
-	  $op->status = $op->user->setPassword($argsObj->password);
-	  $op->template='usersEdit.tpl';
-    $op->operation='';
+	$op = new stdClass();
+	$op->user = new tlUser();
+	$op->status = $op->user->setPassword($argsObj->password);
+	$op->template = 'usersEdit.tpl';
+	$op->operation = '';
 
     $statusOk=false;
-	  if ($op->status >= tl::OK)
-	  {
-	    	initializeUserProperties($op->user,$argsObj);
-	  	  $op->status = $op->user->writeToDB($dbHandler);
-	  	  if( $op->status >= tl::OK)
-	  	  {
-	  	      $statusOk=true;
-	  	      $op->template=null;
-	  	      logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
-	  	      $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
-	      }
-	  }
+	if ($op->status >= tl::OK)
+	{
+	  	initializeUserProperties($op->user,$argsObj);
+		$op->status = $op->user->writeToDB($dbHandler);
+		if($op->status >= tl::OK)
+		 {
+		      $statusOk = true;
+		      $op->template = null;
+		      logAuditEvent(TLS("audit_user_created",$op->user->login),"CREATE",$op->user->dbID,"users");
+		      $op->user_feedback = sprintf(lang_get('user_created'),$op->user->login);
+		}
+	}
 
-	  if (!$statusOk)
-	  {
-	      $op->operation='create';
-	      $op->user_feedback = getUserErrorMessage($op->status);
-    }
+	if (!$statusOk)
+	{
+	    $op->operation = 'create';
+	    $op->user_feedback = getUserErrorMessage($op->status);
+	}
 
     return $op;
 }
@@ -190,37 +188,37 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
     $op=new stdClass();
     $op->user_feedback = '';
     $op->user = new tlUser($argsObj->user_id);
-	  $op->status = $op->user->readFromDB($dbHandler);
-	  if ($op->status >= tl::OK)
-	  {
-	  	$changes=checkUserPropertiesChanges($dbHandler,$op->user,$argsObj);
+	$op->status = $op->user->readFromDB($dbHandler);
+	if ($op->status >= tl::OK)
+	{
+		$changes=checkUserPropertiesChanges($dbHandler,$op->user,$argsObj);
 
-	  	initializeUserProperties($op->user,$argsObj);
-	  	$op->status = $op->user->writeToDB($dbHandler);
-	  	if ($op->status >= tl::OK)
-	  	{
-	  		logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
-	  		/*
-	  	  	foreach($changes as $key => $value)
-	  		{
-	  		    logAuditEvent($value['msg'],$value['activity'],$op->user->dbID,"users");
-	  		}
-	  		*/
-	  		if ($sessionUserID == $argsObj->user_id)
-	  		{
-	  			$_SESSION['currentUser'] = $op->user;
-	  			setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
-	  			               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
-
-	  			if (!$argsObj->user_is_active)
-	  			{
-	  				header("Location: ../../logout.php");
-	  				exit();
-	  			}
-	  		}
-	  	}
-	  	$op->user_feedback = getUserErrorMessage($op->status);
-	  }
+		initializeUserProperties($op->user,$argsObj);
+		$op->status = $op->user->writeToDB($dbHandler);
+		if ($op->status >= tl::OK)
+		{
+			logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
+			/*
+		  	foreach($changes as $key => $value)
+			{
+			    logAuditEvent($value['msg'],$value['activity'],$op->user->dbID,"users");
+			}
+			*/
+			if ($sessionUserID == $argsObj->user_id)
+			{
+				$_SESSION['currentUser'] = $op->user;
+				setUserSession($dbHandler,$op->user->login, $argsObj->user_id,
+				               $op->user->globalRoleID, $op->user->emailAddress, $op->user->locale);
+	
+				if (!$argsObj->user_is_active)
+				{
+					header("Location: ../../logout.php");
+					exit();
+				}
+			}
+		}
+		$op->user_feedback = getUserErrorMessage($op->status);
+	}
     return $op;
 }
 
@@ -302,13 +300,13 @@ function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
       }
   }
 
-  // Add general message only if no important change registered
-  if( $idx == 0 )
-  {
-      $changes[$idx]['property']='general';
-      $changes[$idx]['msg']=TLS('audit_user_saved',$userObj->login);
-      $changes[$idx]['activity']='SAVE';
-  }
+	// Add general message only if no important change registered
+	if($idx == 0)
+	{
+		$changes[$idx]['property']='general';
+		$changes[$idx]['msg']=TLS('audit_user_saved',$userObj->login);
+		$changes[$idx]['activity']='SAVE';
+	}
 
 	return $changes;
 }
@@ -349,7 +347,7 @@ function initializeUserProperties(&$userObj,&$argsObj)
 */
 function decodeRoleId(&$dbHandler,$roleID)
 {
-    $roleInfo=tlRole::getByID($dbHandler,$roleID);
+    $roleInfo = tlRole::getByID($dbHandler,$roleID);
     return $roleInfo->name;
 }
 
@@ -369,29 +367,27 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
         case "edit":
         case "create":
         case "resetPassword":
-        $doRender=true;
+       		$doRender = true;
     		$tpl = $templateCfg->default_template;
     		break;
 
-	      case "doCreate":
-        case "doUpdate":
-        if( !is_null($templateCfg->template) )
+		case "doCreate":
+		case "doUpdate":
+        if(!is_null($templateCfg->template))
         {
-            $doRender=true;
+            $doRender = true;
             $tpl = $templateCfg->template;
         }
         else
         {
- 	  				header("Location: usersView.php");
-	  				exit();
+			header("Location: usersView.php");
+			exit();
         }
-    		break;
+    	break;
 
     }
 
     if($doRender)
-    {
-		    $smartyObj->display($templateCfg->template_dir . $tpl);
-	  }
+        $smartyObj->display($templateCfg->template_dir . $tpl);
 }
 ?>

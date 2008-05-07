@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.16 2008/05/06 06:26:14 franciscom Exp $
+$Id: usersEdit.tpl,v 1.18 2008/05/07 20:07:41 schlundus Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -133,8 +133,8 @@ function validateForm(f,check_password)
   <fieldset class="x-fieldset x-form-label-left" style="width:50%;">
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
-  {if $mgt_view_events eq "yes"}
-	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user_id}','users')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/></h2>
+  {if $mgt_view_events eq "yes" && $user_id}
+	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user_id}','users')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
 	{/if}
   </legend>
 	<table class="common">
@@ -225,7 +225,7 @@ function validateForm(f,check_password)
 	</table>
 
 	<div class="groupBtn">
-	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}">
+	<input type="hidden" name="doAction" id="doActionUserEdit" value="{$operation}" />
 	<input type="submit" name="do_update"   value="{$labels.btn_save}" />
 	<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersView.php';" />

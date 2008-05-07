@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/04/25 22:10:53 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -42,7 +42,9 @@ if (strlen($args->endDate))
 	if (!$endTime)
 		$endTime = null;
 }
-$events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id,$args->object_type,null,500,$startTime,$endTime);
+
+$events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
+									$args->object_type ? $args->object_type : null,null,500,$startTime,$endTime);
 $users = getUsersForHtmlOptions($db,null,false,null);
 $users[0] = false;
 

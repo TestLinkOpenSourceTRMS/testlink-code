@@ -1,9 +1,9 @@
-<?php
+#<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.36 2008/04/25 18:00:39 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.37 2008/05/07 20:07:41 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -21,7 +21,7 @@ require_once("attachments.inc.php");
 testlinkInitPage($db);
 
 $template_dir = 'testcases/';
-$viewerArgs=null;
+$viewerArgs = null;
 $args = init_args($viewerArgs);
 
 $smarty = new TLSmarty();
@@ -35,29 +35,27 @@ switch($args->feature)
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
-   	$item_mgr->show($smarty,$template_dir,$args->id);
+		$item_mgr->show($smarty,$template_dir,$args->id);
 		break;
-
 
 	case 'testcase':
 		$item_mgr = new testcase($db);
 
-    // has been called from a test case search
+    	// has been called from a test case search
 		if(!is_null($args->targetTestCase))
 		{
 			$viewerArgs['display_testproject'] = 1;
 			$viewerArgs['display_parent_testsuite'] = 1;
-	
+
 			// need to get internal Id from External ID
 			$cfg = config_get('testcase_cfg');
 			$args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
 		}
 
-    // need to be managed in a different way that for testproject and testsuites
+    	// need to be managed in a different way that for testproject and testsuites
 		$attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);;
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
-		
 		$item_mgr->show($smarty,$template_dir,$args->id,testcase::ALL_VERSIONS,$viewerArgs);
 		break;
 
@@ -68,11 +66,11 @@ switch($args->feature)
 
 
 /*
-  function: init_args 
+  function: init_args
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function init_args(&$viewerCfg)
@@ -89,20 +87,20 @@ function init_args(&$viewerCfg)
     switch($args->feature)
     {
         case 'testsuite':
-            $_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";  
+            $_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
         break;
-        
+
         case 'testcase':
 		        $spec_cfg = config_get('spec_cfg');
 		        $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
 		        $viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
 		        $viewerCfg['disable_edit'] = !$args->allow_edit;
-            
+
   	        if(isset($_SESSION['tcspec_refresh_on_action']))
   	        {
 		            $viewerCfg['refresh_tree']=$_SESSION['tcspec_refresh_on_action'];
 	          }
-        break; 
+        break;
     }
 
     return $args;

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.10 2008/05/06 06:26:12 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.12 2008/05/07 21:01:22 schlundus Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -26,7 +26,7 @@ rev :
 {assign var="tcImportAction"
         value="lib/testcases/tcImport.php?containerID=$container_id"}
 
-{assign var="importToTProjectAction"  value="$basehref$tcImportAction&bIntoProject=1&amp;bRecursive=1&amp;"}
+{assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;bRecursive=1&amp;"}
 {assign var="importToTSuiteAction"  value="$basehref$tcImportAction&amp;bRecursive=1"}
 {assign var="importTestCasesAction"  value="$basehref$tcImportAction"}
 
@@ -60,7 +60,7 @@ rev :
 	{if $modify_tc_rights == 'yes'}
 		<div>
 			<form method="post" action="lib/testcases/containerEdit.php">
-				<input type="hidden" name="containerID" value="{$container_data.id}">
+				<input type="hidden" name="containerID" value="{$container_data.id}" />
 				<input type="submit" name="new_testsuite" value="{$labels.btn_new_com}" />
 			  <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder_cat}" />
 			  <input type="button" onclick="location='{$importToTProjectAction}'"
@@ -75,7 +75,7 @@ rev :
 		</div>
 	{/if}
 
-	<table width="90%" class="simple">
+	<table border="1" style="width:90%" class="simple" >
 		<tr>
 			<th>{$labels.th_product_name}</th>
 		</tr>
@@ -102,9 +102,9 @@ rev :
 	<div id="executionResults"></div>
   	*}
 
-	{include file="inc_attachments.tpl" 
-	         attach_id=$id 
-	         attach_tableName="nodes_hierarchy" 
+	{include file="inc_attachments.tpl"
+	         attach_id=$id
+	         attach_tableName="nodes_hierarchy"
 	         attach_downloadOnly=$bDownloadOnly}
 {elseif $level == 'testsuite'}
 

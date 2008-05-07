@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.1 2008/03/30 17:19:14 franciscom Exp $
-Purpose: 
+$Id: containerMoveTC.tpl,v 1.3 2008/05/07 21:01:22 schlundus Exp $
+Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
 
 rev :
-     20080329 - contributed by Eugenia Drosdezki 
+     20080329 - contributed by Eugenia Drosdezki
                 refactored by franciscom
 
 *}
@@ -29,21 +29,22 @@ var alert_box_title = "{lang_get s='warning'}";
   function: check_action_precondition
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function check_action_precondition(container_id,action,msg)
 {
- if( checkbox_count_checked(container_id) > 0) 
- {
-      return true;
- }
- else
- {
-    alert_message(alert_box_title,msg);
-    return false; 
- }  
+	var containerSelect = document.getElementById('containerID');
+	if(checkbox_count_checked(container_id) > 0 && containerSelect.value > 0)
+	{
+	     return true;
+	}
+	else
+	{
+	   alert_message(alert_box_title,msg);
+	   return false;
+	}
 }
 </script>
 {/literal}
@@ -59,18 +60,11 @@ function check_action_precondition(container_id,action,msg)
 {if $op_ok == false}
 	{$user_feedback}
 {else}
-	<form id="move_copy_testcases" name="move_copy_testcases" method="post" 
+	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
 	      action="lib/testcases/containerEdit.php?objectID={$objectID}">
-		<p>
-		{*
-		{foreach from=$help item=help_line}
-	      {$help_line|escape}<br>
-		{/foreach}
-		*}
-		</p>
-		
+
 		<p>{$labels.choose_target}:
-			<select name="containerID">
+			<select name="containerID" id="containerID">
 				  {html_options options=$containers}
 			</select>
 		</p>
@@ -78,7 +72,7 @@ function check_action_precondition(container_id,action,msg)
 			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
 			{$labels.copy_keywords}
 		</p>
-		
+
 		{* need to do JS checks*}
 		<div id="move_copy_checkboxes">
         <table class="simple">
@@ -90,7 +84,7 @@ function check_action_precondition(container_id,action,msg)
         {foreach from=$testcases key=rowid item=tcinfo}
             <tr>
                 <td>
-                    <input type="checkbox" name="tcaseSet[]" value="{$tcinfo.TCID}">
+                    <input type="checkbox" name="tcaseSet[]" value="{$tcinfo.TCID}" />
                 </td>
                 <td>
                     {$tcprefix|escape}{$tcinfo.TCEXTERNALID|escape}&nbsp;&nbsp;
@@ -101,13 +95,13 @@ function check_action_precondition(container_id,action,msg)
             </tr>
         {/foreach}
         </table>
-        <br>
+        <br />
     </div>
 		<div>
 			<input type="submit" name="do_move_tcase_set" value="{$labels.btn_move}"
              onclick="return check_action_precondition('move_copy_checkboxes','move','{$check_msg}');"  />
 
-			<input type="submit" name="do_copy_tcase_set" value="{$labels.btn_cp}" 
+			<input type="submit" name="do_copy_tcase_set" value="{$labels.btn_cp}"
 			       onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
 
 			<input type="hidden" name="old_containerID" value="{$old_containerID}" />

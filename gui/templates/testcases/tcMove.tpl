@@ -1,9 +1,9 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcMove.tpl,v 1.4 2008/05/06 06:26:13 franciscom Exp $ 
-Purpose: smarty template - move/copy test case 
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: tcMove.tpl,v 1.6 2008/05/07 21:01:22 schlundus Exp $
+Purpose: smarty template - move/copy test case
 
-rev:20080104 - franciscom - added radio to choose position 
+rev:20080104 - franciscom - added radio to choose position
                             on destination (top/bottom) container.
 
     20060316 - franciscom - html input names updated
@@ -11,7 +11,7 @@ rev:20080104 - franciscom - added radio to choose position
 *}
 {include file="inc_head.tpl"}
 
-{lang_get var="labels" 
+{lang_get var="labels"
           s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
              choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp"}
 <body>
@@ -28,26 +28,24 @@ rev:20080104 - franciscom - added radio to choose position
   {$labels.inst_copy}<br />
   {$labels.inst_copy_move_warning}
   </p>
-  	
+
 	<p>{$labels.choose_container}
 		<select name="new_container">
 			{html_options options=$array_container selected=$old_container}
 		</select>
-	
-	<p><input type="radio" name="target_position"	 
-	          value="top" {$top_checked}>{$labels.as_first_testcase}
-	<br><input type="radio" name="target_position" 
-	          value="bottom" {$bottom_checked}>{$labels.as_last_testcase}
-	<p>
-	
-	<p>
+
+	<p><input type="radio" name="target_position"
+	          value="top" {$top_checked} />{$labels.as_first_testcase}
+	<br /><input type="radio" name="target_position"
+	          value="bottom" {$bottom_checked} />{$labels.as_last_testcase}
+
 		<div class="groupBtn">
 		  {if $move_enabled }
 			  <input id="do_move" type="submit" name="do_move" value="{$labels.btn_mv}" />
-			{/if}  
+			{/if}
 			<input id="do_copy" type="submit" name="do_copy" value="{$labels.btn_cp}" />
 			<input type="hidden" name="old_container" value="{$old_container}" />
-	</div>	
+	</div>
 
 </form>
 </div>

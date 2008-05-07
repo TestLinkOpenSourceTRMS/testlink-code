@@ -5,28 +5,30 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/03/04 07:30:52 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/05/07 06:34:34 $ by $Author: franciscom $
  *
  * rev: 20080303 - franciscom - stdClass
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
-            
-$templateCfg = new stdClass();            
-$templateCfg->template_dir = 'cfields/';
-$templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-$templateCfg->template = null;
 
+$cfield_mgr = new cfield_mgr($db);
+            
+$templateCfg = templateConfiguration();
 $args=init_args();
 
-$cf_is_used = 0;
+$gui = new stdClass();
+$gui->cfield=null;
+$gui->cfield_is_used=0;
+$gui->cfield_types=$cfield_mgr->get_available_types();
+
+// $cf_is_used = 0;
 $result_msg = null;
 
 $do_control_combo_display = 1;
 
-$cfield_mgr = new cfield_mgr($db);
 $cfieldCfg=cfieldCfgInit($cfield_mgr);
 $emptyCF = array('id' => $args->cfield_id,
 		             'name' => ' ',
@@ -39,7 +41,7 @@ $emptyCF = array('id' => $args->cfield_id,
 		             'enable_on_execution' => 1,
 		             'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
 
-$cf = $emptyCF;
+$gui->cfield = $emptyCF;
 switch ($args->do_action)
 {
 	case 'create':
@@ -50,15 +52,15 @@ switch ($args->do_action)
 
 	case 'edit':
 	  	$op = edit($args,$cfield_mgr);
-		$cf = $op->cf;
-		$cf_is_used = $op->cf_is_used;
+		  $gui->cfield = $op->cf;
+		  $gui->cfield_is_used = $op->cf_is_used;
     	$user_feedback = $op->user_feedback;
     	$operation_descr=$op->operation_descr;
 		break;
 
 	case 'do_add':
 	  	$op = doCreate($_REQUEST,$cfield_mgr);
-		$cf = $op->cf;
+		  $gui->cfield = $op->cf;
     	$user_feedback = $op->user_feedback;
     	$templateCfg->template = $op->template;
     	$operation_descr = '';
@@ -66,7 +68,7 @@ switch ($args->do_action)
 
 	case 'do_update':
 	  	$op = doUpdate($_REQUEST,$args,$cfield_mgr);
-		$cf = $op->cf;
+		  $gui->cfield = $op->cf;
     	$user_feedback = $op->user_feedback;
     	$operation_descr=$op->operation_descr;
     	$templateCfg->template = $op->template;
@@ -87,27 +89,30 @@ if( $do_control_combo_display )
   $keys2loop = array('execution','design');
 	foreach( $keys2loop as $ui_mode)
 	{
-		if(!$cfieldCfg->enable_on_cfg[$ui_mode][$cf['node_type_id']])
+		if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 			$cfieldCfg->disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
 
-		if(!$cfieldCfg->show_on_cfg[$ui_mode][$cf['node_type_id']])
+		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 			$cfieldCfg->disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
 	}
 }
 
-$show_possible_values = 0;
-if(isset($cf['type']))
-	$show_possible_values = $cfieldCfg->possible_values_cfg[$cf['type']];
+$gui->show_possible_values = 0;
+if(isset($gui->cfield['type']))
+	$gui->show_possible_values = $cfieldCfg->possible_values_cfg[$gui->cfield['type']];
 
+$gui->cfieldCfg=$cfieldCfg;
 
 $smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
+
 $smarty->assign('operation_descr',$operation_descr);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_action',$args->do_action);
-$smarty->assign('cf_types',$cfield_mgr->get_available_types());
-$smarty->assign('is_used',$cf_is_used);
-$smarty->assign('cf',$cf);
-$smarty->assign('cfieldCfg', $cfieldCfg);
+// $smarty->assign('cf_types',$cfield_mgr->get_available_types());
+// $smarty->assign('is_used',$cf_is_used);
+// $smarty->assign('cf',$cf);
+// $smarty->assign('cfieldCfg', $cfieldCfg);
 
 renderGui($smarty,$args,$cfield_mgr,$templateCfg);
 
@@ -205,8 +210,8 @@ function edit(&$argsObj,&$cfieldMgr)
 		$cfinfo = $cfieldMgr->get_by_id($argsObj->cfield_id);
 		if ($cfinfo)
 		{
-			$op->cf = $cfinfo[$argsObj->cfield_id];
-			$op->cf_is_used = $cfieldMgr->is_used($argsObj->cfield_id);
+			  $op->cf = $cfinfo[$argsObj->cfield_id];
+			  $op->cf_is_used = $cfieldMgr->is_used($argsObj->cfield_id);
   			$op->operation_descr = lang_get('title_cfield_edit') . TITLE_SEP_TYPE3 . $op->cf['name'];
 		}
     return $op;

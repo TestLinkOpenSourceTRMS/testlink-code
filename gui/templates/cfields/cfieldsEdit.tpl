@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: cfieldsEdit.tpl,v 1.10 2008/05/06 06:25:57 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.11 2008/05/07 06:34:25 franciscom Exp $
 
 
 Important Development note:
@@ -26,6 +26,7 @@ rev :
 
      20070128 - franciscom - variable name changes
 *}
+
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -37,7 +38,9 @@ rev :
 {lang_get s='delete' var="del_msgbox_title" }
 
 {lang_get var="labels"
-          s="warning,warning_empty_cfield_name,warning_empty_cfield_label"}
+          s="btn_ok,warning_is_in_use,warning,name,label,type,possible_values,
+             warning_empty_cfield_name,warning_empty_cfield_label,
+             btn_add,btn_cancel,show_on_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -77,26 +80,26 @@ js_show_on_cfg['oid_prefix']['container'] = 'container_cf_show_on_';
 js_show_on_cfg['execution'] = new Array();
 js_show_on_cfg['design'] = new Array();
 
-{foreach key=node_type item=cfg_def from=$cfieldCfg->enable_on_cfg.execution}
+{foreach key=node_type item=cfg_def from=$gui->cfieldCfg->enable_on_cfg.execution}
   js_enable_on_cfg['execution'][{$node_type}]={$cfg_def};
 {/foreach}
 
-{foreach key=node_type item=cfg_def from=$cfieldCfg->enable_on_cfg.design}
+{foreach key=node_type item=cfg_def from=$gui->cfieldCfg->enable_on_cfg.design}
   js_enable_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 
-{foreach key=node_type item=cfg_def from=$cfieldCfg->show_on_cfg.execution}
+{foreach key=node_type item=cfg_def from=$gui->cfieldCfg->show_on_cfg.execution}
   js_show_on_cfg['execution'][{$node_type}]={$cfg_def};
 {/foreach}
 
-{foreach key=node_type item=cfg_def from=$cfieldCfg->show_on_cfg.design}
+{foreach key=node_type item=cfg_def from=$gui->cfieldCfg->show_on_cfg.design}
   js_show_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 // -------------------------------------------------------------------------------
 
 
 var js_possible_values_cfg = new Array();
-{foreach key=cf_type item=cfg_def from=$cfieldCfg->possible_values_cfg}
+{foreach key=cf_type item=cfg_def from=$gui->cfieldCfg->possible_values_cfg}
   js_possible_values_cfg[{$cf_type}]={$cfg_def};
 {/foreach}
 
@@ -258,24 +261,23 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 <h2>{$operation_descr|escape}</h2>
 {include file="inc_update.tpl" user_feedback=$user_feedback}
 
-{if $is_used}
-  <div class="user_feedback">{lang_get s="warning_is_in_use"}</div>
+{if $gui->cfield_is_used}
+  <div class="user_feedback">{$labels.warning_is_in_use}</div>
 {/if}
 
 <div class="workBack">
 
-
 {if $user_action eq "do_delete"}
   <form method="post" name="cfields_edit" action="{$viewAction}">
    <div class="groupBtn">
-		<input type="submit" name="ok" value="{lang_get s='btn_ok'}" />
+		<input type="submit" name="ok" value="{$labels.btn_ok}" />
 	 </div>
   </form>
 
 {else}
 <form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php"
       onSubmit="javascript:return validateForm(this);">
-  <input type="hidden" id="hidden_id" name="cfield_id" value="{$cf.id}" />
+  <input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
 	<table class="common">
     <tr>
       <td colspan="2">
@@ -287,81 +289,81 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     </tr>
 
 	 <tr>
-			<th style="background:none;">{lang_get s='name'}</th>
+			<th style="background:none;">{$labels.name}</th>
 			<td><input type="text" name="cf_name"
 			                       size="{#CFIELD_NAME_SIZE#}"
 			                       maxlength="{#CFIELD_NAME_MAXLEN#}"
-    			 value="{$cf.name|escape}" />
+    			 value="{$gui->cfield.name|escape}" />
            {include file="error_icon.tpl" field="cf_name"}
     	</td>
 		</tr>
 		<tr>
-			<th style="background:none;">{lang_get s='label'}</th>
+			<th style="background:none;">{$labels.label}</th>
 			<td><input type="text" name="cf_label"
 			                       size="{#CFIELD_LABEL_SIZE#}"
 			                       maxlength="{#CFIELD_LABEL_MAXLEN#}"
-			           value="{$cf.label|escape}"/>
+			           value="{$gui->cfield.label|escape}"/>
 		           {include file="error_icon.tpl" field="cf_label"}
     	</td>
 	  </tr>
 
 		<tr>
-			<th style="background:none;">{lang_get s='type'}</th>
+			<th style="background:none;">{$labels.type}</th>
 			<td>
-			  {if $is_used}
-			    {assign var="idx" value=$cf.type}
-			    {$cf_types.$idx}
+			  {if $gui->cfield_is_used}
+			    {assign var="idx" value=$gui->cfield.type}
+			    {$gui->cfield_types.$idx}
 			    <input type="hidden" id="hidden_cf_type"
-			           value={$cf.type} name="cf_type" />
+			           value={$gui->cfield.type} name="cf_type" />
 			  {else}
   				<select onchange="cfg_possible_values_display(js_possible_values_cfg,
   				                                              'combo_cf_type',
   				                                              'possible_values');"
   				        id="combo_cf_type"
   				        name="cf_type">
-	  			{html_options options=$cf_types selected=$cf.type}
+	  			{html_options options=$gui->cfield_types selected=$gui->cfield.type}
 		  		</select>
 		  	{/if}
 			</td>
 		</tr>
 
-    {if $show_possible_values }
+    {if $gui->show_possible_values }
       {assign var="display_style" value=""}
     {else}
       {assign var="display_style" value="none"}
 		{/if}
 		<tr id="possible_values" style="display:{$display_style};">
-			<th style="background:none;">{lang_get s='possible_values'}</th>
+			<th style="background:none;">{$labels.possible_values}</th>
 			<td>
 				<input type="text" id="cf_possible_values"
 				                   name="cf_possible_values"
 		                       size="{#CFIELD_POSSIBLE_VALUES_SIZE#}"
 		                       maxlength="{#CFIELD_POSSIBLE_VALUES_MAXLEN#}"
-				                   value="{$cf.possible_values}" />
+				                   value="{$gui->cfield.possible_values}" />
 			</td>
 		</tr>
 
     {* ------------------------------------------------------------------------------- *}
     {*   Design   *}
-    {if $disabled_cf_show_on.design}
+    {if $gui->cfieldCfg->disabled_cf_show_on.design}
       {assign var="display_style" value="none"}
     {else}
       {assign var="display_style" value=""}
     {/if}
 
 		<tr id="container_cf_show_on_design" style="display:{$display_style};">
-			<th style="background:none;">{lang_get s='show_on_design'}</th>
+			<th style="background:none;">{$labels.show_on_design}</th>
 			<td>
 				<select id="cf_show_on_design"
 				        name="cf_show_on_design"
-			        	{$disabled_cf_show_on.design} >
-				{html_options options=$gsmarty_option_yes_no selected=$cf.show_on_design}
+			        	{$gui->cfieldCfg->disabled_cf_show_on.design} >
+				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_design}
 				</select>
 			</td>
 		</tr>
 
 
-		{if $disabled_cf_enable_on.design}
+		{if $gui->cfieldCfg->disabled_cf_enable_on.design}
       {assign var="display_style" value="none"}
     {else}
       {assign var="display_style" value=""}
@@ -371,8 +373,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			<td>
 				<select name="cf_enable_on_design"
 				        id="cf_enable_on_design"
-				        {$disabled_cf_enable_on.design}>
-				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_design}
+				        {$gui->cfieldCfg->disabled_cf_enable_on.design}>
+				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.enable_on_design}
 				</select>
 			</td>
 		</tr>
@@ -381,7 +383,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
     {* ------------------------------------------------------------------------------- *}
     {*   Execution  *}
-    {if $disabled_cf_show_on.execution}
+    {if $gui->cfieldCfg->disabled_cf_show_on.execution}
       {assign var="display_style" value="none"}
     {else}
       {assign var="display_style" value=""}
@@ -391,13 +393,13 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			<th style="background:none;">{lang_get s='show_on_exec'}</th>
 			<td>
 				<select id="cf_show_on_execution"  name="cf_show_on_execution"
-				        {$disabled_cf_show_on.execution}>
-				{html_options options=$gsmarty_option_yes_no selected=$cf.show_on_execution}
+				        {$gui->cfieldCfg->disabled_cf_show_on.execution}>
+				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_execution}
 				</select>
 			</td>
 		</tr>
 
-		{if $disabled_cf_enable_on.execution}
+		{if $gui->cfieldCfg->disabled_cf_enable_on.execution}
       {assign var="display_style" value="none"}
     {else}
       {assign var="display_style" value=""}
@@ -407,8 +409,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			<td>
 				<select id="cf_enable_on_execution"
 				        name="cf_enable_on_execution"
-				        {$disabled_cf_enable_on.execution}>
-				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_execution}
+				        {$gui->cfieldCfg->disabled_cf_enable_on.execution}>
+				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.enable_on_execution}
 				</select>
 			</td>
 		</tr>
@@ -418,18 +420,18 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		<tr>
 			<th style="background:none;">{lang_get s='available_on'}</th>
 			<td>
-			  {if $is_used} {* Type CAN NOT BE CHANGED *}
-			    {assign var="idx" value=$cf.node_type_id}
-			    {$cfieldCfg->cf_allowed_nodes.$idx}
+			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
+			    {assign var="idx" value=$gui->cfield.node_type_id}
+			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
 			    <input type="hidden" id="hidden_cf_node_type_id"
-			           value={$cf.node_type_id} name="cf_node_type_id" />
+			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
 			  {else}
   				<select onchange="configure_cf_attr('combo_cf_node_type_id',
   				                                    js_enable_on_cfg,
   				                                    js_show_on_cfg);"
   				        id="combo_cf_node_type_id"
   				        name="cf_node_type_id">
-  				{html_options options=$cfieldCfg->cf_allowed_nodes selected=$cf.node_type_id}
+  				{html_options options=$gui->cfieldCfg->cf_allowed_nodes selected=$gui->cfield.node_type_id}
   				</select>
 				{/if}
 			</td>
@@ -442,17 +444,17 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
 		       onclick="do_action.value='do_update'"/>
 
-		{if $is_used eq 0}
+		{if $gui->cfield_is_used eq 0}
   		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
-  		       onclick="delete_confirmation({$cf.id},'{$cf.name|escape:'javascript'}',
+  		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
     {/if}
 
 	{else}
-		<input type="submit" name="do_update" value="{lang_get s='btn_add'}"
+		<input type="submit" name="do_update" value="{$labels.btn_add}"
 		       onclick="do_action.value='do_add'"/>
 	{/if}
-		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}"
+		<input type="button" name="cancel" value="{$labels.btn_cancel}"
 			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />
 
 	</div>

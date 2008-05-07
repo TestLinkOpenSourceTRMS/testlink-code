@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/05/06 06:27:26 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/05/07 06:34:34 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -183,7 +183,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'testsuite')
 				$tsCnt++;
 			$code .= renderTestSpecTreeForPrinting($db,$current,$item_type,$printingOptions,
-			                                       $tocPrefix,$tsCnt,$level+1,$user_id);
+			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id);
 		}
 	}
 	if (isset($node['node_type_id']) && $map_id_descr[$node['node_type_id']] == 'testproject')
@@ -213,6 +213,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0)
 {
+  
 	$tc_mgr = new testcase($db);
  	$id = $node['id'];
 	$name = htmlspecialchars($node['name']);
@@ -220,6 +221,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	$code = null;
   $tcInfo = null;
   $tcResultInfo = null;
+  $cfields = array('specScope' => '', 'execScope' => '');
+  $printType='testproject';
+
+  if($tplan_id > 0)
+  {
+     $printType='testplan';
+     $cfield_scope='execution';
+       
+  }
 
   $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
 
@@ -230,14 +240,21 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 		if ($tcInfo)
 			$tcInfo=$tcInfo[0];
 	}
-	$cfields = $tc_mgr->html_table_of_custom_field_values($id);
-
-  if(strlen(trim($cfields)) > 0 )
+	
+	// get custom fields that has specification scope
+	$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id);
+  if(strlen(trim($cfields['specScope'])) > 0 )
   {
-      $cfields=str_replace('<td class="labelHolder">','<td>',$cfields);  
-      $cfields=str_replace('<table>','',$cfields);
-      $cfields=str_replace('</table>','',$cfields);
+      $cfields['specScope']=str_replace('<td class="labelHolder">','<td>',$cfields['specScope']);  
+      $cfields['specScope']=str_replace('<table>','',$cfields['specScope']);
+      $cfields['specScope']=str_replace('</table>','',$cfields['specScope']);
   }
+  
+  if( $printType='testplan' )
+  {
+	}
+  
+  
 	
 	/* Need to be refactored - franciscom - 20080504
 	if($printingOptions['passfail'])
@@ -289,7 +306,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
 	}
   
-  $code .= $cfields;
+  $code .= $cfields['specScope'];
 
 	// collect REQ for TC
 	// MHT: based on contribution by JMU (1045)

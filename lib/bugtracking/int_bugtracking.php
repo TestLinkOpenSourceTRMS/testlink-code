@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/02/08 08:22:58 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/05/07 02:59:07 $ $Author: tosikawa $
  *
  * @author Andreas Morsing
  *
@@ -37,7 +37,8 @@ $configFiles = array(
 					'TRACKPLUS' => 'trackplus.cfg.php',
 					'EVENTUM' => 'eventum.cfg.php',
 					'TRAC' => 'trac.cfg.php',
-					'SEAPINE' => 'seapine.cfg.php'
+					'SEAPINE' => 'seapine.cfg.php',
+					'REDMINE' => 'redmine.cfg.php'
 				);
 //This holds the interface defintion file names for the bugtracking interfaces
 //located in the lib/bugtracking diectory
@@ -48,7 +49,8 @@ $interfaceFiles = array(
 					'TRACKPLUS' => 'int_trackplus.php',
 					'EVENTUM' => 'int_eventum.php',
 					'TRAC' => 'int_trac.php',
-					'SEAPINE' => 'int_seapine.php'
+					'SEAPINE' => 'int_seapine.php',
+					'REDMINE' => 'int_redmine.php'
 				);
 
 				

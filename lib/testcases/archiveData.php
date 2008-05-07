@@ -1,9 +1,9 @@
-#<?php
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.37 2008/05/07 20:07:41 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.38 2008/05/07 21:01:24 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.

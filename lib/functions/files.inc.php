@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: files.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -20,8 +20,8 @@
  **/
 function getUniqueFileName($fExt)
 {
-	$destFName = md5(uniqid(rand(), true)).".".$fExt; 
-	
+	$destFName = md5(uniqid(rand(), true)).".".$fExt;
+
 	return $destFName;
 }
 
@@ -29,7 +29,7 @@ function getUniqueFileName($fExt)
  * gets the extension from a file name
  *
  * @param string $fName the filename
- * @param string $default a default extension 
+ * @param string $default a default extension
  *
  * @return string returns the extension
  **/
@@ -40,12 +40,12 @@ function getFileExtension($fName,$default)
 		$fExt = $fExt['extension'];
 	else
 		$fExt = $default;
-		
+
 	return $fExt;
 }
 
 /**
- * get the contents of a file 
+ * get the contents of a file
  *
  * @param string $fName the name of the file to read
  *
@@ -78,7 +78,7 @@ function gzip_compress_file($srcName, $dstName)
 	$data = getFileContents($srcName);
 	if (strlen($data))
 		$bSuccess = gzip_writeToFile($dstName,$data);
-		
+
 	return $bSuccess;
 }
 
@@ -102,19 +102,19 @@ function gzip_writeToFile($dstName,$data)
 	return false;
 }
 /**
- * uncompresses arbitrary gzipped content  
+ * uncompresses arbitrary gzipped content
  *
  * @param string content the compressed content
  * @param int $fileSize the original size of the uncompressed content
- * 
- * @return string returns the uncompressed contents on success or null on error 
+ *
+ * @return string returns the uncompressed contents on success or null on error
 
 */
 function gzip_uncompress_content($content,$fileSize)
 {
 	global $g_repositoryPath;
 
-	$dest = $g_repositoryPath.DS.session_id().".dummy.gz";
+	$dest = $g_repositoryPath.DIRECTORY_SEPARATOR.session_id().".dummy.gz";
 	$fp = fopen($dest,"wb");
 	if ($fp)
 	{
@@ -133,7 +133,7 @@ function gzip_readFileContent($fName,$fileSize)
 	{
 		$content = gzread($zp,$fileSize);
 		gzclose($zp);
-		
+
 	}
 	return $content;
 }

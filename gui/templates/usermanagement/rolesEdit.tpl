@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.13 2008/05/06 06:26:13 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.14 2008/05/07 21:01:22 schlundus Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -82,7 +82,11 @@ function validateForm(f)
 	>
 	<input type="hidden" name="roleid" value="{$gui->role->dbID}" />
 	<table class="common">
-		<tr><th>{$labels.th_rolename}</th></tr>
+		<tr><th>{$labels.th_rolename}
+			{if $gui->mgt_view_events eq "yes" && $gui->role->dbID}
+				<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$gui->role->dbID}','roles')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+			{/if}
+		</th></tr>
 		<tr><td>
 			   <input type="text" name="rolename"
 			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$gui->role->name|escape}"/>

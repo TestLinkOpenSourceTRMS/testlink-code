@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/04/14 09:58:34 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/05/07 21:01:24 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -42,7 +42,7 @@ switch($args->doAction)
 	  	  	$templateCfg->template=$op->template;
         }
 	  break;
-	  
+
 	  case 'doUpdate':
 	  	  if($canManage)
 	  	  {
@@ -57,6 +57,7 @@ $gui->userFeedback=$op->userFeedback;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
+$smarty->assign('highlight',$gui->highlight);
 
 renderGui($smarty,$args,$templateCfg);
 
@@ -64,8 +65,8 @@ renderGui($smarty,$args,$templateCfg);
   function: init_args
 
   args:
-  
-  returns: 
+
+  returns:
 
 */
 function init_args()
@@ -135,16 +136,16 @@ function doOperation(&$dbHandler,$argsObj,$operation)
   {
       case 'doCreate':
           $auditCfg['msg']="audit_role_created";
-          $auditCfg['activity']="CREATE";      
+          $auditCfg['activity']="CREATE";
       break;
-      
+
       case 'doUpdate':
           $auditCfg['msg']="audit_role_saved";
-          $auditCfg['activity']="SAVE";      
+          $auditCfg['activity']="SAVE";
       break;
-  
+
   }
-	
+
 	$result = $op->role->writeToDB($dbHandler);
 	if ($result >= tl::OK)
 	{
@@ -185,7 +186,7 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
         case "doUpdate":
         if( !is_null($templateCfg->template) )
         {
-            $doRender=true;  
+            $doRender=true;
             $tpl = $templateCfg->template;
         }
         else
@@ -266,39 +267,40 @@ function initialize_op()
   function: complete_gui
 
   args :
-  
-  returns: 
+
+  returns:
 
 */
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
     $actionCfg['operation']=array('create' => 'doCreate', 'edit' => 'doUpdate',
                                   'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
-    
+
     $actionCfg['highlight']=array('create' => 'create_role', 'edit' => 'edit_role',
                                   'doCreate' => 'create_role', 'doUpdate' => 'edit_role');
-  
+
 
     $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction]=1;
     $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
     $guiObj->role=$roleObj;
     $guiObj->grants=getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
     $guiObj->rightsCfg=getRightsCfg();
+	$guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
     // Create status for all checkboxes and set to unchecked
     foreach( $guiObj->rightsCfg as $grantDetails )
     {
         foreach( $grantDetails as $grantCode => $grantDescription )
         {
-            $guiObj->checkboxStatus[$grantCode] ="";  
-        }  
+            $guiObj->checkboxStatus[$grantCode] ="";
+        }
     }
-    
+
 
     if($roleObj->dbID)
     {
     	$webEditorObj->Value = $roleObj->description;
-    	
+
     	// build checked attribute for checkboxes
     	if(sizeof($roleObj->rights))
     	{
@@ -310,7 +312,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     	//get all users which are affected by changing the role definition
       $guiObj->affectedUsers = $roleObj->getAllUsersWithRole($dbHandler);
     }
-   
+
     $guiObj->notes=$webEditorObj->CreateHTML();
     return $guiObj;
 }

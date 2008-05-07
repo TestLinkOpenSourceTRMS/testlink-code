@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/01/17 21:22:45 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -114,7 +114,7 @@ class tlAttachment extends tlDBObject
 		}
 		//for FS-repository, the path to the repository itself is cut off, so the path is
 		//					relative to the repository itself
-		$this->destFPath = str_replace($this->repositoryPath.DS,"",$destFPath);
+		$this->destFPath = str_replace($this->repositoryPath.DIRECTORY_SEPARATOR,"",$destFPath);
 		$this->title = trim($title);
 		
 		return tl::OK;

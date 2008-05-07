@@ -1,18 +1,18 @@
-{* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesView.tpl,v 1.11 2008/05/06 06:26:13 franciscom Exp $ 
-Purpose: smarty template - View defined roles 
+{*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: rolesView.tpl,v 1.12 2008/05/07 21:01:22 schlundus Exp $
+Purpose: smarty template - View defined roles
 
 rev:
      20080109 - franciscom - table sorting feature
-     20070921 - franciscom - BUGID - added strip_tags|strip to notes 
+     20070921 - franciscom - BUGID - added strip_tags|strip to notes
      20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
 
 *}
 {assign var="roleActionMgr" value="lib/usermanagement/rolesEdit.php"}
 {assign var="createRoleAction" value="$roleActionMgr?doAction=create"}
-{assign var="editRoleAction" value="$roleActionMgr?doAction=edit&roleid="}
+{assign var="editRoleAction" value="$roleActionMgr?doAction=edit&amp;roleid="}
 
 {lang_get var="labels"
           s="btn_create,title_user_mgmt,title_roles,delete_role,caption_possible_affected_users,
@@ -50,7 +50,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 
   {* show user list of users having role he/she want to delete *}
   <h1 class="title">{$labels.delete_role} {$roles[$id]->name|escape}</h1>
-  
+
 	<table class="common" style="width:50%">
 	<caption>{$labels.caption_possible_affected_users}</caption>
 	{foreach from=$affectedUsers item=user}
@@ -60,10 +60,10 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 	{/foreach}
 	</table>
 	<div class="legend_container">{$labels.warning_users_will_be_reset} => {$roles[$role_id_replacement]->name|escape}</div><br />
-	<div class="groupBtn">	
-		<input type="submit" name="confirmed" value="{$labels.btn_confirm_delete}" 
+	<div class="groupBtn">
+		<input type="submit" name="confirmed" value="{$labels.btn_confirm_delete}"
 		       onclick="location='lib/usermanagement/rolesView.php?doAction=confirmDelete&roleid={$id}'"/>
-		<input type="submit" value="{$labels.btn_cancel}" 
+		<input type="submit" value="{$labels.btn_cancel}"
 		       onclick="location='lib/usermanagement/rolesView.php'" />
 	</div>
 {else}
@@ -84,11 +84,11 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 					<a href="{$editRoleAction}{$role->dbID}">
 						{$role->name|escape}
 						{if $gsmarty_gui->show_icon_edit}
- 						  <img title="{$labels.alt_edit_role}" 
- 						       alt="{$labels.alt_edit_role}" 
- 						       title="{$labels.alt_edit_role}" 
+ 						  <img title="{$labels.alt_edit_role}"
+ 						       alt="{$labels.alt_edit_role}"
+ 						       title="{$labels.alt_edit_role}"
  						       src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png" />
- 						{/if}       
+ 						{/if}
 					</a>
 				</td>
 				<td>
@@ -96,9 +96,9 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 				</td>
 				<td>
 					{if $role->dbID > $smarty.const.TL_LAST_SYSTEM_ROLE}
-				       <img style="border:none;cursor: pointer;" 
-		  				            title="{$labels.alt_delete_role}" 
-		  				            alt="{$labels.alt_delete_role}" 
+				       <img style="border:none;cursor: pointer;"
+		  				            title="{$labels.alt_delete_role}"
+		  				            alt="{$labels.alt_delete_role}"
 		 					            onclick="delete_confirmation({$role->dbID},'{$role->name|escape:'javascript'}',
 		 					                                         '{$del_msgbox_title}','{$warning_msg}');"
 		  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>

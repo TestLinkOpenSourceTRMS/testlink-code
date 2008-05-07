@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/04/14 09:58:34 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/05/07 21:01:24 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -46,10 +46,10 @@ if($doDelete)
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
 $highlight = initialize_tabsmenu();
+$highlight->view_roles = 1;
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
-
 $smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
 $smarty->assign('roles',$roles);
 $smarty->assign('id',$args->roleid);

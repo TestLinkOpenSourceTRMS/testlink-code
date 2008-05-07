@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/05/07 13:22:47 $ -  $Author: havlat $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/05/07 21:01:25 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -49,7 +49,7 @@ switch($args->operation)
 				}
 			}
 		}
-		
+
 		if ($sqlResult != tl::OK)
 			$user_feedback = lang_get('error_user_not_deleted');
 
@@ -63,7 +63,7 @@ switch($args->operation)
 		$orderBy->dir = $args->order_by_dir;
 		$args->user_order_by = $args->operation;
 		$order_by_clause = get_order_by_clause($orderBy);
-		
+
 		$the_k = $args->operation . "_dir";
 		$args->order_by_dir[$the_k] = $args->order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc';
 		break;
@@ -76,6 +76,7 @@ $order_by_clause = get_order_by_clause($orderBy);
 $users = getAllUsersRoles($db,$order_by_clause);
 
 $highlight = initialize_tabsmenu();
+$highlight->view_users = 1;
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
@@ -123,7 +124,7 @@ function get_order_by_clause($order)
 		case 'order_by_role':
 			$order_by_clause = " ORDER BY description " . $order->dir['order_by_role_dir'];
 			break;
-			
+
 		case 'order_by_login':
 			$order_by_clause = " ORDER BY login " . $order->dir['order_by_login_dir'];
 			break;
@@ -151,7 +152,7 @@ function init_args()
     {
         $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
     }
-   
+
     $key2loop=array('order_by_role_dir' => 'asc', 'order_by_login_dir' => 'asc');
     foreach($key2loop as $key => $value)
     {
@@ -159,7 +160,7 @@ function init_args()
     }
     $args->user_id = isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
 
-    return $args;  
+    return $args;
 }
 
 /*
@@ -167,8 +168,8 @@ function init_args()
             using configuration parameter ($g_role_colour)
             creates a map with following structure:
             key: role name
-            value: colour 
-            
+            value: colour
+
             If name is not defined on $g_role_colour (this normally
             happens for user defined roles), will be added with '' as colour (means default colour).
 
@@ -186,9 +187,9 @@ function getRoleColourCfg(&$dbHandler)
     {
         if( !isset($role_colour[$roleObj->name]) )
         {
-            $role_colour[$roleObj->name]='';  
-        }  
-    }    
+            $role_colour[$roleObj->name]='';
+        }
+    }
     return $role_colour;
 }
 

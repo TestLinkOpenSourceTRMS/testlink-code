@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/05/05 09:11:43 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/05/08 18:45:35 $ $Author: schlundus $
  *
  * rev :
  *      20080217 - franciscom - refactoring
@@ -142,7 +142,7 @@ function edit(&$argsObj,&$buildMgr)
 	$op->buttonCfg->value = lang_get('btn_save');
 	$op->notes = $binfo['notes'];
 	$op->user_feedback = '';
-	
+
 	$argsObj->build_name = $binfo['name'];
 	$argsObj->is_active = $binfo['active'];
 	$argsObj->is_open = $binfo['is_open'];
@@ -162,7 +162,7 @@ function edit(&$argsObj,&$buildMgr)
 function create(&$argsObj)
 {
 	$op = new stdClass();
-    $op->operation_descr = '';
+    $op->operation_descr = lang_get('title_build_create');
 	$op->buttonCfg = new stdClass();
 	$op->buttonCfg->name = "do_create";
 	$op->buttonCfg->value = lang_get('btn_create');
@@ -263,7 +263,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 	$op->buttonCfg = null;
 
 	$check = crossChecks($argsObj,$tplanMgr);
-	
+
 	if($check->status_ok)
 	{
 		$user_feedback = lang_get("cannot_add_build");

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestones.tpl,v 1.7 2008/05/06 06:26:07 franciscom Exp $
+$Id: planMilestones.tpl,v 1.8 2008/05/08 21:50:57 schlundus Exp $
 Purpose: smarty template - edit milestones
 
 rev :
@@ -76,7 +76,16 @@ function validateForm(f)
 <div class="workBack">
 
 	<div>
-	<h2>{lang_get s='title_new_milestone'}</h2>
+	{if $mileStone.id > 0}
+		<h2>
+		{lang_get s='title_edit_milestone'}&nbsp;{$mileStone.name|escape}&nbsp;
+		{if $mgt_view_events eq "yes"}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$mileStone.id}','milestones')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+		{else}
+			{lang_get s='title_new_milestone'}
+		{/if}
+		</h2>
+	{/if}
 	<p class="italic">{lang_get s='info_milestones_date'}</p>
 	<form method="post" action="lib/plan/planMilestones.php"
 	      name="milestone_mgr" onSubmit="javascript:return validateForm(this);">

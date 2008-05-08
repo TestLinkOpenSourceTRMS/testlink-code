@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.6 2008/05/06 06:26:07 franciscom Exp $
+$Id: buildEdit.tpl,v 1.7 2008/05/08 21:05:43 schlundus Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -56,7 +56,12 @@ function validateForm(f)
 {include file="inc_update.tpl" user_feedback=$user_feedback 
          result=$sqlResult item="build"}
 
-<div> <h2>{$operation_descr|escape}</h2>
+<div> 
+	<h2>{$operation_descr|escape}
+	{if $mgt_view_events eq "yes" && $build_id > 0}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$build_id}','builds')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+		{/if}
+	</h2>
 	<form method="post" id="create_build" name="create_build" 
 	      action="{$managerURL}" onSubmit="javascript:return validateForm(this);">
 	      

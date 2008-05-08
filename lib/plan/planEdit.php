@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/05/08 21:06:42 $ by $Author: schlundus $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -39,10 +39,10 @@ $cf_smarty = '';
 $of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
-$main_descr=lang_get('testplan_title_tp_management'). " - " . 
+$main_descr=lang_get('testplan_title_tp_management'). " - " .
             lang_get('testproject') . ' ' . $args->tproject_name;
 
-// Checks on testplan name, and testplan name<=>testplan id 
+// Checks on testplan name, and testplan name<=>testplan id
 if($args->do_action == "do_create" || $args->do_action == "do_update")
 {
 	$tpName = $args->testplan_name;
@@ -63,8 +63,8 @@ switch($args->do_action)
 			$tpName = $tpInfo['name'];
 			$bActive = $tpInfo['active'];
 		}
-		break;  
-		
+		break;
+
 	case 'do_delete':
 		$tpInfo = $tplan_mgr->get_by_id($args->tplan_id);
 		if ($tpInfo)
@@ -78,8 +78,8 @@ switch($args->do_action)
 			$_SESSION['testPlanId'] = 0;
 			$_SESSION['testPlanName'] = null;
 		}
-		break;  
-	
+		break;
+
 	case 'do_update':
 		$of->Value = $args->notes;
 		$tpName = $args->testplan_name;
@@ -104,7 +104,7 @@ switch($args->do_action)
 				if(isset($_SESSION['testPlanId']) && ($args->tplan_id == $_SESSION['testPlanId']))
 					$_SESSION['testPlanName'] = $args->testplan_name;
 
-				$status_ok = true;  
+				$status_ok = true;
 				$template = null;
 			}
 		}
@@ -119,8 +119,8 @@ switch($args->do_action)
 			$smarty->assign('tproject_name', $args->tproject_name);
 			$smarty->assign('notes', $of->CreateHTML());
 		}
-		break;  
-  
+		break;
+
   case 'do_create':
 		$template = 'planEdit.tpl';
 		$status_ok = false;
@@ -142,11 +142,11 @@ switch($args->do_action)
 
 				$status_ok = true;
 				$template = null;
-				
+
 				// no need to disturb user
 				// $user_feedback = lang_get('testplan_created_ok');
         $user_feedback ='';
-        
+
 				if($args->rights == 'on')
 					$result = insertTestPlanUserRight($db, $tplan_id,$args->user_id);
 
@@ -169,13 +169,14 @@ switch($args->do_action)
 			$smarty->assign('tproject_name', $args->tproject_name);
 			$smarty->assign('notes', $of->CreateHTML());
 		}
-		break;  
+		break;
 }
 
 $smarty->assign('main_descr',$main_descr);
 $smarty->assign('cf',$cf_smarty);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
+$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
 switch($args->do_action)
 {
@@ -188,8 +189,8 @@ switch($args->do_action)
         $template = is_null($template) ? 'planView.tpl' : $template;
         $smarty->assign('tplans',$tplans);
         $smarty->display($templateCfg->template_dir . $template);
-		break; 
-		
+		break;
+
    case "edit":
    case "create":
         $template = is_null($template) ? 'planEdit.tpl' : $template;
@@ -210,25 +211,25 @@ switch($args->do_action)
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
- *  
+ *
  * @parameter hash request_hash the $_REQUEST
  * @parameter hash session_hash the $_SESSION
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
- * 20060103 - fm 
+ * 20060103 - fm
 */
 function init_args($request_hash, $session_hash)
 {
   	$args = new stdClass();
 	  $request_hash = strings_stripSlashes($request_hash);
-    
+
 	  $nullable_keys = array('testplan_name','notes','rights','active','do_action');
 	  foreach($nullable_keys as $value)
 	  {
 	  	$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
 	  }
-	  
+
 	  $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
 	  foreach($intval_keys as $key => $value)
 	  {
@@ -236,21 +237,21 @@ function init_args($request_hash, $session_hash)
 	  }
 	  $args->source_tpid = $args->copy_from_tplan_id;
 	  $args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
-	  
+
 	  $args->copy_options=array();
-	  $boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0, 
+	  $boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
 	                        'copy_milestones' => 0, 'copy_user_roles' => 0, 'copy_builds' => 0);
-	  
+
 	  foreach($boolean_keys as $key => $value)
 	  {
 	    $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
 	  }
-	  
+
 	  $args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
 	  $args->tproject_id = $session_hash['testprojectID'];
 	  $args->tproject_name = $session_hash['testprojectName'];
 	  $args->user_id = $session_hash['userID'];
-	  
+
 	  return $args;
 }
 ?>

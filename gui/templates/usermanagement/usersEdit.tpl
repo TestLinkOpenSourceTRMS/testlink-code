@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.18 2008/05/07 20:07:41 schlundus Exp $
+$Id: usersEdit.tpl,v 1.19 2008/05/08 21:05:43 schlundus Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -238,7 +238,7 @@ function validateForm(f,check_password)
 <br />
 <form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
 	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
-  <input type="hidden" name="user_id" value="{$user_id}" />
+	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />
 </form>
 {/if}

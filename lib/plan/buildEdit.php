@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/05/08 18:45:35 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/05/08 21:06:42 $ $Author: schlundus $
  *
  * rev :
  *      20080217 - franciscom - refactoring
@@ -76,7 +76,7 @@ $smarty->assign('operation_descr',$op->operation_descr);
 $smarty->assign('user_feedback',$op->user_feedback);
 $smarty->assign('buttonCfg',$op->buttonCfg);
 $smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
-
+$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of);
 
 

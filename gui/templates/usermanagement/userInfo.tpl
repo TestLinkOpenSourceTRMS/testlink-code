@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.12 2008/05/06 06:26:13 franciscom Exp $ *}
+{* $Id: userInfo.tpl,v 1.13 2008/05/08 21:05:43 schlundus Exp $ *}
 {*
 *}
 {assign var="cfg_section" value="login" }
@@ -183,8 +183,9 @@ function checkPasswords(oldp,newp,newp_check)
 
 <hr />
 <h2>{$labels.audit_login_history}
-{if $mgt_view_events eq "yes"}
-	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/></h2>
+	{if $mgt_view_events eq "yes"}
+	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
+</h2>
 {/if}
 <div>
 	<h3>{$labels.audit_last_succesful_logins}</h3>
@@ -197,19 +198,17 @@ function checkPasswords(oldp,newp,newp_check)
 	{else}
 	  {$labels.never_logged}
 	{/if}
-
-
 </div>
-<div>
   {if $loginHistory->failed != ''}
+	<div>
 	  <h3>{$labels.audit_last_failed_logins}</h3>
 	  {foreach from=$loginHistory->failed item=event}
 	  <span>{localize_timestamp ts=$event->timestamp}</span>
 	  <span>{$event->description|escape}</span>
 	  <br/>
 	  {/foreach}
+	</div>
   {/if}
-</div>
 
 </div>
 {if $update_title_bar == 1}

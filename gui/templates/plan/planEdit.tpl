@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.10 2008/05/06 06:26:07 franciscom Exp $
+$Id: planEdit.tpl,v 1.11 2008/05/08 21:05:43 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
 
 20070214 - franciscom -
-BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed  
+BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed
 Bug confirmed on IE
 
 *}
@@ -29,7 +29,7 @@ var warning_empty_tp_name = "{$labels.warning_empty_tp_name}";
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.testplan_name.value)) 
+  if (isWhitespace(f.testplan_name.value))
   {
       alert_message(alert_box_title,warning_empty_tp_name);
       selectField(f, 'testplan_name');
@@ -63,46 +63,49 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 <h1 class="title">{$main_descr|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" user_feedback=$user_feedback 
+{include file="inc_update.tpl" user_feedback=$user_feedback
          result=$sqlResult item="TestPlan" action="add"}
 
-	<h2>
-	{assign var='form_action' value='create'} 
+	{assign var='form_action' value='create'}
 	{if $tplan_id neq 0}
-		{$labels.testplan_title_edit} {$tpName|escape} 
-		{assign var='form_action' value='update'} 
+		<h2>
+		{$labels.testplan_title_edit} {$tpName|escape}
+		{assign var='form_action' value='update'}
+		{if $mgt_view_events eq "yes"}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$tplan_id}','testplans')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+		{/if}
+		</h2>
 	{/if}
-	</h2>
 
 	<form method="post" name="testplan_mgmt" id="testplan_mgmt"
 	      action="lib/plan/planEdit.php?action={$form_action}"
 	      onSubmit="javascript:return validateForm(this);">
-	
+
 	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}" />
 	<table class="common" width="80%">
-	
+
 		<tr><th style="background:none;">{$labels.testplan_th_name}</th>
-			<td><input type="text" name="testplan_name" 
-			           size="{#TESTPLAN_NAME_SIZE#}" 
-			           maxlength="{#TESTPLAN_NAME_MAXLEN#}" 
+			<td><input type="text" name="testplan_name"
+			           size="{#TESTPLAN_NAME_SIZE#}"
+			           maxlength="{#TESTPLAN_NAME_MAXLEN#}"
 			           value="{$tpName|escape}"/>
   				{include file="error_icon.tpl" field="testplan_name"}
 			</td>
-		</tr>	
+		</tr>
 		<tr><th style="background:none;">{$labels.testplan_th_notes}</th>
 			<td >{$notes}</td>
 		</tr>
 		{if $tplan_id eq 0}
 			<tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
 			<td>
-				<select name="copy_from_tplan_id" 
+				<select name="copy_from_tplan_id"
 				        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
 				<option value="0">{$labels.opt_no}</option>
 				{foreach item=testplan from=$tplans}
 					<option value="{$testplan.id}">{$testplan.name|escape}</option>
 				{/foreach}
 				</select>
-      
+
       <div id="copy_controls" style="display:none;">
       {assign var=this_template_dir value=$smarty.template|dirname}
       {include file="$this_template_dir/inc_controls_planEdit.tpl"}
@@ -112,17 +115,17 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 		{else}
 			<tr><td>
 				{$labels.testplan_th_active}
-				<input type="checkbox" name="active" 
+				<input type="checkbox" name="active"
 				{if $tpActive eq 1}
 					checked="checked"
 				{/if}
 				/>
       </td></tr>
 		{/if}
-	
+
 	  {* 20070127 - franciscom *}
 	  {if $cf neq ''}
-	  <tr> 
+	  <tr>
 	    <td  colspan="2">
      <div class="custom_field_container">
      {$cf}
@@ -132,15 +135,15 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	  {/if}
 	</table>
 
-	<div class="groupBtn">	
-		
+	<div class="groupBtn">
+
 		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
 		{if $tplan_id eq 0}
 		  <input type="hidden" name="do_action" value="do_create" />
 		  <input type="submit" name="do_create" value="{$labels.btn_testplan_create}"
 		         onclick="do_action.value='do_create'"/>
 		{else}
-		
+
 		  <input type="hidden" name="do_action" value="do_update" />
 		  <input type="submit" name="do_update" value="{$labels.btn_upd}"
 		         onclick="do_action.value='do_update'"/>
@@ -155,7 +158,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	</form>
 
 <p>{$labels.testplan_txt_notes}</p>
-	
+
 </div>
 
 

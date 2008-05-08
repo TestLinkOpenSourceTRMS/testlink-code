@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.14 2008/05/07 21:01:22 schlundus Exp $
+$Id: rolesEdit.tpl,v 1.15 2008/05/08 21:05:43 schlundus Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -29,7 +29,7 @@ rev :
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,
-             th_rolename,th_tp_rights'}
+             th_rolename,th_tp_rights,btn_cancel'}
 
 var alert_box_title = "{$labels.warning}";
 var warning_modify_role = "{$labels.warning_modify_role}";
@@ -155,14 +155,16 @@ function validateForm(f)
 		</tr>
 
 	</table>
+	<div class="groupBtn">
 	{if $gui->grants->role_mgmt == "yes" && $gui->role->dbID != $smarty.const.TL_ROLES_NONE}
 
-		<div class="groupBtn">
 		<input type="hidden" name="doAction" value="{$gui->operation}" />
 		<input type="submit" name="role_mgmt" value="{$labels.btn_save}"
 		         {if $gui->role != null && $gui->affectedUsers neq null} onClick="return modifyRoles_warning()"{/if}
 		/>
 	{/if}
+		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+			onclick="javascript: location.href=fRoot+'lib/usermanagement/rolesView.php';" />
 	</div>
 	<br />
 	{if $gui->affectedUsers neq null}

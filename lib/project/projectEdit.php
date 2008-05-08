@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/05/04 10:33:34 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/05/08 21:06:42 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -56,7 +56,7 @@ switch($args->doAction)
 {
     case 'create':
     	$template = $default_template;
-      $ui=create($args);
+      	$ui = create($args);
     	break;
 
     case 'edit':
@@ -333,8 +333,8 @@ function edit(&$argsObj,&$tprojectMgr)
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
 
-  $ui = new stdClass();
-  $ui->main_descr=lang_get('title_testproject_management');
+	$ui = new stdClass();
+	$ui->main_descr=lang_get('title_testproject_management');
 	$ui->doActionValue = 'doUpdate';
 	$ui->buttonValue = lang_get('btn_save');
 	$ui->caption = sprintf(lang_get('caption_edit_tproject'),$argsObj->tprojectName);
@@ -402,10 +402,10 @@ function create(&$argsObj)
 {
     $argsObj->active = 1;
 
-    $gui = new stdClass();
-	  $gui->doActionValue = 'doCreate';
-		$gui->buttonValue = lang_get('btn_create');
-		$gui->caption = ""; //lang_get('caption_new_tproject');
+	$gui = new stdClass();
+	$gui->doActionValue = 'doCreate';
+	$gui->buttonValue = lang_get('btn_create');
+	$gui->caption = lang_get('caption_new_tproject');
 
     return $gui;
 }

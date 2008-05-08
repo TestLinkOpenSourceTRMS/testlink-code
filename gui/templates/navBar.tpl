@@ -1,8 +1,8 @@
-{* 
-	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.35 2008/05/05 15:01:37 havlat Exp $ 
-	Purpose: smarty template - title bar + menu 
-	
+{*
+	Testlink Open Source Project - http://testlink.sourceforge.net/
+	$Id: navBar.tpl,v 1.36 2008/05/08 21:05:42 schlundus Exp $
+	Purpose: smarty template - title bar + menu
+
 	rev :
        20080504 - layout changes to add access to local documentation
 	     20080211 - changes action for user management
@@ -40,18 +40,18 @@
 <div class="menu_title">
 
 	{if $gui->TestProjects != ""}
-	<span style="float: right; padding: 2px;">
-		<form name="productForm" action="lib/general/navBar.php" method="get"> 
-		<span style="font-size: 80%">{$labels.testproject} </span>
-		<select class="menu_combo" name="testproject" onchange="this.form.submit();">
-      	{foreach key=tproject_id item=tproject_name from=$gui->TestProjects}
-  		  <option value="{$tproject_id}" title="{$tproject_name|escape}"
-  		    {if $tproject_id == $gui->tprojectID} selected="selected" {/if}>
-  		    {$tproject_name|truncate:#TESTPROJECT_TRUNCATE_SIZE#|escape}</option>
-  		{/foreach}
-		</select>
+	<div style="float: right; padding: 2px;">
+		<form name="productForm" action="lib/general/navBar.php" method="get">
+			<span style="font-size: 80%">{$labels.testproject}</span>
+			<select class="menu_combo" name="testproject" onchange="this.form.submit();">
+	      	{foreach key=tproject_id item=tproject_name from=$gui->TestProjects}
+	  		  <option value="{$tproject_id}" title="{$tproject_name|escape}"
+	  		    {if $tproject_id == $gui->tprojectID} selected="selected" {/if}>
+	  		    {$tproject_name|truncate:#TESTPROJECT_TRUNCATE_SIZE#|escape}</option>
+	  		{/foreach}
+			</select>
 		</form>
-	</span>
+	</div>
 	{/if}
 
 	<span class="bold">
@@ -63,49 +63,48 @@
 <div class="menu_bar">
 
 	<span style="float: right;">
-   		<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i" 
+   		<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
       		tabindex="6">{$labels.title_edit_personal_data}</a>
 	 | 	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
 	</span>
 
-	<span>
-   	<a href="index.php" target="_parent" accesskey="h" tabindex="1">{$labels.home}</a> | 
+	<a href="index.php" target="_parent" accesskey="h" tabindex="1">{$labels.home}</a> |
    	{if $gui->tprojectID && $gui->grants->view_testcase_spec == "yes"}
-   	<a href="lib/general/frmWorkArea.php?feature=editTc" target="mainframe" accesskey="s" 
-      		tabindex="2">{$labels.title_specification}</a> | 
-   	{/if}	
+   	<a href="lib/general/frmWorkArea.php?feature=editTc" target="mainframe" accesskey="s"
+      		tabindex="2">{$labels.title_specification}</a> |
+   	{/if}
    	{if $gui->grants->testplan_execute == "yes" and $gui->TestPlanCount > 0}
-   	<a href="lib/general/frmWorkArea.php?feature=executeTest" target="mainframe" accesskey="e" 
-     		tabindex="3">{$labels.title_execute}</a> | 
-   	{/if}	
+   	<a href="lib/general/frmWorkArea.php?feature=executeTest" target="mainframe" accesskey="e"
+     		tabindex="3">{$labels.title_execute}</a> |
+   	{/if}
    	{if $gui->grants->testplan_metrics == "yes" and $gui->TestPlanCount > 0}
-   	<a href="lib/general/frmWorkArea.php?feature=showMetrics" target="mainframe" accesskey="r" 
-      		tabindex="3">{$labels.title_results}</a> | 
-   	{/if}	
+   	<a href="lib/general/frmWorkArea.php?feature=showMetrics" target="mainframe" accesskey="r"
+      		tabindex="3">{$labels.title_results}</a> |
+   	{/if}
    	{if $gui->grants->user_mgmt == "yes"}
-   	<a href="{$action_user_mgmt}" target="mainframe" accesskey="u" 
-      		tabindex="4">{$labels.navbar_user_management}</a> | 
-   	{/if}	
+   	<a href="{$action_user_mgmt}" target="mainframe" accesskey="u"
+      		tabindex="4">{$labels.navbar_user_management}</a> |
+   	{/if}
 	{if $gui->grants->view_events_mgmt eq "yes"}
-		<a href="lib/events/eventviewer.php" target="mainframe" 
+		<a href="lib/events/eventviewer.php" target="mainframe"
 		   accesskey="v" tabindex="5">{$labels.title_events}</a> |
 	{/if}
 
 	{if $gui->tprojectID && $gui->grants->view_testcase_spec == "yes"}
 		<form style="display:inline" target="mainframe" name="searchTC" id="searchTC"
-		      action="lib/testcases/archiveData.php" method="get"> 
+		      action="lib/testcases/archiveData.php" method="get">
 		<span style="font-size: 80%">{$labels.th_tcid}: </span>
-		<input style="font-size: 80%; width: 50px;" type="text" 
-		       title="{$labels.search_testcase}" name="targetTestCase" value="" /> 
-		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png" 
+		<input style="font-size: 80%; width: 50px;" type="text"
+		       title="{$labels.search_testcase}" name="targetTestCase" value="" />
+		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"
 		     title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
-		     onclick="document.getElementById('searchTC').submit()" /> | 
+		     onclick="document.getElementById('searchTC').submit()" /> |
 		<input type="hidden" name="edit" value="testcase"/>
 		<input type="hidden" name="allow_edit" value="0"/>
 		</form>
 	{/if}
   <form style="display:inline;">
-    <select class="menu_combo" style="font-weight:normal;" name="docs" size="1" 
+    <select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
             onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, '{$basehref}');" >
         <option value="leer"> -{lang_get s='access_doc'}-</option>
         {if $gui->docs}
@@ -115,7 +114,7 @@
         {/if}
     </select>
    </form>
-   </span>
+ 
 
 </div>
 

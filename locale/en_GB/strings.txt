@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.312 $
- * @modified $Date: 2008/05/07 21:01:27 $ $Author: schlundus $
+ * @version $Revision: 1.313 $
+ * @modified $Date: 2008/05/08 21:42:19 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1014,6 +1014,7 @@ $TLS_th_perc_c_prio = "Completed tests with C Priority [0-100%]";
 $TLS_title_existing_milestones = "Existing Milestones";
 $TLS_title_milestones = "Milestones for Test Plan";
 $TLS_title_new_milestone = "New Milestone";
+$TLS_title_edit_milestone = "Edit Milestone";
 
 
 
@@ -1023,7 +1024,7 @@ $TLS_btn_del = "Delete";
 $TLS_btn_edit_del = "Edit / Delete";
 $TLS_btn_inactivate = "Inactivate";
 $TLS_caption_edit_tproject = "Edit %s";
-$TLS_caption_new_tproject = "Create";
+$TLS_caption_new_tproject = "Create new Test Project";
 $TLS_color = "Color";
 $TLS_enable_requirements = "Requirements Management";
 $TLS_enable_priority = "Priority Management";

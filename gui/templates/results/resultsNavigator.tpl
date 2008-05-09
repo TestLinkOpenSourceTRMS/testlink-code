@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.4 2008/05/06 06:26:11 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.5 2008/05/09 17:14:19 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -22,9 +22,6 @@ function pre_submit()
 </script>
 {/literal}
 </head>
-
-
-</head>
 <body>
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -43,8 +40,8 @@ function pre_submit()
 </div>
 
 <div style="margin:3px" >
-  <input type="hidden" id="called_by_me" name="called_by_me" value="1">
-  <input type="hidden" id="called_url" name="called_url" value="">
+  <input type="hidden" id="called_by_me" name="called_by_me" value="1" />
+  <input type="hidden" id="called_url" name="called_url" value="" />
 
   <table>
 	<tr><td style="padding-right: 10px">{lang_get s='test_plan'}</td><td>
@@ -73,8 +70,6 @@ function pre_submit()
 </div>
 
 
-
-{* 20070925 *}
 <script type="text/javascript">
 {if $workframe != ''}
 	parent.workframe.location='{$workframe}';

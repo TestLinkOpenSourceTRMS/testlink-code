@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/02/15 20:26:43 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/05/09 17:14:19 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -105,6 +105,7 @@ $smarty->assign('tpName', $tpName);
 $smarty->assign('arrMilestone', $mileStones);
 $smarty->assign('mileStone', $mileStone);
 $smarty->assign('action', $action);
+$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 $smarty->display($template_dir . 'planMilestones.tpl');
 
 /**

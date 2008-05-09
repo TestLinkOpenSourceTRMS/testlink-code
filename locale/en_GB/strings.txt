@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.313 $
- * @modified $Date: 2008/05/08 21:42:19 $ $Author: schlundus $
+ * @version $Revision: 1.314 $
+ * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -797,7 +797,7 @@ $TLS_last_name = "Last name";
 $TLS_link_back_to_login = "Back to login";
 $TLS_password_again = "Repeat password";
 $TLS_password_mgmt_is_external = "Password management is external";
-
+$TLS_user_login_valid_regex = "The Login Name contains invalid characters!";
 
 
 // gui/templates/tcMove.tpl

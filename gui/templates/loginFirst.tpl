@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.11 2008/05/06 11:54:51 havlat Exp $
+$Id: loginFirst.tpl,v 1.12 2008/05/09 17:14:19 schlundus Exp $
 Purpose: smarty template - first login
 *}
 
@@ -31,7 +31,7 @@ window.onload=function(){
 <form method="post" action="firstLogin.php">
 
 	<p class="label">{lang_get s='login_name'}<br />
-	<input type="text" name="loginName" id=loginName" 
+	<input type="text" name="loginName" id="loginName" 
 	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$login|escape}"/></p>
 
   {if $external_password_mgmt eq 0}

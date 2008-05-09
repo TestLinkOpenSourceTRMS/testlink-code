@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/01/22 21:52:19 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
  *
  */
 require_once('config.inc.php');
 require_once('common.php');
+require_once('users.inc.php');
 
 $_POST = strings_stripSlashes($_POST);
 $bEditUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;

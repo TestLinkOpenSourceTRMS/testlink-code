@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/05/05 09:11:43 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/05/09 17:14:19 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -408,17 +408,17 @@ function checkForTestPlansWithoutTestProjects(&$db)
 */
 function checkEmailConfig()
 {
-  $common[]=lang_get('check_email_config');
-  $msg=null;
-  $idx=1;
-	$key2get=array('tl_admin_email','from_email','return_path_email','smtp_host');
+	$common[] = lang_get('check_email_config');
+	$msg = null;
+	$idx = 1;
+	$key2get = array('tl_admin_email','from_email','return_path_email','smtp_host');
 	
 	foreach($key2get as $cfg_key)
 	{  
-	   $cfg_param=config_get($cfg_key);
-	   if( strlen(trim($cfg_param)) == 0 || strpos($cfg_param,'not_configured') > 0 )
+	   $cfg_param = config_get($cfg_key);
+	   if(strlen(trim($cfg_param)) == 0 || strpos($cfg_param,'not_configured') > 0 )
 	   {
-    	    $msg[$idx++] = $cfg_key;
+			$msg[$idx++] = $cfg_key;
 	   }  
 	}
 	return is_null($msg) ? null : $common+$msg; 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.14 2008/04/25 17:49:23 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.15 2008/05/09 17:14:19 schlundus Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -167,8 +167,8 @@ viewer for test case in test specification
 		<td colspan="2">{$args_testcase.summary}</td>
 	</tr>
 	<tr>
-		<th width="50%">{lang_get s='steps'}</td>
-		<th width="50%">{lang_get s='expected_results'}</td>
+		<th width="50%">{lang_get s='steps'}</th>
+		<th width="50%">{lang_get s='expected_results'}</th>
 	</tr>
 	<tr>
 		<td>{$args_testcase.steps}</td>

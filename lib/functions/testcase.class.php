@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.107 $
- * @modified $Date: 2008/05/06 06:27:26 $ $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080425 - franciscom - replacing DEFINE with const
@@ -431,13 +431,13 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
       }
   }
 
-  $req_mgr = new requirement_mgr($this->db);
+	$req_mgr = new requirement_mgr($this->db);
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
-  $tprojectName='';
-  $parentTestSuiteName='';
-  $requirements_feature=null;
+	$tprojectName='';
+	$parentTestSuiteName='';
+	$requirements_feature=null;
 	$gui->tc_current_version = array();
 	$tc_other_versions = array();
 	$status_quo_map = array();
@@ -448,12 +448,12 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 
 	if(is_array($id))
 	{
-		  $a_id = $id;
+		$a_id = $id;
 	}
 	else
 	{
 	    $status_ok=$id > 0 ? 1 : 0;
-		  $a_id = array($id);
+		$a_id = array($id);
 	}
 
   if( $status_ok )
@@ -516,7 +516,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 	$smarty->assign('action',$viewer_defaults['action']);
 	$smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
 	$smarty->assign('tprojectName',$tprojectName);
-  $smarty->assign('parentTestSuiteName',$parentTestSuiteName);
+	$smarty->assign('parentTestSuiteName',$parentTestSuiteName);
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('users',tlUser::getAll($this->db,null,'id'));

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/05/08 21:06:42 $ $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -94,6 +94,7 @@ $ui->main_descr=lang_get('title_testproject_management');
 $smarty = new TLSmarty();
 $smarty->assign('gui_cfg',$gui_cfg);
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
+$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
 if(!$status_ok)
    $args->doAction = "ErrorOnAction";

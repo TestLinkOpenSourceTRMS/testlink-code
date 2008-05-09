@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.6 2008/05/06 06:26:06 franciscom Exp $
+$Id: keywordsEdit.tpl,v 1.7 2008/05/09 20:15:14 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
 {assign var="url_args" value="lib/keywords/keywordsEdit.php"}
@@ -35,7 +35,12 @@ function validateForm(f)
 {if $canManage ne ""}
   <div class="workBack">
   
-  <div class="action_descr">{$action_descr|escape}</div><br />
+  <div class="action_descr">{$action_descr|escape}
+  	{if $mgt_view_events eq "yes" && $keywordID > 0}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$keywordID}','keywords')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+	{/if}
+  
+  </div><br />
   {include file="inc_update.tpl" user_feedback=$user_feedback }
 
   	<form name="addKey" method="post" action="{$keyword_edit_url}"

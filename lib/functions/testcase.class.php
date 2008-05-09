@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.108 $
- * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2008/05/09 20:15:14 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080425 - franciscom - replacing DEFINE with const
@@ -1655,27 +1655,25 @@ function deleteKeywords($tcID,$kwID = null,$audit=self::AUDIT_ON)
 	$sql = " DELETE FROM testcase_keywords WHERE testcase_id = {$tcID} ";
 	if (!is_null($kwID))
 	{
-	  if( is_array($kwID) )
-	  {
+		if(is_array($kwID))
+	  	{
 		    $sql .= " AND keyword_id IN (" . implode(',',$kwID) . ")";
 		    $key4log=$kwID;
 		}
 		else
 		{
 		    $sql .= " AND keyword_id = {$kwID}";
-		    $key4log=array($kwID);
+		    $key4log = array($kwID);
 		}    
 	}	
-  else
-  {
-      $key4log=array_keys($this->get_keywords_map($tcID));
-  }
+	else
+		$key4log = array_keys((array)$this->get_keywords_map($tcID));
 		
 	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
 		$tcInfo = $this->tree_manager->get_node_hierachy_info($tcID);
-		if ($tcInfo)
+		if ($tcInfo && $key4log)
 		{
 			foreach($key4log as $key2get)
 			{

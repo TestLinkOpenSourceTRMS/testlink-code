@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsImport.tpl,v 1.2 2008/05/06 06:26:06 franciscom Exp $ *}
+{* $Id: keywordsImport.tpl,v 1.3 2008/05/09 20:15:14 schlundus Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
    20051231 - scs - fixed incorrect cancel button link
@@ -49,7 +49,7 @@
 </form>
 
 {if $msg neq ''}
-    <script>
+    <script type="text/javascript">
     alert("{$msg}");
     </script>
 {/if}  

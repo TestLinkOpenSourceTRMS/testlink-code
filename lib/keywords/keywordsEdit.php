@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/03/18 20:11:24 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/05/09 20:15:15 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -70,6 +70,7 @@ $smarty->assign('name',$args->keyword);
 $smarty->assign('keyword',$args->keyword);
 $smarty->assign('notes',$args->notes);
 $smarty->assign('keywordID',$args->keyword_id);
+$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 $smarty->display($template_dir . $default_template);
 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.3 2008/05/06 06:26:06 franciscom Exp $
+$Id: keywordsAssign.tpl,v 1.4 2008/05/09 20:15:14 schlundus Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 *}
 {include file="inc_head.tpl" openHead='yes'}
@@ -32,7 +32,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 	{if $can_do} 
      {if $keyword_assignment_subtitle neq ''}
-      <h2> {$keyword_assignment_subtitle}</h2>
+      <h2>{$keyword_assignment_subtitle}</h2>
      {/if}
     
     {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}

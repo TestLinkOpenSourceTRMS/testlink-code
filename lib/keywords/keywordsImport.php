@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/21 22:57:18 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/05/09 20:15:15 $ by $Author: schlundus $
  */
 require('../../config.inc.php');
 require_once('keyword.class.php');
@@ -50,7 +50,7 @@ if(!$msg && $bUpload)
 			{
 				$tproject = new testproject($db);
 				if ($tproject->$pfn($testproject_id,$dest) != tl::OK)
-					$msg = lang_get('wrong_xml_keywords_file'); 
+					$msg = lang_get('wrong_keywords_file'); 
 				else
 				{
 					header("Location: keywordsView.php");

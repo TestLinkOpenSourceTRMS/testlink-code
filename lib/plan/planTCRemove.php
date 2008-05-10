@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.6 2008/05/06 06:27:27 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.7 2008/05/10 14:38:20 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -146,6 +146,8 @@ function init_args()
   $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
   $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
   $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
+  
+  // Can be a list (string with , (comma) has item separator), 
   $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 

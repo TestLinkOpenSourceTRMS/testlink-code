@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.21 2008/03/22 23:47:05 schlundus Exp $
+ * @version $Id: planUpdateTC.php,v 1.22 2008/05/10 14:38:20 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -118,7 +118,10 @@ function init_args()
     $args->checkedTestCaseSet = isset($_REQUEST['achecked_tc']) ? $_REQUEST['achecked_tc'] : null;
     $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
+
+    // Can be a list (string with , (comma) has item separator), 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+
     $args->tplan_id = $_SESSION['testPlanId'];
     $args->tplan_name = $_SESSION['testPlanName'];
     $args->tproject_id =  $_SESSION['testprojectID'];

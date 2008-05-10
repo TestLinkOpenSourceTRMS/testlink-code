@@ -1,11 +1,12 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.52 2008/05/06 06:27:27 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.53 2008/05/10 14:38:20 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20080510 - franciscom - multiple keyword filter with AND type
 //      20080404 - franciscom - reorder logic
 //      20080114 - franciscom - added testCasePrefix management
 //      20070930 - franciscom - BUGID
@@ -19,11 +20,12 @@ require_once("common.php");
 require("specview.php");
 
 testlinkInitPage($db);
-
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
+$tcase_mgr = new testcase($db);
+
 
 $templateCfg = templateConfiguration();
 
@@ -39,6 +41,15 @@ $gui->keywords_filter = '';
 $gui->has_tc=0;
 $gui->items=null;
 $gui->has_linked_items=false;
+
+// 20080508 - franciscom
+$gui->keywordsFilterType=new stdClass();
+$gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
+$gui->keywordsFilterType->selected=$args->keywordsFilterType;
+
+$keywordsFilter=new stdClass();
+$keywordsFilter->items=$args->keyword_id;
+$keywordsFilter->type = $gui->keywordsFilterType->selected;
 
 // full_control, controls the operations planAddTC_m1.tpl will allow
 // 1 => add/remove
@@ -58,17 +69,6 @@ define('ANY_EXEC_STATUS',null);
 switch($args->item_level)
 {
     case 'testsuite':
-		$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
-		                                                   $args->keyword_id);
-		
-		$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
-		
-		$tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,DONT_FILTER_BY_TCASE_ID,
-		                                                            $args->keyword_id,ANY_EXEC_STATUS,ANY_OWNER);
-		
-		$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-		                    $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,DONT_FILTER_BY_TCASE_ID);
-		
 		$do_display = 1;
 		break;
 
@@ -116,17 +116,20 @@ switch($args->doAction)
 
 if($do_display)
 {
-	  $map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
-	                                                      $args->keyword_id);
-	  $tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
-	  
-	  // BUGID 905
-	  $tplan_linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,DONT_FILTER_BY_TCASE_ID,
-	                                                               $args->keyword_id);
-    
-	  $out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-	  	                   $tplan_linked_tcversions, $map_node_tccount,$args->keyword_id,DONT_FILTER_BY_TCASE_ID);
-    
+  	$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
+		                                                    $keywordsFilter);
+		$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
+		
+		// This does filter on keywords ALWAYS in OR mode.
+		$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
+		
+		// With this pieces we implement the AND type of keyword filter.
+		$keywordsTestCases=$tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,$keywordsFilter->type);
+		$testCaseSet=array_keys($keywordsTestCases);
+		
+		$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
+		                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,$testCaseSet);
+		
     
 	  $gui->has_tc=($out['num_tc'] > 0 ? 1 : 0);
 	  $gui->items=$out['spec_view'];
@@ -135,6 +138,8 @@ if($do_display)
     $smarty->assign('gui', $gui);
 	  $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
+
+
 
 /*
   function: init_args
@@ -151,7 +156,6 @@ function init_args()
 
 	$args = new stdClass();
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
-	$args->keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 	$args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->item_level = isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : "default";
@@ -161,7 +165,20 @@ function init_args()
 	$args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
 	$args->testcases2remove = isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
 
-  // 20080331 -franciscom
+  // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
+  $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
+  
+  if( is_null($keywordSet) )
+  {
+     $args->keyword_id=0;  
+  }
+	else
+	{
+	   $args->keyword_id=explode(',',$keywordSet);  
+	}
+	
+  $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+
 	$args->testcases2order = isset($_REQUEST['exec_order']) ? $_REQUEST['exec_order'] : null;
 	$args->linkedOrder = isset($_REQUEST['linked_exec_order']) ? $_REQUEST['linked_exec_order'] : null;
 	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
@@ -211,4 +228,32 @@ function doReorder(&$argsObj,&$tplanMgr)
     
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
+{
+    $doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
+
+    // Multiple step algoritm to apply keyword filter on type=AND
+    // get_linked_tcversions filters by keyword ALWAYS in OR mode.
+    $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,DONT_FILTER_BY_TCASE_ID,
+                                                     $argsObj->keyword_id);
+
+    if($doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
+    {
+      $filteredSet=$tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
+                                              $argsObj->keyword_id,$argsObj->keywordsFilterType);
+
+      $testCaseSet=array_keys($filteredSet);   
+      $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$testCaseSet);
+    }
+    return $tplan_tcases; 
+}
 ?>

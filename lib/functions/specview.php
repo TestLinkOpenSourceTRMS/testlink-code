@@ -2,12 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.4 $ $Author: franciscom $
- * @modified $Date: 2008/04/22 07:01:47 $
+ * @version $Revision: 1.5 $ $Author: franciscom $
+ * @modified $Date: 2008/05/10 14:34:46 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20080510 - franciscom - 
+ *
  *     20080422 - franciscom - BUGID 1497
  *     Suggested by Martin Havlat execution order will be set to external_id * 10
  *     for test cases not linked yet
@@ -33,7 +35,7 @@ arguments:
          map_node_tccount,
                             
          [keyword_id] default 0
-         [tcase_id] default null,
+         [tcase_id] default null, can be an array
 			   [write_button_only_if_linked] default 0
 
 
@@ -140,8 +142,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 		    if($node['node_type_id'] == $tcase_node_type && !isset($tck_map[$node['id']]) )
 			   $test_spec[$key]=null;            
 	    }
-	    
-	    // 20080204 - franciscom
 	    $tobj_mgr=null;
 	}
   // ---------------------------------------------------------------------------------------------
@@ -149,10 +149,14 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	// ---------------------------------------------------------------------------------------------
 	if(!is_null($tcase_id))
 	{
+	  $testCaseSet = is_array($tcase_id) ? $tcase_id : array($tcase_id);
+	  
 		// filter the test_spec
 		foreach($test_spec as $key => $node)
 		{
-			if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
+		  // 20080510 - franciscom
+			// if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
+			if($node['node_type_id'] == $tcase_node_type &&  !in_array($node['id'],$testCaseSet) )
 				$test_spec[$key]=null;            
 		}
 	}

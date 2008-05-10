@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/05/02 07:09:36 $  $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/05/10 14:42:20 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080507 - franciscom - get_keywords_tcases() - changed return type
+ *                                                 add AND type filter 
  * 20080501 - franciscom - typo erro bug in get_keywords_tcases()
  * 20080322 - franciscom - get_keywords_tcases() - keyword_id can be array
  * 20080322 - franciscom - interface changes get_all_testplans()
@@ -1417,16 +1419,45 @@ function get_all_testcases_id($id)
 
 
   returns: map: key: testcase_id
-                value: map with testcase_id,keyword_id,keyword
+                value: map 
+                          key: keyword_id
+                          value: testcase_id,keyword_id,keyword
+
+                Example:
+                 [24] => Array ( [3] => Array( [testcase_id] => 24
+                                               [keyword_id] => 3
+                                               [keyword] => MaxFactor )
+                         
+                                 [2] => Array( [testcase_id] => 24
+                                               [keyword_id] => 2
+                                               [keyword] => Terminator ) )
 
 
 */
-function get_keywords_tcases($testproject_id, $keyword_id=0)
+function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_type='OR')
 {
     $keyword_filter= '' ;
+    $subquery='';
+    
+    //echo $keyword_filter_type;
     if( is_array($keyword_id) )
     {
         $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
+        
+        if($keyword_filter_type == 'AND')
+        {
+		        $subquery = "AND testcase_id IN (" .
+		                    " SELECT FOXDOG.testcase_id FROM
+		                      ( SELECT COUNT(testcase_id) AS HITS,testcase_id
+		                        FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		                        WHERE keyword_id = K.id
+		                        AND testproject_id = {$testproject_id}
+		                        {$keyword_filter}
+		                        GROUP BY testcase_id ) AS FOXDOG " .
+		                    " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
+		                 
+            $keyword_filter ='';
+        }    
     }
     else if( $keyword_id > 0 )
     {
@@ -1438,9 +1469,11 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
 		         FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
 		         WHERE keyword_id = K.id
 		         AND testproject_id = {$testproject_id}
-		         {$keyword_filter}
+		         {$keyword_filter} {$subquery}
 			       ORDER BY keyword ASC ";
-		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+
+		// $map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+		$map_keywords = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','keyword_id');
 
 		return($map_keywords);
 } //end function

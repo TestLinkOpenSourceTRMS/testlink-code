@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.3 2008/05/06 06:26:07 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.4 2008/05/10 14:32:10 franciscom Exp $
 show test specification tree 
 
 rev: 20080429 - franciscom - keyword filter multiselect
 *}
 
 {lang_get var="labels" 
-          s='btn_update_menu,title_navigator,keyword,test_plan,keyword,caption_nav_filter_settings'}
+          s='keywords_filter_help,
+             btn_update_menu,title_navigator,keyword,test_plan,keyword,caption_nav_filter_settings'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
 {if $gui->keywordsFilterItemQty == 0}
@@ -48,9 +49,15 @@ function pre_submit()
 		</tr>
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>
-			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+			<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
+			            multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
+			</td>
+			<td>
+      {html_radios name='keywordsFilterType' 
+                   options=$gui->keywordsFilterType->options
+                   selected=$gui->keywordsFilterType->selected }
 			</td>
 		</tr>
 		<tr>

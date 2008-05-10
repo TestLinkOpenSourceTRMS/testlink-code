@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.30 2008/05/02 07:09:36 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.31 2008/05/10 14:38:20 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -10,6 +10,7 @@
 *	Test specification. Keywords should be used for filter.
 * 
 * rev :
+*      20080507 - franciscom - added type for keyword filter (or/and)
 *      20080501 - franciscom - keyword filter now is multiselect
 *      20080126 - franciscom - refactoring
 *      20070920 - franciscom - REQ - BUGID test plan combo box
@@ -54,10 +55,10 @@ function init_args()
     $args = new stdClass();
     $_REQUEST=strings_stripSlashes($_REQUEST);
 
-
+    // Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+    
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
-
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user_id=$_SESSION['userID'];
@@ -66,6 +67,8 @@ function init_args()
 
     $args->called_by_me = isset($_REQUEST['called_by_me']) ? 1 : 0;
     $args->called_url= isset($_REQUEST['called_url']) ? $_REQUEST['called_url'] : null;
+ 
+    $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
  
     return $args;
 }
@@ -117,7 +120,13 @@ function initializeGui(&$dbHandler,&$argsObj)
     {
    	   $gui->args .= '&keyword_id='.$argsObj->keyword_id;
     }
+    $gui->args .= '&keywordsFilterType=' . $argsObj->keywordsFilterType;
 
+
+    $gui->keywordsFilterType=new stdClass();
+    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+    
 
     return $gui;
 }
@@ -134,6 +143,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 {
 
+    $keywordsFilter=null;
     $my_workframe = $_SESSION['basehref']. $guiObj->menuUrl .                      
                     "?edit=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
 
@@ -146,6 +156,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     {
        // Warning:
        // Algorithm based on field order on URL call
+       // 
        $dummy=explode('?',$argsObj->called_url);
        $qs=explode('&',$dummy[1]);
        if($qs[0] == 'edit=testsuite')
@@ -158,11 +169,19 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
        }
     }
     
-    // added $tplan_id
+    // 20080507 - francisco.mancardi@gruppotesi.com
+    if( $argsObj->keyword_id > 0 )
+    {
+        $keywordsFilter=new stdClass();
+        $keywordsFilter->items=$argsObj->keyword_id;
+        $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
+    }
+
     $treeString = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
                                        $guiObj->menuUrl,NOT_FOR_PRINTING,
                                        HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
-                                       $guiObj->args, $argsObj->keyword_id,IGNORE_INACTIVE_TESTCASES);
+                                       $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
+       
                                        
     return (invokeMenu($treeString,'',null));
 

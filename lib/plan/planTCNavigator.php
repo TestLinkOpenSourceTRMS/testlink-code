@@ -1,7 +1,7 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.10 2008/05/06 06:27:27 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.11 2008/05/10 14:38:20 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
@@ -73,7 +73,12 @@ function init_args(&$tplanMgr)
     $args->user_id = $_SESSION['userID'];
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+    
+    // Can be a list (string with , (comma) has item separator), 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+    $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+   
+    
     $args->help_topic = isset($_REQUEST['help_topic']) ? $_REQUEST['help_topic'] : $args->feature;
 
     if(!(isset($_REQUEST['doUpdateTree']) || isset($_REQUEST['called_by_me'])))
@@ -137,6 +142,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
         $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
     }
 
+    // 20080508 - franciscom
+    $gui->keywordsFilterType=new stdClass();                                 
+    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;         
+
+
     // filter using user roles
     $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id,1);
     $gui->map_tplans = array();
@@ -194,6 +205,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $additionalInfo = new stdClass();
 
     $filters->keyword_id = $argsObj->keyword_id;
+    $filters->keywordsFilterType = $argsObj->keywordsFilterType;
+    
     $filters->tc_id = FILTER_BY_TC_OFF;
     $filters->build_id = FILTER_BY_BUILD_OFF;
     $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
@@ -261,6 +274,8 @@ function initializeGetArguments($argsObj,$filtersObj)
     {
     	  $settings .= '&keyword_id='.$argsObj->keyword_id;
     }
+    $settings .= '&keyword_id='.$argsObj->keyword_id;
+    
     
     if($filtersObj->AssignedTo)
     	  $settings .= '&filter_assigned_to=' . $filtersObj->AssignedTo;

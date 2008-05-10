@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.5 2008/05/06 06:26:08 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.6 2008/05/10 14:32:10 franciscom Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
 *}
 {lang_get var="labels" 
-          s='btn_update_menu,keyword,
+          s='btn_update_menu,keyword,keywords_filter_help,
              filter_owner,TestPlan,test_plan,caption_nav_filter_settings'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -50,9 +50,15 @@ function pre_submit()
 		{/if}
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>
-			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+			<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
+			            multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
+			</td>
+			<td>
+      {html_radios name='keywordsFilterType' 
+                   options=$gui->keywordsFilterType->options
+                   selected=$gui->keywordsFilterType->selected }
 			</td>
 		</tr>
 

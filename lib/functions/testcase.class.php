@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.109 $
- * @modified $Date: 2008/05/09 20:15:14 $ $Author: schlundus $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2008/05/10 14:40:32 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080425 - franciscom - replacing DEFINE with const
@@ -79,7 +79,7 @@ class testcase extends tlObjectWithAttachments
 	private $testprojects_table = "testprojects";
 	private $nodes_hierarchy_table = "nodes_hierarchy";
 	private $keywords_table = "keywords";
-
+  private $testcase_keywords_table="testcase_keywords";
 
   const AUTOMATIC_ID=0;
   const DEFAULT_ORDER=0;
@@ -1521,6 +1521,72 @@ function getInternalID($stringID,$glueCharacter)
   }
   return $internalID;
 }
+
+/*
+  function: filterByKeyword
+            given a test case id (or an array of test case id) 
+            and a keyword filter, returns for the test cases given in input
+            only which pass the keyword filter criteria.
+            
+
+  args :
+  
+  returns: 
+
+*/
+function filterByKeyword($id,$keyword_id=0, $keyword_filter_type='OR')
+{
+    $keyword_filter= '' ;
+    $subquery='';
+    
+    // test case filter
+    if( is_array($id) )
+    {
+        $testcase_filter = " AND testcase_id IN (" . implode(',',$id) . ")";          	
+    }
+    else
+    {
+        $testcase_filter = " AND testcase_id = {$id} ";
+    }    
+    
+    //echo $keyword_filter_type;
+    if( is_array($keyword_id) )
+    {
+        $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
+        
+        if($keyword_filter_type == 'AND')
+        {
+		        $subquery = "AND testcase_id IN (" .
+		                    " SELECT FOXDOG.testcase_id FROM
+		                      ( SELECT COUNT(testcase_id) AS HITS,testcase_id
+		                        FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		                        WHERE keyword_id = K.id
+		                        {$keyword_filter}
+		                        GROUP BY testcase_id ) AS FOXDOG " .
+		                    " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
+		                 
+            $keyword_filter ='';
+        }    
+    }
+    else if( $keyword_id > 0 )
+    {
+        $keyword_filter = " AND keyword_id = {$keyword_id} ";
+    }
+		
+		$map_keywords = null;
+		$sql = " SELECT testcase_id,keyword_id,keyword
+		         FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		         WHERE keyword_id = K.id
+		         {$testcase_filter}
+		         {$keyword_filter} {$subquery}
+			       ORDER BY keyword ASC ";
+
+		// $map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+		$map_keywords = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','keyword_id');
+
+		return($map_keywords);
+} //end function
+
 
 
 // -------------------------------------------------------------------------------

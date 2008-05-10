@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.21 2008/03/12 16:25:57 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.22 2008/05/10 14:38:20 franciscom Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -153,6 +153,14 @@ $smarty->assign('testPlanName', $tplan_name);
 $smarty->display($template_dir . $default_template);
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);

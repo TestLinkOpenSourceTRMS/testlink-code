@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/05/10 14:37:12 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
  *     20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
  *                             (based on contribution by Eugenia Drosdezki)
  *
@@ -451,7 +452,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	{
 	   if( is_array($tcase_id) )
 	   {
-
+        $tc_id_filter = " AND NHA.parent_id IN (" . implode(',',$tcase_id) . ")";          	
 	   }
 	   else if ($tcase_id > 0 )
 	   {
@@ -550,7 +551,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// added NHB.node_order
 	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
 
-  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+  // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
@@ -724,6 +725,14 @@ function get_keywords_map($id,$order_by_clause='')
 } // end function
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function get_keywords_tcases($id,$keyword_id=0)
 {
   $map_keywords=null;

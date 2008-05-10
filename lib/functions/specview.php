@@ -2,13 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.5 $ $Author: franciscom $
- * @modified $Date: 2008/05/10 14:34:46 $
+ * @version $Revision: 1.6 $ $Author: franciscom $
+ * @modified $Date: 2008/05/10 16:51:45 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
- *     20080510 - franciscom - 
+ *     20080510 - franciscom - added getFilteredLinkedVersions()
  *
  *     20080422 - franciscom - BUGID 1497
  *     Suggested by Martin Havlat execution order will be set to external_id * 10
@@ -367,5 +367,34 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	// --------------------------------------------------------------------------------------------
 
 	return $result;
+}
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
+{
+    $doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
+
+    // Multiple step algoritm to apply keyword filter on type=AND
+    // get_linked_tcversions filters by keyword ALWAYS in OR mode.
+    $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,DONT_FILTER_BY_TCASE_ID,
+                                                     $argsObj->keyword_id);
+
+    if($doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
+    {
+      $filteredSet=$tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
+                                              $argsObj->keyword_id,$argsObj->keywordsFilterType);
+
+      $testCaseSet=array_keys($filteredSet);   
+      $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$testCaseSet);
+    }
+    return $tplan_tcases; 
 }
 ?>

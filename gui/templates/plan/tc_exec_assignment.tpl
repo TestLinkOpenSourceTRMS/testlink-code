@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.6 2008/05/06 06:26:08 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.7 2008/05/10 16:50:51 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -16,7 +16,7 @@ rev :
 </head>
 <body>
 
-<h1 class="title">{lang_get s='title_tc_exec_assignment'}  {$testPlanName|escape}</h1>
+<h1 class="title">{lang_get s='title_tc_exec_assignment'}  {$gui->testPlanName|escape}</h1>
 
 
 {if $has_tc }
@@ -61,7 +61,7 @@ rev :
   			{assign var=btoid value=bulk_tester_div_$ts_id}
   			
   			<select name="bulk_tester_div[{$ts_id}]"  id="{$btoid}">
-      		{html_options options=$testers selected=0}
+      		{html_options options=$gui->testers selected=0}
       	</select>
       	<input type='button' name='{$ts.testsuite.name|escape}_mua' 
       	      onclick='javascript: set_combo_if_checkbox("{$div_id}",
@@ -97,7 +97,7 @@ rev :
         				                        value="{$tcase.linked_version_id}" />
        				  </td>
             	  <td>
-            	  {$testCasePrefix}{$tcase.external_id}
+            	  {$gui->testCasePrefix}{$tcase.external_id}
                 </td>
             	  <td title="{$labels.show_tcase_spec}">
             	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
@@ -106,15 +106,15 @@ rev :
         				{$tcase.tcversions[$tcase.linked_version_id]}
                 </td>
                 <td align="center">
-                {$users[$tcase.user_id]}
-                {if $users[$tcase.user_id] != '' && $testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if} 
+                {$gui->users[$tcase.user_id]}
+                {if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if} 
                 </td>
 
                 <td align="center">
       		  		<select name="tester_for_tcid[{$tcase.id}]" 
       		  		        id="tester_for_tcid_{$tcase.id}"
       		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
-      			  	{html_options options=$testers selected=$tcase.user_id}
+      			  	{html_options options=$gui->testers selected=$tcase.user_id}
       				  </select>
               </td>
               </tr>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.3 2008/01/27 15:56:07 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.4 2008/05/10 16:50:51 franciscom Exp $
 
 Author: franciscom
 
@@ -41,9 +41,9 @@ function validateForm(f)
             update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
 
 <body class="testlink">
-<h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1>
+<h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->testPlanName|escape}</h1>
 
-{if $has_tc }
+{if $gui->has_tc }
 <form name='updateTcForm' id='updateTcForm' method='post'
       onSubmit="javascript:return validateForm(this);">
    <h1 class="title">{$labels.update_testcase_versions}</h1>
@@ -62,7 +62,7 @@ function validateForm(f)
   {assign var="item_number" value=0}
   <input type="hidden" name="update_all_value"  id="update_all_value"  value="0" />
   
-	{foreach from=$arrData item=ts}
+	{foreach from=$gui->items item=ts}
 	  {assign var="item_number" value=$item_number+1}
 	  {assign var="ts_id" value=$ts.testsuite.id}
 	  {assign var="div_id" value=div_$ts_id}
@@ -138,7 +138,7 @@ function validateForm(f)
     			      </td>
     			      
     			      <td>
-    				    {$testCasePrefix}{$tcase.external_id}
+    				    {$gui->testCasePrefix}{$tcase.external_id}
     			      </td>
     				    <td title="{$labels.show_tcase_spec}">
      				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>

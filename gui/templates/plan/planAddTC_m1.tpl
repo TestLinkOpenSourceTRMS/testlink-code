@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.10 2008/05/06 06:26:07 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.11 2008/05/10 16:50:51 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -17,6 +17,8 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 
 {if $gui->full_control eq 1}
+  {assign var="execution_order_html_disabled" value=''}
+
   {if $gui->has_linked_items eq 0} 
 	   {lang_get s='title_add_test_to_plan' var="actionTitle"}
   	 {lang_get s='btn_add_selected_tc' var="buttonValue"}
@@ -27,8 +29,8 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 {else}
    {lang_get s='title_remove_test_from_plan' var="actionTitle"}
    {lang_get s='btn_remove_selected_tc' var="buttonValue"}
+   {assign var="execution_order_html_disabled" value='disabled="disabled"'}
 {/if}    
-
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 
@@ -182,6 +184,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
                 <td style="text-align:center;">
                   <input type="text" name="exec_order[{$tcase.id}]"
+                         {$execution_order_html_disabled}
                          style="text-align:right;"
                   			 size="{#EXECUTION_ORDER_SIZE#}" 
  			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
@@ -238,9 +241,11 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
       
       <br /><input type="submit" name="doAddRemove" style="padding-right: 20px;"
                    onclick="doAction.value=this.name" value="{$buttonValue}" />
-      		<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
-                 onclick="doAction.value=this.name"/>
-
+          
+          {if $gui->full_control eq 1}
+           	<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
+                   onclick="doAction.value=this.name"/>
+          {/if}
    </div>
 
 </form>

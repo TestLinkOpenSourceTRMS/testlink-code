@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.22 2008/05/10 14:38:20 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.23 2008/05/10 16:51:46 franciscom Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -21,22 +21,23 @@ require("specview.php");
 
 testlinkInitPage($db);
 
-$tcase_cfg = config_get('testcase_cfg');
 $tree_mgr = new tree($db); 
-$tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
 
-$template_dir = 'plan/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 $args = init_args();
-$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-$tplan_name = $tplan_info['name'];
+$gui=initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-$testCasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id);
-$testCasePrefix .= $tcase_cfg->glue_character;
+$keywordsFilter=null;
+if( is_array($args->keyword_id) )
+{
+    $keywordsFilter=new stdClass();
+    $keywordsFilter->items = $args->keyword_id;
+    $keywordsFilter->type = $gui->keywordsFilterType->selected;
+}
 
 $arrData = array();
 
@@ -89,10 +90,8 @@ if(!is_null($args->doAction))
 	}  
 }
 
-$users = getUsersForHtmlOptions($db);
-$testers = getTestersForHtmlOptions($db,$args->tplan_id,$args->tproject_id);
 $map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
-                                                    $args->tplan_id,$tplan_name,$args->keyword_id);
+                                                 $args->tplan_id,$gui->testPlanName,$keywordsFilter);
 
 switch($args->level)
 {
@@ -112,9 +111,10 @@ switch($args->level)
 		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
 		
+		// 20080510 - franciscom
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 				    		            $linked_items,$map_node_tccount,
-							              $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+							              $keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
@@ -124,33 +124,24 @@ switch($args->level)
 		break;
 		
 	case 'testsuite':
-		$tsuite_data = $tsuite_mgr->get_by_id($args->id);
-		
-		// BUGID 1041
-		$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($args->tplan_id,FILTER_BY_TC_OFF,
-		                                                           $args->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
-		                                                           $args->assigned_to);
-		$out = gen_spec_view($db,'testplan',$args->tplan_id,$args->id,$tsuite_data['name'],
-                         $tplan_linked_tcversions,
-                         $map_node_tccount,
-                         $args->keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+    $out=processTestSuite($db,$args,$map_node_tccount,$keywordsFilter,$tplan_mgr,$tcase_mgr);
 		break;
 
 	default:
-	  // @ MUST BE REFACTORED
-		// show instructions
-		redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=tc_exec_assignment&locale={$_SESSION['locale']}");
+		show_instructions(tc_exec_assignment);
 		break;
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('testCasePrefix', $testCasePrefix);
-$smarty->assign('users', $users);
-$smarty->assign('testers', $testers);
+$smarty->assign('gui', $gui);
 $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
 $smarty->assign('arrData', $out['spec_view']);
-$smarty->assign('testPlanName', $tplan_name);
-$smarty->display($template_dir . $default_template);
+
+// $smarty->assign('users', $users);
+// $smarty->assign('testers', $testers);
+// $smarty->assign('testPlanName', $tplan_name);
+//$smarty->assign('testCasePrefix', $testCasePrefix);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
@@ -163,22 +154,92 @@ $smarty->display($template_dir . $default_template);
 */
 function init_args()
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
-  $args = new stdClass();
-	$args->user_id = $_SESSION['userID'];
-	$args->tproject_id = $_SESSION['testprojectID'];
-	$args->tproject_name = $_SESSION['testprojectName'];
+	  $_REQUEST = strings_stripSlashes($_REQUEST);
+    $args = new stdClass();
+	  $args->user_id = $_SESSION['userID'];
+	  $args->tproject_id = $_SESSION['testprojectID'];
+	  $args->tproject_name = $_SESSION['testprojectName'];
+    
+	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+    
+	  $key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+	  	              'version_id' => 0, 'has_prev_assignment' => null,
+	  	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'assigned_to' => 0);
+	  foreach($key2loop as $key => $value)
+	  {
+	  	$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+	  }
+    
+    // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
+    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
+    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
+    $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+    
+	  return $args;
+}
 
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+/*
+  function: initializeGui
 
-	$key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-		              'version_id' => 0, 'keyword_id' => 0, 'has_prev_assignment' => null,
-		              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'assigned_to' => 0);
-	foreach($key2loop as $key => $value)
-	{
-		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-	}
+  args :
+  
+  returns: 
 
-	return $args;
+*/
+function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
+{
+    $tcase_cfg = config_get('testcase_cfg');
+    $gui = new stdClass();
+    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+    $gui->testCasePrefix .= $tcase_cfg->glue_character;
+
+    $gui->keywordsFilterType=$argsObj->keywordsFilterType;
+
+    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+    $gui->testPlanName = $tplan_info['name'];
+    
+    $gui->users = getUsersForHtmlOptions($dbHandler);
+    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
+    return $gui;
+}
+
+
+/*
+  function: processTestSuite 
+
+  args :
+  
+  returns: 
+
+*/
+function processTestSuite(&$dbHandler,&$argsObj,$map_node_tccount,
+                          $keywordsFilter,&$tplanMgr,&$tcaseMgr)
+{
+    $tsuiteMgr = new testsuite($dbHandler); 
+	  $tprojectMgr = new testproject($dbHandler); 
+	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
+		
+		// BUGID 1041
+		$tplan_linked_tcversions=$tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
+		                                                          $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
+		                                                          $argsObj->assigned_to);
+
+		// This does filter on keywords ALWAYS in OR mode.
+		$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
+
+		// With this pieces we implement the AND type of keyword filter.
+		$testCaseSet=null;
+    if( !is_null($keywordsFilter) )
+		{ 
+		    $keywordsTestCases=$tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
+		                                                          $keywordsFilter->items,$keywordsFilter->type);
+		    $testCaseSet=array_keys($keywordsTestCases);
+    }
+		$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
+                         $tplan_linked_tcversions,
+                         $map_node_tccount,
+                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED);
+
+    return $out;
 }
 ?>

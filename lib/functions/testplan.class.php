@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/05/10 14:37:12 $ $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/05/10 16:51:45 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,7 +11,10 @@
  *
  *
  * rev:
+ *     
  *     20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
+ *                             get_keywords_tcases() - accepts multiple keywords
+ *
  *     20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
  *                             (based on contribution by Eugenia Drosdezki)
  *
@@ -726,10 +729,11 @@ function get_keywords_map($id,$order_by_clause='')
 
 
 /*
-  function: 
+  function: get_keywords_tcases 
 
   args :
-  
+        [$keyword_id]: can be an array
+        
   returns: 
 
 */
@@ -743,10 +747,17 @@ function get_keywords_tcases($id,$keyword_id=0)
   if( !is_null($linked_items) )
   {
      $keyword_filter= '' ;
-     if( $keyword_id > 0 )
+     
+     if( is_array($keyword_id) )
      {
-       $keyword_filter = " AND keyword_id = {$keyword_id} ";
+         $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")"; 
      }
+     else if( $keyword_id > 0 )
+     {
+         $keyword_filter = " AND keyword_id = {$keyword_id} ";
+     }
+     
+     
      $tc_id_list = implode(",",array_keys($linked_items));
 
   	 $sql = "SELECT DISTINCT testcase_id,keyword_id,keyword

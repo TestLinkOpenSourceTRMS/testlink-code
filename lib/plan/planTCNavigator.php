@@ -1,7 +1,7 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.11 2008/05/10 14:38:20 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.12 2008/05/10 16:51:45 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
@@ -74,7 +74,7 @@ function init_args(&$tplanMgr)
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     
-    // Can be a list (string with , (comma) has item separator), 
+    // Array because is a multiselect input
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
    
@@ -274,13 +274,11 @@ function initializeGetArguments($argsObj,$filtersObj)
     {
     	  $settings .= '&keyword_id='.$argsObj->keyword_id;
     }
-    $settings .= '&keyword_id='.$argsObj->keyword_id;
-    
+    $settings .= '&keywordsFilterType='.$argsObj->keywordsFilterType;
     
     if($filtersObj->AssignedTo)
     	  $settings .= '&filter_assigned_to=' . $filtersObj->AssignedTo;
     
-
     return $settings;
 }
 ?>

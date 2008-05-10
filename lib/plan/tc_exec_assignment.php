@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.23 2008/05/10 16:51:46 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.24 2008/05/10 17:59:15 franciscom Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -128,19 +128,15 @@ switch($args->level)
 		break;
 
 	default:
-		show_instructions(tc_exec_assignment);
+		show_instructions('tc_exec_assignment');
 		break;
 }
 
+$gui->items=$out['spec_view'];
+$gui->has_tc=$out['num_tc'] > 0 ? 1:0;
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
-$smarty->assign('arrData', $out['spec_view']);
-
-// $smarty->assign('users', $users);
-// $smarty->assign('testers', $testers);
-// $smarty->assign('testPlanName', $tplan_name);
-//$smarty->assign('testCasePrefix', $testCasePrefix);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -190,6 +186,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
+    
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
 
@@ -197,6 +194,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testPlanName = $tplan_info['name'];
+    $gui->main_descr=lang_get('title_tc_exec_assignment') . $gui->testPlanName;
+    
     
     $gui->users = getUsersForHtmlOptions($dbHandler);
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
@@ -215,31 +214,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 function processTestSuite(&$dbHandler,&$argsObj,$map_node_tccount,
                           $keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-    $tsuiteMgr = new testsuite($dbHandler); 
-	  $tprojectMgr = new testproject($dbHandler); 
-	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
-		
-		// BUGID 1041
-		$tplan_linked_tcversions=$tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
-		                                                          $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
-		                                                          $argsObj->assigned_to);
-
-		// This does filter on keywords ALWAYS in OR mode.
-		$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
-
-		// With this pieces we implement the AND type of keyword filter.
-		$testCaseSet=null;
-    if( !is_null($keywordsFilter) )
-		{ 
-		    $keywordsTestCases=$tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
-		                                                          $keywordsFilter->items,$keywordsFilter->type);
-		    $testCaseSet=array_keys($keywordsTestCases);
-    }
-		$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-                         $tplan_linked_tcversions,
-                         $map_node_tccount,
-                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED);
-
+    $out=keywordFilteredSpecView($dbHandler,$argsObj,$map_node_tccount,
+                                 $keywordsFilter,$tplanMgr,$tcaseMgr);
     return $out;
 }
 ?>

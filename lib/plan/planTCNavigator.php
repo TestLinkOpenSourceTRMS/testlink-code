@@ -1,7 +1,7 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.12 2008/05/10 16:51:45 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.13 2008/05/10 17:59:15 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
@@ -91,10 +91,14 @@ function init_args(&$tplanMgr)
         $args->src_workframe = $_SESSION['basehref'] . "lib/general/show_help.php" .
                                 "?help={$args->help_topic}&locale={$_SESSION['locale']}";
     
-        if( $args->help_topic == 'planUpdateTC' || $args->help_topic == 'planRemoveTC')
+        switch($args->help_topic)
         {
+            case 'tc_exec_assignment':
+            case 'planUpdateTC':
+            case 'planRemoveTC':
             $args->src_workframe = $_SESSION['basehref'] . 
                                   "lib/general/staticPage.php?key={$args->help_topic}";
+            break; 
         }
     }
 

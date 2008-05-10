@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/04/14 09:59:04 $ by $Author: franciscom $
+ * @modified $Date: 2008/05/10 17:59:15 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -32,6 +32,7 @@
 require_once("../../config.inc.php");
 require_once('common.php');
 require_once('treeMenu.inc.php');
+require_once('users.inc.php');
 require_once('exec.inc.php'); // used for bug string lookup
 
 /**

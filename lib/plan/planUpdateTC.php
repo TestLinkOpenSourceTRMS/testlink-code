@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.23 2008/05/10 16:51:45 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.24 2008/05/10 17:59:15 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -196,32 +196,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 function processTestSuite(&$dbHandler,&$argsObj,$map_node_tccount,
                           $keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-    $tsuiteMgr = new testsuite($dbHandler); 
-	  $tprojectMgr = new testproject($dbHandler); 
-	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
-		
-		// BUGID 1041
-		$tplan_linked_tcversions=$tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
-		                                                          $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
-		                                                          $argsObj->assigned_to);
-
-		// This does filter on keywords ALWAYS in OR mode.
-		$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
-
-		// With this pieces we implement the AND type of keyword filter.
-		$testCaseSet=null;
-		if( !is_null($keywordsFilter) )
-		{ 
-		    $keywordsTestCases=$tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
-		                                                          $keywordsFilter->items,$keywordsFilter->type);
-		    $testCaseSet=array_keys($keywordsTestCases);
-    } 
-		$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-                         $tplan_linked_tcversions,
-                         $map_node_tccount,
-                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED);
+    $out=keywordFilteredSpecView($dbHandler,$argsObj,$map_node_tccount,
+                                 $keywordsFilter,$tplanMgr,$tcaseMgr);
 
     return $out;
 }
-
 ?>

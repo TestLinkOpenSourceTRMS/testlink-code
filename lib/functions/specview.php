@@ -2,13 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.6 $ $Author: franciscom $
- * @modified $Date: 2008/05/10 16:51:45 $
+ * @version $Revision: 1.7 $ $Author: franciscom $
+ * @modified $Date: 2008/05/10 17:59:15 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
  *     20080510 - franciscom - added getFilteredLinkedVersions()
+ *                                   keywordFilteredSpecView()
  *
  *     20080422 - franciscom - BUGID 1497
  *     Suggested by Martin Havlat execution order will be set to external_id * 10
@@ -397,4 +398,45 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
     }
     return $tplan_tcases; 
 }
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function keywordFilteredSpecView(&$dbHandler,&$argsObj,$map_node_tccount,
+                                 $keywordsFilter,&$tplanMgr,&$tcaseMgr)
+{
+    $tsuiteMgr = new testsuite($dbHandler); 
+	  $tprojectMgr = new testproject($dbHandler); 
+	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
+		
+		// BUGID 1041
+		$tplan_linked_tcversions=$tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
+		                                                          $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
+		                                                          $argsObj->assigned_to);
+
+		// This does filter on keywords ALWAYS in OR mode.
+		$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
+
+		// With this pieces we implement the AND type of keyword filter.
+		$testCaseSet=null;
+    if( !is_null($keywordsFilter) )
+		{ 
+		    $keywordsTestCases=$tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
+		                                                          $keywordsFilter->items,$keywordsFilter->type);
+		    $testCaseSet=array_keys($keywordsTestCases);
+    }
+		$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
+                         $tplan_linked_tcversions,
+                         $map_node_tccount,
+                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED);
+
+    return $out;
+}
+
 ?>

@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2008/05/02 07:09:36 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2008/05/10 17:59:15 $ by $Author: franciscom $
  *
- * rev: 20080428 - franciscom - keyword filter can be done on multiple keywords
+ * rev: 
+ *      20080428 - franciscom - keyword filter can be done on multiple keywords
  *      20080224 - franciscom - refactoring
  *      20080224 - franciscom - BUGID 1056
  *      20071229 - franciscom - refactoring tree colouring and counters config
@@ -274,6 +275,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $additionalInfo = new stdClass();
 
     $filters->keyword_id = $guiObj->keyword_id;
+    $filters->keywordsFilterType='OR';
+    
     $filters->include_unassigned = $guiObj->include_unassigned;
     
     $filters->tc_id = $argsObj->tcase_id;

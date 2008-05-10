@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.7 2008/05/10 16:50:51 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.8 2008/05/10 17:58:29 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -11,23 +11,18 @@ rev :
      20070120 - franciscom - BUGID 530
 *}
 
+{lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
+                          btn_update_selected_tc,show_tcase_spec,can_not_execute,
+                          th_test_case,version,assigned_to,assign_to,note_keyword_filter'}
+
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 </head>
 <body>
 
-<h1 class="title">{lang_get s='title_tc_exec_assignment'}  {$gui->testPlanName|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
-
-{if $has_tc }
-
-{lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
-                          btn_update_selected_tc,show_tcase_spec,can_not_execute,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter'}
-
-
-
-
+{if $gui->has_tc }
 
 {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
 {if $key ne ''}
@@ -43,7 +38,7 @@ rev :
 {* 20070406 *}
 <div class="workBack" style="height: 450px; overflow-y: auto;">
 	
-	{foreach from=$arrData item=ts}
+	{foreach from=$gui->items item=ts}
 	  {assign var="ts_id" value=$ts.testsuite.id}
 	  {assign var="div_id" value=div_$ts_id}
 	  

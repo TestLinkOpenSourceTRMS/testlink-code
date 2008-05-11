@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/05/05 09:11:06 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/05/11 16:55:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -313,7 +313,9 @@ $att_model_m2->show_upload_column = true;
  */
 
 /** List of Test Case execution results */
-// Note: for GUI use rather lang_get($g_tc_status_verbose_labels["passed"]);        
+// Note: 
+// for GUI use rather lang_get($g_tc_status_verbose_labels["passed"]);        
+//
 // Do not do localisation here, i.e do not change "passed"
 //           with the corresponding word in you national language.
 //           These strings ARE NOT USED at User interface level.
@@ -382,6 +384,17 @@ $tlCfg->results['status_label_for_exec_ui'] = array(
 
 /** Selected execution result by default. Values is key from $tlCfg->results['status_label'] */
 $tlCfg->results['default_status'] = "passed";
+
+
+// Status colours for charts - no way to use verbose just RGB
+$tlCfg->results['charts']=array();
+$tlCfg->results['charts']['status_colour']=array(
+  "not_run"  		=> "000000",
+	"passed"   		=> "00FF00",
+	"failed"   		=> "FF0000",
+	"blocked"  		=> "0000FF"
+);
+
 
 // backward comaptibility; @TODO remove
 $g_tc_status = $tlCfg->results['status_code'];

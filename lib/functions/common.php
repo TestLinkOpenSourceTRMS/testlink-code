@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.110 $ $Author: schlundus $
- * @modified $Date: 2008/05/09 20:15:14 $
+ * @version $Revision: 1.111 $ $Author: franciscom $
+ * @modified $Date: 2008/05/11 16:56:37 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -66,9 +66,10 @@ require_once("role.class.php");
 require_once("attachment.class.php");
 
 /** @TODO use the next include only if it is used -> must be removed*/
+// We can remove here and use PHP autoload feature
 require_once("user.class.php");
 require_once("keyword.class.php");
-require_once("testproject.class.php");
+// require_once("testproject.class.php");
 require_once("testplan.class.php");
 // require_once("testcase.class.php");
 // require_once("testsuite.class.php");

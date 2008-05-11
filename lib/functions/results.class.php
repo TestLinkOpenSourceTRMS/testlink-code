@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/05/10 17:59:15 $ by $Author: franciscom $
+ * @modified $Date: 2008/05/11 16:56:37 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -56,6 +56,7 @@ class results
 	private $testPlanID = -1;
 	private	$tprojectID = -1;
 
+  private $resultsCfg;
 	private $map_tc_status;
   private $tc_status_for_statistics;
 
@@ -199,22 +200,23 @@ class results
 	{
 		$this->db = $db;
 	  $this->tplanMgr = $tplan_mgr;
-    $this->map_tc_status=config_get('tc_status');
-    $dummy=config_get('tc_status_for_ui');
+    $this->resultsCfg=config_get('results');
+    $this->map_tc_status=$this->resultsCfg['status_code'];
+    
 
-    // TestLink standard configuration is not_run not available at user interface level on
-    // execution feature as choice.
+    // TestLink standard configuration is (at least for me)
+    // not_run not available at user interface level on execution feature as choice.
+    //
     // if( !isset($dummy['not_run']) )
     // {
     //     $dummy['not_run']=$this->map_tc_status['not_run'];
     // }
 
     // This will be used to create dynamically counters if user add new status
-    foreach($dummy as $tc_status_verbose => $label)
+    foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
     {
         $this->tc_status_for_statistics[$tc_status_verbose]=$this->map_tc_status[$tc_status_verbose];
     }
-
 
     $this->suitesSelected = $suitesSelected;
     $this->tprojectID = $tproject_info['id'];
@@ -284,7 +286,6 @@ class results
 			// child suites into account
 			$this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
 
-			// $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
       $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
@@ -855,7 +856,6 @@ class results
         $counters[$status_verbose]=0;
     }
 
-		// $loop_qty=count($this->suiteStructure);
 		$loop_qty=count($suiteStructure);
 		for ($idx = 0 ; $idx < $loop_qty ; $idx++)
 		{
@@ -1144,15 +1144,18 @@ class results
 	* written by Andreas, being implemented again by KL
 	*/
 	private function buildBugString(&$db,$execID) {
-		$bugString = null;
+		  $bugString = null;
+		  $bug_interface = config_get('bugInterface');
 	    $bugsOn = config_get('bugInterfaceOn');
-	    if ($bugsOn == null || $bugsOn == false){
-		  return $bugString;
-		}
-		$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
-		if ($bugs) {
-			foreach($bugs as $bugID => $bugInfo) {
-				$bugString .= $bugInfo['link_to_bts']."<br />";
+	    if ($bugsOn == null || $bugsOn == false)
+	    {
+		     return $bugString;
+		  }
+		  $bugs = get_bugs_for_exec($db,$bug_interface,$execID);
+		  if ($bugs) 
+		  {
+			  foreach($bugs as $bugID => $bugInfo) {
+				  $bugString .= $bugInfo['link_to_bts']."<br />";
 			}
 		}
 		return $bugString;
@@ -1227,8 +1230,9 @@ class results
 		$hash_descr_id = $tree_manager->get_available_node_types();
 		$hash_id_descr = array_flip($hash_descr_id);
 
-    // 20071202 - franciscom
-    $status_descr_code=config_get('tc_status');
+    // 20080511 - franciscom
+    // $status_descr_code=config_get('tc_status');
+    $status_descr_code=$this->resultsCfg['status_code'];
     $status_code_descr=array_flip($status_descr_code);
 
     $decoding_hash=array('node_id_descr' => $hash_id_descr,

@@ -2,15 +2,15 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/09/17 06:29:07 $  $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/05/11 16:56:37 $  $Author: franciscom $
  * @author kevin
  *
  *
  *
 **/
 require_once('../../config.inc.php');
-require_once('../functions/common.php');
+require_once('common.php');
 require_once('../../third_party/charts/charts.php');
 
 testlinkInitPage($db);
@@ -31,20 +31,24 @@ $pathToScripts = "lib/results";
 $charts_swf= $pathToCharts . "/charts.swf";
 $charts_library= $pathToCharts . "/charts_library";
 
+$chartsUrl=new stdClass();
+
+$chartsUrl->overallPieChart="{$pathToScripts}/overallPieChart.php?tplan_id={$tplan_id}";
+$chartsUrl->keywordBarChart="{$pathToScripts}/keywordBarChart.php?tplan_id={$tplan_id}";
+$chartsUrl->ownerBarChart="{$pathToScripts}/ownerBarChart.php?tplan_id={$tplan_id}";
+$chartsUrl->topLevelSuitesBarChart="{$pathToScripts}/topLevelSuitesBarChart.php?tplan_id={$tplan_id}";
 
 $charts = array(
 	lang_get('overall_metrics') => InsertChart($charts_swf,$charts_library, 
-	                                           "{$pathToScripts}/overallPieChart.php?tplan_id={$tplan_id}", 
-	                                           400, 250 ),
+	                                           $chartsUrl->overallPieChart,400, 250 ),
 	lang_get('results_by_keyword') => InsertChart($charts_swf,$charts_library,
-	                                              "{$pathToScripts}/keywordBarChart.php?tplan_id={$tplan_id}", 
-	                                              800, 600 ),
+	                                              $chartsUrl->keywordBarChart,800, 600 ),
 	lang_get('results_by_tester') => InsertChart($charts_swf,$charts_library,
-	                                             "{$pathToScripts}/ownerBarChart.php?tplan_id={$tplan_id}", 800, 600),
+	                                             $chartsUrl->ownerBarChart, 800, 600),
 	lang_get('results_top_level_suites') => 
-	InsertChart($charts_swf,$charts_library,
-	            "{$pathToScripts}/topLevelSuitesBarChart.php?tplan_id={$tplan_id}", 800, 600),  
+	         InsertChart($charts_swf,$charts_library,$chartsUrl->topLevelSuitesBarChart, 800, 600),  
 );
+                 
                  
 $smarty = new TLSmarty();
 $smarty->assign("tplan_name",$tplan_name);

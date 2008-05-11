@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: charts.tpl,v 1.4 2008/05/06 06:25:29 franciscom Exp $ *}
+{* $Id: charts.tpl,v 1.5 2008/05/11 16:55:51 franciscom Exp $ *}
 {* Purpose: smarty template - show graphical charts *}
 {include file="inc_head.tpl"}
-{$codex}
+{* Who creates it ?*}
+{*  {$codex} *}
 <body>
 <h1 class="title">{lang_get s='graphical_reports'}</h1>
 {include file="inc_result_tproject_tplan.tpl" 

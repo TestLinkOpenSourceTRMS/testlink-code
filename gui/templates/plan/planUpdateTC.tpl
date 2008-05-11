@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.4 2008/05/10 16:50:51 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.5 2008/05/11 22:13:22 schlundus Exp $
 
 Author: franciscom
 
@@ -44,7 +44,7 @@ function validateForm(f)
 <h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->testPlanName|escape}</h1>
 
 {if $gui->has_tc }
-<form name='updateTcForm' id='updateTcForm' method='post'
+<form name="updateTcForm" id="updateTcForm" method="post"
       onSubmit="javascript:return validateForm(this);">
    <h1 class="title">{$labels.update_testcase_versions}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
@@ -74,7 +74,7 @@ function validateForm(f)
 	    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
 	               alt="{$labels.check_uncheck_all}" 
                  title="{$labels.check_uncheck_all}" 
-                 onclick="cs_all_checkbox_in_div('updateTcForm','{$update_cb}','update_all_value');">
+                 onclick="cs_all_checkbox_in_div('updateTcForm','{$update_cb}','update_all_value');" />
       {/if}
       {$ts.testsuite.name|escape} 
 	    </h3> 
@@ -85,7 +85,7 @@ function validateForm(f)
      {* ------------------------------------------------------------------------- *}      
      {if $ts.testcase_qty gt 0 || $ts.linked_testcase_qty gt 0 }
         
-        <table border="0" cellspacing="0" cellpading="2" style="font-size:small;" width="100%">
+        <table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
           <tr style="background-color:blue;font-weight:bold;color:white">
 			     <th class="clickable_icon">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
@@ -132,7 +132,7 @@ function validateForm(f)
       				      <input type='checkbox' 
       				             name='{$update_cb}[{$tcase.id}]' 
       				             id='{$update_cb}{$tcase.id}' 
-      				             value='{$tcase.linked_version_id}'> 
+      				             value='{$tcase.linked_version_id}' /> 
       				    {/if}
       				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}' />
     			      </td>
@@ -153,7 +153,7 @@ function validateForm(f)
 
                 <td>
                   {if $draw_update_inputs } 
-                    <select name="new_tcversion_for_tcid[{$tcase.id}]"
+                    <select name="new_tcversion_for_tcid[{$tcase.id}]">
          				       {html_options options=$tcase.tcversions disabled=disabled}
          				    </select>
                   {/if}
@@ -190,7 +190,7 @@ function validateForm(f)
       <br/><input type="submit" id="update_btn" name="update_btn" style="padding-right: 20px;"
  	      	        value='{$labels.btn_update_testplan_tcversions}'  />
  	      	        
- 	      	 <input type="hidden" name="doAction" id="doAction" value="doUpdate">  
+ 	      	 <input type="hidden" name="doAction" id="doAction" value="doUpdate" />  
    </div>
 
 </form>

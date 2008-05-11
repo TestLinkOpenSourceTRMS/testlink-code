@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.5 2008/05/06 06:26:07 franciscom Exp $
+$Id: newest_tcversions.tpl,v 1.6 2008/05/11 22:13:22 schlundus Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
 *}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 
 {lang_get s='help' var='common_prefix'}
@@ -15,6 +15,7 @@ rev:
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,th_test_case,linked_version,newest_version' }
 
+</head>
 <body>
 <h1 class="title"> {lang_get s='title_newest_tcversions'} 
 {include file="inc_help.tpl" help="newest_tcversions" locale=$locale 
@@ -54,10 +55,10 @@ rev:
     
       {foreach from=$testcases item=tc}
       <tr>
-        <td style="align:rigth;" > {$tcasePrefix}{$tc.tc_external_id} </td>  
-        <td> {$tc.name} </td>  
-        <td> {$tc.version} </td>
-        <td> {$tc.newest_version} </td>
+		<td style="align:right;"> {$tcasePrefix}{$tc.tc_external_id} </td>  
+		<td> {$tc.name} </td>  
+		<td> {$tc.version} </td>
+		<td> {$tc.newest_version} </td>
       </tr>
   	  {/foreach}
   	</table>

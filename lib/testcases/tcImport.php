@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  *
- * @modified $Date: 2007/12/22 12:26:45 $ by $Author: schlundus $
+ * @modified $Date: 2008/05/11 22:13:22 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -35,23 +35,21 @@ $tproject_id = $_SESSION['testprojectID'];
 $testprojectName = $_SESSION['testprojectName'];
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-$dest_files=array('XML' => $dest_common . ".csv",
+$dest_files = array('XML' => $dest_common . ".csv",
                   'XLS' => $dest_common . ".xls");
 
 $dest=$dest_files['XML'];
-if( !is_null($importType) )
-{                  
-  $dest=$dest_files[$importType];
-}
+if(!is_null($importType))
+	$dest = $dest_files[$importType];
 
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
 $import_title = lang_get('title_tc_import_to');
-$container_description=lang_get('test_case');
+$container_description = lang_get('test_case');
 if($bRecursive)
 {
 	$import_title = lang_get('title_tsuite_import_to');  
-	$container_description=lang_get('test_suite');
+	$container_description = lang_get('test_suite');
 }
 
 $container_name = '';
@@ -123,6 +121,7 @@ $smarty->assign('containerID', $container_id);
 $smarty->assign('container_name', $container_name);
 $smarty->assign('container_description', $container_description);
 $smarty->assign('bIntoProject',$bIntoProject);
+//$smarty->assign('importLimit',TL_IMPORT_LIMIT);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display($template_dir . 'tcImport.tpl');
@@ -151,11 +150,13 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 		if ($xmlKeywords)
 		{
 			$tproject = new testproject($db);
-			if ($tproject->importKeywordsFromXML($tproject_id,$xmlKeywords[0]->dump_node()) >= tl::OK)
+			for($i = 0;$i < sizeof($xmlKeywords);$i++)
 			{
-				$kwMap = $tproject->get_keywords_map($tproject_id);
-				$kwMap = array_flip($kwMap);
+				$tproject->importKeywordsFromXML($tproject_id,$xmlKeywords[$i]->dump_node());
 			}
+			$kwMap = $tproject->get_keywords_map($tproject_id);
+			$kwMap = array_flip($kwMap);
+			
 		}
 		if ($bRecursive && $root->tagname == 'testsuite')
 			$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
@@ -284,7 +285,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 		$kwIDs = null;
 		if (isset($tc['keywords']) && $tc['keywords'])
 			$kwIDs = buildKeywordList($kwMap,$tc['keywords'],true);
-			
 		if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,$expected_results,$userID,$kwIDs))
 			$resultMap[] = array($name,$ret['msg']);
 	}

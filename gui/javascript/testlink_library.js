@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.56 2008/05/07 20:07:39 schlundus Exp $
+// $Id: testlink_library.js,v 1.57 2008/05/11 22:13:22 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -84,10 +84,7 @@ function open_top(page)
 */
 function ST(id,version)
 {
-  var _FUNCTION_NAME_='ST';
-  var action_url=fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
-	alert(_FUNCTION_NAME_ + " " +action_url);
-
+	var action_url = fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
 	parent.workframe.location = action_url;
 }
 
@@ -103,7 +100,7 @@ function ST(id,version)
 */
 function STS(id)
 {
-	var action_url=fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+	var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
 	parent.workframe.location = action_url;
 }
 
@@ -118,7 +115,7 @@ function STS(id)
 */
 function SP()
 {
-    var action_url=fRoot+menuUrl;
+    var action_url = fRoot+menuUrl;
   	parent.workframe.location = action_url;
 }
 
@@ -610,10 +607,9 @@ function REQ_SPEC_MGMT(id)
 {
 	var _FUNCTION_NAME_="REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
-  var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
+ 	var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
 
-  alert(_FUNCTION_NAME_ + " " +action_url);
-	parent.workframe.location = action_url;
+ 	parent.workframe.location = action_url;
 
 }
 
@@ -630,7 +626,7 @@ function REQ_MGMT(id)
 {
 	var _FUNCTION_NAME_="REQ_MGMT";
 	var pParams = tree_getPrintPreferences();
-  var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
+	var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
 
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -648,29 +644,22 @@ function REQ_MGMT(id)
 */
 function show_hide_column(table_id,col_no)
 {
-  var tbl  = document.getElementById(table_id);
-  var rows = tbl.getElementsByTagName('tr');
-
-  for (var row=0; row<rows.length;row++) {
-    if( row ==0 )
-    {
-      cellTag='th'
+	var tbl  = document.getElementById(table_id);
+	var rows = tbl.getElementsByTagName('tr');
+	
+	for (var row=0; row<rows.length;row++)
+	{
+		if(row == 0)
+			cellTag = 'th';
+		else
+			cellTag = 'td';
+  	
+	  	var cels = rows[row].getElementsByTagName(cellTag)
+	    if(cels[col_no].style.display == 'none')
+	        cels[col_no].style.display='block';
+	    else
+	       cels[col_no].style.display='none';
     }
-    else
-    {
-      cellTag='td'
-    }
-    var cels = rows[row].getElementsByTagName(cellTag)
-    if(cels[col_no].style.display == 'none')
-    {
-        cels[col_no].style.display='block';
-    }
-    else
-    {
-       cels[col_no].style.display='none';
-    }
-
-  }
 }
 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.4 2008/05/10 14:32:10 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.6 2008/05/11 22:13:22 schlundus Exp $
 show test specification tree 
 
 rev: 20080429 - franciscom - keyword filter multiselect
@@ -15,13 +15,13 @@ rev: 20080429 - franciscom - keyword filter multiselect
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
 
-{include file="inc_head.tpl" jsTree="yes" OpenHead="yes"}
+{include file="inc_head.tpl" jsTree="yes" openHead="yes"}
 <script type="text/javascript">
 {literal}
 function pre_submit()
 {
- document.getElementById('called_url').value=parent.workframe.location;
- return true;
+	document.getElementById('called_url').value=parent.workframe.location;
+	return true;
 }
 </script>
 {/literal}
@@ -31,8 +31,8 @@ function pre_submit()
 <h1 class="title">{$labels.title_navigator}</h1>
 <div style="margin: 3px;">
 <form method="post" id="planAddTCNavigator" onSubmit="javascript:return pre_submit();">
-  <input type="hidden" id="called_by_me" name="called_by_me" value="1">
-  <input type="hidden" id="called_url" name="called_url" value="">
+	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
+ 	<input type="hidden" id="called_url" name="called_url" value="" />
 
 	<table class="smallGrey" width="100%">
 		<caption>
@@ -55,9 +55,9 @@ function pre_submit()
 				</select>
 			</td>
 			<td>
-      {html_radios name='keywordsFilterType' 
-                   options=$gui->keywordsFilterType->options
-                   selected=$gui->keywordsFilterType->selected }
+     			 {html_radios name='keywordsFilterType' 
+                   	options=$gui->keywordsFilterType->options
+                   	selected=$gui->keywordsFilterType->selected }
 			</td>
 		</tr>
 		<tr>
@@ -78,9 +78,9 @@ function pre_submit()
 {if $gui->src_workframe != ''}
 	parent.workframe.location='{$gui->src_workframe}';
 {else}
-  {if $gui->do_reload}
-	  parent.workframe.location.reload();
-  {/if}
+	{if $gui->do_reload}
+		  parent.workframe.location.reload();
+	{/if}
 {/if}
 </script>
 </body>

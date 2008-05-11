@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.54 2008/05/10 16:51:45 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.56 2008/05/11 22:13:22 schlundus Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -26,16 +26,15 @@ $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
 
-
 $templateCfg = templateConfiguration();
 
 $args = init_args();
 $guiCfg = config_get('gui');
 $do_display = 0;
 
-$gui=initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
-$keywordsFilter=null;
-if( is_array($args->keyword_id) )
+$gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+$keywordsFilter = null;
+if(is_array($args->keyword_id))
 {
     $keywordsFilter=new stdClass();
     $keywordsFilter->items = $args->keyword_id;
@@ -61,7 +60,6 @@ switch($args->item_level)
 
 switch($args->doAction)
 {
-	
 	case 'doAddRemove':
 	// Remember:  checkboxes exist only if are checked
 	if(!is_null($args->testcases2add))
@@ -72,57 +70,52 @@ switch($args->doAction)
 		$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
 	
 	}
-
 	if(!is_null($args->testcases2remove))
 	{
 		// remove without warning
 		$rtc = $args->testcases2remove;
 		$tplan_mgr->unlink_tcversions($args->tplan_id,$rtc);
 	}
-
-  doReorder($args,$tplan_mgr);
-	$do_display = 1;
-	break;
-	
-	case 'doReorder':
 	doReorder($args,$tplan_mgr);
 	$do_display = 1;
 	break;
 	
-  default:
-	break;
+	case 'doReorder':
+		doReorder($args,$tplan_mgr);
+		$do_display = 1;
+		break;
+	
+  	default:
+		break;
 }
-
 
 if($do_display)
 {
-  	$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
+	$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
 		                                                    $keywordsFilter);
-		$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
+	$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
 		
-		// This does filter on keywords ALWAYS in OR mode.
-		$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
-		$testCaseSet=null;
-		if( !is_null($keywordsFilter) )
-		{ 
-		    // With this pieces we implement the AND type of keyword filter.
-		    $keywordsTestCases=$tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
-		                                                                             $keywordsFilter->type);
-		    $testCaseSet=array_keys($keywordsTestCases);
-		}
-		$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-		                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,$testCaseSet);
+	// This does filter on keywords ALWAYS in OR mode.
+	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
+	$testCaseSet=null;
+	if( !is_null($keywordsFilter) )
+	{ 
+	    // With this pieces we implement the AND type of keyword filter.
+	    $keywordsTestCases=$tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
+	                                                                             $keywordsFilter->type);
+	    $testCaseSet=array_keys($keywordsTestCases);
+	}
+	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
+	                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,$testCaseSet);
 		
     
-	  $gui->has_tc=($out['num_tc'] > 0 ? 1 : 0);
-	  $gui->items=$out['spec_view'];
-	  $gui->has_linked_items=$out['has_linked_items'];
+  $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
+  $gui->items = $out['spec_view'];
+  $gui->has_linked_items = $out['has_linked_items'];
 
-    $smarty->assign('gui', $gui);
-	  $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
+  $smarty->assign('gui', $gui);
+  $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
-
-
 
 /*
   function: init_args
@@ -148,27 +141,21 @@ function init_args()
 	$args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
 	$args->testcases2remove = isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
 
-  // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-  $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-  
-  if( is_null($keywordSet) )
-  {
-     $args->keyword_id=0;  
-  }
+	// Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
+	$keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
+	  
+	if(is_null($keywordSet))
+		$args->keyword_id = 0;  
 	else
-	{
-	   $args->keyword_id=explode(',',$keywordSet);  
-	}
+		$args->keyword_id = explode(',',$keywordSet);  
 	
-  $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+	$args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
 
 	$args->testcases2order = isset($_REQUEST['exec_order']) ? $_REQUEST['exec_order'] : null;
 	$args->linkedOrder = isset($_REQUEST['linked_exec_order']) ? $_REQUEST['linked_exec_order'] : null;
 	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
 	return $args;
 }
-
-
 
 /*
   function: doSaveOrder
@@ -181,7 +168,7 @@ function init_args()
 */
 function doReorder(&$argsObj,&$tplanMgr)
 {
-    $mapo=null;
+    $mapo = null;
     if(!is_null($argsObj->linkedVersion))
     {
         // Using memory of linked test case, try to get order
@@ -204,7 +191,7 @@ function doReorder(&$argsObj,&$tplanMgr)
         }
     }  
     
-    if( !is_null($mapo) )
+    if(!is_null($mapo))
     {
         $tplanMgr->setExecutionOrder($argsObj->tplan_id,$mapo);  
     }
@@ -227,28 +214,27 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
 
-    $gui->keywordsFilterType=$argsObj->keywordsFilterType;
+    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
 
     $gui->keywords_filter = '';
-    $gui->has_tc=0;
-    $gui->items=null;
-    $gui->has_linked_items=false;
+    $gui->has_tc = 0;
+    $gui->items = null;
+    $gui->has_linked_items = false;
     
-    $gui->keywordsFilterType=new stdClass();
+    $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
 
     // full_control, controls the operations planAddTC_m1.tpl will allow
     // 1 => add/remove
     // 0 => just remove
-    $gui->full_control=1;
+    $gui->full_control = 1;
 
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->pageTitle = lang_get('test_plan') . $guiCfg->title_sep_1 . $tplan_info['name'];
-    $gui->refreshTree=false;
+    $gui->refreshTree = false;
 
 
     return $gui;
 }
-
 ?>

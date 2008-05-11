@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.11 2008/05/10 16:50:51 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.13 2008/05/11 22:13:22 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -11,10 +11,6 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
              has_been_executed,inactive_testcase,btn_save_exec_order,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
-
-             
-			     
-
 
 {if $gui->full_control eq 1}
   {assign var="execution_order_html_disabled" value=''}
@@ -41,7 +37,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 <h1 class="title">{$gui->pageTitle|escape}</h1>
 
 {if $gui->has_tc }
-<form name='addTcForm' id='addTcForm' method='post'>
+<form name="addTcForm" id="addTcForm" method="post">
    <h1 class="title">{$actionTitle}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
@@ -188,14 +184,14 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
                          style="text-align:right;"
                   			 size="{#EXECUTION_ORDER_SIZE#}" 
  			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
-                         value="{$tcase.execution_order}">
+                         value="{$tcase.execution_order}" />
                   
                   {if $tcase.linked_version_id != 0}  
                     <input type="hidden" name="linked_version[{$tcase.id}]"
-                                         value="{$tcase.linked_version_id}">
+                                         value="{$tcase.linked_version_id}" />
                           
                     <input type="hidden" name="linked_exec_order[{$tcase.id}]"
-                                         value="{$tcase.execution_order}">
+                                         value="{$tcase.execution_order}" />
                   {/if}
                 </td>
 
@@ -237,14 +233,14 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 </div>
 
   <div class="workBack">   
-      <input type="hidden" name="doAction" id="doAction" value="default">
+      <input type="hidden" name="doAction" id="doAction" value="default" />
       
       <br /><input type="submit" name="doAddRemove" style="padding-right: 20px;"
                    onclick="doAction.value=this.name" value="{$buttonValue}" />
           
           {if $gui->full_control eq 1}
            	<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
-                   onclick="doAction.value=this.name"/>
+                   onclick="doAction.value=this.name" />
           {/if}
    </div>
 

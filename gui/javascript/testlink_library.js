@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.57 2008/05/11 22:13:22 schlundus Exp $
+// $Id: testlink_library.js,v 1.58 2008/05/12 19:53:57 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -84,7 +84,9 @@ function open_top(page)
 */
 function ST(id,version)
 {
-	var action_url = fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
+  var _FUNCTION_NAME_='ST';
+  var action_url=fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
+	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 }
 
@@ -175,8 +177,9 @@ function ETS(id)
 function ET(id,v)
 {
   // get checkboxes status
-	var pParams = tree_getPrintPreferences();
+  var pParams = tree_getPrintPreferences();
 	var my_location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
+	// alert(my_location);
 	parent.workframe.location = my_location;
 }
 
@@ -607,10 +610,10 @@ function REQ_SPEC_MGMT(id)
 {
 	var _FUNCTION_NAME_="REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
- 	var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
-
- 	parent.workframe.location = action_url;
-
+  var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
+  
+  // alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
 }
 
 /*
@@ -695,6 +698,7 @@ function showCal(id,dateField)
 	}
 	dp.addListener("select", onSelect);
 }
+
 function onSelect(datePicker,date)
 {
 	var dt = new Date(date);
@@ -736,4 +740,20 @@ function showEventHistoryFor(objectID,objectType)
 		f.object_type.value = objectType;
 		f.submit();
 	}
+}
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function openReqWindow(tcase_id)
+{                        
+  var feature_url="lib/requirements/reqTcAssign.php";
+  feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
+	window.open(fRoot+feature_url,"Test Case - Requirement link",
+	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }

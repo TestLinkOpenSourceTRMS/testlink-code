@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.15 2008/05/09 17:14:19 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.16 2008/05/12 19:49:38 franciscom Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -14,7 +14,7 @@ viewer for test case in test specification
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
 
-{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?requirement_id="}
+{assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
 {assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
 {assign var="updater_userinfo" value=""}
@@ -223,7 +223,7 @@ viewer for test case in test specification
       			  <td>
       				{section name=item loop=$args_reqs}
       					<span onclick="javascript: open_top('{$hrefReqMgmt}{$args_reqs[item].id}');"
-      					style="cursor:  pointer;">{$args_reqs[item].title|escape}</span>
+      					style="cursor:  pointer;">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}
       					{lang_get s='none'}

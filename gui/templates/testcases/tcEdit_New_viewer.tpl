@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.6 2008/04/21 08:29:50 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.7 2008/05/12 19:49:38 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
-    20080420 - franciscom - 
+    20080512 - franciscom - BUGID 
     20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
 *}
 
@@ -76,3 +76,9 @@ Rev:
   <a href={$gsmarty_href_keywordsView}>{lang_get s='tc_keywords'}</a>
 	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	</div>
+	
+  {if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes'}
+	<div>
+	  <a href="javascript:openReqWindow({$tc.testcase_id})">{lang_get s='assign_requirements'}</a>    
+	</div>
+  {/if}

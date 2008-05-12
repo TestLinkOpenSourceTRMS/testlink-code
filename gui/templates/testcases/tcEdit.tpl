@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.5 2008/05/06 06:26:13 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.6 2008/05/12 19:48:39 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20080420 - franciscom - improved user feedback
@@ -76,7 +76,7 @@ function validateForm(f)
 
 	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
-    
+
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='doUpdate'"   value="{$labels.btn_save}" />

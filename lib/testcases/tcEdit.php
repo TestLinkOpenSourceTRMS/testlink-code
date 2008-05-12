@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/04/25 18:01:03 $  by $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/05/12 19:46:59 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -50,7 +50,12 @@ $optionTransferName='ot';
 $args = init_args($cfg->spec,$optionTransferName);
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 
+$gui=new stdClass();
+$gui->grants=getGrants($db);
+$gui->opt_requirements=isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
+
 $smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
 $smarty->assign('has_been_executed',$args->has_been_executed);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 
@@ -587,4 +592,22 @@ function getCfg()
     
     return $cfg;
 }
+
+/*
+  function: getGrants
+
+
+  args :
+  
+  returns: object
+
+*/
+function getGrants(&$dbHandler)
+{
+    $grants=new stdClass();
+    $grants->requirement_mgmt=has_rights($dbHandler,"mgt_modify_req"); 
+
+    return $grants;
+}
+
 ?>

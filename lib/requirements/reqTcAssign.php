@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/03/05 22:22:38 $  $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/05/12 19:46:59 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
+ * 20080512 - franciscom - new input argument to control display/hide of close button
  * 20070617 - franciscom - refactoring
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
@@ -21,8 +22,7 @@ require_once('requirement_mgr.class.php');
 
 testlinkInitPage($db);
 
-$template_dir = "requirements/";
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 $tproject_mgr=new testproject($db);
 $req_spec_mgr=new requirement_spec_mgr($db);
@@ -34,6 +34,8 @@ $arrUnassignedReq = null;
 $tcTitle = null;
 $tmpResult = null;
 $args=init_args();
+$gui = new stdClass();
+$gui->showCloseButton=$args->showCloseButton;
 
 // add or remove dependencies TC - REQ
 switch($args->doAction)
@@ -114,6 +116,7 @@ else
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('gui', $gui);
 $smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('tcTitle',$tcTitle);
 $smarty->assign('arrUnassignedReq', $arrUnassignedReq);
@@ -121,7 +124,7 @@ $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('arrAssignedReq', $arrAssignedReq);
 $smarty->assign('selectedReqSpec', $args->idReqSpec);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
@@ -141,12 +144,16 @@ function init_args()
     $args->idReq = isset($_REQUEST['req']) ? intval($_REQUEST['req']) : null;
     $args->idReqSpec = isset($_REQUEST['idSRS']) ? intval($_REQUEST['idSRS']) : null;
     $args->reqIdSet = isset($_REQUEST['req_id']) ? $_REQUEST['req_id'] : null;
+
+    $args->showCloseButton = isset($_REQUEST['showCloseButton']) ? 1 : 0;
+
     $args->doAction = isset($_REQUEST['assign']) ? 'assign' : null;
     if( is_null($args->doAction) )
     {
         $args->doAction = isset($_REQUEST['unassign']) ? 'unassign' : null;
     } 
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
 
     return $args;
 }

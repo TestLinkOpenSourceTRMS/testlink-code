@@ -3,6 +3,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
 Purpose: smarty template - assign REQ to one test case
 
+20080512 - franciscom - added new parameter to manage "close window" button display.
+                        Is used when this feature is called on a new window, not from menu.
+                        
 20070617 - franciscom - manage checkboxes as arrays
                         added js logic to toogle/untoggle all
 
@@ -12,7 +15,7 @@ Purpose: smarty template - assign REQ to one test case
 
 *}
 {lang_get var="labels"
-          s="please_select_a_req,test_case,req_title_assign,
+          s="please_select_a_req,test_case,req_title_assign,btn_close,
              warning_req_tc_assignment_impossible,req_spec,warning,
              req_title_assigned,check_uncheck_all_checkboxes,
              req_msg_norequirement,btn_unassign,req_title_unassigned,
@@ -166,6 +169,12 @@ function check_action_precondition(form_id,action)
       </div>
     {/if}
 {/if}
-
+{if $gui->showCloseButton}
+	<form name="closeMe">
+		<div class="groupBtn">
+			<input type="button" value="{$labels.btn_close}" onclick="window.close()" />
+		</div>
+	</form>
+{/if}
 </body>
 </html>

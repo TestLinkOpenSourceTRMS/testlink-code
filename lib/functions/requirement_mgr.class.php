@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/05/12 19:46:58 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20080416 - franciscom - update() - fixed bug on return type 
+ * rev : 20080512 - franciscom - get_all_for_tcase() new fields in recordset
+ *       20080416 - franciscom - update() - fixed bug on return type 
  *       20080318 - franciscom - thanks to Postgres have found code that must be removed
  *                               after requirements get it's id from nodes hierarchy
 */
@@ -76,6 +77,8 @@ class requirement_mgr extends tlObjectWithAttachments
     {
         // Decode users
         $rs=$recordset[0];
+        $rs['author'] = '';
+        $rs['modifier'] = '';
         if( strlen(trim($rs['author_id'])) > 0 )
         {
             $user = tlUser::getByID($this->db,$rs['author_id']);
@@ -642,14 +645,18 @@ class requirement_mgr extends tlObjectWithAttachments
           [srs_id]: default 'all'
 
     returns:
+    
+    
 
   */
   function get_all_for_tcase($testcase_id, $srs_id = 'all')
   {
-  	$sql = " SELECT requirements.id,requirements.title " .
+  	$sql = " SELECT requirements.id,requirements.req_doc_id,requirements.title, RSPEC.title AS req_spec_title" .
   	       " FROM {$this->object_table} requirements, " .
-  	       "      {$this->req_coverage_table} req_coverage" .
+  	       "      {$this->req_coverage_table} req_coverage," .
+  	       "      {$this->requirement_spec_table} RSPEC " .
   			   " WHERE req_coverage.testcase_id=" . $testcase_id .
+  			   " AND requirements.srs_id=RSPEC.id " .
   			   " AND req_coverage.req_id=requirements.id";
 
   	// if only for one specification is required

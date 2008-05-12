@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.11 2008/05/06 06:26:10 franciscom Exp $
+$Id: reqView.tpl,v 1.12 2008/05/12 19:48:39 franciscom Exp $
 
-rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
+rev:20080512 - franciscom - added paremt_descr 
+    20071226 - franciscom - fieldset class added (thanks ext je team)
 
 *}
 
@@ -28,6 +29,10 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 <body {$body_onload}>
 
 <div class="workBack">
+{if $gui->showReqSpecTitle}
+<h1 class="title">{$gui->parent_descr|escape}</h1>
+{/if}
+
 <h1 class="title">{$gui->main_descr|escape}</h1>
 
 <table class="simple" style="width: 90%">

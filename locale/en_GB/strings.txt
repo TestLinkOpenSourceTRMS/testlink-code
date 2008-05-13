@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.316 $
- * @modified $Date: 2008/05/11 22:13:22 $ $Author: schlundus $
+ * @version $Revision: 1.317 $
+ * @modified $Date: 2008/05/13 06:26:29 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -224,6 +224,8 @@ $TLS_tc_new_version = "Test Case Version %d was successfully created";
 $TLS_tc_updated = "Test Case %s was successfully updated";
 $TLS_tc_update_failed = "Update of Test Case %s failed!";
 $TLS_tc_version_deleted = "Test Case %s version %d was successfully deleted";
+
+$TLS_assign_requirements = "Assign Requirements";
 
 
 // tcexecute.php
@@ -941,7 +943,7 @@ $TLS_warning_add_remove_selected_tc = "Warning! Are you sure to remove the selec
 
 // gui/templates/planAddTCNavigator.tpl
 $TLS_title_navigator = "Navigator";
-
+$TLS_keywords_filter_help="You can use OR/AND filtering";
 
 
 // gui/templates/planPriority.tpl
@@ -1817,6 +1819,10 @@ $TLS_overall_metrics = "Overall Metrics";
 $TLS_results_by_keyword = "Results by Keyword";
 $TLS_results_by_tester = "Results by Tester";
 $TLS_results_top_level_suites = "Results for Top Level Suites";
+$TLS_chart_report = "Report";
+$TLS_chart_assigned_testers = "Owners";
+$TLS_chart_keywords = "Keywords";
+$TLS_chart_testsuites="Test Suites";
 
 
 // lib/req/reqImport.php

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.16 2008/05/12 19:49:38 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.17 2008/05/13 12:38:20 franciscom Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -11,6 +11,17 @@ viewer for test case in test specification
                         of frequent used href
 *}
 
+{lang_get var="labels"
+          s="requirement_spec,Requirements,tcversion_is_inactive_msg,
+             btn_edit,btn_del,btn_mv_cp,btn_del_this_version,btn_new_version,
+             btn_export,btn_execute_automatic_testcase,version,
+             testproject,testsuite,title_test_case,summary,steps,
+             title_last_mod,title_created,by,expected_results,keywords,
+             execution_type,step,test_importance,none"}
+
+
+
+             
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
 
@@ -24,15 +35,15 @@ viewer for test case in test specification
 
 {if $args_show_title == "yes"}
     {if $args_tproject_name != ''}
-     <h2>{lang_get s='testproject'} {$args_tproject_name|escape} </h2>
+     <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
      <br />
     {/if}
     {if $args_tsuite_name != ''}
-     <h2>{lang_get s='testsuite'} {$args_tsuite_name|escape} </h2>
+     <h2>{$labels.testsuite} {$args_tsuite_name|escape} </h2>
      <br />
     {/if}
 
-	<h2>{lang_get s='title_test_case'} {$args_testcase.name|escape} </h2>
+	<h2>{$labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
 
 
@@ -72,23 +83,23 @@ viewer for test case in test specification
 	    {assign var="go_newline" value=""}
 	    {if $edit_enabled}
 	 	    <input type="submit" name="edit_tc" 
-	 	           onclick="doAction.value='edit'" value="{lang_get s='btn_edit'}" />
+	 	           onclick="doAction.value='edit'" value="{$labels.btn_edit}" />
 	    {/if}
 	
 		{if $args_can_delete_testcase == "yes" }
-			<input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
+			<input type="submit" name="delete_tc" value="{$labels.btn_del}" />
 	    {/if}
 	
 	    {if $args_can_move_copy == "yes" }
-	   		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
+	   		<input type="submit" name="move_copy_tc"   value="{$labels.btn_mv_cp}" />
 	     	{assign var="go_newline" value="<br />"}
 	    {/if}
 	
 	 	{if $args_can_delete_version == "yes" }
-			 <input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
+			 <input type="submit" name="delete_tc_version" value="{$labels.btn_del_this_version}" />
 	    {/if}
 
-   		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
+   		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
 	
 		{* --------------------------------------------------------------------------------------- *}
 		{if $active_status_op_enabled eq 1}
@@ -110,10 +121,10 @@ viewer for test case in test specification
 	<form method="post" action="lib/testcases/tcExport.php" name="tcexport">
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{lang_get s='btn_export'}" />
+		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$labels.btn_export}" />
 		{* 20071102 - franciscom *}
 		{*
-		<input type="button" name="tstButton" value="{lang_get s='btn_execute_automatic_testcase'}"
+		<input type="button" name="tstButton" value="{$labels.btn_execute_automatic_testcase}"
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
 	</form></span>
@@ -124,9 +135,12 @@ viewer for test case in test specification
 
 {* --------------------------------------------------------------------------------------- *}
   {if $args_testcase.active eq 0}
-    <br /><div class="warning_message" align="center">{lang_get s='tcversion_is_inactive_msg'}</div>
+    <br /><div class="warning_message" align="center">{$labels.tcversion_is_inactive_msg}</div>
   {/if}
-
+ 	{if $warning_edit_msg neq ""}
+ 	    <br /><div class="warning_message" align="center">{$warning_edit_msg}</div>
+ 	{/if}
+ 
 <table class="simple">
     {if $args_show_title == "yes"}
 	<tr>
@@ -135,40 +149,44 @@ viewer for test case in test specification
 	</tr>
     {/if}
 
-    {if $args_show_version == "yes"}
-	<tr>
-		<td class="bold" colspan="2">{lang_get s='version'}
-		{$args_testcase.version|escape}
-	  	{if $warning_edit_msg neq ""}
-    		<span class="warning_message" align="center">{$warning_edit_msg}</span>
-	  	{/if}
-		</td>
-	</tr>
+  {if $args_show_version == "yes"}
+
+{*     {if $warning_edit_msg neq ""}
+	    <tr>
+	      <td class="warning_message" align="center" colspan="2">{$warning_edit_msg}</td>
+	    </tr>
+    {/if}
+*}    
+	  <tr>
+	  	<td class="bold" colspan="2">{$labels.version}
+	  	{$args_testcase.version|escape}
+	  	</td>
+	  </tr>
 	{/if}
 
 	<tr class="time_stamp_creation">
   		<td width="50%">
-      		{lang_get s='title_created'}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
-      		{lang_get s='by'}&nbsp;{$author_userinfo->getDisplayName()|escape}
+      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
+      		{$labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
   		</td>
   		{if $args_testcase.updater_last_name ne "" || $args_testcase.updater_first_name ne ""}
     	<td width="50%">
-    		{lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
-		  	&nbsp;{lang_get s='by'}&nbsp;{$updater_userinfo->getDisplayName()|escape}
+    		{$labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
+		  	&nbsp;{$labels.by}&nbsp;{$updater_userinfo->getDisplayName()|escape}
     	</td>
   		{/if}
     </tr>
 
 	<tr>
-		<td class="bold" colspan="2">{lang_get s='summary'}</td>
+		<td class="bold" colspan="2">{$labels.summary}</td>
 	</tr>
 
 	<tr>
 		<td colspan="2">{$args_testcase.summary}</td>
 	</tr>
 	<tr>
-		<th width="50%">{lang_get s='steps'}</th>
-		<th width="50%">{lang_get s='expected_results'}</th>
+		<th width="50%">{$labels.steps}</th>
+		<th width="50%">{$labels.expected_results}</th>
 	</tr>
 	<tr>
 		<td>{$args_testcase.steps}</td>
@@ -177,14 +195,14 @@ viewer for test case in test specification
 </table>
     {if $session['testprojectOptAutomation']}
     <div>
-		<span class="labelHolder">{lang_get s='execution_type'} {$smarty.const.TITLE_SEP}</span>
+		<span class="labelHolder">{$labels.execution_type} {$smarty.const.TITLE_SEP}</span>
 		{$execution_types[$args_testcase.execution_type]}
 	</div>
 	{/if}
 
     {if $session['testprojectOptPriority']}
     <div>
-		<span class="labelHolder">{lang_get s='test_importance'} {$smarty.const.TITLE_SEP}</span>
+		<span class="labelHolder">{$labels.test_importance} {$smarty.const.TITLE_SEP}</span>
 		{$gsmarty_option_importance[$args_testcase.importance]}
 	</div>
 	{/if}
@@ -198,14 +216,14 @@ viewer for test case in test specification
 	<div>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
-			     	  <td width="35%"><a href={$gsmarty_href_keywordsView}>{lang_get s='keywords'}</a>: &nbsp;
+			     	<td width="35%" style="vertical-align:text-top;"><a href={$gsmarty_href_keywordsView}>{$labels.keywords}</a>: &nbsp;
 						</td>
 				 	  <td>
 					  	{foreach item=keyword_item from=$args_keywords_map}
 						    {$keyword_item|escape}
 						    <br />
 	      				{foreachelse}
-    	  					{lang_get s='none'}
+    	  					{$labels.none}
 						{/foreach}
 					</td>
 				</tr>
@@ -216,8 +234,8 @@ viewer for test case in test specification
 	<div>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>
-       			  <td colspan="2"><span><a title="{lang_get s='requirement_spec'}" href="{$hrefReqSpecMgmt}"
-      				target="mainframe" class="bold">{lang_get s='Requirements'}</a>
+       			  <td colspan="2" style="vertical-align:text-top;"><span><a title="{$labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
+      				target="mainframe" class="bold">{$labels.Requirements}</a>
       				: &nbsp;</span>
       			  </td>
       			  <td>
@@ -226,11 +244,10 @@ viewer for test case in test specification
       					style="cursor:  pointer;">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}
-      					{lang_get s='none'}
+      					{$labels.none}
       				{/section}
       			  </td>
     		    </tr>
 	  </table>
 	</div>
 	{/if}
-

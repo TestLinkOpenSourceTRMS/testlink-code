@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/04/14 09:59:51 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/05/14 06:09:33 $ by $Author: franciscom $
  * @author kevinlevy
  * 
  * rev :
@@ -183,7 +183,7 @@ function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 	{
 		foreach($bugs as $bugID => $bugInfo)
 		{
-		    registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
+		  registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
 			$bugString .= $bugInfo['link_to_bts']."<br />";
 		}
 	}

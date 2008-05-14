@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.55 2008/03/31 20:08:04 schlundus Exp $
+* $Id: resultsByStatus.php,v 1.56 2008/05/14 06:09:33 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -38,6 +38,10 @@ $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
 
+$testCaseCfg=config_get('testcase_cfg');
+$testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
+
+
 if($type == $g_tc_status['failed'])
 	$title = lang_get('list_of_failed');
 else if($type == $g_tc_status['blocked'])
@@ -59,71 +63,71 @@ $arrOwners = getUsersForHtmlOptions($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $arrDataIndex = 0;
 $arrData = null;
 
-if (is_array($mapOfLastResult)) {
-  while ($suiteId = key($mapOfLastResult)){
-   while($tcId = key($mapOfLastResult[$suiteId])){
-		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
-		$result = $mapOfLastResult[$suiteId][$tcId]['result'];
-		if ($result == $type)
-		{
-			$currentBuildInfo = null;
-			if ($lastBuildIdExecuted) {
-				$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
-			}
-			else if ($type == $g_tc_status['not_run'])
-			{
-				$lastBuildIdExecuted = $lastBuildID;
-			}
+$canExecute = has_rights($db,"tp_execute");
+if (is_array($mapOfLastResult)) 
+{
+    foreach($mapOfLastResult as $suiteId => $suiteContents)
+    {
+      foreach($suiteContents as $tcId => $tcaseContent)
+      {
+	  	    $lastBuildIdExecuted = $tcaseContent['buildIdLastExecuted'];
+	  	    if ($tcaseContent['result'] == $type)
+	  	    {
+	  	    	$currentBuildInfo = null;
+	  	    	if ($lastBuildIdExecuted) {
+	  	    		$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
+	  	    	}
+	  	    	else if ($type == $g_tc_status['not_run'])
+	  	    	{
+	  	    		$lastBuildIdExecuted = $lastBuildID;
+	  	    	}
+          
+	  	    	$buildName = $currentBuildInfo['name'];
 
-			$buildName = $currentBuildInfo['name'];
-
-			$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
-			$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
-			$name = $mapOfLastResult[$suiteId][$tcId]['name'];
-			$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
-			$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
-			$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];
-
-			// ------------------------------------------------------------------------------------
-			// 20070623 - BUGID 911 - no need to localize, is already localized
-			$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
-			$localizedTS = '';
-			if ($execution_ts != null) {
-			   $localizedTS = $execution_ts;
-			}
-			// ------------------------------------------------------------------------------------
-
-			$bugString = buildBugString($db, $executions_id);
-	        $bCanExecute = has_rights($db,"tp_execute");
-			$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
-			// $tcId . ":" . htmlspecialchars($name)
-	        $testerName = '';
-			if (array_key_exists($tester_id, $arrOwners))
-			   $testerName = $arrOwners[$tester_id];
-
-			$tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
-   			$testVersion = $tcInfo[0]['version'];
-
-			// 20070908 - franciscom - to avoid bad presentation on smarty
-			if($type == $g_tc_status['not_run'])
-					$arrData[$arrDataIndex] = array($suiteName,$testTitle,$testVersion);
-			else
-      		{
-				$arrData[$arrDataIndex] = array($suiteName,$testTitle,$testVersion,
-				                           htmlspecialchars($buildName),
-				                         htmlspecialchars($testerName),
-				                         htmlspecialchars($localizedTS),
-						                strip_tags($notes),
-						                $bugString);
-			}
-
-            // KL - 20070610 - only increment this var if we added to arrData
-		    $arrDataIndex++;
-		}
-		next($mapOfLastResult[$suiteId]);
-	}
-	next($mapOfLastResult);
-  } // end while
+	  	    	$notes = $tcaseContent['notes'];
+	  	    	$suiteName = $tcaseContent['suiteName'];
+	  	    	$name = $tcaseContent['name'];
+	  	    	$tester_id = $tcaseContent['tester_id'];
+	  	    	$executions_id = $tcaseContent['executions_id'];
+	  	    	$tcversion_id = $tcaseContent['tcversion_id'];
+               
+               
+	  	    	// ------------------------------------------------------------------------------------
+	  	    	// 20070623 - BUGID 911 - no need to localize, is already localized
+	  	    	$execution_ts = $tcaseContent['execution_ts'];
+	  	    	$localizedTS = '';
+	  	    	if ($execution_ts != null) {
+	  	    	   $localizedTS = $execution_ts;
+	  	    	}
+	  	    	// ------------------------------------------------------------------------------------
+          
+	  	    	$bugString = $results->buildBugString($db, $executions_id);
+	  	    	$testTitle = getTCLink($canExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted,
+	  	    	                       $testCasePrefix . $tcaseContent['external_id']);
+            $testerName = '';
+	  	    	if (array_key_exists($tester_id, $arrOwners))
+	  	    	   $testerName = $arrOwners[$tester_id];
+          
+	  	    	$tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
+     	      $testVersion = $tcInfo[0]['version'];
+          
+	  	    	// 20070908 - franciscom - to avoid bad presentation on smarty
+	  	    	if($type == $g_tc_status['not_run'])
+	  	    	{
+	  	    			$arrData[] = array($suiteName,$testTitle,$testVersion);
+	  	    	}
+	  	    	else
+            {
+	  	    		  $arrData[] = array($suiteName,$testTitle,$testVersion,
+	  	    		                                  htmlspecialchars($buildName),
+	  	    		                                  htmlspecialchars($testerName),
+	  	    		                                  htmlspecialchars($localizedTS),
+	  	    		  		                            strip_tags($notes),$bugString);
+	  	    	}
+	  	    }
+	  	
+	    }
+    } //foreach
 } // end if
 
 $smarty = new TLSmarty();
@@ -140,36 +144,36 @@ displayReport($template_dir . 'resultsByStatus', $smarty, $report_type);
 * written by Andreas, being implemented again by KL
 */
 
-function buildBugString(&$db,$execID)
-{
-    if (!$execID)
-	  return null;
-
-	$bugString = null;
-	$bugsOn = config_get('bugInterfaceOn');
-	if ($bugsOn == null)
-		return $bugString;
-
-	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
-	if ($bugs)
-	{
-		foreach($bugs as $bugID => $bugInfo)
-		{
-			$bugString .= $bugInfo['link_to_bts']."<br />";
-		}
-	}
-	return $bugString;
-}
+// function buildBugString(&$db,$execID)
+// {
+//     if (!$execID)
+// 	  return null;
+// 
+// 	$bugString = null;
+// 	$bugsOn = config_get('bugInterfaceOn');
+// 	if ($bugsOn == null)
+// 		return $bugString;
+// 
+// 	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+// 	if ($bugs)
+// 	{
+// 		foreach($bugs as $bugID => $bugInfo)
+// 		{
+// 			$bugString .= $bugInfo['link_to_bts']."<br />";
+// 		}
+// 	}
+// 	return $bugString;
+// }
 
 
 /**
 * Function returns number of Test Cases in the Test Plan
 * @return string Link of Test ID + Title
 */
-function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
+function getTCLink($rights, $tcID,$tcversionID, $title, $buildID,$testCaseExternalId)
 {
 	$title = htmlspecialchars($title);
-	$suffix = $tcID . ":&nbsp;<b>" . $title. "</b></a>";
+	$suffix = $testCaseExternalId . ":&nbsp;<b>" . $title. "</b></a>";
 
 	$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
 				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';

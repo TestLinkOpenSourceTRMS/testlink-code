@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.317 $
- * @modified $Date: 2008/05/13 06:26:29 $ $Author: franciscom $
+ * @version $Revision: 1.318 $
+ * @modified $Date: 2008/05/14 06:09:48 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -319,6 +319,7 @@ $TLS_node_type_dbtable_testcases=$TLS_testcase;
 $TLS_alt_del_com = "Delete this Test Suite";
 $TLS_alt_edit_com = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_com = "Move or copy this Test Suite to another Test Project";
+$TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
 $TLS_btn_del_com = "Delete";
 $TLS_btn_edit_com = "Edit";
 $TLS_btn_execute_automatic_testcases="Execute All Automatic Test Cases";

@@ -1,65 +1,64 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: displayMgr.php,v 1.10 2008/04/27 17:35:46 franciscom Exp $ 
+* $Id: displayMgr.php,v 1.11 2008/05/14 06:09:33 franciscom Exp $ 
 *
 * @author	Kevin Levy
 * 
 * Revision:
 * 2007/12/07 - havlatm - added MSWord, magic numbers -> use global const.
 */
- // has the sendMail() method
-require_once('info.inc.php');
+require_once('info.inc.php'); // has the sendMail() method
+require_once('../../cfg/reports.cfg.php');
 
 function displayReport($template_file, &$smarty, $report_type, $buildName = null)
 {
 
   $reports_cfg = config_get('reportsCfg');
-	
+	$reports_formats = config_get('reports_formats');
 
 	// excel report
-	if ($reports_cfg->formats[$report_type] == 'MS Excel') //1
+	switch($reports_formats[$report_type])
 	{
-		sendXlsHeader();
-	}
+	    case 'MS Excel':
+		  sendXlsHeader();
+	    break;  
+
+	    case 'MS Word':
+      sendMsWordHeader();
+      break;
+      
+	    case 'Email':
+		  $template_file = $template_file . ".tpl";
+		  $html_report = $smarty->fetch($template_file);
+		  $emailIsHtml = true;
+		  $send_cc_to_myself = false;
+		  $subjectOfMail = $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
+		  
+		  $emailFrom = $_SESSION['email'];
+		  $emailTo = $_SESSION['email'];
+		  if (!$emailTo)
+		  {
+		  	//Email for this user is not specified, please edit email credentials in \"Personal\" tab.
+		  	$message = lang_get("error_sendreport_no_email_credentials");
+		  }
+		  else
+		  {
+		  	$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
+		  }
+		  $smarty = new TLSmarty();
+		  $smarty->assign('message', $message);
+		  $template_file = "emailSent";
+      break;
+      
+      case 'PDF':
+  		sendPdfHeader();
+      break;
+
+
+	} 
+
 	
-	// msword report
-	if ($reports_cfg->formats[$report_type] == 'MS Word')
-	{
-		sendMsWordHeader();
-	}
-
-	// html email report
-	if ($reports_cfg->formats[$report_type] == 'Email')
-	{
-		$template_file = $template_file . ".tpl";
-		$html_report = $smarty->fetch($template_file);
-		$emailIsHtml = true;
-		$send_cc_to_myself = false;
-		$subjectOfMail = $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
-		
-		$emailFrom = $_SESSION['email'];
-		$emailTo = $_SESSION['email'];
-		if (!$emailTo)
-		{
-			//Email for this user is not specified, please edit email credentials in \"Personal\" tab.
-			$message = lang_get("error_sendreport_no_email_credentials");
-		}
-		else
-		{
-			$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
-		}
-		$smarty = new TLSmarty();
-		$smarty->assign('message', $message);
-		$template_file = "emailSent";
-	}
-
-	// PDF report
-	if ($reports_cfg->formats[$report_type] == 'PDF')
-	{
-		sendPdfHeader();
-	}
-
 	$template_file = $template_file . ".tpl";
 	$smarty->display($template_file);
 

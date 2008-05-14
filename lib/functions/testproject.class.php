@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/05/10 14:42:20 $  $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/05/14 06:09:32 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080507 - franciscom - get_keywords_tcases() - changed return type
@@ -446,6 +446,7 @@ function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modd
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
 
+  $smarty->assign('refreshTree',false);
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testproject');
 	$smarty->assign('page_title', lang_get('testproject'));

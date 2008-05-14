@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/05/11 16:56:37 $ by $Author: franciscom $
+ * @modified $Date: 2008/05/14 06:09:30 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20080513 - franciscom - buildExecutionsMap() added external_id in output
  * 20080413 - franciscom - refactoring
  * 20080302 - franciscom - refactored of tally* functions, to manage
  *                         user defined test case statuses.
@@ -246,7 +247,6 @@ class results
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild);
 
-
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID);
 
@@ -257,7 +257,8 @@ class results
 			$arrBuilds1 = $tplan_mgr->get_builds($this->testPlanID);
 			$arrBuilds = null;
 
-			while ($key = key($arrBuilds1)){
+			while ($key = key($arrBuilds1))
+			{
 				$currentArray = $arrBuilds1[$key] ;
 				$build_id = $currentArray['id'];
 				$build_name = $currentArray['name'];
@@ -697,6 +698,7 @@ class results
 
     // just to avoid a lot of refactoring
 		$testcase_id=$exec['testcaseID'];
+		$external_id=$exec['external_id'];
 	  $buildNumber=$exec['build_id'];
 		$result=$exec['status'];
 		$tcversion_id=$exec['tcversion_id'];
@@ -753,19 +755,18 @@ class results
 			}
 			$this->mapOfCaseResults[$testcase_id]['buildNumber'] = $buildNumber;
 			$this->mapOfCaseResults[$testcase_id]['execID'] = $executions_id;
-			// mapOfLastResult assignments
-			//
-			// 20070919 - version
+
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber,
-	                                                       "result" => $result,
-												 		                             "tcversion_id" => $tcversion_id,
-												 		                             "version" => $version,
-	                                                       "execution_ts" => $execution_ts,
-														                             "notes" => $notes,
-	                                                       "suiteName" => $suiteName,
-	                                                       "executions_id" => $executions_id,
-	                                                       "name" => $name,
-														                             "tester_id" => $tester_id);
+	                                                           "result" => $result,
+												 		                                 "tcversion_id" => $tcversion_id,
+		                                                         "external_id" => $external_id,
+												 		                                 "version" => $version,
+	                                                           "execution_ts" => $execution_ts,
+														                                 "notes" => $notes,
+	                                                           "suiteName" => $suiteName,
+	                                                           "executions_id" => $executions_id,
+	                                                           "name" => $name,
+														                                 "tester_id" => $tester_id);
 		}
 	} // end function
 
@@ -997,11 +998,13 @@ class results
 		// for execution link
 		$bCanExecute = has_rights($this->db,"tp_execute");
 
-		while ($testcaseID = key($this->linked_tcversions)){
+		while ($testcaseID = key($this->linked_tcversions))
+		{
 			$info = $this->linked_tcversions[$testcaseID];
-			$testsuite_id = $info['testsuite_id'];
+		  $testsuite_id = $info['testsuite_id'];
 			$tcversion_id = $info['tcversion_id'];
-			$version = $info['version'];  // 20070917 - franciscom
+			$version = $info['version'];
+      $external_id = $info['external_id']; 
 
 			$currentSuite = null;
 			if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
@@ -1018,31 +1021,34 @@ class results
 
 			$executed = $info['executed'];
 			$executionExists = true;
-			// KL - 20070625 - set link to execute test case
 			$executeLink = $this->getTCLink($bCanExecute,$testcaseID,$tcversion_id,$name,$executeLinkBuild);
 
-			if ($tcversion_id != $executed){
+			if ($tcversion_id != $executed)
+			{
 				$executionExists = false;
-				if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
+				if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) 
+				{
 					// Initialize information on testcaseID to be "not run"
 					$infoToSave = array('testcaseID' => $testcaseID,
-					'tcversion_id' => $tcversion_id,
-					'version' => $version,
-					'build_id' => '',
-					'tester_id' => '',
-					'execution_ts' => '',
-					'status' => $this->map_tc_status['not_run'],
-					'executions_id' => '',
-					'notes' => '',
-					'name' => $name,
-					'assigner_id' => $info['assigner_id'],
-					'feature_id' => $info['feature_id'],
-					'execute_link' => $executeLink);
-					array_push($currentSuite, $infoToSave);
+					                    'external_id' => $external_id,
+					                    'tcversion_id' => $tcversion_id,
+					                    'version' => $version,
+					                    'build_id' => '',
+					                    'tester_id' => '',
+					                    'execution_ts' => '',
+					                    'status' => $this->map_tc_status['not_run'],
+					                    'executions_id' => '',
+					                    'notes' => '',
+					                    'name' => $name,
+					                    'assigner_id' => $info['assigner_id'],
+					                    'feature_id' => $info['feature_id'],
+					                    'execute_link' => $executeLink);
+					                    array_push($currentSuite, $infoToSave);
 				}
 			}
 
-			if ($executionExists) {
+			if ($executionExists) 
+			{
 				// TO-DO - this is where we can include the searching of results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids
@@ -1077,14 +1083,16 @@ class results
 				}
 
 				// mht: fix 966
-				// mike_h - 20070806 - when ordering executions by the timestamp, the results are represented correctly in the report "Test Report".
+				// mike_h - 20070806 - when ordering executions by the timestamp, 
+				// the results are represented correctly in the report "Test Report".
 				$sql .= " ORDER BY execution_ts ASC";
 
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
 				{
 					$executions_id = null;
-					while($executions_id = key($execQuery)){
+					while($executions_id = key($execQuery))
+					{
 						$notSureA = $execQuery[$executions_id];
 						$exec_row = $notSureA[0];
 						$testplan_id = $exec_row['testplan_id'];
@@ -1094,19 +1102,20 @@ class results
 						$bugString = $this->buildBugString($this->db, $executions_id);
 
 						$infoToSave = array('testcaseID' => $testcaseID,
-									'tcversion_id' => $tcversion_id,
-							    'version' => $version,
-									'build_id' => $exec_row['build_id'],
-									'tester_id' => $exec_row['tester_id'],
-									'execution_ts' => $localizedTS,
-									'status' => $exec_row['status'],
-									'notes' => $exec_row['notes'],
-									'executions_id' => $executions_id,
-									'name' => $name,
-									'bugString' => $bugString,
-									'assigner_id' => $info['assigner_id'],
-									'feature_id' => $info['feature_id'],
-									'execute_link' => $executeLink);
+						                    'external_id' => $external_id,
+						 			              'tcversion_id' => $tcversion_id,
+							                  'version' => $version,
+									              'build_id' => $exec_row['build_id'],
+									              'tester_id' => $exec_row['tester_id'],
+									              'execution_ts' => $localizedTS,
+									              'status' => $exec_row['status'],
+									              'notes' => $exec_row['notes'],
+									              'executions_id' => $executions_id,
+									              'name' => $name,
+									              'bugString' => $bugString,
+									              'assigner_id' => $info['assigner_id'],
+									              'feature_id' => $info['feature_id'],
+									              'execute_link' => $executeLink);
 						if ($lastResult != $this->map_tc_status['not_run']) {
 							array_push($currentSuite, $infoToSave);
 						}
@@ -1116,18 +1125,19 @@ class results
 				// HANDLE scenario where execution does not exist
 				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
 					$infoToSave = array('testcaseID' => $testcaseID,
-					'tcversion_id' => $tcversion_id,
-          'version' => $version,
-					'build_id' => '',
-					'tester_id' => '',
-					'execution_ts' => '',
-					'executions_id' => '',
-					'status' => $this->map_tc_status['not_run'],
-					'name' => $name,
-					'notes' => '',
-					'assigner_id' => $info['assigner_id'],
-					'feature_id' => $info['feature_id'],
-					'execute_link' => $executeLink);
+					                    'external_id' => $external_id,
+					                    'tcversion_id' => $tcversion_id,
+                              'version' => $version,
+					                    'build_id' => '',
+					                    'tester_id' => '',
+					                    'execution_ts' => '',
+					                    'executions_id' => '',
+					                    'status' => $this->map_tc_status['not_run'],
+					                    'name' => $name,
+					                    'notes' => '',
+					                    'assigner_id' => $info['assigner_id'],
+					                    'feature_id' => $info['feature_id'],
+					                    'execute_link' => $executeLink);
 					array_push($currentSuite, $infoToSave);
 				}
 			} // end if($executionExists)
@@ -1143,14 +1153,16 @@ class results
 	* builds bug information for execution id
 	* written by Andreas, being implemented again by KL
 	*/
-	private function buildBugString(&$db,$execID) {
+	function buildBugString(&$db,$execID) 
+	{
 		  $bugString = null;
 		  $bug_interface = config_get('bugInterface');
 	    $bugsOn = config_get('bugInterfaceOn');
-	    if ($bugsOn == null || $bugsOn == false)
+	    if ($bugsOn == null || $bugsOn == false || !$execID)
 	    {
 		     return $bugString;
 		  }
+		  
 		  $bugs = get_bugs_for_exec($db,$bug_interface,$execID);
 		  if ($bugs) 
 		  {
@@ -1239,17 +1251,6 @@ class results
                          'status_descr_code' =>  $status_descr_code,
                          'status_code_descr' =>  $status_code_descr);
 
-
-
-
-		// 20071111 - franciscom
-		// $test_spec = $tree_manager->get_subtree($this->tprojectID,
-		//                                         array('testplan'=>'exclude me',
-		//                                               'requirement_spec'=>'exclude me',
-		//                                               'requirement'=>'exclude me'),
-	  //                                         array('testcase'=>'exclude my children',
-	  //                                               'requirement_spec'=>'exclude my children'),
-	  //                                               null,null,true);
  	  $test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
 
 
@@ -1257,6 +1258,7 @@ class results
 		// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
 		$DEFAULT_VALUE_FOR_TC_ID = 0;
 		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);
+		
 		$this->linked_tcversions = &$tp_tcs;
 		if (is_null($tp_tcs)) {
 			$tp_tcs = array();

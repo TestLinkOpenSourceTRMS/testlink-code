@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.35 2007/12/17 21:56:35 schlundus Exp $ 
+* $Id: resultsTC.php,v 1.36 2008/05/14 06:09:33 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -40,6 +40,10 @@ $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
+$testCaseCfg=config_get('testcase_cfg');
+$testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
+
+
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 
@@ -56,32 +60,41 @@ $lastResultMap = $re->getMapOfLastResult();
 $indexOfArrData = 0;
 
 // -----------------------------------------------------------------------------------
-$map_tc_status_verbose_code=array_flip(config_get('tc_status'));
-$map_tc_status_verbose_label=config_get('tc_status_for_ui');
+$resultsCfg=config_get('results');
+$map_tc_status_verbose_code=$resultsCfg['code_status'];
+$map_tc_status_verbose_label=$resultsCfg['status_label'];
+
 foreach($map_tc_status_verbose_code as $code => $verbose )
 {
   if( isset($map_tc_status_verbose_label[$verbose]) )
   {
     $label=$map_tc_status_verbose_label[$verbose];
-    $map_tc_status_code_langet[$code]=lang_get($label);  
+    $map_tc_status_code_langet[$code]=lang_get($label);
+      
+    $map_label_css[$map_tc_status_code_langet[$code]]=$resultsCfg['code_status'][$code];
   }
 }
 
 $not_run_label=lang_get('test_status_not_run');
 // -----------------------------------------------------------------------------------
 
-if ($lastResultMap != null) {
+if ($lastResultMap != null) 
+{
 	while($suiteId = key($lastResultMap)) {
 		$currentSuiteInfo = $lastResultMap[$suiteId];
 		
-		while ($testCaseId = key($currentSuiteInfo)){
+		while ($testCaseId = key($currentSuiteInfo))
+		{
 			
 			$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
+
 			$suiteName = $currentTestCaseInfo['suiteName'];
 			$name = $currentTestCaseInfo['name'];		
 			$testCaseVersion = $currentTestCaseInfo['version'];
+			$external_id = $testCasePrefix . $currentTestCaseInfo['external_id'];
 			
-			$rowArray = array($suiteName, $testCaseId . ":" . $name, $testCaseVersion);
+		  $rowArray = array($suiteName, $external_id . ":" . $name, $testCaseVersion);
+		
 			$suiteExecutions = $executionsMap[$suiteId];		
 			
 			// iterate over all builds and lookup results for current test case			
@@ -113,8 +126,8 @@ if ($lastResultMap != null) {
 	} // end while
 } // end if
 
-
 $smarty = new TLSmarty;
+$smarty->assign('map_css',$map_label_css);
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);

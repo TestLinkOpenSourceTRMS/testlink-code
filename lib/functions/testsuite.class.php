@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/05/04 10:33:33 $ - $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/05/14 06:09:32 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -354,6 +354,7 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
 	$attachmentInfos = getAttachmentInfosFrom($this,$id);
 	
+	$smarty->assign('refreshTree',false);
 	$smarty->assign('attachmentInfos',$attachmentInfos);
 	$smarty->assign('id',$id);
  	$smarty->assign('page_title',lang_get('testsuite'));

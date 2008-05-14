@@ -1,10 +1,15 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.2 2008/05/06 06:26:12 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.3 2008/05/14 08:53:00 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
    20051204 - mht - removed obsolete print button
 *}
+
+{lang_get var="labels"
+          s="title,date,printed_by,title_test_suite_name,
+             title_test_case_title,version,generated_by_TestLink_on"}
+
 {include file="inc_head.tpl"}
 
 <body>
@@ -14,9 +19,9 @@
 
 {else}{* print data to excel *}
 <table style="font-size: larger;font-weight: bold;">
-	<tr><td>{lang_get s='title'}</td><td>{$title|escape}</td><tr>
-	<tr><td>{lang_get s='date'}</td><td>{$printDate|escape}</td><tr>
-	<tr><td>{lang_get s='printed_by'}</td><td>{$user|escape}</td><tr>
+	<tr><td>{$labels.title}</td><td>{$title|escape}</td><tr>
+	<tr><td>{$labels.date}</td><td>{$printDate|escape}</td><tr>
+	<tr><td>{$labels.printed_by}</td><td>{$user|escape}</td><tr>
 </table>
 {/if}
 
@@ -24,11 +29,11 @@
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
 
-<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+<table class="simple" style="width: 100%; margin-left: 0px;">
 	<tr>
-		<th>{lang_get s='title_test_suite_name'}</th>
-		<th>{lang_get s='title_test_case_title'}</th>
-		<th>{lang_get s='version'}</th>
+		<th>{$labels.title_test_suite_name}</th>
+		<th>{$labels.title_test_case_title}</th>
+		<th>{$labels.version}</th>
 
 		{foreach key=row item=buildid from=$arrBuilds}
 			<th>{$arrBuilds[$row].name|escape}</th>
@@ -41,7 +46,6 @@
 	{* add different font styles for tc status for improve readability. 2007-05-31 *jacky *}
 		{if $arrData[Row][Item] == 'Passed'} 
 		<td style="color: green; font-weight:bold">{$arrData[Row][Item]}</td>
-
 		{elseif $arrData[Row][Item] == 'Failed'} 
 		<td style="color: red; font-weight:bold">{$arrData[Row][Item]}</td>
 
@@ -58,7 +62,7 @@
 {/section}
 </table>
 
-{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
+{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div>
 
 </body>

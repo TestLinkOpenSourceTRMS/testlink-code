@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.9 2008/05/06 06:26:13 franciscom Exp $
+$Id: tcView.tpl,v 1.10 2008/05/14 08:53:00 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}
@@ -46,7 +46,7 @@ rev: 20080322 - franciscom - php errors clean up
 		         args_can_delete_testcase=$can_delete_testcase
 		         args_can_delete_version=$my_delete_version
 		         args_show_version="yes" 
-		         args_show_title="yes"
+		         args_show_title="no"
 		         
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'

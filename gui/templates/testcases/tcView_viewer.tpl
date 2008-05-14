@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.17 2008/05/13 12:38:20 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.18 2008/05/14 08:53:00 franciscom Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -17,7 +17,7 @@ viewer for test case in test specification
              btn_export,btn_execute_automatic_testcase,version,
              testproject,testsuite,title_test_case,summary,steps,
              title_last_mod,title_created,by,expected_results,keywords,
-             execution_type,step,test_importance,none"}
+             execution_type,test_importance,none"}
 
 
 

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.12 2008/05/07 21:01:22 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.13 2008/05/14 08:55:09 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -14,6 +14,7 @@ rev :
 *}
 {lang_get var='labels'
           s='btn_new_com,btn_reorder_cat,btn_import_testsuite,
+             alt_move_cp_testcases,
              btn_export_all_testsuites,btn_execute_automatic_testcases,
              th_product_name,edit_testproject_basic_data,th_notes,
              btn_edit_com,alt_edit_com,btn_del_com,alt_del_com,btn_move_cp_com,
@@ -102,9 +103,9 @@ rev :
 	<div id="executionResults"></div>
   	*}
 
-	{include file="inc_attachments.tpl"
-	         attach_id=$id
-	         attach_tableName="nodes_hierarchy"
+	{include file="inc_attachments.tpl" 
+	         attach_attachmentInfos=null
+	         attach_id=$id 
 	         attach_downloadOnly=$bDownloadOnly}
 {elseif $level == 'testsuite'}
 
@@ -124,7 +125,7 @@ rev :
 				     title="{$labels.alt_move_cp_com}" />
 
       <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
-             title="{$labels.move_cp_testcases}" />
+             title="{$labels.alt_move_cp_testcases}" />
 
 			<input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder_cat}" />
 			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
@@ -168,7 +169,10 @@ rev :
 	{if $modify_tc_rights neq 'yes'}
 		{assign var="bDownloadOnly" value=true}
 	{/if}
-	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
+	{include file="inc_attachments.tpl" 
+	         attach_attachmentInfos=null
+	         attach_id=$id attach_tableName="nodes_hierarchy" 
+	         attach_downloadOnly=$bDownloadOnly}
 
 {/if}
 

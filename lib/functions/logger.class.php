@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/05/05 09:11:43 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/05/15 07:26:41 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -432,6 +432,8 @@ class tlEventManager extends tlObjectWithDB
     args:
 
     returns:
+    
+    rev: 20080514 - franciscom - added empty() to avoid crash
 
   */
 	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
@@ -444,13 +446,13 @@ class tlEventManager extends tlObjectWithDB
 			$logLevels = implode(",",$logLevels);
 			$clauses[] = "log_level IN ({$logLevels})";
 		}
-		if (!is_null($objectIDs))
+		if (!is_null($objectIDs) && !empty($objectIDs))
 		{
 			$objectIDs = (array) $objectIDs;
-			$objectIDs = implode(",",$objectIDs);
-			$clauses[] = "object_id IN ({$objectIDs})";
+	    $objectIDs = implode(",",$objectIDs);
+	    $clauses[] = "object_id IN ({$objectIDs})";
 		}
-		if (!is_null($objectTypes))
+		if (!is_null($objectTypes) && !empty($objectTypes) )
 		{
 			$objectTypes = (array) $objectTypes;
 			$objectTypes = $this->db->prepare_string(implode("','",$objectTypes));

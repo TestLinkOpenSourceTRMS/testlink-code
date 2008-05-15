@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/05/15 07:26:05 $ by $Author: franciscom $
  *
  * rev: 20080207 - franciscom - refactored
 **/
@@ -16,8 +16,7 @@ require_once("users.inc.php");
 
 testlinkInitPage($db);
 
-$template_dir = 'events/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 $logLevels = array(
 			tlLogger::AUDIT => lang_get("log_level_AUDIT"),
@@ -57,7 +56,7 @@ $smarty->assign('object_type',$args->object_type);
 $smarty->assign('selectedLogLevels',$args->logLevel ? array_values($args->logLevel) : array());
 $smarty->assign('startDate',$args->startDate);
 $smarty->assign('endDate',$args->endDate);
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {

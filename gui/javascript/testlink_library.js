@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.58 2008/05/12 19:53:57 franciscom Exp $
+// $Id: testlink_library.js,v 1.59 2008/05/15 15:25:51 havlat Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -48,6 +48,37 @@ function focusInputField(id,bSelect)
 			f.select();
 	}
 }
+
+
+/* 
+function: show help <div> tag with absolute position or right site ow window
+arg: localized text of help
+returns: N/A 
+*/
+function show_help(text)
+{
+	myElement = window.document.getElementById("tlhelp");
+	if(myElement == null)
+	{
+  		var mybody = window.document.getElementsByTagName("body").item(0);
+		var newdiv = window.document.createElement('div');
+		newdiv.setAttribute('id', 'tlhelp');
+		newdiv.setAttribute('onclick', 'javascript: close_help()');
+		mybody.appendChild(newdiv);
+
+		myElement = window.document.getElementById("tlhelp");
+	}
+
+	myElement.innerHTML = text;
+	myElement.style.height = 'auto';
+}
+
+function close_help() {
+  var d = window.document.getElementsByTagName("body").item(0);
+  var olddiv = window.document.getElementById('tlhelp');
+  d.removeChild(olddiv);
+}
+
 
 
 /*
@@ -179,7 +210,6 @@ function ET(id,v)
   // get checkboxes status
   var pParams = tree_getPrintPreferences();
 	var my_location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
-	// alert(my_location);
 	parent.workframe.location = my_location;
 }
 

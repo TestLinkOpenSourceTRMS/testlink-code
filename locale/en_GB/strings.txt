@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.318 $
- * @modified $Date: 2008/05/14 06:09:48 $ $Author: franciscom $
+ * @version $Revision: 1.319 $
+ * @modified $Date: 2008/05/15 15:30:21 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2145,4 +2145,66 @@ $TLS_title_eventinfo = "Event information";
 $TLS_title_eventdetails = "Event details";
 $TLS_th_user = "User";
 $TLS_show_event_history = "Show the event history";
+
+
+// ------------------------------------------------------------------------------------------
+//		HELP texts
+// ------------------------------------------------------------------------------------------
+
+// printFilter.html
+$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
+
+<p>This table allows the user to filter test cases before they are viewed. If
+selected (checked) the data will be shown. In order to change the data
+presented, check or uncheck, click on Filter, and select the desired data
+level from the tree.</p>
+
+<p><b>Document Header:</b> Users can filter out Document Header information. 
+Document Header information includes: Introduction, Scope, References, 
+Test Methodology, and Test Limitations.</p>
+
+<p><b>Test Case Body:</b> Users can filter out Test Case Body information. Test Case Body information
+includes: Summary, Steps, Expected Results, and Keywords.</p>
+
+<p><b>Test Case Summary:</b> Users can filter out Test Case Summary information from the Test Case Title,
+however, they cannot filter out Test Case Summary information from the Test
+Case Body. Test Case Summary has only been partially separated from Test Case
+Body in order to support viewing Titles with a brief Summary and the absence of
+Steps, Expected Results, and Keywords. If a user decides to view Test Case
+Body, Test Case Summary will always be included.</p>
+
+<p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
+
+<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
+in second case.</p>";
+
+// testPlan.html
+$TLS_hlp_testPlan = "<h2>Test Plan</h2>
+
+<h3>General</h3>
+<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
+particular builds of product in time and trace results.</p>
+
+<h3>Test Execution</h3>
+<p>This section is where users can execute test cases (write test results) and 
+print Test case suite of the Test Plan. This section is where users can track 
+the results of their test case execution.</p> 
+
+<h2>Test Plan Management</h2>
+<p>This section, which is only lead accessible, allows users to administrate test plans. 
+Administering test plans involves creating/editing/deleting plans, 
+adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
+see which plan.<br />
+Users with lead permissions may also set the priority/risk and ownership of 
+Test case suites (categories) and create testing milestones.</p> 
+
+<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
+In this situation all links (except lead enabled ones) will be unlinked. If you 
+are in this situation you must contact a lead or admin to grant you the proper 
+project rights or create a Test Plan for you.</p>"; 
+
+// xxx.html
+$TLS_hlp_xxx = "";
+
+
 ?>

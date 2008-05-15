@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.5 2008/05/06 14:23:55 havlat Exp $
+$Id: testlink.css,v 1.6 2008/05/15 14:19:52 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -217,6 +217,19 @@ span.help
 {
 	cursor: 		help;
 	text-decoration: underline;
+}
+
+#tlhelp {
+	position: 		absolute; 
+	z-index:		1; 
+	padding:		5px; 
+	right:			50px; 
+	top:			50px; 
+	width: 			300px; 
+	background: 	#059;
+	color:			white;
+	font-size:		80%; 
+	border: 		medium solid #808080;
 }
 
 

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.20 2008/03/03 18:53:17 franciscom Exp $ 
+* $Id: resultsAllBuilds.php,v 1.21 2008/05/17 17:41:08 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -59,10 +59,14 @@ if( $do_report['status_ok'] )
       $colDefinition=$dummy['details'];
       
       // Get labels
-      $labels=config_get('tc_status_verbose_labels');
+      $resultsCfg=config_get('results');
+      $labels=$resultsCfg['status_label'];
       foreach($colDefinition as $status_verbose => $value)
       {
-            $colDefinition[$status_verbose]['qty']=lang_get($labels[$status_verbose]);
+            $l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
+                          lang_get($status_verbose); 
+            
+            $colDefinition[$status_verbose]['qty']=$l18n_label;
             $colDefinition[$status_verbose]['percentage']='[%]';
       }
   }    

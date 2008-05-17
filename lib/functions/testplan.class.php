@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2008/05/10 16:51:45 $ $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2008/05/17 17:41:08 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -76,6 +76,7 @@ class testplan extends tlObjectWithAttachments
   const GET_INACTIVE_BUILD=0;
   const GET_OPEN_BUILD=1;
   const GET_CLOSED_BUILD=0;
+  const ACTIVE_BUILDS=1;
 
 
 	var $db;

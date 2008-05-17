@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/05/15 07:26:41 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/05/17 17:41:08 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -15,7 +15,9 @@
  * the log messages through your code and turn them on and off with a single command.
  * To facilitate this we will create a number of logging functions.
  *
- * rev: 20080316 - franciscom - added getEnableLoggingStatus() methods
+ * rev: 20080517 - franciscom - exclude mktime() logs 
+ *
+ *      20080316 - franciscom - added getEnableLoggingStatus() methods
  *                              refactored access to enable logging status info.
  *                              refactored enable/disable logging
  *                              Added code to configure individual loggers using new config $g_loggerCfg
@@ -937,6 +939,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 		// strftime(),strtotime(),date()
 		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
+		    ($errno == E_STRICT && strpos($errstr,"mktime()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||
         ($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||

@@ -1,65 +1,79 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.5 2008/05/06 06:26:11 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.6 2008/05/17 17:40:00 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
+     20080517 - franciscom - refactoring
      20070916 - franciscom - added hidden input to manage test plan id
      20070901 - franciscom - use config file and smarty date and time controls
 
 *}
+{lang_get var="labels
+			s='enter_start_time,enter_end_time,date,hour,Yes,submit_query,
+			   select_builds_header,select_components_header,
+			   search_in_notes,executor,No,query_metrics_report'}
+			   
+
+
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl"}
 <body>
-<h1 class="title"> {lang_get s='query_metrics_report'}</h1>
+<h1 class="title"> {$labels.query_metrics_report}</h1>
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
+         arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
 
 {* ------------------------------------------------------------------------------- *}
 {* Calculate combo size *}
-{if $build_qty > #BUILDS_COMBO_NUM_ITEMS# }
+{if $gui->builds->qty > #BUILDS_COMBO_NUM_ITEMS# }
   {assign var="build_qty" value={#BUILDS_COMBO_NUM_ITEMS#} }
+{else}
+  {assign var="build_qty" value=$gui->builds->qty }
 {/if}
 
-{if $testsuite_qty > #TSUITES_COMBO_NUM_ITEMS# }
+{if $gui->testsuites->qty > #TSUITES_COMBO_NUM_ITEMS# }
   {assign var="testsuite_qty" value=#TSUITES_COMBO_NUM_ITEMS# }
+{else}
+  {assign var="testsuite_qty" value=$gui->testsuites->qty }
 {/if}
 
-{if $keyword_qty > #KEYWORDS_COMBO_NUM_ITEMS# }
+{if $gui->keywords->qty > #KEYWORDS_COMBO_NUM_ITEMS# }
   {assign var="keyword_qty" value=#KEYWORDS_COMBO_NUM_ITEMS# }
+{else}
+  {assign var="keyword_qty" value=$gui->keywords->qty }
 {/if}
 
 {* ------------------------------------------------------------------------------- *}
 
 
 
-<form action="lib/results/resultsMoreBuilds_buildReport.php?report_type={$report_type}" 
+<form action="lib/results/resultsMoreBuilds_buildReport.php?report_type={$gui->report_type}" 
       method="post">
 
-  <input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}" />
+  <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
   <div>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 		<tr>
-			<th>{lang_get s='select_builds_header'}</th>
-			<th>{lang_get s='select_components_header'}</th>
+			<th>{$labels.select_builds_header}</th>
+			<th>{$labels.select_components_header}</th>
 		</tr>
 		<tr>
 			<td>
 				<select name="build[]" size="{$build_qty}" multiple="multiple">
-					{foreach key=row item=buildid from=$arrBuilds}
-						<option value="{$arrBuilds[$row].id}" selected="selected">{$arrBuilds[$row].name|escape}</option>
+					{foreach key=row item=buildid from=$gui->builds->items}
+						<option value="{$gui->builds->items[$row].id}" selected="selected">{$gui->builds->items[$row].name|escape}</option>
 					{/foreach}
 				</select>
 			</td>
 			<td>
        <select name="testsuite[]" size="{$testsuite_qty}" multiple="multiple">
-					{foreach key=row item=tsuite_name from=$arrTestsuites}
-						<option value="{$arrTestsuites[$row].id},{$arrTestsuites[$row].name}" 
-						        selected="selected">{$arrTestsuites[$row].name|escape}</option>
+					{foreach key=row item=tsuite_name from=$gui->testsuites->items}
+						<option value="{$gui->testsuites->items[$row].id},{$gui->testsuites->items[$row].name}" 
+						        selected="selected">{$gui->testsuites->items[$row].name|escape}</option>
 					{/foreach}
 				</select>
 			</td>
@@ -71,14 +85,14 @@ rev :
 		<tr>
 			<td>
 				<select name="keyword" size="{$keyword_qty}" >
-					{foreach key=keyword_id item=keyword_name from=$arrKeywords}
-						<option value="{$keyword_id}" >{$arrKeywords[$keyword_id]|escape}</option>
+					{foreach key=keyword_id item=keyword_name from=$gui->keywords->items}
+						<option value="{$keyword_id}" >{$gui->keywords->items[$keyword_id]|escape}</option>
 					{/foreach}
 				</select>
 			</td>
 			<td>
 				<select name="owner">
-					{foreach key=owner item=ownerid from=$arrOwners}
+					{foreach key=owner item=ownerid from=$gui->assigned_users->items}
 						{* by default the owner should be the current user *}
 						<option value="{$owner}">{$ownerid|escape}</option>
 					{/foreach}
@@ -87,21 +101,21 @@ rev :
 		</tr>
 		
 		<tr>
-			<th>{lang_get s='enter_start_time'}</th>
-			<th>{lang_get s='enter_end_time'}</th>
+			<th>{$labels.enter_start_time}</th>
+			<th>{$labels.enter_end_time}</th>
 		</tr>
 		<tr>
 			<td align="center">
        <table border='0'>
        <tr>
-       <td>{lang_get s="date"}</td><td>{html_select_date prefix="start_" time=$selected_start_date
-                         month_format='%m' start_year="-1" end_year="+1"
-                         field_order=$gsmarty_html_select_date_field_order}</td>
+       <td>{$labels.date}</td><td>{html_select_date prefix="start_" time=$gui->selected_start_date
+                                   month_format='%m' start_year="-1" end_year="+1"
+                                   field_order=$gsmarty_html_select_date_field_order}</td>
        </tr>
        <tr>
-       <td>{lang_get s="hour"}</td>
+       <td>{$labels.hour}</td>
        <td align='left'>{html_select_time prefix="start_" display_minutes=false 
-                                          time=$selected_start_time
+                                          time=$gui->selected_start_time
                                           display_seconds=false use_24_hours=true}</td>
        </tr>
 			 </table>
@@ -110,14 +124,14 @@ rev :
 			<td align="center">
        <table border='0'>
        <tr>
-       <td>{lang_get s="date"}</td><td>{html_select_date prefix="end_" time=$selected_end_date
-                         month_format='%m' start_year="-1" end_year="+1"
-                         field_order=$gsmarty_html_select_date_field_order}</td>
+       <td>{$labels.date}</td><td>{html_select_date prefix="end_" time=$gui->selected_end_date
+                                   month_format='%m' start_year="-1" end_year="+1"
+                                   field_order=$gsmarty_html_select_date_field_order}</td>
        </tr>
        <tr>
-       <td>{lang_get s="hour"}</td>
+       <td>{$labels.hour}</td>
        <td align='left'>{html_select_time prefix="end_" display_minutes=false 
-                                          time=$selected_end_time
+                                          time=$gui->selected_end_time
                                           display_seconds=false use_24_hours=true}</td>
        </tr>
 			 </table>
@@ -130,8 +144,8 @@ rev :
 		     Allows user to change what data / results are displayed in report 
 		-->
 			<tr>
-				<th>{lang_get s='search_in_notes'}</th>
-				<th>{lang_get s='executor'}</th>
+				<th>{$labels.search_in_notes}</th>
+				<th>{$labels.executor}</th>
 			</tr>
 			<tr>
 				<td>
@@ -139,7 +153,7 @@ rev :
 				</td>
 				<td>
 					<select name="executor">
-						{foreach key=executor item=executorid from=$arrOwners}
+						{foreach key=executor item=executorid from=$gui->assigned_users->items}
 							{* by default the owner should be the current user *}
 							<option value="{$executor}">{$executorid|escape}</option>
 						{/foreach}
@@ -153,7 +167,7 @@ rev :
 			<tr>
 				<td>
 					<select name="lastStatus[]" size="{#TCSTATUS_COMBO_NUM_ITEMS#}" multiple="multiple">
-					{foreach key=status_code item=status_label from=$status_code_label}
+					{foreach key=status_code item=status_label from=$gui->status_code_label}
 						<option selected="selected" value="{$status_code}">{$status_label|escape}</option>
 					{/foreach}
 					</select>
@@ -166,39 +180,45 @@ rev :
     
     <div>
     <table>
-     <tr><th>{lang_get s='display_suite_summaries'}</th>
-     <td>
-					<select name="display_suite_summaries">
-						<option value="1">{lang_get s='Yes'}</option>
-						<option value="0" selected="selected">{lang_get s='No'}</option>
-					</select>
-		 </td>
-		 </tr>
-		 <tr>
-     	<th>{lang_get s='display_query_params'} </th>
-			
-				<td>
-					<select name="display_query_params">
-						<option value="1">{lang_get s='Yes'}</option>
-						<option value="0" selected="selected">{lang_get s='No'}</option>
-					</select>
-				</td>
-		</tr>
-		<tr>		
-				<th>{lang_get s='display_totals'}</th>
-	   		<td>
-					<select name="display_totals">
-						<option value="1">{lang_get s='Yes'}</option>
-						<option value="0" selected="selected">{lang_get s='No'}</option>
-					</select>
-				</td>
-			</tr>
-		<tr>
-			<td colspan="3">
-				<input type="submit" value="{lang_get s='submit_query'}"/>
+      <tr>
+      <td>
+        <table>
+         <tr><th>{lang_get s='display_suite_summaries'}</th>
+         <td>
+		    			<select name="display_suite_summaries">
+		    				<option value="1">{$labels.Yes}</option>
+		    				<option value="0" selected="selected">{$labels.No}</option>
+		    			</select>
+		     </td>
+		     </tr>
+		     <tr>
+         	<th>{lang_get s='display_query_params'} </th>
+		    	
+		    		<td>
+		    			<select name="display_query_params">
+		    				<option value="1">{$labels.Yes}</option>
+		    				<option value="0" selected="selected">{$labels.No}</option>
+		    			</select>
+		    		</td>
+		    </tr>
+		    <tr>		
+		    		<th>{lang_get s='display_totals'}</th>
+	       		<td>
+		    			<select name="display_totals">
+		    				<option value="1">{$labels.Yes}</option>
+		    				<option value="0" selected="selected">{$labels.No}</option>
+		    			</select>
+		    		</td>
+		    	</tr>
+		    </table>
+		  </td>
+		  <td rowspan="3">&nbsp;</td>
+			<td rowspan="3">
+				<input type="submit" value="{$labels.submit_query}"/>
 			</td>
-		</tr>
-</table>
+			</tr>
+    </table>
+
 </div>
 </form>
 </div>

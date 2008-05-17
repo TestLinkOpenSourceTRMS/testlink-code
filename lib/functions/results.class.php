@@ -6,10 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/05/14 06:09:30 $ by $Author: franciscom $
+ * @modified $Date: 2008/05/17 17:41:08 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20080513 - franciscom - getTCLink() added external_id 
  *
  * 20080513 - franciscom - buildExecutionsMap() added external_id in output
  * 20080413 - franciscom - refactoring
@@ -56,10 +58,13 @@ class results
 	private $tplanMgr = null;
 	private $testPlanID = -1;
 	private	$tprojectID = -1;
+  private	$testCasePrefix='';
 
   private $resultsCfg;
 	private $map_tc_status;
   private $tc_status_for_statistics;
+
+  private $testCaseCfg='';
 
 	/**
 	* KL - 20061225 - creating map specifically for owner and keyword
@@ -202,6 +207,8 @@ class results
 		$this->db = $db;
 	  $this->tplanMgr = $tplan_mgr;
     $this->resultsCfg=config_get('results');
+    $this->testCaseCfg=config_get('testcase_cfg');
+    
     $this->map_tc_status=$this->resultsCfg['status_code'];
     
 
@@ -221,6 +228,8 @@ class results
 
     $this->suitesSelected = $suitesSelected;
     $this->tprojectID = $tproject_info['id'];
+    $this->testCasePrefix = $tproject_info['prefix'];
+    
     $this->testPlanID = $tplan_info['id'];
 		$this->tplanName  = $tplan_info['name'];
 
@@ -1021,7 +1030,8 @@ class results
 
 			$executed = $info['executed'];
 			$executionExists = true;
-			$executeLink = $this->getTCLink($bCanExecute,$testcaseID,$tcversion_id,$name,$executeLinkBuild);
+			$executeLink = $this->getTCLink($bCanExecute,$testcaseID,$info['external_id'],
+			                                $tcversion_id,$name,$executeLinkBuild);
 
 			if ($tcversion_id != $executed)
 			{
@@ -1351,10 +1361,11 @@ class results
 	* Function returns number of Test Cases in the Test Plan
 	* @return string Link of Test ID + Title
 	*/
-	function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
+	function getTCLink($rights, $tcID, $tcExternalID,$tcversionID, $title, $buildID)
 	{
 		$title = htmlspecialchars($title);
-		$suffix = $tcID . ":&nbsp;<b>" . $title. "</b></a>";
+		$suffix = $this->testCasePrefix . $this->testCaseCfg->glue_character . $tcExternalID .
+		          ":&nbsp;<b>" . $title. "</b></a>";
 
 		$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
 				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';

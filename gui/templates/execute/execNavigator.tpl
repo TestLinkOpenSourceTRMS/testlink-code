@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.10 2008/05/06 06:26:05 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.11 2008/05/17 14:19:50 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -37,7 +37,8 @@ rev :
 		</caption>
 		<tr>
 			<td>{$labels.filter_tcID}</td>
-			<td><input type="text" name="tcase_id" value="{$gui->tcase_id}" maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
+			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 
+			           maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
 		</tr>
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>

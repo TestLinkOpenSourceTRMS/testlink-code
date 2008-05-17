@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2008/05/10 17:59:15 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2008/05/17 14:20:35 $ by $Author: franciscom $
  *
  * rev: 
+ *      20080517 - franciscom - fixed testcase filter bug
  *      20080428 - franciscom - keyword filter can be done on multiple keywords
  *      20080224 - franciscom - refactoring
  *      20080224 - franciscom - BUGID 1056
@@ -31,10 +32,9 @@ $tplan_mgr = new testplan($db);
 $templateCfg = templateConfiguration();
 
 $cfg=getCfg();
-$args = init_args($cfg);
+$args = init_args($db,$cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
-// echo "<pre>debug 20080427 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 $gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
 buildAssigneeFilter($db,$gui,$args,$cfg);
 $gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
@@ -64,7 +64,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
   schlundus: changed the user_id to the currentUser of the session
 */
-function init_args($cfgObj)
+function init_args(&$dbHandler,$cfgObj)
 {
     $args = new stdClass();
 
@@ -75,6 +75,23 @@ function init_args($cfgObj)
     $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
+    
+    
+    // 20080517 - franciscom
+    $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
+ 		if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
+		{
+			// need to get internal Id from External ID
+			$item_mgr = new testcase($dbHandler);
+			$cfg = config_get('testcase_cfg');
+			$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+			
+			if( $args->tcase_id == 0 )
+			{
+			    $args->tcase_id=-1;  
+			}
+		}
+
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     
     $args->doUpdateTree=isset($_REQUEST['submitOptions']) ? 1 : 0;
@@ -136,7 +153,7 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     	  $settings .= '&keyword_id='.$argsObj->keyword_id;
     }
     
-    if($argsObj->tcase_id)
+    if($argsObj->tcase_id != 0)
         $settings .= '&tc_id='.$argsObj->tcase_id;
 
     if($argsObj->filter_assigned_to)
@@ -334,6 +351,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
     $gui->keyword_id=$argsObj->keyword_id;
     $gui->optResultSelected=$argsObj->optResultSelected;
     $gui->include_unassigned=$argsObj->include_unassigned;
+    
+    $gui->targetTestCase=$argsObj->targetTestCase;
     
     
     // Only active builds no matter user role

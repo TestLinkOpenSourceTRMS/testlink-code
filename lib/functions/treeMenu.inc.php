@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2008/05/10 17:00:26 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/05/17 14:20:36 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -729,7 +729,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $showTestCaseID=config_get('tree_show_testcase_id');
 	  $menustring = null;
 	  $any_exec_status=null;
-    
+    $tplan_tcases=null;
+    $tck_map = null;
+
     $keyword_id = $filters->keyword_id;
     $keywordsFilterType = $filters->keywordsFilterType;
     
@@ -784,33 +786,33 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     
 	  if($test_spec)
 	  {
-	  	
-        $keywordSet=$keyword_id;
-        $testCaseSet=$tc_id;
-        $doFilterByKeyword=(!is_null($keywordSet) && $keywordSet > 0) ? true : false;
-    
-    	  $tck_map = null;
-	  	  if($doFilterByKeyword)
+	  	  if(is_null($tc_id) || $tc_id >= 0)
 	  	  {
-	  	  	$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keywordSet,$keywordsFilterType);
-	      }
-        
-        // Multiple step algoritm to apply keyword filter on type=AND
-        // get_linked_tcversions filters by keyword ALWAYS in OR mode.
-	      $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet,$keywordSet,
-	                                                  null,$assignedTo,$status,$build_id,
-                                                    $cf_hash,$include_unassigned);
-        
-	      if($doFilterByKeyword && $keywordsFilterType == 'AND')
-	      {
-          $filteredSet=$tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-          $testCaseSet=array_keys($filteredSet);   
-          
-  	      $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
-	      }
+            $keywordSet=$keyword_id;
+            $testCaseSet=$tc_id;
+            $doFilterByKeyword=(!is_null($keywordSet) && $keywordSet > 0) ? true : false;
+    	      
+	  	      if($doFilterByKeyword)
+	  	      {
+	  	      	$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keywordSet,$keywordsFilterType);
+	          }
+            
+            // Multiple step algoritm to apply keyword filter on type=AND
+            // get_linked_tcversions filters by keyword ALWAYS in OR mode.
+	          $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet,$keywordSet,
+	                                                            null,$assignedTo,$status,$build_id,
+                                                              $cf_hash,$include_unassigned);
+            
+	          if($doFilterByKeyword && $keywordsFilterType == 'AND')
+	          {
+              $filteredSet=$tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
+              $testCaseSet=array_keys($filteredSet);   
+              
+  	          $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
+	          }
+	      }   
         // --------------------------------------------------------------------------------------
-        
-         
+
 	      if (is_null($tplan_tcases))
 	      {
 	      	$tplan_tcases = array();

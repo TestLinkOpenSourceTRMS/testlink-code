@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.18 2008/05/06 06:26:06 franciscom Exp $
+$Id: execSetResults.tpl,v 1.19 2008/05/18 16:54:32 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20080322 - franciscom - feature: allow edit of execution notes
@@ -60,7 +60,7 @@ Rev:
 {/if}
 
 <script language="JavaScript" type="text/javascript">
-var msg="{lang_get s='warning_delete_execution'}";
+var msg="{$labels.warning_delete_execution}";
 var import_xml_results="{$labels.import_xml_results}";
 </script>
 

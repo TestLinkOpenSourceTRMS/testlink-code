@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/05/18 16:57:19 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -225,9 +225,20 @@ function doCreate($argsObj,&$tprojectMgr)
 
 	  if($op->status_ok)
 	  {
-	  	$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$argsObj->optReq,
-	  	                               $argsObj->optPriority,$argsObj->optAutomation,$argsObj->notes,
-	  								                 $argsObj->active,$argsObj->tcasePrefix);
+	    $options = new stdClass();
+	    
+	    $options->requirement_mgmt = $argsObj->optReq;
+	    $options->priority_mgmt = $argsObj->optPriority;
+	    $options->automated_execution = $argsObj->optAutomation;
+	    	    
+	    
+	  	// $new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$argsObj->optReq,
+	  	//                                $argsObj->optPriority,$argsObj->optAutomation,$argsObj->notes,
+	  	// 							                 $argsObj->active,$argsObj->tcasePrefix);
+	  	// 							                 
+	  	$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$options,
+	  	                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix);
+	  								                 
 	  	if (!$new_id)
 	  	{
 	  		$op->msg = lang_get('refer_to_log');
@@ -443,5 +454,4 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 
     return $op;
 }
-
 ?>

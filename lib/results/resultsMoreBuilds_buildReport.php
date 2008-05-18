@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.57 2008/05/17 17:41:09 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.58 2008/05/18 16:56:09 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -23,32 +23,6 @@ $template_dir='results/';
 $args = init_args();
 $gui=initializeGui($db,$args);
 
-$reports_cfg=config_get('reportsCfg');
-$tc_status_verbose_code=config_get('tc_status');   
-$tc_status_verbose_labels=config_get('tc_status_verbose_labels');   
-
-
-
-// Config to manage versobe and code status
-$tc_status_code_verbose=array_flip($tc_status_verbose_code);
-
-// same key that tcstatus_verbose_code
-$displayTCRows=array();
-$gui->lastStatus=array();
-foreach($reports_cfg->exec_status as $verbose => $label)
-{
-  $displayTCRows[$verbose]=false;
-}
-
-foreach($args->lastStatus	as $key => $status_code)
-{
-   $verbose=$tc_status_code_verbose[$status_code];
-   $displayTCRows[$verbose]=true;
-   $lastStatus_localized[]=lang_get($tc_status_verbose_labels[$verbose]);
-}	
-$gui->lastStatus=$lastStatus_localized;
-
-
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 
@@ -61,11 +35,6 @@ if ($args->executorSelected) {
 if ($args->search_notes_string) {
 	$smarty->assign('search_notes_string', $args->search_notes_string);
 }
-
-$smarty->assign('displayUnexecutedRows', $displayTCRows['not_run']);
-$smarty->assign('displayBlockedRows', $displayTCRows['blocked']);
-$smarty->assign('displayPassedRows', $displayTCRows['passed']);
-$smarty->assign('displayFailedRows', $displayTCRows['failed']);
 
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 
@@ -121,6 +90,9 @@ function get_date_range($hash)
 */
 function initializeGui(&$dbHandler,&$argsObj)
 {
+    $reports_cfg=config_get('reportsCfg');
+    $results_cfg=config_get('results');
+
     $gui=new stdClass();  
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
@@ -132,15 +104,11 @@ function initializeGui(&$dbHandler,&$argsObj)
 
     $gui->tplan_id=$_REQUEST['tplan_id'];
     $gui->tproject_id=$_SESSION['testprojectID'];
-    
-    
     $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
-    $gui->tplan_name = $tplan_info['name'];
-
     $tproject_info = $tproject_mgr->get_by_id($gui->tproject_id);
+    $gui->tplan_name = $tplan_info['name'];
     $gui->tproject_name = $tproject_info['name'];
 
-    
     $execution_link_build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
     
     $testsuiteIds = null;
@@ -169,10 +137,19 @@ function initializeGui(&$dbHandler,&$argsObj)
                       $date_range->start->time, $date_range->end->time, 
                       $argsObj->executorSelected, $argsObj->search_notes_string, $execution_link_build);
                       
-    $gui->suiteList = $re->getSuiteList();
+    $gui->suiteList = $re->getSuiteList();  // test executions results
     $gui->flatArray = $re->getFlatArray();
     $gui->mapOfSuiteSummary =  $re->getAggregateMap();
-    $gui->totals = $re->getTotalsForPlan();
+    
+    $gui->totals = new stdClass();
+    $gui->totals->items = $re->getTotalsForPlan();
+    $gui->totals->labels=array();
+    
+    foreach($gui->totals->items as $key => $value)
+    {
+        $l18n = $key == 'total' ? 'th_total_cases' : $results_cfg['status_label'][$key];
+        $gui->totals->labels[$key]=lang_get($l18n);  
+    }
 
     $gui->keywords = new stdClass();             
     $gui->keywords->items = $tplan_mgr->get_keywords_map($gui->tplan_id); 
@@ -188,6 +165,24 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->buildsSelected=$argsObj->buildsSelected;
     
     $gui->display=$argsObj->display;
+
+
+    // init display rows attribute and some status localized labels
+    $gui->displayResults=array();
+    $gui->lastStatus=array();
+    foreach($reports_cfg->exec_status as $verbose => $label)
+    {
+      $gui->displayResults[$results_cfg['status_code'][$verbose]]=false;
+    }
+    
+    foreach($argsObj->lastStatus	as $key => $status_code)
+    {
+       $verbose=$results_cfg['code_status'][$status_code];
+       $gui->displayResults[$status_code]=true;
+       $lastStatus_localized[]=lang_get($results_cfg['status_label'][$verbose]);
+    }	
+    $gui->lastStatus=$lastStatus_localized;
+
     return $gui;
 }
 

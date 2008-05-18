@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/05/17 14:20:36 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/05/18 16:56:09 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -165,8 +165,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                               $keywordsFilter=null,
                               $ignore_inactive_testcases=0,$exclude_branches=null)
 {
-	
-	
+	$resultsCfg=config_get('results');
 	$showTestCaseID=config_get('tree_show_testcase_id');
 	$menustring = null;
 
@@ -177,8 +176,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
+  $status_descr_code=$resultsCfg['status_code'];
+  $status_code_descr=$resultsCfg['code_status'];
 
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
                        'status_descr_code' =>  $status_descr_code,
@@ -725,7 +724,7 @@ function jtree_renderTestSpecTreeNodeOnClose($node,$node_type)
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$getArguments,$filters,$additionalInfo) 
 {
-
+    $resultsCfg=config_get('results');
     $showTestCaseID=config_get('tree_show_testcase_id');
 	  $menustring = null;
 	  $any_exec_status=null;
@@ -756,9 +755,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  $hash_descr_id = $tree_manager->get_available_node_types();
 
 	  $hash_id_descr = array_flip($hash_descr_id);
-    $status_descr_code=config_get('tc_status');
-    $status_code_descr=array_flip($status_descr_code);
-    
+	  
+	  $status_descr_code=$resultsCfg['status_code'];
+    $status_code_descr=$resultsCfg['code_status'];
+
     $decoding_hash=array('node_id_descr' => $hash_id_descr,
                          'status_descr_code' =>  $status_descr_code,
                          'status_code_descr' =>  $status_code_descr);
@@ -932,10 +932,11 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
                                              $testCasePrefix,$showTestSuiteContents=1)
 {
 	$cfg=config_get('testcase_cfg');
+	$resultsCfg=config_get('results');
 	
-	$status_descr_code=config_get('tc_status');
-	$status_code_descr=array_flip($status_descr_code);
-	$status_verbose=config_get('tc_status_verbose_labels');
+  $status_descr_code=$resultsCfg['status_code'];
+  $status_code_descr=$resultsCfg['code_status'];
+	$status_verbose=$resultsCfg['status_label'];
 
 
 	$pfn = "ST";
@@ -1034,10 +1035,11 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
                                         $testCasePrefix,$showTestSuiteContents=1)
 {
  	$cfg=config_get('testcase_cfg');
- 	
-	$status_descr_code=config_get('tc_status');
-	$status_code_descr=array_flip($status_descr_code);
-	$status_verbose=config_get('tc_status_verbose_labels');
+	$resultsCfg=config_get('results');
+	
+  $status_descr_code=$resultsCfg['status_code'];
+  $status_code_descr=$resultsCfg['code_status'];
+	$status_verbose=$resultsCfg['status_label'];
 	
 	$dtreeCounter = $node['id'];
 
@@ -1134,10 +1136,11 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
  	$cfg=config_get('testcase_cfg');
-	 	
-	$status_descr_code=config_get('tc_status');
-	$status_code_descr=array_flip($status_descr_code);
-	$status_verbose=config_get('tc_status_verbose_labels');
+	$resultsCfg=config_get('results');
+	
+  $status_descr_code=$resultsCfg['status_code'];
+  $status_code_descr=$resultsCfg['code_status'];
+	$status_verbose=$resultsCfg['status_label'];
 	
 	$menustring = "['";
 	$name = filterString($node['name']);
@@ -1233,9 +1236,10 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
-  // 20071111 - franciscom
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
+	$resultsCfg=config_get('results');
+  $status_descr_code=$resultsCfg['status_code'];
+  $status_code_descr=$resultsCfg['code_status'];
+  
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
@@ -1288,8 +1292,10 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
+	$resultsCfg=config_get('results');
+  $status_descr_code=$resultsCfg['status_code'];
+  $status_code_descr=$resultsCfg['code_status'];
+  
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
@@ -1335,23 +1341,20 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 */
 function create_counters_info(&$node,$useColors)
 {
-	  $status_verbose=config_get('tc_status_verbose_labels');
+    $resultsCfg=config_get('results');
+    
+    // I will add not_run if not exists
+		$keys2display=array('not_run' => 'not_run');
+		
+		foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
+		{
+		    if( $key != 'not_run')
+		    {
+		        $keys2display[$key]=$key;  
+		    }  
+		}
+	  $status_verbose=$resultsCfg['status_label']; //config_get('tc_status_verbose_labels');
 
-    // $keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
-    //                     'failed' =>'failed' ,'blocked' =>'blocked');
-    // $add_html='';
-    // foreach($keys2display as $key => $value)
-    // {
-    //   if( isset($node[$key]) )
-    //   {
-    //     $add_html .='<span class="' . $key . '">' . $node[$key] . "</span>,";
-    //   }
-    // }
-    // $add_html = "(" . rtrim($add_html,",") . ")"; 
-
-
-		$keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
-		                    'failed' =>'failed' ,'blocked' =>'blocked');
 		$add_html='';
 		foreach($keys2display as $key => $value)
 		{

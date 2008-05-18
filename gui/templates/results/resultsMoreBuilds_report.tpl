@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.4 2008/05/17 17:40:00 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.5 2008/05/18 16:54:32 franciscom Exp $
 
 rev :
      20070902 - franciscom - refactoring
@@ -13,7 +13,7 @@ rev :
              th_test_case_id,th_build,th_tester_id,th_execution_ts,th_status,th_notes,th_bugs,
              th_search_notes_string,any,caption_user_selected_query_parameters"}
 
-{include file="inc_head.tpl" openHead='yes'}
+{include file="inc_head.tpl" openHead='yes' enableTableSorting="yes"}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 		var bAllShown = false;
@@ -97,26 +97,25 @@ rev :
 		</tr>
 	</table>
 {/if}
+
+
 {if $gui->display->totals}
 	<table class="simple" style="color: blue; width: 100%; text-align:center; margin-left: 0px;" border="0">
 		<tr>
-			<th>{$labels.th_total_cases}</th>
-			<th>{$labels.th_total_pass}</th>
-			<th>{$labels.th_total_fail}</th>
-			<th>{$labels.th_total_block}</th>
-			<th>{$labels.th_total_not_run}</th>
+		  {foreach item=l18n from=$gui->totals->labels}
+			<th>{$l18n}</th>
+      {/foreach}
 		</tr>
 		<tr>
-			<td>{$gui->totals.total}</td>
-			<td>{$gui->totals.pass}</td>
-			<td>{$gui->totals.fail}</td>
-			<td>{$gui->totals.blocked}</td>
-			<td>{$gui->totals.notRun}</td>
+		  {foreach item=figure from=$gui->totals->items}
+			<td>{$figure}</td>
+      {/foreach}
 		</tr>
 	</table>
 {/if}
+
 	{if !$gui->display->suite_summaries}
-		<table class="simple" style="color:blue; width: 100%; text-align:center; margin-left: 0px;" border="0">
+		<table class="simple" style="color:blue; width: 100%; margin-left: 0px;" border="0">
 			<tr>
 				<th>{$labels.th_test_case_id}</th>
 				<th>{$labels.th_build}</th>
@@ -126,8 +125,8 @@ rev :
 				<th>{$labels.th_notes}</th>
 				<th>{$labels.th_bugs}</th>
 			</tr>
-
 	{/if}
+
 	{foreach key=id item=array from=$gui->flatArray}
 		{if ($id mod 3) == 0}
 			{assign var=depthChange value=$gui->flatArray[$id]}
@@ -161,27 +160,33 @@ rev :
 
 			{assign var=previousDepth value=$depth}
 			{if $gui->mapOfSuiteSummary[$currentSuiteId]}
-			<!-- KL 20061021 - Only display title of category if it has test cases in the test plan -->
-			<!-- not a total fix - I need to adjust results.class.php to not pass suite names in
-				which are not in the plan -->
+			    <!-- KL 20061021 - Only display title of category if it has test cases in the test plan -->
+			    <!-- not a total fix - I need to adjust results.class.php to not pass suite names in
+				       which are not in the plan -->
 
 			{if $gui->display->suite_summaries}
 			<h2>{$suiteNameText}</h2>
-
 			<table class="simple" style="color:blue; width: 100%; text-align:center; margin-left: 0px;" border="0">
 				<tr>
-					<th>{$labels.th_total_cases}</th>
-					<th>{$labels.th_total_pass}</th>
-					<th>{$labels.th_total_fail}</th>
-					<th>{$labels.th_total_block}</th>
-					<th>{$labels.th_total_not_run}</th>
+				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId] }
+              {if $status == 'total'} 
+                  <th>{$labels.th_total_cases}</th>
+              {else}
+                  <th>{lang_get s=$resultsCfg.status_label[$status]}</th>
+              {/if}
+          {/foreach}
 				</tr>
 				<tr>
+				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId] }
+					    <td>{$figure}</td>
+          {/foreach}
+          {* 
 					<td>{$gui->mapOfSuiteSummary[$currentSuiteId].total}</td>
 					<td>{$gui->mapOfSuiteSummary[$currentSuiteId].pass}</td>
 					<td>{$gui->mapOfSuiteSummary[$currentSuiteId].fail}</td>
 					<td>{$gui->mapOfSuiteSummary[$currentSuiteId].blocked}</td>
 					<td>{$gui->mapOfSuiteSummary[$currentSuiteId].notRun}</td>
+					*}
 				</tr>
 			</table>
 			{/if}
@@ -193,16 +198,16 @@ rev :
 					</div>
 				{/if}
 			{/if}
-	{foreach key=suiteId item=array from=$gui->suiteList}
+	    {foreach key=suiteId item=array from=$gui->suiteList}
 				{* probably can be done better. If suiteId in $suiteList matches the current
 				suite id - print that suite's information *}
 				{if ($suiteId == $currentSuiteId)}
-				{* test to make sure there are test cases to diplay before
-				   print table and headers *}
+				{* test to make sure there are test cases to diplay before  print table and headers *}
 				{if $gui->suiteList[$suiteId]}
 					{if $gui->display->suite_summaries}
 						<table class="simple" style="width: 100%;margin-left: 0px;" border="0">
 					{/if}
+			
 					{if $gui->display->suite_summaries}
 					<tr>
 						<th>{$labels.th_test_case_id}</th>
@@ -217,26 +222,26 @@ rev :
 					{foreach key=executionInstance item=array from=$gui->suiteList[$suiteId]}
 						{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
 						<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
-						{if $displayUnexecutedRows && $inst.status == 'n'}
-							<td>{$inst.execute_link}</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td style="color: grey; font-weight: bold;">{$labels.test_status_not_run}</td>
-							<td></td>
-							<td></td>
-						{elseif $displayPassedRows && $inst.status == 'p' || 
-						        $displayFailedRows && $inst.status == 'f' ||
-						        $displayBlockedRows && $inst.status == 'b' 
-						        }
-							<td>{$inst.execute_link}</td>
-							<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
-							<td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
-							<td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
+			      {if $gui->displayResults[$inst.status] }
+			      	<td>{$inst.execute_link}</td>
+              {if $inst.status == $resultsCfg.status_code.not_run}
+							    <td>&nbsp;</td>
+							    <td>&nbsp;</td>
+							    <td>&nbsp;</td>
+              {else}
+			      	    <td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
+							    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
+							    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
+              {/if}
 							<td class="{$resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$resultsCfg.code_status[$inst.status]|escape}</td>
-							<td>{$inst.notes}&nbsp;</td>
-							<td style="text-align:center;">{$inst.bugString}&nbsp;</td>
-						{/if}
+              {if $inst.status == $resultsCfg.status_code.not_run}
+							    <td>&nbsp;</td>
+							    <td>&nbsp;</td>
+							{else}
+							    <td>{$inst.notes}&nbsp;</td>
+							    <td style="text-align:center;">{$inst.bugString}&nbsp;</td>
+              {/if}
+			      {/if}
 						</tr>
 					{/foreach}
 					{if $gui->display->suite_summaries}

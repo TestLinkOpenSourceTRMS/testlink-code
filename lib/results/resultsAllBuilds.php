@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.21 2008/05/17 17:41:08 franciscom Exp $ 
+* $Id: resultsAllBuilds.php,v 1.22 2008/05/18 16:56:09 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -12,7 +12,7 @@
 
 require('../../config.inc.php');
 require_once('common.php');
-require_once('../functions/results.class.php');
+require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
 
@@ -36,7 +36,6 @@ $do_report['msg']='';
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 
-
 $topLevelSuites = $re->getTopLevelSuites();
 
 $do_report=array();
@@ -49,19 +48,30 @@ if( is_null($topLevelSuites) )
   $do_report['msg']=lang_get('report_tspec_has_no_tsuites');
 }
 
+$colDefiniton=null;
 $results=null;
 if( $do_report['status_ok'] )
 {
   $results = $re->getAggregateBuildResults();
   if ($results != null) 
   {
-      $dummy=current($results);
-      $colDefinition=$dummy['details'];
-      
       // Get labels
       $resultsCfg=config_get('results');
       $labels=$resultsCfg['status_label'];
-      foreach($colDefinition as $status_verbose => $value)
+      
+      // I will add not_run if not exists
+		  $keys2display=array('not_run' => 'not_run');
+		  foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
+		  {
+		      if( $key != 'not_run')
+		      {
+		          $keys2display[$key]=$key;  
+		      }  
+		  }
+      
+      
+      $colDefinition=array();
+      foreach($keys2display as $status_verbose => $value)
       {
             $l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
                           lang_get($status_verbose); 

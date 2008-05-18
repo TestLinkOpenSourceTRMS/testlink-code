@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.4 2008/05/18 16:54:32 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
 {lang_get var="labels"
-          s='trep_kw,trep_owner,trep_comp,
+          s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on,
              title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites'}
 
 
@@ -51,7 +51,7 @@ Revisions:
            args_column_definition=$columnsDefinition->keywords
            args_column_data=$statistics->keywords}
 
-  {lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
+  {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
   {$do_report.msg}
 {/if}  

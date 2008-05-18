@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/05/18 16:56:09 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -58,14 +58,14 @@ function buildsNumber(&$db,$tpID=0)
 // 20070222 - franciscom - BUGID 645 
 function createResultsMenu()
 {
-  $map_verbose_status_code=config_get('tc_status');
-  $tc_status_verbose_labels = config_get('tc_status_verbose_labels');
-  $tc_status_for_ui = config_get('tc_status_for_ui');
+  $resultsCfg=config_get('results');
+  $map_verbose_status_code=$resultsCfg['status_code'];
+  $tc_status_verbose_labels = $resultsCfg['status_label'];
+  $tc_status_for_ui = $resultsCfg['status_label_for_exec_ui'];
   
   // Fixed values, that has to be added always
   $my_all= isset($tc_status_verbose_labels['all'])?$tc_status_verbose_labels['all']:'';
   $menu_data[$map_verbose_status_code['all']] = $my_all;
-	
 	$menu_data[$map_verbose_status_code['not_run']] = lang_get($tc_status_verbose_labels['not_run']);
 	
 	// loop over tc_status_for_ui, because these are the statuses

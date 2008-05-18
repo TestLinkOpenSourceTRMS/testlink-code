@@ -1,18 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMove.tpl,v 1.7 2008/05/07 21:01:22 schlundus Exp $
+$Id: containerMove.tpl,v 1.8 2008/05/18 16:54:32 franciscom Exp $
 Purpose: smarty template - form for move/copy container in test specification
 
 rev :
-     20080105 - franciscom -
+     20080517 - franciscom - more labels
      20070904 - franciscom - BUGID 1019
      removed checkbox copy nested data
 *}
 {include file="inc_head.tpl"}
 {assign var='parent' value='container'}
 {lang_get var="labels"
-          s="cont_move_first,sorry_further,cont_copy_first,defined_exclam,
-             cont_move_second,cont_copy_second,choose_target,
+          s="cont_move_first,sorry_further,title_move_cp,cont_copy_first,defined_exclam,
+             cont_move_second,cont_copy_second,choose_target,copy_keywords,
              btn_move,btn_cp,as_first_testsuite,as_last_testsuite"}
 
 <body>
@@ -20,7 +20,7 @@ rev :
 <h1 class="title">{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
 
 <div class="workBack">
-<h1 class="title">{lang_get s='title_move_cp'}</h1>
+<h1 class="title">{$labels.title_move_cp}</h1>
 
 {if $containers eq ''}
 	{$labels.sorry_further} {$parent} {$labels.defined_exclam}
@@ -43,7 +43,7 @@ rev :
 
 		<p>
 			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
-			{lang_get s='copy_keywords'}
+			{$labels.copy_keywords}
 		</p>
 
 		<div>

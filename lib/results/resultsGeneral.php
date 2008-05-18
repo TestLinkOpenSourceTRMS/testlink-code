@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/03/03 18:53:17 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/05/18 16:56:09 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -46,7 +46,8 @@ $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 
 
-$tc_status_labels=config_get('tc_status_verbose_labels');
+$resultsCfg=config_get('results');
+$tc_status_labels=$resultsCfg['status_label'];
 
 $columnsDefinition = new stdClass();
 $statistics = new stdClass();
@@ -73,8 +74,6 @@ if( is_null($topLevelSuites) )
 
 if( $do_report['status_ok'] )
 {
-  $tc_status_for_ui=config_get('tc_status_for_ui');
-
   $mapOfAggregate = $re->getAggregateMap();
   $arrDataSuite = null;
   $arrDataSuiteIndex = 0;
@@ -97,13 +96,14 @@ if( $do_report['status_ok'] )
       	$element['total_tc']=$results['total'];
       	$element['percentage_completed']=$percentCompleted;
 
-
-        foreach($tc_status_for_ui as $key => $value)
+        unset($results['total']);
+        foreach($results as $key => $value)
         {
       	    $element['details'][$key]['qty']=$results[$key];
       	}
       	$element['details']['not_run']['qty']=$results['not_run'];
-      	
+      	   
+      	   
       	$arrDataSuite[$arrDataSuiteIndex] = $element;
       	$arrDataSuiteIndex++;
       } 

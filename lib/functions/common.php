@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.111 $ $Author: franciscom $
- * @modified $Date: 2008/05/11 16:56:37 $
+ * @version $Revision: 1.112 $ $Author: franciscom $
+ * @modified $Date: 2008/05/18 16:56:09 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20080518 - franciscom - translate_tc_status()
  * 20080412 - franciscom - templateConfiguration()
  * 20080326 - franciscom - config_get() - refactored removed eval()
  * 20080114 - franciscom - gen_spec_view(): adde external_id management.
@@ -89,6 +90,17 @@ if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 require_once($phpxmlrpc . 'xmlrpc.inc');
 require_once($phpxmlrpc . 'xmlrpcs.inc');
 require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
+
+
+// code from Mantis
+// cache for config variables
+$g_cache_config = array();
+$g_cache_config_access = array();
+$g_cache_config_filled = false;
+$g_cache_can_set_in_database = '';
+
+// cache environment to speed up lookups
+$g_cache_db_table_exists = false;
 
 
 /** $db is a global used throughout the code when accessing the db. */
@@ -599,19 +611,85 @@ function set_dt_formats()
 */
 function config_get($config_id)
 {
-	$my = "g_" . $config_id;
+  global $g_cache_config;
 
-	if (isset($GLOBALS[$my]))
-	{
-		$res = $GLOBALS[$my];
-	} 
-	else 
-	{
-	  $cfg=$GLOBALS['tlCfg'];
-  	$res = $cfg->$config_id;
+  $t_value='';  
+  $t_found=false;  
+
+  // $su=isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  // $stpr=isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']:0;
+  // $stpl=isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId']:0;
+  // 
+  // $user_list = array($su,0);
+  // $tproject_list = array($stpr,0);
+  // $tplan_list = array($stpl,0);
+  // 
+  // $searchCfgOnDB=false;
+  // if( isset($GLOBALS['db']) && $GLOBALS['db'] > 0)
+  // {
+  //     $dbHandler=$GLOBALS['db'];
+  // }
+  // else
+  // {
+  //     doDBConnect($dbHandler);    
+  // }
+  // $searchCfgOnDB=isset($GLOBALS['searchCfgOnDB']) ? $GLOBALS['searchCfgOnDB']:false;
+  // 
+  // if( $searchCfgOnDB )
+	// {
+	//     $sql = "SELECT config_id, user_id, testproject_id, testplan_id, type, value, access_reqd " .
+	//            "FROM configuration";
+  //     $cfg=$dbHandler->get_recordset($sql);
+  //   
+  //     foreach($cfg as $row )
+  //     {
+	// 		   $config = $row['config_id'];
+	// 		   $user = $row['user_id'];
+	// 		   $tproject = $row['testproject_id'];
+	// 		   $tplan = $row['testplan_id'];
+  //       
+  //        $dummy=array('type' => $row['type'], 'value' => $row['value']);
+  //        $g_cache_config[$config][$user][$tplan][$tproject]=$dummy;
+  //     }
+  // 
+  // }
+  
+  // if( isset( $g_cache_config[$config_id] ) ) 
+  // {
+  //     $t_found = false;
+  //     foreach($user_list as $u)
+  //     {
+  //         foreach($tplan_list as $v)
+  //         {
+  //             foreach($tproject_list as $w)
+  //             {
+	//                 if ( isset( $g_cache_config[$config_id][$u][$v][w] ) ) 
+	// 	              {
+  //   							    $t_value = $g_cache_config[$config_id][$u][$v][w];
+  //   							    $t_found = true;
+  //   							    break;
+  //   						  }
+  //      		    }
+  //         }  
+  //     }   
+  //   
+  // }
+
+  if( !$t_found )
+  {
+      $my = "g_" . $config_id;
+	    if (isset($GLOBALS[$my]))
+	    {
+	    	$t_value = $GLOBALS[$my];
+	    } 
+	    else 
+	    {
+	      $cfg=$GLOBALS['tlCfg'];
+      	$t_value = $cfg->$config_id;
+	    }
 	}
-	tlog('config_get global var with key ['.$config_id.'] is ' . $res);
-	return $res;
+	tlog('config_get global var with key ['.$config_id.'] is ' . $t_value);
+	return $t_value;
 }
 
 
@@ -668,12 +746,14 @@ function downloadContentsToFile($content,$fileName)
 */
 function translate_tc_status($status_code)
 {
-	$map_tc_status = array_flip(config_get('tc_status'));
+  $resultsCfg=config_get('results'); 
+	// $map_tc_status = array_flip(config_get('tc_status'));
+  // echo "<pre>debug 20080518 - \ - " . __FUNCTION__ . " --- "; print_r(); echo "</pre>";
 
 	$verbose = lang_get('test_status_not_run');
 	if( $status_code != '')
 	{
-		$suffix = $map_tc_status[$status_code];
+		$suffix = $resultsCfg['code_status'][$status_code];
 		$verbose = lang_get('test_status_' . $suffix);
 	}
 	return $verbose;

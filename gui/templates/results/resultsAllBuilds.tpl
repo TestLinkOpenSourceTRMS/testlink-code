@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsAllBuilds.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $ 
+$Id: resultsAllBuilds.tpl,v 1.4 2008/05/18 16:54:32 franciscom Exp $ 
 Purpose: smarty template - show Test Results and Metrics 
-Rev: 20080302 - franciscom - refactoring to manage dynamic qty of columns
+Rev: 
+    20080518 - franciscom - fixed bug on manage dynamic qty of columns
+    20080302 - franciscom - refactoring to manage dynamic qty of columns
 *}
 {include file="inc_head.tpl"}
 <body>
@@ -28,9 +30,9 @@ Rev: 20080302 - franciscom - refactoring to manage dynamic qty of columns
   	<tr>
   	<td>{$res.build_name|escape}</td>
   	<td>{$res.total_tc}</td>
-      {foreach item=the_column from=$res.details}
-          <td>{$the_column.qty}</td>
-          <td>{$the_column.percentage}</td>
+      {foreach key=status item=the_column from=$colDefinition}
+        <td>{$res.details[$status].qty}</td>
+        <td>{$res.details[$status].percentage}</td>
       {/foreach}
   	<td>{$res.percentage_completed}</td>
   	</tr>

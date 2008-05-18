@@ -1,8 +1,16 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.6 2008/05/15 14:19:52 havlat Exp $
+$Id: testlink.css,v 1.7 2008/05/18 16:59:07 franciscom Exp $
 
 Purpose: Default TestLink CSS
+
+20080517 - franciscom - auto width in simple table creates an ugly effect
+                        on test suite and test case view, on test spec feature.
+                        Reset to original class.
+                        
+                        Another choice:
+                                       Create a new class for the tables use for:
+                                       test suite and test case view.
 
 20080502 - havlatm - remove invalid attributes, refactorization (valid standard CSS 2.1)
 20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
@@ -366,6 +374,8 @@ table.common caption, table.smallGrey caption {
 }
 
 /* Simple Table (often used to show data) */
+
+/* by havlat
 table.simple {
 	background:     #EEE;
 	border: 		thin solid black;
@@ -373,6 +383,18 @@ table.simple {
 	margin:			5px 0px;
 	width:			auto;
 }
+*/
+
+/* by franciscom */
+table.simple {
+	background:     #EEE;
+	border: 		thin solid black;
+	font-size:		90%;
+	margin:			20px;
+  width:			90%;
+}
+
+
 
 table.simple caption {
 	background:     #CCC;

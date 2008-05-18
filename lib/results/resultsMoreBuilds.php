@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.62 2008/05/17 17:41:09 franciscom Exp $
+* $Id: resultsMoreBuilds.php,v 1.63 2008/05/18 16:56:09 franciscom Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -16,6 +16,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
+require_once('exec.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 

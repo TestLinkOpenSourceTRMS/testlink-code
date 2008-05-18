@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/05/14 06:09:32 $  $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/05/18 16:56:09 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20080518 - franciscom - create() interface changes
  * 20080507 - franciscom - get_keywords_tcases() - changed return type
  *                                                 add AND type filter 
  * 20080501 - franciscom - typo erro bug in get_keywords_tcases()
@@ -107,8 +108,10 @@ class testproject extends tlObjectWithAttachments
  *                         added new optional argument active
  *
  */
-function create($name,$color,$optReq,$optPriority,$optAutomation,$notes,$active=1,$tcasePrefix='')
+// function create($name,$color,$optReq,$optPriority,$optAutomation,$notes,$active=1,$tcasePrefix='')
+function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
 {
+  
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
 	$tcprefix=$this->formatTcPrefix($tcasePrefix);
@@ -116,9 +119,9 @@ function create($name,$color,$optReq,$optPriority,$optAutomation,$notes,$active=
 	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority," .
 	       "option_automation,notes,active,prefix) VALUES (" . $root_node_id . ", '" .
 	                     $this->db->prepare_string($color) . "'," .
-	                     $optReq . "," .
-	                     $optPriority . "," .
-	                     $optAutomation . ",'" .
+	                     $options->requirement_mgmt . "," .
+	                     $options->priority_mgmt . "," .
+	                     $options->automated_execution . ",'" .
 		                 $this->db->prepare_string($notes) . "'," .
 		                 $active . ",'" .
 		                 $this->db->prepare_string($tcprefix) . "')";

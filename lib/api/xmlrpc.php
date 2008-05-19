@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/05/06 06:27:25 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/05/19 06:44:38 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -129,6 +129,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $assignedToParamName = "assignedto";
 	public static $executeStatusParamName = "executestatus";
 	public static $testSuiteNameParamName = "testsuitename";
+	public static $testProjectNameParamName = "testprojectname";
+	public static $testCasePrefixParamName = "testcaseprefix";
+
+	
 	/**#@-*/
 	
 	/**
@@ -147,6 +151,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->_connectToDB();
 
 		$this->tcaseMgr=new testcase($this->dbObj);
+		$this->tprojectMgr=new testproject($this->dbObj);
 
 		$this->methods = array(
 			'tl.reportTCResult' 			=> 'this:reportTCResult',
@@ -158,6 +163,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.getTestCasesForTestPlan' 	=> 'this:getTestCasesForTestPlan',
 			'tl.getTestCaseIDByName'		=> 'this:getTestCaseIDByName',
 			'tl.createTestCase'				=> 'this:createTestCase',
+			'tl.createTestProject'				=> 'this:createTestProject',
 			'tl.about'						=> 'this:about',
 			'tl.setTestMode'				=> 'this:setTestMode',
 			// ping is an alias for sayHello
@@ -1264,6 +1270,65 @@ class TestlinkXMLRPCServer extends IXR_Server
 			return $this->errors;
 		} 
 	}
+	
+	// 20080518 - franciscom
+	public function createTestProject($args)
+	{
+	    $this->_setArgs($args);
+	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
+	
+	    if( $this->$checkRequestMethod() )
+	    {
+	        return true;
+	    }
+	    else
+	    {
+	        return $this->errors;
+	    }    
+      
+	}
+	
+  // 20080518 - franciscom
+  private function _checkCreateTestProjectRequest()
+	{
+      $status_ok=$this->authenticate();
+      $name=$this->args[self::$testProjectNameParamName];
+      $prefix=$this->args[self::$testCasePrefixParamName];
+      
+      if( $status_ok )
+      {
+          $check_op=$this->tprojectMgr->checkNameSintax($name);
+          $status_ok=$check_op['status_ok'];     
+          if(!$status_ok)
+          {     
+	           $this->errors[] = new IXR_Error(TESTPROJECTNAME_SINTAX_ERROR, $check_op['msg']);
+          }
+      }
+      
+      if( $status_ok ) 
+      {
+          $check_op=$this->tprojectMgr->checkNameExistence($name);
+          $status_ok=$check_op['status_ok'];     
+          if(!$status_ok)
+          {     
+	           $this->errors[] = new IXR_Error(TESTPROJECTNAME_EXISTS, $check_op['msg']);
+          }
+      }
+
+      if( $status_ok ) 
+      {
+          $status_ok=!empty($prefix);
+          if(!$status_ok)
+          {     
+	           $this->errors[] = new IXR_Error(TESTPROJECT_TESTCASEPREFIX_IS_EMPTY, $check_op['msg']);
+          }
+      }
+
+       
+  	  return $status_ok;
+	}
+
+	
 	
 	/**
 	 * List test suites within a test plan

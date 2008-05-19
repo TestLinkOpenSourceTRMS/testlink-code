@@ -15,14 +15,15 @@
   */
 define("THIRD_PARTY_CODE","/../../../../third_party");
 
+// require_once dirname(__FILE__) . '/../../../functions/lang_api.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
 
 // substitute your server URL Here
-define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080303/lib/api/xmlrpc.php");
+define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080402/lib/api/xmlrpc.php");
 
 // substitute your Dev Key Here
-define("DEV_KEY", "11111111111111111111111111111111");
+define("DEV_KEY", "1111");
 
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - getTestCasesForTestPlan";
@@ -80,5 +81,35 @@ echo "<br> Result was: ";
 // print_r($response);
 new dBug($response);
 echo "<br>";
+
+
+// 20080518 - franciscom
+$unitTestDescription="Test - createTestProject";
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testprojectname"]='API TestProject';
+
+$debug=true;
+//$debug=false;
+echo $unitTestDescription;
+
+$client = new IXR_Client(SERVER_URL);
+$client->debug=$debug;
+
+new dBug($args);
+if(!$client->query('tl.createTestProject', $args))
+{
+		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
+		$response=null;
+}
+else
+{
+		$response=$client->getResponse();
+}
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+
 
 ?>

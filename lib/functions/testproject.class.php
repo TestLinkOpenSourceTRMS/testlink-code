@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/05/18 16:56:09 $  $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/05/19 06:44:43 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080518 - franciscom - create() interface changes
@@ -130,7 +130,6 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
 	if ($result)
 	{
 		tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
-		$status_ok = 1;
 	}
 	else
 	{
@@ -607,6 +606,72 @@ function count_testcases($id)
 		}
 		return $ret;
 	}
+
+	/**
+	 * Checks a test project name for sintax correctness
+	 *
+	 * @param string $name the name to check
+	 * @return map with keys: status_ok, msg
+	 **/
+	function checkNameSintax($name)
+	{
+		global $g_ereg_forbidden;
+		$ret['status_ok']=1;
+		$ret['msg']='ok';
+
+		if (!strlen($name))
+		{
+			$ret['msg'] = lang_get('info_product_name_empty');
+			$ret['status_ok'] = 0;
+		}
+		if ($ret['status_ok'] && !check_string($name,$g_ereg_forbidden))
+		{
+			$ret['msg'] = lang_get('string_contains_bad_chars');
+			$ret['status_ok'] = 0;
+		}
+		return $ret;
+	}
+
+	/**
+	 * Checks is there is another testproject with different id but same name
+	 *
+	 **/
+	function checkNameExistence($name,$id=0)
+	{
+	   	$check_op['msg'] = '';
+		 	$check_op['status_ok'] = 1;
+		 	
+      if( $this->get_by_name($name,"testprojects.id <> {$id}") )
+      {
+          $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
+		      $check_op['status_ok'] = 0;
+      }
+		  return $check_op;
+	}
+
+	/**
+	 * Checks is there is another testproject with different id but same prefix
+	 *
+	 **/
+	function checkTestCasePrefixExistence($prefix,$id=0)
+	{
+	   	$check_op['msg'] = '';
+		 	$check_op['status_ok'] = 1;
+		
+      $sql = " SELECT id FROM {$this->object_table} " .
+   	         " WHERE prefix='" . $this->db->prepare_string($prefix) . "'";
+		    	   " AND id <> {$id}";
+
+		  $rs = $this->db->get_recordset($sql);
+		  if(!is_null($rs))
+		  {
+		    	$check_op['msg'] = sprintf(lang_get('error_tcase_prefix_exists'),$prefix);
+		    	$check_op['status_ok'] = 0;
+		  }
+		  
+		  return $check_op;
+	}
+
 
 
 	/** allow activate or deactivate a test project

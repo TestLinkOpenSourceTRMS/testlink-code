@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.5 2008/05/06 06:26:09 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.6 2008/05/19 10:23:54 havlat Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
@@ -16,22 +16,13 @@
 <body>
 
 <h1 class="title">
- {lang_get s='help' var='common_prefix'}
- {lang_get s='req_spec' var="xx_alt"}
- {assign var="text_hint" value="$common_prefix: $xx_alt"}
-
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
-
-	  {$labels.req_spec}{$smarty.const.TITLE_SEP}{$reqSpec[$selectedReqSpec]|escape}
+	{$labels.req_title_analyse}{$smarty.const.TITLE_SEP}{$reqSpec[$selectedReqSpec]|escape}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
 
 <div class="workBack">
 {include file="inc_update.tpl" result=$sqlResult action=$action}
-
-
-<h1 class="title">{$labels.req_title_analyse}</h1>
 
 <div>
 <form method="get">{$labels.req_spec_change}

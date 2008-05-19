@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.6 2008/05/10 14:32:10 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.7 2008/05/19 10:24:02 havlat Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
@@ -36,7 +36,7 @@ function pre_submit()
 	<table class="smallGrey" style="width:100%;">
 		<caption>
 			{$labels.caption_nav_filter_settings}
-			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
+			{include file="inc_help.tpl" helptopic="hlp_executeFilter"}
 		</caption>
     {if $gui->map_tplans != '' }
 		<tr>

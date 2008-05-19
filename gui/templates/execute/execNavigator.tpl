@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.11 2008/05/17 14:19:50 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.12 2008/05/19 10:23:52 havlat Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -33,7 +33,7 @@ rev :
 	<table class="smallGrey" width="100%">
 		<caption>
 			{$labels.caption_nav_filter_settings}
-			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
+			{include file="inc_help.tpl" helptopic="hlp_executeFilter"}
 		</caption>
 		<tr>
 			<td>{$labels.filter_tcID}</td>

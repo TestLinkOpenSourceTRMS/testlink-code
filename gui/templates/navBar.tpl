@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.36 2008/05/08 21:05:42 schlundus Exp $
+	$Id: navBar.tpl,v 1.37 2008/05/19 10:24:03 havlat Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -60,7 +60,7 @@
 
 </div>
 
-<div class="menu_bar">
+<div class="menu_bar" style="margin: 0px 5px 0px 135px;">
 
 	<span style="float: right;">
    		<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.4 2008/05/04 10:30:39 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.5 2008/05/19 10:23:53 havlat Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -8,13 +8,13 @@ Rev: 20080503 - franciscom - use of tlCfg
 
 *}	
       {assign var="ResultsStatusCode" value=$tlCfg->results.status_code}
-  		<table border="0" width="100%">
+  		<table class="invisible">
   		<tr>
-  			<td rowspan="2" align="center">
+  			<th rowspan="2" style="text-align: center;">
   				<div class="title">{$args_labels.test_exec_notes}</div>
           {$args_webeditor} 
-  			</td>
-  			<td valign="top" style="width:30%">			
+  			</th>
+  			<td valign="top" style="width: 30%;">			
     				{* status of test *}
       			<div class="title" style="text-align: center;">{$args_labels.test_exec_result}</div>
     				

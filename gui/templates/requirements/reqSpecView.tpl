@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.22 2008/05/06 06:26:10 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.23 2008/05/19 10:23:54 havlat Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -49,16 +49,13 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id
 
 <body {$body_onload}>
 
-<div class="workBack">
 <h1 class="title">
- {lang_get s='help' var='common_prefix'}
- {lang_get s='req_spec' var="xx_alt"}
- {assign var="text_hint" value="$common_prefix: $xx_alt"}
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
 	{$gui->main_descr|escape}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
-<br />
+
+<div class="workBack">
+
 {include file="$buttons_template"}
 
 <table class="simple" style="width: 90%">

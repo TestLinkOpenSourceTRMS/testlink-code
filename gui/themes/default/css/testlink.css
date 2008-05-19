@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.7 2008/05/18 16:59:07 franciscom Exp $
+$Id: testlink.css,v 1.8 2008/05/19 10:23:58 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -105,7 +105,7 @@ div.menu_bar {
 	border-style:	groove;
 	border-width:	thin;
 	padding: 		1px 5px;
-	margin:			0px 5px 0px 135px;
+	margin:			0px 5px;
 }
 
 select.menu_combo {
@@ -374,24 +374,12 @@ table.common caption, table.smallGrey caption {
 }
 
 /* Simple Table (often used to show data) */
-
-/* by havlat
 table.simple {
 	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
-	margin:			5px 0px;
-	width:			auto;
-}
-*/
-
-/* by franciscom */
-table.simple {
-	background:     #EEE;
-	border: 		thin solid black;
-	font-size:		90%;
-	margin:			20px;
-  width:			90%;
+	margin:			5px;
+	width:			90%;
 }
 
 

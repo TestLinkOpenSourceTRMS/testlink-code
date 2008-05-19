@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.6 2008/05/11 22:13:22 schlundus Exp $
+$Id: newest_tcversions.tpl,v 1.7 2008/05/19 10:24:02 havlat Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
@@ -9,20 +9,16 @@ rev:
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 
-{lang_get s='help' var='common_prefix'}
-{assign var="text_hint" value="$common_prefix"}
-
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,th_test_case,linked_version,newest_version' }
 
 </head>
 <body>
+
 <h1 class="title"> {lang_get s='title_newest_tcversions'} 
-{include file="inc_help.tpl" help="newest_tcversions" locale=$locale 
-         inc_help_alt="$text_hint" inc_help_title="$text_hint"}
-
-
+	{include file="inc_help.tpl" helptopic="hlp_planTcModified"}
 </h1>
+
 <form method="post" id="newest_tcversions.tpl">
   <table>
   <tr>

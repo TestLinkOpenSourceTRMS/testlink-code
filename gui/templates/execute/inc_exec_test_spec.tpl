@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.4 2008/05/04 10:30:39 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.5 2008/05/19 10:23:53 havlat Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -11,21 +11,21 @@ Rev:
     <div class="exec_test_spec">
 		<table class="test_exec">
 		<tr>
-			<td colspan="2" class="title">{$args_labels.test_exec_summary}</td>
+			<th colspan="2" class="title">{$args_labels.test_exec_summary}</th>
 		</tr>
 		<tr>
 			<td colspan="2">{$args_tc_exec.summary}</td>
 		</tr>
 		<tr>
-			<td class="title" width="50%">{$args_labels.test_exec_steps}</td>
-			<td class="title" width="50%">{$args_labels.test_exec_expected_r}</td>
+			<th width="50%">{$args_labels.test_exec_steps}</th>
+			<th width="50%">{$args_labels.test_exec_expected_r}</th>
 		</tr>
 		<tr>
 			<td>{$args_tc_exec.steps}</td>
 			<td>{$args_tc_exec.expected_results}</td>
 		</tr>
 		<tr>
-      <td colspan="2">{lang_get s='execution_type'}
+      		<td colspan="2">{lang_get s='execution_type'}
 			                {$smarty.const.TITLE_SEP}
 			                {$args_execution_types[$args_tc_exec.execution_type]}</td>
 		</tr>

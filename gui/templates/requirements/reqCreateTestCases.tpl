@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.7 2008/05/06 06:26:09 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.8 2008/05/19 10:23:54 havlat Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -63,12 +63,8 @@ function check_action_precondition(form_id,action,msg)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">
- {lang_get s='help' var='common_prefix'}
- {lang_get s='req_spec' var="xx_alt"}
- {assign var="text_hint" value="$common_prefix: $xx_alt"}
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
- {$gui->main_descr|escape}   
+ 	{$gui->main_descr|escape}   
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
 

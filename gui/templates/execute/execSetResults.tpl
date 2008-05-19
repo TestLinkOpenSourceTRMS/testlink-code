@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.19 2008/05/18 16:54:32 franciscom Exp $
+$Id: execSetResults.tpl,v 1.20 2008/05/19 10:23:53 havlat Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+	20080515 - havlatm - updated help link
     20080322 - franciscom - feature: allow edit of execution notes
                             minor refactoring.
     20071231 - franciscom - new show/hide section to show exec notes
@@ -99,24 +100,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}">
 
 <h1 class="title">
- {lang_get s='help' var='text_hint'}
- {include file="inc_help.tpl" help="execMain" locale=$locale
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
-
 	{$labels.title_t_r_on_build} {$my_build_name}
-
 	{if $gui->ownerDisplayName != ""}
 	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$gui->ownerDisplayName|escape}
 	  {if $gui->include_unassigned}
 	    {$labels.or_unassigned_test_cases}
 	  {/if}
 	{/if}
-
+	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
 </h1>
-
-{* show echo about update if applicable *}
-{*  deprecated ??? *}
-{* {$updated} *}
 
 
 <div id="main_content" class="workBack">

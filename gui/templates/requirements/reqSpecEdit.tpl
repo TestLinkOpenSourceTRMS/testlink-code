@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.9 2008/05/06 06:26:10 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.10 2008/05/19 10:23:54 havlat Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -14,11 +14,9 @@ rev: 20080415 - franciscom - refactoring
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title}";
+	var alert_box_title = "{$labels.warning}";
+	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title}";
 {literal}
 function validateForm(f)
 {
@@ -40,21 +38,13 @@ function validateForm(f)
 
 <body>
 <h1 class="title">
- {lang_get s='help' var='common_prefix'}
- {lang_get s='req_spec' var="xx_alt"}
- {assign var="text_hint" value="$common_prefix: $xx_alt"}
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
- {$gui->main_descr|escape}
+	{if $gui->action_descr != ''}{$gui->action_descr|escape}{/if} {$gui->main_descr|escape}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
 {if $gui->grants->req_mgmt == "yes"}
   <div class="workBack">
-    {if $gui->action_descr != ''}
-    <h1 class="title">{$gui->action_descr|escape}</h1>
-    <br />
-    {/if}
-
+    
     {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
     <form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">

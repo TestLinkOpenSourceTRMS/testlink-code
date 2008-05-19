@@ -25,11 +25,9 @@ Purpose: smarty template - assign REQ to one test case
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
-var please_select_a_req="{$labels.please_select_a_req}";
-var alert_box_title = "{$labels.warning}";
+	var please_select_a_req="{$labels.please_select_a_req}";
+	var alert_box_title = "{$labels.warning}";
 {literal}
 
 function check_action_precondition(form_id,action)
@@ -48,33 +46,26 @@ function check_action_precondition(form_id,action)
 <body>
 
 <h1 class="title">
- {lang_get s='help' var='common_prefix'}
- {lang_get s='req_spec' var="xx_alt"}
- {assign var="text_hint" value="$common_prefix: $xx_alt"}
-
- {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
- {$labels.test_case}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
+	{$labels.test_case}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
-
 <div class="workBack">
-<h1 class="title">{$labels.req_title_assign}</h1>
 
 {include file="inc_update.tpl" user_feedback=$user_feedback}
-
 {if $arrReqSpec eq "" }
    {$labels.warning_req_tc_assignment_impossible}
 {else}
 
+  <h2>{$labels.req_title_assign}</h2>
   <form id="SRS_switch" name="SRS_switch" method="post">
     <p><span class="labelHolder">{$labels.req_spec}</span>
   	<select name="idSRS" onchange="form.submit()">
   	{html_options options=$arrReqSpec selected=$selectedReqSpec}</select>
   </form>
-  </div>
+</div>
 
-  <div class="workBack">
+<div class="workBack">
   <h2>{$labels.req_title_assigned}</h2>
   {if $arrAssignedReq ne ""}
     <form id="reqList" method="post">

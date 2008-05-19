@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.6 2008/05/11 22:13:22 schlundus Exp $
+$Id: planAddTCNavigator.tpl,v 1.7 2008/05/19 10:24:02 havlat Exp $
 show test specification tree 
 
 rev: 20080429 - franciscom - keyword filter multiselect
@@ -37,7 +37,7 @@ function pre_submit()
 	<table class="smallGrey" width="100%">
 		<caption>
 			{$labels.caption_nav_filter_settings}
-			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
+			{include file="inc_help.tpl" helptopic="hlp_executeFilter"}
 		</caption>
 		<tr>
 			<td>{$labels.test_plan}</td>

@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: cfieldsEdit.tpl,v 1.11 2008/05/07 06:34:25 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.12 2008/05/19 10:24:03 havlat Exp $
 
 
 Important Development note:
@@ -252,11 +252,9 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 <body {$body_onload}>
 
 <h1 class="title">
- {lang_get s='help' var='common_prefix'}
- {assign var="text_hint" value="$common_prefix"}
- {include file="inc_help.tpl" help="custom_fields" locale=$locale
-          inc_help_alt="$text_hint" inc_help_title="$text_hint"  inc_help_style="float: right;"}
- {lang_get s='title_cfields_mgmt'} </h1>
+  	{lang_get s='title_cfields_mgmt'} 
+	{include file="inc_help.tpl" helpTopic="hlp_customFields"}
+</h1>
 
 <h2>{$operation_descr|escape}</h2>
 {include file="inc_update.tpl" user_feedback=$user_feedback}
@@ -277,16 +275,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 {else}
 <form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php"
       onSubmit="javascript:return validateForm(this);">
-  <input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
-	<table class="common">
-    <tr>
-      <td colspan="2">
-       {lang_get s='help' var='common_prefix'}
-       {assign var="text_hint" value="$common_prefix"}
-       {include file="inc_help.tpl" help="custom_fields" locale=$locale
-                alt="$text_hint" title="$text_hint"  style="float: right;"}
-      </td>
-    </tr>
+<input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
+<table class="common">
 
 	 <tr>
 			<th style="background:none;">{$labels.name}</th>

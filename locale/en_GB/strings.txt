@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.320 $
- * @modified $Date: 2008/05/19 10:23:53 $ $Author: havlat $
+ * @version $Revision: 1.321 $
+ * @modified $Date: 2008/05/23 19:53:19 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2145,6 +2145,17 @@ $TLS_title_eventinfo = "Event information";
 $TLS_title_eventdetails = "Event details";
 $TLS_th_user = "User";
 $TLS_show_event_history = "Show the event history";
+
+
+// int_mantis.php
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new="New issue";
+$TLS_issue_status_feedback="Feedback";
+$TLS_issue_status_acknowledged="Acknowledged issue ";
+$TLS_issue_status_confirmed="Confirmed issue";
+$TLS_issue_status_assigned="Assigned issue";
+$TLS_issue_status_resolved="Resolved issue";
+$TLS_issue_status_closed="Closed issue";
 
 
 // ------------------------------------------------------------------------------------------

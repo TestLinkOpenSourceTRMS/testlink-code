@@ -4,13 +4,17 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/05/23 19:52:08 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * 20080523 - franciscom - 
+ * Contribution Peter Rooms - BUGID 1534 -
+ * Bug coloring and labeling according status using same colors than Mantis.
  *
  * 20070304 - franciscom - 
  * 1. added an specialized version of checkBugID
@@ -38,6 +42,25 @@ class mantisInterface extends bugtrackingInterface
 	var $dbType = BUG_TRACK_DB_TYPE;
 	var $showBugURL = BUG_TRACK_HREF;
 	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+
+  // Contribution 
+  // Copied from mantis configuration
+  //
+  private $code_status = array(10 => 'new',
+                               20 => 'feedback',
+                               30 => 'acknowledged',
+                               40 => 'confirmed',
+                               50 => 'assigned',
+                               80 => 'resolved',
+                               90 => 'closed');
+                              
+  private $status_color = array('new'          => '#ffa0a0', # red,
+                                'feedback'     => '#ff50a8', # purple
+                                'acknowledged' => '#ffd850', # orange
+                                'confirmed'    => '#ffffb0', # yellow
+                                'assigned'     => '#c8c8ff', # blue
+                                'resolved'     => '#cceedd', # buish-green
+                                'closed'       => '#e8e8e8'); # light gray
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -72,10 +95,11 @@ class mantisInterface extends bugtrackingInterface
 		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->dbConnection->fetch_array($result);
-			if ($status)
+			$status_rs = $this->dbConnection->fetch_array($result);
+			if ($status_rs)
 			{
-				$status = $status['status'];
+			  // 20080523 - franciscom - BUGID 1534
+				$status = $this->code_status[$status_rs['status']];
 			}	
 			else
 				$status = null;
@@ -100,12 +124,19 @@ class mantisInterface extends bugtrackingInterface
 		//if the bug wasn't found the status is null and we simply display the bugID
 		if ($status !== false)
 		{
+		  
 			//the status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
 			//below is the default:
 			//'10:new,20:feedback,30:acknowledged,40:confirmed,50:assigned,80:resolved,90:closed'
 			//strike through all bugs that have a resolved or closed status.. 
-			if ($status == 80 || $status == 90)
-				$str = "<del>" . $id . "</del>";
+			// if ($status == 80 || $status == 90)
+			// {
+			// 	$str = "<del>" . $id . "</del>";
+			// 	
+			// }
+      // 20080523 - franciscom - BUGID 1534
+      $status_i18n=lang_get('issue_status_' . $status);
+			$str = "[" . $status_i18n . "] " . $id . "";	
 		}
 		return $str;
 	}
@@ -178,6 +209,18 @@ class mantisInterface extends bugtrackingInterface
 		return $status_ok;
 	}	
 	
+	// Contribution
+  function buildViewBugLink($bugID,$bWithSummary = false)
+  {
+      $s = parent::buildViewBugLink($bugID, $bWithSummary);
+  
+      $status = $this->getBugStatus($bugID);
+      $color = $this->status_color[$status];
+        
+      return "<div  style=\"display: inline; background: $color;\">$s</div>";
+  }
+
+
 
 }
 ?>

@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.6 2008/05/17 17:40:00 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.7 2008/05/24 14:20:09 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
+     20080524 - franciscom - layout changes
+                             BUGID 1430
      20080517 - franciscom - refactoring
      20070916 - franciscom - added hidden input to manage test plan id
      20070901 - franciscom - use config file and smarty date and time controls
@@ -11,7 +13,9 @@ rev :
 *}
 {lang_get var="labels
 			s='enter_start_time,enter_end_time,date,hour,Yes,submit_query,
-			   select_builds_header,select_components_header,
+			   select_builds_header,select_components_header,report_display_options,
+			   display_suite_summaries,display_test_cases,display_query_params,
+			   display_totals,
 			   search_in_notes,executor,No,query_metrics_report'}
 			   
 
@@ -80,7 +84,7 @@ rev :
 		</tr>
 		<tr>
 			<th>{lang_get s='select_keyword_header'}</th>
-			<th>{lang_get s='select_owner_header'}</th>
+			<th>{lang_get s='select_last_result_header'}</th>
 		</tr>
 		<tr>
 			<td>
@@ -90,14 +94,14 @@ rev :
 					{/foreach}
 				</select>
 			</td>
-			<td>
-				<select name="owner">
-					{foreach key=owner item=ownerid from=$gui->assigned_users->items}
-						{* by default the owner should be the current user *}
-						<option value="{$owner}">{$ownerid|escape}</option>
+				<td>
+					<select name="lastStatus[]" size="{#TCSTATUS_COMBO_NUM_ITEMS#}" multiple="multiple">
+					{foreach key=status_code item=status_label from=$gui->status_code_label}
+						<option selected="selected" value="{$status_code}">{$status_label|escape}</option>
 					{/foreach}
-				</select>
-			</td>
+					</select>
+				</td>
+
 		</tr>
 		
 		<tr>
@@ -144,13 +148,14 @@ rev :
 		     Allows user to change what data / results are displayed in report 
 		-->
 			<tr>
-				<th>{$labels.search_in_notes}</th>
-				<th>{$labels.executor}</th>
-			</tr>
-			<tr>
-				<td>
-					<input type="text" name="search_notes_string"/>
-				</td>
+			<td>
+				<select name="owner">
+					{foreach key=owner item=ownerid from=$gui->assigned_users->items}
+						{* by default the owner should be the current user *}
+						<option value="{$owner}">{$ownerid|escape}</option>
+					{/foreach}
+				</select>
+			</td>
 				<td>
 					<select name="executor">
 						{foreach key=executor item=executorid from=$gui->assigned_users->items}
@@ -160,60 +165,61 @@ rev :
 					</select>
 				</td>
 			</tr>
-			<tr>
-				<th>{lang_get s='select_last_result_header'}</th>
+  		<tr>
+				<th>{$labels.search_in_notes}</th>
 				<th>&nbsp;</th>
 			</tr>
 			<tr>
 				<td>
-					<select name="lastStatus[]" size="{#TCSTATUS_COMBO_NUM_ITEMS#}" multiple="multiple">
-					{foreach key=status_code item=status_label from=$gui->status_code_label}
-						<option selected="selected" value="{$status_code}">{$status_label|escape}</option>
-					{/foreach}
-					</select>
+					<input type="text" name="search_notes_string"/>
 				</td>
 				<td>&nbsp;</td>
 			</tr>
-
-    </table>
+			<tr>
+			  <th>{lang_get s='select_owner_header'}</th>
+				<th>{$labels.executor}</th>
+			</tr>
+	    </table>
     </div>
     
     <div>
-    <table>
+    <table border cellspacing=0 cellpadding=5 rules=groups width="100%">
+     <caption align="top">{$labels.report_display_options}</caption>
       <tr>
       <td>
         <table>
-         <tr><th>{lang_get s='display_suite_summaries'}</th>
-         <td>
-		    			<select name="display_suite_summaries">
+         <tr>
+         <td>{$labels.display_suite_summaries}</td>
+         <td><select name="display_suite_summaries">
 		    				<option value="1">{$labels.Yes}</option>
 		    				<option value="0" selected="selected">{$labels.No}</option>
 		    			</select>
 		     </td>
-		     </tr>
-		     <tr>
-         	<th>{lang_get s='display_query_params'} </th>
-		    	
-		    		<td>
-		    			<select name="display_query_params">
-		    				<option value="1">{$labels.Yes}</option>
-		    				<option value="0" selected="selected">{$labels.No}</option>
+         <td>{$labels.display_test_cases}</td>
+         <td><select name="display_test_cases">
+		    				<option value="1" selected="selected">{$labels.Yes}</option>
+		    				<option value="0">{$labels.No}</option>
 		    			</select>
-		    		</td>
+		     </td>
 		    </tr>
 		    <tr>		
-		    		<th>{lang_get s='display_totals'}</th>
-	       		<td>
-		    			<select name="display_totals">
+     		<td>{$labels.display_query_params}</td>
+     		<td><select name="display_query_params">
+		    				<option value="1">{$labels.Yes}</option>
+		    				<option value="0" selected="selected">{$labels.No}</option>
+		    			</select>
+    		</td>
+		     <td>{$labels.display_totals}</td>
+		     <td><select name="display_totals">
 		    				<option value="1">{$labels.Yes}</option>
 		    				<option value="0" selected="selected">{$labels.No}</option>
 		    			</select>
 		    		</td>
-		    	</tr>
+	    	</tr>
 		    </table>
 		  </td>
-		  <td rowspan="3">&nbsp;</td>
-			<td rowspan="3">
+		  <td>&nbsp;</td>
+			<td>
 				<input type="submit" value="{$labels.submit_query}"/>
 			</td>
 			</tr>

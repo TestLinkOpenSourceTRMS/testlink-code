@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.58 2008/05/18 16:56:09 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.59 2008/05/24 14:20:44 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev :
+*      20080524 - franciscom - BUGID 1430
 *      20070901 - franciscom - refactoring
 * 
 **/
@@ -193,9 +194,11 @@ function init_args()
     $args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
   
     $args->display = new stdClass();
-    $args->display->suite_summaries = isset($_REQUEST['display_suite_summaries']) ? $_REQUEST['display_suite_summaries'] : true;
-    $args->display->totals = isset($_REQUEST['display_totals']) ? $_REQUEST['display_totals'] : true;
-    $args->display->query_params = isset($_REQUEST['display_query_params']) ? $_REQUEST['display_query_params'] : true;
+    $args->display->suite_summaries = isset($_REQUEST['display_suite_summaries']) ? $_REQUEST['display_suite_summaries'] : false;
+    $args->display->totals = isset($_REQUEST['display_totals']) ? $_REQUEST['display_totals'] : false;
+    $args->display->query_params = isset($_REQUEST['display_query_params']) ? $_REQUEST['display_query_params'] : false;
+    $args->display->test_cases = isset($_REQUEST['display_test_cases']) ? $_REQUEST['display_test_cases'] : true;
+
 
     $args->lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : array();
 

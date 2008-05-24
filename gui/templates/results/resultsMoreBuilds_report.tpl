@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.5 2008/05/18 16:54:32 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.6 2008/05/24 14:20:12 franciscom Exp $
 
 rev :
+     20080524 - franciscom - BUGID 1430
      20070902 - franciscom - refactoring
 *}
 {lang_get var="labels"
@@ -191,65 +192,66 @@ rev :
 			</table>
 			{/if}
 			{else}
-				<!--
-				{$labels.not_yet_executed'}
-				-->
 				{if $gui->display->suite_summaries}
 					</div>
 				{/if}
 			{/if}
-	    {foreach key=suiteId item=array from=$gui->suiteList}
-				{* probably can be done better. If suiteId in $suiteList matches the current
-				suite id - print that suite's information *}
-				{if ($suiteId == $currentSuiteId)}
-				{* test to make sure there are test cases to diplay before  print table and headers *}
-				{if $gui->suiteList[$suiteId]}
-					{if $gui->display->suite_summaries}
-						<table class="simple" style="width: 100%;margin-left: 0px;" border="0">
-					{/if}
+      
+      {if $gui->display->test_cases}
 			
-					{if $gui->display->suite_summaries}
-					<tr>
-						<th>{$labels.th_test_case_id}</th>
-						<th>{$labels.th_build}</th>
-						<th>{$labels.th_tester_id}</th>
-						<th>{$labels.th_execution_ts}</th>
-						<th>{$labels.th_status}</th>
-						<th>{$labels.th_notes}</th>
-						<th>{$labels.th_bugs}</th>
-					</tr>
-					{/if}
-					{foreach key=executionInstance item=array from=$gui->suiteList[$suiteId]}
-						{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
-						<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
-			      {if $gui->displayResults[$inst.status] }
-			      	<td>{$inst.execute_link}</td>
-              {if $inst.status == $resultsCfg.status_code.not_run}
-							    <td>&nbsp;</td>
-							    <td>&nbsp;</td>
-							    <td>&nbsp;</td>
-              {else}
-			      	    <td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
-							    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
-							    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
-              {/if}
-							<td class="{$resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$resultsCfg.code_status[$inst.status]|escape}</td>
-              {if $inst.status == $resultsCfg.status_code.not_run}
-							    <td>&nbsp;</td>
-							    <td>&nbsp;</td>
-							{else}
-							    <td>{$inst.notes}&nbsp;</td>
-							    <td style="text-align:center;">{$inst.bugString}&nbsp;</td>
-              {/if}
-			      {/if}
-						</tr>
-					{/foreach}
-					{if $gui->display->suite_summaries}
-						</table>
-					{/if}
-				{/if}
-				{/if}
-			{/foreach}
+	        {foreach key=suiteId item=array from=$gui->suiteList}
+			    	{* probably can be done better. If suiteId in $suiteList matches the current
+			    	suite id - print that suite's information *}
+			    	{if ($suiteId == $currentSuiteId)}
+			    	{* test to make sure there are test cases to diplay before  print table and headers *}
+			    	{if $gui->suiteList[$suiteId]}
+			    		{if $gui->display->suite_summaries}
+			    			<table class="simple" style="width: 100%;margin-left: 0px;" border="0">
+			    		{/if}
+			    
+			    		{if $gui->display->suite_summaries}
+			    		<tr>
+			    			<th>{$labels.th_test_case_id}</th>
+			    			<th>{$labels.th_build}</th>
+			    			<th>{$labels.th_tester_id}</th>
+			    			<th>{$labels.th_execution_ts}</th>
+			    			<th>{$labels.th_status}</th>
+			    			<th>{$labels.th_notes}</th>
+			    			<th>{$labels.th_bugs}</th>
+			    		</tr>
+			    		{/if}
+			    		{foreach key=executionInstance item=array from=$gui->suiteList[$suiteId]}
+			    			{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
+			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
+			          {if $gui->displayResults[$inst.status] }
+			          	<td>{$inst.execute_link}</td>
+                  {if $inst.status == $resultsCfg.status_code.not_run}
+			    				    <td>&nbsp;</td>
+			    				    <td>&nbsp;</td>
+			    				    <td>&nbsp;</td>
+                  {else}
+			          	    <td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
+			    				    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
+			    				    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
+                  {/if}
+			    				<td class="{$resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$resultsCfg.code_status[$inst.status]|escape}</td>
+                  {if $inst.status == $resultsCfg.status_code.not_run}
+			    				    <td>&nbsp;</td>
+			    				    <td>&nbsp;</td>
+			    				{else}
+			    				    <td>{$inst.notes}&nbsp;</td>
+			    				    <td style="text-align:center;">{$inst.bugString}&nbsp;</td>
+                  {/if}
+			          {/if}
+			    			</tr>
+			    		{/foreach}
+			    		{if $gui->display->suite_summaries}
+			    			</table>
+			    		{/if}
+			    	{/if}
+			    	{/if}
+			    {/foreach}
+			 {/if}   
 		{/if}
 	{/foreach}
 

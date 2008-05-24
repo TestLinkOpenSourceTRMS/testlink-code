@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.321 $
- * @modified $Date: 2008/05/23 19:53:19 $ $Author: franciscom $
+ * @version $Revision: 1.322 $
+ * @modified $Date: 2008/05/24 14:21:35 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1252,9 +1252,11 @@ $TLS_th_executor = "Executed By";
 $TLS_th_search_notes_string = "notes search string";
 $TLS_true = "true";
 $TLS_false = "false";
-$TLS_display_suite_summaries = "Display Suite Summaries";
-$TLS_display_query_params  = "Display Query Parameters";
-$TLS_display_totals = "Display Totals";
+$TLS_display_suite_summaries = "Test Suite Summaries";
+$TLS_display_query_params  = "Query Parameters";
+$TLS_display_totals = "Totals";
+$TLS_display_test_cases = "Test Cases";
+$TLS_report_display_options = "Report display options";
 
 // gui/templates/resultsReqs.tpl
 $TLS_no_srs_defined="No Requirements Specification available for this Test Project";
@@ -2156,6 +2158,8 @@ $TLS_issue_status_confirmed="Confirmed issue";
 $TLS_issue_status_assigned="Assigned issue";
 $TLS_issue_status_resolved="Resolved issue";
 $TLS_issue_status_closed="Closed issue";
+$TLS_access_to_bts="Access issue tracking system";
+
 
 
 // ------------------------------------------------------------------------------------------

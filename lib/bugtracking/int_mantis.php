@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/05/23 19:52:08 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/05/24 14:20:14 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -217,7 +217,8 @@ class mantisInterface extends bugtrackingInterface
       $status = $this->getBugStatus($bugID);
       $color = $this->status_color[$status];
         
-      return "<div  style=\"display: inline; background: $color;\">$s</div>";
+      $title=lang_get('access_to_bts');  
+      return "<div  title=\"{$title}\" style=\"display: inline; background: $color;\">$s</div>";
   }
 
 

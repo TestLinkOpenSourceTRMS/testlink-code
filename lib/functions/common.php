@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.112 $ $Author: franciscom $
- * @modified $Date: 2008/05/18 16:56:09 $
+ * @version $Revision: 1.113 $ $Author: franciscom $
+ * @modified $Date: 2008/05/25 14:45:10 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -747,9 +747,6 @@ function downloadContentsToFile($content,$fileName)
 function translate_tc_status($status_code)
 {
   $resultsCfg=config_get('results'); 
-	// $map_tc_status = array_flip(config_get('tc_status'));
-  // echo "<pre>debug 20080518 - \ - " . __FUNCTION__ . " --- "; print_r(); echo "</pre>";
-
 	$verbose = lang_get('test_status_not_run');
 	if( $status_code != '')
 	{

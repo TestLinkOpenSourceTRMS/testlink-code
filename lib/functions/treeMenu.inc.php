@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/05/18 16:56:09 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/05/25 14:45:10 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -1207,10 +1207,6 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	  }
   }
   // -------------------------------------------------------------------------------
-	
-	//echo "<pre>debug 20080305 - \$useColors - " . __FUNCTION__ . " --- "; print_r($useColors); echo "</pre>";
-	//echo "<pre>debug 20080305 - \$useCounters - " . __FUNCTION__ . " --- "; print_r($useCounters); echo "</pre>";
-	
 	$menustring = "['{$label}','{$pfn}({$node['id']},{$versionID})',\n";
 			
 	return $menustring;

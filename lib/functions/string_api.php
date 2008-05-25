@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: string_api.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/11/05 07:28:29 $  $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/05/25 14:45:10 $  $Author: franciscom $
  * @author franciscom
  *
  * rev: 20071104 - franciscom - changes to string_email_links()
@@ -105,8 +105,6 @@
 	# --------------------
 	# Prepare a single line string for display to HTML
 	function string_display_line( $p_string ) {
-	  
-	  echo "<pre>debug 20071027 - \ - " . __FUNCTION__ . " --- "; print_r($p_string); echo "</pre>";
 		$p_string = string_strip_hrefs( $p_string );
 		$p_string = string_html_specialchars( $p_string );
 		$p_string = string_restore_valid_html_tags( $p_string, /* multiline = */ false );

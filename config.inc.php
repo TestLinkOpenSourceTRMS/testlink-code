@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.177 $
- * @modified $Date: 2008/05/05 09:11:07 $ by $Author: franciscom $
+ * @version $Revision: 1.178 $
+ * @modified $Date: 2008/05/25 14:42:07 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,7 +26,8 @@
  *
  * Revisions:
  * 
- *     20080504 - franciscmo - removed gui->enable_custom_fields
+ *     20080525 - franciscom - added spectreemenu_type (temporary solution)
+ *     20080504 - franciscom - removed gui->enable_custom_fields
  * 		 20080419 - havlatm - documentation update; minor refactorization
  *     20080418 - franciscom -  new document_generation
  *     20080330 - franciscom -  
@@ -326,6 +327,12 @@ $tlCfg->gui->title_sep_3 = ' - ';
  *	[LAYERSMENU, DTREE, JTREE]
  */
 $tlCfg->treemenu_type = 'JTREE';
+
+// 20080525 - franciscom
+// To allow two different type of tree menu engine
+// while testing EXT JS.
+// if = '' => $tlCfg->treemenu_type will be used
+$tlCfg->spectreemenu_type = 'EXTJS';
  
 
 // When creating an node in the tree, you can choose if:

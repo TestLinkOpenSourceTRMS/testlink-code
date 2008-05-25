@@ -1,12 +1,37 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.2 2008/05/06 06:26:13 franciscom Exp $ *}
-{* Purpose: smarty template - show test specification tree menu *}
-{*
-	20070217 - franciscom - added test suite filter
-                          changes to form method to allow automatic refresh
-                          without browser warning
+{* 
+   TestLink Open Source Project - http://testlink.sourceforge.net/ 
+   $Id: tcTree.tpl,v 1.3 2008/05/25 14:42:07 franciscom Exp $ 
+   Purpose: smarty template - show test specification tree menu 
+ 
+   20080525 - franciscom - use only ext js tree type.
+                           no change to configure a different tree menu type 
+	 20070217 - franciscom - added test suite filter
+                           changes to form method to allow automatic refresh
+                           without browser warning
 *}
-{include file="inc_head.tpl" jsTree="yes"}
+{if $tlCfg->spectreemenu_type == ''}
+    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
+{else}
+    {include file="inc_head.tpl" openHead="yes"}
+    {include file="inc_ext_js.tpl"}
+
+    {literal}
+    <script type="text/javascript">
+    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",loader:""};
+    </script>
+    {/literal}
+    
+    <script type="text/javascript">
+    treeCfg.loader='{$gui->ajaxTree->loader}';
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_id={$gui->ajaxTree->root_node->id};
+    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+    </script>
+    
+    <script type="text/javascript" src='gui/javascript/tcTree.js'>
+    </script>
+{/if}
+</head>
 
 <body>
 
@@ -65,13 +90,17 @@
 {/if}		
 </div>
 
-
-<div class="tree" id="tree">
-{if $tree eq ''}
-  {lang_get s='no_tc_spec_av'}
+{if $tlCfg->spectreemenu_type == ''}
+    <div class="tree" id="tree">
+        {if $tree eq ''}
+          {lang_get s='no_tc_spec_av'}
+        {/if}
+        {$tree}
+        <br />
+    </div>
+{else}
+    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
 {/if}
-{$tree}
-<br />
-</div>
+
 </body>
 </html>

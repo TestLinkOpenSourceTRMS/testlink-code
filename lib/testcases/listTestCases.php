@@ -2,13 +2,13 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.25 2008/05/10 14:38:20 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.26 2008/05/25 14:42:07 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
-*   rev: 20080223 - franciscom -
+*   rev: 20080525 - franciscom - refactored to use ext js tree
 *        20070217 - franciscom - added test suite filter
 */
 require_once('../../config.inc.php');
@@ -17,12 +17,10 @@ require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $template_dir='testcases/';
-
 $spec_cfg = config_get('spec_cfg');
 
-$feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
-$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+$args=init_args();
+$gui=initializeGui($args,$_SESSION['basehref']);
 
 $do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
                                     'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
@@ -30,17 +28,16 @@ $do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
 
 $_SESSION['tcspec_refresh_on_action'] = $do_refresh_on_action;
 
-$tsuites_to_show = isset($_REQUEST['tsuites_to_show']) ? $_REQUEST['tsuites_to_show'] : 0;
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
                         'keywordsAssign' => "lib/keywords/keywordsAssign.php",
                         'assignReqs' => "lib/requirements/reqTcAssign.php");
 
-if(!is_null($feature) && strlen($feature))
+if(!is_null($args->feature) && strlen($args->feature))
 {
-	if(isset($feature_action[$feature]))
-		$workPath = $feature_action[$feature];
+	if(isset($feature_action[$args->feature]))
+		$workPath = $feature_action[$args->feature];
 	else
 	{
 		tLog("Wrong get argument 'feature'.", 'ERROR');
@@ -57,24 +54,31 @@ else
 $draw_filter = $spec_cfg->show_tsuite_filter;
 $exclude_branches = null;
 $tsuites_combo = null;
+$tree = null;
 if($spec_cfg->show_tsuite_filter)
 {
-	$mappy = tsuite_filter_mgmt($db,$tproject_id,$tsuites_to_show);
+	$mappy = tsuite_filter_mgmt($db,$args->tproject_id,$args->tsuites_to_show);
 	$exclude_branches = $mappy['exclude_branches'];
 	$tsuites_combo = $mappy['html_options'];
 	$draw_filter = $mappy['draw_filter'];
 }
-$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
-                                   $workPath,NOT_FOR_PRINTING,
-                                   SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
-                                   NO_ADDITIONAL_ARGS, null,
-                                   DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
 
-$tree = null;
-if (strlen($treeString))
-	$tree = invokeMenu($treeString,"",null);
+$spectree=config_get('spectreemenu_type');
+if($spectree != 'EXTJS' )
+{
+    $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
+                                       $workPath,NOT_FOR_PRINTING,
+                                       SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
+                                       NO_ADDITIONAL_ARGS, null,
+                                       DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
+    
+    $tree = null;
+    if (strlen($treeString))
+    	$tree = invokeMenu($treeString,"",null);
+}
 		
 $smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
 
 $smarty->assign('tcspec_refresh_on_action',$do_refresh_on_action);
 $smarty->assign('tsuites_combo',$tsuites_combo);
@@ -154,4 +158,56 @@ function manage_tcspec($hash_REQUEST,$hash_SESSION,$key2check,$hidden_name,$defa
     }
     return $do_refresh;
 }
+
+/*
+  function: init_args
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $args = new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+
+    $args->feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
+    $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+    $args->tsuites_to_show = isset($_REQUEST['tsuites_to_show']) ? $_REQUEST['tsuites_to_show'] : 0;
+  
+    return $args;  
+}
+
+
+/*
+  function: initializeGui
+
+  args:
+  
+  returns: 
+
+*/
+function initializeGui($argsObj,$basehref)
+{
+    $gui = new stdClass();
+    $gui->mme='ddd';
+
+    $gui->ajaxTree=new stdClass();
+    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php' .
+                           "?root_node={$argsObj->tproject_id}&filter_node={$argsObj->tsuites_to_show}";
+
+    $gui->ajaxTree->root_node=new stdClass();
+    $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
+    $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
+    $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
+  
+    return $gui;  
+}
+
+
+
+
+
 ?>

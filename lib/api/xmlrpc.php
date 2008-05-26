@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/05/19 06:44:38 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/05/26 10:43:43 $ by $Author: havlat $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -37,9 +37,9 @@
  */
 require_once(dirname(__FILE__) . "/../../third_party/xml-rpc/class-IXR.php");
 require_once("api.const.inc.php");
-require_once("APIErrors.php");
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once(dirname(__FILE__) . "/../functions/common.php");
+require_once("APIErrors.php");
 require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
 require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");

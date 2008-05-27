@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/05/11 16:55:33 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/05/27 09:30:30 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -181,6 +181,12 @@ $g_tpl = array(
 	'usersview' 	=> "usersView.tpl"
 );
 
+// needed for drap and drop feature
+define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');
+define('TL_DRAG_DROP_JS_DIR', TL_DRAG_DROP_DIR. 'js/');
+define('TL_DRAG_DROP_FOLDER_CSS', TL_DRAG_DROP_DIR . 'css/drag-drop-folder-tree.css');
+define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css');
+
 
 
 // ----------------------------------------------------------------------------
@@ -198,19 +204,19 @@ define('TL_LOCALIZE_TAG',"LOCALIZE: ");
  **/
 // Please mantain the alphabetical order when adding new locales.
 $g_locales = array(	
-	'en_GB' => 'English (UK)',
-	'zh_CN' => 'Chinese Simplified',
 	'cs_CZ' => 'Czech',
-	'en_US' => 'English (US)',
-	'fr_FR' => 'Fran&ccedil;ais',
 	'de_DE' => 'German',
-	'it_IT' => 'Italian',
-	'pl_PL' => 'Polski',
-	'pt_BR' => 'Portuguese (Brazil)',
+	'en_GB' => 'English (UK)',
+	'en_US' => 'English (US)',
 	'es_AR' => 'Spanish (Argentine)',
 	'es_ES' => 'Spanish',
+	'fr_FR' => 'Fran&ccedil;ais',
+	'it_IT' => 'Italian',
+	'ja_JP' => 'Japanese',
+	'pl_PL' => 'Polski',
+	'pt_BR' => 'Portuguese (Brazil)',
 	'ru_RU' => 'Russian',
-	'ja_JP' => 'Japanese'
+	'zh_CN' => 'Chinese Simplified'
 );
 
 /** Format of date
@@ -224,53 +230,53 @@ $g_timestamp_format = "%d/%m/%Y %H:%M:%S";
 
 /** localized format of date */
 $g_locales_date_format = array(
-	'en_GB' => "%d/%m/%Y",
 	'cs_CZ' => "%d.%m.%Y",
+	'de_DE' => "%d.%m.%Y",
+	'en_GB' => "%d/%m/%Y",
 	'en_US' => "%m/%d/%Y",
-	'it_IT' => "%d/%m/%Y",
 	'es_AR' => "%d/%m/%Y",
 	'es_ES' => "%d/%m/%Y",
-	'de_DE' => "%d.%m.%Y",
 	'fr_FR' => "%d/%m/%Y",
+	'it_IT' => "%d/%m/%Y",
 	'ja_JP' => "%Y/%m/%d",
 	'pl_PL' => "%d.%m.%Y",
 	'pt_BR' => "%d/%m/%Y",
 	'ru_RU' => "%d/%m/%Y",
-	'zh_CN' => "%Y��%m��%d��"
+	'zh_CN' => "%Y-%m-%d"
 ); 
 
 /** localized format of full timestamp */
 $g_locales_timestamp_format = array(
-	'en_GB' => "%d/%m/%Y %H:%M:%S",
 	'cs_CZ' => "%d.%m.%Y %H:%M:%S",
+	'de_DE' => "%d.%m.%Y %H:%M:%S",
+	'en_GB' => "%d/%m/%Y %H:%M:%S",
 	'en_US' => "%m/%d/%Y %H:%M:%S",
-	'it_IT' => "%d/%m/%Y %H:%M:%S",
 	'es_AR' => "%d/%m/%Y %H:%M:%S",
 	'es_ES' => "%d/%m/%Y %H:%M:%S",
-	'de_DE' => "%d.%m.%Y %H:%M:%S",
-	'pl_PL' => "%d.%m.%Y %H:%M:%S",
 	'fr_FR' => "%d/%m/%Y %H:%M:%S",
+	'it_IT' => "%d/%m/%Y %H:%M:%S",
+	'ja_JP' => "%Y/%m/%d %H:%M:%S",
+	'pl_PL' => "%d.%m.%Y %H:%M:%S",
 	'pt_BR' => "%d/%m/%Y %H:%M:%S",
 	'ru_RU' => "%d/%m/%Y %H:%M:%S",
-	'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��",
-	'ja_JP' => "%Y/%m/%d %H:%M:%S"
+	'zh_CN' => "%Y-%m-%d %H:%M:%S"
 ); 
 
 /** localized date format for smarty templates (html_select_date function) */
 $g_locales_html_select_date_field_order = array(
-	'en_GB' => "dmY",
 	'cs_CZ' => "dmY",
+	'de_DE' => "dmY",
+	'en_GB' => "dmY",
 	'en_US' => "mdY",
-	'it_IT' => "dmY",
 	'es_AR' => "dmY",
 	'es_ES' => "dmY",
-	'de_DE' => "dmY",
-	'pl_PL' => "dmY",
 	'fr_FR' => "dmY",
+	'it_IT' => "dmY",
+	'ja_JP' => "Ymd",
+	'pl_PL' => "dmY",
 	'pt_BR' => "dmY",
 	'ru_RU' => "dmY",
-	'zh_CN' => "Ymd",
-	'ja_JP' => "Ymd"
+	'zh_CN' => "Ymd"
 ); 
 
 
@@ -493,6 +499,11 @@ $g_testsuite_sep='/';
 // martin: @TODO remove to smarty
 define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE', '</div><br />');
+
+/** Bug tracking objects - unknown meaning (do not change)*/
+// @TODO move to appropriate file
+$g_bugInterfaceOn = false;
+$g_bugInterface = null;
 
 
 // -------------------------------------------------------------------

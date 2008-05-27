@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.322 $
- * @modified $Date: 2008/05/24 14:21:35 $ $Author: franciscom $
+ * @version $Revision: 1.323 $
+ * @modified $Date: 2008/05/27 09:27:26 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -61,7 +61,8 @@ $TLS_test_case 		= "Test Case";
 $TLS_testcase 		= $TLS_test_case;
 $TLS_test_plan 		= "Test Plan";
 $TLS_testplan 		= $TLS_test_plan;
-$TLS_testproject = "Test Project";
+$TLS_testproject 	= "Test Project";
+$TLS_test_report 	= "Test Report";
 $TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title 			= "Title";

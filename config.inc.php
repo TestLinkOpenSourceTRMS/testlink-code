@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.178 $
- * @modified $Date: 2008/05/25 14:42:07 $ by $Author: franciscom $
+ * @version $Revision: 1.179 $
+ * @modified $Date: 2008/05/27 09:29:36 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -130,18 +130,6 @@ error_reporting(E_ALL);
 
 
 // ----------------------------------------------------------------------------
-/** [CHARSET] */
-
-/** 
- * Charset 'UTF-8' is only officially supported charset
- * (Require MySQL version >= 4.1) 
- * 'ISO-8859-1' could be set for backward compatability
- * other charsets requires experienced admin
- **/
-$tlCfg->charset = 'UTF-8';
-
-
-// ----------------------------------------------------------------------------
 /** [LOGGING] */
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
@@ -181,10 +169,6 @@ $g_loggerCfg = null;
  */
 $g_interface_bugs = 'NO';
 
-/** Bug tracking include */
-// @TODO havlatm: what's that???
-$g_bugInterfaceOn = false;
-$g_bugInterface = null;
 
 
 // ----------------------------------------------------------------------------
@@ -219,39 +203,47 @@ $g_user_login_valid_regex='/^[\w \-]+$/';
 $g_user_self_signup = TRUE; 
 
 
+
+// ----------------------------------------------------------------------------
+/** [CHARSET] */
+
+/** 
+ * Charset 'UTF-8' is only officially supported charset
+ * (Require MySQL version >= 4.1) 
+ * 'ISO-8859-1' could be set for backward compatability
+ * other charsets requires experienced admin
+ **/
+$tlCfg->charset = 'UTF-8';
+
+
+// ----------------------------------------------------------------------------
+/** [API] */
+
+/** SOAP API availability (disabled by default) */ 
+$tlCfg->api_enabled = FALSE; 
+
+// used to display API ID info in the *View pages 
+$tlCfg->api_id_format = "[ID: %s ]";
+
+
+
 // ----------------------------------------------------------------------------
 /** [GUI] */
 
-/** Configure frmWorkArea navigator width */
-define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
+/** Configure the frame frmWorkArea navigator width */
+$tlCfg->frame_workarea_default_width = "30%";
 
-/** CSS themes - modify if you create own*/
-define('TL_THEME_BASE_DIR','gui/themes/default/');
+/** GUI themes (base for CSS and images)- modify if you create own one */
+$tlCfg->theme_dir = 'gui/themes/default/';
 
-define('TL_THEME_CSS_DIR',TL_THEME_BASE_DIR . 'css/');
-define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
-define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
-define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
-define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
-define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . 'tl_treemenu.css');
-
-// needed for drap and drop feature
-define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');
-define('TL_DRAG_DROP_JS_DIR', TL_DRAG_DROP_DIR. 'js/');
-define('TL_DRAG_DROP_FOLDER_CSS', TL_DRAG_DROP_DIR . 'css/drag-drop-folder-tree.css');
-define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css');
-
-
-/** path to IMAGE directory - DO NOT ADD FINAL */
-define('TL_THEME_IMG_DIR', TL_THEME_BASE_DIR . 'images/');
-
-/** Company logo (used for navbar/login page page) */
+/** Company logo (used by navigation bar and login page page) */
 $tlCfg->gui->html_logo = '<img alt="TestLink" title="TestLink" style="width: 115px; height: 53px;" src="' . 
-                          TL_THEME_IMG_DIR . 'company_logo.png" />';
+                          $tlCfg->theme_dir . 'images/company_logo.png" />';
 
 /** Image for main menu item bullet (just filename) */
-$g_main_menu_item_bullet_img='slide_gripper.gif'; // arrow_org.gif/slide_gripper.gif
+$tlCfg->bullet_image = 'slide_gripper.gif';  // = [arrow_org.gif, slide_gripper.gif]
 
+/** Availability of Test Project specific background colour */
 // 'background'  -> standard behaviour for 1.6.x you can have a different
 //                  background colour for every test project.
 //
@@ -265,16 +257,19 @@ $tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';
 
-/** Display name and surname in all user lists */
-// $g_show_realname=TRUE; -> build a human readable displayname
-//                           using $g_username_format
-$g_show_realname = FALSE;
+/** 
+ * Display name and surname in all user lists using a format defined in $g_username_format
+ * TRUE - build a human readable display 
+ * FALSE - show login name
+ * @TODO - remove the parameter and use a format only (via '%login%')
+ */ 
+$tlCfg->show_realname = FALSE;
 
 /** Display name definition (used to build a human readable display name for users) */
 // '%first% %last%'          -> John Cook
 // '%last%, %first%'          -> John Cook
 // '%first% %last% %login%'    -> John Cook [ux555]
-$g_username_format = '%first% %last%';
+$tlCfg->username_format = '%login%';
 
 /** characters used to surround the role description in the user interface */
 $tlCfg->gui->role_separator_open =  '[';
@@ -299,16 +294,10 @@ $tlCfg->gui->webeditor='fckeditor';
  * modify which icons will be available in html edit pages
  * refer to fckeditor configuration file 
  **/
-$g_fckeditor_toolbar = "TL_Medium_2";
-
-/** SOAP API availability (disabled by default) */ 
-$tlCfg->api_enabled = FALSE; 
-
-// used to display API ID info in the *View pages 
-$g_api_id_format	= "[ID: %s ]";
+$tlCfg->fckeditor_default_toolbar = "TL_Medium_2";
 
 // used to round percentages on metricsDashboard.php
-$g_dashboard_precision=2;
+$tlCfg->dashboard_precision = 2;
 
 // use when componing an title using several strings
 $tlCfg->gui->title_sep_1 = ' : ';
@@ -353,6 +342,7 @@ $g_tree_node_ordering->default_testsuite_order = 1;
 // 0 -> do not show testcase id on tree
 $g_tree_show_testcase_id = 1;
 
+
 // ----------------------------------------------------------------------------
 /** [GUI: Javascript libraries] */
 /* 1 -> use EXT JS library , GUI widgets */
@@ -364,25 +354,28 @@ $g_use_ext_js_library = 1;
 $g_sort_table_engine='kryogenix.org';
 
 
+
 // ----------------------------------------------------------------------------
 /** [GENERATED DOCUMENTATION] */
 
 /**
- * Texts for printed documents
- * Leave them empty if you would not to use.
+ * Texts and settings for printed documents
+ * Leave text values empty if you would like to disable it.
  */
-$tlCfg->document_generation = new stdClass();
-$tlCfg->document_generation->company = new stdClass();
+$tlCfg->document_generator = new stdClass();
 
-$tlCfg->document_generation->company->name = 'Testlink Community [configure using $tlCfg->company->name]';
+$tlCfg->document_generator->company_name = 'Testlink Community [configure using $tlCfg->company->name]';
 
 /** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
-$tlCfg->document_generation->company->logo_image = 'company_logo.png'; 
-$tlCfg->document_generation->company->copyright_msg = '2008 (c) Testlink Community';
-$tlCfg->document_generation->company->confidential_msg = '';
+$tlCfg->document_generator->company_logo = 'company_logo.png'; 
+$tlCfg->document_generator->company_copyright = '2008 (c) Testlink Community';
+$tlCfg->document_generator->confidential_msg = '';
 
 /** CSS used in printed html documents */
-$tlCfg->css_print_doc = TL_THEME_CSS_DIR . 'tl_doc_basic.css';
+$tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
+
+/** Misc settings */
+$tlCfg->document_generator->tc_version_enabled = FALSE;
 
 
 // ----------------------------------------------------------------------------
@@ -412,8 +405,7 @@ $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 
 // the maximum allowed file size for each repository entry, default 1MB.
 // Also check your PHP settings (default is usually 2MBs)
-define("TL_REPOSITORY_MAXFILESIZE_MB", 1);
-define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*TL_REPOSITORY_MAXFILESIZE_MB); // don't change
+$tlCfg->repository_max_filesize = 1; //MB
 
 // TRUE -> when you upload a file you can give no title
 $g_attachments->allow_empty_title = TRUE;
@@ -433,7 +425,7 @@ $g_attachments->action_on_save_empty_title = 'none';
 // 'show_label' -> the value of $g_attachments->access_string will be used .
 $g_attachments->action_on_display_empty_title = 'show_icon';
 
-$g_attachments->access_icon = '<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none" />';
+$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
 // Set display order of uploaded files - BUGID 1086
@@ -460,6 +452,7 @@ $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 //
 $g_req_cfg->reqdoc_id->is_system_wide=false;
+
 
 
 // ----------------------------------------------------------------------------
@@ -760,28 +753,21 @@ $g_html_valid_tags_single_line = 'i, b, u, em';
 
 
 
-// --------------------------------------------------------------------
-// --------------------------------------------------------------------
-
-
-// havlatm: @TODO move the next code out of config
-// basehref should be defined by installation script or stored from login in $_SESSION
-// configCheck.php -> included via common.php
-
-
-/** Functions for check request status */
-require_once('configCheck.php');
-
-/** root of testlink directory location seen through the web server */
-/*  20070106 - franciscom - this statement it's not 100% right      
-    better use $_SESSION['basehref'] in the scripts. */      
-define('TL_BASE_HREF', get_home_url()); 
-
-
 // ----- End of Config ------------------------------------------------
 // --------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
 // --------------------------------------------------------------------
+
+// havlatm: @TODO move the next code out of config - configCheck.php -> included via common.php
+/** Functions for check request status */
+require_once('configCheck.php');
+
+/** root of testlink directory location seen through the web server */
+// @TODO: basehref should be defined by installation script or stored from login in $_SESSION
+/*  20070106 - franciscom - this statement it's not 100% right      
+    better use $_SESSION['basehref'] in the scripts. */      
+define('TL_BASE_HREF', get_home_url()); 
+
 
 clearstatcache();
 if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) ) 
@@ -803,14 +789,12 @@ define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 
 require_once(TL_ABS_PATH . 'cfg/userRightMatrix.php');
 
+
 // --------------------------------------------------------------------
 // converted and derived vars to consts (Users should not modify it)
-define('TL_TREE_KIND', $tlCfg->treemenu_type);
-define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
-define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . "/" .$g_main_menu_item_bullet_img);
 define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
-define('TL_API_ID_FORMAT',$g_api_id_format);
 define('TL_SORT_TABLE_ENGINE',$g_sort_table_engine);
+define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*$tlCfg->repository_max_filesize); 
 
 // simplifies use on smarty template
 define('WEBEDITOR',$tlCfg->gui->webeditor);
@@ -825,6 +809,18 @@ define('TITLE_SEP',$tlCfg->gui->title_sep_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui->title_sep_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui->title_sep_3);
 
+
+define('TL_THEME_BASE_DIR','gui/themes/default/');
+
+define('TL_THEME_CSS_DIR',$tlCfg->theme_dir . 'css/');
+define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
+define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
+define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . 'tl_treemenu.css');
+
+/** path to IMAGE directory - DO NOT ADD FINAL */
+define('TL_THEME_IMG_DIR', $tlCfg->theme_dir . 'images/');
+
+
 // when a role is deleted, a new role must be assigned to all users
 // having role to be deleted
 // A right choice seems to be using $g_default_roleid.
@@ -832,7 +828,20 @@ define('TITLE_SEP_TYPE3',$tlCfg->gui->title_sep_3);
 $g_role_replace_for_deleted_roles=$tlCfg->default_roleid;
 
 // @todo remove - unfinished refactorization for $tlCfg
+define('TL_LOGIN_CSS', TL_TESTLINK_CSS);	// @TODO remove
+define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');	// @TODO remove
+define('TL_TREE_KIND', $tlCfg->treemenu_type);
+define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
 $g_log_level=$tlCfg->log_level;
+$g_show_realname = $tlCfg->show_realname;
+$g_username_format = $tlCfg->username_format;
+$g_dashboard_precision = $tlCfg->dashboard_precision;
+$g_fckeditor_toolbar = $tlCfg->fckeditor_default_toolbar;
+define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width); 
+$g_main_menu_item_bullet_img = $tlCfg->bullet_image; 
+define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . "/" .$g_main_menu_item_bullet_img);
+$g_api_id_format = $tlCfg->api_id_format;
+define('TL_API_ID_FORMAT',$tlCfg->api_id_format);
 
 
 

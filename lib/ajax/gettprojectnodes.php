@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.1 2008/05/25 14:43:48 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.2 2008/05/28 20:57:12 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Created using Ext JS example code
@@ -35,7 +35,9 @@ echo json_encode($nodes);
 
 <?php
 function display_children($dbHandler,$root_node,$parent,$filter_node) 
-{                                                
+{             
+    $nodes=null;
+                                       
     $sql = "SELECT NH.*, NT.description AS node_type FROM nodes_hierarchy NH, node_types NT " .
            " WHERE NH.node_type_id=NT.id " .
            " AND parent_id = {$parent} " .

@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.3 2008/05/25 14:42:07 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.4 2008/05/28 20:56:58 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
  
    20080525 - franciscom - use only ext js tree type.
@@ -50,7 +50,7 @@
     		<tr>
     			<td>{lang_get s='testsuite'}</td>
     			<td>
-    			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$tsuite_choice}
+    			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$gui->tsuite_choice}
     			</td>
     		</tr>
  
@@ -70,7 +70,7 @@
   
   		<tr>
   			<td>&nbsp;</td>
-  			<td><input type="submit" name="refresh_view" 
+  			<td><input type="submit" name="refresh_view" id="refresh_view" 
   			           value="{lang_get s='button_update_tree'}" style="font-size: 90%;" /></td>
   		</tr>
   	</table>

@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.17 $
-$Date: 2008/03/03 07:47:12 $ by $Author: franciscom $
+$Revision: 1.18 $
+$Date: 2008/05/28 20:57:52 $ by $Author: franciscom $
 -------------------------------------------------------------------------
  
  
@@ -41,6 +41,10 @@ Other Contributors (code, ideas, testing..):
 * Lightbulb Technology Services Pvt. Ltd. - techpartners: import test cases from XLS file
   abhishek.kulkarni@gmail.com and amit.dixit@lbtp.co.in 
 * Kester Mielke <kmielke@pironet-ndh.com> (execution tree colouring and counters by tc status)
+* Peter Rooms - Bug coloring and labeling according status using same colors than Mantis.
+* Eugenia Drosdezki - Move/copy multiple testcases
+*                     Access to content of docs folder on combo box  
+*                     Multiselect OR keywords filter
   
 Localization
 * French

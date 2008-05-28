@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  *
- * @modified $Date: 2008/05/11 22:13:22 $ by $Author: schlundus $
+ * @modified $Date: 2008/05/28 20:57:52 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -19,11 +19,14 @@ require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
 
-$template_dir='testcases/';
+$templateCfg=templateConfiguration();
+$gui = new stdClass();
+$gui->testprojectName = $_SESSION['testprojectName'];
 
-$importType = isset($_POST['importType']) ? $_POST['importType'] : null;
+
+$importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
 $bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
-$location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
+$location = isset($_REQUEST['location']) ? strings_stripSlashes($_REQUEST['location']) : null; 
 $container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
 $bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
 $resultMap = null;
@@ -32,7 +35,6 @@ $do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
 
 $userID = $_SESSION['userID'];
 $tproject_id = $_SESSION['testprojectID'];
-$testprojectName = $_SESSION['testprojectName'];
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
 $dest_files = array('XML' => $dest_common . ".csv",
@@ -106,25 +108,25 @@ else
 {
   $obj_mgr = new testcase($db);
 }
-$import_file_types = $obj_mgr->get_import_file_types();
 
+$gui->importTypes = $obj_mgr->get_import_file_types();
+$gui->importLimitKB=(TL_IMPORT_LIMIT / 1024);
 
 $smarty = new TLSmarty();
+// $smarty->assign('testprojectName', $testprojectName);
+// $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
+
+$smarty->assign('gui',$gui);  
 $smarty->assign('import_title',$import_title);  
 $smarty->assign('file_check',$file_check);  
 $smarty->assign('bRecursive',$bRecursive); 
 $smarty->assign('resultMap',$resultMap); 
-$smarty->assign('tcFormatStrings',$g_tcFormatStrings);
-$smarty->assign('importTypes',$import_file_types);
-$smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_name', $container_name);
 $smarty->assign('container_description', $container_description);
 $smarty->assign('bIntoProject',$bIntoProject);
-//$smarty->assign('importLimit',TL_IMPORT_LIMIT);
-$smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
-$smarty->display($template_dir . 'tcImport.tpl');
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*
   function: importTestCaseDataFromXML

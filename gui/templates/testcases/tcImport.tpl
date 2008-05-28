@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.3 2008/05/06 06:26:13 franciscom Exp $
+$Id: tcImport.tpl,v 1.4 2008/05/28 20:57:52 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20080329 - franciscom - lang_get() refactoring
@@ -29,7 +29,7 @@ rev: 20080329 - franciscom - lang_get() refactoring
   <tr>
   <td> {$labels.file_type} </td>
   <td> <select name="importType">
-         {html_options options=$importTypes}
+         {html_options options=$gui->importTypes}
 	     </select>
 	<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
 	</td>
@@ -39,12 +39,12 @@ rev: 20080329 - franciscom - lang_get() refactoring
 	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
 	</tr>
 	</table>
-	<p>{$labels.max_size_cvs_file1} {$importLimitKB} {$labels.max_size_cvs_file2}</p>
+	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
 		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
 		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$containerID}" />
-		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			                   onclick="javascript:history.back();" />

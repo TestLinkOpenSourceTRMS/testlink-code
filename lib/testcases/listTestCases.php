@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.26 2008/05/25 14:42:07 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.27 2008/05/28 20:57:52 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -82,7 +82,6 @@ $smarty->assign('gui',$gui);
 
 $smarty->assign('tcspec_refresh_on_action',$do_refresh_on_action);
 $smarty->assign('tsuites_combo',$tsuites_combo);
-$smarty->assign('tsuite_choice',$tsuites_to_show);
 $smarty->assign('draw_filter',$draw_filter) ;
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
@@ -192,7 +191,6 @@ function init_args()
 function initializeGui($argsObj,$basehref)
 {
     $gui = new stdClass();
-    $gui->mme='ddd';
 
     $gui->ajaxTree=new stdClass();
     $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php' .
@@ -203,6 +201,7 @@ function initializeGui($argsObj,$basehref)
     $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
     $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
   
+    $gui->tsuite_choice=$argsObj->tsuites_to_show;  
     return $gui;  
 }
 

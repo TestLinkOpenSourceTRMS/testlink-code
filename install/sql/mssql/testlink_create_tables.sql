@@ -1,12 +1,13 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.22 2008/04/02 08:44:51 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.23 2008/05/28 18:26:04 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 --      20080331 - franciscom - testplan_tcversions added node_order
 --      20071202 - franciscom - added tcversions.execution_type
 --      20071010 - franciscom - ntext,nvarchar,nchar -> text,varchar,char
@@ -190,6 +191,7 @@ CREATE TABLE [executions](
 	[status] [char](1)  NULL CONSTRAINT [DF_executions_status]  DEFAULT (NULL),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_executions_testplan_id]  DEFAULT ((0)),
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_executions_tcversion_id]  DEFAULT ((0)),
+	[tcversion_number] [smallint] NOT NULL CONSTRAINT [DF_tcversions_version]  DEFAULT ((1)),
 	[execution_type] [tinyint] NOT NULL CONSTRAINT [DF_executions_execution_type]  DEFAULT ((1)),
 	[notes] [text]  NULL CONSTRAINT [DF_executions_notes]  DEFAULT (NULL),
  CONSTRAINT [PK_executions] PRIMARY KEY CLUSTERED 

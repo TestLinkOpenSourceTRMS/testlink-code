@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.56 2008/05/11 22:13:22 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.57 2008/05/28 18:27:20 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -97,6 +97,7 @@ if($do_display)
 		
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
+	
 	$testCaseSet=null;
 	if( !is_null($keywordsFilter) )
 	{ 

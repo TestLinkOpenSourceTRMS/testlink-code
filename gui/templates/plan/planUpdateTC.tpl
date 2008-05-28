@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.5 2008/05/11 22:13:22 schlundus Exp $
+$Id: planUpdateTC.tpl,v 1.6 2008/05/28 18:25:24 franciscom Exp $
 
 Author: franciscom
 
 Purpose: generate a list of Test Cases linked to Test Plan 
          that have a newer available version.
          
-
+rev:
+    20080528 - franciscom - BUGID 1504 
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -119,7 +120,9 @@ function validateForm(f)
                  {assign var='is_active' value=1}
                {/if}
             {/if}      
-            {if $tcase.executed == 'no' && $is_active==1} 
+            
+            {* BUGID 1504 - {if $tcase.executed == 'no' && $is_active==1} *}
+            {if $is_active==1}    
                 {assign var="draw_update_inputs" value=1}
             {/if}    
             {* ------------------------------------------------ *}

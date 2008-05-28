@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.7 $ $Author: franciscom $
- * @modified $Date: 2008/05/10 17:59:15 $
+ * @version $Revision: 1.8 $ $Author: franciscom $
+ * @modified $Date: 2008/05/28 18:27:20 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20080528 - franciscom - internal bug - only one version was retrieved
  *     20080510 - franciscom - added getFilteredLinkedVersions()
  *                                   keywordFilteredSpecView()
  *
@@ -259,7 +260,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		$tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS);
   		$result['num_tc']=0;
   		$pivot_id=-1;
-  		
+
   		foreach($tcase_set as $the_k => $the_tc)
     	{
 			  $tc_id = $the_tc['testcase_id'];
@@ -273,7 +274,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         // --------------------------------------------------------------------------
         if($the_tc['active'] == 1)
         {       
-  	      
   	      // 20080403 - franciscom
   	      if( !isset($out[$parent_idx]['testcases'][$tc_id]['execution_order']) )
   	      {
@@ -284,16 +284,22 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
               // N.B.:
               // As suggested by Martin Havlat order will be set to external_id * 10
   	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $the_tc['tc_external_id']*10;
-    			    $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
-  				    $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
-              $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+
+              // 20080528 - franciscom
+    			    // $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+  				    // $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
+              // $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
           } 
+    			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
+          $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
   				  
 		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
 			    else
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
         }
+        
   			if(!is_null($linked_items))
   			{
   				foreach($linked_items as $the_item)

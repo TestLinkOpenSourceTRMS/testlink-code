@@ -1,23 +1,24 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.20 2008/05/19 10:23:53 havlat Exp $
+$Id: execSetResults.tpl,v 1.21 2008/05/28 18:25:23 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20080528 - franciscom - BUGID 1504 - version number management
 	20080515 - havlatm - updated help link
-    20080322 - franciscom - feature: allow edit of execution notes
-                            minor refactoring.
-    20071231 - franciscom - new show/hide section to show exec notes
-    20071103 - franciscom - BUGID 700
-    20071101 - franciscom - added test automation code
-    20070826 - franciscom - added some niftycube effects
-    20070519 - franciscom -
-    BUGID 856: Guest user can execute test case
+  20080322 - franciscom - feature: allow edit of execution notes
+                          minor refactoring.
+  20071231 - franciscom - new show/hide section to show exec notes
+  20071103 - franciscom - BUGID 700
+  20071101 - franciscom - added test automation code
+  20070826 - franciscom - added some niftycube effects
+  20070519 - franciscom -
+  BUGID 856: Guest user can execute test case
 
-    20070211 - franciscom - added delete logic
-    20070205 - franciscom - display test plan custom fields.
-    20070125 - franciscom - management of closed build
-    20070104 - franciscom - custom field management for test cases
-    20070101 - franciscom - custom field management for test suite div
+  20070211 - franciscom - added delete logic
+  20070205 - franciscom - display test plan custom fields.
+  20070125 - franciscom - management of closed build
+  20070104 - franciscom - custom field management for test cases
+  20070101 - franciscom - custom field management for test suite div
 *}
 
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
@@ -44,6 +45,7 @@ Rev:
 	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
 	           no_data_available,import_xml_results,btn_save_all_tests_results,
+	           testcaseversion,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
 
 
@@ -226,7 +228,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
     {assign var="tc_id" value=$tc_exec.testcase_id}
 	  {assign var="tcversion_id" value=$tc_exec.id}
+	  {* IMPORTANT:
+	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
+	               When we need to display executed version number, we use tcversion_number
+	  *}
+	  {assign var="version_number" value=$tc_exec.version}
+	  
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
+		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
 
     {* ------------------------------------------------------------------------------------ *}
     {lang_get s='th_testsuite' var='container_title'}
@@ -336,12 +345,12 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 		  <table cellspacing="0" class="exec_history">
 			 <tr>
 				<th style="text-align:left">{$labels.date_time_run}</th>
-        {* 20071103 - BUGID 700 *}
 				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:center">{$labels.exec_status}</th>
+				<th style="text-align:center">{$labels.testcaseversion}</th>
 
 				{if $attachment_model->show_upload_column && !$att_download_only}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
@@ -358,10 +367,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
 
-        {* 20080103 - franciscom *}
         <th style="text-align:left">{$labels.run_mode}</th>
         {assign var="my_colspan" value=$my_colspan+1}
-
 
 			 </tr>
 
@@ -383,6 +390,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}" style="text-align:center">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
+  				
+  		   {* IMPORTANT:
+	               Here we use tcversion_number because we want to display
+	               version number used when this execution was recorded.
+      	  *}
+
+  				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
 
           {if $attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">

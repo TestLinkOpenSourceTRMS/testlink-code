@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.110 $
- * @modified $Date: 2008/05/10 14:40:32 $ $Author: franciscom $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2008/05/28 18:27:20 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080425 - franciscom - replacing DEFINE with const
@@ -1871,7 +1871,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 		    users.first AS tester_first_name,
 		    users.last AS tester_last_name,
 			  users.id AS tester_id,
-		    e.id AS execution_id, e.status,
+		    e.id AS execution_id, e.status,e.tcversion_number,
 		    e.notes AS execution_notes, e.execution_ts, e.execution_type,e.build_id AS build_id,
 		    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
 	      FROM nodes_hierarchy NHA
@@ -2017,7 +2017,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 		    users.first AS tester_first_name,
 		    users.last AS tester_last_name,
 			  users.id AS tester_id,
-		    e.notes AS execution_notes, e.execution_ts, e.build_id,
+		    e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
 		    builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open
 	      FROM nodes_hierarchy NHA
         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id

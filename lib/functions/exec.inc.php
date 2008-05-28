@@ -4,12 +4,15 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/05/18 16:56:09 $ $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/05/28 18:27:20 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
+ *
+ * 20080528 - franciscom - BUGID 1504 - changes in write_execution
+ *                                      using version_number
  *
  * 20080504 - franciscom - removed deprecated functions
  *
@@ -89,6 +92,7 @@ function createResultsMenu()
   returns: 
 
   rev :
+       20080528 - franciscom - added tcversion_number
        20070105 - franciscom - added $tproject_id
 */
 function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build_id,$map_last_exec)
@@ -135,14 +139,18 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 	{
 	  $tcase_id=$exec_data['tc_version'][$tcversion_id];
 		$current_status = $exec_data['status'][$tcversion_id];
+		$version_number=$exec_data['version_number'][$tcversion_id];;
 		$has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
 		if($has_been_executed)
 		{ 
 			$my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
 			$sql = "INSERT INTO executions ".
-				     "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
+				     "(build_id,tester_id,status,testplan_id,tcversion_id," .
+				     " execution_ts,notes,tcversion_number)".
 				     " VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
-				     "{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
+				     "{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
+				     "{$version_number}" .
+				     ")";
 			$db->exec_query($sql);  	
 			
 			// 20070617 - franciscom - BUGID : at least for Postgres DBMS table name is needed. 

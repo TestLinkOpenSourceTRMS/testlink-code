@@ -1,12 +1,13 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.19 2008/04/02 08:44:52 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.20 2008/05/28 18:26:05 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 --      20080331 - franciscom - testplan_tcversions added node_order
 --      20080318 - franciscom - tcversions.tc_external_id
 --      20080315 - franciscom - updated testproject table structure
@@ -227,6 +228,7 @@ CREATE TABLE "executions" (
   "status" CHAR(1) NULL DEFAULT NULL,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
   "tcversion_id" BIGINT NOT NULL DEFAULT '0',
+  "tcversion_number" INTEGER NOT NULL DEFAULT '1',
   "execution_type" INT2 NOT NULL DEFAULT '1',
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")

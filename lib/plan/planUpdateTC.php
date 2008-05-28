@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.24 2008/05/10 17:59:15 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.25 2008/05/28 18:27:20 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -9,6 +9,9 @@
  * following user choices.
  * Test Case Execution assignments will be auto(magically) updated.
  *
+ * rev:
+ *     20080528 - franciscom - fixed internal bug that shows wrong version is user works
+ *                             only with one test case
  */
 require('../../config.inc.php');
 require_once("common.php");
@@ -63,11 +66,7 @@ switch($args->level)
 			$my_path = $tree_mgr->get_path($args->id);
 			$idx_ts = count($my_path)-1;
 			$tsuite_data = $my_path[$idx_ts-1];
-			
-			$pp = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id, $args->tplan_id);
-			$linked_items[$args->id] = $pp[$args->version_id];
-			$linked_items[$args->id]['testsuite_id'] = $tsuite_data['id'];
-			$linked_items[$args->id]['tc_id'] = $args->id;
+			$linked_items=$tplan_mgr->get_linked_tcversions($args->tplan_id,$args->id);
 			
 			$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 			                     $linked_items,$map_node_tccount,$args->keyword_id,
@@ -151,9 +150,28 @@ function doUpdate(&$dbObj,&$argsObj)
       foreach($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID)
       {
          $newtcversion=$argsObj->newVersionSet[$tcaseID];
+
+         // Update link to testplan
          $sql = "UPDATE testplan_tcversions " .
                " SET tcversion_id={$newtcversion} " .
-               " WHERE tcversion_id={$tcversionID}";
+               " WHERE tcversion_id={$tcversionID} " .
+               " AND testplan_id={$argsObj->tplan_id}";
+         $dbObj->exec_query($sql);
+
+
+         // BUGID 1504
+         // Update link in executions
+         $sql = "UPDATE executions " .
+               " SET tcversion_id={$newtcversion} " .
+               " WHERE tcversion_id={$tcversionID}" .
+               " AND testplan_id={$argsObj->tplan_id}";
+         $dbObj->exec_query($sql);
+         
+         // Update link in cfields values
+         $sql = "UPDATE cfield_execution_values " .
+               " SET tcversion_id={$newtcversion} " .
+               " WHERE tcversion_id={$tcversionID}" .
+               " AND testplan_id={$argsObj->tplan_id}";
          $dbObj->exec_query($sql);
       }
       $msg = lang_get("tplan_updated");

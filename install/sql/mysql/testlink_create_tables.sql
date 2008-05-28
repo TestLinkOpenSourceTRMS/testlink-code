@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.35 2008/04/02 08:44:52 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.36 2008/05/28 18:26:05 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+# 20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 # 20080331 - franciscom - testplan_tcversions added node_order
 # 20080226 - franciscom - removed autoincrement id on req_spec, requirements
 # 20080119 - franciscom - testprojects.option_automation
@@ -126,6 +127,7 @@ CREATE TABLE `executions` (
   `status` char(1) default NULL,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `tcversion_number` smallint(5) unsigned NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
   `notes` text,
   PRIMARY KEY  (`id`),

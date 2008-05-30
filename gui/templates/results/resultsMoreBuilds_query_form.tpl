@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.7 2008/05/24 14:20:09 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.8 2008/05/30 09:31:06 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
@@ -148,6 +148,10 @@ rev :
 		     Allows user to change what data / results are displayed in report 
 		-->
 			<tr>
+			  <th>{lang_get s='select_owner_header'}</th>
+				<th>{$labels.executor}</th>
+			</tr>
+			<tr>
 			<td>
 				<select name="owner">
 					{foreach key=owner item=ownerid from=$gui->assigned_users->items}
@@ -174,10 +178,6 @@ rev :
 					<input type="text" name="search_notes_string"/>
 				</td>
 				<td>&nbsp;</td>
-			</tr>
-			<tr>
-			  <th>{lang_get s='select_owner_header'}</th>
-				<th>{$labels.executor}</th>
 			</tr>
 	    </table>
     </div>

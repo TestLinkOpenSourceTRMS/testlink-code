@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.22 2008/05/02 07:09:23 franciscom Exp $
+$Id: inc_head.tpl,v 1.23 2008/05/30 09:31:06 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -23,10 +23,6 @@ rev :
 	<title>{$pageTitle|default:"TestLink"}</title>
 	<link rel="TL shortcut icon" href="{$basehref}/{$smarty.const.TL_THEME_IMG_DIR}/favicon.ico" />
 	<style media="all" type="text/css">@import "{$css}";</style>
-	
-	{if $smarty.const.TL_JOMLA_1_CSS neq ''}
-  	<style media="all" type="text/css">@import "{$basehref}{$smarty.const.TL_JOMLA_1_CSS}";</style>
-	{/if}
 	{if $testproject_coloring eq 'background'}
   	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
   {/if}

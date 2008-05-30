@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.57 2008/05/28 18:27:20 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.58 2008/05/30 09:31:25 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -29,7 +29,6 @@ $tcase_mgr = new testcase($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args();
-$guiCfg = config_get('gui');
 $do_display = 0;
 
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
@@ -211,6 +210,8 @@ function doReorder(&$argsObj,&$tplanMgr)
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
+    $guiCfg = config_get('gui');
+
     $gui = new stdClass();
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;

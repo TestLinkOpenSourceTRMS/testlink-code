@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2008/05/17 14:20:35 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2008/05/30 09:31:25 $ by $Author: franciscom $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -309,7 +309,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     //
     $additionalInfo->useCounters=$cfgObj->exec->enable_tree_testcase_counters;
-    $additionalInfo->useColors=$cfgObj->exec->enable_tree_colouring;
+    $additionalInfo->useColours=$cfgObj->exec->enable_tree_colouring;
 
 
     // link to load frame named 'workframe' when the update button is pressed

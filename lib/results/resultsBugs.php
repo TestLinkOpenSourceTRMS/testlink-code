@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/05/14 06:09:33 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/05/30 09:31:25 $ by $Author: franciscom $
  * @author kevinlevy
  * 
  * rev :
@@ -100,6 +100,9 @@ $totalCasesWithBugs = count($arrData);
 
 
 $smarty = new TLSmarty;
+$smarty->assign('user',$args->user);
+//$smarty->assign('printDate', strftime($g_date_format, time()) );
+$smarty->assign('printDate','');
 $smarty->assign('tproject_name', $tproject_info['name']);
 $smarty->assign('tplan_name', $tplan_info['name'] );
 $smarty->assign('title', lang_get('link_report_total_bugs'));
@@ -178,7 +181,9 @@ function tallyResolvedBug($bugID, &$array)
 function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 {
 	$bugString = null;
-	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+  $bugInterface = config_get('bugInterface');
+   
+	$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
 	if ($bugs)
 	{
 		foreach($bugs as $bugID => $bugInfo)
@@ -206,6 +211,8 @@ function init_args()
   
   $args->tplan_id=$_REQUEST['tplan_id'];
   $args->tproject_id=$_SESSION['testprojectID'];
+  $args->user = $_SESSION['currentUser'];
+
   return $args;
 }
 ?>

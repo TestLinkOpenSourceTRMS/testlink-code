@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.4 2008/05/18 16:54:32 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.5 2008/05/30 09:31:06 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -37,6 +37,7 @@ Revisions:
            args_title=$labels.title_res_by_owner
            args_first_column_header=$labels.trep_owner
            args_first_column_key='tester_name'
+           args_show_percentage=true
            args_column_definition=$columnsDefinition->testers
            args_column_data=$statistics->testers}
   
@@ -48,6 +49,7 @@ Revisions:
            args_title=$labels.title_res_by_kw
            args_first_column_header=$labels.trep_kw
            args_first_column_key='keyword_name'
+           args_show_percentage=true
            args_column_definition=$columnsDefinition->keywords
            args_column_data=$statistics->keywords}
 

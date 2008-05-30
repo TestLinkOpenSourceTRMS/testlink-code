@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/05/17 17:41:08 $ by $Author: franciscom $
+ * @modified $Date: 2008/05/30 09:31:25 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -225,7 +225,11 @@ class results
     {
         $this->tc_status_for_statistics[$tc_status_verbose]=$this->map_tc_status[$tc_status_verbose];
     }
-
+    if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
+    {
+        $this->tc_status_for_statistics['not_run']=$this->map_tc_status['not_run'];  
+    }
+   
     $this->suitesSelected = $suitesSelected;
     $this->tprojectID = $tproject_info['id'];
     $this->testCasePrefix = $tproject_info['prefix'];
@@ -629,7 +633,6 @@ class results
 		$dummy=0;
 		foreach($results as $tc_id => $result_code)
 		{
-
 	      $status_verbose=$code_verbose[$result_code];
 
         // Check if user has configured and add not_run.

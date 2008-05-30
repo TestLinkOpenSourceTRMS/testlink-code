@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/04/19 22:18:59 $ $Author: havlat $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/05/30 09:31:25 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -98,7 +98,8 @@ else if ($type == 'testplan')
 	$filters = new stdClass();
   	$additionalInfo = new stdClass();
 
-	$filters->keyword_id = FILTER_BY_KEYWORD_OFF;
+	  $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
+  	$filters->keywordsFilterType=null;
   	$filters->tc_id = FILTER_BY_TC_OFF;
   	$filters->build_id = $latestBuild;
   	$filters->hide_testcases=HIDE_TESTCASES;

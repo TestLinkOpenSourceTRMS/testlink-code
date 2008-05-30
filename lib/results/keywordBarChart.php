@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: keywordBarChart.php,v 1.7 2008/05/11 16:56:37 franciscom Exp $ 
+* $Id: keywordBarChart.php,v 1.8 2008/05/30 09:31:25 franciscom Exp $ 
 *
 * @author	Kevin Levy
 *
@@ -77,7 +77,8 @@ SendChartData ( $chart );
 */
 function getChartData(&$dbHandler)
 {
-  
+    $keywordNames=array('');
+    $totals=null; 
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
     
@@ -118,14 +119,17 @@ function getChartData(&$dbHandler)
     
     $obj = new stdClass();
     $obj->chart_data = array($keywordNames);
+    $obj->series_color=null;
     $resultsCfg=config_get('results');
-    foreach( $totals as $status => $values)
+    if(!is_null($totals) )
     {
-        array_unshift($values,lang_get($resultsCfg['status_label'][$status]));
-        $obj->chart_data[]=$values;
-        $obj->series_color[]=$resultsCfg['charts']['status_colour'][$status];
+        foreach( $totals as $status => $values)
+        {
+            array_unshift($values,lang_get($resultsCfg['status_label'][$status]));
+            $obj->chart_data[]=$values;
+            $obj->series_color[]=$resultsCfg['charts']['status_colour'][$status];
+        }
     }
-    
     return $obj;    
     
 }

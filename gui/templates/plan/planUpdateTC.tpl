@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.6 2008/05/28 18:25:24 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.7 2008/05/31 08:56:06 franciscom Exp $
 
 Author: franciscom
 
@@ -37,17 +37,25 @@ function validateForm(f)
 </head>
 
 {lang_get var='labels'
-          s='test_plan,update_testcase_versions,note_keyword_filter,check_uncheck_all,
-            check_uncheck_all_checkboxes,th_id,has_been_executed,show_tcase_spec,
-            update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
+          s='no_testcase_available,test_plan,update_testcase_versions,
+             update_all_testcase_versions,
+             note_keyword_filter,check_uncheck_all,
+             check_uncheck_all_checkboxes,th_id,has_been_executed,show_tcase_spec,
+             update_to_version,inactive_testcase,btn_update_testplan_tcversions'}
+
+{if $gui->buttonAction=='doUpdate'}
+  {assign var="action_descr" value=$labels.update_testcase_versions}
+{else}
+  {assign var="action_descr" value=$labels.update_all_testcase_versions}
+{/if}
 
 <body class="testlink">
 <h1 class="title">{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->testPlanName|escape}</h1>
 
 {if $gui->has_tc }
 <form name="updateTcForm" id="updateTcForm" method="post"
-      onSubmit="javascript:return validateForm(this);">
-   <h1 class="title">{$labels.update_testcase_versions}</h1>
+      {if $gui->buttonAction=='doUpdate'}onSubmit="javascript:return validateForm(this);" {/if}>
+   <h1 class="title">{$action_descr}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
   {if $key ne ''}
@@ -57,7 +65,17 @@ function validateForm(f)
   {/if}
   
 <div class="workBack" style="height: 380px; overflow-y: auto;">
-     
+
+  {if $gui->instructions != ''}
+    {$gui->instructions}
+
+    {if $gui->user_feedback != ''}
+       <br>{$gui->user_feedback}
+    {/if}     
+    
+  {/if}     
+
+
   {* prefix for checkboxs *}   
   {assign var="update_cb" value="achecked_tc"} 
   {assign var="item_number" value=0}
@@ -192,14 +210,13 @@ function validateForm(f)
   <div class="workBack">   
       <br/><input type="submit" id="update_btn" name="update_btn" style="padding-right: 20px;"
  	      	        value='{$labels.btn_update_testplan_tcversions}'  />
- 	      	        
- 	      	 <input type="hidden" name="doAction" id="doAction" value="doUpdate" />  
+ 	      	 <input type="hidden" name="doAction" id="doAction" value="{$gui->buttonAction}" />  
    </div>
 
 </form>
 
 {else}
-	<h2>{lang_get s='no_testcase_available'}</h2>
+	<h2>{$labels.no_testcase_available}</h2>
 {/if}
 
 {* 

@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.25 2008/05/28 18:27:20 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.26 2008/05/31 08:56:46 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -43,6 +43,9 @@ switch ($args->doAction)
 	    $gui->user_feedback = doUpdate($db,$args);
 	    break;
 
+    case "doUpdateAllToLatest":
+	    $gui->user_feedback = doUpdateAllToLatest($db,$args,$tplan_mgr);
+
     default:
     	break;
 }
@@ -81,6 +84,11 @@ switch($args->level)
    	}
 		break;
 
+	case 'testplan':
+	  $gui->instructions=lang_get('update2latest');
+	  $gui->buttonAction="doUpdateAllToLatest";
+  break;
+  
 	default:
 		// show instructions
   		redirect($_SESSION['basehref'] . "/lib/general/staticPage.php?key=planUpdateTC");
@@ -192,6 +200,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
+    $gui->instructions='';
+    $gui->buttonAction="doUpdate";
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
     $gui->user_feedback = '';
@@ -219,4 +229,70 @@ function processTestSuite(&$dbHandler,&$argsObj,$map_node_tccount,
 
     return $out;
 }
+
+
+/*
+  function: doUpdate
+
+  args:
+
+  returns: message
+
+*/
+function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
+{
+  $qty=0;
+  $linkedItems=$tplanMgr->get_linked_tcversions($argsObj->tplan_id);
+  
+  if( is_null($linkedItems) )
+  {
+     return lang_get('no_testcase_available');  
+  }
+  
+  $items=$tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id);
+  if( !is_null($items) )
+  {
+      foreach($items as $key => $value)
+      {
+         if( $value['newest_tcversion_id'] != $value['tcversion_id'] )
+         {
+            $newtcversion=$value['newest_tcversion_id'];
+            $tcversionID=$value['tcversion_id'];
+            $qty++;
+            
+            // Update link to testplan
+            $sql = "UPDATE testplan_tcversions " .
+                   " SET tcversion_id={$newtcversion} " .
+                   " WHERE tcversion_id={$tcversionID} " .
+                   " AND testplan_id={$argsObj->tplan_id}";
+            $dbObj->exec_query($sql);
+      
+            // Update link in executions
+            $sql = "UPDATE executions " .
+                  " SET tcversion_id={$newtcversion} " .
+                  " WHERE tcversion_id={$tcversionID}" .
+                  " AND testplan_id={$argsObj->tplan_id}";
+            $dbObj->exec_query($sql);
+      
+            // Update link in cfields values
+            $sql = "UPDATE cfield_execution_values " .
+                  " SET tcversion_id={$newtcversion} " .
+                  " WHERE tcversion_id={$tcversionID}" .
+                  " AND testplan_id={$argsObj->tplan_id}";
+            $dbObj->exec_query($sql);
+         }
+      }
+  } 
+  if( $qty == 0 )
+  {
+      $msg=lang_get('all_versions_where_latest');  
+  }  
+  else
+  {
+      $msg=sprintf(lang_get('num_of_updated'),$qty);
+  }
+
+  return $msg;
+}
+
 ?>

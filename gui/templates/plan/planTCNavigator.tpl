@@ -1,12 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.7 2008/05/19 10:24:02 havlat Exp $
+$Id: planTCNavigator.tpl,v 1.8 2008/05/31 08:56:06 franciscom Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
 *}
 {lang_get var="labels" 
-          s='btn_update_menu,keyword,keywords_filter_help,
+          s='btn_update_menu,keyword,keywords_filter_help,title_navigator,
+             btn_update_all_testcases_to_latest_version,
              filter_owner,TestPlan,test_plan,caption_nav_filter_settings'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -22,12 +23,25 @@ function pre_submit()
 	document.getElementById('called_url').value = parent.workframe.location;
 	return true;
 }
+
+/*
+  function: update2latest
+  args :
+
+  returns:
+
+*/
+function update2latest(id)
+{
+	var action_url = fRoot+'/'+menuUrl+"?level=testplan&id="+id+args;
+	parent.workframe.location = action_url;
+}
 </script>
 {/literal}
 </head>
 <body>
 
-<h1 class="title">{lang_get s='title_navigator'} {lang_get s='TestPlan'} {$additional_string|escape}</h1>
+<h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$additional_string|escape}</h1>
 <div style="margin: 3px;">
 <form method="post" id="testSetNavigator" onSubmit="javascript:return pre_submit();">
 	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
@@ -72,8 +86,9 @@ function pre_submit()
 			</td>
 		</tr>
     {/if}
+
 		<tr>
-			<td>
+			<td colspan="2">
 			<input type="submit" value="{$labels.btn_update_menu}" name="doUpdateTree" />
 			</td>
 		</tr>
@@ -82,6 +97,12 @@ function pre_submit()
 </div>
 
 <div class="tree" id="tree">
+    {if $gui->draw_bulk_update_button }
+		    	<input type="button" value="{$labels.btn_update_all_testcases_to_latest_version}" 
+		    	       name="doUpdateToLatest" 
+		    	       onclick="update2latest({$gui->tplan_id})" />
+    {/if}
+
 	{$gui->tree}
 </div>
 

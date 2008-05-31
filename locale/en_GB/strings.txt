@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.324 $
- * @modified $Date: 2008/05/28 18:29:09 $ $Author: franciscom $
+ * @version $Revision: 1.325 $
+ * @modified $Date: 2008/05/31 08:57:34 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -949,6 +949,8 @@ $TLS_warning_add_remove_selected_tc = "Warning! Are you sure to remove the selec
 $TLS_title_navigator = "Navigator";
 $TLS_keywords_filter_help="You can use OR/AND filtering";
 
+// gui/templates/planTCNavigator.tpl
+$TLS_btn_update_all_testcases_to_latest_version="Update all Test Cases to latest version";
 
 // gui/templates/planPriority.tpl
 $TLS_btn_upd_prio = "Update";
@@ -960,9 +962,13 @@ $TLS_tr_th_risk = "Risk/Importance";
 // gui/templates/planUpdateTC.tpl
 $TLS_btn_update_testplan_tcversions = "Update Test Plan";
 $TLS_update_to_version = "Update to version";
+$TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
 $TLS_update_testcase_versions = "Update Linked Test Case Versions";
 $TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
 $TLS_tplan_updated = "Test Plan was updated";
+$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+
+
 
 
 // gui/templates/planEdit.tpl
@@ -1768,7 +1774,9 @@ $TLS_deleted = "deleted";
 $TLS_different_versions = "Diff. Versions";
 $TLS_plan_update_no_tc_updated = "No Test Cases were updated";
 $TLS_updated = "updated";
+$TLS_all_versions_where_latest="Nothing to do - All Test Cases version are the newest available";
 
+$TLS_num_of_updated="%d Test Cases has been updated";
 
 
 // lib/plan/testSetNavigator.php

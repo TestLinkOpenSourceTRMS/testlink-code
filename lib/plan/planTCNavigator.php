@@ -1,7 +1,7 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.13 2008/05/10 17:59:15 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.14 2008/05/31 08:56:45 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
@@ -164,16 +164,17 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
    	$gui->title = lang_get('title_test_plan_navigator');
     $gui->src_workframe=$argsObj->src_workframe;
 
+    $gui->draw_bulk_update_button=false;
     switch($argsObj->feature)
     {
       case 'planUpdateTC':
     	$gui->menuUrl = "lib/plan/planUpdateTC.php";
     	$gui->help_file = "";
+    	$gui->draw_bulk_update_button=true;
       break;
     
       case 'removeTC':
     	$gui->menuUrl = "lib/plan/planTCRemove.php";
-    	//$gui->help_file = "testSetRemove.html";
     	$gui->help_file = "";
       break;
     

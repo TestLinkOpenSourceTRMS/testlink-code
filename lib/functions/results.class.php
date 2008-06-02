@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/05/30 09:31:25 $ by $Author: franciscom $
+ * @modified $Date: 2008/06/02 13:10:13 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -714,7 +714,17 @@ class results
 	  $buildNumber=$exec['build_id'];
 		$result=$exec['status'];
 		$tcversion_id=$exec['tcversion_id'];
-		$version=$exec['version'];
+		
+		// 20080602 - franciscom
+		if( isset($exec['tcversion_number']) && !is_null($exec['tcversion_number']) )
+		{
+		    $version=$exec['tcversion_number'];
+		}
+		else
+		{
+		    $version=$exec['version'];
+		}
+		
 		$execution_ts=$exec['execution_ts'];
     $notes=$exec['notes'];
     $executions_id=$exec['executions_id'];

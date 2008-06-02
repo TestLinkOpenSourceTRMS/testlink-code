@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2008/05/12 19:46:59 $  by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2008/06/02 13:10:14 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -28,8 +28,9 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("web_editor.php");
 require_once("opt_transfer.php");
-testlinkInitPage($db);
+// require_once ("../../third_party/dBug/dBug.php");
 
+testlinkInitPage($db);
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
@@ -182,14 +183,12 @@ else if($args->do_create)
 }
 else if($args->delete_tc)
 {
- 	$exec_status = 'ALL';
-	$linked_tcversions = $tcase_mgr->get_linked_versions($args->tcase_id,$exec_status);
-
-	$msg = '';
+ 	$msg = '';
 	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-
-	switch($my_ret)
+  // new dBug($exec_status_quo);  
+ 
+ switch($my_ret)
 	{
 		case "linked_and_executed":
 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');

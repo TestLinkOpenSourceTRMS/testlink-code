@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.111 $
- * @modified $Date: 2008/05/28 18:27:20 $ $Author: franciscom $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2008/06/02 13:10:13 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20080602 - franciscom - get_linked_versions() - internal changes due to BUG1504
+ *                         get_exec_status() - interface and internal changes due to BUG1504
  *
  * 20080425 - franciscom - replacing DEFINE with const
  *                         new internat method updateKeywordAssignment()
@@ -64,6 +67,8 @@ require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
+// require_once ("../../third_party/dBug/dBug.php");
+
 
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
 
@@ -491,6 +496,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 	  $tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
 		//get the status quo of execution and links of tc versions
 		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
+		
 		$keywords_map[] = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
 		$tc_array[0]['keywords'] = $keywords_map;
 
@@ -510,6 +516,8 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 		$smarty->assign('cf',$cf_smarty);
  	}
 
+  // new dBug($status_quo_map);
+		
 	$smarty->assign('gui',$gui);
 	$smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
 	$smarty->assign('sqlResult',$viewer_defaults['msg_result']);
@@ -712,8 +720,7 @@ function check_link_and_exec_status($id)
 	$status = 'no_links';
 
 	// get linked versions
-	$exec_status = 'ALL';
-	$linked_tcversions = $this->get_linked_versions($id,$exec_status);
+	$linked_tcversions = $this->get_linked_versions($id);
 	$has_links_to_testplans = is_null($linked_tcversions) ? 0 : 1;
 
 	if($has_links_to_testplans)
@@ -807,52 +814,27 @@ function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 	{
 		case "ALL":
 			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
-						tcversions.*,
-						TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name
-					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
-					       nodes_hierarchy NHB
-					WHERE  TTC.tcversion_id = tcversions.id
-          {$active_filter}
-					AND    tcversions.id = NH.id
-					AND    NHB.id = TTC.testplan_id
-					AND    NH.parent_id = {$id}";
-			break;
+						         tcversions.*,
+						         TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name
+					    FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
+					           nodes_hierarchy NHB
+					    WHERE  TTC.tcversion_id = tcversions.id
+              {$active_filter}
+					    AND    tcversions.id = NH.id
+					    AND    NHB.id = TTC.testplan_id
+					    AND    NH.parent_id = {$id}";
+      $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
+	  break;
 
-    	case "EXECUTED":
-    	// 20061030 - franciscom
-			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
-			             tcversions.*,
-			             TTC.testplan_id, TTC.tcversion_id,
-			             executions.id AS execution_id,NHB.name AS tplan_name
-					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
-					       executions,nodes_hierarchy NHB
-					WHERE  TTC.tcversion_id = tcversions.id
-          {$active_filter}
-					AND    TTC.testplan_id = NHB.id
-					AND    TTC.testplan_id = executions.testplan_id
-					AND    executions.tcversion_id = tcversions.id
-					AND    NH.id = tcversions.id
-					AND    NH.parent_id = {$id}";
-		    break;
+    case "EXECUTED":
+	      $recordset=$this->get_exec_status($id,$exec_status,$active_status);
+	  break;
 
-	    case "NOT_EXECUTED":
-			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
-			             tcversions.*,
-			             TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name
-					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
-					       nodes_hierarchy NHB
-					WHERE  TTC.tcversion_id = tcversions.id
-			    {$active_filter}
-					AND    tcversions.id = NH.id
-      		AND    NHB.id = TTC.testplan_id
-					AND    NH.parent_id = {$id}
-					AND    tcversions.id NOT IN ( SELECT tcversion_id FROM executions
-	                WHERE executions.tcversion_id = tcversions.id )";
-	    	break;
+	  case "NOT_EXECUTED":
+	      $recordset=$this->get_exec_status($id,$exec_status,$active_status);
+    break;
   }
-
-  $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
-
+    
   return $recordset;
 }
 
@@ -1394,7 +1376,6 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 
     }
 
-		// 20061030 - franciscom
 		$testplan_filter='';
 		if(!is_null($testplan_id))
     {
@@ -1402,15 +1383,56 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
     }
     $execution_join=" LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id {$testplan_filter})";
 
+ 		$sqlx=" SELECT TCV.id,TCV.version " .
+          " FROM nodes_hierarchy NHA " .
+          " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
+          " JOIN tcversions TCV ON NHA.id = TCV.id " .
+          " WHERE  NHA.parent_id = {$id}";
+		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
+
 		$sql="SELECT DISTINCT NH.id AS tcversion_id,
 		                      T.tcversion_id AS linked,
-		                      E.tcversion_id AS executed
+		                      E.tcversion_id AS executed,
+		                      E.tcversion_number,TCV.version
 		      FROM   nodes_hierarchy NH
+          JOIN tcversions TCV ON (TCV.id = NH.id )
 		      LEFT OUTER JOIN testplan_tcversions T ON T.tcversion_id = NH.id
 		      {$execution_join}
-		      WHERE  NH.parent_id = {$id} {$tcversion_filter}";
+		      WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
 
-		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+		$rs = $this->db->get_recordset($sql);
+
+	  $recordset=array();
+	  $template=array('tcversion_id' => '','linked' => '', 'executed' => '');
+	  foreach($rs as $elem)
+	  {
+	    $recordset[$elem['tcversion_id']]=$template;  
+	    $recordset[$elem['tcversion_id']]['tcversion_id']=$elem['tcversion_id'];  
+	    $recordset[$elem['tcversion_id']]['linked']=$elem['linked'];  
+	    $recordset[$elem['tcversion_id']]['version']=$elem['version'];  
+	    
+	  }
+	
+	  foreach($rs as $elem)
+	  {
+	    $tcvid=null;
+	    if( $elem['tcversion_number'] != $elem['version'])
+	    {
+        if( !is_null($elem['tcversion_number']) )
+        {
+	          $tcvid=$version_id[$elem['tcversion_number']]['id'];
+	      }    
+	    }
+	    else
+	    {
+	      $tcvid=$elem['tcversion_id'];
+	    }
+	    if( !is_null($tcvid) )
+	    {
+	        $recordset[$tcvid]['executed']=$tcvid;
+	        $recordset[$tcvid]['version']=$elem['tcversion_number'];
+	    }    
+	  }
   	return($recordset);
 }
 
@@ -1419,9 +1441,12 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 /*
   function: get_exec_status
             Get information about executed and linked status in
-            every testplan, testcase is linked to.
+            every testplan, a testcase is linked to.
 
-  args :id : testcase id
+  args : id : testcase id
+         [exec_status]: default: ALL, range: ALL,EXECUTED,NOT_EXECUTED
+         [active_status]: default: ALL, range: ALL,ACTIVE,INACTIVE
+
 
   returns: map
            key: tcversion_id
@@ -1439,24 +1464,167 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 				          exec_on_tplan  if executed in testplan -> testplan_id
 
 
+  rev: 
+      
+       20080531 - franciscom
+       Because we allow people to update test case version linked to test plan,
+       and to do this we update tcversion_id on executions to new version
+       maintaining the really executed version in tcversion_number (version number displayed
+       on User Interface) field we need to change algorithm.
 */
-function get_exec_status($id)
+function get_exec_status($id,$exec_status="ALL",$active_status='ALL')
 {
-		$sql="SELECT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
-		             T.tcversion_id AS linked,
+    $active_status=strtoupper($active_status);
+  
+    // Get info about tcversions of this test case
+    $sqlx=" SELECT TCV.id,TCV.version,TCV.active" .
+          " FROM nodes_hierarchy NHA " .
+          " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
+          " JOIN tcversions TCV ON NHA.id = TCV.id " .
+          " WHERE  NHA.parent_id = {$id}";
+		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
+
+  
+		$sql="SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
+		             T.tcversion_id AS linked,TCV.active,
 		             E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan,
+		             E.tcversion_number,
 		             T.testplan_id, NHB.name AS tplan_name, TCV.version
 		      FROM   nodes_hierarchy NH
 		      JOIN testplan_tcversions T ON T.tcversion_id = NH.id
 		      JOIN tcversions TCV ON T.tcversion_id = TCV.id
 		      JOIN nodes_hierarchy NHB ON T.testplan_id = NHB.id
-		      LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
+		      LEFT OUTER JOIN executions E ON 
+		      (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
 		      WHERE  NH.parent_id = {$id}
 		      ORDER BY version,tplan_name";
+		      
+    $rs = $this->db->get_recordset($sql);
 
-			//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
-		$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
-  	return($recordset);
+    // set right tcversion_id, based on tcversion_number,version comparison
+    $item_not_executed=null;
+    $item_executed=null;
+    $link_info=null;
+    $in_set=null;
+    
+	  foreach($rs as $idx => $elem)
+	  {
+      if( $elem['tcversion_number'] != $elem['version'])
+	    {
+        // Save to generate record for linked but not executed if needed
+        // (see below fix not executed section)
+        $link_info[$elem['tcversion_id']][]=$elem;    
+
+	      // We are working with a test case version, that
+	      // was used in a previous life of this test plan
+	      // information about his tcversion_id is not anymore
+	      // present in tables:
+	      //
+	      // testplan_tcversions
+	      // executions
+	      // cfield_execution_values.
+	      //
+	      // if has been executed, but after this operation User
+	      // has choosen to upgrade tcversion linked to testplan
+	      // to a different (may be a newest) test case version.
+	      //
+	      // We can get this information using table tcversions using
+	      // tcase id and version number (value displayed at User Interface)
+	      // as search key.
+	      //
+	      // Important:
+	      // executions.tcversion_number:  maintain info about right test case version executed
+	      // executions.tcversion_id    :  test case version linked to test plan. 
+	      //
+	      //
+	      if( is_null($elem['tcversion_number']) )
+	      {
+	          // Not Executed
+	          $rs[$idx]['executed']=null;
+            $rs[$idx]['tcversion_id']=$elem['tcversion_id'];
+            $rs[$idx]['version']=$elem['version'];
+            $rs[$idx]['linked']=$elem['tcversion_id'];
+            $item_not_executed[]=$idx;  
+	      }
+	      else
+	      {
+            // Get right tcversion_id
+            $rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
+            $rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
+            $rs[$idx]['version']=$elem['tcversion_number'];
+            $rs[$idx]['linked']=$rs[$idx]['executed'];
+            $item_executed[]=$idx;
+	      }
+	      $version=$rs[$idx]['version'];
+        $rs[$idx]['active']=$version_id[$version]['active'];	      
+      }
+      else
+      {
+          $item_executed[]=$idx;  
+      }
+
+      // needed for logic to avoid miss not executed (see below fix not executed)
+      $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
+	  }
+
+    // fix not executed
+    //
+    // need to add record for linked but not executed, that due to new
+    // logic to upate testplan-tcversions link can be absent
+    if( !is_null($link_info) )
+    {
+        foreach($link_info as $idx => $elem)
+	      {
+            foreach($elem as $value)
+            {
+              if( !isset($in_set[$idx][$value['testplan_id']]) ) 
+              {
+                  // missing record
+                  $value['executed']=null;
+                  $value['exec_on_tplan']=null;
+                  $value['tcversion_number']=null;
+                  $rs[]=$value;
+                  
+                  // Must Update list of not executed
+                  $kix=count($rs);
+                  $item_not_executed[]=$kix > 0 ? $kix-1 : $kix;
+              }  
+            }   
+        }
+    }
+    
+    // Convert to result map.
+	  switch ($exec_status)
+	  {
+        case 'NOT_EXECUTED':
+             $target=$item_not_executed;
+        break;
+
+        case 'EXECUTED':
+             $target=$item_executed;
+        break;
+        
+        default:
+             $target=array_keys($rs);
+        break;
+    }
+
+    $recordset=null;
+    foreach($target as $idx)
+	  {
+	     $elem=$rs[$idx];
+       if( $active_status=='ALL' ||
+           $active_status='ACTIVE' && $elem['active'] ||
+           $active_status='INACTIVE' && $elem['active']==0 )
+       {    
+           $recordset[$elem['tcversion_id']][$elem['testplan_id']]=$elem;
+       }    
+    }	  
+    if( !is_null($recordset) )
+    {
+        ksort($recordset);
+    }
+    return $recordset;
 }
 // -------------------------------------------------------------------------------
 

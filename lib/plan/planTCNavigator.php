@@ -1,7 +1,7 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.14 2008/05/31 08:56:45 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.15 2008/06/02 14:43:20 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
@@ -283,6 +283,8 @@ function initializeGetArguments($argsObj,$filtersObj)
     
     if($filtersObj->AssignedTo)
     	  $settings .= '&filter_assigned_to=' . $filtersObj->AssignedTo;
+    
+    $settings .= '&tplan_id=' . $argsObj->tplan_id;
     
     return $settings;
 }

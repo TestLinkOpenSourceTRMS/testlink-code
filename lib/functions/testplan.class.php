@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/05/17 17:41:08 $ $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/06/02 14:43:20 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,7 +11,7 @@
  *
  *
  * rev:
- *     
+ *     20080602 - franciscom - get_linked_tcversions() added tcversion_number in output
  *     20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
  *                             get_keywords_tcases() - accepts multiple keywords
  *
@@ -405,6 +405,7 @@ function setExecutionOrder($id,&$executionOrder)
                            tcversion_id if has executions
 
  rev :
+       20080602 - franciscom - tcversion_number in output
        20080309 - sbouffard - added NHB.name to recordset
        20080114 - franciscom - added external_id in output
      	 20070825 - franciscom - added NHB.node_order on ORDER BY
@@ -506,6 +507,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// missing condition on testplan_id between execution and testplan_tcversions
 	// added tc_id in order clause to maintain same order that navigation tree
 
+  // 20080602 - franciscom - added tcversion_number
 	// 20080114 - franciscom - added tc_external_id
 	//
 	// 20070106 - franciscom
@@ -519,7 +521,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	     "        NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
 	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id, T.node_order AS execution_order," .
 	     "        TCV.version AS version, TCV.active,TCV.tc_external_id AS external_id," .
-	     "        E.id AS exec_id, " .
+	     "        E.id AS exec_id, E.tcversion_number," .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, " .
 	     "        COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".

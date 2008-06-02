@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/06/02 13:10:13 $ by $Author: franciscom $
+ * @modified $Date: 2008/06/02 14:43:19 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20080602 - franciscom - added logic to manage version using tcversion_number
  * 20080513 - franciscom - getTCLink() added external_id 
  *
  * 20080513 - franciscom - buildExecutionsMap() added external_id in output
@@ -709,6 +710,7 @@ class results
 	{
 
     // just to avoid a lot of refactoring
+    //echo "<pre>debug 20080602 - \ - " . __FUNCTION__ . " --- "; print_r($exec); echo "</pre>";
 		$testcase_id=$exec['testcaseID'];
 		$external_id=$exec['external_id'];
 	  $buildNumber=$exec['build_id'];
@@ -716,6 +718,7 @@ class results
 		$tcversion_id=$exec['tcversion_id'];
 		
 		// 20080602 - franciscom
+		// Maybe this check is not more needed, because $exec has been changed using same logic
 		if( isset($exec['tcversion_number']) && !is_null($exec['tcversion_number']) )
 		{
 		    $version=$exec['tcversion_number'];
@@ -1022,10 +1025,22 @@ class results
 
 		while ($testcaseID = key($this->linked_tcversions))
 		{
+		  
 			$info = $this->linked_tcversions[$testcaseID];
+      // echo "<pre>debug 20080602 - \ - " . __FUNCTION__ . " --- "; print_r($info); echo "</pre>";
+
 		  $testsuite_id = $info['testsuite_id'];
 			$tcversion_id = $info['tcversion_id'];
-			$version = $info['version'];
+			
+		  if( isset($info['tcversion_number']) && !is_null($info['tcversion_number']) )
+		  {
+			    $version = $info['tcversion_number'];
+			}
+			else
+			{
+			    $version = $info['version'];
+			}
+			    
       $external_id = $info['external_id']; 
 
 			$currentSuite = null;
@@ -1279,8 +1294,9 @@ class results
 
 
 		// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
-		$DEFAULT_VALUE_FOR_TC_ID = 0;
-		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);
+		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,null,$keyword_id, null, $owner);
+				
+		// echo "<pre>debug 20080602 - \$tp_tcs - " . __FUNCTION__ . " --- "; print_r($tp_tcs); echo "</pre>";
 		
 		$this->linked_tcversions = &$tp_tcs;
 		if (is_null($tp_tcs)) {

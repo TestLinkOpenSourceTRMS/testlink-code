@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.56 2008/05/14 06:09:33 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.57 2008/06/02 14:43:20 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,6 +9,7 @@
 *
 *
 * rev :
+*       20080602 - franciscom - changes due to BUGID 1504
 *       20070908 - franciscom - change column qty on arrData is status not_run
 *                               to have nice html table
 *       20070623 - franciscom - BUGID 911
@@ -90,7 +91,9 @@ if (is_array($mapOfLastResult))
 	  	    	$tester_id = $tcaseContent['tester_id'];
 	  	    	$executions_id = $tcaseContent['executions_id'];
 	  	    	$tcversion_id = $tcaseContent['tcversion_id'];
-               
+            
+            // 20080602 - franciscom
+            $testVersion = $tcaseContent['version'];
                
 	  	    	// ------------------------------------------------------------------------------------
 	  	    	// 20070623 - BUGID 911 - no need to localize, is already localized
@@ -108,8 +111,11 @@ if (is_array($mapOfLastResult))
 	  	    	if (array_key_exists($tester_id, $arrOwners))
 	  	    	   $testerName = $arrOwners[$tester_id];
           
-	  	    	$tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
-     	      $testVersion = $tcInfo[0]['version'];
+          
+            // 20080602 - francisco.mancardi@gruppotesi.com
+            // To get executed Version, we can not do anymore this 
+	  	    	// $tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
+     	      // $testVersion = $tcInfo[0]['version'];
           
 	  	    	// 20070908 - franciscom - to avoid bad presentation on smarty
 	  	    	if($type == $g_tc_status['not_run'])

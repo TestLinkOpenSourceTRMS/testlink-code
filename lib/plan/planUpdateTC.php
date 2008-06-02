@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.26 2008/05/31 08:56:46 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.27 2008/06/02 14:43:20 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -10,6 +10,10 @@
  * Test Case Execution assignments will be auto(magically) updated.
  *
  * rev:
+ *     20080602 - franciscom - fixed internal bug
+ *                             testplan was always value on session, and not what user
+ *                             have choosen on left framework
+ *                             
  *     20080528 - franciscom - fixed internal bug that shows wrong version is user works
  *                             only with one test case
  */
@@ -26,7 +30,7 @@ $tcase_mgr = new testcase($db);
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($tplan_mgr);
 $gui=initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 $keywordsFilter=null;
 if( is_array($args->keyword_id) )
@@ -115,7 +119,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 
 */
-function init_args()
+function init_args(&$tplanMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
@@ -134,8 +138,18 @@ function init_args()
     $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
     $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
 
-    $args->tplan_id = $_SESSION['testPlanId'];
-    $args->tplan_name = $_SESSION['testPlanName'];
+    
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    if($args->tplan_id == 0)
+    {
+        $args->tplan_id = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
+        $args->tplan_name = $_SESSION['testPlanName'];
+    }
+    else
+    {
+        $tpi=$tplanMgr->get_by_id($args->tplan_id);  
+        $args->tplan_name =$tpi['name'];
+    }
     $args->tproject_id =  $_SESSION['testprojectID'];
     $args->tproject_name =  $_SESSION['testprojectName'];
 

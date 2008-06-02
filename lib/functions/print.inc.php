@@ -3,21 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/05/27 09:26:35 $ by $Author: havlat $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/06/02 14:45:42 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
- * rev :
- * 		20080525 - havlatm - fixed missing test result
- *      20080505 - franciscom - renderTestCaseForPrinting() - added custom fields
- *      20080418 - franciscom - document_generation configuration .
- *                              removed tlCfg global coupling
+ * rev:
+ *     20080602 - franciscom - display testcase external id
+ *     20080525 - havlatm - fixed missing test result
+ *     20080505 - franciscom - renderTestCaseForPrinting() - added custom fields
+ *     20080418 - franciscom - document_generation configuration .
+ *                             removed tlCfg global coupling
  *
- *      20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
- *      20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
+ *     20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
+ *     20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  */
 
 require_once("exec.inc.php");
@@ -211,38 +212,39 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0)
 {
-	global $g_tc_status_verbose_labels;
-	global $g_tc_status;
-	global $tlCfg;
-  
-	$tc_mgr = new testcase($db);
- 	$id = $node['id'];
-	$name = htmlspecialchars($node['name']);
+	  global $g_tc_status_verbose_labels;
+	  global $g_tc_status;
+	  global $tlCfg;
 
-	$code = null;
+	  $code = null;
   	$tcInfo = null;
   	$tcResultInfo = null;
+	  
+	  $testcaseCfg=config_get('testcase_cfg');
+	  $tc_mgr = new testcase($db);
+	  $id = $node['id'];
+	  $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
+ 	  
+ 	  // needed to get external id
+ 	  $tcInfo = $tc_mgr->get_by_id($id,$versionID);
+    if ($tcInfo)
+    {           
+        $tcInfo=$tcInfo[0];  
+ 	  }	  
+ 	  $prefix=$tc_mgr->getPrefix($id);
+ 	  $external_id= $prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
+ 	  
+	  $name = htmlspecialchars($node['name']);
   	$cfields = array('specScope' => '', 'execScope' => '');
   	$printType='testproject';
-
   	if($tplan_id > 0)
   	{
      	$printType='testplan';
      	$cfield_scope='execution';
   	}
-
-	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
-
-	if( $printingOptions['body'] || $printingOptions['summary'] ||
-	    $printingOptions['author'] || $printingOptions['keyword'])
-	{
-    $tcInfo = $tc_mgr->get_by_id($id,$versionID);
-		if ($tcInfo)
-			$tcInfo=$tcInfo[0];
-	}
 	
-	// get custom fields that has specification scope
-	$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id);
+  	// get custom fields that has specification scope
+	  $cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id);
   	if(strlen(trim($cfields['specScope'])) > 0 )
   	{
       $cfields['specScope']=str_replace('<td class="labelHolder">','<td>',$cfields['specScope']);  
@@ -251,15 +253,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
   	}
   
   
-	if ($printingOptions['toc'])
-	{
-	  $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' .
-	   	                 $name . '</a></p>';
-		$code .= "<a name='tc" . $id . "'></a>";
-	}
-
- 	$code .= '<div><table class="tc" width="90%">';
- 	$code .= '<tr><th colspan="2">' . lang_get('test_case') . " " . $id . ": " . $name;
+	  if ($printingOptions['toc'])
+	  {
+	    $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' .
+	     	                 $name . '</a></p>';
+	  	$code .= "<a name='tc" . $id . "'></a>";
+	  }
+    
+ 	  $code .= '<div><table class="tc" width="90%">';
+ 	  $code .= '<tr><th colspan="2">' . lang_get('test_case') . " " . $external_id . ": " . $name;
 
 	// add test case version
 	if( $tlCfg->document_generator->tc_version_enabled && isset($node['version']) ) // mht: is it possible that version is not set? - remove condition
@@ -271,12 +273,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 
   	if ($printingOptions['author'])
   	{
-		$authorName = null;
-		$user = tlUser::getByID($db,$tcInfo['author_id']);
-		if ($user)
-			$authorName = $user->getDisplayName();
-		$code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('author').':</span></td>';
-     	$code .= '<td>' . $authorName . "</td></tr>";
+		    $authorName = null;
+		    $user = tlUser::getByID($db,$tcInfo['author_id']);
+		    if ($user)
+		    	$authorName = $user->getDisplayName();
+		    $code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('author').':</span></td>';
+        $code .= '<td>' . $authorName . "</td></tr>";
   	}
 
   	if (($printingOptions['body'] || $printingOptions['summary'])) // && (!empty(trim(strip_tags($tcInfo['summary'])))))

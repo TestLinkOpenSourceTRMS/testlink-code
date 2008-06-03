@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/05/05 09:11:43 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/06/03 12:40:40 $ $Author: havlat $
  *
  * This file manages the navigation bar. 
  *
@@ -21,20 +21,16 @@ require_once("common.php");
 testlinkInitPage($db,true);
 
 $tproject_mgr = new testproject($db);
-
-$guiCfg = config_get('gui');
-
 $gui = new stdClass();
+
 $gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;
 
-$order_by = $tlCfg->gui->tprojects_combo_order_by;
-$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map', $order_by);
+$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map', $tlCfg->gui->tprojects_combo_order_by);
 $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = getNumberOfAccessibleTestPlans($db,$gui->tprojectID, $_SESSION['filter_tp_by_product'],null);
 $gui->docs = getUserDocumentation();
-$gui->logo =$guiCfg->html_logo;
 
 
 if ($gui->tprojectID)
@@ -54,8 +50,8 @@ else
 	// general role applied
 	$testprojectRole = $user->globalRole->name;
 }	
-$gui->whoami =$user->getDisplayName() . ' ' . $guiCfg->role_separator_open . 
-	            $testprojectRole . $guiCfg->role_separator_close;
+$gui->whoami = $user->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open . 
+	            $testprojectRole . $tlCfg->gui->role_separator_close;
                    
 
 // only when the user has changed the product using the combo

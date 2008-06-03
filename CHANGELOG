@@ -3,9 +3,48 @@
    Changelog for TestLink
 ***************************************************************
 
-Testlink 1.8 Release Candidate 1
+Testlink 1.8 Release Candidate 1 (include Beta releases)
 =========================================
 
+- 0001568: [Test Plan (milestones, test assign)] Update ALL test case version linked to test plan with one click (fman) - resolved.
+- 0001565: [Localization] Unable to execute the test cases (mhavlat) - resolved.
+- 0001522: [TL API] testlink 1.8: incorrect order of require_once(...) in xmlrpc.php (FIX include) (mhavlat) - resolved.
+- 0001280: [Installer] important detail missing from upgrade instructions (fman) - resolved.
+- 0000491: [New Feature] Request (Test Specification) Bulk move (drag & Drop) (fman) - resolved.
+- 0001309: [Test Specification] updating test cases requires tedious steps to update test plans and assignments (fman) - resolved.
+- 0001305: [Reports, Metrics, Export and Print] feature request: printed test plan includes title of test plan (fman) - resolved.
+- 0001302: [Installer] REQUEST - Migration from 1.7.x to 1.8.0 - Test Case Prefix Issue (fman) - resolved.
+- 0001315: [Test Project Management] Links in navbar do not work (User Administration | Personal ) (fman) - resolved.
+- 0001416: [Test Execute] Configure behaviour of Left Side pane when click on Test Suite (fman) - resolved.
+- 0001414: [Reports, Metrics, Export and Print] Refactoring of reports to show results on new user defined testcase status (fman) - resolved.
+- 0001008: [Test Execute] Browser hangs when choosing to execute test case and next test case id is non-existant (fman) - resolved.
+- 0001534: [Integration with Other Systems] Small addition to the integration with Mantis (Issue status - color) (fman) - resolved.
+- 0001411: [Database General] Wrong table defintion for the requiremtns tables (fman) - resolved.
+- 0001507: [Test Execute] Keywords Filter - Allow multiselect (fman) - resolved.
+- 0000095: [General] HELP & INSTRUCTION localization (mhavlat) - resolved.
+- 0001555: [Reports, Metrics, Export and Print] Adapt to new used defined execution results (fman) - resolved.
+- 0001342: [Requirement Management] assignReqs.html is missing for help/en_UK (mhavlat) - resolved.
+- 0001530: [Reports, Metrics, Export and Print] Charts are not working in TL1.8 Beta1 (fman) - resolved.
+- 0001535: [General] Fatal error: Call to undefined function getUsersForHtmlOptions() in lib/functions/results.class.php (fman) - resolved.
+- 0000675: [Test Specification] When creating a Test case, init display order to last test in group (fman) - resolved.
+- 0001500: [Test Specification] When I create Test Cases the execution type is always "Automated" (fman) - resolved.
+- 0001505: [User Management] The user management allows you to delete the Admin (mhavlat) - resolved.
+- 0001520: [Reports, Metrics, Export and Print] Printe Test Project Specification - Test Case Custom Fields (fman) - resolved.
+- 0001516: [User Interface General] BTS "redMine" Interface (toshi) - resolved.
+- 0001518: [Reports, Metrics, Export and Print] In the feature of printing test plan, call to undefined function createtestinput() (fman) - resolved.
+- 0001357: [User Interface General] Provide users with access to help (fman) - resolved.
+- 0001492: [Test Execute] Clicking again the executed test case will cause the page to hang. (fman) - resolved.
+- 0001515: [Reports, Metrics, Export and Print] Can not print company name and logo in Test Plans (fman) - resolved.
+- 0001497: [User Interface General] Enhance TC order update (fman) - resolved.
+- 0001496: [User Management] Creating user with any role displays the user's role as "guest" role in "Edit User" page and user successful creating page. (fman) - resolved.
+- 0001352: [Localization] Missing help entry in texts.php for TestPlan-UpdateTCs (mhavlat) - resolved.
+- 0001351: [Localization] Missing help entry in texts.php for TestCase-UserAssigment (mhavlat) - resolved.
+- 0001477: [Reports, Metrics, Export and Print] Total Bugs For Each Test Case report ERROR ON exec_query (fman) - resolved.
+- 0001463: [0 - Undefined] Bad link to import TestCases (fman) - resolved.
+- 0001470: [User Interface General] Event Detail windows doesn't show up with IE (schlundus) - resolved.
+- 0001466: [Localization] Set default language other than en_GB in config. inc.php cause an error (schlundus) - resolved.
+- 0001446: [Test Plan (milestones, test assign)] feature: specify order of test cases in a test plan (fman) - resolved.
+- 0001465: [Reports, Metrics, Export and Print] Try to show Test Plan with print option pass/fail set on cause an error (mhavlat) - closed.
 - 0001444: [Integration with Other Systems] Bugzilla - testlink coupling with 2 seperate postgres dbs has problems with schemes + small issue with short description (fman) - resolved.
 - 0001447: [Test Project Management] Builds are associcated with Test Plans, should be associated with Projects (fman) - resolved.
 - 0001459: [Test Specification] Allow copy/move of selected testcase from a test suite (fman) - resolved.

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/05/07 21:01:24 $ by $Author: schlundus $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/06/03 20:32:26 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
+ *     20080602 - franciscom - doTestSuiteReorder() - fixed typo error
  *     20080504 - franciscom - removed references to gui->enable_custom_fields
  *     20080329 - franciscom - added contribution by Eugenia Drosdezki
  *                             Move/copy testcases
@@ -39,7 +40,6 @@ $opt_cfg->js_ot_name = 'ot';
 $args = init_args($opt_cfg);
 $gui_cfg = config_get('gui');
 $spec_cfg = config_get('spec_cfg');
-
 $smarty = new TLSmarty();
 
 $a_keys['testsuite'] = array('details');
@@ -526,6 +526,7 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
   returns: -
 
   rev:
+      20080602 - franciscom - fixed typo bug 
       20080223 - franciscom - fixed typo error - BUGID 1408
       removed wrong global coupling
 */
@@ -533,7 +534,7 @@ function  doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr
 {
 	$nodes_in_order=transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
 	$tprojectMgr->tree_manager->change_order_bulk($nodes_in_order);
-	if( $args->containerID == $argsObj->tprojectID )
+	if( $argsObj->containerID == $argsObj->tprojectID )
 	{
 	  $objMgr=$tprojectMgr;
 	}

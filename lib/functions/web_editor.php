@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.4 $ $Author: schlundus $
- * @modified $Date: 2008/03/24 20:07:03 $
+ * @version $Revision: 1.5 $ $Author: havlat $
+ * @modified $Date: 2008/06/03 10:54:18 $
  *
  *
  **/
@@ -11,9 +11,7 @@
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 
-$gui_cfg = $tlCfg->gui;
-$editor = $gui_cfg->webeditor;
-switch($editor)
+switch($tlCfg->gui_text_editor)
 {
 	case 'fckeditor':
 		require_once("../../third_party/fckeditor/fckeditor.php");
@@ -40,16 +38,13 @@ switch($editor)
 function web_editor($html_input_id,$base_path)
 {
 	global $tlCfg;
-	$gui_cfg = $tlCfg->gui;
-  	$editor = $gui_cfg->webeditor;
 
-	switch($editor)
+	switch($tlCfg->gui_text_editor)
 	{
 		case 'fckeditor':
-			$toolbar = config_get('fckeditor_toolbar');
 			$of = new fckeditor($html_input_id) ;
 			$of->BasePath = $base_path . 'third_party/fckeditor/';
-			$of->ToolbarSet = $toolbar;
+			$of->ToolbarSet = $tlCfg->fckeditor_default_toolbar;
 			break;
 
 		case 'none':

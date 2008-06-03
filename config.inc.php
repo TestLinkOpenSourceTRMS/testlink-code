@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.180 $
- * @modified $Date: 2008/06/03 09:22:47 $ by $Author: havlat $
+ * @version $Revision: 1.181 $
+ * @modified $Date: 2008/06/03 10:38:51 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -785,7 +785,7 @@ $g_role_replace_for_deleted_roles=$tlCfg->default_roleid;
 define('TL_IMPORT_LIMIT', $tlCfg->import_max_size); 
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row); 
 define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');	// @TODO move layout to main CSS
-define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $g_main_menu_item_bullet_img);
+define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('TL_TREE_KIND', $tlCfg->treemenu_type);
 define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
 define('WEBEDITOR',$tlCfg->gui_text_editor);
@@ -800,7 +800,6 @@ $g_show_realname = $tlCfg->show_realname;
 $g_username_format = $tlCfg->username_format;
 $g_dashboard_precision = $tlCfg->dashboard_precision;
 $g_fckeditor_toolbar = $tlCfg->fckeditor_default_toolbar;
-$g_main_menu_item_bullet_img = $tlCfg->bullet_image; 
 $g_api_id_format = $tlCfg->api_id_format;
 $g_tree_show_testcase_id = $tlCfg->treemenu_show_testcase_id;
 $g_tree_node_ordering->default_testcase_order  = $tlCfg->treemenu_default_testcase_order;

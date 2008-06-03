@@ -1,12 +1,13 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.2 2008/05/28 20:56:42 franciscom Exp $
+$Id: tcTree.js,v 1.3 2008/06/03 20:28:16 franciscom Exp $
 
 Created using EXT JS examples
 Definion for tree used to show test cases specification
 Author: franciscom - 20080525
 
 rev:
+    20080603 - franciscom - drag & drop disabled
     20080528 - franciscom - added code to save/restore tree state
                             using example found on Ext JS forum
     Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
@@ -122,7 +123,7 @@ Ext.onReady(function(){
         useArrows:true,
         autoScroll:true,
         animate:true,
-        enableDD:true,
+        enableDD:false,
         containerScroll: true, 
         loader: new Tree.TreeLoader({
             dataUrl:treeCfg.loader

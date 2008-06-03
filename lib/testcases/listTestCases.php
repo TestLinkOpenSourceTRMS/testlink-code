@@ -2,13 +2,14 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.27 2008/05/28 20:57:52 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.28 2008/06/03 20:28:32 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
-*   rev: 20080525 - franciscom - refactored to use ext js tree
+*   rev: 20080603 - franciscom - added tcase prefix in call to tree loader
+*        20080525 - franciscom - refactored to use ext js tree
 *        20070217 - franciscom - added test suite filter
 */
 require_once('../../config.inc.php');
@@ -16,11 +17,13 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
+$tproject_mgr = New testproject($db);
+
 $template_dir='testcases/';
 $spec_cfg = config_get('spec_cfg');
 
 $args=init_args();
-$gui=initializeGui($args,$_SESSION['basehref']);
+$gui=initializeGui($args,$_SESSION['basehref'],$tproject_mgr);
 
 $do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
                                     'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
@@ -57,7 +60,7 @@ $tsuites_combo = null;
 $tree = null;
 if($spec_cfg->show_tsuite_filter)
 {
-	$mappy = tsuite_filter_mgmt($db,$args->tproject_id,$args->tsuites_to_show);
+	$mappy = tsuite_filter_mgmt($db,$tproject_mgr,$args->tproject_id,$args->tsuites_to_show);
 	$exclude_branches = $mappy['exclude_branches'];
 	$tsuites_combo = $mappy['html_options'];
 	$draw_filter = $mappy['draw_filter'];
@@ -98,15 +101,15 @@ $smarty->display($template_dir . 'tcTree.tpl');
                      map for smarty html_options
 
 */
-function tsuite_filter_mgmt(&$db,$tproject_id,$tsuites_to_show)
+function tsuite_filter_mgmt(&$db,&$tprojectMgr,$tproject_id,$tsuites_to_show)
 {
-  $tproject_mgr = New testproject($db);
+  
 
   $ret=array('draw_filter' => 0,
              'html_options' => array(0 =>''),
              'exclude_branches' => null);
              
-  $fl_tsuites=$tproject_mgr->get_first_level_test_suites($tproject_id,'smarty_html_options');
+  $fl_tsuites=$tprojectMgr->get_first_level_test_suites($tproject_id,'smarty_html_options');
   if( $tsuites_to_show > 0 )
   {
      foreach($fl_tsuites as $tsuite_id => $name)
@@ -188,13 +191,18 @@ function init_args()
   returns: 
 
 */
-function initializeGui($argsObj,$basehref)
+function initializeGui($argsObj,$basehref,&$tprojectMgr)
 {
+    $tcaseCfg=config_get('testcase_cfg');
+        
     $gui = new stdClass();
-
+    $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+    
     $gui->ajaxTree=new stdClass();
-    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php' .
-                           "?root_node={$argsObj->tproject_id}&filter_node={$argsObj->tsuites_to_show}";
+    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
+                           "root_node={$argsObj->tproject_id}&" .
+                           "tcprefix={$tcasePrefix}{$tcaseCfg->glue_character}&" .
+                           "filter_node={$argsObj->tsuites_to_show}";
 
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";

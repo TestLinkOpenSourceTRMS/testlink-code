@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.21 2008/05/06 11:54:51 havlat Exp $
+$Id: login.tpl,v 1.22 2008/06/03 08:40:49 havlat Exp $
 Purpose: smarty template - login page 
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
@@ -23,7 +23,8 @@ window.onload=function()
 </head>
 <body>
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-<div class="fullpage_head"><p>{$login_logo}<br />TestLink {$tlVersion|escape}</p></div>
+{include file="inc_login_title.tpl"}
+
 <div class="forms" id="login_div">
 
 	<form method="post" name="login_form" action="login.php">
@@ -31,10 +32,10 @@ window.onload=function()
   	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
 		  <input type="hidden" name="reqURI" value="{$reqURI}"/>
   		<p class="label">{lang_get s='login_name'}<br />
-			<input type="text" name="login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
+			<input type="text" name="tl_login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
 		</p>
   		<p class="label">{lang_get s='password'}<br />
-			<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />
+			<input type="password" name="tl_password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />
 		</p>
 		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
 		{/if}

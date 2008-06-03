@@ -1,9 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.12 2008/05/09 17:14:19 schlundus Exp $
+$Id: loginFirst.tpl,v 1.13 2008/06/03 08:40:49 havlat Exp $
 Purpose: smarty template - first login
 *}
-
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
@@ -19,11 +18,9 @@ window.onload=function(){
 {/literal}
 </head>
 
-
 <body>
-
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-<div class="fullpage_head">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
+{include file="inc_login_title.tpl"}
 
 <div class="forms" id="login_div">
 <div class="warning_message" style="text-align:center;">{$message}</div>

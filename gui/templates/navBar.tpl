@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.37 2008/05/19 10:24:03 havlat Exp $
+	$Id: navBar.tpl,v 1.38 2008/06/03 08:40:49 havlat Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -35,7 +35,9 @@
 {assign var="action_user_mgmt" value=$action_users_view}
 
 <body>
-<div style="float:left; height: 100%;"><a href="index.php" target="_parent">{$gui->logo}</a></div>
+<div style="float:left; height: 100%;"><a href="index.php" target="_parent">
+	<img alt="Company logo"	title="logo" style="width: 115px; height: 53px;" 
+	src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->company_logo}" /></a></div>
 
 <div class="menu_title">
 
@@ -54,9 +56,7 @@
 	</div>
 	{/if}
 
-	<span class="bold">
-		TestLink {$tlVersion|escape} : {$gui->whoami|escape}
-	</span>
+	<span class="bold">TestLink {$tlVersion|escape} : {$gui->whoami|escape}</span>
 
 </div>
 

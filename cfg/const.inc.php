@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/05/27 09:30:30 $ by $Author: havlat $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/06/03 09:22:47 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -102,7 +102,7 @@ define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', true); 
 
 // 
-define('FILTER_BY_SHOW_ON_EXECUTION',1);
+define('FILTER_BY_SHOW_ON_EXECUTION', 1);
 
 define('GET_ALSO_NOT_EXECUTED', null);
 define('GET_ONLY_EXECUTED', 'executed');
@@ -164,6 +164,12 @@ define('DEFAULT_TC_ORDER', 0);
 // havlatm: @todo remove (must be solved via css)
 // planAddTC_m1-tpl
 define('TL_STYLE_FOR_ADDED_TC', "background-color:yellow;");
+
+/** default filenames of CSS files of current GUI theme */
+define('TL_CSS_MAIN', 'testlink.css');
+define('TL_CSS_PRINT', 'tl_print.css');
+define('TL_CSS_DOCUMENTS', 'tl_documents.css');
+define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 
 
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
@@ -395,23 +401,16 @@ $tlCfg->results['default_status'] = "passed";
 // Status colours for charts - no way to use verbose just RGB
 $tlCfg->results['charts']=array();
 $tlCfg->results['charts']['status_colour']=array(
-  "not_run"  		=> "000000",
+  	"not_run"  		=> "000000",
 	"passed"   		=> "00FF00",
 	"failed"   		=> "FF0000",
 	"blocked"  		=> "0000FF"
 );
 
 
-// backward comaptibility; @TODO remove
-$g_tc_status = $tlCfg->results['status_code'];
-$g_tc_status_css = $tlCfg->results['code_status'];
-$g_tc_status_verbose_labels = $tlCfg->results['status_label'];
-$g_tc_status_for_ui = $tlCfg->results['status_label']; // @todo replace by $tlCfg->results['status_label']
-$g_tc_status_for_ui_default = $tlCfg->results['default_status'];
 
 // -------------------------------------------------------------------------------
 /** [Reports] */
-
 
 /** Displayed execution statuses to use on reports (ordered). */
 // Note: report generation must be changed to manage new statuses
@@ -448,7 +447,6 @@ define("TL_LAST_SYSTEM_ROLE", 9);
 // to different roles.
 // If you don't want use colouring then configure in this way
 // $g_role_colour = array ( );
-//
 $g_role_colour = array ( 
 	"admin"         => 'white',
 	"tester"        => 'wheat',
@@ -477,7 +475,7 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 /** [Priority, Risk, Importance] */
 // Priority = Importance x Risk
 $tlCfg->priority_levels = array( 
-	  HIGH => 6, // high priority include 6 and more
+	HIGH => 6, // high priority include 6 and more
     MEDIUM => 3,
     LOW => 1
 );

@@ -5,12 +5,12 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/01/30 20:37:43 $ by $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/06/03 09:22:47 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * Login management
-  **/
+ **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
@@ -31,8 +31,8 @@ $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 $reqURI = isset($_GET['req']) ? $_GET['req'] : null;
 $_POST = strings_stripSlashes($_POST);
-$login = isset($_POST['login']) ? $_POST['login'] : null;
-$pwd = isset($_POST['password']) ? $_POST['password'] : null;
+$login = isset($_POST['tl_login']) ? $_POST['tl_login'] : null;
+$pwd = isset($_POST['tl_password']) ? $_POST['tl_password'] : null;
 $preqURI = (isset($_POST['reqURI']) && strlen($_POST['reqURI'])) ? $_POST['reqURI'] : null;
 
 // assign a comment for login
@@ -83,11 +83,9 @@ $bLDAPEnabled = false;
 
 $smarty = new TLSmarty();
 $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
-$smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$note);
 $smarty->assign('reqURI',$reqURI ? $reqURI : $preqURI);
-$smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('login_disabled', !checkForLDAPExtension($bLDAPEnabled));
 $smarty->assign('external_password_mgmt', $bLDAPEnabled);
 $smarty->display('login.tpl');

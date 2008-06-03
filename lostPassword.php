@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/02/13 20:31:17 $ $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/06/03 09:22:47 $ $Author: havlat $
  *
  * rev: 20080212 - franciscom - fixed minor bug on call to logAuditEvent
 **/
@@ -52,8 +52,6 @@ if (strlen($login))
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('login_logo', LOGO_LOGIN_PAGE);
-$smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('note',$note);
 $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));

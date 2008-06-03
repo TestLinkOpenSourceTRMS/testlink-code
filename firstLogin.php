@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/05/09 17:14:19 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/06/03 09:22:47 $ $Author: havlat $
  *
  */
 require_once('config.inc.php');
@@ -69,8 +69,6 @@ $smarty->assign('login', $login);
 $smarty->assign('firstName', $first);
 $smarty->assign('lastName', $last);
 $smarty->assign('email', $email);
-$smarty->assign('login_logo', LOGO_LOGIN_PAGE);
-$smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('message',$message);
 $smarty->display('loginFirst.tpl');
 ?>

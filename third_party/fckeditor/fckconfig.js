@@ -1,4 +1,4 @@
-﻿/*
+/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  *
@@ -226,22 +226,5 @@ FCKConfig.SmileyImages	= ['regular_smile.gif','sad_smile.gif','wink_smile.gif','
 FCKConfig.SmileyColumns = 8 ;
 FCKConfig.SmileyWindowWidth		= 320 ;
 FCKConfig.SmileyWindowHeight	= 240 ;
-
-/* ----------------------------------------------------------------------------------- */
-/* 20070212 - Test Link configuration                                                  */
-FCKConfig.ToolbarSets["TL_Medium"] = [
-	['Cut','Copy','Paste','Find','Replace','SelectAll','Link','Unlink','Anchor','Bold','Italic','Underline','OrderedList','UnorderedList','-','JustifyLeft','Image','Table','Rule'],
-	'/',
-	['FontName','FontSize','TextColor','BGColor']
-] ;
-
-FCKConfig.ToolbarSets["TL_Medium_2"] = [
-	['Cut','Copy','Paste','Find','Replace','Link','Unlink','Bold','Italic','Underline','OrderedList','UnorderedList','-','Image','Table'],
-	'/',
-	['FontName','FontSize','TextColor','BGColor']
-] ;
-FCKConfig.ToolbarSets["TL_simple"] = [
-	['Cut','Copy','Paste']
-] ;
 
 /* ----------------------------------------------------------------------------------- */

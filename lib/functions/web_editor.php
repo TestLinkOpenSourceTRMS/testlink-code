@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.5 $ $Author: havlat $
- * @modified $Date: 2008/06/03 10:54:18 $
+ * @version $Revision: 1.6 $ $Author: havlat $
+ * @modified $Date: 2008/06/04 10:54:33 $
  *
  *
  **/
@@ -45,6 +45,7 @@ function web_editor($html_input_id,$base_path)
 			$of = new fckeditor($html_input_id) ;
 			$of->BasePath = $base_path . 'third_party/fckeditor/';
 			$of->ToolbarSet = $tlCfg->fckeditor_default_toolbar;
+			$of->Config['CustomConfigurationsPath']  = $base_path . 'cfg/tl_fckeditor_config.js';
 			break;
 
 		case 'none':

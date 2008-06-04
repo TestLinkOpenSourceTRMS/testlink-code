@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/06/04 12:36:22 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -31,16 +31,12 @@ class TLSmarty extends Smarty
 {
     function TLSmarty()
 	{
-		  global $tlCfg;
-		  global $g_attachments;
-		  global $g_spec_cfg;
-		  // global $g_tc_status;
-		  // global $g_tc_status_css;
-		  global $g_bugInterfaceOn;
-		  global $g_interface_bugs;
-		  //global $g_tc_status_for_ui;
-		  //global $g_tc_status_verbose_labels;
-		  global $g_locales;
+		global $tlCfg;
+		global $g_attachments;
+		global $g_spec_cfg;
+		global $g_bugInterfaceOn;
+		global $g_interface_bugs;
+		global $g_locales;
 	    global $g_locales_html_select_date_field_order;
     	global $g_locales_date_format;
     	global $g_locales_timestamp_format;
@@ -49,89 +45,87 @@ class TLSmarty extends Smarty
 	  	$this->Smarty();
 	  	$this->template_dir = TL_ABS_PATH . 'gui/templates/';
 	  	$this->compile_dir = TL_TEMP_PATH;
-		  $this->config_dir = TL_ABS_PATH . 'gui/templates/';
+		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
 
-		  $testproject_coloring=$tlCfg->gui->testproject_coloring;
-		  $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
-		  if (isset($_SESSION['testprojectColor']))
-      {
+		$testproject_coloring=$tlCfg->gui->testproject_coloring;
+		$testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
+		if (isset($_SESSION['testprojectColor']))
+      	{
 		  	$testprojectColor =  $_SESSION['testprojectColor'];
-       	if (!strlen($testprojectColor))
+       		if (!strlen($testprojectColor))
           		$testprojectColor = $tlCfg->gui->background_color;
-		  }
-		  $this->assign('testprojectColor', $testprojectColor);
+		}
+		$this->assign('testprojectColor', $testprojectColor);
 
-		  $my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-		  $basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
+		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
 
-		  if ($tlCfg->smarty_debug)
-		  {
-		  	$this->debugging = true;
-		  	tLog("Smarty debug window = ON");
-		  }
+		if ($tlCfg->smarty_debug)
+		{
+			$this->debugging = true;
+			tLog("Smarty debug window = ON");
+		}
       
-      // -------------------------------------------------------------------------------------
-      // Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
-      // This means that optional/missing parameters on include can not be used.
-      //
-		  // Good refactoring must be done in future, to create group of this variable
-		  // with clear names that must be a hint for developers, to understand where this
-		  // variables are used.
-		  //
-		  // inc_head.tpl
-		  $this->assign('SP_html_help_file',null);
-		  $this->assign('menuUrl',null);
-		  $this->assign('args',null);
-		  $this->assign('pageTitle',null);
+      	// -------------------------------------------------------------------------------------
+      	// Must be initialized to avoid log on TestLink Event Viewer due to undefined variable.
+      	// This means that optional/missing parameters on include can not be used.
+      	//
+		// Good refactoring must be done in future, to create group of this variable
+		// with clear names that must be a hint for developers, to understand where this
+		// variables are used.
 
-		  $this->assign('css_only',null);
-		  $this->assign('body_onload',null);
+		// inc_head.tpl
+		$this->assign('SP_html_help_file',null);
+		$this->assign('menuUrl',null);
+		$this->assign('args',null);
+		$this->assign('pageTitle',null);
+
+		$this->assign('css_only',null);
+		$this->assign('body_onload',null);
 	
 	    // inc_attachments.tpl
-		  $this->assign('attach_tableStyles',"font-size:12px");
-		  $this->assign('attach_tableClassName',"simple");
-		  $this->assign('attach_inheritStyle',0);
-		  $this->assign('attach_show_upload_btn',1);
-		  $this->assign('attach_show_title',1);
-      $this->assign('attach_downloadOnly',false);
+		$this->assign('attach_tableStyles',"font-size:12px");
+		$this->assign('attach_tableClassName',"simple");
+		$this->assign('attach_inheritStyle',0);
+		$this->assign('attach_show_upload_btn',1);
+		$this->assign('attach_show_title',1);
+      	$this->assign('attach_downloadOnly',false);
 
-      // inc_help.tpl
-      $this->assign('inc_help_alt',null);
-      $this->assign('inc_help_title',null);
-      $this->assign('inc_help_style',null);
+      	// inc_help.tpl
+      	$this->assign('inc_help_alt',null);
+      	$this->assign('inc_help_title',null);
+      	$this->assign('inc_help_style',null);
 
-  
-      $this->assign('tplan_name',null);
-		  $this->assign('name',null);
-      // -------------------------------------------------------------------------------------
+     	$this->assign('tplan_name',null);
+		$this->assign('name',null);
+      	// -----------------------------------------------------------------------------
 
-		  $this->assign('basehref', $basehref);
-		  $this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
-		  $this->assign('css', $basehref . TL_TESTLINK_CSS);
-		  $this->assign('locale', $my_locale);
+		$this->assign('basehref', $basehref);
+		$this->assign('css', $basehref . TL_TESTLINK_CSS);
+		$this->assign('locale', $my_locale);
 		  
 		  
-		  // -----------------------------------------------------------------------------
-		  // load configuration
-		  $this->assign('session',isset($_SESSION) ? $_SESSION : null);
+		// -----------------------------------------------------------------------------
+		// load configuration
+		$this->assign('session',isset($_SESSION) ? $_SESSION : null);
       
-		  // load configuration
-		  $this->assign('tlCfg',$tlCfg);
-		  $this->assign('gsmarty_gui',$tlCfg->gui);
-      $this->assign('gsmarty_spec_cfg',$g_spec_cfg);
-		  $this->assign('gsmarty_attachments',$g_attachments);
+		// load configuration
+		$this->assign('tlCfg',$tlCfg);
+		$this->assign('gsmarty_gui',$tlCfg->gui);
+      	$this->assign('gsmarty_spec_cfg',$g_spec_cfg);
+		$this->assign('gsmarty_attachments',$g_attachments);
       
-		  $this->assign('pageCharset',$tlCfg->charset);
-		  $this->assign('tlVersion',TL_VERSION);
+		$this->assign('pageCharset',$tlCfg->charset);
+		$this->assign('tlVersion',TL_VERSION);
       
-		  $this->assign('gsmarty_tc_status',$tlCfg->results['status_code']);
-		  $this->assign('gsmarty_tc_status_css',$tlCfg->results['code_status']);
-		  $this->assign('gsmarty_tc_status_for_ui',$tlCfg->results['status_label_for_exec_ui']);
-		  $this->assign('gsmarty_tc_status_verbose_labels',$tlCfg->results['status_label']);
+		$this->assign('gsmarty_tc_status',$tlCfg->results['status_code']);
+		$this->assign('gsmarty_tc_status_css',$tlCfg->results['code_status']);
+		$this->assign('gsmarty_tc_status_for_ui',$tlCfg->results['status_label_for_exec_ui']);
+		$this->assign('gsmarty_tc_status_verbose_labels',$tlCfg->results['status_label']);
       
-		  $this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
-		  $this->assign('gsmarty_interface_bugs',$g_interface_bugs);
-		  $this->assign('testproject_coloring',null);
+		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
+		$this->assign('gsmarty_interface_bugs',$g_interface_bugs);
+		$this->assign('testproject_coloring',null);
 
 		
 		// -----------------------------------------------------------------------------
@@ -148,14 +142,12 @@ class TLSmarty extends Smarty
 		// but must be initialized
 		$this->assign('jsValidate', null);
 		$this->assign('jsTree', null);
-		$this->assign('sqlResult', null);
 		
 		// user feedback variables (used in inc_update.tpl)
-		$this->assign('action', 'updated');
 		$this->assign('user_feedback', null);
-		
-		// Possibile values: soft
-		$this->assign('feedback_type', '');
+		$this->assign('feedback_type', ''); // Possibile values: soft
+		$this->assign('action', 'updated'); //todo: simplify (remove) - use user_feedback
+		$this->assign('sqlResult', null); //todo: simplify (remove) - use user_feedback
 
 		$this->assign('refresh', 'no');
 		$this->assign('result', null);
@@ -164,17 +156,16 @@ class TLSmarty extends Smarty
 
     	$this->assign('gsmarty_href_keywordsView',
                   ' "lib/keywords/keywordsView.php" ' .
-		          	  ' target="mainframe" class="bold" ' .
-				          ' title="' . lang_get('menu_manage_keywords') . '"');
-
+		          ' target="mainframe" class="bold" ' .
+				  ' title="' . lang_get('menu_manage_keywords') . '"');
 
     	$this->assign('gsmarty_html_select_date_field_order',
                    $g_locales_html_select_date_field_order[$my_locale]);
     	$this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
     	$this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
 
-		  // -----------------------------------------------------------------------------
-    	// Some common images
+		// -----------------------------------------------------------------------------
+    	// Images
     	$sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
     	$api_info_img = TL_THEME_IMG_DIR . "/brick.png";
 
@@ -182,13 +173,12 @@ class TLSmarty extends Smarty
     	$this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
     	$this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
 
+ 		$this->assign('api_ui_show', $tlCfg->api_enabled);
+
     	$msg = lang_get('show_hide_api_info');
- 		  $this->assign('api_ui_show', $tlCfg->api_enabled);
-
 	    $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
-                           " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
-                           " src=\"{$api_info_img}\" align=\"left\" />";
-
+                   " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
+                   " src=\"{$api_info_img}\" align=\"left\" />";
 	    $this->assign("toogle_api_info_img",$toogle_api_info_img);
 
 
@@ -203,12 +193,12 @@ class TLSmarty extends Smarty
 
         		$this->assign("sortHintIcon",$sortHintIcon);
         		$this->assign("noSortableColumnClass","sorttable_nosort");
- 	       break;
+ 	       	break;
 
 	        default:
- 		       $this->assign("sortHintIcon",'');
- 		       $this->assign("noSortableColumnClass",'');
- 	       break;
+ 		    	$this->assign("sortHintIcon",'');
+ 		    	$this->assign("noSortableColumnClass",'');
+ 	       	break;
 	    }
 
     	// Register functions
@@ -219,6 +209,8 @@ class TLSmarty extends Smarty
 
     	$this->register_modifier("basename","basename");
     	$this->register_modifier("dirname","dirname");
-	}
-}
+
+	} // end of function TLSmarty()
+	
+} // end of class TLSmarty
 ?>

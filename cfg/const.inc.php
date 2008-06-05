@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2008/06/03 09:22:47 $ by $Author: havlat $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2008/06/05 08:19:57 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -325,8 +325,7 @@ $att_model_m2->show_upload_column = true;
  */
 
 /** List of Test Case execution results */
-// Note: 
-// for GUI use rather lang_get($g_tc_status_verbose_labels["passed"]);        
+// Note: for GUI use rather lang_get($g_tc_status_verbose_labels["passed"]);        
 //
 // Do not do localisation here, i.e do not change "passed"
 //           with the corresponding word in you national language.
@@ -338,7 +337,6 @@ $att_model_m2->show_upload_column = true;
 //           example:
 //                   lang_get($g_tc_status_verbose_labels["passed"]);
 //
-//
 $tlCfg->results['status_code'] = array (
 	"failed"        => 'f',
 	"blocked"       => 'b',
@@ -348,15 +346,6 @@ $tlCfg->results['status_code'] = array (
 	"unknown"       => 'u',
 	"all"           => 'a'
 ); 
-
-// IMPORTANT:
-// is used for two applications.
-// 1. To map code to CSS, Please if you add an status you need to add a corresponding CSS Class
-//    in the CSS files (see the gui directory)
-// 2. to decode from code to some more human oriented to use in code
-//
-/** Revered list of Test Case execution results */
-$tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 
 
 /** 
@@ -402,9 +391,9 @@ $tlCfg->results['default_status'] = "passed";
 $tlCfg->results['charts']=array();
 $tlCfg->results['charts']['status_colour']=array(
   	"not_run"  		=> "000000",
-	"passed"   		=> "00FF00",
-	"failed"   		=> "FF0000",
-	"blocked"  		=> "0000FF"
+	"passed"   		=> "006400",
+	"failed"   		=> "B22222",
+	"blocked"  		=> "00008B"
 );
 
 
@@ -549,6 +538,19 @@ $g_field_size->testsuite_name = 100;
 $g_field_size->req_docid = 32;
 $g_field_size->req_title = 100;
 $g_field_size->requirement_title = 100;
+
+// Applied to HTML inputs created to get/show custom field contents
+// For string,numeric,float,email: size & maxlenght of the input type text.
+// For list,email size of the select input.
+$tlCfg->gui->custom_fields->sizes = array( 
+	'string' => 50,
+	'numeric'=> 10,
+	'float'  => 10,
+	'email'  => 50,
+	'list'   => 1,
+	'multiselection list' => 5,
+	'text area' => array('cols' => 40, 'rows' => 6)
+);
 
 
 

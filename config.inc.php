@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.181 $
- * @modified $Date: 2008/06/03 10:38:51 $ by $Author: havlat $
+ * @version $Revision: 1.182 $
+ * @modified $Date: 2008/06/05 08:19:59 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -125,6 +125,11 @@ $tlCfg->gui->role_separator_close = ']';
 /** Title separators are used when componing an title using several strings */
 $tlCfg->gui_title_separator_1 = ' : '; // object : name (Test Specification : My best product)
 $tlCfg->gui_title_separator_2 = ' - '; // parent - child
+
+// used to create full external id in this way:
+// testCasePrefix . g_testcase_cfg->glue_character . external_id
+// CAN NOT BE EMPTY
+$tlCfg->testcase_cfg->glue_character = '-';
 
 
 
@@ -270,6 +275,9 @@ $tlCfg->theme_dir = 'gui/themes/default/';
 //                          $tlCfg->theme_dir . 'images/company_logo.png" />';
 $tlCfg->company_logo = 'company_logo.png';
 
+/** Login page could show an informational text */
+$tlCfg->login_info = ''; // Empty by default
+
 /** Image for main menu item bullet (just filename) */
 $tlCfg->bullet_image = 'slide_gripper.gif';  // = [arrow_org.gif, slide_gripper.gif]
 
@@ -323,7 +331,7 @@ $tlCfg->gui_text_editor = 'fckeditor';
  * modify which icons will be available in html edit pages
  * refer to fckeditor configuration file 
  **/
-$tlCfg->fckeditor_default_toolbar = "TL_Medium_2";
+$tlCfg->fckeditor_default_toolbar = 'tl_default';
 
 
 
@@ -390,6 +398,15 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 // ----------------------------------------------------------------------------
 /** [Test Executions] */
 
+// ENABLED -> enable XML-RPC calls to external test automation server
+//      new buttons will be displayed on execution pages
+// DISABLED -> disable
+$tlCfg->exec_cfg->enable_test_automation = DISABLED;
+
+// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
+// DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
+$tlCfg->exec_cfg->edit_notes = DISABLED;
+
 // ASCending   -> last execution at bottom
 // DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->history_order = 'DESC';
@@ -416,14 +433,6 @@ $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 // DISABLED -> User can not.  [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->can_delete_execution = DISABLED;
 
-// ENABLED -> enable XML-RPC calls to external test automation server
-//      new buttons will be displayed on execution pages
-// DISABLED -> disable
-$tlCfg->exec_cfg->enable_test_automation = DISABLED;
-
-// ENABLED -> enable testcase counters by status on tree
-$tlCfg->exec_cfg->enable_tree_testcase_counters = ENABLED;
-
 // ENABLED -> test cases and test case counters will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_colouring = ENABLED;
 
@@ -434,9 +443,8 @@ $tlCfg->exec_cfg->enable_tree_colouring = ENABLED;
 // DISABLED -> nothing happens, to execute a test case you need to click on test case
 $tlCfg->exec_cfg->show_testsuite_contents = DISABLED;
 
-// 1 -> user can edit execution notes, on old executions (Attention: user must have test case execution right)
-// DISABLED -> no edit allowed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->edit_notes = DISABLED;
+// ENABLED -> enable testcase counters by status on tree
+$tlCfg->exec_cfg->enable_tree_testcase_counters = ENABLED;
 
 // Filter Test cases a user with tester role can VIEW depending on
 // test execution assignment.
@@ -466,40 +474,25 @@ $tlCfg->exec_cfg->user_filter_default='none';
 // 'vertical'   ->  steps on one row, results in the row bellow
 $g_spec_cfg->steps_results_layout = 'vertical';
 
-// 1 -> User will see a test suite filter while creating test specification
-// 0 -> no filter available
-$g_spec_cfg->show_tsuite_filter = 1;
+// ENABLED -> User will see a test suite filter while creating test specification
+// DISABLED -> no filter available
+$g_spec_cfg->show_tsuite_filter = ENABLED;
 
-// 1 -> every time user do some operation on test specification
+// ENABLED -> every time user do some operation on test specification
 //      tree is updated on screen.
-// 0 -> tree will not be updated, user can update it manually.
-$g_spec_cfg->automatic_tree_refresh = 1;
+// DISABLED -> tree will not be updated, user can update it manually.
+$g_spec_cfg->automatic_tree_refresh = ENABLED;
 
-// 1 -> user can edit executed tc versions
-// 0 -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
-$tlCfg->testcase_cfg->can_edit_executed = 0;
+// ENABLED -> user can edit executed tc versions
+// DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
+$tlCfg->testcase_cfg->can_edit_executed = DISABLED;
 
-// used to create full external id in this way:
-// testCasePrefix . g_testcase_cfg->glue_character . external_id
-// CAN NOT BE EMPTY
-$tlCfg->testcase_cfg->glue_character = '-';
-
-/** Used when creating a Test Suite using copy 
-   and you have choose  $g_action_on_duplicate_name = 'generate_new'
-   if the name exist.
- */
-$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
         
-// 20071105 - franciscom
-// Important
+/** text template for a new Test Case summary, steps and expected_results */
 // object members has SAME NAME that FCK editor objects.
 // the logic present on tcEdit.php is dependent of this rule.
 // 
-// summary
-// steps
-// expected_results
-//
-// every member contains an object with following members:
+// every text object contains an object with following members:
 // type
 // value
 // 
@@ -516,11 +509,9 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 //       file is readed and it's contains assigned to FCK object
 //
 // any other value for type, results on '' assigned to FCK object
-//        
-//
+
 $g_testcase_template->summary->type = 'none';
 $g_testcase_template->summary->value = '';
-
 
 $g_testcase_template->steps->type = 'none';
 $g_testcase_template->steps->value = '';
@@ -528,42 +519,9 @@ $g_testcase_template->steps->value = '';
 $g_testcase_template->expected_results->type = 'none';
 $g_testcase_template->expected_results->value = '';
 
-
-// Important
-// object members has SAME NAME that FCK editor objects.
-// the logic present on tcEdit.php is dependent of this rule.
-// 
-// every member contains an object with following members:
-// type
-// value
-// 
-// Possible values for type member: 
-// none: template will not be used, default will be a clean editor screen.
-//
-// string: value of value member is assigned to FCK object
-//
-// string_id: value member is used in a lang_get() call, and return value 
-//            is assigned to FCK object.
-//            Configure string_id on custom_strings.txt            
-//
-// file: value member is used as file name.
-//       file is readed and it's contains assigned to FCK object
-//       example:
-//               $g_testsuite_template->details->type='file';
-//               $g_testsuite_template->details->value='D:\w3\tl\head_20080103\logs\tsuite.txt';
-//
-// any other value for type, results on '' assigned to Web Editor object.
-//        
-//
+/** text template for a new Test Suite description */
 $g_testsuite_template->details->type = 'none';
 $g_testsuite_template->details->value = '';
-
-/** 
-BUGID 0000086: Using "|" in the testsuite name causes malformed URLs
-regexp used to check for chars not allowed in:
-test project, test suite and testcase names.
-*/
-$g_ereg_forbidden = "[|]";
 
 
 
@@ -614,6 +572,7 @@ $g_attachments->action_on_save_empty_title = 'none';
 // 'show_label' -> the value of $g_attachments->access_string will be used .
 $g_attachments->action_on_display_empty_title = 'show_icon';
 
+// martin: @TODO use an image file only
 $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
@@ -625,24 +584,21 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // ----------------------------------------------------------------------------
 /** [Requirements] */
 
-/** Test Case generation from Requirements
+// true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
+// false: you want req_doc_id UNIQUE INSIDE a SRS
+$g_req_cfg->reqdoc_id->is_system_wide = FALSE;
 
-	- use_req_spec_as_testsuite_name
+/** 
+ * Test Case generation from Requirements - use_req_spec_as_testsuite_name
   	FALSE -> test cases are created and assigned to a test suite 
   	         with name $g_req_cfg->default_testsuite_name
-  	         
   	TRUE  -> REQuirement Specification Title is used as testsuite name     
 */
 $g_req_cfg->use_req_spec_as_testsuite_name = TRUE;
-$g_req_cfg->default_testsuite_name = "Test suite created by Requirement - Auto";
-$g_req_cfg->testsuite_details = "<b>Test suite/Test Cases generated from Requirements</b>";
-$g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</b><br>";
-
-
-// true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
-// false: you want req_doc_id UNIQUE INSIDE a SRS
-//
-$g_req_cfg->reqdoc_id->is_system_wide=false;
+$g_req_cfg->default_testsuite_name = "Auto-created Test cases";
+$g_req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
+		"A refinement of test scenario is highly recommended.";
+$g_req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
 
 
 
@@ -661,59 +617,13 @@ $tlCfg->import_max_row = '10000'; // in chars
 // - created using user management features
 $tlCfg->default_roleid = TL_ROLES_GUEST;
 
-/** Allow/disallow to have Test Plans without dependency to Test Project.
- * TRUE  => allow Test Plan over all Test Projects (TL 1.5 compatibility)
- * FALSE => all Test Plans should have own Test Project   [STANDARD BEHAVIOUR]
- * This behaviour is obsolete and could not be supported in future
- **/
-$g_show_tp_without_tproject_id = FALSE;
-
-/** Check unique titles of Test Project, Test Suite and Test Case
- *  TRUE  => Check              [STANDARD BEHAVIOUR]
- *  FALSE => don't check
- **/
-$g_check_names_for_duplicates = TRUE;
-
 /** 
  * Action for duplication check (only if $g_check_names_for_duplicates=TRUE)
  * 'allow_repeat' => allow the name to be repeated (backward compatibility)
  * 'generate_new' => generate a new name using $g_prefix_name_for_copy
  * 'block'        => return with an error 
  **/    
-$g_action_on_duplicate_name = 'generate_new';
-
-// TRUE  -> you can create multiple time the same keyword 
-//           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) 
-// FALSE ->   [STANDARD BEHAIVOUR]
-// @TODO havlatm: remove the possibility duplicate it (have no sense)
-$g_allow_duplicate_keywords = FALSE;
-
-// Applied to HTML inputs created to get/show custom field contents
-// For string,numeric,float,email: size & maxlenght of the input type text.
-// For list,email size of the select input.
-$tlCfg->gui->custom_fields->sizes = array( 
-	'string' => 50,
-	'numeric'=> 10,
-	'float'  => 10,
-	'email'  => 50,
-	'list'   => 1,
-	'multiselection list' => 5,
-	'text area' => array('cols' => 40, 'rows' => 6)
-);
-
-// Set this flag to automatically convert www URLs and
-// email adresses into clickable links (Taken from Mantis BTS) 
-$g_html_make_links = ON;
-
-// These are the valid html tags for multi-line fields (e.g. description)
-// do NOT include href or img tags here
-// do NOT include tags that have parameters (eg. <font face="arial">)
-$g_html_valid_tags = 'p, li, ul, ol, br, pre, i, b, u, em';
-
-// These are the valid html tags for single line fields (e.g. issue summary).
-// do NOT include href or img tags here
-// do NOT include tags that have parameters (eg. <font face="arial">)
-$g_html_valid_tags_single_line = 'i, b, u, em';
+$tlCfg->name_duplicity_checking = 'generate_new';
 
 
 
@@ -755,6 +665,15 @@ define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 
 require_once(TL_ABS_PATH . 'cfg/userRightMatrix.php');
 
+// Reverted execution status is used for two applications.
+// 1. To map code to CSS, Please if you add an status you need to add a corresponding CSS Class
+//    in the CSS files (see the gui directory)
+// 2. to decode from code to some more human oriented to use in code
+//
+/** Revered list of Test Case execution results */
+$tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
+
+
 
 // --------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
@@ -771,11 +690,51 @@ define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
 define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
 
+// --------------------------------------------------------------------
 // when a role is deleted, a new role must be assigned to all users
 // having role to be deleted
 // A right choice seems to be using $g_default_roleid.
 // You can change this adding a config line in custom_config.inc.php
+// @TODO martin: remove - use directly $tlCfg->default_roleid;
 $g_role_replace_for_deleted_roles=$tlCfg->default_roleid;
+
+/** 
+BUGID 0000086: Using "|" in the testsuite name causes malformed URLs
+regexp used to check for chars not allowed in:
+test project, test suite and testcase names.
+@TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)
+*/
+$g_ereg_forbidden = "[|]";
+
+/** 
+ * martin: @TODO remove as obsolete
+ * Allow/disallow to have Test Plans without dependency to Test Project.
+ * TRUE  => allow Test Plan over all Test Projects (TL 1.5 compatibility)
+ * FALSE => all Test Plans should have own Test Project   [STANDARD BEHAVIOUR]
+ * This behaviour is obsolete and could not be supported in future
+ **/
+$g_show_tp_without_tproject_id = FALSE;
+
+/** @TODO martin: remove from configuration and use a number in brackets after name ("My Test Title(2)") 
+ * Used when creating a Test Suite using copy 
+   and you have choose  $g_action_on_duplicate_name = 'generate_new'
+   if the name exist.
+ */
+$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
+
+// TRUE  -> you can create multiple time the same keyword 
+//           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) 
+// FALSE ->   [STANDARD BEHAIVOUR]
+// @TODO havlatm: remove the possibility duplicate it (have no sense)
+$g_allow_duplicate_keywords = FALSE;
+
+/** 
+ * martin: @TODO remove - $g_action_on_duplicate_name is enough to define behaviour
+ * Check unique titles of Test Project, Test Suite and Test Case
+ *  TRUE  => Check              [STANDARD BEHAVIOUR]
+ *  FALSE => don't check
+ **/
+$g_check_names_for_duplicates = TRUE;
 
 
 /** 
@@ -799,7 +758,6 @@ $g_log_level=$tlCfg->log_level;
 $g_show_realname = $tlCfg->show_realname;
 $g_username_format = $tlCfg->username_format;
 $g_dashboard_precision = $tlCfg->dashboard_precision;
-$g_fckeditor_toolbar = $tlCfg->fckeditor_default_toolbar;
 $g_api_id_format = $tlCfg->api_id_format;
 $g_tree_show_testcase_id = $tlCfg->treemenu_show_testcase_id;
 $g_tree_node_ordering->default_testcase_order  = $tlCfg->treemenu_default_testcase_order;
@@ -811,6 +769,7 @@ $g_tc_status_css = $tlCfg->results['code_status'];
 $g_tc_status_verbose_labels = $tlCfg->results['status_label'];
 $g_tc_status_for_ui = $tlCfg->results['status_label']; 
 $g_tc_status_for_ui_default = $tlCfg->results['default_status'];
+$g_action_on_duplicate_name = $tlCfg->name_duplicity_checking;
 
 
 // ----- END OF FILE --------------------------------------------------

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.22 2008/06/03 08:40:49 havlat Exp $
+$Id: login.tpl,v 1.23 2008/06/05 08:19:26 havlat Exp $
 Purpose: smarty template - login page 
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
@@ -58,6 +58,8 @@ window.onload=function()
 	{if $securityNotes}
     	{include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning_message"}
 	{/if}
+	
+	<div>{$tlCfg->login_info}</div>
 
 </div>
 </body>

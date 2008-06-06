@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.182 $
- * @modified $Date: 2008/06/05 08:19:59 $ by $Author: havlat $
+ * @version $Revision: 1.183 $
+ * @modified $Date: 2008/06/06 10:28:56 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -625,7 +625,21 @@ $tlCfg->default_roleid = TL_ROLES_GUEST;
  **/    
 $tlCfg->name_duplicity_checking = 'generate_new';
 
+/** 
+ * String checking and conversions
+ * Allow automatically convert www URLs and email adresses into clickable links 
+ * used by function string_display_links() for example by custom fields. 
+ * Valid values = ENABLED/DISABLED.  
+ **/
+$tlCfg->html_make_links = ENABLED;
 
+/**
+ * Define the valid html tags for "content driven" single-line and multi-line fields.
+ * Do NOT include tags with parameters (eg. <font face="arial">), img and href.
+ * It's used by function string_display_links() for example by custom fields. 
+ */
+$tlCfg->html_valid_tags = 'p, li, ul, ol, br, pre, i, b, u, em';
+$tlCfg->html_valid_tags_single_line = 'i, b, u, em';
 
 
 
@@ -697,6 +711,7 @@ define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
 // You can change this adding a config line in custom_config.inc.php
 // @TODO martin: remove - use directly $tlCfg->default_roleid;
 $g_role_replace_for_deleted_roles=$tlCfg->default_roleid;
+
 
 /** 
 BUGID 0000086: Using "|" in the testsuite name causes malformed URLs

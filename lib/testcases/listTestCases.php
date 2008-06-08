@@ -2,13 +2,17 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.28 2008/06/03 20:28:32 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.29 2008/06/08 09:28:47 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
-*   rev: 20080603 - franciscom - added tcase prefix in call to tree loader
+*   rev: 
+*        20080608 - franciscom - user rights need to be checked in order to enable/disable
+*                                javascript tree operations like drag & drop.
+*
+*        20080603 - franciscom - added tcase prefix in call to tree loader
 *        20080525 - franciscom - refactored to use ext js tree
 *        20070217 - franciscom - added test suite filter
 */
@@ -19,28 +23,27 @@ testlinkInitPage($db);
 
 $tproject_mgr = New testproject($db);
 
+
 $template_dir='testcases/';
 $spec_cfg = config_get('spec_cfg');
-
-$args=init_args();
-$gui=initializeGui($args,$_SESSION['basehref'],$tproject_mgr);
-
-$do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
-                                    'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
-                                    $spec_cfg->automatic_tree_refresh);
-
-$_SESSION['tcspec_refresh_on_action'] = $do_refresh_on_action;
-
-$title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
-
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
                         'keywordsAssign' => "lib/keywords/keywordsAssign.php",
                         'assignReqs' => "lib/requirements/reqTcAssign.php");
 
+$treeDragDropEnabled =  array('edit_tc' => has_rights($db,"mgt_modify_tc")=='yes' ? true: false,
+                              'keywordsAssign' => false,
+                              'assignReqs' => false);
+
+
+
+
+$args=init_args();
 if(!is_null($args->feature) && strlen($args->feature))
 {
 	if(isset($feature_action[$args->feature]))
+	{
 		$workPath = $feature_action[$args->feature];
+	}
 	else
 	{
 		tLog("Wrong get argument 'feature'.", 'ERROR');
@@ -52,6 +55,18 @@ else
 	tLog("Missing argument 'feature'.", 'ERROR');
 	exit();
 }
+
+$gui=initializeGui($args,$_SESSION['basehref'],$tproject_mgr,$treeDragDropEnabled[$args->feature]);
+
+$do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
+                                    'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
+                                    $spec_cfg->automatic_tree_refresh);
+
+$_SESSION['tcspec_refresh_on_action'] = $do_refresh_on_action;
+
+$title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
+
+
 
 
 $draw_filter = $spec_cfg->show_tsuite_filter;
@@ -79,7 +94,7 @@ if($spectree != 'EXTJS' )
     if (strlen($treeString))
     	$tree = invokeMenu($treeString,"",null);
 }
-		
+	
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
@@ -191,7 +206,7 @@ function init_args()
   returns: 
 
 */
-function initializeGui($argsObj,$basehref,&$tprojectMgr)
+function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
 {
     $tcaseCfg=config_get('testcase_cfg');
         
@@ -208,6 +223,11 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr)
     $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
     $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
     $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
+  
+    $gui->ajaxTree->dragDrop=new stdClass();
+    $gui->ajaxTree->dragDrop->enabled=$treeDragDropEnabled;
+    $gui->ajaxTree->dragDrop->BackEndUrl=$basehref . 'lib/ajax/dragdroptprojectnodes.php';
+  
   
     $gui->tsuite_choice=$argsObj->tsuites_to_show;  
     return $gui;  

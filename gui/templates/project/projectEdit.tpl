@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.15 2008/05/06 06:26:08 franciscom Exp $
+$Id: projectEdit.tpl,v 1.16 2008/06/08 09:28:27 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
@@ -25,7 +25,9 @@ rev:
 {assign var="managerURL" value="lib/project/projectEdit.php"}
 {assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
 
-{lang_get var="labels" s='caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
+{lang_get var="labels" s='show_event_history,th_active,cancel,info_failed_loc_prod,
+                          invalid_query,
+                          caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
                           title_testproject_management,notes,color,enable_priority, enable_automation,
                           enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'}
 
@@ -77,7 +79,9 @@ function validateForm(f)
 	{if $found == "yes"}
 		<h2>{$caption|escape}
 		{if $mgt_view_events eq "yes"}
-			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$id}','testprojects')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+			     onclick="showEventHistoryFor('{$id}','testprojects')" 
+			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 		{/if}
 		</h2>
 		<div>
@@ -86,7 +90,7 @@ function validateForm(f)
 		      onSubmit="javascript:return validateForm(this);">
 
 		<input type="hidden" name="tprojectID" value="{$id}" />
-		<table id="item_view" class="common sortable" style="width:80%">
+		<table id="item_view" class="common" style="width:80%">
 			<tr>
 				<th style="background:none;">{$labels.name}</th>
 				<td><input type="text" name="tprojectName"
@@ -144,7 +148,7 @@ function validateForm(f)
 				</td>
 			</tr>
 
-			<tr><th style="background:none;">{lang_get s='th_active'}</th>
+			<tr><th style="background:none;">{$labels.th_active}</th>
 			    <td>
 			    <input type="checkbox" name="active" {if $active eq 1} checked="checked"	{/if} />
 			    </td>
@@ -158,7 +162,7 @@ function validateForm(f)
                   added hidden   *}
     		<input type="hidden" name="doAction" value="{$doActionValue}" />
 		    <input type="submit" name="doActionButton" value="{$buttonValue}" />
-			<input type="button" name="go_back" value="{lang_get s='cancel'}" onclick="javascript:history.back();"/>
+			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
 
 		</div>
 		{/if}
@@ -168,9 +172,9 @@ function validateForm(f)
 	{else}
 		<p class="info">
 		{if $name neq ''}
-			{lang_get s='info_failed_loc_prod'} - {$name|escape}!<br />
+			{$labels.info_failed_loc_prod} - {$name|escape}!<br />
 		{/if}
-		{lang_get s='invalid_query'}: {$sqlResult|escape}<p>
+		{$labels.invalid_query}: {$sqlResult|escape}<p>
 	{/if}
 </div>
 </body>

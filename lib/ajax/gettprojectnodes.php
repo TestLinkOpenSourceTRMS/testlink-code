@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.3 2008/06/03 20:28:32 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.4 2008/06/08 09:28:47 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Created using Ext JS example code
@@ -31,7 +31,6 @@ $filter_node=isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
 $tcprefix=$_REQUEST['tcprefix'];
 
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
-
 $nodes=display_children($db,$root_node,$node,$filter_node,$tcprefix);
 echo json_encode($nodes);
 ?>
@@ -70,6 +69,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix)
     //        "  AND NT.description = 'testcase') ". 
     //        "  GROUP BY NHA.parent_id ";
        
+    // Get external id, used on test case nodes   
     $sql = " SELECT DISTINCT tc_external_id,NHA.parent_id " .
            " FROM tcversions TCV,nodes_hierarchy NHA " .  
            " WHERE NHA.id = TCV.id " .
@@ -86,44 +86,36 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix)
     
     // print_r(array_values($nodeSet));
     // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 
-		
-		foreach($nodeSet as $key => $row)
+		if( !is_null($nodeSet) ) 
 		{
-		    // Response parameters.                                                                  
-		    $path['text']		= html_entity_decode($row['name']);                                  
-		    $path['id']			= $row['id'];                                                           
-		   
-		    // 20080602 - franciscom
-		    // seems this attribute is not used.
-		    // Node order is detemined by writing order => sql select ORDER BY
-		    //
-		    // $path['position']	= $row['node_order'];                                                   
-        // $path['position']	= $idx++;                                                   
+		    foreach($nodeSet as $key => $row)
+		    {
+		        $path['text']		= html_entity_decode($row['name']);                                  
+		        $path['id']			= $row['id'];                                                           
         
-        switch($row['node_type'])
-        {
-            case 'testproject':
+            // this attribute/property is used on custom code on drag and drop
+		        $path['position']	= $row['node_order'];                                                   
             $path['leaf']	= false;
-            $path['href'] = "javascript:EP({$path['id']})";
-            break;
-            
-            case 'testsuite':
-            $path['leaf']	= false;
-            $path['href'] = "javascript:ETS({$path['id']})";
-            break;
-            
-            case 'testcase':
-            $path['text'] = $tcprefix . $external[$row['id']]['tc_external_id'] . ":" . $path['text'];
-            $path['leaf']	= true;
-            $path['href'] = "javascript:ET({$path['id']})";
-            break;
-        }
- 		    $path['cls']	= 'folder';
-                                                                                                  
-		    // call this function again to display this                                              
-		    // child's children                                                                      
-		    $nodes[] = $path;                                                                        
-		}		
-
+ 		        $path['cls']	= 'folder';
+		       
+            switch($row['node_type'])
+            {
+                case 'testproject':
+                $path['href'] = "javascript:EP({$path['id']})";
+                break;
+                
+                case 'testsuite':
+                $path['href'] = "javascript:ETS({$path['id']})";
+                break;
+                
+                case 'testcase':
+                $path['href'] = "javascript:ET({$path['id']})";
+                $path['text'] = $tcprefix . $external[$row['id']]['tc_external_id'] . ":" . $path['text'];
+                $path['leaf']	= true;
+                break;
+            }
+		        $nodes[] = $path;                                                                        
+		    }	// foreach	
+    }
 		return $nodes;                                                                             
 }                                                                                               

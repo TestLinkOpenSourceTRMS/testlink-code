@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.4 2008/05/28 20:56:58 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.5 2008/06/08 09:28:27 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
  
    20080525 - franciscom - use only ext js tree type.
@@ -17,7 +17,8 @@
 
     {literal}
     <script type="text/javascript">
-    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",loader:""};
+    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+               loader:"", enableDD:false, dragDropBackEndUrl:''};
     </script>
     {/literal}
     
@@ -26,6 +27,8 @@
     treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
     treeCfg.root_id={$gui->ajaxTree->root_node->id};
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+    treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+    treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
     </script>
     
     <script type="text/javascript" src='gui/javascript/tcTree.js'>
@@ -40,8 +43,8 @@
 
 <div style="margin: 3px;">
 
-{if $draw_filter}
   <form method="get" id="tree_filter_and_settings"> 
+{if $draw_filter}
     <input type="hidden" name="feature" value="{$smarty.get.feature}" />
   	<table class="smallGrey" width="100%">
     		<caption>
@@ -74,10 +77,8 @@
   			           value="{lang_get s='button_update_tree'}" style="font-size: 90%;" /></td>
   		</tr>
   	</table>
-  </form>
 
 {else}
-  <form>
   	<table class="smallGrey" width="100%">
   		<tr>
   			<td>&nbsp;</td>
@@ -86,7 +87,6 @@
   	    </td>   
   	  </tr>  
     </table>
-  </form>
 {/if}		
 </div>
 
@@ -101,6 +101,7 @@
 {else}
     <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
 {/if}
+  </form>
 
 </body>
 </html>

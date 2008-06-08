@@ -1,12 +1,14 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.3 2008/06/03 20:28:16 franciscom Exp $
+$Id: tcTree.js,v 1.4 2008/06/08 09:28:08 franciscom Exp $
 
 Created using EXT JS examples
 Definion for tree used to show test cases specification
+This tree is used in different TL features, where sometimes drag & drop can not be used.
 Author: franciscom - 20080525
 
 rev:
+    20080607 - franciscom -
     20080603 - franciscom - drag & drop disabled
     20080528 - franciscom - added code to save/restore tree state
                             using example found on Ext JS forum
@@ -14,6 +16,48 @@ rev:
                             
                             
 */
+
+function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorder)
+{
+    var children=newparent.childNodes
+    var serial=new Array(1);
+    var idx=0;
+    var loopqty=children.length;
+    var child;
+    var nodelist='';
+    
+    // debug alert(children);alert(loopqty);alert(children[0].id);
+    
+    
+    for(idx=0; idx < loopqty; idx++)
+    {
+       child=children[idx];
+       serial[idx]=child.id;
+    }
+    nodelist=serial.join(',');
+    
+    if( oldparentid != newparentid )
+    {
+        Ext.Ajax.request({
+            url: treeCfg.dragDropBackEndUrl,
+            params: {doAction: 'changeParent', nodeid: nodeid, 
+                     oldparentid: oldparentid, newparentid: newparentid,                   
+                     top_or_bottom: 'bottom'}
+         });
+    } 
+    else
+    {
+        Ext.Ajax.request({
+            url: treeCfg.dragDropBackEndUrl,
+            params: {doAction: 'doReorder', nodeid: nodeid, 
+                     oldparentid: oldparentid, newparentid: newparentid, 
+                     nodelist: nodelist,
+                     nodeorder: nodeorder}
+         });
+
+    }
+}
+
 function TreePanelState(mytree) 
 {
     this.mytree = mytree;
@@ -100,21 +144,11 @@ Ext.BLANK_IMAGE_URL = fRoot+'third_party/ext-2.0/images/default/s.gif';
 
 Ext.onReady(function(){
 
-    // var cp = new Ext.state.CookieProvider({domain:"localhost"});                                                                      
-    // Ext.state.Manager.setProvider(cp);
-    // alert(cp.encodeValue('Frac'));
-    // 
-    //alert(cp.path); 
-    //alert(cp.domain); 
-    //alert(cp.get('domain','p'));
-    //alert(cp.get('path','ps'));
-    
-    // var sbutton=Ext.get('refresh_view');
-    // 
-    // sbutton.on('click', 
-    //            function(){ alert('BBBByou click on a link');}
-    //           );
-    // 
+    // to manage drag & drop
+    var oldPosition = null;
+    var oldNextSibling = null;
+
+
     // shorthand
     var Tree = Ext.tree;
     
@@ -123,7 +157,7 @@ Ext.onReady(function(){
         useArrows:true,
         autoScroll:true,
         animate:true,
-        enableDD:false,
+        enableDD:treeCfg.enableDD,
         containerScroll: true, 
         loader: new Tree.TreeLoader({
             dataUrl:treeCfg.loader
@@ -148,16 +182,34 @@ Ext.onReady(function(){
     treeState.init();                                             
     
     // initialize event handlers                                  
+
+    // Needed to manage save/restore tree state
     tree.on('expandnode', treeState.onExpand, treeState);             
     tree.on('collapsenode', treeState.onCollapse, treeState);         
+    // 
+
+    // Needed to manage drag and drop back-end actions
+    tree.on('startdrag', function(tree, node, event){
+                                  oldPosition = node.parentNode.indexOf(node);
+                                  oldNextSibling = node.nextSibling;
+    });
     
+    tree.on('movenode', function(tree,node,oldParent,newParent,newNodePosition ){ 
+                    
+                    /*
+                    alert('oldParent:'+ oldParent.id + ' newParent:'+ newParent.id + 
+                          ' nodeId:'+node.id + '\n nodePosition:' + newNodePosition+ 
+                          'oldPosition:' + oldPosition + 
+                          '\n oldNextSibling:' +  oldNextSibling +
+                          '\n nextSibling:' +  node.nextSibling);
+                    */      
+                    writeNodePositionToDB(newParent,node.id,oldParent.id,newParent.id,newNodePosition);                    
+                    });                                          
+    //
+                                                                 
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  
     
-    
     //root.expand();
     
-    // tree.el.on('keypress', 
-    //            function(){ alert('you click on a link');}
-    //           );
 });

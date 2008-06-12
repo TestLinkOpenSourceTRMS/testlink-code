@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.16 2008/05/04 10:30:39 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.17 2008/06/12 13:40:32 havlat Exp $
 Generic attachment management
 
 Input:
@@ -45,7 +45,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
  	{if $attach_show_title}
 	<tr>
-		<td class="bold">{lang_get s="attached_files"}:</td>
+		<td class="bold">{lang_get s="attached_files"}{$tlCfg->gui_title_separator_1}</td>
 	</tr>
  	{/if}
 
@@ -71,13 +71,18 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 				{/if}
 			</td>
 		</tr>
+	{foreachelse}
+	<tr>
+		<td class="bold" style="margin-left:10px;">{lang_get s="none"}</td>
+	</tr>
+    		    
 	{/foreach}
 
   {if $attach_show_upload_btn && !$attach_downloadOnly}
   <tr>
   	<td colspan="2">
-  	<input type="button" value="{lang_get s='button_upload'}" 
-  	       onclick="openFileUploadWindow({$attach_id},'{$attach_tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
+  	<input type="button" value="{lang_get s='upload_file_new_file'}" 
+  	       onclick="openFileUploadWindow({$attach_id},'{$attach_tableName}')" /></td>
   </tr>
   {/if}
 

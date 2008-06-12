@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.4 2008/06/11 08:17:09 havlat Exp $
+$Id: tcNew.tpl,v 1.5 2008/06/12 14:40:40 havlat Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -11,8 +11,9 @@ BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pres
 20061231 - franciscom - use of $gsmarty_href_keywordsView
                         use a class for the labels
 
-*}
+ ----------------------------------------------------------------- *}
 
+{lang_get var='labels' s='btn_create,cancel'}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -61,23 +62,22 @@ function validateForm(f)
       name="tc_new" id="tc_new"
       onSubmit="javascript:return validateForm(this);">
 
-	<div style="float: right;">
+	<div class="menu_bar">
 	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
-			<input type="submit" id="do_create_button"  name="do_create_button" value="{lang_get s='btn_create'}" />
+			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" />
+			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
 	</div>	
 
-  {* 20071202 - franciscom *}
-  {assign var=this_template_dir value=$smarty.template|dirname}
+	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
 
-  <br />
-	<div style="margin-right:5px;float: right;">
+	<div class="menu_bar">
+	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
-			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{lang_get s='btn_create'}" />
+			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" />
+			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
 	</div>	
-	<br/>
-
 
 </form>
 </div>

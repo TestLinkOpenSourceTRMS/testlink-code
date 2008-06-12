@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.326 $
- * @modified $Date: 2008/06/05 12:27:16 $ $Author: havlat $
+ * @version $Revision: 1.327 $
+ * @modified $Date: 2008/06/12 11:57:23 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -319,24 +319,23 @@ $TLS_node_type_dbtable_testcases=$TLS_testcase;
 
 
 // gui/templates/containerView.tpl
-$TLS_alt_del_com = "Delete this Test Suite";
-$TLS_alt_edit_com = "Modify this Test Suite data and title";
-$TLS_alt_move_cp_com = "Move or copy this Test Suite to another Test Project";
+$TLS_alt_del_testsuite = "Delete this Test Suite with all child data (Test Suites and Test Cases)";
+$TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
+$TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
 $TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
-$TLS_btn_del_com = "Delete";
-$TLS_btn_edit_com = "Edit";
+$TLS_btn_del_testsuite = "Delete Test Suite";
+$TLS_btn_edit_testsuite = "Edit details";
 $TLS_btn_execute_automatic_testcases="Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";
-$TLS_btn_export_tc = "Export Test Case(s)";
+$TLS_btn_export_tc = "Export child Test Case(s)";
 $TLS_btn_export_testsuite = "Export Test Suite";
 $TLS_btn_import_tc = "Import Test Case(s)";
 $TLS_btn_import_testsuite = "Import Test Suite";
-$TLS_btn_move_cp_com = "Move/Copy";
+$TLS_btn_move_cp_testsuite = "Move/Copy";
 $TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
-$TLS_btn_new_cat = "New Test Suite";
-$TLS_btn_new_com = "New Test Suite";
+$TLS_btn_new_testsuite = "New child Test Suite";
 $TLS_btn_new_tc = "Create Test Case(s)";
-$TLS_btn_reorder_cat = "Reorder children";
+$TLS_btn_reorder = "Reorder child data";
 $TLS_edit_testproject_basic_data = "Edit Test Project basic data";
 $TLS_th_product_name = "Test Project Name";
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/06/02 14:43:20 $ $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/06/14 08:45:27 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
  *     20080602 - franciscom - get_linked_tcversions() added tcversion_number in output
  *     20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
  *                             get_keywords_tcases() - accepts multiple keywords
@@ -592,6 +593,9 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 
 
   rev:
+      20080614 - franciscom - fixed bug on SQL generated while
+                              adding tc_external_id on results.
+                              
       20080126 - franciscom - added tc_external_id on results
 
 */
@@ -609,8 +613,14 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	      $tc_id_filter = " AND NHA.parent_id = {$tcase_id} ";
 	   }
 	}
+	
+	// 20080614 - franciscom
+	// Peter Rooms found bug due to wrong SQL, accepted by MySQL but not by PostGres
+	// Missing column in GROUP BY Clause
+	//
 	$sql = " SELECT MAX(NHB.id) AS newest_tcversion_id, " .
-	       "        NHA.parent_id AS tc_id, NHC.name, " .
+	       "        NHA.parent_id AS tc_id, " .
+	       "        NHC.name, " .
 	       "        T.tcversion_id AS tcversion_id," .
 	       "        TCVA.tc_external_id AS tc_external_id," .
 	       "        TCVA.version AS version" .
@@ -621,7 +631,7 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	       " JOIN tcversions TCVA ON T.tcversion_id = TCVA.id " .
 	       " JOIN tcversions TCVB ON NHB.id = TCVB.id AND TCVB.active=1 " .
 	       " WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
-	       " GROUP BY NHA.parent_id, NHC.name, tcversion_id, TCVA.version  ";
+	       " GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
 
 	$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
 	        " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .

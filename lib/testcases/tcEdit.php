@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/06/11 08:17:49 $  by $Author: havlat $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/06/16 08:13:19 $  by $Author: havlat $
  * This page manages all the editing of test cases.
  *
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
@@ -23,7 +23,8 @@
  *                         refresh tree logic
  *
  *
-**/
+* -------------------------------------------------------------------------------- */
+
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("web_editor.php");
@@ -110,8 +111,6 @@ switch($args->doAction)
 	  
 }
 
-
-
 //If the user has chosen to edit a testcase then show this code
 if($args->edit_tc)
 {
@@ -139,6 +138,7 @@ if($args->edit_tc)
   	$smarty->assign('opt_cfg', $opt_cfg);
   	$smarty->display($templateCfg->template_dir . $g_tpl['tcEdit']);
 }
+
 else if($args->create_tc)
 {
 	$show_newTC_form = 1;
@@ -146,6 +146,7 @@ else if($args->create_tc)
 	keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
 	$smarty->assign('opt_cfg', $opt_cfg);
 }
+
 else if($args->do_create)
 {
 	$show_newTC_form = 1;
@@ -156,7 +157,8 @@ else if($args->do_create)
 		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->steps,
 		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
 		                            $cfg->node_ordering->default_testcase_order,testcase::AUTOMATIC_ID,
-		                            config_get('check_names_for_duplicates'),'block',$args->exec_type);
+		                            config_get('check_names_for_duplicates'),'block',$args->exec_type,
+		                            $args->importance);
 
 		if($tcase['status_ok'])
 		{
@@ -381,6 +383,7 @@ else if($args->do_create_new_version)
 
 	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS, $viewer_args);
 }
+
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
@@ -388,6 +391,7 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 	$viewer_args['refresh_tree']=DONT_REFRESH;
 	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS,$viewer_args);
 }
+
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
 {
@@ -433,12 +437,9 @@ if ($show_newTC_form)
 
 /*
   function: read_file
-
   args: file_name
-
   returns: if file exist and can be read -> file contents
            else error message
-
 */
 function read_file($file_name)
 {
@@ -521,11 +522,8 @@ function init_args($spec_cfg,$otName)
 
 /*
   function: initializeOptionTransferCfg
-
   args :
-  
   returns: 
-
 */
 function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
 {
@@ -545,16 +543,13 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
 /*
   function: createWebEditors
 
-            When using tinymce or none as web editor, we need to set rows and cols
-            to appropriate values, to avoid an ugly ui.
-            null => use default values defined on editor class file
-           
-            Rows and Cols values are useless for FCKeditor
+      When using tinymce or none as web editor, we need to set rows and cols
+      to appropriate values, to avoid an ugly ui.
+      null => use default values defined on editor class file
+      Rows and Cols values are useless for FCKeditor
 
   args :
-  
   returns: object
-
 */
 function createWebEditors($basehref)
 {
@@ -576,12 +571,8 @@ function createWebEditors($basehref)
 
 /*
   function: getCfg
-
-
   args :
-  
   returns: object
-
 */
 function getCfg()
 {
@@ -596,12 +587,8 @@ function getCfg()
 
 /*
   function: getGrants
-
-
   args :
-  
   returns: object
-
 */
 function getGrants(&$dbHandler)
 {

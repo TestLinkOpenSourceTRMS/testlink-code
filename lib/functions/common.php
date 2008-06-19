@@ -1,12 +1,13 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.113 $ $Author: franciscom $
- * @modified $Date: 2008/05/25 14:45:10 $
+ * @version $Revision: 1.114 $ $Author: havlat $
+ * @modified $Date: 2008/06/19 16:40:42 $
  *
- * @author 	Martin Havlat
- * @author 	Chad Rosen
+ * @author 	Martin Havlat, Chad Rosen
  *
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
@@ -200,21 +201,16 @@ function setSessionTestPlan($tplan_info)
  * @todo solve problems after session expires
  */
 // MHT 20050712 create extra function for this;
+// 200806 - havlatm - removed rpath
 function setPaths()
 {
 	tLog('test ' . getenv('SCRIPT_NAME'));
 	if (!isset($_SESSION['basehref']))
 		$_SESSION['basehref'] = get_home_url();
 
-	$my_locale = isset($_SESSION['locale']) ?  $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+// havlatm: unknown purpose -> disabled
+//	$my_locale = isset($_SESSION['locale']) ?  $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 
-	global $g_rpath;
-	$g_rpath = array ( 'help' => TL_HELP_RPATH . $my_locale,
-	                   'instructions' => TL_HELP_RPATH . $my_locale);
-
-	global $g_apath;
-	foreach ($g_rpath as $key => $value)
-	    $g_apath[$key] = TL_ABS_PATH . $value;
 
 	return 1;
 }
@@ -280,7 +276,7 @@ function doSessionStart()
 * @param boolean $bDontCheckSession (optional) Set to true if no session should be
 * 		 started
 */
-function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
+function testlinkInitPage(&$db,$initProject = FALSE, $bDontCheckSession = false)
 {
 	global $g_repositoryType;
 	global $g_attachments;
@@ -297,7 +293,7 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 
 	checkUserRights($db);
 
-	if ($initProduct)
+	if ($initProject)
 		doInitSelection($db) or die("Could not set session variables");
 
 	// used to disable the attachment feature if there are problems with repository path
@@ -340,6 +336,7 @@ function checkUserRights(&$db)
 	}
 
 }
+
 /**
  * Redirect page to another one
  *
@@ -456,7 +453,6 @@ function localize_timestamp_smarty($params, &$smarty)
          $value: must be a date or time stamp in ISO format
 
   returns:
-
 */
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 {
@@ -613,67 +609,9 @@ function config_get($config_id)
 {
   global $g_cache_config;
 
-  $t_value='';  
-  $t_found=false;  
+  $t_value = '';  
+  $t_found = false;  
 
-  // $su=isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-  // $stpr=isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']:0;
-  // $stpl=isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId']:0;
-  // 
-  // $user_list = array($su,0);
-  // $tproject_list = array($stpr,0);
-  // $tplan_list = array($stpl,0);
-  // 
-  // $searchCfgOnDB=false;
-  // if( isset($GLOBALS['db']) && $GLOBALS['db'] > 0)
-  // {
-  //     $dbHandler=$GLOBALS['db'];
-  // }
-  // else
-  // {
-  //     doDBConnect($dbHandler);    
-  // }
-  // $searchCfgOnDB=isset($GLOBALS['searchCfgOnDB']) ? $GLOBALS['searchCfgOnDB']:false;
-  // 
-  // if( $searchCfgOnDB )
-	// {
-	//     $sql = "SELECT config_id, user_id, testproject_id, testplan_id, type, value, access_reqd " .
-	//            "FROM configuration";
-  //     $cfg=$dbHandler->get_recordset($sql);
-  //   
-  //     foreach($cfg as $row )
-  //     {
-	// 		   $config = $row['config_id'];
-	// 		   $user = $row['user_id'];
-	// 		   $tproject = $row['testproject_id'];
-	// 		   $tplan = $row['testplan_id'];
-  //       
-  //        $dummy=array('type' => $row['type'], 'value' => $row['value']);
-  //        $g_cache_config[$config][$user][$tplan][$tproject]=$dummy;
-  //     }
-  // 
-  // }
-  
-  // if( isset( $g_cache_config[$config_id] ) ) 
-  // {
-  //     $t_found = false;
-  //     foreach($user_list as $u)
-  //     {
-  //         foreach($tplan_list as $v)
-  //         {
-  //             foreach($tproject_list as $w)
-  //             {
-	//                 if ( isset( $g_cache_config[$config_id][$u][$v][w] ) ) 
-	// 	              {
-  //   							    $t_value = $g_cache_config[$config_id][$u][$v][w];
-  //   							    $t_found = true;
-  //   							    break;
-  //   						  }
-  //      		    }
-  //         }  
-  //     }   
-  //   
-  // }
 
   if( !$t_found )
   {

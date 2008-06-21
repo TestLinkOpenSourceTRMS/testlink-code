@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.12 2008/05/19 10:23:52 havlat Exp $ *}
+{* $Id: execNavigator.tpl,v 1.13 2008/06/21 15:58:14 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+     20080621 - franciscom - adding ext js treemenu
      20080427 - franciscom - refactoring
      20080224 - franciscom - BUGID 1056
      20070225 - franciscom - fixed auto-bug BUGID 642
@@ -19,8 +20,33 @@ rev :
 {if $gui->keywordsFilterItemQty == 0}
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
+
+{if $tlCfg->treemenu_type == 'EXTJS'}
+    {include file="inc_head.tpl" openHead="yes"}
+    {include file="inc_ext_js.tpl"}
           
-{include file="inc_head.tpl" jsTree="yes"}
+    {literal}
+    <script type="text/javascript">
+    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+               loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+    </script>
+    {/literal}
+    
+    <script type="text/javascript">
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_id={$gui->ajaxTree->root_node->id};
+    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+    treeCfg.children={$gui->ajaxTree->children};
+    </script>
+    
+    <script type="text/javascript" src='gui/javascript/execTree.js'>
+    </script>
+
+{else}
+    {include file="inc_head.tpl" openHead="yes" jsTree="yes"}
+{/if}
+</head>
+
 
 <body>
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -92,9 +118,14 @@ rev :
 </form>
 </div>
 
-<div class="tree" id="tree">
-{$gui->tree}
-</div>
+
+{if $tlCfg->treemenu_type == 'EXTJS'}    
+    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+{else}
+    <div class="tree" id="tree">
+    {$gui->tree}
+    </div>
+{/if}
 
 {if $gui->src_workframe != ''}
 <script type="text/javascript">

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.8 2008/05/31 08:56:06 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.9 2008/06/21 15:58:14 franciscom Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
@@ -15,7 +15,31 @@ rev : 20080311 - franciscom - BUGID 1427 - first developments
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
 
-{include file="inc_head.tpl" jsTree="yes" openHead="yes"}
+{if $tlCfg->treemenu_type == 'EXTJS'}
+    {include file="inc_head.tpl" openHead="yes"}
+    {include file="inc_ext_js.tpl"}
+          
+    {literal}
+    <script type="text/javascript">
+    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+               loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+    </script>
+    {/literal}
+    
+    <script type="text/javascript">
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_id={$gui->ajaxTree->root_node->id};
+    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+    treeCfg.children={$gui->ajaxTree->children};
+    </script>
+    
+    <script type="text/javascript" src='gui/javascript/execTree.js'>
+    </script>
+
+{else}
+    {include file="inc_head.tpl" openHead="yes" jsTree="yes"}
+{/if}
+
 <script type="text/javascript">
 {literal}
 function pre_submit()
@@ -96,15 +120,22 @@ function update2latest(id)
 </form>
 </div>
 
-<div class="tree" id="tree">
-    {if $gui->draw_bulk_update_button }
-		    	<input type="button" value="{$labels.btn_update_all_testcases_to_latest_version}" 
-		    	       name="doUpdateToLatest" 
-		    	       onclick="update2latest({$gui->tplan_id})" />
-    {/if}
 
-	{$gui->tree}
-</div>
+{* 20080621 - franciscom *}
+{if $gui->draw_bulk_update_button }
+    	<input type="button" value="{$labels.btn_update_all_testcases_to_latest_version}" 
+    	       name="doUpdateToLatest" 
+    	       onclick="update2latest({$gui->tplan_id})" />
+{/if}
+
+{if $tlCfg->treemenu_type == 'EXTJS'}    
+    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+{else}
+    <div class="tree" id="tree">
+  	{$gui->tree}
+    </div>
+{/if}
+
 
 {* 20070925 *}
 <script type="text/javascript">

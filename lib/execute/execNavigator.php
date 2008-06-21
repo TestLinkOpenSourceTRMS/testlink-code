@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2008/05/30 09:31:25 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2008/06/21 16:04:16 $ by $Author: franciscom $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -37,7 +37,20 @@ $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
 $gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
 buildAssigneeFilter($db,$gui,$args,$cfg);
-$gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
+
+// $gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
+
+$treeMenu=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
+$gui->tree=$treeMenu->menustring;
+
+if( !is_null($treeMenu->rootnode) )
+{
+    $gui->ajaxTree=new stdClass();
+    $gui->ajaxTree->loader='';
+    $gui->ajaxTree->root_node=new stdClass();
+    $gui->ajaxTree->root_node=$treeMenu->rootnode;
+    $gui->ajaxTree->children=$treeMenu->menustring;
+}
 
                       
 $smarty = new TLSmarty();
@@ -184,6 +197,7 @@ function getCfg()
     $cfg->gui = config_get('gui');
     $cfg->exec = config_get('exec_cfg');
     $cfg->results = config_get('results');
+    $cfg->treemenu_type = config_get('treemenu_type');
     return $cfg;
 }
 
@@ -319,12 +333,19 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 	                              "?level=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
     }
        
-    $treeString = generateExecTree($dbHandler,$guiObj->menuUrl,
-                                   $argsObj->tproject_id,$argsObj->tproject_name,
-                                   $argsObj->tplan_id,$argsObj->tplan_name,
-                                   $guiObj->args,$filters,$additionalInfo);
-   
-    return (invokeMenu($treeString,null,null));
+    // 20080620 - francisco.mancardi@gruppotesi.com
+    $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
+                                 $argsObj->tproject_id,$argsObj->tproject_name,
+                                 $argsObj->tplan_id,$argsObj->tplan_name,
+                                 $guiObj->args,$filters,$additionalInfo);
+
+     
+    if( $cfgObj->treemenu_type != 'EXTJS' )
+    {
+        $treeMenu->menustring=invokeMenu($treeMenu->menustring,null,null);
+    }
+
+    return $treeMenu;
 }
 
 

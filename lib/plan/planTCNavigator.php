@@ -1,12 +1,13 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.15 2008/06/02 14:43:20 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.16 2008/06/21 16:05:20 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
 *
 * rev :
+*      20080621 - added code to use ext js tree
 *      20080429 - multiple keyword filter
 *      20080311 - franciscom - BUGID 1427 - first developments
 *      20070925 - franciscom - added management of workframe
@@ -23,7 +24,18 @@ $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr);
 
-$gui->tree=buildTree($db,$gui,$args);                                                
+// 20080621 - francisco.mancardi@gruppotesi.com
+$treeMenu=buildTree($db,$gui,$args);                                                
+$gui->tree=$treeMenu->menustring;
+if( !is_null($treeMenu->rootnode) )
+{
+    $gui->ajaxTree=new stdClass();
+    $gui->ajaxTree->loader='';
+    $gui->ajaxTree->root_node=new stdClass();
+    $gui->ajaxTree->root_node=$treeMenu->rootnode;
+    $gui->ajaxTree->children=$treeMenu->menustring;
+}
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
@@ -206,6 +218,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 {
+    $treemenu_type=config_get('treemenu_type');
+    
     $filters = new stdClass();
     $additionalInfo = new stdClass();
 
@@ -238,14 +252,18 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
 
     $guiObj->args=initializeGetArguments($argsObj,$filters);
-      
-    $treeString = generateExecTree($dbHandler,$guiObj->menuUrl,
-                                   $argsObj->tproject_id,$argsObj->tproject_name,
-                                   $argsObj->tplan_id,$argsObj->tplan_name,
-                                   $guiObj->args,$filters,$additionalInfo);
-
     
-    return (invokeMenu($treeString,null,null));
+    // 20080621 - francisco.mancardi@gruppotesi.com
+    $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
+                                 $argsObj->tproject_id,$argsObj->tproject_name,
+                                 $argsObj->tplan_id,$argsObj->tplan_name,
+                                 $guiObj->args,$filters,$additionalInfo);
+
+    if( $treemenu_type != 'EXTJS' )
+    {
+        $treeMenu->menustring=invokeMenu($treeMenu->menustring,null,null);
+    }
+    return $treeMenu;
 }
 
 

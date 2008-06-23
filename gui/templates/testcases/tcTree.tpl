@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.5 2008/06/08 09:28:27 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.6 2008/06/23 06:23:33 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
  
    20080525 - franciscom - use only ext js tree type.
@@ -29,6 +29,9 @@
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
     treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
     treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+
+    // 20080622 - franciscom
+    treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
     </script>
     
     <script type="text/javascript" src='gui/javascript/tcTree.js'>

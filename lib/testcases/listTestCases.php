@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.29 2008/06/08 09:28:47 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.30 2008/06/23 06:23:53 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -82,7 +82,8 @@ if($spec_cfg->show_tsuite_filter)
 }
 
 $spectree=config_get('spectreemenu_type');
-if($spectree != 'EXTJS' )
+$treemenu_type=config_get('treemenu_type');
+if($spectree != 'EXTJS')
 {
     $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
                                        $workPath,NOT_FOR_PRINTING,
@@ -228,7 +229,9 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $gui->ajaxTree->dragDrop->enabled=$treeDragDropEnabled;
     $gui->ajaxTree->dragDrop->BackEndUrl=$basehref . 'lib/ajax/dragdroptprojectnodes.php';
   
-  
+    // Prefix for cookie used to save tree state
+    $gui->ajaxTree->cookiePrefix='tproject_' . $gui->ajaxTree->root_node->id . "_" ;
+    
     $gui->tsuite_choice=$argsObj->tsuites_to_show;  
     return $gui;  
 }

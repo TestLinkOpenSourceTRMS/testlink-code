@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.21 2008/05/28 18:25:23 franciscom Exp $
+$Id: execSetResults.tpl,v 1.22 2008/06/23 06:23:33 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20080528 - franciscom - BUGID 1504 - version number management
@@ -67,9 +67,11 @@ var msg="{$labels.warning_delete_execution}";
 var import_xml_results="{$labels.import_xml_results}";
 </script>
 
-{if $smarty.const.USE_EXT_JS_LIBRARY}
+ 
+{if $smarty.const.USE_EXT_JS_LIBRARY || $tlCfg->treemenu_type == 'EXTJS'}
   {include file="inc_ext_js.tpl"}
 {/if}
+
 
 <script language="JavaScript" type="text/javascript">
 {literal}
@@ -80,7 +82,6 @@ function load_notes(panel,exec_id)
 }
 {/literal}
 </script>
-
 
 </head>
 {*

@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.4 2008/06/08 09:28:08 franciscom Exp $
+$Id: tcTree.js,v 1.5 2008/06/23 06:24:50 franciscom Exp $
 
 Created using EXT JS examples
 Definion for tree used to show test cases specification
@@ -25,8 +25,6 @@ function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorde
     var loopqty=children.length;
     var child;
     var nodelist='';
-    
-    // debug alert(children);alert(loopqty);alert(children[0].id);
     
     
     for(idx=0; idx < loopqty; idx++)
@@ -58,21 +56,26 @@ function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorde
     }
 }
 
-function TreePanelState(mytree) 
+/* Improvement - cookie name prefix
+function TreePanelState(mytree,cookiePrefix) 
 {
     this.mytree = mytree;
+    this.cookiePrefix = cookiePrefix;
 }
 
 TreePanelState.prototype.init = function() 
 {
     this.cp = new Ext.state.CookieProvider();
-    this.state = this.cp.get('TreePanelState_' + this.mytree.id, new Array() );
+    // this.state = this.cp.get('TreePanelState_' + this.mytree.id, new Array() );
+    this.state = this.cp.get(this.cookiePrefix + this.mytree.id, new Array() );
 }
 
 TreePanelState.prototype.saveState = function(newState) 
 {
     this.state = newState;
-    this.cp.set('TreePanelState_' + this.mytree.id, this.state);
+    // this.cp.set('TreePanelState_' + this.mytree.id, this.state);
+    this.cp.set(this.cookiePrefix + this.mytree.id, this.state);
+    
 }
 
 TreePanelState.prototype.onExpand = function(node) 
@@ -178,7 +181,8 @@ Ext.onReady(function(){
     // render the tree
     tree.render();
     
-    var treeState = new TreePanelState(tree);                     
+    // 20080622 - franciscom
+    var treeState = new TreePanelState(tree,treeCfg.cookiePrefix);                     
     treeState.init();                                             
     
     // initialize event handlers                                  

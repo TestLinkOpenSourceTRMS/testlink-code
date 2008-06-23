@@ -5,9 +5,12 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/04/03 06:53:09 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/06/23 06:23:53 $ by $Author: franciscom $
  * @author Francisco Mancardi
+ *
+ * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
+ *                         to create map with keys useful for ext js tree
  *
  * 20080331 - franciscom - changes in get_subtree(),_get_subtree_rec(),_get_subtree()
  *                         to support a different order for test cases
@@ -685,11 +688,15 @@ function getBottomOrder($parentID)
                       
           
   returns: array or map
+  
+  rev: 20080614 - franciscom
+       added key_type arguments, useful only fo recursive mode
 
 */
 function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
                               $exclude_branches=null,$and_not_in_clause='',
-                              $bRecursive = false,$order_cfg=array("type" =>'spec_order'))
+                              $bRecursive = false,
+                              $order_cfg=array("type" =>'spec_order'),$key_type='std')
 {
  		$the_subtree=array();
  		
@@ -707,7 +714,8 @@ function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null
     
 	if ($bRecursive)
 	    $this->_get_subtree_rec($node_id,$the_subtree,$not_in_clause,
-	                            $exclude_children_of,$exclude_branches,$order_cfg);
+	                            $exclude_children_of,$exclude_branches,
+	                            $order_cfg,$key_type);
 	else
 	    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
 	                        $exclude_children_of,$exclude_branches,$order_cfg);
@@ -813,9 +821,10 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
 // 20061008 - franciscom - added ID in order by clause
 // 
 function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
-                                           $exclude_children_of = null,
-                                           $exclude_branches = null,
-                                           $order_cfg=array("type" =>'spec_order'))
+                          $exclude_children_of = null,
+                          $exclude_branches = null,
+                          $order_cfg=array("type" =>'spec_order'),
+                          $key_type='std')
 {
     switch($order_cfg['type'] )
     {
@@ -856,17 +865,49 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
   		$rowID = $row['id'];
   		$nodeTypeID = $row['node_type_id'];
   		$nodeType = $this->node_types[$nodeTypeID];
+      $children_key='childNodes';
   		
   		if(!isset($exclude_branches[$rowID]))
   		{  
-  			$node_table = $this->node_tables[$nodeType];
-  			$node =  array('id' => $rowID,
-                       'parent_id' => $row['parent_id'],
-                       'node_type_id' => $nodeTypeID,
-                       'node_order' => $row['node_order'],
-                       'node_table' => $node_table,
-                       'name' => $row['name'],
-  							       'childNodes' => null);
+  		  switch($key_type)
+  		  {
+  		      case 'std':
+  			        $node_table = $this->node_tables[$nodeType];
+  			        
+  			        $node =  array('id' => $rowID,
+                               'parent_id' => $row['parent_id'],
+                               'node_type_id' => $nodeTypeID,
+                               'node_order' => $row['node_order'],
+                               'node_table' => $node_table,
+                               'name' => $row['name'],
+  			           			       $children_key => null);
+  			    break;
+  			    
+  		      case 'extjs':
+  			        $node =  array('text' => $row['name'],
+  			                       'id' => $rowID,
+                               'parent_id' => $row['parent_id'],
+                               'node_type_id' => $nodeTypeID,
+                               'position' => $row['node_order'],
+  			           			       $children_key => null,
+                               'leaf' => false);
+
+                switch($nodeType)
+                {
+                    case 'testproject':
+                    case 'testsuite':
+                        $node[$children_key]=null;
+                    break;  
+
+                    case 'testcase':
+                        $node['leaf']=true;
+                    break;
+                } 
+  			    break;
+  			    
+  			    				       
+  			    				       
+        }
             
         // Basically we use this because:
         // 1. Sometimes we don't want the children if the parent is a testcase,
@@ -887,10 +928,10 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                                   $and_not_in_clause,
                                   $exclude_children_of,
                                   $exclude_branches,
-                                  $order_cfg);	
+                                  $order_cfg,$key_type);	
         }
   			
-  			$pnode['childNodes'][] = $node;
+  			$pnode[$children_key][] = $node;
   			
   		} // if(!isset($exclude_branches[$rowID]))
   	} //while

@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.7 2008/05/19 10:24:02 havlat Exp $
+$Id: planAddTCNavigator.tpl,v 1.8 2008/06/23 06:23:33 franciscom Exp $
 show test specification tree 
 
-rev: 20080429 - franciscom - keyword filter multiselect
+rev:20080622 - franciscom - ext js tree support
+    20080429 - franciscom - keyword filter multiselect
 *}
 
 {lang_get var="labels" 
@@ -15,7 +16,36 @@ rev: 20080429 - franciscom - keyword filter multiselect
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
 
-{include file="inc_head.tpl" jsTree="yes" openHead="yes"}
+{if $tlCfg->treemenu_type == 'EXTJS'}
+    {include file="inc_head.tpl" openHead="yes"}
+    {include file="inc_ext_js.tpl"}
+
+    {literal}
+    <script type="text/javascript">
+    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+               loader:"", enableDD:false, dragDropBackEndUrl:''};
+    </script>
+    {/literal}
+    
+    <script type="text/javascript">
+    treeCfg.loader='{$gui->ajaxTree->loader}';
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_id={$gui->ajaxTree->root_node->id};
+    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+    
+    // Not allowed in this feature
+    // treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+    // treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+    </script>
+    
+    <script type="text/javascript" src='gui/javascript/tcTree.js'>
+    </script>
+
+
+{else}
+    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
+{/if}
+
 <script type="text/javascript">
 {literal}
 function pre_submit()
@@ -69,9 +99,15 @@ function pre_submit()
 </form>
 </div>
 
-<div class="tree" id="tree">
-	{$gui->tree}
-</div>
+{* 20080622 - franciscom *}
+{if $tlCfg->treemenu_type == 'EXTJS'}
+    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+{else}
+   <div class="tree" id="tree">
+   	{$gui->tree}
+   </div>
+{/if}
+
 
 {* 20061030 - update the right pane *}
 <script type="text/javascript">

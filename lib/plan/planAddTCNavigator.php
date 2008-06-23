@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.33 2008/05/11 22:13:22 schlundus Exp $
+* @version $Id: planAddTCNavigator.php,v 1.34 2008/06/23 06:23:53 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -10,6 +10,7 @@
 *	Test specification. Keywords should be used for filter.
 * 
 * rev :
+*      20080622 - franciscom - added support for ext js tree.
 *      20080507 - franciscom - added type for keyword filter (or/and)
 *      20080501 - franciscom - keyword filter now is multiselect
 *      20080126 - franciscom - refactoring
@@ -81,12 +82,15 @@ function init_args()
   
   returns: 
 
-  rev: 20080429 - franciscom
+  rev:20080622 - franciscom - changes for ext js tree
+      20080429 - franciscom
 */
 function initializeGui(&$dbHandler,&$argsObj)
 {
     $gui = new stdClass();
     $tprojectMgr = new testproject($dbHandler);
+    $tcaseCfg = config_get('testcase_cfg'); 
+
 
     $gui->do_reload = 0;
     $gui->src_workframe = null;
@@ -125,6 +129,29 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+    
+    
+    // 20080622 - francisco.mancardi@gruppotesi.com
+    // $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+    
+    $gui->ajaxTree=new stdClass();
+    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
+                           "root_node={$argsObj->tproject_id}&" .
+                           "show_tcases=0&" .
+                           "filter_node={$argsObj->tsuites_to_show}";
+
+    $gui->ajaxTree->root_node=new stdClass();
+    $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
+    $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
+    $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
+  
+    // Prefix for cookie used to save tree state
+    $gui->ajaxTree->cookiePrefix='planaddtc_' . $gui->ajaxTree->root_node->id . "_" ;
+
+    // not allowed in this feature
+    $gui->ajaxTree->dragDrop=new stdClass();
+    $gui->ajaxTree->dragDrop->enabled=false;
+    $gui->ajaxTree->dragDrop->BackEndUrl='';
     
     return $gui;
 }
@@ -169,13 +196,21 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
         $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
     }
 
-    $treeString = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
-                                       $guiObj->menuUrl,NOT_FOR_PRINTING,
-                                       HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
-                                       $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
-       
-                                    
-    return invokeMenu($treeString,'',null);
+    // 20080622 - franciscom
+    $treemenu_type=config_get('treemenu_type');
+    $treeMenu=null;
+    if($treemenu_type != 'EXTJS')
+    {
+        $treeString = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
+                                           $guiObj->menuUrl,NOT_FOR_PRINTING,
+                                           HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
+                                           $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
+           
+                                        
+        // return invokeMenu($treeString,'',null);
+        $treeMenu=invokeMenu($treeString,'',null);
+    }
 
+    return $treeMenu;
 }
 ?>

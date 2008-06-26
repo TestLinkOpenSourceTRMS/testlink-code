@@ -1,18 +1,19 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/05/09 17:14:19 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/06/26 21:46:47 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
-require_once("plan.core.inc.php");
+require_once("testplan.class.php");
+
 testlinkInitPage($db);
 
-$template_dir = 'plan/';
 
 $_POST = strings_stripSlashes($_POST);
 $name = isset($_POST['milestone_name']) ? $_POST['milestone_name'] : '';
@@ -60,6 +61,7 @@ else if ($bDelete && $id)
 	}
 	$action = "deleted";
 }
+
 else if($newMileStone || $bUpdate)
 {
 	$mileStone = array(
@@ -106,7 +108,7 @@ $smarty->assign('arrMilestone', $mileStones);
 $smarty->assign('mileStone', $mileStone);
 $smarty->assign('action', $action);
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
-$smarty->display($template_dir . 'planMilestones.tpl');
+$smarty->display('plan/planMilestones.tpl');
 
 /**
  * Checks the milestone parameter for correctness

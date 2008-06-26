@@ -1,18 +1,19 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/05/06 06:27:26 $ by $Author: franciscom $
- *
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/06/26 21:46:47 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
- * rev: 20080501 - franciscom -
- *      20060809 - franciscom - changes in validateBuildAvailability()
+ * rev: 
+ * 	20080620 - havlatm - urgency support
+ * 	20080501 - franciscom -
+ *  20060809 - franciscom - changes in validateBuildAvailability()
  *
 **/
 require_once('../../config.inc.php');
@@ -37,21 +38,23 @@ testlinkInitPage($db);
 $req_cfg=config_get('req_cfg');
 
 $aa_tfp = array( 
-            'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
-            'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
-            'searchTc' => 'lib/testcases/searchForm.php',
-            'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
-            'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
-            'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
-            'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
-            'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
-            'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
-            'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-            'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',
-            'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
-            'executeTest' => 'lib/execute/execNavigator.php',
-            'showMetrics' => 'lib/results/resultsNavigator.php',
-            'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php');
+     'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
+     'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
+     'searchTc' => 'lib/testcases/searchForm.php',
+     'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
+     'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
+     'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
+     'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',
+     'planUpdateTC'    => 'lib/plan/planTCNavigator.php?feature=planUpdateTC',
+     'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
+     'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
+//            'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',
+     'test_urgency' => 'lib/plan/planTCNavigator.php?feature=test_urgency',
+     'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
+     'executeTest' => 'lib/execute/execNavigator.php',
+     'showMetrics' => 'lib/results/resultsNavigator.php',
+     'reqSpecMgmt' => 'lib/requirements/reqSpecListTree.php'
+);
 
 $full_screen = array('newest_tcversions' => 1);
 
@@ -60,27 +63,24 @@ $showFeature = isset($_GET['feature']) ? $_GET['feature'] : null;
 if (isset($aa_tfp[$showFeature]) === FALSE)
 {
 	// argument is wrong
-	tLog("Wrong get argument 'feature'.", 'ERROR');
+	tLog("Wrong page argument feature = ".$showFeature, 'ERROR');
 	exit();
 }
+
 // features that need to run the validate build function
 if (in_array($showFeature,array('executeTest','showMetrics')))
 {
-  
-  // BUGID 623
-  // Check if for test project selected at least a test plan exist
-  if( isset($_SESSION['testPlanId']) )
-  {
-  	validateBuildAvailability($db,$_SESSION['testPlanId'],
-	                                $_SESSION['testPlanName'],
-	                                $_SESSION['testprojectName']);
-     
-  }
-  else
-  {
-  	redirect("../plan/planView.php");
+	// Check if for test project selected at least a test plan exist (BUGID 623)
+	if( isset($_SESSION['testPlanId']) )
+	{
+  		validateBuildAvailability($db,$_SESSION['testPlanId'],
+	    		$_SESSION['testPlanName'], $_SESSION['testprojectName']);
+	}
+  	else
+	{
+  		redirect('../plan/planView.php');
 		exit();
-  }   
+	}   
 }
 
 /// 1. get path from global var

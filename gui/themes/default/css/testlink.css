@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.9 2008/05/30 09:32:31 franciscom Exp $
+$Id: testlink.css,v 1.10 2008/06/26 21:48:22 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -36,11 +36,12 @@ assigned using name (example: white) instead of code (example: #FFF)
 */
 
 /* ***** GLOBAL HTML ************************************************ */
-body, body.testlink{
-	background:  	#EEE; /*#9BD;*/
+body, body.testlink {
+	background:  	#EEE; 
 	font-family: 	'Trebuchet MS', Verdana, Arial, sans-serif;
 	font-size: 		small;
 	margin:			0px;
+	padding:		0px;
 }
 
 img {
@@ -63,7 +64,7 @@ h1, h1.title {
 	background:		#059;
 	border: 		1px solid black;
 	color:			white;
-	margin-bottom:	4px;
+	margin:			0px 0px 4px 0px;
 	padding: 		3px;
 	text-align: 	left;
 	font-size:		85%;
@@ -106,7 +107,7 @@ div.menu_bar {
 	border-style:	groove;
 	border-width:	thin;
 	padding: 		1px 5px;
-	margin:			0px 5px;
+	margin:			0px 3px;
 }
 
 select.menu_combo {
@@ -181,7 +182,7 @@ div.workBack {
 	text-align: 	left;
 	margin: 		3px;
 	background: 	#CDE;
-	padding: 		3px;
+	padding: 		3px 3px 50px 3px;
 	border-style:	groove;
 	border-width:	thin;
 }

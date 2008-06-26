@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/06/05 08:19:57 $ by $Author: havlat $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/06/26 21:44:14 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -16,25 +16,17 @@
  * 
  * No revisions logged here but each parameter must be described!
  *
-**/
+ * ----------------------------------------------------------------------------------- */
 
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-/** [GLOBAL] */
+/** [GLOBAL SETTINGS] */
 
 /** TestLink Release (MUST BE changed before the release day) */
 define('TL_VERSION', '1.8.0 BETA2'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
+// want to point to root install dir, need to remove fixed part
 if (!defined('TL_ABS_PATH')) 
-{
-    // want to point to root install dir, need to remove fixed part
     define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
-}
-
-
-/** Dir for temporary files and compiled templates */
-define('TL_TEMP_PATH', TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . DIRECTORY_SEPARATOR);
 
 /** Setting up the global include path for testlink */
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
@@ -42,32 +34,26 @@ ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR .
 
 /** Other TestLink file paths */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
-define('TL_HELP_RPATH','gui/help/');
-
-// 20080504 - franciscom -
-// May be will be removed, but now is needed to suppress logger errors
-define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 
-// -------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------
 /** [GENERAL MAGIC NUMBERS] */
 
 // Basicly true/false
+define('ENABLED', 	1 );
+define('DISABLED', 	0 );
 define('ON',		1 );
 define('OFF',		0 );
-define('ACTIVE',	1);
-define('INACTIVE',	0);
-define('OPEN',		1);
-define('CLOSED',	0);
-define('DO_LANG_GET',1);
-define('DONT_DO_LANG_GET',0);
-define('OK',		1);
-define('ERROR',		0);
-define('ENABLED', 	1);
-define('DISABLED', 	0);
-define('HIGH',		3);
-define('MEDIUM', 	2);
-define('LOW', 		1);
+define('ACTIVE',	1 );
+define('INACTIVE',	0 );
+define('OPEN',		1 );
+define('CLOSED',	0 );
+define('OK',		1 );
+define('ERROR',		0 );
+define('HIGH',		3 );
+define('MEDIUM', 	2 );
+define('LOW', 		1 );
 
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
@@ -77,6 +63,8 @@ define('FILTER_BY_PRODUCT', 1);
 define('FILTER_BY_TESTPROJECT', FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE', 1);
 
+define('DO_LANG_GET',1 );
+define('DONT_DO_LANG_GET',0 );
 
 define('DSN', FALSE);  // for method connect() of database.class
 define('ANY_BUILD', null);
@@ -136,6 +124,10 @@ define('GET_INACTIVE_BUILD', 0);
 define('GET_OPEN_BUILD', 1);
 define('GET_CLOSED_BUILD', 0);
 
+define('AUTOMATIC_ID', 0);
+define('NO_FILTER_SHOW_ON_EXEC', null);
+define('DONT_REFRESH', 'no');
+define('DEFAULT_TC_ORDER', 0);
 
 // bug_interface->buildViewBugLink()
 define('GET_BUG_SUMMARY', true);
@@ -152,13 +144,8 @@ define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
 
-define('AUTOMATIC_ID', 0);
-define('NO_FILTER_SHOW_ON_EXEC', null);
-define('DONT_REFRESH', 'no');
-define('DEFAULT_TC_ORDER', 0);
 
-
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [GUI] */
 
 // havlatm: @todo remove (must be solved via css)
@@ -195,7 +182,7 @@ define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css
 
 
 
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [LOCALIZATION] */
 
 /** String that will used as prefix, to generate an string when a label to be localized
@@ -225,8 +212,8 @@ $g_locales = array(
 	'zh_CN' => 'Chinese Simplified'
 );
 
-/** Format of date
- * see strftime() in PHP manual
+/** 
+ * Format of date - see strftime() in PHP manual
  * NOTE: setting according local is done in testlinkInitPage() using set_dt_formats()
  */
 
@@ -287,7 +274,7 @@ $g_locales_html_select_date_field_order = array(
 
 
 
-// -------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** ATTACHMENTS */
 
 /** Attachment key constants (do not change) */
@@ -317,7 +304,7 @@ $att_model_m2->num_cols = 5;
 $att_model_m2->show_upload_column = true;
 
 
-// -------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [Test execution status] */
 /** 
  * Note: do not change existing values (you can enhance arrays of course more into custom_config)
@@ -398,7 +385,7 @@ $tlCfg->results['charts']['status_colour']=array(
 
 
 
-// -------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [Reports] */
 
 /** Displayed execution statuses to use on reports (ordered). */
@@ -418,12 +405,12 @@ $tlCfg->reportsCfg->exec_status = array(
 $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 
-// -------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [Users & Roles] */
 define("TL_ROLES_TESTER", 7);
 define("TL_ROLES_GUEST", 5);
-define("TL_ROLES_NONE", 3);
 define("TL_ROLES_NO_RIGHTS", 3);
+define("TL_ROLES_NONE", 3); // obsolete, use TL_ROLES_NO_RIGHTS
 
 define("TL_ROLES_UNDEFINED", 0);
 define("TL_ROLES_INHERITED", 0);
@@ -448,9 +435,9 @@ $g_role_colour = array (
 );
 
 
-// -------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [LDAP authentication errors */
-// 
+ 
 // Based on mantis issue tracking system code
 // ERROR_LDAP_*
 define( 'ERROR_LDAP_AUTH_FAILED',				1400 );
@@ -460,9 +447,9 @@ define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
 define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
 
-// -------------------------------------------------------------------
-/** [Priority, Risk, Importance] */
-// Priority = Importance x Risk
+// --------------------------------------------------------------------------------------
+/** [Priority, Urgency, Importance] */
+// Priority = Importance x Urgency(Risk)
 $tlCfg->priority_levels = array( 
 	HIGH => 6, // high priority include 6 and more
     MEDIUM => 3,
@@ -470,10 +457,10 @@ $tlCfg->priority_levels = array(
 );
 
 $tlCfg->testcase_importance_default = MEDIUM;
-$tlCfg->testcase_risk_default = MEDIUM;
+$tlCfg->testcase_urgency_default = MEDIUM;
 
 
-// -------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [MISC] */
 
 // used to mark up inactive objects (test projects, etc)
@@ -488,12 +475,12 @@ define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE', '</div><br />');
 
 /** Bug tracking objects - unknown meaning (do not change)*/
-// @TODO move to appropriate file
+// @TODO move to appropriate file - not configuration
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;
 
 
-// -------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [Requirements] */
 // martin: @TODO statuses should be the same for both REQ and TC
 define('TL_REQ_STATUS_VALID', 		'V');
@@ -531,13 +518,17 @@ define('VALID_REQ', 'v');
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
 // Used to force the max len of this field, during the automatic creation of requirements
+// havlatm: @TODO move to smarty config
 $g_field_size = new stdClass();
 $g_field_size->testsuite_name = 100;
-
 // requirements and req_spec tables field sizes
 $g_field_size->req_docid = 32;
 $g_field_size->req_title = 100;
 $g_field_size->requirement_title = 100;
+
+
+// --------------------------------------------------------------------------------------
+/** [MISC] */
 
 // Applied to HTML inputs created to get/show custom field contents
 // For string,numeric,float,email: size & maxlenght of the input type text.
@@ -554,6 +545,5 @@ $tlCfg->gui->custom_fields->sizes = array(
 
 
 
-
-// -------------------------------------------------------------------
+// ----- END ----------------------------------------------------------------------------
 ?>

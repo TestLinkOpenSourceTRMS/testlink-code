@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.183 $
- * @modified $Date: 2008/06/06 10:28:56 $ by $Author: havlat $
+ * @version $Revision: 1.184 $
+ * @modified $Date: 2008/06/26 21:44:31 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -119,8 +119,8 @@ $tlCfg->default_language = 'en_GB';
 $tlCfg->charset = 'UTF-8';
 
 /** characters used to surround a description in the user interface (for example role)*/
-$tlCfg->gui->role_separator_open =  '[';
-$tlCfg->gui->role_separator_close = ']';
+$tlCfg->gui_separator_open =  '[';
+$tlCfg->gui_separator_close = ']';
 
 /** Title separators are used when componing an title using several strings */
 $tlCfg->gui_title_separator_1 = ' : '; // object : name (Test Specification : My best product)
@@ -151,7 +151,7 @@ error_reporting(E_ALL);
  * If you want sessions to last longer this must be set to a higher value.
  * You may need to set this in your global php.ini if the settings don't take effect.
  */
-//ini_set('session.gc_maxlifetime', 54000)
+//ini_set('session.gc_maxlifetime', 54000);
 
 
 // ----------------------------------------------------------------------------
@@ -269,6 +269,9 @@ $tlCfg->api_id_format = "[ID: %s ]";
 
 /** GUI themes (base for CSS and images)- modify if you create own one */
 $tlCfg->theme_dir = 'gui/themes/default/';
+
+/** Dir for compiled templates */
+$tlCfg->temp_dir = TL_ABS_PATH . 'gui' . DIRECTORY_SEPARATOR . 'templates_c' . DIRECTORY_SEPARATOR;
 
 /** Company logo (used by navigation bar and login page page) */
 //$tlCfg->company_logo = '<img alt="TestLink" title="TestLink" style="width: 115px; height: 53px;" src="' . 
@@ -491,20 +494,13 @@ $tlCfg->testcase_cfg->can_edit_executed = DISABLED;
 /** text template for a new Test Case summary, steps and expected_results */
 // object members has SAME NAME that FCK editor objects.
 // the logic present on tcEdit.php is dependent of this rule.
-// 
-// every text object contains an object with following members:
-// type
-// value
+// every text object contains an object with following members: type and value
 // 
 // Possible values for type member: 
 // none: template will not be used, default will be a clean editor screen.
-//
 // string: value of value member is assigned to FCK object
-//
 // string_id: value member is used in a lang_get() call, and return value 
-//            is assigned to FCK object.
-//            Configure string_id on custom_strings.txt            
-//
+//       is assigned to FCK object. Configure string_id on custom_strings.txt
 // file: value member is used as file name.
 //       file is readed and it's contains assigned to FCK object
 //
@@ -769,6 +765,7 @@ define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width); 
 define('TL_API_ID_FORMAT',$tlCfg->api_id_format);
+define('TL_TEMP_PATH', $tlCfg->temp_dir);
 $g_log_level=$tlCfg->log_level;
 $g_show_realname = $tlCfg->show_realname;
 $g_username_format = $tlCfg->username_format;
@@ -785,6 +782,8 @@ $g_tc_status_verbose_labels = $tlCfg->results['status_label'];
 $g_tc_status_for_ui = $tlCfg->results['status_label']; 
 $g_tc_status_for_ui_default = $tlCfg->results['default_status'];
 $g_action_on_duplicate_name = $tlCfg->name_duplicity_checking;
+$tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
+$tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
 
 
 // ----- END OF FILE --------------------------------------------------

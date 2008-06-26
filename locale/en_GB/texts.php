@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: texts.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/04/18 16:44:07 $ by $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/06/26 21:47:22 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * Scope:
@@ -369,6 +369,21 @@ Specification is changed. It often happens that some functionality is clarified 
 	<li>Choose a new version from bombo boxmenu for particular Test case.</li>
 	<li>Press button 'Update Test plan' to submit changes.</li>
 	<li>To verify: Open execution page to view text of the test case(s).</li>
+</ol>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
+$TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
+<p>This page allows set urgency of Test case to affect a testing Priority of test cases. " .
+		"Test priority depends on both Importance of Test cases and urgency defined in " .
+		"the Test Plan.</p>
+
+<h2>Get Started</h2>
+<ol>
+	<li>Choose a Test case or Test Suite to set urgency.</li>
+	<li>Choose a urgency level (high, medium or low).</li>
+	<li>Press the button 'Save' to submit changes.</li>
 </ol>";
 
 

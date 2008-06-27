@@ -1,10 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.4 2008/05/04 10:31:14 franciscom Exp $ 
+$Id: index.php,v 1.5 2008/06/27 08:37:50 franciscom Exp $ 
 Author: franciscom
 
 rev :
+     20080627 - franciscom - added new info for user
      20080504 - franciscom - added warning about php.ini settings
      20080103 - franciscom - fixed path to images
 
@@ -57,6 +58,7 @@ $operation='Migration from 1.7.2 (or greater)';
       <li>add requirement specifications and requirements to the nodes hierachy table.</li>
       <li>create test case prefix for every test project.</li>
       <li>assign external numeric ID (unique inside every test project) to test cases.</li>
+      <li>update of new field (tcversion_number) on executions table.</li>
       </ul>
       </li>    
       </ul>

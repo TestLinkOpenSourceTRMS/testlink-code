@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.3 2008/02/21 07:50:52 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.4 2008/06/27 08:37:50 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -12,7 +12,10 @@ tasks:
   getting new IDs.
   
 - Update IDs on requirement tables on with new ids
-  
+
+- Update executiosn.tcversion_number updateExecutionsTCVersionInfo()
+
+rev: 20080627 - franciscom -   
 
 */
 require_once(dirname(__FILE__) . "/../../../config.inc.php");
@@ -179,6 +182,9 @@ else
 }
 
 updateTProjectInfo($source_db,$tproject_mgr);
+
+// 20080627 - franciscom
+updateExecutionsTCVersionInfo($source_db);
 $last_message="Migration process finished! :: " . date("H:i:s");
 
 

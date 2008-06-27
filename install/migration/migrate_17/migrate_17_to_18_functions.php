@@ -1,11 +1,13 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.3 2008/02/21 07:50:56 franciscom Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.4 2008/06/27 08:37:50 franciscom Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
 Author: franciscom
+
+rev: added updateExecutionsTCVersionInfo()
 */
 ?>
 
@@ -260,5 +262,21 @@ function updateTestCaseExternalID(&$db,&$all_tprojects,&$tprojectMgr)
         }
     }
   
+}
+
+/*
+  function: updateExecutionsTCVersionInfo
+
+  args:
+  
+  returns: 
+
+*/ 
+function updateExecutionsTCVersionInfo(&$db)
+{
+    $sql="update executions E,tcversions TCV " .
+         "set tcversion_number=TCV.version " .
+         "where TCV.id = E.tcversion_id";
+    $db->exec_query($sql);
 }
 ?>

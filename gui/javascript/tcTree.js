@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.5 2008/06/23 06:24:50 franciscom Exp $
+$Id: tcTree.js,v 1.6 2008/06/28 16:53:51 franciscom Exp $
 
 Created using EXT JS examples
 Definion for tree used to show test cases specification
@@ -8,6 +8,7 @@ This tree is used in different TL features, where sometimes drag & drop can not 
 Author: franciscom - 20080525
 
 rev:
+    20080628 - franciscom - unclosed comment bug
     20080607 - franciscom -
     20080603 - franciscom - drag & drop disabled
     20080528 - franciscom - added code to save/restore tree state
@@ -56,7 +57,7 @@ function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorde
     }
 }
 
-/* Improvement - cookie name prefix
+/* Improvement - cookie name prefix */
 function TreePanelState(mytree,cookiePrefix) 
 {
     this.mytree = mytree;
@@ -199,18 +200,9 @@ Ext.onReady(function(){
     });
     
     tree.on('movenode', function(tree,node,oldParent,newParent,newNodePosition ){ 
-                    
-                    /*
-                    alert('oldParent:'+ oldParent.id + ' newParent:'+ newParent.id + 
-                          ' nodeId:'+node.id + '\n nodePosition:' + newNodePosition+ 
-                          'oldPosition:' + oldPosition + 
-                          '\n oldNextSibling:' +  oldNextSibling +
-                          '\n nextSibling:' +  node.nextSibling);
-                    */      
-                    writeNodePositionToDB(newParent,node.id,oldParent.id,newParent.id,newNodePosition);                    
-                    });                                          
-    //
-                                                                 
+              writeNodePositionToDB(newParent,node.id,oldParent.id,newParent.id,newNodePosition);                    
+    });                                          
+    
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  
     

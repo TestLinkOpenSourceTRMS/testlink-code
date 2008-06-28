@@ -1,0 +1,126 @@
+-- $Revision: 1.1 $
+-- $Date: 2008/06/28 16:52:56 $
+-- $Author: franciscom $
+-- $Name:  $
+-- DB: Postgres
+
+-- Step 1 - Drops if needed
+DROP TABLE IF EXISTS priorities;
+DROP TABLE IF EXISTS risk_assignments;
+DROP TABLE IF EXISTS events;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS text_templates;
+DROP TABLE IF EXISTS test_urgency;
+DROP TABLE IF EXISTS user_group;
+DROP TABLE IF EXISTS user_group_assign;
+
+
+-- Step 2 - new tables
+
+--
+CREATE TABLE "events" (
+  "id" BIGSERIAL NOT NULL,
+  "transaction_id" BIGINT NOT NULL default '0',
+  "log_level" SMALLINT NOT NULL default '0',
+  "source" varchar(45) NULL,
+  "description" text NOT NULL,
+  "fired_at" INT NOT NULL default '0',
+  "activity" varchar(45) NULL,
+  "object_id" BIGINT NULL,
+  "object_type" varchar(45) NULL,
+  PRIMARY KEY  ("id")
+);
+
+--
+CREATE TABLE  "transactions" (
+  "id" BIGSERIAL NOT NULL,
+  "entry_point" varchar(45) NOT NULL default '',
+  "start_time" INT NOT NULL default '0',
+  "end_time" INT NOT NULL default '0',
+  "user_id" BIGINT DEFAULT 0,
+  "session_id" varchar(45) default NULL,
+  PRIMARY KEY ("id")
+);
+
+--
+CREATE TABLE text_templates (
+  "id" BIGSERIAL NOT NULL,
+  type INT NOT NULL,
+  title varchar(100) NOT NULL,
+  template_data text,
+  author_id BIGINT default NULL,
+  create_ts TIMESTAMP NOT NULL default now(),
+  is_public INT2 NOT NULL default '0',
+  PRIMARY KEY ("id"),
+  UNIQUE (type,title)
+);
+COMMENT ON TABLE text_templates IS 'Global Project Templates';
+
+--
+CREATE TABLE test_urgency (
+  node_id BIGINT NOT NULL,
+  testplan_id BIGINT NOT NULL,
+  urgency INT2 NOT NULL default '2',
+  UNIQUE (node_id,testplan_id)
+);
+
+COMMENT ON TABLE test_urgency IS 'Urgence of testing test suite in a Test Plan';
+
+--
+CREATE TABLE user_group (
+  "id" BIGSERIAL NOT NULL,
+  title varchar(100) NOT NULL,
+  description text,
+  owner_id BIGINT NOT NULL,
+  testproject_id BIGINT NOT NULL,
+  UNIQUE (title)
+);
+
+--
+CREATE TABLE user_group_assign (
+  usergroup_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL
+);
+
+
+-- Step 3 - table changes
+-- tcversions
+ALTER TABLE tcversions ADD COLUMN execution_type INT2 NOT NULL default '1';
+COMMENT ON COLUMN tcversions.execution_type IS '1 -> manual, 2 -> automated';
+
+-- testprojects
+ALTER TABLE testprojects ADD COLUMN prefix varchar(30) NULL;
+ALTER TABLE testprojects ADD COLUMN tc_counter INT NULL default '0';
+ALTER TABLE testprojects ADD COLUMN option_automation INT2 NOT NULL default '0';
+COMMENT ON TABLE testprojects IS 'Updated to TL 1.8.0 Development - DB 1.2';
+
+
+-- user
+ALTER TABLE users ADD COLUMN script_key varchar(32) NULL;
+COMMENT ON TABLE users IS 'Updated to TL 1.8.0 Development - DB 1.2';
+
+-- executions
+ALTER TABLE executions ADD COLUMN tcversion_number INT NOT NULL default '1';
+ALTER TABLE executions ADD COLUMN execution_type INT2 NOT NULL default '1';
+COMMENT ON COLUMN executions.execution_type IS '1 -> manual, 2 -> automated'; 
+COMMENT ON COLUMN executions.tcversion_number IS 'test case version used for this execution';
+COMMENT ON TABLE executions  IS 'Updated to TL 1.8.0 Development - DB 1.2';
+
+-- testplan_tcversions
+ALTER TABLE testplan_tcversions ADD COLUMN node_order INT NOT NULL default '1';
+COMMENT ON COLUMN testplan_tcversions.node_order IS 'order in execution tree'; 
+COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.8.0 Development - DB 1.2';
+
+
+-- db_version
+ALTER TABLE db_version ADD COLUMN notes  text;
+COMMENT ON TABLE db_version IS 'Updated to TL 1.8.0 Development - DB 1.2';
+
+-- data update
+INSERT INTO rights (id,description) VALUES (19,'system_configuraton');
+INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
+INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
+
+INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,21);

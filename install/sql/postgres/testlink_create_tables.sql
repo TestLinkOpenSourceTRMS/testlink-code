@@ -1,12 +1,15 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.20 2008/05/28 18:26:05 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.21 2008/06/28 16:59:24 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20080628 - franciscom - added tables:
+--                              text_templates,test_urgency,user_group,user_group_assign
+--
 --      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 --      20080331 - franciscom - testplan_tcversions added node_order
 --      20080318 - franciscom - tcversions.tc_external_id
@@ -567,4 +570,43 @@ CREATE TABLE "users" (
   "script_key" VARCHAR(32) NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("login")
+);
+
+--
+CREATE TABLE text_templates (
+  "id" BIGSERIAL NOT NULL,
+  type INT NOT NULL,
+  title varchar(100) NOT NULL,
+  template_data text,
+  author_id BIGINT default NULL,
+  create_ts TIMESTAMP NOT NULL default now(),
+  is_public INT2 NOT NULL default '0',
+  PRIMARY KEY ("id"),
+  UNIQUE (type,title)
+);
+COMMENT ON TABLE text_templates IS 'Global Project Templates';
+
+--
+CREATE TABLE test_urgency (
+  node_id BIGINT NOT NULL,
+  testplan_id BIGINT NOT NULL,
+  urgency INT2 NOT NULL default '2',
+  UNIQUE (node_id,testplan_id)
+);
+COMMENT ON TABLE test_urgency IS 'Urgence of testing test suite in a Test Plan';
+
+--
+CREATE TABLE user_group (
+  "id" BIGSERIAL NOT NULL,
+  title varchar(100) NOT NULL,
+  description text,
+  owner_id BIGINT NOT NULL,
+  testproject_id BIGINT NOT NULL,
+  UNIQUE (title)
+);
+
+--
+CREATE TABLE user_group_assign (
+  usergroup_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL
 );

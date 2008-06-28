@@ -1,9 +1,10 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.14 2008/01/31 22:15:47 schlundus Exp $
+--  $Id: testlink_create_default_data.sql,v 1.15 2008/06/28 16:59:24 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
 --
+--  20080628 - franciscom - 
 --  20070724 - franciscom - BUGID 950 
 --             removed right with id=19
 --             renamed right with id=5 
@@ -59,6 +60,8 @@ INSERT INTO rights (id,description) VALUES (17,'cfield_view');
 INSERT INTO rights (id,description) VALUES (18,'cfield_management');
 INSERT INTO rights (id,description) VALUES (19,'system_configuraton');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
+INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
+
 
 --  Rights for Administrator (admin role)
 INSERT INTO role_rights (role_id,right_id) VALUES (8,1 );
@@ -81,6 +84,7 @@ INSERT INTO role_rights (role_id,right_id) VALUES (8,17);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,18);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,21);
 
 --  Rights for guest (guest role)
 INSERT INTO role_rights (role_id,right_id) VALUES (5,3 );

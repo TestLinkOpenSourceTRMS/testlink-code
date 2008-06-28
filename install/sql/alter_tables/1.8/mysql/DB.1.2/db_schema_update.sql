@@ -1,9 +1,10 @@
 /* 
-$Revision: 1.11 $
-$Date: 2008/06/23 06:22:57 $
+$Revision: 1.12 $
+$Date: 2008/06/28 16:58:56 $
 $Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
+DB: mysql
 
 Important:
 
@@ -58,7 +59,7 @@ CREATE TABLE text_templates (
   title varchar(100) NOT NULL,
   template_data text,
   author_id int(10) unsigned default NULL,
-  create_ts datetime NOT NULL default '1900-00-00 01:00:00',
+  creation_ts datetime NOT NULL default '1900-00-00 01:00:00',
   is_public tinyint(1) NOT NULL default '0',
   UNIQUE KEY idx_text_templates (tpl_type,title)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
@@ -130,10 +131,9 @@ ALTER TABLE req_specs MODIFY COLUMN   id int(10) unsigned NOT NULL;
 
 /* data update */
 INSERT INTO rights (id,description) VALUES (19,'system_configuraton');
-INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
-
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
-INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
-
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
+
+INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,21);

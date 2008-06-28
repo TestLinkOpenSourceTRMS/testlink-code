@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.36 2008/05/28 18:26:05 franciscom Exp $
-# SQL script - create db tables for TL   
+# $Id: testlink_create_tables.sql,v 1.37 2008/06/28 16:59:24 franciscom Exp $
+#
+# SQL script - create db tables for TL - MySQL  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#
+# 20080628 - franciscom - create_ts -> creation_ts
 # 20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 # 20080331 - franciscom - testplan_tcversions added node_order
 # 20080226 - franciscom - removed autoincrement id on req_spec, requirements
@@ -467,13 +470,13 @@ CREATE TABLE `assignment_status` (
 /* mht - 0000774: Global Project Template */
 CREATE TABLE `text_templates` (
   `id` int(10) unsigned NOT NULL,
-  `tpl_type` smallint(5) unsigned NOT NULL,
+  `type` smallint(5) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
   `template_data` text,
   `author_id` int(10) unsigned default NULL,
-  `create_ts` datetime NOT NULL default '1900-00-00 01:00:00',
+  `creation_ts` datetime NOT NULL default '1900-00-00 01:00:00',
   `is_public` tinyint(1) NOT NULL default '0',
-  UNIQUE KEY `idx_text_templates` (`tpl_type`,`title`)
+  UNIQUE KEY `idx_text_templates` (`type`,`title`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
 /* mht - 0000537: Discussion: Priority = Urgency + Importance */

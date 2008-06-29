@@ -1,14 +1,15 @@
 <?php
 /**
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.16 2008/06/21 16:05:20 franciscom Exp $
+* @version $Id: planTCNavigator.php,v 1.17 2008/06/29 17:22:19 franciscom Exp $
 *	@author Martin Havlat
 *
 * Used in the remove test case feature
 *
 * rev :
-*      20080621 - added code to use ext js tree
-*      20080429 - multiple keyword filter
+*      20080629 - franciscom - fixed missing variables bugs
+*      20080621 - franciscom - added code to use ext js tree
+*      20080429 - franciscom - multiple keyword filter
 *      20080311 - franciscom - BUGID 1427 - first developments
 *      20070925 - franciscom - added management of workframe
 */
@@ -23,6 +24,7 @@ $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr);
+$gui->additional_string='';
 
 // 20080621 - francisco.mancardi@gruppotesi.com
 $treeMenu=buildTree($db,$gui,$args);                                                
@@ -34,6 +36,7 @@ if( !is_null($treeMenu->rootnode) )
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node=$treeMenu->rootnode;
     $gui->ajaxTree->children=$treeMenu->menustring;
+    $gui->ajaxTree->cookiePrefix=$args->feature;
 }
 
 $smarty = new TLSmarty();
@@ -285,7 +288,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 function initializeGetArguments($argsObj,$filtersObj)
 {
     $kl='';
-    $settings = '&include_unassigned=' . $argsObj->include_unassigned;
+    $settings = '&include_unassigned=' . $filtersObj->include_unassigned;
 
     // 20080428 - franciscom  
     if( is_array($argsObj->keyword_id) )
@@ -299,8 +302,8 @@ function initializeGetArguments($argsObj,$filtersObj)
     }
     $settings .= '&keywordsFilterType='.$argsObj->keywordsFilterType;
     
-    if($filtersObj->AssignedTo)
-    	  $settings .= '&filter_assigned_to=' . $filtersObj->AssignedTo;
+    if($filtersObj->assignedTo)
+    	  $settings .= '&filter_assigned_to=' . $filtersObj->assignedTo;
     
     $settings .= '&tplan_id=' . $argsObj->tplan_id;
     

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/06/21 16:07:04 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/06/29 17:22:18 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,7 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20080629 - franciscom - fixed bug in extjs_renderExecTreeNodeOnOpen()
  *      20080621 - franciscom - changes in exec functions to support ext js tree.
  *      20080510 - franciscom - interface changes get_testplan_nodes_testcount() 
  *      20080508 - franciscom - interface changes get_testproject_nodes_testcount()
@@ -941,6 +942,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
       break;
       
       case 'EXTJS':
+         $menustring='';  // just to silence PHP warnings
          extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 	                                      $tc_action_enabled,$bHideTCs,
 	                                      $useCounters,$useColors,$showTestCaseID,
@@ -1441,6 +1443,8 @@ function create_counters_info(&$node,$useColors)
 // VERY IMPORTANT:
 // node must be passed BY REFERENCE
 //
+// rev: 20080629 - franciscom - fixed bug missing argument for call to ST
+//
 function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action_enabled,
                                         $bForPrinting,$useCounters=1,$useColors=1,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
@@ -1530,8 +1534,8 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
   }
   // -------------------------------------------------------------------------------
   $node['text']=$label;
-  $node['position']=$node['node_order'];
-  $node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']})";
+  $node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
+  $node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
   
   // Remove useless keys
   foreach($status_descr_code as $key => $code)

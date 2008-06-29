@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.8 2008/06/23 06:23:33 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.9 2008/06/29 17:21:20 franciscom Exp $
 show test specification tree 
 
-rev:20080622 - franciscom - ext js tree support
+rev:20080629 - franciscom - fixed missed variable bug
+    20080622 - franciscom - ext js tree support
     20080429 - franciscom - keyword filter multiselect
 *}
 
@@ -32,6 +33,7 @@ rev:20080622 - franciscom - ext js tree support
     treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
     treeCfg.root_id={$gui->ajaxTree->root_node->id};
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+    treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
     
     // Not allowed in this feature
     // treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.9 2008/06/21 15:58:14 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.10 2008/06/29 17:21:20 franciscom Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
@@ -65,7 +65,7 @@ function update2latest(id)
 </head>
 <body>
 
-<h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$additional_string|escape}</h1>
+<h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>
 <div style="margin: 3px;">
 <form method="post" id="testSetNavigator" onSubmit="javascript:return pre_submit();">
 	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />

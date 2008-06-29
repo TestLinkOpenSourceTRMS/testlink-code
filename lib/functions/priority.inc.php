@@ -1,24 +1,25 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: priority.inc.php,v 1.10 2006/09/09 07:13:28 franciscom Exp $ 
+ * $Id: priority.inc.php,v 1.11 2008/06/29 17:22:18 franciscom Exp $ 
  *
  * Functions for Priority management 
  *
+ *
+ * rev: 20080629 - franciscom - naming standard changes
+ *                 tpID -> no good for testplan 
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
 
 /**
- * Collect information about rules for priority within actual Plan
+ * Collect information about rules for priority within actual test Plan
  * 
  * @return array of array: id, priority, name of item 
  */
-function getPriority(&$db,$tpID)
+function getPriority(&$db,$tplanID)
 {
-	$arrData = array();
-	
 	$sql = " SELECT id, risk_importance, priority " .
-	       " FROM priorities WHERE testplan_id = " . $tpID;
+	       " FROM priorities WHERE testplan_id = " . $tplanID;
 
 	return $db->get_recordset($sql);
 }

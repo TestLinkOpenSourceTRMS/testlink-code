@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.71 $
- * @modified $Date: 2008/06/14 08:45:27 $ $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/06/29 17:22:18 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080629 - franciscom - improments in audit info - link_tcversions(), unlink_tcversions()
  *     20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
  *     20080602 - franciscom - get_linked_tcversions() added tcversion_number in output
  *     20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
@@ -84,13 +85,14 @@ class testplan extends tlObjectWithAttachments
 	var $tree_manager;
 	var $assignment_mgr;
   var $cfield_mgr;
+  var $tcase_mgr;
+
   var $builds_table="builds";
   var $testplan_tcversions_table="testplan_tcversions";
 
 	var $assignment_types;
 	var $assignment_status;
-
-
+	
   /*
    function: testplan
              constructor
@@ -102,16 +104,17 @@ class testplan extends tlObjectWithAttachments
   */
 	function testplan(&$db)
 	{
-		$this->db = &$db;
-		$this->tree_manager = New tree($this->db);
-
-		$this->assignment_mgr=New assignment_mgr($this->db);
-		$this->assignment_types=$this->assignment_mgr->get_available_types();
-		$this->assignment_status=$this->assignment_mgr->get_available_status();
-
-  		$this->cfield_mgr=new cfield_mgr($this->db);
-
-		tlObjectWithAttachments::__construct($this->db,'testplans');
+	    $this->db = &$db;
+	    $this->tree_manager = New tree($this->db);
+      
+	    $this->assignment_mgr=New assignment_mgr($this->db);
+	    $this->assignment_types=$this->assignment_mgr->get_available_types();
+	    $this->assignment_status=$this->assignment_mgr->get_available_status();
+      
+      $this->cfield_mgr=new cfield_mgr($this->db);
+      $this->tcase_mgr = New testcase($this->db);
+      
+	    tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
 
 
@@ -310,6 +313,42 @@ function count_testcases($id)
 	return $qty;
 }
 
+
+/*
+  function: tcversionInfoForAudit
+            get info regarding tcversions, to generate useful audit messages
+            
+
+  args :
+        $tplan_id: test plan id
+        $items: assoc array key=tc_id value=tcversion_id
+                passed by reference for speed
+
+  returns: -
+
+  rev: 20080629 - franciscom - audit message improvements
+*/
+function tcversionInfoForAudit($tplan_id,&$items)
+{
+  // Get human readeable info for audit
+  $ret=array();
+  $tcase_cfg = config_get('testcase_cfg');
+  
+	$dummy=reset($items);
+  $ret['tcasePrefix']=$this->tcase_mgr->getPrefix($dummy) . $tcase_cfg->glue_character;
+  
+  $sql=" SELECT TCV.id, tc_external_id, version, NHB.name " .
+       " FROM tcversions TCV,nodes_hierarchy NHA, nodes_hierarchy NHB " .
+       " WHERE NHA.id=TCV.id " .
+       " AND NHB.id=NHA.parent_id  " .
+       " AND TCV.id IN (" . implode(',',$items) . ")";
+
+  $ret['info']=$this->db->fetchRowsIntoMap($sql,'id');  
+  $ret['tplanInfo']=$this->get_by_id($tplan_id);                                                          
+                                                        
+  return $ret;
+}
+
 /*
   function: link_tcversions
             associates version of different test cases to a test plan.
@@ -323,16 +362,45 @@ function count_testcases($id)
 
   returns: -
 
+  rev: 20080629 - franciscom - audit message improvements
 */
 function link_tcversions($id,&$items_to_link)
 {
-	$sql = "INSERT INTO testplan_tcversions (testplan_id,tcversion_id) VALUES ({$id},";
 
+  // Get human readeable info for audit
+  $gui_cfg = config_get('gui');
+  $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link);
+  $info=$auditInfo['info'];
+  $tcasePrefix=$auditInfo['tcasePrefix'];
+  $tplanInfo=$auditInfo['tplanInfo'];
+  
+  // $tcase_cfg = config_get('testcase_cfg');
+  
+  // 
+	// $dummy=reset($items_to_link);
+  // $tcasePrefix=$this->tcase_mgr->getPrefix($dummy) . $tcase_cfg->glue_character;
+  // 
+  // $sql=" SELECT TCV.id, tc_external_id, version, NHB.name " .
+  //      " FROM tcversions TCV,nodes_hierarchy NHA, nodes_hierarchy NHB " .
+  //      " WHERE NHA.id=TCV.id " .
+  //      " AND NHB.id=NHA.parent_id  " .
+  //      " AND TCV.id IN (" . implode(',',$items_to_link) . ")";
+  // 
+  // $info=$this->db->fetchRowsIntoMap($sql,'id');  
+   
+	$sql = "INSERT INTO testplan_tcversions (testplan_id,tcversion_id) VALUES ({$id},";
 	foreach($items_to_link as $tc => $tcversion)
 	{
 		$result = $this->db->exec_query($sql . "{$tcversion})");
 		if ($result)
-			logAuditEvent(TLS("audit_tc_added_to_testplan",$tcversion),"ASSIGN",$id,"testplans");
+		{
+			$auditMsg=TLS("audit_tc_added_to_testplan",
+			              $tcasePrefix . $info[$tcversion]['tc_external_id'] . 
+			              $gui_cfg->title_separator_1 . $info[$tcversion]['name'],
+			              $info[$tcversion]['version'],$tplanInfo['name']);
+			              
+			logAuditEvent($auditMsg,"ASSIGN",$id,"testplans");
+		}	
 	}
 }
 
@@ -663,7 +731,14 @@ function unlink_tcversions($id,&$items)
 {
 	if(!is_null($items))
 	{
-		$idList = implode(",",$items);
+	    // Get human readeable info for audit
+      $gui_cfg = config_get('gui');
+      $auditInfo=$this->tcversionInfoForAudit($id,$items);
+      $info=$auditInfo['info'];
+      $tcasePrefix=$auditInfo['tcasePrefix'];
+      $tplanInfo=$auditInfo['tplanInfo'];
+	    
+		  $idList = implode(",",$items);
 	    $in_clause = " AND tcversion_id IN (" . $idList . ")";
 
       // Need to remove all related info:
@@ -713,7 +788,16 @@ function unlink_tcversions($id,&$items)
              WHERE testplan_id={$id} {$in_clause} ";
 	    $result = $this->db->exec_query($sql);
 
-		logAuditEvent(TLS("audit_tc_removed_from_testplan",$idList),"UNASSIGN",$id,"testplans");
+
+	    foreach($items as $tc => $tcversion)
+	    {
+	    		$auditMsg=TLS("audit_tc_removed_from_testplan",
+	    		              $tcasePrefix . $info[$tcversion]['tc_external_id'] . 
+	    		              $gui_cfg->title_separator_1 . $info[$tcversion]['name'],
+	    		              $info[$tcversion]['version'],$tplanInfo['name']);
+	    		              
+	    		logAuditEvent($auditMsg,"UNASSIGN",$id,"testplans");
+	    }
 	}
 } // end function
 

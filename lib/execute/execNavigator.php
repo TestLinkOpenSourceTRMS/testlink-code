@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2008/06/21 16:04:16 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2008/06/29 17:22:18 $ by $Author: franciscom $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -50,6 +50,7 @@ if( !is_null($treeMenu->rootnode) )
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node=$treeMenu->rootnode;
     $gui->ajaxTree->children=$treeMenu->menustring;
+    $gui->ajaxTree->cookiePrefix='exec_tplan_id_' . $argsObj->tplan_id;
 }
 
                       

@@ -1,11 +1,12 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.58 2008/05/30 09:31:25 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.59 2008/06/29 17:22:19 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20080629 - franciscom - fixed missing variable bug
 //      20080510 - franciscom - multiple keyword filter with AND type
 //      20080404 - franciscom - reorder logic
 //      20080114 - franciscom - added testCasePrefix management
@@ -233,7 +234,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->full_control = 1;
 
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
-    $gui->pageTitle = lang_get('test_plan') . $guiCfg->title_sep_1 . $tplan_info['name'];
+    $gui->pageTitle = lang_get('test_plan') . $guiCfg->title_separator_1 . $tplan_info['name'];
     $gui->refreshTree = false;
 
 

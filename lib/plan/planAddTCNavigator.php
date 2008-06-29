@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.34 2008/06/23 06:23:53 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.35 2008/06/29 17:22:19 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -10,6 +10,7 @@
 *	Test specification. Keywords should be used for filter.
 * 
 * rev :
+*      20080629 - franciscom - fixed undefined variables bug
 *      20080622 - franciscom - added support for ext js tree.
 *      20080507 - franciscom - added type for keyword filter (or/and)
 *      20080501 - franciscom - keyword filter now is multiselect
@@ -26,7 +27,7 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui($db,$args);
+$gui = initializeGui($db,$args,$_SESSION['basehref']);
 $gui->tree = buildTree($db,$gui,$args);
 
 $smarty = new TLSmarty();
@@ -82,10 +83,11 @@ function init_args()
   
   returns: 
 
-  rev:20080622 - franciscom - changes for ext js tree
+  rev:20080629 - franciscom - added missed argument basehref
+      20080622 - franciscom - changes for ext js tree
       20080429 - franciscom
 */
-function initializeGui(&$dbHandler,&$argsObj)
+function initializeGui(&$dbHandler,&$argsObj,$basehref)
 {
     $gui = new stdClass();
     $tprojectMgr = new testproject($dbHandler);
@@ -137,8 +139,10 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->ajaxTree=new stdClass();
     $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
                            "root_node={$argsObj->tproject_id}&" .
-                           "show_tcases=0&" .
-                           "filter_node={$argsObj->tsuites_to_show}";
+                           "show_tcases=0";
+                            
+                           // 20080629 - franciscom
+                           // "filter_node={$argsObj->tsuites_to_show}";
 
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.328 $
- * @modified $Date: 2008/06/26 21:46:47 $ $Author: havlat $
+ * @version $Revision: 1.329 $
+ * @modified $Date: 2008/06/30 06:02:18 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2133,8 +2133,8 @@ $TLS_audit_milestone_deleted = "Milestone '{%1}' was deleted";
 $TLS_audit_milestone_created = "Milestone '{%1}' was created";
 $TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
 
-$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";
-$TLS_audit_tc_removed_from_testplan = "Test Case(s) '{%1}' were removed from Test Plan";
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' version {%2} was added to Test Plan {%3}";
+$TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed from Test Plan {%3}";
 
 $TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
 

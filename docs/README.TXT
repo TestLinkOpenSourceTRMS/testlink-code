@@ -1,1 +1,0 @@
-tl-bts-howto.pdf -> was written for 1.6.x, but can be useful for 1.7 (a new version will be written)

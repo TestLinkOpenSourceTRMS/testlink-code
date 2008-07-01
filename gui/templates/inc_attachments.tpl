@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.17 2008/06/12 13:40:32 havlat Exp $
+$Id: inc_attachments.tpl,v 1.18 2008/07/01 20:01:26 franciscom Exp $
 Generic attachment management
 
 Input:
@@ -18,6 +18,7 @@ Input:
 Smarty global variables:
 $gsmarty_attachments
 
+20080701 - franciscom - removed "none" label when there are no attachments has no value.
 20080425 - franciscom -
 20070826 - franciscom - added inheritStyle
 20070307 - franciscom - BUGID 722
@@ -71,11 +72,6 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 				{/if}
 			</td>
 		</tr>
-	{foreachelse}
-	<tr>
-		<td class="bold" style="margin-left:10px;">{lang_get s="none"}</td>
-	</tr>
-    		    
 	{/foreach}
 
   {if $attach_show_upload_btn && !$attach_downloadOnly}

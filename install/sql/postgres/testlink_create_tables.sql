@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.21 2008/06/28 16:59:24 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.22 2008/07/01 07:27:33 havlat Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -307,20 +307,6 @@ CREATE TABLE "object_keywords" (
 ); 
 
 
---
--- Table structure for table "priorities"
---
-CREATE TABLE "priorities" (  
-  "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
-  "priority" CHAR(1) NOT NULL DEFAULT 'B',
-  "risk" CHAR(1) NOT NULL DEFAULT '2',
-  "importance" CHAR(1) NOT NULL DEFAULT 'M',
-  PRIMARY KEY ("id"),
-  UNIQUE ("testplan_id","priority", "risk", "importance")
-); 
-CREATE INDEX "priorities_testplan_id" ON "priorities" ("testplan_id");
-
 
 --
 -- Table structure for table "req_coverage"
@@ -432,7 +418,7 @@ CREATE TABLE "tcversions" (
   "summary" TEXT NULL DEFAULT NULL,
   "steps" TEXT NULL DEFAULT NULL,
   "expected_results" TEXT NULL DEFAULT NULL,
-  "importance" CHAR(1) NOT NULL DEFAULT 'M',
+  "importance" INT2 NOT NULL DEFAULT '2',
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "updater_id" BIGINT NULL DEFAULT NULL,
@@ -459,10 +445,11 @@ CREATE TABLE "testcase_keywords" (
 -- Table structure for table "testplan_tcversions"
 --
 CREATE TABLE "testplan_tcversions" (  
- "id" BIGSERIAL NOT NULL ,
- "testplan_id" BIGINT NOT NULL DEFAULT '0',
- "tcversion_id" BIGINT NOT NULL DEFAULT '0',
- "node_order" BIGINT NOT NULL DEFAULT 1,
+  "id" BIGSERIAL NOT NULL ,
+  "testplan_id" BIGINT NOT NULL DEFAULT '0',
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0',
+  "node_order" BIGINT NOT NULL DEFAULT 1,
+  "urgency" INT2 NOT NULL DEFAULT '2',
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","tcversion_id")
 ); 
@@ -586,14 +573,6 @@ CREATE TABLE text_templates (
 );
 COMMENT ON TABLE text_templates IS 'Global Project Templates';
 
---
-CREATE TABLE test_urgency (
-  node_id BIGINT NOT NULL,
-  testplan_id BIGINT NOT NULL,
-  urgency INT2 NOT NULL default '2',
-  UNIQUE (node_id,testplan_id)
-);
-COMMENT ON TABLE test_urgency IS 'Urgence of testing test suite in a Test Plan';
 
 --
 CREATE TABLE user_group (

@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.37 2008/06/28 16:59:24 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.38 2008/07/01 07:27:33 havlat Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20080701 - havlatm - refine test prioritization fields
 # 20080628 - franciscom - create_ts -> creation_ts
 # 20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 # 20080331 - franciscom - testplan_tcversions added node_order
@@ -297,6 +298,7 @@ CREATE TABLE `testplan_tcversions` (
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `tcversion_id` int(10) unsigned NOT NULL default '0',
   `node_order` int(10) unsigned NOT NULL default '1',
+  `urgency` smallint(5) NOT NULL default '2',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_tcversion` (`testplan_id`,`tcversion_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -478,14 +480,6 @@ CREATE TABLE `text_templates` (
   `is_public` tinyint(1) NOT NULL default '0',
   UNIQUE KEY `idx_text_templates` (`type`,`title`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
-
-/* mht - 0000537: Discussion: Priority = Urgency + Importance */
-CREATE TABLE `test_urgency` (
-  `node_id` int(10) unsigned NOT NULL,
-  `testplan_id` int(10) unsigned NOT NULL,
-  `urgency` smallint(5) unsigned NOT NULL default '2',
-  UNIQUE KEY `idx_test_urgency` (`node_id`,`testplan_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Urgence of testing test suite in a Test Plan';
 
 /* mht - group users for large companies */
 CREATE TABLE `user_group` (

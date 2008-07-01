@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.12 $
-$Date: 2008/06/28 16:58:56 $
-$Author: franciscom $
+$Revision: 1.13 $
+$Date: 2008/07/01 07:27:33 $
+$Author: havlat $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
@@ -64,13 +64,6 @@ CREATE TABLE text_templates (
   UNIQUE KEY idx_text_templates (tpl_type,title)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
-CREATE TABLE test_urgency (
-  node_id int(10) unsigned NOT NULL,
-  testplan_id int(10) unsigned NOT NULL,
-  urgency smallint(5) unsigned NOT NULL default '2',
-  UNIQUE KEY idx_test_urgency (node_id,testplan_id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Urgence of testing test suite in a Test Plan';
-
 
 CREATE TABLE user_group (
   id int(10) unsigned NOT NULL,
@@ -94,33 +87,35 @@ ALTER TABLE tcversions ADD COLUMN tc_external_id int(10) unsigned NOT NULL;
 
 -- 20080622 - franciscom
 -- Present in 1.7.4
--- ALTER TABLE tcversions ADD COLUMN importance smallint(5) unsigned NOT NULL default '2';
-ALTER TABLE tcversions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
+-- MHT: but invalid type (need to reenter)
+ALTER TABLE tcversions MODIFY COLUMN importance smallint(5) unsigned NOT NULL default '2';
+ALTER TABLE tcversions COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
 
 /* testprojects */
 ALTER TABLE testprojects ADD COLUMN prefix varchar(30) NULL;
 ALTER TABLE testprojects ADD COLUMN tc_counter int(10) unsigned NULL default '0';
 ALTER TABLE testprojects ADD COLUMN option_automation tinyint(1) NOT NULL default '0';
-ALTER TABLE testprojects COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
+ALTER TABLE testprojects COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
 
 
 /* user */
 ALTER TABLE users ADD COLUMN script_key varchar(32) NULL;
-ALTER TABLE users COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
+ALTER TABLE users COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
 
 /* executions */
 ALTER TABLE executions ADD COLUMN tcversion_number smallint(5) unsigned NOT NULL default '1' COMMENT 'test case version used for this execution' AFTER tcversion_id;
 ALTER TABLE executions ADD COLUMN execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated' AFTER  tcversion_number;
-ALTER TABLE executions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
+ALTER TABLE executions COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
 
 /* testplan_tcversions */
 ALTER TABLE testplan_tcversions ADD COLUMN node_order int(10) unsigned NOT NULL default '1' COMMENT 'order in execution tree' AFTER tcversion_id;
-ALTER TABLE testplan_tcversions COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
+ALTER TABLE testplan_tcversions ADD COLUMN urgency smallint(5) unsigned NOT NULL default '2' COMMENT 'test prioritization, default is MEDIUM';
+ALTER TABLE testplan_tcversions COMMENT = 'Updated to TL 1.8 RC1  - DB 1.2';
 
 
 /* db_version */
 ALTER TABLE db_version ADD COLUMN notes  text;
-ALTER TABLE db_version COMMENT = 'Updated to TL 1.8.0 Development - DB 1.2';
+ALTER TABLE db_version COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
 
 /* requirements */
 ALTER TABLE requirements MODIFY COLUMN id int(10) unsigned NOT NULL;

@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.23 2008/05/28 18:26:04 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.24 2008/07/01 07:27:33 havlat Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -78,6 +78,7 @@ CREATE TABLE [testplan_tcversions](
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_tcversion_id]  DEFAULT ((0)),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_testplan_id]  DEFAULT ((0)),
 	[node_order] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_node_order]  DEFAULT ((1)),
+	[urgency] [tinyint] NOT NULL CONSTRAINT [DF_testplan_tcversions_node_order]  DEFAULT ((2)),
  CONSTRAINT [PK_testplan_tcversions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -455,7 +456,7 @@ CREATE TABLE [tcversions](
 	[summary] [text]  NULL,
 	[steps] [text]  NULL,
 	[expected_results] [text]  NOT NULL,
-	[importance] [char](1)  NOT NULL CONSTRAINT [DF_tcversions_importance]  DEFAULT (N'M'),
+	[importance] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_importance]  DEFAULT ((2)),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_tcversions_creation_ts]  DEFAULT (getdate()),
 	[updater_id] [int] NULL,

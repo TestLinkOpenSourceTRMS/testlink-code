@@ -1,6 +1,6 @@
--- $Revision: 1.1 $
--- $Date: 2008/06/28 16:52:56 $
--- $Author: franciscom $
+-- $Revision: 1.2 $
+-- $Date: 2008/07/01 07:27:33 $
+-- $Author: havlat $
 -- $Name:  $
 -- DB: Postgres
 
@@ -57,16 +57,6 @@ CREATE TABLE text_templates (
 COMMENT ON TABLE text_templates IS 'Global Project Templates';
 
 --
-CREATE TABLE test_urgency (
-  node_id BIGINT NOT NULL,
-  testplan_id BIGINT NOT NULL,
-  urgency INT2 NOT NULL default '2',
-  UNIQUE (node_id,testplan_id)
-);
-
-COMMENT ON TABLE test_urgency IS 'Urgence of testing test suite in a Test Plan';
-
---
 CREATE TABLE user_group (
   "id" BIGSERIAL NOT NULL,
   title varchar(100) NOT NULL,
@@ -85,6 +75,7 @@ CREATE TABLE user_group_assign (
 
 -- Step 3 - table changes
 -- tcversions
+ALTER TABLE tcversions MODIFY COLUMN importance INT2 NOT NULL default '2';
 ALTER TABLE tcversions ADD COLUMN execution_type INT2 NOT NULL default '1';
 COMMENT ON COLUMN tcversions.execution_type IS '1 -> manual, 2 -> automated';
 
@@ -107,6 +98,7 @@ COMMENT ON COLUMN executions.tcversion_number IS 'test case version used for thi
 COMMENT ON TABLE executions  IS 'Updated to TL 1.8.0 Development - DB 1.2';
 
 -- testplan_tcversions
+ALTER TABLE testplan_tcversions ADD COLUMN urgency INT2 NOT NULL default '2',
 ALTER TABLE testplan_tcversions ADD COLUMN node_order INT NOT NULL default '1';
 COMMENT ON COLUMN testplan_tcversions.node_order IS 'order in execution tree'; 
 COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.8.0 Development - DB 1.2';

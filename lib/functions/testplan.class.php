@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/06/29 17:22:18 $ $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/07/02 19:11:17 $ $Author: havlat $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -872,7 +872,7 @@ function get_keywords_tcases($id,$keyword_id=0)
 /*
   function: copy_as
             creates a new test plan using an existent one as source.
-
+	Note:	copy_test_urgency is not appropriate to copy
 
 
   args: id: source testplan id
@@ -899,7 +899,7 @@ function get_keywords_tcases($id,$keyword_id=0)
 function copy_as($id,$new_tplan_id,$tplan_name=null,
                  $tproject_id=null,$copy_options=null,$tcversion_type=null)
 {
-  $cp_options = array('copy_tcases' => 1,'copy_test_urgency' => 1,
+  $cp_options = array('copy_tcases' => 1,'copy_test_urgency' => 0,
 	                    'copy_milestones' => 1, 'copy_user_roles' => 1, 'copy_builds' => 1);
 
   $cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
@@ -980,7 +980,8 @@ function copy_builds($id,$new_tplan_id)
                                       use lastest available version
 
   returns:
-
+  
+  Note: test urgency is set to default in the new Test plan (not copied)
 */
 function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 {
@@ -1083,24 +1084,6 @@ function copy_user_roles($id,$new_tplan_id)
   }
 }
 
-/**
- * Copy definition about test urgency to a new Test Plan
- */
-function copy_test_urgency($id,$new_tplan_id)
-{
-  $sql="SELECT * FROM test_urgency WHERE testplan_id={$id} ";
-  $rs=$this->db->get_recordset($sql);
-  if(!is_null($rs))
-  {
-    foreach($rs as $pr)
-    {
-      $sql="INSERT test_urgency (urgency,node_id,testplan_id) VALUES (" .
-            $pr['urgency'] . "," . $pr['node_id'] . ",{$new_tplan_id})";
-
-      $this->db->exec_query($sql);
-    }
-  }
-}
 
 /**
  * Gets all testplan related user assignments

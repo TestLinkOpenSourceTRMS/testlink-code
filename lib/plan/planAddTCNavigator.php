@@ -1,25 +1,27 @@
 <?php
 /** 
-*	TestLink Open Source Project - http://testlink.sourceforge.net/
-* 
-* @version $Id: planAddTCNavigator.php,v 1.35 2008/06/29 17:22:19 franciscom Exp $
-*	@author Martin Havlat
-* 
-* 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
-*	It builds the javascript tree that allow the user select a required part 
-*	Test specification. Keywords should be used for filter.
-* 
-* rev :
-*      20080629 - franciscom - fixed undefined variables bug
-*      20080622 - franciscom - added support for ext js tree.
-*      20080507 - franciscom - added type for keyword filter (or/and)
-*      20080501 - franciscom - keyword filter now is multiselect
-*      20080126 - franciscom - refactoring
-*      20070920 - franciscom - REQ - BUGID test plan combo box
-* 
-*      20061112 - franciscom - changes in call to generateTestSpecTree()
-*                              to manage the display ONLY of ACTIVE test case versions .
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ * 
+ * @version $Id: planAddTCNavigator.php,v 1.36 2008/07/02 19:11:59 havlat Exp $
+ * @author Martin Havlat
+ * 
+ * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
+ *	It builds the javascript tree that allow the user select a required part 
+ *	Test specification. Keywords should be used for filter.
+ * 
+ * rev :
+ *      20080629 - franciscom - fixed undefined variables bug
+ *      20080622 - franciscom - added support for ext js tree.
+ *      20080507 - franciscom - added type for keyword filter (or/and)
+ *      20080501 - franciscom - keyword filter now is multiselect
+ *      20080126 - franciscom - refactoring
+ *      20070920 - franciscom - REQ - BUGID test plan combo box
+ * 
+ *      20061112 - franciscom - changes in call to generateTestSpecTree()
+ *                              to manage the display ONLY of ACTIVE test case versions.
+ * 
+ * ----------------------------------------------------------------------------------- */
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
@@ -33,29 +35,24 @@ $gui->tree = buildTree($db,$gui,$args);
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 
-// IMPORTANT:
-//
-// A javascript variable 'args' will be initialized with this value
+// IMPORTANT: A javascript variable 'args' will be initialized with this value
 // using inc_head.tpl template.
-// 
-$smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('args', $gui->args);
+$smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('menuUrl', $gui->menuUrl);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
-  function: 
-
-  args:
-  
-  returns: 
+  function: get input data 
+  args: none
+  returns: array with expected parameters
 
 */
 function init_args()
 {
     $args = new stdClass();
-    $_REQUEST=strings_stripSlashes($_REQUEST);
+    $_REQUEST = strings_stripSlashes($_REQUEST);
 
     // Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
@@ -78,9 +75,7 @@ function init_args()
 
 /*
   function: initializeGui
-
   args :
-  
   returns: 
 
   rev:20080629 - franciscom - added missed argument basehref

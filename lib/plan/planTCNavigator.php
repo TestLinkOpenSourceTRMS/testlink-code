@@ -1,18 +1,23 @@
 <?php
 /**
-*	TestLink Open Source Project - http://testlink.sourceforge.net/
-* @version $Id: planTCNavigator.php,v 1.17 2008/06/29 17:22:19 franciscom Exp $
-*	@author Martin Havlat
-*
-* Used in the remove test case feature
-*
-* rev :
-*      20080629 - franciscom - fixed missing variables bugs
-*      20080621 - franciscom - added code to use ext js tree
-*      20080429 - franciscom - multiple keyword filter
-*      20080311 - franciscom - BUGID 1427 - first developments
-*      20070925 - franciscom - added management of workframe
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ * 
+ * @version $Id: planTCNavigator.php,v 1.18 2008/07/02 19:11:59 havlat Exp $
+ * @author Martin Havlat
+ *
+ * Test navigator for Test Plan
+ *
+ * rev :
+ *  20080702 - havlatm - added urgency support
+ *  20080629 - franciscom - fixed missing variables bugs
+ *  20080621 - franciscom - added code to use ext js tree
+ *	20080429 - multiple keyword filter
+ *  20080311 - franciscom - BUGID 1427 - first developments
+ *  20070925 - franciscom - added management of workframe
+ * 
+ * ----------------------------------------------------------------------------------- */
+
 require('../../config.inc.php');
 require_once("common.php");
 require_once("users.inc.php");
@@ -26,7 +31,6 @@ $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr);
 $gui->additional_string='';
 
-// 20080621 - francisco.mancardi@gruppotesi.com
 $treeMenu=buildTree($db,$gui,$args);                                                
 $gui->tree=$treeMenu->menustring;
 if( !is_null($treeMenu->rootnode) )
@@ -42,24 +46,20 @@ if( !is_null($treeMenu->rootnode) )
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
-// Warning: 
-// the following variable names CAN NOT BE Changed,
+//  
+// Warning: the following variable names CAN NOT BE Changed,
 // because there is global coupling on template logic
-//
 $smarty->assign('treeKind',$gui->treeKind);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
 $smarty->assign('treeHeader', $gui->title);
 
-$smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] ."/". $gui->help_file);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
   function: init_args
-
-  args :
-  
+  args : pointer to test Plan
   returns: 
 
 */
@@ -72,19 +72,18 @@ function init_args(&$tplanMgr)
     $args->feature = $_REQUEST['feature'];
     switch($args->feature)
     {
-      case 'planUpdateTC':
-      case 'removeTC':
-      case 'plan_risk_assignment':
-      case 'tc_exec_assignment':
+      	case 'planUpdateTC':
+      	case 'removeTC':
+		case 'test_urgency':
+      	case 'tc_exec_assignment':
     	break;
     
-      default:
+    	default:
     	tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
     	exit();
     	break;
     }
 
-    $args->src_workframe = '';
     $args->user_id = $_SESSION['userID'];
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
@@ -96,26 +95,15 @@ function init_args(&$tplanMgr)
     
     $args->help_topic = isset($_REQUEST['help_topic']) ? $_REQUEST['help_topic'] : $args->feature;
 
-    if(!(isset($_REQUEST['doUpdateTree']) || isset($_REQUEST['called_by_me'])))
+    if(isset($_REQUEST['doUpdateTree']) || isset($_REQUEST['called_by_me']))
     {
-        $args->src_workframe = '';
+		$args->src_workframe = $_SESSION['basehref'] . 
+                      "lib/general/staticPage.php?key={$args->help_topic}";
     }
-    else
-    {
-        
-        $args->src_workframe = $_SESSION['basehref'] . "lib/general/show_help.php" .
-                                "?help={$args->help_topic}&locale={$_SESSION['locale']}";
-    
-        switch($args->help_topic)
-        {
-            case 'tc_exec_assignment':
-            case 'planUpdateTC':
-            case 'planRemoveTC':
-            $args->src_workframe = $_SESSION['basehref'] . 
-                                  "lib/general/staticPage.php?key={$args->help_topic}";
-            break; 
-        }
-    }
+	else
+	{
+		$args->src_workframe = '';
+	}
 
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : 0;
 
@@ -137,11 +125,8 @@ function init_args(&$tplanMgr)
 
 /*
   function: initializeGui
-
   args :
-  
   returns: 
-
   rev: 20080429 - franciscom
 */
 function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
@@ -184,44 +169,35 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     {
       case 'planUpdateTC':
     	$gui->menuUrl = "lib/plan/planUpdateTC.php";
-    	$gui->help_file = "";
     	$gui->draw_bulk_update_button=true;
-      break;
+    	break;
     
       case 'removeTC':
     	$gui->menuUrl = "lib/plan/planTCRemove.php";
-    	$gui->help_file = "";
-      break;
+    	break;
     
-      case 'plan_risk_assignment':
-    	$gui->menuUrl = "lib/plan/plan_risk_assignment.php";
-    	$gui->help_file = "priority.html";
-      break;
+      case 'test_urgency':
+    	$gui->menuUrl = "lib/plan/planUrgency.php";
+	    break;
     
       case 'tc_exec_assignment':
     	// BUGID 1427
     	$gui->menuUrl = "lib/plan/tc_exec_assignment.php";
     	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
-    	$gui->help_file = "planOwnerAndPriority.html";
     	break;
     }
-
-
 
     return $gui;
 }
 
 /*
   function: buildTree
-
   args :
-  
   returns: 
-
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 {
-    $treemenu_type=config_get('treemenu_type');
+    global $tlCfg;
     
     $filters = new stdClass();
     $additionalInfo = new stdClass();
@@ -241,8 +217,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     switch($argsObj->feature)
     {
     
-      case 'plan_risk_assignment':
-    	$filters->hide_testcases = 1;
+      case 'test_urgency':
+//    	$filters->hide_testcases = 1;
       break;
     
       case 'tc_exec_assignment':
@@ -262,7 +238,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
 
-    if( $treemenu_type != 'EXTJS' )
+    if( $tlCfg->treemenu_type != 'EXTJS' )
     {
         $treeMenu->menustring=invokeMenu($treeMenu->menustring,null,null);
     }

@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.38 2008/07/01 07:27:33 havlat Exp $
+# $Id: testlink_create_tables.sql,v 1.39 2008/07/03 06:41:26 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,7 +8,8 @@
 #
 # Rev :
 #
-# 20080701 - havlatm - refine test prioritization fields
+# 20080703 - franciscom - removed MyISAM on create table
+# 20080701 - havlatm - redefine test prioritization fields
 # 20080628 - franciscom - create_ts -> creation_ts
 # 20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 # 20080331 - franciscom - testplan_tcversions added node_order
@@ -95,13 +96,13 @@ CREATE TABLE `builds` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`testplan_id`,`name`),
   KEY `testplan_id` (`testplan_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Available builds';
+) DEFAULT CHARSET=utf8 COMMENT='Available builds';
 
 CREATE TABLE `db_version` (
   `version` varchar(50) NOT NULL default 'unknown',
   `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `notes` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `events` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -114,13 +115,13 @@ CREATE TABLE  `events` (
   `object_id` int(10) unsigned NULL,
   `object_type` varchar(45) NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `execution_bugs` (
   `execution_id` int(10) unsigned NOT NULL default '0',
   `bug_id` varchar(16) NOT NULL default '0',
   PRIMARY KEY  (`execution_id`,`bug_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `executions` (
@@ -138,7 +139,7 @@ CREATE TABLE `executions` (
   KEY `testplan_id_tcversion_id`(`testplan_id`,`tcversion_id`),
   KEY `execution_type`(`execution_type`)
 
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `keywords` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -148,7 +149,7 @@ CREATE TABLE `keywords` (
   PRIMARY KEY  (`id`),
   KEY `testproject_id` (`testproject_id`),
   KEY `keyword` (`keyword`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `milestones` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -160,14 +161,14 @@ CREATE TABLE `milestones` (
   `name` varchar(100) NOT NULL default 'undefined',
   PRIMARY KEY  (`id`),
   KEY `testplan_id` (`testplan_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `node_types` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default 'testproject',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `nodes_hierarchy` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -177,14 +178,14 @@ CREATE TABLE `nodes_hierarchy` (
   `node_order` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   KEY `pid_m_nodeorder` (`parent_id`,`node_order`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `req_coverage` (
   `req_id` int(10) NOT NULL,
   `testcase_id` int(10) NOT NULL,
   KEY `req_testcase` (`req_id`,`testcase_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
+) DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 
 CREATE TABLE `req_specs` (
   `id` int(10) unsigned NOT NULL,
@@ -199,7 +200,7 @@ CREATE TABLE `req_specs` (
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   KEY `testproject_id` (`testproject_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
+) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
 CREATE TABLE `requirements` (
   `id` int(10) unsigned NOT NULL,
@@ -217,14 +218,14 @@ CREATE TABLE `requirements` (
   PRIMARY KEY  (`id`),
   KEY `srs_id` (`srs_id`,`status`),
   UNIQUE KEY `req_doc_id` (`srs_id`,`req_doc_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rights` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `rights_descr` (`description`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `risk_assignments` (
@@ -235,7 +236,7 @@ CREATE TABLE `risk_assignments` (
   `importance` char(1) NOT NULL default 'M',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_node_id` (`testplan_id`,`node_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_assignments` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -248,7 +249,7 @@ CREATE TABLE `user_assignments` (
   `status` int(10) unsigned default '1',
   PRIMARY KEY  (`id`),
   KEY `feature_id` (`feature_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 
@@ -256,7 +257,7 @@ CREATE TABLE `role_rights` (
   `role_id` int(10) NOT NULL default '0',
   `right_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`role_id`,`right_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `roles` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -264,7 +265,7 @@ CREATE TABLE `roles` (
   `notes` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `roles_descr` (`description`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 
@@ -272,7 +273,7 @@ CREATE TABLE `testcase_keywords` (
   `testcase_id` int(10) unsigned NOT NULL default '0',
   `keyword_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`testcase_id`,`keyword_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tcversions` (
   `id` int(10) unsigned NOT NULL,
@@ -290,7 +291,7 @@ CREATE TABLE `tcversions` (
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `testplan_tcversions` (
@@ -301,7 +302,7 @@ CREATE TABLE `testplan_tcversions` (
   `urgency` smallint(5) NOT NULL default '2',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_tcversion` (`testplan_id`,`tcversion_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `testplans` (
@@ -312,7 +313,7 @@ CREATE TABLE `testplans` (
   `is_open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `testproject_id_active` (`testproject_id`,`active`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `testprojects` (
   `id` int(10) unsigned NOT NULL,
@@ -328,13 +329,13 @@ CREATE TABLE `testprojects` (
   KEY `id_active` (`id`,`active`),
   UNIQUE KEY `prefix` (`prefix`)
   
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `testsuites` (
   `id` int(10) unsigned NOT NULL,
   `details` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE  `transactions` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -344,7 +345,7 @@ CREATE TABLE  `transactions` (
   `user_id` int(10) unsigned NOT NULL default '0',
   `session_id` varchar(45) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -360,14 +361,14 @@ CREATE TABLE `users` (
   `script_key` varchar(32) NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `login` (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='User information';
+) DEFAULT CHARSET=utf8 COMMENT='User information';
 
 CREATE TABLE `cfield_node_types` (
   `field_id` int(10) NOT NULL default '0',
   `node_type_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`node_type_id`),
   KEY `idx_custom_fields_assign` (`node_type_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cfield_testprojects` (
   `field_id` int(10) unsigned NOT NULL default '0',
@@ -377,7 +378,7 @@ CREATE TABLE `cfield_testprojects` (
   `required_on_design` tinyint(1) NOT NULL default '0',
   `required_on_execution` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cfield_design_values` (
   `field_id` int(10) NOT NULL default '0',
@@ -385,7 +386,7 @@ CREATE TABLE `cfield_design_values` (
   `value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`field_id`,`node_id`),
   KEY `idx_cfield_design_values` (`node_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cfield_execution_values` (
   `field_id`     int(10) NOT NULL default '0',
@@ -394,7 +395,7 @@ CREATE TABLE `cfield_execution_values` (
   `tcversion_id` int(10) NOT NULL default '0',
   `value` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`field_id`,`execution_id`,`testplan_id`,`tcversion_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `custom_fields` (
   `id` int(10) NOT NULL auto_increment,
@@ -412,7 +413,7 @@ CREATE TABLE `custom_fields` (
   `enable_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> user can write/manage it during test case execution',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `idx_custom_fields_name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `user_testproject_roles` (
@@ -420,14 +421,14 @@ CREATE TABLE `user_testproject_roles` (
   `testproject_id` int(10) NOT NULL default '0',
   `role_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`testproject_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_testplan_roles` (
   `user_id` int(10) NOT NULL default '0',
   `testplan_id` int(10) NOT NULL default '0',
   `role_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`testplan_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `attachments` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -443,7 +444,7 @@ CREATE TABLE `attachments` (
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8; 
+) DEFAULT CHARSET=utf8; 
 
 CREATE TABLE `object_keywords` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -451,7 +452,7 @@ CREATE TABLE `object_keywords` (
   `fk_table` varchar(30) default '',
   `keyword_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8; 
+) DEFAULT CHARSET=utf8; 
 
 
 /*  20060908 - franciscom */
@@ -460,14 +461,14 @@ CREATE TABLE `assignment_types` (
   `fk_table` varchar(30) default '',
   `description` varchar(100) NOT NULL default 'unknown',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 /*  20060908 - franciscom */
 CREATE TABLE `assignment_status` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default 'unknown',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 /* mht - 0000774: Global Project Template */
 CREATE TABLE `text_templates` (
@@ -479,7 +480,7 @@ CREATE TABLE `text_templates` (
   `creation_ts` datetime NOT NULL default '1900-00-00 01:00:00',
   `is_public` tinyint(1) NOT NULL default '0',
   UNIQUE KEY `idx_text_templates` (`type`,`title`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
+) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
 /* mht - group users for large companies */
 CREATE TABLE `user_group` (
@@ -488,10 +489,10 @@ CREATE TABLE `user_group` (
   `description` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY (`title`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `user_group_assign` (
   `usergroup_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   UNIQUE KEY `idx_user_group_assign` (`usergroup_id`,`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;

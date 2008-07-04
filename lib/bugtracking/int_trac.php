@@ -13,8 +13,8 @@
  * @link http://trac-hacks.swapoff.org/wiki/XmlRpcPlugin/ "Trac XmlRpcPlugin"
  *
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/21 04:36:13 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/07/04 02:42:30 $
  *
  * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
  * @author Ichiro Okazaki
@@ -31,6 +31,7 @@ class tracInterface extends bugtrackingInterface
 {
     var $m_dbHost = null;
     var $m_enterBugURL = null;
+	var $m_showBugURL = null;
     
     var $m_dbConnection = null;
     var $m_bConnected = false;
@@ -107,7 +108,7 @@ class tracInterface extends bugtrackingInterface
     {
         $this->checkConnectionViaXmarpc();
 
-        $ticketUrl = $this->m_enterBugURL . "/$id";
+        $ticketUrl = $this->m_showBugURL . "/$id";
         return $ticketUrl;
     }
 
@@ -174,6 +175,22 @@ class tracInterface extends bugtrackingInterface
         return $summary_string;
      }
     
+	/**
+	 * returns the URL which should be displayed for entering bugs 
+	 * 
+	 * @return string returns a complete URL 
+	 *
+	 * @version 1.0
+	 *
+     * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
+	 **/
+	function getEnterBugURL()
+	{
+		$this->checkConnectionViaXmarpc();
+
+		return $this->m_enterBugURL;
+	}
+
     /**
      * checks is bug id is present on BTS
      * 
@@ -199,7 +216,10 @@ class tracInterface extends bugtrackingInterface
      * 
      * @return if the specified trac project exest it returns true; otherwise false
      *
-     * @version 1.0
+     * @version 1.1
+	 *
+	 *     modified for http://www.testlink.org/mantis/view.php?id=1469
+	 *
      * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
      **/
     function checkConnectionViaXmarpc()
@@ -207,7 +227,7 @@ class tracInterface extends bugtrackingInterface
         global $g_interface_bugs_project_name_mapping;
 
         $tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xx';
-        
+ 
         if ($this->m_currentTestProjectName != $tprojectName) {
             if(!isset($g_interface_bugs_project_name_mapping[$tprojectName])) {
                 $this->m_bConnected = false;
@@ -218,6 +238,7 @@ class tracInterface extends bugtrackingInterface
             $this->m_dbHost = BUG_TRACK_DB_HOST . $tracProjectName;
             $this->m_xmlrpcClient = new IXR_Client($this->m_dbHost . '/xmlrpc');
             $this->m_enterBugURL = $this->m_dbHost . BUG_TRACK_ENTER_BUG_HREF;
+			$this->m_showBugURL = $this->m_dbHost . BUG_TRACK_HREF;
         }
 
         return true;

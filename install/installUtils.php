@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.31 2008/03/08 10:24:57 franciscom Exp $ 
+$Id: installUtils.php,v 1.32 2008/07/05 12:53:56 franciscom Exp $ 
 
 
 rev :
@@ -643,7 +643,7 @@ $msg .=	"Please enter the name of the database you want to use for TestLink. <br
 				"The database name can contain any character that is allowed in a directory name, except '/', '\', or '.'  
 				  </span> <br><br>" .
 				"If you haven't created a database yet, the installer will attempt to do so for you, <br>" . 
-				"but this may fail depending on the MySQL setup your host uses.<br>";
+				"but this may fail depending on the DBMS setup your host uses.<br>";
 
 if ($inst_type == "upgrade" )
 {

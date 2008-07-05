@@ -2,13 +2,14 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.30 2008/06/23 06:23:53 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.31 2008/07/05 12:53:56 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
 *   rev: 
+*        20080705 - franciscom - removed obsolte config parameter
 *        20080608 - franciscom - user rights need to be checked in order to enable/disable
 *                                javascript tree operations like drag & drop.
 *
@@ -81,9 +82,9 @@ if($spec_cfg->show_tsuite_filter)
 	$draw_filter = $mappy['draw_filter'];
 }
 
-$spectree=config_get('spectreemenu_type');
+// $spectree=config_get('spectreemenu_type');
 $treemenu_type=config_get('treemenu_type');
-if($spectree != 'EXTJS')
+if($treemenu_type != 'EXTJS')
 {
     $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
                                        $workPath,NOT_FOR_PRINTING,

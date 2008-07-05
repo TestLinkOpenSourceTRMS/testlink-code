@@ -1,7 +1,7 @@
 <?php 
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newInstallStart_TL.php,v 1.20 2008/02/20 07:49:12 franciscom Exp $
+$Id: newInstallStart_TL.php,v 1.21 2008/07/05 12:53:56 franciscom Exp $
 
 rev: 20080219 - franciscom - fixed dir permission checking
 */
@@ -191,9 +191,24 @@ exit;
           echo ewigth($inst_type); 
          ?>
 
+         <table width="100%"  border="0" cellspacing="0" cellpadding="1">
+               <tr align="left" valign="top">
+             <td> <img src="./img/dot.gif" alt="" style="margin-top: 1px;" />
+         		<b>Important Notice</b><br>
+				 	if You DO NOT USE STANDARD Port for DB connection,
+				 	you need to add '<b>:port_number</b>', at the end Database host parameter.<br>
+				 	Example:	you use MySQL running on port 6606, on server matrix 
+				 	then Database host will be -> <b>matrix:6606</b><br>
+             </td>
+             </tr>
+    <tr class="fancyRow2">
+    <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
+    </tr>
+
+         </table>
+         <p />
 					
-					Database Configuration <p />
-					
+					Database Configuration:<p />
 					<div class="labelHolder">
 						<label for="databasetype">Database Type</label>
 					</div>

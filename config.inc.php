@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.184 $
- * @modified $Date: 2008/06/26 21:44:31 $ by $Author: havlat $
+ * @version $Revision: 1.185 $
+ * @modified $Date: 2008/07/05 12:53:56 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -354,7 +354,7 @@ $tlCfg->treemenu_type = 'JTREE';
 // while testing EXT JS.
 // if = '' => $tlCfg->treemenu_type will be used
 // MHT: This is temporary parameter and will be removed 
-$tlCfg->spectreemenu_type = 'EXTJS';
+// $tlCfg->spectreemenu_type = 'EXTJS';
  
 /** Default ordering value for new Test Suites and Test Cases to separate them */
 $tlCfg->treemenu_default_testsuite_order = 1;

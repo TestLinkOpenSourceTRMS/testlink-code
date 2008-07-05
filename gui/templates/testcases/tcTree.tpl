@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.6 2008/06/23 06:23:33 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.7 2008/07/05 12:53:56 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
  
    20080525 - franciscom - use only ext js tree type.
@@ -9,9 +9,8 @@
                            changes to form method to allow automatic refresh
                            without browser warning
 *}
-{if $tlCfg->spectreemenu_type == ''}
-    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
-{else}
+
+{if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl"}
 
@@ -36,6 +35,9 @@
     
     <script type="text/javascript" src='gui/javascript/tcTree.js'>
     </script>
+
+{else}
+    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
 {/if}
 </head>
 
@@ -93,7 +95,9 @@
 {/if}		
 </div>
 
-{if $tlCfg->spectreemenu_type == ''}
+{if $tlCfg->treemenu_type == 'EXTJS'}
+    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+{else}
     <div class="tree" id="tree">
         {if $tree eq ''}
           {lang_get s='no_tc_spec_av'}
@@ -101,8 +105,6 @@
         {$tree}
         <br />
     </div>
-{else}
-    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
 {/if}
   </form>
 

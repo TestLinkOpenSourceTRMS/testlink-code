@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2008/06/29 17:22:18 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/07/05 14:17:45 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,9 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20080705 - franciscom - found another null to replace in order to 
+ *                              make menustring good for extjs
+ *
  *      20080629 - franciscom - fixed bug in extjs_renderExecTreeNodeOnOpen()
  *      20080621 - franciscom - changes in exec functions to support ext js tree.
  *      20080510 - franciscom - interface changes get_testplan_nodes_testcount() 
@@ -871,10 +874,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	    $treeMenu->rootnode->href=$test_spec['href'];
 
  	    // Change key ('childNodes')  to the one required by Ext JS tree.
-	    $dummy_string=str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+	    $dummy_stringA=str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
 	    
 	    // Remove null elements (Ext JS tree do not like it ).
-	    $menustring=str_ireplace('null,', '', $dummy_string); 
+	    $dummy_string=str_ireplace('null,', '', $dummy_stringA); 
+      
+      // 20080705 - franciscom found another problem (hope is last)
+      $menustring=str_ireplace(',null', '', $dummy_string); 
 	    
 	    $treeMenu->menustring=$menustring;
 	    	    

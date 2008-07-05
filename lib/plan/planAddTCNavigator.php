@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.36 2008/07/02 19:11:59 havlat Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.37 2008/07/05 14:17:45 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -45,8 +45,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*
   function: get input data 
-  args: none
-  returns: array with expected parameters
+
+  args: -
+
+  returns: object expected parameters
 
 */
 function init_args()

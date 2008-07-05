@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/07/02 19:11:17 $ $Author: havlat $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/07/05 14:17:45 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,7 @@
  *
  *
  * rev:
+ *     20080705 - franciscom - changes due to test case urgency has been made.
  *     20080629 - franciscom - improments in audit info - link_tcversions(), unlink_tcversions()
  *     20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
  *     20080602 - franciscom - get_linked_tcversions() added tcversion_number in output

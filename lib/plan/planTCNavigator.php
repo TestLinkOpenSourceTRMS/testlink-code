@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.18 2008/07/02 19:11:59 havlat Exp $
+ * @version $Id: planTCNavigator.php,v 1.19 2008/07/05 14:17:45 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -59,7 +59,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*
   function: init_args
-  args : pointer to test Plan
+
+  args : pointer to test Plan manager
   returns: 
 
 */
@@ -125,8 +126,11 @@ function init_args(&$tplanMgr)
 
 /*
   function: initializeGui
+  
   args :
-  returns: 
+  
+  returns:
+   
   rev: 20080429 - franciscom
 */
 function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
@@ -146,11 +150,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
         $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
     }
 
-    // 20080508 - franciscom
     $gui->keywordsFilterType=new stdClass();                                 
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;         
-
 
     // filter using user roles
     $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id,1);
@@ -192,13 +194,23 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
 
 /*
   function: buildTree
+  
   args :
+  
   returns: 
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 {
-    global $tlCfg;
-    
+    // Developer remarks:
+    // using global coupling is 99% (ALWAYS) BAD -> global $tlCfg;
+    // use config_get() because:
+    //
+    // - is standard practice on whole TL code (sued in 75 files).
+    // - is better because you do not need to care about name
+    //   of config object or variable.
+    // 
+    $treemenu_type=config_get('treemenu_type');
+
     $filters = new stdClass();
     $additionalInfo = new stdClass();
 
@@ -238,7 +250,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
 
-    if( $tlCfg->treemenu_type != 'EXTJS' )
+    if( $treemenu_type != 'EXTJS' )
     {
         $treeMenu->menustring=invokeMenu($treeMenu->menustring,null,null);
     }
@@ -266,7 +278,6 @@ function initializeGetArguments($argsObj,$filtersObj)
     $kl='';
     $settings = '&include_unassigned=' . $filtersObj->include_unassigned;
 
-    // 20080428 - franciscom  
     if( is_array($argsObj->keyword_id) )
     {
        $kl=implode(',',$argsObj->keyword_id);

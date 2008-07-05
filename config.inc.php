@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.185 $
- * @modified $Date: 2008/07/05 12:53:56 $ by $Author: franciscom $
+ * @version $Revision: 1.186 $
+ * @modified $Date: 2008/07/05 14:17:45 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -345,7 +345,7 @@ $tlCfg->fckeditor_default_toolbar = 'tl_default';
  * TREE MENU 
  *	Definition of tree menu component: dTree, jTree or phplayersmenu.
  *	jTree has the best performance but others have a better functionality  
- *	[LAYERSMENU, DTREE, JTREE]
+ *	[LAYERSMENU, DTREE, JTREE, EXTJS]
  */
 $tlCfg->treemenu_type = 'JTREE';
 

@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.15 2008/06/12 11:57:03 havlat Exp $ *}
+{* $Id: containerView.tpl,v 1.16 2008/07/06 10:57:45 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
-	20080606 - havlatm - refactorization; layout update
+    20080706 - franciscom - fixed refactorization bug that broke attachments feature
+    20080606 - havlatm - refactorization; layout update
     20080403 - franciscom - BUGID  - problems with IE 7 and incomplete URL
     20080329 - franciscom - added contribution by Eugenia Drosdezki
                               choose testcases to move/copy inside a testsuite
@@ -94,9 +95,10 @@ rev :
 	<div id="executionResults"></div>
   	*}
 
+  {* internal bug - 20080706 - franciscom*}
 	{include file="inc_attachments.tpl" 
 	         attach_id=$id attach_tableName="nodes_hierarchy"
-	         attach_attachmentInfos=null
+	         attach_attachmentInfos=$attachmentInfos
 	         attach_downloadOnly=$bDownloadOnly}
 
 {* ----- TEST SUITE ----------------------------------------------------- *}
@@ -169,7 +171,7 @@ rev :
 		{assign var="bDownloadOnly" value=true}
 	{/if}
 	{include file="inc_attachments.tpl" 
-	         attach_attachmentInfos=null
+	         attach_attachmentInfos=$attachmentInfos
 	         attach_id=$id attach_tableName="nodes_hierarchy" 
 	         attach_downloadOnly=$bDownloadOnly}
 

@@ -4,10 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/06/16 08:13:19 $  by $Author: havlat $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/07/06 11:01:14 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20080706 - franciscom - force refresh tree when operation can put tree on
+ *                         situation that lead to errors if user click on deleted element.
  * 20080203 - franciscom - changes on $tcase_mgr->show() interface
  * 20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
  *
@@ -264,15 +266,22 @@ else if($args->do_delete)
 	}
 
 	$the_title = lang_get('title_del_tc') . htmlspecialchars($tcinfo[0]['name']);
-  	$refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
-
+  
+  // 20080706 - refresh must be forced to avoid a wrong tree situation.
+  // if tree is not refreshed and user click on deleted test case he/she
+  // will get a SQL error
+  // $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
+  $gui->refresh_tree = "yes";
+ 
+  // When deleting JUST one version, there is no need to refresh tree
 	if($args->tcversion_id != testcase::ALL_VERSIONS)
 	{
-		$the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
-		$refresh_tree = "no";
+		  $the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
+		  $gui->refresh_tree = "no";
 	  	$user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
 	}
 
+  $smarty->assign('gui',$gui); 
 	$smarty->assign('title', $the_title);
 	$smarty->assign('testcase_name', $tcinfo[0]['name']);
 	$smarty->assign('user_feedback', $user_feedback);
@@ -280,7 +289,6 @@ else if($args->do_delete)
 	$smarty->assign('testcase_id', $args->tcase_id);
 	$smarty->assign('delete_message', $msg);
 	$smarty->assign('action',$action_result);
-	$smarty->assign('refresh_tree',$refresh_tree);
 	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->move_copy_tc)

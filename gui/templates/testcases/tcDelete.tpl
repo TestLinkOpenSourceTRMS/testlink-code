@@ -1,15 +1,16 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.4 2008/07/01 20:01:02 franciscom Exp $
+$Id: tcDelete.tpl,v 1.5 2008/07/06 10:58:41 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
-      20080701 - franciscom - changed FORM method to get, to avoid this bug:
+      20080701 - franciscom - Found bug related to javascript:history.go(-1)
                               1. create a new tcversion
                               2. click on delete
                               3. click on no
                               4. A new version is created due to re-post of old data
                               
+                              Till a good solution is found -> cancel button removed
       
       20070502 - franciscom - solved problems on delete due to name of local variable
                               equal to name of variable assigned on php page.
@@ -30,8 +31,12 @@ rev :
 <div class="workBack">
 <h1 class="title">{$title}</h1>
 
+{* 
 {include file="inc_update.tpl" result=$sqlResult action=$action item="test case"
          refresh=$smarty.session.tcspec_refresh_on_action}
+*}
+{include file="inc_update.tpl" result=$sqlResult action=$action item="test case"
+         refresh=$gui->refresh_tree}
 
 {if $sqlResult == ''}
 	{if $exec_status_quo neq ''}
@@ -61,9 +66,14 @@ rev :
 		<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
 
 		{* 20070213 - franciscom - BUGID 0000629 *}
+		
+		{* 
+		20080706 - we have problem due to re-post of last operation 
+		need to find a good solution
 		<input type="button" name="cancel_delete"
 		                     onclick='javascript:history.go(-1);'
 		                     value="{$labels.btn_no}" />
+		*}                     
 
 	</form>
 {/if}

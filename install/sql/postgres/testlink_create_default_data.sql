@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.15 2008/06/28 16:59:24 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.16 2008/07/10 07:03:50 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -12,10 +12,6 @@
 --
 --  --------------------------------------------------------
 
---  admin account 
---  SECURITY: change password after first login
-INSERT INTO users (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
 
 
 --  Node types -
@@ -136,6 +132,10 @@ INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (1,'testpl
 INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcversions','testcase_review');
 
 
+--  admin account 
+--  SECURITY: change password after first login
+INSERT INTO users (login,password,role_id,email,first,last,locale,active)
+             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
 
 --  Database version
 --

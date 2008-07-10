@@ -1,23 +1,15 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.22 2008/07/01 07:27:33 havlat Exp $
+-- $Id: testlink_create_tables.sql,v 1.23 2008/07/10 07:03:50 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
---      20080628 - franciscom - added tables:
---                              text_templates,test_urgency,user_group,user_group_assign
---
---      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
---      20080331 - franciscom - testplan_tcversions added node_order
---      20080318 - franciscom - tcversions.tc_external_id
---      20080315 - franciscom - updated testproject table structure
---                              added events and transactions tables
---
+--      20080709 - franciscom - Added Foreing Keys (REFERENCES)
 --      20080102 - franciscom - added changes for API feature (DB 1.2)
---                              added notes field on db_version
+--                              added notes fields on db_version
 --
 --      20071202 - franciscom - added tcversions.execution_type
 --      20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
@@ -40,6 +32,30 @@
 --                              required_on_design,required_on_execution
 --      20060515 - franciscom - creation
 --
+
+--
+-- Table structure for table "node_types"
+--
+CREATE TABLE "node_types" (  
+  "id" BIGSERIAL NOT NULL ,
+  "description" VARCHAR(100) NOT NULL DEFAULT 'testproject',
+  PRIMARY KEY ("id")
+); 
+
+
+--
+-- Table structure for table "nodes_hierarchy"
+--
+CREATE TABLE "nodes_hierarchy" (  
+  "id" BIGSERIAL NOT NULL ,
+  "name" VARCHAR(100) NULL DEFAULT NULL,
+  "parent_id" BIGINT NULL DEFAULT NULL,
+  "node_type_id" BIGINT NOT NULL DEFAULT '1' REFERENCES node_types (id),
+  "node_order" BIGINT NULL DEFAULT NULL,
+  PRIMARY KEY ("id")
+); 
+CREATE INDEX "nodes_hierarchy_pid_m_nodeorder" ON "nodes_hierarchy" ("parent_id","node_order");
+
 --
 --
 --
@@ -70,52 +86,79 @@ CREATE TABLE "events" (
 );
 
 --
--- Table structure for table "assignment_status"
+-- Table structure for table "roles"
 --
-CREATE TABLE "assignment_status" (  
+CREATE TABLE "roles" (  
   "id" BIGSERIAL NOT NULL ,
-  "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
+  "description" VARCHAR(100) NOT NULL DEFAULT '',
+  "notes" TEXT NULL DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  UNIQUE ("description")
+); 
+
+
+--
+-- Table structure for table "users"
+--
+CREATE TABLE "users" (  
+  "id" BIGSERIAL NOT NULL ,
+  "login" VARCHAR(30) NOT NULL DEFAULT '',
+  "password" VARCHAR(32) NOT NULL DEFAULT '',
+  "role_id" SMALLINT NOT NULL DEFAULT '0' REFERENCES roles (id),
+  "email" VARCHAR(100) NOT NULL DEFAULT '',
+  "first" VARCHAR(30) NOT NULL DEFAULT '',
+  "last" VARCHAR(30) NOT NULL DEFAULT '',
+  "locale" VARCHAR(10) NOT NULL DEFAULT 'en_GB',
+  "default_testproject_id" INTEGER NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "script_key" VARCHAR(32) NULL,
+  PRIMARY KEY ("id"),
+  UNIQUE ("login")
+);
+
+
+--
+-- Table structure for table "tcversions"
+--
+CREATE TABLE "tcversions" (  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "tc_external_id" INT NULL,
+  "version" INTEGER NOT NULL DEFAULT '1',
+  "summary" TEXT NULL DEFAULT NULL,
+  "steps" TEXT NULL DEFAULT NULL,
+  "expected_results" TEXT NULL DEFAULT NULL,
+  "importance" CHAR(1) NOT NULL DEFAULT 'M',
+  "author_id" BIGINT NULL DEFAULT NULL REFERENCES users (id),
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "updater_id" BIGINT NULL DEFAULT NULL REFERENCES users (id),
+  "modification_ts" TIMESTAMP NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
+  "execution_type" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 
 
 --
--- Table structure for table "assignment_types"
+-- Table structure for table "testplans"
 --
-CREATE TABLE "assignment_types" (  
-  "id" BIGSERIAL NOT NULL ,
-  "fk_table" VARCHAR(30) NULL DEFAULT '',
-  "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
+CREATE TABLE "testplans" (  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "testproject_id" BIGINT NOT NULL DEFAULT '0',
+  "notes" TEXT NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
+CREATE INDEX "testplans_testproject_id_active" ON "testplans" ("testproject_id","active");
 
 
 --
--- Table structure for table "attachments"
---
-CREATE TABLE "attachments" (  
-  "id" BIGSERIAL NOT NULL ,
-  "fk_id" BIGINT NOT NULL DEFAULT '0',
-  "fk_table" VARCHAR(250) NULL DEFAULT '',
-  "title" VARCHAR(250) NULL DEFAULT '',
-  "description" VARCHAR(250) NULL DEFAULT '',
-  "file_name" VARCHAR(250) NOT NULL DEFAULT '',
-  "file_path" VARCHAR(250) NULL DEFAULT '',
-  "file_size" INTEGER NOT NULL DEFAULT '0',
-  "file_type" VARCHAR(250) NOT NULL DEFAULT '',
-  "date_added" TIMESTAMP NOT NULL DEFAULT now(),
-  "content" BYTEA NULL DEFAULT NULL,
-  "compression_type" INTEGER NOT NULL DEFAULT '0',
-  PRIMARY KEY ("id")
-); 
-
-
---
--- Table structure for table "builds"
+-- Table structure for table `builds`
 --
 CREATE TABLE "builds" (  
   "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
   "name" VARCHAR(100) NOT NULL DEFAULT 'undefined',
   "notes" TEXT NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
@@ -125,62 +168,31 @@ CREATE TABLE "builds" (
 ); 
 CREATE INDEX "builds_testplan_id" ON "builds" ("testplan_id");
 
-
 --
--- Table structure for table "cfield_design_values"
+-- Table structure for table "executions"
 --
-CREATE TABLE "cfield_design_values" (  
-  "field_id" BIGINT NOT NULL DEFAULT '0',
-  "node_id" BIGINT NOT NULL DEFAULT '0',
-  "value" VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY ("field_id","node_id")
+CREATE TABLE "executions" (  
+  "id" BIGSERIAL NOT NULL ,
+  "build_id" INTEGER NOT NULL DEFAULT '0' REFERENCES builds (id),
+  "tester_id" BIGINT NULL DEFAULT NULL,
+  "execution_ts" TIMESTAMP NULL,
+  "status" CHAR(1) NULL DEFAULT NULL,
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES tcversions (id),
+  "tcversion_number" INTEGER NOT NULL DEFAULT '1',
+  "execution_type" INT2 NOT NULL DEFAULT '1',
+  "notes" TEXT NULL DEFAULT NULL,
+  PRIMARY KEY ("id")
 ); 
-CREATE INDEX "idx_cfield_design_values" ON "cfield_design_values" ("node_id");
-
-
---
--- Table structure for table "cfield_execution_values"
---
-CREATE TABLE "cfield_execution_values" (  
-  "field_id" INTEGER NOT NULL DEFAULT '0',
-  "execution_id" INTEGER NOT NULL DEFAULT '0',
-  "testplan_id" INTEGER NOT NULL DEFAULT '0',
-  "tcversion_id" INTEGER NOT NULL DEFAULT '0',
-  "value" VARCHAR(255) NOT NULL DEFAULT '',
-  PRIMARY KEY ("field_id","execution_id","testplan_id","tcversion_id")
-); 
-
-
---
--- Table structure for table "cfield_node_types"
---
-CREATE TABLE "cfield_node_types" (  
-  "field_id" INTEGER NOT NULL DEFAULT '0',
-  "node_type_id" INTEGER NOT NULL DEFAULT '0',
-  PRIMARY KEY ("field_id","node_type_id")
-); 
-CREATE INDEX "cfield_node_types_idx_custom_fields_assign" ON "cfield_node_types" ("node_type_id");
-
-
---
--- Table structure for table "cfield_testprojects"
---
-CREATE TABLE "cfield_testprojects" (  
-  "field_id" BIGINT NOT NULL DEFAULT '0',
-  "testproject_id" BIGINT NOT NULL DEFAULT '0',
-  "display_order" INTEGER NOT NULL default '1',
-  "active" INT2 NOT NULL default '1',
-  "required_on_design" INT2 NOT NULL default '0',
-  "required_on_execution" INT2 NOT NULL default '0',
-  PRIMARY KEY ("field_id","testproject_id")
-); 
+CREATE INDEX "executions_idx1" ON "executions" ("testplan_id","tcversion_id");
+CREATE INDEX "executions_idx2" ON "executions" ("execution_type");
 
 
 --
 -- Table structure for table "custom_fields"
 --
 CREATE TABLE "custom_fields" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" SERIAL NOT NULL ,
   "name" VARCHAR(64) NOT NULL DEFAULT '',
   "label" VARCHAR(64) NOT NULL DEFAULT '',
   "type" SMALLINT NOT NULL DEFAULT '0',
@@ -199,12 +211,126 @@ CREATE INDEX "custom_fields_idx_custom_fields_name" ON "custom_fields" ("name");
 
 
 --
+-- Table structure for table "testprojects"
+--
+CREATE TABLE "testprojects" (  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "notes" TEXT NULL DEFAULT NULL,
+  "color" VARCHAR(12) NOT NULL DEFAULT '#9BD',
+  "active" INT2 NOT NULL DEFAULT '1',
+  "option_reqs" INT2 NOT NULL DEFAULT '0',
+  "option_priority" INT2 NOT NULL DEFAULT '1',
+  "option_automation" INT2 NOT NULL DEFAULT '0',
+  "prefix" varchar(16) NOT NULL,
+  "tc_counter" int NOT NULL default '0',
+  PRIMARY KEY ("id"),
+  UNIQUE ("prefix")
+); 
+CREATE INDEX "testprojects_id_active" ON "testprojects" ("id","active");
+
+--
+-- Table structure for table `cfield_testprojects`
+--
+
+CREATE TABLE "cfield_testprojects" (  
+  "field_id" BIGINT NOT NULL DEFAULT '0' REFERENCES custom_fields (id),
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testprojects (id),
+  "display_order" INTEGER NOT NULL default '1',
+  "active" INT2 NOT NULL default '1',
+  "required_on_design" INT2 NOT NULL default '0',
+  "required_on_execution" INT2 NOT NULL default '0',
+
+  PRIMARY KEY ("field_id","testproject_id")
+); 
+
+
+--
+-- Table structure for table `cfield_design_values`
+--
+CREATE TABLE "cfield_design_values" (  
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES custom_fields (id),
+  "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY ("field_id","node_id")
+); 
+CREATE INDEX "idx_cfield_design_values" ON "cfield_design_values" ("node_id");
+
+
+--
+-- Table structure for table `cfield_execution_values`
+--
+CREATE TABLE "cfield_execution_values" (  
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES custom_fields (id),
+  "execution_id" INTEGER NOT NULL DEFAULT '0' REFERENCES executions (id),
+  "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES testplans (id),
+  "tcversion_id" INTEGER NOT NULL DEFAULT '0' REFERENCES tcversions (id),
+  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY ("field_id","execution_id","testplan_id","tcversion_id")
+); 
+
+
+--
+-- Table structure for table `cfield_node_types`
+--
+CREATE TABLE "cfield_node_types" (  
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES custom_fields (id),
+  "node_type_id" INTEGER NOT NULL DEFAULT '0' REFERENCES node_types (id),
+  PRIMARY KEY ("field_id","node_type_id")
+); 
+CREATE INDEX "cfield_node_types_idx_custom_fields_assign" ON "cfield_node_types" ("node_type_id");
+
+
+
+
+
+
+
+-- ################################################################################ --
+--
+-- Table structure for table `assignment_status`
+--
+CREATE TABLE "assignment_status" (  
+  "id" BIGSERIAL NOT NULL ,
+  "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
+  PRIMARY KEY ("id")
+); 
+
+
+--
+-- Table structure for table `assignment_types`
+--
+CREATE TABLE "assignment_types" (  "id" BIGSERIAL NOT NULL ,
+  "fk_table" VARCHAR(30) NULL DEFAULT '',
+  "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
+  PRIMARY KEY ("id")
+); 
+
+
+--
+-- Table structure for table `attachments`
+--
+CREATE TABLE "attachments" (  "id" BIGSERIAL NOT NULL ,
+  "fk_id" BIGINT NOT NULL DEFAULT '0',
+  "fk_table" VARCHAR(250) NULL DEFAULT '',
+  "title" VARCHAR(250) NULL DEFAULT '',
+  "description" VARCHAR(250) NULL DEFAULT '',
+  "file_name" VARCHAR(250) NOT NULL DEFAULT '',
+  "file_path" VARCHAR(250) NULL DEFAULT '',
+  "file_size" INTEGER NOT NULL DEFAULT '0',
+  "file_type" VARCHAR(250) NOT NULL DEFAULT '',
+  "date_added" TIMESTAMP NOT NULL DEFAULT now(),
+  "content" BYTEA NULL DEFAULT NULL,
+  "compression_type" INTEGER NOT NULL DEFAULT '0',
+  PRIMARY KEY ("id")
+); 
+
+--
 -- Table structure for table "db_version"
 --
 CREATE TABLE "db_version" (  
-  "version" VARCHAR(50) NOT NULL DEFAULT 'unknown',
-  "upgrade_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  "notes" TEXT NULL
+   "version" VARCHAR(50) NOT NULL DEFAULT 'unknown',
+   "upgrade_ts" TIMESTAMP NOT NULL DEFAULT now(),
+   "notes" TEXT NULL
 ); 
 
 
@@ -214,30 +340,10 @@ CREATE TABLE "db_version" (
 -- Table structure for table "execution_bugs"
 --
 CREATE TABLE "execution_bugs" (  
-  "execution_id" BIGINT NOT NULL DEFAULT '0',
+  "execution_id" BIGINT NOT NULL DEFAULT '0' REFERENCES executions (id),
   "bug_id" VARCHAR(16) NOT NULL DEFAULT '0',
   PRIMARY KEY ("execution_id","bug_id")
 ); 
-
-
---
--- Table structure for table "executions"
---
-CREATE TABLE "executions" (  
-  "id" BIGSERIAL NOT NULL ,
-  "build_id" INTEGER NOT NULL DEFAULT '0',
-  "tester_id" BIGINT NULL DEFAULT NULL,
-  "execution_ts" TIMESTAMP NULL,
-  "status" CHAR(1) NULL DEFAULT NULL,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
-  "tcversion_id" BIGINT NOT NULL DEFAULT '0',
-  "tcversion_number" INTEGER NOT NULL DEFAULT '1',
-  "execution_type" INT2 NOT NULL DEFAULT '1',
-  "notes" TEXT NULL DEFAULT NULL,
-  PRIMARY KEY ("id")
-); 
-CREATE INDEX "executions_idx1" ON "executions" ("testplan_id","tcversion_id");
-CREATE INDEX "executions_idx2" ON "executions" ("execution_type");
 
 
 --
@@ -246,7 +352,7 @@ CREATE INDEX "executions_idx2" ON "executions" ("execution_type");
 CREATE TABLE "keywords" (  
   "id" BIGSERIAL NOT NULL ,
   "keyword" VARCHAR(100) NOT NULL DEFAULT '',
-  "testproject_id" BIGINT NOT NULL DEFAULT '0',
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testprojects (id),
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
@@ -259,7 +365,7 @@ CREATE INDEX "keywords_keyword" ON "keywords" ("keyword");
 --
 CREATE TABLE "milestones" (  
   "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
   "target_date" DATE NOT NULL ,
   "a" SMALLINT NOT NULL DEFAULT '0',
   "b" SMALLINT NOT NULL DEFAULT '0',
@@ -270,60 +376,29 @@ CREATE TABLE "milestones" (
 CREATE INDEX "milestones_testplan_id" ON "milestones" ("testplan_id");
 
 
---
--- Table structure for table "node_types"
---
-CREATE TABLE "node_types" (  
-  "id" BIGSERIAL NOT NULL ,
-  "description" VARCHAR(100) NOT NULL DEFAULT 'testproject',
-  PRIMARY KEY ("id")
-); 
+
 
 
 --
--- Table structure for table "nodes_hierarchy"
---
-CREATE TABLE "nodes_hierarchy" (  
-  "id" BIGSERIAL NOT NULL ,
-  "name" VARCHAR(100) NULL DEFAULT NULL,
-  "parent_id" BIGINT NULL DEFAULT NULL,
-  "node_type_id" BIGINT NOT NULL DEFAULT '1',
-  "node_order" BIGINT NULL DEFAULT NULL,
-  PRIMARY KEY ("id")
-); 
-CREATE INDEX "nodes_hierarchy_pid_m_nodeorder" ON "nodes_hierarchy" ("parent_id","node_order");
-
---
--- Table structure for table "object_keywords"
+-- Table structure for table `object_keywords`
 --
 
 
 CREATE TABLE "object_keywords" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" BIGINT NOT NULL ,
   "fk_id" BIGINT NOT NULL DEFAULT '0',
   "fk_table" VARCHAR(30) NULL DEFAULT '',
-  "keyword_id" BIGINT NOT NULL DEFAULT '0',
+  "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES keywords (id),
   PRIMARY KEY ("id")
 ); 
-
-
-
---
--- Table structure for table "req_coverage"
---
-CREATE TABLE "req_coverage" (  
-  "req_id" BIGINT NOT NULL DEFAULT '0',
-  "testcase_id" BIGINT NOT NULL DEFAULT '0'
-); 
-CREATE INDEX "req_coverage_req_testcase" ON "req_coverage" ("req_id","testcase_id");
 
 
 --
 -- Table structure for table "req_specs"
 --
 CREATE TABLE "req_specs" (  
-  "id" BIGINT NOT NULL ,
-  "testproject_id" BIGINT NOT NULL DEFAULT '0',
+  "id" BIGSERIAL NOT NULL ,
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testprojects (id),
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "total_req" INTEGER NOT NULL DEFAULT '0',
@@ -341,14 +416,14 @@ CREATE INDEX "req_specs_testproject_id" ON "req_specs" ("testproject_id");
 -- Table structure for table "requirements"
 --
 CREATE TABLE "requirements" (  
-  "id" BIGINT NOT NULL,
-  "srs_id" BIGINT NOT NULL DEFAULT '0',
+  "id" BIGSERIAL NOT NULL ,
+  "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES req_specs (id),
   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
-  "node_order" BIGINT NOT NULL DEFAULT 1,
+  "node_order" BIGINT NOT NULL DEFAULT 0,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
@@ -357,6 +432,16 @@ CREATE TABLE "requirements" (
 ); 
 CREATE INDEX "requirements_srs_id" ON "requirements" ("srs_id","status");
 CREATE INDEX "requirements_req_doc_id" ON "requirements" ("srs_id","req_doc_id");
+
+
+--
+-- Table structure for table "req_coverage"
+--
+CREATE TABLE "req_coverage" (  
+  "req_id" INTEGER NOT NULL DEFAULT '0' REFERENCES requirements (id),
+  "testcase_id" INTEGER NOT NULL DEFAULT '0'
+); 
+CREATE INDEX "req_coverage_req_testcase" ON "req_coverage" ("req_id","testcase_id");
 
 
 --
@@ -375,8 +460,8 @@ CREATE TABLE "rights" (
 --
 CREATE TABLE "risk_assignments" (  
   "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
-  "node_id" BIGINT NOT NULL DEFAULT '0',
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
+  "node_id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
   "risk" CHAR(1) NOT NULL DEFAULT '2',
   "importance" CHAR(1) NOT NULL DEFAULT 'M',
   PRIMARY KEY ("id"),
@@ -388,55 +473,18 @@ CREATE TABLE "risk_assignments" (
 -- Table structure for table "role_rights"
 --
 CREATE TABLE "role_rights" (  
-  "role_id" BIGINT NOT NULL DEFAULT '0',
-  "right_id" BIGINT NOT NULL DEFAULT '0',
+  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES roles (id),
+  "right_id" INTEGER NOT NULL DEFAULT '0' REFERENCES rights (id),
   PRIMARY KEY ("role_id","right_id")
 ); 
-
-
-
-
---
--- Table structure for table "roles"
---
-CREATE TABLE "roles" (  
-  "id" BIGSERIAL NOT NULL ,
-  "description" VARCHAR(100) NOT NULL DEFAULT '',
-  "notes" TEXT NULL DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE ("description")
-); 
-
-
---
--- Table structure for table "tcversions"
---
-CREATE TABLE "tcversions" (  
-  "id" BIGSERIAL NOT NULL ,
-  "tc_external_id" INT NULL,
-  "version" INTEGER NOT NULL DEFAULT '1',
-  "summary" TEXT NULL DEFAULT NULL,
-  "steps" TEXT NULL DEFAULT NULL,
-  "expected_results" TEXT NULL DEFAULT NULL,
-  "importance" INT2 NOT NULL DEFAULT '2',
-  "author_id" BIGINT NULL DEFAULT NULL,
-  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  "updater_id" BIGINT NULL DEFAULT NULL,
-  "modification_ts" TIMESTAMP NULL,
-  "active" INT2 NOT NULL DEFAULT '1',
-  "is_open" INT2 NOT NULL DEFAULT '1',
-  "execution_type" INT2 NOT NULL DEFAULT '1',
-  PRIMARY KEY ("id")
-); 
-
 
 
 --
 -- Table structure for table "testcase_keywords"
 --
 CREATE TABLE "testcase_keywords" (  
-  "testcase_id" BIGINT NOT NULL DEFAULT '0',
-  "keyword_id" BIGINT NOT NULL DEFAULT '0',
+  "testcase_id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES keywords (id),
   PRIMARY KEY ("testcase_id","keyword_id")
 ); 
 
@@ -446,58 +494,22 @@ CREATE TABLE "testcase_keywords" (
 --
 CREATE TABLE "testplan_tcversions" (  
   "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
-  "tcversion_id" BIGINT NOT NULL DEFAULT '0',
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES tcversions (id),  
   "node_order" BIGINT NOT NULL DEFAULT 1,
   "urgency" INT2 NOT NULL DEFAULT '2',
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","tcversion_id")
 ); 
 
-
---
--- Table structure for table "testplans"
---
-CREATE TABLE "testplans" (  
-  "id" BIGSERIAL NOT NULL ,
-  "testproject_id" BIGINT NOT NULL DEFAULT '0',
-  "notes" TEXT NULL DEFAULT NULL,
-  "active" INT2 NOT NULL DEFAULT '1',
-  "is_open" INT2 NOT NULL DEFAULT '1',
-  PRIMARY KEY ("id")
-); 
-CREATE INDEX "testplans_testproject_id_active" ON "testplans" ("testproject_id","active");
-
-
-
---
--- Table structure for table "testprojects"
---
-CREATE TABLE "testprojects" (  
-  "id" BIGSERIAL NOT NULL ,
-  "notes" TEXT NULL DEFAULT NULL,
-  "color" VARCHAR(12) NOT NULL DEFAULT '#9BD',
-  "active" INT2 NOT NULL DEFAULT '1',
-  "option_reqs" INT2 NOT NULL DEFAULT '0',
-  "option_priority" INT2 NOT NULL DEFAULT '0',
-  "option_automation" INT2 NOT NULL DEFAULT '0',
-  "prefix" varchar(16) NOT NULL,
-  "tc_counter" int NOT NULL default '0',
-  PRIMARY KEY ("id"),
-  UNIQUE ("prefix")
-); 
-CREATE INDEX "testprojects_id_active" ON "testprojects" ("id","active");
-
-
 --
 -- Table structure for table "testsuites"
 --
 CREATE TABLE "testsuites" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
   "details" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
-
 
 
 --
@@ -507,9 +519,9 @@ CREATE TABLE "user_assignments" (
   "id" BIGSERIAL NOT NULL ,
   "type" BIGINT NOT NULL DEFAULT '0',
   "feature_id" BIGINT NOT NULL DEFAULT '0',
-  "user_id" BIGINT NOT NULL,
+  "user_id" BIGINT NULL DEFAULT NULL REFERENCES users (id),
   "deadline_ts" TIMESTAMP NOT NULL DEFAULT (now() + '10 days'::interval),
-  "assigner_id" BIGINT NULL DEFAULT NULL,
+  "assigner_id" BIGINT NULL DEFAULT NULL REFERENCES users (id),
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "status" INTEGER NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
@@ -517,14 +529,13 @@ CREATE TABLE "user_assignments" (
 CREATE INDEX feature_id ON user_assignments ("feature_id");
 
 
-
 --
 -- Table structure for table "user_testplan_roles"
 --
 CREATE TABLE "user_testplan_roles" (  
-  "user_id" BIGINT NOT NULL,
-  "testplan_id" INTEGER NOT NULL DEFAULT '0',
-  "role_id" INTEGER NOT NULL DEFAULT '0',
+  "user_id" INTEGER NOT NULL DEFAULT '0' REFERENCES users (id),
+  "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES testplans (id),
+  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES roles (id),
   PRIMARY KEY ("user_id","testplan_id")
 ); 
 
@@ -533,31 +544,11 @@ CREATE TABLE "user_testplan_roles" (
 -- Table structure for table "user_testproject_roles"
 --
 CREATE TABLE "user_testproject_roles" (  
-  "user_id" BIGINT NOT NULL,
-  "testproject_id" INTEGER NOT NULL DEFAULT '0',
-  "role_id" INTEGER NOT NULL DEFAULT '0',
+  "user_id" INTEGER NOT NULL DEFAULT '0' REFERENCES users (id),
+  "testproject_id" INTEGER NOT NULL DEFAULT '0' REFERENCES testprojects (id),
+  "role_id" INTEGER NOT NULL DEFAULT '0' REFERENCES roles (id),
   PRIMARY KEY ("user_id","testproject_id")
 ); 
-
-
---
--- Table structure for table "users"
---
-CREATE TABLE "users" (  
-  "id" BIGSERIAL NOT NULL ,
-  "login" VARCHAR(30) NOT NULL DEFAULT '',
-  "password" VARCHAR(32) NOT NULL DEFAULT '',
-  "role_id" SMALLINT NOT NULL DEFAULT '0',
-  "email" VARCHAR(100) NOT NULL DEFAULT '',
-  "first" VARCHAR(30) NOT NULL DEFAULT '',
-  "last" VARCHAR(30) NOT NULL DEFAULT '',
-  "locale" VARCHAR(10) NOT NULL DEFAULT 'en_GB',
-  "default_testproject_id" INTEGER NULL DEFAULT NULL,
-  "active" INT2 NOT NULL DEFAULT '1',
-  "script_key" VARCHAR(32) NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE ("login")
-);
 
 --
 CREATE TABLE text_templates (
@@ -565,7 +556,7 @@ CREATE TABLE text_templates (
   type INT NOT NULL,
   title varchar(100) NOT NULL,
   template_data text,
-  author_id BIGINT default NULL,
+  author_id BIGINT default NULL REFERENCES users (id),
   create_ts TIMESTAMP NOT NULL default now(),
   is_public INT2 NOT NULL default '0',
   PRIMARY KEY ("id"),
@@ -579,13 +570,14 @@ CREATE TABLE user_group (
   "id" BIGSERIAL NOT NULL,
   title varchar(100) NOT NULL,
   description text,
-  owner_id BIGINT NOT NULL,
-  testproject_id BIGINT NOT NULL,
+  owner_id BIGINT NOT NULL REFERENCES users (id),
+  testproject_id BIGINT NOT NULL REFERENCES testprojects (id),
+  PRIMARY KEY ("id"),
   UNIQUE (title)
 );
 
 --
 CREATE TABLE user_group_assign (
-  usergroup_id BIGINT NOT NULL,
-  user_id BIGINT NOT NULL
+  usergroup_id BIGINT NOT NULL REFERENCES user_group (id),
+  user_id BIGINT NOT NULL REFERENCES users (id)
 );

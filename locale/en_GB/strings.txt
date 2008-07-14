@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.329 $
- * @modified $Date: 2008/06/30 06:02:18 $ $Author: franciscom $
+ * @version $Revision: 1.330 $
+ * @modified $Date: 2008/07/14 17:19:34 $ $Author: asielb $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -2041,6 +2041,8 @@ $TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
 $TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
 $TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
 $TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
+$TLS_API_NO_TPID = "No testplanid (tpid) provoded. A valid tpid must be provided!";
+$TLS_API_NO_TCID = "No testcaseid (tcid) provided. A valid tcid must be provided!";
 $TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
 $TLS_API_INVALID_TPLANID = "The Test Plan ID (tpid) provided does not exist!";

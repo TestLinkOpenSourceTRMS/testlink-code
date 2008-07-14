@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.39 2008/07/03 06:41:26 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.40 2008/07/14 06:37:31 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -455,7 +455,6 @@ CREATE TABLE `object_keywords` (
 ) DEFAULT CHARSET=utf8; 
 
 
-/*  20060908 - franciscom */
 CREATE TABLE `assignment_types` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `fk_table` varchar(30) default '',
@@ -463,7 +462,6 @@ CREATE TABLE `assignment_types` (
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
-/*  20060908 - franciscom */
 CREATE TABLE `assignment_status` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default 'unknown',
@@ -472,7 +470,7 @@ CREATE TABLE `assignment_status` (
 
 /* mht - 0000774: Global Project Template */
 CREATE TABLE `text_templates` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL auto_increment,
   `type` smallint(5) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
   `template_data` text,
@@ -484,7 +482,7 @@ CREATE TABLE `text_templates` (
 
 /* mht - group users for large companies */
 CREATE TABLE `user_group` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(100) NOT NULL,
   `description` text,
   PRIMARY KEY  (`id`),

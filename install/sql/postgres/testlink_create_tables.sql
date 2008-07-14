@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.23 2008/07/10 07:03:50 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.24 2008/07/14 06:37:31 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -552,7 +552,7 @@ CREATE TABLE "user_testproject_roles" (
 
 --
 CREATE TABLE text_templates (
-  "id" BIGSERIAL NOT NULL,
+  id BIGSERIAL NOT NULL,
   type INT NOT NULL,
   title varchar(100) NOT NULL,
   template_data text,
@@ -567,7 +567,7 @@ COMMENT ON TABLE text_templates IS 'Global Project Templates';
 
 --
 CREATE TABLE user_group (
-  "id" BIGSERIAL NOT NULL,
+  id BIGSERIAL NOT NULL,
   title varchar(100) NOT NULL,
   description text,
   owner_id BIGINT NOT NULL REFERENCES users (id),

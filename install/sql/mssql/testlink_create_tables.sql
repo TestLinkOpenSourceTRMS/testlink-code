@@ -1,12 +1,14 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.24 2008/07/01 07:27:33 havlat Exp $
+-- $Id: testlink_create_tables.sql,v 1.25 2008/07/14 06:37:29 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20080713 - franciscom - schema upgrade
+--
 --      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
 --      20080331 - franciscom - testplan_tcversions added node_order
 --      20071202 - franciscom - added tcversions.execution_type
@@ -15,33 +17,18 @@
 --      20070519 - franciscom - milestones table date -> target_date, because
 --                              date is reserved word for Oracle
 --
---       20070414 - franciscom - table requirements: added field node_order 
+--      20070414 - franciscom - table requirements: added field node_order 
 --
---       20070228 - franciscom -  BUGID 697 - priority table
---       20070228 - franciscom -  BUGID 697 - builds table
---       20070131 - franciscom - requirements -> req_doc_id(32), 
+--      20070228 - franciscom -  BUGID 697 - priority table
+--      20070228 - franciscom -  BUGID 697 - builds table
+--      20070131 - franciscom - requirements -> req_doc_id(32), 
 --
---       20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                               two new fields on builds table
---                               active, open
---                               
---                               
+--      20070120 - franciscom - following BUGID 458 ( really a new feature request)
+--                              two new fields on builds table
+--                              active, open
+--                              
+--                              
 --  -----------------------------------------------------------------------------------
-CREATE TABLE [api_developer_keys] (  
-	[id] [int] IDENTITY(1,1) NOT NULL,
-  [developer_key] [VARCHAR] (32) NOT NULL,
-  [user_id] [int] NOT NULL,
-  CONSTRAINT [PK_api_developer_keys] PRIMARY KEY CLUSTERED 
-  (
-	 [id] ASC
-  ) ON [PRIMARY]
-) ON [PRIMARY] 
-CREATE NONCLUSTERED INDEX [api_developer_keys_user_id] ON [api_developer_keys] 
-(
-	[user_id] ASC
-) ON [PRIMARY]
-
-
 CREATE TABLE [db_version](
 [version] [varchar](50)  NOT NULL CONSTRAINT [DF_db_version_version]  DEFAULT (N'unknown'),
 [upgrade_ts] [datetime] NOT NULL CONSTRAINT [DF_db_version_upgrade_ts]  DEFAULT (getdate()),
@@ -78,7 +65,7 @@ CREATE TABLE [testplan_tcversions](
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_tcversion_id]  DEFAULT ((0)),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_testplan_id]  DEFAULT ((0)),
 	[node_order] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_node_order]  DEFAULT ((1)),
-	[urgency] [tinyint] NOT NULL CONSTRAINT [DF_testplan_tcversions_node_order]  DEFAULT ((2)),
+	[urgency] [tinyint] NOT NULL CONSTRAINT [DF_testplan_tcversions_urgency]  DEFAULT ((2)),
  CONSTRAINT [PK_testplan_tcversions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -171,7 +158,7 @@ CREATE TABLE [user_assignments](
 	[user_id] [int] NULL,
 	[deadline_ts] [datetime] NULL,
 	[assigner_id] [int] NULL DEFAULT ((0)),
-	[creation_ts] [datetime] NOT NULL,
+	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_user_assignments_creation_ts]  DEFAULT (getdate()),
 	[status] [int] NULL DEFAULT ((1)),
  CONSTRAINT [PK_user_assignments] PRIMARY KEY CLUSTERED 
 (
@@ -192,7 +179,7 @@ CREATE TABLE [executions](
 	[status] [char](1)  NULL CONSTRAINT [DF_executions_status]  DEFAULT (NULL),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_executions_testplan_id]  DEFAULT ((0)),
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_executions_tcversion_id]  DEFAULT ((0)),
-	[tcversion_number] [smallint] NOT NULL CONSTRAINT [DF_tcversions_version]  DEFAULT ((1)),
+	[tcversion_number] [smallint] NOT NULL CONSTRAINT [DF_executions_tcversion_number]  DEFAULT ((1)),
 	[execution_type] [tinyint] NOT NULL CONSTRAINT [DF_executions_execution_type]  DEFAULT ((1)),
 	[notes] [text]  NULL CONSTRAINT [DF_executions_notes]  DEFAULT (NULL),
  CONSTRAINT [PK_executions] PRIMARY KEY CLUSTERED 
@@ -260,25 +247,6 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_name] ON [builds]
 CREATE NONCLUSTERED INDEX [IX_testplan_id] ON [builds] 
 (
 	[testplan_id] ASC
-) ON [PRIMARY]
-
-CREATE TABLE [priorities](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[testplan_id] [int] NOT NULL CONSTRAINT [DF_priorities_testplan_id]  DEFAULT ((0)),
-	[risk] [char](1)  NOT NULL,
-	[importance] [char](1)  NOT NULL,
-	[priority] [char](1)  NOT NULL CONSTRAINT [DF_priorities_priority]  DEFAULT (N'b'),
- CONSTRAINT [PK_priorities] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-) ON [PRIMARY],
- CONSTRAINT [IX_testplan_id] UNIQUE NONCLUSTERED 
-(
-	[testplan_id] ASC,
-	[risk] ASC,
-	[importance] ASC,
-	[priority] ASC
-) ON [PRIMARY]
 ) ON [PRIMARY]
 
 CREATE TABLE [keywords](
@@ -379,7 +347,7 @@ CREATE NONCLUSTERED INDEX [IX_req_testcase] ON [req_coverage]
 ) ON [PRIMARY]
 
 CREATE TABLE [req_specs](
-	[id] [int] IDENTITY(1,1) NOT NULL,
+	[id] [int] NOT NULL,
 	[testproject_id] [int] NOT NULL,
 	[title] [varchar](100)  NOT NULL,
 	[scope] [text]  NULL,
@@ -401,7 +369,7 @@ CREATE NONCLUSTERED INDEX [IX_testproject_id] ON [req_specs]
 ) ON [PRIMARY]
 
 CREATE TABLE [requirements](
-	[id] [int] IDENTITY(1,1) NOT NULL,
+	[id] [int] NOT NULL,
 	[srs_id] [int] NOT NULL,
 	[req_doc_id] [varchar](32)  NULL,
 	[title] [varchar](100)  NOT NULL,
@@ -475,7 +443,7 @@ CREATE TABLE [testplans](
 	[testproject_id] [int] NOT NULL CONSTRAINT [DF_testplans_testproject_id]  DEFAULT ((0)),
 	[notes] [text]  NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_testplans_active]  DEFAULT ((1)),
-	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_testplans_open]  DEFAULT ((1)),
+	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_testplans_is_open]  DEFAULT ((1)),
  CONSTRAINT [PK_testplans] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -495,10 +463,17 @@ CREATE TABLE [testprojects](
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_active]  DEFAULT ((1)),
 	[option_reqs] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_reqs]  DEFAULT ((0)),
 	[option_priority] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_priority]  DEFAULT ((1)),
- CONSTRAINT [PK_testprojects] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-) ON [PRIMARY]
+	[prefix] [varchar](16) NOT NULL,
+  [tc_counter] [int] NOT NULL CONSTRAINT [DF_testprojects_tc_counter]  DEFAULT ((0)),
+  CONSTRAINT [PK_testprojects] PRIMARY KEY CLUSTERED 
+  (
+	 [id] ASC
+  ) ON [PRIMARY],
+	CONSTRAINT [IX_testprojects_prefix] UNIQUE  NONCLUSTERED 
+	(
+		[prefix]
+	)  ON [PRIMARY] 
+  
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE NONCLUSTERED INDEX [IX_id_active] ON [testprojects] 
@@ -506,6 +481,8 @@ CREATE NONCLUSTERED INDEX [IX_id_active] ON [testprojects]
 	[id] ASC,
 	[active] ASC
 ) ON [PRIMARY]
+
+
 
 CREATE TABLE [testsuites](
 	[id] [int] NOT NULL,
@@ -549,6 +526,7 @@ CREATE TABLE [users](
 	[locale] [varchar](10)  NOT NULL CONSTRAINT [DF_users_locale]  DEFAULT (N'en_US'),
 	[default_testproject_id] [int] NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_users_active]  DEFAULT ((1)),
+	[script_key] [varchar] (32) NULL,
  CONSTRAINT [PK_users] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -600,3 +578,43 @@ CREATE TABLE [cfield_execution_values](
 	[tcversion_id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
+
+
+CREATE TABLE [text_templates] (
+  [id] [int] IDENTITY(1,1) NOT NULL,
+  [type] [smallint] NOT NULL,
+  [title] [varchar] (100) NOT NULL,
+  [template_data] [text],
+  [author_id] [int] default NULL,
+	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_text_templates_creation_ts]  DEFAULT (getdate()),
+	[is_public] [tinyint] NOT NULL CONSTRAINT [DF_text_templates_is_public]  DEFAULT ((0)),
+	CONSTRAINT [PK_text_templates] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY],
+	CONSTRAINT [IX_text_templates] UNIQUE  NONCLUSTERED 
+	(
+		[type],
+		[title]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+
+CREATE TABLE [user_group] (
+  [id] [int] IDENTITY(1,1) NOT NULL,
+  [title] [varchar] (100) NOT NULL,
+  [description] [text],
+	CONSTRAINT [PK_user_group] PRIMARY KEY  CLUSTERED 
+	(
+		[id]
+	)  ON [PRIMARY], 
+	CONSTRAINT [IX_user_group_title] UNIQUE  NONCLUSTERED 
+	(
+		[title]
+	)  ON [PRIMARY] 
+) ON [PRIMARY]
+
+CREATE TABLE [user_group_assign] (
+  [usergroup_id] [int] NOT NULL,
+  [user_id] [int] NOT NULL,
+) ON [PRIMARY]
+

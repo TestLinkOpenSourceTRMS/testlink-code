@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.19 2008/07/05 14:17:45 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.20 2008/07/17 15:14:38 havlat Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -230,7 +230,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     {
     
       case 'test_urgency':
-//    	$filters->hide_testcases = 1;
+    	$filters->hide_testcases = 1;
       break;
     
       case 'tc_exec_assignment':

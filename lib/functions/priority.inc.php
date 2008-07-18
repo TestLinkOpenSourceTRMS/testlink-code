@@ -1,72 +1,81 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: priority.inc.php,v 1.11 2008/06/29 17:22:18 franciscom Exp $ 
- *
- * Functions for Priority management 
- *
- *
- * rev: 20080629 - franciscom - naming standard changes
- *                 tpID -> no good for testplan 
-*/
-require_once('../../config.inc.php');
-require_once("../functions/common.php");
-
-/**
- * Collect information about rules for priority within actual test Plan
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @return array of array: id, priority, name of item 
+ * @filesource $RCSfile: priority.inc.php,v $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/07/18 14:26:23 $ by $Author: havlat $
+ * 
+ * @copyright Copyright (c) 2008, TestLink community
+ * @author Martin Havlat
+ * 
+ * Class testPlanUrgency extends testPlan functionality by Test Urgency functions 
+ *
+ * Revision:
+ *  None.
+ *
+ * ------------------------------------------------------------------------------------ */
+
+require_once('testplan.class.php');
+
+/** 
+ * class testPlanUrgency - modify and list Test Urgency
+ * @since 1.8 - 17.7.2008
  */
-function getPriority(&$db,$tplanID)
+class testPlanUrgency extends testPlan
 {
-	$sql = " SELECT id, risk_importance, priority " .
-	       " FROM priorities WHERE testplan_id = " . $tplanID;
 
-	return $db->get_recordset($sql);
+
+public function setTestUrgency($testplan_id, $tc_id, $urgency)
+{
+    $sql="UPDATE testplan_tcversions SET urgency={$urgency} " .
+           "WHERE testplan_id={$testplan_id} AND tcversion_id={$tc_id}";
+	$result = $this->db->exec_query($sql);
+
+	if ($result)
+		return OK;
+	else
+		return ERROR;
 }
-
 
 /**
- * Set rules for priority within actual Plan
- *
- * @param hash with key  : priority id on priorities table.
- *                  value: priority value
- *        Example:
- *                [priority] => Array
- *                (
- *                 [10] => b
- *                 [11] => b
- *                 [12] => a
- *                 [13] => b
- *                 [14] => b
- *                 [15] => b
- *                 [16] => b
- *                 [17] => b
- *                 [18] => b
- *                )
- *
- *        Important: priority ID is system wide, can not be found in more
- *                   than one test plan. 
- *                   That's the reason we are not passing the test plan id
- *                   to this function.
- *
- *      
- * @return string 'ok'
- * @todo return could depend on sql result
- *
- * 20060908 - franciscom - interface changes
- */
-function setPriority(&$db,$priority_hash)
+ * Set urgency for TCs (direct child only) within a Test Suite and Test Plan
+ */	
+public function setSuiteUrgency($testplan_id, $node_id, $urgency)
 {
-	foreach($priority_hash as $priID => $priority)
-	{
-		$sql = "SELECT id, priority FROM priorities WHERE id = " . $priID;
-		$oldPriority = $db->fetchFirstRowSingleColumn($sql,'priority');
-		if($oldPriority != null && $oldPriority != $priority)
-		{ 
-			$sql = "UPDATE priorities SET priority ='" . $priority . "' WHERE id = " . $priID;
-			$result = $db->exec_query($sql);
-		}
-	}
-	return 'ok';
+    $sql='UPDATE testplan_tcversions ' . 
+        ' JOIN nodes_hierarchy NHA ON testplan_tcversions.tcversion_id = NHA.id '.
+        ' JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id' .
+        ' SET urgency=' . $urgency .
+		' WHERE testplan_tcversions.testplan_id=' . $testplan_id .
+	 	' AND NHB.parent_id=' .	$node_id; 
+	$result = $this->db->exec_query($sql);
+
+	if ($result)
+		return OK;
+	else
+		return ERROR;
 }
+
+/**
+ * Collect urgency for a Test Suite within a Test Plan
+ * 
+ * @return array of array: testcase_id, name, urgency 
+ */
+function getSuiteUrgency($testplan_id, $node_id)
+{
+	$sql = 'SELECT NHB.name, NHA.parent_id AS testcase_id, testplan_tcversions.urgency
+         FROM nodes_hierarchy NHA
+         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id
+		 JOIN testplan_tcversions ON testplan_tcversions.tcversion_id=NHA.id ' .
+		' WHERE testplan_tcversions.testplan_id=' . $testplan_id .
+	 	' AND NHB.parent_id=' .	$node_id . 
+		' ORDER BY NHB.node_order';
+
+	return $this->db->get_recordset($sql);
+}
+
+
+} // end of class
 ?>

@@ -1,21 +1,26 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
+ * @version $Revision: 1.331 $
+ * @modified $Date: 2008/07/18 14:26:23 $ by $Author: havlat $
  *
- * @version $Revision: 1.330 $
- * @modified $Date: 2008/07/14 17:19:34 $ $Author: asielb $
- *
- * N.B.:
- * Here we are defining GLOBAL variables.
- * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
- * This must be a reserved prefix.
- *
+ * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
- *
+ * --------------------------------------------------------------------------------------
+ * 
  * English (en_GB) strings
  *
+ * This list of labels is defined as GLOBAL string variables. The first sections is general 
+ * for strings used over all GUI. Next sections are related to particular pages.
+ * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
+ * This must be a reserved prefix.
+ * 
+ *
+ * --------------------------------------------------------------------------------------
+ * Revisions:
  * 20071102 - franciscom - tcexecute strings
  * 20071101 - franciscom - view_file_format_doc
  * 20070930 - franciscom - show_tcase_spec
@@ -23,12 +28,12 @@
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  *
  *
-**/
-//If this file is coded in UTF-8 then enable the following line
-//$TLS_STRINGFILE_CHARSET = "UTF-8";
+ * ---------------------------------------------------------------------------------- */
+
 
 // BUGID 1133 - needed by email_api
 $TLS_charset		= 'utf-8';
+
 
 // General terms - Leave it here in this way can be reused !!!
 $TLS_asc 			= "ascending";
@@ -43,10 +48,12 @@ $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_file_type		= 'File type';
 $TLS_help 			= "Help";
 $TLS_hour 			= "Hour";
+$TLS_importance		= "Importance";
 $TLS_manual 		= "Manual";
 $TLS_Milestone 		= "Milestone";
 $TLS_not_aplicable 	= "N/A";
 $TLS_none			= "None";
+$TLS_priority		= "Priority";
 $TLS_project		= "Project";
 $TLS_requirement 	= "Requirement";
 $TLS_reqs 			= "Requirements";
@@ -66,6 +73,7 @@ $TLS_test_report 	= "Test Report";
 $TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title 			= "Title";
+$TLS_urgency		= "Urgency";
 
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
 $TLS_no_testcases_available="No Test Cases or no destination Test Suites available!";
@@ -73,7 +81,8 @@ $TLS_no_testcases_available="No Test Cases or no destination Test Suites availab
 $TLS_th_active = "Active";
 $TLS_th_delete = "Delete";
 $TLS_th_name = "Name";
-$TLS_th_notes = "Notes";
+$TLS_th_notes = "Description";
+$TLS_th_testcase = "Test Case";
 $TLS_th_requirement_feature="Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
@@ -92,24 +101,27 @@ $TLS_remove 		= "remove";
 
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
-$TLS_btn_apply = "Apply";
-$TLS_btn_add = "Add";
-$TLS_btn_assign	= "Assign";
-$TLS_btn_cancel	= "Cancel";
-$TLS_btn_close = "Close";
-$TLS_btn_cp = "Copy";
-$TLS_btn_create = "Create";
-$TLS_btn_delete = "Delete";
-$TLS_btn_edit	= "Edit";
-$TLS_btn_export = "Export";
-$TLS_btn_find = "Find";
-$TLS_btn_import = "Import";
-$TLS_btn_move = "Move";
-$TLS_btn_no = "No";
-$TLS_btn_ok = "Ok";
-$TLS_btn_save = "Save";
-$TLS_btn_unassign = "Unassign";
-$TLS_btn_update = "Update";
+$TLS_btn_apply 		= "Apply";
+$TLS_btn_add 		= "Add";
+$TLS_btn_assign		= "Assign";
+$TLS_btn_cancel		= "Cancel";
+$TLS_btn_close 		= "Close";
+$TLS_btn_cp 		= "Copy";
+$TLS_btn_create 	= "Create";
+$TLS_btn_delete 	= "Delete";
+$TLS_btn_edit		= "Edit";
+$TLS_btn_export 	= "Export";
+$TLS_btn_find 		= "Find";
+$TLS_btn_import 	= "Import";
+$TLS_btn_high 		= "High";
+$TLS_btn_low 		= "Low";
+$TLS_btn_medium 	= "Medium";
+$TLS_btn_move 		= "Move";
+$TLS_btn_no 		= "No";
+$TLS_btn_ok 		= "Ok";
+$TLS_btn_save 		= "Save";
+$TLS_btn_unassign 	= "Unassign";
+$TLS_btn_update 	= "Update";
 $TLS_btn_upd = $TLS_btn_update;
 
 // Status
@@ -123,7 +135,7 @@ $TLS_test_status_not_available = "Not Available";
 $TLS_test_status_unknown	= "Unknown";
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
+// --------------------------------------------------------------------------------------
 // firstLogin.php
 $TLS_cant_create_user = "I'm sorry but your login could not be created. Please contact your administrator about this!";
 $TLS_empty_email_address = " You can't use an empty Email address!";
@@ -1207,14 +1219,17 @@ $TLS_th_run_by = "Run by";
 $TLS_title_gen_test_rep = "General Test Plan Metrics";
 $TLS_title_report_tc_priorities = "Test results according to test priorities";
 $TLS_title_report_milestones = "Status of Milestones";
+$TLS_th_completed = "Completed";
 $TLS_th_milestone = "Milestone [date]";
+$TLS_th_not_run = "Not run";
 $TLS_th_tc_priority_high = "High priority";
 $TLS_th_tc_priority_medium = "Medium priority";
 $TLS_th_tc_priority_low = "Low priority";
-$TLS_th_completed = "Completed";
-$TLS_th_not_run = "Not run";
-$TLS_th_progress = "Progress [%]";
+$TLS_th_progress = "Test progress [%]";
 $TLS_th_goal = "Execution goal [%]";
+$TLS_th_overall_priority = "Overall test priority";
+$TLS_th_expected = "Expected";
+$TLS_th_overall_percentage = "Overall [%]";
 
 
 
@@ -1304,7 +1319,15 @@ $TLS_generated_by_TestLink_on="Generated by TestLink on ";
 $TLS_results_import_format = "XML File Must be in the following format: ";
 $TLS_title_results_import_to="Import results";
 
-// gui/templates/tcEdit_m2.tpl
+
+
+// gui/templates/plan/setUrgency.tpl
+$TLS_title_plan_urgency = "Test urgency for the Test suite";
+$TLS_th_urgency = "Urgency";
+$TLS_label_set_urgency = "Set test urgency: ";
+$TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. Medium test urgency is default value.";
+$TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
+$TLS_feedback_urgency_ok = "Test urgency was modified.";
 
 
 
@@ -2041,8 +2064,8 @@ $TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
 $TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
 $TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
 $TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
-$TLS_API_NO_TPID = "No testplanid (tpid) provoded. A valid tpid must be provided!";
-$TLS_API_NO_TCID = "No testcaseid (tcid) provided. A valid tcid must be provided!";
+$TLS_API_NO_TPID = "No testplan ID (tpid) provided. A valid tpid must be provided!";
+$TLS_API_NO_TCID = "No testcase ID (tcid) provided. A valid tcid must be provided!";
 $TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
 $TLS_API_INVALID_TPLANID = "The Test Plan ID (tpid) provided does not exist!";

@@ -1,124 +1,122 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/07/05 14:17:45 $ $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/07/18 14:26:23 $ by $Author: havlat $
+ * 
+ * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *
- * Manages test plan operations and related items like Custom fields.
  *
+ * Manages test plan operations and related items like Custom fields, 
+ * Builds, Custom fields, etc.
  *
+ * --------------------------------------------------------------------------------------
+ * @todo class for builds and milestones should extend testPlan class
+ * @todo create class testplanEdit (as extension of testplan class) and 
+ *		move here create,edit,delete,copy related stuff
+ * @todo remove dependency to tree.class.php, assignment_mgr.class.php, attachments.inc.php
+ * 		add object.class.php
  *
- * rev:
- *     20080705 - franciscom - changes due to test case urgency has been made.
- *     20080629 - franciscom - improments in audit info - link_tcversions(), unlink_tcversions()
- *     20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
- *     20080602 - franciscom - get_linked_tcversions() added tcversion_number in output
- *     20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
- *                             get_keywords_tcases() - accepts multiple keywords
+ * --------------------------------------------------------------------------------------
+ * Revisions:
+ * 	20080717 - havlatm - added get_node_name
+ *  20080705 - franciscom - changes due to test case urgency has been made.
+ *  20080629 - franciscom - improments in audit info - link_tcversions(), unlink_tcversions()
+ *  20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
+ *  20080602 - franciscom - get_linked_tcversions() added tcversion_number in output
+ *  20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
+ *                          get_keywords_tcases() - accepts multiple keywords
+ *  20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
+ *                          (based on contribution by Eugenia Drosdezki)
+ *  20080403 - franciscom - setExecutionOrder()
+ *  20080310 - sbouffard - contribution added NHB.name to recordset (useful for API methods).  
+ *  20080224 - franciscom - get_linked_tcversions() interface changes
+ *  20080217 - franciscom - interface changes - check_build_name_existence()
+ *  20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
+ *  20080119 - franciscom - improved logic in copy_as to avoid bug due to
+ *                          missing methods.
+ *  20080114 - franciscom - get_linked_tcversions()
+ *  20071205 - franciscom - copy_as() - added reactored code from contribution
+ *  20071010 - franciscom - BUGID     MSSQL reserved word problem - open
+ *  20070927 - franciscom - BUGID 1069
+ *                          added _natsort_builds() (see natsort info on PHP manual).
+ *                          get_builds() add call to _natsort_builds()
+ *                          get_builds_for_html_options() add call to natsort()
+ *  20070917 - franciscom - get_linked_tcversions() added version on recordset
+ *  20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
+ *  20070630 - franciscom - get_linked_tcversions(), added active column
+ *                          in output recordset.
+ *                          html_table_of_custom_field_values()
+ *  20070519 - franciscom - added Class milestone_mgr
+ *     						copy_milestones()- changed date to target_date, because date
+ *                        	is an Oracle reverved word.
+ *  20070501 - franciscom - added localization of custom field labels
+ *                          added use of htmlspecialchars() on labels
+ *  20070425 - franciscom - added get_linked_and_newest_tcversions()
+ *  20070310 - franciscom - BUGID 731
+ *  20070306 - franciscom - BUGID 705 - changes in get_linked_tcversions()
+ *  20070127 - franciscom - added insert_default_priorities()
+ *  20070127 - franciscom - custom field management
+ *  20070120 - franciscom - added Class build_mgr
+ *  20070120 - franciscom - added active and open argument to build functions
+ *                          get_builds_for_html_options(), get_builds()
  *
- *     20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
- *                             (based on contribution by Eugenia Drosdezki)
- *
- *     20080403 - franciscom - setExecutionOrder()
- *     20080310 - sbouffard - contribution added NHB.name to recordset (useful for API methods).  
- *     20080224 - franciscom - get_linked_tcversions() interface changes
- *     20080217 - franciscom - interface changes - check_build_name_existence()
- *     20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
- *     20080119 - franciscom - improved logic in copy_as to avoid bug due to
- *                             missing methods.
- *     20080114 - franciscom - get_linked_tcversions()
- *     20071205 - franciscom - copy_as() - added reactored code from contribution
- *
- *     20071010 - franciscom - BUGID     MSSQL reserved word problem - open
- *     20070927 - franciscom - BUGID 1069
- *                             added _natsort_builds() (see natsort info on PHP manual).
- *                             get_builds() add call to _natsort_builds()
- *                             get_builds_for_html_options() add call to natsort()
- *
- *
- *     20070917 - franciscom - get_linked_tcversions() added version on recordset
- *     20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
- *     20070630 - franciscom - get_linked_tcversions(), added active column
- *                             in output recordset.
- *
- *                             html_table_of_custom_field_values()
- *
- *     20070519 - franciscom - added Class milestone_mgr
- *
- *     copy_milestones()- changed date to target_date, because date
- *                        is an Oracle reverved word.
- *
- *     20070501 - franciscom - added localization of custom field labels
- *                             added use of htmlspecialchars() on labels
- *     20070425 - franciscom - added get_linked_and_newest_tcversions()
- *     20070310 - franciscom - BUGID 731
- *     20070306 - franciscom -
- *     BUGID 705 - changes in get_linked_tcversions()
- *
- *     20070127 - franciscom - added insert_default_priorities()
- *     20070127 - franciscom - custom field management
- *     20070120 - franciscom - added Class build_mgr
- *
- *     20070120 - franciscom - added active and open argument
- *                             to build functions
- *                             get_builds_for_html_options()
- *                             get_builds()
- *
-*/
+ * ----------------------------------------------------------------------------------- */
 
-require_once( dirname(__FILE__). '/tree.class.php' );
+require_once( dirname(__FILE__) . '/tree.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
+
 class testplan extends tlObjectWithAttachments
 {
-  const GET_ALL=null;
-  const GET_ACTIVE_BUILD=1;
-  const GET_INACTIVE_BUILD=0;
-  const GET_OPEN_BUILD=1;
-  const GET_CLOSED_BUILD=0;
-  const ACTIVE_BUILDS=1;
-
+	const GET_ALL=null;
+	const GET_ACTIVE_BUILD=1;
+	const GET_INACTIVE_BUILD=0;
+	const GET_OPEN_BUILD=1;
+	const GET_CLOSED_BUILD=0;
+	const ACTIVE_BUILDS=1;
 
 	var $db;
 	var $tree_manager;
 	var $assignment_mgr;
-  var $cfield_mgr;
-  var $tcase_mgr;
+	var $cfield_mgr;
+	var $tcase_mgr;
 
-  var $builds_table="builds";
-  var $testplan_tcversions_table="testplan_tcversions";
+	var $builds_table="builds";
+ 	var $testplan_tcversions_table="testplan_tcversions";
 
 	var $assignment_types;
 	var $assignment_status;
+	var $user_feedback_message = '';
 	
-  /*
-   function: testplan
-             constructor
-
-   args: db [reference] db object
-
-   returns:
-
-  */
+	/**
+	 * testplan class constructor
+	 * 
+	 * args: db [reference] db object
+	 * returns: N/A
+	 */
 	function testplan(&$db)
 	{
 	    $this->db = &$db;
 	    $this->tree_manager = New tree($this->db);
       
-	    $this->assignment_mgr=New assignment_mgr($this->db);
-	    $this->assignment_types=$this->assignment_mgr->get_available_types();
-	    $this->assignment_status=$this->assignment_mgr->get_available_status();
+	    $this->assignment_mgr = New assignment_mgr($this->db);
+	    $this->assignment_types = $this->assignment_mgr->get_available_types();
+	    $this->assignment_status = $this->assignment_mgr->get_available_status();
       
-      $this->cfield_mgr=new cfield_mgr($this->db);
-      $this->tcase_mgr = New testcase($this->db);
-      
+    	$this->cfield_mgr = new cfield_mgr($this->db);
+    	$this->tcase_mgr = New testcase($this->db);
+    	
 	    tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: create
             creates a tesplan on Database, for a testproject.
@@ -150,6 +148,7 @@ function create($name,$notes,$testproject_id)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: update testplan information
 
@@ -160,7 +159,6 @@ function create($name,$notes,$testproject_id)
 
   returns: 1 -> ok
            0 -> ko
-
 */
 function update($id,$name,$notes,$is_active)
 {
@@ -200,6 +198,7 @@ function update($id,$name,$notes,$is_active)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: get_by_name
             get information about a testplan using name as access key.
@@ -216,9 +215,6 @@ function update($id,$name,$notes,$is_active)
                        is_open: open status
                        name: testplan name
                        testproject_id
-
-
-
 */
 function get_by_name($name,$tproject_id = 0)
 {
@@ -236,6 +232,22 @@ function get_by_name($name,$tproject_id = 0)
 	return($recordset);
 }
 
+
+// --------------------------------------------------------------------------------------
+/**
+ * Get name of any node
+ * 
+ * @param number $node_id 
+ * @return string node name
+ */
+public function get_node_name($node_id)
+{
+	$sql = " SELECT name FROM nodes_hierarchy NH WHERE id=" . $node_id;
+	return $this->db->fetchOneValue($sql);
+}
+
+
+// --------------------------------------------------------------------------------------
 /*
   function: get_by_id
 
@@ -249,8 +261,6 @@ function get_by_name($name,$tproject_id = 0)
            active
            is_open
            parent_id
-
-
 */
 function get_by_id($id)
 {
@@ -263,12 +273,12 @@ function get_by_id($id)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: get_all
             get array of info for every test plan,
             without considering Test Project and any other kind of filter.
             Every array element contains an assoc array
-
 
   args : -
 
@@ -291,7 +301,7 @@ function get_all()
 }
 
 
-
+// --------------------------------------------------------------------------------------
 /*
   function: count_testcases
             get number of testcases linked to a testplan
@@ -301,7 +311,7 @@ function get_all()
   returns: number
 
 */
-function count_testcases($id)
+private function count_testcases($id)
 {
 	$sql = "SELECT COUNT(testplan_id) AS qty FROM testplan_tcversions
 	        WHERE testplan_id={$id}";
@@ -315,6 +325,7 @@ function count_testcases($id)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: tcversionInfoForAudit
             get info regarding tcversions, to generate useful audit messages
@@ -350,18 +361,19 @@ function tcversionInfoForAudit($tplan_id,&$items)
   return $ret;
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: link_tcversions
             associates version of different test cases to a test plan.
             this is the way to populate a test plan
-
 
   args :
         $id: test plan id
         $items_to_link: assoc array key=tc_id value=tcversion_id
                         passed by reference for speed
 
-  returns: -
+  returns: N/A
 
   rev: 20080629 - franciscom - audit message improvements
 */
@@ -406,34 +418,32 @@ function link_tcversions($id,&$items_to_link)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: setExecutionOrder
-
 
   args :
         $id: test plan id
         $executionOrder: assoc array key=tcversion_id value=order
                          passed by reference for speed
 
-  returns: -
-
+  returns: N/A
 */
 function setExecutionOrder($id,&$executionOrder)
 {
-  foreach($executionOrder as $tcVersionID => $execOrder)
-  {
-      $execOrder=intval($execOrder);
-      $sql="UPDATE {$this->testplan_tcversions_table} " .
+	foreach($executionOrder as $tcVersionID => $execOrder)
+	{
+    	$execOrder=intval($execOrder);
+    	$sql="UPDATE {$this->testplan_tcversions_table} " .
            "SET node_order={$execOrder} " .
            "WHERE testplan_id={$id} " .
            "AND tcversion_id={$tcVersionID}";
-		  $result = $this->db->exec_query($sql);
-  }
+		$result = $this->db->exec_query($sql);
+	}
 }
 
 
-
-
+// --------------------------------------------------------------------------------------
 /*
   function: get_linked_tcversions
             get information about testcases linked to a testplan.
@@ -464,7 +474,6 @@ function setExecutionOrder($id,&$executionOrder)
                                default: false
                                true: also testcase not assigned will be retreived
 
-
   returns: map
            key: testcase id
            value: map with following keys:
@@ -474,21 +483,21 @@ function setExecutionOrder($id,&$executionOrder)
                            NULL if the tc version has not been executed in THIS test plan
                            tcversion_id if has executions
 
- rev :
-       20080602 - franciscom - tcversion_number in output
-       20080309 - sbouffard - added NHB.name to recordset
-       20080114 - franciscom - added external_id in output
-     	 20070825 - franciscom - added NHB.node_order on ORDER BY
-       20070630 - franciscom - added active tcversion status in output recorset
-       20070306 - franciscom - BUGID 705
-
+	rev :
+		20080714 - havlatm - added urgency
+    	20080602 - franciscom - tcversion_number in output
+    	20080309 - sbouffard - added NHB.name to recordset
+    	20080114 - franciscom - added external_id in output
+     	20070825 - franciscom - added NHB.node_order on ORDER BY
+    	20070630 - franciscom - added active tcversion status in output recorset
+    	20070306 - franciscom - BUGID 705
 */
-function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
+public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
                                $assigned_to=null,$exec_status=null,$build_id=0,
                                $cf_hash = null, $include_unassigned=false)
 {
-  $tc_status=config_get('tc_status');
-  $status_not_run=$tc_status['not_run'];
+	$tc_status=config_get('tc_status');
+	$status_not_run=$tc_status['not_run'];
 
 	$keywords_join = " ";
 	$keywords_filter = " ";
@@ -496,32 +505,31 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	$executions_join = " ";
 	$executions_filter=" ";
 	$sql_subquery='';
-  $build_filter = " ";
+	$build_filter = " ";
 
-  // Based on work by Eugenia Drosdezki
-  if( is_array($keyword_id) )
-  {
+	// Based on work by Eugenia Drosdezki
+	if( is_array($keyword_id) )
+	{
     	// 0 -> no keyword, remove it
     	if( $keyword_id[0] == 0 )
     	{
     	   array_shift($keyword_id);
     	}
  
-      if( (count($keyword_id) > 0) )
+    	if( (count($keyword_id) > 0) )
     	{
           $keywords_filter = " AND TK.keyword_id IN (" . implode(',',$keyword_id) . ")";          	
     	}  
-  }
-  else if($keyword_id > 0)
+	}
+	else if($keyword_id > 0)
 	{
 	    $keywords_filter = " AND TK.keyword_id = {$keyword_id} ";
 	}
 	
-  if( strlen(trim($keywords_filter)) > 0 )
-  {
+	if( strlen(trim($keywords_filter)) > 0 )
+	{
 	    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";
 	}
-	
 	
 	if (!is_null($tcase_id) )
 	{
@@ -534,8 +542,6 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	      $tc_id_filter = " AND NHA.parent_id = {$tcase_id} ";
 	   }
 	}
-
-
 
 	// --------------------------------------------------------------
 	if(!is_null($exec_status) )
@@ -554,7 +560,6 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	    }
 
 	}
-	// --------------------------------------------------------------
 
 	// --------------------------------------------------------------
 	if( $build_id > 0 )
@@ -571,30 +576,24 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	                    "  E.testplan_id=T.testplan_id {$build_filter}) ";
 
 	// --------------------------------------------------------------
-
-
-
 	// missing condition on testplan_id between execution and testplan_tcversions
 	// added tc_id in order clause to maintain same order that navigation tree
 
-  // 20080602 - franciscom - added tcversion_number
+	// 20080602 - franciscom - added tcversion_number
 	// 20080114 - franciscom - added tc_external_id
-	//
-	// 20070106 - franciscom
-	// Postgres does not like Column alias without AS, and (IMHO) he is right
-	//
+	// 20070106 - franciscom - Postgres does not like Column alias without AS, 
+	//							and (IMHO) he is right
 	// 20070917 - added version
-	//
 	// 20080331 - added T.node_order
-	//
+	
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
-	     "        NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
-	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id, T.node_order AS execution_order," .
-	     "        TCV.version AS version, TCV.active,TCV.tc_external_id AS external_id," .
-	     "        E.id AS exec_id, E.tcversion_number," .
-	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
-	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, " .
-	     "        COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
+	     " NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
+	     " T.tcversion_id AS tcversion_id, T.id AS feature_id, " .
+	     " T.node_order AS execution_order, TCV.version AS version, TCV.active," .
+	     " TCV.tc_external_id AS external_id, E.id AS exec_id, E.tcversion_number," .
+	     " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
+	     " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
+	     " COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
 	     " FROM nodes_hierarchy NHA " .
 	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
 	     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
@@ -604,16 +603,15 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
 	     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
 	     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] .
-	     "      OR UA.type IS NULL) " . $executions_filter;
+	     " OR UA.type IS NULL) " . $executions_filter;
 
 
 	if (!is_null($assigned_to) && $assigned_to > 0)
 	{
-    // 20080224 - franciscom
-	  $sql .= " AND ";
-	  $sql_unassigned="";
-	  if( $include_unassigned )
-	  {
+		$sql .= " AND ";
+		$sql_unassigned="";
+		if( $include_unassigned )
+		{
 		    $sql .= "(";
 		    $sql_unassigned=" OR UA.user_id IS NULL)";
 		}
@@ -621,18 +619,14 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	}
 
 	$sql .=$sql_subquery;
-	// $sql .= " ORDER BY testsuite_id,tc_id,E.id ASC";
-	//
-	// BUGID 989 -
-	// added NHB.node_order
-	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
 
-  // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+	// BUGID 989 - added NHB.node_order
+	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
 
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
-   // 20070913 - jbarchibald
-   // here we add functionality to filter out the custom field selections
+	// 20070913 - jbarchibald
+	// here we add functionality to filter out the custom field selections
     if (!is_null($cf_hash)) {
         $recordset = $this->filter_cf_selection($recordset, $cf_hash);
     }
@@ -641,6 +635,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: get_linked_and_last_tcversions
             returns for every test case in a test plan
@@ -660,13 +655,10 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
             [version] (for humans)
             [newest_version] (for humans)
 
-
   rev:
       20080614 - franciscom - fixed bug on SQL generated while
                               adding tc_external_id on results.
-                              
       20080126 - franciscom - added tc_external_id on results
-
 */
 function get_linked_and_newest_tcversions($id,$tcase_id=null)
 {
@@ -686,13 +678,10 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	// 20080614 - franciscom
 	// Peter Rooms found bug due to wrong SQL, accepted by MySQL but not by PostGres
 	// Missing column in GROUP BY Clause
-	//
+
 	$sql = " SELECT MAX(NHB.id) AS newest_tcversion_id, " .
-	       "        NHA.parent_id AS tc_id, " .
-	       "        NHC.name, " .
-	       "        T.tcversion_id AS tcversion_id," .
-	       "        TCVA.tc_external_id AS tc_external_id," .
-	       "        TCVA.version AS version" .
+	       " NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
+	       " TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
 	       " FROM nodes_hierarchy NHA " .
 	       " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.parent_id " .
 	       " JOIN nodes_hierarchy NHC ON NHA.parent_id = NHC.id " .
@@ -704,30 +693,24 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 
 	$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
 	        " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
-	        " TCV.version AS newest_version" .
-	        " FROM tcversions TCV, ( $sql ) AS SUBQ" .
-	        " WHERE SUBQ.newest_tcversion_id = TCV.id ";
+	        " TCV.version AS newest_version " .
+	        " FROM tcversions TCV, ( $sql ) AS SUBQ " .
+	        " WHERE SUBQ.newest_tcversion_id = TCV.id " .
+	        " ORDER BY SUBQ.tc_id ";
 
-
-
-	$sql2 .= " ORDER BY SUBQ.tc_id";
-	$recordset = $this->db->fetchRowsIntoMap($sql2,'tc_id');
-
-	return $recordset;
+	return $this->db->fetchRowsIntoMap($sql2,'tc_id');
 }
 
 
-
-
-
-
-// $id   : test plan id
-// $items: assoc array key=tc_id value=tcversion_id
-//
-//
-// 20060910 - franciscom
-// added remove of records from user_assignments table
-//
+// --------------------------------------------------------------------------------------
+/**
+ * Remove of records from user_assignments table
+ * 
+ * @author franciscom
+ * @param $id   : test plan id
+ * @param $items: assoc array key=tc_id value=tcversion_id
+ * @return N/A 
+ */
 function unlink_tcversions($id,&$items)
 {
 	if(!is_null($items))
@@ -800,9 +783,10 @@ function unlink_tcversions($id,&$items)
 	    		logAuditEvent($auditMsg,"UNASSIGN",$id,"testplans");
 	    }
 	}
-} // end function
+} // end function unlink_tcversions
 
 
+// --------------------------------------------------------------------------------------
 // 20060430 - franciscom
 function get_keywords_map($id,$order_by_clause='')
 {
@@ -826,13 +810,14 @@ function get_keywords_map($id,$order_by_clause='')
 } // end function
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: get_keywords_tcases 
 
   args :
         [$keyword_id]: can be an array
         
-  returns: 
+  returns: TBD
 
 */
 function get_keywords_tcases($id,$keyword_id=0)
@@ -868,8 +853,9 @@ function get_keywords_tcases($id,$keyword_id=0)
   }
   return ($map_keywords);
 } // end function
-// -------------------------------------------------------------------------------
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: copy_as
             creates a new test plan using an existent one as source.
@@ -883,7 +869,7 @@ function get_keywords_tcases($id,$keyword_id=0)
 
         [tproject_id]: default null.
                        != null => set this as the new testproject for the testplan
-                                  this allow us to copy testplans to differents test projects.
+                              this allow us to copy testplans to differents test projects.
         [copy_options]: default null
                         null: do a deep copy => copy following test plan child elements:
                               builds,linked tcversions,milestones,
@@ -894,8 +880,7 @@ function get_keywords_tcases($id,$keyword_id=0)
                           'lastest' -> for every testcase linked to source testplan
                                       use lastest available version
 
-  returns:
-
+  returns: N/A
 */
 function copy_as($id,$new_tplan_id,$tplan_name=null,
                  $tproject_id=null,$copy_options=null,$tcversion_type=null)
@@ -947,13 +932,14 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,
     }
   }
 
-} // end function
+} // end function copy_as
 
 
+// --------------------------------------------------------------------------------------
 // $id: source testplan id
 // $new_tplan_id: destination
 //
-function copy_builds($id,$new_tplan_id)
+private function copy_builds($id,$new_tplan_id)
 {
   $rs=$this->get_builds($id);
 
@@ -971,6 +957,7 @@ function copy_builds($id,$new_tplan_id)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: copy_linked_tcversions
 
@@ -984,7 +971,7 @@ function copy_builds($id,$new_tplan_id)
   
   Note: test urgency is set to default in the new Test plan (not copied)
 */
-function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
+private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 {
   $sql="SELECT * FROM testplan_tcversions WHERE testplan_id={$id} ";
 
@@ -1015,6 +1002,7 @@ function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: copy_milestones
 
@@ -1027,7 +1015,7 @@ function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
         changed date to target_date, because date is an Oracle reverved word.
 
 */
-function copy_milestones($id,$new_tplan_id)
+private function copy_milestones($id,$new_tplan_id)
 {
   $sql="SELECT * FROM milestones WHERE testplan_id={$id} ";
   $rs=$this->db->get_recordset($sql);
@@ -1046,46 +1034,46 @@ function copy_milestones($id,$new_tplan_id)
   }
 }
 
-/*
-  function:
 
-  args :
-
-  returns:
-
-*/
-function get_milestones($id)
+// --------------------------------------------------------------------------------------
+/**
+ * Get all milestones for a Test Plan
+ * @param int $tplan_id Test Plan identificator
+ * @return array of arrays TBD fields description 
+ */
+function get_milestones($tplan_id)
 {
-  $sql="SELECT * FROM milestones WHERE testplan_id={$id} ORDER BY target_date";
-  $rs=$this->db->get_recordset($sql);
-  return $rs;
+	$sql="SELECT * FROM milestones WHERE testplan_id={$tplan_id} ORDER BY target_date";
+	return $this->db->get_recordset($sql);
 }
 
 
-
-
-// $id: source testplan id
-// $new_tplan_id: destination
-//
-function copy_user_roles($id,$new_tplan_id)
+// --------------------------------------------------------------------------------------
+/**
+ * Copy user roles to a new Test Plan
+ * @param int $original_tplan_id original Test Plan identificator
+ * @param int $new_tplan_id new Test Plan identificator
+ * @return N/A 
+ */
+private function copy_user_roles($original_tplan_id, $new_tplan_id)
 {
-  $sql="SELECT * FROM user_testplan_roles WHERE testplan_id={$id} ";
+	$sql = "SELECT * FROM user_testplan_roles WHERE testplan_id={$original_tplan_id} ";
+	$rs=$this->db->get_recordset($sql);
 
-  $rs=$this->db->get_recordset($sql);
-
-  if(!is_null($rs))
-  {
-    foreach($rs as $elem)
-    {
-      $sql="INSERT INTO user_testplan_roles " .
-           "(testplan_id,user_id,role_id) " .
-           "VALUES({$new_tplan_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
-      $this->db->exec_query($sql);
-    }
-  }
+	if(!is_null($rs))
+	{
+    	foreach($rs as $elem)
+    	{
+      		$sql="INSERT INTO user_testplan_roles " .
+           		"(testplan_id,user_id,role_id) " .
+           		"VALUES({$new_tplan_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
+      		$this->db->exec_query($sql);
+		}
+	}
 }
 
 
+// --------------------------------------------------------------------------------------
 /**
  * Gets all testplan related user assignments
  *
@@ -1100,6 +1088,7 @@ function copy_user_roles($id,$new_tplan_id)
 	}
 
 
+// --------------------------------------------------------------------------------------
 /**
  * Inserts a testplan related role for a given user
  *
@@ -1111,19 +1100,23 @@ function copy_user_roles($id,$new_tplan_id)
 
 function addUserRole($userID,$testPlanID,$roleID)
 {
-	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
+	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES " .
+			" ({$userID},{$testPlanID},{$roleID})";
 	if ($this->db->exec_query($query))
 	{
 		$testPlan = $this->get_by_id($testPlanID);
 		$role = tlRole::getByID($this->db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 		$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 		if ($user && $testPlan && $role)
-			logAuditEvent(TLS("audit_users_roles_added_testplan",$user->getDisplayName(),$testPlan['name'],$role->name),"ASSIGN",$testPlanID,"testplans");
+			logAuditEvent(TLS("audit_users_roles_added_testplan",$user->getDisplayName(),
+			$testPlan['name'],$role->name),"ASSIGN",$testPlanID,"testplans");
 		return tl::OK;
 	}
 	return tl::ERROR;
 }
 
+
+// --------------------------------------------------------------------------------------
 /**
  * Deletes all testplan related role assignments for a given testplan
  *
@@ -1141,9 +1134,10 @@ function deleteUserRoles($testPlanID)
 		return tl::OK;
 	}
 	return tl::ERROR;
-
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function:
 
@@ -1156,7 +1150,6 @@ function deleteUserRoles($testPlanID)
 */
 function delete($id)
 {
-
   $the_sql=array();
   $main_sql=array();
 
@@ -1195,9 +1188,9 @@ function delete($id)
 
 
 
-// -----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Build related methods
-// -----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
 /*
   function: get_builds_for_html_options()
@@ -1244,6 +1237,8 @@ function get_builds_for_html_options($id,$active=null,$open=null)
 
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: get_max_build_id
 
@@ -1251,8 +1246,6 @@ function get_builds_for_html_options($id,$active=null,$open=null)
         $id     : test plan id.
 
   returns:
-
-  rev :
 */
 function get_max_build_id($id,$active = null,$open = null)
 {
@@ -1278,7 +1271,7 @@ function get_max_build_id($id,$active = null,$open = null)
 }
 
 
-
+// --------------------------------------------------------------------------------------
 /*
   function: get_builds
             get info about builds defined for a testlan.
@@ -1298,7 +1291,6 @@ function get_max_build_id($id,$active = null,$open = null)
                   active: build active status
                   is_open: build open status
                   testplan_id
-
 
   rev :
         20070120 - franciscom
@@ -1331,13 +1323,11 @@ function get_builds($id,$active=null,$open=null)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function:
-
   args:
-
   returns:
-
 */
 function get_build_by_name($id,$build_name)
 {
@@ -1359,13 +1349,11 @@ function get_build_by_name($id,$build_name)
 
 
 
+// --------------------------------------------------------------------------------------
 /*
   function:
-
   args :
-
   returns:
-
 */
 function _natsort_builds($builds_map)
 {
@@ -1386,7 +1374,7 @@ function _natsort_builds($builds_map)
 }
 
 
-
+// --------------------------------------------------------------------------------------
 /*
   function: check_build_name_existence
 
@@ -1434,7 +1422,7 @@ function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_s
 }
 
 
-
+// --------------------------------------------------------------------------------------
 /*
   function: create_build
 
@@ -1469,19 +1457,18 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
 	return $new_build_id;
 }
 
-// -------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------
 // Custom field related methods
-// -------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /*
   function: get_linked_cfields_at_design
-
 
   args: $id
         [$parent_id]:
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
-
 
   returns: hash
 
@@ -1502,16 +1489,16 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
   return($cf_map);
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: get_linked_cfields_at_execution
-
 
   args: $id
         [$parent_id]
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
-
 
   returns: hash
 
@@ -1533,11 +1520,9 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
 }
 
 
-
-
+// --------------------------------------------------------------------------------------
 /*
   function: html_table_of_custom_field_inputs
-
 
   args: $id
         [$parent_id]: need when you call this method during the creation
@@ -1546,7 +1531,6 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
         [$scope]: 'design','execution'
 
   returns: html string
-
 */
 function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
 {
@@ -1581,9 +1565,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   return($cf_smarty);
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: html_table_of_custom_field_values
-
 
   args: $id
         [$scope]: 'design','execution'
@@ -1595,7 +1580,6 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
 
   rev :
        20070701 - franciscom - fixed return string when there are no custom fields.
-
 */
 function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null)
 {
@@ -1635,117 +1619,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 } // function end
 
 
-
-
-
-/*
-  function:
-
-  args :
-
-  returns:
-
-*/
-/*
-function insert_default_priorities($tplan_id)
-{
-  $risk_range=array_keys(config_get('risk'));
-  $importance_range=array_keys(config_get('importance'));
-
-  foreach($risk_range as $risk)
-  {
-    foreach($importance_range as $importance)
-    {
-	    $sql = "INSERT into priorities (testplan_id,risk,importance) " .
-	           " VALUES ({$tplan_id},'{$risk}', '{$importance}')";
-	    $result = $this->db->exec_query($sql);
-    }
-  }
-}
-*/
-
-/*
-  function:
-
-  args :
-
-  returns:
-
-*/
-/*
-function get_priority_rules($tplan_id,$do_lang_get=0)
-{
-	$sql = "SELECT * FROM priorities " .
-	       " WHERE testplan_id = {$tplan_id}" .
-	       " ORDER BY risk,importance";
-
-	$rs=$this->db->get_recordset($sql);
-
-	if($do_lang_get)
-	{
-	  $risk_range=config_get('risk');
-	  $importance_range=config_get('importance');
-
-    foreach($rs as $key => $row )
-    {
-      $rs[$key]['risk_verbose']='';
-      $rs[$key]['importance_verbose']='';
-
-      if(isset($risk_range[$row['risk']]))
-      {
-        $rs[$key]['risk_verbose']=lang_get($risk_range[$row['risk']]);
-      }
-
-      if(isset($importance_range[$row['importance']]))
-      {
-        $rs[$key]['importance_verbose']=lang_get($importance_range[$row['importance']]);
-      }
-
-    }
-	}
-
-	return($rs);
-}
-*/
-
-/**
- * Set rules for priority within actual Plan
- *
- * @param hash with key  : priority id on priorities table.
- *                  value: priority value
- *        Example:
- *                [priority] => Array
- *                (
- *                 [10] => b
- *                 [11] => b
- *                 [12] => a
- *                 [13] => b
- *                 [14] => b
- *                 [15] => b
- *                 [16] => b
- *                 [17] => b
- *                 [18] => b
- *                )
- *
- *        Important: priority ID is system wide, can not be found in more
- *                   than one test plan, then passing test plan id seems
- *                   superflous. Anyway we use it.
- *
- *
- */
-/*
-function set_priority_rules($tplan_id,$priority_hash)
-{
-	foreach($priority_hash as $priID => $priority)
-	{
-			$sql = "UPDATE priorities " .
-			       " SET priority ='{$priority}' " .
-			       " WHERE id = {$priID} AND testplan_id={$tplan_id}";
-			$result = $this->db->exec_query($sql);
-	}
-}
-*/
-
+// --------------------------------------------------------------------------------------
   /*
     function: filter_cf_selection
 
@@ -1809,7 +1683,7 @@ function set_priority_rules($tplan_id,$priority_hash)
 
 
 } // end class testplan
-// ##################################################################################
+// ######################################################################################
 
 
 
@@ -1817,10 +1691,10 @@ function set_priority_rules($tplan_id,$priority_hash)
 
 
 
-// ##################################################################################
-//
+// ######################################################################################
+
 // Build Manager Class
-//
+
 // ##################################################################################
 class build_mgr
 {

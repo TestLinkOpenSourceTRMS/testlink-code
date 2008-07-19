@@ -1,12 +1,14 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.25 2008/07/14 06:37:29 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.26 2008/07/19 17:15:08 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20080719 - franciscom - schema upgrade - added transactions and event tables
+--
 --      20080713 - franciscom - schema upgrade
 --
 --      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
@@ -29,6 +31,42 @@
 --                              
 --                              
 --  -----------------------------------------------------------------------------------
+--
+--
+--
+CREATE TABLE [transactions] (
+	[id] [int] IDENTITY(1,1) NOT NULL,
+  [entry_point] varchar(45) NOT NULL CONSTRAINT [DF_transactions_entry_point] default(N''),
+  [start_time] INT NOT NULL CONSTRAINT [DF_transactions_start_time] DEFAULT ((0)),
+  [end_time] INT NOT NULL CONSTRAINT [DF_transactions_end_time] DEFAULT ((0)),
+  [user_id] INT CONSTRAINT [DF_transactions_user_id] DEFAULT ((0)),
+  [session_id] varchar(45) NULL,
+  CONSTRAINT [PK_transactions] PRIMARY KEY CLUSTERED 
+  (
+	  [id] ASC
+  ) ON [PRIMARY]
+) ON [PRIMARY]
+
+--
+--
+--
+CREATE TABLE [events] (
+	[id] [int] IDENTITY(1,1) NOT NULL,
+  [transaction_id] INT NOT NULL CONSTRAINT [DF_events_transaction_id] DEFAULT ((0)),
+  [log_level] SMALLINT NOT NULL CONSTRAINT [DF_events_log_level] DEFAULT ((0)),
+  [source] varchar(45) NULL,
+  [description] text NOT NULL,
+  [fired_at] INT NOT NULL CONSTRAINT [DF_fired_at] DEFAULT ((0)),
+  [activity] varchar(45) NULL,
+  [object_id] INT NULL,
+  [object_type] varchar(45) NULL,
+  CONSTRAINT [PK_events] PRIMARY KEY CLUSTERED 
+  (
+	  [id] ASC
+  ) ON [PRIMARY]
+) ON [PRIMARY]
+
+
 CREATE TABLE [db_version](
 [version] [varchar](50)  NOT NULL CONSTRAINT [DF_db_version_version]  DEFAULT (N'unknown'),
 [upgrade_ts] [datetime] NOT NULL CONSTRAINT [DF_db_version_upgrade_ts]  DEFAULT (getdate()),

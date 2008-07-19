@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/03/15 18:53:11 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/07/19 17:12:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
@@ -58,10 +58,16 @@ class database
   
 	function database($db_type)
 	{
+	  // 20080719 - franciscom
+	  $fetch_mode=ADODB_FETCH_ASSOC;
 	  $this->db = NewADOConnection($db_type);
     
     // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
-    $this->db->SetFetchMode(ADODB_FETCH_ASSOC);
+    if($db_type == 'mssql')
+    {
+        $fetch_mode=ADODB_FETCH_BOTH;
+    }
+    $this->db->SetFetchMode($fetch_mode);
 	}
 
 

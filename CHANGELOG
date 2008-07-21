@@ -5,7 +5,11 @@
 
 Testlink 1.8 Release Candidate 1 (include Beta releases)
 =========================================
-
+- 0001602: [Database MySQL] MyISAM engine always used (fman) - resolved.
+- 0001455: [User Interface General] Ability to change Testplan in Result frame. (mhavlat) - resolved.
+- 0001574: [Test Execute] Error when clicking on Show Test Cases newest version (fman) - resolved.
+- 0001352: [Localization] Missing help entry in texts.php for TestPlan-UpdateTCs (mhavlat) - resolved.
+- 0001351: [Localization] Missing help entry in texts.php for TestCase-UserAssigment (mhavlat) - resolved.
 - 0001568: [Test Plan (milestones, test assign)] Update ALL test case version linked to test plan with one click (fman) - resolved.
 - 0001565: [Localization] Unable to execute the test cases (mhavlat) - resolved.
 - 0001522: [TL API] testlink 1.8: incorrect order of require_once(...) in xmlrpc.php (FIX include) (mhavlat) - resolved.

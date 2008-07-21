@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.24 2008/07/14 06:37:31 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.25 2008/07/21 10:14:25 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -219,7 +219,7 @@ CREATE TABLE "testprojects" (
   "color" VARCHAR(12) NOT NULL DEFAULT '#9BD',
   "active" INT2 NOT NULL DEFAULT '1',
   "option_reqs" INT2 NOT NULL DEFAULT '0',
-  "option_priority" INT2 NOT NULL DEFAULT '1',
+  "option_priority" INT2 NOT NULL DEFAULT '0',
   "option_automation" INT2 NOT NULL DEFAULT '0',
   "prefix" varchar(16) NOT NULL,
   "tc_counter" int NOT NULL default '0',

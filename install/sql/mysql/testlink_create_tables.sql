@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.40 2008/07/14 06:37:31 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.41 2008/07/21 10:12:38 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20080720 - franciscom - fixed bug on text_templates definition
 # 20080703 - franciscom - removed MyISAM on create table
 # 20080701 - havlatm - redefine test prioritization fields
 # 20080628 - franciscom - create_ts -> creation_ts
@@ -477,8 +478,10 @@ CREATE TABLE `text_templates` (
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '1900-00-00 01:00:00',
   `is_public` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
   UNIQUE KEY `idx_text_templates` (`type`,`title`)
 ) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
+
 
 /* mht - group users for large companies */
 CREATE TABLE `user_group` (

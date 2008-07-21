@@ -1,12 +1,13 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.26 2008/07/19 17:15:08 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.27 2008/07/21 10:14:02 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20080720 - franciscom - added missing option_automation field
 --      20080719 - franciscom - schema upgrade - added transactions and event tables
 --
 --      20080713 - franciscom - schema upgrade
@@ -500,7 +501,8 @@ CREATE TABLE [testprojects](
 	[color] [varchar](12)  NOT NULL CONSTRAINT [DF_testprojects_color]  DEFAULT (N'#9BD'),
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_active]  DEFAULT ((1)),
 	[option_reqs] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_reqs]  DEFAULT ((0)),
-	[option_priority] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_priority]  DEFAULT ((1)),
+	[option_priority] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_priority]  DEFAULT ((0)),
+  [option_automation] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_automation]  DEFAULT ((0)),
 	[prefix] [varchar](16) NOT NULL,
   [tc_counter] [int] NOT NULL CONSTRAINT [DF_testprojects_tc_counter]  DEFAULT ((0)),
   CONSTRAINT [PK_testprojects] PRIMARY KEY CLUSTERED 

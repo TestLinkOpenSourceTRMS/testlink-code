@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/06/02 14:43:19 $ by $Author: franciscom $
+ * @modified $Date: 2008/07/21 09:25:04 $ by $Author: havlat $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -59,13 +59,14 @@ class results
 	private $tplanMgr = null;
 	private $testPlanID = -1;
 	private	$tprojectID = -1;
-  private	$testCasePrefix='';
+	private	$testCasePrefix='';
 
-  private $resultsCfg;
+	private $globalCfg = null;
+	private $resultsCfg;
+	private $testCaseCfg='';
 	private $map_tc_status;
-  private $tc_status_for_statistics;
+	private $tc_status_for_statistics;
 
-  private $testCaseCfg='';
 
 	/**
 	* KL - 20061225 - creating map specifically for owner and keyword
@@ -201,44 +202,47 @@ class results
 	                        $suitesSelected = 'all',
 	                        $builds_to_query = -1, $lastResult = 'a',
 	                        $keywordId = 0, $owner = null,
-							            $startTime = null, $endTime = null,
-							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
-							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
+							$startTime = null, $endTime = null,
+							$executor = null, $search_notes_string = null, $linkExecutionBuild = null,
+							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
+		global $tlCfg;
+		$this->globalCfg = $tlCfg;
+    	$this->resultsCfg=config_get('results');
+    	$this->testCaseCfg=config_get('testcase_cfg');
+
 		$this->db = $db;
-	  $this->tplanMgr = $tplan_mgr;
-    $this->resultsCfg=config_get('results');
-    $this->testCaseCfg=config_get('testcase_cfg');
+		$this->tplanMgr = $tplan_mgr;
     
-    $this->map_tc_status=$this->resultsCfg['status_code'];
+    	$this->map_tc_status=$this->resultsCfg['status_code'];
     
 
-    // TestLink standard configuration is (at least for me)
-    // not_run not available at user interface level on execution feature as choice.
-    //
-    // if( !isset($dummy['not_run']) )
-    // {
-    //     $dummy['not_run']=$this->map_tc_status['not_run'];
-    // }
+    	// TestLink standard configuration is (at least for me)
+    	// not_run not available at user interface level on execution feature as choice.
+    	//
+    	// if( !isset($dummy['not_run']) )
+    	// {
+    	//     $dummy['not_run']=$this->map_tc_status['not_run'];
+    	// }
 
-    // This will be used to create dynamically counters if user add new status
-    foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
-    {
-        $this->tc_status_for_statistics[$tc_status_verbose]=$this->map_tc_status[$tc_status_verbose];
-    }
-    if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
-    {
-        $this->tc_status_for_statistics['not_run']=$this->map_tc_status['not_run'];  
-    }
+    	// This will be used to create dynamically counters if user add new status
+    	foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+    	{
+        	$this->tc_status_for_statistics[$tc_status_verbose]=$this->map_tc_status[$tc_status_verbose];
+    	}
+    	if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
+    	{
+        	$this->tc_status_for_statistics['not_run']=$this->map_tc_status['not_run'];  
+    	}
    
-    $this->suitesSelected = $suitesSelected;
-    $this->tprojectID = $tproject_info['id'];
-    $this->testCasePrefix = $tproject_info['prefix'];
+    	$this->suitesSelected = $suitesSelected;
+    	$this->tprojectID = $tproject_info['id'];
+    	$this->testCasePrefix = $tproject_info['prefix'];
     
-    $this->testPlanID = $tplan_info['id'];
+    	$this->testPlanID = $tplan_info['id'];
 		$this->tplanName  = $tplan_info['name'];
 
-    $this->suiteStructure = $suiteStructure;
+    	$this->suiteStructure = $suiteStructure;
 		$this->flatArray = $flatArray;
 		$this->linked_tcversions = $linked_tcversions;
 
@@ -301,7 +305,7 @@ class results
 			// child suites into account
 			$this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
 
-      $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
+      		$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
@@ -310,39 +314,33 @@ class results
 	} // end results constructor
 
 
-  /*
+  	/*
     function: get_export_file_types
-              getter
-
     args: -
-
-    returns: map
+    @returns: map
              key: export file type code
              value: export file type verbose description
-
-  */
+  	*/
 	function get_export_file_types()
 	{
-     return $this->export_file_types;
-  }
+    	return $this->export_file_types;
+	}
 
-  /*
-    function: get_impor_file_types
-              getter
 
+  	/*
+    function: get_import_file_types
     args: -
-
     returns: map
              key: import file type code
              value: import file type verbose description
-
-  */
+	*/
 	function get_import_file_types()
 	{
-     return $this->import_file_types;
-  }
+    	return $this->import_file_types;
+  	}
 
 	/**
+	* 
 	* tallyKeywordResults($keywordResults, $keywordIdNamePairs)
 	*
 	* keywordResultsformat:
@@ -355,45 +353,44 @@ class results
 	* @return map indexed using Keyword ID, where each element is a map with following structure:
 	*
 	*          [keyword_name] => K1
-  *          [total_tc] => 2
-  *          [percentage_completed] => 100.00
-  *          [details] => Array
-  *              (
-  *                  [passed] => Array
-  *                      (
-  *                          [qty] => 1
-  *                          [percentage] => 50.00
-  *                      )
-  *
-  *                  [failed] => Array
-  *                      (
-  *                          [qty] => 1
-  *                          [percentage] => 50.00
-  *                      )
-  *
-  *                  [blocked] => Array
-  *                      (
-  *                          [qty] => 0
-  *                          [percentage] => 0.00
-  *                      )
-  *
-  *                  [unknown] => Array
-  *                      (
-  *                          [qty] => 0
-  *                          [percentage] => 0.00
-  *                      )
-  *
-  *                  [not_run] => Array
-  *                      (
-  *                          [qty] => 0
-  *                          [percentage] => 0.00
-  *                      )
-  *              )
-  *      )
+	*          [total_tc] => 2
+	*          [percentage_completed] => 100.00
+  	*          [details] => Array
+  	*              (
+  	*                  [passed] => Array
+  	*                      (
+  	*                          [qty] => 1
+  	*                          [percentage] => 50.00
+  	*                      )
+  	*
+  	*                  [failed] => Array
+  	*                      (
+  	*                          [qty] => 1
+  	*                          [percentage] => 50.00
+  	*                      )
+  	*
+  	*                  [blocked] => Array
+  	*                      (
+  	*                          [qty] => 0
+  	*                          [percentage] => 0.00
+  	*                      )
+  	*
+  	*                  [unknown] => Array
+  	*                      (
+  	*                          [qty] => 0
+  	*                          [percentage] => 0.00
+  	*                      )
+  	*
+  	*                  [not_run] => Array
+  	*                      (
+  	*                          [qty] => 0
+  	*                          [percentage] => 0.00
+  	*                      )
+  	*              )
+  	*      )
 	*
 	*      IMPORTANT:
 	*                keys on details map dependends of configuration map $g_tc_status_for_ui
-	*
 	*/
 	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs)
 	{
@@ -1402,5 +1399,105 @@ class results
 
 	return $testTitle;
 	}
-} // end class result
+
+	// ----------------------------------------------------------------------------------
+	/**
+	* Function returns prioritized test result counter
+	* 
+	* @param timestamp $milestoneDate - optional milestone deadline
+	* @return array with three priority counters
+	*/
+	public function getPrioritizedResults($milestoneDate = null)
+	{
+		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
+		
+		for($i=1; $i <= 3; $i++)
+		{
+			for($j=1; $j <= 3; $j++)
+			{	
+				$sql = "SELECT COUNT( testplan_tcversions.id )
+						FROM testplan_tcversions JOIN executions ON
+						testplan_tcversions.tcversion_id = executions.tcversion_id
+                        JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id
+						WHERE testplan_tcversions.testplan_id = $this->testPlanID
+						AND executions.testplan_id = $this->testPlanID " .
+						"AND NOT executions.status = 'n'" . 
+			    		"AND tcversions.importance={$j} AND testplan_tcversions.urgency={$i}";
+
+				if( !is_null($milestoneDate) )
+					$sql .= " AND execution_ts < '{$milestoneDate}'";
+
+				$tmpResult = $this->db->fetchOneValue($sql);
+
+				// parse results into three levels of priority
+				if (($i*$j) >= $this->globalCfg->priority_levels[HIGH])
+				{
+					$output[HIGH] = $output[HIGH] + $tmpResult;
+					tLog("getPrioritizedResults> Result-priority HIGH: $i, $j = " . $output[HIGH]);
+				}
+				elseif (($i*$j) >= $this->globalCfg->priority_levels[MEDIUM])
+				{
+					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
+					tLog("getPrioritizedResults> Result-priority MEDIUM: $i, $j = " . $output[MEDIUM]);
+				}
+				else
+				{
+					$output[LOW] = $output[LOW] + $tmpResult;
+					tLog("getPrioritizedResults> Result-priority LOW: $i, $j = " . $output[LOW]);
+				}	
+			}
+		}
+					
+		return $output;
+	}
+
+
+	// ----------------------------------------------------------------------------------
+	/**
+	* Function returns prioritized test case counter (in Test Plan)
+	* 
+	* @return array with three priority counters
+	*/
+	public function getPrioritizedTestCases()
+	{
+		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
+		
+		for($i=1; $i <= 3; $i++)
+		{
+			for($j=1; $j <= 3; $j++)
+			{	
+				// get total count of related TCs
+				$sql = "SELECT COUNT( testplan_tcversions.id ) FROM testplan_tcversions " .
+						" JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id " .
+						" WHERE testplan_tcversions.testplan_id = " . $this->testPlanID .
+			    		" AND tcversions.importance={$j} AND testplan_tcversions.urgency={$i}";
+
+				$tmpResult = $this->db->fetchOneValue($sql);
+
+				// parse results into three levels of priority
+				if (($i*$j) >= $this->globalCfg->priority_levels[HIGH])
+				{
+					$output[HIGH] = $output[HIGH] + $tmpResult;
+					tLog("getPrioritizedTestCases> Result-priority HIGH: $i, $j = " . $output[HIGH]);
+				}
+				elseif (($i*$j) >= $this->globalCfg->priority_levels[MEDIUM])
+				{
+					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
+					tLog("getPrioritizedTestCases> Result-priority MEDIUM: $i, $j = " . $output[MEDIUM]);
+				}
+				else
+				{
+					$output[LOW] = $output[LOW] + $tmpResult;
+					tLog("getPrioritizedTestCases> Result-priority LOW: $i, $j = " . $output[LOW]);
+				}	
+			}
+		}
+					
+		return $output;
+	}
+	
+
+} // ---- end class result -----
+
+
 ?>

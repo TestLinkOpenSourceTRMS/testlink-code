@@ -1,12 +1,17 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.6 2008/06/26 21:46:48 havlat Exp $
+$Id: resultsGeneral.tpl,v 1.7 2008/07/21 09:25:03 havlat Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
 {lang_get var="labels"
-          s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on,
-             title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites'}
+     s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on, 
+       	 th_overall_priority, th_progress, th_expected, th_overall, th_milestone,
+       	 th_tc_priority_high, th_tc_priority_medium, th_tc_priority_low,
+         title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
+         title_gen_test_rep,title_report_tc_priorities,title_report_milestones,
+         title_metrics_x_build'
+}
 
 
 {assign var=this_template_dir value=$smarty.template|dirname}
@@ -14,7 +19,7 @@ Revisions:
 
 <body>
 
-<h1 class="title">{lang_get s='title_gen_test_rep'}</h1>
+<h1 class="title">{$labels.title_gen_test_rep}</h1>
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
@@ -22,6 +27,36 @@ Revisions:
 
 {if $do_report.status_ok}
   
+  	{* ----- results by builds -------------------------------------- *}
+	<h2>{$labels.title_metrics_x_build}</h1>
+
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+  	<tr>
+  		<th style="width: 10%;">{lang_get s='th_build'}</th>
+    	<th>{lang_get s='th_tc_total'}</th>
+      	{foreach item=the_column from=$buildColDefinition}
+        	<th>{$the_column.qty}</th>
+        	<th>{$the_column.percentage}</th>
+    	{/foreach}
+    	<th>{lang_get s='th_perc_completed'}</th>
+  	</tr>
+
+	{foreach item=res from=$buildResults}
+  	<tr>
+  		<td>{$res.build_name|escape}</td>
+  		<td>{$res.total_tc}</td>
+    	{foreach key=status item=the_column from=$buildColDefinition}
+        	<td>{$res.details[$status].qty}</td>
+        	<td>{$res.details[$status].percentage}</td>
+    	{/foreach}
+  		<td>{$res.percentage_completed}</td>
+  	</tr>
+	{/foreach}
+	
+	</table>
+
+  	{* ----- results by test suites -------------------------------------- *}
+
   	{* by TestSuite *}
   	{include file="$this_template_dir/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_top_level_suites
@@ -53,70 +88,104 @@ Revisions:
            args_column_definition=$columnsDefinition->keywords
            args_column_data=$statistics->keywords}
 
-  	{* ----- results by milestones / priorities ----- *}
+
+  	{* ----- results by milestones / priorities -------------------------------------- *}
+
 	{if $session['testprojectOptPriority']}
-		<h2>{lang_get s='title_report_tc_priorities'}</h2>
-	{elseif $statistics->milestones ne ""}
-		<h2>{lang_get s='title_report_milestones'}</h2>
-	{/if}
-	
-	{if $session['testprojectOptPriority'] && $statistics->milestones ne ""}
-			<table class="simple" style="text-align: center;">
+		<h2>{$labels.title_report_tc_priorities}</h2>
+		
+		<table class="simple" style="width: 50%; text-align: center; margin-left: 0px;">
 		<tr>
-		<th>{lang_get s='th_milestone'}</th>
-		<th>{lang_get s='th_tc_priority'}</th>
-		<th>{lang_get s='trep_comp_perc'}</th>
+			<th>{$labels.th_overall_priority}</th>
+			<th>{$labels.th_progress}</th>
 		</tr>
-{*	
- 		{foreach item=res from=$args_column_data}
-  			<tr>
-  			<td>{$res.$args_first_column_key|escape}</td>
-  			<td>{$res.total_tc}</td>
-      		{foreach item=the_column from=$res.details}
-          	<td>{$the_column.qty}</td>
-        	{if $args_show_percentage}
-          	<td>{$the_column.percentage}</td>
-        	{/if}
-      		{/foreach}
-  		<td>{$res.percentage_completed}</td>
+  		<tr>
+			<td>{$labels.th_tc_priority_high}</td>
+ 			<td>{$statistics->priority_overall.3} {$tlCfg->gui_separator_open}
+  					{$statistics->priority_overall.high_percentage} %{$tlCfg->gui_separator_close}</td>
   		</tr>
-  		{/foreach}
-*}		</table>
+  		<tr>
+			<td>{$labels.th_tc_priority_medium}</td>
+  			<td>{$statistics->priority_overall.2} {$tlCfg->gui_separator_open}
+  					{$statistics->priority_overall.medium_percentage} %{$tlCfg->gui_separator_close}</td>
+  		</tr>
+  		<tr>
+			<td>{$labels.th_tc_priority_low}</td>
+  			<td>{$statistics->priority_overall.1} {$tlCfg->gui_separator_open}
+  					{$statistics->priority_overall.low_percentage} %{$tlCfg->gui_separator_close}</td>
+  		</tr>
+		</table>
 
-	{elseif $session['testprojectOptPriority']}
-		<p>TODO: priorities without milestones</p>
+		{if $statistics->milestones ne ""}
 
+			<h2>{$labels.title_report_milestones}</h2>
+
+			<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+			<tr>
+				<th>{$labels.th_milestone}</th>
+				<th>{$labels.th_tc_priority_high}</th>
+				<th>{$labels.th_expected}</th>
+				<th>{$labels.th_tc_priority_medium}</th>
+				<th>{$labels.th_expected}</th>
+				<th>{$labels.th_tc_priority_low}</th>
+				<th>{$labels.th_expected}</th>
+				<th>{$labels.th_overall}</th>
+			</tr>
+ 			{foreach item=res from=$statistics->milestones}
+  			<tr>
+  				<td>{$res.name|escape} {$tlCfg->gui_separator_open} 
+  						{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
+	  			<td class="{if $res.high_incomplete}failed{else}passed{/if}">
+	  					{$res.high_percentage} % {$tlCfg->gui_separator_open} 
+	  					{$res.results.3} {$tlCfg->gui_separator_close}</td>
+	  			<td>{$res.C} %</td>
+	  			<td class="{if $res.medium_incomplete}failed{else}passed{/if}">
+	  					{$res.medium_percentage} % {$tlCfg->gui_separator_open} 
+	  					{$res.results.2} {$tlCfg->gui_separator_close}</td>
+	  			<td>{$res.B} %</td>
+	  			<td class="{if $res.low_incomplete}failed{else}passed{/if}">
+	  					{$res.low_percentage} % {$tlCfg->gui_separator_open} 
+	  					{$res.results.1} {$tlCfg->gui_separator_close}</td>
+	  			<td>{$res.A} %</td>
+				<td>{$res.percentage_completed} %</td>
+  			</tr>
+  			{/foreach}
+		</table>
+
+	{/if}
+		
 	{elseif $statistics->milestones ne ""}
+		<h2>{$labels.title_report_milestones}</h2>
+
 		<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 		<tr>
 			<th>{lang_get s='th_milestone'}</th>
 			<th>{lang_get s='th_tc_total'}</th>
 			<th>{lang_get s='th_completed'}</th>
-			<th>{lang_get s='th_not_run'}</th>
 			<th>{lang_get s='th_progress'}</th>
 			<th>{lang_get s='th_goal'}</th>
 		</tr>
 
  		{foreach item=res from=$statistics->milestones}
   		<tr>
-  			<td>{$res.name|escape} {$tlCfg->gui_separator_open}{$res.target_date|escape}
-  					{$tlCfg->gui_separator_close}</td>
+  			<td>{$res.name|escape} {$tlCfg->gui_separator_open}
+  					{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
   			<td>{$res.tc_total}</td>
   			<td>{$res.tc_completed}</td>
-  			<td>{$res.tc_not_run}</td>
-			<td {if $res.B_incomplete}class="failed"{/if}>{$res.percentage_completed}</td>
-			<td>{$res.B}</td>
+			<td class="{if $res.all_incomplete}failed{else}passed{/if}">
+					{$res.percentage_completed} %</td>
+			<td>{$res.B} %</td>
   		</tr>
   		{/foreach}
 		</table>
 	{/if}
 
-  	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
-
 {else}
   	{$do_report.msg}
 {/if}  
 </div>
+
+<p style="margin: 10px;">{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}</p>
 
 </body>
 </html>

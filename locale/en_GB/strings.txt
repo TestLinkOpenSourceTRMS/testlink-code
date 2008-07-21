@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.331 $
- * @modified $Date: 2008/07/18 14:26:23 $ by $Author: havlat $
+ * @version $Revision: 1.332 $
+ * @modified $Date: 2008/07/21 09:25:02 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1216,7 +1216,7 @@ $TLS_th_run_by = "Run by";
 
 
 // gui/templates/resultsGeneral.tpl
-$TLS_title_gen_test_rep = "General Test Plan Metrics";
+$TLS_title_gen_test_rep = "Test Plan Metrics";
 $TLS_title_report_tc_priorities = "Test results according to test priorities";
 $TLS_title_report_milestones = "Status of Milestones";
 $TLS_th_completed = "Completed";
@@ -1229,7 +1229,7 @@ $TLS_th_progress = "Test progress [%]";
 $TLS_th_goal = "Execution goal [%]";
 $TLS_th_overall_priority = "Overall test priority";
 $TLS_th_expected = "Expected";
-$TLS_th_overall_percentage = "Overall [%]";
+$TLS_th_overall = "Overall";
 
 
 

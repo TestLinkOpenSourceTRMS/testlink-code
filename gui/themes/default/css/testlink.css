@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.10 2008/06/26 21:48:22 havlat Exp $
+$Id: testlink.css,v 1.11 2008/07/21 09:25:04 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -12,30 +12,26 @@ Purpose: Default TestLink CSS
                                        Create a new class for the tables use for:
                                        test suite and test case view.
 
+20080721 - havlatm - removed red_alert, warning_soft, warning_message-> messages,
+					div.notesBox, table.notesBox
 20080502 - havlatm - remove invalid attributes, refactorization (valid standard CSS 2.1)
 20080130 - franciscom - BUGID 1340 - contribution - remove bold on a:hover
 20080127 - franciscom - need to clone some classes to avoid problems due to ext-js css.
 20071227 - franciscom - input.tl-input
 20070915 - franciscom - exec_test_spec
 20070826 - franciscom - exec_tc_title, split of div.test_exec and table.test_exec
-
-20070401 - franciscom -  added padding to:
-                        .login_warning_message, .warning_message
+20070401 - franciscom -  added padding to: .login_warning_message, .warning_message
 20070311 - franciscom - corrected path to navbar.gif
 20070224 - franciscom - added div.user_feedback
-
-20060819 - franciscom - minor adjustemnts
-                        changes in class names
-                        div.menu -> div.menu_bar
-
+20060819 - franciscom - minor adjustemnts, changes in class names, div.menu -> div.menu_bar
 
 IMPORTANT:
 NiftyCube rounding package has problems with I.E. 6 if background color is
 assigned using name (example: white) instead of code (example: #FFF)
 
-*/
+-------------------------------------------------------------------------------------- */
 
-/* ***** GLOBAL HTML ************************************************ */
+/* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
 	background:  	#EEE; 
 	font-family: 	'Trebuchet MS', Verdana, Arial, sans-serif;
@@ -95,6 +91,7 @@ a:hover   {
 	text-decoration: none;
 }
 
+
 /* ***** Menu bar specific ******************************************* */
 div.menu_title {
 	margin-left:	135px;
@@ -119,25 +116,6 @@ select.menu_combo {
 
 
 /* ***** Main page specific ***************************************** */
-div.vertical_menu {
-	background: 	#EEE;
-	font-size:      90%;
-	margin: 		3px;
-	padding: 		2px;
-	padding-bottom:	1px;
-	width:			26%;
-}
-
-div.vertical_menu h2 {
-	background:     #FFC;
-	border-style:	none;
-	color:			black;
-	font-weight:    bold;
-}
-
-div.vertical_menu a {
-	font-weight:    normal;
-}
 
 div.testproject_title{
 	background:		#059;
@@ -147,32 +125,6 @@ div.testproject_title{
 	padding: 		2px;
 }
 
-
-/***** main page table *****/
-table.mainTable{
-	background: 	#EEE;
-	border: 		1px double black;
-	min-width:		200px;
-}
-
-table.mainTable td th {
-	border: 		thin dotted black;
-}
-
-table.mainTable th {
-	background:     #FFC;
-}
-
-table.link_and_exec {
-	background:     #EEE;
-	border: 		1px solid black;
-	margin-bottom:	10px;
-	margin-right:	0px;
-}
-
-table.link_and_exec th {
-	background:     #CCC;
-}
 
 
 /* **** general classes ************************************* */
@@ -185,19 +137,6 @@ div.workBack {
 	padding: 		3px 3px 50px 3px;
 	border-style:	groove;
 	border-width:	thin;
-}
-
-/* for tree menu */
-div.tree {
-	background: 	#EEE;
-	padding: 		3px;
-	border: 		1px solid #808080;
-	margin:			2px;
-	overflow: 		auto; /* BUGID: SF1243287 */
-}
-
-div.groupBtn {
-	padding:		5px;
 }
 
 /* .label is used to magnify label for active objects */
@@ -214,15 +153,62 @@ div.groupBtn {
 }
 
 
+/* **** Navigation, menu and buttons ************************************* */
 
-/* ***** Links to help files ******************************************* */
+/* for tree menu */
+div.tree {
+	background: 	#EEE;
+	padding: 		3px;
+	border: 		1px solid #808080;
+	margin:			3px;
+	overflow: 		auto; /* BUGID: SF1243287 */
+}
+
+div.groupBtn {
+	padding:		5px;
+}
+
+div.vertical_menu {
+	background: 	#EEE;
+	font-size:      90%;
+	margin: 		3px;
+	padding: 		2px;
+	padding-bottom:	1px;
+	width:			250px;
+}
+
+div.vertical_menu h2 {
+	background:     #FFC;
+	border-style:	none;
+	color:			black;
+	font-weight:    bold;
+}
+
+div.vertical_menu a {
+	font-weight:    normal;
+}
+
+div.menu_bubble {
+  background:		#c8dce8;
+  padding:			3px;
+}
+
+div.menu_bubble h3{
+  margin: 0px 0px 8px 8px;
+  /* border-bottom: 1px solid #005498; */
+}
+
+
+
+/* ***** Help ***************************************************************************
+ * This allows link help from text e.g. instruction
+ * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">
+ * 			Test Specification</span>
+ */
 img.help {
 	vertical-align: top;
 	float:			right;
 }
-/* This allows link help from text e.g. instruction
- * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">Test Specification</span>
- */
 span.help
 {
 	cursor: 		help;
@@ -246,67 +232,37 @@ span.help
 
 /* ***** Messages ******************************************************* */
 /* show results of SQL actions or important information for user */
-div.error, .info {
+.error, .info, .warning, div.user_feedback {
 	font-size:		110%;
 	text-align:		center;
-	color:			red;
 	font-weight:    bold;
-	padding: 		2px;
+	padding: 		3px;
 }
 
-/* 20061229 - franciscom */
-div.warning_soft
-{
-	text-align:		center;
-	background-color: white;
-	color:			red;
-	font-weight:    bold;
-	padding: 		2px;
+.error, .warning {
+	color:			#B22222; /* firebrick (red) */
 }
 
-div.user_feedback{
-	font-size:		110%;
-	text-align:		center;
+.info, div.user_feedback{
 	color:			black;
-	font-weight:    bold;
-	padding: 		2px;
 }
 
-div.notesBox, table.notesBox {
-	background: 	#FFC;
-	border: 		thin dashed black;
-	color: 			black;
-	margin: 		12px;
-	padding: 		12px;
-	width: 97%;
+div.messages {
+	background-color:	#059;
+	color:				white;
+	margin: 			3px;
+	padding:			3px;
 }
 
+/* TODO havlatm: consider to remove (used only in probably obsolete show_exec_notes.tpl) */
 textarea.tcDesc {
 	background: 	white;
 	border: 		medium solid #808080;
 }
 
-.warning_message {
-background-color:#059;
-color:white;
-padding:4px;
-}
 
-.login_warning_message {
-background-color:#059;
-color:white;
-padding:4px;
-}
-
-
-/* 20070204 - franciscom */
-.red_alert {
-background-color:#990000;
-color:white;
-}
-
-
-/***** tabbed menu *********************************************** */
+/***** tabbed menu ******************************************************************* */
+/* TODO havlatm: remove tabbed menu to be compliant with other design */
 /* add under h1 tag */
 
 div.tabMenu {
@@ -336,17 +292,18 @@ span.unselected a, span.unselected a:visited {
 
 
 
-/***** Tables **********************************************************
+/***** Tables ***************************************************************************
 *
 * Standard table classes:
 *
-* "common" 		- view tables
-* "simple" 		- forms
-* "smallGrey" 	- options / filters
+* "common" 		- often used for view arrays
+* "simple" 		- often used for forms
+* "smallGrey" 	- often used for options / filters
 * "invisible" 	- no borders
+* !!! Do not add new table kinds !!! (there is bunch of wild table definitions below)
 */
 
-/* Common */
+/* ***** Common ********************* */
 table.common {
 	background:     #EEE;
 	border: 		1px solid black;
@@ -375,7 +332,8 @@ table.common caption, table.smallGrey caption {
 	font-weight:    bold;
 }
 
-/* Simple Table (often used to show data) */
+
+/* ***** Simple Table (often used to show data) ***************** */
 table.simple {
 	background:     #EEE;
 	border: 		thin solid black;
@@ -383,8 +341,6 @@ table.simple {
 	margin:			5px;
 	width:			90%;
 }
-
-
 
 table.simple caption {
 	background:     #CCC;
@@ -411,8 +367,32 @@ table.invisible {
 	width:			auto;
 }
 
+table.mainTable{
+	background: 	#EEE;
+	border: 		1px double black;
+	min-width:		200px;
+}
 
-/* Execution History */
+table.mainTable td th {
+	border: 		thin dotted black;
+}
+
+table.mainTable th {
+	background:     #FFC;
+}
+
+table.link_and_exec {
+	background:     #EEE;
+	border: 		1px solid black;
+	margin-bottom:	10px;
+	margin-right:	0px;
+}
+
+table.link_and_exec th {
+	background:     #CCC;
+}
+
+/* *****  Table Execution History ********* */
 table.exec_history {
 	background:     #EEE;
 	border: 		thin solid black;
@@ -427,21 +407,18 @@ table.exec_history th {
 	padding:		2px;
 }
 
-/* Martin: @TODO REMOVE! do not use tables to structure page */
+
+/* >>>> Martin: @TODO REMOVE! do not use tables to structure page <<<<<<< */
 table.notesBox td
 {
 	vertical-align: top;
 }
-
-
 td.checkbox_cell{
 	width: 			1px;
 }
-
 td.tcase_id_cell{
 	width: 			25px;
 }
-
 table.srs_view td {
 	border: 		1px solid black;
 }
@@ -455,8 +432,7 @@ table.test_exec {
 
 
 
-
-/* ***** Execution & Results ****************************************** */
+/* ***** Execution & Results ********************************************************* */
 div.passed, div.failed, div.blocked, div.not_run {
 	color: 			white;
 	margin: 		8px;
@@ -513,7 +489,8 @@ div.not_run {
 
 
 
-/* ***** MISC ********************************************* */
+/* ***** MISC ************************************************************************ */
+/* Please, be carefull to be consistent if you add a new definition */
 
 /* execution boxes (result, test scenario, notes) */
 div.resultBox {
@@ -561,14 +538,15 @@ div.fullpage_head {
 
 /* For the HTML forms */
 div.forms {
-	text-align: left;
-	margin: 20%;
-	margin-top: 20px;
-	background: #CCDDEE;
-	padding: 25px;
-	border: 1px;
+	text-align: 	left;
+	margin: 		20%;
+	margin-top: 	20px;
+	background: 	#CDE;
+	padding: 		25px;
+	border: 		1px;
 }
 
+/* Martin: @TODO clean-up required */
 .hint, .time_stamp_creation, .time_stamp_last_change  {
 	font-style: 	italic;
 }
@@ -607,8 +585,6 @@ div.exec_test_spec {
 	padding: 		12px;
 }
 
-
-
 .custom_field_container {
   border: thin solid white;
   padding: 5px;
@@ -619,17 +595,6 @@ div.exec_test_spec {
   padding: 5px;
 }
 
-
-/* 20070523 */
-div.menu_bubble {
-  background:#c8dce8;
-  padding:2px;
-}
-
-div.menu_bubble h3{
-  margin: 0px 0px 8px 8px;
-  /* border-bottom: 1px solid #005498; */
-}
 
 .clickable_icon
 {
@@ -646,7 +611,7 @@ div.menu_bubble h3{
   vertical-align: 	middle;
 }
 
-
+/* TODO havlatm: title must be header markup */
 .exec_tc_title {
 	background:		#059;
 	color:			white;
@@ -699,8 +664,8 @@ th.testlink, td.testlink, tr.testlink td {
 }
 
 
-/* ***************************************************************************** */
-/* Taken from ext js 2.0, and adapted                                            */
+/* *********************************************************************************** */
+/* Taken from ext js 2.0, and adapted */
 
 .x-tl-panel{border-style:solid;border-color:#99bbe8;border-width:0;}
 .x-tl-panel-header{overflow:hidden;color:#15428b;font:bold 11px tahoma,arial,verdana,sans-serif;
@@ -740,4 +705,5 @@ th.testlink, td.testlink, tr.testlink td {
 .x-tl-panel-bwrap{overflow:hidden;}
 .x-tl-panel-body{overflow:hidden;}
 .x-tl-panel-collapsed .x-resizable-handle{display:none;}
-/* ----------------------------------------------------------------------------- */
+
+/* ----- END ------------------------------------------------------------------------- */

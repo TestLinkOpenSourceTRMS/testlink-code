@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/06/26 21:47:49 $ by $Author: havlat $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2008/07/21 09:25:04 $ by $Author: havlat $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -49,7 +49,7 @@ $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
 
 
 // ----------------------------------------------------------------------------
-/** Top Level Suites */
+
 $topLevelSuites = $re->getTopLevelSuites();
 
 if( is_null($topLevelSuites) )
@@ -60,11 +60,13 @@ if( is_null($topLevelSuites) )
 	tLog('Overall Metrics page: no test cases defined');
 }
 
-else //if( $do_report['status_ok'] )
+// ----------------------------------------------------------------------------
+else // do report
 {
 	$do_report['status_ok']=1;
 	$do_report['msg']='';
-	
+
+
   	$mapOfAggregate = $re->getAggregateMap();
   	$arrDataSuite = null;
   	$arrDataSuiteIndex = 0;
@@ -78,8 +80,8 @@ else //if( $do_report['status_ok'] )
       			
       		$element['tsuite_name'] = $suiteNameID['name'];
       		$element['total_tc'] = $results['total'];
-      		$element['percentage_completed'] = get_completed_percentage($results['total'], 
-      				$results['not_run']);
+      		$element['percentage_completed'] = get_percentage($results['total'], 
+      				$results['total'] - $results['not_run']);
 
         	unset($results['total']);
         	foreach($results as $key => $value)
@@ -104,40 +106,106 @@ else //if( $do_report['status_ok'] )
       	$columnsDefinition->testsuites = $dummy['details'];
   	} // end if 
 
+	// ----------------------------------------------------------------------------
+  	/* BUILDS REPORT */
+
+	$colDefiniton=null;
+	$results=null;
+	if( $do_report['status_ok'] )
+	{
+  		$results = $re->getAggregateBuildResults();
+  		if ($results != null) 
+  		{
+      		// Get labels
+      		$resultsCfg=config_get('results');
+      		$labels=$resultsCfg['status_label'];
+      
+      		// I will add not_run if not exists
+		  	$keys2display=array('not_run' => 'not_run');
+		  	foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
+		  	{
+		      	if( $key != 'not_run')
+		      	{
+		          $keys2display[$key]=$key;  
+		      	}  
+		  	}
+      
+      		$colDefinition=array();
+      		foreach($keys2display as $status_verbose => $value)
+      		{
+            	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
+                          lang_get($status_verbose); 
+            
+            	$colDefinition[$status_verbose]['qty']=$l18n_label;
+            	$colDefinition[$status_verbose]['percentage']='[%]';
+      		}
+  		}    
+	}  
+
 
 	// ----------------------------------------------------------------------------
   	/* MILESTONE & PRIORITY REPORT */
-	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
 	$planMetrics = $re->getTotalsForPlan();
-	foreach($milestonesList as $item)
+
+	// collect prioritized results for whole Test Plan
+	if ($_SESSION['testprojectOptPriority'])
 	{
+		tLog('collect prioritized results for whole Test Plan','ERROR');
+		$statistics->priority_overall = $re->getPrioritizedResults();
+		$statistics->priority_overall['high_percentage'] = get_percentage($planMetrics['total'],
+				$statistics->priority_overall[HIGH]); 
+		$statistics->priority_overall['medium_percentage'] = get_percentage($planMetrics['total'],
+				$statistics->priority_overall[MEDIUM]); 
+		$statistics->priority_overall['low_percentage'] = get_percentage($planMetrics['total'],
+				$statistics->priority_overall[LOW]); 
+	}
+
+	// collect milestones
+	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
+
+	// get test results for milestones
+	if (!empty($milestonesList))
+	{
+	  $arrPrioritizedTCs = $re->getPrioritizedTestCases();
+		
+	  foreach($milestonesList as $item)
+	  {
 		$item['tc_total'] = $planMetrics['total'];
-		$item['tc_not_run'] = $planMetrics['not_run'];
-		$item['tc_completed'] = $planMetrics['total'] - $planMetrics['not_run'];
-		$item['percentage_completed'] = get_completed_percentage($planMetrics['total'], 
-				$planMetrics['not_run']);
-		if ($item['percentage_completed'] < $item['B'])
-			$item['B_incomplete'] = ON;
+		$item['results'] = $re->getPrioritizedResults($item['target_date']);
+
+		$item['low_percentage'] = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
+		$item['medium_percentage'] = get_percentage($arrPrioritizedTCs[MEDIUM], $item['results'][MEDIUM]); 
+		$item['high_percentage'] = get_percentage($arrPrioritizedTCs[HIGH], $item['results'][HIGH]); 
+		$item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
+		$item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
+
+		if ($item['low_percentage'] < $item['A'])
+			$item['low_incomplete'] = ON;
 		else
-			$item['B_incomplete'] = OFF;
+			$item['low_incomplete'] = OFF;
+		if ($item['medium_percentage'] < $item['B'])
+			$item['medium_incomplete'] = ON;
+		else
+			$item['medium_incomplete'] = OFF;
+		if ($item['high_percentage'] < $item['C'])
+			$item['high_incomplete'] = ON;
+		else
+			$item['high_incomplete'] = OFF;
+		if ($item['percentage_completed'] < $item['B'])
+			$item['all_incomplete'] = ON;
+		else
+			$item['all_incomplete'] = OFF;
+
 		$item['B'] = number_format($item['B'], 2);
 		
 		// save array
 		$statistics->milestones[$item['target_date']] = $item;
+	  } // end foreach
 	}
 
-/*
- *   			<td>{$res.tc_completed}</td>
-  			<td>{$res.tc_not_run}</td>
-			<td>{$res.percentage_completed}</td>
+	//debug	
+//	$arrPriority = $statistics->milestones;
 
- * {$aaa}	Array (5)
-total => 2
-not_run => 2
-passed => 0
-failed => 0
-blocked => 0
- */
   
 	// ----------------------------------------------------------------------------
 	/* Keywords report */
@@ -171,11 +239,12 @@ blocked => 0
 
 // ----------------------------------------------------------------------------
 $smarty = new TLSmarty;
-//$smarty->assign('aaa', $ccc);
+//$smarty->assign('aaa', $arrPriority);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('tplan_name', $tplan_info['name']);
-//$smarty->assign('milestonesList', $milestonesList);
 $smarty->assign('columnsDefinition', $columnsDefinition);
+$smarty->assign('buildColDefinition', $colDefinition);
+$smarty->assign('buildResults',$results);
 $smarty->assign('statistics', $statistics);
 
 displayReport($template_dir . 'resultsGeneral', $smarty, $args->format);
@@ -204,15 +273,21 @@ function init_args()
     return $args;
 }
 
-function get_completed_percentage($total, $not_run)
+/**
+ * calculate percentage and format
+ * 
+ * @param int $total Total count
+ * @param int $parameter a parameter count
+ * @return string formatted percentage
+ */
+function get_percentage($total, $parameter)
 {
     if ($total > 0) 
-   		$percentCompleted = (($total - $not_run) / $total) * 100;
+   		$percentCompleted = ($parameter / $total) * 100;
 	else 
    		$percentCompleted = 0;
 
-	$percentCompleted = number_format($percentCompleted,2);
-	return $percentCompleted;
+	return number_format($percentCompleted,1);
 	
 }
 

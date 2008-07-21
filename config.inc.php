@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.186 $
- * @modified $Date: 2008/07/05 14:17:45 $ by $Author: franciscom $
+ * @version $Revision: 1.187 $
+ * @modified $Date: 2008/07/21 07:46:47 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -170,8 +170,8 @@ $tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
  * Configure if individual logging data stores are enabled of disabled
  * Possibile values to identify loggers: 'db','file'
  *		$g_loggerCfg=null; all loggers enabled (default) 
- * 		$g_loggerCfg['db']['enabled']=true/false;
- * 		$g_loggerCfg['file']['enabled']=true/false;
+ * 		$g_loggerCfg['db']['enable']=true/false;
+ * 		$g_loggerCfg['file']['enable']=true/false;
  */
 $g_loggerCfg = null;
 

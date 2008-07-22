@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/07/19 17:12:20 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/07/22 09:27:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
+ * 20080722 - franciscom -  problems with MSSQL and ADODB_FETCH_ASSOC
  * 20080315 - franciscom -  due to problems with PostGres with $ADODB_COUNTRECS=FALSE;
  *                          return to default mode ($ADODB_COUNTRECS=TRUE;)
  *

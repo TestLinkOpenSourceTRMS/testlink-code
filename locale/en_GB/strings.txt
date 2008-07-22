@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.333 $
- * @modified $Date: 2008/07/22 09:07:33 $ by $Author: franciscom $
+ * @version $Revision: 1.334 $
+ * @modified $Date: 2008/07/22 09:25:43 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1507,7 +1507,7 @@ $TLS_href_admin_modules   = "System Configuration";
 $TLS_title_requirements = "Requirements";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_product_mgmt = "Test Project";
-
+$TLS_href_plan_define_priority="Test Plan priority";
 
 // gui/templates/mainPage_right.tpl
 $TLS_filter_tp_by_product = "Filter Test Plans by Test Project";

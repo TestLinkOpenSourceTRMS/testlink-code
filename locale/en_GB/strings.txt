@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.332 $
- * @modified $Date: 2008/07/21 09:25:02 $ by $Author: havlat $
+ * @version $Revision: 1.333 $
+ * @modified $Date: 2008/07/22 09:07:33 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -98,6 +98,10 @@ $TLS_testcaseversion='Test Case Version';
 $TLS_add 			= "add";
 $TLS_create 		= "create";
 $TLS_remove 		= "remove";
+
+$TLS_high = "High";
+$TLS_medium = "Medium";
+$TLS_low = "Low";
 
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
@@ -1325,11 +1329,12 @@ $TLS_title_results_import_to="Import results";
 $TLS_title_plan_urgency = "Test urgency for the Test suite";
 $TLS_th_urgency = "Urgency";
 $TLS_label_set_urgency = "Set test urgency: ";
-$TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. Medium test urgency is default value.";
+$TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. " .
+                           "Medium test urgency is default value.";
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
 $TLS_feedback_urgency_ok = "Test urgency was modified.";
 
-
+$TLS_testsuite_is_empty='Test suite has no test cases. Nothing can be done';
 
 // gui/templates/tcPrintNavigator.tpl
 $TLS_caption_print_opt = "Print Options";

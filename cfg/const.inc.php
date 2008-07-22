@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/06/26 21:44:14 $ by $Author: havlat $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/07/22 08:58:00 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -451,13 +451,26 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 /** [Priority, Urgency, Importance] */
 // Priority = Importance x Urgency(Risk)
 $tlCfg->priority_levels = array( 
-	HIGH => 6, // high priority include 6 and more
+	  HIGH => 6, // high priority include 6 and more
     MEDIUM => 3,
     LOW => 1
 );
 
 $tlCfg->testcase_importance_default = MEDIUM;
 $tlCfg->testcase_urgency_default = MEDIUM;
+
+
+
+/** 
+ * Used to get localized string to show to users
+ * key: numeric code
+ * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
+ */
+$tlCfg->urgency['code_label'] = array(
+HIGH => 'high',
+MEDIUM => 'medium',
+LOW => 'low'
+);
 
 
 // --------------------------------------------------------------------------------------

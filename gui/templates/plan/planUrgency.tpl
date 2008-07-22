@@ -1,16 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.1 2008/07/18 14:26:23 havlat Exp $
+$Id: planUrgency.tpl,v 1.2 2008/07/22 08:58:09 franciscom Exp $
 
-Purpose: smarty template - Show existing builds
+Purpose: smarty template - manage test case urgency
 
-Revision:
-	None
+Revision: 20080721 - franciscom 
+          1. if test suite has no test case, then give message and remove all controls
+          2. use labels instead of code to display urgency
+          3. remove feedback -> user get feedback seeing his/her changes has been applied
+          
 ---------------------------------------------------------------------------- *}
 {assign var="ownURL" value="lib/plan/planUrgency.php"}
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, btn_low, btn_medium, btn_high,
-             label_set_urgency, urgency_description'}
+             label_set_urgency, urgency_description,testsuite_is_empty'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -19,8 +22,8 @@ Revision:
 	 {$tlCfg->gui_title_separator_1}{$node_name}</h1>
 
 <div class="workBack">
-{include file="inc_feedback.tpl"}
 
+{if $listTestCases != ''}
 	<div class="groupBtn">
     <form method="post" action="{$ownURL}" id="set_urgency">
 	<span>{$labels.label_set_urgency}
@@ -44,7 +47,8 @@ Revision:
 	{foreach item=res from=$listTestCases}
 	<tr>
   			<td style="text-align: left;">{$res.name|escape}</td>
-  			<td>{$res.urgency}</td>
+  			{assign var=urgencyCode value=$res.urgency}
+  			<td>{lang_get s=$gui->urgencyCfg.code_label[$urgencyCode]}</td>
 	</tr>
 	{/foreach}
 	</table>
@@ -54,6 +58,10 @@ Revision:
 
 
 	<p>{$labels.urgency_description}</p>
+
+{else}
+	<p>{$labels.testsuite_is_empty}</p>
+{/if}
 
 </div>
 

@@ -15,7 +15,7 @@ pre {
 <body bgcolor="#ffffff" text="black">
 
 <h2>ADOdb Library for PHP</h2>
-<p>V5.02 24 Sept 2007  (c) 2000-2007 John Lim (jlim#natsoft.com)</p>
+<p>V5.04a 25 Mar 2008  (c) 2000-2008 John Lim (jlim#natsoft.com)</p>
 <p><font size="1">This software is dual licensed using BSD-Style and LGPL. This 
   means you can use it in compiled proprietary and commercial products.</font></p>
   
@@ -328,14 +328,14 @@ a </a><a href="dsnsupport">DSN</a> since ADOdb 4.51. Exceptions to this are list
 <h4>PDO</h4>
 <p>PDO, which only works with PHP5, accepts a driver specific connection string:
 <pre>
-	$conn = NewADConnection('pdo');
+	$conn = NewADOConnection('pdo');
 	$conn->Connect('mysql:host=localhost',$user,$pwd,$mydb);
 	$conn->Connect('mysql:host=localhost;dbname=mydb',$user,$pwd);
 	$conn->Connect("mysql:host=localhost;dbname=mydb;username=$user;password=$pwd");
 </pre>
 <p>The DSN mechanism is also supported:
 <pre>
-	$conn = NewADConnection("pdo_mysql://user:pwd@localhost/mydb?persist"); # persist is optional
+	$conn = NewADOConnection("pdo_mysql://user:pwd@localhost/mydb?persist"); # persist is optional
 </pre>
 <h4>PostgreSQL</h4>
 <p>PostgreSQL 7 and 8 accepts connections using: </p>
@@ -2118,7 +2118,7 @@ row3: Rose, Flower </font></p>
   Since 4.96, we return null if no records were found.</font></p>
 <p><font><b>GetRow<a name="getrow"></a>($sql,$inputarr=false)</b></font></p>
 <p><font>Executes the SQL and returns the first row as an array. The recordset and remaining 
-  rows are discarded for you automatically. If an error occurs, false is returned.</font></p>
+  rows are discarded for you automatically. If no data is found, an empty recordset is returned. If an error occurs, false is returned.</font></p>
 <p><font><b>GetAll<a name="getall"></a>($sql,$inputarr=false)</b></font></p>
 
 <p>Executes the SQL and returns the all the rows as a 2-dimensional 
@@ -2928,6 +2928,29 @@ of MySQL.</font></p>
   PHP</a>. </font></p>
 
 <h2><font>Change Log<a name="Changes"></a><a name="changes"></a><a name="changelog"></a></font></h2>
+
+<p><a name="4.98"></a><b>4.98/5.04 13 Feb 2008</b>
+<p> Fixed adodb_mktime problem which causes a performance bottleneck in $hrs.
+<p>Added mysqli support to adodb_getcount().
+<p>Removed MYSQLI_TYPE_CHAR from MetaType().
+
+<p><a name="4.97"></a><b>4.97/5.03 22 Jan 2008</b>
+<p>Active Record: $ADODB_ASSOC_CASE=1 did not work properly. Fixed. 
+<p>Modified Fields() in recordset class to support display null fields in FetchNextObject().
+<p>In ADOdb5, active record implementation, we now support column names with spaces in them - we autoconvert the spaces to _ using
+ __set(). Thx Daniel Cook. http://phplens.com/lens/lensforum/msgs.php?id=17200
+<p>Removed $arg3 from mysqli SelectLimit. See http://phplens.com/lens/lensforum/msgs.php?id=16243. Thx Zsolt Szeberenyi.
+<p>Changed oci8 FetchField, which returns the max_length of BLOB/CLOB/NCLOB as 4000 (incorrectly) to -1.
+<p>CacheExecute would sometimes return an error on Windows if it was unable to lock the cache file. This is harmless
+and has been changed to a warning that can be ignored. Also adodb_write_file() code revised.
+<p>ADOdb perf code changed to only log sql if execution time >= 0.05 seconds. New $ADODB_PERF_MIN variable holds min sql timing. 
+Any SQL with timing value below this and is not causing an error is not logged.
+<p>Also adodb_backtrace() now traces 1 level deeper as sometimes actual culprit function is not displayed.
+<p>Fixed a group by problem with adodb_getcount() for db's which are not postgres/oci8 based.
+<p>Changed mssql driver Parameter() from SQLCHAR to SQLVARCHAR: case 'string': $type = SQLVARCHAR; break.
+<p>Problem with mssql driver in php5 (for adodb 5.03) because some functions are not static. Fixed.
+
+
 <p><a name="4.96"></a><b>4.96/5.02 24 Sept 2007</b>
 p>Fix adodb count optimisation. Preg_match did not work properly. Also rewrote the ORDER BY stripping code in _adodb_getcount(), adodb-lib.inc.php.
 <p>SelectLimit for oci8 not optimal for large recordsets when offset=0. Changed $nrows check.

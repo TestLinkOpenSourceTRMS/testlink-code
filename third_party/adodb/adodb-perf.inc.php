@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.04a 25 Mar 2008   (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. See License.txt. 
@@ -21,6 +21,10 @@ include_once(ADODB_DIR.'/tohtml.inc.php');
 
 define( 'ADODB_OPT_HIGH', 2);
 define( 'ADODB_OPT_LOW', 1);
+
+global $ADODB_PERF_MIN;
+$ADODB_PERF_MIN = 0.05; // log only if >= minimum number of secs to run
+
 
 // returns in K the memory of current process, or 0 if not known
 function adodb_getmem()
@@ -165,7 +169,13 @@ function adodb_log_sql(&$connx,$sql,$inputarr)
 			if ($dbT == 'db2') $arr['f'] = (float) $arr['f'];
 			$isql = "insert into $perf_table (created,sql0,sql1,params,tracer,timer) values( $d,?,?,?,?,?)";
 		}
-		$ok = $conn->Execute($isql,$arr);
+		
+		global $ADODB_PERF_MIN;
+		if ($errN != 0 || $time >= $ADODB_PERF_MIN) {
+			$ok = $conn->Execute($isql,$arr);
+		} else
+			$ok = true;
+		
 		$conn->debug = $saved;
 		
 		if ($ok) {
@@ -694,6 +704,8 @@ Committed_AS:   348732 kB
 	else $form = "<td>&nbsp;</td>";
 	
 	$allowsql = !defined('ADODB_PERF_NO_RUN_SQL');
+	global $ADODB_PERF_MIN;
+	$app .= " (Min sql timing \$ADODB_PERF_MIN=$ADODB_PERF_MIN secs)";
 	
 	if  (empty($_GET['hidem']))
 	echo "<table border=1 width=100% bgcolor=lightyellow><tr><td colspan=2>

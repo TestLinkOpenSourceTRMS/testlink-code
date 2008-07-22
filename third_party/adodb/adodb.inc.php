@@ -14,7 +14,7 @@
 /**
 	\mainpage 	
 	
-	 @version V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
+	 @version V5.04a 25 Mar 2008   (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved.
 
 	Released under both BSD license and Lesser GPL library license. You can choose which license
 	you prefer.
@@ -169,7 +169,7 @@
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'V5.02 24 Sept 2007  (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved. Released BSD & LGPL.';
+		$ADODB_vers = 'V5.04a 25 Mar 2008  (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved. Released BSD & LGPL.';
 	
 		/**
 		 * Determines whether recordset->RecordCount() is used. 
@@ -1220,7 +1220,7 @@
 	* @param [offset] 	offset by number of rows (optional)
 	* @return 			the new recordset
 	*/
-	function _rs2rs(&$rs,$nrows=-1,$offset=-1,$close=true)
+	function &_rs2rs(&$rs,$nrows=-1,$offset=-1,$close=true)
 	{
 		if (! $rs) {
 			$false = false;
@@ -1331,7 +1331,7 @@
 	
 	function GetCol($sql, $inputarr = false, $trim = false)
 	{
-	  	$rv = false;
+	  	
 	  	$rs = $this->Execute($sql, $inputarr);
 	  	if ($rs) {
 			$rv = array();
@@ -1347,15 +1347,16 @@
 		   		}
 			}
 	   		$rs->Close();
-	  	}
+	  	} else
+			$rv = false;
 	  	return $rv;
 	}
 	
 	function CacheGetCol($secs, $sql = false, $inputarr = false,$trim=false)
 	{
-	  	$rv = false;
 	  	$rs = $this->CacheExecute($secs, $sql, $inputarr);
 	  	if ($rs) {
+			$rv = array();
 			if ($trim) {
 				while (!$rs->EOF) {
 					$rv[] = trim(reset($rs->fields));
@@ -1368,7 +1369,9 @@
 		   		}
 			}
 	   		$rs->Close();
-	  	}
+	  	} else
+			$rv = false;
+			
 	  	return $rv;
 	}
 	
@@ -1487,8 +1490,9 @@
 	{
 		$rs = $this->CacheExecute($secs2cache,$sql,$inputarr);
 		if ($rs) {
-			$arr = false;
 			if (!$rs->EOF) $arr = $rs->fields;
+			else $arr = array();
+			
 			$rs->Close();
 			return $arr;
 		}
@@ -1700,8 +1704,8 @@
 			
 		if ($createdir && $notSafeMode && !file_exists($dir)) {
 			$oldu = umask(0);
-			if (!mkdir($dir,0771)) 
-				if ($this->debug) ADOConnection::outp( "Unable to mkdir $dir for $sql");
+			if (!@mkdir($dir,0771)) 
+				 if(!is_dir($dir) && $this->debug) ADOConnection::outp( "Unable to mkdir $dir for $sql");
 			umask($oldu);
 		}
 		return $dir.'/adodb_'.$m.'.cache';
@@ -1719,8 +1723,6 @@
 	 */
 	function CacheExecute($secs2cache,$sql=false,$inputarr=false)
 	{
-
-			
 		if (!is_numeric($secs2cache)) {
 			$inputarr = $sql;
 			$sql = $secs2cache;
@@ -1756,6 +1758,7 @@
 			$rs = false;
 			$this->numCacheMisses += 1;
 		}
+	
 		if (!$rs) {
 		// no cached rs found
 			if ($this->debug) {
@@ -1774,17 +1777,27 @@
 						$fn($this->databaseType,'CacheExecute',-32000,"Cache write error",$md5file,$sql,$this);
 					if ($this->debug) ADOConnection::outp( " Cache write error");
 				}
-			} else
-			if ($rs) {
+			} else if ($rs) {
 				$eof = $rs->EOF;
 				$rs = $this->_rs2rs($rs); // read entire recordset into memory immediately
 				$txt = _rs2serialize($rs,false,$sql); // serialize
-		
-				if (!adodb_write_file($md5file,$txt,$this->debug)) {
-					if ($fn = $this->raiseErrorFn) {
-						$fn($this->databaseType,'CacheExecute',-32000,"Cache write error",$md5file,$sql,$this);
+	
+				$ok = adodb_write_file($md5file,$txt,$this->debug);
+				if (!$ok) {
+					if ($ok === false) {
+						$em = 'Cache write error';
+						$en = -32000;
+						
+						if ($fn = $this->raiseErrorFn) {
+							$fn($this->databaseType,'CacheExecute', $en, $em, $md5file,$sql,$this);
+						}
+					} else {
+						$em = 'Cache file locked warning';
+						$en = -32001;
+						// do not call error handling for just a warning
 					}
-					if ($this->debug) ADOConnection::outp( " Cache write error");
+					
+					if ($this->debug) ADOConnection::outp( " ".$em);
 				}
 				if ($rs->EOF && !$eof) {
 					$rs->MoveFirst();
@@ -1805,8 +1818,8 @@
 			}
 		// ok, set cached object found
 			$rs->connection = $this; // Pablo suggestion
-			if ($this->debug){ 
-					
+			if ($this->debug){ 			
+				if ($this->debug == 99) adodb_backtrace();
 				$inBrowser = isset($_SERVER['HTTP_USER_AGENT']);
 				$ttl = $rs->timeCreated + $secs2cache - time();
 				$s = is_array($sql) ? $sql[0] : $sql;
@@ -3958,7 +3971,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			$mode = isset($this->adodbFetchMode) ? $this->adodbFetchMode : $this->fetchMode;
 			
 			if ($mode & ADODB_FETCH_ASSOC) {
-				if (!isset($this->fields[$colname])) $colname = strtolower($colname);
+				if (!isset($this->fields[$colname]) && !is_null($this->fields[$colname])) $colname = strtolower($colname);
 				return $this->fields[$colname];
 			}
 			if (!$this->bind) {
@@ -4107,31 +4120,31 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE',2);
 		$errorfn = (defined('ADODB_ERROR_HANDLER')) ? ADODB_ERROR_HANDLER : false;
 		$false = false;
-		if ($at = strpos($db,'://')) {
+		if (($at = strpos($db,'://')) !== FALSE) {
 			$origdsn = $db;
-			if (PHP_VERSION < 5) $dsna = @parse_url($db);
-			else {
-				$fakedsn = 'fake'.substr($db,$at);
+			$fakedsn = 'fake'.substr($origdsn,$at);
+			if (($at2 = strpos($origdsn,'@/')) !== FALSE) {
+				// special handling of oracle, which might not have host
+				$fakedsn = str_replace('@/','@adodb-fakehost/',$fakedsn);
+			}
 				$dsna = @parse_url($fakedsn);
-				$dsna['scheme'] = substr($db,0,$at);
+			if (!$dsna) {
+				return $false;
+			}
+				$dsna['scheme'] = substr($origdsn,0,$at);
+			if ($at2 !== FALSE) {
+				$dsna['host'] = '';
+			}
 			
-				if (strncmp($db,'pdo',3) == 0) {
-					$sch = explode('_',$dsna['scheme']);
-					if (sizeof($sch)>1) {
-						$dsna['host'] = isset($dsna['host']) ? rawurldecode($dsna['host']) : '';
-						$dsna['host'] = rawurlencode($sch[1].':host='.rawurldecode($dsna['host']));
-						$dsna['scheme'] = 'pdo';
-					}
+			if (strncmp($origdsn,'pdo',3) == 0) {
+				$sch = explode('_',$dsna['scheme']);
+				if (sizeof($sch)>1) {
+					$dsna['host'] = isset($dsna['host']) ? rawurldecode($dsna['host']) : '';
+					$dsna['host'] = rawurlencode($sch[1].':host='.rawurldecode($dsna['host']));
+					$dsna['scheme'] = 'pdo';
 				}
 			}
 			
-			if (!$dsna) {
-				// special handling of oracle, which might not have host
-				$db = str_replace('@/','@adodb-fakehost/',$db);
-				$dsna = parse_url($db);
-				if (!$dsna) return $false;
-				$dsna['host'] = '';
-			}
 			$db = @$dsna['scheme'];
 			if (!$db) return $false;
 			$dsna['host'] = isset($dsna['host']) ? rawurldecode($dsna['host']) : '';

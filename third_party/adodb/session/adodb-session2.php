@@ -2,7 +2,7 @@
 
 
 /*
-V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.02 24 Sept 2007   (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved.
          Contributed by Ross Smith (adodb@netebb.com). 
   Released under both BSD license and Lesser GPL library license.
   Whenever there is any discrepancy between the two licenses,
@@ -303,7 +303,7 @@ class ADODB_Session {
 
 			$conn = ADODB_Session::_conn();
 			if ($conn) {
-				$conn->debug = $_debug;
+				#$conn->debug = $_debug;
 			}
 			$set = true;
 		} elseif (!$set) {
@@ -655,7 +655,7 @@ class ADODB_Session {
 
 		If the data has not been modified since the last read(), we do not write.
 	*/
-	static function write($key, $val) 
+	static function write($key, $oval) 
 	{
 	global $ADODB_SESSION_READONLY;
 	
@@ -674,7 +674,7 @@ class ADODB_Session {
 		if (!$conn) {
 			return false;
 		}
-	
+		if ($debug) $conn->debug = 1;
 		$sysTimeStamp = $conn->sysTimeStamp;
 		
 		//assert('$table');
@@ -685,7 +685,7 @@ class ADODB_Session {
 
 		// crc32 optimization since adodb 2.1
 		// now we only update expiry date, thx to sebastian thom in adodb 2.32
-		if ($crc !== false && $crc == (strlen($val) . crc32($val))) {
+		if ($crc !== false && $crc == (strlen($oval) . crc32($oval))) {
 			if ($debug) {
 				echo '<p>Session: Only updating date - crc32 not changed</p>';
 			}
@@ -704,7 +704,7 @@ class ADODB_Session {
 			$rs = $conn->Execute($sql,array($expirevar,$key));
 			return true;
 		}
-		$val = rawurlencode($val);
+		$val = rawurlencode($oval);
 		foreach ($filter as $f) {
 			if (is_object($f)) {
 				$val = $f->write($val, ADODB_Session::_sessionKey());
@@ -769,6 +769,7 @@ class ADODB_Session {
 			
 			$qkey = $conn->qstr($key);
 			$rs2 = $conn->UpdateBlob($table, 'sessdata', $val, " sesskey=$qkey", strtoupper($clob));
+			if ($debug) echo "<hr>",htmlspecialchars($oval), "<hr>";
 			$rs = @$conn->CompleteTrans();
 			
 			
@@ -805,7 +806,8 @@ class ADODB_Session {
 		if (!$conn) {
 			return false;
 		}
-
+		$debug			= ADODB_Session::debug();
+		if ($debug) $conn->debug = 1;
 		//assert('$table');
 
 		$qkey = $conn->quote($key);
@@ -856,6 +858,10 @@ class ADODB_Session {
 			return false;
 		}
 
+
+		$debug			= ADODB_Session::debug();
+		if ($debug) $conn->debug = 1;
+		
 		//assert('$table');
 
 		$time = $conn->sysTimeStamp;

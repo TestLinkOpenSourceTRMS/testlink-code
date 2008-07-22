@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.04a 25 Mar 2008   (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -13,6 +13,7 @@ Set tabs to 4 for best viewing.
    	http://phpbuilder.com/columns/alberto20000919.php3
 	
 */
+
 
 // security - hide paths
 if (!defined('ADODB_DIR')) die();
@@ -606,7 +607,7 @@ order by constraint_name, referenced_table_name, keyno";
 		if ($type === false) 
 			switch(gettype($var)) {
 			default:
-			case 'string': $type = SQLCHAR; break;
+			case 'string': $type = SQLVARCHAR; break;
 			case 'double': $type = SQLFLT8; break;
 			case 'integer': $type = SQLINT4; break;
 			case 'boolean': $type = SQLINT1; break; # SQLBIT not supported in 4.1.0
@@ -722,12 +723,12 @@ order by constraint_name, referenced_table_name, keyno";
 	}
 	
 	// mssql uses a default date like Dec 30 2000 12:00AM
-	function UnixDate($v)
+	static function UnixDate($v)
 	{
 		return ADORecordSet_array_mssql::UnixDate($v);
 	}
 	
-	function UnixTimeStamp($v)
+	static function UnixTimeStamp($v)
 	{
 		return ADORecordSet_array_mssql::UnixTimeStamp($v);
 	}	
@@ -917,12 +918,12 @@ class ADORecordset_mssql extends ADORecordSet {
 		return $rez;
 	}
 	// mssql uses a default date like Dec 30 2000 12:00AM
-	function UnixDate($v)
+	static function UnixDate($v)
 	{
 		return ADORecordSet_array_mssql::UnixDate($v);
 	}
 	
-	function UnixTimeStamp($v)
+	static function UnixTimeStamp($v)
 	{
 		return ADORecordSet_array_mssql::UnixTimeStamp($v);
 	}
@@ -937,7 +938,7 @@ class ADORecordSet_array_mssql extends ADORecordSet_array {
 	}
 	
 		// mssql uses a default date like Dec 30 2000 12:00AM
-	function UnixDate($v)
+	static function UnixDate($v)
 	{
 	
 		if (is_numeric(substr($v,0,1)) && ADODB_PHPVER >= 0x4200) return parent::UnixDate($v);
@@ -968,7 +969,7 @@ class ADORecordSet_array_mssql extends ADORecordSet_array {
 		return  mktime(0,0,0,$themth,$theday,$rr[3]);
 	}
 	
-	function UnixTimeStamp($v)
+	static function UnixTimeStamp($v)
 	{
 	
 		if (is_numeric(substr($v,0,1)) && ADODB_PHPVER >= 0x4200) return parent::UnixTimeStamp($v);

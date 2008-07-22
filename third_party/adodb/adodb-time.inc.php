@@ -241,6 +241,16 @@ b. Implement daylight savings, which looks awfully complicated, see
 
 
 CHANGELOG
+
+- 11 Feb 2008 0.33
+* Bug in 0.32 fix for hour handling. Fixed.
+
+- 1 Feb 2008 0.32
+* Now adodb_mktime(0,0,0,12+$m,20,2040) works properly. 
+
+- 10 Jan 2008 0.31
+* Now adodb_mktime(0,0,0,24,1,2037) works correctly.
+
 - 15 July 2007 0.30
 Added PHP 5.2.0 compatability fixes. 
  * gmtime behaviour for 1970 has changed. We use the actual date if it is between 1970 to 2038 to get the
@@ -376,7 +386,7 @@ First implementation.
 /*
 	Version Number
 */
-define('ADODB_DATE_VERSION',0.30);
+define('ADODB_DATE_VERSION',0.33);
 
 $ADODB_DATETIME_CLASS = (PHP_VERSION >= 5.2);
 
@@ -422,9 +432,12 @@ function adodb_date_test_strftime($fmt)
 
 /**
 	 Test Suite
-*/
+*/	
 function adodb_date_test()
 {
+	
+	for ($m=-24; $m<=24; $m++)
+		echo "$m :",adodb_date('d-m-Y',adodb_mktime(0,0,0,1+$m,20,2040)),"<br>";
 	
 	error_reporting(E_ALL);
 	print "<h4>Testing adodb_date and adodb_mktime. version=".ADODB_DATE_VERSION.' PHP='.PHP_VERSION."</h4>";
@@ -1202,13 +1215,18 @@ function adodb_mktime($hr,$min,$sec,$mon=false,$day=false,$year=false,$is_dst=fa
 		
 		// for windows, we don't check 1970 because with timezone differences, 
 		// 1 Jan 1970 could generate negative timestamp, which is illegal
-		if (1971 < $year && $year < 2038
+		$usephpfns = (1971 < $year && $year < 2038
 			|| !defined('ADODB_NO_NEGATIVE_TS') && (1901 < $year && $year < 2038)
-			) {
+			); 
+			
+		
+		if ($usephpfns && ($year + $mon/12+$day/365.25+$hr/(24*365.25) >= 2038)) $usephpfns = false;
+			
+		if ($usephpfns) {
 				return $is_gmt ?
 					@gmmktime($hr,$min,$sec,$mon,$day,$year):
 					@mktime($hr,$min,$sec,$mon,$day,$year);
-			}
+		}
 	}
 	
 	$gmt_different = ($is_gmt) ? 0 : adodb_get_gmt_diff($year,$mon,$day);
@@ -1228,7 +1246,7 @@ function adodb_mktime($hr,$min,$sec,$mon=false,$day=false,$year=false,$is_dst=fa
 	$year = adodb_year_digit_check($year);
 
 	if ($mon > 12) {
-		$y = floor($mon / 12);
+		$y = floor(($mon-1)/ 12);
 		$year += $y;
 		$mon -= $y*12;
 	} else if ($mon < 1) {

@@ -1,23 +1,23 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcReorder.tpl,v 1.2 2008/05/06 06:26:13 franciscom Exp $
+$Id: tcReorder.tpl,v 1.3 2008/07/22 09:25:14 havlat Exp $
 Purpose: reorder testcases 
-20051015 - fm - BUGID 181 - data -> categoryID
+Revisions:
+	20080722 - havlatm - layout update
+	20051015 - fm - BUGID 181 - data -> categoryID
 *}
 {include file="inc_head.tpl"}
 
 <body>
-<div class="workBack">
-
 <h1 class="title">{lang_get s='title_change_tc_order'}</h1>
 
-<div>	
+<div class="workBack">
 
 {if $arrTC eq ''}
 	{lang_get s='no_tc_to_reorder'}
 {else}
 	<form method="post" action="lib/testcases/containerEdit.php?categoryID={$data}">
-		<div style="padding: 3px;">
+		<div class="groupBtn">
 			<input id="submit" type="submit" name="updateTCorder" value="Update" />
 		</div>	
 	
@@ -44,7 +44,6 @@ Purpose: reorder testcases
 		</table>
 	</form>
 {/if}	
-</div>
 
 </div>
 

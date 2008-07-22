@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.16 2008/07/06 10:57:45 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.17 2008/07/22 09:25:14 havlat Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -105,7 +105,7 @@ rev :
 {elseif $level == 'testsuite'}
 
 	{if $modify_tc_rights == 'yes' || $sqlResult neq ''}
-		<div class="menu_bar">
+		<div class="groupBtn">
 
 		{* Add a new testsuite children for this parent *}
 		<span style="float: left; margin-right: 5px;">
@@ -132,7 +132,7 @@ rev :
 	    </div>
 
 		{* ----- Work with test cases ----------------------------------------------- *}
-		<div class="menu_bar">
+		<div class="groupBtn">
 		<span style="float: left; margin-right: 5px;">
 		<form method="post" action="lib/testcases/tcEdit.php">
 		  <input type="hidden" name="containerID" value="{$container_data.id}" />

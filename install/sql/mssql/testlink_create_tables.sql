@@ -1,12 +1,13 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.27 2008/07/21 10:14:02 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.28 2008/07/22 09:33:49 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20080722 - franciscom - added missing tc_external_id
 --      20080720 - franciscom - added missing option_automation field
 --      20080719 - franciscom - schema upgrade - added transactions and event tables
 --
@@ -459,6 +460,7 @@ CREATE NONCLUSTERED INDEX [IX_testcase_keywords] ON [testcase_keywords]
 
 CREATE TABLE [tcversions](
 	[id] [int] NOT NULL,
+	[tc_external_id] [int] NULL,
 	[version] [smallint] NOT NULL CONSTRAINT [DF_tcversions_version]  DEFAULT ((1)),
 	[summary] [text]  NULL,
 	[steps] [text]  NULL,

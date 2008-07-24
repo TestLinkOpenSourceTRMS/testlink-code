@@ -1,7 +1,7 @@
-// TestLink Open Source Project - http://testlink.sourceforge.net/
-// This script is distributed under the GNU General Public License 2 or later.
+// TestLink Open Source Project - http://testlink.sourceforge.net/ 
+// This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.60 2008/05/25 14:42:07 franciscom Exp $
+// $Id: testlink_library.js,v 1.61 2008/07/24 16:59:05 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -23,19 +23,20 @@
 // ----------------------------------------------------------------------------
 //
 //
-// 20080322 - franciscom - openExecNotesWindow()
+// 20080724 - franciscom - BUGID 1639 
+// 20080322 - franciscom - openExecNotesWindow() 
 // 20080118 - franciscom - showHideByClass()
 // 20070930 - franciscom - REQ - BUGID 1078 - openTCaseWindow()
 // 20070509 - franciscom - changes in tree_getPrintPreferences()
 //                         to support new options (Contribution)
-//
+// 
 //
 /*
   function: focusInputField
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function focusInputField(id,bSelect)
@@ -50,53 +51,22 @@ function focusInputField(id,bSelect)
 }
 
 
-/* 
-function: show help <div> tag with absolute position or right site ow window
-arg: localized text of help
-returns: N/A 
-*/
-function show_help(text)
-{
-	myElement = window.document.getElementById("tlhelp");
-	if(myElement == null)
-	{
-  		var mybody = window.document.getElementsByTagName("body").item(0);
-		var newdiv = window.document.createElement('div');
-		newdiv.setAttribute('id', 'tlhelp');
-		newdiv.setAttribute('onclick', 'javascript: close_help()');
-		mybody.appendChild(newdiv);
-
-		myElement = window.document.getElementById("tlhelp");
-	}
-
-	myElement.innerHTML = text;
-	myElement.style.height = 'auto';
-}
-
-function close_help() {
-  var d = window.document.getElementsByTagName("body").item(0);
-  var olddiv = window.document.getElementById('tlhelp');
-  d.removeChild(olddiv);
-}
-
-
-
 /*
   function: open_popup
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
-function open_popup(page)
+function open_popup(page) 
 {
 	window.open(page, "_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
 	return true;
 }
 
 // middle window (information, TC)
-function open_top(page)
+function open_top(page) 
 {
 	window.open(page, "_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=400")
 	return true;
@@ -105,50 +75,47 @@ function open_top(page)
 
 // test specification related functions
 /*
-  function: ST
+  function: ST 
             Show Test case
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function ST(id,version)
 {
-  var _FUNCTION_NAME_='ST';
-  var action_url=fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
-	// alert(_FUNCTION_NAME_ + " " +action_url);
-	parent.workframe.location = action_url;
+	parent.workframe.location = fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
 }
 
 
 /*
-  function: STS
+  function: STS 
             Show Test Suite
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function STS(id)
 {
-	var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+	var action_url=fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
 	parent.workframe.location = action_url;
 }
 
 
 /*
-  function: SP
+  function: SP 
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function SP()
 {
-    var action_url = fRoot+menuUrl;
+    var action_url=fRoot+menuUrl;
   	parent.workframe.location = action_url;
 }
 
@@ -157,8 +124,8 @@ function SP()
             printing of Test Specification
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function EP(id)
@@ -167,8 +134,8 @@ function EP(id)
 
 	// get checkboxes status
 	var pParams = tree_getPrintPreferences();
-	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
-	                 "&level=testproject&id="+id+args+"&"+pParams;
+	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" + 
+	"&level=testproject&id="+id+args+"&"+pParams;
 
 	//alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -178,8 +145,8 @@ function EP(id)
   function: Edit Test Suite or launch print
 
   args :
-
-  returns:
+  
+  returns: 
 
   rev :
         20070218 - franciscom
@@ -191,28 +158,25 @@ function ETS(id)
 	var pParams = tree_getPrintPreferences();
 	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
 	               "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
-
+	
 	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
-
+	
 }
 
 /*
   function: Edit Test case
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function ET(id,v)
 {
   // get checkboxes status
- 	var _FUNCTION_NAME_="ET";
-  var pParams = tree_getPrintPreferences();
+	var pParams = tree_getPrintPreferences();
 	var my_location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
-	// alert(_FUNCTION_NAME_ + " " +my_location);
-  
 	parent.workframe.location = my_location;
 }
 
@@ -221,8 +185,8 @@ function ET(id,v)
             Test PROJECT Print Test Suite
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function TPROJECT_PTS(id)
@@ -256,8 +220,8 @@ function TPROJECT_PTC(id)
             Test PLAN Print Test Suite
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function TPLAN_PTS(id)
@@ -274,7 +238,7 @@ function TPLAN_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
 	var my_location = fRoot+menuUrl+"?print_scope=testplan&level=testproject&id="+id+args+"&"+pParams;
-	parent.workframe.location =my_location;
+	parent.workframe.location =my_location; 
 }
 
 
@@ -335,9 +299,12 @@ function changeFeature(feature)
 	var tmp = document.getElementById('featureSel');
 	if (!tmp)
 		return;
-	var fID = tmp.value;
+	var fID = tmp.value;	
 	if(fID)
-		location = fRoot+"lib/usermanagement/usersassign.php?feature="+feature+"&featureID="+fID;
+	{
+	  /* 20080724 - franciscom - BUGID 1639 */
+		location = fRoot+"lib/usermanagement/usersAssign.php?feature="+feature+"&featureID="+fID;
+	}	
 }
 
 // 20070222 - changed height to solve BUGID 627
@@ -349,11 +316,11 @@ function openFileUploadWindow(id,tableName)
 
 
 /*
-  function:
+  function: 
 
   args :  object id
-
-  returns:
+  
+  returns: 
 
 */
 function deleteAttachment_onClick(id)
@@ -372,7 +339,7 @@ function attachmentDlg_onUnload()
 	try
 	{
 		if (attachmentDlg_refWindow == top.opener)
-			top.opener.location = attachmentDlg_refLocation;
+			top.opener.location = attachmentDlg_refLocation;		
 	}
 	catch(e)
 	{}
@@ -396,7 +363,7 @@ function attachmentDlg_onLoad()
 function attachmentDlg_onSubmit()
 {
 	attachmentDlg_bNoRefresh = true;
-
+	
 	return true;
 }
 
@@ -405,8 +372,8 @@ function attachmentDlg_onSubmit()
   function: confirm_and_submit
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,action_field_value)
@@ -420,26 +387,26 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 			if (field)
 			{
 				field.value = field_value;
-			}
-
+			}	
+			
 			var field_a = document.getElementById(action_field_id);
 			if (field_a)
 			{
 				field_a.value = action_field_value;
-			}
-
+			}	
+			
 			f.submit();
 		}
 	}
-
+	
 }
 
 /*
-  function:
+  function: 
 
   args :
-
-  returns:
+  
+  returns: 
 
   rev  :
          20070509 - franciscom - added 'author'
@@ -461,9 +428,9 @@ function tree_getPrintPreferences()
 	var f = document.getElementById('format');
 	if(f)
 		params.push("format="+f.value);
-
+		
 	params = params.join('&');
-
+	
 	return params;
 }
 
@@ -473,7 +440,7 @@ function tree_getCheckBox(id)
 	if (cb && cb.checked)
 	{
 		return id+'=y';
-	}
+	}	
 	return null;
 }
 
@@ -483,7 +450,7 @@ function open_bug_add_window(exec_id)
 	window.open(fRoot+"lib/execute/bugAdd.php?exec_id="+exec_id,"bug_add",
 	            "width=510,height=270,resizable=yes,dependent=yes");
 }
-function bug_dialog()
+function bug_dialog() 
 {
 	this.refWindow = null;
 	this.refLocation = null;
@@ -519,7 +486,7 @@ function dialog_onUnload(odialog)
 	try
 	{
 		if (odialog.refWindow == top.opener)
-			top.opener.location = odialog.refLocation;
+			top.opener.location = odialog.refLocation;		
 	}
 	catch(e)
 	{}
@@ -533,7 +500,7 @@ function deleteBug_onClick(execution_id,bug_id,warning_msg)
 	{
 		window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+execution_id+"&bug_id="+bug_id,
 		            "Delete","width=510,height=150,resizable=yes,dependent=yes");
-	}
+	}	
 }
 
 function planRemoveTC(warning_msg)
@@ -545,7 +512,7 @@ function planRemoveTC(warning_msg)
 	{
 		var item = cbs[i];
 		if (item.type == 'checkbox' && item.checked && item.name.substring(0,17) == "remove_checked_tc")
-		{
+		{	
 			bRemoveTC = true;
 			break;
 		}
@@ -555,7 +522,7 @@ function planRemoveTC(warning_msg)
 		if (!confirm(warning_msg))
 			return false;
 	}
-
+	
 	return true;
 }
 
@@ -563,8 +530,8 @@ function planRemoveTC(warning_msg)
   function: openExecNotesWindow
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function openExecNotesWindow(exec_id)
@@ -577,8 +544,8 @@ function openExecNotesWindow(exec_id)
   function: open_help_window
 
   args :
-
-  returns:
+  
+  returns: 
 
 */
 function open_help_window(help_page,locale)
@@ -588,18 +555,18 @@ function open_help_window(help_page,locale)
 
 
 /*
-  function:
+  function: 
 
   args :
-
-  returns:
-
+  
+  returns: 
+  
   rev :
        20070930 - franciscom - REQ - BUGID 1078
 
 */
 function openTCaseWindow(tcase_id)
-{
+{                        
   var feature_url="lib/testcases/archiveData.php";
   feature_url +="?allow_edit=0&edit=testcase&id="+tcase_id;
 	window.open(fRoot+feature_url,"Test Case Spec",
@@ -614,8 +581,8 @@ function openTCaseWindow(tcase_id)
             launcher for Testproject REQuirement SPECifications ManaGeMenT
 
   args:
-
-  returns:
+  
+  returns: 
 
 */
 function TPROJECT_REQ_SPEC_MGMT(id)
@@ -623,10 +590,10 @@ function TPROJECT_REQ_SPEC_MGMT(id)
 	var _FUNCTION_NAME_="TPROJECT_REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
   var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+"&"+pParams;
-
+  
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
-
+	
 }
 
 
@@ -635,8 +602,8 @@ function TPROJECT_REQ_SPEC_MGMT(id)
             launcher for REQuirement SPECification ManaGeMenT
 
   args:
-
-  returns:
+  
+  returns: 
 
 */
 function REQ_SPEC_MGMT(id)
@@ -645,8 +612,9 @@ function REQ_SPEC_MGMT(id)
 	var pParams = tree_getPrintPreferences();
   var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
   
-  // alert(_FUNCTION_NAME_ + " " +action_url);
+  //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
+	
 }
 
 /*
@@ -654,19 +622,19 @@ function REQ_SPEC_MGMT(id)
             launcher for REQuirement ManaGeMenT
 
   args:
-
-  returns:
+  
+  returns: 
 
 */
 function REQ_MGMT(id)
 {
 	var _FUNCTION_NAME_="REQ_MGMT";
 	var pParams = tree_getPrintPreferences();
-	var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
-
+  var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
+  
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
-
+	
 }
 
 
@@ -674,39 +642,46 @@ function REQ_MGMT(id)
   function: show_hide_column
 
   args:
-
-  returns:
+  
+  returns: 
 
 */
-function show_hide_column(table_id,col_no)
+function show_hide_column(table_id,col_no) 
 {
-	var tbl  = document.getElementById(table_id);
-	var rows = tbl.getElementsByTagName('tr');
-	
-	for (var row=0; row<rows.length;row++)
-	{
-		if(row == 0)
-			cellTag = 'th';
-		else
-			cellTag = 'td';
-  	
-	  	var cels = rows[row].getElementsByTagName(cellTag)
-	    if(cels[col_no].style.display == 'none')
-	        cels[col_no].style.display='block';
-	    else
-	       cels[col_no].style.display='none';
+  var tbl  = document.getElementById(table_id);
+  var rows = tbl.getElementsByTagName('tr');
+
+  for (var row=0; row<rows.length;row++) {
+    if( row ==0 )
+    {
+      cellTag='th'
     }
+    else
+    {
+      cellTag='td'
+    }
+    var cels = rows[row].getElementsByTagName(cellTag)
+    if(cels[col_no].style.display == 'none')
+    {
+        cels[col_no].style.display='block';
+    }
+    else
+    {
+       cels[col_no].style.display='none';
+    }    
+    
+  }
 }
 
 
-function showHideByClass(tagName,className)
+function showHideByClass(tagName,className) 
 {
     var objects = document.getElementsByTagName(tagName);
     for (var idx=0; idx<objects.length; idx++)
     {
     	var myClassName = objects[idx].className;
     	if( myClassName == className)
-    	{
+    	{ 
             if(objects[idx].style.display == 'none')
             {
                 objects[idx].style.display='';
@@ -714,13 +689,13 @@ function showHideByClass(tagName,className)
             else
             {
                objects[idx].style.display='none';
-            }
-    	}
+            }    
+    	} 
     }
 }
 
 function showCal(id,dateField)
-{
+{ 
 	var dp = new Ext.DatePicker({ renderTo:id, format:"m/d/y", idField:dateField });
 	//get the element
 	var el = document.getElementById(dateField);
@@ -731,62 +706,9 @@ function showCal(id,dateField)
 	}
 	dp.addListener("select", onSelect);
 }
-
 function onSelect(datePicker,date)
 {
 	var dt = new Date(date);
 	document.getElementById(datePicker.idField).value = dt.format("m/d/Y");
 	datePicker.destroy();
-}
-
-function showEventHistoryFor(objectID,objectType)
-{
-	var f = document.getElementById('eventhistory');
-	if (!f)
-	{
-		f = document.createElement("form");
-		if (!f)
-			return;
-		var b = document.getElementsByTagName('body')[0];
-		if (!b)
-			return;
-		b.appendChild(f);
-		f.style.display = "none";
-		f.id = "eventhistory";
-		f.target = "_blank";
-		f.method = "POST";
-		var i = document.createElement("input");
-		i.type = "hidden";
-		i.name = "object_id";
-		i.id = "object_id";
-		f.appendChild(i);
-		i = document.createElement("input");
-		i.type = "hidden";
-		i.name = "object_type";
-		i.id = "object_type";
-		f.appendChild(i);
-		f.action = fRoot+"lib/events/eventviewer.php";
-	}
-	if (f)
-	{
-		f.object_id.value = objectID;
-		f.object_type.value = objectType;
-		f.submit();
-	}
-}
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function openReqWindow(tcase_id)
-{                        
-  var feature_url="lib/requirements/reqTcAssign.php";
-  feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
-	window.open(fRoot+feature_url,"Test Case - Requirement link",
-	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }

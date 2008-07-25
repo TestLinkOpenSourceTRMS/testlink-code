@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_help.tpl,v 1.10 2008/05/19 10:24:03 havlat Exp $ *}
+{* $Id: inc_help.tpl,v 1.11 2008/07/25 10:28:26 havlat Exp $ *}
 {* 
 
 Purpose: smarty template - help link/icon component
@@ -18,7 +18,9 @@ Revisions:
 {assign var="help_text" value=$help_text_raw|regex_replace:"/[\r\t\n]/":" "|replace:"'":"&#39;"|replace:"\"":"&quot;"|default:"Help: Localization/Text is missing." }
 
 <script type="text/javascript">
-	var help_localized_text = "{$help_text}";
+	var help_localized_text = "<img style='float: right' " +
+		"src='{$smarty.const.TL_THEME_IMG_DIR}/x-icon.gif' " +
+		"onclick='javascript: close_help();' /> {$help_text}";
 </script>  
 <img alt="{$img_alt}" style="{$img_style}" 
 	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 

@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.11 2008/07/21 09:25:04 havlat Exp $
+$Id: testlink.css,v 1.12 2008/07/25 10:28:46 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -217,11 +217,12 @@ span.help
 
 #tlhelp {
 	position: 		absolute; 
-	z-index:		1; 
+	z-index:		100; 
 	padding:		5px; 
 	right:			50px; 
 	top:			50px; 
 	width: 			300px; 
+	height:			auto;
 	background: 	#059;
 	color:			white;
 	font-size:		80%; 

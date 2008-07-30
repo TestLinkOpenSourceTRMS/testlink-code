@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.18 $
-$Date: 2008/05/28 20:57:52 $ by $Author: franciscom $
+$Revision: 1.19 $
+$Date: 2008/07/30 04:39:30 $ by $Author: tosikawa $
 -------------------------------------------------------------------------
  
  
@@ -67,20 +67,20 @@ Localization
   Working Group of TestLink Japanese Translation Project
  
   http://blues.se.uec.ac.jp/swtest/forum.html
-  http://www38.atwiki.jp/testlink/
+  http://testlinkjp.org/
   http://sourceforge.jp/projects/testlinkjp/
  
   Adviser:
   Yasuharu NISHI
   
   Core member:
-  Atsushi Nagata,      AZMA Daisuke,      Kaname Mochizuki,
-  Kunio Murakami,      Lumina Nishihara,  Marino Suda,
-  Masahide Katsumata,  Masami Ichikawa,   Masataka Yoneta,
-  Sadahiko Hantani,    Shinichi Sugiyama, Shinsuke Matsuki,
-  Shizuka Ban,         Takahiro Wada,     Toshinori Sawaguchi,
-  Toshiyuki Kawanishi, Yasuhiko Okada,    Yoichi Kunihiro,
-  Yoshihiro Yoshimura, Yukiko Kajino
+  Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
+  Kaname Mochizuki,     Kunio Murakami,       Lumina Nishihara,
+  Marino Suda,          Masahide Katsumata,   Masami Ichikawa,
+  Masataka Yoneta,      Sadahiko Hantani,     Shinichi Sugiyama,
+  Shinsuke Matsuki,     Shizuka Ban,          Takahiro Wada,
+  Toshinori Sawaguchi,  Toshiyuki Kawanishi,  Yasuhiko Okada,
+  Yoichi Kunihiro,      Yoshihiro Yoshimura,  Yukiko Kajino
 
 * Polish
 -------------------------------------------------------------------------

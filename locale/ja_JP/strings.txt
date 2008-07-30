@@ -9,7 +9,7 @@
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
  * @author Francisco Mancardi
  *
@@ -39,15 +39,15 @@
  * Yasuharu NISHI
  *
  * Core member:
- * Atsushi Nagata,      AZMA Daisuke,      Kaname Mochizuki,
- * Kunio Murakami,      Lumina Nishihara,  Marino Suda,
- * Masahide Katsumata,  Masami Ichikawa,   Masataka Yoneta,
- * Sadahiko Hantani,    Shinichi Sugiyama, Shinsuke Matsuki,
- * Shizuka Ban,         Takahiro Wada,     Toshinori Sawaguchi,
- * Toshiyuki Kawanishi, Yasuhiko Okada,    Yoichi Kunihiro,
- * Yoshihiro Yoshimura, Yukiko Kajino
+ * Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
+ * Kaname Mochizuki,     Kunio Murakami,       Lumina Nishihara,
+ * Marino Suda,          Masahide Katsumata,   Masami Ichikawa,
+ * Masataka Yoneta,      Sadahiko Hantani,     Shinichi Sugiyama,
+ * Shinsuke Matsuki,     Shizuka Ban,          Takahiro Wada,
+ * Toshinori Sawaguchi,  Toshiyuki Kawanishi,  Yasuhiko Okada,
+ * Yoichi Kunihiro,      Yoshihiro Yoshimura,  Yukiko Kajino
  *
- * @modified $Date: 2008/07/04 02:45:52 $ $Author: tosikawa $
+ * @modified $Date: 2008/07/30 04:39:30 $ $Author: tosikawa $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line

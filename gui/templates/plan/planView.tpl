@@ -1,12 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.14 2008/05/06 06:26:08 franciscom Exp $ 
+$Id: planView.tpl,v 1.15 2008/08/05 17:44:03 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
      some smarty and javascript variables are created on the inc_*.tpl files.
      
 Rev:
+    20080805 - franciscom - api config refactoring
     20080116 - franciscom - added option to show/hide id useful for API 
     20080109 - franciscom - added sort table by JS
     20071006 - franciscom - added logic to use ext js confirm widget
@@ -66,7 +67,7 @@ var del_action=fRoot+'{$deleteAction}';
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>
-			<td><span class="api_info" style='display:none'>{$smarty.const.TL_API_ID_FORMAT|replace:"%s":$testplan.id}</span>
+			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
 			    <a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.188 $
- * @modified $Date: 2008/08/05 07:02:19 $ by $Author: franciscom $
+ * @version $Revision: 1.189 $
+ * @modified $Date: 2008/08/05 17:44:02 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20080805 - franciscom - api configuration refactoring
  *     20080805 - franciscom - BUGID 1660 - extjs tree is default
  *     20080525 - franciscom - added spectreemenu_type (temporary solution)
  *     20080504 - franciscom - removed gui->enable_custom_fields
@@ -40,8 +41,6 @@
  *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
  *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
  *     20080124 - franciscom - $g_dashboard_precision
- *     20080118 - franciscom - $g_api_id_format
- * 		 20081011 - asielb	   - $g_api_ui_show
  *     20080110 - franciscom - $g_tree_show_testcase_id
  *     20080109 - franciscom - $g_sort_table_engine
  *     20080105 - franciscom - $g_testsuite_template
@@ -92,6 +91,7 @@ $tlCfg->gui = new stdClass();
 $tlCfg->exec_cfg = new stdClass();
 $tlCfg->testcase_cfg=new stdClass();
 $tlCfg->document_generator = new stdClass();
+$tlCfg->api=new stdClass();
 
 /** Include database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -257,12 +257,11 @@ $g_user_self_signup = TRUE;
 // ----------------------------------------------------------------------------
 /** [API] */
 
-/** SOAP API availability (disabled by default) */ 
-$tlCfg->api_enabled = FALSE; 
+/** XML-RPC API availability (disabled by default) */ 
+$tlCfg->api->enabled=FALSE;
 
 // used to display API ID info in the *View pages 
-$tlCfg->api_id_format = "[ID: %s ]";
-
+$tlCfg->api->id_format = "[ID: %s ]";
 
 
 // ----------------------------------------------------------------------------
@@ -765,13 +764,11 @@ define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width); 
-define('TL_API_ID_FORMAT',$tlCfg->api_id_format);
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
 $g_log_level=$tlCfg->log_level;
 $g_show_realname = $tlCfg->show_realname;
 $g_username_format = $tlCfg->username_format;
 $g_dashboard_precision = $tlCfg->dashboard_precision;
-$g_api_id_format = $tlCfg->api_id_format;
 $g_tree_show_testcase_id = $tlCfg->treemenu_show_testcase_id;
 $g_tree_node_ordering->default_testcase_order  = $tlCfg->treemenu_default_testcase_order;
 $g_tree_node_ordering->default_testsuite_order = $tlCfg->treemenu_default_testsuite_order;

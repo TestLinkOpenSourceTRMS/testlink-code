@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.11 2008/05/06 06:26:07 franciscom Exp $
+$Id: buildView.tpl,v 1.12 2008/08/05 17:44:02 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
 Rev:
+    20080805 - franciscom - api config refactoring
     20080116 - franciscom - added option to show/hide id useful for API 
                             removed testplan id from title
     20080109 - franciscom - added sort table by JS
@@ -60,7 +61,7 @@ var del_action=fRoot+'{$deleteAction}';
   		</tr>
   		{foreach item=build from=$the_builds}
         	<tr>
-  				<td><span class="api_info" style='display:none'>{$smarty.const.TL_API_ID_FORMAT|replace:"%s":$build.id}</span>
+  				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
   				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none"

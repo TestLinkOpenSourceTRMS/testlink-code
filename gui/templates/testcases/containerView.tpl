@@ -1,9 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.17 2008/07/22 09:25:14 havlat Exp $ *}
+{* $Id: containerView.tpl,v 1.18 2008/08/05 07:22:15 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+    20080805 - franciscom - fixed undefined variable log warning.
+                            BUGID 1661 - removed reorder button if tree component support drag & drop
+                            
     20080706 - franciscom - fixed refactorization bug that broke attachments feature
     20080606 - havlatm - refactorization; layout update
     20080403 - franciscom - BUGID  - problems with IE 7 and incomplete URL
@@ -13,14 +16,13 @@ rev :
 
     20070216 - franciscom  moved parameters from GET to hidden
 *}
-{lang_get var='labels' s='th_product_name,edit_testproject_basic_data,th_notes,
-	alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
-    btn_new_testsuite, btn_reorder, 
-	btn_execute_automatic_testcases,
-	btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
-	
-	btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
-	btn_new_tc, btn_move_cp_testcases, btn_import_tc, btn_export_tc'}
+{lang_get var='labels' 
+          s='th_product_name,edit_testproject_basic_data,th_notes,
+	           alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
+             btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
+	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,	
+	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
+	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc'}
 
 {assign var="container_id" value=$container_data.id}
 {assign var="tcImportAction"
@@ -33,10 +35,8 @@ rev :
 {assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
 {assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;bRecursive=1"}
 
-
 {include file="inc_head.tpl" openHead="yes"}
 {assign var="ext_version" value="-2.0"}
-
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
 </head>
 
@@ -48,14 +48,27 @@ rev :
 {include file="inc_update.tpl" result=$sqlResult item=$level
          name=$moddedItem.name refresh=$smarty.session.tcspec_refresh_on_action }
 
+{assign var="bDownloadOnly" value=true}
+{assign var="drawReorderButton" value=true}
+{if $tlCfg->treemenu_type == 'EXTJS'}
+    {* EXTJS Tree support this feature using drag & drop *}
+    {assign var="drawReorderButton" value=false}
+{/if}
+
 {if $level == 'testproject'}
 
 	{if $modify_tc_rights == 'yes'}
+		{assign var="bDownloadOnly" value=false}
+
 	<div>
 	<form method="post" action="lib/testcases/containerEdit.php">
 		<input type="hidden" name="containerID" value="{$container_data.id}" />
 		<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
-		<input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
+
+    {if $drawReorderButton}
+		    <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
+		{/if}    
+
 		<input type="button" onclick="location='{$importToTProjectAction}'"
 			                       value="{$labels.btn_import_testsuite}" />
 		<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
@@ -125,7 +138,10 @@ rev :
 			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
 				    title="{$labels.alt_move_cp_testsuite}" />
 
-			<input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
+      {if $drawReorderButton}
+			    <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
+			{/if}    
+			
 			<input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
 			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
 		</form>
@@ -164,11 +180,8 @@ rev :
   	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/inc_testsuite_viewer_ro.tpl"}
 
-	{* ----- show Attachment --------------------------------------------- *}
 	{if $modify_tc_rights eq 'yes'}
 		{assign var="bDownloadOnly" value=false}
-	{else}
-		{assign var="bDownloadOnly" value=true}
 	{/if}
 	{include file="inc_attachments.tpl" 
 	         attach_attachmentInfos=$attachmentInfos

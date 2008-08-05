@@ -1,8 +1,9 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.7 2008/07/05 12:53:56 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.8 2008/08/05 07:24:22 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
  
+   20080805 - franciscom - BUGID 1656
    20080525 - franciscom - use only ext js tree type.
                            no change to configure a different tree menu type 
 	 20070217 - franciscom - added test suite filter
@@ -96,7 +97,8 @@
 </div>
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
-    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+    {* 20080805 - franciscom - BUGID 1656 *}
+    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 {else}
     <div class="tree" id="tree">
         {if $tree eq ''}

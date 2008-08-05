@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.187 $
- * @modified $Date: 2008/07/21 07:46:47 $ by $Author: franciscom $
+ * @version $Revision: 1.188 $
+ * @modified $Date: 2008/08/05 07:02:19 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20080805 - franciscom - BUGID 1660 - extjs tree is default
  *     20080525 - franciscom - added spectreemenu_type (temporary solution)
  *     20080504 - franciscom - removed gui->enable_custom_fields
  * 		 20080419 - havlatm - documentation update; minor refactorization
@@ -347,7 +348,7 @@ $tlCfg->fckeditor_default_toolbar = 'tl_default';
  *	jTree has the best performance but others have a better functionality  
  *	[LAYERSMENU, DTREE, JTREE, EXTJS]
  */
-$tlCfg->treemenu_type = 'JTREE';
+$tlCfg->treemenu_type = 'EXTJS';
 
 // 20080525 - franciscom
 // To allow two different type of tree menu engine

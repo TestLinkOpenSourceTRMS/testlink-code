@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.189 $
- * @modified $Date: 2008/08/05 17:44:02 $ by $Author: franciscom $
+ * @version $Revision: 1.190 $
+ * @modified $Date: 2008/08/07 14:27:13 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -87,11 +87,11 @@
 
 /** @global array Global configuration class */
 $tlCfg = new stdClass();
-$tlCfg->gui = new stdClass();
-$tlCfg->exec_cfg = new stdClass();
-$tlCfg->testcase_cfg=new stdClass();
+$tlCfg->api = new stdClass();
 $tlCfg->document_generator = new stdClass();
-$tlCfg->api=new stdClass();
+$tlCfg->exec_cfg = new stdClass();
+$tlCfg->gui = new stdClass();
+$tlCfg->testcase_cfg = new stdClass();
 
 /** Include database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -227,18 +227,19 @@ $g_smtp_password    = '';  # password
 /** 
  * Login authentication method:
  * 		'MD5' => use password stored on db
- *      'LDAP'      => use password from LDAP Server
+ *      'LDAP' => use password from LDAP Server
  */ 
-$g_login_method				= 'MD5';
+$tlCfg->authentication['method'] 		= 'MD5';
 
 /** LDAP authentication credentials */
-$g_ldap_server			= 'localhost';
-$g_ldap_port			= '389';
-$g_ldap_root_dn			= 'dc=mycompany,dc=com';
-$g_ldap_organization	= '';    # e.g. '(organizationname=*Traffic)'
-$g_ldap_uid_field		= 'uid'; # Use 'sAMAccountName' for Active Directory
-$g_ldap_bind_dn			= ''; // 'my_bind_user' / Left empty if you LDAP server allows anonymous binding 
-$g_ldap_bind_passwd	= ''; // 'my_bind_password' / Left empty if you LDAP server allows anonymous binding 
+$tlCfg->authentication['ldap_server']			= 'localhost';
+$tlCfg->authentication['ldap_port']			= '389';
+$tlCfg->authentication['ldap_version']		= '3'; // could be '2' in some cases
+$tlCfg->authentication['ldap_root_dn']		= 'dc=mycompany,dc=com';
+$tlCfg->authentication['ldap_organization']	= '';    // e.g. '(organizationname=*Traffic)'
+$tlCfg->authentication['ldap_uid_field']	= 'uid'; // Use 'sAMAccountName' for Active Directory
+$tlCfg->authentication['ldap_bind_dn']		= ''; // Left empty for anonymous LDAP binding 
+$tlCfg->authentication['ldap_bind_passwd']	= ''; // Left empty for anonymous LDAP binding 
 
 /** Regular expression to use when validating new user login names */
 // This default regular expression: '/^[\w \-]+$/'
@@ -765,6 +766,7 @@ define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width); 
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
+$g_login_method = $tlCfg->authentication['method'];
 $g_log_level=$tlCfg->log_level;
 $g_show_realname = $tlCfg->show_realname;
 $g_username_format = $tlCfg->username_format;

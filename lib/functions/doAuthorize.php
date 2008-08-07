@@ -4,23 +4,19 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/03/03 11:48:57 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/08/07 14:27:13 $ by $Author: havlat $
  * @author Chad Rosen, Martin Havlat
  *
- * This file handles the initial login and creates all user session variables.
+ * This file handles the initial authentication for login and creates all user session variables.
  *
  * @todo Setting up cookies so that the user can automatically login next time
  * 
  * Revision:
- *           20070130 - jbarchibald -
- *           $_SESSION['filter_tp_by_product'] should always default to = 1;
+ *  20070130 - jbarchibald - $_SESSION['filter_tp_by_product'] should always default to = 1;
+ *	20060507 - franciscom - added bare bones LDAP authentication using mantis code
  *
- *           20060507 - franciscom - 
- *           added bare bones LDAP authentication using mantis code
- *                                  
- *
- */
+ * *********************************************************************************** */
 require_once("users.inc.php");
 require_once("roles.inc.php");
 
@@ -67,19 +63,18 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 
 
 // 20060507 - franciscom - based on mantis function
-//
-//
 // returns:
 //         obj->status_ok = true/false
 //         obj->msg = message to explain what has happened to a human being.
 //
 function auth_does_password_match(&$user,$cleartext_password)
 {
-	$login_method = config_get('login_method');
-  $ret = new stdClass();
+	$authCfg = config_get('authentication');
+  	$ret = new stdClass();
 	$ret->status_ok = true;
 	$ret->msg = 'ok';
-	if ('LDAP' == $login_method) 
+
+	if ('LDAP' == $authCfg['method']) 
 	{
 		$msg[ERROR_LDAP_AUTH_FAILED] = lang_get('error_ldap_auth_failed');
 		$msg[ERROR_LDAP_SERVER_CONNECT_FAILED] = lang_get('error_ldap_server_connect_failed');
@@ -91,8 +86,12 @@ function auth_does_password_match(&$user,$cleartext_password)
 		$ret->status_ok = $xx->status_ok;
 		$ret->msg = $msg[$xx->status_code];	
 	}
-	else if ($user->comparePassword($cleartext_password) != tl::OK)
-		$ret->status_ok = false;      
+
+	else // normal database password compare
+	{
+		if ($user->comparePassword($cleartext_password) != tl::OK)
+			$ret->status_ok = false;
+	}      
 	
 	return $ret;
 }

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.23 $
-* @modified $Date: 2008/04/26 18:29:14 $
+* @version $Revision: 1.24 $
+* @modified $Date: 2008/08/11 17:10:10 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -50,7 +50,7 @@ switch($args->doAction)
 	    break;
 
     case 'genApiKey':
-	    $op = xgenerateApiKey($args);
+	    $op = generateApiKey($args);
 	    break;
 }
 

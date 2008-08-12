@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.6 2008/05/11 16:56:37 franciscom Exp $ 
+* $Id: ownerBarChart.php,v 1.7 2008/08/12 22:17:46 havlat Exp $ 
 *
 * @author	Kevin Levy
 *
@@ -18,37 +18,22 @@ require_once('results.class.php');
 testlinkInitPage($db);
 $cdata = getChartData($db);
 $chart['chart_data'] = $cdata->chart_data;
-
-$chart['axis_value'] = array ( 'font'=>"arial", 'bold'=>true, 'size'=>10, 'color'=>"000000", 'alpha'=>50, 'steps'=>6, 'prefix'=>"", 'suffix'=>"", 'decimals'=>0, 'separator'=>"", 'show_min'=>true );
-$chart['chart_border'] = array ( 'color'=>"000000", 'top_thickness'=>0, 'bottom_thickness'=>3, 'left_thickness'=>0, 'right_thickness'=>0 );
-$chart['chart_grid_h'] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"solid" );
-$chart['chart_grid_v'] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"dashed" );
-$chart['chart_rect'] = array ( 'x'=>125, 'y'=>75, 'width'=>500, 'height'=>400, 'positive_color'=>"ffffff", 'negative_color'=>"000000", 'positive_alpha'=>75, 'negative_alpha'=>15 );
-// $chart['chart_transition'] = array ( 'type'=>"drop", 'delay'=>0, 'duration'=>2, 'order'=>"series" );
-$chart['chart_transition'] = array ();
-
 $chart['chart_type'] = "stacked column"; 
+
+$chart['axis_value'] = array ( 'font'=>"arial", 'bold'=>true, 'size'=>10, 
+		'color'=>"000000", 'alpha'=>50, 'steps'=>6, 'prefix'=>"", 'suffix'=>"", 
+		'decimals'=>0, 'separator'=>"", 'show_min'=>true );
 $chart['axis_category'] = array ('orientation'=>"diagonal_down");
 
-// $chart['draw'] = array ( array ( 'transition'=>"slide_up", 'delay'=>1, 'duration'=>.5, 'type'=>"text", 'color'=>"000033", 'alpha'=>15, 'font'=>"arial", 'rotation'=>-90, 'bold'=>true, 'size'=>64, 'x'=>0, 'y'=>295, 'width'=>300, 'height'=>50, 'text'=>"Owners", 'h_align'=>"right", 'v_align'=>"middle" ),
-//                            array ( 'transition'=>"slide_up", 'delay'=>1, 'duration'=>.5, 'type'=>"text", 'color'=>"ffffff", 'alpha'=>40, 'font'=>"arial", 'rotation'=>-90, 'bold'=>true, 'size'=>25, 'x'=>30, 'y'=>300, 'width'=>300, 'height'=>50, 'text'=>"report", 'h_align'=>"right", 'v_align'=>"middle" ) );
-// 
-$labels = new stdClass();
-$labels->report=lang_get('chart_report');
-$labels->assigned_testers=lang_get('chart_assigned_testers');
-
-$chart['draw'] = array ( array ( 'type'=>"text", 'color'=>"000033", 'alpha'=>15, 
-                                 'font'=>"arial", 'rotation'=>-90, 'bold'=>true, 'size'=>40, 'x'=>0, 'y'=>400, 
-                                 'width'=>300, 'height'=>50, 'text'=>$labels->assigned_testers, 
-                                 'h_align'=>"right", 'v_align'=>"middle" ),
-                         array ( 'type'=>"text", 'color'=>"ffffff", 'alpha'=>40, 
-                                 'font'=>"arial", 'rotation'=>-90, 'bold'=>true, 'size'=>25, 'x'=>30, 
-                                 'y'=>300, 'width'=>300, 'height'=>50, 'text'=>$labels->report, 
-                                 'h_align'=>"right", 'v_align'=>"middle" ) );
+$chart['chart_rect'] = array ( 'x'=>30, 'y'=>20, 'height'=>250, 
+	'positive_color'=>"EEEEEE", 'negative_color'=>"000000", 'positive_alpha'=>20, 'negative_alpha'=>15 );
 
 
-$chart['legend_label'] = array ( 'layout'=>"horizontal", 'font'=>"arial", 'bold'=>true, 'size'=>13, 'color'=>"444466", 'alpha'=>90 ); 
-$chart['legend_rect'] = array ( 'x'=>125, 'y'=>10, 'width'=>250, 'height'=>10, 'margin'=>5, 'fill_color'=>"ffffff", 'fill_alpha'=>35, 'line_color'=>"000000", 'line_alpha'=>0, 'line_thickness'=>0 ); 
+
+$chart['legend_label'] = array ( 'layout'=>"horizontal", 'font'=>"arial", 
+		'bold'=>true, 'size'=>13, 'color'=>"444466", 'alpha'=>90 ); 
+$chart['legend_rect'] = array ( 'x'=>50, 'y'=>360, 'width'=>350,  
+		'margin'=>5, 'fill_color'=>"ffffff", 'fill_alpha'=>35); 
 
 // $chart['legend_transition'] = array ( 'type'=>"slide_left", 'delay'=>0, 'duration'=>1 );
 $chart['legend_transition'] = array();

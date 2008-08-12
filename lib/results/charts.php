@@ -2,16 +2,21 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/05/11 16:56:37 $  $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/08/12 22:17:46 $ by $Author: havlat $
  * @author kevin
  *
+ * Revisions:
+ *	20080812 - havlatm - simplyfied, polite
  *
- *
-**/
+ **/
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('../../third_party/charts/charts.php');
+
+define('TL_CHART_WIDTH', 600);
+define('TL_CHART_HEIGHT', 400);
+define('TL_CHART_BG', '888888');
 
 testlinkInitPage($db);
 $tplan_mgr = new testplan($db);
@@ -39,14 +44,16 @@ $chartsUrl->ownerBarChart="{$pathToScripts}/ownerBarChart.php?tplan_id={$tplan_i
 $chartsUrl->topLevelSuitesBarChart="{$pathToScripts}/topLevelSuitesBarChart.php?tplan_id={$tplan_id}";
 
 $charts = array(
-	lang_get('overall_metrics') => InsertChart($charts_swf,$charts_library, 
-	                                           $chartsUrl->overallPieChart,400, 250 ),
-	lang_get('results_by_keyword') => InsertChart($charts_swf,$charts_library,
-	                                              $chartsUrl->keywordBarChart,800, 600 ),
-	lang_get('results_by_tester') => InsertChart($charts_swf,$charts_library,
-	                                             $chartsUrl->ownerBarChart, 800, 600),
-	lang_get('results_top_level_suites') => 
-	         InsertChart($charts_swf,$charts_library,$chartsUrl->topLevelSuitesBarChart, 800, 600),  
+	lang_get('overall_metrics') => InsertChart($charts_swf, $charts_library, 
+				$chartsUrl->overallPieChart, TL_CHART_WIDTH, TL_CHART_HEIGHT, 
+				TL_CHART_BG ),
+	lang_get('results_by_keyword') => InsertChart($charts_swf, $charts_library,
+	            $chartsUrl->keywordBarChart,TL_CHART_WIDTH, TL_CHART_HEIGHT, TL_CHART_BG ),
+	lang_get('results_by_tester') => InsertChart($charts_swf, $charts_library,
+	            $chartsUrl->ownerBarChart, TL_CHART_WIDTH, TL_CHART_HEIGHT, TL_CHART_BG),
+	lang_get('results_top_level_suites') => InsertChart($charts_swf, $charts_library,
+				$chartsUrl->topLevelSuitesBarChart, TL_CHART_WIDTH, TL_CHART_HEIGHT,
+				TL_CHART_BG),  
 );
                  
                  

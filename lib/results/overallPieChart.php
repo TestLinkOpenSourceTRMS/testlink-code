@@ -1,12 +1,15 @@
 <?php
 /** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: overallPieChart.php,v 1.5 2008/05/11 16:56:37 franciscom Exp $ 
-*
-* @author	Kevin Levy
-*
-* - PHP autoload feature is used to load classes on demand
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * $Id: overallPieChart.php,v 1.6 2008/08/12 22:17:46 havlat Exp $ 
+ *
+ * @author	Kevin Levy
+ *
+ * - PHP autoload feature is used to load classes on demand
+ * 
+ * Revisions:
+ *	20080812 - havlatm - simplyfied, polite
+ */
 require_once('../../config.inc.php');
 require_once('results.class.php');
 require_once("../../third_party/charts/charts.php");
@@ -23,18 +26,15 @@ testlinkInitPage($db);
 //
 
 $cdata = getChartData($db);
-$chart['chart_data'] = $cdata->labels_values;
-$chart['chart_grid_h'] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"solid" );
-$chart['chart_rect'] = array ( 'positive_color'=>"ffffff", 'positive_alpha'=>20, 'negative_color'=>"ff0000", 'negative_alpha'=>10 );
 $chart['chart_type'] = "pie";
-$chart['chart_value'] = array ( 'color'=>"ffffff", 'alpha'=>90, 'font'=>"arial", 'bold'=>true, 'size'=>10, 'position'=>"inside", 'prefix'=>"", 'suffix'=>"", 'decimals'=>0, 'separator'=>"", 'as_percentage'=>true );
-$chart['draw'] = array ( array ( 'type'=>"text", 'color'=>"000000", 'alpha'=>10, 'font'=>"arial", 
-                                 'rotation'=>0, 'bold'=>true, 'size'=>30, 'x'=>0, 'y'=>230, 'width'=>400, 'height'=>250, 
-                                 'text'=>"|||||||||||||||||||||||||||||||||||||||||||||||", 'h_align'=>"center", 'v_align'=>"bottom" )) ;
-$chart['legend_label'] = array ( 'layout'=>"horizontal", 'bullet'=>"circle", 'font'=>"arial", 'bold'=>true, 'size'=>13, 'color'=>"ffffff", 'alpha'=>85 ); 
-$chart['legend_rect'] = array ( 'fill_color'=>"ffffff", 'fill_alpha'=>10, 'line_color'=>"000000", 'line_alpha'=>0, 'line_thickness'=>0 ); 
+$chart['chart_data'] = $cdata->labels_values;
+$chart['chart_value'] = array ( 'color'=>"ffffff", 'alpha'=>90, 'font'=>"arial", 
+		'bold'=>true, 'size'=>10, 'position'=>"inside", 'prefix'=>"", 'suffix'=>"", 
+		'decimals'=>0, 'separator'=>"", 'as_percentage'=>true );
+$chart['legend_label'] = array ( 'layout'=>"horizontal",  
+		'font'=>"arial", 'bold'=>true, 'size'=>13, 'color'=>"ffffff" ); 
+$chart['legend_rect'] = array ( 'fill_color'=>"AAAAAA", 'margin'=>30 ); 
 $chart['series_color'] = $cdata->series_color; 
-$chart['series_explode'] = array ( 20, 0, 50 );
 
 SendChartData($chart);
 

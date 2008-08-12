@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.24 $
-* @modified $Date: 2008/08/11 17:10:10 $
+* @version $Revision: 1.25 $
+* @modified $Date: 2008/08/12 19:21:23 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -82,6 +82,7 @@ if (null == $user->userApiKey)
 $smarty = new TLSmarty();
 $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
 $smarty->assign('user',$user);
+$smarty->assign('api_ui_show',$user);
 $smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
 $smarty->assign('loginHistory', $loginHistory);
 $smarty->assign('user_feedback', $op->user_feedback);

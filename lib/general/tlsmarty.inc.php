@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/08/05 17:44:03 $ $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2008/08/12 19:21:19 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -172,8 +172,6 @@ class TLSmarty extends Smarty
     	$this->assign("sort_img",$sort_img);
     	$this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
     	$this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
-
- 		  $this->assign('api_ui_show', $tlCfg->api->enabled);
 
     	$msg = lang_get('show_hide_api_info');
 	    $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .

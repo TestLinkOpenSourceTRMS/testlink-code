@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.13 2008/05/08 21:05:43 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.14 2008/08/12 19:21:19 havlat Exp $ *}
 {*
 *}
 {assign var="cfg_section" value="login" }
@@ -166,7 +166,7 @@ function checkPasswords(oldp,newp,newp_check)
    <p>{$labels.your_password_is_external}<p>
 {/if}
 
-{if $api_ui_show eq 1}
+{if $tlCfg->api->enabled eq TRUE}
 <hr />
 <h2>{lang_get s="title_api_interface"}</h2>
 <div>

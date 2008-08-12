@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2008/06/29 17:22:18 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2008/08/12 19:21:24 $ by $Author: havlat $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -36,6 +36,9 @@ $args = init_args($db,$cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
 $gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
+$str_option_any = $tlCfg->gui_separator_open . lang_get('any') . $tlCfg->gui_separator_close;
+$gui->optResult['a'] = $str_option_any;
+$gui->users[0] = $str_option_any; 
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
 // $gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
@@ -50,30 +53,24 @@ if( !is_null($treeMenu->rootnode) )
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node=$treeMenu->rootnode;
     $gui->ajaxTree->children=$treeMenu->menustring;
-    $gui->ajaxTree->cookiePrefix='exec_tplan_id_' . $argsObj->tplan_id;
+    $gui->ajaxTree->cookiePrefix='exec_tplan_id_' . $args->tplan_id;
 }
 
                       
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-
-// Warning: 
-// the following variable names CAN NOT BE Changed,
+// Warning: the following variable names CAN NOT BE Changed,
 // because there is global coupling on template logic
-//
 $smarty->assign('treeKind',$gui->treeKind);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
 
-$smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html");
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
   function:
-
   args:
-
   returns:
 
   schlundus: changed the user_id to the currentUser of the session
@@ -352,9 +349,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 
 /*
   function: initializeGui
-
   args :
-  
   returns: 
 
   rev: 20080429 - franciscom

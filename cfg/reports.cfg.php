@@ -4,28 +4,26 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/04/19 21:52:21 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/08/13 15:06:56 $ by $Author: havlat $
  * @author Martin Havlat
  *
- * SCOPE:
- * 	Definition of report/metrics menu 
+ * SCOPE: Definition of report/metrics menu 
  * 
+ * Revision:
+ * 	20080813 - havlatm - removed metrics_tp_builds
  *
-**/
+ * *********************************************************************************** */
 
-
-
-// ----------------------------------------------------------------------------
 /** supported document formats */
 $tlCfg->reports_formats = array(
 	'HTML', 
 	'MS Excel', 
 	'MS Word',
-	'PDF',
+//	'PDF',
 	'Email'
 );
+
 
 /** 
  * @VAR $tlCfg->reports_list['report_identifier'] 
@@ -46,12 +44,6 @@ $tlCfg->reports_list['test_plan'] = array(
 $tlCfg->reports_list['metrics_tp_general'] = array( 
 	'title' => 'link_report_general_tp_metrics',
 	'url' => 'lib/results/resultsGeneral.php',
-	'enabled' => 'all',
-	'format' => 'HTML,MS Excel,Email'
-);
-$tlCfg->reports_list['metrics_tp_builds'] = array( 
-	'title' => 'link_report_overall_build',
-	'url' => 'lib/results/resultsAllBuilds.php',
 	'enabled' => 'all',
 	'format' => 'HTML,MS Excel,Email'
 );

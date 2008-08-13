@@ -4,11 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.33 $
- *
- * @modified $Date: 2008/05/28 20:57:52 $ by $Author: franciscom $
-*/
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/08/13 15:06:11 $ by $Author: havlat $
+ * 
+ * Scope: control test specification import
+ * Troubleshooting: check if DOM module is enabled
+ * 
+ * Revision:
+ * 	20080813 - havlatm - added a few logging
+ * 
+ * *********************************************************************************** */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
@@ -19,10 +24,7 @@ require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
 
-$templateCfg=templateConfiguration();
-$gui = new stdClass();
-$gui->testprojectName = $_SESSION['testprojectName'];
-
+$templateCfg = templateConfiguration();
 
 $importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
 $bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
@@ -46,12 +48,15 @@ if(!is_null($importType))
 
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
-$import_title = lang_get('title_tc_import_to');
-$container_description = lang_get('test_case');
 if($bRecursive)
 {
 	$import_title = lang_get('title_tsuite_import_to');  
 	$container_description = lang_get('test_suite');
+}
+else
+{
+	$import_title = lang_get('title_tc_import_to');
+	$container_description = lang_get('test_case');
 }
 
 $container_name = '';
@@ -68,11 +73,13 @@ if ($do_upload)
 {
 	// check the uploaded file
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+	tLog('Uploaded file: '.$source);
 	if (($source != 'none') && ($source != ''))
 	{ 
 		$file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
 		{
+			tLog('Renamed uploaded file: '.$source);
 			switch($importType)
 			{
 				case 'XML':
@@ -89,12 +96,14 @@ if ($do_upload)
 		}
 		if($file_check['status_ok'] && $pimport_fn)
 		{
+			tLog('Check is Ok.');
 			$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
 										                 $userID,$bRecursive,$bIntoProject);
 		}
 	}
 	else
 	{
+		tLog('Missing upload file','WARNING');
 		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
 		$importType = null;
 	}
@@ -109,13 +118,12 @@ else
   $obj_mgr = new testcase($db);
 }
 
+$gui = new stdClass();
+$gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->importLimitKB=(TL_IMPORT_LIMIT / 1024);
 
 $smarty = new TLSmarty();
-// $smarty->assign('testprojectName', $testprojectName);
-// $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
-
 $smarty->assign('gui',$gui);  
 $smarty->assign('import_title',$import_title);  
 $smarty->assign('file_check',$file_check);  
@@ -128,17 +136,17 @@ $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: importTestCaseDataFromXML
-
   args :
-  
   returns: 
-
 */
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
                                    $userID,$bRecursive,$importIntoProject = 0)
 {
+	tLog('importTestCaseDataFromXML called for file: '.$fileName);
 	$xmlTCs = null;
 	$resultMap  = null;
 	$dom = domxml_open_file($fileName);
@@ -169,13 +177,11 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: importTestCases
-
   args :
-  
   returns: 
-
 */
 function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 {
@@ -190,13 +196,12 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 	return $resultMap;
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: importTestSuite
-
   args :
-  
   returns: 
-
 */
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
@@ -254,13 +259,12 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 	}
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: saveImportedTCData
-
   args :
-  
   returns: 
-
 */
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
 {
@@ -295,13 +299,11 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: buildKeywordList
-
   args :
-  
   returns: 
-
 */
 function buildKeywordList($kwMap,$keywords,$bList = false)
 {
@@ -316,13 +318,11 @@ function buildKeywordList($kwMap,$keywords,$bList = false)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: importTCsFromXML
-
   args :
-  
   returns: 
-
 */
 function importTCsFromXML($xmlTCs)
 {
@@ -349,13 +349,11 @@ function importTCsFromXML($xmlTCs)
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: importTCFromXML()
-
   args :
-  
   returns: 
-
 */
 function importTCFromXML(&$xmlTC)
 {
@@ -370,11 +368,11 @@ function importTCFromXML(&$xmlTC)
 	
 	return $tc; 		
 }
+
+
+// --------------------------------------------------------------------------------------
 /*
-  function: 
-
-           Check if at least the file starts seems OK
-
+  function: Check if at least the file starts seems OK
 */
 function check_xml_tc_tsuite($fileName,$bRecursive)
 {
@@ -432,7 +430,6 @@ function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id
 	create_xml_tcspec_from_xls($fileName,$xml_filename);
 	$resultMap=importTestCaseDataFromXML($db,$xml_filename,$parentID,$tproject_id,$userID,
 	                                     $bRecursive,$importIntoProject);
-	
 	unlink($fileName);
 	unlink($xml_filename);
 	
@@ -440,8 +437,7 @@ function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id
 }
 
 
-
-
+// --------------------------------------------------------------------------------------
 /*
   function: create_xml_tcspec_from_xls
             Using an XSL file, that contains testcase specifications
@@ -457,14 +453,10 @@ function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id
             First row contains header:  name,summary,steps,expectedresults
             and must be skipped.
             
-            
-            
   args: xls_filename
         xml_filename
-        
   
   returns: 
-
 */
 function create_xml_tcspec_from_xls($xls_filename,$xml_filename) 
 {
@@ -514,6 +506,7 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
   fclose($xmlFileHandle);
 }
 
+// --------------------------------------------------------------------------------------
 //SCHLUNDUS will be removed after refactoring
 function importKeywordsFromXML($xmlKeywords)
 {
@@ -531,6 +524,9 @@ function importKeywordsFromXML($xmlKeywords)
 	}
 	return $keywords;
 }
+
+
+// --------------------------------------------------------------------------------------
 /**
  * Imports a single keywords from a XML Element
  *
@@ -550,4 +546,6 @@ function importKeywordFromXML(&$xmlKeyword)
 
 	return $keyword;
 }
+
+// ----- END ----------------------------------------------------------------------------
 ?>

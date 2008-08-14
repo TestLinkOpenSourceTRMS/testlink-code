@@ -2,12 +2,15 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.8 $ $Author: franciscom $
- * @modified $Date: 2008/05/28 18:27:20 $
+ * @version $Revision: 1.9 $ $Author: franciscom $
+ * @modified $Date: 2008/08/14 15:08:24 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20080811 - franciscom - BUGID 1650 (REQ)
+ *                             documentation improvements
+ *
  *     20080528 - franciscom - internal bug - only one version was retrieved
  *     20080510 - franciscom - added getFilteredLinkedVersions()
  *                                   keywordFilteredSpecView()
@@ -33,42 +36,87 @@ arguments:
          id: node id
 
          name:
-         linked_items
+         linked_items:  map where key=testcase_id
+                        value map with following keys:
+                              [testsuite_id] => 2732            
+                              [tc_id] => 2733        
+                              [z] => 100  ---> nodes_hierarchy.order             
+                              [name] => TC1          
+                              [tcversion_id] => 2734 
+                              [feature_id] => 9      --->> testplan_tcversions.ID
+                              [execution_order] => 10
+                              [version] => 1         
+                              [active] => 1          
+                              [external_id] => 1     
+                              [exec_id] => 1         
+                              [tcversion_number] => 1
+                              [executed] => 2734     
+                              [exec_on_tplan] => 2735
+                              [user_id] =>           
+                              [type] =>              
+                              [status] =>            
+                              [assigner_id] =>       
+                              [urgency] => 2         
+                              [exec_status] => b     
+                        
+                        
+                        
          map_node_tccount,
                             
          [keyword_id] default 0
          [tcase_id] default null, can be an array
 			   [write_button_only_if_linked] default 0
-
-
+                        
+                        
          [do_prune]: default 0. 
                      Useful when working on spec_view_type='testplan'.
                      1 -> will return only linked tcversion
                      0 -> returns all test cases specs. 
-                     
-         
-         
-
+                        
+                        
+                        
+                        
 returns: array where every element is an associative array with the following
-         structure:
+         structure: (to get last updated info add debug code and print_r returned value)
         
          [testsuite] => Array( [id] => 28
                                [name] => TS1 )
 
-         [testcases] => Array( [79] => Array( [id] => 79
-                                             [name] => TC0
-                                             [tcversions] => Array 
-                                                             (
-                                                              [1093] => 2   // key=tcversion id,value=version
-                                                              [6] => 1
-                                                             )
-                                                             [testcase_qty] => 
-                                                             [linked_version_id] => 0
-                                             )
+         [testcases] => Array(  [2736] => Array
+                                (
+                                    [id] => 2736
+                                    [name] => TC2
+                                    [tcversions] => Array
+                                        (
+                                            [2738] => 2   // key=tcversion id,value=version
+                                            [2737] => 1
+                                        )
+
+                                    [tcversions_active_status] => Array
+                                        (
+                                            [2738] => 1  // key=tcversion id,value=active status
+                                            [2737] => 1
+                                        )
+
+                                    [tcversions_execution_type] => Array
+                                        (
+                                            [2738] => 1
+                                            [2737] => 2
+                                        )
+
+                                    [tcversions_qty] => 2
+                                    [linked_version_id] => 2737
+                                    [executed] => no
+                                    [user_id] => 0       ---> !=0 if execution has been assigned
+                                    [feature_id] => 12   ---> testplan_tcversions.id
+                                    [execution_order] => 20
+                                    [external_id] => 2
+                                )
 
                                [81] => Array( [id] => 81
-            
-                                             [name] => TC88))
+                                             [name] => TC88)
+                                             ...
+                                             )
 
        [level] =  
        [write_buttons] => yes or no
@@ -101,7 +149,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
-							              $write_button_only_if_linked = 0,$do_prune=0)
+							              $write_button_only_if_linked = 0,$do_prune=0,$add_custom_fields=0)
 {
 	$write_status = 'yes';
 	if($write_button_only_if_linked)
@@ -196,9 +244,14 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
+
+  				// 20080811 - franciscom - BUGID 1650 (REQ)
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'] = array();
+  				
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
   				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
   				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
+
   				$out[$parent_idx]['write_buttons'] = $write_status;
   				$out[$parent_idx]['testcase_qty']++;
   				$out[$parent_idx]['linked_testcase_qty'] = 0;
@@ -274,25 +327,23 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         // --------------------------------------------------------------------------
         if($the_tc['active'] == 1)
         {       
-  	      // 20080403 - franciscom
   	      if( !isset($out[$parent_idx]['testcases'][$tc_id]['execution_order']) )
   	      {
-              // Doing this I will set 1 as order for test cases that still are not linked.
-              // But Because I loop over all version (linked and not) if I write always
-              // I will overwrite rigth execution order of linked tcversion.
+              // Doing this I will set order for test cases that still are not linked.
+              // But Because I loop over all version (linked and not) if I always write, 
+              // will overwrite right execution order of linked tcversion.
               //
               // N.B.:
               // As suggested by Martin Havlat order will be set to external_id * 10
   	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $the_tc['tc_external_id']*10;
-
-              // 20080528 - franciscom
-    			    // $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
-  				    // $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
-              // $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
           } 
     			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
           $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+  				  
+  				// 20080811 - franciscom - BUGID 1650
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'][$the_tc['id']] = $the_tc['execution_type'];
+            
   				  
 		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
 				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
@@ -302,21 +353,24 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         
   			if(!is_null($linked_items))
   			{
-  				foreach($linked_items as $the_item)
+  				foreach($linked_items as $linked_testcase)
   				{
-  					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
-  						($the_item['tcversion_id'] == $the_tc['id']) )
+  					if(($linked_testcase['tc_id'] == $the_tc['testcase_id']) &&
+  						($linked_testcase['tcversion_id'] == $the_tc['id']) )
   					{
        				if( !isset($out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']]) )
        				{
         				$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 0;
                 $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+
+                // 20080811 - franciscom - BUGID 1650 (REQ)
+  	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'][$the_tc['id']] = $the_tc['execution_type'];
 				      }
-  						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
+  						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $linked_testcase['tcversion_id'];
               
               // 20080401 - franciscom
-              $exec_order= isset($the_item['execution_order'])? $the_item['execution_order']:0;
+              $exec_order= isset($linked_testcase['execution_order'])? $linked_testcase['execution_order']:0;
               $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $exec_order;
               
   						$out[$parent_idx]['write_buttons'] = 'yes';
@@ -324,13 +378,13 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   						
   						$result['has_linked_items'] = 1;
   						
-  						if(intval($the_item['executed']))
+  						if(intval($linked_testcase['executed']))
   							$out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
   						
-  						if( isset($the_item['user_id']))
-  							$out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($the_item['user_id']);
-  						if( isset($the_item['feature_id']))
-  							$out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($the_item['feature_id']);
+  						if( isset($linked_testcase['user_id']))
+  							$out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($linked_testcase['user_id']);
+  						if( isset($linked_testcase['feature_id']))
+  							$out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($linked_testcase['feature_id']);
   						break;
   					}
   				}
@@ -371,6 +425,44 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
       } // is_null($value)
     }
 	}
+	// --------------------------------------------------------------------------------------------
+
+	// --------------------------------------------------------------------------------------------
+	// BUGID 1650 (REQ)
+	if( count($result['spec_view']) > 0 && $add_custom_fields)
+	{                          
+	  // Important:
+	  // testplan_tcversions.id value, that is used to link to manage custom fields that are used
+	  // during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
+    foreach($result['spec_view'] as $key => $value) 
+    {
+      if( !is_null($value) )
+      {
+         if( isset($value['testcases']) && count($value['testcases']) > 0 )
+         {
+           foreach($value['testcases'] as $skey => $svalue)
+           {
+          
+             $linked_version_id=$svalue['linked_version_id'];
+             $result['spec_view'][$key]['testcases'][$skey]['custom_fields']='';
+            
+             // if( $linked_version_id != 0 && 
+             //     $svalue['tcversions_execution_type'][$linked_version_id]==TESTCASE_EXECUTION_TYPE_AUTO
+             //   )
+             //   
+             if( $linked_version_id != 0  )
+             {
+               $cf_name_suffix="_" . $svalue['feature_id'];
+               $cf_map=$tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+                                                                     $cf_name_suffix,$svalue['feature_id']);
+               $result['spec_view'][$key]['testcases'][$skey]['custom_fields']=$cf_map;
+             }
+           }
+         } 
+         
+      } // is_null($value)
+    }
+  }
 	// --------------------------------------------------------------------------------------------
 
 	return $result;

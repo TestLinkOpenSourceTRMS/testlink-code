@@ -2,9 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/03/24 20:07:03 $  $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/08/14 15:08:24 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20080810 - franciscom - documentation improvements
+ *                         BUGID 1650 (REQ)
+ *                         get_linked_cfields_at_design() - interface changes
  *
  * 20080304 - franciscom - prepare_string() before insert
  * 20080216 - franciscom - added testproject name to logAudit recorded information
@@ -37,13 +41,46 @@ class cfield_mgr
 	var $db;
 	var $tree_manager;
 
-  var $cfield_design_values_table="cfield_design_values";
+  // Why we are doing this ?
+  // To be ready in future to add a prefix on table names
+  //
   var $cfield_node_types_table="cfield_node_types";
+
+  var $object_table="custom_fields";
+  var $custom_fields_table="custom_fields";
+  var $cfield_design_values_table="cfield_design_values";
+  var $cfield_execution_values_table="cfield_execution_values";
+  var $cfield_testplan_design_values_table="cfield_testplan_design_values";
+  var $cfield_testprojects_table='cfield_testprojects';
+
   var $nodes_hierarchy_table="nodes_hierarchy";
   var $node_types_table="node_types";
 
 
-	// I'm using the same codes used by Mantis
+  // Hold string keys used on this object and pages that manages CF,
+  // identifying in what areas/features something will be done
+  // 'execution' => mainly on test execution pages,
+  //                identifies TL features/pages to record test results
+  // 
+  // 'design'    => test suites, test cases creation
+  //                identifies TL features/pages to create test specification
+  // 
+  // 'testplan_design' => link test cases to test plan (assign testcase option)
+  //
+  // IMPORTANT: this values are used as access keys in several properties of this object.
+  //            then if you add one here, remember to update other properties.
+  //
+  var $application_areas=array('execution','design','testplan_design');
+
+	// I'm using the same codes used by Mantis (franciscom)
+	//
+	// Define type of custom fields managed.
+	// Values will be displayed in "Custom Field Type" combo box when 
+	// users create custom fields. No localization is applied
+	// 
+  // 20080809 - franciscom
+  // Added specific type for test automation related custom fields.
+  // Start at code 500
   var $custom_field_types = array(0=>'string',
                                   1=>'numeric',
                                   2=>'float',
@@ -52,10 +89,14 @@ class cfield_mgr
                                   6=>'list',
                                   7=>'multiselection list',
                                   8=>'date',
-							                   20=>'text area');
+							                   20=>'text area',
+							                   500=>'script',
+							                   501=>'server');
 
-  // for what type of CF possible_values need
-  // to be manage at GUI level
+  // Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
+  // Keys of this map must be the values present in:
+  // $this->custom_field_types
+  // 
   var $possible_values_cfg = array('string' => 0,
                                    'numeric'=> 0,
                                    'float'=> 0,
@@ -64,8 +105,9 @@ class cfield_mgr
                                    'list' => 1,
                                    'multiselection list' => 1,
                                    'date' => 0,
-								                   'text area' => 0);
-
+								                   'text area' => 0,
+								                   'script'=> 0,
+								                   'server' => 0);
 
   // only the types listed here can have custom fields
 	//var $node_types = array('testproject',
@@ -80,8 +122,12 @@ class cfield_mgr
 	                        'requirement');
 
 
-  // Needed to manage user interface, when creating Custom Fields
+  // Needed to manage user interface, when creating Custom Fields.
+  // When user choose a item type (test case, etc), a javascript logic
+  // uses this information to hide/show enable_on, and show_on combos.
+  //
   // 0 => combo will not displayed
+  //
   var $enable_on_cfg=array('execution' => array('testsuite' => 0,
 	                                              'testplan'  => 0,
 	                                              'testcase'  => 1,
@@ -91,9 +137,16 @@ class cfield_mgr
 	                                           'testplan'  => 1,
 	                                           'testcase'  => 1,
 	                                           'requirement_spec' => 0,
-	                                           'requirement' => 0));
+	                                           'requirement' => 0),
+                           'testplan_design' => array('testsuite' => 1,
+	                                                    'testplan'  => 0,
+	                                                    'testcase'  => 1,
+	                                                    'requirement_spec' => 0,
+	                                                    'requirement' => 0));
 
   // 0 => combo will not displayed
+  // 20080809 - franciscom 
+  // Added 'testplan_design' key
   var $show_on_cfg=array('execution'=>array('testsuite' => 1,
 	                                          'testplan'  => 1,
 	                                          'testcase'  => 1,
@@ -103,7 +156,13 @@ class cfield_mgr
 	                                         'testplan'  => 1,
 	                                         'testcase'  => 1,
 	                                         'requirement_spec' => 0,
-	                                         'requirement' => 0 ));
+	                                         'requirement' => 0 ),
+                         'testplan_design' => array('testsuite' => 1,
+	                                         'testplan'  => 1,
+	                                         'testcase'  => 1,
+	                                         'requirement_spec' => 0,
+	                                         'requirement' => 0 )
+	                                         );
 
   // the name of html input will have the following format
   // <name_prefix>_<custom_field_type_id>_<progressive>
@@ -138,6 +197,19 @@ class cfield_mgr
 		$gui_cfg = $tlCfg->gui;
 		$this->sizes = $gui_cfg->custom_fields->sizes;
 	}
+
+  /*
+    function: get_application_areas
+
+    returns: 
+    
+    rev: 20080810 - franciscom
+  */
+	function get_application_areas()
+	{
+    return($this->application_areas);
+  }
+
 
   /*
     function: get_available_types
@@ -187,7 +259,7 @@ class cfield_mgr
   /*
     function: get_enable_on_cfg
 
-    returns: hash with node types id, that can have custom fields with enabled_on_exec.
+    returns: hash with node types id, that can have custom fields with enabled_on_$ui_mode.
              key  : node_type_id      (node_types.id)
              value: 1 -> enable on exec can be configured by user
 
@@ -215,7 +287,7 @@ class cfield_mgr
     function: _get_ui_mgtm_cfg_for_node_type
               utility method
 
-    returns: hash with node types id, that can have custom fields with enabled_on_exec.
+    returns: hash with node types id.
              key  : node_type_id      (node_types.id)
              value: 1 -> enable on exec can be configured by user
 
@@ -279,10 +351,13 @@ class cfield_mgr
                        Remember that also exist custom fields
                        that can be only used during TEST CASE EXECUTION.
 
-    [$show_on_execution]: default: null
-                          1 -> filter on field show_on_execution=1
-                          0 or null -> don't filter
+    [$filters]:default: null
+               map with keys:
+               [$show_on_execution]: 1 -> filter on field show_on_execution=1
+                                     0 or null or not exists -> don't filter
 
+               [$show_on_testplan_design]: 1 -> filter on field show_on_execution=1
+                                           0 or null or not exists -> don't filter
 
     [$node_type]: default: null
                   verbose id ('testcase', 'testsuite', etc) of a node type.
@@ -305,6 +380,11 @@ class cfield_mgr
 
 
     rev :
+          20080811 - franciscom
+          interface changes $show_on_execution -> $filters
+          
+         
+          
           20070526 - franciscom
           changed order by clause
 
@@ -314,7 +394,7 @@ class cfield_mgr
 
 
   */
-  function get_linked_cfields_at_design($tproject_id,$enabled,$show_on_execution=null,
+  function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
                                         $node_type=null,$node_id=null)
   {
     $additional_join="";
@@ -336,16 +416,25 @@ class cfield_mgr
                           " AND CFDV.node_id={$node_id} ";
     }
 
-    if( !is_null($show_on_execution) )
+    // 20080811 - franciscom - refactoring for BUGID 1650 (REQ)
+    if( !is_null($filters) )
     {
-     $additional_filter .= " AND CF.show_on_execution=1 ";
+        if( isset($filters['show_on_execution']) && !is_null($filters['show_on_execution']) )
+        {
+            $additional_filter .= " AND CF.show_on_execution=1 ";
+        }   
+        
+        if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
+        {
+            $additional_filter .= " AND CF.show_on_testplan_design=1 ";
+        }   
     }
 
     // 20070526 - added CF.id to order by
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
-         " FROM custom_fields CF " .
-         " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
+         " FROM {$this->object_table} CF " .
+         " JOIN {$this->cfield_testprojects_table} CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
          " WHERE CFTP.testproject_id={$tproject_id} " .
          " AND   CFTP.active=1     " .
@@ -517,12 +606,12 @@ class cfield_mgr
     function: design_values_to_db
               write values of custom fields that are used at design time.
 
-    args: $hash:
-          key: custom_field_<field_type_id>_<cfield_id>.
-               Example custom_field_0_67 -> 0=> string field
+    args: $hash: contains info about CF gathered at user interface.
+                 (normally $_REQUEST variable)
+                 key: custom_field_<field_type_id>_<cfield_id>.
+                      Example custom_field_0_67 -> 0=> string field
 
           $node_id:
-
           [$cf_map]:  hash -> all the custom fields linked and enabled
                               that are applicable to the node type of $node_id.
 
@@ -854,9 +943,14 @@ class cfield_mgr
                  enable_on_design
                  show_on_execute
                  enable_on_execute
+                 show_on_testplan_design
+                 enable_on_testplan_design
                  node_type_id
 
     returns: -
+
+    rev: 20080810 - franciscom - BUGID 1650
+
   */
 	function create($cf)
   {
@@ -870,9 +964,11 @@ class cfield_mgr
     $sql="INSERT INTO custom_fields " .
          " (name,label,type,possible_values, " .
          "  show_on_design,enable_on_design, " .
+         "  show_on_testplan_design,enable_on_testplan_design, " .
          "  show_on_execution,enable_on_execution) " .
          " VALUES('{$my_name}','{$my_label}',{$cf['type']},'{$my_pvalues}', " .
          "        {$cf['show_on_design']},{$cf['enable_on_design']}," .
+         "        {$cf['show_on_testplan_design']},{$cf['enable_on_testplan_design']}," .
          "        {$cf['show_on_execution']},{$cf['enable_on_execution']})";
     $result=$this->db->exec_query($sql);
 
@@ -907,6 +1003,8 @@ class cfield_mgr
                  enable_on_design
                  show_on_execute
                  enable_on_execute
+                 show_on_testplan_design
+                 enable_on_testplan_design
                  node_type_id
 
     returns: -
@@ -922,6 +1020,8 @@ class cfield_mgr
 			 "     type={$cf['type']},possible_values='{$my_pvalues}'," .
 			 "     show_on_design={$cf['show_on_design']}," .
 			 "     enable_on_design={$cf['enable_on_design']}," .
+			 "     show_on_testplan_design={$cf['show_on_testplan_design']}," .
+			 "     enable_on_testplan_design={$cf['enable_on_testplan_design']}," .
 			 "     show_on_execution={$cf['show_on_execution']}," .
 			 "     enable_on_execution={$cf['enable_on_execution']}" .
 			 " WHERE id={$cf['id']}";
@@ -939,7 +1039,7 @@ class cfield_mgr
 
 
   /*
-    function: update a custom field
+    function: delete a custom field
 
     args: $id
 
@@ -965,13 +1065,18 @@ class cfield_mgr
     args: $id: custom field id
 
     returns: 1/0
+    
+    rev: 20080810 - franciscom - BUGID 1650
   */
 	function is_used($id)
 	{
-	  $sql="SELECT field_id FROM cfield_design_values " .
+	  $sql="SELECT field_id FROM {$this->cfield_design_values} " .
 	       "WHERE  field_id={$id} " .
 	       "UNION " .
-	       "SELECT field_id FROM cfield_execution_values " .
+	       "SELECT field_id FROM {$this->cfield_tesplan_design_values} " .
+	       "WHERE  field_id={$id} " .
+	       "UNION " .
+	       "SELECT field_id FROM {$this->cfield_execution_values} " .
 	       "WHERE  field_id={$id} ";
 	  $result=$this->db->exec_query($sql);
 	  return($this->db->num_rows( $result ) > 0 ? 1 : 0);
@@ -1165,16 +1270,17 @@ class cfield_mgr
     function: execution_values_to_db
               write values of custom fields that are used at execution time.
 
-    args: $hash:
-          key: custom_field_<field_type_id>_<cfield_id>.
-               Example custom_field_0_67 -> 0=> string field
+    args: $hash: contains info about CF gathered at user interface.
+                 (normally $_REQUEST variable)
+                 key: custom_field_<field_type_id>_<cfield_id>.
+                      Example custom_field_0_67 -> 0=> string field
 
           $node_id:
           $execution_id:
           $testplan_id:
 
           [$cf_map]:  hash -> all the custom fields linked and enabled
-                            that are applicable to the node type of $node_id.
+                              that are applicable to the node type of $node_id.
 
                             For the keys not present in $hash, we will write
                             an appropriate value according to custom field
@@ -1194,9 +1300,7 @@ class cfield_mgr
     {
        return;
     }
-
     $cfield=$this->_build_cfield($hash,$cf_map);
-
     if( !is_null($cfield) )
     {
       foreach($cfield as $field_id => $type_and_value)
@@ -1210,7 +1314,7 @@ class cfield_mgr
         $safe_value=$this->db->prepare_string($value);
 
         # Remark got from Mantis code:
-  		  # Always store the value, even if it's the dafault value
+  		  # Always store the value, even if it's the default value
   		  # This is important, as the definitions might change but the
   		  #  values stored with a bug must not change
   		  $sql = "INSERT INTO cfield_execution_values " .
@@ -1227,14 +1331,25 @@ class cfield_mgr
 
   /*
     function: _build_cfield
-              support function useful for:
-              design_values_to_db()
-              execution_values_to_db()
-
+              support function useful for method used to write CF values to db:
+              - design_values_to_db()
+              - execution_values_to_db()
+              - testplan_design_values_to_db()
 
     args: $hash:
-           key: custom_field_<field_type_id>_<cfield_id>.
+           key: custom_field_<field_type_id>_<cfield_id>[_<name_suffix>][_<date_part>].
                 Example custom_field_0_67 -> 0=> string field
+                
+                In certain situation we can get:
+                custom_field_0_67_234
+                0 => string field
+                234 => item owner of CF.
+                       this happens when you can have multiple times same CF on a page, as happens
+                       on execution page if configure TL to work on all test cases in test suite,
+                       or when you use CF on testplan_design.
+                                                
+                To understand [<_date_part>] read below on "Notes on DATE PART - _build_cfield"
+
            value: can be an array, or a string depending the <field_type_id>
 
            $cf_map: hash
@@ -1281,6 +1396,8 @@ class cfield_mgr
       {
         if( strncmp($key,$cf_prefix,$len_cfp) == 0 )
         {
+          // Notes on DATE PART - _build_cfield
+          // 
           // When using Custom Fields on Test Spec:
           // key has this format (for every type except date )
           // custom_field_0_10 for every type except for type date.
@@ -1293,8 +1410,13 @@ class cfield_mgr
           // Position 3: CF id
           // Position 4: only available for date CF, is date part indicator
           //
-          // When using Custom Fields on Execution, another piece is added (TC id)
-          // then for a date CF, date part indicator is Position 5, instead of 4
+          // When using Custom Fields on Execution
+          // another piece is added (TC id) then for a date CF, 
+          // date part indicator is Position 5, instead of 4
+          //
+          // When using Custom Fields on Testplan Design 
+          // another piece is added (testplan_tcversion.id) then for a date CF, 
+          // date part indicator is Position 5, instead of 4
           //
           $dummy=explode('_',$key);
           $last_idx=count($dummy)-1;
@@ -1360,8 +1482,12 @@ class cfield_mgr
  } // function end
 
 
+
+
+
+
  /*
-   function:
+   function: set_display_order
 
    args :  $tproject_id: needed because is possible to associate/link
                          a different set of custom field for every test project
@@ -1477,6 +1603,209 @@ function getXMLServerParams($node_id){
 
   return $ret;
 } //function end
+
+
+
+  /*
+    function: testplan_design_values_to_db
+              write values of custom fields that are used at testplan design time.
+
+    args: $hash: contains info about CF gathered at user interface.
+                 (normally $_REQUEST variable)
+                 key: custom_field_<field_type_id>_<cfield_id>.
+                      Example custom_field_0_67 -> 0=> string field
+
+          $node_id: Remember that this CF are used to extend information
+                    on test cases (tcversions) linked to test plans.
+                    Then node_id can not point to other type of node than test case version,
+                    then node_id will contain a tcversion_id.
+                    
+                    I have leave this argument to 
+          
+          
+          
+          $link_id: Remember that this CF are used to extend information
+                    on test cases (tcversions) linked to test plans.
+                    Link information is store in testplan_tcversions table,
+                    $link_id points to this link (testplan_tcversions.id field)
+
+          [$cf_map]:  hash -> all the custom fields linked and enabled
+                              that are applicable to the node type of $node_id.
+
+                              For the keys not present in $hash, we will write
+                              an appropriate value according to custom field
+                              type.
+                              This is needed because when trying to udpate
+                              with hash being $_REQUEST, $_POST or $_GET
+                              some kind of custom fields (checkbox, list, multiple list)
+                              when has been deselected by user.
+                              
+          [$hash_type]:  NEED TO BE COMMENTED
+                         
+
+    rev:
+  */
+  function testplan_design_values_to_db($hash,$node_id,$link_id,$cf_map=null,$hash_type=null)
+  {
+    if( is_null($hash) && is_null($cf_map) )
+    {
+       return;
+    }
+    if( is_null($hash_type) )
+    {
+      $cfield=$this->_build_cfield($hash,$cf_map);
+    }
+    else
+    {
+      $cfield=$hash;
+    }
+
+    if( !is_null($cfield) )
+    {
+      foreach($cfield as $field_id => $type_and_value)
+      {
+        $value = $type_and_value['cf_value'];
+        // do I need to update or insert this value?
+        $sql = "SELECT value FROM {$this->cfield_testplan_design_values_table} " .
+    		 			 " WHERE field_id={$field_id} AND	link_id={$link_id}";
+
+        $result = $this->db->exec_query($sql);
+
+        if( $this->max_length_value > 0 && strlen($value) > $this->max_length_value)
+        {
+           $value = substr($value,0,$this->max_length_value);
+        }
+
+        $safe_value=$this->db->prepare_string($value);
+        if($this->db->num_rows( $result ) > 0 )
+        {
+
+          $sql = "UPDATE {$this->cfield_testplan_design_values_table} " .
+                 " SET value='{$safe_value}' " .
+    		 			   " WHERE field_id={$field_id} AND	link_id={$link_id}";
+        }
+        else
+        {
+          # Remark got from Mantis code:
+  		    # Always store the value, even if it's the dafault value
+  		    # This is important, as the definitions might change but the
+  		    #  values stored with a bug must not change
+  		    $sql = "INSERT INTO {$this->cfield_testplan_design_values_table} " .
+  					     " ( field_id, link_id, value ) " .
+  				       " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
+  		  }
+        $this->db->exec_query($sql);
+      } //foreach($cfield
+    } //if( !is_null($cfield) )
+
+  } //function end
+
+
+  
+  /*
+    function: get_linked_cfields_at_testplan_design
+              returns information about custom fields that can be used
+              at least at testplan design time (test case assignment), 
+              with the value assigned (is any has been assigned).
+
+
+    $tproject_id: needed because is possible to associate/link
+                  a different set of custom field for every test project
+
+    $enabled    : 1 -> get custom fields that are has been configured
+                       to be shown during test case execution AND are enabled.
+
+    [$node_type]: default: null
+                  verbose id ('testcase', 'testsuite', etc) of a node type.
+                  custom fields are linked also to different node types.
+                  Example:
+                  I can define a custom field "Aspect" with values
+                  Performace, Usability and wnat use it only for test suites.
+
+    [$node_id]: default: null
+                identification of a node/element on node hierarchy.
+                Needed when I want to get the value of custom fields
+                linked to a node.
+                Example:
+                Have two test cases (ID:9999, ID:89800), and want to get
+                the value assigned to custom field "Operating System".
+                I will do two calls to this method.
+
+                IMPORTANT:
+                Fot testplan_design Custom Field this will be a TCVERSION_ID,
+                not a TESTCASE_ID
+
+
+    [link_id]: points to testplan_tcversions.id field
+    [testplan_id]
+
+
+    returns: hash
+             key: custom field id
+             
+             
+
+  */
+  function get_linked_cfields_at_testplan_design($tproject_id,$enabled,
+                                                 $node_type=null,$node_id=null,
+                                                 $link_id=null,$testplan_id=null)
+  {
+    $additional_join="";
+    $additional_values="";
+    $additional_filter="";
+
+    if( !is_null($node_type) )
+    {
+   		$hash_descr_id = $this->tree_manager->get_available_node_types();
+      $node_type_id=$hash_descr_id[$node_type];
+
+      $additional_join  .= " JOIN {$this->cfield_node_types_table} CFNT ON CFNT.field_id=CF.id " .
+                           " AND CFNT.node_type_id={$node_type_id} ";
+    }
+    
+    /*
+    if( !is_null($node_id) && !is_null($link_id) && !is_null($testplan_id) )
+    {
+      $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
+      $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values} CFTDV ON CFEV.field_id=CF.id " .
+                          " AND CFTDV.tcversion_id={$node_id} " .
+                          " AND CFTDV.link_id={$link_id} " .
+                          " AND CFTDV.testplan_id={$testplan_id} ";
+    }
+    */
+    
+    // if( !is_null($node_id) && !is_null($link_id) )
+    // {
+    //   $additional_values .= ",CFTDV.value AS value,{$node_id} AS node_id";
+    //   $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values} CFTDV ON CFTDV.field_id=CF.id " .
+    //                       " AND CFTDV.link_id={$link_id} " .
+    // }
+
+    if( !is_null($link_id) )
+    {
+      $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id";
+      $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
+                          " ON CFTDV.field_id=CF.id " .
+                          " AND CFTDV.link_id={$link_id} ";
+    }
+
+    
+    
+    $sql="SELECT CF.*,CFTP.display_order" .
+         $additional_values .
+         " FROM {$this->custom_fields_table} CF " .
+         " JOIN {$this->cfield_testprojects_table} CFTP ON CFTP.field_id=CF.id " .
+         $additional_join .
+         " WHERE CFTP.testproject_id={$tproject_id} " .
+         " AND   CFTP.active=1     " .
+         " AND   CF.enable_on_testplan_design={$enabled} " .
+         " AND   CF.show_on_testplan_design=1 " .
+         " ORDER BY display_order,CF.id ";
+
+    $map = $this->db->fetchRowsIntoMap($sql,'id');
+    return($map);
+  }
+
 
 
 } // end class

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.335 $
- * @modified $Date: 2008/08/05 07:25:25 $ by $Author: franciscom $
+ * @version $Revision: 1.336 $
+ * @modified $Date: 2008/08/14 15:08:44 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -362,12 +362,14 @@ $TLS_available_on = "Available for";
 $TLS_custom_field = "Custom field";
 $TLS_enable_on_design = "Enable on <br />test specification";
 $TLS_enable_on_exec = "Enable on <br />test execution";
+$TLS_enable_on_testplan_design = "Enable on <br />test plan design";
 $TLS_label = "Label";
 $TLS_name = "Name";
 $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom field?";
 $TLS_possible_values = "Possible values";
 $TLS_show_on_design = "Display on <br />test specification";
 $TLS_show_on_exec = "Display on <br />test execution";
+$TLS_show_on_testplan_design = "Display on <br />test plan design";
 $TLS_testcase = $TLS_test_case;
 $TLS_title_cfields_mgmt = "Custom fields";
 $TLS_title_cfield_edit="Edit ";
@@ -940,6 +942,7 @@ $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_check = "Check";
 $TLS_btn_save_exec_order = "Save order";
+$TLS_btn_save_custom_fields ="Save custom fields";
 $TLS_btn_uncheck = "Uncheck";
 $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_check_uncheck_all_checkboxes="check/uncheck all";

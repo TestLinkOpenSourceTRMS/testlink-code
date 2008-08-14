@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.9 2008/05/10 17:59:15 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.10 2008/08/14 15:08:25 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -101,8 +101,8 @@ switch($args->level)
 		  $linked_items[$id]['tc_id'] = $args->id;
 
   		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-	  			                 $linked_items,$map_node_tccount,$args->keyword_id,
-	  			                 FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+	  			                 $linked_items,$map_node_tccount,$args->keyword_id,FILTER_BY_TC_OFF,
+	  			                 WRITE_BUTTON_ONLY_IF_LINKED);
 		}
 	  break;
 		

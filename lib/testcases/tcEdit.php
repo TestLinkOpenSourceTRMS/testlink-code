@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/07/06 11:01:14 $  by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/08/14 15:08:26 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20080706 - franciscom - force refresh tree when operation can put tree on
@@ -134,7 +134,6 @@ if($args->edit_tc)
   	}
 
 		$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
-
     $smarty->assign('cf',$cf_smarty);
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);

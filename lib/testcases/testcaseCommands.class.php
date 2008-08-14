@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/04/25 18:01:27 $  by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/08/14 15:08:26 $  by $Author: franciscom $
  * testcases commands
  *
  *
@@ -92,9 +92,9 @@ class testcaseCommands
 		    $refresh_tree='yes';
 		    $msg = '';
   			$ENABLED = 1;
-	  		$NO_FILTER_SHOW_ON_EXEC = null;
+	  		$NO_FILTERS = null;
 		  	$cf_map=$this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
-			                                                                  $ENABLED,$NO_FILTER_SHOW_ON_EXEC,'testcase') ;
+			                                                                     $ENABLED,$NO_FILTERS,'testcase') ;
 			  $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcase_id);
          
         $attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);

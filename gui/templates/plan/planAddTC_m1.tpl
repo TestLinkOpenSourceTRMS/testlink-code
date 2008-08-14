@@ -1,17 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.13 2008/05/11 22:13:22 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.14 2008/08/14 15:09:44 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
              th_id,th_test_case,version,execution_order,
-             no_testcase_available,
+             no_testcase_available,btn_save_custom_fields,
              has_been_executed,inactive_testcase,btn_save_exec_order,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
+{assign var="show_write_custom_fields" value=0}
 {if $gui->full_control eq 1}
   {assign var="execution_order_html_disabled" value=''}
 
@@ -219,6 +220,16 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
                 {* ------------------------------------------------------------------------- *}      
  
               </tr>
+              {* 20080813 - franciscom - BUGID 1650 (REQ) *}
+              {*
+              {if $tcase.tcversions_execution_type[$tcase.linked_version_id] == {$smarty.const.TESTCASE_EXECUTION_TYPE_AUTO} &&
+                  $tcase.custom_fields != ''}
+      				*}
+      				{if $tcase.custom_fields != ''}
+      				    <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
+                  {assign var="show_write_custom_fields" value=1}
+              <tr> <td colspan="7">{$tcase.custom_fields}</td> </tr>
+              {/if}
             {/if}  {* $tcase.tcversions_qty *}
            {/if} 
   	      {/foreach}
@@ -241,6 +252,12 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
           {if $gui->full_control eq 1}
            	<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
                    onclick="doAction.value=this.name" />
+
+            {if $show_write_custom_fields eq 1}
+             	<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}" 
+                     onclick="doAction.value=this.name" />
+            {/if}
+
           {/if}
    </div>
 

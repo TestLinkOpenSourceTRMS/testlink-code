@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.13 $
-$Date: 2008/07/01 07:27:33 $
-$Author: havlat $
+$Revision: 1.14 $
+$Date: 2008/08/14 15:07:50 $
+$Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
@@ -13,7 +13,10 @@ Change/Modify operation on columns:
 want to change NAME  -> CHANGE
 want to change column properties -> MODIFY
 
-rev: 20080622 - franciscom
+rev: 20080810 - franciscom
+     ALTER custom_fields table
+     
+     20080622 - franciscom
      added executions.tcversion_number
     
 */
@@ -122,6 +125,11 @@ ALTER TABLE requirements MODIFY COLUMN id int(10) unsigned NOT NULL;
 
 /* req_specs */
 ALTER TABLE req_specs MODIFY COLUMN   id int(10) unsigned NOT NULL;
+
+/* custom_fields */
+ALTER TABLE custom_fields ADD COLUMN show_on_testplan_design tinyint(3) unsigned NOT NULL default '0' AFTER enable_on_execution;
+ALTER TABLE custom_fields ADD COLUMN enable_on_testplan_design tinyint(3) unsigned NOT NULL default '0' AFTER show_on_testplan_design;
+ALTER TABLE custom_fields COMMENT = 'Updated to TL 1.8 RC1  - DB 1.2';
 
 
 /* data update */

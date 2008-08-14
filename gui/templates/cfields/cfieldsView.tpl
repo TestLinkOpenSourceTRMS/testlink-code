@@ -1,53 +1,59 @@
 {* 
-Testlink: smarty template - 
-$Id: cfieldsView.tpl,v 1.3 2008/05/06 06:25:57 franciscom Exp $ 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: cfieldsView.tpl,v 1.4 2008/08/14 15:09:44 franciscom Exp $ 
+
 rev :
-     20070128 - franciscom - variable name changes
+     20080810 - franciscom - BUGID 1650 (REQ)
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
+{lang_get var="labels"
+          s="name,label,type,title_cfields_mgmt,manage_cfield,btn_cfields_create,
+             show_on_design,enable_on_design,show_on_exec,enable_on_exec,
+             show_on_testplan_design,enable_on_testplan_design,available_on"}
+
 {include file="inc_head.tpl"}
-
 <body>
-
-<h1 class="title">{lang_get s='title_cfields_mgmt'}</h1>
-
+<h1 class="title">{$labels.title_cfields_mgmt}</h1>
 <div class="workBack">
-
-{if $cf_map neq '' }
+{if $cf_map != '' }
   <table class="simple" style="width: 90%">
   	<tr>
-  		<th>{lang_get s='name'}</th>
-  		<th>{lang_get s='label'}</th>
-  		<th>{lang_get s='type'}</th>
-  		<th>{lang_get s='show_on_design'}</th>
-  		<th>{lang_get s='enable_on_design'}</th>
-  		<th>{lang_get s='show_on_exec'}</th>
-  		<th>{lang_get s='enable_on_exec'}</th>
-  		<th>{lang_get s='available_on'}</th>
+  		<th>{$labels.name}</th>
+  		<th>{$labels.label}</th>
+  		<th>{$labels.type}</th>
+  		<th>{$labels.show_on_design}</th>
+  		<th>{$labels.enable_on_design}</th>
+  		<th>{$labels.show_on_exec}</th>
+  		<th>{$labels.enable_on_exec}</th>
+  		<th>{$labels.show_on_testplan_design}</th>
+  		<th>{$labels.enable_on_testplan_design}</th>
+  		<th>{$labels.available_on}</th>
   	</tr>
   
    	{foreach key=cf_id item=cf_def from=$cf_map}
    	<tr>
    	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf_def.id}"
-   	                    title="{lang_get s='manage_cfield'}">{$cf_def.name|escape}</a></td>
+   	                    title="{$labels.manage_cfield}">{$cf_def.name|escape}</a></td>
    	<td>{$cf_def.label|escape}</td>
    	<td>{$cf_types[$cf_def.type]}</td>
-   	<td align="center">{if $cf_def.show_on_design eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
-   	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
-   	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
-   	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
+   	<td align="center">{if $cf_def.show_on_design eq 1}<img src="{$checked_img}">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="{$checked_img}">{/if} </td>
+   	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="{$checked_img}">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="{$checked_img}">{/if} </td>
+   	<td align="center">{if $cf_def.show_on_testplan_design eq 1}<img src="{$checked_img}">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_testplan_design eq 1}<img src="{$checked_img}">{/if} </td>
    	<td>{lang_get s=$cf_def.node_description}</td>
    	
    	</tr>
    	{/foreach}
   </table>
-{/if} {* $cf_map neq '' *}
+{/if} {* $cf_map != '' *}
   
   <div class="groupBtn">
     <form method="post" action="lib/cfields/cfieldsEdit.php?do_action=create">
-      <input type="submit" name="create_cfield" value="{lang_get s='btn_cfields_create'}" />
+      <input type="submit" name="create_cfield" value="{$labels.btn_cfields_create}" />
     </form>
   </div>
 

@@ -1,11 +1,12 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.59 2008/06/29 17:22:19 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.60 2008/08/14 15:08:25 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20080813 - franciscom - BUGID 1650 (REQ)
 //      20080629 - franciscom - fixed missing variable bug
 //      20080510 - franciscom - multiple keyword filter with AND type
 //      20080404 - franciscom - reorder logic
@@ -44,6 +45,9 @@ if(is_array($args->keyword_id))
 $smarty = new TLSmarty();
 define('DONT_FILTER_BY_TCASE_ID',null);
 define('ANY_EXEC_STATUS',null);
+define('DONT_PRUNE',0);
+define('ADD_CUSTOM_FIELDS',1);
+define('WRITE_BUTTON_ONLY_IF_LINKED',0);
 
 switch($args->item_level)
 {
@@ -60,33 +64,38 @@ switch($args->item_level)
 
 switch($args->doAction)
 {
-	case 'doAddRemove':
-	// Remember:  checkboxes exist only if are checked
-	if(!is_null($args->testcases2add))
-	{
-		$atc = $args->testcases2add;
-		$atcversion = $args->tcversion_for_tcid;
-		$items_to_link = my_array_intersect_keys($atc,$atcversion);
-		$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
+    case 'doAddRemove':
+    // Remember:  checkboxes exist only if are checked
+    if(!is_null($args->testcases2add))
+    {
+    	$atc = $args->testcases2add;
+    	$atcversion = $args->tcversion_for_tcid;
+    	$items_to_link = my_array_intersect_keys($atc,$atcversion);
+    	$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
+    }
+
+    if(!is_null($args->testcases2remove))
+    {
+    	// remove without warning
+    	$rtc = $args->testcases2remove;
+    	$tplan_mgr->unlink_tcversions($args->tplan_id,$rtc);
+    }
+    doReorder($args,$tplan_mgr);
+    $do_display = 1;
+    break;
 	
-	}
-	if(!is_null($args->testcases2remove))
-	{
-		// remove without warning
-		$rtc = $args->testcases2remove;
-		$tplan_mgr->unlink_tcversions($args->tplan_id,$rtc);
-	}
-	doReorder($args,$tplan_mgr);
-	$do_display = 1;
-	break;
-	
-	case 'doReorder':
+    case 'doReorder':
 		doReorder($args,$tplan_mgr);
 		$do_display = 1;
 		break;
-	
-  	default:
+
+    case 'doSaveCustomFields':
+		doSaveCustomFields($args,$_REQUEST,$tplan_mgr,$tcase_mgr);
+		$do_display = 1;
 		break;
+	
+    default:
+    break;
 }
 
 if($do_display)
@@ -107,13 +116,13 @@ if($do_display)
 	    $testCaseSet=array_keys($keywordsTestCases);
 	}
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-	                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,$testCaseSet);
+	                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,
+	                     $testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,DONT_PRUNE,ADD_CUSTOM_FIELDS);
 		
     
   $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
   $gui->items = $out['spec_view'];
   $gui->has_linked_items = $out['has_linked_items'];
-
   $smarty->assign('gui', $gui);
   $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -155,16 +164,20 @@ function init_args()
 	$args->testcases2order = isset($_REQUEST['exec_order']) ? $_REQUEST['exec_order'] : null;
 	$args->linkedOrder = isset($_REQUEST['linked_exec_order']) ? $_REQUEST['linked_exec_order'] : null;
 	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
+	$args->linkedWithCF = isset($_REQUEST['linked_with_cf']) ? $_REQUEST['linked_with_cf'] : null;
+	
 	return $args;
 }
 
 /*
-  function: doSaveOrder
-            
+  function: doReorder
+            writes to DB execution order of test case versions 
+            linked to testplan.
 
-  args:
+  args: argsObj: user input data collected via HTML inputs
+        tplanMgr: testplan manager object
 
-  returns: 
+  returns: -
 
 */
 function doReorder(&$argsObj,&$tplanMgr)
@@ -239,5 +252,77 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 
 
     return $gui;
+}
+
+
+/*
+  function: doSaveCustomFields
+            writes to DB value of custom fields displayed
+            for test case versions linked to testplan.
+
+  args: argsObj: user input data collected via HTML inputs
+        tplanMgr: testplan manager object
+
+  returns: -
+
+*/
+function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
+{
+    // function testplan_design_values_to_db($hash,$node_id,$link_id,$cf_map=null,$hash_type=null)
+    // N.B.: I've use this piece of code also on write_execution(), think is time to create
+    //       a method on cfield_mgr class.
+    //       One issue: find a good method name
+    $cf_prefix=$tcaseMgr->cfield_mgr->get_name_prefix();
+	  $len_cfp=strlen($cf_prefix);
+    $cf_nodeid_pos=4;
+    
+  	$nodeid_array_cfnames=null;
+  	// Example: two test cases (21 adn 19 are testplan_tcversions.id)
+  	//          with 3 custom fields
+  	// (
+    // [21] => Array
+    //     (
+    //         [0] => custom_field_0_3_21
+    //         [1] => custom_field_0_7_21
+    //         [5] => custom_field_6_9_21_
+    //     )
+    // 
+    // [19] => Array
+    //     (
+    //         [0] => custom_field_0_3_19
+    //         [1] => custom_field_0_7_19
+    //         [5] => custom_field_6_9_19_
+    //     )
+    // )
+    //  	
+    foreach($userInput as $input_name => $value)
+    {
+        if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 )
+        {
+          $dummy=explode('_',$input_name);
+          $nodeid_array_cfnames[$dummy[$cf_nodeid_pos]][]=$input_name;
+        } 
+    }
+   
+    // foreach($argsObj->linkedWithCF as $key => $link_id)
+    foreach( $nodeid_array_cfnames as $link_id => $customFieldsNames)
+    {   
+        // Create a SubSet of userInput just with inputs regarding CF for a link_id
+        // Example for link_id=21:
+        //
+        // $cfvalues=( 'custom_field_0_3_21' => A
+        //             'custom_field_0_7_21' => 
+        //             'custom_field_8_8_21_day' => 0
+        //             'custom_field_8_8_21_month' => 0
+        //             'custom_field_8_8_21_year' => 0
+        //             'custom_field_6_9_21_' => Every day)
+        //
+        $cfvalues=null;
+        foreach($customFieldsNames as $cf)
+        {
+           $cfvalues[$cf]=$userInput[$cf];
+        }  
+        $tcaseMgr->cfield_mgr->testplan_design_values_to_db($cfvalues,null,$link_id);
+    }
 }
 ?>

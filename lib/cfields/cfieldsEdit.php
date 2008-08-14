@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/05/07 06:34:34 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/08/14 15:08:24 $ by $Author: franciscom $
  *
- * rev: 20080303 - franciscom - stdClass
+ * rev: 20080810 - franciscom - BUGID 1650 
+ *
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
@@ -24,9 +25,7 @@ $gui->cfield=null;
 $gui->cfield_is_used=0;
 $gui->cfield_types=$cfield_mgr->get_available_types();
 
-// $cf_is_used = 0;
 $result_msg = null;
-
 $do_control_combo_display = 1;
 
 $cfieldCfg=cfieldCfgInit($cfield_mgr);
@@ -39,6 +38,8 @@ $emptyCF = array('id' => $args->cfield_id,
 		             'enable_on_design' => 1,
 		             'show_on_execution' => 1,
 		             'enable_on_execution' => 1,
+		             'show_on_testplan_design' => 1,
+		             'enable_on_testplan_design' => 1,
 		             'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
 
 $gui->cfield = $emptyCF;
@@ -86,7 +87,7 @@ switch ($args->do_action)
 // To control combo display
 if( $do_control_combo_display )
 {
-  $keys2loop = array('execution','design');
+  $keys2loop = $cfield_mgr->get_application_areas();
 	foreach( $keys2loop as $ui_mode)
 	{
 		if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
@@ -109,11 +110,6 @@ $smarty->assign('gui',$gui);
 $smarty->assign('operation_descr',$operation_descr);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_action',$args->do_action);
-// $smarty->assign('cf_types',$cfield_mgr->get_available_types());
-// $smarty->assign('is_used',$cf_is_used);
-// $smarty->assign('cf',$cf);
-// $smarty->assign('cfieldCfg', $cfieldCfg);
-
 renderGui($smarty,$args,$cfield_mgr,$templateCfg);
 
 
@@ -131,6 +127,8 @@ renderGui($smarty,$args,$cfield_mgr,$templateCfg);
   returns: hash only with related to custom fields, where
            (keys,values) are the original with 'cf_' prefix, but
            in this new hash prefix on key is removed.
+           
+  rev: 20080811 - franciscom - added new values on missing_keys         
 
 */
 function request2cf($hash)
@@ -148,6 +146,8 @@ function request2cf($hash)
                         'enable_on_design' => 1,
                         'show_on_execution' => 0,
                         'enable_on_execution' => 0,
+                        'show_on_testplan_design' => 0,
+                        'enable_on_testplan_design' => 0,
                         'possible_values' => ' ' );
 
 	$cf_prefix = 'cf_';
@@ -339,22 +339,22 @@ function doDelete(&$argsObj,&$cfieldMgr)
 
   args :
 
-  returns:
+  returns: object with configuration options
+  
+  rev: 20080810 - franciscom - BUGID 1650 (REQ - CF on testplan_design)
 
 */
 function cfieldCfgInit($cfieldMgr)
 {
     $cfg = new stdClass();
-    $cfg->disabled_cf_enable_on = array('execution' => '', 'design' => '');
-    $cfg->disabled_cf_show_on = array('execution' => '', 'design' => '');
-
-    $keys2loop = array('execution','design');
-    foreach($keys2loop as $ui_mode)
+    $cfAppAreas=$cfieldMgr->get_application_areas();     // 20080810 - BUGID 1650 - Start
+    foreach($cfAppAreas as $area)
     {
-    	$cfg->enable_on_cfg[$ui_mode] = $cfieldMgr->get_enable_on_cfg($ui_mode);
-    	$cfg->show_on_cfg[$ui_mode] = $cfieldMgr->get_show_on_cfg($ui_mode);
-    }
-
+        $cfg->disabled_cf_enable_on[$area]='';
+        $cfg->disabled_cf_show_on[$area]='';
+    	  $cfg->enable_on_cfg[$area] = $cfieldMgr->get_enable_on_cfg($area);
+    	  $cfg->show_on_cfg[$area] = $cfieldMgr->get_show_on_cfg($area);
+    }// 20080810 - BUGID 1650 - End
 
     $cfg->possible_values_cfg = $cfieldMgr->get_possible_values_cfg();
     $cfg->allowed_nodes = $cfieldMgr->get_allowed_nodes();

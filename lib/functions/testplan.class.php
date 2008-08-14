@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/07/18 14:26:23 $ by $Author: havlat $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/08/14 15:08:25 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -23,6 +23,10 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *  20080811 - franciscom - BUGID 1650 (REQ)
+ *                          html_table_of_custom_field_values() interface changes
+ *                          {$this->builds_table} instead of 'builds'
+ *
  * 	20080717 - havlatm - added get_node_name
  *  20080705 - franciscom - changes due to test case urgency has been made.
  *  20080629 - franciscom - improments in audit info - link_tcversions(), unlink_tcversions()
@@ -89,6 +93,7 @@ class testplan extends tlObjectWithAttachments
 
 	var $builds_table="builds";
  	var $testplan_tcversions_table="testplan_tcversions";
+  var $cfield_design_values_table="cfield_design_values";
 
 	var $assignment_types;
 	var $assignment_status;
@@ -1572,23 +1577,32 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
 
   args: $id
         [$scope]: 'design','execution'
-        [$show_on_execution]: default: null
-                              1 -> filter on field show_on_execution=1
-                              0 or null -> don't filter
+        
+        [$filters]:default: null
+                            
+                           map with keys:
+        
+                           [show_on_execution]: default: null
+                                                1 -> filter on field show_on_execution=1
+                                                     include ONLY custom fields that can be viewed
+                                                     while user is execution testcases.
+                           
+                                                0 or null -> don't filter
 
   returns: html string
 
   rev :
+       20080811 - franciscom - BUGID 1650 (REQ)
        20070701 - franciscom - fixed return string when there are no custom fields.
 */
-function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null)
+function html_table_of_custom_field_values($id,$scope='design',$filters=null)
 {
   $cf_smarty='';
   $parent_id=null;
 
   if( $scope=='design' )
   {
-    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
   }
   else
   {
@@ -1602,7 +1616,6 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       // if user has assigned a value, then node_id is not null
       if($cf_info['node_id'])
       {
-        // 20070501 - franciscom
         $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
         $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                       $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
@@ -1642,12 +1655,12 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
             {
                 $passed = 0;
                 // there will never be more than one record that has a field_id / node_id combination
-                $sql = "SELECT value FROM cfield_design_values " .
+                $sql = "SELECT value FROM {$this->cfield_design_values_table} " .
                         "WHERE field_id = $cf_id " .
                         "AND node_id = $tc_id ";
 
                 $result = $this->db->exec_query($sql);
-    			$myrow = $this->db->fetch_array($result);
+    			      $myrow = $this->db->fetch_array($result);
 
                 // push both to arrays so we can compare
                 $possibleValues = explode ('|', $myrow['value']);
@@ -1699,6 +1712,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 class build_mgr
 {
 	var $db;
+	var $builds_table="builds";
 
   /*
    function:
@@ -1732,7 +1746,7 @@ class build_mgr
   */
   function create($tplan_id,$name,$notes = '',$active=1,$open=1)
   {
-  	$sql = " INSERT INTO builds (testplan_id,name,notes,active,is_open) " .
+  	$sql = " INSERT INTO {$this->builds_table} (testplan_id,name,notes,active,is_open) " .
   	       " VALUES ('". $tplan_id . "','" .
   	                     $this->db->prepare_string($name) . "','" .
   	                     $this->db->prepare_string($notes) . "'," .
@@ -1742,7 +1756,7 @@ class build_mgr
   	$result = $this->db->exec_query($sql);
   	if ($result)
   	{
-  		$new_build_id = $this->db->insert_id('builds');
+  		$new_build_id = $this->db->insert_id($this->builds_table);
   	}
 
   	return $new_build_id;
@@ -1767,7 +1781,7 @@ class build_mgr
   */
   function update($id,$name,$notes,$active=null,$open=null)
   {
-  	$sql = " UPDATE builds " .
+  	$sql = " UPDATE {$this->builds_table} " .
   	       " SET name='" . $this->db->prepare_string($name) . "'," .
   	       "     notes='" . $this->db->prepare_string($notes) . "'";
 
@@ -1813,7 +1827,7 @@ class build_mgr
   	$result=$this->db->exec_query($sql);
 
   	//
-  	$sql = " DELETE FROM builds " .
+  	$sql = " DELETE FROM {$this->builds_table} " .
   	       " WHERE id={$id}";
 
   	$result=$this->db->exec_query($sql);
@@ -1839,7 +1853,7 @@ class build_mgr
   */
   function get_by_id($id)
   {
-  	$sql = "SELECT * FROM builds WHERE id = {$id}";
+  	$sql = "SELECT * FROM {$this->builds_table} WHERE id = {$id}";
   	$result = $this->db->exec_query($sql);
   	$myrow = $this->db->fetch_array($result);
   	return $myrow;

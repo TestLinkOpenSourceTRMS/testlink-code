@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchForm.php,v 1.16 2008/05/09 17:14:19 schlundus Exp $
+ * $Id: searchForm.php,v 1.17 2008/08/14 15:08:25 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
 **/
@@ -15,10 +15,10 @@ $tproject_mgr = new testproject($db);
 $args = init_args();
 
 $enabled = 1;
-$no_show_filter = null;
+$no_filters = null;
 $mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 $cf_map_for_tcases = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
-	                                                                           $no_show_filter,'testcase');
+	                                                                           $no_filters,'testcase');
 
 $smarty = new TLSmarty();
 $smarty->assign('mainCaption',$mainCaption);

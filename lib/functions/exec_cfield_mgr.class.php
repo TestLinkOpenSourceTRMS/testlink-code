@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/03/26 20:39:32 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/08/14 15:08:24 $ $Author: franciscom $
  * @author jbarchibald
  *
  * rev :
@@ -67,6 +67,7 @@ class exec_cfield_mgr extends cfield_mgr
       returns: array
 
       rev :
+           20080811 - franciscom - BUGID 1650 (REQ)
            20071006 - franciscom - interface changed
 
     */
@@ -74,12 +75,10 @@ class exec_cfield_mgr extends cfield_mgr
     {
 
       $enabled=1;
-      $show_on_execution=1;
+      $filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
 
       // this is calling the parent method
-      // 20071006 - $_SESSION['testprojectID']
-      $cf = $this->get_linked_cfields_at_design($tproject_id,$enabled,
-                                                $show_on_execution,'testcase');
+      $cf = $this->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testcase');
 
       // does not make sence to include the text area here..
       // need to strip it out of the array..

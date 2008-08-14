@@ -2,9 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.112 $
- * @modified $Date: 2008/06/02 13:10:13 $ $Author: franciscom $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2008/08/14 15:08:24 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20080812 - franciscom - BUGID 1650 (REQ)
+ *                         html_table_of_custom_field_inputs() interface changes
+ *                         to manage custom fields with scope='testplan_design'
  *
  * 20080602 - franciscom - get_linked_versions() - internal changes due to BUG1504
  *                         get_exec_status() - interface and internal changes due to BUG1504
@@ -2402,14 +2406,26 @@ function copy_attachments($source_id,$target_id)
                      null -> use testcase_id as starting point.
                      !is_null -> use this value as starting point.
 
-        [show_on_execution]: default: null
-                             1 -> filter on field show_on_execution=1
-                                  include ONLY custom fields that can be viewed
-                                  while user is execution testcases.
+        [$filters]:default: null
+                    
+                   map with keys:
 
-                             0 or null -> don't filter
+                   [show_on_execution]: default: null
+                                        1 -> filter on field show_on_execution=1
+                                             include ONLY custom fields that can be viewed
+                                             while user is execution testcases.
+                   
+                                        0 or null -> don't filter
 
+                   [show_on_testplan_design]: default: null
+                                              1 -> filter on field show_on_testplan_design=1
+                                                   include ONLY custom fields that can be viewed
+                                                   while user is designing test plan.
+                                              
+                                              0 or null -> don't filter
 
+                   More comments/instructions on cfield_mgr->get_linked_cfields_at_design()
+                   
   returns: map/hash
            key: custom field id
            value: map with custom field definition and value assigned for choosen testcase,
@@ -2440,12 +2456,10 @@ function copy_attachments($source_id,$target_id)
        20070302 - check for $id not null, is not enough, need to check is > 0
 
 */
-function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null)
+function get_linked_cfields_at_design($id,$parent_id=null,$filters=null)
 {
 	$enabled = 1;
 	$tproject_mgr = new testproject($this->db);
-
-	// 20070302 - added $id > 0
 	$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
 	$path_len = count($the_path);
 
@@ -2453,8 +2467,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 	//            generating errors (no cf displayed) when editing TC
 	// $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
-	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-	                                                          $show_on_execution,'testcase',$id);
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testcase',$id);
 
 	return $cf_map;
 }
@@ -2466,7 +2479,14 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
             Used to manage user actions on custom fields values.
 
 
-  args: $id
+  args: $id: IMPORTANT: 
+             we can receive 0 in this arguments and THERE IS NOT A problem
+             if parent_id arguments has a value.
+             Because argument id or parent_id are used to understand what is
+             testproject where test case belong, in order to get custom fields
+             assigned/linked to test project. 
+                     
+                
         [parent_id]: node id of parent testsuite of testcase.
                      need to undertad to which testproject the testcase belongs.
                      this information is vital, to get the linked custom fields.
@@ -2481,27 +2501,46 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 
         [$name_suffix]: must start with '_' (underscore).
                         Used when we display in a page several items
-                        (example during test case execution, several test cases)
+                        example:
+                                during test case execution, several test cases
+                                during testplan design (assign test case to testplan).
+                        
                         that have the same custom fields.
                         In this kind of situation we can use the item id as name suffix.
 
+        [link_id]: default null
+                   used only when scope='testplan_design'.
+                   link_id=testplan_tcversions.id this value is also part of key
+                   to access CF values on new table that hold values assigned
+                   to CF used on the 'tesplan_design' scope.
+                   
 
   returns: html string
+  
+  rev: 20080811 - franciscom - BUGID 1650 (REQ)
 
 */
-function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='')
+function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$link_id=null)
 {
 	$cf_smarty = '';
 
-	if($scope == 'design')
-	{
-		$cf_map = $this->get_linked_cfields_at_design($id,$parent_id);
-	}
-	else
-	{
-		$cf_map = $this->get_linked_cfields_at_execution($id,$parent_id);
-	}
+  // BUGID 1650
+  $cf_scope=trim($scope);
+  $method_name='get_linked_cfields_at_' . $cf_scope;
+  
+  switch($cf_scope)
+  {
+      case 'testplan_design':
+          $cf_map = $this->$method_name($id,$parent_id,null,$link_id);    
+      break;
 
+      case 'design':
+      case 'execution':
+          $cf_map = $this->$method_name($id,$parent_id);    
+      break;
+        
+  }
+  
 	if(!is_null($cf_map))
 	{
 		$cf_smarty = "<table>";
@@ -2532,9 +2571,27 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
         [$scope]: 'design' -> use custom fields that can be used at design time (specification)
                   'execution' -> use custom fields that can be used at execution time.
 
-        [$show_on_execution]: default: null
-                              1 -> filter on field show_on_execution=1
-                              0 or null -> don't filter
+
+        [$filters]:default: null
+                    
+                   map with keys:
+
+                   [show_on_execution]: default: null
+                                        1 -> filter on field show_on_execution=1
+                                             include ONLY custom fields that can be viewed
+                                             while user is execution testcases.
+                   
+                                        0 or null -> don't filter
+
+                   [show_on_testplan_design]: default: null
+                                              1 -> filter on field show_on_testplan_design=1
+                                                   include ONLY custom fields that can be viewed
+                                                   while user is designing test plan.
+                                              
+                                              0 or null -> don't filter
+
+                   More comments/instructions on cfield_mgr->get_linked_cfields_at_design()
+                              
 
         [$execution_id]: null -> get values for all executions availables for testcase
                          !is_null -> only get values or this execution_id
@@ -2545,7 +2602,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
   returns: html string
 
 */
-function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,
+function html_table_of_custom_field_values($id,$scope='design',$filters=null,
                                            $execution_id=null,$testplan_id=null)
 {
 	$cf_smarty = '';
@@ -2553,11 +2610,11 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 
 	if($scope=='design')
 	{
-		$cf_map = $this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$show_on_execution);
+		$cf_map = $this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$filters);
 	}
 	else
 	{
-		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$show_on_execution,
+		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$filters,
 		                                                 $execution_id,$testplan_id);
 	}
 
@@ -2676,6 +2733,82 @@ function copy_cfields_design_values($from_id,$to_id)
     }
   }
   $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
+}
+
+
+/*
+  function: get_linked_cfields_at_testplan_design
+
+
+  args: $id
+        [$parent_id]
+
+        [$filters]:default: null
+                    
+                   map with keys:
+
+                   [show_on_execution]: default: null
+                                        1 -> filter on field show_on_execution=1
+                                             include ONLY custom fields that can be viewed
+                                             while user is execution testcases.
+                   
+                                        0 or null -> don't filter
+
+                   [show_on_testplan_design]: default: null
+                                              1 -> filter on field show_on_testplan_design=1
+                                                   include ONLY custom fields that can be viewed
+                                                   while user is designing test plan.
+                                              
+                                              0 or null -> don't filter
+
+                   More comments/instructions on cfield_mgr->get_linked_cfields_at_design()
+
+
+        [$execution_id]: null -> get values for all executions availables for testcase
+                         !is_null -> only get values or this execution_id
+
+        [$testplan_id]: null -> get values for any tesplan to with testcase is linked
+                        !is_null -> get values only for this testplan.
+
+  returns: hash
+           key: custom field id
+           value: map with custom field definition, with keys:
+
+				          id: custom field id
+          				name
+          				label
+          				type
+          				possible_values
+          				default_value
+          				valid_regexp
+          				length_min
+          				length_max
+          				show_on_design
+          				enable_on_design
+          				show_on_execution
+          				enable_on_execution
+          				display_order
+
+
+*/
+function get_linked_cfields_at_testplan_design($id,$parent_id=null,$filters=null,
+                                               $link_id=null,$testplan_id=null)
+{
+	$enabled = 1;
+	$tproject_mgr = new testproject($this->db);
+
+	$the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
+	$path_len = count($the_path);
+
+	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+
+	// Warning:
+	// I'm setting node type to test case, but $id is the tcversion_id, because
+	// link data is related to tcversion NO testcase
+	//
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,'testcase',
+	                                                                   $id,$link_id,$testplan_id);
+	return($cf_map);
 }
 
 } // end class

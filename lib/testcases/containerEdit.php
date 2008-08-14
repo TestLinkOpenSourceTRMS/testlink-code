@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/06/03 20:32:26 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/08/14 15:08:25 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -364,11 +364,11 @@ function init_args($optionTransferCfg)
 function writeCustomFieldsToDB(&$db,$tprojectID,$tsuiteID,&$hash)
 {
     $ENABLED=1;
-    $NO_FILTER_SHOW_ON_EXEC = null;
+    $NO_FILTERS = null;
 
     $cfield_mgr = new cfield_mgr($db);
     $cf_map = $cfield_mgr->get_linked_cfields_at_design($tprojectID,$ENABLED,
-                                                        $NO_FILTER_SHOW_ON_EXEC,'testsuite');
+                                                        $NO_FILTERS,'testsuite');
     $cfield_mgr->design_values_to_db($hash,$tsuiteID,$cf_map);
 }
 

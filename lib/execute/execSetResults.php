@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2008/05/04 10:33:33 $ $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2008/08/14 15:08:24 $ $Author: franciscom $
  *
+ * 20080811 - franciscom - BUGID 1650 (REQ)
  * 20080224 - franciscom - to avoid performance problems
  *                         clicking on root node will NOT try to display
  *                         all testcases in testplan.
@@ -434,7 +435,6 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
 				$bugs[$exec_id] = $the_bugs;
   		}
 
-     
       // Custom fields
       $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
                                                                                $exec_id,$tplan_id);
@@ -756,7 +756,7 @@ function initializeRights(&$dbHandler,$user_id,$tproject_id,$tplan_id)
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 {
     $gui = new stdClass();
-    
+    $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
     $buildMgr = new build_mgr($dbHandler);
 
     $gui->ownerDisplayName = null;
@@ -803,7 +803,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
     $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'execution',
-                                                                          FILTER_BY_SHOW_ON_EXECUTION);
+                                                                          $cf_filters);
 
     $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                          'btn_history_on','btn_history_off','history_on');
@@ -820,36 +820,38 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   
   returns: 
 
-  rev: 
+  rev: 20080811 - franciscom - BUGID 1650 (REQ)
+  
 */
 function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$treeMgr,&$tcaseMgr,&$docRepository)
 {     
-      $guiObj->design_time_cfields='';
-  		
-  		$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id]['tcversion_id'];    
-  		$tcase_id = $argsObj->id;
-  		$tcversion_id = $linked_tcversions[$argsObj->id]['tcversion_id'];
-  		$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
-      $guiObj->tcasePrefix=$tcaseMgr->getPrefix($tcase_id) . $cfgObj->testcase_cfg->glue_character;
-      
-      
-  		$guiObj->design_time_cfields[$argsObj->id] = 
-  		         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',EXEC_SHOW_ON_EXECUTION);
-  		
-      // BUGID 856: Guest user can execute test case
-  		if($guiObj->grants->execute)
-  		{
-  		   $guiObj->execution_time_cfields[$argsObj->id] = 
-  		            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,EXEC_PID_NOT_NEEDED,
-  		                                                         'execution',"_{$argsObj->id}");
-  		}
-  		
-      // 20070405 - BUGID 766
-      $tc_info=$treeMgr->get_node_hierachy_info($tcase_id);
-	    $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
-		                                                                        'nodes_hierarchy',true,1);
-		                                                                        
-      return array($tcase_id,$tcversion_id);
+    $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
+    $guiObj->design_time_cfields='';
+  	
+  	$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id]['tcversion_id'];    
+  	$tcase_id = $argsObj->id;
+  	$tcversion_id = $linked_tcversions[$argsObj->id]['tcversion_id'];
+  	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
+    $guiObj->tcasePrefix=$tcaseMgr->getPrefix($tcase_id) . $cfgObj->testcase_cfg->glue_character;
+    
+    
+  	$guiObj->design_time_cfields[$argsObj->id] = 
+  	         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$cf_filters);
+  	
+    // BUGID 856: Guest user can execute test case
+  	if($guiObj->grants->execute)
+  	{
+  	   $guiObj->execution_time_cfields[$argsObj->id] = 
+  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,EXEC_PID_NOT_NEEDED,
+  	                                                         'execution',"_{$argsObj->id}");
+  	}
+  	
+    // 20070405 - BUGID 766
+    $tc_info=$treeMgr->get_node_hierachy_info($tcase_id);
+	  $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
+		                                                                      'nodes_hierarchy',true,1);
+		                                                                      
+    return array($tcase_id,$tcversion_id);
 }
 
 
@@ -942,12 +944,14 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
   
   returns: 
 
-  rev: 
+  rev: 20080811 - franciscom - BUGID 1650 (REQ)
+
 */
 function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
                           &$treeMgr,&$tcaseMgr,&$docRepository)
 {
     $testSet=new stdClass();
+    $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)    
     
     $tsuite_mgr=new testsuite($dbHandler); 
     $tsuite_data = $tsuite_mgr->get_by_id($argsObj->id);
@@ -989,7 +993,7 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     
          // --------------------------------------------------------------------------------------
     		 $guiObj->design_time_cfields[$item['tc_id']] = $tcaseMgr->html_table_of_custom_field_values($item['tc_id'],
-    				                                                                       'design',EXEC_SHOW_ON_EXECUTION);
+    				                                                                       'design',$cf_filters);
     				                                                                        
          // BUGID 856: Guest user can execute test case
     		 if($guiObj->grants->execute)

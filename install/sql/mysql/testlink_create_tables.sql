@@ -1,12 +1,17 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.41 2008/07/21 10:12:38 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.42 2008/08/14 15:08:00 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#
+# 20080810 - franciscom - BUGID 1650 (REQ)
+#                         custom_fields.show_on_testplan_design
+#                         custom_fields.enable_on_testplan_design
+#                         new table cfield_testplan_design_values 
 #
 # 20080720 - franciscom - fixed bug on text_templates definition
 # 20080703 - franciscom - removed MyISAM on create table
@@ -398,6 +403,17 @@ CREATE TABLE `cfield_execution_values` (
   PRIMARY KEY  (`field_id`,`execution_id`,`testplan_id`,`tcversion_id`)
 ) DEFAULT CHARSET=utf8;
 
+CREATE TABLE `cfield_testplan_design_values` (
+  `field_id` int(10) NOT NULL default '0',
+  `link_id` int(10) NOT NULL default '0' COMMENT 'point to testplan_tcversion id',   
+  `value` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`link_id`),
+  KEY `idx_cfield_tplan_design_val` (`link_id`)
+) DEFAULT CHARSET=utf8;
+
+
+# 20080809 - franciscom - new fields to display custom fields in new areas
+#                         test case linking to testplan (test plan design)
 CREATE TABLE `custom_fields` (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
@@ -412,6 +428,8 @@ CREATE TABLE `custom_fields` (
   `enable_on_design` tinyint(3) unsigned NOT NULL default '1' COMMENT '1=> user can write/manage it during specification design',
   `show_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> show it during test case execution',
   `enable_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> user can write/manage it during test case execution',
+  `show_on_testplan_design` tinyint(3) unsigned NOT NULL default '0' ,
+  `enable_on_testplan_design` tinyint(3) unsigned NOT NULL default '0' ,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `idx_custom_fields_name` (`name`)
 ) DEFAULT CHARSET=utf8;

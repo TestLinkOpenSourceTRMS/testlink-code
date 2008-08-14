@@ -1,6 +1,6 @@
 {*
-Testlink: smarty template -
-$Id: cfieldsEdit.tpl,v 1.12 2008/05/19 10:24:03 havlat Exp $
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: cfieldsEdit.tpl,v 1.13 2008/08/14 15:09:44 franciscom Exp $
 
 
 Important Development note:
@@ -10,6 +10,11 @@ Input names:
             cf_enable_on_design
             cf_enable_on_execution
 
+            20080809 - franciscom - BUGID 1650
+            cf_show_on_testplan_design
+            cf_enable_on_testplan_design
+
+
 can not be changed, because there is logic on cfields_edit.php
 that dependens on these names.
 As you can see these names are build adding 'cf_' prefix to name
@@ -18,6 +23,8 @@ This is done to simplify logic.
 
 
 rev :
+     20080810 - franciscom - BUGID 1650 (REQ)
+
      20071209 - franciscom - added user feedback to explain
                              why certain changes can not be done.
 
@@ -40,7 +47,7 @@ rev :
 {lang_get var="labels"
           s="btn_ok,warning_is_in_use,warning,name,label,type,possible_values,
              warning_empty_cfield_name,warning_empty_cfield_label,
-             btn_add,btn_cancel,show_on_design"}
+             btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -70,6 +77,8 @@ js_enable_on_cfg['oid_prefix']['container'] = 'container_cf_enable_on_';
 // will containg show (1 /0 ) info for every node type
 js_enable_on_cfg['execution'] = new Array();
 js_enable_on_cfg['design'] = new Array();
+js_enable_on_cfg['testplan_design'] = new Array();  // BUGID 1650 (REQ)
+
 
 // DOM Object ID (oid)
 js_show_on_cfg['oid_prefix'] = new Array();
@@ -79,6 +88,7 @@ js_show_on_cfg['oid_prefix']['container'] = 'container_cf_show_on_';
 // will containg show (1 /0 ) info for every node type
 js_show_on_cfg['execution'] = new Array();
 js_show_on_cfg['design'] = new Array();
+js_show_on_cfg['testplan_design'] = new Array();  // BUGID 1650 (REQ)
 
 {foreach key=node_type item=cfg_def from=$gui->cfieldCfg->enable_on_cfg.execution}
   js_enable_on_cfg['execution'][{$node_type}]={$cfg_def};
@@ -88,6 +98,12 @@ js_show_on_cfg['design'] = new Array();
   js_enable_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
 
+// BUGID 1650 (REQ)
+{foreach key=node_type item=cfg_def from=$gui->cfieldCfg->enable_on_cfg.testplan_design}
+  js_enable_on_cfg['testplan_design'][{$node_type}]={$cfg_def};
+{/foreach}
+
+
 {foreach key=node_type item=cfg_def from=$gui->cfieldCfg->show_on_cfg.execution}
   js_show_on_cfg['execution'][{$node_type}]={$cfg_def};
 {/foreach}
@@ -95,8 +111,12 @@ js_show_on_cfg['design'] = new Array();
 {foreach key=node_type item=cfg_def from=$gui->cfieldCfg->show_on_cfg.design}
   js_show_on_cfg['design'][{$node_type}]={$cfg_def};
 {/foreach}
-// -------------------------------------------------------------------------------
 
+// BUGID 1650 (REQ)
+{foreach key=node_type item=cfg_def from=$gui->cfieldCfg->show_on_cfg.testplan_design}
+  js_show_on_cfg['testplan_design'][{$node_type}]={$cfg_def};
+{/foreach}
+// -------------------------------------------------------------------------------
 
 var js_possible_values_cfg = new Array();
 {foreach key=cf_type item=cfg_def from=$gui->cfieldCfg->possible_values_cfg}
@@ -151,9 +171,11 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   var keys2loop=new Array();
   var idx;
   var key;
-
+  
   keys2loop[0]='execution';
   keys2loop[1]='design';
+  keys2loop[2]='testplan_design'; // BUGID 1650 - 20080809 - franciscom
+
 
   // ------------------------------------------------------------
   // Enable on
@@ -405,6 +427,45 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			</td>
 		</tr>
     {* ------------------------------------------------------------------------------- *}
+
+    {* ------------------------------------------------------------------------------- *}
+    {* Test Plan Design   *}
+    {if $gui->cfieldCfg->disabled_cf_show_on.testplan_design}
+      {assign var="display_style" value="none"}
+    {else}
+      {assign var="display_style" value=""}
+    {/if}
+
+		<tr id="container_cf_show_on_testplan_design" style="display:{$display_style};">
+			<th style="background:none;">{$labels.show_on_testplan_design}</th>
+			<td>
+				<select id="cf_show_on_testplan_design"
+				        name="cf_show_on_testplan_design"
+			        	{$gui->cfieldCfg->disabled_cf_show_on.testplan_design} >
+				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_testplan_design}
+				</select>
+			</td>
+		</tr>
+
+
+		{if $gui->cfieldCfg->disabled_cf_enable_on.testplan_design}
+      {assign var="display_style" value="none"}
+    {else}
+      {assign var="display_style" value=""}
+    {/if}
+		<tr	id="container_cf_enable_on_testplan_design" style="display:{$display_style};">
+			<th style="background:none;">{lang_get s='enable_on_testplan_design'}</th>
+			<td>
+				<select name="cf_enable_on_testplan_design"
+				        id="cf_enable_on_testplan_design"
+				        {$gui->cfieldCfg->disabled_cf_enable_on.testplan_design}>
+				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.enable_on_testplan_design}
+				</select>
+			</td>
+		</tr>
+    {* ------------------------------------------------------------------------------- *}
+
+
 
 
 		<tr>

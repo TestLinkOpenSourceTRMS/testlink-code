@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/07/22 08:58:18 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/08/15 11:27:09 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -24,44 +24,44 @@ require_once('priority.inc.php');
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
+$tplan_mgr = new testPlanUrgency($db);
+$gui=new stdClass();  //Use to pass values to smarty template
 $args=init_args();
 
 tLog(__FILE__ . ' > Arguments: Node='.$args->node_id.' Urgency='.$args->urgency);
 
-$tplan_mgr = new testPlanUrgency($db);
-$node_name = $tplan_mgr->get_node_name($args->node_id);
+$node_info=$tplan_mgr->tree_manager->get_node_hierachy_info($args->node_id);
+
+$gui->urgencyCfg = config_get('urgency');
+$gui->node_name=$node_info['name'];
+$gui->user_feedback = null;
+$gui->node_id=$args->node_id;
+$gui->tplan_id=$args->tplan_id;
+$gui->tplan_name=$args->tplan_name;
 
 if($args->urgency != OFF)
 {
-	$user_feedback['type'] = $tplan_mgr->setSuiteUrgency($args->tplan_id, $args->node_id, $args->urgency);
+	$gui->user_feedback['type'] = $tplan_mgr->setSuiteUrgency($args->tplan_id, $args->node_id, $args->urgency);
 	
-	if ($user_feedback['type'] == OK)
-		$user_feedback['message'] = lang_get("feedback_urgency_ok");
+	if ($gui->user_feedback['type'] == OK)
+		$gui->user_feedback['message'] = lang_get("feedback_urgency_ok");
 	else
-		$user_feedback['message'] = lang_get("feedback_urgency_fail");;
+		$gui->user_feedback['message'] = lang_get("feedback_urgency_fail");;
 }
-else
-{
-	$user_feedback = null;
-}
-
 
 // get the current urgency for child test cases
-$listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id);
-
-$gui=new stdClass();
-$gui->urgencyCfg = config_get('urgency');
+$gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id);
 
 $smarty = new TLSmarty();
-$smarty->assign('user_feedback', $user_feedback);
-$smarty->assign('listTestCases', $listTestCases);
-$smarty->assign('node_name', $node_name);
-$smarty->assign('node_id', $args->node_id);
-$smarty->assign('tplan_id', $args->tplan_id);
-$smarty->assign('tplan_name', $args->tplan_name);
 $smarty->assign('gui', $gui);
-
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+// $smarty->assign('user_feedback', $user_feedback);
+// $smarty->assign('listTestCases', $listTestCases);
+// $smarty->assign('node_name', $node_name);
+// $smarty->assign('node_id', $args->node_id);
+// $smarty->assign('tplan_id', $args->tplan_id);
+// $smarty->assign('tplan_name', $args->tplan_name);
 
 
 /*

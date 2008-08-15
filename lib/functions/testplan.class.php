@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.76 $
- * @modified $Date: 2008/08/14 15:08:25 $ by $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2008/08/15 11:27:09 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -91,9 +91,18 @@ class testplan extends tlObjectWithAttachments
 	var $cfield_mgr;
 	var $tcase_mgr;
 
-	var $builds_table="builds";
- 	var $testplan_tcversions_table="testplan_tcversions";
-  var $cfield_design_values_table="cfield_design_values";
+  var $builds_table="builds";
+ 	var $cfield_design_values_table="cfield_design_values";
+  var $cfield_execution_values_table="cfield_execution_values";
+  var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
+  var $execution_bugs_table="execution_bugs";
+  var $executions_table='executions';
+  var $nodes_hierarchy_table='nodes_hierarchy';
+	var $milestones_table='milestones';
+  var $tcversions_table='tcversions';
+  var $testplans_table="testplans";
+	var $testplan_tcversions_table="testplan_tcversions";
+
 
 	var $assignment_types;
 	var $assignment_status;
@@ -139,7 +148,7 @@ function create($name,$notes,$testproject_id)
 	$node_types=$this->tree_manager->get_available_node_types();
 	$tplan_id = $this->tree_manager->new_node($testproject_id,$node_types['testplan'],$name);
 
-	$sql = "INSERT INTO testplans (id,notes,testproject_id)
+	$sql = "INSERT INTO {$this->testplans_table} (id,notes,testproject_id)
 	        VALUES ( {$tplan_id} " . ", '" .
 	                 $this->db->prepare_string($notes) . "'," .
 	                 $testproject_id .")";
@@ -185,14 +194,14 @@ function update($id,$name,$notes,$is_active)
 	if($do_update)
 	{
 		// Update name
-		$sql = "UPDATE nodes_hierarchy " .
+		$sql = "UPDATE {$this->nodes_hierarchy_table} " .
 				"SET name='" . $this->db->prepare_string($name) . "'" .
 				"WHERE id={$id}";
 		$result = $this->db->exec_query($sql);
 
 		if($result)
 		{
-			$sql = "UPDATE testplans " .
+			$sql = "UPDATE {$this->testplans_table} " .
 					"SET active={$active}," .
 					"notes='" . $this->db->prepare_string($notes). "' " .
 					"WHERE id=" . $id;
@@ -224,7 +233,7 @@ function update($id,$name,$notes,$is_active)
 function get_by_name($name,$tproject_id = 0)
 {
 	$sql = " SELECT testplans.*, NH.name " .
-	       " FROM testplans, nodes_hierarchy NH" .
+	       " FROM {$this->testplans_table} testplans, {$this->nodes_hierarchy_table} NH" .
 	       " WHERE testplans.id=NH.id " .
 	       " AND NH.name = '" . $this->db->prepare_string($name) . "'";
 
@@ -236,21 +245,6 @@ function get_by_name($name,$tproject_id = 0)
 	$recordset = $this->db->get_recordset($sql);
 	return($recordset);
 }
-
-
-// --------------------------------------------------------------------------------------
-/**
- * Get name of any node
- * 
- * @param number $node_id 
- * @return string node name
- */
-public function get_node_name($node_id)
-{
-	$sql = " SELECT name FROM nodes_hierarchy NH WHERE id=" . $node_id;
-	return $this->db->fetchOneValue($sql);
-}
-
 
 // --------------------------------------------------------------------------------------
 /*
@@ -270,7 +264,7 @@ public function get_node_name($node_id)
 function get_by_id($id)
 {
 	$sql = " SELECT testplans.*,NH.name,NH.parent_id
-	         FROM testplans, nodes_hierarchy NH
+	         FROM {$this->testplans_table} testplans, {$this->nodes_hierarchy_table} NH
 	         WHERE testplans.id = NH.id
 	         AND   testplans.id = {$id}";
 	$recordset = $this->db->get_recordset($sql);
@@ -299,7 +293,7 @@ function get_by_id($id)
 function get_all()
 {
 	$sql = " SELECT testplans.*, nodes_hierarchy.name
-	         FROM testplans, nodes_hierarchy
+	         FROM {$this->testplans_table} testplans, {$this->nodes_hierarchy_table} nodes_hierarchy
 	         WHERE testplans.id=nodes_hierarchy.id";
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
@@ -318,7 +312,7 @@ function get_all()
 */
 private function count_testcases($id)
 {
-	$sql = "SELECT COUNT(testplan_id) AS qty FROM testplan_tcversions
+	$sql = "SELECT COUNT(testplan_id) AS qty FROM {$this->testplan_tcversions_table}
 	        WHERE testplan_id={$id}";
 	$recordset = $this->db->get_recordset($sql);
 	$qty = 0;
@@ -355,7 +349,8 @@ function tcversionInfoForAudit($tplan_id,&$items)
   $ret['tcasePrefix']=$this->tcase_mgr->getPrefix($dummy) . $tcase_cfg->glue_character;
   
   $sql=" SELECT TCV.id, tc_external_id, version, NHB.name " .
-       " FROM tcversions TCV,nodes_hierarchy NHA, nodes_hierarchy NHB " .
+       " FROM {$this->tcversions_table} TCV,{$this->nodes_hierarchy_table} NHA, " .
+       " {$this->nodes_hierarchy_table} NHB " .
        " WHERE NHA.id=TCV.id " .
        " AND NHB.id=NHA.parent_id  " .
        " AND TCV.id IN (" . implode(',',$items) . ")";
@@ -399,14 +394,14 @@ function link_tcversions($id,&$items_to_link)
   // $tcasePrefix=$this->tcase_mgr->getPrefix($dummy) . $tcase_cfg->glue_character;
   // 
   // $sql=" SELECT TCV.id, tc_external_id, version, NHB.name " .
-  //      " FROM tcversions TCV,nodes_hierarchy NHA, nodes_hierarchy NHB " .
+  //      " FROM {$this->tcversions_table} TCV,{$this->nodes_hierarchy_table} NHA, {$this->nodes_hierarchy_table} NHB " .
   //      " WHERE NHA.id=TCV.id " .
   //      " AND NHB.id=NHA.parent_id  " .
   //      " AND TCV.id IN (" . implode(',',$items_to_link) . ")";
   // 
   // $info=$this->db->fetchRowsIntoMap($sql,'id');  
    
-	$sql = "INSERT INTO testplan_tcversions (testplan_id,tcversion_id) VALUES ({$id},";
+	$sql = "INSERT INTO {$this->testplan_tcversions_table} (testplan_id,tcversion_id) VALUES ({$id},";
 	foreach($items_to_link as $tc => $tcversion)
 	{
 		$result = $this->db->exec_query($sql . "{$tcversion})");
@@ -599,10 +594,10 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	     " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 	     " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
 	     " COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
-	     " FROM nodes_hierarchy NHA " .
-	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
-	     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
-	     " JOIN tcversions TCV ON NHA.id = TCV.id " .
+	     " FROM {$this->nodes_hierarchy_table} NHA " .
+	     " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
+	     " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " .
+	     " JOIN  {$this->tcversions_table} TCV ON NHA.id = TCV.id " .
 	     " {$executions_join} " .
 	     " {$keywords_join} " .
 	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
@@ -687,19 +682,19 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	$sql = " SELECT MAX(NHB.id) AS newest_tcversion_id, " .
 	       " NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
 	       " TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
-	       " FROM nodes_hierarchy NHA " .
-	       " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.parent_id " .
-	       " JOIN nodes_hierarchy NHC ON NHA.parent_id = NHC.id " .
-	       " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
-	       " JOIN tcversions TCVA ON T.tcversion_id = TCVA.id " .
-	       " JOIN tcversions TCVB ON NHB.id = TCVB.id AND TCVB.active=1 " .
+	       " FROM {$this->nodes_hierarchy_table} NHA " .
+	       " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.parent_id " .
+	       " JOIN {$this->nodes_hierarchy_table} NHC ON NHA.parent_id = NHC.id " .
+	       " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " .
+	       " JOIN {$this->tcversions_table} TCVA ON T.tcversion_id = TCVA.id " .
+	       " JOIN {$this->tcversions_table} TCVB ON NHB.id = TCVB.id AND TCVB.active=1 " .
 	       " WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
 	       " GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
 
 	$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
 	        " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
 	        " TCV.version AS newest_version " .
-	        " FROM tcversions TCV, ( $sql ) AS SUBQ " .
+	        " FROM {$this->tcversions_table} TCV, ( $sql ) AS SUBQ " .
 	        " WHERE SUBQ.newest_tcversion_id = TCV.id " .
 	        " ORDER BY SUBQ.tc_id ";
 
@@ -760,7 +755,7 @@ function unlink_tcversions($id,&$items)
       // 20060910 - franciscom
       // to remove the assignment to users (if any exists)
       // we need the list of id
-      $sql=" SELECT id AS link_id FROM testplan_tcversions
+      $sql=" SELECT id AS link_id FROM {$this->testplan_tcversions_table}
              WHERE testplan_id={$id} {$in_clause} ";
 	    // $link_id = $this->db->get_recordset($sql);
 	    $link_ids = $this->db->fetchRowsIntoMap($sql,'link_id');
@@ -773,7 +768,7 @@ function unlink_tcversions($id,&$items)
 	    // ----------------------------------------------------------------
 
       // Delete from link table
-      $sql=" DELETE FROM testplan_tcversions
+      $sql=" DELETE FROM {$this->testplan_tcversions_table}
              WHERE testplan_id={$id} {$in_clause} ";
 	    $result = $this->db->exec_query($sql);
 
@@ -890,11 +885,14 @@ function get_keywords_tcases($id,$keyword_id=0)
 function copy_as($id,$new_tplan_id,$tplan_name=null,
                  $tproject_id=null,$copy_options=null,$tcversion_type=null)
 {
-  $cp_options = array('copy_tcases' => 1,'copy_test_urgency' => 0,
-	                    'copy_milestones' => 1, 'copy_user_roles' => 1, 'copy_builds' => 1);
-
+  // CoPy configuration
+  // Configure here only elements that has his own table.
+  // Exception example:
+  //                   test urgency information is not stored in a special table
+  //                   then key can set to 0, or better REMOVED.
+  //
+  $cp_options = array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 'copy_builds' => 1);
   $cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
-                      'copy_test_urgency' => 'copy_test_urgency',
 	                    'copy_milestones' => 'copy_milestones',
 	                    'copy_user_roles' => 'copy_user_roles',
 	                    'copy_builds' => 'copy_builds');
@@ -910,7 +908,7 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,
 
   if(!is_null($tplan_name))
   {
-    $sql="UPDATE nodes_hierarchy " .
+    $sql="UPDATE {$this->nodes_hierarchy_table} " .
          "SET name='" . $this->db->prepare_string(trim($tplan_name)) . "' " .
          "WHERE id={$new_tplan_id}";
     $this->db->exec_query($sql);
@@ -918,7 +916,7 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,
 
   if(!is_null($tproject_id))
   {
-    $sql="UPDATE testplans " .
+    $sql="UPDATE {$this->testplans_table} " .
          "SET testproject_id={$tproject_id} " .
          "WHERE id={$new_tplan_id}";
     $this->db->exec_query($sql);
@@ -978,7 +976,7 @@ private function copy_builds($id,$new_tplan_id)
 */
 private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 {
-  $sql="SELECT * FROM testplan_tcversions WHERE testplan_id={$id} ";
+  $sql="SELECT * FROM {$this->testplan_tcversions_table} WHERE testplan_id={$id} ";
 
   $rs=$this->db->get_recordset($sql);
 
@@ -992,13 +990,13 @@ private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 
   		if( !is_null($tcversion_type) )
 		  {
-			  $sql="SELECT * FROM nodes_hierarchy WHERE id={$tcversion_id} ";
+			  $sql="SELECT * FROM {$this->nodes_hierarchy_table} WHERE id={$tcversion_id} ";
 			  $rs2=$this->db->get_recordset($sql);
 			  $last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
 			  $tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
 		  }
 
-      $sql="INSERT INTO testplan_tcversions " .
+      $sql="INSERT INTO {$this->testplan_tcversions_table} " .
            "(testplan_id,tcversion_id) " .
            "VALUES({$new_tplan_id},{$tcversion_id})";
       $this->db->exec_query($sql);
@@ -1022,14 +1020,14 @@ private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 */
 private function copy_milestones($id,$new_tplan_id)
 {
-  $sql="SELECT * FROM milestones WHERE testplan_id={$id} ";
+  $sql="SELECT * FROM {$this->milestones_table} WHERE testplan_id={$id} ";
   $rs=$this->db->get_recordset($sql);
 
   if(!is_null($rs))
   {
     foreach($rs as $mstone)
     {
-      $sql="INSERT milestones (name,A,B,C,target_date,testplan_id) " .
+      $sql="INSERT {$this->milestones_table} (name,A,B,C,target_date,testplan_id) " .
            "VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
            $mstone['A'] . "," . $mstone['B'] . "," . $mstone['C'] . "," .
            "'" . $mstone['target_date'] . "',{$new_tplan_id})";
@@ -1048,7 +1046,7 @@ private function copy_milestones($id,$new_tplan_id)
  */
 function get_milestones($tplan_id)
 {
-	$sql="SELECT * FROM milestones WHERE testplan_id={$tplan_id} ORDER BY target_date";
+	$sql="SELECT * FROM {$this->milestones_table} WHERE testplan_id={$tplan_id} ORDER BY target_date";
 	return $this->db->get_recordset($sql);
 }
 
@@ -1159,16 +1157,22 @@ function delete($id)
   $main_sql=array();
 
   $this->deleteUserRoles($id);
-  $the_sql[]="DELETE FROM milestones WHERE testplan_id={$id}";
-  $the_sql[]="DELETE FROM testplan_tcversions WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM {$this->milestones_table} WHERE testplan_id={$id}";
+  
+  // 20080815 - franciscom
+  // CF used on testplan_design are linked by testplan_tcversions.id
+  $the_sql[]="DELETE FROM {$this->cfield_testplan_design_values_table} WHERE link_id ".
+             "IN (SELECT id FROM {$this->testplan_tcversions_table} WHERE testplan_id={$id})";
+  
+  $the_sql[]="DELETE FROM {$this->testplan_tcversions_table} WHERE testplan_id={$id}";
+  
   $the_sql[]="DELETE FROM {$this->builds_table} WHERE testplan_id={$id}";
-  $the_sql[]="DELETE FROM test_urgency WHERE testplan_id={$id}";
-  $the_sql[]="DELETE FROM cfield_execution_values WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM {$this->cfield_execution_values_table} WHERE testplan_id={$id}";
 
   // When deleting from executions, we need to clean related tables
-  $the_sql[]="DELETE FROM execution_bugs WHERE execution_id ".
-             "IN (SELECT id from executions WHERE testplan_id={$id})";
-  $the_sql[]="DELETE FROM executions WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM {$this->execution_bugs_table} WHERE execution_id ".
+             "IN (SELECT id FROM {$this->executions_table} WHERE testplan_id={$id})";
+  $the_sql[]="DELETE FROM {$this->executions_table} WHERE testplan_id={$id}";
 
 
   foreach($the_sql as $sql)
@@ -1182,8 +1186,8 @@ function delete($id)
   // ------------------------------------------------------------------------
 
   // Finally delete from main table
-  $main_sql[]="DELETE FROM testplans WHERE id={$id}";
-  $main_sql[]="DELETE FROM nodes_hierarchy WHERE id={$id}";
+  $main_sql[]="DELETE FROM {$this->testplans_table} WHERE id={$id}";
+  $main_sql[]="DELETE FROM {$this->nodes_hierarchy_table} WHERE id={$id}";
 
   foreach($main_sql as $sql)
   {
@@ -1871,6 +1875,17 @@ class build_mgr
 class milestone_mgr
 {
 	var $db;
+  var $builds_table="builds";
+ 	var $cfield_design_values_table="cfield_design_values";
+  var $cfield_execution_values_table="cfield_execution_values";
+  var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
+  var $execution_bugs_table="execution_bugs";
+  var $executions_table='executions';
+  var $nodes_hierarchy_table='nodes_hierarchy';
+	var $milestones_table='milestones';
+  var $tcversions_table='tcversions';
+  var $testplans_table="testplans";
+	var $testplan_tcversions_table="testplan_tcversions";
 
   /*
    function:
@@ -1903,7 +1918,7 @@ class milestone_mgr
   function create($tplan_id,$name,$date,$A,$B,$C)
   {
     $new_milestone_id=0;
-  	$sql = "INSERT INTO milestones (testplan_id,name,target_date,A,B,C) " .
+  	$sql = "INSERT INTO {$this->milestones_table} (testplan_id,name,target_date,A,B,C) " .
   	       " VALUES (" . $tplan_id . ",'" .
   	       $this->db->prepare_string($name) . "','" .
   	       $this->db->prepare_string($date) . "'," . $A . "," .  $B . "," . $C . ")";
@@ -1911,7 +1926,7 @@ class milestone_mgr
 
   	if ($result)
     {
-    		$new_milestone_id = $this->db->insert_id('milestones');
+    		$new_milestone_id = $this->db->insert_id($this->milestones_table);
     }
 
     return $new_milestone_id;
@@ -1935,7 +1950,7 @@ class milestone_mgr
   */
   function update($id,$name,$date,$A,$B,$C)
   {
-	  $sql = "UPDATE milestones SET name='" . $this->db->prepare_string($name) . "', " .
+	  $sql = "UPDATE {$this->milestones_table} SET name='" . $this->db->prepare_string($name) . "', " .
 	         " target_date='" . $this->db->prepare_string($date) . "', " .
 	         " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
 	  $result = $this->db->exec_query($sql);
@@ -1956,7 +1971,7 @@ class milestone_mgr
   */
   function delete($id)
   {
-  	$sql = "DELETE FROM milestones WHERE id=" . $id;
+  	$sql = "DELETE FROM {$this->milestones_table} WHERE id=" . $id;
   	$result=$this->db->exec_query($sql);
   	return $result ? 1 : 0;
   }
@@ -1975,7 +1990,7 @@ class milestone_mgr
   */
   function get_by_id($id)
   {
-  	$sql = "SELECT * FROM milestones WHERE id = {$id}";
+  	$sql = "SELECT * FROM {$this->milestones_table} WHERE id = {$id}";
   	$myrow = $this->db->fetchRowsIntoMap($sql,'id');
   	return $myrow;
   }
@@ -1994,7 +2009,7 @@ class milestone_mgr
   */
   function get_all_by_testplan($tplan_id)
   {
-    $sql="SELECT * FROM milestones WHERE testplan_id={$tplan_id} ORDER BY target_date";
+    $sql="SELECT * FROM {$this->milestones_table} WHERE testplan_id={$tplan_id} ORDER BY target_date";
     $rs=$this->db->get_recordset($sql);
     return $rs;
   }

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testplan.class.test.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/10/29 14:04:19 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/08/15 11:27:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -16,17 +16,106 @@
 
 require_once('../../../config.inc.php');
 require_once('common.php');
-require_once('tree.class.php');
-require_once('dBug.php');
-
 testlinkInitPage($db);
 
-echo "<hr><h2> Testplan Manager Class </h2>";
-echo "<pre> testplan - constructor - testplan(&\$db)";echo "</pre>";
+$object_item="Testplan Manager";
+$object_class="testplan";
+
+echo "<pre>Poor's Man - $object_item - code inspection tool<br>";
+echo "<pre>Scope of this page is allow you to understand with live<br>";
+echo "examples how to use object: $object_item (implemented in file $object_class_file.class.php)<br>";
+echo "Important:";
+echo "You are using your testlink DB to do all operations";
+echo "</pre>";
+echo "<hr>";
+echo "<pre> $object_item - constructor - $object_class(&\$db)";echo "</pre>";
+$obj_mgr=new $object_class($db);
+new dBug($obj_mgr);
+
+$target_testproject=new stdClass(); 
+$target_testproject->name='Testplan Class Unit Test';
+$target_testproject->color='';
+
+$target_testproject->options=new stdClass();
+$target_testproject->options->requirement_mgmt=1;
+$target_testproject->options->priority_mgmt=1;
+$target_testproject->options->automated_execution=1;
+
+$target_testproject->notes='Created to run testplan unit tests on ';
+$target_testproject->active=1;
+$target_testproject->tcasePrefix='TPlanUnitTest';
+
+// Create a test project that will be Test plan parent
+$tproject_mgr=new testproject($db);
+$info=$tproject_mgr->get_by_name($target_testproject->name);
+if( !is_null($info) )
+{
+    $name=$info[0]['name'];
+    echo "TestProject with name <b><i>{$name}</i></b> exists!<br>Will be deleted and re-created"; 
+    $tproject_mgr->delete($info[0]['id']);
+}
+$testproject_id=$tproject_mgr->create($target_testproject->name,
+                                      $target_testproject->color,
+                                      $target_testproject->options,
+                                      $target_testproject->notes,$target_testproject->active,
+                                      $target_testproject->tcasePrefix);
+
+
+$testplan = new stdClass();
+$testplan->name='Test Plan Code Testing';
+$testplan->notes='Test Plan created running Code Testing code by TestLink Development Team';
+echo "<pre> {$object_class} - create(\$name,\$notes,\$testproject_id)";echo "</pre>";
+echo "<pre> {$object_class} - create('$testplan->name','$testplan->notes',$testproject_id)";echo "</pre>";
+$testplan->id=$obj_mgr->create($testplan->name,$testplan->notes,$testproject_id);
+$info=$obj_mgr->get_by_id($testplan->id);
+new dBug($info);
+
+
+
+
+// ---------------------------------------------------------------------------------------------------------
+// Build Manager
+// ---------------------------------------------------------------------------------------------------------
+// Support Object
 $tplan_mgr=new testplan($db);
-new dBug($tplan_mgr);
+
+$object_item="Build Manager";
+$object_class="build_mgr";
+$object_class_file="testplan";
+
+echo "<pre>Poor's Man - $object_item - code inspection tool<br>";
+echo "<pre>Scope of this page is allow you to understand with live<br>";
+echo "examples how to use object: $object_item (implemented in file $object_class_file.class.php)<br>";
+echo "Important:";
+echo "You are using your testlink DB to do all operations";
+echo "</pre>";
+echo "<hr>";
+echo "<pre> $object_item - constructor - $object_class(&\$db)";echo "</pre>";
+$obj_mgr=new $object_class($db);
+new dBug($obj_mgr);
+
+$build = new stdClass();
+$build->name='Build Code Testing';
+$build->notes='Build created running Code Testing code by TestLink Development Team';
+
+echo "<pre> {$object_class} - create(\$tplan_id,\$name,\$notes = '',\$active=1,\$open=1)";echo "</pre>";
+echo "<pre> {$object_class} - create($testplan->id,'$build->name','$build->notes')";echo "</pre>";
+$build->id=$obj_mgr->create($testplan->id,$build->name,$build->notes);
+$info=$obj_mgr->get_by_id($build->id);
+new dBug($info);
+
+echo "<pre> Check Build existence using testplan manager method 'get_builds()'";echo "</pre>";
+echo "<pre> testplan - get_builds(\$testplan_id,\$active=null,\$open=null)";echo "</pre>";
+echo "<pre>            get_builds($testplan->id)";echo "</pre>";
+$all_builds=$tplan_mgr->get_builds($testplan->id);
+new dBug($all_builds);
+
+// Final Clean-Up
+$tproject_mgr->delete($testproject_id);
+die();
 
 
+// OLD CODE MUST BE REFACTORED
 echo "<pre> testplan - get_all()";echo "</pre>";
 $all_testplans_on_tl=$tplan_mgr->get_all();
 new dBug($all_testplans_on_tl);

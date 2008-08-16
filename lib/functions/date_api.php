@@ -2,13 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: date_api.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/05/28 06:47:56 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/08/16 16:13:20 $ $Author: franciscom $
  * @author franciscom
  *
  * Piece copied form Mantis and adapted to TestLink needs
  *
- * rev :
+ * rev : 20080816 - franciscom
+ *       added code to manage datetime Custom Fields (Mantis contribution on 2005)
  *       
 */
  
@@ -19,7 +20,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: date_api.php,v 1.1 2007/05/28 06:47:56 franciscom Exp $
+	# $Id: date_api.php,v 1.2 2008/08/16 16:13:20 franciscom Exp $
 	# --------------------------------------------------------
 
 	### Date API ###
@@ -78,6 +79,7 @@
 		}
 	  return $year_option;
 	}
+	
 	# --------------------
 	function create_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0) {
 	  $year_option='';
@@ -112,16 +114,22 @@
 	}
 	# --------------------
 
+  # 20080816 - franciscom
+  # Added contribution (done on mantis) to manage datetime
+  #
 	function create_date_selection_set( $p_name, $p_format, $p_date=0, 
 	                                    $p_default_disable=false, $p_allow_blank=false, 
 	                                    $p_year_start=0, $p_year_end=0) {
+	  
 	  $str_out='';
-	                                      
 		$t_chars = preg_split('//', $p_format, -1, PREG_SPLIT_NO_EMPTY) ;
 		if ( $p_date != 0 ) {
-			$t_date = preg_split('/-/', date( 'Y-m-d', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
+			// 20080816 - $t_date = preg_split('/-/', date( 'Y-m-d', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
+      $t_date = preg_split('/-| |:/', date( 'Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
+
 		} else {
-			$t_date = array( 0, 0, 0 );
+			// 20080816 -  $t_date = array( 0, 0, 0 );
+			$t_date = array( 0, 0, 0, 0, 0, 0 );
 		}
 
 		$t_disable = '' ;
@@ -158,7 +166,39 @@
 				$str_out .= create_year_range_option_list( $t_date[0], $p_year_start, $p_year_end ) ;
 				$str_out .= "</select>\n" ;
 			}
+			
+			// -----------------------------------------------------------------
+			// 20080816 - franciscom
+      if (strcasecmp( $t_char, "H") == 0) {
+          $str_out .= "<select name=\"" . $p_name . "_hour\" $t_disable>" ;
+          $str_out .= create_range_option_list($t_date[3], 0, 23); 
+				  $str_out .= "</select>\n" ;
+			}
+      if (strcasecmp( $t_char, "i") == 0) {
+          $str_out .= "<select name=\"" . $p_name . "_minute\" $t_disable>" ;
+          $str_out .= create_range_option_list($t_date[4], 0, 59); 
+				  echo "</select>\n" ;
+			}
+      if (strcasecmp( $t_char, "s") == 0) {
+          $str_out .= "<select name=\"" . $p_name . "_second\" $t_disable>" ;
+          $str_out .= create_range_option_list($t_date[5], 0, 59); 
+				  $str_out .= "</select>\n" ;
+			}
+			// -----------------------------------------------------------------
 		}
 		return $str_out;
 	}
+
+   
+  function create_range_option_list($p_value, $p_min, $p_max ) 
+  {
+      $option_list='';
+      for ($idx=$p_min; $idx<=$p_max; $idx++) 
+      {
+          $selected='';
+          $selected = ($idx+1 == $p_value) ? ' selected="selected" ' :'';
+      	   $option_list .="<option value=\"$idx\" {$selected}> $idx </option>";
+  	  }
+  	  return $option_list;
+  }
 ?>

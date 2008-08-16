@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/08/16 13:36:25 $  $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/08/16 16:13:20 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080816 - franciscom - new feature: user defined Custom Fields.
@@ -11,7 +11,8 @@
  *                         solution is a mix of own ideas and Mantis 1.2.0a1 approach.
  *                         string_custom_field_input(), _build_cfield()
  *
- *                         added radio type.
+ *                         added radio type, datetime type.
+ *
  *
  * 20080810 - franciscom - documentation improvements
  *                         BUGID 1650 (REQ)
@@ -107,6 +108,7 @@ class cfield_mgr
                                   7=>'multiselection list',
                                   8=>'date',
                                   9=>'radio',
+                                  10=>'datetime',
 							                   20=>'text area',
 							                   500=>'script',
 							                   501=>'server');
@@ -124,6 +126,7 @@ class cfield_mgr
                                    'multiselection list' => 1,
                                    'date' => 0,
                                    'radio' => 1,
+                                   'datetime' =>0,
 								                   'text area' => 0,
 								                   'script'=> 0,
 								                   'server' => 0);
@@ -630,10 +633,23 @@ class cfield_mgr
   	  break;
 
       case 'date':
-      $str_out .=create_date_selection_set($input_name,
-                                           config_get('date_format'),
+      $str_out .=create_date_selection_set($input_name,config_get('date_format'),
                                            $t_custom_field_value, false, true) ;
       break;
+      
+      case 'datetime':
+      $cfg=config_get('gui');
+      
+      // Important
+      // We can do this mix (get date format configuration from standard variable 
+      // and time format from an specific custom field config) because string used 
+      // for date_format on strftime() has no problem
+      // on date() calls (that are used in create_date_selection_set() ).
+      $datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
+      $str_out .=create_date_selection_set($input_name,$datetime_format,
+                                           $t_custom_field_value, false, true,date( "Y" )-1) ;
+      break;
+      
 
       default:
       $dynamic_call='string_input_' . str_replace(' ', '_', $verbose_type);
@@ -1208,6 +1224,21 @@ class cfield_mgr
 				}
 				break ;
 
+			case 'datetime':
+				if ($t_custom_field_value != null)
+				{
+				  // must remove %
+				  // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
+          // $datetime_format=$t_date_format;
+          $t_date_format=str_replace("%","",config_get( 'date_format'));
+          $cfg=config_get('gui');
+          $datetime_format=$t_date_format . " " .$cfg->custom_fields->time_format;
+          $xdate=date( $datetime_format, $t_custom_field_value);
+					return  $xdate;
+				}
+				break ;
+
+
 		  case 'text area':
         if ($t_custom_field_value != null)
 				{
@@ -1411,15 +1442,19 @@ class cfield_mgr
                           'cf_value' => value)
 
     rev: 20080816 - franciscom
-         added code to manange user defined (and code developed) Custom Fields.
-         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
+         - added code to manange user defined (and code developed) Custom Fields.
+           Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
+         - added logic to manage datetime custom field type.  
   */
   function _build_cfield($hash,$cf_map)
   {
     // carved in the stone
     $html_date_input_suffix = array('day' => true,
                                     'month' => true,
-                                    'year' => true);
+                                    'year' => true,
+                                    'hour' => true,
+                                    'minute' => true,
+                                    'second' => true);
 
     $cf_prefix=$this->name_prefix;
     $len_cfp=strlen($cf_prefix);
@@ -1519,6 +1554,32 @@ class cfield_mgr
                                                        $value['month'] . "-" . $value['day']);
             }
           break;
+          
+          case 'datetime':
+            if (($value['year'] == 0) || ($value['month'] == 0) || ($value['day'] == 0))
+            {
+              $cfield[$field_id]['cf_value']='';
+            }
+            else
+            {
+              // mktime(int hour, int minute, int second, int month, int day, int year); 
+              // to avoid problems with date formats on strtotime().
+              // I've used this PHP manual user's note:
+              // thalesjacobi at thalesjacobi dot net (06-Nov-2007 09:50)
+              // strtotime() reads the timestamp in en_US format if you want to change 
+              // the date format with this number, you should previously know the format 
+              // of the date you are trying to parse. Let's say you want to do this :
+              // strftime("%Y-%m-%d",strtotime("05/11/2007"));
+              // It will understand the date as 11th of may 2007, and not 5th of november 2007. 
+              // In this case I would use: 
+              // $date = explode("/","05/11/2007");
+              // strftime("%Y-%m-%d",mktime(0,0,0,$date[1],$date[0],$date[2]));
+              // Much reliable but you must know the date format before. 
+              $cfield[$field_id]['cf_value']=mktime($value['hour'],$value['minute'],$value['second'],
+                                                    $value['month'],$value['day'],$value['year']);
+            }
+          break;
+         
 
           default:
             $dynamic_call='build_cfield_' . str_replace(' ', '_', $verbose_type);

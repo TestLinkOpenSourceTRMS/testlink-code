@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/07/22 08:58:00 $ by $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/08/16 16:12:41 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -271,6 +271,8 @@ $g_locales_html_select_date_field_order = array(
 	'ru_RU' => "dmY",
 	'zh_CN' => "Ymd"
 ); 
+
+
 
 
 
@@ -557,6 +559,28 @@ $tlCfg->gui->custom_fields->sizes = array(
 );
 
 
+// 20080815 - franciscom
+// Use this variable (on custom_config.inc.php) to define new Custom Field types.
+// IMPORTANT:
+//           check $custom_field_types property on cfield_mgr.class.php 
+//           to avoid overwrite of standard types.
+//
+$tlCfg->gui->custom_fields->types = null;
+
+// Use this variable (on custom_config.inc.php)
+// to define possible values behaviour for new Custom Field types.
+//
+// IMPORTANT:
+//           check $possible_values_cfg property on cfield_mgr.class.php 
+//           to avoid overwrite of standard values.
+//
+$tlCfg->gui->custom_fields->possible_values_cfg = null;
+
+// Format string follows date() spec - see PHP Manual
+// We can not use $g_timestamp_format, because format strings for date() and strftime() 
+// uses same LETTER with different meanings (Bad Luck!)
+$tlCfg->gui->custom_fields->time_format = "H:i:s";                                                       
+                                                       
 
 // ----- END ----------------------------------------------------------------------------
 ?>

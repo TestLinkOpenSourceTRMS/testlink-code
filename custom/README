@@ -1,0 +1,24 @@
+----------------------------------------------------------------------
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: README,v 1.1 2008/08/16 13:34:52 franciscom Exp $ 
+Author: franciscom
+----------------------------------------------------------------------
+This directory (custom) under TestLink Installation directory,
+has been created to give users, that want to develop some extensions 
+to TestLink standard Features, a standard place where to put his/her code.
+This is a first simple approach, a better one (PLUG-INS) will be
+provided on future versions.
+
+At time of this writing (20080816) only usage of this drectory is for
+user defined custom field, i.e. custom fields types not provided with standard
+TestLink distribution.
+Users must put here code that add more custom fields to build-in types.
+Files containing code for this feature must follow naming rules:
+cf_<custom field type>.php
+
+These files WILL HE AUTOMATICALLY required_once() on cfield_mgr.class.php.
+Once example has been provided (_cf_radio_head.php) that is a new type
+called 'radio head', that is just a simple radio type.
+As you can see file name start with _cf => will not be available.
+
+TestLink Development Team 

@@ -2,9 +2,16 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/08/14 15:08:24 $  $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/08/16 13:36:25 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20080816 - franciscom - new feature: user defined Custom Fields.
+ *                         Important: 
+ *                         solution is a mix of own ideas and Mantis 1.2.0a1 approach.
+ *                         string_custom_field_input(), _build_cfield()
+ *
+ *                         added radio type.
  *
  * 20080810 - franciscom - documentation improvements
  *                         BUGID 1650 (REQ)
@@ -36,6 +43,16 @@
 **/
 require_once(dirname(__FILE__) . '/date_api.php');
 require_once(dirname(__FILE__) . '/string_api.php');
+
+$cf_files=glob( TL_ABS_PATH . "custom/cf_*.php");
+if( count($cf_files) > 0 )
+{
+    foreach($cf_files as $inc)
+    {
+        require_once($inc);  
+    }   
+}
+
 class cfield_mgr
 {
 	var $db;
@@ -89,6 +106,7 @@ class cfield_mgr
                                   6=>'list',
                                   7=>'multiselection list',
                                   8=>'date',
+                                  9=>'radio',
 							                   20=>'text area',
 							                   500=>'script',
 							                   501=>'server');
@@ -105,6 +123,7 @@ class cfield_mgr
                                    'list' => 1,
                                    'multiselection list' => 1,
                                    'date' => 0,
+                                   'radio' => 1,
 								                   'text area' => 0,
 								                   'script'=> 0,
 								                   'server' => 0);
@@ -196,6 +215,17 @@ class cfield_mgr
 
 		$gui_cfg = $tlCfg->gui;
 		$this->sizes = $gui_cfg->custom_fields->sizes;
+		
+		if( !is_null($gui_cfg->custom_fields->types) )
+		{
+		    $this->custom_field_types +=$gui_cfg->custom_fields->types;
+		    ksort($this->custom_field_types);
+		}
+    
+		if( !is_null($gui_cfg->custom_fields->possible_values_cfg) )
+		{
+		    $this->possible_values_cfg +=$gui_cfg->custom_fields->possible_values_cfg;
+		}
 	}
 
   /*
@@ -449,7 +479,15 @@ class cfield_mgr
 
 
 	/*
-    Very Important: this code is based on Mantis code.
+	  ====================================================================
+    ** Very Imporant ** 
+    This code is based on Mantis code.
+    Initial development was based on 1.x.x versions.
+    file:custom_field_api.php - function:print_custom_field_input()
+    
+    20080815: some changes are done to add more flexibility, and idea
+              was compared with 1.2.0a1 Mantis implementation.
+    ====================================================================          
 
     function: string_custom_field_input
               returns an string with the html need to display the custom field.
@@ -460,9 +498,13 @@ class cfield_mgr
           [$name_suffix]: if used must start with _.
                           example _TCID017
 
-    returns:
+    returns: html string
 
     rev :
+         20080816 - franciscom
+         added code to manange user defined (and code developed) Custom Fields.
+         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
+
          20071006 - francisco.mancardi@gruppotesi.com
          Added field_size argument
 
@@ -489,14 +531,12 @@ class cfield_mgr
 		}
 
 
-    $verbose_type=$this->custom_field_types[$t_type];
+    $verbose_type=trim($this->custom_field_types[$t_type]);
   	$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
 
-    // 20070105 - franciscom
     $input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
     $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
 
-    // 20071006 - franciscom
     if( $field_size > 0)
     {
       $size=$field_size;
@@ -555,8 +595,6 @@ class cfield_mgr
 			  }
  			  break;
 
-
-
   		case 'string':
   		case 'email':
   		case 'float':
@@ -596,6 +634,15 @@ class cfield_mgr
                                            config_get('date_format'),
                                            $t_custom_field_value, false, true) ;
       break;
+
+      default:
+      $dynamic_call='string_input_' . str_replace(' ', '_', $verbose_type);
+      if( function_exists($dynamic_call) )
+      {
+          $str_out .= $dynamic_call($p_field_def, $input_name, $t_custom_field_value);      
+      }
+      break;
+
 
   	}
     return ($str_out);
@@ -1363,6 +1410,9 @@ class cfield_mgr
              value: hash ('type_id'  => field_type_id,
                           'cf_value' => value)
 
+    rev: 20080816 - franciscom
+         added code to manange user defined (and code developed) Custom Fields.
+         Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
   */
   function _build_cfield($hash,$cf_map)
   {
@@ -1441,7 +1491,7 @@ class cfield_mgr
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];
-        $verbose_type=$this->custom_field_types[$type_and_value['type_id']];
+        $verbose_type=trim($this->custom_field_types[$type_and_value['type_id']]);
 
         switch ($verbose_type)
         {
@@ -1471,7 +1521,15 @@ class cfield_mgr
           break;
 
           default:
-            $cfield[$field_id]['cf_value']=$value;
+            $dynamic_call='build_cfield_' . str_replace(' ', '_', $verbose_type);
+            if( function_exists($dynamic_call) )
+            {
+                $cfield[$field_id]['cf_value']=$dynamic_call($value);      
+            }
+            else
+            {
+                $cfield[$field_id]['cf_value']=$value;
+            }    
           break;
 
         }
@@ -1806,7 +1864,70 @@ function getXMLServerParams($node_id){
     return($map);
   }
 
+  /*
+    function: string_input_radio
+              returns an string with the html need to display radio custom field.
+              Is normally called by string_custom_field_input()
 
+    args: p_field_def: contains the definition of the custom field
+                       (including it's field id)
+
+          p_input_name: html input name
+          
+          p_custom_field_value: html input value
+                                htmlspecialchars() must be applied to this
+                                argument by caller.
+
+    returns: html string
+  
+    rev: 20080816 - franciscom
+         based on Mantis 1.2.0a1 code
+         
+  */
+  function string_input_radio($p_field_def, $p_input_name, $p_custom_field_value) 
+  {
+    $str_out='';
+    $t_values = explode( '|', $p_field_def['possible_values']);                                        
+    $t_checked_values = explode( '|', $p_custom_field_value );                                         
+    foreach( $t_values as $t_option )                                                                  
+    {                                                                                                  
+      $str_out .= '<input type="radio" name="' . $p_input_name . '[]"';                               
+      if( in_array( $t_option, $t_checked_values ) )                                                   
+      {                                                                                                
+    	  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+      }                                                                                                
+      else                                                                                             
+      {                                                                                                
+    	  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';                  
+      }                                                                                                
+    }
+    return $str_out;
+  }               
+
+  /*
+    function: build_cfield_radio
+              support function useful for method used to write radio CF values to db.
+              Is normally called by _build_cfield()
+              
+    args: custom_field_value: value to be converted to be written to db.
+    
+    returns: value converted
+    
+    rev: 20080816 - franciscom
+
+  */
+  function build_cfield_radio($custom_field_value) 
+  {
+      if( count($value) > 1)
+      {
+        $value=implode('|',$custom_field_value);
+      }
+      else
+      {
+        $value=is_array($custom_field_value) ? $custom_field_value[0] :$custom_field_value;
+      }
+      return $value;
+  }
 
 } // end class
 ?>

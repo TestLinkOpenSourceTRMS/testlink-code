@@ -5,20 +5,22 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/01/28 19:41:24 $ by $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/08/16 13:35:23 $ by $Author: franciscom $
  *
  * SCOPE:
- * Constants and configuration parameters used throughout TestLink 
- * DEFINED BY USERS.
+ * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
  *
- * Use this page to overwrite configuration parameters (variables and defines)
- * presente in:
- *
+ * Use this file to overwrite configuration parameters (variables and defines)
+ * present in:
  *             config.inc.php
- *             cfg\const.inc.php
+ *             cfg/const.inc.php
  *-----------------------------------------------------------------------------
 */
+// $tlCfg->treemenu_type='EXTJS';
+
+// $tlCfg->gui->custom_fields->types = array(100 => 'radio head');
+// $tlCfg->gui->custom_fields->possible_values_cfg = array('radio head' => 1);
 
 //$g_log_level='DEBUG';
 

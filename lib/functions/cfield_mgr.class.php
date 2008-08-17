@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/08/16 16:13:20 $  $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/08/17 10:23:30 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20080817 - franciscom - added logic give default logic to manage 
+ *                         new custom field types that have no specific code.
  *
  * 20080816 - franciscom - new feature: user defined Custom Fields.
  *                         Important: 
@@ -56,6 +59,14 @@ if( count($cf_files) > 0 )
 
 class cfield_mgr
 {
+  const DEFAULT_INPUT_SIZE=50;
+  const MULTISELECTIONLIST_WINDOW_SIZE=5;
+
+  // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
+  const TEXTAREA_DEFAULT_COLS = 40;
+  const TEXTAREA_DEFAULT_ROWS = 6;
+
+
 	var $db;
 	var $tree_manager;
 
@@ -493,7 +504,10 @@ class cfield_mgr
     ====================================================================          
 
     function: string_custom_field_input
-              returns an string with the html need to display the custom field.
+              returns an string with the html needed to display the custom field.
+   
+              If no specific code is found to manage a custom field type,
+              it will be used code that manage string type.
 
     args: $p_field_def: contains the definition of the custom field
                         (including it's field id)
@@ -516,12 +530,6 @@ class cfield_mgr
   */
 	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0)
 	{
-    $WINDOW_SIZE_MULTILIST=5;
-    $DEFAULT_SIZE=50;
-
-    // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
-    $DEFAULT_COLS = 40;
-    $DEFAULT_ROWS = 6;
 
 		$str_out='';
 		$t_id = $p_field_def['id'];
@@ -558,7 +566,7 @@ class cfield_mgr
         }
         else
         {
-           $window_size = intval($size) > 1 ? $size : $WINDOW_SIZE_MULTILIST;
+           $window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
            $t_name_suffix='[]';
            $t_multiple=' multiple="multiple" ';
            $t_list_size = count( $t_values );
@@ -602,17 +610,19 @@ class cfield_mgr
   		case 'email':
   		case 'float':
   		case 'numeric':
-  		  $size = intval($size) > 0 ? $size : $DEFAULT_SIZE;
-  			$str_out .= '<input type="text" name="' . $input_name . '" size="' . $size .'"';
-			  if( 0 < $p_field_def['length_max'] )
-			  {
-				  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
-			  }
-			  else
-			  {
-				   $str_out .= ' maxlength="255"';
-			  }
-			  $str_out .= ' value="' . $t_custom_field_value .'"></input>';
+  		  $str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
+  		  
+  		  // $size = intval($size) > 0 ? $size : self::DEFAULT_INPUT_SIZE;
+  			// $str_out .= '<input type="text" name="' . $input_name . '" size="' . $size .'"';
+			  // if( 0 < $p_field_def['length_max'] )
+			  // {
+				//   $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
+			  // }
+			  // else
+			  // {
+				//    $str_out .= ' maxlength="255"';
+			  // }
+			  // $str_out .= ' value="' . $t_custom_field_value .'"></input>';
 			  break ;
 
       case 'text area':
@@ -620,11 +630,11 @@ class cfield_mgr
         $rows = intval($this->sizes['text area']['rows']);
 			  if($cols <= 0)
         {
-           $cols = $DEFAULT_COLS;
+           $cols = self::TEXTAREA_DEFAULT_COLS;
         }
         if($rows <= 0)
         {
-          $rows = $DEFAULT_ROWS;
+          $rows = self::TEXTAREA_DEFAULT_ROWS;
         }
 
 			  $str_out .= '<textarea name="' . $input_name . '" ' .
@@ -656,6 +666,15 @@ class cfield_mgr
       if( function_exists($dynamic_call) )
       {
           $str_out .= $dynamic_call($p_field_def, $input_name, $t_custom_field_value);      
+      }
+      else if( method_exists($this, $dynamic_call) )
+      {
+          $str_out .= $this->$dynamic_call($p_field_def, $input_name, $t_custom_field_value);
+      }
+      else
+      {
+          // treat it as an simple string  
+     		  $str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
       }
       break;
 
@@ -1587,6 +1606,10 @@ class cfield_mgr
             {
                 $cfield[$field_id]['cf_value']=$dynamic_call($value);      
             }
+            else if( method_exists($this,$dynamic_call) )
+            {
+                $cfield[$field_id]['cf_value']=$this->$dynamic_call($value);      
+            }
             else
             {
                 $cfield[$field_id]['cf_value']=$value;
@@ -1927,7 +1950,7 @@ function getXMLServerParams($node_id){
 
   /*
     function: string_input_radio
-              returns an string with the html need to display radio custom field.
+              returns an string with the html needed to display radio custom field.
               Is normally called by string_custom_field_input()
 
     args: p_field_def: contains the definition of the custom field
@@ -1989,6 +2012,47 @@ function getXMLServerParams($node_id){
       }
       return $value;
   }
+
+
+/*
+    function: string_input_string
+              returns an string with the html needed to display custom field of type:
+              string, email, numeric, float
+               
+              Is normally called by string_custom_field_input()
+
+    args: p_field_def: contains the definition of the custom field
+                       (including it's field id)
+
+          p_input_name: html input name
+          
+          p_custom_field_value: html input value
+                                htmlspecialchars() must be applied to this
+                                argument by caller.
+          
+          p_size: html input size
+
+    returns: html string
+  
+    rev: 20080817 - franciscom
+         
+  */
+  function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
+  {
+      $str_out='';
+    	$size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
+  		$str_out .= '<input type="text" name="' . $p_input_name . '" size="' . $size .'"';
+			if( 0 < $p_field_def['length_max'] )
+			{
+			  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
+			}
+			else
+			{
+			   $str_out .= ' maxlength="255"';
+			}
+			$str_out .= ' value="' . $p_custom_field_value .'"></input>';
+      return $str_out;
+  }               
 
 } // end class
 ?>

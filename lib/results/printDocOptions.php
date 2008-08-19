@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/05/30 09:31:25 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/08/19 13:17:46 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,11 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ *      20080819 - franciscom - fixed internal bug due to changes in return
+ *                              values of generate*tree()
+ *                              IMPORTANT: 
+ *                                        TEMPLATE DO NOT WORK YET with EXTJS tree
+ * 
  *      20070509 - franciscom - added contribution BUGID
  *
  */
@@ -22,6 +27,7 @@ require('../../config.inc.php');
 require("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -44,7 +50,7 @@ $arrCheckboxes = array(
 	array( 'value' => 'header', 'description' => lang_get('opt_show_doc_header'), 'checked' => 'n'),
 	array( 'value' => 'summary', 'description' => lang_get('opt_show_tc_summary'), 'checked' => 'y'),
 	array( 'value' => 'body', 'description' => lang_get('opt_show_tc_body'), 'checked' => 'n'),
-  	array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'), 'checked' => 'n'),
+ 	array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'), 'checked' => 'n'),
 	array( 'value' => 'requirement', 'description' => lang_get('opt_show_tc_reqs'), 'checked' => 'n'),
 	array( 'value' => 'keyword', 'description' => lang_get('opt_show_tc_keys'), 'checked' => 'n')
 );
@@ -83,8 +89,7 @@ $smarty = new TLSmarty();
 // generate tree for Test Specification
 if ($type == 'testspec')
 {
-  // 20071014 - franciscom 
-	$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
+	$treeContents = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
 	                                   FOR_PRINTING,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,$args);
 	$smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
@@ -112,7 +117,7 @@ else if ($type == 'testplan')
   	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
   	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
 
-	$treeString = generateExecTree($db,$workPath,$tproject_id,$tproject_name,
+	$treeContents = generateExecTree($db,$workPath,$tproject_id,$tproject_name,
 	                               $tplan_id,$tplan_name,$args,$filters,$additionalInfo);
                                  
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
@@ -123,7 +128,7 @@ else
 	exit();
 }
 
-$tree = invokeMenu($treeString,null,null);
+$tree = invokeMenu($treeContents->menustring,null,null);
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);
@@ -132,5 +137,5 @@ $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $args);
 $smarty->assign('type', $type);
-$smarty->display('results/printDocOptions.tpl');
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

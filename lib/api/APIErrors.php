@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.4 2008/05/19 06:44:38 franciscom Exp $
+ * $Id: APIErrors.php,v 1.5 2008/08/19 13:17:45 franciscom Exp $
  */
 
 /** 
@@ -12,7 +12,7 @@
  * @link      http://testlink.org/api/
  *
  * rev: 20080518 - franciscom - TestLink Development team - www.teamst.org
- *      suppress log for missing localization strings
+ *      suppress log for missing localization strings.
  */
  
  /**
@@ -24,12 +24,20 @@ require_once dirname(__FILE__) . '/../functions/lang_api.php';
 /**#@+
  * Constants
  */
+
+
 /**
  * a catch all generic error
  */
 define('GENERAL_ERROR_CODE', -1);
 
 define('GENERAL_SUCCESS_CODE', 1);
+
+// IMPORTANT:
+//           lang_get('API_GENERAL_SUCCESS',null,1)
+//           null -> use user locale
+//           1 -> do not log on audit system if localized string do not exist
+//
 define('GENERAL_SUCCESS_STR', lang_get('API_GENERAL_SUCCESS',null,1));
 
 define('NOT_YET_IMPLEMENTED', 50);
@@ -67,8 +75,6 @@ define('NO_TESTCASENAME_STR', lang_get('API_NO_TESTCASENAME',null,1));
 
 define('NO_TESTSUITEID', 180);
 define('NO_TESTSUITEID_STR', lang_get('API_NO_TESTSUITEID',null,1));
-
-
 
 
 /**
@@ -135,11 +141,17 @@ define('TESTPROJECT_TESTCASEPREFIX_IS_EMPTY', 7004);
 define('TESTPROJECT_TESTCASEPREFIX_IS_TOO_LONG', 7005);
 
 
-
 /**
  * 8000 level - Test Suite errors
  */
 define('INVALID_TESTSUITEID', 8000);
 define('INVALID_TESTSUITEID_STR', lang_get('API_INVALID_TESTSUITEID',null,1));
+
+/**
+ * 9000 level - Custom Fields
+ */
+define('NO_CUSTOMFIELD_BY_THIS_NAME', 5030);
+define('NO_CUSTOMFIELD_BY_THIS_NAME_STR', lang_get('API_NO_CUSTOMFIELD_BY_THIS_NAME',null,1));
+
 
 ?>

@@ -2,9 +2,10 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.5 2008/06/23 06:23:53 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.6 2008/08/19 13:17:45 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
+*   **** IMPORTANT *****   
 *   Created using Ext JS example code
 *
 * 	Is the tree loader, will be called via AJAX.
@@ -17,7 +18,10 @@
 *   - Assign keywords to test cases
 *   - Assign requirements to test cases
 *
-*   rev: 20080622 - franciscom - added new argument (show_tcases), 
+*   rev: 20080817 - franciscom - added logic to display test case quantity on
+*                                test suites.
+*
+*        20080622 - franciscom - added new argument (show_tcases), 
 *                                to use this page on test plan add test case feature.
 *
 *        20080603 - franciscom - added external id on test case nodes
@@ -42,6 +46,9 @@ echo json_encode($nodes);
 ?>
 
 <?php
+/*
+
+*/
 function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$show_tcases=1) 
 {             
     $nodes=null;
@@ -65,7 +72,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$
     
     
     // for debug 
-    file_put_contents('d:\sql_display_node.txt', $sql); 
+    // file_put_contents('d:\sql_display_node.txt', $sql); 
     $nodeSet = $dbHandler->get_recordset($sql);
     
     // Remove before create release
@@ -103,6 +110,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$
     // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 
 		if( !is_null($nodeSet) ) 
 		{
+		    $tproject_mgr = new testproject($dbHandler);
 		    foreach($nodeSet as $key => $row)
 		    {
 		        $path['text']		= html_entity_decode($row['name']);                                  
@@ -113,13 +121,17 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$
             $path['leaf']	= false;
  		        $path['cls']	= 'folder';
 		       
+		        $tcase_qty=null;
             switch($row['node_type'])
             {
                 case 'testproject':
+                // 20080817 - franciscom - 
+                // at least on Test Specification seems that we do not execute this piece of code.
                 $path['href'] = "javascript:EP({$path['id']})";
                 break;
                 
                 case 'testsuite':
+                $tcase_qty=$tproject_mgr->count_testcases($row['id']);
                 $path['href'] = "javascript:ETS({$path['id']})";
                 break;
                 
@@ -128,6 +140,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$
                 $path['text'] = $tcprefix . $external[$row['id']]['tc_external_id'] . ":" . $path['text'];
                 $path['leaf']	= true;
                 break;
+            }
+            if( !is_null($tcase_qty) )
+            {
+                $path['text'] .= "({$tcase_qty})";   
             }
 		        $nodes[] = $path;                                                                        
 		    }	// foreach	

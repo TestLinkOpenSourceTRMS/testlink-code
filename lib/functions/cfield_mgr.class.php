@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/08/17 10:23:30 $  $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/08/19 13:17:46 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -1011,6 +1011,27 @@ class cfield_mgr
     return($this->db->fetchRowsIntoMap($sql,'id'));
   }
 
+  /*
+    function: get_available_item_type
+              get information about what item type (testcase,testplan, etc)
+              can use this custom field
+
+    args: $id: custom field id
+
+    returns: 
+
+  */
+	function get_available_item_type($id)
+	{
+	  $sql=" SELECT CFNT.field_id,CFNT.node_type_id ".
+	       " FROM {$this->cfield_node_types_table} CFNT, " .
+	       "      {$this->nodes_types_table} NT " .
+	       " WHERE NT.id=CFNT.node_type_id " .
+	       " CFNt.field_id={$id} ";
+
+    return($this->db->fetchRowsIntoMap($sql,'field_id'));
+  }
+
 
 
   /*
@@ -1152,13 +1173,13 @@ class cfield_mgr
   */
 	function is_used($id)
 	{
-	  $sql="SELECT field_id FROM {$this->cfield_design_values} " .
+	  $sql="SELECT field_id FROM {$this->cfield_design_values_table} " .
 	       "WHERE  field_id={$id} " .
 	       "UNION " .
-	       "SELECT field_id FROM {$this->cfield_tesplan_design_values} " .
+	       "SELECT field_id FROM {$this->cfield_testplan_design_values_table} " .
 	       "WHERE  field_id={$id} " .
 	       "UNION " .
-	       "SELECT field_id FROM {$this->cfield_execution_values} " .
+	       "SELECT field_id FROM {$this->cfield_execution_values_table} " .
 	       "WHERE  field_id={$id} ";
 	  $result=$this->db->exec_query($sql);
 	  return($this->db->num_rows( $result ) > 0 ? 1 : 0);
@@ -1174,9 +1195,9 @@ class cfield_mgr
 	function whoIsUsingMe($id)
 	{
 	  $sql=" SELECT field_id,name ".
-	       " FROM {$cfield_design_values_table} CFDV, ".
-	       "      {$cfield_node_types_table} CFNT, " .
-	       "      {$nodes_hierarchy_table} NH " .
+	       " FROM {$this->cfield_design_values_table} CFDV, ".
+	       "      {$this->cfield_node_types_table} CFNT, " .
+	       "      {$this->nodes_hierarchy_table} NH " .
 	       " WHERE CFDV.field_id=CFNT.field_id " .
 	       " AND NH.id=CFDV.node_id " .
 	       " CFDV.field_id={$id} ";

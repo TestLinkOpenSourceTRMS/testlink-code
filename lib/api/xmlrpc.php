@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/05/26 10:43:43 $ by $Author: havlat $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/08/19 13:17:45 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -43,6 +43,7 @@ require_once("APIErrors.php");
 require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
 require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
+// require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 
 /**
  * The entry class for serving XML-RPC Requests
@@ -66,7 +67,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   const   ON=true;
   const   BUILD_GUESS_DEFAULT_MODE=OFF;
 	
-	private $nodes_hierarchy_table="nodes_hierarchy";
+	private $custom_fields_table="custom_fields";
+  private $nodes_hierarchy_table="nodes_hierarchy";
   private $node_types_table="node_types";
   private $testplans_table="testplans";
   private $testprojects_table="testprojects";
@@ -131,6 +133,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $testSuiteNameParamName = "testsuitename";
 	public static $testProjectNameParamName = "testprojectname";
 	public static $testCasePrefixParamName = "testcaseprefix";
+	public static $customFieldNameParamName = "customfieldname";
+
 
 	
 	/**#@-*/
@@ -164,6 +168,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.getTestCaseIDByName'		=> 'this:getTestCaseIDByName',
 			'tl.createTestCase'				=> 'this:createTestCase',
 			'tl.createTestProject'				=> 'this:createTestProject',
+      'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
 			'tl.about'						=> 'this:about',
 			'tl.setTestMode'				=> 'this:setTestMode',
 			// ping is an alias for sayHello
@@ -1702,6 +1707,72 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		return $status;
 	}
+
+  
+  /**
+	 * Gets value of a Custom Field with scope='design' for a given Test case
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]: used to check if operation can be done.
+	 *                                if devKey is not valid => abort.
+	 *
+   * @return mixed $resultInfo
+	 * 				
+	 * @access public
+	 */		
+  public function getTestCaseCustomFieldDesignValue($args)
+	{
+
+		$this->_setArgs($args);		
+		if($this->_checkGetTestCaseCustomFieldDesignValueRequest())
+		{
+			return $this->errors;
+		}
+		else
+		{
+			return $this->errors;
+		} 
+  }
+  
+  /**
+	 * Run all the necessary checks to see if ...
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
+	private function _checkGetTestCaseCustomFieldDesignValueRequest()
+	{		
+	    $status_ok=$this->authenticate();
+	    
+      $cf_name=$this->args[self::$customFieldNameParamName];
+  	  //  $testCaseIDParamName = "testcaseid";
+	    //  public static $testCaseExternalIDParamName = "testcaseexternalid";
+  
+      // Custom Field checks:
+      // - Custom Field exists ?
+      // - Can be used on a test case ?
+      // - Custom Field scope includes 'design' ?
+      // - is linked to testproject that owns test case ?
+      //
+      if( $status_ok )
+      {
+          $cfield_mgr=new cfield_mgr($this->dbObj);
+          $cfinfo=$cfield_mgr->get_by_name($cf_name);
+          
+          if( !($status_ok=!is_null($cfinfo)) )
+          {
+	           $this->errors[] = new IXR_Error(NO_CUSTOMFIELD_BY_THIS_NAME,NO_CUSTOMFIELD_BY_THIS_NAME_STR);
+          }
+      }
+ 	
+ 	    if( $status_ok )
+      {
+          
+      }	
+      return $status_ok;
+  }
+
+
 
 
 

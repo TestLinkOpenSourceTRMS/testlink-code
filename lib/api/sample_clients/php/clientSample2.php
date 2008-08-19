@@ -1,12 +1,24 @@
 <?php
  /**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Filename $RCSfile: clientSample2.php,v $
+ *
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/08/19 13:18:07 $ by $Author: franciscom $
+ *
+ *
  * A sample client implementation in php
  * 
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 20080306 - franciscom - added dBug to improve diagnostic info.
+ *
+ *
+ * rev: 20080818 - franciscom - start work on custom field tests
+ *      20080306 - franciscom - added dBug to improve diagnostic info.
  *      20080305 - franciscom - refactored
  */
  
@@ -20,12 +32,12 @@ require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
 
 // substitute your server URL Here
-define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080402/lib/api/xmlrpc.php");
+define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080804/lib/api/xmlrpc.php");
 
 // substitute your Dev Key Here
 define("DEV_KEY", "1111");
 
-// Substitute for tcid and tpid that apply to your project
+// 
 $unitTestDescription="Test - getTestCasesForTestPlan";
 
 /**
@@ -111,5 +123,36 @@ echo "<br> Result was: ";
 new dBug($response);
 echo "<br>";
 
+// ----------------------------------------------------------------------
+$method='getTestCaseCustomFieldDesignValue';
+$client_query='tl.' . $method;
+$unitTestDescription="Test - $method";
 
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testcaseexternalid"]='ESP-1';
+// $args["customfieldname"]='TESTER_EXPERIENCE';
+$args["customfieldname"]='SSCRIPT_CF1';
+
+$debug=true;
+
+echo $unitTestDescription;
+
+$client = new IXR_Client(SERVER_URL);
+$client->debug=$debug;
+
+new dBug($args);
+if(!$client->query($client_query, $args))
+{
+		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
+		$response=null;
+}
+else
+{
+		$response=$client->getResponse();
+}
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
 ?>

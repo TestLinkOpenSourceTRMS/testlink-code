@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.113 $
- * @modified $Date: 2008/08/14 15:08:24 $ $Author: franciscom $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2008/08/19 13:17:46 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -1645,6 +1645,16 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL')
 
   returns: internal id (node id in nodes_hierarchy)
 
+
+  20080818 - franciscom - Dev Note
+  I'm a feeling regarding performance of this function.
+  Surelly adding a new column to tcversions (prefix) will simplify a lot this function.
+  Other choice (that I refuse to implement time ago) is to add prefix field
+  as a new nodes_hierarchy column.
+  This must be discussed with dev team if we got performance bottleneck trying
+  to get internal id from external one.
+ 
+  
   rev:
       20080126 - franciscom - BUGID 1313
 */

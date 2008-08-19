@@ -2,13 +2,17 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.31 2008/07/05 12:53:56 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.32 2008/08/19 13:17:46 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
 *   rev: 
+*        20080817 - franciscom - initializeGui(): added code to get total number of 
+*                                                 testcases in a test project, to display
+*                                                 it on root tree node.
+*
 *        20080705 - franciscom - removed obsolte config parameter
 *        20080608 - franciscom - user rights need to be checked in order to enable/disable
 *                                javascript tree operations like drag & drop.
@@ -24,7 +28,6 @@ testlinkInitPage($db);
 
 $tproject_mgr = New testproject($db);
 
-
 $template_dir='testcases/';
 $spec_cfg = config_get('spec_cfg');
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
@@ -34,9 +37,6 @@ $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
 $treeDragDropEnabled =  array('edit_tc' => has_rights($db,"mgt_modify_tc")=='yes' ? true: false,
                               'keywordsAssign' => false,
                               'assignReqs' => false);
-
-
-
 
 $args=init_args();
 if(!is_null($args->feature) && strlen($args->feature))
@@ -202,10 +202,21 @@ function init_args()
 
 /*
   function: initializeGui
-
-  args:
+            initialize gui (stdClass) object that will be used as argument
+            in call to Template Engine.
+ 
+  args: argsObj: object containing User Input and some session values
+        basehref: URL to web home of your testlink installation.
+        tprojectMgr: test project manager object.
+        treeDragDropEnabled: true/false. Controls Tree drag and drop behaivor.
+        
   
-  returns: 
+  
+  returns: stdClass object
+  
+  rev: 20080817 - franciscom
+       added code to get total number of testcases in a test project, to display
+       it on root tree node.
 
 */
 function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
@@ -224,7 +235,10 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
     $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
-    $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
+    
+    // 20080817 - francisco.mancardi@gruppotesi.com
+    $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
+    $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
   
     $gui->ajaxTree->dragDrop=new stdClass();
     $gui->ajaxTree->dragDrop->enabled=$treeDragDropEnabled;

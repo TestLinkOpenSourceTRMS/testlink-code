@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/06/02 14:45:42 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/08/19 13:17:46 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
  * rev:
+ *     20080819 - franciscom - renderTestCaseForPrinting() - removed mysql only code
+ *
  *     20080602 - franciscom - display testcase external id
  *     20080525 - havlatm - fixed missing test result
  *     20080505 - franciscom - renderTestCaseForPrinting() - added custom fields
@@ -48,7 +50,8 @@ function printHeader($title, $base_href)
 /**
   print HTML - initial page of document
 */
-function printFirstPage(&$db, $item_type, $title, $tproject_info, $userID, $printingOptions=null, $tplan_info=null)
+function printFirstPage(&$db, $item_type, $title, $tproject_info, 
+                        $userID, $printingOptions=null, $tplan_info=null)
 {
 	$docCfg=config_get('document_generator');
 	
@@ -56,6 +59,9 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info, $userID, $prin
 	$tproject_name = htmlspecialchars($tproject_info['name']);
 	$tproject_notes = $tproject_info['notes'];
 
+  // echo "<pre>debug 20080819 - \ - " . __FUNCTION__ . " --- "; print_r($tplan_info); echo "</pre>";
+  // die();
+  
 	$author = null;
 	$user = tlUser::getById($db,$userID);
 	if ($user)
@@ -86,16 +92,34 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info, $userID, $prin
 	else
 	{
 		if ($printingOptions['passfail'])
-			$output .= lang_get('test_report') . ' ' . htmlspecialchars($tplan_info['name']);
+			$output .= lang_get('test_report');
 		else
-			$output .= lang_get('test_plan') . ' ' . htmlspecialchars($tplan_info['name']);
+			$output .= lang_get('test_plan');
+
+   	$output .=  ' ' . htmlspecialchars($tplan_info['name']);
 	}
 
 	if($title != '')
 	{
-		// $my_title = lang_get('testsuite') . ' ' . $title;
-		//SCHLUNDUS: SRS titles should be localized. Needs  a deeper look
 		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
+
+    // Based on contribution
+	  if( !is_null($tplan_info) )
+	  {
+	      $tplan_mgr = new testplan($db);
+      
+        // Get list of test cases on test plan
+	      $linked_testcases=$tplan_mgr->get_linked_tcversions($tplan_info['id']);
+        if( !is_null($linked_testcases) )
+        {
+            $tcase_ids=array_keys($linked_testcases);
+        }
+        
+        // now get how many test cases has been assigned value to CF_ESTIMATED_EXEC_TIME
+        // at design time.
+        $cf_info = $tplan_mgr->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
+        echo "<pre>debug 20080819 - \$cf_info - " . __FUNCTION__ . " --- "; print_r($cf_info); echo "</pre>";
+    }
 	}
 	$output .= "</div>\n";
 
@@ -206,6 +230,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
   returns:
 
   rev :
+       20080819 - franciscom - removed mysql only code
        20071014 - franciscom - display test case version
        20070509 - franciscom - added Contribution
 
@@ -264,7 +289,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
  	  $code .= '<tr><th colspan="2">' . lang_get('test_case') . " " . $external_id . ": " . $name;
 
 	// add test case version
-	if( $tlCfg->document_generator->tc_version_enabled && isset($node['version']) ) // mht: is it possible that version is not set? - remove condition
+	// mht: is it possible that version is not set? - remove condition
+	if( $tlCfg->document_generator->tc_version_enabled && isset($node['version']) ) 
 	{
 	  $code .= '&nbsp;<span style="font-size: 80%;"' . $tlCfg->gui->role_separator_open . lang_get('version') . $tlCfg->gui->title_sep_1 . 
 	  		$node['version'] . $tlCfg->gui->role_separator_close . '</span>';
@@ -302,27 +328,36 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 		// contribution by SDM 
 		// printing testresult and notes in 'Print Test Plan'
 		// @TODO refactorize
-		$id2 = $id+=1;
+		// $id2 = $id+=1;
+    // 
+    // $query = mysql_query("SELECT status, execution_ts, notes FROM executions" .
+		// 		" WHERE tcversion_id = $id2 AND testplan_id = $tplan_id" .
+		// 		" and execution_ts = (select MAX(execution_ts) from executions" .
+		// 		" where tcversion_id = $id2 and testplan_id = $tplan_id" .
+		// 		" group by tcversion_id, testplan_id)");
+    // 
+		// $result = mysql_fetch_assoc($query);
 
-		$query = mysql_query("SELECT status, execution_ts, notes FROM executions" .
-				" WHERE tcversion_id = $id2 AND testplan_id = $tplan_id" .
-				" and execution_ts = (select MAX(execution_ts) from executions" .
-				" where tcversion_id = $id2 and testplan_id = $tplan_id" .
-				" group by tcversion_id, testplan_id)");
-
-		$result = mysql_fetch_assoc($query);
-
+    // 20080819 - franciscom - refactoring
+		$sql =  " SELECT status, execution_ts, notes FROM executions" .
+				    " WHERE tcversion_id = $versionID AND testplan_id = $tplan_id" .
+				    " and execution_ts = (select MAX(execution_ts) from executions" .
+				    " where tcversion_id = $versionID and testplan_id = $tplan_id" .
+				    " group by tcversion_id, testplan_id)";
+                                   
+		$result = $db->get_recordset($sql);
+                                   
 	    if (!$result) 
 	    {
-			$tcstatus2 = lang_get("test_status_not_run");
-			$tcnotes2 = lang_get("not_aplicable");
+			    $tcstatus2 = lang_get("test_status_not_run");
+			    $tcnotes2 = lang_get("not_aplicable");
 	    }
 	    else
 	    {
-			$tcstatus2 = $result['status'];
-			$tcstatus2 = lang_get($g_tc_status_verbose_labels[array_search($tcstatus2, $g_tc_status)]);
-			$tcnotes2 = $result['notes'];
-		}
+			    $tcstatus2 = $result[0]['status'];
+			    $tcstatus2 = lang_get($g_tc_status_verbose_labels[array_search($tcstatus2, $g_tc_status)]);
+			    $tcnotes2 = $result[0]['notes'];
+		  }
 		
 		$code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('passfail').
 				':</span><br /><span style="text-align:center; padding:10px;">'.$tcstatus2.'</span></td><td><u>'.

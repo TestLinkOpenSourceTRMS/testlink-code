@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/08/15 11:27:09 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/08/20 14:02:19 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -23,6 +23,8 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *  20080820 - franciscom - added get_estimated_execution_time() as result of contributed idea.
+ *
  *  20080811 - franciscom - BUGID 1650 (REQ)
  *                          html_table_of_custom_field_values() interface changes
  *                          {$this->builds_table} instead of 'builds'
@@ -1637,66 +1639,117 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null)
 
 
 // --------------------------------------------------------------------------------------
-  /*
-    function: filter_cf_selection
+/*
+  function: filter_cf_selection
 
-    args :
-          $tp_tcs - this comes from get_linked_tcversion
-          $cf_hash [cf_id] = value of cfields to filter by.
+  args :
+        $tp_tcs - this comes from get_linked_tcversion
+        $cf_hash [cf_id] = value of cfields to filter by.
 
-    returns: array filtered by selected custom fields.
+  returns: array filtered by selected custom fields.
 
-    rev :
-  */
-    function filter_cf_selection ($tp_tcs, $cf_hash)
+  rev :
+*/
+function filter_cf_selection ($tp_tcs, $cf_hash)
+{
+    $new_tp_tcs = null;
+
+    foreach ($tp_tcs as $tc_id => $tc_value)
     {
-        $new_tp_tcs = null;
 
-        foreach ($tp_tcs as $tc_id => $tc_value)
+        foreach ($cf_hash as $cf_id => $cf_value)
         {
+            $passed = 0;
+            // there will never be more than one record that has a field_id / node_id combination
+            $sql = "SELECT value FROM {$this->cfield_design_values_table} " .
+                    "WHERE field_id = $cf_id " .
+                    "AND node_id = $tc_id ";
 
-            foreach ($cf_hash as $cf_id => $cf_value)
-            {
-                $passed = 0;
-                // there will never be more than one record that has a field_id / node_id combination
-                $sql = "SELECT value FROM {$this->cfield_design_values_table} " .
-                        "WHERE field_id = $cf_id " .
-                        "AND node_id = $tc_id ";
+            $result = $this->db->exec_query($sql);
+			      $myrow = $this->db->fetch_array($result);
 
-                $result = $this->db->exec_query($sql);
-    			      $myrow = $this->db->fetch_array($result);
+            // push both to arrays so we can compare
+            $possibleValues = explode ('|', $myrow['value']);
+            $valuesSelected = explode ('|', $cf_value);
 
-                // push both to arrays so we can compare
-                $possibleValues = explode ('|', $myrow['value']);
-                $valuesSelected = explode ('|', $cf_value);
-
-                // we want to match any selected item from list and checkboxes.
-                if ( count($valuesSelected) ) {
-                    foreach ($valuesSelected as $vs_id => $vs_value) {
-                        $found = array_search($vs_value, $possibleValues);
-                        if (is_int($found)) {
-                            $passed = 1;
-                        } else {
-                            $passed = 0;
-                            break;
-                        }
+            // we want to match any selected item from list and checkboxes.
+            if ( count($valuesSelected) ) {
+                foreach ($valuesSelected as $vs_id => $vs_value) {
+                    $found = array_search($vs_value, $possibleValues);
+                    if (is_int($found)) {
+                        $passed = 1;
+                    } else {
+                        $passed = 0;
+                        break;
                     }
                 }
-                // if we don't match, fall out of the foreach.
-                // this gives a "and" search for all cf's, if this is removed then it responds
-                // as an "or" search
-                // perhaps this could be parameterized.
-                if ($passed == 0) {
-                    break;
-                }
             }
-            if ($passed) {
-                $new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
+            // if we don't match, fall out of the foreach.
+            // this gives a "and" search for all cf's, if this is removed then it responds
+            // as an "or" search
+            // perhaps this could be parameterized.
+            if ($passed == 0) {
+                break;
             }
         }
-        return ($new_tp_tcs);
+        if ($passed) {
+            $new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
+        }
+    }
+    return ($new_tp_tcs);
+}
+
+
+/*
+  function: get_estimated_execution_time
+            Created after a contributed code (BUGID 1670)
+
+            Takes all testcases linked to testplan and computes
+            SUM of values assigned AT DESIGN TIME to customa field
+            named CF_ESTIMATED_EXEC_TIME
+
+            IMPORTANT:
+            1. at time of this writting (20080820) this CF can be of type: string,numeric or float.
+            2. YOU NEED TO USE . (dot) as decimal separator (US decimal separator?) or
+               sum will be wrong. 
+         
+            
+            
+  args:id testplan id
+
+  returns: sum of CF values for all testcases linked to testplan
+
+  rev: 20080820 - franciscom
+*/
+function get_estimated_execution_time($id)
+{
+    // Get list of test cases on test plan
+    $estimated=0;
+    $cf_info = $this->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
+
+    // CF exists ?
+    if( ($status_ok=!is_null($cf_info)) )
+    {
+      $cfield_id=key($cf_info);
     }
 
+    if( $status_ok )
+    {
+        $linked_testcases=$this->get_linked_tcversions($id);
+        if( ($status_ok=!is_null($linked_testcases)) )
+        {
+            $tcase_ids=array_keys($linked_testcases);
+            
+            $sql="SELECT SUM(value) AS SUM_VALUE FROM {$this->cfield_design_values_table} CFDV " .
+                 " WHERE CFDV.field_id={$cfield_id} " .
+                 " AND node_id IN (" . implode(',',$tcase_ids) . ")";
+            $estimated=$this->db->fetchOneValue($sql);
+            $estimated=is_null($estimated) ? 0 :$estimated;
+        }
+    }
+    
+    return $estimated;
+}    
 
 
 } // end class testplan

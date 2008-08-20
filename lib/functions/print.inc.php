@@ -3,14 +3,36 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2008/08/19 13:17:46 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2008/08/20 14:02:18 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
  * rev:
+ *     20080820 - franciscom - added contribution (BUGID 1670)
+ *                             Test Plan report:
+ *                             Total Estimated execution time will be printed
+ *                             on table of contents. 
+ *                             Compute of this time can be done if: 
+ *                             - Custom Field with Name CF_ESTIMATED_EXEC_TIME exists
+ *                             - Custom Field is managed at design time
+ *                             - Custom Field is assigned to Test Cases
+ *                             
+ *                             Important Note:
+ *                             Lots of controls must be developed to avoid problems 
+ *                             presenting with results, when user use time with decimal part.
+ *                             Example:
+ *                             14.6 minuts what does means? 
+ *                             a) 14 min and 6 seconds?  
+ *                             b) 14 min and 6% of 1 minute => 14 min 3.6 seconds ?
+ *
+ *                             Implementation at (20080820) is very simple => is user
+ *                             responsibility to use good times (may be always interger values)
+ *                             to avoid problems.
+ *                             Another choice: TL must round individual times before doing sum.
+ *
  *     20080819 - franciscom - renderTestCaseForPrinting() - removed mysql only code
  *
  *     20080602 - franciscom - display testcase external id
@@ -103,22 +125,21 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	{
 		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
 
-    // Based on contribution
+    // Based on contribution (BUGID 1670)
 	  if( !is_null($tplan_info) )
 	  {
 	      $tplan_mgr = new testplan($db);
-      
-        // Get list of test cases on test plan
-	      $linked_testcases=$tplan_mgr->get_linked_tcversions($tplan_info['id']);
-        if( !is_null($linked_testcases) )
+        $estimated_minutes=$tplan_mgr->get_estimated_execution_time($tplan_info['id']);
+        if( $estimated_minutes > 60)
         {
-            $tcase_ids=array_keys($linked_testcases);
-        }
-        
-        // now get how many test cases has been assigned value to CF_ESTIMATED_EXEC_TIME
-        // at design time.
-        $cf_info = $tplan_mgr->cfield_mgr->get_by_name('CF_ESTIMATED_EXEC_TIME');
-        echo "<pre>debug 20080819 - \$cf_info - " . __FUNCTION__ . " --- "; print_r($cf_info); echo "</pre>";
+		        $estimated_string=lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
+		    }
+		    else
+		    {
+		        $estimated_string=lang_get('estimated_time_min') . $estimated_minutes;
+		    }
+		    $output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' .
+		               $estimated_string . "</p>\n";
     }
 	}
 	$output .= "</div>\n";

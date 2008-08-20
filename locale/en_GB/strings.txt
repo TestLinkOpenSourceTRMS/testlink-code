@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.337 $
- * @modified $Date: 2008/08/19 13:18:18 $ by $Author: franciscom $
+ * @version $Revision: 1.338 $
+ * @modified $Date: 2008/08/20 14:02:45 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -102,6 +102,9 @@ $TLS_remove 		= "remove";
 $TLS_high = "High";
 $TLS_medium = "Medium";
 $TLS_low = "Low";
+
+$TLS_estimated_time_hours = "Estimated time (hours):";
+$TLS_estimated_time_min = "Estimated time (min):";
 
 
 // Buttons (one word) - Leave it here in this way can be reused !!!

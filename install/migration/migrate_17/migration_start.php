@@ -1,7 +1,7 @@
 <?php 
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migration_start.php,v 1.2 2008/02/20 07:49:13 franciscom Exp $ 
+$Id: migration_start.php,v 1.3 2008/08/20 16:58:54 franciscom Exp $ 
 
 Author: franciscom
 */
@@ -263,7 +263,7 @@ $check = check_session();
 $errors += $check['errors'];
 echo $check['msg'];
 
-$dirs_to_check=array('../../../gui/templates_c,../../../logs');
+$dirs_to_check=array('../../../gui/templates_c','../../../logs');
 $check = check_with_feedback($dirs_to_check);
 echo $check['msg'];
 $errors += $check['errors'];

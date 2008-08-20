@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/08/19 13:17:46 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/08/20 17:33:23 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -29,21 +29,14 @@ require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
-$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
-$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+$args=init_args();
+$gui=initializeGui($db,$args,$_SESSION['basehref']);
 
-$tplan_id   = isset($_GET['tplan_id']) ? $_GET['tplan_id'] : 0;
-$format   = isset($_GET['format']) ? $_GET['format'] : 0;
-$type = isset($_GET['type']) ? $_GET['type'] : '';
-
-// default vars
 $arrFormat = array('html' => 'HTML', 'msword' => 'MS Word');
 
 // Important Notice:
 // If you made add/remove elements from this array, you must update
 // $printingOptions in printData.php
-
 
 $arrCheckboxes = array(
 	array( 'value' => 'toc', 'description' => lang_get('opt_show_toc'), 'checked' => 'n'),
@@ -55,87 +48,176 @@ $arrCheckboxes = array(
 	array( 'value' => 'keyword', 'description' => lang_get('opt_show_tc_keys'), 'checked' => 'n')
 );
 
-if( $type == 'testplan')
+if( $gui->report_type == 'testplan')
 {
   $arrCheckboxes[]=	array( 'value' => 'passfail', 'description' => lang_get('opt_show_passfail'), 'checked' => 'n');
 }
 
 //process setting for print
-if(isset($_POST['setPrefs']))
+if(isset($_REQUEST['setPrefs']))
 {
   foreach($arrCheckboxes as $key => $elem)
   {
    $field_name=$elem['value'];
-   if(isset($_POST[$field_name]) )
+   if(isset($_REQUEST[$field_name]) )
    {
     $arrCheckboxes[$key]['checked'] = 'y';   
    }  
   }
 }
 
-
-$selFormat = 'html';
-if(isset($_POST['format']) && $_POST['format'] == 'msword') 
-{
-   	$selFormat = 'msword';
-}
-
 // generate tree for product test specification
 $workPath = 'lib/results/printDocument.php';
-$args = "&type=" . $type;
-$smarty = new TLSmarty();
-
+$getArguments = "&type=" . $gui->report_type;
 
 // generate tree for Test Specification
-if ($type == 'testspec')
+switch($gui->report_type)
 {
-	$treeContents = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
-	                                   FOR_PRINTING,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,$args);
-	$smarty->assign('title', lang_get('title_tc_print_navigator'));
-}	
+    case 'testspec':
+        $treemenu_type=config_get('treemenu_type');
+        if($treemenu_type != 'EXTJS')
+        {
+	          $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,$workPath,
+	                                             FOR_PRINTING,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,$getArguments);
+        }
+    break;
 
-// generate tree for Test Plan/Test Report
-else if ($type == 'testplan')
-{
-	$tp = new testplan($db);
-	$latestBuild = $tp->get_max_build_id($tplan_id);
-	
-	$filters = new stdClass();
-  	$additionalInfo = new stdClass();
+    case 'testplan':
+    	  $tplan_mgr = new testplan($db);
+	      $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
+	      
+	      $filters = new stdClass();
+  	    $additionalInfo = new stdClass();
+        
+	      $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
+  	    $filters->keywordsFilterType=null;
+  	    $filters->tc_id = FILTER_BY_TC_OFF;
+  	    $filters->build_id = $latestBuild;
+  	    $filters->hide_testcases=HIDE_TESTCASES;
+  	    $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+  	    $filters->status = FILTER_BY_TC_STATUS_OFF;
+  	    $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+  	    $filters->include_unassigned=1;
+  	    $filters->show_testsuite_contents=1;
+        
+  	    $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+  	    $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+        
+	      $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
+	                                       $args->tplan_id,$args->tplan_name,$args,$filters,$additionalInfo);
+        
+        $treeString=$treeContents->menustring;
+    break;
 
-	  $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
-  	$filters->keywordsFilterType=null;
-  	$filters->tc_id = FILTER_BY_TC_OFF;
-  	$filters->build_id = $latestBuild;
-  	$filters->hide_testcases=HIDE_TESTCASES;
-  	$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-  	$filters->status = FILTER_BY_TC_STATUS_OFF;
-  	$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-  	$filters->include_unassigned=1;
-  	$filters->show_testsuite_contents=1;
-  
-  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
-  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
-
-	$treeContents = generateExecTree($db,$workPath,$tproject_id,$tproject_name,
-	                               $tplan_id,$tplan_name,$args,$filters,$additionalInfo);
-                                 
-	$smarty->assign('title', lang_get('title_tp_print_navigator'));
-}	
-else
-{
-	tLog("Argument GET['type'] has invalid value", 'ERROR');
-	exit();
+    default:
+	      tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
+	      exit();
+    break;
 }
 
-$tree = invokeMenu($treeContents->menustring,null,null);
+$tree = invokeMenu($treeString,null,null);
+
+$smarty = new TLSmarty();
+$smarty->assign('gui', $gui);
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);
-$smarty->assign('selFormat', $selFormat);
+$smarty->assign('selFormat', $args->format);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
-$smarty->assign('args', $args);
-$smarty->assign('type', $type);
+$smarty->assign('args', $getArguments);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+
+/*
+  function: init_args
+            get user input and create an object with properties representing
+            this inputs.
+            You can think in ths like some sort of namespace.
+
+  args:
+  
+  returns: stdClass() object 
+
+*/
+function init_args()
+{
+    $args=new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+
+    $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+    $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+
+    $args->tplan_id   = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
+    $args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'html';
+    $args->report_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
+    
+    return $args;
+}
+
+/*
+  function: initializeGui
+            initialize gui (stdClass) object that will be used as argument
+            in call to Template Engine.
+ 
+  args: argsObj: object containing User Input and some session values
+        basehref: URL to web home of your testlink installation.
+        tprojectMgr: test project manager object.
+        treeDragDropEnabled: true/false. Controls Tree drag and drop behaivor.
+        
+  
+  
+  returns: stdClass object
+  
+  rev: 20080817 - franciscom
+       added code to get total number of testcases in a test project, to display
+       it on root tree node.
+
+*/
+function initializeGui(&$dbHandler,$argsObj,$basehref)
+{
+    $tcaseCfg=config_get('testcase_cfg');
+        
+    $gui = new stdClass();
+    $tprojectMgr = new testproject($dbHandler);
+
+    $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+    
+    $gui->ajaxTree=new stdClass();
+    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
+                           "root_node={$argsObj->tproject_id}&" .
+                           "show_tcases=0&operation=print&" .
+                           "tcprefix={$tcasePrefix}{$tcaseCfg->glue_character}";
+
+    $gui->ajaxTree->root_node=new stdClass();
+    $gui->ajaxTree->root_node->href="javascript:TPROJECT_PTP({$argsObj->tproject_id})";
+    $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
+    
+    $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
+    $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
+  
+    $gui->ajaxTree->dragDrop=new stdClass();
+    $gui->ajaxTree->dragDrop->enabled=false;
+    $gui->ajaxTree->dragDrop->BackEndUrl=null;
+  
+    // Prefix for cookie used to save tree state
+    $gui->ajaxTree->cookiePrefix='printTestProject_' . $gui->ajaxTree->root_node->id . "_" ;
+
+    $gui->tree_title='';
+    switch($argsObj->report_type)
+    {
+        case 'testspec':
+	          $gui->tree_title=lang_get('title_tc_print_navigator');
+	      break;
+	      
+        case 'testplan':
+	          $gui->tree_title=lang_get('title_tp_print_navigator');
+	      break;
+    }
+
+    $gui->report_type=$argsObj->report_type;    
+    return $gui;  
+}
 ?>

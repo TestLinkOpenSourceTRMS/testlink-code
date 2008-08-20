@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.6 2008/08/19 13:17:45 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.7 2008/08/20 17:33:23 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -18,7 +18,11 @@
 *   - Assign keywords to test cases
 *   - Assign requirements to test cases
 *
-*   rev: 20080817 - franciscom - added logic to display test case quantity on
+*   rev: 20080820 - franciscom - added operation argument
+*                                values: 'manage','print'
+*                                used to change Javascript functions to call on item click.
+*
+*        20080817 - franciscom - added logic to display test case quantity on
 *                                test suites.
 *
 *        20080622 - franciscom - added new argument (show_tcases), 
@@ -40,8 +44,11 @@ $tcprefix=isset($_REQUEST['tcprefix']) ? $_REQUEST['tcprefix'] : '';
 // 20080622 - franciscom - useful only for feature: test plan add test case
 $show_tcases=isset($_REQUEST['show_tcases']) ? $_REQUEST['show_tcases'] : 1;
 
+// 20080820 - franciscom
+$operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
+
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
-$nodes=display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases);
+$nodes=display_children($db,$root_node,$node,$filter_node,$tcprefix,$show_tcases,$operation);
 echo json_encode($nodes);
 ?>
 
@@ -49,8 +56,23 @@ echo json_encode($nodes);
 /*
 
 */
-function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$show_tcases=1) 
+function display_children($dbHandler,$root_node,$parent,$filter_node,
+                          $tcprefix,$show_tcases=1,$operation='manage') 
 {             
+    
+    switch($operation)
+    {
+        case 'print':
+            $js_function=array('testproject' => 'TPROJECT_PTP',
+                               'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
+        break;
+        
+        case 'manage':
+        default:
+            $js_function=array('testproject' => 'EP','testsuite' =>'ETS', 'testcase' => 'ET');
+        break;  
+    }
+    
     $nodes=null;
                                        
     // 20080622 - franciscom
@@ -128,15 +150,18 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,$tcprefix,$
                 // 20080817 - franciscom - 
                 // at least on Test Specification seems that we do not execute this piece of code.
                 $path['href'] = "javascript:EP({$path['id']})";
+                // $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
                 break;
                 
                 case 'testsuite':
                 $tcase_qty=$tproject_mgr->count_testcases($row['id']);
-                $path['href'] = "javascript:ETS({$path['id']})";
+                // $path['href'] = "javascript:ETS({$path['id']})";
+                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
                 break;
                 
                 case 'testcase':
-                $path['href'] = "javascript:ET({$path['id']})";
+                //$path['href'] = "javascript:ET({$path['id']})";
+                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
                 $path['text'] = $tcprefix . $external[$row['id']]['tc_external_id'] . ":" . $path['text'];
                 $path['leaf']	= true;
                 break;

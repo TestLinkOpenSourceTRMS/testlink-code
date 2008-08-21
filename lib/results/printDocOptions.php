@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/08/20 17:33:23 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/08/21 14:40:22 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -71,10 +71,12 @@ $workPath = 'lib/results/printDocument.php';
 $getArguments = "&type=" . $gui->report_type;
 
 // generate tree for Test Specification
+$treeString=null;
+$tree=null;
+$treemenu_type=config_get('treemenu_type');
 switch($gui->report_type)
 {
     case 'testspec':
-        $treemenu_type=config_get('treemenu_type');
         if($treemenu_type != 'EXTJS')
         {
 	          $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,$workPath,
@@ -104,9 +106,16 @@ switch($gui->report_type)
   	    $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
 	      $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-	                                       $args->tplan_id,$args->tplan_name,$args,$filters,$additionalInfo);
+	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
         $treeString=$treeContents->menustring;
+        $guiObj->ajaxTree=null;
+        if( $treemenu_type == 'EXTJS' )
+        {
+            $gui->ajaxTree->root_node=$treeContents->rootnode;
+            $gui->ajaxTree->children=$treeContents->menustring;
+            $gui->ajaxTree->cookiePrefix .=$gui->ajaxTree->root_node->id . "_" ;
+        }
     break;
 
     default:
@@ -114,8 +123,7 @@ switch($gui->report_type)
 	      exit();
     break;
 }
-
-$tree = invokeMenu($treeString,null,null);
+$tree = ($treemenu_type == 'EXTJS') ? $treeString :invokeMenu($treeString);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -182,38 +190,43 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
         
     $gui = new stdClass();
     $tprojectMgr = new testproject($dbHandler);
-
     $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
-    
-    $gui->ajaxTree=new stdClass();
-    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
-                           "root_node={$argsObj->tproject_id}&" .
-                           "show_tcases=0&operation=print&" .
-                           "tcprefix={$tcasePrefix}{$tcaseCfg->glue_character}";
 
+    $gui->tree_title='';
+    $gui->ajaxTree=new stdClass();
     $gui->ajaxTree->root_node=new stdClass();
-    $gui->ajaxTree->root_node->href="javascript:TPROJECT_PTP({$argsObj->tproject_id})";
-    $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
-    
-    $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
-    $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
-  
     $gui->ajaxTree->dragDrop=new stdClass();
     $gui->ajaxTree->dragDrop->enabled=false;
     $gui->ajaxTree->dragDrop->BackEndUrl=null;
-  
+    $gui->ajaxTree->children='';
+     
     // Prefix for cookie used to save tree state
-    $gui->ajaxTree->cookiePrefix='printTestProject_' . $gui->ajaxTree->root_node->id . "_" ;
-
-    $gui->tree_title='';
+    $gui->ajaxTree->cookiePrefix='print' . str_replace(' ', '_', $argsObj->report_type) . '_';
+    
     switch($argsObj->report_type)
     {
         case 'testspec':
 	          $gui->tree_title=lang_get('title_tc_print_navigator');
+            
+            $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
+                                   "root_node={$argsObj->tproject_id}&" .
+                                   "show_tcases=0&operation=print&" .
+                                   "tcprefix={$tcasePrefix}{$tcaseCfg->glue_character}";
+	          
+	          $gui->ajaxTree->loadFromChildren=0;
+	          $gui->ajaxTree->root_node->href="javascript:TPROJECT_PTP({$argsObj->tproject_id})";
+            $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
+
+            $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
+            $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
+            
+            $gui->ajaxTree->cookiePrefix .=$gui->ajaxTree->root_node->id . "_" ;
 	      break;
 	      
         case 'testplan':
 	          $gui->tree_title=lang_get('title_tp_print_navigator');
+	          $gui->ajaxTree->loadFromChildren=1;
+	          $gui->ajaxTree->loader='';
 	      break;
     }
 

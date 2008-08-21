@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/07/06 10:59:55 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/08/21 14:40:21 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -777,9 +777,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                          'status_descr_code' =>  $status_descr_code,
                          'status_code_descr' =>  $status_code_descr);
 
-
-
-    // 20080114 - franciscom
  	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
 
     $nt2exclude=array('testplan' => 'exclude_me',
@@ -798,8 +795,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  $test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	  $map_node_tccount = array();
     
-    //echo 'one';
-    //new dBug($test_spec);
 	  if($test_spec)
 	  {
 	  	  if(is_null($tc_id) || $tc_id >= 0)
@@ -851,9 +846,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  	    $test_spec[$key]=$testcase_counters[$key];
 	  	  }
 	      
-	      //echo 'one';	  
-	  	  //new dBug($test_spec);
-	  	  
 	      // 20071111 - franciscom
 	      // added map $tplan_tcases.
 	      // key -> testcase id.
@@ -879,11 +871,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	    
 	    // Remove null elements (Ext JS tree do not like it ).
 	    $dummy_stringB=str_ireplace('null,', '', $dummy_stringA); 
-      
-      // 20080705 - franciscom found another problem (hope is last)
       $dummy_string=str_ireplace(',null', '', $dummy_stringB); 
-      
-      // 20080705 - franciscom found another problem (hope is last)
       $menustring=str_ireplace('null', '', $dummy_string); 
       
 	    $treeMenu->menustring=$menustring;
@@ -970,18 +958,25 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 	  // Can not assign anymore to intermediate variables.
 	  //
     $nodes_qty = sizeof($node['childNodes']);
-		
+		$skipped=0;
 		for($idx = 0;$idx <$nodes_qty ;$idx++)
 		{
 			if(is_null($node['childNodes'][$idx]))
+			{
+			  $skipped++;
 				continue;
-			
+			}
 			$menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
 			                                  $getArguments,$hash_id_descr,
 			                                  $tc_action_enabled,$linkto,$bHideTCs,
 			                                  $useCounters,$useColors,$showTestCaseID,
 			                                  $testCasePrefix,$showTestSuiteContents);
 		}
+		// if( $skipped == $nodes_qty )
+		// {
+		//     // EXTJS tree component do not like empty array
+		//     unset($node['childNodes']);  
+		// }
 	}
   else if (TL_TREE_KIND == 'EXTJS')
   {

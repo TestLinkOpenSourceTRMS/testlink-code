@@ -1,11 +1,26 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execTree.js,v 1.1 2008/06/21 15:58:56 franciscom Exp $
+$Id: execTree.js,v 1.2 2008/08/21 14:39:43 franciscom Exp $
 
-Created using EXT JS examples
-Definion for tree used to show test cases specification
-This tree is used in different TL features, where sometimes drag & drop can not be used.
+Created using EXT JS examples.
+This code has following features:
+
+- tree will created ONLY using COMPLETE TREE Description.
+  This description is taken from global Javascript object treeCfg,
+  usign property children -> treeCfg.children
+
+- Drag & Drop is not supported
+
+This code has been used in following TL features
+
+- Test plan printing
+- Test Execution assignment on test plans
+
 Author: franciscom - 20080525
+
+@TODO: (20080821 - franciscom) 
+       today this code is copy of tcTree.js, that's not good for mantainance.
+       Need to find a way to create common library
 
 rev:
     20080620 - franciscom - added code to save/restore tree state
@@ -14,21 +29,25 @@ rev:
                             
                             
 */
-function TreePanelState(mytree) 
+function TreePanelState(mytree,cookiePrefix) 
 {
     this.mytree = mytree;
+    this.cookiePrefix = cookiePrefix;
 }
 
 TreePanelState.prototype.init = function() 
 {
     this.cp = new Ext.state.CookieProvider();
-    this.state = this.cp.get('TLExecTreePanelState_' + this.mytree.id, new Array() );
+    // this.state = this.cp.get('TLExecTreePanelState_' + this.mytree.id, new Array() );
+    this.state = this.cp.get(this.cookiePrefix + this.mytree.id, new Array() );
+
 }
 
 TreePanelState.prototype.saveState = function(newState) 
 {
     this.state = newState;
-    this.cp.set('TLExecTreePanelState_' + this.mytree.id, this.state);
+    // this.cp.set('TLExecTreePanelState_' + this.mytree.id, this.state);
+    this.cp.set(this.cookiePrefix + this.mytree.id, this.state);
 }
 
 TreePanelState.prototype.onExpand = function(node) 
@@ -135,7 +154,8 @@ Ext.onReady(function(){
     // render the tree
     tree.render();
     
-    var treeState = new TreePanelState(tree);                     
+    // 20080821 - franciscom
+    var treeState = new TreePanelState(tree,treeCfg.cookiePrefix);                     
     treeState.init();                                             
     
     // initialize event handlers                                  

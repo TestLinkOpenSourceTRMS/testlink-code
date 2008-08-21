@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/08/20 14:02:18 $ by $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2008/08/21 14:40:10 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -80,9 +80,6 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	$g_date_format = config_get('date_format');
 	$tproject_name = htmlspecialchars($tproject_info['name']);
 	$tproject_notes = $tproject_info['notes'];
-
-  // echo "<pre>debug 20080819 - \ - " . __FUNCTION__ . " --- "; print_r($tplan_info); echo "</pre>";
-  // die();
   
 	$author = null;
 	$user = tlUser::getById($db,$userID);

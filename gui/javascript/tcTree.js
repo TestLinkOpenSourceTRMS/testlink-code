@@ -1,10 +1,21 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.6 2008/06/28 16:53:51 franciscom Exp $
+$Id: tcTree.js,v 1.7 2008/08/21 14:39:43 franciscom Exp $
 
-Created using EXT JS examples
-Definion for tree used to show test cases specification
-This tree is used in different TL features, where sometimes drag & drop can not be used.
+Created using EXT JS examples.
+This code has following features:
+
+- tree will created using a tree loader code, that get tree information
+  step by step (on user request) using AJAX calls.
+  
+- Drag & Drop is supported
+
+This code has been used in following TL features
+
+- Test Specification Tree
+- Test Plan Design (test case assignment/link to test plan)
+
+
 Author: franciscom - 20080525
 
 rev:
@@ -76,7 +87,6 @@ TreePanelState.prototype.saveState = function(newState)
     this.state = newState;
     // this.cp.set('TreePanelState_' + this.mytree.id, this.state);
     this.cp.set(this.cookiePrefix + this.mytree.id, this.state);
-    
 }
 
 TreePanelState.prototype.onExpand = function(node) 

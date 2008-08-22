@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/08/20 14:02:19 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/08/22 14:29:00 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -23,6 +23,7 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *  20080822 - franciscom - get_linked_and_newest_tcversions() improved query documentation
  *  20080820 - franciscom - added get_estimated_execution_time() as result of contributed idea.
  *
  *  20080811 - franciscom - BUGID 1650 (REQ)
@@ -685,11 +686,26 @@ function get_linked_and_newest_tcversions($id,$tcase_id=null)
 	       " NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
 	       " TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
 	       " FROM {$this->nodes_hierarchy_table} NHA " .
-	       " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.parent_id " .
-	       " JOIN {$this->nodes_hierarchy_table} NHC ON NHA.parent_id = NHC.id " .
-	       " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " .
-	       " JOIN {$this->tcversions_table} TCVA ON T.tcversion_id = TCVA.id " .
-	       " JOIN {$this->tcversions_table} TCVB ON NHB.id = TCVB.id AND TCVB.active=1 " .
+	       
+	       // NHA - will contain ONLY nodes of type testcase_version that are LINKED to test plan
+	       " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " . 
+
+	       // Get testcase_version data for LINKED VERSIONS
+	       " JOIN {$this->tcversions_table} TCVA ON TCVA.id = T.tcversion_id" .
+
+	       // Work on Sibblings - Start
+	       // NHB - Needed to get ALL testcase_version sibblings nodes
+	       " JOIN {$this->nodes_hierarchy_table} NHB ON NHB.parent_id = NHA.parent_id " .
+	       
+	       // Want only ACTIVE Sibblings
+	       " JOIN {$this->tcversions_table} TCVB ON TCVB.id = NHB.id AND TCVB.active=1 " . 
+	       // Work on Sibblings - STOP 
+
+	       // NHC will contain - nodes of type TESTCASE (parent of testcase versions we are working on)
+	       // we use NHC to get testcase NAME ( testcase version nodes have EMPTY NAME)
+	       " JOIN {$this->nodes_hierarchy_table} NHC ON NHC.id = NHA.parent_id " .
+         
+         // Want to get only testcase version with id (NHB.id) greater than linked one (NHA.id)
 	       " WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
 	       " GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
 

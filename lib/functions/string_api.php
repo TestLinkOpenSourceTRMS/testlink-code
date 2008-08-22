@@ -4,15 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: string_api.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/06/06 10:28:24 $  $Author: havlat $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/08/22 14:28:59 $  $Author: franciscom $
  * @author franciscom
  * 
  *	### String Processing functions ###
  * 
  * rev: 
- * 	20071104 - franciscom - changes to string_email_links()
+ *  20080822 - franciscom - restored missed string_email_links() 
  * 	20080606 - havlatm - remove useles mantis related code
+ * 	20071104 - franciscom - changes to string_email_links()
  *     
  * ----------------------------------------------------------------------------------- */
  // The original code was developed by:
@@ -160,6 +161,14 @@ function string_email( $p_string )
 	return $p_string;
 }
   
+/**  Prepare a string for plain text display in email and add URLs for bug
+     links and cvs links
+*/     
+function string_email_links( $p_string ) {
+	$p_string = string_email( $p_string );
+  return $p_string;
+}
+
 /** Process a string for display in a textarea box */
 function string_textarea( $p_string ) 
 {
@@ -230,9 +239,7 @@ function string_textarea( $p_string )
 /** Detect URLs and email addresses in the string and replace them with href anchors */
 function string_insert_hrefs( $p_string ) 
 {
-	global $tlCfg;
-
-	if ( !$tlCfg->html_make_links ) {
+	if ( !config_get('html_make_links') ) {
 		return $p_string;
 	}
 

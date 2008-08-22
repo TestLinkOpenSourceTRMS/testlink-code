@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/03/12 18:14:27 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/08/22 14:29:13 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -31,6 +31,7 @@ $TLS_testplan = $TLS_test_plan;
 $TLS_test_suite="Test Suite";
 $TLS_SRS = "SRS";
 $TLS_Role = "Ruolo";
+$TLS_sort_table_by_column="Ordina per colonna";
 $TLS_Keyword = "Parola chiave";
 $TLS_Milestone = "Milestone";
 $TLS_testsuite_created = "Test Suite creato";
@@ -95,6 +96,9 @@ $TLS_your_first_login = "Benvenuto! Sei un visitatore.";
 
 // newest_tcversions.php
 $TLS_no_linked_tcversions = "no linked Test Case versions";
+$TLS_newest_version = "Versione piùnuova disponibile";
+$TLS_title_newest_tcversions = "Ultime versioni dei Test Case legati";
+$TLS_no_newest_version_of_linked_tcversions = "Tutte le versioni sono le ultime disponibili";
 
 
 // planPriority.php
@@ -760,17 +764,18 @@ $TLS_test_suite = "Test Suite";
 
 
 // gui/templates/navBar.tpl
+$TLS_access_doc="documentazione";
 $TLS_home = "Home";
 $TLS_link_logout = "Logout";
+$TLS_navbar_user_management="Gestione utenti";
 $TLS_product = "Test Project";
 $TLS_product_role = "Ruolo nel Test Project";
 $TLS_search_testcase = "Trova";
 $TLS_title_edit_personal_data = "Personale";
 $TLS_title_execute = "Esegui";
+$TLS_title_events="Eventi";
 $TLS_title_results = "Risultati";
 $TLS_title_specification = "Specifiche";
-
-
 
 // gui/templates/inc_testsuite_viewer_rw.tpl
 
@@ -1232,18 +1237,22 @@ $TLS_href_add_test_case = "Aggiungi Test Cases";
 $TLS_href_build_new = "Gestione Build";
 $TLS_href_execute_test = "Esegui Tests";
 $TLS_href_metrics_dashboard = "Metrics dashboard";
+$TLS_href_newest_tcversions="Visualizza Versioni più nuove dei Test";
+$TLS_href_plan_assign_urgency="Gestione Urgenza Casi di test";
 $TLS_href_plan_assign_priority = "Assign priorities";
 $TLS_href_plan_define_priority="Definisci regole di priorità";
 $TLS_href_plan_management="Gestione Test Plan";
 $TLS_href_plan_mstones = "Modifica / Cancella Milestones";
-$TLS_href_print_tc_suite = "Stampa Test Case Suite";
+$TLS_href_print_tc_suite = "Stampa Test Plan";
 $TLS_href_remove_test_case = "Rimuovi Test Cases";
 $TLS_href_rep_and_metrics = "Test reports e Metriche";
 $TLS_href_tc_exec_assignment = "Assegna esecuzione test case";
 $TLS_href_upd_mod_tc = "Aggiorna Test Cases modificati";
+$TLS_href_update_tplan="Aggiorna Casi di test del Test Plan";
+
 $TLS_msg_no_rights_for_tp = "- non disponibile (non sei abilitato per nessun Test Plan)";
-$TLS_testplan_role = "Ruolo TestPlan";
-$TLS_title_test_case_suite = "Test Case Suite";
+$TLS_testplan_role = "Ruolo Test Plan";
+$TLS_title_test_case_suite = "Contenuto del Test Plan";
 $TLS_title_test_execution = "Esecuzione Test";
 $TLS_title_test_plan_mgmt = "Gestione Test Plan";
 
@@ -1411,6 +1420,7 @@ $TLS_bts_connection_problems = "Il collegamento al sistema di Bug Tracking è fal
                                 Controlla la configurazione.<br>
                                 Attenzione! Questo problema degraderà le prestazioni di TestLink.";
 $TLS_but_directory_is_not_writable = "La directory non è scrivibile!";
+$TLS_check_email_config="Controllare la configurazione della posta";
 $TLS_directory_is_writable = "La directory è scrivibile";
 $TLS_does_not_exist = "non esiste";
 $TLS_exists = "esiste";
@@ -1432,7 +1442,7 @@ $TLS_no_testplans_available = "Nessun Test Plan disponibile";
 
 
 // lib/general/tlsmarty.inc.php
-
+$TLS_show_hide_api_info="Visualizza/nascondi API info";
 
 
 // lib/keywords/keywords.inc.php
@@ -1765,4 +1775,39 @@ $TLS_audit_milestone_saved = "Milestone '{%1}' was saved";
 $TLS_audit_tc_added_to_testplan = "Test Case '{%1}' was added to Test Plan";
 $TLS_audit_tc_removed_from_testplan = "Test Case(s) '{%1}' were removed from Test Plan";
 
+//eventviewer.php
+$TLS_th_loglevel = "Log level";
+$TLS_th_timestamp = "Timestamp";
+$TLS_th_activity = "Attività";
+$TLS_label_startdate = "Data inizio";
+$TLS_label_enddate = "Data fine";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "Visualizzatore eventi";
+$TLS_th_session_info = "Session information";
+$TLS_th_sessionID = "Session ID";
+$TLS_th_source = "Origine";
+$TLS_click_on_event_info = "Clicka su qualsiasi evenvto per visualizzazre dettagli";
+$TLS_th_activity_code = "Attività";
+$TLS_th_object_id = "ID dell'Oggetto";
+$TLS_th_object_type = "Tipo Oggetto";
+$TLS_message_please_wait = "Attender prego ...";
+$TLS_title_eventinfo = "Informazione evento";
+$TLS_title_eventdetails = "Dettagli evento";
+$TLS_th_user = "Utente";
+$TLS_show_event_history = "Visualizza storia";
+
+// int_mantis.php
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new="Nuova";
+$TLS_issue_status_feedback="Da discuttere";
+$TLS_issue_status_acknowledged="Riconosciuta";
+$TLS_issue_status_confirmed="Confermata";
+$TLS_issue_status_assigned="Assegnata";
+$TLS_issue_status_resolved="Risolta";
+$TLS_issue_status_closed="Chiusa";
+$TLS_access_to_bts="Accesso al sistema di gestione richieste";
 ?>

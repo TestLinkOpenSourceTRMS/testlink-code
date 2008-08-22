@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.338 $
- * @modified $Date: 2008/08/20 14:02:45 $ by $Author: franciscom $
+ * @version $Revision: 1.339 $
+ * @modified $Date: 2008/08/22 14:29:13 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -918,18 +918,18 @@ $TLS_keywords = "Keywords";
 
 
 // gui/templates/navBar.tpl
+$TLS_access_doc = "documentation";
 $TLS_home = "Home";
 $TLS_link_logout = "Logout";
+$TLS_navbar_user_management = "Users";
 $TLS_product = "Test Project";
 $TLS_product_role = "Test Project role ";
 $TLS_search_testcase = "Search";
 $TLS_title_edit_personal_data = "Personal";
+$TLS_title_events = "Events";
 $TLS_title_execute = "Execute";
 $TLS_title_results = "Results";
 $TLS_title_specification = "Specification";
-$TLS_access_doc = "documentation";
-$TLS_title_events = "Events";
-$TLS_navbar_user_management = "Users";
 
 
 

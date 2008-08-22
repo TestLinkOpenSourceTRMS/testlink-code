@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2008/04/07 07:07:00 $ $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2008/08/22 14:29:00 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * rev: 20080405 - franciscom - getGrantsForUserMgmt()
+ * rev: 20080822 - franciscom - resetPassword() - added generatePassword()
+ *      20080405 - franciscom - getGrantsForUserMgmt()
  *      20080315 - franciscom - added initalize_tabsmenu()
  *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
  *
@@ -127,27 +128,35 @@ function buildUserMap($users,$add_blank_option = false)
 /*
   function: resetPassword
 
-  args:
+  args: db: dbHandler
+        userID:
+        reference to error string
 
   returns:
+  
+  rev: 20080822 - franciscom
+       use generatePassword()
 
 */
 function resetPassword(&$db,$userID,&$errorMsg)
 {
+
 	$errorMsg = '';
 	$user = new tlUser($userID);
 	$result = $user->readFromDB($db);
+	
 	if ($result >= tl::OK)
 	{
 		if (strlen($user->emailAddress))
 		{
-			$newPassword = md5(uniqid(rand(),1));
+			$newPassword = generatePassword(8,4); 
 			$result = $user->setPassword($newPassword);
+
 			if ($result >= tl::OK)
 			{
 				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');
 				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,
-		                       lang_get('mail_passwd_subject'), $msgBody);
+		                           lang_get('mail_passwd_subject'), $msgBody);
 				if ($mail_op->status_ok)
 					$result = $user->writeToDB($db);
 				else
@@ -311,4 +320,29 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj)
     }
     return $grants;
 }
+
+/*
+  function: generatePassword
+            code taken from PHP manual user's notes. 
+            you can choose the number of alphanumeric characters to add and 
+            the number of non-alphanumeric characters. 
+            You obtain a more secure password. 
+            You can add another characters to the non-alphanumeric list if you need.
+            
+  args:numAlpha
+       numNonAlpha
+  
+  returns: string
+
+*/
+function generatePassword($numAlpha=6,$numNonAlpha=2)
+{
+  $listAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  $listNonAlpha = ',;:!?.$/*-+&@_+;./*&?$-!,';
+  return str_shuffle(
+     substr(str_shuffle($listAlpha),0,$numAlpha) .
+     substr(str_shuffle($listNonAlpha),0,$numNonAlpha)
+   );
+}
+
 ?>

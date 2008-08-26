@@ -3,9 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource $RCSfile: priority.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/07/18 14:26:23 $ by $Author: havlat $
+ * @filesource $RCSfile: priority.class.php,v $
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2008/08/26 21:33:04 $ by $Author: havlat $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat

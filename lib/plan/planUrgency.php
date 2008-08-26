@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/08/15 11:27:09 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/08/26 21:33:04 $ by $Author: havlat $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -20,7 +20,7 @@
  
 require('../../config.inc.php');
 require_once('common.php');
-require_once('priority.inc.php');
+require_once('priority.class.php');
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();

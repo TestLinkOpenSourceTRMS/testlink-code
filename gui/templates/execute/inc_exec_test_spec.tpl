@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.5 2008/05/19 10:23:53 havlat Exp $
+$Id: inc_exec_test_spec.tpl,v 1.6 2008/08/26 21:00:36 havlat Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -21,8 +21,8 @@ Rev:
 			<th width="50%">{$args_labels.test_exec_expected_r}</th>
 		</tr>
 		<tr>
-			<td>{$args_tc_exec.steps}</td>
-			<td>{$args_tc_exec.expected_results}</td>
+			<td style="vertical-align:top;">{$args_tc_exec.steps}</td>
+			<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
 		</tr>
 		<tr>
       		<td colspan="2">{lang_get s='execution_type'}

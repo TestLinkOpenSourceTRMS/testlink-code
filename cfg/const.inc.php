@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/08/16 16:12:41 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/08/26 21:30:32 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -21,7 +21,7 @@
 /** [GLOBAL SETTINGS] */
 
 /** TestLink Release (MUST BE changed before the release day) */
-define('TL_VERSION', '1.8.0 BETA2'); 
+define('TL_VERSION', '1.8.0 BETA3'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -347,7 +347,7 @@ $tlCfg->results['status_label'] = array(
 	"not_run"  		=> "test_status_not_run",
 	"passed"   		=> "test_status_passed",
 	"failed"   		=> "test_status_failed",
-	"blocked"  		=> "test_status_blocked",
+	"blocked"  		=> "test_status_blocked"
 // "all"      		=> "test_status_all_status",
 //	"not_available" => "test_status_not_available",
 //	"unknown"       => "test_status_unknown"
@@ -358,7 +358,6 @@ $tlCfg->results['status_label'] = array(
 // on execution page.
 // See this as a subset of $tlCfg->results['status_label']
 //
-//
 // Used to generate radio and buttons at user interface level.
 // Order is important, because this will be display order on User Interface
 //
@@ -367,13 +366,14 @@ $tlCfg->results['status_label'] = array(
 //          used to localize the strings.
 //
 $tlCfg->results['status_label_for_exec_ui'] = array(
-	"passed"  => "test_status_passed",
-	"failed"  => "test_status_failed",
-	"blocked" => "test_status_blocked"
+	"not_run"  		=> "test_status_not_run",
+	"passed"  		=> "test_status_passed",
+	"failed"  		=> "test_status_failed",
+	"blocked" 		=> "test_status_blocked"
 );
 
 /** Selected execution result by default. Values is key from $tlCfg->results['status_label'] */
-$tlCfg->results['default_status'] = "passed";
+$tlCfg->results['default_status'] = "not_run";
 
 
 // Status colours for charts - no way to use verbose just RGB

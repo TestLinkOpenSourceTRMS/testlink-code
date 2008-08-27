@@ -5,23 +5,27 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/05/07 21:01:24 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/08/27 06:22:20 $ by $Author: franciscom $
+ *
+ * rev: 20080827 - franciscom - BUGID 1692
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("web_editor.php");
+$editorType=getWebEditorCfg('role');
+require_once(require_web_editor($editorType));
 
 testlinkInitPage($db);
 init_global_rights_maps();
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initialize_gui();
+$gui = initialize_gui($editorType);
 $op = initialize_op();
 
-$owebeditor = web_editor('notes',$_SESSION['basehref']) ;
+$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorType) ;
 $owebeditor->Value = null;
 $canManage=has_rights($db,"role_management") ? true : false;
 
@@ -236,13 +240,14 @@ function getRightsCfg()
   returns:
 
 */
-function initialize_gui()
+function initialize_gui($editorType)
 {
     $gui=new stdClass();
     $gui->checkboxStatus = null;
     $gui->userFeedback = null;
     $gui->affectedUsers = null;
     $gui->highlight = initialize_tabsmenu();
+    $gui->editorType=$editorType;
 
     return $gui;
 }

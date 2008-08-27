@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.22 2008/06/23 06:23:33 franciscom Exp $
+$Id: execSetResults.tpl,v 1.23 2008/08/27 06:20:22 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20080528 - franciscom - BUGID 1504 - version number management
@@ -53,7 +53,7 @@ Rev:
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl" popup='yes' openHead='yes'}
+{include file="inc_head.tpl" popup='yes' openHead='yes' editorType=$gui->editorType}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 

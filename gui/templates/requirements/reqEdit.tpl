@@ -1,13 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.10 2008/05/06 06:26:09 franciscom Exp $
+$Id: reqEdit.tpl,v 1.11 2008/08/27 06:20:29 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 
 {literal}

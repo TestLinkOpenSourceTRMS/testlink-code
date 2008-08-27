@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.11 2008/05/08 21:05:43 schlundus Exp $
+$Id: planEdit.tpl,v 1.12 2008/08/27 06:20:25 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -19,7 +19,7 @@ Bug confirmed on IE
 
 
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
 {literal}
 <script type="text/javascript">

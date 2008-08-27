@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/08/14 15:08:25 $ by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/08/27 06:22:19 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
+ *     20080827 - franciscom - BUGID 1692
  *     20080602 - franciscom - doTestSuiteReorder() - fixed typo error
  *     20080504 - franciscom - removed references to gui->enable_custom_fields
  *     20080329 - franciscom - added contribution by Eugenia Drosdezki
@@ -21,6 +22,8 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
+$editorType=getWebEditorCfg('design');
+require_once(require_web_editor($editorType));
 
 testlinkInitPage($db);
 
@@ -41,6 +44,7 @@ $args = init_args($opt_cfg);
 $gui_cfg = config_get('gui');
 $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
+$smarty->assign('editorType',$editorType);
 
 $a_keys['testsuite'] = array('details');
 
@@ -98,7 +102,7 @@ $amy_keys = $a_keys[$level];
 $oWebEditor = array();
 foreach ($amy_keys as $key)
 {
-	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref']);
+	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorType);
 }
 
 if($get_c_data)

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.23 2008/05/30 09:31:06 franciscom Exp $
+$Id: inc_head.tpl,v 1.24 2008/08/27 06:20:25 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -59,7 +59,7 @@ rev :
 	var bug_dialog=new bug_dialog();
 	</script> 
 	
-  {if $smarty.const.WEBEDITOR eq 'tinymce'}
+  {if $editorType == 'tinymce'}
     <script type="text/javascript" src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js" language="javascript" ></script>
     {include file="inc_tinymce_init.tpl"}
 	{/if}

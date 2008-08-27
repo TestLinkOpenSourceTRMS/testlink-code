@@ -5,12 +5,12 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/05/08 21:06:42 $ by $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/08/27 06:22:15 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
- * rev :
+ * rev : 20080827 - franciscom - BUGID 1692
  *       20080119 - franciscom - remove priority code
  *       20071201 - franciscom - new web editor code
  *
@@ -18,12 +18,16 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("web_editor.php");
-require_once('testplan.class.php');
+$editorType=getWebEditorCfg('testplan');
+require_once(require_web_editor($editorType));
+
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
 $smarty = new TLSmarty();
+$smarty->assign('editorType',$editorType);
+
 $user_feedback = '';
 $template = null;
 $args = init_args($_REQUEST,$_SESSION);
@@ -36,7 +40,7 @@ $tpName = null;
 $bActive = 0;
 $cf_smarty = '';
 
-$of = web_editor('notes',$_SESSION['basehref']) ;
+$of = web_editor('notes',$_SESSION['basehref'],$editorType);
 $of->Value = null;
 
 $main_descr=lang_get('testplan_title_tp_management'). " - " .

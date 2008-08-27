@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.8 2008/05/09 20:15:14 schlundus Exp $
+$Id: buildEdit.tpl,v 1.9 2008/08/27 06:20:25 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -22,7 +22,7 @@ Rev :
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
              open,builds_description,cancel"}          
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
 
 {literal}

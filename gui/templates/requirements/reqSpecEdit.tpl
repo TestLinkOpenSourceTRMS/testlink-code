@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.10 2008/05/19 10:23:54 havlat Exp $
+$Id: reqSpecEdit.tpl,v 1.11 2008/08/27 06:20:29 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -11,7 +11,7 @@ rev: 20080415 - franciscom - refactoring
 {lang_get var="labels"
           s='warning,warning_empty_req_spec_title,title,scope,req_total'}
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">

@@ -4,34 +4,37 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/08/14 15:08:26 $  by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/08/27 06:22:20 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
- * 20080706 - franciscom - force refresh tree when operation can put tree on
- *                         situation that lead to errors if user click on deleted element.
- * 20080203 - franciscom - changes on $tcase_mgr->show() interface
- * 20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
- *
- * 20071201 - franciscom - new web editor code
- * 20071106 - BUGID 1165
- * 20070826 - franciscom - is automatic tree refresh is disable,
- *                         do not refresh if test case changes during update
- *
- * 20070701 - franciscom - feedback improvement on new version operation
- * 20070302 - franciscom - BUGID
- * 20070220 - franciscom - automatic tree refresh management
- * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
- *                         refresh tree logic
+ * rev: 
+ *     20080827 - franciscom - BUGID 1692 
+ *     20080706 - franciscom - force refresh tree when operation can put tree on
+ *                             situation that lead to errors if user click on deleted element.
+ *     20080203 - franciscom - changes on $tcase_mgr->show() interface
+ *     20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
+ *     
+ *     20071201 - franciscom - new web editor code
+ *     20071106 - BUGID 1165
+ *     20070826 - franciscom - is automatic tree refresh is disable,
+ *                             do not refresh if test case changes during update
+ *     
+ *     20070701 - franciscom - feedback improvement on new version operation
+ *     20070302 - franciscom - BUGID
+ *     20070220 - franciscom - automatic tree refresh management
+ *     20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the refresh tree logic
  *
  *
 * -------------------------------------------------------------------------------- */
 
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("web_editor.php");
 require_once("opt_transfer.php");
-// require_once ("../../third_party/dBug/dBug.php");
+require_once("web_editor.php");
+
+$cfg=getCfg();
+require_once(require_web_editor($cfg->webEditorType));
 
 testlinkInitPage($db);
 $tcase_mgr = new testcase($db);
@@ -40,12 +43,11 @@ $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
 $templateCfg=templateConfiguration();
-$cfg=getCfg();
 
 $commandMgr=new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
-$oWebEditor=createWebEditors($_SESSION['basehref']);
+$oWebEditor=createWebEditors($_SESSION['basehref'],$cfg->webEditorType);
 
 $sqlResult = "";
 
@@ -55,6 +57,7 @@ $args = init_args($cfg->spec,$optionTransferName);
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 
 $gui=new stdClass();
+$gui->editorType=$editorType;
 $gui->grants=getGrants($db);
 $gui->opt_requirements=isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
 
@@ -558,7 +561,7 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
   args :
   returns: object
 */
-function createWebEditors($basehref)
+function createWebEditors($basehref,$editorType)
 {
     $owe = new stdClass();
     
@@ -570,7 +573,7 @@ function createWebEditors($basehref)
     $owe->editor = array();
     foreach ($owe->cfg as $key => $value)
     {
-    	$owe->editor[$key] = web_editor($key,$basehref);
+    	$owe->editor[$key] = web_editor($key,$basehref,$editorType);
     }
     
     return $owe;
@@ -588,6 +591,7 @@ function getCfg()
     $cfg->spec = config_get('spec_cfg');
     $cfg->exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
     $cfg->tcase_template = config_get('testcase_template');
+    $cfg->webEditorType=getWebEditorCfg('design');
     
     return $cfg;
 }

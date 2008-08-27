@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/04/19 16:12:33 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/08/27 06:22:19 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
- * rev : 20071106 - franciscom - custom field management
+ * rev: 20080827 - franciscom - BUGID 1692 
+ *      20071106 - franciscom - custom field management
  *
  */
 require_once("../../config.inc.php");
@@ -19,6 +20,9 @@ require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
 require_once("web_editor.php");
+$editorType=getWebEditorCfg('requirement_spec');
+require_once(require_web_editor($editorType));
+
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -61,7 +65,7 @@ switch($args->doAction)
 		break;
 }
 
-renderGui($args,$gui,$op,$templateCfg);
+renderGui($args,$gui,$op,$templateCfg,$editorType);
 
 /*
   function: init_args
@@ -102,16 +106,17 @@ function init_args()
   returns:
 
 */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorType)
 {
     $smartyObj = new TLSmarty();
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
                            'doDelete' => '', 'doReorder' => '', 'reorder' => '',
                            'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
-    $owebEditor = web_editor('scope',$argsObj->basehref) ;
+    $owebEditor = web_editor('scope',$argsObj->basehref,$editorType) ;
     $owebEditor->Value = $argsObj->scope;
 	  $guiObj->scope=$owebEditor->CreateHTML();
+    $guiObj->editorType=$editorType;  
       
     $renderType='none';
     

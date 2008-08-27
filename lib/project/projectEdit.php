@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/05/18 16:57:19 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/08/27 06:22:18 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,20 +14,21 @@
  *
  * @todo Verify dependency before delete testplan
  *
- * 20080203 - franciscom - fixed bug on active management
- * 20080112 - franciscom - adding testcase prefix management
+ * rev: 20080827 - franciscom - BUGID 1692
+ *      20080203 - franciscom - fixed bug on active management
+ *      20080112 - franciscom - adding testcase prefix management
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('testproject.class.php');
 require_once("web_editor.php");
+$editorType=getWebEditorCfg('testproject');
+require_once(require_web_editor($editorType));
+
 testlinkInitPage($db,true);
 
 
 $gui_cfg=config_get('gui');
-
-$template_dir = 'project/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 // current testproject displayed on testproject combo.
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -46,7 +47,7 @@ $reloadType = 'none';
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 
-$of = web_editor('notes',$_SESSION['basehref']) ;
+$of = web_editor('notes',$_SESSION['basehref'],$editorType) ;
 $of->Value = null;
 
 $found = 'yes';
@@ -55,18 +56,18 @@ $status_ok = 1;
 switch($args->doAction)
 {
     case 'create':
-    	$template = $default_template;
+    	  $template = $templateCfg->default_template;
       	$ui = create($args);
     	break;
 
     case 'edit':
-    	$template = $default_template;
+    	$template = $templateCfg->default_template;
     	$ui=edit($args,$tproject_mgr);
     	break;
 
     case 'doCreate':
     	$op = doCreate($args,$tproject_mgr);
-    	$template= $op->status_ok ?  null : $default_template;
+    	$template= $op->status_ok ?  null : $templateCfg->default_template;
     	$ui=$op->ui;
     	$status_ok=$op->status_ok;
     	$user_feedback = $op->msg;
@@ -74,7 +75,7 @@ switch($args->doAction)
 
     case 'doUpdate':
     	$op = doUpdate($args,$tproject_mgr,$session_tproject_id);
-    	$template= $op->status_ok ?  null : $default_template;
+    	$template= $op->status_ok ?  null : $templateCfg->default_template;
     	$ui=$op->ui;
 
     	$status_ok=$op->status_ok;
@@ -93,6 +94,7 @@ switch($args->doAction)
 $ui->main_descr=lang_get('title_testproject_management');
 $smarty = new TLSmarty();
 $smarty->assign('gui_cfg',$gui_cfg);
+$smarty->assign('editorType',$editorType);
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
@@ -110,7 +112,7 @@ switch($args->doAction)
         $template= is_null($template) ? 'projectView.tpl' : $template;
         $smarty->assign('tprojects',$tprojects);
         $smarty->assign('doAction',$reloadType);
-        $smarty->display($template_dir . $template);
+        $smarty->display($templateCfg->template_dir . $template);
     break;
 
     case "ErrorOnAction":
@@ -132,7 +134,7 @@ switch($args->doAction)
         $smarty->assign('tcasePrefix', $args->tcasePrefix);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('found', $found);
-        $smarty->display($template_dir . $template);
+        $smarty->display($templateCfg->template_dir . $template);
     break;
 
 }

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.16 2008/06/08 09:28:27 franciscom Exp $
+$Id: projectEdit.tpl,v 1.17 2008/08/27 06:20:28 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
@@ -32,7 +32,7 @@ rev:
                           enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'}
 
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
 
 {if $gui_cfg->testproject_coloring neq 'none'}

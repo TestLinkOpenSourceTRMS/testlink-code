@@ -4,24 +4,26 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2008/08/14 15:08:24 $ $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2008/08/27 06:22:14 $ $Author: franciscom $
  *
- * 20080811 - franciscom - BUGID 1650 (REQ)
- * 20080224 - franciscom - to avoid performance problems
- *                         clicking on root node will NOT try to display
- *                         all testcases in testplan.
- *
- * 20080104 - franciscom - REQ 1232 - web editor on execution notes
- *                         added createExecNotesWebEditor()
- * 20071224 - franciscom - refactoring
- * 20071113 - franciscom - added contribution History for all builds.
- * 20071006 - franciscom - changes on exec_cfield_mgr() call
- * 20071002 - jbarchibald - BUGID 1051
- * 20070707 - franciscom - BUGID 921
- * 20070519 - franciscom - BUGID 856
- * 20070306 - franciscom - BUGID 705
- * 20070222 - franciscom - BUGID 647
+ * rev:
+ *     20080827 - franciscom - BUGID 1692
+ *     20080811 - franciscom - BUGID 1650 (REQ)
+ *     20080224 - franciscom - to avoid performance problems
+ *                             clicking on root node will NOT try to display
+ *                             all testcases in testplan.
+ *     
+ *     20080104 - franciscom - REQ 1232 - web editor on execution notes
+ *                             added createExecNotesWebEditor()
+ *     20071224 - franciscom - refactoring
+ *     20071113 - franciscom - added contribution History for all builds.
+ *     20071006 - franciscom - changes on exec_cfield_mgr() call
+ *     20071002 - jbarchibald - BUGID 1051
+ *     20070707 - franciscom - BUGID 921
+ *     20070519 - franciscom - BUGID 856
+ *     20070306 - franciscom - BUGID 705
+ *     20070222 - franciscom - BUGID 647
  *
 **/
 require_once('../../config.inc.php');
@@ -29,17 +31,15 @@ require_once('common.php');
 require_once('exec.inc.php');
 require_once("builds.inc.php");
 require_once("attachments.inc.php");
+require_once("specview.php");
 require_once("web_editor.php");
-require("specview.php");
-
-testlinkInitPage($db);
-
-define('EXEC_PID_NOT_NEEDED',null);
-define('EXEC_SHOW_ON_EXECUTION',1);
-
-$templateCfg = templateConfiguration();
 
 $cfg=getCfg();
+require_once(require_web_editor($cfg->editorType));
+
+testlinkInitPage($db);
+$templateCfg = templateConfiguration();
+
 
 $tcversion_id = null;
 $submitResult = null;
@@ -180,7 +180,7 @@ if(!is_null($linked_tcversions))
 
 }
 
-$gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref']);
+$gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorType);
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
 
 // To silence smarty errors
@@ -638,6 +638,7 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
                     about testcase version that can be executed.
                     
         basehref: URL            
+        editorType:
   
   returns: map
            key: testcase id
@@ -645,7 +646,7 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 
   rev : 20080104 - creation  
 */
-function createExecNotesWebEditor(&$tcversions,$basehref)
+function createExecNotesWebEditor(&$tcversions,$basehref,$editorType)
 {
   
     if(is_null($tcversions) || count($tcversions) == 0 )
@@ -673,7 +674,7 @@ function createExecNotesWebEditor(&$tcversions,$basehref)
         $tcversion_id=$tcv['id'];
         $tcase_id=$tcv['testcase_id'];
 
-        $of=web_editor("notes[{$tcversion_id}]",$basehref) ;
+        $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorType) ;
         $of->Value = null;
         
         // Magic numbers that can be determined by trial and error
@@ -701,8 +702,8 @@ function getCfg()
     
     $results = config_get('results');
     $cfg->tc_status = $results['status_code'];
-     
     $cfg->testcase_cfg = config_get('testcase_cfg'); 
+    $cfg->editorType=getWebEditorCfg('execution');
     
     return $cfg;
 }
@@ -759,6 +760,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
     $buildMgr = new build_mgr($dbHandler);
 
+    $gui->editorType=$cfgObj->editorType;
     $gui->ownerDisplayName = null;
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
     $gui->tester_id=$argsObj->user->dbID;
@@ -842,8 +844,7 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$treeMg
   	if($guiObj->grants->execute)
   	{
   	   $guiObj->execution_time_cfields[$argsObj->id] = 
-  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,EXEC_PID_NOT_NEEDED,
-  	                                                         'execution',"_{$argsObj->id}");
+  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,null,'execution',"_{$argsObj->id}");
   	}
   	
     // 20070405 - BUGID 766
@@ -999,7 +1000,7 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     		 if($guiObj->grants->execute)
     	   {
     				$guiObj->execution_time_cfields[$item['tc_id']] = 
-    				         $tcaseMgr->html_table_of_custom_field_inputs($item['tc_id'], EXEC_PID_NOT_NEEDED,'execution',
+    				         $tcaseMgr->html_table_of_custom_field_inputs($item['tc_id'], null,'execution',
     				                                                      "_".$item['tc_id']);
          }
     		} // if( $path_elem['parent_id'] == $argsObj->id )

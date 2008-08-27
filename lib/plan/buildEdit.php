@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/05/08 21:06:42 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/08/27 06:22:14 $ $Author: franciscom $
  *
  * rev :
+ *      20080827 - franciscom - BUGID 1692
  *      20080217 - franciscom - refactoring
  *      20080213 - franciscom - fixed bad template names
  *
@@ -17,13 +18,11 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
 require_once("web_editor.php");
+$editorType=getWebEditorCfg('build');
+require_once(require_web_editor($editorType));
 
 testlinkInitPage($db);
-
-$templateCfg = new stdClass();
-$templateCfg->template_dir = 'plan/';
-$templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-$templateCfg->template = null;
+$templateCfg = templateConfiguration();
 
 $op = new stdClass();
 $op->user_feedback = '';
@@ -36,7 +35,7 @@ $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION);
-$of = web_editor('notes',$_SESSION['basehref']);
+$of = web_editor('notes',$_SESSION['basehref'],$editorType);
 $of->Value = null;
 
 $main_descr = lang_get('title_build_2') . TITLE_SEP_TYPE3 . lang_get('test_plan') . TITLE_SEP . $args->tplan_name;
@@ -71,6 +70,7 @@ switch($args->do_action)
 }
 
 
+$smarty->assign('editorType',$editorType);
 $smarty->assign('main_descr',$main_descr);
 $smarty->assign('operation_descr',$op->operation_descr);
 $smarty->assign('user_feedback',$op->user_feedback);

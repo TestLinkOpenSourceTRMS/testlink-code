@@ -2,61 +2,92 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.6 $ $Author: havlat $
- * @modified $Date: 2008/06/04 10:54:33 $
+ * @version $Revision: 1.7 $ $Author: franciscom $
+ * @modified $Date: 2008/08/27 06:22:14 $
  *
  *
+ * rev: 20080826 - franciscom - BUGID 1692
+ *      refactoring to allow use of different editor type in different TL features/areas
  **/
 
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 
-switch($tlCfg->gui_text_editor)
+
+/*
+  function: getWebEditorCfg
+
+  args:-
+
+  returns:
+
+*/
+function getWebEditorCfg($feature='all')
 {
-	case 'fckeditor':
-		require_once("../../third_party/fckeditor/fckeditor.php");
-		break;
-
-	case 'none':
-		require_once("no_editor.class.php");
-		break;
-
-	case 'tinymce':
-		require_once("tinymce.class.php");
-		break;
+    $cfg=config_get('gui');
+	  $webEditorType=isset($cfg->text_editor[$feature])?$cfg->text_editor[$feature]:$cfg->text_editor['all'];
+    return $webEditorType;
 }
 
 
 /*
-  function:
+  function: require_web_editor
 
   args:
 
   returns:
 
 */
-function web_editor($html_input_id,$base_path)
+function require_web_editor($editor_type=null)
 {
-	global $tlCfg;
+    $webEditorType=is_null($editor_type) ? getWebEditorCfg() : $editor_type;
+	  switch($webEditorType)
+    {
+    	case 'fckeditor':
+    		return "../../third_party/fckeditor/fckeditor.php";
+    		break;
+   
+    	case 'tinymce':
+    		return "tinymce.class.php";
+    		break;
 
-	switch($tlCfg->gui_text_editor)
-	{
-		case 'fckeditor':
-			$of = new fckeditor($html_input_id) ;
-			$of->BasePath = $base_path . 'third_party/fckeditor/';
-			$of->ToolbarSet = $tlCfg->fckeditor_default_toolbar;
-			$of->Config['CustomConfigurationsPath']  = $base_path . 'cfg/tl_fckeditor_config.js';
-			break;
+    	case 'none':
+    	default:
+    		return "no_editor.class.php";
+    		break;
+    }
+}
 
-		case 'none':
-			$of = new no_editor($html_input_id) ;
-			break;
+/*
+  function: web_editor
 
-		case 'tinymce':
-			$of = new tinymce($html_input_id) ;
-			break;
-  }
+  args:
 
-  return $of;
+  returns:
+
+*/
+function web_editor($html_input_id,$base_path,$editor_type=null)
+{
+    $webEditorType=is_null($editor_type) ? getWebEditorCfg() : $editor_type;
+	  switch($webEditorType)
+	  {
+	  	case 'fckeditor':
+	  		$of = new fckeditor($html_input_id) ;
+	  		$of->BasePath = $base_path . 'third_party/fckeditor/';
+	  		$of->ToolbarSet = config_get('fckeditor_default_toolbar');
+	  		$of->Config['CustomConfigurationsPath']  = $base_path . 'cfg/tl_fckeditor_config.js';
+	  		break;
+    
+	  	case 'tinymce':
+	  		$of = new tinymce($html_input_id) ;
+	  		break;
+    
+	  	case 'none':
+	  	default:
+	  		$of = new no_editor($html_input_id) ;
+	  		break;
+    }
+    
+    return $of;
 }
 ?>

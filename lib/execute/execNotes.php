@@ -5,22 +5,26 @@
  *
  * Filename $RCSfile: execNotes.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/03/22 15:47:46 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/08/27 06:22:14 $ by $Author: franciscom $
  *
  * Edit an execution note
+ *
+ * rev: 20080827 - franciscom - BUGID 1692
 **/
 require_once('../../config.inc.php');
-require_once('../functions/common.php');
-require_once("web_editor.php");
+require_once('common.php');
 require_once('exec.inc.php');
-testlinkInitPage($db);
+require_once("web_editor.php");
 
-$template_dir = 'execute/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$editorType=getWebEditorCfg('execution');
+require_once(require_web_editor($editorType));
+
+testlinkInitPage($db);
+$templateCfg=templateConfiguration();
 
 $args=init_args();
-$owebeditor = web_editor('notes',$_SESSION['basehref']);
+$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorType);
 
 switch ($args->doAction)
 {
@@ -36,7 +40,8 @@ $owebeditor->Value=$map[0]['notes'];
 
 $smarty = new TLSmarty();
 $smarty->assign('notes',$owebeditor->CreateHTML());
-$smarty->display($template_dir . $default_template);
+$smarty->assign('editorType',$editorType);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*

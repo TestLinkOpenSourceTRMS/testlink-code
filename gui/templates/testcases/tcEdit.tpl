@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.6 2008/05/12 19:48:39 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.7 2008/08/27 06:20:30 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20080420 - franciscom - improved user feedback
@@ -10,7 +10,7 @@ rev: 20080420 - franciscom - improved user feedback
           s="warning,warning_empty_tc_title,btn_save,cancel"}
 
 
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

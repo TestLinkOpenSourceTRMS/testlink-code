@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.3 2008/05/06 06:26:12 franciscom Exp $
+$Id: containerEdit.tpl,v 1.4 2008/08/27 06:20:29 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
                         removed TL 1.6 useless code
 *}
-{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}
 
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">

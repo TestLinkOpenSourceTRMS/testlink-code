@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/04/21 08:30:03 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/08/27 06:22:19 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
- * rev: 20080411 - franciscom - BUGID 1476
+ * rev: 20080827 - franciscom - BUGID 1692
+ *      20080411 - franciscom - BUGID 1476
  *      20070415 - franciscom - custom field manager
  *      20070415 - franciscom - added reorder feature
  *
@@ -24,8 +25,11 @@ require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
-require_once("web_editor.php");
 require_once("configCheck.php");
+require_once("web_editor.php");
+$editorType=getWebEditorCfg('requirement');
+require_once(require_web_editor($editorType));
+
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -72,7 +76,7 @@ switch($args->doAction)
 		break;
 } // switch
 
-renderGui($args,$gui,$op,$templateCfg);
+renderGui($args,$gui,$op,$templateCfg,$editorType);
 
 
 /*
@@ -121,7 +125,7 @@ function init_args()
   returns:
 
 */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorType)
 {
     $smartyObj = new TLSmarty();
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
@@ -130,9 +134,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
                            'doCreateTestCases' => 'doCreateTestCases',
                            'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
-    $owebEditor = web_editor('scope',$argsObj->basehref) ;
+    $owebEditor = web_editor('scope',$argsObj->basehref,$editorType) ;
     $owebEditor->Value = $argsObj->scope;
 	  $guiObj->scope=$owebEditor->CreateHTML();
+    $guiObj->editorType=$editorType;
       
     $renderType='none';
     switch($argsObj->doAction)

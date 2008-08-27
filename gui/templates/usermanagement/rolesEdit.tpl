@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.15 2008/05/08 21:05:43 schlundus Exp $
+$Id: rolesEdit.tpl,v 1.16 2008/08/27 06:20:30 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -17,7 +17,7 @@ rev :
 *}
 
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.190 $
- * @modified $Date: 2008/08/07 14:27:13 $ by $Author: havlat $
+ * @version $Revision: 1.191 $
+ * @modified $Date: 2008/08/27 06:27:12 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -329,7 +329,23 @@ $tlCfg->dashboard_precision = 2;
  * 'tinymce'
  * 'none' -> use plain text area input field
  */
-$tlCfg->gui_text_editor = 'fckeditor';
+// $tlCfg->gui_text_editor = 'fckeditor';
+
+$tlCfg->gui->text_editor = array();
+$tlCfg->gui->text_editor['all'] = 'fckeditor';
+
+// Enable and configure this if you want to have different
+// webeditor type in different TL areas
+//
+// $tlCfg->gui->text_editor['execution'] = 'none';
+// $tlCfg->gui->text_editor['design'] = 'fckeditor';
+// $tlCfg->gui->text_editor['testplan'] = 'none';
+// $tlCfg->gui->text_editor['build'] = 'fckeditor';
+// $tlCfg->gui->text_editor['testproject'] = 'tinymce';
+// $tlCfg->gui->text_editor['role'] = 'tinymce';
+// $tlCfg->gui->text_editor['requirement'] = 'none';
+// $tlCfg->gui->text_editor['requirement_spec'] = 'none';
+
 
 /** fckeditor Toolbar 
  * modify which icons will be available in html edit pages
@@ -759,7 +775,7 @@ define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');	// @TODO mo
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('TL_TREE_KIND', $tlCfg->treemenu_type);
 define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
-define('WEBEDITOR',$tlCfg->gui_text_editor);
+// define('WEBEDITOR',$tlCfg->gui_text_editor);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2008/08/12 19:21:19 $ $Author: havlat $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2008/08/27 06:25:53 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -140,8 +140,11 @@ class TLSmarty extends Smarty
 
 		// there are some variables which should not be assigned for template
 		// but must be initialized
+		// inc_head.tpl
 		$this->assign('jsValidate', null);
 		$this->assign('jsTree', null);
+		$this->assign('editorType', null);
+		
 		
 		// user feedback variables (used in inc_update.tpl)
 		$this->assign('user_feedback', null);

@@ -1,14 +1,17 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.8 2008/08/05 07:24:22 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.9 2008/09/02 16:39:13 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
- 
-   20080805 - franciscom - BUGID 1656
-   20080525 - franciscom - use only ext js tree type.
-                           no change to configure a different tree menu type 
-	 20070217 - franciscom - added test suite filter
-                           changes to form method to allow automatic refresh
-                           without browser warning
+
+rev: 
+     20080831 - franciscom - treeCfg
+                             manage testlink_node_type, useBeforeMoveNode
+     20080805 - franciscom - BUGID 1656
+     20080525 - franciscom - use only ext js tree type.
+                             no change to configure a different tree menu type 
+	   20070217 - franciscom - added test suite filter
+                             changes to form method to allow automatic refresh
+                             without browser warning
 *}
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
@@ -18,6 +21,7 @@
     {literal}
     <script type="text/javascript">
     treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+               root_testlink_node_type:'',useBeforeMoveNode:false,
                loader:"", enableDD:false, dragDropBackEndUrl:''};
     </script>
     {/literal}
@@ -29,12 +33,12 @@
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
     treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
     treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
-
-    // 20080622 - franciscom
     treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+    treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
+    treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
     </script>
     
-    <script type="text/javascript" src='gui/javascript/tcTree.js'>
+    <script type="text/javascript" src='gui/javascript/treebyloader.js'>
     </script>
 
 {else}

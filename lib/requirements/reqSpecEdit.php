@@ -3,14 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/08/27 06:22:19 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
- * rev: 20080827 - franciscom - BUGID 1692 
+ * rev: 20080830 - franciscom - added code to manage unlimited depth tree
+ *                              (will be not enabled yet)
+ *
+ *      20080827 - franciscom - BUGID 1692 
  *      20071106 - franciscom - custom field management
  *
  */
@@ -20,8 +23,8 @@ require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
 require_once("web_editor.php");
-$editorType=getWebEditorCfg('requirement_spec');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('requirement_spec');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 
@@ -63,9 +66,15 @@ switch($args->doAction)
   case "doReorder":
 		$op=$commandMgr->doReorder($args);
 		break;
+
+  case "createChild":
+    // Will be use in future when we clarify how we will want to manage
+    // requirements with unlimited depth
+ 	  $op=$commandMgr->createChild($args);
+	  break;
 }
 
-renderGui($args,$gui,$op,$templateCfg,$editorType);
+renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 /*
   function: init_args
@@ -73,6 +82,8 @@ renderGui($args,$gui,$op,$templateCfg,$editorType);
   args:
   
   returns: 
+  
+  rev: 20080830 - franciscom
 
 */
 function init_args()
@@ -80,13 +91,21 @@ function init_args()
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
-	$args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
-	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
-	$args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
-	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;
+	
+	$key2loop=array('scope','countReq','req_spec_id','doAction','reqParentID','nodes_order');
+	$intkey2loop=array('countReq','req_spec_id','reqParentID');
+	foreach($intkey2loop as $keyname)
+  {
+     $args->$keyname=isset($_REQUEST[$keyname]) ? intval($_REQUEST[$keyname]) : null;
+  }
 
-	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction']:null;
-	$args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
+  $key2loop=array('scope','doAction','nodes_order');
+	foreach($key2loop as $keyname)
+  {
+     $args->$keyname=isset($_REQUEST[$keyname]) ? $_REQUEST[$keyname] : null;
+  }
+
+  $args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
@@ -94,6 +113,7 @@ function init_args()
 	$args->basehref=$_SESSION['basehref'];
 	
 	
+	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
 
 	return $args;
 }
@@ -106,17 +126,18 @@ function init_args()
   returns:
 
 */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorType)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
                            'doDelete' => '', 'doReorder' => '', 'reorder' => '',
-                           'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
+                           'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                           'createChild' => 'doCreate');
 
-    $owebEditor = web_editor('scope',$argsObj->basehref,$editorType) ;
+    $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
     $owebEditor->Value = $argsObj->scope;
 	  $guiObj->scope=$owebEditor->CreateHTML();
-    $guiObj->editorType=$editorType;  
+    $guiObj->editorType=$editorCfg['type'];  
       
     $renderType='none';
     
@@ -124,6 +145,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorType)
     {
         case "edit":
         case "create":
+        case "createChild":
         case "reorder":
         case "doDelete":
         case "doReorder":

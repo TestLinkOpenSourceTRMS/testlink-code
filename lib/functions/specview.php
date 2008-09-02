@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.9 $ $Author: franciscom $
- * @modified $Date: 2008/08/14 15:08:24 $
+ * @version $Revision: 1.10 $ $Author: franciscom $
+ * @modified $Date: 2008/09/02 16:39:49 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -479,6 +479,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 */
 function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 {
+    define('DONT_FILTER_BY_TCASE_ID',null);
     $doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 
     // Multiple step algoritm to apply keyword filter on type=AND

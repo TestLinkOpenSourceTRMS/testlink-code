@@ -5,19 +5,23 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  *
- * rev : 20080419 - franciscom - bug on update(), no control for duplicate.
- *
- *       20080318 - franciscom - thanks to Postgres have found code that must be removed
- *                               after req_specs get it's id from nodes hierarchy
+ * rev: 20080830 - franciscom - changes in create() for future use
+ *                              changes to use node_order field from nodes hierachy
+ *                              table when manage requirements. (get_requirements())
  * 
- *       20080309 - franciscom - changed return value for get_by_id()
+ *      20080419 - franciscom - bug on update(), no control for duplicate.
+ *
+ *      20080318 - franciscom - thanks to Postgres have found code that must be removed
+ *                              after req_specs get it's id from nodes hierarchy
+ * 
+ *      20080309 - franciscom - changed return value for get_by_id()
 */
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
@@ -98,8 +102,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   /*
     function: create
 
-    args :
-          tproject_id:  requirement spec parent
+    args:
+          tproject_id:  requirement spec parent (till we will manage unlimited tree depth)
+          parent_id:
           title
           scope
           countReq
@@ -111,13 +116,12 @@ class requirement_spec_mgr extends tlObjectWithAttachments
              msg -> some simple message, useful when status_ok ==0
              id -> id of requirement specification
 
-    rev : 20080318 - franciscom - removed code to get last inserted id
+    rev:20080830 - franciscom -  added new argument parent_id
+        20080318 - franciscom - removed code to get last inserted id
 
   */
-	function create($tproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
+	function create($tproject_id,$parent_id,$title, $scope, $countReq,$user_id,$type = 'n')
 	{
-	  $ignore_case=1;
-
 		$result=array();
 
     $result['status_ok'] = 0;
@@ -129,7 +133,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     $chk=$this->check_title($title,$tproject_id);
 		if ($chk['status_ok'])
 		{
-		  $parent_id=$tproject_id;
 		  $name=$title;
 		  $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
 
@@ -466,24 +469,29 @@ function get_metrics($id)
 
     returns: array of rows
 
+    rev: 20080830 - franciscom - changed to get node_order from nodes_hierarchy table
   */
 function get_requirements($id, $range = 'all', $testcase_id = null,
-                          $order_by=" ORDER BY node_order,title,req_doc_id")
+                          $order_by=" ORDER BY NH.node_order,title,req_doc_id")
 {
   $sql='';
 	switch($range)
 	{
 	  case 'all';
-	  $sql = " SELECT * FROM {$this->requirements_table} requirements " .
-	         " WHERE srs_id={$id}";
+	  $sql = " SELECT requirements.*, NH.node_order" .
+	         " FROM {$this->requirements_table} requirements, {$this->nodes_hierarchy_table} NH" .
+	         " WHERE requirements.id=NH.id " .
+	         " AND srs_id={$id}";
 	  break;
 
 
 	  case 'assigned':
-		$sql = "SELECT requirements.* " .
-		       " FROM {$this->requirements_table} requirements,{$this->req_coverage_table} req_coverage " .
-		       " WHERE srs_id={$id} " .
+		$sql = "SELECT requirements.*, NH.node_order" .
+		       " FROM {$this->requirements_table} requirements, {$this->nodes_hierarchy_table} NH, " .
+		       " {$this->req_coverage_table} req_coverage " .
+	         " WHERE requirements.id=NH.id " .
 		       " AND req_coverage.req_id=requirements.id " .
+		       " AND srs_id={$id} " .
 		       " AND req_coverage.testcase_id={$testcase_id}";
 	  break;
 	}
@@ -606,14 +614,16 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   */
   function set_order($map_id_order)
   {
-   	foreach($map_id_order as $order => $node_id)
-  	{
-  		$order = abs(intval($order));
-  		$node_id = intval($node_id);
-  	  $sql = " UPDATE {$this->nodes_hierarchy_table} " .
-  	         " SET node_order = {$order} WHERE id = {$node_id}";
-  	  $result = $this->db->exec_query($sql);
-  	}
+    $this->tree_mgr->change_order_bulk($map_id_order);
+    
+   	// foreach($map_id_order as $order => $node_id)
+  	// {
+  	// 	$order = abs(intval($order));
+  	// 	$node_id = intval($node_id);
+  	//   $sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  	//          " SET node_order = {$order} WHERE id = {$node_id}";
+  	//   $result = $this->db->exec_query($sql);
+  	// }
 
   } // set_order($map_id_order)
 

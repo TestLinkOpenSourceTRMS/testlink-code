@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.1 2008/08/25 07:20:48 franciscom Exp $
+$Id: treebyloader.js,v 1.2 2008/09/02 16:39:04 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -19,10 +19,54 @@ This code has been used in following TL features
 Author: franciscom - 20080525
 
 rev:
+    20080831 - franciscom - added beforemovenode() logic
+    
     Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
-                            
-                            
 */
+
+/*
+  function: checkMovement()
+            check if node can be move to new parent.
+            called by beforemovenode() event
+
+  args: same interface that beforemovenode()
+  
+  returns: true -> movement can be made.
+
+*/
+function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
+{
+    var status=true;
+    var newparent_node_type =newparent.attributes.testlink_node_type;
+    var node_type = node.attributes.testlink_node_type;
+    
+    switch(node_type)
+    {
+        case 'requirement':
+            switch(newparent_node_type)
+            {
+                case 'testproject':
+                    status=false;
+                break;
+            }   
+        break;
+
+        // While we do not manage unlimited tree depth, need
+        // to use this control
+        case 'requirement_spec':
+            switch(newparent_node_type)
+            {
+                case 'requirement_spec':
+                    status=false;
+                break;
+            }   
+        break;
+               
+    }
+    return status;
+    
+}
+
 
 function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorder)
 {
@@ -176,7 +220,8 @@ Ext.onReady(function(){
         text: treeCfg.root_name,
         draggable:false,
         id:treeCfg.root_id,
-        href:treeCfg.root_href
+        href:treeCfg.root_href,
+        testlink_node_type:treeCfg.root_testlink_node_type
     });
     
     
@@ -200,6 +245,19 @@ Ext.onReady(function(){
     tree.on('movenode', function(tree,node,oldParent,newParent,newNodePosition ){ 
               writeNodePositionToDB(newParent,node.id,oldParent.id,newParent.id,newNodePosition);                    
     });                                          
+    
+    
+    // 20080831 - franciscom
+    // Class Ext.tree.TreePanel - event
+    // Want to avoid some movements like:
+    // A requirement CAN NOT BE direct child of test project
+    //
+    if( treeCfg.enableDD && treeCfg.useBeforeMoveNode )
+    {
+        tree.on('beforemovenode', function(tree,node,oldParent,newParent,newNodePosition ){ 
+                  return checkMovement(newParent,node,oldParent.id,newParent.id,newNodePosition);                    
+        });                                          
+    }   
     
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  

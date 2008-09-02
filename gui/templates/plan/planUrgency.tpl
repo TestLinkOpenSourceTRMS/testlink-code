@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.3 2008/08/15 11:26:28 franciscom Exp $
+$Id: planUrgency.tpl,v 1.4 2008/09/02 16:39:13 franciscom Exp $
 
 Purpose: smarty template - manage test case urgency
 
-Revision: 20080721 - franciscom 
+Revision: 20080901 - franciscom - display testcase external id
+
+          20080721 - franciscom 
           1. if test suite has no test case, then give message and remove all controls
           2. use labels instead of code to display urgency
           3. remove feedback -> user get feedback seeing his/her changes has been applied
@@ -45,7 +47,7 @@ Revision: 20080721 - franciscom
 
 	{foreach item=res from=$gui->listTestCases}
 	<tr>
-  			<td style="text-align: left;">{$res.name|escape}</td>
+  			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
   			{assign var=urgencyCode value=$res.urgency}
   			<td>{lang_get s=$gui->urgencyCfg.code_label[$urgencyCode]}</td>
 	</tr>

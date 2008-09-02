@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/08/27 06:22:19 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -27,8 +27,8 @@ require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
 require_once("configCheck.php");
 require_once("web_editor.php");
-$editorType=getWebEditorCfg('requirement');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('requirement');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 
@@ -76,7 +76,7 @@ switch($args->doAction)
 		break;
 } // switch
 
-renderGui($args,$gui,$op,$templateCfg,$editorType);
+renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
 /*
@@ -125,7 +125,7 @@ function init_args()
   returns:
 
 */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorType)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
@@ -134,10 +134,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorType)
                            'doCreateTestCases' => 'doCreateTestCases',
                            'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
-    $owebEditor = web_editor('scope',$argsObj->basehref,$editorType) ;
+    $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
     $owebEditor->Value = $argsObj->scope;
 	  $guiObj->scope=$owebEditor->CreateHTML();
-    $guiObj->editorType=$editorType;
+    $guiObj->editorType=$editorCfg['type'];
       
     $renderType='none';
     switch($argsObj->doAction)

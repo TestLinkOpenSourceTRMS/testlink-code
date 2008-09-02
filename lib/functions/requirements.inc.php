@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -101,7 +101,8 @@ function printRequirements(&$db,$srs_id)
 
 
 function exportReqDataToXML($reqData)
-{
+{            
+  
 	$rootElem = "<requirements>{{XMLCODE}}</requirements>";
 	$elemTpl = "\t".'<requirement><docid><![CDATA['."\n||DOCID||\n]]>".'</docid><title><![CDATA['."\n||TITLE||\n]]>".'</title>'.
 					'<description><![CDATA['."\n||DESCRIPTION||\n]]>".'</description>'.

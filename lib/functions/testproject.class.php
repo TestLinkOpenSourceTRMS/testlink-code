@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/05/19 06:44:43 $  $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/09/02 16:39:49 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080518 - franciscom - create() interface changes
@@ -722,7 +722,7 @@ function count_testcases($id)
   	$sql = " SELECT testprojects.prefix ".
   	       " FROM {$this->object_table} " .
   	       " WHERE testprojects.id = {$id}";
-	$ret = $this->db->fetchOneValue($sql);
+	  $ret = $this->db->fetchOneValue($sql);
 
   	return ($ret);
   }

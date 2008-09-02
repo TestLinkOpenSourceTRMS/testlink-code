@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.43 2008/03/16 18:41:31 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.44 2008/09/02 16:38:41 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -482,8 +482,9 @@ if( $inst_type=='new' && $conn_result['status'] != 0 )
     echo "<br>Dropping all existent tables:";
     foreach($the_tables as $table2drop )
     {
+      // Need to add option (CASCADE ?) to delete dependent object
       // echo $table2drop . "<br>";
-      $sql="DROP TABLE {$table2drop}";
+      $sql="DROP TABLE {$table2drop} CASCADE";
       $db->exec_query($sql);
     }
    echo "<span class='ok'>Done!</span>";

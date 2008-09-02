@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/08/27 06:22:20 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  *
  * rev: 20080827 - franciscom - BUGID 1692
 **/
@@ -14,18 +14,18 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("web_editor.php");
-$editorType=getWebEditorCfg('role');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('role');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 init_global_rights_maps();
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initialize_gui($editorType);
+$gui = initialize_gui($editorCfg['type']);
 $op = initialize_op();
 
-$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorType) ;
+$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $owebeditor->Value = null;
 $canManage=has_rights($db,"role_management") ? true : false;
 

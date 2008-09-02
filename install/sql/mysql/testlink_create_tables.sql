@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.42 2008/08/14 15:08:00 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.43 2008/09/02 16:39:29 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -208,6 +208,7 @@ CREATE TABLE `req_specs` (
   KEY `testproject_id` (`testproject_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
+/*   `node_order` int(10) unsigned NOT NULL default '1', */
 CREATE TABLE `requirements` (
   `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
@@ -216,7 +217,6 @@ CREATE TABLE `requirements` (
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
-  `node_order` int(10) unsigned NOT NULL default '1',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifier_id` int(10) unsigned default NULL,

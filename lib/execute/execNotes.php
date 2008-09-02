@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNotes.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/08/27 06:22:14 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  *
  * Edit an execution note
  *
@@ -17,14 +17,14 @@ require_once('common.php');
 require_once('exec.inc.php');
 require_once("web_editor.php");
 
-$editorType=getWebEditorCfg('execution');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('execution');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 $templateCfg=templateConfiguration();
 
 $args=init_args();
-$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorType);
+$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 
 switch ($args->doAction)
 {
@@ -40,7 +40,7 @@ $owebeditor->Value=$map[0]['notes'];
 
 $smarty = new TLSmarty();
 $smarty->assign('notes',$owebeditor->CreateHTML());
-$smarty->assign('editorType',$editorType);
+$smarty->assign('editorType',$editorCfg['type']);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2008/08/27 06:22:14 $ $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -35,7 +35,7 @@ require_once("specview.php");
 require_once("web_editor.php");
 
 $cfg=getCfg();
-require_once(require_web_editor($cfg->editorType));
+require_once(require_web_editor($cfg->editorCfg['type']));
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -180,7 +180,7 @@ if(!is_null($linked_tcversions))
 
 }
 
-$gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorType);
+$gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
 
 // To silence smarty errors
@@ -638,7 +638,7 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
                     about testcase version that can be executed.
                     
         basehref: URL            
-        editorType:
+        editorCfg:
   
   returns: map
            key: testcase id
@@ -646,7 +646,7 @@ function setCanExecute($exec_info,$execution_mode,$can_execute,$tester_id)
 
   rev : 20080104 - creation  
 */
-function createExecNotesWebEditor(&$tcversions,$basehref,$editorType)
+function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
 {
   
     if(is_null($tcversions) || count($tcversions) == 0 )
@@ -674,7 +674,7 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorType)
         $tcversion_id=$tcv['id'];
         $tcase_id=$tcv['testcase_id'];
 
-        $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorType) ;
+        $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorCfg) ;
         $of->Value = null;
         
         // Magic numbers that can be determined by trial and error
@@ -703,7 +703,7 @@ function getCfg()
     $results = config_get('results');
     $cfg->tc_status = $results['status_code'];
     $cfg->testcase_cfg = config_get('testcase_cfg'); 
-    $cfg->editorType=getWebEditorCfg('execution');
+    $cfg->editorCFg=getWebEditorCfg('execution');
     
     return $cfg;
 }
@@ -760,7 +760,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
     $buildMgr = new build_mgr($dbHandler);
 
-    $gui->editorType=$cfgObj->editorType;
+    $gui->editorType=$cfgObj->editorCfg['type'];
     $gui->ownerDisplayName = null;
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
     $gui->tester_id=$argsObj->user->dbID;

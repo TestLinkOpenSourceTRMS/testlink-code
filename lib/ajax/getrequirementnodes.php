@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.1 2008/08/25 07:20:51 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.2 2008/09/02 16:39:49 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -77,9 +77,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     
     // for debug 
-    // file_put_contents('d:\sql_display_node.txt', $sql); 
+    file_put_contents('d:\sql_display_node.txt', $sql); 
     $nodeSet = $dbHandler->get_recordset($sql);
-   
+    file_put_contents('d:\nodeSet.txt', serialize($nodeSet)); 
+    
     // print_r(array_values($nodeSet));
     // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 
 		if( !is_null($nodeSet) ) 
@@ -94,7 +95,13 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 		        $path['position']	= $row['node_order'];                                                   
             $path['leaf']	= false;
  		        $path['cls']	= 'folder';
-		       
+ 		        
+ 		        // Important:
+ 		        // We can add custom keys, and will be able to access it using
+ 		        // public property 'attributes' of object of Class Ext.tree.TreeNode 
+ 		        // 
+ 		        $path['testlink_node_type']	= $row['node_type'];		                                 
+		                                 
 		        $tcase_qty=null;
             switch($row['node_type'])
             {

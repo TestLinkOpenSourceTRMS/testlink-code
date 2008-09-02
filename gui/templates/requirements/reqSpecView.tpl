@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.23 2008/05/19 10:23:54 havlat Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.24 2008/09/02 16:39:13 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -31,6 +31,11 @@
 
 {assign var="url_args" value="reqEdit.php?doAction=createTestCases&amp;req_spec_id="}
 {assign var="req_create_tc_url"  value="$basehref$req_module$url_args$reqSpecID"}
+
+{assign var="url_args" value="reqSpecEdit.php?doAction=createChild&amp;reqParentID="}
+{assign var="req_spec_new_url" value="$basehref$req_module$url_args$reqSpecID"}
+
+
 
 
 {* used on inc_btn_reqSpecView.tpl *}
@@ -112,7 +117,7 @@ var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id
          attach_downloadOnly=$bDownloadOnly}
 
 </div>
-{if $gui->refresh_tree}
+{if $gui->refresh_tree == 'yes'}
    {include file="inc_refreshTree.tpl"}
 {/if}
 </body>

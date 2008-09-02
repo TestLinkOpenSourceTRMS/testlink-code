@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.5 2008/08/21 14:39:51 franciscom Exp $ 
+$Id: printDocOptions.tpl,v 1.6 2008/09/02 16:39:13 franciscom Exp $ 
 Purpose: show tree on print feature
 
 rev: 20080820 - franciscom - added code to manage EXTJS tree component
@@ -45,7 +45,7 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
         treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
         treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
         </script>
-        <script type="text/javascript" src='gui/javascript/tcTree.js'>
+        <script type="text/javascript" src='gui/javascript/treebyloader.js'>
         </script>
     {/if} 
 

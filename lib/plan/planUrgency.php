@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/08/26 21:33:04 $ by $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -55,13 +55,6 @@ $gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_i
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
-// $smarty->assign('user_feedback', $user_feedback);
-// $smarty->assign('listTestCases', $listTestCases);
-// $smarty->assign('node_name', $node_name);
-// $smarty->assign('node_id', $args->node_id);
-// $smarty->assign('tplan_id', $args->tplan_id);
-// $smarty->assign('tplan_name', $args->tplan_name);
 
 
 /*

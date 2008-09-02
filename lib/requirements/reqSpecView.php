@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/04/17 08:24:10 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -19,8 +19,6 @@ require_once("common.php");
 require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once('attachments.inc.php');
-require_once('requirement_spec_mgr.class.php');
-require_once('requirement_mgr.class.php');
 require_once("configCheck.php");
 
 testlinkInitPage($db);
@@ -40,7 +38,7 @@ $gui->req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 $gui->req_spec_id = $args->req_spec_id;
 $gui->tproject_name=$args->tproject_name;
 $gui->name=$gui->req_spec['title'];
-$gui->main_descr= lang_get('req_spec') . TITLE_SEP . $gui->req_spec['title'];
+$gui->main_descr= lang_get('req_spec') . config_get('gui_title_separator_1') . $gui->req_spec['title'];
 $gui->refresh_tree= 'no';
 $gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 $gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
@@ -66,7 +64,7 @@ function init_args()
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
 
-    // 20080416 - francisco.mancardi@gruppotesi.com
+    // 20080416 - franciscom
     // $args->title = isset($_REQUEST['title']) ? trim($_REQUEST['title']) : null;
     // $args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
     // $args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;

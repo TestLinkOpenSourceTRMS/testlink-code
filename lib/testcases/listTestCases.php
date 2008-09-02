@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.32 2008/08/19 13:17:46 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.33 2008/09/02 16:39:49 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -243,9 +243,29 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $gui->ajaxTree->dragDrop=new stdClass();
     $gui->ajaxTree->dragDrop->enabled=$treeDragDropEnabled;
     $gui->ajaxTree->dragDrop->BackEndUrl=$basehref . 'lib/ajax/dragdroptprojectnodes.php';
+    
+    // TRUE -> beforemovenode() event will use our custom implementation 
+    $gui->ajaxTree->dragDrop->useBeforeMoveNode=FALSE;
+  
   
     // Prefix for cookie used to save tree state
     $gui->ajaxTree->cookiePrefix='tproject_' . $gui->ajaxTree->root_node->id . "_" ;
+  
+    // 20080831 - franciscom - Custom attribute
+    // You can access to it's value using public property 'attributes' of object of Class Ext.tree.TreeNode 
+    // example: mynode.attributes.testlink_node_type
+    //
+    // Important: 
+    // Fore root node (this node)
+    // You need to initialize every custom property you want to add to root node
+    // on the js file that create it (treebyloader.js) and smarty template
+    // 
+    //
+    // Also this property must be managed in php code used to generate JSON code.
+    //
+    // I'appologize for using MAGIC constant
+    $gui->ajaxTree->root_node->testlink_node_type='testproject';
+
     
     $gui->tsuite_choice=$argsObj->tsuites_to_show;  
     return $gui;  

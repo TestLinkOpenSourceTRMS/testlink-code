@@ -2,14 +2,10 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: dragdroptprojectnodes.php,v 1.2 2008/09/02 16:39:48 franciscom Exp $
+* 	@version 	$Id: dragdroprequirementnodes.php,v 1.1 2008/09/02 16:44:29 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   manage drag and drop on test project tree
-*
-*   Development Notes:
-*   This code is called by javascript function writeNodePositionToDB() present
-*   in javascript file with all function used to manage EXTJS tree.
 *
 *   rev: 20080605 - franciscom
 *        
@@ -19,9 +15,6 @@ require_once('common.php');
 testlinkInitPage($db);
 
 
-// check if this is really needed
-$exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
-
 $args=init_args();
 $treeMgr = new tree($db);
 
@@ -29,6 +22,17 @@ switch($args->doAction)
 {
     case 'changeParent':
         $treeMgr->change_parent($args->nodeid,$args->newparentid);
+
+        // 20080831 - franciscom
+        // This will be removed in future, when parent / child relationship
+        // will be manage only on nodes_hierarchy table
+        // NEED to talk Martin ASAP
+        $sql=" UPDATE requirements " .
+             " SET srs_id={$args->newparentid} " .
+             " WHERE id={$args->nodeid}";
+        //file_put_contents('d:\dragdroprequirementnodes.php.txt', $sql);                                 
+        $db->exec_query($sql);
+             
     break;
 
     case 'doReorder':

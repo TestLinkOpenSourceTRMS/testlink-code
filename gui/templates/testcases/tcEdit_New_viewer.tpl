@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.7 2008/05/12 19:49:38 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.8 2008/09/02 16:39:13 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -9,6 +9,10 @@ Rev:
 *}
 
 {* ---------------------------------------------------------------- *}
+{lang_get var='labels' 
+          s='tc_title,alt_add_tc_name,summary,steps,expected_results,
+             execution_type,test_importance,tc_keywords,assign_requirements'}
+
 {* Steps and results Layout management *}
 {assign var="layout1" value="<br />"}
 {assign var="layout2" value="<br />"}
@@ -24,28 +28,28 @@ Rev:
 
 
  <br/>
-	<div class="labelHolder"><label for="testcase_name">{lang_get s='tc_title'}</label></div>
+	<div class="labelHolder"><label for="testcase_name">{$labels.tc_title}</label></div>
 	<div>	
 		<input type="text" name="testcase_name" id="testcase_name"
    	       size="{#TESTCASE_NAME_SIZE#}" 
            maxlength="{#TESTCASE_NAME_MAXLEN#}" 
 		       value="{$tc.name|escape}"
-			     title="{lang_get s='alt_add_tc_name'}"/>
+			     title="{$labels.alt_add_tc_name}"/>
   				{include file="error_icon.tpl" field="testcase_name"}
 		  <br/><br/>
 
-			<div class="labelHolder">{lang_get s='summary'}</div>
+			<div class="labelHolder">{$labels.summary}</div>
 			<div>{$summary}</div>
       {$layout1}
-			<div class="labelHolder">{lang_get s='steps'}</div>
+			<div class="labelHolder">{$labels.steps}</div>
 			<div>{$steps}</div>
 			{$layout2}
-			<div class="labelHolder">{lang_get s='expected_results'}</div>
+			<div class="labelHolder">{$labels.expected_results}</div>
 			<div>{$expected_results}</div>
 			{$layout3}
 
 	  {if $session['testprojectOptAutomation']}
-		<div class="labelHolder">{lang_get s='execution_type'}
+		<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type">
     	  	{html_options options=$execution_types selected=$tc.execution_type}
 	    	</select>
@@ -53,7 +57,7 @@ Rev:
 
 	    {if $session['testprojectOptPriority']}
     	<div>
-			<span class="labelHolder">{lang_get s='test_importance'}</span>
+			<span class="labelHolder">{$labels.test_importance}</span>
 			<select name="importance">
     	  	{html_options options=$gsmarty_option_importance selected=$tc.importance}
 	    	</select>
@@ -73,12 +77,12 @@ Rev:
 	   {/if}
 	</div>
   <div>
-  <a href={$gsmarty_href_keywordsView}>{lang_get s='tc_keywords'}</a>
+  <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
 	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	</div>
 	
   {if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes'}
 	<div>
-	  <a href="javascript:openReqWindow({$tc.testcase_id})">{lang_get s='assign_requirements'}</a>    
+	  <a href="javascript:openReqWindow({$tc.testcase_id})">{$labels.assign_requirements}</a>    
 	</div>
   {/if}

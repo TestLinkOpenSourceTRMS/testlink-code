@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.191 $
- * @modified $Date: 2008/08/27 06:27:12 $ by $Author: franciscom $
+ * @version $Revision: 1.192 $
+ * @modified $Date: 2008/09/02 16:38:41 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20080902 - franciscom -
  *     20080805 - franciscom - api configuration refactoring
  *     20080805 - franciscom - BUGID 1660 - extjs tree is default
  *     20080525 - franciscom - added spectreemenu_type (temporary solution)
@@ -200,6 +201,10 @@ $g_interface_bugs = 'NO';
 // ----------------------------------------------------------------------------
 /** [SMTP] */
 
+// Developer Note:
+// these config variable names has been choosed to maintain compatibility
+// with code taken from Mantis.
+// 
 // SMTP server Configuration ("localhost" is enough in the most cases)
 $g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured  
 
@@ -227,7 +232,7 @@ $g_smtp_password    = '';  # password
 /** 
  * Login authentication method:
  * 		'MD5' => use password stored on db
- *      'LDAP' => use password from LDAP Server
+ *    'LDAP' => use password from LDAP Server
  */ 
 $tlCfg->authentication['method'] 		= 'MD5';
 
@@ -301,6 +306,7 @@ $tlCfg->gui->background_color = '#9BD';
  * TRUE - build a human readable display 
  * FALSE - show login name
  * @TODO - remove these useless parameter and use a format only (via $tlCfg->username_format)
+ *         20080902 - franciscom - need to think if is really useless
  */ 
 $tlCfg->show_realname = FALSE;
 
@@ -324,34 +330,64 @@ $tlCfg->gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 // used to round percentages on metricsDashboard.php
 $tlCfg->dashboard_precision = 2;
 
-/** Choose what kind of webeditor you want to use.
- * 'fckeditor'
- * 'tinymce'
- * 'none' -> use plain text area input field
+/** Choose what kind of webeditor you want to use in every TL area.
+ *
  */
-// $tlCfg->gui_text_editor = 'fckeditor';
-
 $tlCfg->gui->text_editor = array();
-$tlCfg->gui->text_editor['all'] = 'fckeditor';
+
+// This configuration will be used if no element with search key (area) is found
+// on this structure.
+// Every element is a mp with this configuration keys:
+//
+// 'type':
+//        'fckeditor'
+//        'tinymce'
+//        'none' -> use plain text area input field
+//
+// 'toolbar': only applicable for type = 'fckeditor'
+//            name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
+//
+// 'configFile': only applicable for type = 'fckeditor'
+//               (See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath)
+//
+// 
+// Hint: After doing configuration changes, clean you Browser's cookies and cache 
+//
+$tlCfg->gui->text_editor['all'] = array( 'type' => 'fckeditor', 
+                                         'toolbar' => 'tl_default', 
+                                         'configFile' => 'cfg/tl_fckeditor_config.js');
+
+// Copy this to custom_config.inc.php if you want use 'tinymce' as default.
+// $tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');
+// 
+// Copy this to custom_config.inc.php if you want use 'nome' as default.
+// $tlCfg->gui->text_editor['all'] = array( 'type' => 'none');
+
+// Suggested for BETTER Performance with lot of testcases
+$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
 // Enable and configure this if you want to have different
 // webeditor type in different TL areas
+// You can not define new areas without making changes to php code
 //
-// $tlCfg->gui->text_editor['execution'] = 'none';
-// $tlCfg->gui->text_editor['design'] = 'fckeditor';
-// $tlCfg->gui->text_editor['testplan'] = 'none';
-// $tlCfg->gui->text_editor['build'] = 'fckeditor';
-// $tlCfg->gui->text_editor['testproject'] = 'tinymce';
-// $tlCfg->gui->text_editor['role'] = 'tinymce';
-// $tlCfg->gui->text_editor['requirement'] = 'none';
-// $tlCfg->gui->text_editor['requirement_spec'] = 'none';
+// $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');  // BETTER Performance with lot of testcases
+// 
+// This configuration is useful only if default type is set to 'fckeditor'
+// $tlCfg->gui->text_editor['design'] = array('toolbar' => 'tl_mini');
+// 
+// $tlCfg->gui->text_editor['testplan'] = array( 'type' => 'none');
+// $tlCfg->gui->text_editor['build'] = array( 'type' => 'fckeditor','toolbar' => 'tl_mini');
+// $tlCfg->gui->text_editor['testproject'] = array( 'type' => 'tinymce');
+// $tlCfg->gui->text_editor['role'] = array( 'type' => 'tinymce');
+// $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
+// $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
 
 
 /** fckeditor Toolbar 
  * modify which icons will be available in html edit pages
  * refer to fckeditor configuration file 
  **/
-$tlCfg->fckeditor_default_toolbar = 'tl_default';
+// $tlCfg->fckeditor_default_toolbar = 'tl_default';
 
 
 

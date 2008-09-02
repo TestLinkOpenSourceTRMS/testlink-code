@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.60 2008/08/14 15:08:25 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.61 2008/09/02 16:39:49 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -43,11 +43,7 @@ if(is_array($args->keyword_id))
 }
 
 $smarty = new TLSmarty();
-define('DONT_FILTER_BY_TCASE_ID',null);
-define('ANY_EXEC_STATUS',null);
-define('DONT_PRUNE',0);
-define('ADD_CUSTOM_FIELDS',1);
-define('WRITE_BUTTON_ONLY_IF_LINKED',0);
+// define('ANY_EXEC_STATUS',null);
 
 switch($args->item_level)
 {
@@ -115,9 +111,13 @@ if($do_display)
 	                                                                             $keywordsFilter->type);
 	    $testCaseSet=array_keys($keywordsTestCases);
 	}
+  
+  define('DONT_PRUNE',0);
+  define('ADD_CUSTOM_FIELDS',1);
+  define('WRITE_BUTTON_ALWAYS',0);
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,
-	                     $testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,DONT_PRUNE,ADD_CUSTOM_FIELDS);
+	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS);
 		
     
   $gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
@@ -224,7 +224,7 @@ function doReorder(&$argsObj,&$tplanMgr)
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
-    $guiCfg = config_get('gui');
+    $title_separator = config_get('gui_title_separator_1');
 
     $gui = new stdClass();
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
@@ -247,7 +247,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->full_control = 1;
 
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
-    $gui->pageTitle = lang_get('test_plan') . $guiCfg->title_separator_1 . $tplan_info['name'];
+    $gui->pageTitle = lang_get('test_plan') . $title_separator . $tplan_info['name'];
     $gui->refreshTree = false;
 
 

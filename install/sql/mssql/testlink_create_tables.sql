@@ -1,12 +1,17 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.28 2008/07/22 09:33:49 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.29 2008/09/02 16:39:29 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20080831 - franciscom - BUGID 1650 (REQ)
+--                 custom_fields.show_on_testplan_design
+--                 custom_fields.enable_on_testplan_design
+--                 new table cfield_testplan_design_values 
+--
 --      20080722 - franciscom - added missing tc_external_id
 --      20080720 - franciscom - added missing option_automation field
 --      20080719 - franciscom - schema upgrade - added transactions and event tables
@@ -156,6 +161,8 @@ CREATE TABLE [custom_fields](
 	[enable_on_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_design]  DEFAULT ((1)),
 	[show_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_execution]  DEFAULT ((0)),
 	[enable_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_execution]  DEFAULT ((0)),
+	[show_on_testplan_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_testplan_design]  DEFAULT ((0)),
+	[enable_on_testplan_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_testplan_design]  DEFAULT ((0)),
  CONSTRAINT [PK_custom_fields] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -595,6 +602,26 @@ CREATE NONCLUSTERED INDEX [dx_cfield_design_values] ON [cfield_design_values]
 (
 	[node_id] ASC
 ) ON [PRIMARY]
+
+-- 
+CREATE TABLE [cfield_testplan_design_values](
+	[field_id] [int] NOT NULL,
+	[link_id] [int] NOT NULL CONSTRAINT [DF_cfield_testplan_design_values_node_id]  DEFAULT ((0)),
+	[value] [varchar](255)  NOT NULL CONSTRAINT [DF_cfield_testplan_design_values_value]  DEFAULT (''),
+ CONSTRAINT [PK_cfield_testplan_design_values] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[link_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+
+CREATE NONCLUSTERED INDEX [dx_cfield_testplan_design_values] ON [cfield_testplan_design_values] 
+(
+	[link_id] ASC
+) ON [PRIMARY]
+--
+
+
 
 CREATE TABLE [assignment_types](
 	[id] [int] IDENTITY(1,1) NOT NULL,

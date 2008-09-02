@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.9 2008/06/29 17:21:20 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.10 2008/09/02 16:39:13 franciscom Exp $
 show test specification tree 
 
 rev:20080629 - franciscom - fixed missed variable bug
@@ -24,6 +24,7 @@ rev:20080629 - franciscom - fixed missed variable bug
     {literal}
     <script type="text/javascript">
     treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+               root_testlink_node_type:'',useBeforeMoveNode:false,
                loader:"", enableDD:false, dragDropBackEndUrl:''};
     </script>
     {/literal}
@@ -38,9 +39,11 @@ rev:20080629 - franciscom - fixed missed variable bug
     // Not allowed in this feature
     // treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
     // treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+    // treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
+    // treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
     </script>
     
-    <script type="text/javascript" src='gui/javascript/tcTree.js'>
+    <script type="text/javascript" src='gui/javascript/treebyloader.js'>
     </script>
 
 

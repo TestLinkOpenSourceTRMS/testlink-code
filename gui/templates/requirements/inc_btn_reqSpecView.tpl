@@ -1,8 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.3 2008/04/15 06:44:21 franciscom Exp $
-*}
+$Id: inc_btn_reqSpecView.tpl,v 1.4 2008/09/02 16:39:13 franciscom Exp $
 
+rev: 20080830 - franciscom 
+*}
+{lang_get var='labels'
+          s='btn_req_create,btn_print,btn_new_req_spec'}
+          
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 <div class="groupBtn">
@@ -11,6 +15,11 @@ $Id: inc_btn_reqSpecView.tpl,v 1.3 2008/04/15 06:44:21 franciscom Exp $
   	<input type="hidden" name="doAction" value="" />
   	
   	{if $gui->grants->req_mgmt == "yes"}
+    {* - 20080830 - franciscom - DO NOT REMOVE
+  	<input type="button" name="btn_new_req_spec" 
+  	       value="{$labels.btn_new_req_spec}"
+		       onclick="location='{$req_spec_new_url}'" />  
+    *}
   	<input type="submit" name="edit_req_spec" 
   	       value="{lang_get s='btn_edit_spec'}" 
   	       onclick="doAction.value='edit'"/>
@@ -20,7 +29,7 @@ $Id: inc_btn_reqSpecView.tpl,v 1.3 2008/04/15 06:44:21 franciscom Exp $
   	       onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'}',
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
 
-  	<input type="button" name="print_req_spec" value="{lang_get s='btn_print'}"
+  	<input type="button" name="print_req_spec" value="{$labels.btn_print}"
   		onclick="javascript: window.open('{$basehref}{$req_module}reqSpecPrint.php?req_spec_id={$gui->req_spec.id}', 
   		        '_blank','left=100,top=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=650');" />
   	<input type="button" name="analyse" value="{lang_get s='btn_analyse'}"
@@ -30,7 +39,7 @@ $Id: inc_btn_reqSpecView.tpl,v 1.3 2008/04/15 06:44:21 franciscom Exp $
   	&nbsp;
   	<br />
   	<input type="button" name="create_req" 
-  	       value="{lang_get s='btn_req_create'}"
+  	       value="{$labels.btn_req_create}"
 		       onclick="location='{$req_edit_url}'" />  
   	
   	

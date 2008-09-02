@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/05/12 19:46:58 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -701,19 +701,20 @@ class requirement_mgr extends tlObjectWithAttachments
   */
   function set_order($map_id_order)
   {
+    $this->tree_mgr->change_order_bulk($map_id_order);
 
-  	foreach($map_id_order as $order => $node_id)
-  	{
-  		$order = abs(intval($order));
-  		$node_id = intval($node_id);
-  	  $sql = " UPDATE {$this->object_table} " .
-  	         " SET node_order = {$order} WHERE id = {$node_id}";
-  	  $result = $this->db->exec_query($sql);
-
-  	  $sql = " UPDATE {$this->nodes_hierarchy_table} " .
-  	         " SET node_order = {$order} WHERE id = {$node_id}";
-  	  $result = $this->db->exec_query($sql);
-  	}
+  	// foreach($map_id_order as $order => $node_id)
+  	// {
+  	// 	$order = abs(intval($order));
+  	// 	$node_id = intval($node_id);
+  	//   $sql = " UPDATE {$this->object_table} " .
+  	//          " SET node_order = {$order} WHERE id = {$node_id}";
+  	//   $result = $this->db->exec_query($sql);
+    // 
+  	//   $sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  	//          " SET node_order = {$order} WHERE id = {$node_id}";
+  	//   $result = $this->db->exec_query($sql);
+  	// }
 
   }
 

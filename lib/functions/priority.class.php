@@ -4,16 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: priority.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/08/26 21:33:04 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
  * 
  * Class testPlanUrgency extends testPlan functionality by Test Urgency functions 
  *
- * Revision:
- *  None.
+ * Revision: 20080901 - franciscom - getSuiteUrgency() - changes in return data 
  *
  * ------------------------------------------------------------------------------------ */
 
@@ -61,17 +60,31 @@ public function setSuiteUrgency($testplan_id, $node_id, $urgency)
 /**
  * Collect urgency for a Test Suite within a Test Plan
  * 
- * @return array of array: testcase_id, name, urgency 
+ * node_id: testsuite id
+ *
+ * @return array of array: testcase_id, name, urgency, tcprefix, tc_external_id 
+ *
+ * rev: 20080901 - franciscom - added tcprefix, tc_external_id  in return data
  */
 function getSuiteUrgency($testplan_id, $node_id)
 {
-	$sql = 'SELECT NHB.name, NHA.parent_id AS testcase_id, testplan_tcversions.urgency
-         FROM nodes_hierarchy NHA
-         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id
-		 JOIN testplan_tcversions ON testplan_tcversions.tcversion_id=NHA.id ' .
-		' WHERE testplan_tcversions.testplan_id=' . $testplan_id .
-	 	' AND NHB.parent_id=' .	$node_id . 
-		' ORDER BY NHB.node_order';
+  $testcase_cfg = config_get('testcase_cfg');  
+ 	$sql = " SELECT testprojects.prefix ".
+  	     " FROM testprojects " .
+  	     " WHERE testprojects.id = (" .
+  	     " SELECT parent_id AS testproject_id FROM nodes_hierarchy " .
+         " WHERE id={$testplan_id} ) ";
+	$tcprefix = $this->db->fetchOneValue($sql) . $testcase_cfg->glue_character;
+
+	$sql = " SELECT DISTINCT '{$tcprefix}' AS tcprefix, NHB.name, " .
+	       " NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.urgency".
+         " FROM nodes_hierarchy NHA " .
+         " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
+		     " JOIN testplan_tcversions ON testplan_tcversions.tcversion_id=NHA.id " .
+		     " JOIN tcversions TCV ON TCV.id = testplan_tcversions.tcversion_id " .
+		     " WHERE testplan_tcversions.testplan_id={$testplan_id}" .
+	 	     " AND NHB.parent_id={$node_id}" . 
+		     " ORDER BY NHB.node_order";
 
 	return $this->db->get_recordset($sql);
 }

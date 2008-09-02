@@ -1,12 +1,17 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.25 2008/07/21 10:14:25 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.26 2008/09/02 16:39:29 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20080831 - franciscom - BUGID 1650 (REQ)
+--                 custom_fields.show_on_testplan_design
+--                 custom_fields.enable_on_testplan_design
+--                 new table cfield_testplan_design_values 
+--
 --      20080709 - franciscom - Added Foreing Keys (REFERENCES)
 --      20080102 - franciscom - added changes for API feature (DB 1.2)
 --                              added notes fields on db_version
@@ -189,6 +194,20 @@ CREATE INDEX "executions_idx2" ON "executions" ("execution_type");
 
 
 --
+-- Table structure for table "testplan_tcversions"
+--
+CREATE TABLE "testplan_tcversions" (  
+  "id" BIGSERIAL NOT NULL ,
+  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
+  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES tcversions (id),  
+  "node_order" BIGINT NOT NULL DEFAULT 1,
+  "urgency" INT2 NOT NULL DEFAULT '2',
+  PRIMARY KEY ("id"),
+  UNIQUE ("testplan_id","tcversion_id")
+); 
+
+
+--
 -- Table structure for table "custom_fields"
 --
 CREATE TABLE "custom_fields" (  
@@ -205,10 +224,11 @@ CREATE TABLE "custom_fields" (
   "enable_on_design" SMALLINT NOT NULL DEFAULT '1',
   "show_on_execution" SMALLINT NOT NULL DEFAULT '0',
   "enable_on_execution" SMALLINT NOT NULL DEFAULT '0',
+  "show_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
+  "enable_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX "custom_fields_idx_custom_fields_name" ON "custom_fields" ("name");
-
 
 --
 -- Table structure for table "testprojects"
@@ -268,6 +288,16 @@ CREATE TABLE "cfield_execution_values" (
   PRIMARY KEY ("field_id","execution_id","testplan_id","tcversion_id")
 ); 
 
+--
+-- Table structure for table cfield_testplan_design_values
+--
+CREATE TABLE "cfield_testplan_design_values" (  
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES custom_fields (id),
+  "link_id" INTEGER NOT NULL DEFAULT '0' REFERENCES testplan_tcversions (id),
+  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY ("field_id","link_id")
+); 
+CREATE INDEX "idx_cfield_tplan_design_val" ON "cfield_testplan_design_values" ("link_id");
 
 --
 -- Table structure for table `cfield_node_types`
@@ -278,10 +308,6 @@ CREATE TABLE "cfield_node_types" (
   PRIMARY KEY ("field_id","node_type_id")
 ); 
 CREATE INDEX "cfield_node_types_idx_custom_fields_assign" ON "cfield_node_types" ("node_type_id");
-
-
-
-
 
 
 
@@ -488,19 +514,6 @@ CREATE TABLE "testcase_keywords" (
   PRIMARY KEY ("testcase_id","keyword_id")
 ); 
 
-
---
--- Table structure for table "testplan_tcversions"
---
-CREATE TABLE "testplan_tcversions" (  
-  "id" BIGSERIAL NOT NULL ,
-  "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testplans (id),
-  "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES tcversions (id),  
-  "node_order" BIGINT NOT NULL DEFAULT 1,
-  "urgency" INT2 NOT NULL DEFAULT '2',
-  PRIMARY KEY ("id"),
-  UNIQUE ("testplan_id","tcversion_id")
-); 
 
 --
 -- Table structure for table "testsuites"

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/08/27 06:22:19 $ by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -22,8 +22,8 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
-$editorType=getWebEditorCfg('design');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('design');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 
@@ -44,7 +44,7 @@ $args = init_args($opt_cfg);
 $gui_cfg = config_get('gui');
 $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
-$smarty->assign('editorType',$editorType);
+$smarty->assign('editorType',$editorCfg['type']);
 
 $a_keys['testsuite'] = array('details');
 
@@ -102,7 +102,7 @@ $amy_keys = $a_keys[$level];
 $oWebEditor = array();
 foreach ($amy_keys as $key)
 {
-	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorType);
+	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
 }
 
 if($get_c_data)

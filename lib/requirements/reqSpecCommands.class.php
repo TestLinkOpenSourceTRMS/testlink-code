@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/04/19 16:12:33 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -108,7 +108,8 @@ class reqSpecCommands
 		  $guiObj->total_req_counter=null;
 
 		  $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-		  $ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->title,$argsObj->scope,
+		  $ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->reqParentID,
+		                                   $argsObj->title,$argsObj->scope,
 		                                   $argsObj->countReq,$argsObj->user_id);
       
 		  $guiObj->user_feedback = $ret['msg'];
@@ -265,5 +266,32 @@ class reqSpecCommands
       $guiObj->refresh_tree='yes';
 	    return $guiObj;
   }
+
+
+  /*
+    function: create
+
+    args:
+    
+    returns: 
+
+  */
+	function createChild(&$argsObj)
+	{
+      $reqParent=$this->reqSpecMgr->get_by_id($argsObj->reqParentID);
+      $guiObj=new stdClass();
+		  $guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $reqParent['title'];
+		  $guiObj->action_descr = lang_get('create_child_req_spec');
+
+		  $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+      $guiObj->template = $this->defaultTemplate;
+		  $guiObj->submit_button_label=$this->submit_button_label;
+ 	    $guiObj->req_spec_id=null;
+		  $guiObj->req_spec_title=null;
+		  $guiObj->total_req_counter=null;
+
+      return $guiObj;	
+	}
+
 }
 ?>

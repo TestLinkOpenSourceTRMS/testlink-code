@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.7 $ $Author: franciscom $
- * @modified $Date: 2008/08/27 06:22:14 $
+ * @version $Revision: 1.8 $ $Author: franciscom $
+ * @modified $Date: 2008/09/02 16:39:49 $
  *
  *
  * rev: 20080826 - franciscom - BUGID 1692
@@ -25,8 +25,16 @@ require_once("common.php");
 function getWebEditorCfg($feature='all')
 {
     $cfg=config_get('gui');
-	  $webEditorType=isset($cfg->text_editor[$feature])?$cfg->text_editor[$feature]:$cfg->text_editor['all'];
-    return $webEditorType;
+    $defaultCfg = $cfg->text_editor['all'];
+    
+	  $webEditorCfg=isset($cfg->text_editor[$feature])?$cfg->text_editor[$feature]:$defaultCfg;
+	  
+	  foreach($defaultCfg as $key => $value)
+	  {
+	     if( !isset($webEditorCfg[$key]) )
+	         $webEditorCfg[$key]=$defaultCfg[$key];
+	  } 
+    return $webEditorCfg;
 }
 
 
@@ -40,7 +48,13 @@ function getWebEditorCfg($feature='all')
 */
 function require_web_editor($editor_type=null)
 {
-    $webEditorType=is_null($editor_type) ? getWebEditorCfg() : $editor_type;
+    $webEditorType=$editor_type;
+    if( is_null($editor_type) )
+    {
+        $cfg=getWebEditorCfg();
+        $webEditorType=$cfg['type'];
+	  }
+	  
 	  switch($webEditorType)
     {
     	case 'fckeditor':
@@ -66,16 +80,18 @@ function require_web_editor($editor_type=null)
   returns:
 
 */
-function web_editor($html_input_id,$base_path,$editor_type=null)
+function web_editor($html_input_id,$base_path,$editor_cfg=null)
 {
-    $webEditorType=is_null($editor_type) ? getWebEditorCfg() : $editor_type;
-	  switch($webEditorType)
+    
+    $webEditorCfg=is_null($editor_cfg) ? getWebEditorCfg() : $editor_cfg;
+
+	  switch($webEditorCfg['type'])
 	  {
 	  	case 'fckeditor':
 	  		$of = new fckeditor($html_input_id) ;
 	  		$of->BasePath = $base_path . 'third_party/fckeditor/';
-	  		$of->ToolbarSet = config_get('fckeditor_default_toolbar');
-	  		$of->Config['CustomConfigurationsPath']  = $base_path . 'cfg/tl_fckeditor_config.js';
+	  		$of->ToolbarSet = $webEditorCfg['toolbar'];
+	  		$of->Config['CustomConfigurationsPath']  = $base_path . $webEditorCfg['configFile'];
 	  		break;
     
 	  	case 'tinymce':

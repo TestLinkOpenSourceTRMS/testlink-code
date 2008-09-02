@@ -5,9 +5,11 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
- * @author Francisco Mancardi
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @author Andreas Morsing
+ *
+ * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
  *
 */
 
@@ -74,13 +76,15 @@ class tlAttachmentRepository extends tlObjectWithDB
 
 		if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
 		{
-			$destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
+		 	$destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
 			$bUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
 		}
 		else
 		{
 			$fContents = $this->getFileContentsForDBRepository($fTmpName,$destFName);
 			$bUploaded = sizeof($fContents);
+			if($bUploaded)
+		    @unlink($fTmpName);	
 		}
 
 		if ($bUploaded)
@@ -88,9 +92,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 			$attachment = new tlAttachment();
 			$attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
 			$bUploaded = $attachment->writeToDb($this->db);
+			
 		}
-
-		@unlink($fTmpName);
 
 		return $bUploaded;
 	}

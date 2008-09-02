@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/08/27 06:22:18 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -21,8 +21,8 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("web_editor.php");
-$editorType=getWebEditorCfg('testproject');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('testproject');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db,true);
 
@@ -47,7 +47,7 @@ $reloadType = 'none';
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 
-$of = web_editor('notes',$_SESSION['basehref'],$editorType) ;
+$of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $of->Value = null;
 
 $found = 'yes';
@@ -94,7 +94,7 @@ switch($args->doAction)
 $ui->main_descr=lang_get('title_testproject_management');
 $smarty = new TLSmarty();
 $smarty->assign('gui_cfg',$gui_cfg);
-$smarty->assign('editorType',$editorType);
+$smarty->assign('editorType',$editorCfg['type']);
 $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 

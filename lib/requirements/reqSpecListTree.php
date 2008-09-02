@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.5 2008/08/25 07:20:51 franciscom Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.6 2008/09/02 16:39:49 franciscom Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -80,12 +80,30 @@ function initializeGui($argsObj,$basehref)
     $gui->ajaxTree->root_node=new stdClass();
     $gui->ajaxTree->root_node->href="javascript:TPROJECT_REQ_SPEC_MGMT({$argsObj->tproject_id})";
     $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
-    
     $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
   
+    // 20080831 - franciscom - Custom attribute
+    // You can access to it's value using public property 'attributes' of object of Class Ext.tree.TreeNode 
+    // example: mynode.attributes.testlink_node_type
+    //
+    // Important: 
+    // Fore root node (this node)
+    // You need to initialize every custom property you want to add to root node
+    // on the js file that create it (treebyloader.js) and smarty template
+    // 
+    //
+    // Also this property must be managed in php code used to generate JSON code.
+    //
+    // I'appologize for using MAGIC constant
+    $gui->ajaxTree->root_node->testlink_node_type='testproject';
+    
+   
     $gui->ajaxTree->dragDrop=new stdClass();
-    $gui->ajaxTree->dragDrop->enabled=FALSE;
+    $gui->ajaxTree->dragDrop->enabled=TRUE;
     $gui->ajaxTree->dragDrop->BackEndUrl=$basehref . 'lib/ajax/dragdroprequirementnodes.php';
+    
+    // TRUE -> beforemovenode() event will use our custom implementation 
+    $gui->ajaxTree->dragDrop->useBeforeMoveNode=TRUE;
   
     $gui->ajaxTree->cookiePrefix='requirement_spec' . $gui->ajaxTree->root_node->id . "_" ;
     return $gui;  

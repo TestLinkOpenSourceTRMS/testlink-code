@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/08/27 06:22:20 $  by $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/09/02 16:39:49 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -34,7 +34,7 @@ require_once("opt_transfer.php");
 require_once("web_editor.php");
 
 $cfg=getCfg();
-require_once(require_web_editor($cfg->webEditorType));
+require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 testlinkInitPage($db);
 $tcase_mgr = new testcase($db);
@@ -47,7 +47,7 @@ $templateCfg=templateConfiguration();
 $commandMgr=new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
-$oWebEditor=createWebEditors($_SESSION['basehref'],$cfg->webEditorType);
+$oWebEditor=createWebEditors($_SESSION['basehref'],$cfg->webEditorCfg);
 
 $sqlResult = "";
 
@@ -57,7 +57,7 @@ $args = init_args($cfg->spec,$optionTransferName);
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 
 $gui=new stdClass();
-$gui->editorType=$editorType;
+$gui->editorType=$cfg->webEditorCfg['type'];
 $gui->grants=getGrants($db);
 $gui->opt_requirements=isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
 
@@ -559,21 +559,30 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
       Rows and Cols values are useless for FCKeditor
 
   args :
+  
   returns: object
+  
+  rev: 20080902 - franciscom - manage column number as function of layout for tinymce
 */
-function createWebEditors($basehref,$editorType)
+function createWebEditors($basehref,$editorCfg)
 {
+    $specGUICfg=config_get('spec_cfg');
+    $layout=$specGUICfg->steps_results_layout;
+    
+    $cols=array('steps' => array('horizontal' => 38, 'vertical' => null),
+                'expected_results' => array('horizontal' => 38, 'vertical' => null));
+        
     $owe = new stdClass();
     
     // Rows and Cols configuration
     $owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
-                      'steps' => array('rows'=> null,'cols' => 38) ,
-                      'expected_results' => array('rows'=> null,'cols' => 38));
+                      'steps' => array('rows'=> null,'cols' => $cols['steps'][$layout]) ,
+                      'expected_results' => array('rows'=> null, 'cols' => $cols['expected_results'][$layout]));
     
     $owe->editor = array();
     foreach ($owe->cfg as $key => $value)
     {
-    	$owe->editor[$key] = web_editor($key,$basehref,$editorType);
+    	$owe->editor[$key] = web_editor($key,$basehref,$editorCfg);
     }
     
     return $owe;
@@ -591,7 +600,7 @@ function getCfg()
     $cfg->spec = config_get('spec_cfg');
     $cfg->exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
     $cfg->tcase_template = config_get('testcase_template');
-    $cfg->webEditorType=getWebEditorCfg('design');
+    $cfg->webEditorCfg=getWebEditorCfg('design');
     
     return $cfg;
 }

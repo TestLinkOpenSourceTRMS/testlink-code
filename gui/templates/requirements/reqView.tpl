@@ -1,9 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.12 2008/05/12 19:48:39 franciscom Exp $
+$Id: reqView.tpl,v 1.13 2008/09/02 16:39:13 franciscom Exp $
 
-rev:20080512 - franciscom - added paremt_descr 
-    20071226 - franciscom - fieldset class added (thanks ext je team)
+rev: 20080512 - franciscom - added paremt_descr 
+     20071226 - franciscom - fieldset class added (thanks ext js team)
 
 *}
 

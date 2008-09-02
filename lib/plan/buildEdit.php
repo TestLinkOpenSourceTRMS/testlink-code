@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/08/27 06:22:14 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
  *
  * rev :
  *      20080827 - franciscom - BUGID 1692
@@ -18,8 +18,8 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
 require_once("web_editor.php");
-$editorType=getWebEditorCfg('build');
-require_once(require_web_editor($editorType));
+$editorCfg=getWebEditorCfg('build');
+require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
@@ -35,10 +35,11 @@ $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION);
-$of = web_editor('notes',$_SESSION['basehref'],$editorType);
+$of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = null;
 
-$main_descr = lang_get('title_build_2') . TITLE_SEP_TYPE3 . lang_get('test_plan') . TITLE_SEP . $args->tplan_name;
+$main_descr = lang_get('title_build_2') . config_get('gui_title_sep_type2') . 
+              lang_get('test_plan') . config_get('gui_title_sep_type1') . $args->tplan_name;
 
 switch($args->do_action)
 {
@@ -70,7 +71,7 @@ switch($args->do_action)
 }
 
 
-$smarty->assign('editorType',$editorType);
+$smarty->assign('editorType',$editorCfg['type']);
 $smarty->assign('main_descr',$main_descr);
 $smarty->assign('operation_descr',$op->operation_descr);
 $smarty->assign('user_feedback',$op->user_feedback);

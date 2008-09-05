@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.45 $ $Author: havlat $
- * @modified $Date: 2008/03/24 19:33:28 $
+ * @version $Revision: 1.46 $ $Author: franciscom $
+ * @modified $Date: 2008/09/05 08:16:53 $
  *
  * @author Martin Havlat
  * 
@@ -17,6 +17,7 @@
  * There is also some javascript that handles the form information.
  *
  * rev :
+ *       20080905 - franciscom - BUGID 1698
  *       20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
  *       20080120 - franciscom - added logic to enable/disable test case search link
  *       20070725 - franciscom - refactoring of rights checking 
@@ -27,7 +28,12 @@
 
 require_once('../../config.inc.php');
 require_once('common.php');
-tlog("mainPage.php: Memory after common> Usage: ".memory_get_usage()." | Peak: ".memory_get_peak_usage() , 'DEBUG');
+
+// BUGID 1698
+if( function_exists('memory_get_usage') )
+{
+    tlog("mainPage.php: Memory after common> Usage: ".memory_get_usage()." | Peak: ".memory_get_peak_usage() , 'DEBUG');
+}
 
 testlinkInitPage($db,TRUE);
 

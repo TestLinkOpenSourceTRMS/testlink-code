@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/06/05 12:27:16 $ $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/09/09 10:19:44 $ $Author: franciscom $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -112,6 +112,8 @@ syntax). <b>(NOT IMPLEMENTED YET)</b></li>
 <li>Enable on test specification. User can change the value during Test Case Specification Design</li>
 <li>Display on test execution.</li>
 <li>Enable on test execution. User can change the value during Test Case execution</li>
+<li>Display on test plan design.</li>
+<li>Enable on test plan design. User can change the value during Test Plan design (add test cases to test plan)</li>
 <li>Available for. User choose to what kind of item the field belows.</li>
 </ul>
 ";

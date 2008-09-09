@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.8 2008/09/02 16:39:13 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.9 2008/09/09 10:22:53 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -71,7 +71,7 @@ Rev:
 	  {* Custom fields *}
 	   {if $cf neq ""}
 		     <br/>
-		     <div class="custom_field_container">
+		     <div id="cfields_design_time" class="custom_field_container">
 	     {$cf}
 	     </div>
 	   {/if}

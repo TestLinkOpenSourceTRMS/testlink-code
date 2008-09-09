@@ -1,9 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.13 2008/06/03 08:40:49 havlat Exp $
+$Id: loginFirst.tpl,v 1.14 2008/09/09 10:22:49 franciscom Exp $
 Purpose: smarty template - first login
 *}
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
+
+{lang_get var="labels"
+          s='login_name,password,password_again,first_name,last_name,e_mail,
+             password_mgmt_is_external,btn_add_user_data,link_back_to_login'}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 {literal}
@@ -27,32 +31,32 @@ window.onload=function(){
 
 <form method="post" action="firstLogin.php">
 
-	<p class="label">{lang_get s='login_name'}<br />
+	<p class="label">{$labels.login_name}<br />
 	<input type="text" name="loginName" id="loginName" 
 	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$login|escape}"/></p>
 
   {if $external_password_mgmt eq 0}
-  	<p class="label">{lang_get s='password'}<br />
+  	<p class="label">{$labels.password}<br />
   	<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
-  	<p class="label">{lang_get s='password_again'}<br />
+  	<p class="label">{$labels.password_again}<br />
   	<input type="password" name="password2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
   {/if}
   
-	<p class="label">{lang_get s='first_name'}<br />
+	<p class="label">{$labels.first_name}<br />
 	<input type="text" name="first" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" value="{$firstName|escape}"/></p>
-	<p class="label">{lang_get s='last_name'}<br />
+	<p class="label">{$labels.last_name}<br />
 	<input type="text" name="last" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" value="{$lastName|escape}"/></p>
-	<p class="label">{lang_get s='e_mail'}<br />
+	<p class="label">{$labels.e_mail}<br />
 	<input type="text" name="email" size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" value="{$email|escape}"/></p>
 
   {if $external_password_mgmt eq 1}
-     <p>{lang_get s='password_mgmt_is_external'}<p>
+     <p>{$labels.password_mgmt_is_external}<p>
 	{/if}
 
-	<br /><input type="submit" name="editUser" value="{lang_get s='btn_add_user_data'}" />
+	<br /><input type="submit" name="editUser" value="{$labels.btn_add_user_data}" />
 </form>
 <hr />
-<p><a href="login.php">{lang_get s='link_back_to_login'}</a></p>
+<p><a href="login.php">{$labels.link_back_to_login}</a></p>
 </div>
 </body>
 </html>

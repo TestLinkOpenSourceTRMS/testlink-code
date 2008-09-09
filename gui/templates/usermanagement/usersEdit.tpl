@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.19 2008/05/08 21:05:43 schlundus Exp $
+$Id: usersEdit.tpl,v 1.20 2008/09/09 10:22:53 franciscom Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -15,9 +15,9 @@ $Id: usersEdit.tpl,v 1.19 2008/05/08 21:05:43 schlundus Exp $
           s='warning_empty_login,warning_empty_first_name,warning,btn_save,
              warning_empty_pwd,warning_different_pwd,empty_email_address,
              title_user_mgmt,title_account_settings,menu_edit_user,menu_new_user,
-             menu_view_users,menu_define_roles,menu_view_roles,
+             menu_view_users,menu_define_roles,menu_view_roles,no_good_email_address,
              menu_assign_testproject_roles,warning_empty_last_name,
-             menu_assign_testplan_roles,caption_user_details,
+             menu_assign_testplan_roles,caption_user_details,show_event_history,
              th_login,th_first_name,th_last_name,th_password,th_email,
              th_role,th_locale,th_active,password_mgmt_is_external,
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
@@ -31,12 +31,16 @@ var warning_empty_first_name = "{$labels.warning_empty_first_name}";
 var warning_empty_last_name  = "{$labels.warning_empty_last_name}";
 var warning_empty_pwd = "{$labels.warning_empty_pwd}";
 var warning_different_pwd = "{$labels.warning_different_pwd}";
-var warning_empty_email = "{$labels.empty_email_address}";
+var warning_empty_email_address = "{$labels.empty_email_address}";
+var warning_no_good_email_address = "{$labels.no_good_email_address}"; 
 
 
 {literal}
 function validateForm(f,check_password)
 {
+  var email_warning;
+  var show_email_warning=false;
+
   if (isWhitespace(f.login.value))
   {
       alert_message(alert_box_title,warning_empty_login);
@@ -70,7 +74,21 @@ function validateForm(f,check_password)
 
   if (isWhitespace(f.emailAddress.value))
   {
-      alert_message(alert_box_title,warning_empty_email);
+      show_email_warning=true;
+      email_warning=warning_empty_email_address;
+  }
+  else 
+  { 
+      if (!/\w{1,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/.test(f.emailAddress.value))
+      {
+          show_email_warning=true;
+          email_warning=warning_no_good_email_address;
+      }
+  }
+
+  if( show_email_warning )
+  {
+      alert_message(alert_box_title,email_warning);
       selectField(f, 'emailAddress');
       return false;
   }
@@ -134,7 +152,9 @@ function validateForm(f,check_password)
   <legend class="x-fieldset-header x-unselectable" style="-moz-user-select: none;">
   {$labels.caption_user_details}
   {if $mgt_view_events eq "yes" && $user_id}
-	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user_id}','users')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+	     onclick="showEventHistoryFor('{$user_id}','users')"
+	     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 	{/if}
   </legend>
 	<table class="common">

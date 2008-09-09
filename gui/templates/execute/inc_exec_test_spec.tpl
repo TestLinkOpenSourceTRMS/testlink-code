@@ -1,13 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.6 2008/08/26 21:00:36 havlat Exp $
+$Id: inc_exec_test_spec.tpl,v 1.7 2008/09/09 10:22:47 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
 *}	
 
-	{assign var="testcase_id" value=$args_tc_exec.testcase_id}
+	  {assign var="testcase_id" value=$args_tc_exec.testcase_id}
+    {assign var="tcversion_id" value=$args_tc_exec.id}
+    
     <div class="exec_test_spec">
 		<table class="test_exec">
 		<tr>
@@ -36,7 +38,7 @@ Rev:
   	  {if $args_execution_time_cf[$testcase_id]}
   	 		<tr>
   				<td colspan="2">
-  					<div class="custom_field_container" 
+  					<div id="cfields_exec_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
   						style="background-color:#dddddd;">{$args_execution_time_cf[$testcase_id]}
   					</div>
   				</td>
@@ -49,7 +51,7 @@ Rev:
   	<tr>
 		  <td colspan="2">
       {if $args_design_time_cf[$testcase_id] neq ''}
-					<div class="custom_field_container" 
+					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
 					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id]}
 					</div>
 		  {/if} 

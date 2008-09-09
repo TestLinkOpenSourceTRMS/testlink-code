@@ -4,20 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.114 $ $Author: havlat $
- * @modified $Date: 2008/06/19 16:40:42 $
+ * @version $Revision: 1.115 $ $Author: franciscom $
+ * @modified $Date: 2008/09/09 10:22:55 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
  *
- * @var array $_SESSION
- * - user related data are adjusted via doAuthorize.php and here (product & test plan)
- * - has next values: valid (yes/no), user (login name), role (e.g. admin),
- * email, userID, productID, productName, testplan (use rather testPlanID),
- * testPlanID, testPlanName
- *
+ * 20080907 - franciscom - isValidISODateTime()
  * 20080518 - franciscom - translate_tc_status()
  * 20080412 - franciscom - templateConfiguration()
  * 20080326 - franciscom - config_get() - refactored removed eval()
@@ -71,10 +66,7 @@ require_once("attachment.class.php");
 // We can remove here and use PHP autoload feature
 require_once("user.class.php");
 require_once("keyword.class.php");
-// require_once("testproject.class.php");
 require_once("testplan.class.php");
-// require_once("testcase.class.php");
-// require_once("testsuite.class.php");
 require_once("tree.class.php");
 require_once("treeMenu.inc.php");
 require_once("cfield_mgr.class.php");
@@ -92,7 +84,9 @@ require_once($phpxmlrpc . 'xmlrpc.inc');
 require_once($phpxmlrpc . 'xmlrpcs.inc');
 require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
 
-
+// -------------------------------------------------------------------------
+// @TODO understand if following variable are used or not
+//
 // code from Mantis
 // cache for config variables
 $g_cache_config = array();
@@ -102,7 +96,7 @@ $g_cache_can_set_in_database = '';
 
 // cache environment to speed up lookups
 $g_cache_db_table_exists = false;
-
+// -------------------------------------------------------------------------
 
 /** $db is a global used throughout the code when accessing the db. */
 $db = 0;
@@ -1023,4 +1017,28 @@ function templateConfiguration()
 }
 
 
+/*
+  function: isValidISODateTime
+            check if an string is a valid ISO date/time
+            accepted format: YYYY-MM-DD HH:MM:SS
+
+  args: datetime to check
+
+  returns: true / false
+  
+  rev: 20080907 - franciscom - 
+       Code taked form PHP manual
+*/
+function isValidISODateTime($ISODateTime)
+{
+   $dateParts=array('YEAR' => 1, 'MONTH' => 2 , 'DAY' => 3);
+   
+   $matches=null;
+   $status_ok=false;
+   if (preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $ISODateTime, $matches)) 
+   {
+       $status_ok=checkdate($matches[$dateParts['MONTH']],$matches[$dateParts['DAY']],$matches[$dateParts['YEAR']]);
+   }
+   return $status_ok;
+}
 ?>

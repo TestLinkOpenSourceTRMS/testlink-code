@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.114 $
- * @modified $Date: 2008/08/19 13:17:46 $ $Author: franciscom $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2008/09/09 10:22:55 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -2557,9 +2557,16 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			$label = $cf_info['label'];
-			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
-				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
-						"</td></tr>\n";
+			
+			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
+			// logic to validate CF content
+			$cf_html_string=$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);
+			
+			// extract input html id
+			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+      $td_label_id=str_replace('id="', 'id="label_', $dummy[0]);
+			$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . 
+			              ":</td><td>{$cf_html_string}</td></tr>\n";
 		}
 		$cf_smarty .= "</table>";
 

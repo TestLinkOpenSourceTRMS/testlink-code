@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.4 2008/08/27 06:20:29 franciscom Exp $
+$Id: containerEdit.tpl,v 1.5 2008/09/09 10:22:50 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
@@ -60,7 +60,7 @@ function validateForm(f)
    {* Custom fields *}
    {if $cf neq ""}
      <p>
-     <div class="custom_field_container">
+     <div id="cfields_design_time" class="custom_field_container">
      {$cf}
      </div>
      <p>

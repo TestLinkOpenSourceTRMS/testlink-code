@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.18 2008/05/14 08:53:00 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.19 2008/09/09 10:22:53 franciscom Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -209,7 +209,7 @@ viewer for test case in test specification
 
 	{if $args_cf neq ''}
 	<div>
-        <div class="custom_field_container">{$args_cf}</div>
+        <div id="cfields_design_time" class="custom_field_container">{$args_cf}</div>
 	</div>
 	{/if}
 

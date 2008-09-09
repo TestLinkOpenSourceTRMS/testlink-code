@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2008/09/09 10:22:53 $ $Author: franciscom $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -39,7 +39,6 @@ require_once(require_web_editor($cfg->editorCfg['type']));
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-
 
 $tcversion_id = null;
 $submitResult = null;

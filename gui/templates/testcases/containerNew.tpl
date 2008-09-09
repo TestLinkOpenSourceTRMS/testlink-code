@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.3 2008/05/06 06:26:12 franciscom Exp $
+$Id: containerNew.tpl,v 1.4 2008/09/09 10:22:52 franciscom Exp $
 Purpose: smarty template - create containers
 
 20070214 - franciscom -
@@ -35,6 +35,7 @@ function validateForm(f)
       selectField(f, 'container_name');
       return false;
   }
+  
   return true;
 }
 </script>
@@ -73,7 +74,7 @@ function validateForm(f)
    {* Custom fields *}
    {if $cf neq ""}
      <br />
-     <div class="custom_field_container">
+     <div id="cfields_design_time" class="custom_field_container">
      {$cf}
      </div>
    {/if}

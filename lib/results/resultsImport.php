@@ -5,12 +5,16 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/02 17:08:16 $  by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/09/09 10:22:55 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
  * rev :
+ *      20080906 - franciscom - must be refactored to accept both type of test case id:
+ *                              - internal (nodes_hierarchy)
+ *                              - external
+ * 
  *      20071101 - franciscom - added manish contribution
  *      20070904 - franciscom - refactoring
 */
@@ -23,45 +27,27 @@ testlinkInitPage($db);
 
 $template_dir='results/';
 
-$importType = isset($_POST['importType']) ? $_POST['importType'] : null;
-$buildID = isset($_GET['build']) ? intval($_GET['build']) : null;
+$args=init_args();
 
-$ref = $_SERVER['HTTP_REFERER'];
-$url_array = split('[?=&]',$ref);
-
-if( in_array('build_id',$url_array) ) {
-	$buildIdIndex = array_search('build_id',$url_array) + 1;
-	$buildID = $url_array[$buildIdIndex];
+$ref=$_SERVER['HTTP_REFERER'];
+$url_array=split('[?=&]',$ref);
+if( in_array('build_id',$url_array) ) 
+{
+	$buildIdIndex=array_search('build_id',$url_array) + 1;
+	$args->buildID=$url_array[$buildIdIndex];
 }
 
-if ($buildID == null) {
-	$buildID = isset($_POST['build']) ? intval($_POST['build']) : null;
-}
+$resultMap=null;
+$dest=TL_TEMP_PATH . session_id()."-results.import";
+$file_check=array('status_ok' => 1, 'msg' => 'ok');
 
-$bRecursive = 0;
-$container_id = 0;
-$containerType = 0;
-
-$location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
-$resultMap = null;
-$do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
-
-$userID = $_SESSION['userID'];
-$tproject_id = $_SESSION['testprojectID'];
-$tplan_id = $_SESSION['testPlanId'];
-
-$testprojectName = $_SESSION['testprojectName'];
-
-$dest = TL_TEMP_PATH . session_id()."-importtcs.csv";
-$file_check = array('status_ok' => 1, 'msg' => 'ok');
-
-$import_title = lang_get('title_results_import_to');
+$import_title=lang_get('title_results_import_to');
 $container_description=lang_get('import_results');
 
-if ($do_upload)
+if ($args->doUpload)
 {
 	// check the uploaded file
-	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+	$source=isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
 		
 	if (($source != 'none') && ($source != ''))
 	{ 
@@ -70,21 +56,21 @@ if ($do_upload)
 		{
 			if (move_uploaded_file($source, $dest))
 			{
-				switch($importType)
+				switch($args->importType)
 				{
 					case 'XML':
-					$pcheck_fn  = "check_xml_tc_tsuite";
-					$pimport_fn = "importTestCaseDataFromXML";
+					$pcheck_fn="check_xml_execution_results";
+					$pimport_fn="importExecutionResultsFromXML";
 					break;
 				}
 				if ($pcheck_fn)
 				{
-					$file_check = $pcheck_fn($dest,$bRecursive);
+					$file_check=$pcheck_fn($dest);
 					if($file_check['status_ok'])
 					{
 						if ($pimport_fn)
 						{
-							$resultMap = $pimport_fn($db,$dest,$tplan_id,$userID,$buildID);
+							$resultMap=$pimport_fn($db,$dest,$args->tplan_id,$args->userID,$args->buildID);
 						}
 					}
 				}
@@ -93,23 +79,23 @@ if ($do_upload)
 	}
 	else
 	{
-		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
-		$importType = null;
+		$file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
+		$args->importType=null;
 	}
 }
 
-$import_file_types = array("XML" => "XML");
+$import_file_types=array("XML" => "XML");
 
 
-$smarty = new TLSmarty();
+$smarty=new TLSmarty();
 $smarty->assign('import_title',$import_title);  
-$smarty->assign('buildID', $buildID);
+$smarty->assign('buildID', $args->buildID);
 $smarty->assign('file_check',$file_check);  
 $smarty->assign('resultMap',$resultMap); 
 $smarty->assign('importTypes',$import_file_types);
-$smarty->assign('testprojectName', $testprojectName);
+$smarty->assign('testprojectName', $args->testprojectName);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
-$smarty->assign('bImport',strlen($importType));
+$smarty->assign('bImport',strlen($args->importType));
 $smarty->display($template_dir .'resultsImport.tpl');
 ?>
 
@@ -122,16 +108,14 @@ $smarty->display($template_dir .'resultsImport.tpl');
   returns: 
 
 */
-function importTestCaseDataFromXML(&$db,$fileName,&$tplan_id,$userID, $buildID)
+function importExecutionResultsFromXML(&$db,$fileName,&$tplan_id,$userID, $buildID)
 {	
-	$xmlTCs = null;
-	$resultMap  = null;
-	$dom = domxml_open_file($fileName);
-	
+	$resultMap=null;
+	$dom=domxml_open_file($fileName);
 	if ($dom)
 	{
-		$root = $dom->document_element();
-		$resultMap = importResults($db,$root,$parentID,$tplan_id,$userID, $buildID);
+		$root=$dom->document_element();
+		$resultMap=importResults($db,$root,$tplan_id,$userID, $buildID);
 	}
 	return $resultMap;
 }
@@ -144,14 +128,15 @@ function importTestCaseDataFromXML(&$db,$fileName,&$tplan_id,$userID, $buildID)
   returns: 
 
 */
-function importResults(&$db, &$node, &$parentID, &$tplan_id, &$userID, $buildID) {
-	$resultMap = null;
-	if ($node->tagname == 'results')
+function importResults(&$db, &$node,&$tplan_id, &$userID, $buildID) 
+{
+	$resultMap=null;
+	if($node->tagname == 'results')
 	{
-		$xmlTCs = $node->get_elements_by_tagname("testcase");
-		$resultData = importTCsFromXML($xmlTCs);
+		$xmlTCExec=$node->get_elements_by_tagname("testcase");
+		$resultData=importExecutionsFromXML($xmlTCExec);
 		if ($resultData) {
-			$resultMap = saveImportedResultData($db,$resultData,$tplan_id,$parentID,$userID,$buildID);
+			$resultMap=saveImportedResultData($db,$resultData,$tplan_id,$userID,$buildID);
 		}
 	}
 	return $resultMap;
@@ -165,121 +150,168 @@ function importResults(&$db, &$node, &$parentID, &$tplan_id, &$userID, $buildID)
   returns: 
 
 */
-function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userID,$buildID)
+function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
 {
 	if (!$resultData)
 		return;
 	
-	$tc_status=config_get('tc_status');
+	$user=new tlUser($userID);
+  $user->readFromDB($db);
+  
+	$tcase_mgr=new testcase($db);
+	$resulstCfg=config_get('results');
+	$tcaseCfg=config_get('testcase_cfg');
 	
-	$resultMap = array();
-	$tplan_mgr = null;
-	$tc_qty = sizeof($resultData);
+	$resultMap=array();
+	$tplan_mgr=null;
+	$tc_qty=sizeof($resultData);
 	if($tc_qty)
 	{
-		$tplan_mgr = new testplan($db);
+		$tplan_mgr=new testplan($db);
 	}
-	for($i = 0; $i <$tc_qty ;$i++)
+	
+	for($idx=0; $idx < $tc_qty ;$idx++)
 	{
-		$tc = $resultData[$i];
-		$id = $tc['id'];
-		if(!$id){
-			$tcname = $tc['name'];
-			$query = "SELECT nodes.id from nodes_hierarchy nodes WHERE nodes.name = '{$tcname}'";
-			$result = $db->exec_query($query);
-			$id = $db->db_result($result);
-			error_log("Id is:- ".$id);
-		}
-		$result = $tc['result'];
-		$result_is_acceptable = false;
-
-		if ($result == $tc_status['passed'] || $result == $tc_status['blocked'] ||
-		    $result == $tc_status['failed']) { 
-			$result_is_acceptable = true;
-		}
-
-				
-		$notes = $tc['notes'];
-		$message = null;
-		$linked_cases = $tplan_mgr->get_linked_tcversions($tplan_id, $id);
-		$info_on_case = $linked_cases[$id];
+	  $tester_id=0;
+	  $tester_name='';	
+	  $using_external_id=false;
+    $message=null;
+	  $status_ok=true;
+		$tcase_exec=$resultData[$idx];
 		
-		if (!$linked_cases){
-			$message = sprintf(lang_get('import_results_tc_not_found'),$id);
-  	}
-		else if (!$result_is_acceptable) {
-			$message = sprintf(lang_get('import_results_invalid_result'),$id);
-		} 
-		else {
-			$tcversion_id = $info_on_case['tcversion_id'];
-			$message = sprintf(lang_get('import_results_tc_exists'),$id,$tcversion_id);
-			
-      $notes = $db->prepare_string(trim($notes));		
-		  $db_now = $db->db_now();
-		  $sql="INSERT INTO executions (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
-	      	  VALUES ({$buildID}, {$userID},'{$result}',{$tplan_id}, {$tcversion_id},{$db_now},'{$notes}')";
-	    $db->exec_query($sql); 
+		$checks=check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec);
+    $status_ok=$checks['status_ok'];		
+		if($status_ok)
+		{
+	      $tcase_id=$checks['tcase_id'];
+		    $tcase_external_id=trim($tcase_exec['tcase_external_id']);
+        $tester_id=$checks['tester_id'];
+		    
+        // external_id has precedence over internal id
+        $using_external_id=(strlen($tcase_external_id) > 0);
+	  } 
+	  else
+	  {
+        foreach($checks['msg'] as $warning )
+        {
+            $resultMap[]=array($warning);
+	      }
+	  }
+   		
+	  if( $status_ok) 
+	  {
+	      $tcase_identity=$using_external_id ? $tcase_external_id : $tcase_id; 
+		    $result_code=strtolower($tcase_exec['result']);
+		    $result_is_acceptable=isset($resulstCfg['code_status'][$result_code]) ? true : false;
+		    		
+		    $notes=$tcase_exec['notes'];
+		    $message=null;
+		    $linked_cases=$tplan_mgr->get_linked_tcversions($tplan_id, $tcase_id);
+		    $info_on_case=$linked_cases[$tcase_id];
+
+		    if (!$linked_cases)
+		    {
+		    	$message=sprintf(lang_get('import_results_tc_not_found'),$tcase_identity);
+  	    }
+		    else if (!$result_is_acceptable) 
+		    {
+		    	$message=sprintf(lang_get('import_results_invalid_result'),$tcase_identity,$tcase_exec['result']);
+		    } 
+		    else 
+		    {
+		    	$tcversion_id=$info_on_case['tcversion_id'];
+		    	$version=$info_on_case['version'];
+		    	
+          $notes=$db->prepare_string(trim($notes));
+          		
+          // N.B.: db_now() returns an string ready to be used in an SQL insert
+          //       example '2008-09-04', while $tcase_exec["timestamp"] => 2008-09-04
+          //
+          $execution_ts=($tcase_exec['timestamp'] != '') ? "'" . $tcase_exec["timestamp"] . "'": $db->db_now();
+          
+          if($tester_id != 0)
+          {
+              $tester_name=$tcase_exec['tester'];
+          } 
+          else
+          {
+              $tester_name=$user->login;
+              $tester_id=$userID;
+          }
+          
+		      $sql="INSERT INTO executions (build_id,tester_id,status,testplan_id," .
+		           "tcversion_id,execution_ts,notes,tcversion_number)" .
+	          	 "VALUES ({$buildID}, {$tester_id},'{$result_code}',{$tplan_id}, ".
+	          	 "{$tcversion_id},{$execution_ts},'{$notes}', {$version})";
+	        $db->exec_query($sql); 
+
+		    	$message=sprintf(lang_get('import_results_ok'),$tcase_identity,$version,$tester_name,
+		    	                 $resulstCfg['code_status'][$result_code],$execution_ts);
+
+		    }
 		}
-		
-		$resultMap[] = array($id, $message);
+	
+	  if( !is_null($message) )
+	  { 	    
+		    $resultMap[]=array($message);
+		}   
 	}
 	return $resultMap;
 }
 
 /*
-  function: 
+  function: importExecutionsFromXML
 
   args :
   
   returns: 
 
 */
-function importTCsFromXML($xmlTCs)
+function importExecutionsFromXML($xmlTCExecSet)
 {
-	$tcs = null;
-	if (!$xmlTCs) {
-		return $tcs;
+	$execInfoSet=null;
+	if($xmlTCExecSet) 
+	{ 
+	    $jdx=0;
+	    $exec_qty=sizeof($xmlTCExecSet);
+	    for($idx=0;$idx <$exec_qty ;$idx++)
+	    {
+	    	  $xmlTCExec=$xmlTCExecSet[$idx];
+	    	  if ($xmlTCExec->node_type() != XML_ELEMENT_NODE)
+	    	  	continue;
+	    	  	
+	    	  $execInfo=importExecutionFromXML($xmlTCExec);
+	    	  if ($execInfo)
+	    	  {
+	    	  	$execInfoSet[$jdx++]=$execInfo;
+	    	  }
+	    }
 	}
-	$j = 0;
-	for($i = 0;$i < sizeof($xmlTCs);$i++)
-	{
-		$xmlTC = $xmlTCs[$i];
-		if ($xmlTC->node_type() != XML_ELEMENT_NODE)
-			continue;
-		$tc = importTCFromXML($xmlTC);
-		if ($tc)
-		{
-			$tcs[$j++] = $tc;
-		}
-	}
-	
-	return $tcs;
+	return $execInfoSet;
 }
 
 /*
-  function: importTCFromXML()
+  function: importExecutionFromXML()
 
   args :
   
   returns: 
 
 */
-function importTCFromXML(&$xmlTC)
+function importExecutionFromXML(&$xmlTCExec)
 {
-	if (!$xmlTC)
+	if (!$xmlTCExec)
 		return null;
-		
-	$tc = null;
-	
-	$tc['id'] = $xmlTC->get_attribute("id");
-	if(!$tc['id']) {
-		$tc['name'] = $xmlTC->get_attribute("name");
-	}
-	
-	$tc['result'] = trim(getNodeContent($xmlTC,"result"));
-	$tc['notes'] = trim(getNodeContent($xmlTC,"notes"));
-	$tc['customField1'] = trim(getNodeContent($xmlTC,"customField1"));
-	return $tc; 		
+  
+	$execInfo=array();;
+	$execInfo['tcase_id']=$xmlTCExec->get_attribute("id");
+	$execInfo['tcase_external_id']=$xmlTCExec->get_attribute("external_id");
+  $execInfo['tcase_name']=$xmlTCExec->get_attribute("name");
+	$execInfo['result']=trim(getNodeContent($xmlTCExec,"result"));
+	$execInfo['notes']=trim(getNodeContent($xmlTCExec,"notes"));
+  $execInfo['timestamp']=trim(getNodeContent($xmlTCExec,"timestamp"));
+  $execInfo['tester']=trim(getNodeContent($xmlTCExec,"tester"));
+	return $execInfo; 		
 }
 
 
@@ -293,35 +325,35 @@ function importTCFromXML(&$xmlTC)
 */
 function check_valid_ftype($upload_info,$import_type)
 {
-	$ret = array();
-	$ret['status_ok'] = 0;
+	$ret=array();
+	$ret['status_ok']=0;
 	$ret['msg']='ok';
 	
-	$mime_types = array();
-	$import_type = strtoupper($import_type);
+	$mime_types=array();
+	$import_type=strtoupper($import_type);
 	
-	$mime_import_types['text/xml'] = array('XML' => 'XML');
+	$mime_import_types['text/xml']=array('XML' => 'XML');
 	
 	if(isset($mime_import_types[$upload_info['type']])) 
 	{
 		if(isset($mime_import_types[$upload_info['type']][$import_type]))
 		{
-			$ret['status_ok'] = 1;
+			$ret['status_ok']=1;
 			if( isset($mime_types['check_ext'][$upload_info['type']]))
 			{
-				$path_parts = pathinfo($upload_info['name']);
+				$path_parts=pathinfo($upload_info['name']);
 				if($path_parts['extension'] != $mime_types['check_ext'][$upload_info['type']])
 				{
-					$status_ok = 0;    
-					$ret['msg'] = lang_get('file_is_not_text');
+					$status_ok=0;    
+					$ret['msg']=lang_get('file_is_not_text');
 				}
 			}
 		}
 		else
-			$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
+			$ret['msg']=lang_get('file_is_not_ok_for_import_type');
 	}
 	else
-		$ret['msg'] = lang_get('file_is_not_xml');
+		$ret['msg']=lang_get('file_is_not_xml');
 	
 	return $ret;
 }
@@ -333,18 +365,119 @@ function check_valid_ftype($upload_info,$import_type)
            Check if at least the file starts seems OK
 
 */
-function check_xml_tc_tsuite($fileName,$bRecursive)
+function check_xml_execution_results($fileName)
 {
-	$dom = domxml_open_file($fileName);
-	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
+	$dom=domxml_open_file($fileName);
+	$file_check=array('status_ok' => 0, 'msg' => 'dom_ko');    		  
 	if ($dom)
 	{
-		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
-		$root = $dom->document_element();
+		$file_check=array('status_ok' => 1, 'msg' => 'ok');    		  
+		$root=$dom->document_element();
 		if($root->tagname != 'results') {
 			$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong format for results file'));
 		}
 	}
 	return $file_check;
+}
+
+
+/*
+  function: init_args()
+
+  args :
+  
+  returns: 
+
+*/
+function init_args()
+{
+	$args=new stdClass();
+  $_REQUEST=strings_stripSlashes($_REQUEST);
+
+  $args->importType=isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+  $args->buildID=isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
+  
+  $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
+  $args->userID=$_SESSION['userID'];
+  $args->tplan_id=$_SESSION['testPlanId'];
+  $args->testprojectName=$_SESSION['testprojectName'];
+
+  return $args;
+}
+
+/*
+  function: check_exec_values()
+
+  args :
+  
+  returns: map
+           keys: 
+           status_ok -> value=true / false
+           tcase_id: test case id if controls OK
+           tester_id: tester_id if controls OK  
+           msg -> array with localized messages  
+
+*/
+function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues)
+{
+    $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 
+                  'msg' => array()); 
+
+		$tcase_id=$execValues['tcase_id'];
+		$tcase_external_id=trim($execValues['tcase_external_id']);
+		
+    // external_id has precedence over internal id
+    $using_external_id=(strlen($tcase_external_id) > 0);
+    if($using_external_id)
+    {
+        // need to get internal id  
+        $checks['tcase_id']=$tcase_mgr->getInternalID($tcase_external_id,$tcaseCfg->glue_character);
+        $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
+        if(!$checks['status_ok'])
+        {
+           $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 
+        }
+    }
+    else
+    {
+       // before using internal id, I want to check it's a number  
+       $checks['tcase_id']=$tcase_id;
+       $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
+       if(!$checks['status_ok'])
+       {
+           $checks['msg'][]=sprintf(lang_get('tcase_id_is_not_number'),$tcase_id); 
+       }          
+    }
+    if($checks['status_ok'])
+    {
+        // useful for user feedback 
+        $identity=$using_external_id ? $tcase_external_id : $checks['tcase_id']; 
+    }
+ 
+    if($checks['status_ok'] && $execValues['timestamp'] != '' )
+    {
+        $checks['status_ok']=isValidISODateTime($execValues['timestamp']);
+        if(!$checks['status_ok'])
+        {
+           $checks['msg'][]=sprintf(lang_get('invalid_execution_timestamp'),$identity,$execValues['timestamp']); 
+        }              
+    }
+
+    if($checks['status_ok'] && $execValues['tester'] != '' )
+    {
+      $sql="SELECT id,login FROM users WHERE login ='" . $db->prepare_string($execValues['tester']) . "'";
+		  $userInfo=$db->get_recordset($sql);
+		  
+		  if(!is_null($userInfo) && isset($userInfo[0]['id']) )
+		  {
+		      $checks['tester_id']=$userInfo[0]['id'];
+		  }
+		  else
+		  {
+		      $checks['status_ok']=false;
+		      $checks['msg'][]=sprintf(lang_get('invalid_tester'),$identity,$execValues['tester']); 
+		  }
+    }
+    return $checks;
 }
 ?>

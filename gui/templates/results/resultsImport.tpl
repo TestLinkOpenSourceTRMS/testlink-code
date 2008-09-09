@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.2 2008/05/06 06:26:11 franciscom Exp $
+$Id: resultsImport.tpl,v 1.3 2008/09/09 10:22:50 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 *}
 {include file="inc_head.tpl"}
@@ -34,10 +34,7 @@ Purpose: smarty template - manage import of test cases and test suites
 	<p>{lang_get s='max_size_cvs_file1'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</p>
 	
 	<div class="groupBtn">
-		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
 		<input type="hidden" name="build" value="{$buildID}" />
-		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
-		<input type="hidden" name="containerID" value="{$containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
@@ -46,7 +43,7 @@ Purpose: smarty template - manage import of test cases and test suites
 </form>
 {else}
 	{foreach item=result from=$resultMap}
-		{lang_get s='title_imp_tc_data'} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
+		{lang_get s='title_imp_tc_data'} : {$result[0]|escape}<br />
 	{/foreach}
 	{include file="inc_refreshTree.tpl"}
 {/if}

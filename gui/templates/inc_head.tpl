@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.24 2008/08/27 06:20:25 franciscom Exp $
+$Id: inc_head.tpl,v 1.25 2008/09/09 10:22:49 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -35,6 +35,7 @@ rev :
 	
   {if $jsValidate == "yes"} 
 	  <script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
+    {include file="inc_jsCfieldsValidation.tpl"}
   {/if}
    
   {if $jsTree == "yes"} {* 'no' is default defined in config *}

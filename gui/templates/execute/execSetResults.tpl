@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.23 2008/08/27 06:20:22 franciscom Exp $
+$Id: execSetResults.tpl,v 1.24 2008/09/09 10:22:47 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20080528 - franciscom - BUGID 1504 - version number management
@@ -45,7 +45,7 @@ Rev:
 	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
 	           no_data_available,import_xml_results,btn_save_all_tests_results,
-	           testcaseversion,
+	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
 
 
@@ -53,7 +53,7 @@ Rev:
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl" popup='yes' openHead='yes' editorType=$gui->editorType}
+{include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
@@ -67,11 +67,15 @@ var msg="{$labels.warning_delete_execution}";
 var import_xml_results="{$labels.import_xml_results}";
 </script>
 
- 
+{include file="inc_del_onclick.tpl"}
+
+{*  
+
 {if $smarty.const.USE_EXT_JS_LIBRARY || $tlCfg->treemenu_type == 'EXTJS'}
   {include file="inc_ext_js.tpl"}
 {/if}
 
+*}
 
 <script language="JavaScript" type="text/javascript">
 {literal}
@@ -82,6 +86,76 @@ function load_notes(panel,exec_id)
 }
 {/literal}
 </script>
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var alert_box_title="{$labels.warning}";
+var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved}";
+{literal}
+function validateForm(f)
+{
+  var status_ok=true;
+  var cfields_inputs='';
+  var cfChecks;
+  var cfield_container;
+  var access_key;
+  cfield_container=document.getElementById('save_button_clicked').value;
+  access_key='cfields_exec_time_tcversionid_'+cfield_container; 
+    
+    
+ 	cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
+  cfChecks=validateCustomFields(cfields_inputs);
+  if( !cfChecks.status_ok )
+  {
+      var warning_msg=cfMessages[cfChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfChecks.cfield_label));
+      return false;
+  }
+  return true;
+}
+
+/*
+  function: checkSubmitForStatus
+            if a radio (with a particular id, see code for details)
+            with $statusCode has been checked, then false is returned to block form submit().
+            
+            Dev. Note - remember this:
+            
+            KO:
+               onclick="foo();checkSubmitForStatus('n')"
+            OK
+               onclick="foo();return checkSubmitForStatus('n')"
+                              ^^^^^^ 
+            
+
+  args :
+  
+  returns: 
+
+*/
+function checkSubmitForStatus($statusCode)
+{
+  var button_clicked;
+  var access_key;
+  var isChecked;
+  
+  button_clicked=document.getElementById('save_button_clicked').value;
+  access_key='status_'+button_clicked+'_'+$statusCode; 
+ 	isChecked = document.getElementById(access_key).checked;
+  if(isChecked)
+  {
+      alert_message(alert_box_title,warning_nothing_will_be_saved);
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+
+
+
+
 
 </head>
 {*
@@ -123,8 +197,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   <br />
   {/if}
 
-<form method="post" id="execSetResults" name="execSetResults" >
+<form method="post" id="execSetResults" name="execSetResults" 
+      onSubmit="javascript:return validateForm(this);">
 
+  <input type="hidden" id="save_button_clicked"  name="save_button_clicked" value="0" />
   <input type="hidden" id="do_delete"  name="do_delete" value="0" />
   <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
 
@@ -144,7 +220,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
   <div id="{$div_id}" class="exec_additional_info">
     {$gui->testplan_notes}
-    {if $gui->testplan_cfields neq ''} <div class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
+    {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
 
   {* -------------------------------------------------------------------------------- *}
@@ -205,7 +281,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
       <hr />
       <div class="groupBtn">
-    		  <input type="button" name="print" value="{lang_get s='btn_print'}"
+    		  <input type="button" name="print" value="{$labels.btn_print}"
     		         onclick="javascript:window.print();" />
     		  <input type="submit" id="toggle_history_on_off"
     		         name="{$gui->history_status_btn_name}"
@@ -216,7 +292,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 		      {if $test_automation_enabled}
 		      <input type="submit" id="execute_cases" name="execute_cases"
-		             value="{lang_get s='execute_and_save_results'}"/>
+		             value="{$labels.execute_and_save_results}"/>
 		      {/if}
     		  <input type="hidden" id="history_on"
     		         name="history_on" value="{$gui->history_on}" />

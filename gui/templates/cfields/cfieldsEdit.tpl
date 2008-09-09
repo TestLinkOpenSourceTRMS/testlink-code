@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.13 2008/08/14 15:09:44 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.14 2008/09/09 10:22:47 franciscom Exp $
 
 
 Important Development note:
@@ -40,13 +40,14 @@ rev :
 {assign var="managerURL" value="lib/cfields/cfieldsEdit.php"}
 {assign var="viewAction" value="lib/cfields/cfieldsView.php"}
 
-
 {lang_get s='warning_delete_cf' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
 {lang_get var="labels"
-          s="btn_ok,warning_is_in_use,warning,name,label,type,possible_values,
+          s="btn_ok,title_cfields_mgmt,warning_is_in_use,warning,name,label,type,possible_values,
              warning_empty_cfield_name,warning_empty_cfield_label,
+             enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,
+             available_on,btn_upd,btn_delete,
              btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -274,8 +275,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 <body {$body_onload}>
 
 <h1 class="title">
-  	{lang_get s='title_cfields_mgmt'} 
-	{include file="inc_help.tpl" helpTopic="hlp_customFields"}
+  	{$labels.title_cfields_mgmt} 
+	{include file="inc_help.tpl" helptopic="hlp_customFields"}
 </h1>
 
 <h2>{$operation_descr|escape}</h2>
@@ -381,7 +382,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 		<tr	id="container_cf_enable_on_design" style="display:{$display_style};">
-			<th style="background:none;">{lang_get s='enable_on_design'}</th>
+			<th style="background:none;">{$labels.enable_on_design}</th>
 			<td>
 				<select name="cf_enable_on_design"
 				        id="cf_enable_on_design"
@@ -402,7 +403,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     {/if}
 
 		<tr id="container_cf_show_on_execution" style="display:{$display_style};">
-			<th style="background:none;">{lang_get s='show_on_exec'}</th>
+			<th style="background:none;">{$labels.show_on_exec}</th>
 			<td>
 				<select id="cf_show_on_execution"  name="cf_show_on_execution"
 				        {$gui->cfieldCfg->disabled_cf_show_on.execution}>
@@ -417,7 +418,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 		<tr id="container_cf_enable_on_execution" style="display:{$display_style};">
-			<th style="background:none;">{lang_get s='enable_on_exec'}</th>
+			<th style="background:none;">{$labels.enable_on_exec}</th>
 			<td>
 				<select id="cf_enable_on_execution"
 				        name="cf_enable_on_execution"
@@ -454,7 +455,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 		<tr	id="container_cf_enable_on_testplan_design" style="display:{$display_style};">
-			<th style="background:none;">{lang_get s='enable_on_testplan_design'}</th>
+			<th style="background:none;">{$labels.enable_on_testplan_design}</th>
 			<td>
 				<select name="cf_enable_on_testplan_design"
 				        id="cf_enable_on_testplan_design"
@@ -469,7 +470,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 
 		<tr>
-			<th style="background:none;">{lang_get s='available_on'}</th>
+			<th style="background:none;">{$labels.available_on}</th>
 			<td>
 			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$gui->cfield.node_type_id}
@@ -492,11 +493,11 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 	<div class="groupBtn">
 	<input type="hidden" name="do_action" value="" />
 	{if $user_action eq 'edit'  or $user_action eq 'do_update'}
-		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
+		<input type="submit" name="do_update" value="{$labels.btn_upd}"
 		       onclick="do_action.value='do_update'"/>
 
 		{if $gui->cfield_is_used eq 0}
-  		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
+  		<input type="button" name="do_delete" value="{$labels.btn_delete}"
   		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
     {/if}

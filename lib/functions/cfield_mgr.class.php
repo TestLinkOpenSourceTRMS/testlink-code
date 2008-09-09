@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/08/19 13:17:46 $  $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2008/09/09 10:22:55 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -575,7 +575,9 @@ class cfield_mgr
             $t_list_size=$window_size;
            }
         }
-  			$str_out .='<select name="' . $input_name . $t_name_suffix . '"' . $t_multiple;
+        $html_identity=$input_name . $t_name_suffix;
+        
+  			$str_out .="<select name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
   			$str_out .= ' size="' . $t_list_size . '">';
 
   			$t_selected_values = explode( '|', $t_custom_field_value );
@@ -594,7 +596,7 @@ class cfield_mgr
         $t_checked_values = explode( '|', $t_custom_field_value );
 			  foreach( $t_values as $t_option )
 			  {
-				  $str_out .= '<input type="checkbox" name="' . $input_name . '[]"';
+				  $str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
 				  if( in_array( $t_option, $t_checked_values ) )
 				  {
 					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
@@ -637,7 +639,7 @@ class cfield_mgr
           $rows = self::TEXTAREA_DEFAULT_ROWS;
         }
 
-			  $str_out .= '<textarea name="' . $input_name . '" ' .
+			  $str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
 			              'cols="' . $cols . '" rows="' . $rows . '">' .
 			              "{$t_custom_field_value}</textarea>";
   	  break;
@@ -2062,7 +2064,7 @@ function getXMLServerParams($node_id){
   {
       $str_out='';
     	$size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
-  		$str_out .= '<input type="text" name="' . $p_input_name . '" size="' . $size .'"';
+  		$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" ";
 			if( 0 < $p_field_def['length_max'] )
 			{
 			  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';

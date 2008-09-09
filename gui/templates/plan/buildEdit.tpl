@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.9 2008/08/27 06:20:25 franciscom Exp $
+$Id: buildEdit.tpl,v 1.10 2008/09/09 10:22:49 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -68,7 +68,8 @@ function validateForm(f)
 	<table class="common" style="width:80%">
 		<tr>
 			<th style="background:none;">{$labels.enter_build}</th>
-			<td><input type="text" name="build_name" maxlength="{#BUILD_NAME_MAXLEN#}" 
+			<td><input type="text" name="build_name" id="build_name" 
+			           maxlength="{#BUILD_NAME_MAXLEN#}" 
 			           value="{$build_name|escape}" size="{#BUILD_NAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="build_name"}
 			</td>

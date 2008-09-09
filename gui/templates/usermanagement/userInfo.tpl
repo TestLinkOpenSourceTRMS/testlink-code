@@ -1,6 +1,8 @@
-{* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.14 2008/08/12 19:21:19 havlat Exp $ *}
-{*
+{* 
+Testlink: smarty template - Edit own account 
+$Id: userInfo.tpl,v 1.15 2008/09/09 10:22:53 franciscom Exp $
+
+rev: 20080908 - franciscom - email validity check
 *}
 {assign var="cfg_section" value="login" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -12,7 +14,7 @@
              th_email,th_locale,btn_save,th_old_passwd,audit_login_history,none,
              th_new_passwd,th_new_passwd_again,btn_change_passwd,audit_last_failed_logins,
              your_password_is_external,user_api_key,btn_apikey_generate,empty_email_address,
-             audit_last_succesful_logins,warning,warning_empty_first_name,
+             audit_last_succesful_logins,warning,warning_empty_first_name,no_good_email_address,
              warning_empty_last_name,passwd_dont_match,empty_old_passwd,show_event_history'}
 
 {assign var="action_mgmt" value="lib/usermanagement/userInfo.php"}
@@ -37,10 +39,14 @@ var warning_empty_last = "{$labels.warning_empty_last_name}";
 var warning_passwd_dont_match = "{$labels.passwd_dont_match}";
 var warning_empty_old_password = "{$labels.empty_old_passwd}";
 var warning_empty_email_address = "{$labels.empty_email_address}";
+var warning_no_good_email_address = "{$labels.no_good_email_address}"; 
 
 {literal}
 function validatePersonalData(f)
 {
+  var email_warning;
+  var show_email_warning=false;
+  
   if (isWhitespace(f.firstName.value))
   {
       alert_message(alert_box_title,warning_empty_name);
@@ -57,7 +63,21 @@ function validatePersonalData(f)
 
   if (isWhitespace(f.emailAddress.value))
   {
-      alert_message(alert_box_title,warning_empty_email_address);
+      show_email_warning=true;
+      email_warning=warning_empty_email_address;
+  }
+  else 
+  { 
+      if (!/\w{1,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/.test(f.emailAddress.value))
+      {
+          show_email_warning=true;
+          email_warning=warning_no_good_email_address;
+      }
+  }
+
+  if( show_email_warning )
+  {
+      alert_message(alert_box_title,email_warning);
       selectField(f, 'emailAddress');
       return false;
   }

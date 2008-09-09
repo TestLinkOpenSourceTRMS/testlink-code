@@ -1,16 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.7 2008/08/27 06:20:30 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.8 2008/09/09 10:22:52 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
-rev: 20080420 - franciscom - improved user feedback
+rev:20080908 - franciscom - added logic to validate Custom Field user input
+    20080420 - franciscom - improved user feedback
 *}
 
 {lang_get var="labels"
           s="warning,warning_empty_tc_title,btn_save,cancel"}
 
-
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
+
 {include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -33,10 +34,23 @@ var alert_box_title = "{$labels.warning}";
 {literal}
 function validateForm(f)
 {
+  var status_ok=true;
+  var cfields_container='';
+  var cfChecks;
+  
   if (isWhitespace(f.testcase_name.value)) 
   {
       alert_message(alert_box_title,warning_empty_testcase_name);
       selectField(f, 'testcase_name');
+      return false;
+  }
+  
+ 	cfields_container = document.getElementById('cfields_design_time').getElementsByTagName('input');
+  cfChecks=validateCustomFields(cfields_container);
+  if( !cfChecks.status_ok )
+  {
+      var warning_msg=cfMessages[cfChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfChecks.cfield_label));
       return false;
   }
   return true;

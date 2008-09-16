@@ -1,9 +1,10 @@
 <?php 
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newInstallStart_TL.php,v 1.21 2008/07/05 12:53:56 franciscom Exp $
+$Id: newInstallStart_TL.php,v 1.22 2008/09/16 06:10:19 franciscom Exp $
 
-rev: 20080219 - franciscom - fixed dir permission checking
+rev:20080914 - franciscom - check_php_resource_settings() 
+    20080219 - franciscom - fixed dir permission checking
 */
 
 require_once("installUtils.php");
@@ -78,6 +79,11 @@ $errors += $check['errors'];
 echo $check['msg'];
 
 $check = check_php_settings();
+$errors += $check['errors'];
+echo $check['msg'];
+
+// 20080914 - francisco.mancardi@gruppotesi.com
+$check = check_php_resource_settings();
 $errors += $check['errors'];
 echo $check['msg'];
 

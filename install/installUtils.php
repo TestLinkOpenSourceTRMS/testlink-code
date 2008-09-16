@@ -1,10 +1,11 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.32 2008/07/05 12:53:56 franciscom Exp $ 
+$Id: installUtils.php,v 1.33 2008/09/16 06:10:18 franciscom Exp $ 
 
 
 rev :
+     20080914 - franciscom - check_php_resource_settings()
      20080219 - franciscom - improvements on getDirSqlFiles
      20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
      20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
@@ -1295,5 +1296,55 @@ echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a 
        <li>copy from config.inc.php, [SMTP] Section into custom_config.inc.php.</li>
        <li>complete correct data regarding email addresses and mail server.</li></ul><p>';
 }  /* Function ends */
+
+
+/*
+  function: check_php_resource_settings
+
+  args:
+  
+  returns: 
+
+*/
+function check_php_resource_settings()
+{
+    $errors = 0;
+
+    $limits=array();
+    $limits['max_execution_time']=120;
+    $limits['memory_limit']=64;
+      
+    $max_execution_time=ini_get('max_execution_time');
+    $memory_limit=intval(str_ireplace('M','',ini_get('memory_limit')));
+
+    $final_msg = "</b><br />Checking PHP Resource Settings on your php configuration file:<b> ";
+    $final_msg .=  "<br><span>max_execution_time setting is {$max_execution_time} seconds";
+    if($max_execution_time < $limits['max_execution_time'])
+    {
+        $final_msg .=  "</span><br><span class='notok'>  " .
+                       "We suggest {$limits['max_execution_time']} " .
+                       "seconds in order to manage hundred of test cases </span><br>";
+    } 
+    else
+    {
+        $final_msg .=" OK!</span><br>";
+    }
+    $final_msg .=  "<br><span>memory_limit setting is {$memory_limit}";
+    
+    if($memory_limit < $limits['memory_limit'])
+    {
+       $final_msg .= "</span><br><span class='notok'> " .
+                     "We suggest {$limits['memory_limit']} MegaBytes" .
+                     "MegaByte in order to manage hundred of test cases </span><br>";
+    } 
+    else
+    {
+        $final_msg .=" OK!</span><br>";
+    }
+    
+    $ret = array ('errors' => $errors,
+                  'msg' => $final_msg);
+    return ($ret);
+}  //function end
 
 ?>

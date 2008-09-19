@@ -91,7 +91,7 @@ function check_action_precondition(form_id,action)
     		<td><input type="checkbox" id="assigned_req{$arrAssignedReq[row].id}"
     		                           name="req_id[{$arrAssignedReq[row].id}]" /></td>
     		<td><span class="bold">{$arrAssignedReq[row].req_doc_id|escape}</span></td>
-    		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrAssignedReq[row].id}&amp;idSRS={$selectedReqSpec}">
+    		<td><span class="bold"><a href="lib/requirements/reqSpecView.php?editReq={$arrAssignedReq[row].id}&amp;idSRS={$selectedReqSpec}">
     			{$arrAssignedReq[row].title|escape}</a></span></td>
     		<td>{$arrAssignedReq[row].scope|strip_tags|strip|truncate:30}</td>
     	</tr>
@@ -143,7 +143,7 @@ function check_action_precondition(form_id,action)
       		           name="req_id[{$arrUnassignedReq[row2].id}]" /></td>
 
       		<td><span class="bold">{$arrUnassignedReq[row2].req_doc_id|escape}</span></td>
-      		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&amp;idSRS={$selectedReqSpec}">
+      		<td><span class="bold"><a href="lib/requirements/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&amp;idSRS={$selectedReqSpec}">
       			{$arrUnassignedReq[row2].title|escape}</a></span></td>
       		<td>{$arrUnassignedReq[row2].scope|strip_tags|strip|truncate:30}</td>
       	</tr>

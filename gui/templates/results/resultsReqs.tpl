@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.6 2008/05/19 10:24:04 havlat Exp $
+$Id: resultsReqs.tpl,v 1.7 2008/09/19 09:31:29 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -67,7 +67,7 @@ Author : Martin Havlat
   	</tr>
   {/if}
   	<tr>
-  		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.passed[row].id}&idSRS={$selectedReqSpec}">
+  		<td><span class="bold"><a href="lib/requirements/reqSpecView.php?editReq={$arrCoverage.passed[row].id}&idSRS={$selectedReqSpec}">
   			{$arrCoverage.passed[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.passed[row].tcList}
   			{section name=idx loop=$tcList}
@@ -97,7 +97,7 @@ Author : Martin Havlat
   	</tr>
   {/if}
   	<tr>
-  		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.failed[row].id}&idSRS={$selectedReqSpec}">
+  		<td><span class="bold"><a href="lib/requirements/reqSpecView.php?editReq={$arrCoverage.failed[row].id}&idSRS={$selectedReqSpec}">
   			{$arrCoverage.failed[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.failed[row].tcList}
   			{section name=idx loop=$tcList}
@@ -127,7 +127,7 @@ Author : Martin Havlat
   	</tr>
   {/if}
   	<tr>
-  		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.blocked[row].id}&idSRS={$selectedReqSpec}">
+  		<td><span class="bold"><a href="lib/requirements/reqSpecView.php?editReq={$arrCoverage.blocked[row].id}&idSRS={$selectedReqSpec}">
   			{$arrCoverage.blocked[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.blocked[row].tcList}
   			{section name=idx loop=$tcList}
@@ -157,7 +157,7 @@ Author : Martin Havlat
   	</tr>
   {/if}
   	<tr>
-  		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.not_run[row].id}&idSRS={$selectedReqSpec}">
+  		<td><span class="bold"><a href="lib/requirements/reqSpecView.php?editReq={$arrCoverage.not_run[row].id}&idSRS={$selectedReqSpec}">
   			{$arrCoverage.not_run[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.not_run[row].tcList}
   			{section name=idx loop=$tcList}

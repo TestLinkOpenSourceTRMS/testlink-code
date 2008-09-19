@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.115 $
- * @modified $Date: 2008/09/09 10:22:55 $ $Author: franciscom $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2008/09/19 09:29:30 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -1739,13 +1739,13 @@ function filterByKeyword($id,$keyword_id=0, $keyword_filter_type='OR')
         if($keyword_filter_type == 'AND')
         {
 		        $subquery = "AND testcase_id IN (" .
-		                    " SELECT FOXDOG.testcase_id FROM
+		                    " SELECT MAFALDA.testcase_id FROM
 		                      ( SELECT COUNT(testcase_id) AS HITS,testcase_id
 		                        FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
 		                        WHERE keyword_id = K.id
 		                        {$keyword_filter}
-		                        GROUP BY testcase_id ) AS FOXDOG " .
-		                    " WHERE FOXDOG.HITS=" . count($keyword_id) . ")";
+		                        GROUP BY testcase_id ) AS MAFALDA " .
+		                    " WHERE MAFALDA.HITS=" . count($keyword_id) . ")";
 		                 
             $keyword_filter ='';
         }    

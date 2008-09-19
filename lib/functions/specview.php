@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.10 $ $Author: franciscom $
- * @modified $Date: 2008/09/02 16:39:49 $
+ * @version $Revision: 1.11 $ $Author: franciscom $
+ * @modified $Date: 2008/09/19 09:29:30 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20080919 - franciscom - BUGID 1716
  *     20080811 - franciscom - BUGID 1650 (REQ)
  *                             documentation improvements
  *
@@ -475,6 +476,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   args :
   
   returns: 
+  
+  rev: 20080919 - franciscom - BUGID 2716
 
 */
 function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
@@ -487,7 +490,8 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
     $tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,DONT_FILTER_BY_TCASE_ID,
                                                      $argsObj->keyword_id);
 
-    if($doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
+    // BUGID 2716
+    if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
     {
       $filteredSet=$tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
                                               $argsObj->keyword_id,$argsObj->keywordsFilterType);

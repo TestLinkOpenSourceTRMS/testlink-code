@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/08/21 14:40:22 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/09/20 21:02:54 $ $Author: schlundus $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -211,7 +211,7 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
             $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
                                    "root_node={$argsObj->tproject_id}&" .
                                    "show_tcases=0&operation=print&" .
-                                   "tcprefix={$tcasePrefix}{$tcaseCfg->glue_character}";
+                                   "tcprefix=".urlencode($tcasePrefix.$tcaseCfg->glue_character)."}";
 	          
 	          $gui->ajaxTree->loadFromChildren=0;
 	          $gui->ajaxTree->root_node->href="javascript:TPROJECT_PTP({$argsObj->tproject_id})";

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.7 2008/08/20 17:33:23 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.8 2008/09/20 21:02:54 schlundus Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -130,48 +130,46 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     // print_r(array_values($nodeSet));
     // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 
-		if( !is_null($nodeSet) ) 
-		{
-		    $tproject_mgr = new testproject($dbHandler);
-		    foreach($nodeSet as $key => $row)
-		    {
-		        $path['text']		= html_entity_decode($row['name']);                                  
-		        $path['id']			= $row['id'];                                                           
+	if(!is_null($nodeSet)) 
+	{
+	    $tproject_mgr = new testproject($dbHandler);
+	    foreach($nodeSet as $key => $row)
+	    {
+	        $path['text'] = htmlspecialchars($row['name']);                                  
+	        $path['id'] = $row['id'];                                                           
         
             // this attribute/property is used on custom code on drag and drop
-		        $path['position']	= $row['node_order'];                                                   
-            $path['leaf']	= false;
- 		        $path['cls']	= 'folder';
-		       
-		        $tcase_qty=null;
+	        $path['position'] = $row['node_order'];                                                   
+            $path['leaf'] = false;
+ 	        $path['cls'] = 'folder';
+	       
+	        $tcase_qty = null;
             switch($row['node_type'])
             {
                 case 'testproject':
-                // 20080817 - franciscom - 
-                // at least on Test Specification seems that we do not execute this piece of code.
-                $path['href'] = "javascript:EP({$path['id']})";
-                // $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-                break;
-                
+	                // 20080817 - franciscom - 
+	                // at least on Test Specification seems that we do not execute this piece of code.
+	                $path['href'] = "javascript:EP({$path['id']})";
+	                // $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                break;
+	                
                 case 'testsuite':
-                $tcase_qty=$tproject_mgr->count_testcases($row['id']);
-                // $path['href'] = "javascript:ETS({$path['id']})";
-                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-                break;
-                
+	                $tcase_qty = $tproject_mgr->count_testcases($row['id']);
+	                // $path['href'] = "javascript:ETS({$path['id']})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                break;
+	                
                 case 'testcase':
-                //$path['href'] = "javascript:ET({$path['id']})";
-                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-                $path['text'] = $tcprefix . $external[$row['id']]['tc_external_id'] . ":" . $path['text'];
-                $path['leaf']	= true;
-                break;
+	                //$path['href'] = "javascript:ET({$path['id']})";
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                $path['text'] = htmlspecialchars($tcprefix . $external[$row['id']]['tc_external_id'] . ":") . $path['text'];
+	                $path['leaf']	= true;
+	                break;
             }
-            if( !is_null($tcase_qty) )
-            {
+            if(!is_null($tcase_qty))
                 $path['text'] .= "({$tcase_qty})";   
-            }
-		        $nodes[] = $path;                                                                        
-		    }	// foreach	
+            $nodes[] = $path;                                                                        
+	    }
     }
-		return $nodes;                                                                             
+	return $nodes;                                                                             
 }                                                                                               

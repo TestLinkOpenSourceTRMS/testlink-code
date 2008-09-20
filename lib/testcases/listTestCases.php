@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.33 2008/09/02 16:39:49 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.34 2008/09/20 21:02:54 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -82,8 +82,7 @@ if($spec_cfg->show_tsuite_filter)
 	$draw_filter = $mappy['draw_filter'];
 }
 
-// $spectree=config_get('spectreemenu_type');
-$treemenu_type=config_get('treemenu_type');
+$treemenu_type = config_get('treemenu_type');
 if($treemenu_type != 'EXTJS')
 {
     $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
@@ -229,7 +228,7 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $gui->ajaxTree=new stdClass();
     $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
                            "root_node={$argsObj->tproject_id}&" .
-                           "tcprefix={$tcasePrefix}{$tcaseCfg->glue_character}&" .
+                           "tcprefix=" . urlencode($tcasePrefix. $tcaseCfg->glue_character) . "&" .
                            "filter_node={$argsObj->tsuites_to_show}";
 
     $gui->ajaxTree->root_node=new stdClass();
@@ -240,9 +239,9 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
     $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
   
-    $gui->ajaxTree->dragDrop=new stdClass();
-    $gui->ajaxTree->dragDrop->enabled=$treeDragDropEnabled;
-    $gui->ajaxTree->dragDrop->BackEndUrl=$basehref . 'lib/ajax/dragdroptprojectnodes.php';
+    $gui->ajaxTree->dragDrop = new stdClass();
+    $gui->ajaxTree->dragDrop->enabled = $treeDragDropEnabled;
+    $gui->ajaxTree->dragDrop->BackEndUrl = $basehref . 'lib/ajax/dragdroptprojectnodes.php';
     
     // TRUE -> beforemovenode() event will use our custom implementation 
     $gui->ajaxTree->dragDrop->useBeforeMoveNode=FALSE;

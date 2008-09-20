@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.5 2008/03/01 21:41:27 schlundus Exp $
+*  @version 	$Id: printDocument.php,v 1.7 2008/09/21 19:02:48 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -17,7 +17,6 @@ require_once("print.inc.php");
 testlinkInitPage($db);
 
 $args = init_args();
-
 // Important Notice:
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
 //
@@ -109,7 +108,6 @@ switch ($args->print_scope)
 		}
 	break;
 }
-
 if($tree)
 {
 	$tree['name'] = $args->tproject_name;

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.4 2008/09/02 16:39:13 franciscom Exp $ 
+$Id: reqSpecListTree.tpl,v 1.5 2008/09/20 21:02:53 schlundus Exp $ 
 show requirement specifications tree menu
 
 rev: 20080831 - franciscom - treeCfg
@@ -22,7 +22,7 @@ rev: 20080831 - franciscom - treeCfg
     
     <script type="text/javascript">
     treeCfg.loader='{$gui->ajaxTree->loader}';
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
     treeCfg.root_id={$gui->ajaxTree->root_node->id};
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
     treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
@@ -38,12 +38,11 @@ rev: 20080831 - franciscom - treeCfg
 {else}
     {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
 {/if}
-</head>
 
-<script type="text/javascript" language="javascript">
-var req_spec_manager_url = '{$gui->req_spec_manager_url}';
-var req_manager_url = '{$gui->req_manager_url}';
-</script>
+	<script type="text/javascript" language="javascript">
+	var req_spec_manager_url = '{$gui->req_spec_manager_url}';
+	var req_manager_url = '{$gui->req_manager_url}';
+	</script>
 </head>
 
 <body>

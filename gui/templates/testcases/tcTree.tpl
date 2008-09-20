@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.9 2008/09/02 16:39:13 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.10 2008/09/20 21:02:54 schlundus Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -28,7 +28,7 @@ rev:
     
     <script type="text/javascript">
     treeCfg.loader='{$gui->ajaxTree->loader}';
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
     treeCfg.root_id={$gui->ajaxTree->root_node->id};
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
     treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
@@ -54,50 +54,51 @@ rev:
 <div style="margin: 3px;">
 
   <form method="get" id="tree_filter_and_settings"> 
-{if $draw_filter}
-    <input type="hidden" name="feature" value="{$smarty.get.feature}" />
-  	<table class="smallGrey" width="100%">
-    		<caption>
-    			{lang_get s='caption_nav_filter_settings'}
-    		</caption>
-    		<tr>
-    			<td>{lang_get s='testsuite'}</td>
-    			<td>
-    			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$gui->tsuite_choice}
-    			</td>
-    		</tr>
- 
-  		<tr>
-   			<td>{lang_get s='do_auto_update'}</td>
-  			<td>
-  			   <input type="hidden" id="hidden_tcspec_refresh_on_action"   
-  			           name="hidden_tcspec_refresh_on_action" />
-  			
-  			   <input type="checkbox" 
-  			           id="cbtcspec_refresh_on_action"   name="tcspec_refresh_on_action"
-  			           value="1"
-  			           {if $tcspec_refresh_on_action eq "yes"} checked {/if}
-  			           style="font-size: 90%;" onclick="submit()"/>
-  			</td>
-  		</tr>
-  
-  		<tr>
-  			<td>&nbsp;</td>
-  			<td><input type="submit" name="refresh_view" id="refresh_view" 
-  			           value="{lang_get s='button_update_tree'}" style="font-size: 90%;" /></td>
-  		</tr>
-  	</table>
-
-{else}
-  	<table class="smallGrey" width="100%">
-  		<tr>
-  			<td>&nbsp;</td>
-  	    <td><input type="button" value="{lang_get s='button_update_tree'}" style="font-size: 90%;"
-  	       onClick="javascript: parent.treeframe.location.reload();" />
-  	    </td>   
-  	  </tr>  
-    </table>
-{/if}		
+	{if $draw_filter}
+	    <input type="hidden" name="feature" value="{$smarty.get.feature}" />
+	  	<table class="smallGrey" width="100%">
+	    		<caption>
+	    			{lang_get s='caption_nav_filter_settings'}
+	    		</caption>
+	    		<tr>
+	    			<td>{lang_get s='testsuite'}</td>
+	    			<td>
+	    			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$gui->tsuite_choice}
+	    			</td>
+	    		</tr>
+	 
+	  		<tr>
+	   			<td>{lang_get s='do_auto_update'}</td>
+	  			<td>
+	  			   <input type="hidden" id="hidden_tcspec_refresh_on_action"   
+	  			           name="hidden_tcspec_refresh_on_action" />
+	  			
+	  			   <input type="checkbox" 
+	  			           id="cbtcspec_refresh_on_action"   name="tcspec_refresh_on_action"
+	  			           value="1"
+	  			           {if $tcspec_refresh_on_action eq "yes"} checked {/if}
+	  			           style="font-size: 90%;" onclick="submit()"/>
+	  			</td>
+	  		</tr>
+	  
+	  		<tr>
+	  			<td>&nbsp;</td>
+	  			<td><input type="submit" name="refresh_view" id="refresh_view" 
+	  			           value="{lang_get s='button_update_tree'}" style="font-size: 90%;" /></td>
+	  		</tr>
+	  	</table>
+	
+	{else}
+	  	<table class="smallGrey" width="100%">
+	  		<tr>
+	  			<td>&nbsp;</td>
+	  	    <td><input type="button" value="{lang_get s='button_update_tree'}" style="font-size: 90%;"
+	  	       onClick="javascript: parent.treeframe.location.reload();" />
+	  	    </td>   
+	  	  </tr>  
+	    </table>
+	{/if}	 
+  </form>	
 </div>
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
@@ -112,7 +113,7 @@ rev:
         <br />
     </div>
 {/if}
-  </form>
+ 
 
 </body>
 </html>

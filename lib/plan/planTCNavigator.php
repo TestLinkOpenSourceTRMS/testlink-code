@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.21 2008/08/21 14:40:22 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.22 2008/09/20 21:02:54 schlundus Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -246,7 +246,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
     $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
 
-    $guiObj->args=initializeGetArguments($argsObj,$filters);
+    $guiObj->args =initializeGetArguments($argsObj,$filters);
     $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
                                  $argsObj->tproject_id,$argsObj->tproject_name,
                                  $argsObj->tplan_id,$argsObj->tplan_name,
@@ -254,17 +254,16 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
     if( $treemenu_type == 'EXTJS' )
     {
-        $guiObj->ajaxTree=new stdClass();
-        $guiObj->ajaxTree->loader='';
-        $guiObj->ajaxTree->root_node=new stdClass();
-        $guiObj->ajaxTree->root_node=$treeMenu->rootnode;
-        $guiObj->ajaxTree->children=$treeMenu->menustring;
-        $guiObj->ajaxTree->cookiePrefix=$args->feature;
+        $guiObj->ajaxTree = new stdClass();
+        $guiObj->ajaxTree->loader = '';
+        $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
+        $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
+        $guiObj->ajaxTree->cookiePrefix = $args->feature;
     }
     else
     {
-        $guiObj->ajaxTree=null;
-        $treeMenu->menustring=invokeMenu($treeMenu->menustring,null,null);
+        $guiObj->ajaxTree = null;
+        $treeMenu->menustring = invokeMenu($treeMenu->menustring,null,null);
     }
     
     return $treeMenu;

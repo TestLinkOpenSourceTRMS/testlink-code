@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/05/09 20:15:15 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/09/20 21:02:54 $ by $Author: schlundus $
  */
 require('../../config.inc.php');
 require_once('keyword.class.php');
@@ -16,7 +16,7 @@ require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
 
-$template_dir='keywords/';
+$template_dir = 'keywords/';
 
 $fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
 $source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;

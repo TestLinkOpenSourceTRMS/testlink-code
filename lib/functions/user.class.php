@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/03/24 19:33:27 $ $Author: havlat $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/09/20 21:02:54 $ $Author: schlundus $
  *
  */
 
@@ -253,7 +253,7 @@ class tlUser extends tlDBObject
 		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
 		
 		$displayName = trim(str_replace($keys,$values,$this->usernameFormat));
-	
+
 		return $displayName;
 	}
 	

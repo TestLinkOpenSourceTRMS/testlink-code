@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.3 2008/05/14 08:53:00 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.4 2008/09/20 21:02:53 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
@@ -43,7 +43,7 @@
 	<tr>
 	{section name=Item loop=$arrData[Row]}
 
-	{* add different font styles for tc status for improve readability. 2007-05-31 *jacky *}
+		{* add different font styles for tc status for improve readability. 2007-05-31 *jacky *}
 		{if $arrData[Row][Item] == 'Passed'} 
 		<td style="color: green; font-weight:bold">{$arrData[Row][Item]}</td>
 		{elseif $arrData[Row][Item] == 'Failed'} 
@@ -55,7 +55,7 @@
 		{elseif $arrData[Row][Item] == 'Blocked'}
 		<td style="color:blue;">{$arrData[Row][Item]}</td>
 		{else} 
-		<td>{$arrData[Row][Item]}</td>
+		<td>{$arrData[Row][Item]|escape}</td>
 		{/if}
 	{/section}
 	</tr>

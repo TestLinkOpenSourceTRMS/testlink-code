@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.37 2008/05/30 09:31:25 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.38 2008/09/20 21:02:54 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -31,8 +31,8 @@ $arrData = array();
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$tplan_id=$_REQUEST['tplan_id'];
-$tproject_id=$_SESSION['testprojectID'];
+$tplan_id = $_REQUEST['tplan_id'];
+$tproject_id = $_SESSION['testprojectID'];
 
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
@@ -40,7 +40,7 @@ $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
-$testCaseCfg=config_get('testcase_cfg');
+$testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
 
@@ -61,16 +61,15 @@ $indexOfArrData = 0;
 
 // -----------------------------------------------------------------------------------
 $resultsCfg=config_get('results');
-$map_tc_status_verbose_code=$resultsCfg['code_status'];
-$map_tc_status_verbose_label=$resultsCfg['status_label'];
+$map_tc_status_verbose_code = $resultsCfg['code_status'];
+$map_tc_status_verbose_label = $resultsCfg['status_label'];
 
 foreach($map_tc_status_verbose_code as $code => $verbose )
 {
   if( isset($map_tc_status_verbose_label[$verbose]) )
   {
-    $label=$map_tc_status_verbose_label[$verbose];
+    $label = $map_tc_status_verbose_label[$verbose];
     $map_tc_status_code_langet[$code]=lang_get($label);
-      
     $map_label_css[$map_tc_status_code_langet[$code]]=$resultsCfg['code_status'][$code];
   }
 }

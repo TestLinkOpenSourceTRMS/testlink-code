@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.10 2008/09/02 16:39:13 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.11 2008/09/20 21:02:53 schlundus Exp $
 show test specification tree 
 
 rev:20080629 - franciscom - fixed missed variable bug
@@ -31,7 +31,7 @@ rev:20080629 - franciscom - fixed missed variable bug
     
     <script type="text/javascript">
     treeCfg.loader='{$gui->ajaxTree->loader}';
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
     treeCfg.root_id={$gui->ajaxTree->root_node->id};
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
     treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
@@ -106,7 +106,7 @@ function pre_submit()
 
 {* 20080622 - franciscom *}
 {if $tlCfg->treemenu_type == 'EXTJS'}
-    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 {else}
    <div class="tree" id="tree">
    	{$gui->tree}

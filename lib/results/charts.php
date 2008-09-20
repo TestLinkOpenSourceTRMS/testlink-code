@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/08/12 22:17:46 $ by $Author: havlat $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/09/20 21:02:54 $ by $Author: schlundus $
  * @author kevin
  *
  * Revisions:
@@ -38,10 +38,10 @@ $charts_library= $pathToCharts . "/charts_library";
 
 $chartsUrl=new stdClass();
 
-$chartsUrl->overallPieChart="{$pathToScripts}/overallPieChart.php?tplan_id={$tplan_id}";
-$chartsUrl->keywordBarChart="{$pathToScripts}/keywordBarChart.php?tplan_id={$tplan_id}";
-$chartsUrl->ownerBarChart="{$pathToScripts}/ownerBarChart.php?tplan_id={$tplan_id}";
-$chartsUrl->topLevelSuitesBarChart="{$pathToScripts}/topLevelSuitesBarChart.php?tplan_id={$tplan_id}";
+$chartsUrl->overallPieChart = "{$pathToScripts}/overallPieChart.php?tplan_id={$tplan_id}";
+$chartsUrl->keywordBarChart = "{$pathToScripts}/keywordBarChart.php?tplan_id={$tplan_id}";
+$chartsUrl->ownerBarChart = "{$pathToScripts}/ownerBarChart.php?tplan_id={$tplan_id}";
+$chartsUrl->topLevelSuitesBarChart = "{$pathToScripts}/topLevelSuitesBarChart.php?tplan_id={$tplan_id}";
 
 $charts = array(
 	lang_get('overall_metrics') => InsertChart($charts_swf, $charts_library, 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.10 2008/06/29 17:21:20 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.11 2008/09/20 21:02:53 schlundus Exp $
 show test plan tree
 
 rev : 20080311 - franciscom - BUGID 1427 - first developments
@@ -129,7 +129,7 @@ function update2latest(id)
 {/if}
 
 {if $tlCfg->treemenu_type == 'EXTJS'}    
-    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+   <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 {else}
     <div class="tree" id="tree">
   	{$gui->tree}

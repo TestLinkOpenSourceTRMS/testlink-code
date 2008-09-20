@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: topLevelSuitesBarChart.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/08/12 22:17:46 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/09/21 19:02:48 $ by $Author: schlundus $
  *
  * @author	Kevin Levy
  *
@@ -19,7 +19,6 @@
 require_once('../../config.inc.php');
 require_once("../../third_party/charts/charts.php");
 require_once('results.class.php');
-
 testlinkInitPage($db);
 
 $cdata = getChartData($db);
@@ -45,8 +44,7 @@ $chart['legend_rect'] = array ( 'x'=>50, 'y'=>360, 'width'=>350,
 
 $chart['series_color'] = $cdata->series_color;
 
-SendChartData ( $chart );
-
+SendChartData($chart);
 
 /*
   function: getChartData
@@ -61,15 +59,14 @@ function getChartData(&$dbHandler)
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
     
-    $tplan_id=$_REQUEST['tplan_id'];
-    $tproject_id=$_SESSION['testprojectID'];
+    $tplan_id = $_REQUEST['tplan_id'];
+    $tproject_id = $_SESSION['testprojectID'];
     
     $tplan_info = $tplan_mgr->get_by_id($tplan_id);
     $tproject_info = $tproject_mgr->get_by_id($tproject_id);
     
     $re = new results($dbHandler, $tplan_mgr, $tproject_info, $tplan_info,
                       ALL_TEST_SUITES,ALL_BUILDS);
-    
     
     $topLevelSuites = $re->getTopLevelSuites();
     $mapOfAggregate = $re->getAggregateMap();
@@ -92,19 +89,19 @@ function getChartData(&$dbHandler)
     //                           [1] => 1
     //                           [2] => 0)
     //
+    $tsuiteNames = array('');
     if (is_array($topLevelSuites)) 
     {
-        $tsuiteNames=array('');
         foreach($topLevelSuites as $tsuite )
         {
-            $rmap=$mapOfAggregate[$tsuite['id']];
-        	  $tsuiteNames[]=$tsuite['name'];
+            $rmap = $mapOfAggregate[$tsuite['id']];
+        	$tsuiteNames[] = htmlspecialchars($tsuite['name']);
 
             unset($rmap['total']);
-        	  foreach( $rmap as $key => $value)
-        	  {
-        	      $totals[$key][]=$value;  
-        	  }
+        	foreach($rmap as $key => $value)
+        	{
+        		$totals[$key][]=$value;  
+        	}
         } 
     } // end if 
     
@@ -116,7 +113,7 @@ function getChartData(&$dbHandler)
     //
     $obj = new stdClass();
     $obj->chart_data = array($tsuiteNames);
-    $resultsCfg=config_get('results');
+    $resultsCfg = config_get('results');
     foreach( $totals as $status => $values)
     {
         // $values[0]=lang_get($resultsCfg['status_label'][$status]);

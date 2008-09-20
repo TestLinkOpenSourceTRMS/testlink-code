@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/08/21 14:40:21 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2008/09/20 21:02:54 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -1454,14 +1454,13 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
                                         $bForPrinting,$useCounters=1,$useColors=1,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
-
-  $cfg=config_get('testcase_cfg');
+	$cfg=config_get('testcase_cfg');
 	$resultsCfg=config_get('results');
-  	
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
+	  
+	$status_descr_code=$resultsCfg['status_code'];
+	$status_code_descr=$resultsCfg['code_status'];
 	$status_verbose=$resultsCfg['status_label'];
-	
+
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
 	$pfn = "ST";
@@ -1511,11 +1510,9 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		
 		if($showTestCaseID)
 		{
- 		   if( strlen(trim($testCasePrefix)) > 0 )
-       {
-            $testCasePrefix .= $cfg->glue_character;
-       }
-  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+			if(strlen(trim($testCasePrefix)))
+				$testCasePrefix .= $cfg->glue_character;
+			$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
 		} 
 		$label .= $name . "</span>";
 		$versionID = $node['tcversion_id'];

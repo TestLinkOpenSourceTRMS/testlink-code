@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planTCRemove.php,v 1.10 2008/08/14 15:08:25 franciscom Exp $ 
+ * @version $Id: planTCRemove.php,v 1.11 2008/09/20 21:02:54 schlundus Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -150,26 +150,24 @@ $smarty->display($templateCfg->template_dir . 'planRemoveTC_m1.tpl');
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-
+	
 	$args = new stdClass();
-
-  $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-  $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
-  $args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
-  
-  // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-  $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-  $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-  $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-
-  
-  $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
-
-
-  $args->tplan_id = $_SESSION['testPlanId'];
-  $args->tplan_name = $_SESSION['testPlanName'];
-  $args->tproject_id =  $_SESSION['testprojectID'];
-  $args->tproject_name =  $_SESSION['testprojectName'];
+	
+	$args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+	$args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
+	$args->level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
+	  
+	// Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
+	$keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
+	$args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
+	$args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+		  
+	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+	
+	$args->tplan_id = $_SESSION['testPlanId'];
+	$args->tplan_name = $_SESSION['testPlanName'];
+	$args->tproject_id = $_SESSION['testprojectID'];
+	$args->tproject_name = $_SESSION['testprojectName'];
 
 	return $args;
 }

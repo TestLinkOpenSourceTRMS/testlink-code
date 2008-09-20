@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.342 $
- * @modified $Date: 2008/09/19 20:22:00 $ by $Author: schlundus $
+ * @version $Revision: 1.343 $
+ * @modified $Date: 2008/09/20 21:02:55 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -144,9 +144,9 @@ $TLS_test_status_unknown	= "Unknown";
 
 
 // Used on javascript logic to validate Custom Field values
-$TLS_warning_numeric_cf="Custom File %s accepts only numeric values";
-$TLS_warning_float_cf="Custom File %s accepts only numeric or float values";
-$TLS_warning_email_cf="Custom File %s accepts only email addresses";
+$TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
+$TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
+$TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
  
 // --------------------------------------------------------------------------------------
 // firstLogin.php

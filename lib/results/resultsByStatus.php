@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.57 2008/06/02 14:43:20 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.58 2008/09/20 21:02:54 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -92,9 +92,9 @@ if (is_array($mapOfLastResult))
 	  	    	$executions_id = $tcaseContent['executions_id'];
 	  	    	$tcversion_id = $tcaseContent['tcversion_id'];
             
-            // 20080602 - franciscom
-            $testVersion = $tcaseContent['version'];
-               
+	            // 20080602 - franciscom
+	            $testVersion = $tcaseContent['version'];
+	               
 	  	    	// ------------------------------------------------------------------------------------
 	  	    	// 20070623 - BUGID 911 - no need to localize, is already localized
 	  	    	$execution_ts = $tcaseContent['execution_ts'];
@@ -112,24 +112,24 @@ if (is_array($mapOfLastResult))
 	  	    	   $testerName = $arrOwners[$tester_id];
           
           
-            // 20080602 - francisco.mancardi@gruppotesi.com
-            // To get executed Version, we can not do anymore this 
-	  	    	// $tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
-     	      // $testVersion = $tcInfo[0]['version'];
-          
-	  	    	// 20070908 - franciscom - to avoid bad presentation on smarty
+	            // 20080602 - francisco.mancardi@gruppotesi.com
+	            // To get executed Version, we can not do anymore this 
+	      		// $tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
+	            // $testVersion = $tcInfo[0]['version'];
+	          
+	  	    	$suiteName = htmlspecialchars($suiteName);
 	  	    	if($type == $g_tc_status['not_run'])
 	  	    	{
-	  	    			$arrData[] = array($suiteName,$testTitle,$testVersion);
+	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion);
 	  	    	}
 	  	    	else
-            {
-	  	    		  $arrData[] = array($suiteName,$testTitle,$testVersion,
-	  	    		                                  htmlspecialchars($buildName),
-	  	    		                                  htmlspecialchars($testerName),
-	  	    		                                  htmlspecialchars($localizedTS),
-	  	    		  		                            strip_tags($notes),$bugString);
-	  	    	}
+				{
+	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion,
+                                        htmlspecialchars($buildName),
+                                        htmlspecialchars($testerName),
+                                        htmlspecialchars($localizedTS),
+        		                        strip_tags($notes),$bugString);
+      			}
 	  	    }
 	  	
 	    }
@@ -179,7 +179,7 @@ displayReport($template_dir . 'resultsByStatus', $smarty, $report_type);
 function getTCLink($rights, $tcID,$tcversionID, $title, $buildID,$testCaseExternalId)
 {
 	$title = htmlspecialchars($title);
-	$suffix = $testCaseExternalId . ":&nbsp;<b>" . $title. "</b></a>";
+	$suffix = htmlspecialchars($testCaseExternalId) . ":&nbsp;<b>" . $title. "</b></a>";
 
 	$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
 				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';

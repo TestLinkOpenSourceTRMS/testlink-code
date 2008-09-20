@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.12 2008/08/05 17:44:02 franciscom Exp $
+$Id: buildView.tpl,v 1.13 2008/09/20 21:02:53 schlundus Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -96,7 +96,7 @@ var del_action=fRoot+'{$deleteAction}';
 				       <img style="border:none;cursor: pointer;" 
   				            title="{$labels.alt_delete_build}" 
   				            alt="{$labels.alt_delete_build}" 
- 					            onclick="delete_confirmation({$build.id},'{$build.name|escape:'javascript'}',
+ 					            onclick="delete_confirmation({$build.id},'{$build.name|escape}',
  					                                         '{$del_msgbox_title}','{$warning_msg}');"
   				            src="{$delete_img}"/>
   				</td>

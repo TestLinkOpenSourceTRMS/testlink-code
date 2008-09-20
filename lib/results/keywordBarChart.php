@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: keywordBarChart.php,v 1.9 2008/08/12 22:17:46 havlat Exp $ 
+ * $Id: keywordBarChart.php,v 1.10 2008/09/20 21:02:54 schlundus Exp $ 
  *
  * @author	Kevin Levy
  *
@@ -54,13 +54,13 @@ SendChartData ( $chart );
 */
 function getChartData(&$dbHandler)
 {
-    $keywordNames=array('');
-    $totals=null; 
+    $keywordNames = array('');
+    $totals = null; 
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
     
-    $tplan_id=$_REQUEST['tplan_id'];
-    $tproject_id=$_SESSION['testprojectID'];
+    $tplan_id = $_REQUEST['tplan_id'];
+    $tproject_id = $_SESSION['testprojectID'];
     
     $tplan_info = $tplan_mgr->get_by_id($tplan_id);
     $tproject_info = $tproject_mgr->get_by_id($tproject_id);
@@ -68,19 +68,16 @@ function getChartData(&$dbHandler)
     $re = new results($dbHandler, $tplan_mgr, $tproject_info, $tplan_info,
                       ALL_TEST_SUITES,ALL_BUILDS);
     
-    
     $keywordResults = $re->getAggregateKeywordResults();
-    
-    if( !is_null($keywordResults) )
+    if(!is_null($keywordResults))
     {
         // all array must have same number of items
         // keywordNames: used to dsplay name in X axis
         //               first element must be leave clear
         //
-        $keywordNames=array('');
         foreach($keywordResults as $keyword_id => $elem)
         {
-            $keywordNames[] = $elem['keyword_name'];   
+            $keywordNames[] = htmlspecialchars($elem['keyword_name']);
             foreach($elem['details'] as $status => $value)
             {
                 $totals[$status][]=$value['qty'];  
@@ -96,19 +93,17 @@ function getChartData(&$dbHandler)
     
     $obj = new stdClass();
     $obj->chart_data = array($keywordNames);
-    $obj->series_color=null;
-    $resultsCfg=config_get('results');
-    if(!is_null($totals) )
+    $obj->series_color = null;
+    $resultsCfg = config_get('results');
+    if(!is_null($totals))
     {
-        foreach( $totals as $status => $values)
+        foreach($totals as $status => $values)
         {
             array_unshift($values,lang_get($resultsCfg['status_label'][$status]));
-            $obj->chart_data[]=$values;
-            $obj->series_color[]=$resultsCfg['charts']['status_colour'][$status];
+            $obj->chart_data[] = $values;
+            $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
         }
     }
     return $obj;    
-    
 }
-
 ?>

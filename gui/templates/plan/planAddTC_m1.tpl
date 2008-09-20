@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.14 2008/08/14 15:09:44 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.15 2008/09/20 21:02:53 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -165,7 +165,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
     			      </td>
     			      
     			      <td>
-    				    {$gui->testCasePrefix}{$tcase.external_id}
+    				    {$gui->testCasePrefix|escape}{$tcase.external_id}
     			      </td>
     			      {* 20070930 - franciscom - REQ - BUGID 1078 *}
     				    <td title="{$labels.show_tcase_spec}">

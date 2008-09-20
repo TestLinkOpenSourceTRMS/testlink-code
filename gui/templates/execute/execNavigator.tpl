@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.13 2008/06/21 15:58:14 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.14 2008/09/20 21:02:53 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -33,7 +33,7 @@ rev :
     {/literal}
     
     <script type="text/javascript">
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
+    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
     treeCfg.root_id={$gui->ajaxTree->root_node->id};
     treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
     treeCfg.children={$gui->ajaxTree->children};
@@ -120,7 +120,7 @@ rev :
 
 
 {if $tlCfg->treemenu_type == 'EXTJS'}    
-    <div id="tree" style="overflow:auto; height:300px;width:250px;border:1px solid #c3daf9;"></div>
+    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 {else}
     <div class="tree" id="tree">
     {$gui->tree}

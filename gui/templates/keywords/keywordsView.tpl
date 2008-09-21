@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.14 2008/08/19 13:17:13 franciscom Exp $
+$Id: keywordsView.tpl,v 1.15 2008/09/21 19:02:47 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -54,7 +54,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
              title="{lang_get s='alt_delete_keyword'}"   
              src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
 				     onclick="delete_confirmation({$keywords[myKeyword]->dbID},
-				              '{$keywords[myKeyword]->name|escape:'javascript'}',
+				              '{$keywords[myKeyword]->name||escape:'javascript'|escape'}',
 				              '{$del_msgbox_title}','{$warning_msg}');" />
 			</td>
 			{/if}

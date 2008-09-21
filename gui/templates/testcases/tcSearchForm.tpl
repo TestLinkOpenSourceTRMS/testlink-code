@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.6 2008/05/09 17:14:19 schlundus Exp $
+$Id: tcSearchForm.tpl,v 1.7 2008/09/21 19:02:47 schlundus Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
@@ -18,11 +18,11 @@ rev :
 {include file="inc_head.tpl"}
 <body>
 
-<h1 class="title">{$mainCaption}</h1>
+<h1 class="title">{$mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
 <form method="post" action="lib/testcases/searchData.php" target="workframe">
-	<table class="smallGrey">
+	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form}</caption>
 		<tr>
 			<td>{$labels.th_tcid}</td>
@@ -54,7 +54,7 @@ rev :
 		</tr>
 		<tr>
 			<td>{$labels.keyword}</td>
-			<td><select  name="keyword_id">
+			<td><select name="keyword_id">
 					<option value="0">&nbsp;</option>
 					{section name=Row loop=$keywords}
 					<option value="{$keywords[Row]->dbID}">{$keywords[Row]->name|escape}</option>
@@ -63,25 +63,23 @@ rev :
 			</td>
 		</tr>
 		<tr>
-      <td>{$labels.custom_field}</td>
+     		<td>{$labels.custom_field}</td>
 			<td><select name="custom_field_id">
 					<option value="0">&nbsp;</option>
 					{foreach from=$design_cf key=cf_id item=cf}
 						<option value="{$cf_id}">{$cf.name}</option>
 					{/foreach}
 				</select>
-	  </tr>
-	
-	  <tr>
-	   <td>{$labels.custom_field_value}</td>
-     <td>
-			  <input type="text" name="custom_field_value" 
+			</td>
+	  	</tr>
+		<tr>
+	   		<td>{$labels.custom_field_value}</td>
+     		<td>
+				<input type="text" name="custom_field_value" 
 			         size="{#CFVALUE_SIZE#}" maxlength="{#CFVALUE_MAXLEN#}"/>
 			</td>
-	  </tr>
-	
+	  	</tr>
 	</table>
-	
 	
 	<p style="padding-left: 20px;">
 		<input type="submit" name="doSearch" value="{$labels.btn_find}" />

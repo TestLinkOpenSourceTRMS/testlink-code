@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.2 2008/09/02 16:39:49 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.3 2008/09/21 19:02:48 schlundus Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -35,16 +35,13 @@ $operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
 $nodes=display_children($db,$root_node,$node,$filter_node,$show_children,$operation);
 echo json_encode($nodes);
-?>
 
-<?php
 /*
 
 */
 function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $show_children=ON,$operation='manage') 
 {             
-    
     switch($operation)
     {
         // case 'print':
@@ -59,8 +56,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         break;  
     }
     
-    $nodes=null;
-    $filter_node_type=$show_children ? '' : ",'requirement'";
+    $nodes = null;
+    $filter_node_type = $show_children ? '' : ",'requirement'";
 
     $sql = " SELECT NHA.*, NT.description AS node_type " . 
            " FROM nodes_hierarchy NHA, node_types NT " .
@@ -69,7 +66,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
            " AND NT.description NOT IN " .
            " ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) ";
 
-    if( !is_null($filter_node) && $filter_node > 0 && $parent==$root_node)
+    if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
     {
        $sql .=" AND NHA.id = {$filter_node} ";  
     }
@@ -83,26 +80,26 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     // print_r(array_values($nodeSet));
     // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 
-		if( !is_null($nodeSet) ) 
-		{
-		    $tproject_mgr = new testproject($dbHandler);
-		    foreach($nodeSet as $key => $row)
-		    {
-		        $path['text']		= html_entity_decode($row['name']);                                  
-		        $path['id']			= $row['id'];                                                           
+	if( !is_null($nodeSet) ) 
+	{
+	    $tproject_mgr = new testproject($dbHandler);
+	    foreach($nodeSet as $key => $row)
+	    {
+	        $path['text'] = htmlspecialchars($row['name']);                                  
+	        $path['id'] = $row['id'];                                                           
         
-            // this attribute/property is used on custom code on drag and drop
-		        $path['position']	= $row['node_order'];                                                   
-            $path['leaf']	= false;
- 		        $path['cls']	= 'folder';
- 		        
- 		        // Important:
- 		        // We can add custom keys, and will be able to access it using
- 		        // public property 'attributes' of object of Class Ext.tree.TreeNode 
- 		        // 
- 		        $path['testlink_node_type']	= $row['node_type'];		                                 
-		                                 
-		        $tcase_qty=null;
+           	 // this attribute/property is used on custom code on drag and drop
+	        $path['position'] = $row['node_order'];                                                   
+            $path['leaf'] = false;
+ 	        $path['cls'] = 'folder';
+ 	        
+ 	        // Important:
+ 	        // We can add custom keys, and will be able to access it using
+ 	        // public property 'attributes' of object of Class Ext.tree.TreeNode 
+ 	        // 
+ 	        $path['testlink_node_type']	= $row['node_type'];		                                 
+	                                 
+	        $tcase_qty = null;
             switch($row['node_type'])
             {
                 case 'testproject':
@@ -118,12 +115,11 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                 $path['leaf']	= true;
                 break;
             }
-            if( !is_null($tcase_qty) )
-            {
+            if(!is_null($tcase_qty))
                 $path['text'] .= "({$tcase_qty})";   
-            }
-		        $nodes[] = $path;                                                                        
-		    }	// foreach	
+            
+            $nodes[] = $path;                                                                        
+	    }	// foreach	
     }
-		return $nodes;                                                                             
+	return $nodes;                                                                             
 }                                                                                               

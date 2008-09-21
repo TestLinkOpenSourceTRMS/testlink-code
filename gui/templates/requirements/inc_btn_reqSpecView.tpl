@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.4 2008/09/02 16:39:13 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.5 2008/09/21 19:02:47 schlundus Exp $
 
 rev: 20080830 - franciscom 
 *}
@@ -26,7 +26,7 @@ rev: 20080830 - franciscom
   	
   	
   	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
-  	       onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'}',
+  	       onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
 
   	<input type="button" name="print_req_spec" value="{$labels.btn_print}"

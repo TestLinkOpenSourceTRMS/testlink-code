@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.5 2007/12/03 08:27:17 franciscom Exp $
+$Id: inc_del_onclick.tpl,v 1.6 2008/09/21 19:02:47 schlundus Exp $
 Purpose: include files for:
 
 
@@ -36,7 +36,7 @@ rev :
   */
   function delete_confirmation(o_id,o_name,title,msg)
   {
-    var safe_name=o_name.escapeHTML();
+  	var safe_name=o_name.escapeHTML();
     // var safe_title=o_label + ' ' + safe_name;
     var safe_title=title;
     var my_msg=msg.replace('%s',safe_name);

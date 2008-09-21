@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.14 2008/09/09 10:22:47 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.15 2008/09/21 19:02:47 schlundus Exp $
 
 
 Important Development note:
@@ -498,7 +498,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 		{if $gui->cfield_is_used eq 0}
   		<input type="button" name="do_delete" value="{$labels.btn_delete}"
-  		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'}',
+  		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'|escape}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
     {/if}
 

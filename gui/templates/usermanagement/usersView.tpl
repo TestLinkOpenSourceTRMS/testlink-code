@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.12 2008/05/08 21:05:43 schlundus Exp $
+$Id: usersView.tpl,v 1.13 2008/09/21 19:02:48 schlundus Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -108,7 +108,7 @@ Purpose: smarty template - users overview
 				  <img style="border:none;cursor: pointer;"
                alt="{$labels.alt_delete_user}"
 					     title="{$labels.alt_delete_user}"
-					     onclick="delete_confirmation({$user->dbID},'{$user->login|escape:'javascript'}',
+					     onclick="delete_confirmation({$user->dbID},'{$user->login|escape:'javascript'|escape}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 				</td>

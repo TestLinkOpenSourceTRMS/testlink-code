@@ -2,10 +2,9 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/09/20 21:02:55 $ $Author: schlundus $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/09/21 19:02:48 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -372,7 +371,7 @@ $TLS_was_success = " wurde erfolgreich ";
 // gui/templates/execNavigator.tpl
 $TLS_TestPlan = "Testplan";
 $TLS_btn_apply_filter = "Filter anwenden";
-$TLS_btn_update_menu = "Menü aktualisieren";
+$TLS_btn_update_menu = "Aktualisieren";
 $TLS_caption_nav_filter_settings = "Navigations Filter & Einstellungen";
 $TLS_current_build = "Aktueller Build";
 $TLS_filter_owner = "Filter: Besitzer";
@@ -707,7 +706,7 @@ $TLS_warning_modify_role = "Wollen Sie diese Rolle wirklich modifizieren?";
 
 // gui/templates/tcSearchForm.tpl
 $TLS_caption_search_form = "Suche nach:";
-$TLS_custom_field_value = "Benutzerderfiniertes Feld Wert";
+$TLS_custom_field_value = "Benutzerdefiniertes Feld Wert";
 $TLS_not_applied = "Nicht angewandt";
 $TLS_th_tcid = "Testfall ID";
 $TLS_th_tcversion = "Version";
@@ -897,12 +896,12 @@ $TLS_keywords = "Stichworte";
 $TLS_access_doc = "documentation";
 $TLS_home = "Startseite";
 $TLS_link_logout = "Abmelden";
-$TLS_navbar_user_management = "Users";
+$TLS_navbar_user_management = "Benutzer";
 $TLS_product = "Testprojekt";
 $TLS_product_role = "Testprojekt Rolle";
 $TLS_search_testcase = "Suchen";
 $TLS_title_edit_personal_data = "Meine Einstellungen ändern";
-$TLS_title_events = "Events";
+$TLS_title_events = "Ereignisse";
 $TLS_title_execute = "Ausführen";
 $TLS_title_results = "Ergebnisse";
 $TLS_title_specification = "Definition";
@@ -1330,7 +1329,7 @@ $TLS_drag_and_drop_to_reorder = "Drag and drop items to reorder them";
 
 // gui/templates/tcTree.tpl
 $TLS_button_refresh = "Aktualisieren";
-$TLS_button_update_tree = "Menü aktualisieren";
+$TLS_button_update_tree = "Aktualisieren";
 $TLS_do_auto_update = "Menü nach jeder Änderung neu laden";
 $TLS_no_tc_spec_av = "Keine Test-Definition verfügbar!";
 
@@ -2014,10 +2013,9 @@ $TLS_req_spec_created = "Spezifikation erstellt";
 $TLS_req_spec_deleted = "Spezifikation: %s wurde erfolgreich gelöscht";
 
 $TLS_title_req_spec = "Spezifikationen definieren";
-$TLS_warning_empty_req_spec_title = "TBD: --TLS_warning_empty_req_spec_title-- = Requirement Specification title cannot be empty!";
+$TLS_warning_empty_req_spec_title = "Der Titel der Anforderungsspezifikation darf nicht leer sein!";
 $TLS_create_req_spec = "Neue Spezifikation anlegen";
 $TLS_edit_req_spec = "Spezifikation Editieren";
-$TLS_edit_req_spec = "Edit Requirements Specification";
 
 // reqEdit.php
 $TLS_create_req = "Anforderung erstellen";
@@ -2036,7 +2034,7 @@ $TLS_created_on_testsuite = "Testfall wird für Testsuite %s erstellt";
 $TLS_keyword_management = $TLS_menu_manage_keywords;
 $TLS_create_keyword = "Stichwort erstellen";
 $TLS_edit_keyword = "Stichwort bearbeiten";
-$TLS_warning_empty_keyword = "Keyword must not be empty!";
+$TLS_warning_empty_keyword = "Das Stichwort darf nicht leer sein!";
 
 // api/TestlinkXMLRPCServerErrors.php
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
@@ -2152,28 +2150,28 @@ $TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
 
 //eventviewer.php
 $TLS_th_loglevel = "Log level";
-$TLS_th_timestamp = "Timestamp";
-$TLS_th_activity = "Activity";
-$TLS_label_startdate = "Start date";
-$TLS_label_enddate = "End date";
+$TLS_th_timestamp = "Zeitstempel";
+$TLS_th_activity = "Aktivität";
+$TLS_label_startdate = "Startdatum";
+$TLS_label_enddate = "Endedatum";
 $TLS_log_level_AUDIT = "Audit";
-$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_WARNING = "Warnung";
 $TLS_log_level_INFO = "Info";
-$TLS_log_level_ERROR = "Error";
+$TLS_log_level_ERROR = "Fehler";
 $TLS_log_level_DEBUG = "Debug";
-$TLS_event_viewer = "Eventviewer";
-$TLS_th_session_info = "Session information";
-$TLS_th_sessionID = "Session ID";
-$TLS_th_source = "Source";
+$TLS_event_viewer = "Ereignisviewer";
+$TLS_th_session_info = "Sitzungsinformation";
+$TLS_th_sessionID = "SitzungsID";
+$TLS_th_source = "Quelle";
 $TLS_click_on_event_info = "Auf Ereignis klicken zur Detailansicht.";
-$TLS_th_activity_code = "Activity";
-$TLS_th_object_id = "Object ID";
-$TLS_th_object_type = "Object Type";
-$TLS_message_please_wait = "Please wait ...";
-$TLS_title_eventinfo = "Event information";
-$TLS_title_eventdetails = "Event details";
-$TLS_th_user = "User";
-$TLS_show_event_history = "Show the event history";
+$TLS_th_activity_code = "Aktivität";
+$TLS_th_object_id = "ObjektID";
+$TLS_th_object_type = "Objekttyp";
+$TLS_message_please_wait = "Bitte warten ...";
+$TLS_title_eventinfo = "Ereignisinformation";
+$TLS_title_eventdetails = "Ereignisdetails";
+$TLS_th_user = "Benutzer";
+$TLS_show_event_history = "Zeige die Ereignishistorie an";
 
 
 // int_mantis.php

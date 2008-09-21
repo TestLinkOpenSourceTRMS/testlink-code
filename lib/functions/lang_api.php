@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/06/05 12:27:16 $ - $Author: havlat $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/09/21 19:02:48 $ - $Author: schlundus $
  *
  * Revision :
  *      20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -54,20 +54,24 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 
 	lang_ensure_loaded($t_lang);
 	global $g_lang_strings;
-	//if lang_get is used to localize a string from the DB (like custom field label) we must simply passthrough the string
+	
+	$loc_str = null;
 	if (isset($g_lang_strings[$t_lang][$p_string]))
+		$loc_str = $g_lang_strings[$t_lang][$p_string];
+	else if(isset($g_lang_strings['en_GB'][$p_string]))
+		$loc_str = $g_lang_strings['en_GB'][$p_string];
+
+	if (!is_null($loc_str))
 	{
-		$the_str = $g_lang_strings[$t_lang][$p_string];
 		if (!isset($TLS_STRINGFILE_CHARSET))
 			$TLS_STRINGFILE_CHARSET = "ISO-8859-1";
-		$the_str = iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$the_str);
+		$the_str = iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$loc_str);
 	}
 	else
 	{
-		if (!$bDontFireEvents )
-		{
+		if (!$bDontFireEvents)
 		    logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
-		}
+
 		$the_str = TL_LOCALIZE_TAG .$p_string;
 	}
 	return $the_str;
@@ -143,7 +147,6 @@ function lang_load( $p_lang ) {
 	if ( isset( $g_lang_strings[ $p_lang ] ) ) {
 		return;
 	}
-
 	$t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
 
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
@@ -151,13 +154,13 @@ function lang_load( $p_lang ) {
 		require_once( $lang_resource_path );
 	else
 		require_once( $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt' );
-
+		
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
 	if (file_exists($lang_resource_path))
 		require_once( $lang_resource_path );
 	else
 		require_once( $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php' );
-
+	
 	# Allow overriding strings declared in the language file.
 	# custom_strings_inc.php can use $g_active_language
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
@@ -165,15 +168,14 @@ function lang_load( $p_lang ) {
 	     require_once( $lang_resource_path );
 	}
 
-
 	$t_vars = get_defined_vars();
-
 	foreach ( array_keys( $t_vars ) as $t_var ) {
 		$t_lang_var = ereg_replace( '^TLS_', '', $t_var );
 		if ( $t_lang_var != $t_var) {
 			$g_lang_strings[ $p_lang ][ $t_lang_var ] = $$t_var;
 		}
 	}
+	
 }
 
 

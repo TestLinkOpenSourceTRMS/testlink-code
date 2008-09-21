@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.16 2008/09/20 21:02:53 schlundus Exp $ 
+$Id: planView.tpl,v 1.17 2008/09/21 19:02:47 schlundus Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -94,7 +94,7 @@ var del_action=fRoot+'{$deleteAction}';
 				  <img style="border:none;cursor: pointer;" 
 				       alt="{$labels.testplan_alt_delete_tp}"
 					   title="{$labels.testplan_alt_delete_tp}" 
-					   onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape}',
+					   onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
 				     src="{$delete_img}"/>
 			</td>

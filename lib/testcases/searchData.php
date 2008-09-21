@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.31 2008/03/05 22:22:39 franciscom Exp $
+ * $Id: searchData.php,v 1.32 2008/09/21 19:02:48 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -16,7 +16,7 @@ $template_dir = 'testcases/';
 $tproject_mgr = new testproject($db);
 
 $map = null;
-$args=init_args();
+$args = init_args();
 if ($args->tprojectID)
 {
 	$from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
@@ -28,9 +28,9 @@ if ($args->tprojectID)
 	  
 		if($args->targetTestCase)
 		{
-      $tcase_mgr = new testcase ($db);
-      $cfg = config_get('testcase_cfg');
-		  $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);  
+			$tcase_mgr = new testcase ($db);
+	      	$cfg = config_get('testcase_cfg');
+			$tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);  
 			$filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
 		}
 		else
@@ -49,27 +49,27 @@ if ($args->tprojectID)
 			$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
 		}
 
-    if(strlen($args->name))
-    {
-        $args->name =  $db->prepare_string($args->name);
-    	  $filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
-    }
+	    if(strlen($args->name))
+	    {
+	     	$args->name =  $db->prepare_string($args->name);
+	      	$filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
+	    }
       
 	    if(strlen($args->summary))
         {
             $summary = $db->prepare_string($args->summary);
-        	$filter['by_summary'] = " AND summary like '%{$args->summary}%' ";	
+        	$filter['by_summary'] = " AND summary like '%{$args->summary}%' ";
         }    
 
         if(strlen($args->steps))
         {
-          $args->steps = $db->prepare_string($args->steps);
+			$args->steps = $db->prepare_string($args->steps);
         	$filter['by_steps'] = " AND steps like '%{$args->steps}%' ";	
         }    
 
         if(strlen($args->expected_results))
         {
-          $args->expected_results = $db->prepare_string($args->expected_results);
+          	$args->expected_results = $db->prepare_string($args->expected_results);
         	$filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	
         }    
 

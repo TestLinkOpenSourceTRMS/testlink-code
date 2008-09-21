@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.343 $
- * @modified $Date: 2008/09/20 21:02:55 $ by $Author: schlundus $
+ * @version $Revision: 1.344 $
+ * @modified $Date: 2008/09/21 19:02:48 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -217,16 +217,6 @@ $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please 
 // newest_tcversions.php
 $TLS_no_linked_tcversions = "no linked Test Case versions";
 
-// planPriority.php
-$TLS_high_priority = "High";
-$TLS_low_priority = "Low";
-$TLS_medium_priority = "Medium";
-$TLS_high_risk = "High";
-$TLS_low_risk = "Low";
-$TLS_medium_risk = "Medium";
-$TLS_high_importance = "High";
-$TLS_low_importance = "Low";
-$TLS_medium_importance = "Medium";
 // resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
                                  "then no execution data can exist => no report can be created";

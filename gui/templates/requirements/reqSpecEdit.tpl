@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.11 2008/08/27 06:20:29 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.12 2008/09/21 19:02:47 schlundus Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -55,7 +55,7 @@ function validateForm(f)
     <input type="text" id="req_spec_title" name="req_spec_title"
            size="{#REQ_SPEC_TITLE_SIZE#}"
     		   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
-           value="{$gui->req_spec_title}" />
+           value="{$gui->req_spec_title|escape}" />
   				{include file="error_icon.tpl" field="req_spec_title"}
    </div>
    <br />

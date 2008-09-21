@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/09/21 19:02:48 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -28,18 +28,18 @@ $req_mgr = new requirement_mgr($db);
 
 $templateCfg = templateConfiguration();
 
-$args=init_args();
+$args = init_args();
 
-$gui=new stdClass();
-$gui->grants=new stdClass();
+$gui = new stdClass();
+$gui->grants = new stdClass();
 $gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
 
 $gui->req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 $gui->req_spec_id = $args->req_spec_id;
-$gui->tproject_name=$args->tproject_name;
-$gui->name=$gui->req_spec['title'];
-$gui->main_descr= lang_get('req_spec') . config_get('gui_title_separator_1') . $gui->req_spec['title'];
-$gui->refresh_tree= 'no';
+$gui->tproject_name = $args->tproject_name;
+$gui->name = $gui->req_spec['title'];
+$gui->main_descr = lang_get('req_spec') . config_get('gui_title_separator_1') . $gui->req_spec['title'];
+$gui->refresh_tree = 'no';
 $gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 $gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
 
@@ -76,6 +76,4 @@ function init_args()
     
     return $args;
 }
-
-
 ?>

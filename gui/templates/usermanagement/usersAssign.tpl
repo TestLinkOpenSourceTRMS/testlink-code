@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.10 2008/05/06 06:26:13 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.11 2008/09/21 19:02:48 schlundus Exp $ 
 
 rev:
     20070818 - franciscom
@@ -42,7 +42,7 @@ rev:
     	{if $feature == 'testproject'}
     		<tr><td class="labelHolder">{lang_get s='TestProject'}</td><td>&nbsp;<td>
     	{else}
-    		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name}</td></tr>
+    		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name|escape}</td></tr>
     		<tr>
 				<td class="labelHolder">{lang_get s='TestPlan'}</td>
     	{/if}

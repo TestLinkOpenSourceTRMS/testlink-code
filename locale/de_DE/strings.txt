@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/09/21 19:02:48 $ $Author: schlundus $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/09/21 19:35:48 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1034,18 +1034,18 @@ $TLS_btn_del = "Löschen";
 $TLS_btn_edit_del = "Bearbeiten / Löschen";
 $TLS_btn_inactivate = "Deaktivieren";
 $TLS_caption_edit_tproject = "Projektdaten ändern";
-$TLS_caption_new_tproject = "TBD: --TLS_caption_new_tproject-- = Create";
+$TLS_caption_new_tproject = "Neues Projekt erstellen";
 $TLS_color = "Hintergrundfarbe";
 $TLS_enable_requirements = "Anforderungen verwenden?";
 $TLS_enable_priority = "Prioritäten?";
 $TLS_enable_automation = "Testautomatisierung?";
 $TLS_info_failed_loc_prod = "Das Projekt konnte nicht gefunden werden!";
 $TLS_notes = "Verwandte Notizen";
-$TLS_testproject_alt_delete = "Delete Test Project";
-$TLS_testproject_alt_active = "Active";
-$TLS_testproject_alt_requirement_feature = "Requirements enabled";
-$TLS_testproject_alt_edit = "Edit Test Project";
-$TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
+$TLS_testproject_alt_delete = "Projekt löschen";
+$TLS_testproject_alt_active = "Aktiv?";
+$TLS_testproject_alt_requirement_feature = "Anforderunge eingeschaltet?";
+$TLS_testproject_alt_edit = "Projekt editieren";
+$TLS_testproject_txt_empty_list = "Es sind keine Projekte definiert!";
 
 // Warning!!! - if JS string you must use \\n to get \n                                       
 $TLS_popup_product_delete = "Achtung! Diese Aktion löscht unwiderrufbar alle Testprojekt-relevanten Daten (inklusive Testresultat, Pläne, etc.). Sie können das Testprojekt auch deaktivieren anstatt es zu löschen!.\\n Empfehlung: Führen Sie ein Backup ihrer Datenbank durch.\\nSind Sie sicher, dass Sie das Testprojekt löschen wollen?";

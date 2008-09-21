@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/09/21 19:35:47 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -186,6 +186,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     switch($renderType)
     {
         case 'template':
+        		$smartyObj->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
  		        $smartyObj->assign('gui',$guiObj);
 		        $smartyObj->display($tpl);
         break;  

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2008/09/21 19:35:47 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -58,7 +58,7 @@ function printSRS(&$db,&$tproject,$srs_id, $prodName, $testproject_id, $user_id,
 	$title = $arrSpec[0]['title'];
 	$output =  printHeader($title,$base_href);
 	$tprojectInfo = $tproject->get_by_id($testproject_id);
-	$output .= printFirstPage($db,$title,$prodName,$tprojectInfo,$user_id);
+	$output .= printFirstPage($db,"req_spec_short",$title." - ".$prodName,$tprojectInfo,$user_id);
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
 	$output .= printRequirements($db,$srs_id);
 	$output .= "\n</body>\n</html>";

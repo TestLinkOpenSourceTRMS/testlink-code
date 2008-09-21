@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventinfo.tpl,v 1.5 2008/02/29 23:19:29 schlundus Exp $ 
+$Id: eventinfo.tpl,v 1.6 2008/09/21 19:35:47 schlundus Exp $ 
 
 rev:
 *}
@@ -35,7 +35,7 @@ rev:
 			<th>{$labels.User}</th>
 			<td>
 				{if $user}
-					{$user->getDisplayName()}
+					{$user->getDisplayName()|escape}
 				{else}
 					{$event->userID}
 				{/if}

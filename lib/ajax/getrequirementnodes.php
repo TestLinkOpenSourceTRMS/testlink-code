@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.3 2008/09/21 19:02:48 schlundus Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.4 2008/09/21 19:35:47 schlundus Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -74,9 +74,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     
     // for debug 
-    file_put_contents('d:\sql_display_node.txt', $sql); 
+    //file_put_contents('d:\sql_display_node.txt', $sql); 
     $nodeSet = $dbHandler->get_recordset($sql);
-    file_put_contents('d:\nodeSet.txt', serialize($nodeSet)); 
+    //file_put_contents('d:\nodeSet.txt', serialize($nodeSet)); 
     
     // print_r(array_values($nodeSet));
     // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2008/09/21 19:02:48 $ by $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2008/09/21 19:35:47 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -73,7 +73,7 @@ function printHeader($title, $base_href)
   print HTML - initial page of document
 */
 function printFirstPage(&$db, $item_type, $title, $tproject_info, 
-                        $userID, $printingOptions=null, $tplan_info=null)
+                        $userID, $printingOptions = null, $tplan_info = null)
 {
 	$docCfg = config_get('document_generator');
 	

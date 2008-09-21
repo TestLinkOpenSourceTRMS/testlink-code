@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.12 2008/09/21 19:02:47 schlundus Exp $
+$Id: reqSpecEdit.tpl,v 1.13 2008/09/21 19:35:47 schlundus Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -50,7 +50,13 @@ function validateForm(f)
     <form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
     <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 
-   <div class="labelHolder"><label for="req_spec_title">{$labels.title}</label></div>
+   <div class="labelHolder"><label for="req_spec_title">{$labels.title}</label>
+   		{if $mgt_view_events eq "yes" and $gui->req_spec_id}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+			     onclick="showEventHistoryFor('{$gui->req_spec_id}','req_specs')" 
+			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
+		{/if}
+   </div>
    <div>
     <input type="text" id="req_spec_title" name="req_spec_title"
            size="{#REQ_SPEC_TITLE_SIZE#}"

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/09/22 19:14:08 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -530,7 +530,7 @@ class requirement_mgr extends tlObjectWithAttachments
 
   		// create coverage dependency
   		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) {
-  			$output = 'Test case: ' . $reqData['title'] . "was not created </br>";
+  			$output[] = 'Test case: ' . $reqData['title'] . "was not created";
   		}
   	}
 

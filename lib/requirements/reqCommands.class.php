@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/09/22 18:06:30 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/09/22 19:14:08 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -238,16 +238,16 @@ class reqCommands
   */
 	function createTestCases(&$argsObj)
 	{
-      $guiObj=new stdClass();
-		  $guiObj->template = 'reqCreateTestCases.tpl';
-		  $req_spec=$this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		  $guiObj->main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
-		  $guiObj->action_descr=lang_get('create_testcase_from_req');
+		$guiObj=new stdClass();
+		$guiObj->template = 'reqCreateTestCases.tpl';
+		$req_spec=$this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$guiObj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$guiObj->action_descr = lang_get('create_testcase_from_req');
       
-		  $guiObj->all_reqs=$this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
-		  $guiObj->req_spec_id=$argsObj->req_spec_id;
-		  $guiObj->req_spec_name=$req_spec['title'];
-		  $guiObj->array_of_msg='';
+		$guiObj->all_reqs = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
+		$guiObj->req_spec_id = $argsObj->req_spec_id;
+		$guiObj->req_spec_name = $req_spec['title'];
+		$guiObj->array_of_msg = '';
 		  
 	    return $guiObj;
   }
@@ -262,8 +262,8 @@ class reqCommands
   */
 	function doCreateTestCases(&$argsObj)
 	{
-      $guiObj=$this->createTestCases($argsObj);
-	    $guiObj->array_of_msg=$this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
+		$guiObj = $this->createTestCases($argsObj);
+	    $guiObj->array_of_msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
 	                                                                    $argsObj->user_id);
 	    return $guiObj;
   }

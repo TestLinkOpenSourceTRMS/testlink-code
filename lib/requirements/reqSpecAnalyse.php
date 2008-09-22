@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/03/05 22:22:38 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/09/22 19:28:18 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -19,22 +19,21 @@ testlinkInitPage($db);
 
 $template_dir = 'requirements/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-$args=init_args();                                               
+$args = init_args();                                               
 $tproject_mgr = new testproject($db);                                                
 $req_spec_mgr = new requirement_spec_mgr($db); 
 
-$tcasecfg=config_get('testcase_cfg');
-$tcprefix=$tproject_mgr->getTestCasePrefix($args->tprojectID) . $tcasecfg->glue_character;
+$tcasecfg = config_get('testcase_cfg');
+$tcprefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . $tcasecfg->glue_character;
 
 // get list of ReqSpec
 $ns = new stdClass();
 $ns->reqSpec = $tproject_mgr->getOptionReqSpec($args->tprojectID);
 
 //get first ReqSpec if not defined
-if( $args->reqSpecID==0 && count($ns->reqSpec))
+if($args->reqSpecID == 0 && count($ns->reqSpec))
 {
-  echo 'tt';
-	reset($ns->reqSpec);
+ 	reset($ns->reqSpec);
 	$args->reqSpecID = key($ns->reqSpec);
 }
 

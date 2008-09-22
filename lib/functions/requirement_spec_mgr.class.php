@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/09/22 19:28:18 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -273,20 +273,16 @@ function get_metrics($id)
 	$output['expectedTotal'] = $this->db->fetchFirstRowSingleColumn($sql,'total_req');
 
 	if ($output['expectedTotal'] == 0)
-	{
 		$output['expectedTotal'] = $output['total'];
-	}
-
+	
 	$sql = " SELECT DISTINCT requirements.id " .
 	       " FROM {$this->requirements_table} requirements, {$this->req_coverage_table} req_coverage " .
 	       " WHERE requirements.srs_id={$id}" .
-				 " AND requirements.srs_id=req_coverage.req_id";
+				 " AND requirements.id=req_coverage.req_id";
 	$result = $this->db->exec_query($sql);
 	if (!empty($result))
-	{
 		$output['covered'] = $this->db->num_rows($result);
-	}
-
+	
 	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] - $output['notTestable'];
 
 	return $output;

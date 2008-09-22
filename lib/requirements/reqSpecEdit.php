@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/09/21 19:35:47 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/09/22 19:14:09 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -90,28 +90,30 @@ function init_args()
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-
 	
-	$key2loop=array('scope','countReq','req_spec_id','doAction','reqParentID','nodes_order');
-	$intkey2loop=array('countReq','req_spec_id','reqParentID');
+	
+	$key2loop = array('scope','countReq','req_spec_id','doAction','reqParentID','nodes_order');
+	$intkey2loop = array('countReq','req_spec_id','reqParentID');
 	foreach($intkey2loop as $keyname)
-  {
-     $args->$keyname=isset($_REQUEST[$keyname]) ? intval($_REQUEST[$keyname]) : null;
-  }
-
-  $key2loop=array('scope','doAction','nodes_order');
+	{
+		$val = isset($_REQUEST[$keyname]) ? intval($_REQUEST[$keyname]) : null;
+		if ($val < 0)
+			$val = 0;
+		$args->$keyname = $val;
+	}
+	
+	$key2loop = array('scope','doAction','nodes_order');
 	foreach($key2loop as $keyname)
-  {
-     $args->$keyname=isset($_REQUEST[$keyname]) ? $_REQUEST[$keyname] : null;
-  }
-
-  $args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
+	{
+		$args->$keyname = isset($_REQUEST[$keyname]) ? $_REQUEST[$keyname] : null;
+	}
+	
+	$args->title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-	$args->basehref=$_SESSION['basehref'];
-	
+	$args->basehref = $_SESSION['basehref'];
 	
 	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
 

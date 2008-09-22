@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/05/25 14:45:11 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/09/22 18:06:30 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -59,21 +59,20 @@ class reqCommands
   */
 	function edit(&$argsObj)
 	{
-      $obj=new stdClass();
+		$obj = new stdClass();
+		$obj->req = $this->reqMgr->get_by_id($argsObj->req_id);
+		$argsObj->scope = $obj->req['scope'];
+	
+		$obj->main_descr = lang_get('req') . TITLE_SEP . $obj->req['title'];
+		$obj->action_descr = lang_get('edit_req');
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
+		$obj->template = 'reqEdit.tpl';
+		$obj->submit_button_label = lang_get('btn_save');
+	    $obj->reqStatusDomain = $this->reqStatusDomain;
+		$obj->req_spec_id = $argsObj->req_spec_id;
+		$obj->req_id = $argsObj->req_id;
 
-		  $obj->req = $this->reqMgr->get_by_id($argsObj->req_id);
-		  $argsObj->scope=$obj->req['scope'];
-
-		  $obj->main_descr = lang_get('req') . TITLE_SEP . $obj->req['title'];
-		  $obj->action_descr =lang_get('edit_req');
-		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
-      $obj->template = 'reqEdit.tpl';
-		  $obj->submit_button_label=lang_get('btn_save');
-      $obj->reqStatusDomain=$this->reqStatusDomain;
- 		  $obj->req_spec_id = $argsObj->req_spec_id;
- 		  $obj->req_id = $argsObj->req_id;
-
-      return $obj;	
+		return $obj;	
 	}
 
   /*
@@ -166,20 +165,19 @@ class reqCommands
   */
 	function doDelete(&$argsObj)
 	{
-      $obj=new stdClass();
-		  $req = $this->reqMgr->get_by_id($argsObj->req_id);
-		  $this->reqMgr->delete($argsObj->req_id);
-		  logAuditEvent(TLS("audit_requirement_deleted",$req['req_doc_id']),"DELETE",$argsObj->req_id,"requirements");
-		  
-		  $obj->template = 'show_message.tpl';
-		  $obj->template_dir='';
-		  $obj->user_feedback = sprintf(lang_get('req_deleted'),$req['title']);
-      $obj->main_descr=lang_get('requirement') . TITLE_SEP . $req['title'];
-		  $obj->title=lang_get('delete_req');
-		  $obj->refresh_tree='yes';
-		  $obj->result='ok';  // needed to enable refresh_tree logic
-		  
-	    return $obj;
+		$obj=new stdClass();
+		$req = $this->reqMgr->get_by_id($argsObj->req_id);
+		$this->reqMgr->delete($argsObj->req_id);
+		logAuditEvent(TLS("audit_requirement_deleted",$req['req_doc_id']),"DELETE",$argsObj->req_id,"requirements");
+  
+		$obj->template = 'show_message.tpl';
+		$obj->template_dir = '';
+		$obj->user_feedback = sprintf(lang_get('req_deleted'),$req['title']);
+		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req['title'];
+		$obj->title=lang_get('delete_req');
+		$obj->refresh_tree = 'yes';
+		$obj->result = 'ok';  // needed to enable refresh_tree logic
+		return $obj;
   }
   
   /*

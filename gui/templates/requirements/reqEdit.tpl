@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.11 2008/08/27 06:20:29 franciscom Exp $
+$Id: reqEdit.tpl,v 1.13 2008/09/22 19:14:08 schlundus Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -65,17 +65,23 @@ window.onload=function()
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 
-  	<div class="labelHolder"> <label for="reqDocId">{lang_get s='req_doc_id'}</label></div>
+  	<div class="labelHolder"><label for="reqDocId">{lang_get s='req_doc_id'}</label>
+  	   		{if $gui->grants->mgt_view_events eq "yes" and $gui->req_id}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+			     onclick="showEventHistoryFor('{$gui->req_id}','requirements')" 
+			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
+		{/if}
+  	</div>
 	<div><input type="text" name="reqDocId" id="reqDocId"
   		        size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"
-  		        value="{$gui->req.req_doc_id}" />
+  		        value="{$gui->req.req_doc_id|escape}" />
   				{include file="error_icon.tpl" field="reqDocId"}
   	</div>
  	<br />
  	<div class="labelHolder"> <label for="req_title">{lang_get s='title'}</label></div>
   	<div><input type="text" name="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
-  		        value="{$gui->req.title}" />
+  		        value="{$gui->req.title|escape}" />
   		    {include file="error_icon.tpl" field="req_title"}
  	 </div>
   	<br />

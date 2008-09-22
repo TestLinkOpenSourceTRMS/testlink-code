@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.13 2008/09/02 16:39:13 franciscom Exp $
+$Id: reqView.tpl,v 1.15 2008/09/22 19:14:08 schlundus Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -117,7 +117,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
     	
     	
     	<input type="button" name="delete_req" value="{$labels.btn_delete}"
-    	       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'}',
+    	       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'|escape}',
  					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
     	{/if}
     </form>

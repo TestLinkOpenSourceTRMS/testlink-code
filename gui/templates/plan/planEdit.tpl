@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.12 2008/08/27 06:20:25 franciscom Exp $
+$Id: planEdit.tpl,v 1.13 2008/09/23 20:27:55 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -96,8 +96,9 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 			<td >{$notes}</td>
 		</tr>
 		{if $tplan_id eq 0}
-			<tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
-			<td>
+			{if $tplans}
+				<tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
+				<td>
 				<select name="copy_from_tplan_id"
 				        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
 				<option value="0">{$labels.opt_no}</option>
@@ -106,21 +107,24 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 				{/foreach}
 				</select>
 
-      <div id="copy_controls" style="display:none;">
-      {assign var=this_template_dir value=$smarty.template|dirname}
-      {include file="$this_template_dir/inc_controls_planEdit.tpl"}
-      </div>
-			</td>
-			</tr>
+			      <div id="copy_controls" style="display:none;">
+			      {assign var=this_template_dir value=$smarty.template|dirname}
+			      {include file="$this_template_dir/inc_controls_planEdit.tpl"}
+			      </div>
+				</td>
+				</tr>
+			{/if}
 		{else}
-			<tr><td>
-				{$labels.testplan_th_active}
-				<input type="checkbox" name="active"
-				{if $tpActive eq 1}
-					checked="checked"
-				{/if}
-				/>
-      </td></tr>
+			<tr>
+				<th style="background:none;">{$labels.testplan_th_active}</th>
+				<td>
+					<input type="checkbox" name="active"
+					{if $tpActive eq 1}
+						checked="checked"
+					{/if}
+					/>
+      			</td>
+      		</tr>
 		{/if}
 
 	  {* 20070127 - franciscom *}

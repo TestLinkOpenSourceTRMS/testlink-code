@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/09/22 19:28:18 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/09/23 20:27:55 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -283,7 +283,7 @@ function get_metrics($id)
 	if (!empty($result))
 		$output['covered'] = $this->db->num_rows($result);
 	
-	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] - $output['notTestable'];
+	$output['uncovered'] = $output['expectedTotal'] - $output['total'];
 
 	return $output;
 }

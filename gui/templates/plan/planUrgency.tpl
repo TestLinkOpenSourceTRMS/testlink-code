@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.4 2008/09/02 16:39:13 franciscom Exp $
+$Id: planUrgency.tpl,v 1.5 2008/09/23 20:27:55 schlundus Exp $
 
 Purpose: smarty template - manage test case urgency
 
@@ -20,8 +20,8 @@ Revision: 20080901 - franciscom - display testcase external id
 {include file="inc_head.tpl"}
 <body>
 
-<h1 class="title">{$gui->tplan_name}{$tlCfg->gui_title_separator_2}{$labels.title_plan_urgency}
-	 {$tlCfg->gui_title_separator_1}{$gui->node_name}</h1>
+<h1 class="title">{$gui->tplan_name|escape}{$tlCfg->gui_title_separator_2}{$labels.title_plan_urgency}
+	 {$tlCfg->gui_title_separator_1}{$gui->node_name|escape}</h1>
 
 <div class="workBack">
 

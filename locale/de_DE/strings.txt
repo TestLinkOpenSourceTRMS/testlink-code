@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/09/22 19:14:09 $ $Author: schlundus $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/09/23 20:27:55 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1062,7 +1062,7 @@ $TLS_warning_empty_tproject_name = "Der Name eines Testprojektes darf nicht leer
 $TLS_title_testproject_management = "Projektverwaltung";
 
 // gui/templates/reqAssign.tpl
-$TLS_please_select_a_req = "Bitte wählen Sie einen Anforderung!";
+$TLS_please_select_a_req = "Bitte wählen Sie eine Anforderung!";
 $TLS_req_msg_norequirement66 = "Keine Anforderung";
 $TLS_req_title_assign = "Anforderungen an Testfall zuweisen";
 $TLS_req_title_assigned = "Zugewiesene Anforderungen";

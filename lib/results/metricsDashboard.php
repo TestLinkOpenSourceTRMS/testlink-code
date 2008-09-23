@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/24 21:21:04 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/09/23 20:27:55 $ $Author: schlundus $
  *
  * @author franciscom
  *
@@ -17,14 +17,14 @@ require('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-$template_dir='results/';
+$template_dir = 'results/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
-$tproject_name=$_SESSION['testprojectName'];
-$user_id=$_SESSION['userID'];
-$tproject_id=$_SESSION['testprojectID'];
+$tproject_name = $_SESSION['testprojectName'];
+$user_id = $_SESSION['userID'];
+$tproject_id = $_SESSION['testprojectID'];
 
-$tplan_metrics=getMetrics($db,$user_id,$tproject_id);
+$tplan_metrics = getMetrics($db,$user_id,$tproject_id);
 
 $smarty = new TLSmarty;
 $smarty->assign('tplan_metrics', $tplan_metrics);
@@ -36,9 +36,8 @@ $smarty->display($template_dir . $default_template);
 <?php
 function getMetrics(&$db,$user_id,$tproject_id)
 {
-
-  $linked_tcversions=array();
-  $metrics=array();
+  $linked_tcversions = array();
+  $metrics = array();
   $tplan_mgr = new testplan($db);
   
   

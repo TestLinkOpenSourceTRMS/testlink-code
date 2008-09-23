@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/08/14 15:08:24 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/09/23 06:59:59 $ by $Author: franciscom $
  *
- * rev: 20080810 - franciscom - BUGID 1650 
+ * rev: 20080921 - franciscom - minor refactoring
+ *      20080810 - franciscom - BUGID 1650 
  *
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -47,7 +48,7 @@ switch ($args->do_action)
 {
 	case 'create':
     	$templateCfg->template=$templateCfg->default_template;
-		$user_feedback ='';
+		  $user_feedback ='';
     	$operation_descr = '';
 		break;
 
@@ -105,12 +106,10 @@ if(isset($gui->cfield['type']))
 $gui->cfieldCfg=$cfieldCfg;
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
-
 $smarty->assign('operation_descr',$operation_descr);
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('user_action',$args->do_action);
-renderGui($smarty,$args,$cfield_mgr,$templateCfg);
+renderGui($smarty,$args,$gui,$cfield_mgr,$templateCfg);
 
 
 /*
@@ -370,13 +369,16 @@ function cfieldCfgInit($cfieldMgr)
 
 /*
   function: renderGui
+            set environment and render (if needed) smarty template
 
-  args :
+  args: 
 
-  returns:
+  returns: - 
+  
+  rev: 20080921 - franciscom - added guiObj argument
 
 */
-function renderGui(&$smartyObj,&$argsObj,&$cfieldMgr,$templateCfg)
+function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
 {
     $doRender=false;
     switch($argsObj->do_action)
@@ -397,12 +399,10 @@ function renderGui(&$smartyObj,&$argsObj,&$cfieldMgr,$templateCfg)
 
     if($doRender)
     {
-		$cfield_map = $cfieldMgr->get_all();
-		$smartyObj->assign('cf_map',$cfield_map);
-		$smartyObj->assign('cf_types',$cfieldMgr->get_available_types());
-		$smartyObj->display($templateCfg->template_dir . $tpl);
-	}
-
+		    $guiObj->cf_map=$cfieldMgr->get_all();
+		    $guiObj->cf_types=$cfieldMgr->get_available_types();
+		    $smartyObj->assign('gui',$guiObj);
+		    $smartyObj->display($templateCfg->template_dir . $tpl);
+	  }
 }
-
 ?>

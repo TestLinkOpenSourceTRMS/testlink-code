@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.344 $
- * @modified $Date: 2008/09/21 19:02:48 $ by $Author: schlundus $
+ * @version $Revision: 1.345 $
+ * @modified $Date: 2008/09/23 07:02:29 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -36,45 +36,49 @@ $TLS_charset		= 'utf-8';
 
 
 // General terms - Leave it here in this way can be reused !!!
-$TLS_asc 			= "ascending";
-$TLS_any 			= "any";
-$TLS_assigned 		= "assigned";
-$TLS_automated 		= "Automated";
-$TLS_automatic 		= "Automatic";
+$TLS_asc = "ascending";
+$TLS_any = "any";
+$TLS_assigned = "assigned";
+$TLS_automated = "Automated";
+$TLS_automatic = "Automatic";
 $TLS_check_uncheck_all = "Toogle all";
-$TLS_unassigned 	= "unassigned";
-$TLS_desc 			= "descending";
+$TLS_unassigned = "unassigned";
+$TLS_desc = "descending";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_file_type		= 'File type';
-$TLS_help 			= "Help";
-$TLS_hour 			= "Hour";
+$TLS_help = "Help";
+$TLS_hour = "Hour";
 $TLS_importance		= "Importance";
-$TLS_manual 		= "Manual";
-$TLS_Milestone 		= "Milestone";
-$TLS_not_aplicable 	= "N/A";
+$TLS_manual = "Manual";
+$TLS_Milestone = "Milestone";
+$TLS_not_aplicable = "N/A";
 $TLS_none			= "None";
 $TLS_priority		= "Priority";
 $TLS_project		= "Project";
-$TLS_requirement 	= "Requirement";
-$TLS_reqs 			= "Requirements";
-$TLS_req_spec 		= "Requirements Specification Document";
+$TLS_requirement = "Requirement";
+$TLS_reqs = "Requirements";
+$TLS_req_spec = "Requirements Specification Document";
 $TLS_req_spec_short = "Req. Spec.";
-$TLS_SRS 			= "SRS";
-$TLS_Role 			= "Role";
+$TLS_SRS = "SRS";
+$TLS_Role = "Role";
 $TLS_sort_table_by_column="Click to change sort order";
-$TLS_scope 			= "Scope";
-$TLS_status 		= "Status";
-$TLS_Keyword 		= "Keyword";
-$TLS_test_case 		= "Test Case";
-$TLS_testcase 		= $TLS_test_case;
-$TLS_test_plan 		= "Test Plan";
-$TLS_testplan 		= $TLS_test_plan;
-$TLS_testproject 	= "Test Project";
-$TLS_test_report 	= "Test Report";
-$TLS_test_suite 	= "Test Suite";
+$TLS_scope = "Scope";
+$TLS_status = "Status";
+$TLS_Keyword = "Keyword";
+$TLS_test_case = "Test Case";
+$TLS_testcase = $TLS_test_case;
+$TLS_test_plan = "Test Plan";
+$TLS_testplan = $TLS_test_plan;
+$TLS_testproject = "Test Project";
+$TLS_test_report = "Test Report";
+$TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
-$TLS_title 			= "Title";
-$TLS_urgency		= "Urgency";
+$TLS_title = "Title";
+$TLS_urgency = "Urgency";
+$TLS_problems_loading_xml_content="Unable to load XML data, Check your file."; 
+$TLS_not_imported = "Not imported";
+$TLS_imported = "Imported";
+
 
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
 $TLS_no_testcases_available="No Test Cases or no destination Test Suites available!";
@@ -96,9 +100,9 @@ $TLS_no_permissions_for_action = "You do not have permissions to perform this ac
 $TLS_testcaseversion='Test Case Version';
 
 // Actions  - Leave it here in this way can be reused !!!
-$TLS_add 			= "add";
-$TLS_create 		= "create";
-$TLS_remove 		= "remove";
+$TLS_add = "add";
+$TLS_create = "create";
+$TLS_remove = "remove";
 
 $TLS_high = "High";
 $TLS_medium = "Medium";
@@ -109,36 +113,37 @@ $TLS_estimated_time_min = "Estimated time (min):";
 
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
-$TLS_btn_apply 		= "Apply";
-$TLS_btn_add 		= "Add";
+$TLS_btn_apply = "Apply";
+$TLS_btn_add = "Add";
 $TLS_btn_assign		= "Assign";
 $TLS_btn_cancel		= "Cancel";
-$TLS_btn_close 		= "Close";
-$TLS_btn_cp 		= "Copy";
-$TLS_btn_create 	= "Create";
-$TLS_btn_delete 	= "Delete";
+$TLS_btn_close = "Close";
+$TLS_btn_cp = "Copy";
+$TLS_btn_create = "Create";
+$TLS_btn_delete = "Delete";
 $TLS_btn_edit		= "Edit";
-$TLS_btn_export 	= "Export";
-$TLS_btn_find 		= "Find";
-$TLS_btn_import 	= "Import";
-$TLS_btn_high 		= "High";
-$TLS_btn_low 		= "Low";
-$TLS_btn_medium 	= "Medium";
-$TLS_btn_move 		= "Move";
-$TLS_btn_no 		= "No";
-$TLS_btn_ok 		= "Ok";
-$TLS_btn_save 		= "Save";
-$TLS_btn_unassign 	= "Unassign";
-$TLS_btn_update 	= "Update";
+$TLS_btn_export = "Export";
+$TLS_btn_find = "Find";
+$TLS_btn_goback = "Go back";
+$TLS_btn_import = "Import";
+$TLS_btn_high = "High";
+$TLS_btn_low = "Low";
+$TLS_btn_medium = "Medium";
+$TLS_btn_move = "Move";
+$TLS_btn_no = "No";
+$TLS_btn_ok = "Ok";
+$TLS_btn_save = "Save";
+$TLS_btn_unassign = "Unassign";
+$TLS_btn_update = "Update";
 $TLS_btn_upd = $TLS_btn_update;
 
 // Status
-$TLS_test_status_all 		= "All";
-$TLS_test_status_any 		= "Any";
-$TLS_test_status_not_run 	= "Not Run";
-$TLS_test_status_blocked 	= "Blocked";
-$TLS_test_status_failed 	= "Failed";
-$TLS_test_status_passed 	= "Passed";
+$TLS_test_status_all = "All";
+$TLS_test_status_any = "Any";
+$TLS_test_status_not_run = "Not Run";
+$TLS_test_status_blocked = "Blocked";
+$TLS_test_status_failed = "Failed";
+$TLS_test_status_passed = "Passed";
 $TLS_test_status_not_available = "Not Available";
 $TLS_test_status_unknown	= "Unknown";
 
@@ -353,7 +358,7 @@ $TLS_edit_testproject_basic_data = "Edit Test Project basic data";
 $TLS_th_product_name = "Test Project Name";
 
 
-// gui/templates/cfields_edit.tpl
+// gui/templates/cfields/cfieldsEdit.tpl
 $TLS_available_on = "Available for";
 $TLS_custom_field = "Custom field";
 $TLS_enable_on_design = "Enable on <br />test specification";
@@ -477,11 +482,18 @@ $TLS_link_results_import = "Import Results";
 
 
 
-// gui/templates/cfields_view.tpl
+// gui/templates/cfields/cfieldsView.tpl
 $TLS_btn_cfields_create = "Create";
 $TLS_manage_cfield = "Manage custom field";
 
 
+// cfieldsExport.php
+$TLS_export_cfields = "Export Custom fields";
+
+// cfieldsImport.php
+$TLS_import_cfields = "Import Custom fields";
+$TLS_custom_field_already_exists="Custom field %s already exists.";
+$TLS_custom_field_imported="Custom field %s imported.";
 
 // gui/templates/inc_cat_viewer_ro_m0.tpl
 $TLS_cat_scope = "Scope and Objective";

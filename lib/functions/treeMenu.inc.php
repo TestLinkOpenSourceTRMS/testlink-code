@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2008/09/20 21:02:54 $ by $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -756,7 +756,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $cf_hash = $filters->cf_hash;
     $include_unassigned = $filters->include_unassigned;
     $show_testsuite_contents = $filters->show_testsuite_contents;
-    
+    $urgencyImportance = $filters->urgencyImportance;
     $useCounters=$additionalInfo->useCounters;
     $useColors=$additionalInfo->useColours;
 
@@ -812,7 +812,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
             // get_linked_tcversions filters by keyword ALWAYS in OR mode.
 	          $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet,$keywordSet,
 	                                                            null,$assignedTo,$status,$build_id,
-                                                              $cf_hash,$include_unassigned);
+                                                              $cf_hash,$include_unassigned,$urgencyImportance);
             
 	          if($doFilterByKeyword && $keywordsFilterType == 'AND')
 	          {

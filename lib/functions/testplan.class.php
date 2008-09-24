@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/08/22 14:29:00 $ by $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -476,7 +476,7 @@ function setExecutionOrder($id,&$executionOrder)
          [include_unassigned]: has effects only if [assigned_to] <> null.
                                default: false
                                true: also testcase not assigned will be retreived
-
+		 [urgencyImportance] : filter only Tc's with certain (urgency*importance)-value 
   returns: map
            key: testcase id
            value: map with following keys:
@@ -497,7 +497,7 @@ function setExecutionOrder($id,&$executionOrder)
 */
 public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
                                $assigned_to=null,$exec_status=null,$build_id=0,
-                               $cf_hash = null, $include_unassigned=false)
+                               $cf_hash = null, $include_unassigned=false, $urgencyImportance = null)
 {
 	$tc_status=config_get('tc_status');
 	$status_not_run=$tc_status['not_run'];
@@ -620,7 +620,16 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 		}
 		$sql .= " UA.user_id = {$assigned_to} " . $sql_unassigned;
 	}
-
+	if (!is_null($urgencyImportance))
+	{
+		if ($urgencyImportance == HIGH)
+			$sql .= " AND (urgency * importance) >= ".config_get("urgencyImportance_HIGH_Threshold");
+		else if($urgencyImportance == LOW)
+			$sql .= " AND (urgency * importance) < ".config_get("urgencyImportance_LOW_Threshold");
+		else
+			$sql .= " AND ( ((urgency * importance) >= ".config_get("urgencyImportance_LOW_Threshold")." AND  ((urgency * importance) < ".config_get("urgencyImportance_HIGH_Threshold")."))) ";
+	}
+	
 	$sql .=$sql_subquery;
 
 	// BUGID 989 - added NHB.node_order

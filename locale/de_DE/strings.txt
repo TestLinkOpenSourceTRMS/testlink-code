@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/09/24 18:25:23 $ $Author: schlundus $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/09/24 20:17:55 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -32,13 +32,13 @@ $TLS_delete_confirm_question = "Sind Sie sicher, dass Sie löschen möchten";
 $TLS_file_type = "Dateiformat";
 $TLS_help = "Hilfe";
 $TLS_hour = "Stunde";
-$TLS_importance		= "Importance";
+$TLS_importance		= "Wichtigkeit";
 $TLS_manual = "Manuell";
 $TLS_Milestone = "Meilenstein";
 $TLS_not_aplicable = "N/A";
 $TLS_none = "Keine";
-$TLS_priority		= "Priority";
-$TLS_project		= "Project";
+$TLS_priority		= "Priorität";
+$TLS_project		= "Projekt";
 $TLS_requirement = "Anforderung";
 $TLS_reqs = "Anforderungen";
 $TLS_req_spec = "Anforderungen definieren";

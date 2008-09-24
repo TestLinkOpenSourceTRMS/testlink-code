@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.192 $
- * @modified $Date: 2008/09/02 16:38:41 $ by $Author: franciscom $
+ * @version $Revision: 1.193 $
+ * @modified $Date: 2008/09/24 20:17:53 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -690,7 +690,15 @@ $tlCfg->html_make_links = ENABLED;
 $tlCfg->html_valid_tags = 'p, li, ul, ol, br, pre, i, b, u, em';
 $tlCfg->html_valid_tags_single_line = 'i, b, u, em';
 
-
+/**
+ * Defines the threshold values for filtering TC by a priority according to the formula
+ *  ui =	(urgency*importance) 
+ *  LOW = all Tc's with ui < LOW_Threshold
+ *  HIGH = all Tc's with ui >= HIGH_Threshold
+ *  MEDIUM = all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
+ */
+$tlCfg->urgencyImportance_LOW_Threshold = 3;
+$tlCfg->urgencyImportance_HIGH_Threshold = 6;
 
 // ----- End of Config ------------------------------------------------
 // --------------------------------------------------------------------

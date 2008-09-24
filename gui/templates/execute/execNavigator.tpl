@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.14 2008/09/20 21:02:53 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.15 2008/09/24 20:17:53 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -13,7 +13,7 @@ rev :
 *}
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,
-             btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases"}
+             btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases,priority"}
        
        
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -70,6 +70,14 @@ rev :
 			<td>{$labels.keyword}</td>
 			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{$labels.priority}</td>
+			<td><select name="urgencyImportance">
+				<option value=""/>{$gui->str_option_any}</option>
+				{html_options options=$gsmarty_option_importance selected=$gui->urgencyImportance}
 				</select>
 			</td>
 		</tr>

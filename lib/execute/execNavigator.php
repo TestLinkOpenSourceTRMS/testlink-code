@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2008/08/12 19:21:24 $ by $Author: havlat $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2008/09/24 20:17:54 $ by $Author: schlundus $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -31,12 +31,13 @@ $tplan_mgr = new testplan($db);
 
 $templateCfg = templateConfiguration();
 
-$cfg=getCfg();
+$cfg = getCfg();
 $args = init_args($db,$cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 
 $gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
 $str_option_any = $tlCfg->gui_separator_open . lang_get('any') . $tlCfg->gui_separator_close;
+$gui->str_option_any = $str_option_any;
 $gui->optResult['a'] = $str_option_any;
 $gui->users[0] = $str_option_any; 
 buildAssigneeFilter($db,$gui,$args,$cfg);
@@ -109,10 +110,8 @@ function init_args(&$dbHandler,$cfgObj)
     
     $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : null;
     if ($args->optResultSelected == $cfgObj->results['status_code']['all'])
-    {
-	     $args->optResultSelected = null;
-    }
-
+        $args->optResultSelected = null;
+   
     $user_filter_default = 0;
     switch($cfgObj->exec->user_filter_default)
     {
@@ -124,7 +123,11 @@ function init_args(&$dbHandler,$cfgObj)
     	default:
     		break;
     }
+    
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
+    $args->urgencyImportance = isset($_REQUEST['urgencyImportance']) ? intval($_REQUEST['urgencyImportance']) : null;
+    if ($args->urgencyImportance == 0)
+    	$args->urgencyImportance = null;
     $args->optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
 
     // Checkbox
@@ -167,6 +170,9 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     if($argsObj->tcase_id != 0)
         $settings .= '&tc_id='.$argsObj->tcase_id;
 
+    if ($argsObj->urgencyImportance > 0)
+    	$settings .= "&urgencyImportance={$argsObj->urgencyImportance}";
+        
     if($argsObj->filter_assigned_to)
     	  $settings .= '&filter_assigned_to='.$argsObj->filter_assigned_to;
     
@@ -315,7 +321,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     $filters->hide_testcases = false;
     $filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
-     
+    $filters->urgencyImportance = $argsObj->urgencyImportance;
+    
     $filters->cf_hash = $exec_cfield_mgr->get_set_values();
     $guiObj->args=initializeGetArguments($argsObj,$cfgObj,$filters->cf_hash);
     
@@ -366,9 +373,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
     $gui->tplan_name=$argsObj->tplan_name;
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->keyword_id=$argsObj->keyword_id;
-    $gui->optResultSelected=$argsObj->optResultSelected;
+    $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->include_unassigned=$argsObj->include_unassigned;
-    
+    $gui->urgencyImportance = $argsObj->urgencyImportance;
     $gui->targetTestCase=$argsObj->targetTestCase;
     
     

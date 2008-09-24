@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.7 2008/08/12 22:17:46 havlat Exp $ 
+* $Id: ownerBarChart.php,v 1.9 2008/09/24 20:17:55 schlundus Exp $ 
 *
 * @author	Kevin Levy
 *
@@ -76,7 +76,7 @@ function getChartData(&$dbHandler)
         $testerNames=array('');
         foreach($testerResults as $tester_id => $elem)
         {
-            $testerNames[] = $elem['tester_name'];   
+            $testerNames[] = htmlspecialchars($elem['tester_name']);   
             foreach($elem['details'] as $status => $value)
             {
                 $totals[$status][]=$value['qty'];  

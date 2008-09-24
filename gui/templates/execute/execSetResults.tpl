@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.24 2008/09/09 10:22:47 franciscom Exp $
+$Id: execSetResults.tpl,v 1.26 2008/09/24 20:17:53 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20080528 - franciscom - BUGID 1504 - version number management
@@ -318,7 +318,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {lang_get s='th_testsuite' var='container_title'}
     {assign var="div_id" value=tsdetails_$tc_id}
     {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
-    {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name|escape}
+    {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
     {assign var="container_title" value="$container_title$title_sep$ts_name"}
 
     {include file="inc_show_hide_mgmt.tpl"
@@ -358,7 +358,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 		<div class="exec_tc_title">
 		{* 20080126 - franciscom - external id - $tc_exec.testcase_id *}
-		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix}{$tc_exec.tc_external_id} :: {$labels.version}: {$tc_exec.version}<br />
+		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
 		      {$labels.has_no_assignment}

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.6 2008/05/24 14:20:12 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.7 2008/09/24 18:25:23 schlundus Exp $
 
 rev :
      20080524 - franciscom - BUGID 1430
@@ -27,7 +27,6 @@ rev :
 
 {assign var=depth value=0}
 {assign var='resultsCfg' value=$tlCfg->results}
-
 
 <h1 class="title"> {$labels.query_metrics_report}</h1>
 {include file="inc_result_tproject_tplan.tpl"

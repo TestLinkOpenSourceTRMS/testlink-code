@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -25,19 +25,19 @@ require_once('priority.class.php');
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testPlanUrgency($db);
-$gui=new stdClass();  //Use to pass values to smarty template
-$args=init_args();
+$gui = new stdClass();  //Use to pass values to smarty template
+$args = init_args();
 
 tLog(__FILE__ . ' > Arguments: Node='.$args->node_id.' Urgency='.$args->urgency);
 
 $node_info=$tplan_mgr->tree_manager->get_node_hierachy_info($args->node_id);
 
 $gui->urgencyCfg = config_get('urgency');
-$gui->node_name=$node_info['name'];
+$gui->node_name = $node_info['name'];
 $gui->user_feedback = null;
-$gui->node_id=$args->node_id;
-$gui->tplan_id=$args->tplan_id;
-$gui->tplan_name=$args->tplan_name;
+$gui->node_id = $args->node_id;
+$gui->tplan_id = $args->tplan_id;
+$gui->tplan_name = $args->tplan_name;
 
 if($args->urgency != OFF)
 {
@@ -51,7 +51,6 @@ if($args->urgency != OFF)
 
 // get the current urgency for child test cases
 $gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id);
-
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.5 2008/09/23 20:27:55 schlundus Exp $
+$Id: planUrgency.tpl,v 1.7 2008/09/24 20:17:54 schlundus Exp $
 
 Purpose: smarty template - manage test case urgency
 
@@ -47,7 +47,7 @@ Revision: 20080901 - franciscom - display testcase external id
 
 	{foreach item=res from=$gui->listTestCases}
 	<tr>
-  			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
+			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
   			{assign var=urgencyCode value=$res.urgency}
   			<td>{lang_get s=$gui->urgencyCfg.code_label[$urgencyCode]}</td>
 	</tr>

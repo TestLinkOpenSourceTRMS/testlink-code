@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/07/21 09:25:04 $ by $Author: havlat $
+ * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -1390,7 +1390,7 @@ class results
 	function getTCLink($rights, $tcID, $tcExternalID,$tcversionID, $title, $buildID)
 	{
 		$title = htmlspecialchars($title);
-		$suffix = $this->testCasePrefix . $this->testCaseCfg->glue_character . $tcExternalID .
+		$suffix = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character . $tcExternalID) .
 		          ":&nbsp;<b>" . $title. "</b></a>";
 
 		$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
@@ -1415,7 +1415,7 @@ class results
 		{
 			for($j=1; $j <= 3; $j++)
 			{	
-				$sql = "SELECT COUNT( testplan_tcversions.id )
+				$sql = "SELECT COUNT( DISTINCT(testplan_tcversions.id ))
 						FROM testplan_tcversions JOIN executions ON
 						testplan_tcversions.tcversion_id = executions.tcversion_id
                         JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id
@@ -1428,7 +1428,6 @@ class results
 					$sql .= " AND execution_ts < '{$milestoneDate}'";
 
 				$tmpResult = $this->db->fetchOneValue($sql);
-
 				// parse results into three levels of priority
 				if (($i*$j) >= $this->globalCfg->priority_levels[HIGH])
 				{

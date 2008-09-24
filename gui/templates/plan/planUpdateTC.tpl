@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.7 2008/05/31 08:56:06 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.9 2008/09/24 20:17:54 schlundus Exp $
 
 Author: franciscom
 
@@ -159,7 +159,7 @@ function validateForm(f)
     			      </td>
     			      
     			      <td>
-    				    {$gui->testCasePrefix}{$tcase.external_id}
+    				    {$gui->testCasePrefix|escape}{$tcase.external_id|escape}
     			      </td>
     				    <td title="{$labels.show_tcase_spec}">
      				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>

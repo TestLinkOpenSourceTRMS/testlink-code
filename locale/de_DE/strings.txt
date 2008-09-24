@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/09/23 20:27:55 $ $Author: schlundus $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/09/24 18:25:23 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -57,8 +57,7 @@ $TLS_testproject 	= "Test Project";
 $TLS_test_report 	= "Test Report";
 $TLS_test_suite = "Testsuite";
 $TLS_testsuite_created = "Testsuite erstellt";
-$TLS_title = "Titel:";
-$TLS_urgency		= "Dringlichkeit";
+$TLS_urgency = "Dringlichkeit";
 
 $TLS_select_at_least_one_testcase = "Bitte wählen Sie mindestens einen Testfall und ein Ziel!";
 $TLS_no_testcases_available = "Keine Testfälle oder Ziel-Testsuites verfügbar!";
@@ -104,8 +103,8 @@ $TLS_btn_export = "Exportieren";
 $TLS_btn_find = "Suchen";
 $TLS_btn_import = "Importieren";
 $TLS_btn_high 		= $TLS_high;
-$TLS_btn_low 		= $TLS_medium;
-$TLS_btn_medium 	= $TLS_low;
+$TLS_btn_low 		= $TLS_low;
+$TLS_btn_medium 	= $TLS_medium;
 $TLS_btn_move = "Verschieben";
 $TLS_btn_no = "Nein";
 $TLS_btn_ok = "Ok";
@@ -377,7 +376,7 @@ $TLS_current_build = "Aktueller Build";
 $TLS_filter_owner = "Filter: Besitzer";
 $TLS_filter_result = "Filter: Ergebnis";
 $TLS_filter_tcID = "Filter: Testfall ID";
-$TLS_include_unassigned_testcases = "include unassigned ";
+$TLS_include_unassigned_testcases = "Inklusive nicht zugewiesene ";
 $TLS_keyword = "Stichwort";
 $TLS_test_status_all_status = $TLS_test_status_all;
 
@@ -1304,15 +1303,15 @@ $TLS_title_results_import_to = "TBD: --TLS_title_results_import_to-- = Import re
 
 
 // gui/templates/plan/setUrgency.tpl
-$TLS_title_plan_urgency = "Test urgency for the Test suite";
-$TLS_th_urgency = "Urgency";
-$TLS_label_set_urgency = "Set test urgency: ";
+$TLS_title_plan_urgency = "Test-Dringlichkeit für die ausgewählte TestSuite";
+$TLS_th_urgency = $TLS_urgency;
+$TLS_label_set_urgency = "Test-Dringlichkeit setzen";
 $TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. " .
                            "Medium test urgency is default value.";
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
-$TLS_feedback_urgency_ok = "Test urgency was modified.";
+$TLS_feedback_urgency_ok = "Test-Dringlichkeit wurde geändert.";
 
-$TLS_testsuite_is_empty='Test suite has no test cases. Nothing can be done';
+$TLS_testsuite_is_empty = 'Die ausgewählte TestSuite hat keine Testfälle.';
 
 
 // gui/templates/tcPrintNavigator.tpl
@@ -1488,7 +1487,7 @@ $TLS_href_build_new = "Builds verwalten";
 $TLS_href_execute_test = "Test ausführen";
 $TLS_href_metrics_dashboard = "Metriken-Übersicht";
 $TLS_href_newest_tcversions = "Zeige neuste Versionen der Testfälle";
-$TLS_href_plan_assign_urgency = "Set urgent tests";
+$TLS_href_plan_assign_urgency = $TLS_label_set_urgency;
 $TLS_href_plan_management = "Testpläne verwalten";
 $TLS_href_plan_mstones = "Meilensteine verwalten";
 $TLS_href_remove_test_case = "Testfälle abtrennen";

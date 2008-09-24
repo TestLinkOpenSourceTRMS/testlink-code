@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: priority.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/09/24 18:25:23 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -68,14 +68,15 @@ public function setSuiteUrgency($testplan_id, $node_id, $urgency)
  */
 function getSuiteUrgency($testplan_id, $node_id)
 {
-  $testcase_cfg = config_get('testcase_cfg');  
+	$testcase_cfg = config_get('testcase_cfg');  
  	$sql = " SELECT testprojects.prefix ".
   	     " FROM testprojects " .
   	     " WHERE testprojects.id = (" .
   	     " SELECT parent_id AS testproject_id FROM nodes_hierarchy " .
          " WHERE id={$testplan_id} ) ";
 	$tcprefix = $this->db->fetchOneValue($sql) . $testcase_cfg->glue_character;
-
+	$tcprefix = $this->db->prepare_string($tcprefix);
+	
 	$sql = " SELECT DISTINCT '{$tcprefix}' AS tcprefix, NHB.name, " .
 	       " NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.urgency".
          " FROM nodes_hierarchy NHA " .

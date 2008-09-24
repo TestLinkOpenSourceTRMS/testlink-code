@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.8 2008/05/30 09:31:06 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.10 2008/09/24 20:17:54 schlundus Exp $
 @author Francisco Mancardi
 
 rev :
@@ -76,7 +76,7 @@ rev :
 			<td>
        <select name="testsuite[]" size="{$testsuite_qty}" multiple="multiple">
 					{foreach key=row item=tsuite_name from=$gui->testsuites->items}
-						<option value="{$gui->testsuites->items[$row].id},{$gui->testsuites->items[$row].name}" 
+						<option value="{$gui->testsuites->items[$row].id},{$gui->testsuites->items[$row].name|escape}" 
 						        selected="selected">{$gui->testsuites->items[$row].name|escape}</option>
 					{/foreach}
 				</select>

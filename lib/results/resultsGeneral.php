@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/07/21 09:25:04 $ by $Author: havlat $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -159,7 +159,6 @@ else // do report
 		$statistics->priority_overall['low_percentage'] = get_percentage($planMetrics['total'],
 				$statistics->priority_overall[LOW]); 
 	}
-
 	// collect milestones
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
 
@@ -167,7 +166,6 @@ else // do report
 	if (!empty($milestonesList))
 	{
 	  $arrPrioritizedTCs = $re->getPrioritizedTestCases();
-		
 	  foreach($milestonesList as $item)
 	  {
 		$item['tc_total'] = $planMetrics['total'];

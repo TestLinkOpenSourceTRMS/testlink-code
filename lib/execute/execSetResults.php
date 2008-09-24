@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2008/09/09 10:22:53 $ $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2008/09/24 20:17:54 $ $Author: schlundus $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -189,9 +189,7 @@ $smarty->assign('cfg',$cfg);
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-?>
 
-<?php
 /*
   function: 
 

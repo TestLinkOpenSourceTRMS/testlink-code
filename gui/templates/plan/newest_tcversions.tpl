@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.7 2008/05/19 10:24:02 havlat Exp $
+$Id: newest_tcversions.tpl,v 1.9 2008/09/24 20:17:54 schlundus Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
@@ -51,10 +51,10 @@ rev:
     
       {foreach from=$testcases item=tc}
       <tr>
-		<td style="align:right;"> {$tcasePrefix}{$tc.tc_external_id} </td>  
-		<td> {$tc.name} </td>  
-		<td> {$tc.version} </td>
-		<td> {$tc.newest_version} </td>
+		<td style="align:right;"> {$tcasePrefix|escape}{$tc.tc_external_id|escape} </td>  
+		<td> {$tc.name|escape} </td>  
+		<td> {$tc.version|escape} </td>
+		<td> {$tc.newest_version|escape} </td>
       </tr>
   	  {/foreach}
   	</table>

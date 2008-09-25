@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/09/25 19:34:16 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -27,7 +27,7 @@ require_once(require_web_editor($editorCfg['type']));
 testlinkInitPage($db,true);
 
 
-$gui_cfg=config_get('gui');
+$gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 
 // current testproject displayed on testproject combo.

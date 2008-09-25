@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tinymce.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/02 17:07:05 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/09/25 19:34:16 $ by $Author: schlundus $
  * 
  * Rev :
  *      20071201 - francisco.mancardi@gruppotesi.com
@@ -20,39 +20,35 @@
 
 class tinymce
 {
-  
-  var $InstanceName ;
-  var $Value ;
+	var $InstanceName;
+	var $Value;
+	var $rows = 12;
+	var $cols = 80;
 
-  function __construct( $instanceName )
+	function __construct($instanceName)
  	{
-  	$this->InstanceName	= $instanceName ;
-		$this->Value		= '' ;
-  }
+  		$this->InstanceName	= $instanceName;
+		$this->Value		= '';
+	}
   
- 	function Create($rows=12,$cols=80)
+ 	function Create($rows = null,$cols = null)
 	{
-		echo $this->CreateHtml($rows,$cols) ;
+		echo $this->CreateHtml($rows,$cols);
 	}
 
-	function CreateHtml($rows=12,$cols=80)
+	function CreateHtml($rows = null,$cols = null)
 	{
-		$HtmlValue = htmlspecialchars( $this->Value ) ;
+		$HtmlValue = htmlspecialchars($this->Value);
 
-    $my_rows=$rows;
-    $my_cols=$cols;
+    	$my_rows = $rows;
+    	$my_cols = $cols;
 
-    if( is_null($my_rows) || $my_rows <= 0 )
-    {  
-      $my_rows=12;
-    }
-    if( is_null($my_cols) || $my_cols <= 0 )
-    {  
-      $my_cols=80;
-    }
-    
-    
-    // rows must count place for toolbar !! 
+	    if(is_null($my_rows) || $my_rows <= 0)
+			$my_rows = $this->rows;
+	    if(is_null($my_cols) || $my_cols <= 0)
+	    	$my_cols = $this->cols;
+	    
+	    // rows must count place for toolbar !! 
 		$Html = "<textarea name=\"{$this->InstanceName}\" " .
 		        "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" \">".
 		        "{$HtmlValue}</textarea>" ;

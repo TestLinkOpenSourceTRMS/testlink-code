@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.193 $
- * @modified $Date: 2008/09/24 20:17:53 $ by $Author: schlundus $
+ * @version $Revision: 1.194 $
+ * @modified $Date: 2008/09/25 19:34:15 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -350,12 +350,17 @@ $tlCfg->gui->text_editor = array();
 // 'configFile': only applicable for type = 'fckeditor'
 //               (See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath)
 //
-// 
+// 'height': the height in px for FCKEditor 
+// 'width': the width in px for FCKEditor
+// 'cols': the number of cols for tinymce and none
+// 'rows': the number of rows for tinymce and none
 // Hint: After doing configuration changes, clean you Browser's cookies and cache 
 //
-$tlCfg->gui->text_editor['all'] = array( 'type' => 'fckeditor', 
+$tlCfg->gui->text_editor['all'] = array( 
+										 'type' => 'fckeditor', 
                                          'toolbar' => 'tl_default', 
-                                         'configFile' => 'cfg/tl_fckeditor_config.js');
+                                         'configFile' => 'cfg/tl_fckeditor_config.js',
+								);
 
 // Copy this to custom_config.inc.php if you want use 'tinymce' as default.
 // $tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');
@@ -382,14 +387,11 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
 
-
 /** fckeditor Toolbar 
  * modify which icons will be available in html edit pages
  * refer to fckeditor configuration file 
  **/
 // $tlCfg->fckeditor_default_toolbar = 'tl_default';
-
-
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */

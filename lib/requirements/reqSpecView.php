@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/09/25 10:34:30 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/09/25 19:34:16 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -43,12 +43,7 @@ $gui->main_descr = lang_get('req_spec') . config_get('gui_title_separator_1') . 
 $gui->refresh_tree = 'no';
 $gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 $gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
-
-
-// 20080924 - franciscom
 $gui->requirements_count = $req_spec_mgr->get_requirements_count($args->req_spec_id);
-
-echo "<pre>debug 20080924 - \ - " . __FILE__ . __LINE__ ." --- "; print_r($gui); echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

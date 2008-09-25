@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.194 $
- * @modified $Date: 2008/09/25 19:34:15 $ by $Author: schlundus $
+ * @version $Revision: 1.195 $
+ * @modified $Date: 2008/09/25 20:20:03 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,7 +26,9 @@
  *
  * Revisions:
  * 
- *     20080902 - franciscom -
+ *     20080925 - franciscom - refactoring of urgencyImportance config
+ *                             $tlCfg->req_cfg->child_requirements_mgmt
+ *
  *     20080805 - franciscom - api configuration refactoring
  *     20080805 - franciscom - BUGID 1660 - extjs tree is default
  *     20080525 - franciscom - added spectreemenu_type (temporary solution)
@@ -93,6 +95,9 @@ $tlCfg->document_generator = new stdClass();
 $tlCfg->exec_cfg = new stdClass();
 $tlCfg->gui = new stdClass();
 $tlCfg->testcase_cfg = new stdClass();
+$tlCfg->req_cfg = new stdClass();
+
+
 
 /** Include database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -637,21 +642,25 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
-$g_req_cfg->reqdoc_id->is_system_wide = FALSE;
+$tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
 
 /** 
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name
   	FALSE -> test cases are created and assigned to a test suite 
-  	         with name $g_req_cfg->default_testsuite_name
+  	         with name $tlCfg->req_cfg->default_testsuite_name
   	TRUE  -> REQuirement Specification Title is used as testsuite name     
 */
-$g_req_cfg->use_req_spec_as_testsuite_name = TRUE;
-$g_req_cfg->default_testsuite_name = "Auto-created Test cases";
-$g_req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
-		"A refinement of test scenario is highly recommended.";
-$g_req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
+$tlCfg->req_cfg->use_req_spec_as_testsuite_name = TRUE;
+$tlCfg->req_cfg->default_testsuite_name = "Auto-created Test cases";
+$tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
+		                            "A refinement of test scenario is highly recommended.";
+$tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
 
 
+// 20080925 - franciscom
+// ENABLED: allow N level depth tree 
+// DISABLED: just one level
+$tlCfg->req_cfg->child_requirements_mgmt=DISABLED;
 
 // ----------------------------------------------------------------------------
 /** [MISC FUNCTIONALITY] */
@@ -699,8 +708,13 @@ $tlCfg->html_valid_tags_single_line = 'i, b, u, em';
  *  HIGH = all Tc's with ui >= HIGH_Threshold
  *  MEDIUM = all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
  */
-$tlCfg->urgencyImportance_LOW_Threshold = 3;
-$tlCfg->urgencyImportance_HIGH_Threshold = 6;
+// $tlCfg->urgencyImportance_LOW_Threshold = 3;
+// $tlCfg->urgencyImportance_HIGH_Threshold = 6;
+// $tlCfg->urgencyImportance_HIGH_Threshold = 6;
+$tlCfg->urgencyImportance=new stdClass();
+$tlCfg->urgencyImportance->threshold['low'] = 3;
+$tlCfg->urgencyImportance->threshold['high'] = 6;
+
 
 // ----- End of Config ------------------------------------------------
 // --------------------------------------------------------------------

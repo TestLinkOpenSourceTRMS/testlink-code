@@ -1,11 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.6 2008/09/25 10:33:11 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.7 2008/09/25 20:18:55 franciscom Exp $
 
-rev: 20080924 - franciscom - if req spec has no requirements then disable certain features
-
-     20080830 - franciscom 
-
+rev:20080925 - franciscom - child requirements/folder management 
+    20080924 - franciscom - if req spec has no requirements then disable certain features
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_print,btn_new_req_spec'}
@@ -19,11 +17,13 @@ rev: 20080924 - franciscom - if req spec has no requirements then disable certai
   	<input type="hidden" name="doAction" value="" />
   	
   	{if $gui->grants->req_mgmt == "yes"}
-    {* - 20080830 - franciscom - DO NOT REMOVE
-  	<input type="button" name="btn_new_req_spec" 
-  	       value="{$labels.btn_new_req_spec}"
-		       onclick="location='{$req_spec_new_url}'" />  
-    *}
+    
+        {if $tlCfg->req_cfg->child_requirements_mgmt == $smarty.const.ENABLED}
+  	        <input type="button" name="btn_new_req_spec" 
+  	               value="{$labels.btn_new_req_spec}"
+		               onclick="location='{$req_spec_new_url}'" />  
+        {/if}
+    
   	<input type="submit" name="edit_req_spec" 
   	       value="{lang_get s='btn_edit_spec'}" 
   	       onclick="doAction.value='edit'"/>

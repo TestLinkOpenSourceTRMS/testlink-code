@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/09/22 19:14:08 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/09/25 20:20:04 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -461,9 +461,9 @@ class requirement_mgr extends tlObjectWithAttachments
   {
     $tcase_mgr = new testcase($this->db);
 
-  	$g_req_cfg = config_get('req_cfg');
-  	$g_field_size = config_get('field_size');
-  	$auto_testsuite_name = $g_req_cfg->default_testsuite_name;
+  	$req_cfg = config_get('req_cfg');
+  	$field_size = config_get('field_size');
+  	$auto_testsuite_name = $req_cfg->default_testsuite_name;
     $node_descr_type=$this->tree_mgr->get_available_node_types();
     $empty_steps='';
     $empty_results='';
@@ -475,13 +475,13 @@ class requirement_mgr extends tlObjectWithAttachments
   	} else {
   		$arrIdReq = array($mixIdReq);
   	}
-  	if ( $g_req_cfg->use_req_spec_as_testsuite_name )
+  	if ( $req_cfg->use_req_spec_as_testsuite_name )
   	{
   	  // SRS Title
      	$sql = " SELECT * FROM {$this->requirement_spec_table} WHERE id = {$srs_id}";
     	$arrSpec = $this->db->get_recordset($sql);
   	  $testproject_id=$arrSpec[0]['testproject_id'];
-  	  $auto_testsuite_name = substr($arrSpec[0]['title'],0,$g_field_size->testsuite_name);
+  	  $auto_testsuite_name = substr($arrSpec[0]['title'],0,$field_size->testsuite_name);
   	}
 
   	// find container with the following characteristics:
@@ -504,7 +504,7 @@ class requirement_mgr extends tlObjectWithAttachments
   		// not found -> create
   		tLog('test suite:' . $auto_testsuite_name . ' was not found.');
       $tsuite_mgr=New testsuite($this->db);
-      $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$g_req_cfg->testsuite_details);
+      $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$req_cfg->testsuite_details);
       $tsuite_id=$new_tsuite['id'];
       $output[]=sprintf(lang_get('testsuite_name_created'), $auto_testsuite_name);
    	}
@@ -515,7 +515,7 @@ class requirement_mgr extends tlObjectWithAttachments
   		$reqData = $this->get_by_id($execIdReq);
 
   	  $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
-  	                            $g_req_cfg->testcase_summary_prefix . $reqData['scope'] ,
+  	                            $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
   	                            $empty_steps,$empty_results,$user_id,null,
   	                            DEFAULT_TC_ORDER,AUTOMATIC_ID,
   		                          config_get('check_names_for_duplicates'),

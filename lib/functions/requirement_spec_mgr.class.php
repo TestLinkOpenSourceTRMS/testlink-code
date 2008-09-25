@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/09/23 20:27:55 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/09/25 10:35:57 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -487,8 +487,12 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 		       " {$this->req_coverage_table} req_coverage " .
 	         " WHERE requirements.id=NH.id " .
 		       " AND req_coverage.req_id=requirements.id " .
-		       " AND srs_id={$id} " .
-		       " AND req_coverage.testcase_id={$testcase_id}";
+		       " AND srs_id={$id} ";
+		       
+		if( !is_null($testcase_id) )
+		{       
+		    $sql .= " AND req_coverage.testcase_id={$testcase_id}";
+	  }
 	  break;
 	}
 	if( !is_null($order_by) )
@@ -622,6 +626,44 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   	// }
 
   } // set_order($map_id_order)
+
+
+  /*
+    function: 
+
+    args:
+    
+    returns: 
+
+  */
+  function get_requirements_count($id, $range = 'all', $testcase_id = null)
+  {
+      $sql='';
+	    switch($range)
+	    {
+	      case 'all';
+	      $sql = " SELECT count(id) AS requirements_qty" .
+	             " FROM {$this->requirements_table}" .
+	             " WHERE srs_id={$id}";
+	      break;
+      
+      
+	      case 'assigned':
+	    	$sql = " SELECT count(requirements.id) AS requirements_qty" .
+	    	       " FROM {$this->requirements_table} requirements, " .
+	    	       " {$this->req_coverage_table} req_coverage " .
+	             " WHERE req_coverage.req_id=requirements.id " .
+	    	       " AND srs_id={$id} ";
+	    	       
+	    	if( !is_null($testcase_id) )
+		    {       
+		        $sql .= " AND req_coverage.testcase_id={$testcase_id}";
+	      }
+	      break;
+	    }
+	    return $this->db->fetchOneValue($sql);
+  }
+
 
 
 

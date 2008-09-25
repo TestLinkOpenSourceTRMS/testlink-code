@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.5 2008/09/21 19:02:47 schlundus Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.6 2008/09/25 10:33:11 franciscom Exp $
 
-rev: 20080830 - franciscom 
+rev: 20080924 - franciscom - if req spec has no requirements then disable certain features
+
+     20080830 - franciscom 
+
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_print,btn_new_req_spec'}
@@ -10,6 +13,7 @@ rev: 20080830 - franciscom
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 <div class="groupBtn">
+  <!--- inc_btn_reqSpecView.tpl --->
   <form id="req_spec" name="req_spec" action="{$req_module}reqSpecEdit.php" method="post">
   	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
   	<input type="hidden" name="doAction" value="" />
@@ -46,15 +50,16 @@ rev: 20080830 - franciscom
 	  <input type="button" name="importReq" value="{lang_get s='btn_import'}"
 		       onclick="location='{$req_import_url}'" />
 
-  	<input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"
-		       onclick="location='{$req_export_url}'" />
-
-  	<input type="button" name="reorderReq" value="{lang_get s='req_reorder'}"
-		       onclick="location='{$req_reorder_url}'" />
-
-  	<input type="button" name="create_tcases" value="{lang_get s='req_select_create_tc'}"
-		       onclick="location='{$req_create_tc_url}'" />
-
+        {if $gui->requirements_count > 0}
+  	        <input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"
+		               onclick="location='{$req_export_url}'" />
+            
+  	        <input type="button" name="reorderReq" value="{lang_get s='req_reorder'}"
+		               onclick="location='{$req_reorder_url}'" />
+            
+  	        <input type="button" name="create_tcases" value="{lang_get s='req_select_create_tc'}"
+		               onclick="location='{$req_create_tc_url}'" />
+        {/if}
   	{/if}
   </form>
 </div>

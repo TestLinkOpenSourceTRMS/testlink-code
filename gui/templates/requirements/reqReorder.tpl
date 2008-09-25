@@ -1,6 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqReorder.tpl,v 1.5 2008/05/06 06:26:09 franciscom Exp $
+$Id: reqReorder.tpl,v 1.6 2008/09/25 10:33:11 franciscom Exp $
+
+rev: 20080924 - franciscom
+     BUGID 1728
 *}
 
 {lang_get var="labels"
@@ -43,6 +46,8 @@ $Id: reqReorder.tpl,v 1.5 2008/05/06 06:26:09 franciscom Exp $
   {assign var="form_id" value="items_order_mgmt"}
 	<form method="post" name="{$form_id}" id="{$form_id}" action="{$action_url}">
 
+    {* BUGID 1728 *}
+    <input type="hidden" name="req_spec_id" id="req_spec_id" value="{$gui->req_spec_id}">
 		<input type="hidden" name="nodes_order" />
 		<input type="hidden" name="doReorder" disabled="disabled" />
 	

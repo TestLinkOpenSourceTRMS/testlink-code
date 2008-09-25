@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/09/09 10:22:47 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/09/25 20:28:33 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -17,8 +17,8 @@
  *             cfg/const.inc.php
  *-----------------------------------------------------------------------------
 */
-
-$g_spec_cfg->steps_results_layout='horizontal';
+//$tlCfg->req_cfg->child_requirements_mgmt=ENABLED;
+//$g_spec_cfg->steps_results_layout='horizontal';
 
 // Hint: After doing configuration changes, clean you Browser's cookies and cache 
 //
@@ -27,13 +27,13 @@ $g_spec_cfg->steps_results_layout='horizontal';
 //                                          'configFile' => 'cfg/tl_fckeditor_config.js');
 
 // Copy this to custom_config.inc.php if you want use 'tinymce' as default.
-$tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');
+//$tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');
 // 
 // Copy this to custom_config.inc.php if you want use 'nome' as default.
 // $tlCfg->gui->text_editor['all'] = array( 'type' => 'none');
 
 // Suggested for BETTER Performance with lot of testcases
-$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
+//$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
 // Enable and configure this if you want to have different
 // webeditor type in different TL areas
@@ -51,50 +51,42 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
 
-
-
-
-
-
-
-
-
 // SMTP server Configuration ("localhost" is enough in the most cases)
-$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
+//$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
 
 # Configure using custom_config.inc.php
-$g_tl_admin_email     = 'tl_admin@127.0.0.1'; # for problem/error notification 
-$g_from_email         = 'testlink@127.0.0.1';  # email sender
-$g_return_path_email  = 'francisco@127.0.0.1';
-
+//$g_tl_admin_email     = 'tl_admin@127.0.0.1'; # for problem/error notification 
+//$g_from_email         = 'testlink@127.0.0.1';  # email sender
+//$g_return_path_email  = 'francisco@127.0.0.1';
+//
 # Urgent = 1, Not Urgent = 5, Disable = 0
-$g_mail_priority = 5;   
+//$g_mail_priority = 5;   
 
 # Taken from mantis for phpmailer config
 #define ("SMTP_SEND",2);
 #$g_phpMailer_method = SMTP_SEND;
 
 // Configure only if SMTP server requires authentication
-$g_smtp_username    = '';  # user  
-$g_smtp_password    = '';  # password 
-
-
-
-
-// TRUE  -> the whole execution history for the choosen build will be showed
-// FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->history_on = TRUE;
-
-$tlCfg->exec_cfg->show_testsuite_contents = ENABLED;
+// $g_smtp_username    = '';  # user  
+// $g_smtp_password    = '';  # password 
+// 
+// 
+// 
+// 
+// // TRUE  -> the whole execution history for the choosen build will be showed
+// // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
+// $tlCfg->exec_cfg->history_on = TRUE;
+// 
+// $tlCfg->exec_cfg->show_testsuite_contents = ENABLED;
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status will be displayed
 // FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->show_last_exec_any_build = TRUE;
-
-// TRUE  ->  History for all builds will be shown
-// FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->show_history_all_builds = TRUE;
-
+// $tlCfg->exec_cfg->show_last_exec_any_build = TRUE;
+// 
+// // TRUE  ->  History for all builds will be shown
+// // FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]
+// $tlCfg->exec_cfg->show_history_all_builds = TRUE;
+// 
 //$tlCfg->treemenu_type='JTREE';
 
 // $tlCfg->gui->custom_fields->types = array(100 => 'radio head');
@@ -119,35 +111,35 @@ $tlCfg->exec_cfg->show_history_all_builds = TRUE;
 //$g_tc_status_for_ui_default="blocked";
 
 
-$tlCfg->results['status_code'] = array ( 
-        "failed"        => 'f', 
-        "blocked"       => 'b', 
-        "passed"        => 'p', 
-        "not_run"       => 'n', 
-        "not_available" => 'x', 
-        "unknown"       => 'u', 
-        "all"           => 'a' 
-); 
-
-$tlCfg->results['status_label'] = array( 
-        "passed"                => "test_status_passed", 
-        "failed"                => "test_status_failed", 
-        "blocked"               => "test_status_blocked", 
-        "not_run"               => "test_status_not_run", 
-//    "all"                   => "test_status_all_status", 
-        "not_available"    => "test_status_not_available", 
-//      "unknown"          => "test_status_unknown" 
-); 
-
-$tlCfg->results['status_label_for_exec_ui'] = array( 
-        "passed"  => "test_status_passed", 
-        "failed"  => "test_status_failed", 
-        "blocked" => "test_status_blocked", 
-        "not_run" => "test_status_not_run",
-        "not_available" => "test_status_not_available" 
-); 
-
-$tlCfg->results['default_status'] = "not_run"; 
+// $tlCfg->results['status_code'] = array ( 
+//         "failed"        => 'f', 
+//         "blocked"       => 'b', 
+//         "passed"        => 'p', 
+//         "not_run"       => 'n', 
+//         "not_available" => 'x', 
+//         "unknown"       => 'u', 
+//         "all"           => 'a' 
+// ); 
+// 
+// $tlCfg->results['status_label'] = array( 
+//         "passed"                => "test_status_passed", 
+//         "failed"                => "test_status_failed", 
+//         "blocked"               => "test_status_blocked", 
+//         "not_run"               => "test_status_not_run", 
+// //    "all"                   => "test_status_all_status", 
+//         "not_available"    => "test_status_not_available", 
+// //      "unknown"          => "test_status_unknown" 
+// ); 
+// 
+// $tlCfg->results['status_label_for_exec_ui'] = array( 
+//         "passed"  => "test_status_passed", 
+//         "failed"  => "test_status_failed", 
+//         "blocked" => "test_status_blocked", 
+//         "not_run" => "test_status_not_run",
+//         "not_available" => "test_status_not_available" 
+// ); 
+// 
+// $tlCfg->results['default_status'] = "not_run"; 
 
 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: texts.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/06/26 21:47:22 $ by $Author: havlat $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/09/26 06:28:23 $ by $Author: franciscom $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * Scope:
@@ -137,7 +137,7 @@ wrong designed requirements.</p>
 
 <p>You can create new test cases for requirements by using multi action with checked
 requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: \$g_req_cfg->default_testsuite_name =
+with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
 'Test suite created by Requirement - Auto';)</i>. Title and Scope are copied to these Test cases.</p>";
 
 
@@ -382,8 +382,7 @@ $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
 <h2>Get Started</h2>
 <ol>
 	<li>Choose a Test case or Test Suite to set urgency.</li>
-	<li>Choose a urgency level (high, medium or low).</li>
-	<li>Press the button 'Save' to submit changes.</li>
+	<li>Press the button (high, medium or low) to set urgency level .</li>
 </ol>";
 
 

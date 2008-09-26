@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/05/09 17:14:19 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/09/26 06:28:22 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -182,10 +182,12 @@ function checkForLDAPExtension(&$bLDAPEnabled)
  * @author Andreas Morsing 
  *
  * rev :
+ *      20080925 - franciscom - added option to not show results
  *      20070626 - franciscom - added LDAP checks  
  **/
 function getSecurityNotes(&$db)
 {
+  
 	$repository['type'] = config_get('repositoryType');
 	$repository['path'] = config_get('repositoryPath');
   
@@ -232,6 +234,29 @@ function getSecurityNotes(&$db)
 	}
 	checkForExtensions($securityNotes);
   
+  if( !config_get('show_config_check_warning') && !is_null($securityNotes))
+  {
+      $warnings='';
+      $file_ok=true;
+      $filename=config_get('log_path') . 'config_check.txt';
+      
+      if (@!$handle = fopen($filename, 'w')) 
+      {
+	       $securityNotes[] = lang_get('unable_to_create_file');
+	       $file_ok=false;
+      }
+      
+      if( $file_ok )
+      {
+        $warnings=implode("\n",$securityNotes);
+        @fwrite($handle, $warnings);
+      }
+      @fclose($handle);	
+      
+      $securityNotes=null;
+      $securityNotes[]=lang_get('config_check_warnings');
+      $securityNotes[]=sprintf(lang_get('see_details_on_file'),$filename);;
+  }
 	return $securityNotes;
 }
 

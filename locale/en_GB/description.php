@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/09/09 10:19:44 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/09/26 06:28:23 $ $Author: franciscom $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -223,7 +223,7 @@ wrong designed requirements.</p>
 
 <p>You can create new test cases for requirements by using multi action with checked 
 requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;g_req_cfg->default_testsuite_name = 
+with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 

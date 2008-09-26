@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.195 $
- * @modified $Date: 2008/09/25 20:20:03 $ by $Author: franciscom $
+ * @version $Revision: 1.196 $
+ * @modified $Date: 2008/09/26 06:28:21 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -28,7 +28,7 @@
  * 
  *     20080925 - franciscom - refactoring of urgencyImportance config
  *                             $tlCfg->req_cfg->child_requirements_mgmt
- *
+ *                             
  *     20080805 - franciscom - api configuration refactoring
  *     20080805 - franciscom - BUGID 1660 - extjs tree is default
  *     20080525 - franciscom - added spectreemenu_type (temporary solution)
@@ -138,8 +138,6 @@ $tlCfg->gui_title_separator_2 = ' - '; // parent - child
 // CAN NOT BE EMPTY
 $tlCfg->testcase_cfg->glue_character = '-';
 
-
-
 // ----------------------------------------------------------------------------
 /** [SERVER ENVIRONMENT] */
 
@@ -172,6 +170,9 @@ $tlCfg->smarty_debug = false;
 
 /** Path to store logs */
 $tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
+
+/** TRUE -> show result of config checks */
+$tlCfg->show_config_check_warning=FALSE;
 
 /** 
  * Configure if individual logging data stores are enabled of disabled
@@ -835,7 +836,6 @@ define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');	// @TODO mo
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('TL_TREE_KIND', $tlCfg->treemenu_type);
 define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
-// define('WEBEDITOR',$tlCfg->gui_text_editor);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);

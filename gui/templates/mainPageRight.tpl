@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.9 2008/07/25 10:28:26 havlat Exp $
+ $Id: mainPageRight.tpl,v 1.10 2008/09/26 20:21:45 schlundus Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -16,7 +16,7 @@
              href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
              href_plan_management,href_assign_user_roles,
              href_build_new,href_plan_mstones,href_plan_define_priority,
-             href_metrics_dashboard,href_add_test_case,href_remove_test_case"}
+             href_metrics_dashboard,href_add_remove_test_cases"}
 
 
 {* ----- Right Column begin ---------------------------------------------------------- *}
@@ -120,13 +120,8 @@
 	    <h3>{$labels.title_test_case_suite}</h3>
 		<p>
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	    <a href="{$launcher}?feature=planAddTC">{$labels.href_add_test_case}</a>
+	    <a href="{$launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
 	    <br />
-
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   	<a href="{$launcher}?feature=planRemoveTC">{$labels.href_remove_test_case}</a>
-	    <br />
-
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   	<a href="{$launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
 	    <br />

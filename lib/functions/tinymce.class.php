@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tinymce.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/09/25 19:34:16 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/09/26 20:21:46 $ by $Author: schlundus $
  * 
  * Rev :
  *      20071201 - francisco.mancardi@gruppotesi.com
@@ -49,8 +49,8 @@ class tinymce
 	    	$my_cols = $this->cols;
 	    
 	    // rows must count place for toolbar !! 
-		$Html = "<textarea name=\"{$this->InstanceName}\" " .
-		        "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" \">".
+		$Html = "<textarea name=\"{$this->InstanceName}\"" .
+		        "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\">".
 		        "{$HtmlValue}</textarea>" ;
 		return $Html ;
 	}

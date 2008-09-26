@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: texts.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/09/26 06:28:23 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/09/26 20:21:47 $ by $Author: schlundus $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * Scope:
@@ -312,34 +312,16 @@ This report is only available if a Bug Tracking System is connected.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Add Test case to Test Plan"; // testSetAdd
+$TLS_htmltext_title['planAddTC']	= "Add / Remove Test cases to Test Plan"; // testSetAdd
 $TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
-<p>Allows user (with lead level permissions) to add test cases into a Test plan.</p>
+<p>Allows user (with lead level permissions) to add or remove test cases into a Test plan.</p>
 
-<h2>To add Test cases:</h2>
+<h2>To add or remove Test cases:</h2>
 <ol>
 	<li>Click on a test suite to see all of its test suites and all of its test cases.</li>
-	<li>When you are done click the 'Add Test Cases' button to import the test cases.
-		Note: Is not possibile to add the same test case multiple times.</li>
-	<li>You can also use filter according to Keywords.</li>
+	<li>When you are done click the 'Add / Remove Test Cases' button to add or remove the test cases.
+		Note: Is not possible to add the same test case multiple times.</li>
 </ol>";
-
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planRemoveTC']	= "Remove Test case from Test Plan";
-$TLS_htmltext['planRemoveTC'] 		= "<h2>Purpose:</h2>
-
-<p>Allows user to remove Test cases from Test Plan.</p>
-<p>Old Test Case results will be REMOVED.</p>
-
-<h2>Getting Started</h2>
-
-<ol>
-	<li>Click on a Test suite to show all its test cases or a single Test Case</li>
-	<li>Set checkbox.</li>
-	<li>Submit the page.</li>
-</ol>";
-
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['tc_exec_assignment']	= "Assign Testers to test execution";

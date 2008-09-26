@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.197 $
- * @modified $Date: 2008/09/26 06:32:55 $ by $Author: franciscom $
+ * @version $Revision: 1.198 $
+ * @modified $Date: 2008/09/26 20:21:45 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -713,10 +713,7 @@ $tlCfg->html_valid_tags_single_line = 'i, b, u, em';
  *  HIGH = all Tc's with ui >= HIGH_Threshold
  *  MEDIUM = all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
  */
-// $tlCfg->urgencyImportance_LOW_Threshold = 3;
-// $tlCfg->urgencyImportance_HIGH_Threshold = 6;
-// $tlCfg->urgencyImportance_HIGH_Threshold = 6;
-$tlCfg->urgencyImportance=new stdClass();
+$tlCfg->urgencyImportance = new stdClass();
 $tlCfg->urgencyImportance->threshold['low'] = 3;
 $tlCfg->urgencyImportance->threshold['high'] = 6;
 

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.22 2008/09/20 21:02:54 schlundus Exp $
+ * @version $Id: planTCNavigator.php,v 1.23 2008/09/26 20:21:46 schlundus Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -75,8 +75,7 @@ function init_args(&$tplanMgr)
     switch($args->feature)
     {
       	case 'planUpdateTC':
-      	case 'removeTC':
-		case 'test_urgency':
+      	case 'test_urgency':
       	case 'tc_exec_assignment':
     	break;
     
@@ -173,10 +172,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
       case 'planUpdateTC':
     	$gui->menuUrl = "lib/plan/planUpdateTC.php";
     	$gui->draw_bulk_update_button=true;
-    	break;
-    
-      case 'removeTC':
-    	$gui->menuUrl = "lib/plan/planTCRemove.php";
     	break;
     
       case 'test_urgency':

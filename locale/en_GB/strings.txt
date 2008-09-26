@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.346 $
- * @modified $Date: 2008/09/26 06:28:23 $ by $Author: franciscom $
+ * @version $Revision: 1.347 $
+ * @modified $Date: 2008/09/26 20:21:46 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1522,7 +1522,7 @@ $TLS_href_plan_define_priority = "Test Plan priority";
 
 // gui/templates/mainPage_right.tpl
 $TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
-$TLS_href_add_test_case = "Add Test Cases";
+$TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds/Releases";
 $TLS_href_execute_test = "Execute Tests";
 $TLS_href_metrics_dashboard = "Metrics dashboard";
@@ -1530,7 +1530,6 @@ $TLS_href_newest_tcversions = "Show Test Cases newest versions";
 $TLS_href_plan_assign_urgency = "Set urgent tests";
 $TLS_href_plan_management = "Test Plan Management";
 $TLS_href_plan_mstones = "Milestone overview";
-$TLS_href_remove_test_case = "Remove Test Cases";
 $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_tc_exec_assignment = "Assign Test Case execution";
 $TLS_href_update_tplan = "Update Linked Test Case Versions";

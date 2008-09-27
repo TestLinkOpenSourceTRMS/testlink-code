@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_help.tpl,v 1.12 2008/09/09 10:22:49 franciscom Exp $ *}
+{* $Id: inc_help.tpl,v 1.13 2008/09/27 16:50:42 schlundus Exp $ *}
 {* 
 
 Purpose: smarty template - help link/icon component
@@ -21,7 +21,7 @@ Revisions:
 <script type="text/javascript">
 	var help_localized_text = "<img style='float: right' " +
 		"src='{$smarty.const.TL_THEME_IMG_DIR}/x-icon.gif' " +
-		"onclick='javascript: close_help();' /> {$help_text}";
+		"onclick='javascript: close_help();' /> {$help_text|escape:'javascript'}";
 </script>  
 <img alt="{$img_alt}" style="{$img_style}" 
 	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 

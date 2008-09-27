@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.3 2008/09/09 10:22:50 franciscom Exp $
+$Id: resultsImport.tpl,v 1.4 2008/09/27 16:50:45 schlundus Exp $
 Purpose: smarty template - manage import of test cases and test suites
 *}
 {include file="inc_head.tpl"}
@@ -27,7 +27,9 @@ Purpose: smarty template - manage import of test cases and test suites
   	
 	<tr>
 	 <td>{lang_get s='local_file'}</td> 
-	 <td><input type="file" name="uploadedFile" 
+	 <td>
+	 	<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
+		<input type="file" name="uploadedFile" 
 	                        size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
   </tr>                              
 	</table>
@@ -35,7 +37,6 @@ Purpose: smarty template - manage import of test cases and test suites
 	
 	<div class="groupBtn">
 		<input type="hidden" name="build" value="{$buildID}" />
-		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 			onclick="javascript: location.href=fRoot+'lib/results/resultsImport.php';" />

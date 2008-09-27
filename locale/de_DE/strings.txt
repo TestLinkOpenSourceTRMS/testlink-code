@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/09/24 20:17:55 $ $Author: schlundus $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/09/27 16:50:46 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -57,7 +57,11 @@ $TLS_testproject 	= "Test Project";
 $TLS_test_report 	= "Test Report";
 $TLS_test_suite = "Testsuite";
 $TLS_testsuite_created = "Testsuite erstellt";
+$TLS_title = "Title";
 $TLS_urgency = "Dringlichkeit";
+$TLS_problems_loading_xml_content="Unable to load XML data, Check your file."; 
+$TLS_not_imported = "Not imported";
+$TLS_imported = "Imported";
 
 $TLS_select_at_least_one_testcase = "Bitte wählen Sie mindestens einen Testfall und ein Ziel!";
 $TLS_no_testcases_available = "Keine Testfälle oder Ziel-Testsuites verfügbar!";
@@ -88,6 +92,8 @@ $TLS_low = "Niedrig";
 $TLS_estimated_time_hours = "Geschätzte Zeit (Stunden):";
 $TLS_estimated_time_min = "Geschätzte Zeit (Minuten):";
 
+$TLS_config_check_warnings = "There are warnings on your configuration";
+$TLS_see_details_on_file="See details on file: %s";
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Anwenden";
@@ -196,8 +202,6 @@ $TLS_your_first_login = "Willkommen bei TestLink! Sie haben jetzt Gast-Zugang. B
 
 // newest_tcversions.php
 $TLS_no_linked_tcversions = "keine verlinkten Testfall-Versionen";
-
-
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites = "Für dieses Projekt sind keine Testsuiten definiert, <br>daher existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
 
@@ -373,9 +377,9 @@ $TLS_btn_apply_filter = "Filter anwenden";
 $TLS_btn_update_menu = "Aktualisieren";
 $TLS_caption_nav_filter_settings = "Navigations Filter & Einstellungen";
 $TLS_current_build = "Aktueller Build";
-$TLS_filter_owner = "Filter: Besitzer";
-$TLS_filter_result = "Filter: Ergebnis";
-$TLS_filter_tcID = "Filter: Testfall ID";
+$TLS_filter_owner = "Besitzer";
+$TLS_filter_result = "Ergebnis";
+$TLS_filter_tcID = "Testfall ID";
 $TLS_include_unassigned_testcases = "Inklusive nicht zugewiesene ";
 $TLS_keyword = "Stichwort";
 $TLS_test_status_all_status = $TLS_test_status_all;
@@ -461,7 +465,13 @@ $TLS_link_results_import = "Import Ergebnisse";
 $TLS_btn_cfields_create = "Erstellen";
 $TLS_manage_cfield = "Benutzerdefiniertes Feld bearbeiten";
 
+// cfieldsExport.php
+$TLS_export_cfields = "Export Custom fields";
 
+// cfieldsImport.php
+$TLS_import_cfields = "Import Custom fields";
+$TLS_custom_field_already_exists="Custom field %s already exists.";
+$TLS_custom_field_imported="Custom field %s imported.";
 
 // gui/templates/inc_cat_viewer_ro_m0.tpl
 $TLS_cat_scope = "Themenbereich";

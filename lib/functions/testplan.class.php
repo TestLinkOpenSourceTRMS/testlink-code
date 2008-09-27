@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/09/27 16:50:46 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -622,12 +622,13 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	}
 	if (!is_null($urgencyImportance))
 	{
+		$urgencyImportanceCfg = config_get("urgencyImportance");
 		if ($urgencyImportance == HIGH)
-			$sql .= " AND (urgency * importance) >= ".config_get("urgencyImportance_HIGH_Threshold");
+			$sql .= " AND (urgency * importance) >= ".$urgencyImportanceCfg->threshold['high'];
 		else if($urgencyImportance == LOW)
-			$sql .= " AND (urgency * importance) < ".config_get("urgencyImportance_LOW_Threshold");
+			$sql .= " AND (urgency * importance) < ".$urgencyImportanceCfg->threshold['low'];
 		else
-			$sql .= " AND ( ((urgency * importance) >= ".config_get("urgencyImportance_LOW_Threshold")." AND  ((urgency * importance) < ".config_get("urgencyImportance_HIGH_Threshold")."))) ";
+			$sql .= " AND ( ((urgency * importance) >= ".$urgencyImportanceCfg->threshold['low']." AND  ((urgency * importance) < ".$urgencyImportanceCfg->threshold['high']."))) ";
 	}
 	
 	$sql .=$sql_subquery;

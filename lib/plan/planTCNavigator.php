@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.23 2008/09/26 20:21:46 schlundus Exp $
+ * @version $Id: planTCNavigator.php,v 1.24 2008/09/27 16:50:46 schlundus Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -253,7 +253,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
         $guiObj->ajaxTree->loader = '';
         $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
         $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
-        $guiObj->ajaxTree->cookiePrefix = $args->feature;
+        $guiObj->ajaxTree->cookiePrefix = $argsObj->feature;
     }
     else
     {

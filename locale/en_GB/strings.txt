@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.347 $
- * @modified $Date: 2008/09/26 20:21:46 $ by $Author: schlundus $
+ * @version $Revision: 1.348 $
+ * @modified $Date: 2008/09/27 16:50:47 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -79,7 +79,6 @@ $TLS_problems_loading_xml_content="Unable to load XML data, Check your file.";
 $TLS_not_imported = "Not imported";
 $TLS_imported = "Imported";
 
-
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
 $TLS_no_testcases_available="No Test Cases or no destination Test Suites available!";
 
@@ -96,8 +95,7 @@ $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
                                  " Please contact your administrator.";
 
-
-$TLS_testcaseversion='Test Case Version';
+$TLS_testcaseversion = 'Test Case Version';
 
 // Actions  - Leave it here in this way can be reused !!!
 $TLS_add = "add";
@@ -223,7 +221,6 @@ $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please 
 
 // newest_tcversions.php
 $TLS_no_linked_tcversions = "no linked Test Case versions";
-
 // resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
                                  "then no execution data can exist => no report can be created";

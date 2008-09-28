@@ -6,12 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/09/28 10:23:30 $ by $Author: franciscom $
+ * @modified $Date: 2008/09/28 16:41:28 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
- * 20080928 - franciscom - refactoring
+ * 20080928 - franciscom - refactoring on buildExecutionsMap()
  * 20080602 - franciscom - added logic to manage version using tcversion_number
  * 20080513 - franciscom - getTCLink() added external_id 
  *
@@ -207,6 +207,10 @@ class results
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null,
 							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
+	    
+      // $mem=array();		
+      // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+		  
 		  $this->priorityLevelsCfg = config_get('priority_levels');
     	$this->resultsCfg=config_get('results');
     	$this->testCaseCfg=config_get('testcase_cfg');
@@ -250,6 +254,10 @@ class results
 		if (($this->suiteStructure == null) && ($this->flatArray == null) && ($this->linked_tcversions == null)){
 		    $this->suiteStructure = $this->generateExecTree($db,$keywordId, $owner);
 		}
+    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+    // $xmem=current($mem);
+    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+    // ob_flush();flush();
 
 		// KL - if no builds are specified, no need to execute the following block of code
 		if ($builds_to_query != -1) {
@@ -264,25 +272,12 @@ class results
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId,
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild);
-
+     
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID);
 
 			// get owner id -> owner name pairs used in this test plan
 			$arrOwners = getUsersForHtmlOptions($db, null, false);
-
-			// get build id -> build name pairs used in this test plan
-			$arrBuilds1 = $tplan_mgr->get_builds($this->testPlanID);
-			$arrBuilds = null;
-
-			while ($key = key($arrBuilds1))
-			{
-				$currentArray = $arrBuilds1[$key] ;
-				$build_id = $currentArray['id'];
-				$build_name = $currentArray['name'];
-				$arrBuilds[$build_id] = $build_name;
-				next($arrBuilds1);
-			} // end while
 
 			// KL - 20061229 - this call may not be necessary for all reports
 			// only those that require info on results for keywords
@@ -292,9 +287,7 @@ class results
 			// create data object which tallies last result for each test case
 			// this function now also creates mapOfLastResultByKeyword
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
-
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
-
 			$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
 
 			// create data object which tallies totals for individual suites
@@ -304,10 +297,10 @@ class results
 			// create data object which tallies totals for suites taking
 			// child suites into account
 			$this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
-
-      		$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
+   		$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
+			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID);
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
 			                                                        $arrBuilds, $this->totalsForPlan);
 		} // end if block
@@ -503,15 +496,17 @@ class results
 	  // OK go ahead
 		$totalCases = $finalResults['total'];
 		$rValue = null;
-		foreach($arrBuilds as $buildId => $buildName)
+		foreach($arrBuilds as $buildId => $buildInfo)
 		{
 	    $item_name='build_name';
 		  $results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
       $element=$this->tallyResults($results,$totalCases,$item_name);
-		  $element[$item_name]=$arrBuilds[$buildId];
+		  $element[$item_name]=$buildInfo['name'];
 			$rValue[$buildId] = $element;
 		} // end  foreach
-
+      
+    unset($element);       
+		unset($results);
 		return $rValue;
 	} // end function
 
@@ -1006,6 +1001,14 @@ class results
 	* all test cases are included, even cases that have not been executed yet
 	*
 	* rev :
+	*      20080928 - franciscom - seems that adding a control to avoid call to buildBugString()
+	*                              reduces dramatically memory usage();
+	*                              IMPORTANT:
+	*                              we need to refactor this method, because if we had to call buildBugsString()
+	*                              probably will crash again.
+	*                              We need to think about function that got bug for all test cases, with one
+	*                              call, may be is the solution.
+	*
 	*      20070916 - franciscom - removed session coupling
 	*
 	*      added node_order
@@ -1013,6 +1016,16 @@ class results
 	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0,
 	                                    $owner = null, $startTime, $endTime, $executor,
 	                                    $search_notes_string, $executeLinkBuild){
+		
+    // $mem=array();		
+    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+    // $xmem=current($mem);
+    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+    // ob_flush();flush();
+
+    $bugsOn = config_get('bugInterfaceOn');
+    $searchBugs=!is_null($bugsOn) && $bugsOn;
+                                                    
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
@@ -1020,65 +1033,84 @@ class results
 		// for execution link
 		$bCanExecute = has_rights($this->db,"tp_execute");
 
-		while ($testcaseID = key($this->linked_tcversions))
+		// ------------------------------------------------------
+    // Build Sql additional filters
+		$sqlFilters='';
+		if( !is_null($startTime) )
 		{
-		  
-			$info = $this->linked_tcversions[$testcaseID];
-      // echo "<pre>debug 20080602 - \ - " . __FUNCTION__ . " --- "; print_r($info); echo "</pre>";
+		  $sqlFilters .= " AND execution_ts > '{$startTime}'";
+		}
 
-		  $testsuite_id = $info['testsuite_id'];
-			$tcversion_id = $info['tcversion_id'];
+		if( !is_null($endTime) )
+		{
+		  $sqlFilters .= " AND execution_ts < '{$endTime}' ";
+		}
+
+		if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) ||
+		    ($lastResult == $this->map_tc_status['blocked'])){
+			$sqlFilters .= " AND status = '" . $lastResult . "' ";
+		}
+		if (($builds_to_query != -1) && ($builds_to_query != 'a')) {
+			$sqlFilters .= " AND build_id IN ($builds_to_query) ";
+		}
+		if (!is_null($executor)) {
+		    $sqlFilters .= " AND tester_id = $executor ";
+		}
+		if ($search_notes_string != null) {
+		    $sqlFilters .= " AND notes LIKE '%" . $search_notes_string ."%' ";
+		}
+		// ------------------------------------------------------
+
+    foreach($this->linked_tcversions as $testcaseID => $info)
+		{
+	
+			$executionExists = true;
+			$currentSuite = null;
+			if (!$executionsMap || !(array_key_exists($info['testsuite_id'], $executionsMap))){
+				$currentSuite = array();
+			}
+			else {
+				$currentSuite = $executionsMap[$info['testsuite_id']];
+			}
+		  
+			// $name = $info['name'];
+		  // $testsuite_id = $info['testsuite_id'];
+			// $tcversion_id = $info['tcversion_id'];
+			// $executed = $info['executed'];
 			
+	    $version = $info['version'];
 		  if( isset($info['tcversion_number']) && !is_null($info['tcversion_number']) )
 		  {
 			    $version = $info['tcversion_number'];
 			}
-			else
-			{
-			    $version = $info['version'];
-			}
-			    
-      $external_id = $info['external_id']; 
-
-			$currentSuite = null;
-			if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
-				$currentSuite = array();
-			}
-			else {
-				$currentSuite = $executionsMap[$testsuite_id];
-			}
-
-
-		  $sql = "select name from nodes_hierarchy where id = $testcaseID ";
-			$results = $this->db->fetchFirstRow($sql);
-			$name = $results['name'];
-
-			$executed = $info['executed'];
-			$executionExists = true;
+			
 			$executeLink = $this->getTCLink($bCanExecute,$testcaseID,$info['external_id'],
-			                                $tcversion_id,$name,$executeLinkBuild);
+			                                $info['tcversion_id'],$info['name'],$executeLinkBuild);
 
-			if ($tcversion_id != $executed)
+      $infoToSave = array('testcaseID' => $testcaseID,
+			                    'external_id' => $info['external_id'],
+			                    'tcversion_id' => $info['tcversion_id'],
+			                    'version' => $version,
+			                    'build_id' => '',
+			                    'tester_id' => '',
+			                    'execution_ts' => '',
+			                    'status' => $this->map_tc_status['not_run'],
+			                    'executions_id' => '',
+			                    'notes' => '',
+			                    'bugString' => '',
+			                    'name' => $info['name'],
+			                    'assigner_id' => $info['assigner_id'],
+			                    'feature_id' => $info['feature_id'],
+			                    'execute_link' => $executeLink);
+      
+
+			if ($info['tcversion_id'] != $info['executed'])
 			{
 				$executionExists = false;
 				if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) 
 				{
 					// Initialize information on testcaseID to be "not run"
-					$infoToSave = array('testcaseID' => $testcaseID,
-					                    'external_id' => $external_id,
-					                    'tcversion_id' => $tcversion_id,
-					                    'version' => $version,
-					                    'build_id' => '',
-					                    'tester_id' => '',
-					                    'execution_ts' => '',
-					                    'status' => $this->map_tc_status['not_run'],
-					                    'executions_id' => '',
-					                    'notes' => '',
-					                    'name' => $name,
-					                    'assigner_id' => $info['assigner_id'],
-					                    'feature_id' => $info['feature_id'],
-					                    'execute_link' => $executeLink);
-					                    array_push($currentSuite, $infoToSave);
+					array_push($currentSuite, $infoToSave);
 				}
 			}
 
@@ -1087,35 +1119,13 @@ class results
 				// TO-DO - this is where we can include the searching of results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids
+        //
+        // 20080928 - franciscom - Be careful about memory usage problems
+        //  
 				$sql = "SELECT * FROM executions " .
-				       "WHERE tcversion_id = $executed AND testplan_id = $this->testPlanID " ;
+				       "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " ;
 
-				// ------------------------------------------------------
-				if( !is_null($startTime) )
-				{
-				  $sql .= " AND execution_ts > '{$startTime}'";
-				}
-
-				if( !is_null($endTime) )
-				{
-				  $sql .= " AND execution_ts < '{$endTime}' ";
-				}
-				// ------------------------------------------------------
-
-
-				if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) ||
-				    ($lastResult == $this->map_tc_status['blocked'])){
-					$sql .= " AND status = '" . $lastResult . "' ";
-				}
-				if (($builds_to_query != -1) && ($builds_to_query != 'a')) {
-					$sql .= " AND build_id IN ($builds_to_query) ";
-				}
-				if ($executor != null) {
-				    $sql .= " AND tester_id = $executor ";
-				}
-				if ($search_notes_string != null) {
-				    $sql .= " AND notes LIKE '%" . $search_notes_string ."%' ";
-				}
+        $sql .= $sqlFilters;
 
 				// mht: fix 966
 				// mike_h - 20070806 - when ordering executions by the timestamp, 
@@ -1125,60 +1135,42 @@ class results
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
 				{
-					$executions_id = null;
-					while($executions_id = key($execQuery))
-					{
-						$notSureA = $execQuery[$executions_id];
-						$exec_row = $notSureA[0];
-						$testplan_id = $exec_row['testplan_id'];
-						$execution_ts = $exec_row['execution_ts'];
-						$dummy = null;
-						$localizedTS = localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$execution_ts);
-						$bugString = $this->buildBugString($this->db, $executions_id);
+  				if ($lastResult != $this->map_tc_status['not_run']) 
+  				{
+              foreach($execQuery as $executions_id => $execInfo)
+					    {
+					    	//$notSureA = $execInfo;
+					    	//$exec_row = $notSureA[0];
+					    	// $testplan_id = $exec_row['testplan_id'];
+					    	$exec_row = $execInfo[0];
+					    	
+					    	$infoToSave['build_id'] = $exec_row['build_id'];
+					    	$infoToSave['tester_id'] = $exec_row['tester_id'];
+					    	$infoToSave['status'] = $exec_row['status'];
+					    	$infoToSave['notes'] = $exec_row['notes'];
+					    	$infoToSave['executions_id'] = $executions_id;
+					    	$infoToSave['bugString'] = $searchBugs ? $this->buildBugString($this->db, $executions_id) : '';
 
-						$infoToSave = array('testcaseID' => $testcaseID,
-						                    'external_id' => $external_id,
-						 			              'tcversion_id' => $tcversion_id,
-							                  'version' => $version,
-									              'build_id' => $exec_row['build_id'],
-									              'tester_id' => $exec_row['tester_id'],
-									              'execution_ts' => $localizedTS,
-									              'status' => $exec_row['status'],
-									              'notes' => $exec_row['notes'],
-									              'executions_id' => $executions_id,
-									              'name' => $name,
-									              'bugString' => $bugString,
-									              'assigner_id' => $info['assigner_id'],
-									              'feature_id' => $info['feature_id'],
-									              'execute_link' => $executeLink);
-						if ($lastResult != $this->map_tc_status['not_run']) {
-							array_push($currentSuite, $infoToSave);
-						}
-						next($execQuery);
-					} // end while
+					    	$dummy=null;
+					    	$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
+					    	                                                       $exec_row['execution_ts']);
+
+					   		array_push($currentSuite, $infoToSave);
+					    } // end foreach
+					}  
 				} // end if($execQuery)
-				// HANDLE scenario where execution does not exist
-				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
-					$infoToSave = array('testcaseID' => $testcaseID,
-					                    'external_id' => $external_id,
-					                    'tcversion_id' => $tcversion_id,
-                              'version' => $version,
-					                    'build_id' => '',
-					                    'tester_id' => '',
-					                    'execution_ts' => '',
-					                    'executions_id' => '',
-					                    'status' => $this->map_tc_status['not_run'],
-					                    'name' => $name,
-					                    'notes' => '',
-					                    'assigner_id' => $info['assigner_id'],
-					                    'feature_id' => $info['feature_id'],
-					                    'execute_link' => $executeLink);
+				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) 
+				{
+				  // HANDLE scenario where execution does not exist
 					array_push($currentSuite, $infoToSave);
 				}
 			} // end if($executionExists)
-			$executionsMap[$testsuite_id] = $currentSuite;
-			next($this->linked_tcversions);
-		} // end $testcaseId while
+			
+			$executionsMap[$info['testsuite_id']] = $currentSuite;
+		} // end foreach
+		
+		unset($infoToSave);
+		
 		return $executionsMap;
 	} // end function
 
@@ -1191,9 +1183,7 @@ class results
 	function buildBugString(&$db,$execID) 
 	{
 		  $bugString = null;
-		  $bug_interface = config_get('bugInterface');
-	    $bugsOn = config_get('bugInterfaceOn');
-	    if ($bugsOn == null || $bugsOn == false || !$execID)
+	    if (!$execID)
 	    {
 		     return $bugString;
 		  }
@@ -1201,10 +1191,11 @@ class results
 		  $bugs = get_bugs_for_exec($db,$bug_interface,$execID);
 		  if ($bugs) 
 		  {
-			  foreach($bugs as $bugID => $bugInfo) {
+			  foreach($bugs as $bugID => $bugInfo) 
+			  {
 				  $bugString .= $bugInfo['link_to_bts']."<br />";
-			}
-		}
+			  }
+		  }
 		return $bugString;
 	} // end function
 
@@ -1269,6 +1260,13 @@ class results
 	*/
 	private function generateExecTree(&$db,$keyword_id = 0, $owner = null) {
 
+    // $mem=array();		
+    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+    // $xmem=current($mem);
+    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+    // ob_flush();flush();
+
+
 	  $RECURSIVE_MODE=true;
 		$tplan_mgr = $this->tplanMgr;
 		$tproject_mgr = new testproject($this->db);
@@ -1314,11 +1312,21 @@ class results
 			$testcase_count = prepareNode($db,$test_spec,$decoding_hash,$count,$tck_map,$tp_tcs,
 			                              HIDE_TESTCASES,$owner);
 
+      // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+      // $xmem=current($mem);
+      // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+      // ob_flush();flush();
+
 			$test_spec['testcase_count'] = $testcase_count;
 			$currentNode = null;
 			$currentNodeIndex = 0;
 			$suiteStructure = $this->processExecTreeNode(1,$test_spec,$hash_id_descr);
 		}
+    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+    // $xmem=current($mem);
+    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+    // ob_flush();flush();
+
 		return $suiteStructure;
 	} // end generateExecTree
 
@@ -1397,7 +1405,7 @@ class results
 				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';
 		$testTitle .= $suffix;
 
-	return $testTitle;
+	  return $testTitle;
 	}
 
 	// ----------------------------------------------------------------------------------
@@ -1494,9 +1502,27 @@ class results
 					
 		return $output;
 	}
+
+  /* utility method to trace memory usage
+  
+  */
+	function memory_status($pclass,$pfile,$pfunction,$pline)
+	{
+	  
+	  $status=array('msg'=>'','mem'=>0,'peak'=>0); 
+    if( function_exists('memory_get_usage') )
+    {
+        $status['mem']=memory_get_usage();
+        $status['peak']=memory_get_peak_usage();
+
+        $status['msg']='<pre> Class:' . $pclass . ' - File:' . $pfile . '<br>';
+        $status['msg'] .= 'Function:' . $pfunction . ' - Line:' . $pline . ' - ';
+        $status['msg'] .="Mem Usage: ". $status['mem'] ." | Peak: ". $status['peak'] .'<br> </pre>';
+    }
+    return $status;
+	}
+
 	
 
 } // ---- end class result -----
-
-
 ?>

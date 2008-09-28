@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.59 2008/05/24 14:20:44 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.60 2008/09/28 10:04:43 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -19,7 +19,7 @@ require_once('results.class.php');
 require_once('users.inc.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
-$template_dir='results/';
+$templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui=initializeGui($db,$args);
@@ -46,7 +46,7 @@ if (!isset($_GET['report_type']))
 	exit();
 }
 
-displayReport($template_dir . 'resultsMoreBuilds_report', $smarty, $report_type);
+displayReport($templateCfg->template_dir . 'resultsMoreBuilds_report.tpl', $smarty, $report_type);
 ?>
 
 

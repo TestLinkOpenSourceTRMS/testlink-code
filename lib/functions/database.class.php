@@ -3,10 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/07/22 09:27:28 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/09/28 10:03:03 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20080722 - franciscom -  trying to solve memory usage problems, have add option
+ *                          to enable/disable query execution log.
+ *                          Setted to DISABLE by default.
  *
  * 20080722 - franciscom -  problems with MSSQL and ADODB_FETCH_ASSOC
  * 20080315 - franciscom -  due to problems with PostGres with $ADODB_COUNTRECS=FALSE;
@@ -47,6 +51,8 @@ class database
 	var $nQuery = 0;
 	var $overallDuration = 0;
   private $logEnabled=0;
+  private $logQueries=0;
+  
 	
   
 	# ------------------------------------------------------
@@ -56,6 +62,24 @@ class database
 		return ( (float)$usec + (float)$sec );
 	}
   
+  function setLogEnabled($value)
+	{
+	    $this->logEnabled=$value?1:0;
+	}
+	function getLogEnabled($value)
+	{
+	    return $this->logEnabled;
+	}
+	
+  function setLogQueries($value)
+	{
+	    $this->logQueries=$value?1:0;
+	}
+	function getLogQueries($value)
+	{
+	    return $this->logQueries;
+	}
+
   
 	function database($db_type)
 	{
@@ -140,8 +164,13 @@ class database
 		{
 		    tLog($message,$logLevel,"DATABASE");
 		}
-		array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
-
+		
+    // 20080927 - may be this causes lot of memory usage
+    if($this->logQueries)
+    {
+		    array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
+    }
+    
 		if ( !$t_result ) {
 			echo "ERROR ON exec_query() - database.class.php <br>" . $this->error($p_query) . "<br>";
       echo "<br> THE MESSAGE :: $message <br>";			

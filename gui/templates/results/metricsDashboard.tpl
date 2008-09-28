@@ -1,26 +1,29 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.5 2008/09/23 20:27:55 schlundus Exp $     
+ $Id: metricsDashboard.tpl,v 1.6 2008/09/28 10:01:50 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                   
 *}
+{lang_get var="labels"
+          s="generated_by_TestLink_on,testproject,test_plan,th_total_tc,th_active_tc,th_executed_tc,
+             th_executed_vs_active,th_executed_vs_total"}
 {include file="inc_head.tpl"}
 
 <body>
 <div class="workBack">
-<h1 class="title">{lang_get s='testproject'} {$smarty.const.TITLE_SEP} {$tproject_name|escape}</h1>
+<h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
 
 <table class="mainTable-x" style="width: 100%">
   <tr>
-    <th>{lang_get s='test_plan'}</th>
-   	<th>{lang_get s='th_total_tc'}</th>
-   	<th>{lang_get s='th_active_tc'}</th>
-   	<th>{lang_get s='th_executed_tc'}</th>
-   	<th>{lang_get s='th_executed_vs_active'}</th>
-   	<th>{lang_get s='th_executed_vs_total'}</th>
+    <th>{$labels.test_plan}</th>
+   	<th>{$labels.th_total_tc}</th>
+   	<th>{$labels.th_active_tc}</th>
+   	<th>{$labels.th_executed_tc}</th>
+   	<th>{$labels.th_executed_vs_active}</th>
+   	<th>{$labels.th_executed_vs_total}</th>
   </tr>
-  {foreach item=metric from=$tplan_metrics}
+  {foreach item=metric from=$gui->tplan_metrics}
   <tr>
     <td>{$metric.tplan_name|escape}</td>
     <td style="text-align:right;">{$metric.total}</td>
@@ -37,7 +40,7 @@
 
 </table>
 <br />
-{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
+{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div> 
 </body>
 </html>

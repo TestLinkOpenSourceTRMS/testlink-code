@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.4 2008/06/27 08:37:50 franciscom Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.5 2008/09/28 10:02:11 franciscom Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
@@ -232,33 +232,56 @@ function initNewTProjectProperties(&$db,&$tprojectMap,&$tprojectMgr)
 */ 
 function updateTestCaseExternalID(&$db,&$all_tprojects,&$tprojectMgr)
 {
+    $show_memory=true;
     if( !is_null($all_tprojects) )
     {
+        $numtproject=count($all_tprojects);
+        echo "Total number of Test Projects to process: {$numtproject}<br>";
+        ob_flush();flush();
+        $feedback_counter=0;
+        $tproject_counter=0;
+        
         foreach($all_tprojects as $tproject_key => $tproject_value)
         {
+            $feedback_counter=0;
+            $tproject_counter++;
             $tcaseSet=$tprojectMgr->get_all_testcases_id($tproject_value['id']);
-            echo "Working on Test Project {$tproject_value['name']}<br>";
+            echo "Working on Test Project ({$tproject_counter}/{$numtproject}) : {$tproject_value['name']}<br>";
+            if( function_exists('memory_get_usage') && $show_memory)
+            {
+               echo "(Memory Usage: ".memory_get_usage() . " | Peak: " . memory_get_peak_usage() . ")<br><br>";
+            }
             ob_flush();flush();
 
             if( !is_null($tcaseSet) && ($numtc=count($tcaseSet)) > 0 )
             {
+               $do_feedback=$numtc > 100;
                echo "Test Cases to process: {$numtc}<br><br>";
                ob_flush();flush();
 
                foreach($tcaseSet as $tckey => $tcvalue)
                {
+                   $feedback_counter++;
                    $eid=$tckey+1;
                    $sql="UPDATE tcversions " .
                         "SET tc_external_id={$eid} " .
                         "WHERE id IN (SELECT id FROM nodes_hierarchy WHERE parent_id={$tcvalue})";
                     $db->exec_query($sql);
+                   
+                   if( $do_feedback && $feedback_counter%100 == 0)
+                   {
+                       echo "Test Cases Processed: {$feedback_counter} - " . date("H:i:s") . "<br>";
+                       ob_flush();flush();
+                   }
                }         
+               echo "ALL Test Cases Processed: {$feedback_counter} - " . date("H:i:s") ."<br><br>";
  
                $sql="UPDATE testprojects " .
                     "SET tc_counter={$eid} " .
                     "WHERE id={$tproject_value['id']}";
                $db->exec_query($sql);
             }
+           unset($tcaseSet);
         }
     }
   

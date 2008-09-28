@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.4 2008/06/27 08:37:50 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.5 2008/09/28 10:02:11 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -26,10 +26,11 @@ require_once("../migrate_16_to_17_functions.php");
 require_once("migrate_17_to_18_functions.php");
 
 // over this qty, the process will take a lot of time
-define('CRITICAL_TC_SPECS_QTY',5000);
+define('CRITICAL_TC_SPECS_QTY',2000);
 define('FEEDBACK_STEP',2500);
-
 define('FULL_FEEDBACK',FALSE);
+
+$show_memory=true;
 
 if( !isset($_SESSION) )
 { 
@@ -165,9 +166,34 @@ if( $do_it== 0 )
 
 
 // ---STARTING MIGRATION---
+// -----------------------------------------------------------------------------------------------
+// How many test cases ?
+$sql="SELECT count(NH.parent_id) AS qta_nodes " .
+     " FROM nodes_hierarchy NH,node_types NT" .
+     " WHERE NH.node_type_id=NT.id " .
+     " AND NT.description='testcase' ";
+     
+$rs=$source_db->get_recordset($sql);
+$qta_nodes=$rs[0]['qta_nodes'];
+
+if( $qta_nodes >= CRITICAL_TC_SPECS_QTY)
+{
+    $start_message="Due to total test cases quantity Migration process will take at least 15 min";
+    echo '<span class="headers">' . $start_message . "</span></b><br><br>";
+    ob_flush();flush();
+}
+// -----------------------------------------------------------------------------------------------
+
+if( function_exists('memory_get_usage') and $show_memory)
+{
+   echo "(Memory Usage: ".memory_get_usage() . " | Peak: " . memory_get_peak_usage() . ")<br><br>";
+}
+
 $start_message="Migration process STARTED :: " . date("H:i:s");
 echo '<span class="headers">' . $start_message . "</span></b><br><br>";
 ob_flush();flush();
+
+
 
 if( checkPreconditions($source_db,$tree_mgr) )
 {

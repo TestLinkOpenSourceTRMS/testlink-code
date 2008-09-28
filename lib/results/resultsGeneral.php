@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2008/09/28 10:04:43 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
  *
  * Revisions:
+ *  20080928 - franciscom - removed useless requires
  * 	20050807 - fm - refactoring:  changes in getTestSuiteReport() call
  * 	20050905 - fm - reduce global coupling
  *  20070101 - KL - upgraded to 1.7
@@ -20,15 +21,13 @@
 
 require('../../config.inc.php');
 require_once('common.php');
-//require_once('builds.inc.php'); martin: it seems obsolete
 require_once('results.class.php');
-require_once('testplan.class.php');
 require_once('displayMgr.php');
 
 testlinkInitPage($db);
 $args = init_args();
+$templateCfg = templateConfiguration();
 
-$template_dir = 'results/';
 $arrDataSuite = array();
 $do_report = array();
 
@@ -245,7 +244,7 @@ $smarty->assign('buildColDefinition', $colDefinition);
 $smarty->assign('buildResults',$results);
 $smarty->assign('statistics', $statistics);
 
-displayReport($template_dir . 'resultsGeneral', $smarty, $args->format);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
 
 
 

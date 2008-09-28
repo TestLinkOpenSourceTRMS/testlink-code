@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.58 2008/09/20 21:02:54 schlundus Exp $
+* $Id: resultsByStatus.php,v 1.59 2008/09/28 10:04:43 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -21,7 +21,8 @@ require_once('displayMgr.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-$template_dir = 'results/';
+$templateCfg = templateConfiguration();
+
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
 $report_type = isset($_GET['format']) ? intval($_GET['format']) : null;
 
@@ -143,7 +144,7 @@ $smarty->assign('title', $title);
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrData', $arrData);
 $smarty->assign('type', $type);
-displayReport($template_dir . 'resultsByStatus', $smarty, $report_type);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $report_type);
 
 /**
 * builds bug information for execution id

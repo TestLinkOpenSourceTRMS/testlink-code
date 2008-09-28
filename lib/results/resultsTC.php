@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.38 2008/09/20 21:02:54 schlundus Exp $ 
+* $Id: resultsTC.php,v 1.39 2008/09/28 10:04:43 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -24,8 +24,7 @@ require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
 
-$template_dir='results/';
-
+$templateCfg = templateConfiguration();
 $arrData = array();
 
 $tplan_mgr = new testplan($db);
@@ -142,5 +141,5 @@ if (!isset($_GET['format']))
 	tlog('$_GET["format"] is not defined');
 	exit();
 }
-displayReport($template_dir . 'resultsTC', $smarty, $format);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $format);
 ?>

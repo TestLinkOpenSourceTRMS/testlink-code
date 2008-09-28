@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/09/24 20:17:55 $ by $Author: schlundus $
+ * @modified $Date: 2008/09/28 10:05:28 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20080928 - franciscom - refactoring
  * 20080602 - franciscom - added logic to manage version using tcversion_number
  * 20080513 - franciscom - getTCLink() added external_id 
  *
@@ -61,7 +62,7 @@ class results
 	private	$tprojectID = -1;
 	private	$testCasePrefix='';
 
-	private $globalCfg = null;
+  private $priorityLevelsCfg='';
 	private $resultsCfg;
 	private $testCaseCfg='';
 	private $map_tc_status;
@@ -206,13 +207,12 @@ class results
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null,
 							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
-		global $tlCfg;
-		$this->globalCfg = $tlCfg;
+		  $this->priorityLevelsCfg = config_get('priority_levels');
     	$this->resultsCfg=config_get('results');
     	$this->testCaseCfg=config_get('testcase_cfg');
 
-		$this->db = $db;
-		$this->tplanMgr = $tplan_mgr;
+		  $this->db = $db;
+		  $this->tplanMgr = $tplan_mgr;
     
     	$this->map_tc_status=$this->resultsCfg['status_code'];
     
@@ -1411,9 +1411,9 @@ class results
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
 		
-		for($i=1; $i <= 3; $i++)
+		for($urgency=1; $urgency <= 3; $urgency++)
 		{
-			for($j=1; $j <= 3; $j++)
+			for($importance=1; $importance <= 3; $importance++)
 			{	
 				$sql = "SELECT COUNT( DISTINCT(testplan_tcversions.id ))
 						FROM testplan_tcversions JOIN executions ON
@@ -1421,28 +1421,28 @@ class results
                         JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id
 						WHERE testplan_tcversions.testplan_id = $this->testPlanID
 						AND executions.testplan_id = $this->testPlanID " .
-						"AND NOT executions.status = 'n'" . 
-			    		"AND tcversions.importance={$j} AND testplan_tcversions.urgency={$i}";
+						"AND NOT executions.status = {$this->map_tc_status['not_run']}" . 
+			    		"AND tcversions.importance={$importance} AND testplan_tcversions.urgency={$urgency}";
 
 				if( !is_null($milestoneDate) )
 					$sql .= " AND execution_ts < '{$milestoneDate}'";
 
 				$tmpResult = $this->db->fetchOneValue($sql);
 				// parse results into three levels of priority
-				if (($i*$j) >= $this->globalCfg->priority_levels[HIGH])
+				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
 				{
 					$output[HIGH] = $output[HIGH] + $tmpResult;
-					tLog("getPrioritizedResults> Result-priority HIGH: $i, $j = " . $output[HIGH]);
+					tLog("getPrioritizedResults> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
 				}
-				elseif (($i*$j) >= $this->globalCfg->priority_levels[MEDIUM])
+				elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
 				{
 					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
-					tLog("getPrioritizedResults> Result-priority MEDIUM: $i, $j = " . $output[MEDIUM]);
+					tLog("getPrioritizedResults> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
 				}
 				else
 				{
 					$output[LOW] = $output[LOW] + $tmpResult;
-					tLog("getPrioritizedResults> Result-priority LOW: $i, $j = " . $output[LOW]);
+					tLog("getPrioritizedResults> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
 				}	
 			}
 		}
@@ -1461,33 +1461,33 @@ class results
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
 		
-		for($i=1; $i <= 3; $i++)
+		for($urgency=1; $urgency <= 3; $urgency++)
 		{
-			for($j=1; $j <= 3; $j++)
+			for($importance=1; $importance <= 3; $importance++)
 			{	
 				// get total count of related TCs
 				$sql = "SELECT COUNT( testplan_tcversions.id ) FROM testplan_tcversions " .
 						" JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id " .
 						" WHERE testplan_tcversions.testplan_id = " . $this->testPlanID .
-			    		" AND tcversions.importance={$j} AND testplan_tcversions.urgency={$i}";
+			    		" AND tcversions.importance={$importance} AND testplan_tcversions.urgency={$urgency}";
 
 				$tmpResult = $this->db->fetchOneValue($sql);
 
 				// parse results into three levels of priority
-				if (($i*$j) >= $this->globalCfg->priority_levels[HIGH])
+				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
 				{
 					$output[HIGH] = $output[HIGH] + $tmpResult;
-					tLog("getPrioritizedTestCases> Result-priority HIGH: $i, $j = " . $output[HIGH]);
+					tLog("getPrioritizedTestCases> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
 				}
-				elseif (($i*$j) >= $this->globalCfg->priority_levels[MEDIUM])
+				elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
 				{
 					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
-					tLog("getPrioritizedTestCases> Result-priority MEDIUM: $i, $j = " . $output[MEDIUM]);
+					tLog("getPrioritizedTestCases> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
 				}
 				else
 				{
 					$output[LOW] = $output[LOW] + $tmpResult;
-					tLog("getPrioritizedTestCases> Result-priority LOW: $i, $j = " . $output[LOW]);
+					tLog("getPrioritizedTestCases> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
 				}	
 			}
 		}

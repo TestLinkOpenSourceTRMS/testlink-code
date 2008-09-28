@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.14 $
-$Date: 2008/08/14 15:07:50 $
+$Revision: 1.15 $
+$Date: 2008/09/28 10:02:29 $
 $Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
@@ -13,7 +13,10 @@ Change/Modify operation on columns:
 want to change NAME  -> CHANGE
 want to change column properties -> MODIFY
 
-rev: 20080810 - franciscom
+rev: 
+     20080927 - franciscom - fix bug when migration tcversions.importance
+
+     20080810 - franciscom
      ALTER custom_fields table
      
      20080622 - franciscom
@@ -91,34 +94,47 @@ ALTER TABLE tcversions ADD COLUMN tc_external_id int(10) unsigned NOT NULL;
 -- 20080622 - franciscom
 -- Present in 1.7.4
 -- MHT: but invalid type (need to reenter)
+UPDATE tcversions
+SET importance='3'
+WHERE importance IN('M','m');
+
+UPDATE tcversions
+SET importance='6'
+WHERE importance IN('H','h');
+
+UPDATE tcversions
+SET importance='1'
+WHERE importance IN('L','l');
+
+
 ALTER TABLE tcversions MODIFY COLUMN importance smallint(5) unsigned NOT NULL default '2';
-ALTER TABLE tcversions COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
+ALTER TABLE tcversions COMMENT = 'Updated to TL 1.8 RC3 - DB 1.2';
 
 /* testprojects */
 ALTER TABLE testprojects ADD COLUMN prefix varchar(30) NULL;
 ALTER TABLE testprojects ADD COLUMN tc_counter int(10) unsigned NULL default '0';
 ALTER TABLE testprojects ADD COLUMN option_automation tinyint(1) NOT NULL default '0';
-ALTER TABLE testprojects COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
+ALTER TABLE testprojects COMMENT = 'Updated to TL 1.8 RC3 - DB 1.2';
 
 
 /* user */
 ALTER TABLE users ADD COLUMN script_key varchar(32) NULL;
-ALTER TABLE users COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
+ALTER TABLE users COMMENT = 'Updated to TL 1.8 RC3 - DB 1.2';
 
 /* executions */
 ALTER TABLE executions ADD COLUMN tcversion_number smallint(5) unsigned NOT NULL default '1' COMMENT 'test case version used for this execution' AFTER tcversion_id;
 ALTER TABLE executions ADD COLUMN execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated' AFTER  tcversion_number;
-ALTER TABLE executions COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
+ALTER TABLE executions COMMENT = 'Updated to TL 1.8 RC3 - DB 1.2';
 
 /* testplan_tcversions */
 ALTER TABLE testplan_tcversions ADD COLUMN node_order int(10) unsigned NOT NULL default '1' COMMENT 'order in execution tree' AFTER tcversion_id;
 ALTER TABLE testplan_tcversions ADD COLUMN urgency smallint(5) unsigned NOT NULL default '2' COMMENT 'test prioritization, default is MEDIUM';
-ALTER TABLE testplan_tcversions COMMENT = 'Updated to TL 1.8 RC1  - DB 1.2';
+ALTER TABLE testplan_tcversions COMMENT = 'Updated to TL 1.8 RC3  - DB 1.2';
 
 
 /* db_version */
 ALTER TABLE db_version ADD COLUMN notes  text;
-ALTER TABLE db_version COMMENT = 'Updated to TL 1.8 RC1 - DB 1.2';
+ALTER TABLE db_version COMMENT = 'Updated to TL 1.8 RC3 - DB 1.2';
 
 /* requirements */
 ALTER TABLE requirements MODIFY COLUMN id int(10) unsigned NOT NULL;
@@ -129,7 +145,7 @@ ALTER TABLE req_specs MODIFY COLUMN   id int(10) unsigned NOT NULL;
 /* custom_fields */
 ALTER TABLE custom_fields ADD COLUMN show_on_testplan_design tinyint(3) unsigned NOT NULL default '0' AFTER enable_on_execution;
 ALTER TABLE custom_fields ADD COLUMN enable_on_testplan_design tinyint(3) unsigned NOT NULL default '0' AFTER show_on_testplan_design;
-ALTER TABLE custom_fields COMMENT = 'Updated to TL 1.8 RC1  - DB 1.2';
+ALTER TABLE custom_fields COMMENT = 'Updated to TL 1.8 RC3  - DB 1.2';
 
 
 /* data update */

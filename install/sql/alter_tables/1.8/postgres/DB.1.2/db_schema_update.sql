@@ -1,9 +1,11 @@
--- $Revision: 1.2 $
--- $Date: 2008/07/01 07:27:33 $
--- $Author: havlat $
--- $Name:  $
+-- $Revision: 1.3 $
+-- $Date: 2008/09/28 10:02:43 $
+-- $Author: franciscom $
+-- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 
+-- 20080927 - franciscom - fix bug when migration tcversions.importance
+--
 -- Step 1 - Drops if needed
 DROP TABLE IF EXISTS priorities;
 DROP TABLE IF EXISTS risk_assignments;
@@ -75,6 +77,18 @@ CREATE TABLE user_group_assign (
 
 -- Step 3 - table changes
 -- tcversions
+UPDATE tcversions
+SET importance='3'
+WHERE importance IN('M','m');
+
+UPDATE tcversions
+SET importance='6'
+WHERE importance IN('H','h');
+
+UPDATE tcversions
+SET importance='1'
+WHERE importance IN('L','l');
+
 ALTER TABLE tcversions MODIFY COLUMN importance INT2 NOT NULL default '2';
 ALTER TABLE tcversions ADD COLUMN execution_type INT2 NOT NULL default '1';
 COMMENT ON COLUMN tcversions.execution_type IS '1 -> manual, 2 -> automated';

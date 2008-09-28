@@ -1,12 +1,13 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: displayMgr.php,v 1.11 2008/05/14 06:09:33 franciscom Exp $ 
+* $Id: displayMgr.php,v 1.12 2008/09/28 10:04:43 franciscom Exp $ 
 *
 * @author	Kevin Levy
 * 
 * Revision:
-* 2007/12/07 - havlatm - added MSWord, magic numbers -> use global const.
+* 20080928 - franciscom - minor refactoring
+* 20071207 - havlatm - added MSWord, magic numbers -> use global const.
 */
 require_once('info.inc.php'); // has the sendMail() method
 require_once('../../cfg/reports.cfg.php');
@@ -29,7 +30,7 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
       break;
       
 	    case 'Email':
-		  $template_file = $template_file . ".tpl";
+		  // $template_file = $template_file . ".tpl";
 		  $html_report = $smarty->fetch($template_file);
 		  $emailIsHtml = true;
 		  $send_cc_to_myself = false;
@@ -48,7 +49,7 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 		  }
 		  $smarty = new TLSmarty();
 		  $smarty->assign('message', $message);
-		  $template_file = "emailSent";
+		  $template_file = "emailSent.tpl";
       break;
       
       case 'PDF':
@@ -57,9 +58,6 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 
 
 	} 
-
-	
-	$template_file = $template_file . ".tpl";
 	$smarty->display($template_file);
 
 } //end function

@@ -4,32 +4,31 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/09/23 20:27:55 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/09/28 10:04:43 $ $Author: franciscom $
  *
  * @author franciscom
  *
  * rev:
+ *     20080928 - franciscom - refactoring
  *     20080124 - franciscom - BUGID 1321
  *     20070907 - franciscom
 **/
 require('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 
-$template_dir = 'results/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-$tproject_name = $_SESSION['testprojectName'];
+$gui=new stdClass();
+$gui->tproject_name = $_SESSION['testprojectName'];
 $user_id = $_SESSION['userID'];
 $tproject_id = $_SESSION['testprojectID'];
 
-$tplan_metrics = getMetrics($db,$user_id,$tproject_id);
+$gui->tplan_metrics = getMetrics($db,$user_id,$tproject_id);
 
 $smarty = new TLSmarty;
-$smarty->assign('tplan_metrics', $tplan_metrics);
-$smarty->assign('tproject_name', $tproject_name);
-$smarty->display($template_dir . $default_template); 
+$smarty->assign('gui', $gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template); 
 ?>
 
 

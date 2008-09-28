@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/09/28 10:05:28 $ by $Author: franciscom $
+ * @modified $Date: 2008/09/28 10:23:30 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -1421,7 +1421,7 @@ class results
                         JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id
 						WHERE testplan_tcversions.testplan_id = $this->testPlanID
 						AND executions.testplan_id = $this->testPlanID " .
-						"AND NOT executions.status = {$this->map_tc_status['not_run']}" . 
+						"AND NOT executions.status = '{$this->map_tc_status['not_run']}' " . 
 			    		"AND tcversions.importance={$importance} AND testplan_tcversions.urgency={$urgency}";
 
 				if( !is_null($milestoneDate) )

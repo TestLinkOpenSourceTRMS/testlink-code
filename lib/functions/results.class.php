@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/09/28 16:41:28 $ by $Author: franciscom $
+ * @modified $Date: 2008/09/29 13:13:48 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -203,9 +203,9 @@ class results
 	                        $suitesSelected = 'all',
 	                        $builds_to_query = -1, $lastResult = 'a',
 	                        $keywordId = 0, $owner = null,
-							$startTime = null, $endTime = null,
-							$executor = null, $search_notes_string = null, $linkExecutionBuild = null,
-							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
+							            $startTime = null, $endTime = null,
+							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
+							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
 	    
       // $mem=array();		
@@ -263,15 +263,6 @@ class results
 		if ($builds_to_query != -1) {
 			// retrieve results from executions table
 
-			// KL - 2/01/07
-			// we should NOT build executions map with cases that are just pass/failed/or blocked.
-			// we should always populate the executions map with all results
-			// and then programmatically figure out the last result
-			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
-			// that is not the way to determine last result
-			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId,
-			                                                 $owner, $startTime, $endTime, $executor,
-			                                                 $search_notes_string, $linkExecutionBuild);
      
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID);
@@ -285,8 +276,22 @@ class results
 			$this->keywordData = $this->getKeywordData($arrKeywords);
 
 			// create data object which tallies last result for each test case
-			// this function now also creates mapOfLastResultByKeyword
+			// this function now also creates mapOfLastResultByKeyword ???
+
+			// KL - 2/01/07
+			// we should NOT build executions map with cases that are just pass/failed/or blocked.
+			// we should always populate the executions map with all results
+			// and then programmatically figure out the last result
+			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
+			// that is not the way to determine last result
+
+			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId,
+			                                                 $owner, $startTime, $endTime, $executor,
+			                                                 $search_notes_string, $linkExecutionBuild);
+      
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
+
+			
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
 			$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
 
@@ -1060,7 +1065,10 @@ class results
 		    $sqlFilters .= " AND notes LIKE '%" . $search_notes_string ."%' ";
 		}
 		// ------------------------------------------------------
-
+		
+		$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $executeLinkBuild;
+    $suffixLink = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character);
+    
     foreach($this->linked_tcversions as $testcaseID => $info)
 		{
 	
@@ -1072,11 +1080,6 @@ class results
 			else {
 				$currentSuite = $executionsMap[$info['testsuite_id']];
 			}
-		  
-			// $name = $info['name'];
-		  // $testsuite_id = $info['testsuite_id'];
-			// $tcversion_id = $info['tcversion_id'];
-			// $executed = $info['executed'];
 			
 	    $version = $info['version'];
 		  if( isset($info['tcversion_number']) && !is_null($info['tcversion_number']) )
@@ -1084,8 +1087,11 @@ class results
 			    $version = $info['tcversion_number'];
 			}
 			
-			$executeLink = $this->getTCLink($bCanExecute,$testcaseID,$info['external_id'],
-			                                $info['tcversion_id'],$info['name'],$executeLinkBuild);
+			$executeLink = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . '">' .
+			               $suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
+			
+			// $this->getTCLink($bCanExecute,$testcaseID,$info['external_id'],
+			//                                 $info['tcversion_id'],$info['name'],$executeLinkBuild);
 
       $infoToSave = array('testcaseID' => $testcaseID,
 			                    'external_id' => $info['external_id'],
@@ -1392,7 +1398,7 @@ class results
 	} //end function
 
 	/**
-	* Function returns number of Test Cases in the Test Plan
+	* Function 
 	* @return string Link of Test ID + Title
 	*/
 	function getTCLink($rights, $tcID, $tcExternalID,$tcversionID, $title, $buildID)

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/05/17 17:41:08 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2008/09/29 18:33:48 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -70,7 +70,6 @@ class tlLogger extends tlObject
 	{
 		parent::__construct();
 
-		//the database logger
 		$this->loggers['db'] = new tlDBLogger($db);
 		$this->loggers['file'] = new tlFileLogger();
 
@@ -95,6 +94,12 @@ class tlLogger extends tlObject
 		return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,
 		                                          $limit,$startTime,$endTime);
 	}
+	
+	public function deleteEventsFor($logLevels = null,$startTime = null)
+	{
+		return $this->eventManager->deleteEventsFor($logLevels,$startTime);
+	}
+	
 	/*
 		set the log level filter, only events which matches the filter can pass
 		can be combination of any of the tlLogger::LogLevels
@@ -451,8 +456,8 @@ class tlEventManager extends tlObjectWithDB
 		if (!is_null($objectIDs) && !empty($objectIDs))
 		{
 			$objectIDs = (array) $objectIDs;
-	    $objectIDs = implode(",",$objectIDs);
-	    $clauses[] = "object_id IN ({$objectIDs})";
+	    	$objectIDs = implode(",",$objectIDs);
+	    	$clauses[] = "object_id IN ({$objectIDs})";
 		}
 		if (!is_null($objectTypes) && !empty($objectTypes) )
 		{
@@ -477,6 +482,35 @@ class tlEventManager extends tlObjectWithDB
 		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
 		return tlEvent::createObjectsFromDBbySQL($this->db,$query,'id',"tlEvent",true,
 		                                         tlEvent::TLOBJ_O_GET_DETAIL_FULL,$limit);
+	}
+	
+	function deleteEventsFor($logLevels = null,$startTime = null)
+	{
+		$clauses = null;
+		if (!is_null($logLevels))
+		{
+			$logLevels = (array) $logLevels;
+			$logLevels = implode(",",$logLevels);
+			$clauses[] = "log_level IN ({$logLevels})";
+		}
+		if (!is_null($startTime))
+			$clauses[] = "fired_at < {$startTime}";
+			
+		$query = "DELETE FROM events";
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
+		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
+		
+		$this->db->exec_query($query);
+		
+		$query = "SELECT id FROM transactions t WHERE (SELECT COUNT(*) FROM events e WHERE e.transaction_id = t.id) = 0";
+		$transIDs = $this->db->fetchColumnsIntoArray($query,"id");
+		if ($transIDs)
+		{
+			$transIDs = implode(",",$transIDs);
+			$query = "DELETE FROM transactions WHERE id IN ({$transIDs})";
+			$this->db->exec_query($query);
+		}
 	}
 }
 

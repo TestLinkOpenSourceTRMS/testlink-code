@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/06/03 09:22:47 $ by $Author: havlat $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/09/29 18:33:48 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -80,6 +80,8 @@ if (!is_null($login))
 
 $securityNotes = getSecurityNotes($db);
 $bLDAPEnabled = false;
+
+$g_tlLogger->deleteEventsFor(null, strtotime("-{$g_removeEventsOlderThan} days UTC"));
 
 $smarty = new TLSmarty();
 $smarty->assign('g_user_self_signup', config_get('user_self_signup'));

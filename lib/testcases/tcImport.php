@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/08/13 15:06:11 $ by $Author: havlat $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2008/09/29 18:33:48 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -490,7 +490,7 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
     fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
     
     $summary=htmlspecialchars($xls_rows[$idx][IDX_COL_SUMMARY]);
-    fwrite($xmlFileHandle,"<summary>" . $xls_rows[$idx][IDX_COL_SUMMARY] . "</summary>\n");
+    fwrite($xmlFileHandle,"<summary>" . $summary . "</summary>\n");
     
     $steps=str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
     $steps=htmlspecialchars($xls_rows[$idx][IDX_COL_STEPS]);

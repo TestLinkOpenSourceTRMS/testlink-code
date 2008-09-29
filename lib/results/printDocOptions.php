@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/09/20 21:02:54 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/09/29 19:48:11 $ $Author: schlundus $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -85,13 +85,13 @@ switch($gui->report_type)
     break;
 
     case 'testplan':
-    	  $tplan_mgr = new testplan($db);
-	      $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
+    	$tplan_mgr = new testplan($db);
+	    $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
 	      
-	      $filters = new stdClass();
+	    $filters = new stdClass();
   	    $additionalInfo = new stdClass();
         
-	      $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
+	    $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
   	    $filters->keywordsFilterType=null;
   	    $filters->tc_id = FILTER_BY_TC_OFF;
   	    $filters->build_id = $latestBuild;
@@ -105,16 +105,16 @@ switch($gui->report_type)
   	    $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
   	    $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
-	      $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
+	    $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
 	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
-        $treeString=$treeContents->menustring;
-        $guiObj->ajaxTree=null;
-        if( $treemenu_type == 'EXTJS' )
+        $treeString = $treeContents->menustring;
+        $gui->ajaxTree = null;
+        if($treemenu_type == 'EXTJS')
         {
-            $gui->ajaxTree->root_node=$treeContents->rootnode;
-            $gui->ajaxTree->children=$treeContents->menustring;
-            $gui->ajaxTree->cookiePrefix .=$gui->ajaxTree->root_node->id . "_" ;
+            $gui->ajaxTree->root_node = $treeContents->rootnode;
+            $gui->ajaxTree->children = $treeContents->menustring;
+            $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
         }
     break;
 

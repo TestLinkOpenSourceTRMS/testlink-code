@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/05/28 18:27:20 $ $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/09/29 19:48:10 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -218,7 +218,7 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 	$map = $db->get_recordset($sql);
 	if( !is_null($map) )
   {  	
-    	foreach($map as $elem)
+  		foreach($map as $elem)
     	{
     		$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
     		$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];

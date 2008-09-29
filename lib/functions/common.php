@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.115 $ $Author: franciscom $
- * @modified $Date: 2008/09/09 10:22:55 $
+ * @version $Revision: 1.116 $ $Author: schlundus $
+ * @modified $Date: 2008/09/29 19:48:07 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
@@ -610,7 +610,7 @@ function config_get($config_id)
   if( !$t_found )
   {
       $my = "g_" . $config_id;
-	    if (isset($GLOBALS[$my]))
+        if (isset($GLOBALS[$my]))
 	    {
 	    	$t_value = $GLOBALS[$my];
 	    } 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/05/07 02:59:07 $ $Author: tosikawa $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/09/29 19:48:06 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -66,6 +66,7 @@ class bugtrackingInterface
 	var $dbType = null;
 	var $showBugURL = null;
 	var $enterBugURL = null;
+	var $dbCharSet = null; 
 	
 	//private vars don't touch
 	var $dbConnection = null;	
@@ -88,6 +89,10 @@ class bugtrackingInterface
 	 **/
 	function bugtrackingInterface()
 	{
+		global $tlCfg;
+		$this->dbCharSet = $tlCfg->charset;
+		if (defined('BUG_TRACK_DB_CHARSET')) 
+ 	    	$this->dbCharSet = BUG_TRACK_DB_CHARSET;
 	}
 
 	/**
@@ -205,7 +210,6 @@ class bugtrackingInterface
 		return false;
 	}
 	
-	
 
 	/*
 	* 
@@ -269,12 +273,16 @@ class bugtrackingInterface
 	 **/
 	function buildViewBugLink($bugID,$bWithSummary = false)
 	{
+		global $tlCfg;
 		$link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
 		
 		$status = $this->getBugStatusString($bugID);
 		
 		if (!is_null($status))
+		{
+			$status = iconv($this->dbCharSet,$tlCfg->charset,$status);
 			$link .= $status;
+		}
 		else
 			$link .= $bugID;
 		if ($bWithSummary)
@@ -282,6 +290,7 @@ class bugtrackingInterface
 			$summary = $this->getBugSummaryString($bugID);
 			if (!is_null($summary))
 			{
+				$summary = iconv($this->dbCharSet,$tlCfg->charset,$summary);
 				$link .= " - " . $summary;
 			}
 		}
@@ -318,5 +327,6 @@ if (isset($configFiles[$g_interface_bugs]))
 		$g_bugInterface->connect();
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());			
 }
+
 unset($configFiles);
 ?>

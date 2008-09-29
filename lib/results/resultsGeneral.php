@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/09/28 10:04:43 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/09/29 19:48:12 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -30,7 +30,7 @@ $templateCfg = templateConfiguration();
 
 $arrDataSuite = array();
 $do_report = array();
-
+$colDefinition = array();
 $columnsDefinition = new stdClass();
 $columnsDefinition->keywords = null;
 $columnsDefinition->testers = null;
@@ -129,7 +129,6 @@ else // do report
 		      	}  
 		  	}
       
-      		$colDefinition=array();
       		foreach($keys2display as $status_verbose => $value)
       		{
             	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 

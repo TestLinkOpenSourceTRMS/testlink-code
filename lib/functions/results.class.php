@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/09/29 13:13:48 $ by $Author: franciscom $
+ * @modified $Date: 2008/09/29 19:48:10 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -1027,9 +1027,7 @@ class results
     // $xmem=current($mem);
     // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
     // ob_flush();flush();
-
-    $bugsOn = config_get('bugInterfaceOn');
-    $searchBugs=!is_null($bugsOn) && $bugsOn;
+    	$searchBugs= config_get('bugInterfaceOn');
                                                     
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
@@ -1188,12 +1186,12 @@ class results
 	*/
 	function buildBugString(&$db,$execID) 
 	{
-		  $bugString = null;
+		$bugString = null;
 	    if (!$execID)
 	    {
 		     return $bugString;
 		  }
-		  
+		  $bug_interface = config_get("bugInterface");
 		  $bugs = get_bugs_for_exec($db,$bug_interface,$execID);
 		  if ($bugs) 
 		  {

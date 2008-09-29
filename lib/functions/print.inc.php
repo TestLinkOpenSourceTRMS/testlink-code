@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2008/09/21 19:35:47 $ by $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2008/09/29 19:48:10 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -147,7 +147,7 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 
 	if ($docCfg->company_copyright != '')
 		$output .= '<div class="pagefooter" id="copyright">' . 
-		           htmlspecialchars($docCfg->company->company_copyright)."</div>\n";
+		           htmlspecialchars($docCfg->company_copyright)."</div>\n";
 		           
 	if ($docCfg->confidential_msg != '')
 		$output .= '<div class="pagefooter" id="confidential">' . 

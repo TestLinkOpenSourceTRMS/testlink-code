@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/05/30 09:31:25 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/09/29 19:48:12 $ by $Author: schlundus $
  * @author kevinlevy
  * 
  * rev :
@@ -33,7 +33,6 @@ $tproject_mgr = new testproject($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
-
 $arrBuilds = $tplan_mgr->get_builds($args->tplan_id); 
 $executionsMap = $re->getSuiteList();
 
@@ -181,17 +180,19 @@ function tallyResolvedBug($bugID, &$array)
 function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 {
 	$bugString = null;
-  $bugInterface = config_get('bugInterface');
-   
-	$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
-	if ($bugs)
-	{
-		foreach($bugs as $bugID => $bugInfo)
+  	$bugInterface = config_get('bugInterface');
+  	if ($bugInterface)
+  	{
+  		$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
+		if ($bugs)
 		{
-		  registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
-			$bugString .= $bugInfo['link_to_bts']."<br />";
+			foreach($bugs as $bugID => $bugInfo)
+			{
+			  registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
+				$bugString .= $bugInfo['link_to_bts']."<br />";
+			}
 		}
-	}
+  	}
 	return $bugString;
 }
 
@@ -207,12 +208,12 @@ function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 function init_args()
 {
 	$args = new stdClass();
-  $_REQUEST = strings_stripSlashes($_REQUEST);
+	$_REQUEST = strings_stripSlashes($_REQUEST);
   
-  $args->tplan_id=$_REQUEST['tplan_id'];
-  $args->tproject_id=$_SESSION['testprojectID'];
-  $args->user = $_SESSION['currentUser'];
+	$args->tplan_id=$_REQUEST['tplan_id'];
+	$args->tproject_id=$_SESSION['testprojectID'];
+	$args->user = $_SESSION['currentUser'];
 
-  return $args;
+	return $args;
 }
 ?>

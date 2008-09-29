@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/03/31 14:04:45 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/09/29 19:48:06 $ $Author: schlundus $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, 
  *                                         corrected getBugStatusString($id)
@@ -31,7 +31,7 @@ class bugzillaInterface extends bugtrackingInterface
 	var $dbUser = BUG_TRACK_DB_USER;
 	var $dbPass = BUG_TRACK_DB_PASS;
 	var $dbType = BUG_TRACK_DB_TYPE;
-  var $dbSchema = BUG_TRACK_DB_NAME;  // BUGID 1444
+  	var $dbSchema = BUG_TRACK_DB_NAME;  // BUGID 1444
 	var $showBugURL = BUG_TRACK_HREF;
 	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	/*
@@ -104,9 +104,7 @@ class bugzillaInterface extends bugtrackingInterface
 	function getBugSummaryString($id)
 	{
 		if (!$this->isConnected())
-		{
 			return null;
-    }
     
 		$status = null;
 		$query = "SELECT short_desc FROM {$this->dbSchema}.bugs WHERE bug_id='" . $id."'";

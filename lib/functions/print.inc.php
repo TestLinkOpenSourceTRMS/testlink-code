@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2008/09/29 19:48:10 $ by $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2008/10/02 19:18:44 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -113,7 +113,7 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 		else
 			$output .= lang_get('test_plan');
 
-   	$output .=  ' ' . htmlspecialchars($tplan_info['name']);
+   		$output .=  ' ' . htmlspecialchars($tplan_info['name']);
 	}
 
 	if($title != '')
@@ -130,6 +130,9 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 		    else
 		        $estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
 
+		        
+	      
+		        
 		        $output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' .
 			               $estimated_string . "</p>\n";
 	    }
@@ -155,7 +158,9 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 
 	if (strlen($tproject_notes))
 		$output .= '<h1>'.lang_get('introduction').'</h1><p id="prodnotes">'. $tproject_notes . "</p>\n";
-
+   	if (strlen($tplan_info['notes']))
+		$output .= '<p id="prodnotes">'. $tplan_info['notes'] . "</p>\n";
+		
 
 	return $output;
 }

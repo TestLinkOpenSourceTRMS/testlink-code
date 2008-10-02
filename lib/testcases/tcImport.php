@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/09/29 18:33:48 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/10/02 19:18:44 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -460,50 +460,45 @@ function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id
 */
 function create_xml_tcspec_from_xls($xls_filename,$xml_filename) 
 {
-  define('FIRTS_DATA_ROW',2);
-  define('IDX_COL_NAME',1);
-  define('IDX_COL_SUMMARY',2);
-  define('IDX_COL_STEPS',3);
-  define('IDX_COL_EXPRESULTS',4);
+	define('FIRST_DATA_ROW',2);
+	define('IDX_COL_NAME',1);
+	define('IDX_COL_SUMMARY',2);
+	define('IDX_COL_STEPS',3);
+	define('IDX_COL_EXPRESULTS',4);
   
+	$xls_handle = new Spreadsheet_Excel_Reader(); 
   
+	$xls_handle->setOutputEncoding('CP1252'); 
+	$xls_handle->read($xls_filename);
+	$xls_rows = $xls_handle->sheets[0]['cells'];
+	$xls_row_qty = sizeof($xls_rows);
   
-  $xls_handle = new Spreadsheet_Excel_Reader(); 
+	if($xls_row_qty <= FIRST_DATA_ROW)
+    	return;  // >>>----> bye!
   
-  $xls_handle->setOutputEncoding('CP1251'); 
-  $xls_handle->read($xls_filename);
-  $xls_rows = $xls_handle->sheets[0]['cells'];
-  $xls_row_qty=sizeof($xls_rows);
-  
-  if( $xls_row_qty <= FIRTS_DATA_ROW )
-  {
-     return;  // >>>----> bye!
-  }
-  
-  // OK, go ahead
-  $xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
-  fwrite($xmlFileHandle,"<testcases>\n");
+	$xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
+	fwrite($xmlFileHandle,"<testcases>\n");
 
-  for($idx=FIRTS_DATA_ROW; $idx <= $xls_row_qty; $idx++ )
-  {                       
-    $name=htmlspecialchars($xls_rows[$idx][IDX_COL_NAME]);
-    fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
-    
-    $summary=htmlspecialchars($xls_rows[$idx][IDX_COL_SUMMARY]);
-    fwrite($xmlFileHandle,"<summary>" . $summary . "</summary>\n");
-    
-    $steps=str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
-    $steps=htmlspecialchars($xls_rows[$idx][IDX_COL_STEPS]);
-    fwrite($xmlFileHandle,"<steps>".$steps."</steps>\n");
-    
-    $expresults=str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
-    $expresults=htmlspecialchars($xls_rows[$idx][IDX_COL_EXPRESULTS]);
-    fwrite($xmlFileHandle,"<expectedresults>".$expresults."</expectedresults>\n");
-    
-    fwrite($xmlFileHandle,"</testcase>\n");
-  }
-  fwrite($xmlFileHandle,"</testcases>\n");
-  fclose($xmlFileHandle);
+	for($idx = FIRST_DATA_ROW;$idx <= $xls_row_qty; $idx++ )
+	{                       
+		$name = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_NAME]));
+		fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
+	    
+		$summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
+	    fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
+	    
+	    $steps = str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
+	    $steps = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_STEPS]));
+	    fwrite($xmlFileHandle,"<steps><![CDATA[".$steps."]]></steps>\n");
+	    
+	    $expresults = str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
+	    $expresults = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_EXPRESULTS]));
+	    fwrite($xmlFileHandle,"<expectedresults><![CDATA[".$expresults."]]></expectedresults>\n");
+	    
+	    fwrite($xmlFileHandle,"</testcase>\n");
+	}
+	fwrite($xmlFileHandle,"</testcases>\n");
+	fclose($xmlFileHandle);
 }
 
 // --------------------------------------------------------------------------------------

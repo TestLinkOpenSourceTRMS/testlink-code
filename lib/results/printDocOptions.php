@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/09/29 19:48:11 $ $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2008/10/02 19:18:44 $ $Author: schlundus $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -109,7 +109,7 @@ switch($gui->report_type)
 	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
         $treeString = $treeContents->menustring;
-        $gui->ajaxTree = null;
+        $gui->ajaxTree = new stdClass();
         if($treemenu_type == 'EXTJS')
         {
             $gui->ajaxTree->root_node = $treeContents->rootnode;

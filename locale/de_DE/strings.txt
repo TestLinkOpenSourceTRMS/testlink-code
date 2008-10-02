@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/09/27 16:50:46 $ $Author: schlundus $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/10/02 19:18:44 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1375,14 +1375,14 @@ $TLS_warning_empty_pwd = "Das Passwort darf nicht leer sein!";
 $TLS_your_password_is_external = "Ihr Passwort wird extern verwaltet!<br>Aus diesem Grund kann es nicht in TestLink geändert werden.";
 
 $TLS_user_api_key = "Persönlicher API Schlüssel";
-$TLS_audit_login_history = "Login history";
+$TLS_audit_login_history = "Login Historie";
 $TLS_audit_last_succesful_logins = "Letzter erfolgreicher Login";
 $TLS_audit_last_failed_logins = "Letzter erfolgloser Login";
 $TLS_result_password_changed = "Ihr Passwort wurde erfolgreich geändert";
 $TLS_result_apikey_create_ok = "Neuer API Schlüssel wurde erzeugt";
 $TLS_result_user_changed = "Persönliche Daten geändert";
-$TLS_empty_old_passwd = "Empty Old Password. Please enter your Old Password";
-$TLS_never_logged = "Never logged";
+$TLS_empty_old_passwd = "Bitte geben Sie Ihr aktuelles Passwort ein!";
+$TLS_never_logged = "Noch nie angemeldet";
 
 // gui/templates/usersassign.tpl
 $TLS_TestProject = "Testprojekt";

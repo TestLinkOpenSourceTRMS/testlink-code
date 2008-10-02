@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.17 2007/12/02 17:08:16 franciscom Exp $ 
+* $Id: resultsSend.php,v 1.18 2008/10/02 19:18:44 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -137,15 +137,10 @@ if(isset($_POST['submit']))
 		$headers = null;
 		$send_cc_to_myself=false;
 		if (isset($_POST['cc']))
-		{
-			// 20051106 - fm
-			// $headers = "Cc: " . $_SESSION['email'] . "\r\n";
 			$send_cc_to_myself=true;
-    }
     
-    // 20050906 - fm
 		$msgBody .= "</body></html>";
-		$message = sendMail($_SESSION['email'],$_POST['to'], $_POST['subject'],
+		$message = sendMail($_SESSION['currentUser']->emailAddress,$_POST['to'], $_POST['subject'],
 		                    $msgBody,$send_cc_to_myself);
 	}
 }

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/09/29 19:48:12 $ by $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2008/10/02 19:18:44 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -34,9 +34,10 @@ $colDefinition = array();
 $columnsDefinition = new stdClass();
 $columnsDefinition->keywords = null;
 $columnsDefinition->testers = null;
-$statistics = new stdClass(); // array with metrics data
+$statistics = new stdClass();
 $statistics->keywords = null;
 $statistics->testers = null;
+$statistics->milestones = null;
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);

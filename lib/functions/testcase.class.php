@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.117 $
- * @modified $Date: 2008/10/03 05:25:10 $ $Author: asielb $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2008/10/03 16:47:23 $ $Author: franciscom $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -96,6 +96,8 @@ class testcase extends tlObjectWithAttachments
   const LATEST_VERSION=-1;
   const AUDIT_OFF=0;
   const AUDIT_ON=1;
+  const CHECK_DUPLICATE_NAME=1;
+  const DONT_CHECK_DUPLICATE_NAME=0;
     
   
 	var $db;
@@ -208,7 +210,7 @@ class testcase extends tlObjectWithAttachments
 function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
                 $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-                $check_duplicate_name=0,
+                $check_duplicate_name=self::DONT_CHECK_DUPLICATE_NAME,
                 $action_on_duplicate_name='generate_new',
                 $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 {

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.349 $
- * @modified $Date: 2008/10/03 05:07:23 $ by $Author: asielb $
+ * @version $Revision: 1.350 $
+ * @modified $Date: 2008/10/03 16:47:33 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -111,6 +111,13 @@ $TLS_estimated_time_min = "Estimated time (min):";
 
 $TLS_config_check_warnings = "There are warnings on your configuration";
 $TLS_see_details_on_file="See details on file: %s";
+
+$TLS_start_warning='---- Warning ----';
+$TLS_testlink_warning='Test Link Warning';
+$TLS_testcase_name_too_long='test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name='Original name';
+$TLS_end_warning='---- *** ----';
+
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Apply";

@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.5 2008/08/19 13:17:45 franciscom Exp $
+ * $Id: APIErrors.php,v 1.6 2008/10/03 04:55:18 asielb Exp $
  */
 
 /** 
@@ -82,6 +82,9 @@ define('NO_TESTSUITEID_STR', lang_get('API_NO_TESTSUITEID',null,1));
  */
 define('INVALID_AUTH', 2000);
 define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH',null,1));
+define('INSUFFICIENT_RIGHTS', 2010);
+define('INSUFFICIENT_RIGHTS_STR', lang_get('INSUFFICIENT_RIGHTS',null,1));
+
 
 /**
  * 3000 level - Test Plan errors

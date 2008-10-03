@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2008/09/25 20:20:29 $ by $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2008/10/03 16:41:30 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -533,9 +533,15 @@ define('VALID_REQ', 'v');
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
 // Used to force the max len of this field, during the automatic creation of requirements
+// or other import features
+//
 // havlatm: @TODO move to smarty config
+// 20081001 - franciscom: how we can move to smarty config if we need during import procees?
+//
 $g_field_size = new stdClass();
 $g_field_size->testsuite_name = 100;
+$g_field_size->testcase_name = 100;
+
 // requirements and req_spec tables field sizes
 $g_field_size->req_docid = 32;
 $g_field_size->req_title = 100;

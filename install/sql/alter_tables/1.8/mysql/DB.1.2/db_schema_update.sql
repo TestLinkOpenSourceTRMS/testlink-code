@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.15 $
-$Date: 2008/09/28 10:02:29 $
+$Revision: 1.16 $
+$Date: 2008/10/03 16:41:37 $
 $Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
@@ -14,6 +14,8 @@ want to change NAME  -> CHANGE
 want to change column properties -> MODIFY
 
 rev: 
+     20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
+
      20080927 - franciscom - fix bug when migration tcversions.importance
 
      20080810 - franciscom
@@ -47,7 +49,7 @@ CREATE TABLE  events (
   object_id int(10) unsigned NULL,
   object_type varchar(45) NULL,
   PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE  transactions (
   id int(10) unsigned NOT NULL auto_increment,
@@ -57,7 +59,7 @@ CREATE TABLE  transactions (
   user_id int(10) unsigned NOT NULL default '0',
   session_id varchar(45) default NULL,
   PRIMARY KEY  (id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE text_templates (
   id int(10) unsigned NOT NULL,
@@ -68,7 +70,7 @@ CREATE TABLE text_templates (
   creation_ts datetime NOT NULL default '1900-00-00 01:00:00',
   is_public tinyint(1) NOT NULL default '0',
   UNIQUE KEY idx_text_templates (tpl_type,title)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
+) DEFAULT CHARSET=utf8 COMMENT='Global Project Templates';
 
 
 CREATE TABLE user_group (
@@ -78,12 +80,22 @@ CREATE TABLE user_group (
   owner_id int(10) unsigned NOT NULL,
   testproject_id int(10) unsigned NOT NULL,
   UNIQUE KEY (title)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8;
 
 CREATE TABLE user_group_assign (
   usergroup_id int(10) unsigned NOT NULL,
   user_id int(10) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `cfield_testplan_design_values` (
+  field_id int(10) NOT NULL default '0',
+  link_id int(10) NOT NULL default '0' COMMENT 'point to testplan_tcversion id',   
+  value varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`link_id`),
+  KEY `idx_cfield_tplan_design_val` (`link_id`)
+) DEFAULT CHARSET=utf8;
+
 
 
 /* Step 3 - table changes */

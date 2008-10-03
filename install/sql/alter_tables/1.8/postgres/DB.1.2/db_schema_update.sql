@@ -1,9 +1,11 @@
--- $Revision: 1.3 $
--- $Date: 2008/09/28 10:02:43 $
+-- $Revision: 1.4 $
+-- $Date: 2008/10/03 16:41:43 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
-
+--
+-- 20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
+--
 -- 20080927 - franciscom - fix bug when migration tcversions.importance
 --
 -- Step 1 - Drops if needed
@@ -75,6 +77,18 @@ CREATE TABLE user_group_assign (
 );
 
 
+--
+-- Table structure for table cfield_testplan_design_values
+--
+CREATE TABLE "cfield_testplan_design_values" (  
+  "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES custom_fields (id),
+  "link_id" INTEGER NOT NULL DEFAULT '0' REFERENCES testplan_tcversions (id),
+  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  PRIMARY KEY ("field_id","link_id")
+); 
+CREATE INDEX "idx_cfield_tplan_design_val" ON "cfield_testplan_design_values" ("link_id");
+
+
 -- Step 3 - table changes
 -- tcversions
 UPDATE tcversions
@@ -116,6 +130,12 @@ ALTER TABLE testplan_tcversions ADD COLUMN urgency INT2 NOT NULL default '2',
 ALTER TABLE testplan_tcversions ADD COLUMN node_order INT NOT NULL default '1';
 COMMENT ON COLUMN testplan_tcversions.node_order IS 'order in execution tree'; 
 COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.8.0 Development - DB 1.2';
+
+-- custom_fields
+ALTER TABLE custom_fields ADD COLUMN show_on_testplan_design SMALLINT NOT NULL DEFAULT,
+ALTER TABLE custom_fields ADD COLUMN enable_on_testplan_design SMALLINT NOT NULL DEFAULT;
+COMMENT ON TABLE custom_fields IS 'Updated to TL 1.8 RC3  - DB 1.2';
+
 
 
 -- db_version

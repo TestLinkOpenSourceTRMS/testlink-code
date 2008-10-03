@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.348 $
- * @modified $Date: 2008/09/27 16:50:47 $ by $Author: schlundus $
+ * @version $Revision: 1.349 $
+ * @modified $Date: 2008/10/03 05:07:23 $ by $Author: asielb $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -2077,6 +2077,7 @@ $TLS_warning_empty_keyword = "Keyword must not be empty!";
 
 // api/TestlinkXMLRPCServerErrors.php
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
 $TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
 $TLS_API_NO_TCASEID = "No Test Case ID provided. A valid Test Case ID must be provided!";
 $TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided. A valid Test Case External ID must be provided!";

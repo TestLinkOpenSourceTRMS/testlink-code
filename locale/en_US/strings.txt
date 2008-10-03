@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/07/14 17:19:34 $ $Author: asielb $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/10/03 05:03:39 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -1744,6 +1744,7 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 
 // api/TestlinkXMLRPCServerErrors.php
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
 $TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
 $TLS_API_NO_TCASEID = "No tcid provided. A valid tcid must be provided!";
 $TLS_API_NO_TPLANID = "No tpid provided. A valid tpid must be provided!";

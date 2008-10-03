@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/10/02 19:18:44 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/10/03 17:01:17 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *  20081001 - franciscom - added logic to manage too long testcase name
  * 	20080813 - havlatm - added a few logging
  * 
  * *********************************************************************************** */
@@ -265,6 +266,9 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
   function: saveImportedTCData
   args :
   returns: 
+  
+  rev:
+      configure create to rename test case if exists 
 */
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
 {
@@ -272,6 +276,13 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 		return;
 		
 	$resultMap = array();
+	$fieldSizeCfg=config_get('field_size');
+	
+	// because name can be changed automatically during item creation
+	// to avoid name conflict adding a suffix automatically generated,
+	// is better to use a max size < max allowed size 
+	$safeSizeCfg = new stdClass();
+	$safeSizeCfg->testcase_name=($fieldSizeCfg->testcase_name) * 0.8;
 	
 	$tc_qty = sizeof($tcData);
 	if($tc_qty)
@@ -282,17 +293,36 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
 		$tc = $tcData[$idx];
-		
+
+		$name = $tc['name'];
 		$summary = $tc['summary'];
 		$expected_results = $tc['expectedresults'];
 		$steps = $tc['steps'];
-		$name = $tc['name'];
+    
+    $name_len=strlen($name);  
+    if( $name_len > $fieldSizeCfg->testcase_name)
+    {
+        // Will put original name inside summary
+        $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
+        $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
+        $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
+        $summary = nl2br($xx) . $summary;
+        $name=substr($name, 0, $safeSizeCfg->testcase_name);      
+    }
+    		
 		
 		$kwIDs = null;
 		if (isset($tc['keywords']) && $tc['keywords'])
 			$kwIDs = buildKeywordList($kwMap,$tc['keywords'],true);
-		if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,$expected_results,$userID,$kwIDs))
-			$resultMap[] = array($name,$ret['msg']);
+			
+		if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,
+		                              $expected_results,$userID,$kwIDs,
+		                              testcase::DEFAULT_ORDER,testcase::AUTOMATIC_ID,
+                                  testcase::CHECK_DUPLICATE_NAME,'generate_new'))
+    {
+        $resultMap[] = array($name,$ret['msg']);
+    }                              
+			
 	}
 
 	return $resultMap;

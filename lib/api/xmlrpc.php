@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/08/19 13:17:45 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/10/03 05:01:07 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -43,6 +43,7 @@ require_once("APIErrors.php");
 require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
 require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
+require_once(dirname(__FILE__) . "/../functions/user.class.php");
 // require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 
 /**
@@ -90,6 +91,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 	/** userID associated with the devKey provided */
 	private $userID = null;
+	
+	/** UserObject associated with the userID */
+	private $user = null;
 
 	/** array where all the args are stored for requests */
 	private $args = null;	
@@ -275,8 +279,21 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }
 		    else
 		    {
+		    	//Load User
+		    	$this->user = tlUser::getByID($this->dbObj,$this->userID);		    	
 		    	return true;
 		    }				
+    }
+    
+    protected function UserHasRight($roleQuestion)
+    {
+    	if ($this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
+    	{
+    		return true;
+    	} else {
+    		$this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, INSUFFICIENT_RIGHTS_STR);
+    		return false;
+    	}
     }
 
 	/**
@@ -778,7 +795,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       
     	if(!is_int($tcaseid))
     	{
-    		$this->errors[] = new IXR_Error(TCID_NOT_INTEGER, TCID_NOT_INTEGER_STR);
+    		$this->errors[] = new IXR_Error(TCASEID_NOT_INTEGER, TCASEID_NOT_INTEGER_STR);
     		return false;
     	}
     	$tcaseid = $this->dbObj->prepare_int($tcaseid);
@@ -813,7 +830,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$this->userID = null;
         	$this->devKey = $this->dbObj->prepare_string($devKey);
         	$query = "SELECT id FROM users WHERE script_key='{$this->devKey}'";
-        	$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
+        	$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
+        	    	
         	if(null == $this->userID)
         	{
         		return false;        		
@@ -1208,7 +1226,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		// TODO: look into switching to use $testplan->create_build method
 		$this->_setArgs($args);
-		if($this->_checkCreateBuildRequest($this->args))
+		if($this->_checkCreateBuildRequest($this->args) && $this->UserHasRight("testplan_create_build"))
 		{
 			$insertID = $this->_insertBuildToDB();			
 			$resultInfo = array();
@@ -1233,6 +1251,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public function getProjects($args)
 	{
 		$this->_setArgs($args);		
+		//TODO: NEED associated RIGHT
 		if($this->authenticate())
 		{
 			$testProjectObj = new testproject($this->dbObj);
@@ -1264,6 +1283,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 		$this->_setArgs($args);
 		// check the tplanid
+		//TODO: NEED associated RIGHT
 		if($this->_checkGetProjectTestPlansRequest())
 		{
 			$testProjectObj = new testproject($this->dbObj);
@@ -1279,10 +1299,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	// 20080518 - franciscom
 	public function createTestProject($args)
 	{
+	    
 	    $this->_setArgs($args);
 	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
 	
-	    if( $this->$checkRequestMethod() )
+	    if( $this->$checkRequestMethod() && $this->UserHasRight("mgt_modify_product"))
 	    {
 	        return true;
 	    }
@@ -1364,7 +1385,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 public function getTestCasesForTestSuite($args)
 	 {
 		$this->_setArgs($args);
-		if($this->_checkGetTestCasesForTestSuiteRequest())
+		if($this->_checkGetTestCasesForTestSuiteRequest() && $this->UserHasRight("mgt_view_tc"))
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
 				
@@ -1426,7 +1447,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 public function getTestCaseIDByName($args)
 	 {
 		$this->_setArgs($args);		
-		if($this->_checkGetTestCaseByIDNameRequest())
+		if($this->_checkGetTestCaseByIDNameRequest() && $this->UserHasRight("mgt_view_tc"))
 		{			
 			$testCaseName = $this->args[self::$testCaseNameParamName];
 
@@ -1505,7 +1526,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{		
 		$this->_setArgs($args);
 		// Verify that we have everything we need to create a new execution
-		if($this->_checkReportTCResultRequest($this->args))
+		if($this->_checkReportTCResultRequest($this->args) && $this->UserHasRight("testplan_execute"))
 		{			
 			$insertID = $this->_insertResultToDB();			
 			$resultInfo = array();
@@ -1562,66 +1583,72 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestCaseIdentity()
     {
-        $try_again=false;
+		//Three Cases - Internal ID, External ID, No Id        
         $status=true;
         $tcaseID=0;
         $my_errors=array();
 
-		    if($this->_isTestCaseIDPresent())
-		    {
-		      $tcaseID = $this->args[self::$testCaseIDParamName];
-		    }
-		    else
-		    {  
-		    	$my_errors[] = new IXR_Error(NO_TCASEID, NO_TCASEID_STR);
-		    	$try_again=true;
-		    	$status=false;
-		    }
+		$fromExternal=false;
+		$fromInternal=false;
 
-        if($try_again)
-        {
-            if($this->_isTestCaseExternalIDPresent())
-		        {
-		            $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
-		            $tcaseCfg=config_get('testcase_cfg');
-		            $glueCharacter=$tcaseCfg->glue_character;
-		            $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
-                $status = $tcaseID > 0 ? true : false;
-                if( !status )
-                {
-                    $my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
+	    if($this->_isTestCaseIDPresent())
+	    {
+		      $fromInternal=true;
+		      $tcaseID = $this->args[self::$testCaseIDParamName];
+		      $status = true;
+		      
+	    }
+		elseif ($this->_isTestCaseExternalIDPresent())
+		{
+			$fromExternal = true;
+			$tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
+		    $tcaseCfg=config_get('testcase_cfg');
+		    $glueCharacter=$tcaseCfg->glue_character;
+		    $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
+            $status = $tcaseID > 0 ? true : false;
+            //Invalid TestCase ID
+            if( !status )
+            {
+              	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
                                                  INVALID_TESTCASE_EXTERNAL_ID_STR);                  
-                } 
-		        } 
-		        else
-		        {  
-		        	$my_errors[] = new IXR_Error(NO_TCASEEXTERNALID, NO_TCASEEXTERNALID_STR);
-		        	$status=false;
-		        }
-        }		    
+            }
+		}
+        else
+		{  
+		  	$my_errors[] = new IXR_Error(NO_TCASEID, NO_TCASEID_STR);
+		   	$status=false;
+		}
+
 	    
-		    if( $status )
+	    if( $status )
+	    {
+	        $my_errors=null;
+	        if($this->_isTestCaseIDValid($tcaseID))
+	        {
+	            $this->_setTestCaseID($tcaseID);  
+	        }  
+	        else
+	        {  
+	        	  if ($fromInternal)
+	        	  {
+	        	  	$my_errors[] = new IXR_Error(INVALID_TCASEID, INVALID_TCASEID_STR);
+	        	  } elseif ($fromExternal) {
+	        	  	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
+                                                 INVALID_TESTCASE_EXTERNAL_ID_STR);
+	        	  }
+	        	  $status=false;
+	        }    	
+	    }
+	    
+	    
+	    if (!$status)
+	    {
+            foreach($my_errors as $error_msg)
 		    {
-		
-		        $my_errors=null;
-		        if($this->_isTestCaseIDValid($tcaseID))
-		        {
-		            $this->_setTestCaseID($tcaseID);  
-		        }  
-		        else
-		        {  
-		        	  $this->errors[] = new IXR_Error(INVALID_TCASEID, INVALID_TCASEID_STR);
-		        	  $status=false;
-		        }    	
-		    }
-		    else
-		    {
-		        foreach($my_errors as $error_msg)
-		        {
-		            $this->errors[] = $error_msg; 
-		        }    
-		    }
-		    return $status;
+		        $this->errors[] = $error_msg; 
+		    } 
+	    }
+	    return $status;
     }
 
 	 /**
@@ -1657,7 +1684,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		
 		
 		// Test Case ID, Build ID are checked if present
-		if(!$this->_checkGetTestCasesForTestPlanRequest())
+		if(!$this->_checkGetTestCasesForTestPlanRequest() && $this->UserHasRight("mgt_view_tc"))
 		{
 			return $this->errors;
 		}
@@ -1724,7 +1751,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 
 		$this->_setArgs($args);		
-		if($this->_checkGetTestCaseCustomFieldDesignValueRequest())
+		if($this->_checkGetTestCaseCustomFieldDesignValueRequest() && $this->UserHasRight("mgt_view_tc"))
 		{
 			return $this->errors;
 		}

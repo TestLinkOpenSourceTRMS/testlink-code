@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: TestlinkXMLRPCServerTestData.php,v 1.2 2007/12/03 23:04:42 asielb Exp $
+ * $Id: TestlinkXMLRPCServerTestData.php,v 1.3 2008/10/03 05:02:12 asielb Exp $
  */
  
 /** 
@@ -23,6 +23,7 @@ class TestlinkXMLRPCServerTestData
 {
 	// dependant on data in the sql file
 	const testDevKey = "validTestDevKey";
+	const noRightsDevKey = "devKeyWithNoRights";
 	const testTPID = 2; 
 	const testTCID = 4;
 	const testBuildID = 1;

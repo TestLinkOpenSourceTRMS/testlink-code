@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.116 $
- * @modified $Date: 2008/09/19 09:29:30 $ $Author: franciscom $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2008/10/03 05:25:10 $ $Author: asielb $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -506,11 +506,29 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 
 		$gui->tc_current_version[] = array($tc_array[0]);
 
+			  
+		  //Get UserID and Updater ID for current Version
+		  $tc_current = $gui->tc_current_version[0][0];
+		  $author_id = $tc_current['author_id'];
+		  $updater_id = $tc_current['updater_id'];
+		  $userid_array[$author_id] = $author_id;
+		  $userid_array[$updater_id] = $updater_id;
+			
+		
 		$qta_versions = count($tc_array);
 		if($qta_versions > 1)
 			$tc_other_versions[] = array_slice($tc_array,1);
 		else
 			$tc_other_versions[] = null;
+			
+	//Get author and updater id for each version
+		foreach($tc_other_versions[0] as $key => $version)
+		{				
+			$author_id = $version['author_id'];
+  			$updater_id = $version['updater_id'];
+  			$userid_array[$author_id] = $author_id;
+  			$userid_array[$updater_id] = $updater_id;				
+		}
 
 		// get assigned REQs
 		$arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
@@ -519,6 +537,13 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
 		$smarty->assign('cf',$cf_smarty);
  	}
+ 	
+		//Removing duplicate and NULL id's
+		unset($userid_array['']);
+		foreach($userid_array as $value)
+		{		
+			$passeduserarray[] = $value;
+		}
 
   // new dBug($status_quo_map);
 		
@@ -531,7 +556,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 	$smarty->assign('parentTestSuiteName',$parentTestSuiteName);
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
-	$smarty->assign('users',tlUser::getAll($this->db,null,'id'));
+	$smarty->assign('users',tlUser::getByIDs($this->db,$passeduserarray,'id'));
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);
 	$smarty->assign('can_delete_version',$can_edit);

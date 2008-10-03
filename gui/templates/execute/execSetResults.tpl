@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.26 2008/09/24 20:17:53 schlundus Exp $
+$Id: execSetResults.tpl,v 1.27 2008/10/03 05:21:14 asielb Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20080528 - franciscom - BUGID 1504 - version number management
@@ -397,7 +397,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
      			<div class="{$gsmarty_tc_status_css.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
-     			{$labels.test_exec_by} {$title_sep} {$gui->alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape}
+     			{$labels.test_exec_by} {$title_sep} {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
      			{$title_sep_type3}
      			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
      			{$title_sep_type3}
@@ -463,7 +463,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   				</td>
   				{/if}
 
-  				<td>{$gui->alluserInfo[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
+  				<td>{$users[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}" style="text-align:center">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>

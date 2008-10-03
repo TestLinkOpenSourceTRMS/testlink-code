@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2008/09/24 20:17:54 $ $Author: schlundus $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2008/10/03 05:23:10 $ $Author: asielb $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -164,6 +164,11 @@ if(!is_null($linked_tcversions))
     {
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
                                                                        ANY_BUILD,GET_NO_EXEC);
+                                                                       
+         //Get UserID and Updater ID for current Version
+         $tc_current = $gui->map_last_exec_any_build;
+		 $testerid = $tc_current['tester_id'];
+		 $userid_array[$testerid] = $testerid;
     }
     
     $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
@@ -171,6 +176,17 @@ if(!is_null($linked_tcversions))
     // Get attachment,bugs, etc
     if(!is_null($gui->other_execs))
     {
+    	
+    	//Get the Tester ID for all previous executions
+		foreach ($gui->other_execs as $key => $execution)
+		{    	
+	    	foreach ($execution as $singleExecution)
+	    	{    			  
+			  $testerid = $singleExecution['tester_id'];
+			  $userid_array[$testerid] = $testerid;
+	    	}    	
+		}
+
       $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id);
  			$gui->attachments=$other_info['attachment'];
       $gui->bugs=$other_info['bugs'];
@@ -179,6 +195,15 @@ if(!is_null($linked_tcversions))
 
 }
 
+		//Removing duplicate and NULL id's
+		unset($userid_array['']);
+		foreach($userid_array as $value)
+		{		
+			$passeduserarray[] = $value;
+		}
+		
+		
+
 $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
 
@@ -186,6 +211,7 @@ smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
 //  future must be initialized in a right way
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
+$smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -777,9 +803,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
     
     $gui->execution_types=$tcaseMgr->get_execution_types();
-    $gui->alluserInfo = tlUser::getAll($dbHandler,null,'id');
-
-
+   
 
 
     if ($argsObj->filter_assigned_to)

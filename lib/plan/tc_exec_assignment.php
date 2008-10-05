@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.24 2008/05/10 17:59:15 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.25 2008/10/05 17:53:18 franciscom Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -132,8 +132,13 @@ switch($args->level)
 		break;
 }
 
+//echo "<pre>debug 20081004 - \$out['spec_view'] - " . __FUNCTION__ . " --- "; print_r($out['spec_view']); echo "</pre>";
+
 $gui->items=$out['spec_view'];
 $gui->has_tc=$out['num_tc'] > 0 ? 1:0;
+$gui->support_array=array_keys($gui->items);
+
+//echo "<pre>debug 20081005 - \$gui - " . __FUNCTION__ . " --- "; print_r($gui); echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);

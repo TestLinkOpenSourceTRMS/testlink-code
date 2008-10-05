@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.11 $ $Author: franciscom $
- * @modified $Date: 2008/09/19 09:29:30 $
+ * @version $Revision: 1.12 $ $Author: franciscom $
+ * @modified $Date: 2008/10/05 17:53:18 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20081004 - franciscom - minor code clean up
  *     20080919 - franciscom - BUGID 1716
  *     20080811 - franciscom - BUGID 1650 (REQ)
  *                             documentation improvements
@@ -186,8 +187,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	    }
 	    $tck_map = $tobj_mgr->get_keywords_tcases($tobj_id,$keyword_id);
 	   
-	    // Get the Test Cases that has the Keyword_id
-	    // filter the test_spec
+	    // Get the Test Cases that has the Keyword_id to filter the test_spec
 	    foreach($test_spec as $key => $node)
 	    {
 		    if($node['node_type_id'] == $tcase_node_type && !isset($tck_map[$node['id']]) )
@@ -205,8 +205,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 		// filter the test_spec
 		foreach($test_spec as $key => $node)
 		{
-		  // 20080510 - franciscom
-			// if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
 			if($node['node_type_id'] == $tcase_node_type &&  !in_array($node['id'],$testCaseSet) )
 				$test_spec[$key]=null;            
 		}
@@ -218,17 +216,19 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
     $a_tsuite_idx = array();
   	$hash_id_pos[$id] = $idx;
   	$out[$idx]['testsuite'] = array('id' => $id, 'name' => $name);
+  	//$out[$idx]['children_testsuites'] = array(); // 20081004 - franciscom
+  	
   	$out[$idx]['testcases'] = array();
   	$out[$idx]['write_buttons'] = 'no';
   	
   	$out[$idx]['testcase_qty'] = 0;
   	$out[$idx]['level'] = 1;
-
+    
     $idx++;
   	if(count($test_spec))
   	{
   		$pivot = $test_spec[0];
-  		$the_level = 2;
+  		$the_level = $out[0]['level']+1;
   		$level = array();
   
   		foreach ($test_spec as $current)
@@ -283,11 +283,15 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				$out[$idx]['level'] = $the_level;
   				$out[$idx]['write_buttons'] = 'no';
   				$hash_id_pos[$current['id']] = $idx;
+
+  		    // $out[$idx-1]['children_testsuites'][]=$out[$idx]['testsuite'];
+
   				$idx++;
   				    
   				// update pivot.
   				$level[$current['parent_id']] = $the_level;
-  				$pivot = $current;
+      		$pivot = $current;
+  	 
   		    }
   		} // foreach
 	} // count($test_spec))
@@ -299,11 +303,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 			if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
 				$map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)  
 				{
+				  // why not unset ?
+				  // 
 				  $out[$key]=null;
 				}
 			}
 	}
-	
 	
   // and now ???
 	if( !is_null($out[0]) )
@@ -326,7 +331,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   			$parent_idx = $a_tsuite_idx[$tc_id];
   		
         // --------------------------------------------------------------------------
-        if($the_tc['active'] == 1)
+        if($the_tc['active'] == 1 && !is_null($out[$parent_idx]) )
         {       
   	      if( !isset($out[$parent_idx]['testcases'][$tc_id]['execution_order']) )
   	      {
@@ -397,7 +402,26 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	} // !is_null($out[0])
 	
 	// --------------------------------------------------------------------------------------------
-	$out=null;
+	unset($out);
+	//echo "<pre>debug 20081004 - \$result['spec_view'] - " . __FUNCTION__ . " --- "; print_r($result['spec_view']); echo "</pre>";
+	if( count($result['spec_view']) > 0)
+	{
+	  foreach($result['spec_view'] as $key => $value)
+	  {
+	      if( is_null($value))
+	      {
+	          unset($result['spec_view'][$key]);
+	      }
+	      else
+	      {
+	          $tsuite_id=$value['testsuite']['id'];  
+	          $result['spec_view'][$key]['children_testsuites']=
+	                  $tcase_mgr->tree_manager->get_subtree_list($tsuite_id,$hash_descr_id['testsuite']);  
+	      }  
+	  }
+	  
+	}
+	
 	if( count($result['spec_view']) > 0 && $do_prune)
 	{                                                
 	  foreach($result['spec_view'] as $key => $value)
@@ -422,7 +446,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
              }
            }
          } 
-         
       } // is_null($value)
     }
 	}
@@ -466,6 +489,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   }
 	// --------------------------------------------------------------------------------------------
 
+  // 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
+  $result['spec_view']=array_values($result['spec_view']);
 	return $result;
 }
 

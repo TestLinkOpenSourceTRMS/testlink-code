@@ -1,9 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.10 2008/09/24 20:17:54 schlundus Exp $
+$Id: tc_exec_assignment.tpl,v 1.11 2008/10/05 17:52:29 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20081005 - franciscom - added new logic to improve check/uncheck in order
+                             to act on contained test suites.
+                             
      20070930 - franciscom - BUGID 
      tcase name href to open window with test case spec.
      
@@ -13,10 +16,30 @@ rev :
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
+                          exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+	var check_msg="{$labels.exec_assign_no_testcase}";
+	var alert_box_title = "{$labels.warning}";
+{literal}
+
+function check_action_precondition(container_id,action)
+{
+	if(checkbox_count_checked(container_id) <= 0)
+	{
+		alert_message(alert_box_title,check_msg);
+		return false;
+	}
+	return true;
+}
+</script>
+{/literal}
+
 </head>
 <body>
 
@@ -31,97 +54,109 @@ rev :
 
 {* prefix for checkbox name ADD*}   
 {assign var="add_cb" value="achecked_tc"}
- 
   
 <form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
-
-{* 20070406 *}
 <div class="workBack" style="height: 450px; overflow-y: auto;">
 	
-	{foreach from=$gui->items item=ts}
+	{assign var=top_level value=$gui->items[0].level}
+	
+	{foreach from=$gui->items item=ts key=idx name="div_drawing"}
 	  {assign var="ts_id" value=$ts.testsuite.id}
 	  {assign var="div_id" value=div_$ts_id}
 	  
-	  <div id="{$div_id}" style="margin:0px 0px 0px {$ts.level}0px;">
-	    <h3>{$ts.testsuite.name|escape}</h3>
+	  {if $ts_id != '' }
+	  
+	    <div id="{$div_id}" style="margin:0px 0px 0px {$ts.level}0px;border:1;">
+      <br />
+      {* check/uncheck on ALL contained test suites is implemented with this clickable image *}
+	    <h3 class="testlink"><img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			                          onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
+                                title="{$labels.check_uncheck_children_checkboxes}" />
+      {$ts.testsuite.name|escape}
+	    </h3>
 
-     {* used as memory for the check/uncheck all checkbox javascript logic *}
-     <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
+      {* used as memory for the check/uncheck all checkbox javascript logic *}
+      <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
+  		{$labels.user_bulk_assignment}
+  		
+  		{* Bulk Tester Object ID (BTOID)*}
+  		{assign var=btoid value=bulk_tester_div_$ts_id}
+  		
+  		<select name="bulk_tester_div[{$ts_id}]"  id="{$btoid}">
+      	{html_options options=$gui->testers selected=0}
+      </select>
+  		<input type='button' name='{$ts.testsuite.name|escape}_mua' 
+            onclick='if(check_action_precondition("{$div_id}","default"))
+                        set_combo_if_checkbox("{$div_id}","tester_for_tcid_",
+                                              document.getElementById("{$btoid}").value)' 
+             value="{$labels.btn_do}" />
+  		<br />
 
     	{if $ts.write_buttons eq 'yes'}
-  			<br />
-  			{$labels.user_bulk_assignment}
-  			
-  			{* Bulk Tester Object ID (BTOID)*}
-  			{assign var=btoid value=bulk_tester_div_$ts_id}
-  			
-  			<select name="bulk_tester_div[{$ts_id}]"  id="{$btoid}">
-      		{html_options options=$gui->testers selected=0}
-      	</select>
-      	<input type='button' name='{$ts.testsuite.name|escape}_mua' 
-      	      onclick='javascript: set_combo_if_checkbox("{$div_id}",
-      	                                                 "tester_for_tcid_",
-      	                                                 document.getElementById("{$btoid}").value)' 
-      	       value="{$labels.btn_do}" />
-  			<br />
               	     
 
-      {if $ts.testcase_qty gt 0 }
-          <table cellspacing="0" style="font-size:small;" width="100%">
-           <tr style="background-color:blue;font-weight:bold;color:white">
-			     <td width="5" align="center">
-			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
-                    title="{$labels.check_uncheck_all_checkboxes}" />
-			     </td>
-          	<td class="tcase_id_cell">{$labels.th_id}</td> 
-            <td>{$labels.th_test_case}</td>
-          	<td align="center">&nbsp;&nbsp;{$labels.version}</td>
-          	<td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
-          	<td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
-          </tr>
-          {foreach from=$ts.testcases item=tcase }
-          	{if $tcase.linked_version_id ne 0}
-          	  <tr>
-            	  <td>
-						<input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}" />
-						<input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}" />
-						<input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}" />
-        				<input type="checkbox"  name='{$add_cb}[{$tcase.id}]' 
-    				                            id='{$add_cb}_{$tcase.id}' 
-        				                        value="{$tcase.linked_version_id}" />
-       				  </td>
-            	  <td>
-            	  {$gui->testCasePrefix|escape}{$tcase.external_id|escape}
+        {if $ts.testcase_qty gt 0 }
+            <table cellspacing="0" style="font-size:small;" width="100%">
+             <tr style="background-color:blue;font-weight:bold;color:white">
+			       <td width="5" align="center">
+			           <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			                onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
+                      title="{$labels.check_uncheck_all_checkboxes}" />
+			       </td>
+            	<td class="tcase_id_cell">{$labels.th_id}</td> 
+              <td>{$labels.th_test_case}</td>
+            	<td align="center">&nbsp;&nbsp;{$labels.version}</td>
+            	<td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
+            	<td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
+            </tr>
+            {foreach from=$ts.testcases item=tcase }
+            	{if $tcase.linked_version_id ne 0}
+            	  <tr>
+              	  <td>
+			  			<input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}" />
+			  			<input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}" />
+			  			<input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}" />
+          				<input type="checkbox"  name='{$add_cb}[{$tcase.id}]' 
+    	  			                            id='{$add_cb}_{$ts_id}_{$tcase.id}' 
+          				                        value="{$tcase.linked_version_id}" />
+         				  </td>
+              	  <td>
+              	  {$gui->testCasePrefix|escape}{$tcase.external_id|escape}
+                  </td>
+              	  <td title="{$labels.show_tcase_spec}">
+              	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
+                  </td>
+                  <td align="center">
+          				{$tcase.tcversions[$tcase.linked_version_id]}
+                  </td>
+                  <td align="center">
+                  {$gui->users[$tcase.user_id]|escape}
+                  {if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if} 
+                  </td>
+        
+                  <td align="center">
+        		  		<select name="tester_for_tcid[{$tcase.id}]" 
+        		  		        id="tester_for_tcid_{$tcase.id}"
+        		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
+        			  	{html_options options=$gui->testers selected=$tcase.user_id}
+        				  </select>
                 </td>
-            	  <td title="{$labels.show_tcase_spec}">
-            	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
-                </td>
-                <td align="center">
-        				{$tcase.tcversions[$tcase.linked_version_id]}
-                </td>
-                <td align="center">
-                {$gui->users[$tcase.user_id]|escape}
-                {if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if} 
-                </td>
-
-                <td align="center">
-      		  		<select name="tester_for_tcid[{$tcase.id}]" 
-      		  		        id="tester_for_tcid_{$tcase.id}"
-      		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
-      			  	{html_options options=$gui->testers selected=$tcase.user_id}
-      				  </select>
-              </td>
-              </tr>
-    	      {/if}		
-    			{/foreach}
-          </table>
-      {/if}
+                </tr>
+    	        {/if}		
+    	  		{/foreach}
+            </table>
+        {/if}
+      {/if} {* write buttons*}
     
-    {/if} {* write buttons*}
-    </div>
+      {if $ts.level gte $gui->items[$smarty.foreach.div_drawing.iteration].level }
+          {assign var="max_loop" value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
+          {assign var="max_loop" value=$ts.level-$max_loop+1}
+          {section name="div_closure" loop=$gui->support_array max=$max_loop} </div> {/section}
+      {/if}
+      {if $smarty.foreach.div_drawing.last}</div> {/if}
+    
+    {/if} {* {if $ts_id != '' } *}
 	{/foreach}
-
 </div>
 
 <div class="workBack">    

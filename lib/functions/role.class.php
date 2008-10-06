@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/04/14 09:59:05 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/10/06 19:01:32 $ $Author: schlundus $
  *
  * rev: 20080412 - franciscom - typo error
  */
@@ -222,7 +222,12 @@ class tlRole extends tlDBObject
 	*/
 	public function hasRight($right)
 	{
-		$rights = explode(",",implode(",",(array)$this->rights));
+		$roleRights = (array)$this->rights;
+		$rights = array();
+		foreach($roleRights as $right)
+		{
+			$rights = $right->name;
+		}
 		return in_array($right,$rights);
 	}
 	

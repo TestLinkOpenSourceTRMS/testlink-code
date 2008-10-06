@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/09/20 21:02:54 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/10/06 19:01:32 $ $Author: schlundus $
  *
  */
 
@@ -355,9 +355,12 @@ class tlUser extends tlDBObject
 		global $g_propRights_global;
 		global $g_propRights_product;
 		
-		$globalRights = is_null($this->globalRole->rights) ? '' : $this->globalRole->rights;
-		//SCHLUNDUS: hack, will be removed later
-		$globalRights = explode(",",implode(",",(array)$globalRights));
+		$userGlobalRights = (array)$this->globalRole->rights;
+		$globalRights = array();
+		foreach($userGlobalRights as $right)
+		{
+			$globalRights[] = $right->name;
+		}
 		
 		if (!is_null($tplanID))
 			$testPlanID = $tplanID;
@@ -376,22 +379,26 @@ class tlUser extends tlDBObject
 		/* if $productID == -1 we dont check rights at product level! */
 		if (isset($userTestProjectRoles[$productID]))
 		{
-			$productRights = $userTestProjectRoles[$productID]->rights;
-			//SCHLUNDUS: hack, will be removed later
-			$productRights = explode(",",implode(",",(array)$productRights));
+			$userProductRights = (array)$userTestProjectRoles[$productID]->rights;
+			$productRights = array();
+			foreach($userProductRights as $right)
+			{
+				$productRights[] = $right->name;
+			}
 			//subtract global rights		
 			$productRights = array_diff($productRights,array_keys($g_propRights_global));
-
 			propagateRights($globalRights,$g_propRights_global,$productRights);
 			$allRights = $productRights;
 		}
 		/* if $tplanID == -1 we dont check rights at tp level! */
 		if (isset($userTestPlanRoles[$testPlanID]))
 		{
-			$testPlanRights = $userTestPlanRoles[$testPlanID]->rights;
-			//SCHLUNDUS: hack, will be removed later
-			$testPlanRights = explode(",",implode(",",(array)$testPlanRights));
-			
+			$userTestPlanRights = (array) $userTestPlanRoles[$testPlanID]->rights;
+			$testPlanRights = array();
+			foreach($userTestPlanRights as $right)
+			{
+				$testPlanRights[] = $right->name;
+			}
 			//subtract product rights		
 			$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
 			

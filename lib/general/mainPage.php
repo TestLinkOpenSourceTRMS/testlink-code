@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.46 $ $Author: franciscom $
- * @modified $Date: 2008/09/05 08:16:53 $
+ * @version $Revision: 1.47 $ $Author: franciscom $
+ * @modified $Date: 2008/10/06 20:10:53 $
  *
  * @author Martin Havlat
  * 
@@ -30,7 +30,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 
 // BUGID 1698
-if( function_exists('memory_get_usage') )
+if( function_exists('memory_get_usage') && function_exists('memory_get_peak_usage') )
 {
     tlog("mainPage.php: Memory after common> Usage: ".memory_get_usage()." | Peak: ".memory_get_peak_usage() , 'DEBUG');
 }

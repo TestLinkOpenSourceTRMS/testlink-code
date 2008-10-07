@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.7 2008/07/21 09:25:03 havlat Exp $
+$Id: resultsGeneral.tpl,v 1.8 2008/10/07 19:13:44 schlundus Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -44,12 +44,18 @@ Revisions:
 	{foreach item=res from=$buildResults}
   	<tr>
   		<td>{$res.build_name|escape}</td>
-  		<td>{$res.total_tc}</td>
-    	{foreach key=status item=the_column from=$buildColDefinition}
-        	<td>{$res.details[$status].qty}</td>
-        	<td>{$res.details[$status].percentage}</td>
-    	{/foreach}
-  		<td>{$res.percentage_completed}</td>
+  		{if isset($res.total_tc)}
+	  		<td>{$res.total_tc}</td>
+	    	{foreach key=status item=the_column from=$buildColDefinition}
+	        	<td>{$res.details[$status].qty}</td>
+	        	<td>{$res.details[$status].percentage}</td>
+	    	{/foreach}
+	  		<td>{$res.percentage_completed}</td>
+	  	{else}
+	  		{foreach item=the_column from=$buildColDefinition}
+	  		<td>&nbsp;</td>
+	  		{/foreach}
+	  	{/if}
   	</tr>
 	{/foreach}
 	

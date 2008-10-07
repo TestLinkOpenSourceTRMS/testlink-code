@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/10/02 19:18:44 $ by $Author: schlundus $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/10/07 19:13:44 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -256,9 +256,9 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args=new stdClass();
-    $args->tplan_id=$_REQUEST['tplan_id'];
-    $args->tproject_id=$_SESSION['testprojectID'];
+    $args = new stdClass();
+    $args->tplan_id = $_REQUEST['tplan_id'];
+    $args->tproject_id = $_SESSION['testprojectID'];
     $args->format = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
 
 	if (is_null($args->format))

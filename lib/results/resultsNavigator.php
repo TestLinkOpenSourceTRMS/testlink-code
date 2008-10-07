@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.44 2008/04/19 21:52:21 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.45 2008/10/07 19:13:44 schlundus Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -24,13 +24,13 @@ require_once('reports.class.php');
 testlinkInitPage($db);
 tLog('resultsNavigator.php called');
 
-$template_dir='results/';
+$template_dir = 'results/';
 
-$do_report=array();
-$do_report['status_ok']=1;
-$do_report['msg']='';
+$do_report = array();
+$do_report['status_ok'] = 1;
+$do_report['msg'] = '';
 $selectedReportType = null;
-$workframe="";
+$workframe = "";
 
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
@@ -38,7 +38,6 @@ $btsEnabled = config_get('bugInterfaceOn');
 
 $tplan_mgr = new testplan($db);
 $reports_magic = new tlReports($db, $tplan_id);
-
 
 // -----------------------------------------------------------------------------
 // Do some checks to understand if reports make sense
@@ -49,8 +48,8 @@ tLog('TC in TP count = ' . $tc4tp_count);
 if( $tc4tp_count == 0)
 {
    // Test plan without test cases
-   $do_report['status_ok']=0;
-   $do_report['msg']=lang_get('report_tplan_has_no_tcases');       
+   $do_report['status_ok'] = 0;
+   $do_report['msg'] = lang_get('report_tplan_has_no_tcases');       
 }
 
 // Build qty
@@ -59,45 +58,41 @@ tLog('Active Builds count = ' . $build_count);
 if( $build_count == 0)
 {
    // Test plan without builds can have execution data
-   $do_report['status_ok']=0;
-   $do_report['msg']=lang_get('report_tplan_has_no_build');       
+   $do_report['status_ok'] = 0;
+   $do_report['msg'] = lang_get('report_tplan_has_no_build');       
 }
 
 // -----------------------------------------------------------------------------
 // get navigation data
 $href_map = array();
-$map_tplans=array();
+$map_tplans = array();
 if($do_report['status_ok'])
 {
   	if (isset($_GET['format']))
-	  $selectedReportType = intval($_GET['format']);
+		$selectedReportType = intval($_GET['format']);
   	else
-	  $selectedReportType = sizeof($tlCfg->reports_formats) ? key($tlCfg->reports_formats) : null;
+		$selectedReportType = sizeof($tlCfg->reports_formats) ? key($tlCfg->reports_formats) : null;
 
 	// create a list or reports
 	$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs'], 
 		$tlCfg->reports_formats[$selectedReportType]);
 
-	$tplans = getAccessibleTestPlans($db, $tproject_id, $_SESSION['userID'], 1);
-	foreach($tplans as $key => $value)
-	{
-  		$map_tplans[$value['id']]=$value['name'];
-	}
 }
-$workframe=$_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
+$tplans = getAccessibleTestPlans($db, $tproject_id, $_SESSION['userID'], 1);
+foreach($tplans as $key => $value)
+{
+  	$map_tplans[$value['id']] = $value['name'];
+}
 
+$workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
 
-$smarty = new TLSmarty;
-
+$smarty = new TLSmarty();
 $smarty->assign('workframe', $workframe);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('arrData', $href_map);
 $smarty->assign('tplans', $map_tplans);
-//$smarty->assign('arrReportTypes', $reports_magic->get_list_report_formats());
 $smarty->assign('arrReportTypes', $tlCfg->reports_formats);
-
 $smarty->assign('tplan_id', $tplan_id);
 $smarty->assign('selectedReportType', $selectedReportType);
-
 $smarty->display($template_dir .'resultsNavigator.tpl');
 ?>

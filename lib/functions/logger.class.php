@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/09/29 18:33:48 $ $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/10/07 19:13:44 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -502,7 +502,6 @@ class tlEventManager extends tlObjectWithDB
 		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
 		
 		$this->db->exec_query($query);
-		
 		$query = "SELECT id FROM transactions t WHERE (SELECT COUNT(*) FROM events e WHERE e.transaction_id = t.id) = 0";
 		$transIDs = $this->db->fetchColumnsIntoArray($query,"id");
 		if ($transIDs)

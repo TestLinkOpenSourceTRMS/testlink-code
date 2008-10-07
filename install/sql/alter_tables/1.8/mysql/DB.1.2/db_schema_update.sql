@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.16 $
-$Date: 2008/10/03 16:41:37 $
-$Author: franciscom $
+$Revision: 1.17 $
+$Date: 2008/10/07 19:13:44 $
+$Author: schlundus $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
@@ -38,17 +38,19 @@ DROP TABLE IF EXISTS user_group_assign;
 
 
 /* Step 2 - new tables */
-CREATE TABLE  events (
-  id int(10) unsigned NOT NULL auto_increment,
-  transaction_id int(10) unsigned NOT NULL default '0',
-  log_level smallint(5) unsigned NOT NULL default '0',
-  source varchar(45) NULL,
-  description text NOT NULL,
-  fired_at int(10) unsigned NOT NULL default '0',
-  activity varchar(45) NULL,
-  object_id int(10) unsigned NULL,
-  object_type varchar(45) NULL,
-  PRIMARY KEY  (id)
+CREATE TABLE `events` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `transaction_id` int(10) unsigned NOT NULL default '0',
+  `log_level` smallint(5) unsigned NOT NULL default '0',
+  `source` varchar(45) default NULL,
+  `description` text NOT NULL,
+  `fired_at` int(10) unsigned NOT NULL default '0',
+  `activity` varchar(45) default NULL,
+  `object_id` int(10) unsigned default NULL,
+  `object_type` varchar(45) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IX_TransID` (`transaction_id`),
+  KEY `IX_FiredAt` (`fired_at`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE  transactions (

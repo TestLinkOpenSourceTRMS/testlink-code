@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.43 2008/09/02 16:39:29 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.44 2008/10/07 19:13:44 schlundus Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -110,17 +110,20 @@ CREATE TABLE `db_version` (
   `notes` text
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE  `events` (
+
+CREATE TABLE `events` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `transaction_id` int(10) unsigned NOT NULL default '0',
   `log_level` smallint(5) unsigned NOT NULL default '0',
-  `source` varchar(45) NULL,
+  `source` varchar(45) default NULL,
   `description` text NOT NULL,
   `fired_at` int(10) unsigned NOT NULL default '0',
-  `activity` varchar(45) NULL,
-  `object_id` int(10) unsigned NULL,
-  `object_type` varchar(45) NULL,
-  PRIMARY KEY  (`id`)
+  `activity` varchar(45) default NULL,
+  `object_id` int(10) unsigned default NULL,
+  `object_type` varchar(45) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `IX_TransID` (`transaction_id`),
+  KEY `IX_FiredAt` (`fired_at`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `execution_bugs` (

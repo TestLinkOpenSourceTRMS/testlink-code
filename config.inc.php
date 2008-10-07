@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.199 $
- * @modified $Date: 2008/09/29 18:33:47 $ by $Author: schlundus $
+ * @version $Revision: 1.200 $
+ * @modified $Date: 2008/10/07 07:40:52 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20081006 - franciscom - config for rounding via nifty corners
  *     20080925 - franciscom - refactoring of urgencyImportance config
  *                             $tlCfg->req_cfg->child_requirements_mgmt
  *                             
@@ -314,6 +315,13 @@ $tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring
 // @TODO Ok, then merge these two attributes into one                                           
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';
+
+// Enable/disable rounded corners via javascript
+$tlCfg->gui->round_corners=new stdClass();
+$tlCfg->gui->round_corners->exec_history=ENABLED;
+$tlCfg->gui->round_corners->tc_title=ENABLED;
+$tlCfg->gui->round_corners->tc_spec=ENABLED;
+
 
 /** 
  * Display name and surname in all user lists using a format defined in $g_username_format

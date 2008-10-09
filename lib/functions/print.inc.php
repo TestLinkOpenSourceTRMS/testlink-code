@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2008/10/02 19:18:44 $ by $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2008/10/09 20:24:08 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -392,14 +392,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 		{
 			foreach ($arrReqs as $req)
 			{
-				//@TODO: htmlspecialchars needed?
-				$code .=  $req['id'] . ":  " . $req['title'] . "<br />";
+				$code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
 			}
 		}
 		else
-		{
-			$code .= '&nbsp;' . lang_get('none') . '<br>';
-		}
+			$code .= '&nbsp;' . lang_get('none') . '<br />';
+		
 		$code .= "</td></tr>\n";
 	}
 	// collect keywords for TC

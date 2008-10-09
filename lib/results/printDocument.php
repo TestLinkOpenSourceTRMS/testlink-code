@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.7 2008/09/21 19:02:48 schlundus Exp $
+*  @version 	$Id: printDocument.php,v 1.8 2008/10/09 20:24:08 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -113,7 +113,6 @@ if($tree)
 	$tree['name'] = $args->tproject_name;
 	$tree['id'] = $args->tproject_id;
 	$tree['node_type_id'] = $hash_descr_id['testproject'];
-	
 	switch ($args->print_scope)
 	{
 		case 'testproject':

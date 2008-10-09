@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.17 2008/05/06 06:25:57 franciscom Exp $
+$Id: eventviewer.tpl,v 1.18 2008/10/09 19:11:56 schlundus Exp $
 
 Event Viewer
 
@@ -145,7 +145,7 @@ fieldset
 			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
 			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$startDate}" />
 			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','startDate');" value="^" />
-			<div id="startDate-cal" style="position:absolute;"></div>
+			<div id="startDate-cal" style="position:absolute;width:240px;left:300px"></div>
 			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$endDate}" />
 			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','endDate');" value="^" />
 			<br /><br />

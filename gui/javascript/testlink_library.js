@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.62 2008/07/25 10:28:26 havlat Exp $
+// $Id: testlink_library.js,v 1.63 2008/10/09 19:02:30 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -736,13 +736,21 @@ function showHideByClass(tagName,className)
 
 function showCal(id,dateField)
 {
+	var x = document.getElementById(id);
+	x.innerHTML = '';
 	var dp = new Ext.DatePicker({ renderTo:id, format:"m/d/y", idField:dateField });
 	//get the element
 	var el = document.getElementById(dateField);
 	if(el.value != "")
 	{
 		selectedDate = new Date(el.value);
-		dp.setValue(selectedDate);
+		if (isNaN(selectedDate.getTime()))
+		{
+			 selectedDate = '';
+			 el.value = '';
+		}
+		else
+			dp.setValue(selectedDate);
 	}
 	dp.addListener("select", onSelect);
 }

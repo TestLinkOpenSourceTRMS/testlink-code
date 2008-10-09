@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/09/25 10:34:30 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/10/09 20:16:08 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -203,20 +203,20 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
     $gui = new stdClass();
     
-    // BUGID 1728
-	  $gui->req_spec_id=$argsObj->req_spec_id;
-    $gui->requirements_count = $req_spec_mgr->get_requirements_count($gui->req_spec_id);
-    $gui->req_spec = $req_spec_mgr->get_by_id($gui->req_spec_id);
-
-  
+  	$gui->req_spec_id = $argsObj->req_spec_id;
+	if ($argsObj->req_spec_id)
+	{
+		$gui->requirements_count = $req_spec_mgr->get_requirements_count($gui->req_spec_id);
+		$gui->req_spec = $req_spec_mgr->get_by_id($gui->req_spec_id);
+	}
     $gui->user_feedback = null;
     $gui->main_descr = lang_get('req_spec') . config_get('gui_title_separator_1') . $gui->req_spec['title'];
     $gui->action_descr = null;
 
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
-	  $gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
 	
-	  return $gui;
+	return $gui;
 }
 ?>

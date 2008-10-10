@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/10/06 19:01:32 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/10/10 20:59:47 $ $Author: schlundus $
  *
  * rev: 20080412 - franciscom - typo error
  */
@@ -226,7 +226,7 @@ class tlRole extends tlDBObject
 		$rights = array();
 		foreach($roleRights as $right)
 		{
-			$rights = $right->name;
+			$rights[] = $right->name;
 		}
 		return in_array($right,$rights);
 	}

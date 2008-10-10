@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.116 $ $Author: schlundus $
- * @modified $Date: 2008/09/29 19:48:07 $
+ * @version $Revision: 1.117 $ $Author: schlundus $
+ * @modified $Date: 2008/10/10 20:59:47 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
@@ -601,23 +601,19 @@ function set_dt_formats()
 */
 function config_get($config_id)
 {
-  global $g_cache_config;
+	$t_value = '';  
+	$t_found = false;  
 
-  $t_value = '';  
-  $t_found = false;  
-
-
-  if( !$t_found )
-  {
-      $my = "g_" . $config_id;
+	if(!$t_found)
+	{
+ 		$my = "g_" . $config_id;
         if (isset($GLOBALS[$my]))
-	    {
 	    	$t_value = $GLOBALS[$my];
-	    } 
 	    else 
 	    {
-	      $cfg=$GLOBALS['tlCfg'];
-      	$t_value = $cfg->$config_id;
+			$cfg = $GLOBALS['tlCfg'];
+			if (property_exists($cfg,$config_id))
+				$t_value = $cfg->$config_id;
 	    }
 	}
 	tlog('config_get global var with key ['.$config_id.'] is ' . $t_value);

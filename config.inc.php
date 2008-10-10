@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.200 $
- * @modified $Date: 2008/10/07 07:40:52 $ by $Author: franciscom $
+ * @version $Revision: 1.201 $
+ * @modified $Date: 2008/10/10 20:59:46 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -191,7 +191,7 @@ $g_loggerCfg = null;
  * All events older the this value are removed from the db, during login
  * 
  */
-$g_removeEventsOlderThan = 120;
+$g_removeEventsOlderThan = 30;
 
 // ----------------------------------------------------------------------------
 /** [Bug Tracking systems] */

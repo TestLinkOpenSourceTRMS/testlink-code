@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2008/10/03 05:23:10 $ $Author: asielb $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2008/10/10 20:59:46 $ $Author: schlundus $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -127,6 +127,7 @@ $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc
                                                        $args->filter_status,$args->build_id,
                                                        $args->cf_selected,$args->include_unassigned);
 $tcase_id = 0;
+$userid_array = null;
 if(!is_null($linked_tcversions))
 {
 	  $items_to_exec = array();
@@ -195,14 +196,16 @@ if(!is_null($linked_tcversions))
 
 }
 
-		//Removing duplicate and NULL id's
-		unset($userid_array['']);
-		foreach($userid_array as $value)
-		{		
-			$passeduserarray[] = $value;
-		}
-		
-		
+//Removing duplicate and NULL id's
+unset($userid_array['']);
+$passeduserarray = null;
+if ($userid_array)
+{
+	foreach($userid_array as $value)
+	{		
+		$passeduserarray[] = $value;
+	}
+}
 
 $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
@@ -726,7 +729,7 @@ function getCfg()
     $results = config_get('results');
     $cfg->tc_status = $results['status_code'];
     $cfg->testcase_cfg = config_get('testcase_cfg'); 
-    $cfg->editorCFg=getWebEditorCfg('execution');
+    $cfg->editorCfg = getWebEditorCfg('execution');
     
     return $cfg;
 }

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.9 2008/09/09 10:22:53 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.10 2008/10/10 20:59:46 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -32,8 +32,12 @@ Rev:
 	<div>	
 		<input type="text" name="testcase_name" id="testcase_name"
    	       size="{#TESTCASE_NAME_SIZE#}" 
-           maxlength="{#TESTCASE_NAME_MAXLEN#}" 
+           maxlength="{#TESTCASE_NAME_MAXLEN#}"
+           {if isset($tc.name)}
 		       value="{$tc.name|escape}"
+		   {else}
+		   		value=""
+		   	{/if}
 			     title="{$labels.alt_add_tc_name}"/>
   				{include file="error_icon.tpl" field="testcase_name"}
 		  <br/><br/>
@@ -81,7 +85,7 @@ Rev:
 	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	</div>
 	
-  {if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes'}
+  {if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes' && isset($tc.testcase_id)}
 	<div>
 	  <a href="javascript:openReqWindow({$tc.testcase_id})">{$labels.assign_requirements}</a>    
 	</div>

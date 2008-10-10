@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.118 $
- * @modified $Date: 2008/10/03 16:47:23 $ $Author: franciscom $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2008/10/10 20:59:47 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -524,14 +524,16 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 			$tc_other_versions[] = null;
 			
 	//Get author and updater id for each version
-		foreach($tc_other_versions[0] as $key => $version)
-		{				
-			$author_id = $version['author_id'];
-  			$updater_id = $version['updater_id'];
-  			$userid_array[$author_id] = $author_id;
-  			$userid_array[$updater_id] = $updater_id;				
+		if ($tc_other_versions[0])
+		{
+			foreach($tc_other_versions[0] as $key => $version)
+			{				
+				$author_id = $version['author_id'];
+	  			$updater_id = $version['updater_id'];
+	  			$userid_array[$author_id] = $author_id;
+	  			$userid_array[$updater_id] = $updater_id;				
+			}
 		}
-
 		// get assigned REQs
 		$arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
 

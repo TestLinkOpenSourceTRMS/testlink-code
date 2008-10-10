@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.13 2008/09/22 19:14:08 schlundus Exp $
+$Id: reqEdit.tpl,v 1.14 2008/10/10 19:35:12 schlundus Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -69,7 +69,7 @@ window.onload=function()
   	   		{if $gui->grants->mgt_view_events eq "yes" and $gui->req_id}
 			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
 			     onclick="showEventHistoryFor('{$gui->req_id}','requirements')" 
-			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
+			     alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
 		{/if}
   	</div>
 	<div><input type="text" name="reqDocId" id="reqDocId"

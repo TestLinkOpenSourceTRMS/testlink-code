@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/10/09 20:16:08 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/10/10 19:35:12 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -37,44 +37,10 @@ $args = init_args();
 $gui = initialize_gui($db,$args);
 $commandMgr = new reqCommands($db);
 
-switch($args->doAction)
-{
-	case "create":
-	  $op=$commandMgr->create($args);
-		break;
-
-	case "edit":
-	 	$op = $commandMgr->edit($args);
-		break;
-
-	case "doCreate":
-	  $op=$commandMgr->doCreate($args,$_REQUEST);
-		break;
-
-	case "doUpdate":
-	  $op=$commandMgr->doUpdate($args,$_REQUEST);
-		break;
-
-  case "doDelete":
-		$op=$commandMgr->doDelete($args);
-		break;
-
-	case "reorder":
-		$op=$commandMgr->reorder($args);
-		break;
-
-  case "doReorder":
-		$op=$commandMgr->doReorder($args);
-		break;
-
-	case "createTestCases":
-		$op=$commandMgr->createTestCases($args);
-		break;
-	
-	case "doCreateTestCases":
-		$op=$commandMgr->doCreateTestCases($args);
-		break;
-} // switch
+$pFn = $args->doAction;
+$op = null;
+if(method_exists($commandMgr,$pFn))
+	$op = $commandMgr->$pFn($args,$_REQUEST);
 
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
@@ -160,7 +126,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             }
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             
-            $tplDir = is_null($opObj->template_dir) ? $templateCfg->template_dir : $opObj->template_dir;
+            $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
             $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
             
             $pos = strpos($tpl, '.php');
@@ -176,12 +142,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     {
         case 'template':
         	$smartyObj->assign('gui',$guiObj);
-		      $smartyObj->display($tpl);
+		    $smartyObj->display($tpl);
         	break;  
  
         case 'redirect':
-		      header("Location: {$tpl}");
-	  		  exit();
+		    header("Location: {$tpl}");
+	  		exit();
         	break;
 
         default:
@@ -210,7 +176,9 @@ function initialize_gui(&$dbHandler,&$argsObj)
 		$gui->req_spec = $req_spec_mgr->get_by_id($gui->req_spec_id);
 	}
     $gui->user_feedback = null;
-    $gui->main_descr = lang_get('req_spec') . config_get('gui_title_separator_1') . $gui->req_spec['title'];
+    $gui->main_descr = lang_get('req_spec');
+    if (isset($gui->req_spec))
+     	$gui->main_descr .= config_get('gui_title_separator_1') . $gui->req_spec['title'];
     $gui->action_descr = null;
 
     $gui->grants = new stdClass();

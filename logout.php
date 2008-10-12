@@ -5,15 +5,14 @@
  * 
  * Filename $RCSfile: logout.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/01/30 20:37:43 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/10/12 08:11:56 $
 **/
 require_once('config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
 $userID = $_SESSION['userID'] ?  $_SESSION['userID'] : null;
-$userName = null;
 if ($userID)
 {
 	$userName = $_SESSION['currentUser']->getDisplayName();

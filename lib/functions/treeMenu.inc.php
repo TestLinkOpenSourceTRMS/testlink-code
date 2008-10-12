@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/09/29 19:48:11 $ by $Author: schlundus $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -1308,25 +1308,21 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
-	$resultsCfg=config_get('results');
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
+	$resultsCfg = config_get('results');
+	$status_descr_code = $resultsCfg['status_code'];
+	$status_code_descr = $resultsCfg['code_status'];
   
-  $decoding_hash=array('node_id_descr' => $hash_id_descr,
+	$decoding_hash = array('node_id_descr' => $hash_id_descr,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
-	
-
-  // 20071111 - franciscom	
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
-
-
+	
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
 	
-	$map_node_tccount=array(); 
-	$tplan_tcases=null;
+	$map_node_tccount = array(); 
+	$tplan_tcases = null;
 	
 	if($test_spec)
 	{
@@ -1342,7 +1338,7 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 		$test_spec['testcase_count'] = $testcase_counters['testcase_count'];
 	}
 
-	return($map_node_tccount);
+	return $map_node_tccount;
 }
 
 // Returns a map:

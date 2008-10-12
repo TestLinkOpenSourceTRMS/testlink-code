@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/06/03 09:22:47 $ $Author: havlat $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/10/12 08:11:56 $ $Author: schlundus $
  *
  */
 require_once('config.inc.php');
@@ -22,9 +22,7 @@ $first = isset($_POST['first']) ? $_POST['first'] : null;
 $last = isset($_POST['last']) ? $_POST['last'] : null;
 $email = isset($_POST['email']) ? $_POST['email'] : null;
 
-$message = lang_get('your_info_please');
-
-$op = doDBConnect($db);
+doDBConnect($db);
 if (!config_get('user_self_signup'))
 {
 	$smarty = new TLSmarty();
@@ -36,6 +34,7 @@ if (!config_get('user_self_signup'))
 	exit();
 }
 
+$message = lang_get('your_info_please');
 if($bEditUser)
 {
 	if(strcmp($password,$password2))

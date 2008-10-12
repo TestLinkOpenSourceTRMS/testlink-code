@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/09/29 18:33:48 $ by $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -35,7 +35,6 @@ $login = isset($_POST['tl_login']) ? $_POST['tl_login'] : null;
 $pwd = isset($_POST['tl_password']) ? $_POST['tl_password'] : null;
 $preqURI = (isset($_POST['reqURI']) && strlen($_POST['reqURI'])) ? $_POST['reqURI'] : null;
 
-// assign a comment for login
 switch($note)
 {
 	case 'expired':

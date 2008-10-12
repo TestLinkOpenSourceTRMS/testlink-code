@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.82 $
- * @modified $Date: 2008/09/02 16:39:49 $  $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2008/10/12 08:11:56 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080518 - franciscom - create() interface changes
@@ -398,21 +398,15 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
   rev : 20080104 - franciscom - added exclude_testcases
 
 */
-function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
-                     $exclude_branches=null, $and_not_in_clause='')
+function get_subtree($id,$recursive_mode = false,$exclude_testcases = false,
+                     $exclude_branches = null, $and_not_in_clause = '')
 {
-  
-  $exclude_node_types=$this->nt2exclude;
-  if($exclude_testcases)
-  {
-    $exclude_node_types['testcase']='exclude me';
-  }
-	$subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,
+	$exclude_node_types = $this->nt2exclude;
+	if($exclude_testcases)
+ 		$exclude_node_types['testcase'] = 'exclude me';
+ 	$subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,
 	                                                $this->nt2exclude_children,
-	                                                $exclude_branches,
-	                                                $and_not_in_clause,
-	                                                $recursive_mode);
-  return $subtree;
+	return $subtree;
 }
 
 

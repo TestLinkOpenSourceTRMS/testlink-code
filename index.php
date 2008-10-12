@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/01/18 20:40:17 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -22,7 +22,6 @@ unset($_SESSION['basehref']);
 setPaths();
 $reqURI = isset($_GET['reqURI']) ? $_GET['reqURI'] : 'lib/general/mainPage.php';
 
-//moved the code to the login page
 //verify the session during a work
 if (!isset($_SESSION['currentUser']))
 {

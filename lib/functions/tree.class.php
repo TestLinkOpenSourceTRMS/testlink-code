@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/10/05 17:53:18 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
@@ -225,7 +225,7 @@ class tree
 		while($row = $this->db->fetch_array($result))
 		{
 			$node_list[] = $row['id'];
-			$this->_get_subtree_list($row['id'],$node_list,$node_type);	
+			$this->_get_subtree_list($row['id'],$node_list,$node_type_id);	
 		}
 	}
 
@@ -702,21 +702,20 @@ function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null
                               $bRecursive = false,
                               $order_cfg=array("type" =>'spec_order'),$key_type='std')
 {
- 		$the_subtree=array();
+	$the_subtree = array();
  		
- 		// Generate NOT IN CLAUSE to exclude some node types
- 		$not_in_clause='';
- 	  if( !is_null($exclude_node_types) )
+	// Generate NOT IN CLAUSE to exclude some node types
+ 	$not_in_clause = '';
+ 	if(!is_null($exclude_node_types))
   	{
-  			$exclude=array();
-    		foreach($exclude_node_types as $the_key => $elem)
-    		{
-      			$exclude[]= $this->node_descr_id[$the_key];
-    		}
-    		$not_in_clause = " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
+  		$exclude = array();
+		foreach($exclude_node_types as $the_key => $elem)
+    	{
+      		$exclude[] = $this->node_descr_id[$the_key];
+    	}
+    	$not_in_clause = " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
   	}
-    
-	if ($bRecursive)
+    if ($bRecursive)
 	    $this->_get_subtree_rec($node_id,$the_subtree,$not_in_clause,
 	                            $exclude_children_of,$exclude_branches,
 	                            $order_cfg,$key_type);
@@ -725,7 +724,7 @@ function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null
 	                        $exclude_children_of,$exclude_branches,$order_cfg);
 
 
-  return ($the_subtree);
+  return $the_subtree;
 }
 
 
@@ -827,55 +826,53 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
 function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                           $exclude_children_of = null,
                           $exclude_branches = null,
-                          $order_cfg=array("type" =>'spec_order'),
-                          $key_type='std')
+                          $order_cfg = array("type" =>'spec_order'),
+                          $key_type = 'std')
 {
-    switch($order_cfg['type'] )
+    switch($order_cfg['type'])
     {
         case 'spec_order':
-  	    $sql = " SELECT * from {$this->obj_table} " .
-  	           " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
+  	    	$sql = " SELECT * from {$this->obj_table} " .
+  	           	   " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
 		           " ORDER BY node_order,id";
 		    break;
 		    
 		    case 'exec_order':
-        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
-             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
-             "                NH.name, NH.node_type_id" .
-             "                FROM nodes_hierarchy NH,node_types NT" .
-             "                WHERE parent_id = {$node_id}" .
-             "                AND NH.node_type_id=NT.id" .
-             "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
-             "                UNION" .
-             "                SELECT NHA.node_order AS spec_order, " .
-             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
-             "                       NHA.name, NHA.node_type_id" .
-             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
-             "                     testplan_tcversions T,node_types NT" .
-             "                WHERE NHA.id=NHB.parent_id " .
-             "                AND NHA.node_type_id=NT.id" .
-             "                AND NHB.id=T.tcversion_id " .
-             "                AND NT.description = 'testcase'" .
-             "                AND NHA.parent_id = {$node_id}" .
-             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
-             "                ORDER BY node_order,spec_order,id";
+		        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+		             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
+		             "                NH.name, NH.node_type_id" .
+		             "                FROM nodes_hierarchy NH,node_types NT" .
+		             "                WHERE parent_id = {$node_id}" .
+		             "                AND NH.node_type_id=NT.id" .
+		             "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
+		             "                UNION" .
+		             "                SELECT NHA.node_order AS spec_order, " .
+		             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
+		             "                       NHA.name, NHA.node_type_id" .
+		             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
+		             "                     testplan_tcversions T,node_types NT" .
+		             "                WHERE NHA.id=NHB.parent_id " .
+		             "                AND NHA.node_type_id=NT.id" .
+		             "                AND NHB.id=T.tcversion_id " .
+		             "                AND NT.description = 'testcase'" .
+		             "                AND NHA.parent_id = {$node_id}" .
+		             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
+		             "                ORDER BY node_order,spec_order,id";
 		    break;
     }
-
- 
-    $result = $this->db->exec_query($sql);
+  	$children_key = 'childNodes';
+  	$result = $this->db->exec_query($sql);
     while($row = $this->db->fetch_array($result))
     {
   		$rowID = $row['id'];
   		$nodeTypeID = $row['node_type_id'];
   		$nodeType = $this->node_types[$nodeTypeID];
-      $children_key='childNodes';
-  		
+		
   		if(!isset($exclude_branches[$rowID]))
   		{  
-  		  switch($key_type)
-  		  {
-  		      case 'std':
+			switch($key_type)
+			{
+  		    	case 'std':
   			        $node_table = $this->node_tables[$nodeType];
   			        
   			        $node =  array('id' => $rowID,
@@ -885,58 +882,53 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                                'node_table' => $node_table,
                                'name' => $row['name'],
   			           			       $children_key => null);
-  			    break;
+  			    	break;
   			    
-  		      case 'extjs':
+				case 'extjs':
   			        $node =  array('text' => $row['name'],
   			                       'id' => $rowID,
                                'parent_id' => $row['parent_id'],
                                'node_type_id' => $nodeTypeID,
                                'position' => $row['node_order'],
-  			           			       $children_key => null,
+  			           			$children_key => null,
                                'leaf' => false);
 
-                switch($nodeType)
-                {
-                    case 'testproject':
-                    case 'testsuite':
-                        $node[$children_key]=null;
-                    break;  
-
-                    case 'testcase':
-                        $node['leaf']=true;
-                    break;
-                } 
-  			    break;
-  			    
-  			    				       
-  			    				       
-        }
+	                switch($nodeType)
+	                {
+	                    case 'testproject':
+	                    case 'testsuite':
+	                        $node[$children_key] = null;
+	                    	break;  
+	
+	                    case 'testcase':
+	                        $node['leaf'] = true;
+	                    	break;
+	                } 
+	  			    break;
+  			}	
             
-        // Basically we use this because:
-        // 1. Sometimes we don't want the children if the parent is a testcase,
-        //    due to the version management
-        //
-        // 2. Sometime we want to exclude all descendants (branch) of a node.
-        //
-        // [franciscom]: 
-        // I think ( but I have no figures to backup my thoughts) doing this check and 
-        // avoiding the function call is better that passing a condition that will result
-        // in a null result set.
-        //
-        //
-        if(!isset($exclude_children_of[$nodeType]) && 
-           !isset($exclude_branches[$rowID]) )
-  			{
-  				$this->_get_subtree_rec($rowID,$node,
-                                  $and_not_in_clause,
-                                  $exclude_children_of,
-                                  $exclude_branches,
-                                  $order_cfg,$key_type);	
-        }
-  			
+	        // Basically we use this because:
+	        // 1. Sometimes we don't want the children if the parent is a testcase,
+	        //    due to the version management
+	        //
+	        // 2. Sometime we want to exclude all descendants (branch) of a node.
+	        //
+	        // [franciscom]: 
+	        // I think ( but I have no figures to backup my thoughts) doing this check and 
+	        // avoiding the function call is better that passing a condition that will result
+	        // in a null result set.
+	        //
+	        //
+	        if(!isset($exclude_children_of[$nodeType]) && 
+	           !isset($exclude_branches[$rowID]))
+	  			{
+	  				$this->_get_subtree_rec($rowID,$node,
+	                                  $and_not_in_clause,
+	                                  $exclude_children_of,
+	                                  $exclude_branches,
+	                                  $order_cfg,$key_type);	
+	        	}
   			$pnode[$children_key][] = $node;
-  			
   		} // if(!isset($exclude_branches[$rowID]))
   	} //while
 }

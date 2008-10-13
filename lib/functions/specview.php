@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.12 $ $Author: franciscom $
- * @modified $Date: 2008/10/05 17:53:18 $
+ * @version $Revision: 1.13 $ $Author: schlundus $
+ * @modified $Date: 2008/10/13 21:25:39 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -453,44 +453,37 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 
 	// --------------------------------------------------------------------------------------------
 	// BUGID 1650 (REQ)
-	if( count($result['spec_view']) > 0 && $add_custom_fields)
+	if(count($result['spec_view']) && $add_custom_fields)
 	{                          
-	  // Important:
-	  // testplan_tcversions.id value, that is used to link to manage custom fields that are used
-	  // during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
-    foreach($result['spec_view'] as $key => $value) 
-    {
-      if( !is_null($value) )
-      {
-         if( isset($value['testcases']) && count($value['testcases']) > 0 )
-         {
-           foreach($value['testcases'] as $skey => $svalue)
-           {
-          
-             $linked_version_id=$svalue['linked_version_id'];
-             $result['spec_view'][$key]['testcases'][$skey]['custom_fields']='';
-            
-             // if( $linked_version_id != 0 && 
-             //     $svalue['tcversions_execution_type'][$linked_version_id]==TESTCASE_EXECUTION_TYPE_AUTO
-             //   )
-             //   
-             if( $linked_version_id != 0  )
-             {
-               $cf_name_suffix="_" . $svalue['feature_id'];
-               $cf_map=$tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
-                                                                     $cf_name_suffix,$svalue['feature_id']);
-               $result['spec_view'][$key]['testcases'][$skey]['custom_fields']=$cf_map;
-             }
-           }
-         } 
-         
-      } // is_null($value)
-    }
+		// Important:
+		// testplan_tcversions.id value, that is used to link to manage custom fields that are used
+		// during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
+		foreach($result['spec_view'] as $key => $value) 
+	    {
+	    	if(!is_null($value) && isset($value['testcases']) && count($value['testcases']))
+	      	{
+	        	foreach($value['testcases'] as $skey => $svalue)
+		        {
+		        	$linked_version_id = $svalue['linked_version_id'];
+		            $cf_map = '';
+		            if($linked_version_id != 0)
+		            {
+		            	$cf_name_suffix = "_" . $svalue['feature_id'];
+		                $cf_map = $tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+		                                                                     $cf_name_suffix,$svalue['feature_id']);
+		               
+		            }
+		          	$result['spec_view'][$key]['testcases'][$skey]['custom_fields'] = $cf_map;
+		        }
+	      	}
+	    }
   }
+
+	
 	// --------------------------------------------------------------------------------------------
 
-  // 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
-  $result['spec_view']=array_values($result['spec_view']);
+  	// 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
+  	$result['spec_view']= array_values($result['spec_view']);
 	return $result;
 }
 

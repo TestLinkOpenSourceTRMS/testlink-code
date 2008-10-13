@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/10/13 12:05:31 $  $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/10/13 21:25:39 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080518 - franciscom - create() interface changes
@@ -1541,7 +1541,6 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
 		         {$keyword_filter} {$subquery}
 			       ORDER BY keyword ASC ";
 
-		// $map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
 		$map_keywords = $this->db->fetchMapRowsIntoMap($sql,'testcase_id','keyword_id');
 
 		return($map_keywords);

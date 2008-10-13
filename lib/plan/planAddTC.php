@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.62 2008/10/12 08:11:56 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.63 2008/10/13 21:25:39 schlundus Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -89,8 +89,7 @@ switch($args->doAction)
 $smarty = new TLSmarty();
 if($do_display)
 {
-	$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
-		                                                    $keywordsFilter);
+	$map_node_tccount = get_testproject_nodes_testcount($db,$args->object_id,'',$keywordsFilter);
 	$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
@@ -99,13 +98,12 @@ if($do_display)
 	if(!is_null($keywordsFilter))
 	{ 
 	    // With this pieces we implement the AND type of keyword filter.
-	    $keywordsTestCases=$tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
+	    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
 	                                                                             $keywordsFilter->type);
-	    $testCaseSet=array_keys($keywordsTestCases);
+	    $testCaseSet = array_keys($keywordsTestCases);
 	}
-  
-	define('DONT_PRUNE',0);
-	define('ADD_CUSTOM_FIELDS',1);
+  	define('DONT_PRUNE',0);
+	define('ADD_CUSTOM_FIELDS',0);
 	define('WRITE_BUTTON_ALWAYS',0);
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,$map_node_tccount,$args->keyword_id,

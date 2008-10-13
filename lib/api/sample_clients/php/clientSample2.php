@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientSample2.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/08/19 13:18:07 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/10/13 20:08:36 $ by $Author: franciscom $
  *
  *
  * A sample client implementation in php
@@ -17,7 +17,9 @@
  *
  *
  *
- * rev: 20080818 - franciscom - start work on custom field tests
+ * rev: 20081013 - franciscom - minor improvements to avoid reconfigure server url
+ *                              added test of getTestSuitesForTestPlan()
+ *      20080818 - franciscom - start work on custom field tests
  *      20080306 - franciscom - added dBug to improve diagnostic info.
  *      20080305 - franciscom - refactored
  */
@@ -26,18 +28,15 @@
   * Need the IXR class for client
   */
 define("THIRD_PARTY_CODE","/../../../../third_party");
-
-// require_once dirname(__FILE__) . '/../../../functions/lang_api.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
 
-// substitute your server URL Here
-define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080804/lib/api/xmlrpc.php");
+$dummy=explode('sample_clients',$_SERVER['HTTP_REFERER']);
+$server_url=$dummy[0] . "xmlrpc.php";
 
 // substitute your Dev Key Here
 define("DEV_KEY", "1111");
 
-// 
 $unitTestDescription="Test - getTestCasesForTestPlan";
 
 /**
@@ -57,7 +56,7 @@ $unitTestDescription="Test - getTestCasesForTestPlan";
 */
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=95;
+$args["testplanid"]=61579;
 
 // optional
 // $args["testcaseid"] - optional
@@ -72,7 +71,7 @@ $debug=false;
 echo $unitTestDescription;
 
 
-$client = new IXR_Client(SERVER_URL);
+$client = new IXR_Client($server_url);
 $client->debug=$debug;
 
 
@@ -105,7 +104,7 @@ $debug=true;
 //$debug=false;
 echo $unitTestDescription;
 
-$client = new IXR_Client(SERVER_URL);
+$client = new IXR_Client($server_url);
 $client->debug=$debug;
 
 new dBug($args);
@@ -138,7 +137,7 @@ $debug=true;
 
 echo $unitTestDescription;
 
-$client = new IXR_Client(SERVER_URL);
+$client = new IXR_Client($server_url);
 $client->debug=$debug;
 
 new dBug($args);
@@ -155,4 +154,32 @@ else
 echo "<br> Result was: ";
 new dBug($response);
 echo "<br>";
+
+// -------------------------------------------------------------------------------------
+$unitTestDescription="Test - getTestSuitesForTestPlan";
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testplanid"]=61579;
+
+$debug=true;
+echo $unitTestDescription;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+new dBug($args);
+if(!$client->query('tl.getTestSuitesForTestPlan', $args))
+{
+		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
+		$response=null;
+}
+else
+{
+		$response=$client->getResponse();
+}
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+
 ?>

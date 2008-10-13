@@ -18,8 +18,8 @@ define("THIRD_PARTY_CODE","/../../../../third_party");
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
 
-// substitute your server URL Here
-define("SERVER_URL", "http://localhost/w3/tl/tl18/head_20080303/lib/api/xmlrpc.php");
+$dummy=explode('sample_clients',$_SERVER['HTTP_REFERER']);
+$server_url=$dummy[0] . "xmlrpc.php";
 
 // substitute your Dev Key Here
 // define("DEV_KEY", "f2a979d533cdd9761434bba60a88e4d8");
@@ -43,7 +43,7 @@ $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status= {$tcaseStatu
 //$debug=true;
 $debug=false;
 echo $unitTestDescription;
-$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,
+$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
                          $buildID,null,$tcaseStatusCode['blocked'],$exec_notes,$debug);
 
 echo "<br> Result was: ";
@@ -64,7 +64,7 @@ $exec_notes="";
 //$debug=true;
 $debug=false;
 echo $unitTestDescription;
-$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,
+$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
                          $buildID,null,$tcaseStatusCode['passed'],$exec_notes,$debug);
 
 echo "<br> Result was: ";
@@ -83,7 +83,7 @@ $exec_notes="Call using all Build by name ({$testCaseID})";
 //$debug=true;
 $debug=false;
 echo $unitTestDescription;
-$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,null,
+$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,null,
                          $buildName,$tcaseStatusCode['blocked'],$exec_notes,$debug);
 
 echo "<br> Result was: ";
@@ -104,7 +104,7 @@ $exec_notes=null;
 //$debug=true;
 $debug=false;
 echo $unitTestDescription;
-$response = reportResult($testCaseID,$testCaseExternalID,$testPlanID,null,
+$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,null,
                          $buildName,$tcaseStatusCode['failed'],$exec_notes,$debug);
 
 echo "<br> Result was: ";
@@ -121,11 +121,12 @@ echo "<br>";
   returns: 
 
 */
-function reportResult($tcaseid=null, $tcaseexternalid=null,
+function reportResult($server_url,
+                      $tcaseid=null, $tcaseexternalid=null,
                       $tplanid, $buildid=null, $buildname=null, $status,$notes=null,$debug=false)
 {
 
-	$client = new IXR_Client(SERVER_URL);
+	$client = new IXR_Client($server_url);
  
   $client->debug=$debug;
   

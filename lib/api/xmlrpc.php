@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/10/07 16:24:20 $ by $Author: asielb $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/10/13 13:47:02 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1289,7 +1289,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			$testProjectObj = new testproject($this->dbObj);
 			$testProjectID = $this->args[self::$testProjectIDParamName];
-			return $testProjectObj->get_all_testplans($testProjectID);	
+			return array($testProjectObj->get_all_testplans($testProjectID));	
 		}
 		else
 		{

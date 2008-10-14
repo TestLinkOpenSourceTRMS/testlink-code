@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.13 $ $Author: schlundus $
- * @modified $Date: 2008/10/13 21:25:39 $
+ * @version $Revision: 1.14 $ $Author: schlundus $
+ * @modified $Date: 2008/10/14 19:08:10 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -151,7 +151,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
-							              $write_button_only_if_linked = 0,$do_prune=0,$add_custom_fields=0)
+							              $write_button_only_if_linked = 0,$do_prune=0,$add_custom_fields=0,$bDropEmptySuites = 0)
 {
 	$write_status = 'yes';
 	if($write_button_only_if_linked)
@@ -170,7 +170,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	$test_spec = $tproject_mgr->get_subtree($id);
-     
 	// ---------------------------------------------------------------------------------------------
   // filters
 	if($keyword_id)
@@ -276,7 +275,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   						$the_level = $level[$current['parent_id']];
   				}
   	            
-  	      $out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);
+  	      		$out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);
   				$out[$idx]['testcases'] = array();
   				$out[$idx]['testcase_qty'] = 0;
   				$out[$idx]['linked_testcase_qty'] = 0;
@@ -421,7 +420,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  }
 	  
 	}
-	
+
 	if( count($result['spec_view']) > 0 && $do_prune)
 	{                                                
 	  foreach($result['spec_view'] as $key => $value)
@@ -431,12 +430,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	        unset($result['spec_view'][$key]);
 	    } 
 	  }
-	  
     foreach($result['spec_view'] as $key => $value) 
     {
       if( !is_null($value) )
       {
-         if( isset($value['testcases']) && count($value['testcases']) > 0 )
+      	 if( isset($value['testcases']) && count($value['testcases']) > 0 )
          {
            foreach($value['testcases'] as $skey => $svalue)
            {
@@ -449,37 +447,53 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
       } // is_null($value)
     }
 	}
+	//@TODO: maybe we can integrate this into already present loops above?
+	if ($bDropEmptySuites)
+	{
+		foreach($result['spec_view'] as $key => $value) 
+	    {
+			if(is_null($value) || !isset($value['testcases']) || !count($value['testcases']))
+	      		unset($result['spec_view'][$key]);
+	    }
+	}
 	// --------------------------------------------------------------------------------------------
 
 	// --------------------------------------------------------------------------------------------
 	// BUGID 1650 (REQ)
-	if(count($result['spec_view']) && $add_custom_fields)
+	if( count($result['spec_view']) > 0 && $add_custom_fields)
 	{                          
-		// Important:
-		// testplan_tcversions.id value, that is used to link to manage custom fields that are used
-		// during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
-		foreach($result['spec_view'] as $key => $value) 
-	    {
-	    	if(!is_null($value) && isset($value['testcases']) && count($value['testcases']))
-	      	{
-	        	foreach($value['testcases'] as $skey => $svalue)
-		        {
-		        	$linked_version_id = $svalue['linked_version_id'];
-		            $cf_map = '';
-		            if($linked_version_id != 0)
-		            {
-		            	$cf_name_suffix = "_" . $svalue['feature_id'];
-		                $cf_map = $tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
-		                                                                     $cf_name_suffix,$svalue['feature_id']);
-		               
-		            }
-		          	$result['spec_view'][$key]['testcases'][$skey]['custom_fields'] = $cf_map;
-		        }
-	      	}
-	    }
+	  // Important:
+	  // testplan_tcversions.id value, that is used to link to manage custom fields that are used
+	  // during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
+    foreach($result['spec_view'] as $key => $value) 
+    {
+      if( !is_null($value) )
+      {
+         if( isset($value['testcases']) && count($value['testcases']) > 0 )
+         {
+           foreach($value['testcases'] as $skey => $svalue)
+           {
+          
+             $linked_version_id=$svalue['linked_version_id'];
+             $result['spec_view'][$key]['testcases'][$skey]['custom_fields']='';
+            
+             // if( $linked_version_id != 0 && 
+             //     $svalue['tcversions_execution_type'][$linked_version_id]==TESTCASE_EXECUTION_TYPE_AUTO
+             //   )
+             //   
+             if( $linked_version_id != 0  )
+             {
+               $cf_name_suffix="_" . $svalue['feature_id'];
+               $cf_map=$tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+                                                                     $cf_name_suffix,$svalue['feature_id']);
+               $result['spec_view'][$key]['testcases'][$skey]['custom_fields']=$cf_map;
+             }
+           }
+         } 
+         
+      } // is_null($value)
+    }
   }
-
-	
 	// --------------------------------------------------------------------------------------------
 
   	// 20081004 - franciscom - with array_values() we reindex array to avoid "holes"

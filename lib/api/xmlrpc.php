@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/10/15 21:34:07 $ by $Author: asielb $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/10/15 21:40:02 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -15,10 +15,10 @@
  * directly from automation frameworks as well as other features.
  * 
  * See examples for additional detail
- * @example ../sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
- * @example ../sample_clients/php/clientSample.php php client sample
- * @example ../sample_clients/ruby/clientSample.rb ruby client sample
- * @example ../sample_clients/python/clientSample.py python client sample
+ * @example sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
+ * @example sample_clients/php/clientSample.php php client sample
+ * @example sample_clients/ruby/clientSample.rb ruby client sample
+ * @example sample_clients/python/clientSample.py python client sample
  * 
  *
  * rev :
@@ -51,10 +51,10 @@ require_once(dirname(__FILE__) . "/../functions/testplan.class.php");
  * The entry class for serving XML-RPC Requests
  * 
  * See examples for additional detail
- * @example ../sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
- * @example ../sample_clients/php/clientSample.php php client sample
- * @example ../sample_clients/ruby/clientSample.rb ruby client sample
- * @example ../sample_clients/python/clientSample.py python client sample
+ * @example sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
+ * @example sample_clients/php/clientSample.php php client sample
+ * @example sample_clients/ruby/clientSample.rb ruby client sample
+ * @example sample_clients/python/clientSample.py python client sample
  * 
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI 
@@ -1595,10 +1595,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Reports a result for a single test case
 	 *
 	 * See examples for additional detail
-	 * @example ../sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
-	 * @example ../sample_clients/php/clientSample.php php client sample
-	 * @example ../sample_clients/ruby/clientSample.rb ruby client sample
-	 * @example ../sample_clients/python/clientSample.py python client sample
+	 * @example sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
+	 * @example sample_clients/php/clientSample.php php client sample
+	 * @example sample_clients/ruby/clientSample.rb ruby client sample
+	 * @example sample_clients/python/clientSample.py python client sample
 	 * 
 	 * @param struct $args
 	 * @param string $args["devKey"]

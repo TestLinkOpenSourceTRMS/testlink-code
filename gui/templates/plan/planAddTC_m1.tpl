@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.15 2008/09/20 21:02:53 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.16 2008/10/15 20:36:52 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -39,45 +39,42 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 {if $gui->has_tc }
 <form name="addTcForm" id="addTcForm" method="post">
-   <h1 class="title">{$actionTitle}</h1>
+	<h1 class="title">{$actionTitle}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
-  {if $gui->keywords_filter != ''}
-	  <div style="margin-left: 20px; font-size: smaller;">
-		  <br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
-	  </div>
-  {/if}
+	{if $gui->keywords_filter != ''}
+		<div style="margin-left: 20px; font-size: smaller;">
+			<br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
+		</div>
+	{/if}
   
-<div class="workBack" style="height: 380px; overflow-y: auto;">
+	<div class="workBack" style="height: 380px; overflow-y: auto;">
      
-  {* prefix for checkbox named , ADD and ReMove *}   
-  {assign var="add_cb" value="achecked_tc"} 
-  {assign var="rm_cb" value="remove_checked_tc"}
+	{* prefix for checkbox named , ADD and ReMove *}   
+	{assign var="add_cb" value="achecked_tc"} 
+	{assign var="rm_cb" value="remove_checked_tc"}
   
-  
-  {assign var="item_number" value=0}
-  <input type="hidden" name="add_all_value"  id="add_all_value"  value="0" />
-  <input type="hidden" name="rm_all_value"  id="rm_all_value" value="0" />
+	{assign var="item_number" value=0}
+	<input type="hidden" name="add_all_value" id="add_all_value"  value="0" />
+	<input type="hidden" name="rm_all_value" id="rm_all_value" value="0" />
   
 	{foreach from=$gui->items item=ts}
-	  {assign var="item_number" value=$item_number+1}
-	
-	  {assign var="ts_id" value=$ts.testsuite.id}
-	  {assign var="div_id" value=div_$ts_id}
+		{assign var="item_number" value=$item_number+1}
+		{assign var="ts_id" value=$ts.testsuite.id}
+		{assign var="div_id" value=div_$ts_id}
 	  
-	
-	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
-	    <h3 class="testlink">{$ts.testsuite.name|escape}</h3> 
-	        {if $item_number ==1}
-	          <br />
-            <table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 
+		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
+	    	<h3 class="testlink">{$ts.testsuite.name|escape}</h3> 
+	        {if $item_number == 1}
+	          	<br />
+            	<table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 
                    width="100%">
-            <tr>
-				<td align="center">
-	            {if $gui->full_control }
-		          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-		               alt="{$labels.check_uncheck_all_checkboxes_for_add}" 
-	                 title="{$labels.check_uncheck_all_checkboxes_for_add}" 
+            	<tr>
+					<td align="center">
+	            		{if $gui->full_control}
+		          		<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+		               		alt="{$labels.check_uncheck_all_checkboxes_for_add}" 
+	                 		title="{$labels.check_uncheck_all_checkboxes_for_add}" 
 	                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');" />
 	            {lang_get s='add'}
 	            {else} &nbsp;
@@ -132,7 +129,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
           {foreach from=$ts.testcases item=tcase}
             
             {assign var='is_active' value=0}
-            {if $tcase.linked_version_id neq 0 }
+            {if $tcase.linked_version_id neq 0}
                {if $tcase.tcversions_active_status[$tcase.linked_version_id] eq 1}             
                  {assign var='is_active' value=1}
                {/if}
@@ -146,7 +143,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
             {if $is_active || $tcase.linked_version_id ne 0 }  
    				    {if $gui->full_control || $tcase.linked_version_id ne 0 }
     			    <tr {if $tcase.linked_version_id ne 0}
-    			         style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
+    			       	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20">
     				    {if $gui->full_control}
 	      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
@@ -158,7 +155,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 	      				             value="{$tcase.id}" /> 
 	      				    {/if}
       				    
-	      				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
+	      				    <input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.id}" />
     				    {else}
 							&nbsp;&nbsp;
     				    {/if}
@@ -225,7 +222,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
               {if $tcase.tcversions_execution_type[$tcase.linked_version_id] == {$smarty.const.TESTCASE_EXECUTION_TYPE_AUTO} &&
                   $tcase.custom_fields != ''}
       				*}
-      				{if $tcase.custom_fields != ''}
+      				{if isset($tcase.custom_fields)}
       				    <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
                   {assign var="show_write_custom_fields" value=1}
               <tr> <td colspan="7">{$tcase.custom_fields}</td> </tr>

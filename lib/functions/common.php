@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.117 $ $Author: schlundus $
- * @modified $Date: 2008/10/10 20:59:47 $
+ * @version $Revision: 1.118 $ $Author: schlundus $
+ * @modified $Date: 2008/10/15 20:36:52 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
@@ -260,6 +260,20 @@ function doSessionStart()
 
 	if(!isset($_SESSION))
 		session_start();
+}
+
+function printPageStatistics($startupMemory,$startupTime)
+{
+	print "<div style=\"color:red;font-weight:bold\">";	
+	print "startup: Memory: $startupMemory <br />";
+	echo $startupTime."<br />";
+	tlTimingStop();
+	$finishingTime = tlTimingCurrent();
+	$finishingMemory  = memory_get_peak_usage(true)."--".memory_get_usage(true);
+	print "finished: Memory: $finishingMemory <br />";
+	print "took ".($finishingTime - $startupTime)." secs\n";
+	print "</div>";
+	
 }
 
 /**

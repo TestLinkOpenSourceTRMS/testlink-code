@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.11 2008/10/05 17:52:29 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.12 2008/10/15 20:36:52 schlundus Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -130,17 +130,18 @@ function check_action_precondition(container_id,action)
           				{$tcase.tcversions[$tcase.linked_version_id]}
                   </td>
                   <td align="center">
-                  {$gui->users[$tcase.user_id]|escape}
-                  {if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if} 
+                  {if $tcase.user_id > 0}
+       	          	{$gui->users[$tcase.user_id]|escape}
+                  	{if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if}
+                  {/if}
                   </td>
-        
-                  <td align="center">
+                  	<td align="center">
         		  		<select name="tester_for_tcid[{$tcase.id}]" 
         		  		        id="tester_for_tcid_{$tcase.id}"
         		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
-        			  	{html_options options=$gui->testers selected=$tcase.user_id}
+        			   	{html_options options=$gui->testers selected=$tcase.user_id}
         				  </select>
-                </td>
+                	</td>
                 </tr>
     	        {/if}		
     	  		{/foreach}

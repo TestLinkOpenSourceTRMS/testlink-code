@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.118 $ $Author: schlundus $
- * @modified $Date: 2008/10/15 20:36:52 $
+ * @version $Revision: 1.119 $ $Author: schlundus $
+ * @modified $Date: 2008/10/15 20:40:55 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
@@ -264,6 +264,7 @@ function doSessionStart()
 
 function printPageStatistics($startupMemory,$startupTime)
 {
+	/*
 	print "<div style=\"color:red;font-weight:bold\">";	
 	print "startup: Memory: $startupMemory <br />";
 	echo $startupTime."<br />";
@@ -273,6 +274,7 @@ function printPageStatistics($startupMemory,$startupTime)
 	print "finished: Memory: $finishingMemory <br />";
 	print "took ".($finishingTime - $startupTime)." secs\n";
 	print "</div>";
+	*/
 	
 }
 

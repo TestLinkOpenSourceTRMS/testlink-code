@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.25 2008/10/05 17:53:18 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.26 2008/10/15 20:36:53 schlundus Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -21,6 +21,11 @@ require("specview.php");
 
 testlinkInitPage($db);
 
+/* @TODO: schlundus clean up
+	$startupTime = tlTimingStart();
+	$startupMemory = memory_get_peak_usage(true)."--".memory_get_usage(true)."\n";;
+	register_shutdown_function("printPageStatistics",$startupMemory,$startupTime); 
+*/
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
@@ -31,10 +36,10 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui=initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-$keywordsFilter=null;
-if( is_array($args->keyword_id) )
+$keywordsFilter = null;
+if(is_array($args->keyword_id))
 {
-    $keywordsFilter=new stdClass();
+    $keywordsFilter = new stdClass();
     $keywordsFilter->items = $args->keyword_id;
     $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
@@ -90,17 +95,13 @@ if(!is_null($args->doAction))
 	}  
 }
 
-$map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
-                                                 $args->tplan_id,$gui->testPlanName,$keywordsFilter);
-
 switch($args->level)
 {
 	case 'testcase':
 		// build the data need to call gen_spec_view
 		$my_path = $tree_mgr->get_path($args->id);
 		$idx_ts = count($my_path) - 1;
-		$tsuite_data= $my_path[$idx_ts - 1];
-		
+		$tsuite_data = $my_path[$idx_ts - 1];
 		
 		$status_quo = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id);
 		$linked_items[$args->id] = $status_quo[$args->version_id];
@@ -110,21 +111,19 @@ switch($args->level)
 		$exec_assignment = $tcase_mgr->get_version_exec_assignment($args->version_id,$args->tplan_id);
 		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
-		
-		// 20080510 - franciscom
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-				    		            $linked_items,$map_node_tccount,
-							              $keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+				    		    $linked_items,null,
+							    $keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
-		$out=array();
-		$out['spec_view'][0]=$my_out['spec_view'][0];
-		$out['num_tc']=1;
+		$out = array();
+		$out['spec_view'][0] = $my_out['spec_view'][0];
+		$out['num_tc'] = 1;
 		break;
 		
 	case 'testsuite':
-    $out=processTestSuite($db,$args,$map_node_tccount,$keywordsFilter,$tplan_mgr,$tcase_mgr);
+		$out = keywordFilteredSpecView($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr);
 		break;
 
 	default:
@@ -132,13 +131,9 @@ switch($args->level)
 		break;
 }
 
-//echo "<pre>debug 20081004 - \$out['spec_view'] - " . __FUNCTION__ . " --- "; print_r($out['spec_view']); echo "</pre>";
-
-$gui->items=$out['spec_view'];
-$gui->has_tc=$out['num_tc'] > 0 ? 1:0;
-$gui->support_array=array_keys($gui->items);
-
-//echo "<pre>debug 20081005 - \$gui - " . __FUNCTION__ . " --- "; print_r($gui); echo "</pre>";
+$gui->items = $out['spec_view'];
+$gui->has_tc = $out['num_tc'] > 0 ? 1:0;
+$gui->support_array = array_keys($gui->items);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -155,28 +150,28 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-	  $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-	  $args->user_id = $_SESSION['userID'];
-	  $args->tproject_id = $_SESSION['testprojectID'];
-	  $args->tproject_name = $_SESSION['testprojectName'];
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
+	$args->user_id = $_SESSION['userID'];
+	$args->tproject_id = $_SESSION['testprojectID'];
+	$args->tproject_name = $_SESSION['testprojectName'];
     
-	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
     
-	  $key2loop=array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+	$key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	  	              'version_id' => 0, 'has_prev_assignment' => null,
 	  	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'assigned_to' => 0);
-	  foreach($key2loop as $key => $value)
-	  {
-	  	$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-	  }
+	foreach($key2loop as $key => $value)
+	{
+		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+	}
     
     // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
     $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
     $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-    $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     
-	  return $args;
+	return $args;
 }
 
 /*
@@ -195,32 +190,14 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
 
-    $gui->keywordsFilterType=$argsObj->keywordsFilterType;
+    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
 
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testPlanName = $tplan_info['name'];
-    $gui->main_descr=lang_get('title_tc_exec_assignment') . $gui->testPlanName;
-    
+    $gui->main_descr = lang_get('title_tc_exec_assignment') . $gui->testPlanName;
     
     $gui->users = getUsersForHtmlOptions($dbHandler);
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
     return $gui;
-}
-
-
-/*
-  function: processTestSuite 
-
-  args :
-  
-  returns: 
-
-*/
-function processTestSuite(&$dbHandler,&$argsObj,$map_node_tccount,
-                          $keywordsFilter,&$tplanMgr,&$tcaseMgr)
-{
-    $out=keywordFilteredSpecView($dbHandler,$argsObj,$map_node_tccount,
-                                 $keywordsFilter,$tplanMgr,$tcaseMgr);
-    return $out;
 }
 ?>

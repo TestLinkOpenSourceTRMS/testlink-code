@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.14 $ $Author: schlundus $
- * @modified $Date: 2008/10/14 19:08:10 $
+ * @version $Revision: 1.15 $ $Author: schlundus $
+ * @modified $Date: 2008/10/15 20:36:52 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -452,7 +452,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	{
 		foreach($result['spec_view'] as $key => $value) 
 	    {
-			if(is_null($value) || !isset($value['testcases']) || !count($value['testcases']))
+	   		if(is_null($value) || !isset($value['testcases']) || !count($value['testcases']))
 	      		unset($result['spec_view'][$key]);
 	    }
 	}
@@ -543,35 +543,33 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
   returns: 
 
 */
-function keywordFilteredSpecView(&$dbHandler,&$argsObj,$map_node_tccount,
-                                 $keywordsFilter,&$tplanMgr,&$tcaseMgr)
+function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-    $tsuiteMgr = new testsuite($dbHandler); 
-	  $tprojectMgr = new testproject($dbHandler); 
-	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
+	$tsuiteMgr = new testsuite($dbHandler); 
+	$tprojectMgr = new testproject($dbHandler); 
+	$tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
 		
-		// BUGID 1041
-		$tplan_linked_tcversions=$tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
-		                                                          $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
-		                                                          $argsObj->assigned_to);
+	// BUGID 1041
+	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
+	                                                          $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
+	                                                          $argsObj->assigned_to);
 
-		// This does filter on keywords ALWAYS in OR mode.
-		$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
+	// This does filter on keywords ALWAYS in OR mode.
+	$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
 
-		// With this pieces we implement the AND type of keyword filter.
-		$testCaseSet=null;
-    if( !is_null($keywordsFilter) )
-		{ 
-		    $keywordsTestCases=$tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
-		                                                          $keywordsFilter->items,$keywordsFilter->type);
-		    $testCaseSet=array_keys($keywordsTestCases);
+	// With this pieces we implement the AND type of keyword filter.
+	$testCaseSet = null;
+    if(!is_null($keywordsFilter))
+	{ 
+		$keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
+		                                                     $keywordsFilter->items,$keywordsFilter->type);
+		$testCaseSet = array_keys($keywordsTestCases);
     }
-		$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
+	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
                          $tplan_linked_tcversions,
-                         $map_node_tccount,
-                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED);
+                         null,
+                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,1,0,1);
 
     return $out;
 }
-
 ?>

@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.64 2008/10/14 19:08:10 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.65 2008/10/15 20:36:52 schlundus Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -20,14 +20,6 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 require("specview.php");
-
-/*
- * @TODO: schlundus needs to clean up code later
-	$startupTime = tlTimingStart();
-	$startupMemory = memory_get_peak_usage(true)."--".memory_get_usage(true)."\n";;
-	register_shutdown_function("printPageStatistics",$startupMemory,$startupTime); 
-*/
-
 
 testlinkInitPage($db);
 $tree_mgr = new tree($db);
@@ -97,15 +89,13 @@ switch($args->doAction)
 $smarty = new TLSmarty();
 if($do_display)
 {
-	//$map_node_tccount = get_testproject_nodes_testcount($db,$args->tproject_id, $args->tproject_name,
-	//	                                                    $keywordsFilter);
 	$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
 		
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
 	
-	$testCaseSet=null;
-	if( !is_null($keywordsFilter) )
+	$testCaseSet = null;
+	if(!is_null($keywordsFilter))
 	{ 
 	    // With this pieces we implement the AND type of keyword filter.
 	    $keywordsTestCases=$tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
@@ -113,19 +103,20 @@ if($do_display)
 	    $testCaseSet=array_keys($keywordsTestCases);
 	}
   
-  define('DONT_PRUNE',0);
-  define('ADD_CUSTOM_FIELDS',0);
-  define('WRITE_BUTTON_ALWAYS',0);
+	define('DONT_PRUNE',0);
+	//@TODO: maybe this depends on solution for #1650, if #1650 this could be activated again
+	define('ADD_CUSTOM_FIELDS',0);
+	define('WRITE_BUTTON_ALWAYS',0);
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$args->keyword_id,
 	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS,true);
 		
     
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
-  $gui->items = $out['spec_view'];
-  $gui->has_linked_items = $out['has_linked_items'];
-  $smarty->assign('gui', $gui);
-  $smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
+	$gui->items = $out['spec_view'];
+	$gui->has_linked_items = $out['has_linked_items'];
+	$smarty->assign('gui', $gui);
+	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
 
 /*
@@ -154,10 +145,9 @@ function init_args()
 
 	// Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
 	$keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-	  
-	if(is_null($keywordSet))
-		$args->keyword_id = 0;  
-	else
+	
+	$args->keyword_id = 0;  
+	if(!is_null($keywordSet))
 		$args->keyword_id = explode(',',$keywordSet);  
 	
 	$args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
@@ -191,7 +181,7 @@ function doReorder(&$argsObj,&$tplanMgr)
         {
             if($argsObj->linkedOrder[$tcid] != $argsObj->testcases2order[$tcid] )
             { 
-                $mapo[$tcversion_id]=$argsObj->testcases2order[$tcid];
+                $mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
             }    
         }
     }
@@ -201,8 +191,8 @@ function doReorder(&$argsObj,&$tplanMgr)
     {
         foreach($argsObj->testcases2add as $tcid)
         {
-            $tcversion_id=$argsObj->tcversion_for_tcid[$tcid];
-            $mapo[$tcversion_id]=$argsObj->testcases2order[$tcid];
+            $tcversion_id = $argsObj->tcversion_for_tcid[$tcid];
+            $mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
         }
     }  
     
@@ -273,8 +263,8 @@ function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
     // N.B.: I've use this piece of code also on write_execution(), think is time to create
     //       a method on cfield_mgr class.
     //       One issue: find a good method name
-    $cf_prefix=$tcaseMgr->cfield_mgr->get_name_prefix();
-	  $len_cfp=strlen($cf_prefix);
+    $cf_prefix = $tcaseMgr->cfield_mgr->get_name_prefix();
+	$len_cfp=strlen($cf_prefix);
     $cf_nodeid_pos=4;
     
   	$nodeid_array_cfnames=null;

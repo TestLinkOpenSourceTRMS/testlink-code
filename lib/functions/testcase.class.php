@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.119 $
- * @modified $Date: 2008/10/10 20:59:47 $ $Author: schlundus $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2008/10/15 21:28:35 $ $Author: asielb $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -2272,7 +2272,7 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 	$rootElem = "{{XMLCODE}}";
 	if (isset($optExport['ROOTELEM']))
 		$rootElem = $optExport['ROOTELEM'];
-	$elemTpl = "\t".'<testcase name="{{NAME}}">'.
+	$elemTpl = "\t".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">'.
 						'<externalid><![CDATA['."\n||EXTERNALID||\n]]>".'</externalid>'.
 						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
 						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
@@ -2280,6 +2280,7 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 						'||KEYWORDS||</testcase>'."\n";
 
 	$info = array (
+							"{{TESTCASE_ID}}" => "testcase_id",
 							"{{NAME}}" => "name",
 							"||EXTERNALID||" => "tc_external_id",
 							"||SUMMARY||" => "summary",

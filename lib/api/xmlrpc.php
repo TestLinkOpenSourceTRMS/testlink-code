@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/10/13 20:11:16 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/10/15 21:34:07 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -15,17 +15,13 @@
  * directly from automation frameworks as well as other features.
  * 
  * See examples for additional detail
- * @example sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
- * @example sample_clients/php/clientSample.php php client sample
- * @example sample_clients/ruby/clientSample.rb ruby client sample
- * @example sample_clients/python/clientSample.py python client sample
+ * @example ../sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
+ * @example ../sample_clients/php/clientSample.php php client sample
+ * @example ../sample_clients/ruby/clientSample.rb ruby client sample
+ * @example ../sample_clients/python/clientSample.py python client sample
  * 
  *
  * rev :
- *      20081008 - ykaneko - contribution - implemented getTestSuitesForTestPlan
- *                 Attention: this method do not return all test suites, but only test suites that has
- *                            a test case linked to test plan.
- *              
  * 		  20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
  *      20080307 - franciscom - now is possible to use test case external or internal ID
@@ -48,15 +44,17 @@ require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
 require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
 require_once(dirname(__FILE__) . "/../functions/user.class.php");
+// require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
+require_once(dirname(__FILE__) . "/../functions/testplan.class.php");
 
 /**
  * The entry class for serving XML-RPC Requests
  * 
  * See examples for additional detail
- * @example sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
- * @example sample_clients/php/clientSample.php php client sample
- * @example sample_clients/ruby/clientSample.rb ruby client sample
- * @example sample_clients/python/clientSample.py python client sample
+ * @example ../sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
+ * @example ../sample_clients/php/clientSample.php php client sample
+ * @example ../sample_clients/ruby/clientSample.rb ruby client sample
+ * @example ../sample_clients/python/clientSample.py python client sample
  * 
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI 
@@ -169,13 +167,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.getProjects'				=> 'this:getProjects',
 			'tl.getProjectTestPlans'		=> 'this:getProjectTestPlans',
 			'tl.createBuild'				=> 'this:createBuild',
+			'tl.getBuildsForTestPlan' 		=> 'this:getBuildsForTestPlan',	
 			'tl.getTestSuitesForTestPlan' 	=> 'this:getTestSuitesForTestPlan',
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
 			'tl.getTestCasesForTestPlan' 	=> 'this:getTestCasesForTestPlan',
 			'tl.getTestCaseIDByName'		=> 'this:getTestCaseIDByName',
 			'tl.createTestCase'				=> 'this:createTestCase',
 			'tl.createTestProject'				=> 'this:createTestProject',
-			'tl.getLatestBuildForTestPlan'	=> 'this:getLatestBuildForTestPlan',
       'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
 			'tl.about'						=> 'this:about',
 			'tl.setTestMode'				=> 'this:setTestMode',
@@ -289,7 +287,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }				
     }
     
-    protected function userHasRight($roleQuestion)
+    protected function UserHasRight($roleQuestion)
     {
     	if ($this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
     	{
@@ -834,7 +832,6 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$this->userID = null;
         	$this->devKey = $this->dbObj->prepare_string($devKey);
         	$query = "SELECT id FROM users WHERE script_key='{$this->devKey}'";
-        	
         	$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
         	    	
         	if(null == $this->userID)
@@ -983,6 +980,53 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 	}	
 	
+		/**
+	 * Run all the necessary checks to see if the createBuild request is valid
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
+	private function _checkGetBuildRequest()
+	{		
+		if(!$this->authenticate())
+		{
+			return false;
+		}
+		if(!$this->checkTestPlanID())
+		{
+			return false;
+		}				
+		else
+		{
+			// Hurray the request is valid!			
+			return true;
+		}
+	}
+
+			/**
+	 * Run all the necessary checks to see if the getTestSuites request is valid
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
+	private function _checkGetTestSuitesRequest()
+	{
+		if(!$this->authenticate())
+		{
+			return false;
+		}
+		if(!$this->checkTestPlanID())
+		{
+			return false;
+		}				
+		else
+		{
+			// Hurray the request is valid!			
+			return true;
+		}
+	
+	}
+	
 	/**
 	 * Run all the necessary checks to see if the getProjectTestPlans request is valid
 	 *  
@@ -1114,32 +1158,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		return $this->dbObj->insert_id();		
 	}
 	
- 	/**
-	 * Adds the build to the database 
-	 *
-	 * @return int
-	 * @access private
-	 */			
-	private function _insertBuildToDB()
-	{		
-		$name = 		$this->args[self::$buildNameParamName];		
-		$testplan_id =	$this->args[self::$testPlanIDParamName];		
-		if($this->_isBuildNotePresent())
-		{			
-			$notes = $this->dbObj->prepare_string($this->args[self::$buildNotesParamName]);
-		}
-		else
-		{
-			$notes = "";
-		}		
-		// TODO: set the active and is_open flags		
-		
-		$query = "INSERT INTO {$this->builds_table} (testplan_id, name, notes) " .
-				     "VALUES(" . $testplan_id . "," . "'" . $name . "'," .	"'" . $notes . "')";
-				
-		$this->dbObj->exec_query($query);
-		return $this->dbObj->insert_id();		
-	}	
+ 		
 
 	/**
 	 * Performs a deep search for test cases within a test suite
@@ -1223,27 +1242,50 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["devKey"]
 	 * @param int $args["tplanid"]
 	 * @param string $args["buildname"];
+	 * @param string $args["buildnotes"];
 	 * @return mixed $resultInfo
 	 * 				
 	 * @access public
 	 */		
 	public function createBuild($args)
 	{
-		// TODO: look into switching to use $testplan->create_build method
 		$this->_setArgs($args);
-		if($this->_checkCreateBuildRequest($this->args) && $this->userHasRight("testplan_create_build"))
+		// check the tpid
+		if($this->_checkCreateBuildRequest($this->args) && $this->UserHasRight("testplan_create_build"))
 		{
-			$insertID = $this->_insertBuildToDB();			
+			$testPlanObj = new testplan($this->dbObj);
+			$testPlanID = $this->args[self::$testPlanIDParamName];
+			$buildName = $this->args[self::$buildNameParamName];					
+			$buildNotes = "";
+			if($this->_isBuildNotePresent())
+			{			
+				$buildNotes = $this->dbObj->prepare_string($this->args[self::$buildNotesParamName]);
+			}
+
+			
+			$insertID = '';
+			$returnMessage = GENERAL_SUCCESS_STR;
+			
+			if ($testPlanObj->check_build_name_existence($testPlanID,$buildName))
+			{
+				//Build exists so just get the id of the existing build
+				$insertID = $testPlanObj->get_build_id_by_name($testPlanID,$buildName);
+				$returnMessage = BUILD_NAME_ALREADY_EXISTS_STR . $buildName;
+			
+			} else {
+				//Build doesn't exist so create one
+				$insertID = $testPlanObj->create_build($testPlanID,$buildName,$buildNotes,$active=1,$open=1);
+			}
 			$resultInfo = array();
 			$resultInfo[0]["status"] = true;
 			$resultInfo[0]["id"] = $insertID;	
-			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
-			return $resultInfo;	
-		}		
+			$resultInfo[0]["message"] = $returnMessage;
+			return $resultInfo;			 	
+		}
 		else
 		{
-			return $this->errors;			
-		}
+			return $this->errors;
+		}	
 	}
 	
 	/**
@@ -1301,6 +1343,65 @@ class TestlinkXMLRPCServer extends IXR_Server
 		} 
 	}
 	
+	/**
+	 * Gets a list of active builds within a test plan
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["tplanid"]
+	 * @return mixed $resultInfo
+	 * 				
+	 * @access public
+	 */		
+	public function getBuildsForTestPlan($args)
+	{
+		$this->_setArgs($args);
+		// check the tpid
+		//need a right to associate with
+		if($this->_checkGetBuildRequest())
+		{
+			$testPlanObj = new testplan($this->dbObj);
+			$testPlanID = $this->args[self::$testPlanIDParamName];
+			$newResult = $testPlanObj->get_builds($testPlanID);
+			$scrubbedResult = array();
+			foreach ($newResult as $tempBuild)
+			{
+				$scrubbedResult[] = $tempBuild;
+			}
+			
+			return $scrubbedResult;
+		}
+		else
+		{
+			return $this->errors;
+		} 
+	}
+	
+	/**
+	 * List test suites within a test plan alphabetically
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["tplanid"]
+	 * @return mixed $resultInfo
+	 */
+	 public function getTestSuitesForTestPlan($args)
+	 {
+	 	$this->_setArgs($args);
+		// check the tpid
+		if($this->_checkGetTestSuitesRequest())
+		{
+			$testPlanObj = new testplan($this->dbObj);
+			$testPlanID = $this->args[self::$testPlanIDParamName];			
+			$newResult = $testPlanObj->get_testsuites($testPlanID);
+			return 	$newResult;
+		}
+		else
+		{
+			return $this->errors;
+		} 
+	 }
+	
 	// 20080518 - franciscom
 	public function createTestProject($args)
 	{
@@ -1308,7 +1409,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    $this->_setArgs($args);
 	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
 	
-	    if( $this->$checkRequestMethod() && $this->userHasRight("mgt_modify_product"))
+	    if( $this->$checkRequestMethod() && $this->UserHasRight("mgt_modify_product"))
 	    {
 	        return true;
 	    }
@@ -1360,7 +1461,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 
 	
-
+	
 	/**
 	 * List test cases within a test suite
 	 * 
@@ -1377,7 +1478,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 public function getTestCasesForTestSuite($args)
 	 {
 		$this->_setArgs($args);
-		if($this->_checkGetTestCasesForTestSuiteRequest() && $this->userHasRight("mgt_view_tc"))
+		if($this->_checkGetTestCasesForTestSuiteRequest() && $this->UserHasRight("mgt_view_tc"))
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
 				
@@ -1439,7 +1540,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 public function getTestCaseIDByName($args)
 	 {
 		$this->_setArgs($args);		
-		if($this->_checkGetTestCaseByIDNameRequest() && $this->userHasRight("mgt_view_tc"))
+		if($this->_checkGetTestCaseByIDNameRequest() && $this->UserHasRight("mgt_view_tc"))
 		{			
 			$testCaseName = $this->args[self::$testCaseNameParamName];
 
@@ -1494,10 +1595,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Reports a result for a single test case
 	 *
 	 * See examples for additional detail
-	 * @example sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
-	 * @example sample_clients/php/clientSample.php php client sample
-	 * @example sample_clients/ruby/clientSample.rb ruby client sample
-	 * @example sample_clients/python/clientSample.py python client sample
+	 * @example ../sample_clients/java/org/testlink/api/client/sample/TestlinkAPIXMLRPCClient.java java client sample
+	 * @example ../sample_clients/php/clientSample.php php client sample
+	 * @example ../sample_clients/ruby/clientSample.rb ruby client sample
+	 * @example ../sample_clients/python/clientSample.py python client sample
 	 * 
 	 * @param struct $args
 	 * @param string $args["devKey"]
@@ -1518,7 +1619,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{		
 		$this->_setArgs($args);
 		// Verify that we have everything we need to create a new execution
-		if($this->_checkReportTCResultRequest($this->args) && $this->userHasRight("testplan_execute"))
+		if($this->_checkReportTCResultRequest($this->args) && $this->UserHasRight("testplan_execute"))
 		{			
 			$insertID = $this->_insertResultToDB();			
 			$resultInfo = array();
@@ -1676,7 +1777,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		
 		
 		// Test Case ID, Build ID are checked if present
-		if(!$this->_checkGetTestCasesForTestPlanRequest() && $this->userHasRight("mgt_view_tc"))
+		if(!$this->_checkGetTestCasesForTestPlanRequest() && $this->UserHasRight("mgt_view_tc"))
 		{
 			return $this->errors;
 		}
@@ -1743,7 +1844,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	{
 
 		$this->_setArgs($args);		
-		if($this->_checkGetTestCaseCustomFieldDesignValueRequest() && $this->userHasRight("mgt_view_tc"))
+		if($this->_checkGetTestCaseCustomFieldDesignValueRequest() && $this->UserHasRight("mgt_view_tc"))
 		{
 			return $this->errors;
 		}
@@ -1790,84 +1891,6 @@ class TestlinkXMLRPCServer extends IXR_Server
       }	
       return $status_ok;
   }
-
-	/**
-	 * Run all the necessary checks to see if ...
-	 *  
-	 * @return boolean
-	 * @access private
-	 */
-	private function _checkGetTestSuitesForTestPlanRequest()
-	{
-		if(!$this->authenticate())
-		{
-			return false;			
-		}
-		if(!$this->checkTestPlanID())
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-
-	/**
-	 * List test suites within a test plan
-	 *
-	 * Attention: this method do not return all test suites, but only test suites that has
-   *            a test case linked to test plan.
-   *
-   * Example:
-   *         TestPlan
-   *             \----- TS1
-   *                     \-----TS2
-   *                            \---- TC1
-   *                            \---- TC2
-   *             \----- TS3
-   *                     \---- TC3
-   *
-   * You will get:
-   *              TS2 e TS3, but not TS1
-   *
-	 * @param struct $args
-	 * @param string $args["devKey"]
-	 * @param int $args["testplanid"]
-	 * @return mixed $resultInfo
-	 *
-	 */
-	 public function getTestSuitesForTestPlan($args)
-	 {
-		$this->_setArgs($args);
-		if($this->_checkGetTestSuitesForTestPlanRequest())
-		{
-			$tplanid=$this->args[self::$testPlanIDParamName];
-			$query=	"SELECT distinct NH2.id, NH2.name " .
-					"FROM {$this->nodes_hierarchy_table} NH " . 
-					"JOIN {$this->nodes_hierarchy_table} NH2 ON NH2.id=NH.parent_id " .
-					"WHERE NH.id " .
-					"IN ( SELECT NH3.parent_id " .
-					"FROM {$this->testplan_tcversions_table} T " .
-					"JOIN {$this->nodes_hierarchy_table} NH3 ON NH3.id=T.tcversion_id " .
-					"WHERE T.testplan_id={$tplanid} )";
-
-			$resultMap = $this->dbObj->fetchArrayRowsIntoMap($query, "id");
-			$newResult = array();
-			foreach($resultMap as $result)
-			{
-				foreach($result as $item)
-				{
-					$newResult[] = $item;
-				}
-			}
-			return $newResult;
-		}
-		else
-		{
-			return $this->errors;
-		}
-	 }
 
 
 

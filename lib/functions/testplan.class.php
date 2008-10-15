@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/09/27 16:50:46 $ by $Author: schlundus $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/10/15 21:46:57 $ by $Author: asielb $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1307,6 +1307,103 @@ function get_max_build_id($id,$active = null,$open = null)
 	return $maxBuildID;
 }
 
+/*
+  function: get_testsuites
+
+  args :
+	$id     : test plan id.
+	
+  
+  returns: returns flat list of names of test suites (including nest test suites)  No particular Order.
+  
+*/
+function get_testsuites($id)
+{
+    $sql = "SELECT nhgrandparent.name, nhgrandparent.id " . 
+    "FROM testplan_tcversions tptcv, nodes_hierarchy nh, nodes_hierarchy nhparent, nodes_hierarchy nhgrandparent " . 
+    "WHERE tptcv.tcversion_id = nh.id " .
+    "AND nh.parent_id = nhparent.id " .
+    "AND nhparent.parent_id = nhgrandparent.id " .
+    "AND tptcv.testplan_id = " . $id . " " .
+    "GROUP BY nhgrandparent.id " .
+    "ORDER BY nhgrandparent.name" ;
+    
+    $recordset = $this->db->get_recordset($sql);
+    
+    //Now the recordset contains testsuites that have child test cases... 
+    //However there could potentially be testsuites that only have grandchildren/greatgrandchildren
+    //this will iterate through found test suites and check for 
+    $superset = $recordset;
+    foreach($recordset as $value)
+    {
+	$superset = array_merge($superset, $this->get_parenttestsuites($value['id']));
+    }    
+    
+    //At this point there may be duplicates
+    $dup_track = array();
+    foreach($superset as $value)
+    {
+	if (!array_key_exists($value['id'],$dup_track))
+	{
+	    $dup_track[$value['id']] = true;
+	    $finalset[] = $value;
+	}        
+    }    
+    
+    //Needs to be alphabetical based upon name attribute 
+    usort($finalset, array("testplan", "compare_name"));
+    return $finalset;
+}
+
+/*
+ function: compare_name
+Used for sorting a list by nest name attribute
+
+  args :
+	$a     : first array to compare
+	$b       : second array to compare
+  
+  returns: an integer indicating the result of the comparison
+ */
+private function compare_name($a, $b)
+{
+    return strcasecmp($a['name'], $b['name']);
+}
+
+/*
+ function: get_parenttestsuites
+
+Used by get_testsuites
+ 
+Recursive function used to get all the parent test suites of potentially testcase free testsuites.
+If passed node id isn't the product then it's merged into result set.
+
+  args :
+	$id     : $id of potential testsuite
+  
+  returns: an array of all testsuite ancestors of $id
+ */
+private function get_parenttestsuites($id)
+{
+    $sql = "SELECT name, id, parent_id " .
+	    "FROM nodes_hierarchy nh " .
+	    "WHERE nh.node_type_id <> 1 " .
+	    "AND nh.id = " . $id;
+	    
+    $recordset = $this->db->get_recordset($sql);
+    
+    $myarray = array();
+    if (count($recordset) > 0)
+    {        
+	//Don't want parentid in final result so just adding in attributes we want.
+	$myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
+	
+	$myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
+    }
+    
+    return $myarray;            
+}
+
 
 // --------------------------------------------------------------------------------------
 /*
@@ -1455,9 +1552,42 @@ function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_s
   $result = $this->db->exec_query($sql);
   $status= $this->db->num_rows($result) ? 1 : 0;
 
-	return($status);
+	return $status;
 }
 
+/*
+  function: get_build_id_by_name
+
+Ignores case
+
+  args :
+	$tplan_id     : test plan id. 
+	$build_name   : build name. 
+  
+  returns: 
+  The ID of the build name specified regardless of case.
+
+  rev :
+*/
+function get_build_id_by_name($tplan_id,$build_name)
+{
+     $sql = " SELECT builds.id, builds.name, builds.notes " .
+	   " FROM builds " .
+	   " WHERE builds.testplan_id = {$tplan_id} ";
+
+      $build_name=strtoupper($build_name);        
+	$sql .= " AND UPPER(builds.name)=";
+    $sql .= "'" . $this->db->prepare_string($build_name) . "'";    
+    
+  //$result = $this->db->exec_query($sql);
+  
+    $recordset = $this->db->get_recordset($sql);
+    $BuildID = 0;
+    if ($recordset)
+	$BuildID = intval($recordset[0]['id']);
+	    
+    return $BuildID;  
+}
 
 // --------------------------------------------------------------------------------------
 /*

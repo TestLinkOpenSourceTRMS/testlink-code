@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/10/15 21:40:02 $ by $Author: asielb $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/10/16 19:14:22 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1240,7 +1240,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param int $args["tplanid"]
+	 * @param int $args["testplanid"]
 	 * @param string $args["buildname"];
 	 * @param string $args["buildnotes"];
 	 * @return mixed $resultInfo
@@ -1348,7 +1348,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param int $args["tplanid"]
+	 * @param int $args["testplanid"]
 	 * @return mixed $resultInfo
 	 * 				
 	 * @access public
@@ -1382,7 +1382,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param int $args["tplanid"]
+	 * @param int $args["testplanid"]
 	 * @return mixed $resultInfo
 	 */
 	 public function getTestSuitesForTestPlan($args)
@@ -1602,13 +1602,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param int $args["tcid"]
-	 * @param int $args["tplanid"] 
-   * @param string $args["status"] - status is {@link $validStatusList}
-   * @param int $args["buildid"] - optional
-   * @param string $args["notes"] - optional
-   * @param bool $args["guess"] - optional definiing whether to guess optinal params or require them 
-   * 								explicitly default is true (guess by default)
+	 * @param int $args["testcaseid"]
+	 * @param int $args["testplanid"] 
+         * @param string $args["status"] - status is {@link $validStatusList}
+	 * @param int $args["buildid"] - optional
+	 * @param string $args["notes"] - optional
+	 * @param bool $args["guess"] - optional definiing whether to guess optinal params or require them 
+	 * 								explicitly default is true (guess by default)
 	 * @return mixed $resultInfo 
 	 * 				[status]	=> true/false of success
 	 * 				[id]		=> result id or error code

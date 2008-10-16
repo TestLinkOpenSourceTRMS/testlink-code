@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.82 $
- * @modified $Date: 2008/10/15 21:46:57 $ by $Author: asielb $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2008/10/16 18:50:53 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -384,7 +384,7 @@ function link_tcversions($id,&$items_to_link)
 {
 
   // Get human readeable info for audit
-  $gui_cfg = config_get('gui');
+  $title_separator = config_get('gui_title_separator_1');
   $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link);
   $info=$auditInfo['info'];
   $tcasePrefix=$auditInfo['tcasePrefix'];
@@ -412,7 +412,7 @@ function link_tcversions($id,&$items_to_link)
 		{
 			$auditMsg=TLS("audit_tc_added_to_testplan",
 			              $tcasePrefix . $info[$tcversion]['tc_external_id'] . 
-			              $gui_cfg->title_separator_1 . $info[$tcversion]['name'],
+			              $title_separator . $info[$tcversion]['name'],
 			              $info[$tcversion]['version'],$tplanInfo['name']);
 			              
 			logAuditEvent($auditMsg,"ASSIGN",$id,"testplans");

@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.28 2008/10/16 16:09:26 schlundus Exp $
+ * @version $Id: planUpdateTC.php,v 1.29 2008/10/16 18:50:53 schlundus Exp $
  *
  * Author: franciscom
  *
@@ -17,10 +17,9 @@
  *     20080528 - franciscom - fixed internal bug that shows wrong version is user works
  *                             only with one test case
  */
-require('../../config.inc.php');
+require_once("../../config.inc.php");
 require_once("common.php");
-require("specview.php");
-
+require_once("specview.php");
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db);
@@ -31,15 +30,14 @@ $tcase_mgr = new testcase($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args($tplan_mgr);
-$gui=initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
-$keywordsFilter=null;
-if( is_array($args->keyword_id) )
+$gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+$keywordsFilter = null;
+if(is_array($args->keyword_id))
 {
-    $keywordsFilter=new stdClass();
+    $keywordsFilter = new stdClass();
     $keywordsFilter->items = $args->keyword_id;
     $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
-
 
 switch ($args->doAction)
 {
@@ -55,43 +53,28 @@ switch ($args->doAction)
 }
 
 $out = null;
-$map_node_tccount = get_testplan_nodes_testcount($db,$args->tproject_id,$args->tproject_name,
-                                                     $args->tplan_id,$args->tplan_name,$keywordsFilter);
-$total_tccount = 0;
-foreach($map_node_tccount as $elem)
-{
-	$total_tccount += $elem['testcount'];
-}
-
 
 switch($args->level)
 {
 	case 'testcase':
-		if( $total_tccount > 0 )
-		{
-			// build data needed to call gen_spec_view
-			$my_path = $tree_mgr->get_path($args->id);
-			$idx_ts = count($my_path)-1;
-			$tsuite_data = $my_path[$idx_ts-1];
-			$linked_items=$tplan_mgr->get_linked_tcversions($args->tplan_id,$args->id);
-			
-			$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-			                     $linked_items,$map_node_tccount,$args->keyword_id,
-			                     FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-		}
+		$my_path = $tree_mgr->get_path($args->id);
+		$idx_ts = count($my_path)-1;
+		$tsuite_data = $my_path[$idx_ts-1];
+		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->id);
+		
+		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+		                     $linked_items,$map_node_tccount,$args->keyword_id,
+		                     FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,1,0,1);
 		break;
 
 	case 'testsuite':
-		if($total_tccount > 0)
-		{
-        $out=processTestSuite($db,$args,$map_node_tccount,$keywordsFilter,$tplan_mgr,$tcase_mgr);
-   	}
+	    $out = processTestSuite($db,$args,$map_node_tccount,$keywordsFilter,$tplan_mgr,$tcase_mgr);
 		break;
 
 	case 'testplan':
-	  $gui->instructions=lang_get('update2latest');
-	  $gui->buttonAction="doUpdateAllToLatest";
-  break;
+		$gui->instructions = lang_get('update2latest');
+		$gui->buttonAction = "doUpdateAllToLatest";
+  		break;
   
 	default:
 		// show instructions
@@ -99,17 +82,15 @@ switch($args->level)
 		break;
 }
 
-if( !is_null($out) )
+if(!is_null($out))
 {
 	$gui->has_tc = $out['num_tc'] > 0 ? 1:0;
-	$gui->items=$out['spec_view'];
+	$gui->items = $out['spec_view'];
 }
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
-
 
 /*
   function: init_args
@@ -136,7 +117,7 @@ function init_args(&$tplanMgr)
     // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
     $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
     $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-    $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
 
     
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
@@ -147,11 +128,11 @@ function init_args(&$tplanMgr)
     }
     else
     {
-        $tpi=$tplanMgr->get_by_id($args->tplan_id);  
-        $args->tplan_name =$tpi['name'];
+        $tpi = $tplanMgr->get_by_id($args->tplan_id);  
+        $args->tplan_name = $tpi['name'];
     }
-    $args->tproject_id =  $_SESSION['testprojectID'];
-    $args->tproject_name =  $_SESSION['testprojectName'];
+    $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_name = $_SESSION['testprojectName'];
 
     return $args;
 }

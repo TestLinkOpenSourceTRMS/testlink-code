@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.26 2008/10/15 20:36:53 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.27 2008/10/16 18:50:53 schlundus Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -21,11 +21,6 @@ require("specview.php");
 
 testlinkInitPage($db);
 
-/* @TODO: schlundus clean up
-	$startupTime = tlTimingStart();
-	$startupMemory = memory_get_peak_usage(true)."--".memory_get_usage(true)."\n";;
-	register_shutdown_function("printPageStatistics",$startupMemory,$startupTime); 
-*/
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 

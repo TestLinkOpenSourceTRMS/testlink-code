@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: priority.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/09/24 18:25:23 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/10/16 18:50:53 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -43,7 +43,7 @@ public function setTestUrgency($testplan_id, $tc_id, $urgency)
  */	
 public function setSuiteUrgency($testplan_id, $node_id, $urgency)
 {
-    $sql='UPDATE testplan_tcversions ' . 
+    $sql = 'UPDATE testplan_tcversions ' . 
         ' JOIN nodes_hierarchy NHA ON testplan_tcversions.tcversion_id = NHA.id '.
         ' JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id' .
         ' SET urgency=' . $urgency .

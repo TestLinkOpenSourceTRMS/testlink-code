@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/10/16 18:50:53 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -297,18 +297,24 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
                      $ignore_inactive_testcases=0,$show_tc_id=1)
 {
   
-  $hash_id_descr=$decoding_info['node_id_descr'];
-  $status_descr_code=$decoding_info['status_descr_code'];
-  $status_code_descr=$decoding_info['status_code_descr'];
+	static $hash_id_descr;
+	if (!$hash_id_descr)
+		$hash_id_descr = $decoding_info['node_id_descr'];
+	static $status_descr_code;
+  	if (!$status_descr_code)
+		$status_descr_code = $decoding_info['status_descr_code'];
+  	static $status_code_descr;
+  	if (!$status_code_descr)
+  		$status_code_descr = $decoding_info['status_code_descr'];
   
-  $tcase_counters=array('testcase_count' => 0);
-  foreach($status_descr_code as $status_descr => $status_code)
-  {
-    $tcase_counters[$status_descr]=0;
-  }
+	$tcase_counters=array('testcase_count' => 0);
+	foreach($status_descr_code as $status_descr => $status_code)
+	{
+		$tcase_counters[$status_descr]=0;
+	}
 
 	$node_type = $hash_id_descr[$node['node_type_id']];
-  $tcase_counters['testcase_count']=0;
+	$tcase_counters['testcase_count']=0;
   
   if ($node_type == 'testcase')
 	{

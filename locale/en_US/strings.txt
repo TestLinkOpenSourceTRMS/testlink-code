@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/10/03 05:03:39 $ $Author: asielb $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/10/16 20:08:01 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -22,7 +22,6 @@ $TLS_asc = "ascending";
 $TLS_btn_no = "No";
 $TLS_create = "Create";
 $TLS_desc = "descending";
-$TLS_hour = "Hour";
 $TLS_test_case = "Test Case";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "Test Plan";
@@ -173,6 +172,7 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 $TLS_btn_add_bug = "Add bug";
 $TLS_bug_id = "Bug id";
 $TLS_button_enter_bug = "Create new bug";
+$TLS_link_bts_create_bug = "Access to Bug Tracking System ";
 $TLS_title_bug_add = "Add bug";
 
 
@@ -590,6 +590,8 @@ $TLS_menu_assign_testplan_roles = "Assign test plan roles";
 $TLS_menu_define_roles = "Define roles";
 $TLS_menu_mod_user = "Modify User";
 $TLS_menu_new_user = "New User";
+$TLS_menu_edit_user = "Edit User";
+$TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field rights";
@@ -730,6 +732,7 @@ $TLS_no_records_found = "Your search delivered no results!";
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "notes";
+$TLS_assigned_to = "Assigned to";
 $TLS_attachment_mgmt = "attachments";
 $TLS_btn_history_off = "Show only last execution";
 $TLS_btn_history_on = "Show complete execution history";
@@ -748,6 +751,9 @@ $TLS_img_title_bug_mgmt = "Bug management";
 $TLS_img_title_delete_execution= "Delete execution";
 $TLS_just_last_execution_for_this_build = "Last execution for this build";
 $TLS_no_data_available = "No data available";
+$TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
+$TLS_or_unassigned_test_cases = " Or without tester assignment";
+$TLS_run_mode = "Run mode";
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_tc_not_tested_yet = "Not Tested Yet";
@@ -1050,7 +1056,15 @@ $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
 $TLS_test_plan_header = "Test Plan: ";
-
+$TLS_query_metrics_report = "Query Metrics Report";
+$TLS_enter_start_time = "Start Time";
+$TLS_enter_end_time = "End Time";
+$TLS_year = "year";
+$TLS_month = "month";
+$TLS_day = "day";
+$TLS_hour = "hour";
+$TLS_search_in_notes = "search for string in notes";
+$TLS_executor = "executed by";
 
 
 // gui/templates/resultsMoreBuilds_report.tpl
@@ -1215,7 +1229,21 @@ $TLS_no_builds = "No builds are defined within this Test Plan!";
 $TLS_th_description = "Description";
 $TLS_th_open = "Open";
 $TLS_title_build_list = "List of existing builds";
-$TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
+$TLS_warning_delete_build = "You are going to delete: %s " .
+                            "<br /> <br />All dependant data (i.e., test results) will also be deleted!" .
+                            "<br /> <br /> Are you sure?";
+$TLS_builds_description = "A build is identified by its title. Each build is related to the active Test Plan." .
+                                                              "<br />Description should include:&nbsp;" .
+                                                              "list of delivered packages, fixes or features, approvals, status, etc.<br />" .
+                                                              "A build has two attributes:<br />" .
+                          "Active / Inactive &ndash; defines whether the build can be used. " .
+                          "Inactive builds are not listed on the execution and reports pages.<br />" .
+                          "Open / Closed &ndash; Only for open builds, test results can be modified.";
+
+$TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+                     "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
+                     "and if name does not exist, build will be created.";
+
 
 
 
@@ -1245,7 +1273,9 @@ $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Case(s)";
+$TLS_href_tproject_management="Test Project Management";
 $TLS_href_user_management = "User Management";
+$TLS_href_admin_modules   = "System Configuration";
 $TLS_title_requirements = "Requirements";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_product_mgmt = "Test Project Management";

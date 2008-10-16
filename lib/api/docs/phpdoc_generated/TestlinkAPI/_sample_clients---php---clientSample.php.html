@@ -39,13 +39,17 @@
         <div class="package">
 				<span style="padding-left: 1em;"><a href="../TestlinkAPI/_api.const.inc.php.html">api.const.inc.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_APIErrors.php.html">APIErrors.php</a></span><br />
+			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_APIKey.php.html">APIKey.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_sample_clients---php---clientSample.php.html">clientSample.php</a></span><br />
+			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_client_samples---php---clientSample.php.html">clientSample.php</a></span><br />
+			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_sample_clients---php---clientSample2.php.html">clientSample2.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_xmlrpc.php.html">xmlrpc.php</a></span><br />
 	  </div>
             <br />
                   <b>Classes:</b><br />
         <div class="package">
-		    		<a href="../TestlinkAPI/TestlinkXMLRPCServer.html">TestlinkXMLRPCServer</a>    	 <br />
+		    		<a href="../TestlinkAPI/APIKey.html">APIKey</a>    	 <br />
+	    		<a href="../TestlinkAPI/TestlinkXMLRPCServer.html">TestlinkXMLRPCServer</a>    	 <br />
 	  </div>
                 </td>
     <td>
@@ -68,7 +72,10 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 </strong></p>
 		<table border="0" cellspacing="0" cellpadding="0">
 			<tr><td><strong>Author:</strong>&nbsp;&nbsp;</td><td>Asiel Brumfield &lt;<a href="mailto:asielb@users.sourceforge.net">asielb@users.sourceforge.net</a>&gt;</td></tr>
-			<tr><td><strong>Link:</strong>&nbsp;&nbsp;</td><td><a href="http://testlink.org/api/">http://testlink.org/api/</a></td></tr>
+			<tr><td><strong>Link:</strong>&nbsp;&nbsp;</td><td><a href="http://testlink.org/api/">http://testlink.org/api/
+
+ rev: 20080306 - franciscom - added dBug to improve diagnostic info.
+      20080305 - franciscom - refactored</a></td></tr>
 	</table>
 
 			</div>
@@ -85,20 +92,33 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 				|													<a href="#sec-functions">Functions</a>
 					</div>
 		<div class="info-box-body">
-			<a name="_dirname(__FILE__)_/__/__/__/third_party/xml-rpc/class-IXR_php"><!-- --></a>
+			<a name="_dirname(__FILE__)_THIRD_PARTY_CODE_/xml-rpc/class-IXR_php"><!-- --></a>
 <div class="evenrow">
 
 	<div>
 		<span class="include-title">
 			<span class="include-type">require_once</span>
-			(<span class="include-name">dirname(__FILE__).'/../../../third_party/xml-rpc/class-IXR.php'</span>)
-			<span class="smalllinenumber">[line 13]</span>
+			(<span class="include-name">dirname(__FILE__).THIRD_PARTY_CODE.'/xml-rpc/class-IXR.php'</span>)
+			<span class="smalllinenumber">[line 18]</span>
 		</span>
 	</div>
 
-	<p align="center" class="short-description"><strong>Need the IXR class for client
-</strong></p>
-	
+		
+		<div class="top">[ <a href="#top">Top</a> ]</div>
+		<br />
+</div>
+<a name="_dirname(__FILE__)_THIRD_PARTY_CODE_/dBug/dBug_php"><!-- --></a>
+<div class="oddrow">
+
+	<div>
+		<span class="include-title">
+			<span class="include-type">require_once</span>
+			(<span class="include-name">dirname(__FILE__).THIRD_PARTY_CODE.'/dBug/dBug.php'</span>)
+			<span class="smalllinenumber">[line 19]</span>
+		</span>
+	</div>
+
+		
 		<div class="top">[ <a href="#top">Top</a> ]</div>
 		<br />
 </div>
@@ -116,17 +136,17 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 					</div>
 		<div class="info-box-body">
 			<a name="defineDEV_KEY"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div>
 		<span class="const-title">
-			<span class="const-name">DEV_KEY</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 18]</span>
+			<span class="const-name">DEV_KEY</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 26]</span>
 		</span>
 	</div>
 <br />
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
-		<code>DEV_KEY = &quot;f2a979d533cdd9761434bba60a88e4d8&quot;</code>
+		<code>DEV_KEY = &quot;11111111111111111111111111111111&quot;</code>
     </td></tr></table>
     </td></tr></table>
 
@@ -136,22 +156,24 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 		<div class="top">[ <a href="#top">Top</a> ]</div>
 	<br />
 </div>
-<a name="defineSERVER_URL"><!-- --></a>
-<div class="evenrow">
+<a name="defineTHIRD_PARTY_CODE"><!-- --></a>
+<div class="oddrow">
 
 	<div>
 		<span class="const-title">
-			<span class="const-name">SERVER_URL</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 16]</span>
+			<span class="const-name">THIRD_PARTY_CODE</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 16]</span>
 		</span>
 	</div>
 <br />
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
-		<code>SERVER_URL = &quot;http://qa/testlink_sandbox/api/xmlrpc.php&quot;</code>
+		<code>THIRD_PARTY_CODE = &quot;/../../../../third_party&quot;</code>
     </td></tr></table>
     </td></tr></table>
 
-        
+    <p align="center" class="short-description"><strong>Need the IXR class for client
+</strong></p>
+    
 	<br />
 
 		<div class="top">[ <a href="#top">Top</a> ]</div>
@@ -172,17 +194,17 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 		</div>
 		<div class="info-box-body">
 			<a name="functionreportResult" id="functionreportResult"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div>
-		<span class="method-title">reportResult</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 20]</span>
+		<span class="method-title">reportResult</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 124]</span>
 	</div>
 <br />
 	<div class="function">
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">
 		<code>void reportResult(
- $tcid,  $tpid,  $status&nbsp;
+ $server_url, [ $tcaseid = null], [ $tcaseexternalid = null],  $tplanid, [ $buildid = null], [ $buildname = null],  $status, [ $notes = null], [ $debug = false]&nbsp;
 )</code>
     </td></tr></table>
     </td></tr></table>
@@ -193,19 +215,55 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 					<tr><td class="indent">
 				<span class="var-type"></span>&nbsp;&nbsp;</td>
 				<td>
-				<span class="var-name">$tcid:&nbsp;</span></td>
+				<span class="var-name">$server_url:&nbsp;</span></td>
 				<td>
 							</td></tr>
 					<tr><td class="indent">
 				<span class="var-type"></span>&nbsp;&nbsp;</td>
 				<td>
-				<span class="var-name">$tpid:&nbsp;</span></td>
+				<span class="var-name">$tcaseid:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$tcaseexternalid:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$tplanid:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$buildid:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$buildname:&nbsp;</span></td>
 				<td>
 							</td></tr>
 					<tr><td class="indent">
 				<span class="var-type"></span>&nbsp;&nbsp;</td>
 				<td>
 				<span class="var-name">$status:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$notes:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$debug:&nbsp;</span></td>
 				<td>
 							</td></tr>
 				</table>
@@ -222,7 +280,7 @@ Source Location: /sample_clients/php/clientSample.php<br /><br />
 
         <div class="credit">
 		    <hr class="separator" />
-		    Documentation generated on Mon, 03 Dec 2007 14:42:59 -0700 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
+		    Documentation generated on Thu, 16 Oct 2008 13:08:50 -0600 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.2</a>
 	      </div>
       </td></tr></table>
     </td>

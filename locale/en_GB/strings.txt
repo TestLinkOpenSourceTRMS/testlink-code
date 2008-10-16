@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.352 $
- * @modified $Date: 2008/10/15 21:50:21 $ by $Author: asielb $
+ * @version $Revision: 1.353 $
+ * @modified $Date: 2008/10/16 12:34:12 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -401,14 +401,14 @@ $TLS_was_success = " was successfully ";
 
 // gui/templates/execNavigator.tpl
 $TLS_TestPlan = $TLS_testplan;
-$TLS_btn_apply_filter = "Apply filter";
+$TLS_btn_apply_filter = "Apply";
 $TLS_btn_update_menu = "Update menu";
-$TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
+$TLS_caption_nav_filter_settings = "Filter & Settings ...";
 $TLS_current_build = "Current build";
 $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
 $TLS_filter_tcID = "Test Case ID";
-$TLS_include_unassigned_testcases = "include unassigned ";
+$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
 $TLS_keyword = "Keyword";
 $TLS_test_status_all_status = $TLS_test_status_all;
 

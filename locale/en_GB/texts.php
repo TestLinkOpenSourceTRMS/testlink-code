@@ -1,12 +1,14 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/09/26 20:21:47 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/10/16 12:34:12 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
+ *
+ * --------------------------------------------------------------------------------------
  *
  * Scope:
  * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
@@ -21,14 +23,16 @@
  *
  * Revisions history is not stored for the file
  *
-**/
+ * ------------------------------------------------------------------------------------ */
 
-// ------------------------------------------------------------------------------------------
+
 $TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
 $TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>This feature allows to set relations between requirements
-and test cases. A designer could define relations 0..n to 0..n. I.e. One test case
-could be assigned to none, one or more test cases and vice versa.</p>
+<p>Users can set relations between requirements and test cases. A designer could
+define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
+test cases and vice versa. Such traceability matrix helps to investigate test coverage
+of requirements and find out which ones successfully failed during a testing. This
+analyse serves as input for the next planning.</p>
 
 <h2>Get Started:</h2>
 <ol>
@@ -44,7 +48,7 @@ could be assigned to none, one or more test cases and vice versa.</p>
 </ol>";
 
 
-// ------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Test Specification";
 $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
 <p>The <span class=\"help\" onclick=\"javascript:open_help_window('glosary','$locale');\">Test
@@ -175,23 +179,25 @@ $TLS_htmltext_title['executeTest']	= "Test Case Execution";
 $TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
 
 <p>Allows user to execute Test cases. User can assign Test result
-to Test Case for Build. See <span class='help'
-onclick=\"javascript:open_popup('./execFilter.html');\">help</span>
- for more information about filter and settings.</p>
+to Test Case for Build. See help for more information about filter and settings " .
+		"(click on the question mark icon).</p>
 
 <h2>Get started:</h2>
 
 <ol>
 	<li>User must have defined a Build for the Test Plan.</li>
-	<li>Select a Build from the drop down box and the Update button in the navigation pane.</li>
-	<li>Click on a test suite to see all of its test suites and all of its test cases.</li>
+	<li>Select a Build from the drop down box and the \"Apply\" button in the navigation pane.</li>
+	<li>Click on a test case in the tree menu.</li>
 	<li>Fill out the test case result and any applicable notes or bugs.</li>
-</ol>";
-
+	<li>Save results.</li>
+</ol>
+<p><i>Note: TestLink must be configurated to collaborate with your Bug tracker 
+if you would like to create/trace a problem report directly from the GUI.</i></p>";
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['showMetrics']	= "Description of Test Reports and Metrics";
-$TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan (defined in top of navigator). This Test Plan could differs from the
+$TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
+		"(defined in top of navigator). This Test Plan could differs from the
 current Test Plan for execution. You can also select Report format:</p>
 <ul>
 <li><b>Normal</b> - report is displayed in web page</li>
@@ -357,14 +363,20 @@ Specification is changed. It often happens that some functionality is clarified 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
 $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
-<p>This page allows set urgency of Test case to affect a testing Priority of test cases. " .
-		"Test priority depends on both Importance of Test cases and urgency defined in " .
-		"the Test Plan.</p>
+<p>TestLink allows set urgency of Test Suite to affect a testing Priority of test cases. 
+		Test priority depends on both Importance of Test cases and urgency defined in 
+		the Test Plan. Test leader should specify a set of test cases that could be tested
+		at first. It helps to assure that testing will cover the most important tests
+		also under time pressure.</p>
 
 <h2>Get Started</h2>
 <ol>
-	<li>Choose a Test case or Test Suite to set urgency.</li>
-	<li>Press the button (high, medium or low) to set urgency level .</li>
+	<li>Choose a Test Suite to set urgency of a product/component feature in navigator
+	on the left side of window.</li>
+	<li>Choose a urgency level (high, medium or low). Medium is default. You can
+	decrease priority for untouched parts of product and increase for components with
+	significant changes.</li>
+	<li>Press the button 'Save' to submit changes.</li>
 </ol>";
 
 

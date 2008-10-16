@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/09/26 06:28:23 $ $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/10/16 12:34:12 $ $Author: havlat $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -150,29 +150,38 @@ After closing the add bug page, you will see relevant bug data on the execute pa
 </p>";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Test Filtering</h2>
+$TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
 
-<h3>Scope</h3>
-<p>This table allows the user to filter test cases before they are executed.</p>
+<p>The left pane consists from navigator through test cases assigned to the current " .
+"Test plan and table with settings and filter. These filters allows the user " .
+"to refine offered set of test cases before they are executed." .
+"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
+"from tree menu.</p>
 
-<h3>Assigned to</h3>
-<p>Users can filter test cases by their assignee.<br /> 
-
-<h3>Keyword</h3>
-<p>Users can filter test cases by keyword. Keywords are set either using the 
-Create/Edit/Delete Test Cases or by the Assign Keywords To Multiple Cases. 
-Keywords can only be created, edited, or deleted by leads but may be assigned 
-to test cases by testers.</p> 
-
-<h2>Build</h2>
-<p>Users can filter test cases by builds. Builds are the basic component for 
-how test cases are tracked. Each test case may be run once and only once per build. 
+<h3>Build</h3>
+<p>Users must choose a build that will be connected with a test result. " .
+"Builds are the basic component for the current Test Plan. Each test case " .
+"may be run more times per build. However the last results is count only. 
 <br />Builds can be created by leads using the Create New Build page.</p>
 
-<h2>Result</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run.</p>
+<h3>Test Case ID filter</h3>
+<p>Users can filter test cases by unique identifier. This ID is created automatically 
+during create time. Empty box means that the filter doesn't apply.</p> 
 
+<h3>Priority filter</h3>
+<p>Users can filter test cases by test priority. Each test case importance is combined" .
+"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
+"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+
+<h2>Result filter</h2>
+<p>Users can filter test cases by results. Results are what happened to that test 
+case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
+"This filter is disabled by default.</p>
+
+<h3>User filter</h3>
+<p>Users can filter test cases by their assignee. The check-box allows to include also " .
+"\"unassigned\" tests into the resulted set in addtion.</p>";
+/*
 <h2>Most Current Result</h2>
 <p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
 by the build that is chosen from the dropdown box. In this state the tree will display 
@@ -185,7 +194,8 @@ colored by the test cases most recent result.
 <br />Ex: User selects build 2 from the dropdown box and this time checks 
 the 'most current' checkbox. All test cases will be shown with most current 
 status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>";
+build 2, it will be colored green.</p>
+ */
 
 
 // newest_tcversions.html

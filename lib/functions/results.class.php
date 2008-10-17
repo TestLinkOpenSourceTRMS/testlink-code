@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/09/29 19:48:10 $ by $Author: schlundus $
+ * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -211,14 +211,14 @@ class results
       // $mem=array();		
       // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
 		  
-		  $this->priorityLevelsCfg = config_get('priority_levels');
-    	$this->resultsCfg=config_get('results');
-    	$this->testCaseCfg=config_get('testcase_cfg');
+		$this->priorityLevelsCfg = config_get('priority_levels');
+    	$this->resultsCfg = config_get('results');
+    	$this->testCaseCfg = config_get('testcase_cfg');
 
-		  $this->db = $db;
-		  $this->tplanMgr = $tplan_mgr;
+		$this->db = $db;
+		$this->tplanMgr = $tplan_mgr;
     
-    	$this->map_tc_status=$this->resultsCfg['status_code'];
+    	$this->map_tc_status = $this->resultsCfg['status_code'];
     
 
     	// TestLink standard configuration is (at least for me)
@@ -232,11 +232,11 @@ class results
     	// This will be used to create dynamically counters if user add new status
     	foreach( $this->resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
     	{
-        	$this->tc_status_for_statistics[$tc_status_verbose]=$this->map_tc_status[$tc_status_verbose];
+        	$this->tc_status_for_statistics[$tc_status_verbose] = $this->map_tc_status[$tc_status_verbose];
     	}
     	if( !isset($this->resultsCfg['status_label_for_exec_ui']['not_run']) )
     	{
-        	$this->tc_status_for_statistics['not_run']=$this->map_tc_status['not_run'];  
+        	$this->tc_status_for_statistics['not_run'] = $this->map_tc_status['not_run'];  
     	}
    
     	$this->suitesSelected = $suitesSelected;
@@ -249,9 +249,9 @@ class results
     	$this->suiteStructure = $suiteStructure;
 		$this->flatArray = $flatArray;
 		$this->linked_tcversions = $linked_tcversions;
-
 		// build suiteStructure and flatArray
-		if (($this->suiteStructure == null) && ($this->flatArray == null) && ($this->linked_tcversions == null)){
+		if (($this->suiteStructure == null) && ($this->flatArray == null) && ($this->linked_tcversions == null))
+		{
 		    $this->suiteStructure = $this->generateExecTree($db,$keywordId, $owner);
 		}
     // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
@@ -290,11 +290,9 @@ class results
 			                                                 $search_notes_string, $linkExecutionBuild);
       
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
-
-			
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
 			$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
-
+			
 			// create data object which tallies totals for individual suites
 			// child suites are NOT taken into account in this step
 			$this->createMapOfSuiteSummary($this->mapOfLastResult);
@@ -1262,40 +1260,22 @@ class results
 	*	suite[5] = array() of child suites or null
 	*
 	*/
-	private function generateExecTree(&$db,$keyword_id = 0, $owner = null) {
-
-    // $mem=array();		
-    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-    // $xmem=current($mem);
-    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-    // ob_flush();flush();
-
-
-	  $RECURSIVE_MODE=true;
+	private function generateExecTree(&$db,$keyword_id = 0, $owner = null) 
+	{
+	    // $mem=array();		
+	    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+	    // $xmem=current($mem);
+	    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+	    // ob_flush();flush();
+	
+		$RECURSIVE_MODE = true;
 		$tplan_mgr = $this->tplanMgr;
 		$tproject_mgr = new testproject($this->db);
 		$tree_manager = $tplan_mgr->tree_manager;
-		$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 		$hash_descr_id = $tree_manager->get_available_node_types();
-		$hash_id_descr = array_flip($hash_descr_id);
-
-    // 20080511 - franciscom
-    // $status_descr_code=config_get('tc_status');
-    $status_descr_code=$this->resultsCfg['status_code'];
-    $status_code_descr=array_flip($status_descr_code);
-
-    $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                         'status_descr_code' =>  $status_descr_code,
-                         'status_code_descr' =>  $status_code_descr);
-
- 	  $test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
-
-
-
-		// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
+	
+	    $test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
 		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,null,$keyword_id, null, $owner);
-				
-		// echo "<pre>debug 20080602 - \$tp_tcs - " . __FUNCTION__ . " --- "; print_r($tp_tcs); echo "</pre>";
 		
 		$this->linked_tcversions = &$tp_tcs;
 		if (is_null($tp_tcs)) {
@@ -1305,35 +1285,23 @@ class results
 		$test_spec['id'] = $this->tprojectID;
 		$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 		$suiteStructure = null;
-		if($test_spec) {
-			$tck_map = null;
-			if($keyword_id) {
-				$tck_map = $tproject_mgr->get_keywords_tcases($this->tprojectID,$keyword_id);
-			}
-			// testcase_count is required to skip components which don't have cases in the plan
-			$count = array();
-
-			$testcase_count = prepareNode($db,$test_spec,$decoding_hash,$count,$tck_map,$tp_tcs,
-			                              HIDE_TESTCASES,$owner);
-
-      // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-      // $xmem=current($mem);
-      // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-      // ob_flush();flush();
-
-			$test_spec['testcase_count'] = $testcase_count;
-			$currentNode = null;
-			$currentNodeIndex = 0;
-			$suiteStructure = $this->processExecTreeNode(1,$test_spec,$hash_id_descr);
+		$tck_map = null;
+		if($keyword_id)
+		{
+			$tck_map = $tproject_mgr->get_keywords_tcases($this->tprojectID,$keyword_id);
 		}
-    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-    // $xmem=current($mem);
-    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-    // ob_flush();flush();
-
+		$hash_id_descr = array_flip($hash_descr_id);
+		
+		$testcase_count = $this->removeEmptySuites($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$owner);
+		// $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+	   	// $xmem=current($mem);
+	    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+		// ob_flush();flush();
+			                              
+		$suiteStructure = $this->processExecTreeNode(1,$test_spec,$hash_id_descr);
 		return $suiteStructure;
-	} // end generateExecTree
-
+	}
+	
 	/**
 	* parent_suite_name is used to construct the full hierachy name of the suite
 	* ex: "A->A.A->A.A.A"
@@ -1527,6 +1495,57 @@ class results
 	}
 
 	
+	function removeEmptySuites(&$node,$hash_id_descr,
+	                     $tck_map = null,$tplan_tcases = null,$assignedTo = 0)
+	{
+		$tcase_counters = 0;
+		$node_type = $hash_id_descr[$node['node_type_id']];
+		if ($node_type == 'testcase')
+		{
+			$nodeID = $node['id'];
+			$tcase_counters = 1;
+			if ($tck_map && !isset($tck_map[$nodeID]))
+				$tcase_counters = 0;
+			else if ($tplan_tcases)
+			{
+				if (!isset($tplan_tcases[$nodeID]))
+					$tcase_counters = 0;
+				else if ($assignedTo && ($tplan_tcases[$nodeID]['user_id'] != $assignedTo))
+					$tcase_counters = 0;
+			}
+			$node = null;
+			return $tcase_counters;
+		}
+		else if ($node_type == 'testsuite' || $node_type == 'testproject')
+		{
+			if (isset($node['childNodes']) && $node['childNodes'])
+			{
+				$childNodes = &$node['childNodes'];
+				$nSize = sizeof($childNodes);
+				for($i = 0;$i < $nSize;$i++)
+				{
+					$current = &$childNodes[$i];
+					// I use set an element to null to filter out leaf menu items
+					if(is_null($current))
+						continue;
+		  			$tcCount = $this->removeEmptySuites($current,$hash_id_descr,
+					                            $tck_map,$tplan_tcases,
+					                            $assignedTo);
+		 			$tcase_counters += $tcCount;
+		      	}
+		
+				if ((!is_null($tck_map) || !is_null($tplan_tcases)) && 
+				     !$tcase_counters && ($node_type != 'testproject'))
+				{
+					$node = null;
+				}
+			}
+	 		else if ($tplan_tcases)
+				$node = null;
+		}
+		
+		return $tcase_counters;
+	}
 
 } // ---- end class result -----
 ?>

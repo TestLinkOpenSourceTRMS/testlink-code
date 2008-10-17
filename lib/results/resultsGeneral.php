@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/10/07 19:13:44 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -46,13 +46,11 @@ $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
-
-
 // ----------------------------------------------------------------------------
 
 $topLevelSuites = $re->getTopLevelSuites();
 
-if( is_null($topLevelSuites) )
+if(is_null($topLevelSuites))
 {
 	// no test cases -> no report
 	$do_report['status_ok'] = 0;
@@ -149,7 +147,6 @@ else // do report
 	// collect prioritized results for whole Test Plan
 	if ($_SESSION['testprojectOptPriority'])
 	{
-		tLog('collect prioritized results for whole Test Plan','ERROR');
 		$statistics->priority_overall = $re->getPrioritizedResults();
 		$statistics->priority_overall['high_percentage'] = get_percentage($planMetrics['total'],
 				$statistics->priority_overall[HIGH]); 

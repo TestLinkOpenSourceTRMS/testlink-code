@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
@@ -87,10 +87,13 @@ class tree
 
 	function get_available_node_types() 
 	{
-		$sql = " SELECT * FROM node_types "; 
-		$hash_ntypes = $this->db->fetchColumnsIntoMap($sql,"description","id");
-		
-		return $hash_ntypes;
+		static $s_nodeTypes;
+		if (!$s_nodeTypes)
+		{
+			$sql = " SELECT * FROM node_types "; 
+			$s_nodeTypes = $this->db->fetchColumnsIntoMap($sql,"description","id");
+		}
+		return $s_nodeTypes;
 	}
 
 	/*

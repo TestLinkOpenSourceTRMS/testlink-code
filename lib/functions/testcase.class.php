@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.120 $
- * @modified $Date: 2008/10/15 21:28:35 $ $Author: asielb $
+ * @version $Revision: 1.121 $
+ * @modified $Date: 2008/10/17 22:01:32 $ $Author: schlundus $
  * @author franciscom
  *
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -1289,7 +1289,7 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$o
 {
 	$tcid_list = '';
 	$where_clause = '';
-  $active_filter='';
+	$active_filter = '';
 
 	if(is_array($id))
 	{
@@ -1313,12 +1313,11 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$o
 			$where_clause .= " AND tcversions.id = {$version_id} ";
 		}
 
-    $active_status=strtoupper($active_status);
-	  if($active_status !='ALL')
-	  {
-	    $active_filter=' AND tcversions.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
-    }
-
+		$active_status = strtoupper($active_status);
+	  	if($active_status != 'ALL')
+	  	{
+	    	$active_filter =' AND tcversions.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
+    	}
 	}
 
 	$sql = "SELECT	U.login AS updater_login,users.login as author_login,
@@ -1336,7 +1335,7 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$o
          $active_filter
          ORDER BY tcversions.version DESC";
 
-
+    
 	if ($version_id != self::LATEST_VERSION)
 		$recordset = $this->db->get_recordset($sql);
 	else

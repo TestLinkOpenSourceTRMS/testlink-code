@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/09/20 21:02:54 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
  * @author kevin
  *
  * Revisions:
@@ -56,7 +56,7 @@ $charts = array(
 				TL_CHART_BG),  
 );
                  
-                 
+       
 $smarty = new TLSmarty();
 $smarty->assign("tplan_name",$tplan_name);
 $smarty->assign('tproject_name', $tproject_name);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.119 $ $Author: schlundus $
- * @modified $Date: 2008/10/15 20:40:55 $
+ * @version $Revision: 1.120 $ $Author: schlundus $
+ * @modified $Date: 2008/10/17 22:01:32 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
@@ -265,13 +265,15 @@ function doSessionStart()
 function printPageStatistics($startupMemory,$startupTime)
 {
 	/*
+	global $db;
+
 	print "<div style=\"color:red;font-weight:bold\">";	
 	print "startup: Memory: $startupMemory <br />";
 	echo $startupTime."<br />";
 	tlTimingStop();
 	$finishingTime = tlTimingCurrent();
 	$finishingMemory  = memory_get_peak_usage(true)."--".memory_get_usage(true);
-	print "finished: Memory: $finishingMemory <br />";
+	print "finished: {$db->nQuery} SQL; Memory: $finishingMemory ";
 	print "took ".($finishingTime - $startupTime)." secs\n";
 	print "</div>";
 	*/

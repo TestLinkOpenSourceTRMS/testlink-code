@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.8 2008/10/09 20:24:08 schlundus Exp $
+*  @version 	$Id: printDocument.php,v 1.9 2008/10/17 22:01:32 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -30,8 +30,7 @@ foreach($printingOptions as $opt => $val)
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
 }					
 
-$tck_map = null;
-$map_node_tccount = array();
+$dummy = null;
 
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
@@ -55,7 +54,6 @@ $test_spec = $tree_manager->get_subtree($args->itemID,
 											'requirement_spec'=> 'exclude my children'),
 											null,null,RECURSIVE_MODE
 										);
-
 
 $tree = null;
 $code = null;					
@@ -87,8 +85,8 @@ switch ($args->print_scope)
 			$tree = &$test_spec;
 			if (!$tp_tcs)
 				$tree['childNodes'] = null;
-			$testcase_count = prepareNode($db,$tree,$decoding_hash,$map_node_tccount,
-			                     $tck_map,$tp_tcs,SHOW_TESTCASES);
+			prepareNode($db,$tree,$decoding_hash,$dummy,
+			                     $dummy,$tp_tcs,SHOW_TESTCASES);
 			$printingOptions['title'] = $args->tproject_name;
 		}
 		else if ($item_type == 'testsuite')
@@ -97,11 +95,11 @@ switch ($args->print_scope)
 			$tInfo = $tsuite->get_by_id($args->itemID);
 			$tplan_mgr = new testplan($db);
 			$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-
+			
 			$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 			$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-			$testcase_count = prepareNode($db,$tInfo,$decoding_hash,$map_node_tccount,
-			                     $tck_map,$tp_tcs,SHOW_TESTCASES);
+			prepareNode($db,$tInfo,$decoding_hash,$dummy,
+			                     $dummy,$tp_tcs,SHOW_TESTCASES);
 			$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
 
 			$tree['childNodes'] = array($tInfo);
@@ -121,8 +119,8 @@ if($tree)
 	
 		case 'testplan':
 			$code = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
-		                $args->user_id,$args->tplan_id);
-		break;
+		                $args->user_id,$args->tplan_id,$args->tproject_id);
+		    break;
 	}
 }
 

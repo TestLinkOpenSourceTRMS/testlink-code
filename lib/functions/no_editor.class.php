@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: no_editor.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/09/25 19:34:16 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/10/17 16:16:08 $ by $Author: asielb $
  * 
  * Rev :
  *      20071125 - franciscom - added dtree_render_req_node_open
@@ -44,7 +44,7 @@ class no_editor
 	    	$my_cols = $this->cols;
 
 	    $Html = "<textarea name=\"{$this->InstanceName}\" " .
-		        "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" \">".
+		        "id=\"{$this->InstanceName}\" rows=\"{$my_rows}\" cols=\"{$my_cols}\" >".
 		        "{$HtmlValue}</textarea>" ;
 		return $Html ;
 	}

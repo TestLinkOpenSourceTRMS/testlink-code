@@ -5,12 +5,14 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/09/26 06:28:22 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/10/18 16:10:11 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
  * Check configuration functions
+ *
+ * rev: 20081015 - franciscom - getSecurityNotes() - refactoring
  *
  **/
 // ---------------------------------------------------------------------------------------------------
@@ -160,16 +162,13 @@ function checkForAdminDefaultPwd(&$db)
   args :
   
   returns: 
+  
+  rev: 
 
 */
-function checkForLDAPExtension(&$bLDAPEnabled)
+function checkForLDAPExtension()
 {
-	$login_method = config_get('login_method');
-	
-	$bLDAPEnabled = ('LDAP' == $login_method ) ? 1 : 0;
-	if(!$bLDAPEnabled || ($bLDAPEnabled && extension_loaded("ldap")))
-		return true;
-	return 	false;
+	return extension_loaded("ldap");
 }
 
 /**
@@ -182,12 +181,14 @@ function checkForLDAPExtension(&$bLDAPEnabled)
  * @author Andreas Morsing 
  *
  * rev :
+ *      20081015 - franciscom - LDAP checks refactored
  *      20080925 - franciscom - added option to not show results
  *      20070626 - franciscom - added LDAP checks  
  **/
 function getSecurityNotes(&$db)
 {
   
+
 	$repository['type'] = config_get('repositoryType');
 	$repository['path'] = config_get('repositoryPath');
   
@@ -195,12 +196,23 @@ function getSecurityNotes(&$db)
 	if (checkForInstallDir())
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
 
-	$bLDAPEnabled = false;
-	if (!checkForLDAPExtension($bLDAPEnabled))
-		$securityNotes[] = lang_get("ldap_extension_not_loaded");
-		
-    if (!$bLDAPEnabled && checkForAdminDefaultPwd($db))
-		$securityNotes[] = lang_get("sec_note_admin_default_pwd");
+ 	$login_method = config_get('login_method');
+  if( 'LDAP' == $login_method  )
+  {
+    if( !checkForLDAPExtension() )
+    {
+	    $securityNotes[] = lang_get("ldap_extension_not_loaded");
+	  }  
+  } 
+  else
+  {
+    if( checkForAdminDefaultPwd($db) )
+    {
+		    $securityNotes[] = lang_get("sec_note_admin_default_pwd");
+		}
+  }
+
+	
   
 	if (!checkForBTSConnection())
 		$securityNotes[] = lang_get("bts_connection_problems");

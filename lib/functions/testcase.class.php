@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.121 $
- * @modified $Date: 2008/10/17 22:01:32 $ $Author: schlundus $
+ * @version $Revision: 1.122 $
+ * @modified $Date: 2008/10/18 16:10:56 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
  * 20080812 - franciscom - BUGID 1650 (REQ)
  *                         html_table_of_custom_field_inputs() interface changes
  *                         to manage custom fields with scope='testplan_design'
@@ -771,10 +772,15 @@ function check_link_and_exec_status($id)
 }
 
 
-/* 20060326 - franciscom - interface changed */
+/* 
+ 
+rev: 20081015 - franciscom - added check to avoid bug due to no children
+
+*/
 function delete($id,$version_id = self::ALL_VERSIONS)
 {
   $children=null;
+  $doit=true;
   if($version_id == self::ALL_VERSIONS)
   {
     // I'm trying to speedup the next deletes
@@ -789,13 +795,21 @@ function delete($id,$version_id = self::ALL_VERSIONS)
     }
 
     $children_rs=$this->db->get_recordset($sql);
+    $doit=!is_null($children_rs); 
+    if( $doit )
+    {
     foreach($children_rs as $value)
     {
       $children[]=$value['id'];
     }
   }
+  }                       
+
+  if( $doit )
+  {   
 	$this->_execution_delete($id,$version_id,$children);
 	$this->_blind_delete($id,$version_id,$children);
+  }   
 
 	return 1;
 }

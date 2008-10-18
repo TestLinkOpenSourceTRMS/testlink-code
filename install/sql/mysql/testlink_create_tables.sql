@@ -1,13 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.44 2008/10/07 19:13:44 schlundus Exp $
+# $Id: testlink_create_tables.sql,v 1.45 2008/10/18 17:48:39 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
-# default rights & admin account are created via testlink_create_default_data.sql
+# ATTENTION: do not use a different naming convention, that one already in use.
 #
 # Rev :
 #
+# 20081018 - franciscom - renamed indexes on events table according to dev standards
 # 20080810 - franciscom - BUGID 1650 (REQ)
 #                         custom_fields.show_on_testplan_design
 #                         custom_fields.enable_on_testplan_design
@@ -122,8 +123,8 @@ CREATE TABLE `events` (
   `object_id` int(10) unsigned default NULL,
   `object_type` varchar(45) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `IX_TransID` (`transaction_id`),
-  KEY `IX_FiredAt` (`fired_at`)
+  KEY `transaction_id` (`transaction_id`),
+  KEY `fired_at` (`fired_at`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE `execution_bugs` (

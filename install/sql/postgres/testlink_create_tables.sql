@@ -1,12 +1,14 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.26 2008/09/02 16:39:29 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.27 2008/10/18 17:48:39 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
---
+-- ATTENTION: do not use a different naming convention, that one already in use.
+-- 
 -- 
 -- Rev :
+--      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 --      20080831 - franciscom - BUGID 1650 (REQ)
 --                 custom_fields.show_on_testplan_design
 --                 custom_fields.enable_on_testplan_design
@@ -87,8 +89,11 @@ CREATE TABLE "events" (
   "activity" varchar(45) NULL,
   "object_id" BIGINT NULL,
   "object_type" varchar(45) NULL,
-  PRIMARY KEY  ("id")
+  PRIMARY KEY  ("id")  
 );
+CREATE INDEX "events_transaction_id" ON "events" ("transaction_id");
+CREATE INDEX "events_fired_at" ON "events" ("fired_at");
+
 
 --
 -- Table structure for table "roles"

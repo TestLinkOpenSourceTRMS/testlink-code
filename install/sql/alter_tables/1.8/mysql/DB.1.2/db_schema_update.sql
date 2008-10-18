@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.17 $
-$Date: 2008/10/07 19:13:44 $
-$Author: schlundus $
+$Revision: 1.18 $
+$Date: 2008/10/18 17:47:55 $
+$Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
@@ -14,6 +14,8 @@ want to change NAME  -> CHANGE
 want to change column properties -> MODIFY
 
 rev: 
+     20081018 - franciscom - renamed new events indexes to follow standard naming convention
+     
      20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
 
      20080927 - franciscom - fix bug when migration tcversions.importance
@@ -49,8 +51,8 @@ CREATE TABLE `events` (
   `object_id` int(10) unsigned default NULL,
   `object_type` varchar(45) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `IX_TransID` (`transaction_id`),
-  KEY `IX_FiredAt` (`fired_at`)
+  KEY `transaction_id` (`transaction_id`),
+  KEY `fired_at` (`fired_at`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE  transactions (

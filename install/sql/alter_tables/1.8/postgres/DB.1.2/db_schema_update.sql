@@ -1,8 +1,10 @@
--- $Revision: 1.4 $
--- $Date: 2008/10/03 16:41:43 $
+-- $Revision: 1.5 $
+-- $Date: 2008/10/18 17:48:06 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
+--
+-- 20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 --
 -- 20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
 --
@@ -34,6 +36,8 @@ CREATE TABLE "events" (
   "object_type" varchar(45) NULL,
   PRIMARY KEY  ("id")
 );
+CREATE INDEX "events_transaction_id" ON "events" ("transaction_id");
+CREATE INDEX "events_fired_at" ON "events" ("fired_at");
 
 --
 CREATE TABLE  "transactions" (
@@ -105,7 +109,6 @@ WHERE importance IN('L','l');
 
 ALTER TABLE tcversions MODIFY COLUMN importance INT2 NOT NULL default '2';
 ALTER TABLE tcversions ADD COLUMN execution_type INT2 NOT NULL default '1';
-COMMENT ON COLUMN tcversions.execution_type IS '1 -> manual, 2 -> automated';
 
 -- testprojects
 ALTER TABLE testprojects ADD COLUMN prefix varchar(30) NULL;
@@ -132,8 +135,8 @@ COMMENT ON COLUMN testplan_tcversions.node_order IS 'order in execution tree';
 COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.8.0 Development - DB 1.2';
 
 -- custom_fields
-ALTER TABLE custom_fields ADD COLUMN show_on_testplan_design SMALLINT NOT NULL DEFAULT,
-ALTER TABLE custom_fields ADD COLUMN enable_on_testplan_design SMALLINT NOT NULL DEFAULT;
+ALTER TABLE custom_fields ADD COLUMN show_on_testplan_design SMALLINT NOT NULL DEFAULT '0',
+ALTER TABLE custom_fields ADD COLUMN enable_on_testplan_design SMALLINT NOT NULL DEFAULT '0';
 COMMENT ON TABLE custom_fields IS 'Updated to TL 1.8 RC3  - DB 1.2';
 
 

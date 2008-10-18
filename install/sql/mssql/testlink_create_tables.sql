@@ -1,12 +1,18 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.29 2008/09/02 16:39:29 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.30 2008/10/18 17:48:39 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
+--
+-- ATTENTION: do not use a different naming convention, that one already in use.
+--
 -- 
 -- Rev :
+--      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
+--                              refactored index names
+--
 --      20080831 - franciscom - BUGID 1650 (REQ)
 --                 custom_fields.show_on_testplan_design
 --                 custom_fields.enable_on_testplan_design
@@ -71,6 +77,16 @@ CREATE TABLE [events] (
   (
 	  [id] ASC
   ) ON [PRIMARY]
+) ON [PRIMARY]
+
+CREATE NONCLUSTERED INDEX [idx_transaction_id] ON [events] 
+(
+	[transaction_id] ASC
+) ON [PRIMARY]
+
+CREATE NONCLUSTERED INDEX [idx_fired_at] ON [events] 
+(
+	[fired_at] ASC
 ) ON [PRIMARY]
 
 
@@ -213,7 +229,7 @@ CREATE TABLE [user_assignments](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_user_assignments] ON [user_assignments] 
+CREATE NONCLUSTERED INDEX [idx_user_assignments] ON [user_assignments] 
 (
 	[feature_id] ASC
 ) ON [PRIMARY]
@@ -235,7 +251,7 @@ CREATE TABLE [executions](
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_executions_execution_type] ON [executions] 
+CREATE NONCLUSTERED INDEX [idx_executions_execution_type] ON [executions] 
 (
 	[execution_type] ASC
 ) ON [PRIMARY]
@@ -291,7 +307,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_name] ON [builds]
 	[name] ASC
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_testplan_id] ON [builds] 
+CREATE NONCLUSTERED INDEX [idx_testplan_id] ON [builds] 
 (
 	[testplan_id] ASC
 ) ON [PRIMARY]
@@ -307,12 +323,12 @@ CREATE TABLE [keywords](
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_keywords] ON [keywords] 
+CREATE NONCLUSTERED INDEX [idx_keywords] ON [keywords] 
 (
 	[testproject_id] ASC
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_keywords_keyword] ON [keywords] 
+CREATE NONCLUSTERED INDEX [idx_keywords_keyword] ON [keywords] 
 (
 	[keyword] ASC
 ) ON [PRIMARY]
@@ -331,7 +347,7 @@ CREATE TABLE [milestones](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_Testplan] ON [milestones] 
+CREATE NONCLUSTERED INDEX [idx_Testplan] ON [milestones] 
 (
 	[testplan_id] ASC
 ) ON [PRIMARY]
@@ -376,7 +392,7 @@ CREATE TABLE [nodes_hierarchy](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_pid_m_nodeorder] ON [nodes_hierarchy] 
+CREATE NONCLUSTERED INDEX [idx_pid_m_nodeorder] ON [nodes_hierarchy] 
 (
 	[parent_id] ASC,
 	[node_order] ASC
@@ -387,7 +403,7 @@ CREATE TABLE [req_coverage](
 	[testcase_id] [int] NOT NULL
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_req_testcase] ON [req_coverage] 
+CREATE NONCLUSTERED INDEX [idx_req_testcase] ON [req_coverage] 
 (
 	[req_id] ASC,
 	[testcase_id] ASC
@@ -410,7 +426,7 @@ CREATE TABLE [req_specs](
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_testproject_id] ON [req_specs] 
+CREATE NONCLUSTERED INDEX [idx_testproject_id] ON [req_specs] 
 (
 	[testproject_id] ASC
 ) ON [PRIMARY]
@@ -434,7 +450,7 @@ CREATE TABLE [requirements](
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_requirements] ON [requirements] 
+CREATE NONCLUSTERED INDEX [idx_requirements] ON [requirements] 
 (
 	[srs_id] ASC,
 	[status] ASC
@@ -460,7 +476,7 @@ CREATE TABLE [testcase_keywords](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_testcase_keywords] ON [testcase_keywords] 
+CREATE NONCLUSTERED INDEX [idx_testcase_keywords] ON [testcase_keywords] 
 (
 	[testcase_id] ASC
 ) ON [PRIMARY]
@@ -498,7 +514,7 @@ CREATE TABLE [testplans](
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_testproject_id_active] ON [testplans] 
+CREATE NONCLUSTERED INDEX [idx_testproject_id_active] ON [testplans] 
 (
 	[testproject_id] ASC,
 	[active] ASC
@@ -525,7 +541,7 @@ CREATE TABLE [testprojects](
   
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_id_active] ON [testprojects] 
+CREATE NONCLUSTERED INDEX [idx_id_active] ON [testprojects] 
 (
 	[id] ASC,
 	[active] ASC
@@ -582,7 +598,7 @@ CREATE TABLE [users](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [IX_users_login] ON [users] 
+CREATE NONCLUSTERED INDEX [idx_users_login] ON [users] 
 (
 	[login] ASC
 ) ON [PRIMARY]
@@ -598,7 +614,7 @@ CREATE TABLE [cfield_design_values](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [dx_cfield_design_values] ON [cfield_design_values] 
+CREATE NONCLUSTERED INDEX [idx_cfield_design_values] ON [cfield_design_values] 
 (
 	[node_id] ASC
 ) ON [PRIMARY]
@@ -615,7 +631,7 @@ CREATE TABLE [cfield_testplan_design_values](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 
-CREATE NONCLUSTERED INDEX [dx_cfield_testplan_design_values] ON [cfield_testplan_design_values] 
+CREATE NONCLUSTERED INDEX [idx_cfield_testplan_design_values] ON [cfield_testplan_design_values] 
 (
 	[link_id] ASC
 ) ON [PRIMARY]

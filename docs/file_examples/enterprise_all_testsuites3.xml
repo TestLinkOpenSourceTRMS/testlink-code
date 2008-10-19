@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name=""><details><![CDATA[
+
+]]></details><testsuite name="Communications"><details><![CDATA[
+
+<p>Communication Systems of all types</p>
+
+]]></details><testsuite name="Handheld devices"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="4" name="10 G shock"><externalid><![CDATA[
+1
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="6" name="Gamma Ray Storm"><externalid><![CDATA[
+2
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+<testsuite name="short range devices"><details><![CDATA[
+
+]]></details>	<testcase internalid="36" name="100% moisture conditions"><externalid><![CDATA[
+12
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="40" name="acid rain half power"><externalid><![CDATA[
+14
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="medium range devices"><details><![CDATA[
+
+]]></details>	<testcase internalid="38" name="100% moisture conditions"><externalid><![CDATA[
+13
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+<testsuite name="subatomic powered"><details><![CDATA[
+
+]]></details></testsuite><testsuite name="nickel cadmiun powered"><details><![CDATA[
+
+]]></details></testsuite></testsuite></testsuite><testsuite name="Subspace channels"><details><![CDATA[
+
+<p>Only basic subspace features</p>
+
+]]></details>	<testcase internalid="9" name="Black hole test"><externalid><![CDATA[
+3
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Holodeck"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="12" name="Light settings"><externalid><![CDATA[
+4
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Propulsion Systems"><details><![CDATA[
+
+
+
+]]></details><testsuite name="Main engine"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="16" name="Emergency stop"><externalid><![CDATA[
+5
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Transportation"><details><![CDATA[
+
+
+
+]]></details><testsuite name="Individual"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="20" name="High speed"><externalid><![CDATA[
+6
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="22" name="Half speed stop"><externalid><![CDATA[
+7
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="24" name="Jump start"><externalid><![CDATA[
+8
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Terrestrial"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="27" name="Infrared guidance on moon eclipse"><externalid><![CDATA[
+9
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="HyperSpace"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="30" name="Start gate connection"><externalid><![CDATA[
+10
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="32" name="Stop gate connection"><externalid><![CDATA[
+11
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite></testsuite>

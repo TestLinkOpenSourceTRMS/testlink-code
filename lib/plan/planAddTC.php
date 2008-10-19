@@ -1,11 +1,16 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.65 2008/10/15 20:36:52 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.66 2008/10/19 16:26:37 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20081019 - franciscom - removed new argument in call gen_spec_view()
+//                              that remove empty test suite because generates
+//                              a bug, due to implementation in gen_spec_view():
+//                              Reenabled use of custom fields in gen_spec_view();
+// 
 //      20080813 - franciscom - BUGID 1650 (REQ)
 //      20080629 - franciscom - fixed missing variable bug
 //      20080510 - franciscom - multiple keyword filter with AND type
@@ -105,13 +110,18 @@ if($do_display)
   
 	define('DONT_PRUNE',0);
 	//@TODO: maybe this depends on solution for #1650, if #1650 this could be activated again
-	define('ADD_CUSTOM_FIELDS',0);
+	// 1. this CAN NOT BE DEACTIVATED becuase destroy other implementations, then next time ask before
+	//    disabling a feture 
+	// 2. if you want to disable feature do not do in a wrong way i.e. redefining a constant
+	//    ADD_CUSTOM_FIELDS is 1 and MUST remain 1, redefing to 0 is ABSOLUTY WRONG.
+	define('ADD_CUSTOM_FIELDS',1);
+	define('DONOT_ADD_CUSTOM_FIELDS',0);
 	define('WRITE_BUTTON_ALWAYS',0);
+	
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$args->keyword_id,
-	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS,true);
-		
-    
+	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS);
+	  
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];

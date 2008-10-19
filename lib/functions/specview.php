@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.16 $ $Author: franciscom $
- * @modified $Date: 2008/10/19 16:25:19 $
+ * @version $Revision: 1.17 $ $Author: franciscom $
+ * @modified $Date: 2008/10/19 17:30:36 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -181,6 +181,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$out[$idx]['level'] = 1;
     
     $idx++;
+    $tsuite_tcqty=array($id => 0);
+    $parent_idx=-1;
+    
   	if(count($test_spec))
   	{
   		$pivot = $test_spec[0];
@@ -221,6 +224,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   			}
   			else
   			{
+  			  if($parent_idx >= 0)
+  			  { 
+  			      $xdx=$out[$parent_idx]['testsuite']['id'];
+  			      $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
+  			  }
+  			  
   				if($pivot['parent_id'] != $current['parent_id'])
   				{
   					if ($pivot['id'] == $current['parent_id'])
@@ -247,15 +256,26 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	 
   		    }
   		} // foreach
+  		
+  		// Update after finished loop
+  		if($parent_idx >= 0)
+  		{ 
+  		    $xdx=$out[$parent_idx]['testsuite']['id'];
+  		    $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
+  		}
 	} // count($test_spec))
 
 
+
+  // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
   // May be this can be done (as noted by schlundus during performance
   // analisys done on october 2008) in a better way, or better can be absolutely avoided.
   // 
   // This process is neede to prune whole branches that are empty
+	// Need to look for every call in TL and understand if this can be removed
+	//
 	if(!is_null($map_node_tccount))
 	{
 		foreach($out as $key => $elem)
@@ -269,7 +289,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				}
 			}
 	}
-	
+	   
+
   // and now ???
 	if( !is_null($out[0]) )
 	{
@@ -406,7 +427,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	          $tsuite_id=$value['testsuite']['id'];  
 	          $result['spec_view'][$key]['children_testsuites']=
 	                  $tcase_mgr->tree_manager->get_subtree_list($tsuite_id,$hash_descr_id['testsuite']);  
-             
+
 	          if( $value['testcase_qty'] == 0 && $result['spec_view'][$key]['children_testsuites']=='' )
 	          {
 	              unset($result['spec_view'][$key]);
@@ -416,9 +437,27 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  
 	}
 
-echo "<pre>debug 20081019 - \ - " . __FUNCTION__ . " --- "; print_r($result['spec_view']); echo "</pre>";
-  
-
+  // -----------------------------------------------------------------------------------------------
+  // Remove empty branches
+  // Loop to compute test case qty on every level and prune test suite branchs that are empty
+  foreach($result['spec_view'] as $key => $elem)
+  {
+    $tsuite_id=$elem['testsuite']['id'];
+    if( $elem['children_testsuites'] != '' )
+    {
+        $children=explode(',',$elem['children_testsuites']);
+        foreach($children as $access_id)
+        {
+            $tsuite_tcqty[$tsuite_id] += $tsuite_tcqty[$access_id];                
+        }
+    }
+    
+    if( $tsuite_tcqty[$tsuite_id] == 0 )
+    {
+        unset($result['spec_view'][$key]);
+    } 
+  }
+	// -----------------------------------------------------------------------------------------------
 
 	//@TODO: maybe we can integrate this into already present loops above?
 	//

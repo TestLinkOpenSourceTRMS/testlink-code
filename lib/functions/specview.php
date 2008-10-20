@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.17 $ $Author: franciscom $
- * @modified $Date: 2008/10/19 17:30:36 $
+ * @version $Revision: 1.18 $ $Author: franciscom $
+ * @modified $Date: 2008/10/20 14:03:07 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -452,7 +452,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         }
     }
     
-    if( $tsuite_tcqty[$tsuite_id] == 0 )
+    if( !isset($tsuite_tcqty[$tsuite_id]) ||  $tsuite_tcqty[$tsuite_id]== 0 )
     {
         unset($result['spec_view'][$key]);
     } 

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.18 $ $Author: franciscom $
- * @modified $Date: 2008/10/20 14:03:07 $
+ * @version $Revision: 1.19 $ $Author: franciscom $
+ * @modified $Date: 2008/10/20 14:06:09 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -11,6 +11,9 @@
  *     20081019 - franciscom - removed new option to prune empty test suites
  *                             till we understand were this will be used.
  *                             In today implementation causes problems
+ *                             Added logic to compute total count of test cases
+ *                             for every test suite in a branch, to avoid use
+ *                             of map_node_tccount argument
  *
  *     20081004 - franciscom - minor code clean up
  *     20080919 - franciscom - BUGID 1716

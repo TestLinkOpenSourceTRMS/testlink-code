@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
+ * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -23,7 +23,6 @@
  *                         duplicated code. (may be can have performance side effects).
  *
  * 20071101 - franciscom - import_file_types, export_file_types
- * 20071013 - franciscom - changes in prepareNode() call
  * 20071013 - franciscom - changes to fix MSSQL problems
  * 20070916 - franciscom - refactoring to remove global coupling
  *                         changes in constructot interface()
@@ -31,7 +30,6 @@
  * 20070825 - franciscom - added node_order in buildExecutionsMap()
  * 20070505 - franciscom - removing timer.php
  * 20070219 - kevinlevy - nearing completion for 1.7 release
- * 20061113 - franciscom - changes to preparenode() interface
  * 20060829 - kevinlevy - development in progress
 **/
 require_once("../../config.inc.php");

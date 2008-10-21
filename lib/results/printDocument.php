@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.9 2008/10/17 22:01:32 schlundus Exp $
+*  @version 	$Id: printDocument.php,v 1.10 2008/10/21 17:23:53 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -85,8 +85,9 @@ switch ($args->print_scope)
 			$tree = &$test_spec;
 			if (!$tp_tcs)
 				$tree['childNodes'] = null;
+			//@TODO:REFACTOR	
 			prepareNode($db,$tree,$decoding_hash,$dummy,
-			                     $dummy,$tp_tcs,SHOW_TESTCASES);
+			                     $dummy,$tp_tcs,SHOW_TESTCASES,0,null,0,1,0);
 			$printingOptions['title'] = $args->tproject_name;
 		}
 		else if ($item_type == 'testsuite')
@@ -98,6 +99,7 @@ switch ($args->print_scope)
 			
 			$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 			$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+			//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 			prepareNode($db,$tInfo,$decoding_hash,$dummy,
 			                     $dummy,$tp_tcs,SHOW_TESTCASES);
 			$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;

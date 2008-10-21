@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -220,7 +220,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 			  $tck_map=array();  // means filter everything
 			}
 		}
-    
+    	
+		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcs,$bHideTCs,
 		                                 DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
@@ -294,7 +295,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
                      $tck_map = null,$tplan_tcases = null,$bHideTCs = 0,
                      $assignedTo = 0,$status = null, 
-                     $ignore_inactive_testcases=0,$show_tc_id=1)
+                     $ignore_inactive_testcases=0,$show_tc_id=1,$bGetExternalTcID = 1)
 {
   
 	static $hash_id_descr;
@@ -338,15 +339,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			{
 				$node['tcversion_id'] = $tplan_tcases[$node['id']]['tcversion_id'];		
 				$node['version'] = $tplan_tcases[$node['id']]['version'];		
-
-			  $sql=" SELECT TCV.tc_external_id AS external_id " .
-			       " FROM tcversions TCV " .
-			       " WHERE TCV.id=" . $node['tcversion_id'];
-			     
-			  $result = $db->exec_query($sql);
-			  $myrow = $db->fetch_array($result);
-				$node['external_id'] = $myrow['external_id'];		
-
+				//@TODO:REFACTOR
+				if ($bGetExternalTcID)
+				{
+					$sql=" SELECT TCV.tc_external_id AS external_id " .
+			       		" FROM tcversions TCV " .
+			       		" WHERE TCV.id=" . $node['tcversion_id'];
+			  		
+					$result = $db->exec_query($sql);
+			  		$myrow = $db->fetch_array($result);
+					$node['external_id'] = $myrow['external_id'];		
+				}
 			}
 		}
 	
@@ -431,7 +434,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
   		$counters_map = prepareNode($db,$current,$decoding_info,$map_node_tccount,
 			                            $tck_map,$tplan_tcases,$bHideTCs,
 			                            $assignedTo,$status,
- 			                            $ignore_inactive_testcases,$show_tc_id);
+ 			                            $ignore_inactive_testcases,$show_tc_id,$bGetExternalTcID);
       foreach($counters_map as $key => $value)
       {
         $tcase_counters[$key] += $counters_map[$key];   
@@ -842,6 +845,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  	  $assignedTo= $include_unassigned ? 0 :$assignedTo;
 	  	  
 	  	  $bForPrinting=$bHideTCs;
+	  	  //@TODO: schlundus, can we speed up with NO_EXTERNAL?
 	  	  $testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 	  	                                   $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
         
@@ -1336,6 +1340,7 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
 			                                              $keywordsFilter->items,$keywordsFilter->type);
 		}	
+		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,SHOW_TESTCASES);
 	
@@ -1394,6 +1399,7 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
 			                                               $keywordsFilter->items,$keywordsFilter->type);
 		}	
+		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
   	$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,SHOW_TESTCASES);
 		

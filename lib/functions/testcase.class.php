@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.122 $
- * @modified $Date: 2008/10/18 16:10:56 $ $Author: franciscom $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2008/10/21 17:23:53 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
@@ -2512,14 +2512,14 @@ function copy_attachments($source_id,$target_id)
 function get_linked_cfields_at_design($id,$parent_id=null,$filters=null)
 {
 	$enabled = 1;
-	$tproject_mgr = new testproject($this->db);
-	$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
-	$path_len = count($the_path);
-
-	// 20071209 - with new get_path implementation this logic is wrong,
-	//            generating errors (no cf displayed) when editing TC
-	// $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+	if (!$tproject_id)
+	{
+		$tproject_mgr = new testproject($this->db);
+		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
+		$path_len = count($the_path);
+		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+	}
+	
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testcase',$id);
 
 	return $cf_map;
@@ -2663,17 +2663,18 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 
 */
 function html_table_of_custom_field_values($id,$scope='design',$filters=null,
-                                           $execution_id=null,$testplan_id=null)
+                                           $execution_id=null,$testplan_id=null,$tprojectID = null)
 {
 	$cf_smarty = '';
 	$PID_NO_NEEDED = null;
 
 	if($scope=='design')
 	{
-		$cf_map = $this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$filters);
+		$cf_map = $this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$filters,$tprojectID);
 	}
 	else
 	{
+		//@TODO: schlundus, can we speed up with projectID ?
 		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$filters,
 		                                                 $execution_id,$testplan_id);
 	}

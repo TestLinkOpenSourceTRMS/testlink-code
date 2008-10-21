@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -241,10 +241,10 @@ function ORG_renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOpti
 }
 
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
-                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id = 0,$tcPrefix = null)
+                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id = 0,$tcPrefix = null,$tProjectID = 0)
 {
 	$tree_mgr = new tree($db);
- 	$map_id_descr = $tree_mgr->node_types;//array_flip($tree_mgr->get_available_node_types());
+ 	$map_id_descr = $tree_mgr->node_types;
  	$code = null;
  	$verbose_node_type = $map_id_descr[intval($node['node_type_id'])];
   	switch($verbose_node_type)
@@ -262,7 +262,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			break;
 
 		case 'testcase':
-			$code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id,$tcPrefix);
+			$code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id,$tcPrefix,$tProjectID);
 			break;
 	}
 	if (isset($node['childNodes']) && $node['childNodes'])
@@ -279,7 +279,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'testsuite')
 				$tsCnt++;
 			$code .= renderTestSpecTreeForPrinting($db,$current,$item_type,$printingOptions,
-			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id,$tcPrefix);
+			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id,$tcPrefix,$tProjectID);
 		}
 	}
 	if ($verbose_node_type == 'testproject')
@@ -307,30 +307,28 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
        20070509 - franciscom - added Contribution
 
 */
-function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0,$prefix = null)
+function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0,$prefix = null,$tProjectID = 0)
 {
 	global $g_tc_status_verbose_labels;
 	global $g_tc_status;
 	global $tlCfg;
-
+	
 	$code = null;
 	$tcInfo = null;
   	$tcResultInfo = null;
 	  
-	$testcaseCfg = config_get('testcase_cfg');
-	$tc_mgr = new testcase($db);
 	$id = $node['id'];
 	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
- 	  
  	// needed to get external id
- 	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
-    if ($tcInfo)
+	$tc_mgr = new testcase($db);
+	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
+	if ($tcInfo)
 		$tcInfo = $tcInfo[0];  
- 	
-	if (is_null($prefix))
+ 	if (is_null($prefix))
 		$prefix = $tc_mgr->getPrefix($id);
+	$testcaseCfg = config_get('testcase_cfg');
 	$external_id = $prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
- 	  
+
 	$name = htmlspecialchars($node['name']);
   	$cfields = array('specScope' => '', 'execScope' => '');
   	$printType='testproject';
@@ -339,9 +337,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
      	$printType = 'testplan';
      	$cfield_scope = 'execution';
   	}
-	
-  	// get custom fields that has specification scope
-	$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id);
+	// get custom fields that has specification scope
+	$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id,'design',null,null,$tplan_id,$tProjectID);
   	if(strlen(trim($cfields['specScope'])) > 0 )
   	{
 		$cfields['specScope'] = str_replace('<td class="labelHolder">','<td>',$cfields['specScope']);  
@@ -370,10 +367,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 
   	if ($printingOptions['author'])
   	{
+  		//@TODO: schlundus, this can surely be refactor using some kind of static hash
 	    $authorName = null;
 	    $user = tlUser::getByID($db,$tcInfo['author_id']);
 	    if ($user)
 	    	$authorName = $user->getDisplayName();
+	    	
+	    static $s_userMap = array();
+	    	
+	    
 	    $code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('author').':</span></td>';
         $code .= '<td>' . htmlspecialchars($authorName) . "</td></tr>";
   	}
@@ -472,6 +474,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	{
 		unset($tc_mgr);
 	}
+
 	return $code;
 }
 
@@ -739,7 +742,7 @@ function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
 	$tProjectMgr = new testproject($db);
 	$tcPrefix = $tProjectMgr->getTestCasePrefix($tProjectID);
 	$code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
-                                         $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,$tcPrefix);
+                                         $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,$tcPrefix,$tProjectID);
 	return $code;
 }
 ?>

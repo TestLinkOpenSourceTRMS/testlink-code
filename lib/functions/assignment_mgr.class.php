@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: assignment_mgr.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/10/24 15:57:23 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for assignment activities
@@ -28,22 +28,29 @@ class assignment_mgr
 	*/
 	function get_available_types($key_field='description') 
 	{
-		$sql = "SELECT * FROM assignment_types";
-		$hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
-		
-		return $hash_types;
+		static $s_hash_types;
+		if (!$s_hash_types)
+		{
+			$sql = "SELECT * FROM assignment_types";
+			$s_hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
+		}
+		return $s_hash_types;
 	}
 
   /*
-   $key_field: contains the filename that has to be used as the key of
+   $key_field: contains the name column that has to be used as the key of
                the returned hash.    
   */
 	function get_available_status($key_field='description') 
 	{
-		$sql = " SELECT * FROM assignment_status "; 
-		$hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
+		static $s_hash_types;
+		if (!$s_hash_types)
+		{
+			$sql = " SELECT * FROM assignment_status "; 
+			$s_hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
+		}
 		
-		return $hash_types;
+		return $s_hash_types;
 	}
 
 	// $feature_id can be an scalar or an array

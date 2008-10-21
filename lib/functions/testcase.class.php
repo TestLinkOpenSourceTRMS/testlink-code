@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.123 $
- * @modified $Date: 2008/10/21 17:23:53 $ $Author: schlundus $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2008/10/21 18:06:45 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
@@ -2509,7 +2509,7 @@ function copy_attachments($source_id,$target_id)
        20070302 - check for $id not null, is not enough, need to check is > 0
 
 */
-function get_linked_cfields_at_design($id,$parent_id=null,$filters=null)
+function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
 {
 	$enabled = 1;
 	if (!$tproject_id)

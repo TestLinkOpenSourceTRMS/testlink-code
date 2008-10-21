@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.26 $
-* @modified $Date: 2008/08/22 14:29:00 $ $Author: franciscom $
+* @version $Revision: 1.27 $
+* @modified $Date: 2008/10/21 20:23:06 $ $Author: schlundus $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -65,8 +65,6 @@ switch($args->doAction)
 		$highlight->edit_user = 1;
 		$user = new tlUser($args->user_id);
 		$user->readFromDB($db);
-		//echo "<pre>debug 20080821 - \ - " . __FUNCTION__ . " --- "; print_r($user); echo "</pre>";
-		
 		$op = createNewPassword($db,$args,$user);
 		break;
 	

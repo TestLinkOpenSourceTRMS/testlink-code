@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/04/14 09:59:05 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/10/21 20:23:06 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -225,12 +225,12 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 //SCHLUNDUS: removed code by using the roles in the tlUser class, so additional queries for the testproject-user-roles aren't needed
 //also removed the SQL related code, should be done inside the users class
 //added the user and the effective role object to avoid queries later
-function get_tproject_effective_role(&$db,$tproject_id,$user_id = null)
+function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = null)
 {
 	$effective_role = array();
 	if (!is_null($user_id))
 		$users = tlUser::getByIDs($db,(array)$user_id);
-	else
+	else if (is_null($users))
 		$users = tlUser::getAll($db);
 	if ($users)
 	{

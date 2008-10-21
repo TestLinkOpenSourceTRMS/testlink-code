@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2008/10/21 19:46:31 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -180,66 +180,6 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
                                add contribution BUGID
 
 */
-//@TODO: schlundus, clean up later
-function ORG_renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
-                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id=0)
-{
-	$tree_mgr = new tree($db);
- 	$map_id_descr = array_flip($tree_mgr->get_available_node_types());
-	$code = null;
-	$bCloseTOC = 0;
-	if (isset($node['node_type_id']))
-	{
-	  	$verbose_node_type = $map_id_descr[$node['node_type_id']];
-		switch($verbose_node_type)
-		{
-			case 'testproject':
-				$code .= renderProjectNodeForPrinting($db,$node,$printingOptions,$item_type,
-				                                      $printingOptions['title'],$user_id,$tplan_id);
-				break;
-
-			case 'testsuite':
-				if (!is_null($tocPrefix))
-					$tocPrefix .= ".";
-				$tocPrefix .= $tcCnt;
-				$code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level);
-				break;
-
-			case 'testcase':
-				$code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id);
-				break;
-		}
-	}
-	if (isset($node['childNodes']) && $node['childNodes'])
-	{
-		$childNodes = $node['childNodes'];
-		$tsCnt = 0;
-   		$children_qty = sizeof($childNodes);
-		for($i = 0;$i < $children_qty ;$i++)
-		{
-			$current = $childNodes[$i];
-			if(is_null($current))
-				continue;
-
-			if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'testsuite')
-				$tsCnt++;
-			$code .= renderTestSpecTreeForPrinting($db,$current,$item_type,$printingOptions,
-			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id);
-		}
-	}
-	if (isset($node['node_type_id']) && $map_id_descr[$node['node_type_id']] == 'testproject')
-	{
-		if ($printingOptions['toc'])
-		{
-			$printingOptions['tocCode'] .= '</div><hr />';
-			$code = str_replace("{{INSERT_TOC}}",$printingOptions['tocCode'],$code);
-		}
-		$code .= "</body></html>";
-	}
-
-	return $code;
-}
-
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
                                        $tocPrefix,$tcCnt,$level,$user_id,$tplan_id = 0,$tcPrefix = null,$tProjectID = 0)
 {
@@ -317,26 +257,21 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	$tcInfo = null;
   	$tcResultInfo = null;
 	  
-	$id = $node['id'];
 	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
- 	// needed to get external id
-	$tc_mgr = new testcase($db);
+ 	
+	$id = $node['id'];
+ 	$tc_mgr = new testcase($db);
+	if (is_null($prefix))
+		$prefix = $tc_mgr->getPrefix($id);
 	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
 	if ($tcInfo)
 		$tcInfo = $tcInfo[0];  
- 	if (is_null($prefix))
-		$prefix = $tc_mgr->getPrefix($id);
+	
 	$testcaseCfg = config_get('testcase_cfg');
 	$external_id = $prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
 
 	$name = htmlspecialchars($node['name']);
   	$cfields = array('specScope' => '', 'execScope' => '');
-  	$printType='testproject';
-  	if($tplan_id > 0)
-  	{
-     	$printType = 'testplan';
-     	$cfield_scope = 'execution';
-  	}
 	// get custom fields that has specification scope
 	$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id,'design',null,null,$tplan_id,$tProjectID);
   	if(strlen(trim($cfields['specScope'])) > 0 )
@@ -367,17 +302,24 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 
   	if ($printingOptions['author'])
   	{
-  		//@TODO: schlundus, this can surely be refactor using some kind of static hash
 	    $authorName = null;
-	    $user = tlUser::getByID($db,$tcInfo['author_id']);
-	    if ($user)
-	    	$authorName = $user->getDisplayName();
-	    	
+  		$authorID = $tcInfo['author_id'];
 	    static $s_userMap = array();
-	    	
+	    if (!isset($s_userMap[$authorID]))
+	    {
+	    	$authorName = null;
+	    	$user = tlUser::getByID($db,$tcInfo['author_id']);
+	    	if ($user)
+	    	{
+	    		$authorName = $user->getDisplayName();
+	    		$s_userMap[$authorID] = htmlspecialchars($authorName);
+	    	}
+	    }
+	    else
+	    	$authorName	= $s_userMap[$authorID];
 	    
 	    $code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('author').':</span></td>';
-        $code .= '<td>' . htmlspecialchars($authorName) . "</td></tr>";
+        $code .= '<td>' . $authorName . "</td></tr>";
   	}
 
   	if (($printingOptions['body'] || $printingOptions['summary']))
@@ -400,14 +342,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 
 		// contribution by SDM 
 		// printing testresult and notes in 'Print Test Plan'
-	    // 20080819 - franciscom - refactoring
-		$sql =  " SELECT status, execution_ts, notes FROM executions" .
-				    " WHERE tcversion_id = $versionID AND testplan_id = $tplan_id" .
-				    " and execution_ts = (select MAX(execution_ts) from executions" .
-				    " where tcversion_id = $versionID and testplan_id = $tplan_id" .
-				    " group by tcversion_id, testplan_id)";
-                                   
-		$result = $db->get_recordset($sql);
+		$sql =  "SELECT status, execution_ts, notes FROM executions WHERE tcversion_id = {$versionID} AND testplan_id = {$tplan_id} " .
+				"ORDER BY ID DESC";
+		$result = $db->get_recordset($sql,null,1);
                                    
 	    if (!$result) 
 	    {
@@ -416,7 +353,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	    }
 	    else
 	    {
-			    $tcstatus2 = $result[0]['status'];
+	    	    $tcstatus2 = $result[0]['status'];
 			    $tcstatus2 = lang_get($g_tc_status_verbose_labels[array_search($tcstatus2, $g_tc_status)]);
 			    $tcnotes2 = $result[0]['notes'];
 		  }
@@ -453,7 +390,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	{
 		$code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('keywords').':</span><td>';
 
-		$arrKeywords = $tc_mgr->getKeywords($id,null);
+		$arrKeywords = $tc_mgr->getKeywords($id);
 		if (sizeof($arrKeywords))
 		{
 			foreach ($arrKeywords as $kw)
@@ -474,191 +411,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	{
 		unset($tc_mgr);
 	}
-
 	return $code;
 }
-
-//@TODO: schlundus, clean up later
-function ORG_renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0)
-{
-	global $g_tc_status_verbose_labels;
-	global $g_tc_status;
-	global $tlCfg;
-
-	$code = null;
-	$tcInfo = null;
-  	$tcResultInfo = null;
-	  
-	$testcaseCfg = config_get('testcase_cfg');
-	$tc_mgr = new testcase($db);
-	$id = $node['id'];
-	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
- 	  
- 	// needed to get external id
- 	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
-    if ($tcInfo)
-		$tcInfo = $tcInfo[0];  
- 	
-	$prefix = $tc_mgr->getPrefix($id);
- 	$external_id = $prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
- 	  
-	$name = htmlspecialchars($node['name']);
-  	$cfields = array('specScope' => '', 'execScope' => '');
-  	$printType='testproject';
-  	if($tplan_id > 0)
-  	{
-     	$printType = 'testplan';
-     	$cfield_scope = 'execution';
-  	}
-	
-  	// get custom fields that has specification scope
-	$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id);
-  	if(strlen(trim($cfields['specScope'])) > 0 )
-  	{
-		$cfields['specScope'] = str_replace('<td class="labelHolder">','<td>',$cfields['specScope']);  
-		$cfields['specScope'] = str_replace('<table>','',$cfields['specScope']);
-		$cfields['specScope'] = str_replace('</table>','',$cfields['specScope']);
-  	}
-  
-	if ($printingOptions['toc'])
-	{
-	    $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' .
-	     	                 $name . '</a></p>';
-	  	$code .= "<a name='tc" . $id . "'></a>";
-	}
-    
- 	$code .= '<div><table class="tc" width="90%">';
- 	$code .= '<tr><th colspan="2">' . lang_get('test_case') . " " . htmlspecialchars($external_id) . ": " . $name;
-
-	// add test case version
-	// mht: is it possible that version is not set? - remove condition
-	if($tlCfg->document_generator->tc_version_enabled && isset($node['version']) ) 
-	{
-		$code .= '&nbsp;<span style="font-size: 80%;"' . $tlCfg->gui->role_separator_open . lang_get('version') . $tlCfg->gui->title_sep_1 . 
-	  			$node['version'] . $tlCfg->gui->role_separator_close . '</span>';
-	}
- 	$code .= '</th></tr>';
-
-  	if ($printingOptions['author'])
-  	{
-	    $authorName = null;
-	    $user = tlUser::getByID($db,$tcInfo['author_id']);
-	    if ($user)
-	    	$authorName = $user->getDisplayName();
-	    $code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('author').':</span></td>';
-        $code .= '<td>' . htmlspecialchars($authorName) . "</td></tr>";
-  	}
-
-  	if (($printingOptions['body'] || $printingOptions['summary']))
-	{
-		$code .= "<tr><td colspan=\"2\"><span class='label'>".lang_get('summary').":</span><br />" .  $tcInfo['summary'] . "</td></tr>";
-	}
-
-  	if (($printingOptions['body']))
-	{
-	   	$code .= "<tr><td colspan=\"2\"><span class='label'>".lang_get('steps').":</span><br />" .  $tcInfo['steps'] . "</td></tr>";
-	   	$code .= "<tr><td colspan=\"2\"><span class='label'>".lang_get('expected_results').":</span><br />" .  $tcInfo['expected_results'] . "</td></tr>";
-	}
-  
-    $code .= $cfields['specScope'];
-
-
-	// generate test results
-	if ($printingOptions['passfail'])
-	{
-
-		// contribution by SDM 
-		// printing testresult and notes in 'Print Test Plan'
-		// @TODO refactorize
-		// $id2 = $id+=1;
-    // 
-    // $query = mysql_query("SELECT status, execution_ts, notes FROM executions" .
-		// 		" WHERE tcversion_id = $id2 AND testplan_id = $tplan_id" .
-		// 		" and execution_ts = (select MAX(execution_ts) from executions" .
-		// 		" where tcversion_id = $id2 and testplan_id = $tplan_id" .
-		// 		" group by tcversion_id, testplan_id)");
-    // 
-		// $result = mysql_fetch_assoc($query);
-
-    // 20080819 - franciscom - refactoring
-		$sql =  " SELECT status, execution_ts, notes FROM executions" .
-				    " WHERE tcversion_id = $versionID AND testplan_id = $tplan_id" .
-				    " and execution_ts = (select MAX(execution_ts) from executions" .
-				    " where tcversion_id = $versionID and testplan_id = $tplan_id" .
-				    " group by tcversion_id, testplan_id)";
-                                   
-		$result = $db->get_recordset($sql);
-                                   
-	    if (!$result) 
-	    {
-			    $tcstatus2 = lang_get("test_status_not_run");
-			    $tcnotes2 = lang_get("not_aplicable");
-	    }
-	    else
-	    {
-			    $tcstatus2 = $result[0]['status'];
-			    $tcstatus2 = lang_get($g_tc_status_verbose_labels[array_search($tcstatus2, $g_tc_status)]);
-			    $tcnotes2 = $result[0]['notes'];
-		  }
-		
-		$code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('passfail').
-				':</span><br /><span style="text-align:center; padding:10px;">'.$tcstatus2.'</span></td><td><u>'.
-				lang_get('testnotes') . ':</u><br />' . $tcnotes2 . "</td></tr>\n";
-	}
-
-
-	// collect REQ for TC
-	// MHT: based on contribution by JMU (1045)
-	if ($printingOptions['requirement'])
-	{
-		$req_mgr = new requirement_mgr($db);
-		$arrReqs = $req_mgr->get_all_for_tcase($id);
-
-		$code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('reqs').'</span><td>';
-		if (sizeof($arrReqs))
-		{
-			foreach ($arrReqs as $req)
-			{
-				$code .=  htmlspecialchars($req['req_doc_id'] . ":  " . $req['title']) . "<br />";
-			}
-		}
-		else
-			$code .= '&nbsp;' . lang_get('none') . '<br />';
-		
-		$code .= "</td></tr>\n";
-	}
-	// collect keywords for TC
-	// MHT: based on contribution by JMU (1045)
-	if ($printingOptions['keyword'])
-	{
-		$code .= '<tr><td width="20%" valign="top"><span class="label">'.lang_get('keywords').':</span><td>';
-
-		$arrKeywords = $tc_mgr->getKeywords($id,null);
-		if (sizeof($arrKeywords))
-		{
-			foreach ($arrKeywords as $kw)
-			{
-				$code .= htmlspecialchars($kw['keyword']) . "<br />";
-			}
-		}
-		else
-		{
-			$code .= '&nbsp;' . lang_get('none') . '<br>';
-		}
-		$code .= "</td></tr>\n";
-	}
-
-	$code .= "</table>\n</div>\n";
-
-  if( !is_null($tc_mgr) )
-	{
-	  unset($tc_mgr);
-	}
-
-
-	return $code;
-}
-
 /*
   function:
 
@@ -719,7 +473,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 		$tsuite = new testsuite($db);
 		$tInfo = $tsuite->get_by_id($node['id']);
 		unset($tsuite);
-    $code .= "<h2>{$tocPrefix}.0 " . lang_get('details') . "</h2><div>{$tInfo['details']}</div><br />";
+    	$code .= "<h2>{$tocPrefix}.0 " . lang_get('details') . "</h2><div>{$tInfo['details']}</div><br />";
  	}
 
 	return $code;

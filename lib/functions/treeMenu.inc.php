@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/10/21 19:46:31 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -314,7 +314,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		$tcase_counters[$status_descr]=0;
 	}
 
-	$node_type = $hash_id_descr[$node['node_type_id']];
+	
+	$node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
 	$tcase_counters['testcase_count']=0;
   
   if ($node_type == 'testcase')

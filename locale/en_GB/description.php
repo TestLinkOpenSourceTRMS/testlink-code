@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/10/16 12:34:12 $ $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/10/22 06:02:14 $ $Author: franciscom $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -237,6 +237,15 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
+
+// planAddTC_m1.tpl
+$TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
+If you have defined and assigned to Test Project,<br /> 
+Custom Fields with:<br />
+ 'Display on test plan design=true' and <br />
+ 'Enable on test plan design=true'<br />
+you will see these in this page ONLY for Test Cases linked to Test Plan.
+";
 
 // xxx.html
 //$TLS_hlp_xxx = "";

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.16 2008/10/15 20:36:52 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.17 2008/10/22 06:02:08 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -39,7 +39,9 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 {if $gui->has_tc }
 <form name="addTcForm" id="addTcForm" method="post">
-	<h1 class="title">{$actionTitle}</h1>
+	<h1 class="title">{$actionTitle}
+	{include file="inc_help.tpl" helptopic="hlp_planAddTC"}
+	</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
 	{if $gui->keywords_filter != ''}

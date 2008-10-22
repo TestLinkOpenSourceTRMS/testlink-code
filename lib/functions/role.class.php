@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/10/10 20:59:47 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/10/22 19:01:25 $ $Author: schlundus $
  *
  * rev: 20080412 - franciscom - typo error
  */
@@ -50,26 +50,34 @@ class tlRole extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = "SELECT id,description, notes FROM roles";
+		$bFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
+		
+		$query = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
+		if ($bFullDetails)
+			$query .= " ,c.id AS right_id,c.description ";
+		$query .= " FROM roles a ";
+		if ($bFullDetails)
+			$query .= " JOIN role_rights b ON a.id = b.role_id JOIN rights c ON b.right_id = c.id ";
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)
-			$clauses[] = "description = '".$db->prepare_string($this->name)."'";
+			$clauses[] = "a.description = '".$db->prepare_string($this->name)."'";
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-			$clauses[] = "id = {$this->dbID}";		
+			$clauses[] = "a.id = {$this->dbID}";		
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
 			
-		$info = $db->fetchFirstRow($query);			 
-		if ($info)
+		$rightInfo = $db->get_recordset($query);			 
+		if ($rightInfo)
 		{
-			$this->dbID = $info['id'];
-			$this->name = $info['description'];
-			$this->description = $info['notes'];
-			if ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS)
-				$this->readRights($db);
+			$this->dbID = $rightInfo[0]['role_id'];
+			$this->name = $rightInfo[0]['role_desc'];
+			$this->description = $rightInfo[0]['notes'];
+
+			if ($bFullDetails)
+				$this->rights = $this->buildRightsArray($rightInfo);
 		}
-		return $info ? tl::OK : tl::ERROR;
+		return $rightInfo ? tl::OK : tl::ERROR;
 	}
 	public function writeToDB(&$db)
 	{
@@ -134,7 +142,6 @@ class tlRole extends tlDBObject
 		$result = $this->deleteRightsFromDB($db);
 		if ($result >= tl::OK)
 		{
-			//SCHLUNDUS: needs refactoring
 			//reset all affected users by replacing the deleted role with configured role
 			$this->replaceUserRolesWith($db,$this->replacementRoleID);
 
@@ -255,12 +262,24 @@ class tlRole extends tlDBObject
 	
 	protected function readRights(&$db)
 	{
-		$query = "SELECT right_id FROM role_rights WHERE role_id = {$this->dbID}";
-		$ids = $db->fetchColumnsIntoArray($query,"right_id");
-		$this->rights = tlRight::getByIDs($db,$ids,tlRight::TLOBJ_O_GET_DETAIL_FULL);
+		$query = "SELECT right_id,description FROM role_rights a JOIN rights b ON a.right_id = b.id WHERE role_id = {$this->dbID}";
+		$rightInfo = $db->get_recordset($query);
+		$this->rights = buildRightsArray($rightInfo);
 		return tl::OK;
 	}	
 	
+	protected function buildRightsArray($rightInfo)
+	{
+		$rights = null;
+		for($i = 0;$i < sizeof($rightInfo);$i++)
+		{
+			$id = $rightInfo[$i];
+			$right = new tlRight($id['right_id']);
+			$right->name = $id['description'];
+			$rights[] = $right;
+		}
+		return $rights;
+	}
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);

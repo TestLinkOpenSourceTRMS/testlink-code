@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.8 2008/10/07 19:13:44 schlundus Exp $
+$Id: resultsGeneral.tpl,v 1.9 2008/10/24 12:27:37 havlat Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -144,7 +144,7 @@ Revisions:
 	  			<td class="{if $res.high_incomplete}failed{else}passed{/if}">
 	  					{$res.high_percentage} % {$tlCfg->gui_separator_open} 
 	  					{$res.results.3} {$tlCfg->gui_separator_close}</td>
-	  			<td>{$res.C} %</td>
+	  			<td>{$res.A} %</td>
 	  			<td class="{if $res.medium_incomplete}failed{else}passed{/if}">
 	  					{$res.medium_percentage} % {$tlCfg->gui_separator_open} 
 	  					{$res.results.2} {$tlCfg->gui_separator_close}</td>
@@ -152,7 +152,7 @@ Revisions:
 	  			<td class="{if $res.low_incomplete}failed{else}passed{/if}">
 	  					{$res.low_percentage} % {$tlCfg->gui_separator_open} 
 	  					{$res.results.1} {$tlCfg->gui_separator_close}</td>
-	  			<td>{$res.A} %</td>
+	  			<td>{$res.C} %</td>
 				<td>{$res.percentage_completed} %</td>
   			</tr>
   			{/foreach}

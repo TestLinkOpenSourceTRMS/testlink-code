@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2008/10/24 12:27:37 $ by $Author: havlat $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -173,7 +173,7 @@ else // do report
 		$item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
 		$item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
 
-		if ($item['low_percentage'] < $item['A'])
+		if ($item['low_percentage'] < $item['C'])
 			$item['low_incomplete'] = ON;
 		else
 			$item['low_incomplete'] = OFF;
@@ -181,7 +181,7 @@ else // do report
 			$item['medium_incomplete'] = ON;
 		else
 			$item['medium_incomplete'] = OFF;
-		if ($item['high_percentage'] < $item['C'])
+		if ($item['high_percentage'] < $item['A'])
 			$item['high_incomplete'] = ON;
 		else
 			$item['high_incomplete'] = OFF;

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.15 $
-* @modified $Date: 2008/10/21 20:23:06 $ $Author: schlundus $
+* @version $Revision: 1.16 $
+* @modified $Date: 2008/10/25 19:25:41 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -47,7 +47,7 @@ $highlight = initialize_tabsmenu();
 
 if ($feature == "testproject")
 {
-	$highlight->assign_users_tproject=1;
+	$highlight->assign_users_tproject = 1;
 	$roles_updated = lang_get("test_project_user_roles_updated");
 	$no_features = lang_get("no_test_projects");
 	$bTestproject = true;
@@ -55,7 +55,7 @@ if ($feature == "testproject")
 }
 else if ($feature == "testplan")
 {
-  $highlight->assign_users_tplan=1;
+  	$highlight->assign_users_tplan = 1;
 	$roles_updated = lang_get("test_plan_user_roles_updated");
 	$no_features = lang_get("no_test_plans");
 	$bTestPlan = true;
@@ -74,6 +74,7 @@ if ($featureID && $bUpdate && $mgr)
 }
 $can_manage_users = has_rights($db,"mgt_users");
 $users = tlUser::getAll($db);
+
 $userFeatureRoles = null;
 $features = null;
 if ($bTestproject)

@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.66 2008/10/19 16:26:37 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.67 2008/10/25 19:25:41 schlundus Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -103,13 +103,11 @@ if($do_display)
 	if(!is_null($keywordsFilter))
 	{ 
 	    // With this pieces we implement the AND type of keyword filter.
-	    $keywordsTestCases=$tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
+	    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
 	                                                                             $keywordsFilter->type);
-	    $testCaseSet=array_keys($keywordsTestCases);
+	    $testCaseSet = array_keys($keywordsTestCases);
 	}
-  
 	define('DONT_PRUNE',0);
-	//@TODO: maybe this depends on solution for #1650, if #1650 this could be activated again
 	// 1. this CAN NOT BE DEACTIVATED becuase destroy other implementations, then next time ask before
 	//    disabling a feture 
 	// 2. if you want to disable feature do not do in a wrong way i.e. redefining a constant
@@ -117,10 +115,9 @@ if($do_display)
 	define('ADD_CUSTOM_FIELDS',1);
 	define('DONOT_ADD_CUSTOM_FIELDS',0);
 	define('WRITE_BUTTON_ALWAYS',0);
-	
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$args->keyword_id,
-	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS);
+	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS,$args->tproject_id);
 	  
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];

@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.30 2008/10/21 19:46:31 schlundus Exp $
+ * @version $Id: planUpdateTC.php,v 1.31 2008/10/25 19:25:41 schlundus Exp $
  *
  * Author: franciscom
  *
@@ -63,7 +63,7 @@ switch($args->level)
 		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->id);
 		
 		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-		                     $linked_items,$map_node_tccount,$args->keyword_id,
+		                     $linked_items,null,$args->keyword_id,
 		                     FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,1,0);
 		break;
 

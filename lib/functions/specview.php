@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.19 $ $Author: franciscom $
- * @modified $Date: 2008/10/20 14:06:09 $
+ * @version $Revision: 1.20 $ $Author: schlundus $
+ * @modified $Date: 2008/10/25 19:25:40 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -158,10 +158,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,$keyword_id = 0,$tcase_id = null,
 							              $write_button_only_if_linked = 0,
-							              $prune_unlinked_tcversions=0,$add_custom_fields=0)
+							              $prune_unlinked_tcversions=0,$add_custom_fields=0,$tproject_id = null)
 {
 	  $write_status = $write_button_only_if_linked ? 'no' : 'yes';
-	  $is_tplan_view_type=$spec_view_type=='testplan' ? 1 : 0;
+	  $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
 	  $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	  $out = array(); 
 	  
@@ -172,7 +172,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
     
     $filters=array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id);
     $test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
-    
     $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
@@ -269,7 +268,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	} // count($test_spec))
 
 
-
   // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
@@ -293,7 +291,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 			}
 	}
 	   
-
   // and now ???
 	if( !is_null($out[0]) )
 	{
@@ -381,7 +378,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$result['spec_view'] = $out;
   	
 	} // !is_null($out[0])
-	
+
 	// --------------------------------------------------------------------------------------------
 	unset($out);
 	
@@ -439,7 +436,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  }
 	  
 	}
-
+	
   // -----------------------------------------------------------------------------------------------
   // Remove empty branches
   // Loop to compute test case qty on every level and prune test suite branchs that are empty
@@ -451,7 +448,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         $children=explode(',',$elem['children_testsuites']);
         foreach($children as $access_id)
         {
-            $tsuite_tcqty[$tsuite_id] += $tsuite_tcqty[$access_id];                
+        	$tsuite_tcqty[$tsuite_id] += $tsuite_tcqty[$access_id];                
         }
     }
     
@@ -460,7 +457,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         unset($result['spec_view'][$key]);
     } 
   }
-	// -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
 
 	//@TODO: maybe we can integrate this into already present loops above?
 	//
@@ -520,10 +517,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
              //   
              if( $linked_version_id != 0  )
              {
-               $cf_name_suffix="_" . $svalue['feature_id'];
-               $cf_map=$tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
-                                                                     $cf_name_suffix,$svalue['feature_id']);
-               $result['spec_view'][$key]['testcases'][$skey]['custom_fields']=$cf_map;
+               $cf_name_suffix = "_" . $svalue['feature_id'];
+               $cf_map = $tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+                                                                     $cf_name_suffix,$svalue['feature_id'],$tproject_id);
+               $result['spec_view'][$key]['testcases'][$skey]['custom_fields'] = $cf_map;
              }
            }
          } 
@@ -531,11 +528,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
       } // is_null($value)
     }
   }
-	// --------------------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------------------------
 
   // 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
   $result['spec_view']= array_values($result['spec_view']);
-	return $result;
+  return $result;
 }
 
 
@@ -639,10 +636,10 @@ function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewTyp
     $applyFilters=false;
     $testCaseSet=null;
     $tobj_mgr = new testproject($dbHandler);
-	  $test_spec = $tobj_mgr->get_subtree($nodeId);
+	$test_spec = $tobj_mgr->get_subtree($nodeId);
     $useFilter=array('keyword_id' => false, 'tcase_id' => false);
 
-  	if( ($useFilter['keyword_id']=$filters['keyword_id'] > 0) )
+  	if(($useFilter['keyword_id']=$filters['keyword_id'] > 0))
 	  {
 	    $applyFilters=true;
 	    switch ($specViewType)

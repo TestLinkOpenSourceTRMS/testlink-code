@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2008/09/09 10:22:55 $  $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2008/10/25 19:25:40 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -547,7 +547,6 @@ class cfield_mgr
 
     $input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
     $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
-
     if( $field_size > 0)
     {
       $size=$field_size;
@@ -682,7 +681,7 @@ class cfield_mgr
 
 
   	}
-    return ($str_out);
+  	return ($str_out);
 	} //function end
 
 

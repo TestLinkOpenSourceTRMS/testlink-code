@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.17 2008/10/22 06:02:08 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.18 2008/10/25 19:25:40 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -131,8 +131,11 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
           {foreach from=$ts.testcases item=tcase}
             
             {assign var='is_active' value=0}
-            {if $tcase.linked_version_id neq 0}
-               {if $tcase.tcversions_active_status[$tcase.linked_version_id] eq 1}             
+            {assign var='linked_version_id' value=$tcase.linked_version_id}
+            {assign var='tcID' value=$tcase.id}
+            
+            {if $linked_version_id neq 0}
+               {if $tcase.tcversions_active_status[$linked_version_id] eq 1}             
                  {assign var='is_active' value=1}
                {/if}
             {else}
@@ -142,22 +145,22 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
             {/if}      
 
 
-            {if $is_active || $tcase.linked_version_id ne 0 }  
-   				    {if $gui->full_control || $tcase.linked_version_id ne 0 }
-    			    <tr {if $tcase.linked_version_id ne 0}
+            {if $is_active || $linked_version_id ne 0 }  
+   				    {if $gui->full_control || $linked_version_id ne 0 }
+    			    <tr {if $linked_version_id ne 0}
     			       	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20">
     				    {if $gui->full_control}
-	      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
+	      				    {if $is_active eq 0 || $linked_version_id ne 0 }
 	      				       &nbsp;&nbsp;
 	      				    {else}
 	      				      <input type="checkbox" 
-	      				             name="{$add_cb}[{$tcase.id}]" 
-	      				             id="{$add_cb}{$tcase.id}" 
-	      				             value="{$tcase.id}" /> 
+	      				             name="{$add_cb}[{$tcID}]" 
+	      				             id="{$add_cb}{$tcID}" 
+	      				             value="{$tcID}" /> 
 	      				    {/if}
       				    
-	      				    <input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.id}" />
+	      				    <input type="hidden" name="a_tcid[{$tcID}]" value="{$tcID}" />
     				    {else}
 							&nbsp;&nbsp;
     				    {/if}
@@ -168,29 +171,29 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
     			      </td>
     			      {* 20070930 - franciscom - REQ - BUGID 1078 *}
     				    <td title="{$labels.show_tcase_spec}">
-     				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
+     				     <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
     			      </td>
     			      
                 <td>
-         				  <select name="tcversion_for_tcid[{$tcase.id}]"
-      			          {if $tcase.linked_version_id ne 0} disabled	{/if}>
-         				      {html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
+         				  <select name="tcversion_for_tcid[{$tcID}]"
+      			          {if $linked_version_id ne 0} disabled	{/if}>
+         				      {html_options options=$tcase.tcversions selected=$linked_version_id}
          				  </select>
                 </td>
 
                 <td style="text-align:center;">
-                  <input type="text" name="exec_order[{$tcase.id}]"
+                  <input type="text" name="exec_order[{$tcID}]"
                          {$execution_order_html_disabled}
                          style="text-align:right;"
                   			 size="{#EXECUTION_ORDER_SIZE#}" 
  			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
                          value="{$tcase.execution_order}" />
                   
-                  {if $tcase.linked_version_id != 0}  
-                    <input type="hidden" name="linked_version[{$tcase.id}]"
-                                         value="{$tcase.linked_version_id}" />
+                  {if $linked_version_id != 0}  
+                    <input type="hidden" name="linked_version[{$tcID}]"
+                                         value="{$linked_version_id}" />
                           
-                    <input type="hidden" name="linked_exec_order[{$tcase.id}]"
+                    <input type="hidden" name="linked_exec_order[{$tcID}]"
                                          value="{$tcase.execution_order}" />
                   {/if}
                 </td>
@@ -200,11 +203,11 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
                 {if $ts.linked_testcase_qty gt 0 }
           				<td>&nbsp;</td>
           				<td>
-          				   {if $tcase.linked_version_id ne 0} 
+          				   {if $linked_version_id ne 0} 
           						<input type='checkbox' 
-          						       name='{$rm_cb}[{$tcase.id}]' 
-          						       id='{$rm_cb}{$tcase.id}' 
-          				           value='{$tcase.linked_version_id}' />
+          						       name='{$rm_cb}[{$tcID}]' 
+          						       id='{$rm_cb}{$tcID}' 
+          				           value='{$linked_version_id}' />
           				   {else}
           						&nbsp;
           				   {/if}
@@ -221,7 +224,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
               </tr>
               {* 20080813 - franciscom - BUGID 1650 (REQ) *}
               {*
-              {if $tcase.tcversions_execution_type[$tcase.linked_version_id] == {$smarty.const.TESTCASE_EXECUTION_TYPE_AUTO} &&
+              {if $tcase.tcversions_execution_type[$linked_version_id] == {$smarty.const.TESTCASE_EXECUTION_TYPE_AUTO} &&
                   $tcase.custom_fields != ''}
       				*}
       				{if isset($tcase.custom_fields)}

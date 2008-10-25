@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.124 $
- * @modified $Date: 2008/10/21 18:06:45 $ $Author: schlundus $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2008/10/25 19:25:40 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
@@ -2509,22 +2509,26 @@ function copy_attachments($source_id,$target_id)
        20070302 - check for $id not null, is not enough, need to check is > 0
 
 */
-function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
-{
-	$enabled = 1;
-	if (!$tproject_id)
+	function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
+	{
+		if (!$tproject_id)
+			$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
+		
+		$enabled = 1;
+		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testcase',$id);
+	
+		return $cf_map;
+	}
+
+
+	function getTestProjectFromTestCase($id,$parent_id)
 	{
 		$tproject_mgr = new testproject($this->db);
 		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
 		$path_len = count($the_path);
 		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+		return $tproject_id;
 	}
-	
-	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testcase',$id);
-
-	return $cf_map;
-}
-
 /*
   function: html_table_of_custom_field_inputs
             Return html code, implementing a table with custom fields labels
@@ -2573,7 +2577,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tprojec
   rev: 20080811 - franciscom - BUGID 1650 (REQ)
 
 */
-function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$link_id=null)
+function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$link_id=null,$tproject_id = null)
 {
 	$cf_smarty = '';
 
@@ -2584,7 +2588,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
   switch($cf_scope)
   {
       case 'testplan_design':
-          $cf_map = $this->$method_name($id,$parent_id,null,$link_id);    
+          $cf_map = $this->$method_name($id,$parent_id,null,$link_id,null,$tproject_id);    
       break;
 
       case 'design':
@@ -2603,11 +2607,11 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 			
 			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 			// logic to validate CF content
-			$cf_html_string=$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);
+			$cf_html_string = $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);
 			
 			// extract input html id
 			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-      $td_label_id=str_replace('id="', 'id="label_', $dummy[0]);
+     		$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
 			$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . 
 			              ":</td><td>{$cf_html_string}</td></tr>\n";
 		}
@@ -2674,9 +2678,8 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,
 	}
 	else
 	{
-		//@TODO: schlundus, can we speed up with projectID ?
 		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$filters,
-		                                                 $execution_id,$testplan_id);
+		                                                 $execution_id,$testplan_id,$tprojectID);
 	}
 
 	if(!is_null($cf_map))
@@ -2742,26 +2745,18 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,
 
 */
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
-                                         $execution_id=null,$testplan_id=null)
+                                         $execution_id=null,$testplan_id=null,$tproject_id = null)
 {
-	$enabled = 1;
-	$tproject_mgr = new testproject($this->db);
-
-	$the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-	$path_len = count($the_path);
-
-  // 20071209 - with new get_path implementation this logic is wrong,
-	//            generating errors (no cf displayed) when executing TC
-	// $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
-
+	if (!$tproject_id)
+		$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
 	// Warning:
 	// I'm setting node type to test case, but $id is the tcversion_id, because
 	// execution data is related to tcversion NO testcase
 	//
+	$enabled = 1;
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,'testcase',
 	                                                         $id,$execution_id,$testplan_id);
-	return($cf_map);
+	return $cf_map ;
 }
 
 
@@ -2853,24 +2848,18 @@ function copy_cfields_design_values($from_id,$to_id)
 
 */
 function get_linked_cfields_at_testplan_design($id,$parent_id=null,$filters=null,
-                                               $link_id=null,$testplan_id=null)
+                                               $link_id=null,$testplan_id=null,$tproject_id = null)
 {
-	$enabled = 1;
-	$tproject_mgr = new testproject($this->db);
-
-	$the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-	$path_len = count($the_path);
-
-	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
-
+	if (!$tproject_id)
+		$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
 	// Warning:
 	// I'm setting node type to test case, but $id is the tcversion_id, because
 	// link data is related to tcversion NO testcase
 	//
+	$enabled = 1;
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,'testcase',
 	                                                                   $id,$link_id,$testplan_id);
-	return($cf_map);
+	return $cf_map;
 }
-
 } // end class
 ?>

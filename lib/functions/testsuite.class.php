@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/05/14 06:09:32 $ - $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/10/26 11:49:13 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -1056,10 +1056,12 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
   
   if( $scope=='design' )
   {
+  	//@TODO: schlundus, can this be speed up with tprojectID?
     $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
   }
   else 
   {
+  	//@TODO: schlundus, can this be speed up with tprojectID?
     $cf_map=$this->get_linked_cfields_at_execution($id);
   }
     

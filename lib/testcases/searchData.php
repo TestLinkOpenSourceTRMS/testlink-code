@@ -1,12 +1,12 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.32 2008/09/21 19:02:48 schlundus Exp $
+ * $Id: searchData.php,v 1.33 2008/10/26 11:49:13 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
  *     20080120 - franciscom
 **/
-require('../../config.inc.php');
+require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("attachments.inc.php");
@@ -20,57 +20,53 @@ $args = init_args();
 if ($args->tprojectID)
 {
 	$from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
-  
-	$a_tcid = $tproject_mgr->get_all_testcases_id($args->tprojectID);
-	$filter = null;
-	if(count($a_tcid))
+  	$filter = null;
+	if($args->targetTestCase)
 	{
-	  
-		if($args->targetTestCase)
-		{
-			$tcase_mgr = new testcase ($db);
-	      	$cfg = config_get('testcase_cfg');
-			$tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);  
-			$filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
-		}
-		else
-		{
-			$filter['by_tc_id'] = " AND NHB.parent_id IN (" . implode(",",$a_tcid) . ") ";
-		}
-	
-		if($args->version)
-		{
-			$filter['by_version'] = " AND version = {$args->version} ";
-		}
-     
-		if($args->keyword_id)				
-		{
-			$from['by_keyword_id'] = ' ,testcase_keywords KW';
-			$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
-		}
+		$tcase_mgr = new testcase ($db);
+      	$cfg = config_get('testcase_cfg');
+		$tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);  
+		$filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
+	}
+	else
+	{
+		$tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
+		$filter['by_tc_id'] = " AND NHB.parent_id IN (" . implode(",",$a_tcid) . ") ";
+	}
 
-	    if(strlen($args->name))
-	    {
-	     	$args->name =  $db->prepare_string($args->name);
-	      	$filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
-	    }
+	if($args->version)
+	{
+		$filter['by_version'] = " AND version = {$args->version} ";
+	}
+     
+	if($args->keyword_id)				
+	{
+		$from['by_keyword_id'] = ' ,testcase_keywords KW';
+		$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
+	}
+
+    if(strlen($args->name))
+    {
+     	$args->name =  $db->prepare_string($args->name);
+      	$filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
+    }
       
-	    if(strlen($args->summary))
+    if(strlen($args->summary))
         {
             $summary = $db->prepare_string($args->summary);
-        	$filter['by_summary'] = " AND summary like '%{$args->summary}%' ";
+        $filter['by_summary'] = " AND summary like '%{$args->summary}%' ";
         }    
 
         if(strlen($args->steps))
         {
-			$args->steps = $db->prepare_string($args->steps);
-        	$filter['by_steps'] = " AND steps like '%{$args->steps}%' ";	
+		$args->steps = $db->prepare_string($args->steps);
+        $filter['by_steps'] = " AND steps like '%{$args->steps}%' ";	
         }    
 
         if(strlen($args->expected_results))
         {
-          	$args->expected_results = $db->prepare_string($args->expected_results);
-        	$filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	
+          $args->expected_results = $db->prepare_string($args->expected_results);
+        $filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	
         }    
 
         // ------------------------------------------------------------------------------------
@@ -81,21 +77,19 @@ if ($args->tprojectID)
             $args->custom_field_value = $db->prepare_string($args->custom_field_value);
             $from['by_custom_field']= ' ,cfield_design_values CFD'; 
             $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-				 						                     " AND CFD.node_id=NHA.id " .
-			 							                     " AND CFD.value like '%{$args->custom_field_value}%' ";
+			 						                     " AND CFD.node_id=NHA.id " .
+		 							                     " AND CFD.value like '%{$args->custom_field_value}%' ";
         }
         // ------------------------------------------------------------------------------------
 
-		$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,expected_results,version ".
-			     " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions " .
-			     " {$from['by_keyword_id']} {$from['by_custom_field']}".
-  			   " WHERE NHA.id = NHB.parent_id AND NHB.id = tcversions.id ";
-			
-		if ($filter)
-			$sql .= implode("",$filter);
-		$map = $db->fetchRowsIntoMap($sql,'testcase_id');			
-	}
-	
+	$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,expected_results,version ".
+		     " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions " .
+		     " {$from['by_keyword_id']} {$from['by_custom_field']}".
+  		   " WHERE NHA.id = NHB.parent_id AND NHB.id = tcversions.id ";
+		
+	if ($filter)
+		$sql .= implode("",$filter);
+	$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
 }
 
 $smarty = new TLSmarty();
@@ -110,7 +104,6 @@ if(count($map))
 	$smarty->assign('attachments',$attachments);
 	$tcase_mgr = new testcase($db);   
 	$viewerArgs=array('display_parent_testsuite' => 1);
-	
 	$tcase_mgr->show($smarty, $template_dir,array_keys($map),TC_ALL_VERSIONS,$viewerArgs);
 }
 else

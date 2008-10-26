@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.5 2008/09/28 10:02:11 franciscom Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.6 2008/10/26 11:49:12 schlundus Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
@@ -245,7 +245,8 @@ function updateTestCaseExternalID(&$db,&$all_tprojects,&$tprojectMgr)
         {
             $feedback_counter=0;
             $tproject_counter++;
-            $tcaseSet=$tprojectMgr->get_all_testcases_id($tproject_value['id']);
+            $tcaseSet = array();
+            $tprojectMgr->get_all_testcases_id($tproject_value['id'],$tcaseSet);
             echo "Working on Test Project ({$tproject_counter}/{$numtproject}) : {$tproject_value['name']}<br>";
             if( function_exists('memory_get_usage') && $show_memory)
             {

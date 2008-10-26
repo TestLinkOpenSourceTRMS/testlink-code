@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.13 2008/10/13 11:59:50 havlat Exp $
+$Id: tcView.tpl,v 1.14 2008/10/26 11:49:12 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}
@@ -19,7 +19,7 @@ rev: 20080322 - franciscom - php errors clean up
           s='no_records_found,other_versions,version,title_test_case'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
-<h1 class="title">{$labels.title_test_case}{$tlCfg->gui_title_separator_1}{$gui->tc_current_version[0][0].name|escape}</h1>
+<h1 class="title">{$labels.title_test_case}{$tlCfg->gui_title_separator_1}</h1>
 
 {include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
 
@@ -32,7 +32,7 @@ rev: 20080322 - franciscom - php errors clean up
     {else}
         {assign var="my_delete_version" value="no"}
     {/if}
-
+	<h2 class="title">{$gui->tc_current_version[idx][0].name|escape}</h2>
     {* added args_cf *}
 		{include file="$this_template_dir/tcView_viewer.tpl" 
 		         args_testcase=$gui->tc_current_version[idx][0]

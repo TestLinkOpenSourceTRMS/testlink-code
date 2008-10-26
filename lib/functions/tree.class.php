@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2008/10/26 11:49:13 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
@@ -231,8 +231,6 @@ class tree
 			$this->_get_subtree_list($row['id'],$node_list,$node_type_id);	
 		}
 	}
-
-
 
   /*
     function: delete_subtree

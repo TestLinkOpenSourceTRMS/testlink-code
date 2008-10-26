@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/10/17 22:01:32 $  $Author: schlundus $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/10/26 11:49:13 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080518 - franciscom - create() interface changes
@@ -51,17 +51,15 @@ class testproject extends tlObjectWithAttachments
 	private $nodes_hierarchy_table="nodes_hierarchy";
 	private $keywords_table = "keywords";
 	private $testcase_keywords_table="testcase_keywords";
-  private $testplans_table="testplans";
-  private $custom_fields_table="custom_fields";
-  private $cfield_testprojects_table="cfield_testprojects";
-  private $cfield_node_types_table="cfield_node_types";
-  private $user_testproject_roles_table="user_testproject_roles";
-
-
+	private $testplans_table="testplans";
+	private $custom_fields_table="custom_fields";
+	private $cfield_testprojects_table="cfield_testprojects";
+	private $cfield_node_types_table="cfield_node_types";
+	private $user_testproject_roles_table="user_testproject_roles";
 
 	var $db;
 	var $tree_manager;
-  var $cfield_mgr;
+	var $cfield_mgr;
 
   // Node Types (NT)
   var $nt2exclude=array('testplan' => 'exclude_me',
@@ -1445,33 +1443,43 @@ function delete($id)
   function: get_all_testcases_id
             All testproject testcases node id.
 
-  args :id: testproject id
+  args :idList: comma-separated list of IDs (should be the projectID, but could
+		also be an arbitrary suiteID
 
-
-  returns: array with testcases node id.
+  returns: array with testcases node id in parameter tcIDs.
            null is nothing found
 
-
 */
-function get_all_testcases_id($id)
-{
-	$a_tcid = array();
-	$test_spec = $this->get_subtree($id);
-	$hash_descr_id = $this->tree_manager->get_available_node_types();
-	if(count($test_spec))
+	function get_all_testcases_id($idList,&$tcIDs)
 	{
-		$tcNodeType = $hash_descr_id['testcase'];
-		foreach($test_spec as $elem)
+		static $s_tcNodeTypeID;
+		if (!$s_tcNodeTypeID)
+			$s_tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
+		static $s_suiteNodeTypeID;
+		if (!$s_suiteNodeTypeID)
+			$s_suiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
+		
+		$sql = "SELECT id,node_type_id from {$this->tree_manager->obj_table} WHERE parent_id IN ({$idList})";
+		$sql .=  " AND node_type_id IN ({$s_tcNodeTypeID},{$s_suiteNodeTypeID}) "; 
+		
+		$result = $this->db->exec_query($sql);
+		if ($result)
 		{
-			if($elem['node_type_id'] == $tcNodeType)
+			$suiteIDs = array();
+			while($row = $this->db->fetch_array($result))
 			{
-				$a_tcid[] = $elem['id'];
+				$nodeTypeID = $row['node_type_id'];
+				if ($nodeTypeID == $s_tcNodeTypeID)
+					$tcIDs[] = $row['id'];
+				$suiteIDs[] = $row['id'];
 			}
-		}
+			if (sizeof($suiteIDs))
+			{
+				$suiteIDs  = implode(",",$suiteIDs);
+				$this->get_all_testcases_id($suiteIDs,$tcIDs);
+			}
+		}	
 	}
-	return $a_tcid;
-}
-
 
 
 /*

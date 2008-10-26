@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.125 $
- * @modified $Date: 2008/10/25 19:25:40 $ $Author: schlundus $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2008/10/26 11:49:13 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
@@ -492,66 +492,60 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
            $tcasePrefix .= $tcase_cfg->glue_character;
       }
   }
-
-
+  	$cf_smarty = array();
 	foreach($a_id as $key => $tc_id)
 	{
 		$tc_array = $this->get_by_id($tc_id,$version_id);
 		if (!$tc_array)
 			continue;
 
-	  $tc_array[0]['tc_external_id'] =	$tcasePrefix . $tc_array[0]['tc_external_id'];
+		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 		//get the status quo of execution and links of tc versions
 		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
 		
-		$keywords_map[] = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
-		$tc_array[0]['keywords'] = $keywords_map;
-
+		//@TODO: schlundus, could be speed up!
+		$tcKeywordMap = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
+		$keywords_map[] = $tcKeywordMap; 
+		$tc_array[0]['keywords'] = $tcKeywordMap;
 		$gui->tc_current_version[] = array($tc_array[0]);
 
 			  
-		  //Get UserID and Updater ID for current Version
-		  $tc_current = $gui->tc_current_version[0][0];
-		  $author_id = $tc_current['author_id'];
-		  $updater_id = $tc_current['updater_id'];
-		  $userid_array[$author_id] = $author_id;
-		  $userid_array[$updater_id] = $updater_id;
+		//Get UserID and Updater ID for current Version
+		$tc_current = $gui->tc_current_version[0][0];
+		$author_id = $tc_current['author_id'];
+		$updater_id = $tc_current['updater_id'];
+		$userid_array[$author_id] = null;
+		$userid_array[$updater_id] = null;
 			
-		
 		$qta_versions = count($tc_array);
 		if($qta_versions > 1)
 			$tc_other_versions[] = array_slice($tc_array,1);
 		else
 			$tc_other_versions[] = null;
 			
-	//Get author and updater id for each version
+		//Get author and updater id for each version
 		if ($tc_other_versions[0])
 		{
 			foreach($tc_other_versions[0] as $key => $version)
 			{				
 				$author_id = $version['author_id'];
 	  			$updater_id = $version['updater_id'];
-	  			$userid_array[$author_id] = $author_id;
-	  			$userid_array[$updater_id] = $updater_id;				
+	  			$userid_array[$author_id] = null;
+	  			$userid_array[$updater_id] = null;				
 			}
 		}
 		// get assigned REQs
+		//@TODO: schlundus, could be speed up!
 		$arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
 
 		// custom fields
-		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
-		$smarty->assign('cf',$cf_smarty);
- 	}
- 	
-		//Removing duplicate and NULL id's
-		unset($userid_array['']);
-		foreach($userid_array as $value)
-		{		
-			$passeduserarray[] = $value;
-		}
-
-  // new dBug($status_quo_map);
-		
+		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tprojectID);
+	}
+	//Removing duplicate and NULL id's
+	unset($userid_array['']);
+	$passeduserarray = array_keys($userid_array);
+	
+	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('gui',$gui);
 	$smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
 	$smarty->assign('sqlResult',$viewer_defaults['msg_result']);
@@ -2672,7 +2666,7 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,
 	$cf_smarty = '';
 	$PID_NO_NEEDED = null;
 
-	if($scope=='design')
+	if($scope == 'design')
 	{
 		$cf_map = $this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$filters,$tprojectID);
 	}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2008/10/10 20:59:46 $ $Author: schlundus $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2008/10/26 11:49:12 $ $Author: schlundus $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -410,7 +410,8 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
       $tc_id = $elem['tc_id'];
       if(!isset($cached_cf[$tsuite_id]))
       {
-         $cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id);
+//		@TODO: schlundus, can this be speed up with tprojectID?
+      	$cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id);
       }
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
    
@@ -462,6 +463,7 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
   		}
 
       // Custom fields
+      //@TODO: schlundus, can this be speed up with tprojectID?
       $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
                                                                                $exec_id,$tplan_id);
   	}
@@ -828,6 +830,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 
     $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
+    //@TODO: schlundus, can this be speed up with tprojectID?
     $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'execution',
                                                                           $cf_filters);
 
@@ -860,7 +863,7 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$treeMg
   	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
     $guiObj->tcasePrefix=$tcaseMgr->getPrefix($tcase_id) . $cfgObj->testcase_cfg->glue_character;
     
-    
+    //@TODO: schlundus, can this be speed up with tprojectID?
   	$guiObj->design_time_cfields[$argsObj->id] = 
   	         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$cf_filters);
   	
@@ -1017,6 +1020,7 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     		                                                             'nodes_hierarchy',true,1);
     
          // --------------------------------------------------------------------------------------
+         //@TODO: schlundus, can this be speed up with tprojectID?
     		 $guiObj->design_time_cfields[$item['tc_id']] = $tcaseMgr->html_table_of_custom_field_values($item['tc_id'],
     				                                                                       'design',$cf_filters);
     				                                                                        

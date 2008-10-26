@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.83 $
- * @modified $Date: 2008/10/16 18:50:53 $ by $Author: schlundus $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2008/10/26 11:49:13 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1764,10 +1764,12 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null)
 
   if( $scope=='design' )
   {
+  	//@TODO: schlundus, can this be speed up with tprojectID?
     $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
   }
   else
   {
+  	//@TODO: schlundus, can this be speed up with tprojectID?
     $cf_map=$this->get_linked_cfields_at_execution($id);
   }
 

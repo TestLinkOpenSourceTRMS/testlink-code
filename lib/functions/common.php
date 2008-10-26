@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.120 $ $Author: schlundus $
- * @modified $Date: 2008/10/17 22:01:32 $
+ * @version $Revision: 1.121 $ $Author: schlundus $
+ * @modified $Date: 2008/10/26 11:49:13 $
  *
  * @author 	Martin Havlat, Chad Rosen
  *
@@ -16,16 +16,12 @@
  * 20080518 - franciscom - translate_tc_status()
  * 20080412 - franciscom - templateConfiguration()
  * 20080326 - franciscom - config_get() - refactored removed eval()
- * 20080114 - franciscom - gen_spec_view(): adde external_id management.
  * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
  *                         string_api.php, also from Mantis.
  *
  * 20071002 - jbarchibald - BUGID 1051
- * 20070707 - franciscom - BUGID 921 - changes to gen_spec_view()
  * 20070705 - franciscom - init_labels()
- *                         gen_spec_view(), changes on process of inactive versions
  * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
- * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/
 

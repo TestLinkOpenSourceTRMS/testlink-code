@@ -2,65 +2,60 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/10/17 22:01:32 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/10/28 09:54:49 $ by $Author: franciscom $
  * @author kevin
  *
  * Revisions:
+ *  20081027 - franciscom - refactored to use pChart and improve performance
  *	20080812 - havlatm - simplyfied, polite
  *
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('../../third_party/charts/charts.php');
-
-define('TL_CHART_WIDTH', 600);
-define('TL_CHART_HEIGHT', 400);
-define('TL_CHART_BG', '888888');
-
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
+
+$gui=new stdClass();
+
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
-
 $tplan_id=$_REQUEST['tplan_id'];
 $tproject_id=$_SESSION['testprojectID'];
-
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 
-$tplan_name = $tplan_info['name'];
-$tproject_name = $tproject_info['name'];
+$gui->tplan_name = $tplan_info['name'];
+$gui->tproject_name = $tproject_info['name'];
 
-$pathToCharts = "third_party/charts";
-$pathToScripts = "lib/results";
-$charts_swf= $pathToCharts . "/charts.swf";
-$charts_library= $pathToCharts . "/charts_library";
+$resultsCfg=config_get('results');
 
+// Save in session to improve perfomance.
+// This data will be used in different *chart.php to generate on the fly image
+$re=new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
+$_SESSION['statistics']['getTotalsForPlan']=$re->getTotalsForPlan();
+$_SESSION['statistics']['getTopLevelSuites'] = $re->getTopLevelSuites();
+$_SESSION['statistics']['getAggregateMap'] = $re->getAggregateMap();
+$_SESSION['statistics']['getAggregateOwnerResults'] = $re->getAggregateOwnerResults();
+$_SESSION['statistics']['getAggregateKeywordResults']= $re->getAggregateKeywordResults();
+
+$pathToScripts = "lib/results/";
 $chartsUrl=new stdClass();
+$chartsUrl->overallPieChart = $pathToScripts . "overallPieChart.php";
+$chartsUrl->keywordBarChart = $pathToScripts . "keywordBarChart.php";
+$chartsUrl->ownerBarChart = $pathToScripts . "ownerBarChart.php";
+$chartsUrl->topLevelSuitesBarChart = $pathToScripts . "topLevelSuitesBarChart.php";
 
-$chartsUrl->overallPieChart = "{$pathToScripts}/overallPieChart.php?tplan_id={$tplan_id}";
-$chartsUrl->keywordBarChart = "{$pathToScripts}/keywordBarChart.php?tplan_id={$tplan_id}";
-$chartsUrl->ownerBarChart = "{$pathToScripts}/ownerBarChart.php?tplan_id={$tplan_id}";
-$chartsUrl->topLevelSuitesBarChart = "{$pathToScripts}/topLevelSuitesBarChart.php?tplan_id={$tplan_id}";
-
-$charts = array(
-	lang_get('overall_metrics') => InsertChart($charts_swf, $charts_library, 
-				$chartsUrl->overallPieChart, TL_CHART_WIDTH, TL_CHART_HEIGHT, 
-				TL_CHART_BG ),
-	lang_get('results_by_keyword') => InsertChart($charts_swf, $charts_library,
-	            $chartsUrl->keywordBarChart,TL_CHART_WIDTH, TL_CHART_HEIGHT, TL_CHART_BG ),
-	lang_get('results_by_tester') => InsertChart($charts_swf, $charts_library,
-	            $chartsUrl->ownerBarChart, TL_CHART_WIDTH, TL_CHART_HEIGHT, TL_CHART_BG),
-	lang_get('results_top_level_suites') => InsertChart($charts_swf, $charts_library,
-				$chartsUrl->topLevelSuitesBarChart, TL_CHART_WIDTH, TL_CHART_HEIGHT,
-				TL_CHART_BG),  
-);
+$gui->charts = array(lang_get('overall_metrics') => $chartsUrl->overallPieChart,
+                     lang_get('results_by_keyword') => $chartsUrl->keywordBarChart,
+                lang_get('results_by_tester') => $chartsUrl->ownerBarChart,
+                lang_get('results_top_level_suites') => $chartsUrl->topLevelSuitesBarChart );
                  
        
 $smarty = new TLSmarty();
-$smarty->assign("tplan_name",$tplan_name);
-$smarty->assign('tproject_name', $tproject_name);
-
-$smarty->assign("charts",$charts);
-$smarty->display("charts.tpl");	                   
+// $smarty->assign("tplan_name",$tplan_name);
+// $smarty->assign('tproject_name', $tproject_name);
+// $smarty->assign("charts",$charts);
+$smarty->assign("gui",$gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

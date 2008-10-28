@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: topLevelSuitesBarChart.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/09/21 19:02:48 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/10/28 09:54:49 $ by $Author: franciscom $
  *
  * @author	Kevin Levy
  *
@@ -17,110 +17,110 @@
  *
  */
 require_once('../../config.inc.php');
-require_once("../../third_party/charts/charts.php");
 require_once('results.class.php');
+define('PCHART_PATH','../../third_party/pchart');
+include(PCHART_PATH . "/pChart/pData.class");   
+include(PCHART_PATH . "/pChart/pChart.class");   
+
 testlinkInitPage($db);
+createChart($db);
 
-$cdata = getChartData($db);
-
-$chart['chart_data'] = $cdata->chart_data;
-
-$chart['chart_type'] = "stacked column"; 
-$chart['axis_category'] = array ('orientation'=>"diagonal_down");
-$chart['axis_value'] = array ( 'font'=>"arial", 'bold'=>true, 'size'=>10, 'color'=>"000000", 
-		'alpha'=>50, 'steps'=>6, 'prefix'=>"", 'suffix'=>"", 'decimals'=>0, 'separator'=>"", 
-		'show_min'=>true );
-
-$chart['chart_grid_h'] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 
-		'type'=>"solid" );
-$chart['chart_rect'] = array ( 'x'=>30, 'y'=>20, 'height'=>250, 
-		'positive_color'=>"ffffff", 'negative_color'=>"000000", 'positive_alpha'=>75, 
-		'negative_alpha'=>15 );
-
-$chart['legend_label'] = array ( 'layout'=>"horizontal", 'font'=>"arial", 
-		'bold'=>true, 'size'=>13, 'color'=>"444466", 'alpha'=>90 ); 
-$chart['legend_rect'] = array ( 'x'=>50, 'y'=>360, 'width'=>350,  
-		'margin'=>5, 'fill_color'=>"ffffff", 'fill_alpha'=>35); 
-
-$chart['series_color'] = $cdata->series_color;
-
-SendChartData($chart);
 
 /*
-  function: getChartData
+  function: createChart
 
   args :
   
   returns: 
 
 */
-function getChartData(&$dbHandler)
+function createChart(&$dbHandler)
 {
-    $tplan_mgr = new testplan($dbHandler);
-    $tproject_mgr = new testproject($dbHandler);
+    // $tplan_mgr = new testplan($dbHandler);
+    // $tproject_mgr = new testproject($dbHandler);
+    // 
+    // $tplan_id = $_REQUEST['tplan_id'];
+    // $tproject_id = $_SESSION['testprojectID'];
+    // 
+    // $tplan_info = $tplan_mgr->get_by_id($tplan_id);
+    // $tproject_info = $tproject_mgr->get_by_id($tproject_id);
+    // 
+    // $re = new results($dbHandler, $tplan_mgr, $tproject_info, $tplan_info,
+    //                   ALL_TEST_SUITES,ALL_BUILDS);
     
-    $tplan_id = $_REQUEST['tplan_id'];
-    $tproject_id = $_SESSION['testprojectID'];
-    
-    $tplan_info = $tplan_mgr->get_by_id($tplan_id);
-    $tproject_info = $tproject_mgr->get_by_id($tproject_id);
-    
-    $re = new results($dbHandler, $tplan_mgr, $tproject_info, $tplan_info,
-                      ALL_TEST_SUITES,ALL_BUILDS);
-    
-    $topLevelSuites = $re->getTopLevelSuites();
-    $mapOfAggregate = $re->getAggregateMap();
+    $topLevelSuites = $_SESSION['statistics']['getTopLevelSuites']; //$re->getTopLevelSuites();
+    $mapOfAggregate = $_SESSION['statistics']['getAggregateMap']; //$re->getAggregateMap();
    
-    // data structures:
-    //
-    // An array with test suites names ($tsuiteNames) where position 0 is ''
-    // A map with key= test case status.
-    //       value -> array
-    //                position 0 = human description (label) for status
-    //                other position are related to $tsuiteNames, and contain total figures.
-    //
-    // Example:
-    //
-    // test suite names: [0] => 
-    //                   [1] => Communications
-    //                   [2] => Transportation
-    //
-    // totals['passed'] => Array([0] => Passed
-    //                           [1] => 1
-    //                           [2] => 0)
-    //
-    $tsuiteNames = array('');
     if (is_array($topLevelSuites)) 
     {
         foreach($topLevelSuites as $tsuite )
         {
             $rmap = $mapOfAggregate[$tsuite['id']];
-        	$tsuiteNames[] = htmlspecialchars($tsuite['name']);
+        	  $tsuiteNames[] = htmlspecialchars($tsuite['name']);
 
             unset($rmap['total']);
-        	foreach($rmap as $key => $value)
-        	{
-        		$totals[$key][]=$value;  
-        	}
+        	  foreach($rmap as $key => $value)
+        	  {
+        		    $totals[$key][]=$value;  
+        	  }
         } 
     } // end if 
-    
-    // all array must have same number of items
-    // testerNames: used to dsplay name in X axis
-    //               first element must be leave clear
-    //
-    // results array: first element is status label
-    //
+
     $obj = new stdClass();
-    $obj->chart_data = array($tsuiteNames);
+    $obj->xAxis=new stdClass();
+    $obj->xAxis->values = $tsuiteNames;
+    $obj->xAxis->serieName = 'Serie8';
+    $obj->series_color = null;
+    
+ 
     $resultsCfg = config_get('results');
     foreach( $totals as $status => $values)
     {
-        // $values[0]=lang_get($resultsCfg['status_label'][$status]);
-        array_unshift($values,lang_get($resultsCfg['status_label'][$status]));
-        $obj->chart_data[]=$values;
-        $obj->series_color[]=$resultsCfg['charts']['status_colour'][$status];
+       $obj->chart_data[] = $values;
+       $obj->series_label[] =lang_get($resultsCfg['status_label'][$status]);
+       $obj->series_color[]=$resultsCfg['charts']['status_colour'][$status];
     }
-    return $obj;
+
+    $DataSet = new pData;
+    foreach($obj->chart_data as $key => $values)
+    {
+        $id=$key+1;
+        $DataSet->AddPoint($values,"Serie{$id}");  
+        $DataSet->SetSerieName($obj->series_label[$key],"Serie{$id}");
+        
+    }
+    $DataSet->AddPoint($obj->xAxis->values,$obj->xAxis->serieName);
+    $DataSet->AddAllSeries();
+    $DataSet->RemoveSerie($obj->xAxis->serieName);
+    $DataSet->SetAbsciseLabelSerie($obj->xAxis->serieName);
+
+           
+    // Initialise the graph
+    $Test = new pChart(700,230);
+    foreach( $obj->series_color as $key => $hexrgb)
+    {
+        $rgb=str_split($hexrgb,2);
+        $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
+    }
+    $Test->drawGraphAreaGradient(132,173,131,50,TARGET_BACKGROUND);
+    $Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);
+    $Test->setGraphArea(120,20,675,190);
+    $Test->drawGraphArea(213,217,221,FALSE);
+    $Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_ADDALL,213,217,221,TRUE,0,2,TRUE);
+  
+    // Draw the bar chart
+    $Test->drawStackedBarGraph($DataSet->GetData(),$DataSet->GetDataDescription(),70);
+    
+    // Draw the title
+    $Title = lang_get('results_top_level_suites');
+    $Test->drawTextBox(0,0,50,230,$Title,90,255,255,255,ALIGN_BOTTOM_CENTER,TRUE,0,0,0,30);
+    
+    // Draw the legend
+    $Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);
+    $Test->drawLegend(610,10,$DataSet->GetDataDescription(),236,238,240,52,58,82);
+    
+    // Render the picture
+    $Test->addBorder(2);
+    $Test->Stroke();
 }
 ?>

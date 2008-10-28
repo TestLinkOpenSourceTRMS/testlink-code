@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/10/14 20:30:18 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/10/28 09:53:42 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -390,9 +390,9 @@ $tlCfg->results['default_status'] = "not_run";
 $tlCfg->results['charts']=array();
 $tlCfg->results['charts']['status_colour']=array(
  	"not_run"  		=> "000000",
-	"passed"   		=> "006400",
-	"failed"   		=> "B22222",
-	"blocked"  		=> "00008B"
+	"passed"   		=> "00FF00",
+	"failed"   		=> "FF0000",
+	"blocked"  		=> "0000FF"
 );
 
 

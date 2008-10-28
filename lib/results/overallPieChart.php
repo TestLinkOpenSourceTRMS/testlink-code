@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: overallPieChart.php,v 1.6 2008/08/12 22:17:46 havlat Exp $ 
+ * $Id: overallPieChart.php,v 1.7 2008/10/28 09:54:49 franciscom Exp $ 
  *
  * @author	Kevin Levy
  *
@@ -12,76 +12,67 @@
  */
 require_once('../../config.inc.php');
 require_once('results.class.php');
-require_once("../../third_party/charts/charts.php");
+define('PCHART_PATH','../../third_party/pchart');
+include(PCHART_PATH . "/pChart/pData.class");   
+include(PCHART_PATH . "/pChart/pChart.class");   
 
 testlinkInitPage($db);
-
-// Important:
-// Elements order in chart array is CRITIC
-//
-// Good strings to send to chart rendering engine
+$resultsCfg=config_get('results');
+// $tplan_mgr = new testplan($db);
+// $tproject_mgr = new testproject($db);
+// $tplan_id=$_REQUEST['tplan_id'];
+// $tproject_id=$_SESSION['testprojectID'];
 // 
-// Passed  Failed  Blocked  Not Run   0  0  0  3  pie    |||||||||||||||||||||||||||||||||||||||||||||||   00FF00  FF0000  0000FF  000000    20  0  50  
-// Not Run  Passed  Failed  Blocked   1  1  0  1  pie    |||||||||||||||||||||||||||||||||||||||||||||||   000000  00FF00  FF0000  0000FF    20  0  50  
-//
+// $tplan_info = $tplan_mgr->get_by_id($tplan_id);
+// $tproject_info = $tproject_mgr->get_by_id($tproject_id);
+// 
+// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 
-$cdata = getChartData($db);
-$chart['chart_type'] = "pie";
-$chart['chart_data'] = $cdata->labels_values;
-$chart['chart_value'] = array ( 'color'=>"ffffff", 'alpha'=>90, 'font'=>"arial", 
-		'bold'=>true, 'size'=>10, 'position'=>"inside", 'prefix'=>"", 'suffix'=>"", 
-		'decimals'=>0, 'separator'=>"", 'as_percentage'=>true );
-$chart['legend_label'] = array ( 'layout'=>"horizontal",  
-		'font'=>"arial", 'bold'=>true, 'size'=>13, 'color'=>"ffffff" ); 
-$chart['legend_rect'] = array ( 'fill_color'=>"AAAAAA", 'margin'=>30 ); 
-$chart['series_color'] = $cdata->series_color; 
+$totals = $_SESSION['statistics']['getTotalsForPlan'];
 
-SendChartData($chart);
-
-
-
-
-/*
-  function: getChartData
-
-  args :
-  
-  returns: 
-
-*/
-function getChartData(&$dbHandler)
+unset($totals['total']);
+$values=array();
+$labels=array();
+foreach( $totals as $key => $value)
 {
-    $obj=new stdClass();   
-    $resultsCfg=config_get('results');
-   
-    $tplan_mgr = new testplan($dbHandler);
-    $tproject_mgr = new testproject($dbHandler);
-    
-    $tplan_id=$_REQUEST['tplan_id'];
-    $tproject_id=$_SESSION['testprojectID'];
-    
-    $tplan_info = $tplan_mgr->get_by_id($tplan_id);
-    $tproject_info = $tproject_mgr->get_by_id($tproject_id);
-    
-    $re = new results($dbHandler, $tplan_mgr, $tproject_info, $tplan_info,
-                      ALL_TEST_SUITES,ALL_BUILDS);
-    
-    $totals = $re->getTotalsForPlan();
-    
-    // Will exclude 'total' key
-    unset($totals['total']);
-    
-    $values=array('');
-    $labels=array('');
-    foreach( $totals as $key => $value)
-    {
-        $values[]=$value;
-        $labels[]=lang_get($resultsCfg['status_label'][$key]);
-        $obj->series_color[]=$resultsCfg['charts']['status_colour'][$key];
-    }
-    
-    $obj->labels_values=array($labels,$values);
-    
-    return $obj;
+    $values[]=$value;
+    $labels[]=lang_get($resultsCfg['status_label'][$key]);
+    $series_color[]=$resultsCfg['charts']['status_colour'][$key];
 }
+
+// Dataset definition    
+$DataSet = new pData;   
+$DataSet->AddPoint($values,"Serie1");   
+$DataSet->AddPoint($labels,"Serie8");   
+$DataSet->AddAllSeries();   
+$DataSet->SetAbsciseLabelSerie("Serie8");   
+
+// Initialise the graph
+$pChartCfg=new stdClass(); 
+$pChartCfg->XSize=400;
+$pChartCfg->YSize=400;                    
+$pChartCfg->centerX=intval($pChartCfg->XSize/2);                    
+$pChartCfg->centerY=intval($pChartCfg->YSize/2);
+$pChartCfg->radius=150;
+$pChartCfg->legendX=10;                    
+$pChartCfg->legendY=15;
+
+$graph=new stdClass();
+$graph->data=$DataSet->GetData();
+$graph->description=$DataSet->GetDataDescription();
+
+$Test = new pChart($pChartCfg->XSize,$pChartCfg->YSize);
+foreach( $series_color as $key => $hexrgb)
+{
+    $rgb=str_split($hexrgb,2);
+    $Test->setColorPalette($key,hexdec($rgb[0]),hexdec($rgb[1]),hexdec($rgb[2]));  
+}
+ 
+// Draw the pie chart   
+$Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);   
+$Test->AntialiasQuality = 0;
+$Test->drawBasicPieGraph($graph->data,$graph->description,
+                         $pChartCfg->centerX,$pChartCfg->centerY,$pChartCfg->radius,PIE_PERCENTAGE,255,255,218);   
+$Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph->description,250,250,250);                                
+$Test->Stroke();   
 ?>

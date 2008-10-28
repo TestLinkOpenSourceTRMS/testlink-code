@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/10/26 11:49:13 $  $Author: schlundus $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/10/28 19:57:01 $  $Author: schlundus $
  * @author franciscom
  *
  * 20080518 - franciscom - create() interface changes
@@ -466,17 +466,10 @@ function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modd
 */
 function count_testcases($id)
 {
-	$test_spec = $this->get_subtree($id);
- 	$hash_descr_id = $this->tree_manager->get_available_node_types();
- 	$qty = 0;
-	if(count($test_spec))
-	{
-		foreach($test_spec as $elem)
-		{
-			if($elem['node_type_id'] == $hash_descr_id['testcase'])
-				$qty++;
-		}
-	}
+	$tcIDs = array();
+	$this->get_all_testcases_id($id,$tcIDs);
+	$qty = sizeof($tcIDs);
+	
 	return $qty;
 }
 

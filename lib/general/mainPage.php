@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.47 $ $Author: franciscom $
- * @modified $Date: 2008/10/06 20:10:53 $
+ * @version $Revision: 1.48 $ $Author: schlundus $
+ * @modified $Date: 2008/10/28 19:57:01 $
  *
  * @author Martin Havlat
  * 
@@ -62,7 +62,7 @@ if(has_rights($db,"mgt_view_tc"))
     //users can modify tcs
     $smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc")); 
     
-   	$hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
+	$hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
    	$smarty->assign('hasTestCases',$hasTestCases);
 }
 

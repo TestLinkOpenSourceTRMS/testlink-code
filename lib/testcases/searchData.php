@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.33 2008/10/26 11:49:13 schlundus Exp $
+ * $Id: searchData.php,v 1.34 2008/10/28 19:57:01 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -103,7 +103,7 @@ if(count($map))
 	}
 	$smarty->assign('attachments',$attachments);
 	$tcase_mgr = new testcase($db);   
-	$viewerArgs=array('display_parent_testsuite' => 1);
+	$viewerArgs = array('display_parent_testsuite' => 1);
 	$tcase_mgr->show($smarty, $template_dir,array_keys($map),TC_ALL_VERSIONS,$viewerArgs);
 }
 else

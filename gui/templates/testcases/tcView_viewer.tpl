@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.19 2008/09/09 10:22:53 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.20 2008/10/28 19:57:01 schlundus Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -220,7 +220,7 @@ viewer for test case in test specification
 						</td>
 				 	  <td>
 					  	{foreach item=keyword_item from=$args_keywords_map}
-						    {$keyword_item|escape}
+						    {$keyword_item.keyword|escape}
 						    <br />
 	      				{foreachelse}
     	  					{$labels.none}

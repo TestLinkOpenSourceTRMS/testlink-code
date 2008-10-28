@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2008/10/21 19:46:31 $ by $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2008/10/28 19:57:01 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -47,7 +47,7 @@
 
 require_once("exec.inc.php");
 require_once("requirement_mgr.class.php");
-
+require_once("testcase.class.php");
 
 /**
  * print HTML header

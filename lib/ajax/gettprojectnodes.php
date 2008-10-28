@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.9 2008/10/25 19:25:40 schlundus Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.10 2008/10/28 19:57:01 schlundus Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -155,7 +155,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                break;
 	                
                 case 'testsuite':
-	                $tcase_qty = $tproject_mgr->count_testcases($row['id']);
+                	$tcase_qty = $tproject_mgr->count_testcases($row['id']);
 	                // $path['href'] = "javascript:ETS({$path['id']})";
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                break;

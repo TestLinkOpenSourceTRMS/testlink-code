@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.34 2008/09/20 21:02:54 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.35 2008/10/28 19:57:01 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -235,9 +235,8 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
     $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
     
-    // 20080817 - francisco.mancardi@gruppotesi.com
-    $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
-    $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
+  	$tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
+    $gui->ajaxTree->root_node->name = $argsObj->tproject_name . " ($tcase_qty)";
   
     $gui->ajaxTree->dragDrop = new stdClass();
     $gui->ajaxTree->dragDrop->enabled = $treeDragDropEnabled;

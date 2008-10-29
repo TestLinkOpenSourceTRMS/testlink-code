@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.127 $
- * @modified $Date: 2008/10/28 19:57:01 $ $Author: schlundus $
+ * @version $Revision: 1.128 $
+ * @modified $Date: 2008/10/29 19:38:37 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
@@ -2600,8 +2600,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
       break;
 
       case 'design':
+      		$cf_map = $this->$method_name($id,$parent_id,null,$tproject_id);    
+      	break;
       case 'execution':
-          $cf_map = $this->$method_name($id,$parent_id);    
+          $cf_map = $this->$method_name($id,$parent_id,null,null,null,$tproject_id);    
       break;
         
   }
@@ -2689,7 +2691,6 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,
 		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$filters,
 		                                                 $execution_id,$testplan_id,$tprojectID);
 	}
-
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)

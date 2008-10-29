@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2008/10/26 11:49:13 $ - $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2008/10/29 19:38:37 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -942,21 +942,25 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
   rev :
         20061231 - franciscom - added $parent_id
 */
-function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
-{
-  $enabled=1;
-  $tproject_mgr= new testproject($this->db);
-  
-  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-  $path_len=count($the_path);
-  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-                                                          $show_on_execution,'testsuite',$id);
-  return($cf_map);
-}
-
-
+	function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null,$tproject_id = null) 
+	{
+		if (!$tproject_id)
+			$tproject_id = $this->getTestProjectFromTestSuite($id,$parent_id);
+		$enabled = 1;
+		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+	                                                          $show_on_execution,'testsuite',$id);
+		return $cf_map;
+	}
+	
+	//@TODO: schlundus, same as in Testcase.class => refactor
+	function getTestProjectFromTestSuite($id,$parent_id)
+	{
+		$tproject_mgr = new testproject($this->db);
+		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
+		$path_len = count($the_path);
+		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+		return $tproject_id;
+	}
 /*
   function: get_linked_cfields_at_execution
             
@@ -1049,15 +1053,14 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   returns: html string
   
 */
-function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
+function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,$tproject_id = null) 
 {
   $cf_smarty='';
   $parent_id=null;
   
   if( $scope=='design' )
   {
-  	//@TODO: schlundus, can this be speed up with tprojectID?
-    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
+    $cf_map = $this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution,$tproject_id);
   }
   else 
   {
@@ -1080,7 +1083,6 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       }
     }
   }
-  
   // 20070826 - to avoid returning empty table
   if( strlen(trim($cf_smarty)) > 0 )
   {

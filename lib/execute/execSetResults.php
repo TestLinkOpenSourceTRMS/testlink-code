@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.102 $
- * @modified $Date: 2008/10/26 11:49:12 $ $Author: schlundus $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2008/10/29 19:38:36 $ $Author: schlundus $
  *
  * rev:
  *     20080827 - franciscom - BUGID 1692
@@ -188,7 +188,7 @@ if(!is_null($linked_tcversions))
 	    	}    	
 		}
 
-      $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id);
+      $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id,$args->tproject_id);
  			$gui->attachments=$other_info['attachment'];
       $gui->bugs=$other_info['bugs'];
       $gui->other_exec_cfields=$other_info['cfexec_values'];
@@ -208,7 +208,7 @@ if ($userid_array)
 }
 
 $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
-smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
+smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id,$args->tproject_id);
 
 // To silence smarty errors
 //  future must be initialized in a right way
@@ -384,7 +384,7 @@ function get_ts_name_details(&$db,$tcase_id)
   returns: 
 
 */
-function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
+function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id,$tproject_id)
 {
 
   $tsuite_info = get_ts_name_details($db,$tcase_id);
@@ -410,8 +410,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
       $tc_id = $elem['tc_id'];
       if(!isset($cached_cf[$tsuite_id]))
       {
-//		@TODO: schlundus, can this be speed up with tprojectID?
-      	$cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id);
+      	$cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id,'design',null,$tproject_id);
       }
       $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
    
@@ -436,7 +435,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
   returns: 
 
 */
-function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_execs,$tplan_id)
+function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_execs,$tplan_id,$tproject_id)
 {
   $bugInterfaceOn = config_get('bugInterfaceOn');
   $bugInterface = config_get('bugInterface');
@@ -463,9 +462,8 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
   		}
 
       // Custom fields
-      //@TODO: schlundus, can this be speed up with tprojectID?
       $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
-                                                                               $exec_id,$tplan_id);
+                                                                               $exec_id,$tplan_id,$tproject_id);
   	}
   }
   
@@ -799,8 +797,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->tpn_view_status=$argsObj->tpn_view_status;
     $gui->bn_view_status=$argsObj->bn_view_status;
     $gui->bc_view_status=$argsObj->bc_view_status;
-    
-    
+    	
+	$tprojectMgr = new testproject($dbHandler);
+	$gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+	
     // $gui->default_status=config_get('tc_status_for_ui_default');
 
     $build_info = $buildMgr->get_by_id($argsObj->build_id);
@@ -861,22 +861,19 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$treeMg
   	$tcase_id = $argsObj->id;
   	$tcversion_id = $linked_tcversions[$argsObj->id]['tcversion_id'];
   	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
-    $guiObj->tcasePrefix=$tcaseMgr->getPrefix($tcase_id) . $cfgObj->testcase_cfg->glue_character;
     
-    //@TODO: schlundus, can this be speed up with tprojectID?
-  	$guiObj->design_time_cfields[$argsObj->id] = 
-  	         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$cf_filters);
-  	
+    $guiObj->design_time_cfields[$argsObj->id] = 
+  	         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$cf_filters,null,null,$argsObj->tproject_id);
+    
     // BUGID 856: Guest user can execute test case
   	if($guiObj->grants->execute)
   	{
   	   $guiObj->execution_time_cfields[$argsObj->id] = 
-  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,null,'execution',"_{$argsObj->id}");
+  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,null,'execution',"_{$argsObj->id}",null,$argsObj->tproject_id);
   	}
-  	
-    // 20070405 - BUGID 766
+  	// 20070405 - BUGID 766
     $tc_info=$treeMgr->get_node_hierachy_info($tcase_id);
-	  $guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
+	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
 		                                                                      'nodes_hierarchy',true,1);
 		                                                                      
     return array($tcase_id,$tcversion_id);
@@ -1029,7 +1026,7 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     	   {
     				$guiObj->execution_time_cfields[$item['tc_id']] = 
     				         $tcaseMgr->html_table_of_custom_field_inputs($item['tc_id'], null,'execution',
-    				                                                      "_".$item['tc_id']);
+    				                                                      "_".$item['tc_id'],null,$argsObj->tproject_id);
          }
     		} // if( $path_elem['parent_id'] == $argsObj->id )
     		

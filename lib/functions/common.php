@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.122 $ $Author: havlat $
- * @modified $Date: 2008/10/29 12:25:11 $
+ * @version $Revision: 1.123 $ $Author: schlundus $
+ * @modified $Date: 2008/10/29 19:38:37 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -82,7 +82,22 @@ if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 	require_once(TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 
 		'domxml-php4-to-php5.php');
 }
-
+function printPageStatistics($startupMemory,$startupTime)
+{
+/*
+	global $db;
+	
+	print "<div style=\"color:red;font-weight:bold\">";	
+	print "startup: Memory: $startupMemory <br />";
+	echo $startupTime."<br />";
+	tlTimingStop();
+	$finishingTime = tlTimingCurrent();
+	$finishingMemory  = memory_get_peak_usage(true)."--".memory_get_usage(true);
+	print "finished: {$db->nQuery} SQL; Memory: $finishingMemory ";
+	print "took ".($finishingTime - $startupTime)." secs\n";
+	print "</div>";
+*/
+}
 
 // -------------------------------------------------------------------------------------
 /** @var integer global main DB connection identifier */
@@ -386,12 +401,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 
 //	checkUserRights($db); - martin: disabled as it miss appropriate code
 
-	tLog('c','ERROR');
 
 	// adjust Product and Test Plan to $_SESSION
 	if ($initProject)
 		upd_session_tplan_tproject($db,$_REQUEST);
-	tLog('d','ERROR');
 
 	// used to disable the attachment feature if there are problems with repository path
 	/** @TODO this check should not be done anytime but on login and using */

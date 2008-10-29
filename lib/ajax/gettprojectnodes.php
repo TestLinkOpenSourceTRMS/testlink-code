@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.10 2008/10/28 19:57:01 schlundus Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.11 2008/10/29 19:38:36 schlundus Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -113,17 +113,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     if( $show_tcases )
     {  
         // Get external id, used on test case nodes   
-		 /* @TODO: schlundus, i leave this here until i checked the sql below
-    	 $sql = " SELECT DISTINCT tc_external_id,NHA.parent_id " .
-               " FROM tcversions TCV,nodes_hierarchy NHA " .  
-               " WHERE NHA.id = TCV.id " .
-               " AND NHA.parent_id IN " .
-               " (SELECT NHA.id  " .
-               "  FROM nodes_hierarchy NHA, node_types NT " . 
-               "  WHERE NHA.node_type_id=NT.id " .
-               "  AND parent_id = {$parent} ".
-               "  AND NT.description = 'testcase') ";
-        */
         $sql =  "SELECT DISTINCT tc_external_id,NHA.parent_id FROM tcversions TCV JOIN nodes_hierarchy NHA  ON NHA.id = TCV.id  JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id WHERE NHB.parent_id = {$parent} AND NHA.node_type_id = 4"; 
         //file_put_contents('c:\austausch\sql_display_node1.txt', $sql); 
         $external=$dbHandler->fetchRowsIntoMap($sql,'parent_id');

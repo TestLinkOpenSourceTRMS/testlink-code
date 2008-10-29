@@ -4,14 +4,22 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.121 $ $Author: schlundus $
- * @modified $Date: 2008/10/26 11:49:13 $
- *
+ * @version $Revision: 1.122 $ $Author: havlat $
+ * @modified $Date: 2008/10/29 12:25:11 $
  * @author 	Martin Havlat, Chad Rosen
  *
+ * SCOPE:
+ * Load core functions for TestLink GUI
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
+ * 
+ * Note: this file cannot include a feature specific code for performance and 
+ * readability reason
  *
+ * -----------------------------------------------------------------------------------
+ * Revisions:
+ * 20081027 - havlatm - refactorization, description
+ * 						removed unused $g_cache_config and some functions 
  * 20080907 - franciscom - isValidISODateTime()
  * 20080518 - franciscom - translate_tc_status()
  * 20080412 - franciscom - templateConfiguration()
@@ -23,43 +31,40 @@
  * 20070705 - franciscom - init_labels()
  * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  *
- **/
+ * ----------------------------------------------------------------------------------- */
 
-$third_party_path=TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR;
-$phpxmlrpc = $third_party_path . DIRECTORY_SEPARATOR . 'phpxmlrpc' . 
-             DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
 
-require_once("object.class.php");
-require_once("metastring.class.php");
+require_once('object.class.php');
+require_once('metastring.class.php');
 
 /** library for localization */
-require_once("lang_api.php");
+require_once('lang_api.php');
 
 /** library of database wrapper */
-require_once("database.class.php");
+require_once('database.class.php');
 
 /** user right checking */
-require_once("roles.inc.php");
+require_once('roles.inc.php');
 
-
-/** Testlink Smarty class sets up the default smarty settings for testlink */
-require_once( $third_party_path . 'smarty'.  DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'Smarty.class.php');
-require_once(TL_ABS_PATH . 'lib'. DIRECTORY_SEPARATOR . 'general'. DIRECTORY_SEPARATOR . 'tlsmarty.inc.php');
+/** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
+require_once('tlsmarty.inc.php');
 
 /** logging functions */
 require_once('logging.inc.php');
+require_once('logger.class.php');
 
+/** BTS interface */
+/** @TODO martin: remove from global loading - limited using */ 
 if ($g_interface_bugs != 'NO')
 {
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
-require_once("logger.class.php");
 require_once("role.class.php");
 require_once("attachment.class.php");
 
-/** @TODO use the next include only if it is used -> must be removed*/
-// We can remove here and use PHP autoload feature
+/** @TODO use the next include only if it is used -> must be removed */
+require_once("testproject.class.php");
 require_once("user.class.php");
 require_once("keyword.class.php");
 require_once("testplan.class.php");
@@ -68,41 +73,30 @@ require_once("treeMenu.inc.php");
 require_once("cfield_mgr.class.php");
 require_once("exec_cfield_mgr.class.php");
 require_once("plan.core.inc.php");
-/** load the php4 to php5 domxml wrapper if the php5 is used and the domxml extension is not loaded **/
+
+/** load the php4 to php5 domxml wrapper if the php5 is used and 
+ * the domxml extension is not loaded 
+ **/
 if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 {
-	require_once($third_party_path . 'domxml-php4-to-php5.php');
+	require_once(TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 
+		'domxml-php4-to-php5.php');
 }
 
-             
-// Contributed code - manish
-require_once($phpxmlrpc . 'xmlrpc.inc');
-require_once($phpxmlrpc . 'xmlrpcs.inc');
-require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
 
-// -------------------------------------------------------------------------
-// @TODO understand if following variable are used or not
-//
-// code from Mantis
-// cache for config variables
-$g_cache_config = array();
-$g_cache_config_access = array();
-$g_cache_config_filled = false;
-$g_cache_can_set_in_database = '';
-
-// cache environment to speed up lookups
-$g_cache_db_table_exists = false;
-// -------------------------------------------------------------------------
-
-/** $db is a global used throughout the code when accessing the db. */
+// -------------------------------------------------------------------------------------
+/** @var integer global main DB connection identifier */
 $db = 0;
 
 
+// --------------------------------------------------------------------------------------
+/** @TODO martin: using must be discussed (leads to inpropper using of classes) ; describe */
 function __autoload($class_name) {
    require_once $class_name . '.class.php';
 }
 
 
+// --------------------------------------------------------------------------------------
 /**
 * TestLink connects to the database
 *
@@ -144,6 +138,12 @@ function doDBConnect(&$db)
  	return $result;
 }
 
+
+// --------------------------------------------------------------------------------------
+/**
+ * Set session data related to the current test project
+ * @param array $tproject_info result of DB query
+ */
 function setSessionTestProject($tproject_info)
 {
 	if ($tproject_info)
@@ -170,6 +170,12 @@ function setSessionTestProject($tproject_info)
 	}
 }
 
+
+// --------------------------------------------------------------------------------------
+/**
+ * Set session data related to the current test plan
+ * @param array $tplan_info result of DB query
+ */
 function setSessionTestPlan($tplan_info)
 {
 	if ($tplan_info)
@@ -186,25 +192,21 @@ function setSessionTestPlan($tplan_info)
 	}
 }
 
+
+// --------------------------------------------------------------------------------------
 /**
- * Function set paths
+ * Set home URL path
  * @todo solve problems after session expires
+ * 200806 - havlatm - removed rpath
  */
-// MHT 20050712 create extra function for this;
-// 200806 - havlatm - removed rpath
 function setPaths()
 {
-	tLog('test ' . getenv('SCRIPT_NAME'));
 	if (!isset($_SESSION['basehref']))
 		$_SESSION['basehref'] = get_home_url();
-
-// havlatm: unknown purpose -> disabled
-//	$my_locale = isset($_SESSION['locale']) ?  $_SESSION['locale'] : TL_DEFAULT_LOCALE;
-
-
-	return 1;
 }
 
+
+// --------------------------------------------------------------------------------------
 /** Verify if user is log in. Redirect to login page if not. */
 function checkSessionValid(&$db)
 {
@@ -230,26 +232,22 @@ function checkSessionValid(&$db)
 	}
 	else
 	{
+		/** @TODO martin: remove this stupid code >| 
+		 * a) store just data -not all object
+		 * b) do not read again and again the same data from DB
+		 * c) this function check JUST session validity
+		 **/
 		$user = new tlUser($_SESSION['userID']);
 		$user->readFromDB($db);
 		$_SESSION['currentUser'] = $user;
 	}
 }
 
-/**
-* Function adjust Product and Test Plan to $_SESSION
-*
-*/
-function doInitSelection(&$db)
-{
-	upd_session_tplan_tproject($db,$_REQUEST);
 
-	return 1;
-}
-
+// --------------------------------------------------------------------------------------
 /**
-* Function start session
-*/
+ * Function start session
+ */
 function doSessionStart()
 {
 	session_set_cookie_params(99999);
@@ -258,68 +256,9 @@ function doSessionStart()
 		session_start();
 }
 
-function printPageStatistics($startupMemory,$startupTime)
-{
-	/*
-	global $db;
 
-	print "<div style=\"color:red;font-weight:bold\">";	
-	print "startup: Memory: $startupMemory <br />";
-	echo $startupTime."<br />";
-	tlTimingStop();
-	$finishingTime = tlTimingCurrent();
-	$finishingMemory  = memory_get_peak_usage(true)."--".memory_get_usage(true);
-	print "finished: {$db->nQuery} SQL; Memory: $finishingMemory ";
-	print "took ".($finishingTime - $startupTime)." secs\n";
-	print "</div>";
-	*/
-	
-}
-
-/**
-* General page initialization procedure
-*
-* @param boolean $initProduct (optional) Set true if adjustment of Product or
-* 		Test Plan is required; default is FALSE
-* @param boolean $bDontCheckSession (optional) Set to true if no session should be
-* 		 started
-*/
-function testlinkInitPage(&$db,$initProject = FALSE, $bDontCheckSession = false)
-{
-	global $g_repositoryType;
-	global $g_attachments;
-	global $g_repositoryPath;
-
-	doSessionStart();
-	doDBConnect($db);
-
-	setPaths();
-	set_dt_formats();
-
-	if (!$bDontCheckSession)
-		checkSessionValid($db);
-
-	checkUserRights($db);
-
-	if ($initProject)
-		doInitSelection($db) or die("Could not set session variables");
-
-	// used to disable the attachment feature if there are problems with repository path
-	global $g_repositoryType;
-	global $g_attachments;
-	global $g_repositoryPath;
-	$g_attachments->disabled_msg = "";
-	if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
-	{
-	  $ret = checkForRepositoryDir($g_repositoryPath);
-	  if(!$ret['status_ok'])
-	  {
-		  $g_attachments->enabled = FALSE;
-		  $g_attachments->disabled_msg = $ret['msg'];
-	  }
-	}
-}
-
+// --------------------------------------------------------------------------------------
+/** @TODO martin: should be removed? purpose? */
 function checkUserRights(&$db)
 {
 	//bypassed as long roles and rights aren't fully defined
@@ -345,159 +284,8 @@ function checkUserRights(&$db)
 
 }
 
-/**
- * Redirect page to another one
- *
- * @param   string   URL of required page
- * @param   string   Browser location - use for redirection or refresh of another frame
- * 					 Default: 'location'
- */
-function redirect($path, $level = 'location')
-{
-	echo "<html><head></head><body>";
-	echo "<script type='text/javascript'>";
-	echo "$level.href='$path';";
-	echo "</script></body></html>";
-	exit;
-}
 
-/*
-  function:
-
-  args:
-
-  returns:
-
-*/
-function strings_stripSlashes($parameter,$bGPC = true)
-{
-	if ($bGPC && !ini_get('magic_quotes_gpc'))
-		return $parameter;
-
-	if (is_array($parameter))
-	{
-		$retParameter = null;
-		if (sizeof($parameter))
-		{
-			foreach($parameter as $key=>$value)
-			{
-				if (is_array($value))
-					$retParameter[$key] = strings_stripSlashes($value,$bGPC);
-				else
-					$retParameter[$key] = stripslashes($value);
-			}
-		}
-		return $retParameter;
-	}
-	else
-		return stripslashes($parameter);
-}
-
-function to_boolean($alt_boolean)
-{
-	$the_val = 1;
-
-	if (is_numeric($alt_boolean) && !intval($alt_boolean))
-	{
-		$the_val = 0;
-	}
-	else
-	{
-		$a_bool	= array ("on" => 1, "y" => 1, "off" => 0, "n" => 0);
-		$alt_boolean = strtolower($alt_boolean);
-		if(isset($a_bool[$alt_boolean]))
-		{
-			$the_val = $a_bool[$alt_boolean];
-		}
-	}
-
-	return $the_val;
-}
-
-
-/*
--------------------------------------------------------------------------------------------
-20050708 - fm
-Modified to cope with situation where you need to assign a Smarty Template variable instead
-of generate output.
-Now you can use this function in both situatuons.
-
-if the key 'var' is found in the associative array instead of return a value,
-this value is assigned to $params['var`]
-
-usage: Important: if registered as localize_date()
-       {localize_date d='the date to localize'}
-------------------------------------------------------------------------------------------
-*/
-function localize_date_smarty($params, &$smarty)
-{
-	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
-}
-
-/*
-  function:
-
-  args:
-
-  returns:
-
-*/
-function localize_timestamp_smarty($params, &$smarty)
-{
-	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
-}
-
-/*
-  function:
-
-  args :
-         $params: used only if you call this from an smarty template
-                  or a wrapper in an smarty function.
-
-         $smarty: when not used in an smarty template, pass NULL.
-         $what: give info about what kind of value is contained in value.
-                possible values: timestamp_format
-                                 date_format
-         $value: must be a date or time stamp in ISO format
-
-  returns:
-*/
-function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
-{
-  // to supress E_STRICT messages
-  setlocale(LC_ALL, TL_DEFAULT_LOCALE);
-
-	$format = config_get($what);
-	if (!is_numeric($value))
-		$value = strtotime($value);
-	$retVal = strftime($format, $value);
-	if(isset($params['var']))
-		$smarty->assign($params['var'],$retVal);
-	return $retVal;
-}
-
-
-/**
- *
- * @param string $str2check
- * @param string  $ereg_forbidden_chars: regular expression
- *
- * @return  1: check ok, 0:check KO
- */
-function check_string($str2check, $ereg_forbidden_chars)
-{
-	$status_ok = 1;
-
-	if( $ereg_forbidden_chars != '' && !is_null($ereg_forbidden_chars))
-	{
-		if (eregi($ereg_forbidden_chars, $str2check))
-		{
-			$status_ok=0;
-		}
-	}
-	return $status_ok;
-}
-
+// --------------------------------------------------------------------------------------
 // If we receive TestPlan ID in the _SESSION
 //    then do some checks and if everything OK
 //    Update this value at Session Level, to set it available in other
@@ -573,13 +361,217 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 }
 
 
+// --------------------------------------------------------------------------------------
+/**
+* General page initialization procedure
+* - init session
+* - init database
+* - check rights
+* 
+* @param integer $db DB connection identifier
+* @param boolean $initProduct (optional) Set true if adjustment of Product or
+* 		Test Plan is required; default is FALSE
+* @param boolean $bDontCheckSession (optional) Set to true if no session should be
+* 		 started
+*/
+function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false)
+{
+	doSessionStart();
+	setPaths();
+	set_dt_formats();
+
+	doDBConnect($db);
+	if (!$bDontCheckSession)
+		checkSessionValid($db);
+
+//	checkUserRights($db); - martin: disabled as it miss appropriate code
+
+	tLog('c','ERROR');
+
+	// adjust Product and Test Plan to $_SESSION
+	if ($initProject)
+		upd_session_tplan_tproject($db,$_REQUEST);
+	tLog('d','ERROR');
+
+	// used to disable the attachment feature if there are problems with repository path
+	/** @TODO this check should not be done anytime but on login and using */
+	global $g_repositoryType;
+	global $g_attachments;
+	global $g_repositoryPath;
+	$g_attachments->disabled_msg = "";
+	if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
+	{
+	  $ret = checkForRepositoryDir($g_repositoryPath);
+	  if(!$ret['status_ok'])
+	  {
+		  $g_attachments->enabled = FALSE;
+		  $g_attachments->disabled_msg = $ret['msg'];
+	  }
+	}
+}
+
+
+// --------------------------------------------------------------------------------------
+/**
+ * Redirect page to another one
+ *
+ * @param   string   URL of required page
+ * @param   string   Browser location - use for redirection or refresh of another frame
+ * 					 Default: 'location'
+ */
+function redirect($path, $level = 'location')
+{
+	echo "<html><head></head><body>";
+	echo "<script type='text/javascript'>";
+	echo "$level.href='$path';";
+	echo "</script></body></html>";
+	exit;
+}
+
+
+// --------------------------------------------------------------------------------------
+/**
+ * Security parser for input strings
+ * @param string $parameter
+ * @return string cleaned parameter
+ */
+function strings_stripSlashes($parameter,$bGPC = true)
+{
+	if ($bGPC && !ini_get('magic_quotes_gpc'))
+		return $parameter;
+
+	if (is_array($parameter))
+	{
+		$retParameter = null;
+		if (sizeof($parameter))
+		{
+			foreach($parameter as $key=>$value)
+			{
+				if (is_array($value))
+					$retParameter[$key] = strings_stripSlashes($value,$bGPC);
+				else
+					$retParameter[$key] = stripslashes($value);
+			}
+		}
+		return $retParameter;
+	}
+	else
+		return stripslashes($parameter);
+}
+
+
+// --------------------------------------------------------------------------------------
+function to_boolean($alt_boolean)
+{
+	$the_val = 1;
+
+	if (is_numeric($alt_boolean) && !intval($alt_boolean))
+	{
+		$the_val = 0;
+	}
+	else
+	{
+		$a_bool	= array ("on" => 1, "y" => 1, "off" => 0, "n" => 0);
+		$alt_boolean = strtolower($alt_boolean);
+		if(isset($a_bool[$alt_boolean]))
+		{
+			$the_val = $a_bool[$alt_boolean];
+		}
+	}
+
+	return $the_val;
+}
+
+
+// --------------------------------------------------------------------------------------
+/*
+20050708 - fm
+Modified to cope with situation where you need to assign a Smarty Template variable instead
+of generate output.
+Now you can use this function in both situatuons.
+
+if the key 'var' is found in the associative array instead of return a value,
+this value is assigned to $params['var`]
+
+usage: Important: if registered as localize_date()
+       {localize_date d='the date to localize'}
+------------------------------------------------------------------------------------------
+*/
+function localize_date_smarty($params, &$smarty)
+{
+	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
+}
+
+
+// --------------------------------------------------------------------------------------
 /*
   function:
+  args:
+  returns:
+*/
+function localize_timestamp_smarty($params, &$smarty)
+{
+	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
+}
 
+// --------------------------------------------------------------------------------------
+/*
+  function:
   args :
+         $params: used only if you call this from an smarty template
+                  or a wrapper in an smarty function.
+
+         $smarty: when not used in an smarty template, pass NULL.
+         $what: give info about what kind of value is contained in value.
+                possible values: timestamp_format
+                                 date_format
+         $value: must be a date or time stamp in ISO format
 
   returns:
+*/
+function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
+{
+	// to supress E_STRICT messages
+	setlocale(LC_ALL, TL_DEFAULT_LOCALE);
 
+	$format = config_get($what);
+	if (!is_numeric($value))
+		$value = strtotime($value);
+	$retVal = strftime($format, $value);
+	if(isset($params['var']))
+		$smarty->assign($params['var'],$retVal);
+	return $retVal;
+}
+
+
+// --------------------------------------------------------------------------------------
+/**
+ *
+ * @param string $str2check
+ * @param string  $ereg_forbidden_chars: regular expression
+ *
+ * @return  1: check ok, 0:check KO
+ */
+function check_string($str2check, $ereg_forbidden_chars)
+{
+	$status_ok = 1;
+
+	if( $ereg_forbidden_chars != '' && !is_null($ereg_forbidden_chars))
+	{
+		if (eregi($ereg_forbidden_chars, $str2check))
+		{
+			$status_ok=0;
+		}
+	}
+	return $status_ok;
+}
+
+
+// --------------------------------------------------------------------------------------
+/*
+  function:
+  args :
+  returns:
 */
 function set_dt_formats()
 {
@@ -602,16 +594,14 @@ function set_dt_formats()
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: config_get
-
   args :
-
   returns:
   
   rev:
       20080326 - franciscom - removed eval
-
 */
 function config_get($config_id)
 {
@@ -635,18 +625,12 @@ function config_get($config_id)
 }
 
 
-# --------------------
-# Return true if the parameter is an empty string or a string
-#  containing only whitespace, false otherwise
-# --------------------------------------------------------
-# This piece of softare is based on work belonging to:
-# --------------------------------------------------------
-#
-# Mantis - a php based bugtracking system
-# Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
-# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
-# This program is distributed under the terms and conditions of the GPL
-# See the README and LICENSE files for details
+// --------------------------------------------------------------------------------------
+/**  
+ * Return true if the parameter is an empty string or a string
+ * containing only whitespace, false otherwise
+ * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
+ */ 
 function is_blank( $p_var ) {
 	$p_var = trim( $p_var );
 	$str_len = strlen( $p_var );
@@ -657,6 +641,7 @@ function is_blank( $p_var ) {
 }
 
 
+// --------------------------------------------------------------------------------------
 /**
  * Builds the header needed to make the content available for downloading
  *
@@ -678,17 +663,16 @@ function downloadContentsToFile($content,$fileName)
 }
 
 
+// --------------------------------------------------------------------------------------
+/** @TODO martin: move the next two functions to appropriate class + describe */
 /*
   function: translate_tc_status
-
   args :
-
   returns:
-
 */
 function translate_tc_status($status_code)
 {
-  $resultsCfg=config_get('results'); 
+	$resultsCfg = config_get('results'); 
 	$verbose = lang_get('test_status_not_run');
 	if( $status_code != '')
 	{
@@ -698,14 +682,10 @@ function translate_tc_status($status_code)
 	return $verbose;
 }
 
-
 /*
   function: translate_tc_status_smarty
-
   args :
-
   returns:
-
 */
 function translate_tc_status_smarty($params, &$smarty)
 {
@@ -721,13 +701,12 @@ function translate_tc_status_smarty($params, &$smarty)
 }
 
 
+// --------------------------------------------------------------------------------------
+/** @TODO describe */
 /*
   function:
-
   args :
-
   returns:
-
 */
 function my_array_intersect_keys($array1,$array2)
 {
@@ -742,13 +721,12 @@ function my_array_intersect_keys($array1,$array2)
 	return($aresult);
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
-  function:
-            for performance timing
-  args :
-
+  function for performance timing
+  @TODO martin: move to logger?
   returns:
-
 */
 function microtime_float()
 {
@@ -757,16 +735,15 @@ function microtime_float()
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: init_labels
 
   args : map key=a code
              value: string_to_translate, that can be found in strings.txt
 
-
   returns: map key=a code
                value: lang_get(string_to_translate)
-
 */
 function init_labels($map_code_label)
 {
@@ -778,8 +755,11 @@ function init_labels($map_code_label)
 }
 
 
-// From Mantis
-// Get the named php ini variable but return it as a bool
+// --------------------------------------------------------------------------------------
+/**
+ * Get the named php ini variable but return it as a bool
+ * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
+ */
 function ini_get_bool( $p_name ) {
 	$result = ini_get( $p_name );
 
@@ -806,6 +786,16 @@ function ini_get_bool( $p_name ) {
 }
 
 
+/** @TODO martin: this is specific library and cannot be loaded via common.php
+ * USE EXTRA LIBRARY             
+// Contributed code - manish
+$phpxmlrpc = TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'phpxmlrpc' . 
+             DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
+require_once($phpxmlrpc . 'xmlrpc.inc');
+require_once($phpxmlrpc . 'xmlrpcs.inc');
+require_once($phpxmlrpc . 'xmlrpc_wrappers.inc');
+*/
+
 
 /**
 * Initiate the execution of a testcase through XML Server RPCs.
@@ -824,6 +814,7 @@ function ini_get_bool( $p_name ) {
 *                 'notes' -> Notes text
 *                 'message' -> Message from server
 */
+/*
 function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
 
 	//Fetching required params from the entire node hierarchy
@@ -879,8 +870,10 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
 
 	return $ret;
 } // function end
+*/
 
 
+// --------------------------------------------------------------------------------------
 // MHT: I'm not able find a simple SQL (subquery is not supported
 // in MySQL 4.0.x); probably temporary table should be used instead of the next
 function array_diff_byId ($arrAll, $arrPart)
@@ -918,6 +911,7 @@ function array_diff_byId ($arrAll, $arrPart)
 }
 
 
+// --------------------------------------------------------------------------------------
 /**
  * trim string and limit to N chars
  * @param string
@@ -926,7 +920,6 @@ function array_diff_byId ($arrAll, $arrPart)
  * @return string trimmed string
  *
  * @author Francisco Mancardi - 20050905 - refactoring
- *
  */
 function trim_and_limit($s, $len=100)
 {
@@ -937,6 +930,7 @@ function trim_and_limit($s, $len=100)
 	return($s);
 }
 
+// --------------------------------------------------------------------------------------
 //
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
@@ -958,13 +952,14 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
 
   return $nodes_id;
 }
-/*
-*	Checks $_FILES for errors while uploading
-*
-*	 @param array $fInfo an array used by uploading files ($_FILES)
-*
-*	returns string containing  an error message (if any)
-*/
+
+
+// --------------------------------------------------------------------------------------
+/**
+ * Checks $_FILES for errors while uploading
+ * @param array $fInfo an array used by uploading files ($_FILES)
+ * @return string containing an error message (if any)
+ */
 function getFileUploadErrorMessage($fInfo)
 {
 	$msg = null;
@@ -987,17 +982,16 @@ function getFileUploadErrorMessage($fInfo)
 	return $msg;
 }
 
-/*
-  function: show_instructions
 
-  args :
-
-  returns:
-
-*/
-function show_instructions($key,$refreshTree=0)
+// --------------------------------------------------------------------------------------
+/**
+ * @abstract redirect to a page with static html defined in locale/en_GB/texts.php
+ * @param string $key keyword for finding exact html text in definition array
+ * @return N/A 
+ */
+function show_instructions($key, $refreshTree=0)
 {
-    $myURL=$_SESSION['basehref'] . "lib/general/staticPage.php?key={$key}";
+    $myURL = $_SESSION['basehref'] . "lib/general/staticPage.php?key={$key}";
     
     if( $refreshTree )
     {
@@ -1006,13 +1000,12 @@ function show_instructions($key,$refreshTree=0)
   	redirect($myURL);
 }
 
+
+// --------------------------------------------------------------------------------------
 /*
   function: templateConfiguration
-
   args :
-
   returns:
-
 */
 function templateConfiguration()
 {
@@ -1027,6 +1020,7 @@ function templateConfiguration()
 }
 
 
+// --------------------------------------------------------------------------------------
 /*
   function: isValidISODateTime
             check if an string is a valid ISO date/time
@@ -1036,8 +1030,7 @@ function templateConfiguration()
 
   returns: true / false
   
-  rev: 20080907 - franciscom - 
-       Code taked form PHP manual
+  rev: 20080907 - franciscom - Code taked form PHP manual
 */
 function isValidISODateTime($ISODateTime)
 {

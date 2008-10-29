@@ -4,13 +4,16 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/08/27 06:25:53 $ $Author: franciscom $
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2008/10/29 12:25:11 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
+ * SCOPE:
  * TLSmarty class implementation used in all templates
  *
+ * Revisions:
+ * 20081027 - havlatm - moved to include Smarty library
  * 20080424 - havlatm - added $tlCfg
  * 20080303 - franciscom - changed default value for feedback_type
  * 20080109 - franciscom - added some *_img for URL to common used images.
@@ -26,7 +29,12 @@
  * 20060602 - franciscom - added new global var $g_attachments
  * 20060528 - franciscom - added new global var $g_tc_status_for_ui
  *
-**/
+ * ----------------------------------------------------------------------------------- */
+
+require_once( TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
+	DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'Smarty.class.php');
+
+
 class TLSmarty extends Smarty
 {
     function TLSmarty()

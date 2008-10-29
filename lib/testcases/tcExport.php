@@ -5,22 +5,23 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/20 09:35:05 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/10/29 12:26:31 $ by $Author: havlat $
  *
- * test case and test suites export
- *
- * 20070113 - franciscom - added logic to create message when there is 
+ * Scope: test case and test suites export
+ * 
+ * Revisions:
+ * 20081027 - martin - cleanup
+ * 20070113 - franciscom - added logic to create messagexportDataToXMLexportDataToXMLe when there is 
  *                         nothing to export.
  *
  * 20061118 - franciscom - using different file name, depending the
  *                         type of exported elements.
  *
-**/
+ * ----------------------------------------------------------------------------------- */
+/** @TODO martin: csv export is not available now - get it back */
+
 require_once("../../config.inc.php");
-require_once("../functions/csv.inc.php");
-require_once("../functions/xml.inc.php");
-require_once("../keywords/keywords.inc.php");
 require_once("../functions/common.php");
 testlinkInitPage($db);
 
@@ -45,20 +46,19 @@ $do_it = 1;
 $nothing_todo_msg = '';
 $check_children = 0;
 
+
 if($bRecursive)
 {
 	// Exporting situations:
 	// All test suites in test project
 	// One test suite 
 	$page_title=lang_get('title_tsuite_export');
-	$container_description=lang_get('test_suite');
 
 	$fileName = 'testsuites.xml';
 	if($node_id == $testproject_id)
 	{
-		$container_description=lang_get('testproject');
 		$page_title=lang_get('title_tsuite_export_all');
-	  $fileName = 'all_testsuites.xml';
+		$fileName = 'all_testsuites.xml';
 		$check_children=1; 
 		$nothing_todo_msg=lang_get('no_testsuites_to_export');
 	}
@@ -73,13 +73,11 @@ else
 	
 	if($exporting_just_one_tc)
 	{
-		$container_description = lang_get('test_case');
 		$node_id = $tcase_id;
 		$page_title = lang_get('title_tc_export');
 	}
 	else
 	{
-		$container_description = lang_get('test_suite');
 		$page_title = lang_get('title_tc_export_all');
 		$check_children = 1;
 		$nothing_todo_msg = lang_get('no_testcases_to_export');
@@ -172,7 +170,6 @@ $smarty->assign('tcID', $tcase_id);
 $smarty->assign('bRecursive',$bRecursive ? 1 : 0);
 $smarty->assign('tcVersionID', $tcversion_id);
 $smarty->assign('containerID', $container_id);
-$smarty->assign('container_description', $container_description);
 $smarty->assign('exportTypes',$export_file_types);
 $smarty->display($template_dir . $default_template);
 ?>

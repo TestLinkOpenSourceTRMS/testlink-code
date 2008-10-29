@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.10 2008/10/28 09:54:49 franciscom Exp $ 
+* $Id: ownerBarChart.php,v 1.11 2008/10/29 07:58:25 franciscom Exp $ 
 *
 * @author	Kevin Levy
 *
@@ -31,16 +31,10 @@ createChart($db);
 */
 function createChart(&$dbHandler)
 {
-    // $tplan_mgr = new testplan($dbHandler);
-    // $tproject_mgr = new testproject($dbHandler);
-    // 
-    // $tplan_id=$_REQUEST['tplan_id'];
-    // $tproject_id=$_SESSION['testprojectID'];
-    // 
-    // $tplan_info = $tplan_mgr->get_by_id($tplan_id);
-    // $tproject_info = $tproject_mgr->get_by_id($tproject_id);
-    // $re = new results($dbHandler, $tplan_mgr, $tproject_info, $tplan_info,
-    //                   ALL_TEST_SUITES,ALL_BUILDS);
+    $pChartCfg=new stdClass(); 
+    $pChartCfg->XSize=700;
+    $pChartCfg->YSize=275;
+    $pChartCfg->legendXAngle=75;                    
     
     $testerResults = $_SESSION['statistics']['getAggregateOwnerResults']; //$re->getAggregateOwnerResults();
     
@@ -55,7 +49,6 @@ function createChart(&$dbHandler)
             }    
         }  
     }
-    
     $obj = new stdClass();
     $obj->xAxis=new stdClass();
     $obj->xAxis->values = $testerNames;
@@ -85,10 +78,14 @@ function createChart(&$dbHandler)
     $DataSet->AddAllSeries();
     $DataSet->RemoveSerie($obj->xAxis->serieName);
     $DataSet->SetAbsciseLabelSerie($obj->xAxis->serieName);
+    
+    $graph=new stdClass();
+    $graph->data=$DataSet->GetData();
+    $graph->description=$DataSet->GetDataDescription();
 
            
     // Initialise the graph
-    $Test = new pChart(700,230);
+    $Test = new pChart($pChartCfg->XSize,$pChartCfg->YSize);
     foreach( $obj->series_color as $key => $hexrgb)
     {
         $rgb=str_split($hexrgb,2);
@@ -98,18 +95,19 @@ function createChart(&$dbHandler)
     $Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);
     $Test->setGraphArea(120,20,675,190);
     $Test->drawGraphArea(213,217,221,FALSE);
-    $Test->drawScale($DataSet->GetData(),$DataSet->GetDataDescription(),SCALE_ADDALL,213,217,221,TRUE,0,2,TRUE);
+    $Test->drawScale($graph->data,$graph->description,SCALE_ADDALL,
+                     213,217,221,TRUE,$pChartCfg->legendXAngle,2,TRUE);
   
     // Draw the bar chart
-    $Test->drawStackedBarGraph($DataSet->GetData(),$DataSet->GetDataDescription(),70);
+    $Test->drawStackedBarGraph($graph->data,$graph->description,70);
     
     // Draw the title
     $Title = lang_get('results_by_tester');
-    $Test->drawTextBox(0,0,50,230,$Title,90,255,255,255,ALIGN_BOTTOM_CENTER,TRUE,0,0,0,30);
+    $Test->drawTextBox(0,0,50,$pChartCfg->YSize,$Title,90,255,255,255,ALIGN_BOTTOM_CENTER,TRUE,0,0,0,30);
     
     // Draw the legend
     $Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);
-    $Test->drawLegend(610,10,$DataSet->GetDataDescription(),236,238,240,52,58,82);
+    $Test->drawLegend(610,10,$graph->description,236,238,240,52,58,82);
     
     // Render the picture
     $Test->addBorder(2);

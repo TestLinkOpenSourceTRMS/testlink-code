@@ -1,13 +1,14 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: overallPieChart.php,v 1.7 2008/10/28 09:54:49 franciscom Exp $ 
+ * $Id: overallPieChart.php,v 1.8 2008/10/29 07:58:25 franciscom Exp $ 
  *
  * @author	Kevin Levy
  *
  * - PHP autoload feature is used to load classes on demand
  * 
  * Revisions:
+ *  20081028 - franciscom - refactored to use pChart
  *	20080812 - havlatm - simplyfied, polite
  */
 require_once('../../config.inc.php');
@@ -18,16 +19,6 @@ include(PCHART_PATH . "/pChart/pChart.class");
 
 testlinkInitPage($db);
 $resultsCfg=config_get('results');
-// $tplan_mgr = new testplan($db);
-// $tproject_mgr = new testproject($db);
-// $tplan_id=$_REQUEST['tplan_id'];
-// $tproject_id=$_SESSION['testprojectID'];
-// 
-// $tplan_info = $tplan_mgr->get_by_id($tplan_id);
-// $tproject_info = $tproject_mgr->get_by_id($tproject_id);
-// 
-// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
-
 $totals = $_SESSION['statistics']['getTotalsForPlan'];
 
 unset($totals['total']);

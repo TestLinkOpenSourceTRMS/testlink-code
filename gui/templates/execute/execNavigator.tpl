@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.16 2008/10/07 16:46:22 havlat Exp $ *}
+{* $Id: execNavigator.tpl,v 1.17 2008/10/29 12:27:57 havlat Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -67,7 +67,11 @@ rev :
 		onclick="show_hide('tplan_settings', 'tpn_view_settings',
 	              document.getElementById('tplan_settings').style.display=='none')">
 	</div>
-	<span style="padding:2px;">{$labels.caption_nav_filter_settings} {include file="inc_help.tpl" helptopic="hlp_executeFilter"}</span>
+	<span style="padding:2px;"
+			onclick="show_hide('tplan_settings', 'tpn_view_settings',
+	              document.getElementById('tplan_settings').style.display=='none')">
+	{$labels.caption_nav_filter_settings}</span>
+	<span>{include file="inc_help.tpl" helptopic="hlp_executeFilter"}</span>
 </div>
 
 <div id="tplan_settings" class="exec_additional_info" style="margin: 3px;">

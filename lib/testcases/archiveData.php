@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.38 2008/05/07 21:01:24 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.39 2008/10/29 12:26:56 havlat Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -17,7 +17,7 @@
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once("attachments.inc.php");
+require_once('testsuite.class.php');
 testlinkInitPage($db);
 
 $template_dir = 'testcases/';

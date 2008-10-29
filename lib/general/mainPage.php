@@ -1,12 +1,11 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- *
- * @version $Revision: 1.48 $ $Author: schlundus $
- * @modified $Date: 2008/10/28 19:57:01 $
- *
+ * @version $Revision: 1.49 $ $Author: havlat $
+ * @modified $Date: 2008/10/29 12:14:59 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -16,7 +15,7 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- * rev :
+ * Revisions :
  *       20080905 - franciscom - BUGID 1698
  *       20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
  *       20080120 - franciscom - added logic to enable/disable test case search link
@@ -24,15 +23,15 @@
  *       20070509 - franciscom - improving test plan availabilty checking
  *       20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
  *
-**/
+ **/
 
 require_once('../../config.inc.php');
 require_once('common.php');
 
 // BUGID 1698
-if( function_exists('memory_get_usage') && function_exists('memory_get_peak_usage') )
+if( function_exists('memory_get_usage') )
 {
-    tlog("mainPage.php: Memory after common> Usage: ".memory_get_usage()." | Peak: ".memory_get_peak_usage() , 'DEBUG');
+    tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
 }
 
 testlinkInitPage($db,TRUE);
@@ -48,7 +47,8 @@ $userID = $currentUser->dbID;
 /** redirect admin to create testproject if not found */
 $can_manage_tprojects = has_rights($db,'mgt_modify_product');
 if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
-{ 
+{
+	tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
 	redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
 }
 // ----------------------------------------------------------------------

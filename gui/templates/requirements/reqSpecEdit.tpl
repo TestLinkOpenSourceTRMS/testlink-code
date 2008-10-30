@@ -1,15 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.13 2008/09/21 19:35:47 schlundus Exp $
+$Id: reqSpecEdit.tpl,v 1.14 2008/10/30 11:24:27 havlat Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
      20071120 - franciscom - added ext js alert message box
-
 *}
+{* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s='warning,warning_empty_req_spec_title,title,scope,req_total'}
+          s='warning,warning_empty_req_spec_title,title,scope,req_total,cancel'}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -29,43 +31,41 @@ function validateForm(f)
   }
   return true;
 }
-</script>
 {/literal}
+</script>
 </head>
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-
+{* ------------------------------------------------------------------------- *}
 <body>
 <h1 class="title">
 	{if $gui->action_descr != ''}{$gui->action_descr|escape}{/if} {$gui->main_descr|escape}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
-{if $gui->grants->req_mgmt == "yes"}
-  <div class="workBack">
-    
-    {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
-    <form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
+{if $gui->grants->req_mgmt == "yes"}
+<div class="workBack">
+<form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
+
     <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 
-   <div class="labelHolder"><label for="req_spec_title">{$labels.title}</label>
+	<div class="labelHolder"><label for="req_spec_title">{$labels.title}</label>
    		{if $mgt_view_events eq "yes" and $gui->req_spec_id}
 			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
 			     onclick="showEventHistoryFor('{$gui->req_spec_id}','req_specs')" 
 			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 		{/if}
-   </div>
-   <div>
+   	</div>
+   	<div>
     <input type="text" id="req_spec_title" name="req_spec_title"
            size="{#REQ_SPEC_TITLE_SIZE#}"
     		   maxlength="{#REQ_SPEC_TITLE_MAXLEN#}"
            value="{$gui->req_spec_title|escape}" />
   				{include file="error_icon.tpl" field="req_spec_title"}
-   </div>
-   <br />
-	 <div class="labelHolder">
+   	</div>
+   	<br />
+	<div class="labelHolder">
 		<label for="scope">{$labels.scope}</label>
 		</div>
 		<div>
@@ -73,27 +73,28 @@ function validateForm(f)
    </div>
    <br />
    <div class="labelHolder"><label for="countReq">{$labels.req_total}</label>
-	 <input type="text" name="countReq"
-		      size="{#REQ_COUNTER_SIZE#}" maxlength="{#REQ_COUNTER_MAXLEN#}"
-			    value="{$gui->total_req_counter}" />
-	 </div>
-     <br />
-   {* Custom fields *}
-   {if $gui->cfields neq ""}
-     <div class="custom_field_container">
-     {$gui->cfields}
-     </div>
-     <br />
-   {/if}
+		<input type="text" name="countReq" size="{#REQ_COUNTER_SIZE#}" 
+		      maxlength="{#REQ_COUNTER_MAXLEN#}" value="{$gui->total_req_counter}" />
+	</div>
+    <br />
+	{* Custom fields *}
+	{if $gui->cfields neq ""}
+	<div class="custom_field_container">
+    	{$gui->cfields}
+    </div>
+    <br />
+	{/if}
 
-<div class="groupBtn">
-	<input type="hidden" name="doAction" value="" />
-	<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
+	<div class="groupBtn">
+		<input type="hidden" name="doAction" value="" />
+		<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
 	       onclick="doAction.value='{$gui->operation}'" />
-</div>
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+			onclick="javascript: history.back();"/>
+	</div>
 
  </form>
- </div>
+</div>
 {/if}
 
 

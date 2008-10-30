@@ -1,18 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.14 2008/10/10 19:35:12 schlundus Exp $
+$Id: reqEdit.tpl,v 1.15 2008/10/30 11:24:27 havlat Exp $
 Purpose: smarty template - create / edit a req  
 *}
+{* ------------------------------------------------------------------------- *}
 
+{lang_get var='labels' s='btn_save,cancel'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 var alert_box_title = "{lang_get s='warning'}";
 var warning_empty_req_docid = "{lang_get s='warning_empty_reqdoc_id'}";
 var warning_empty_req_title = "{lang_get s='warning_empty_req_title'}";
@@ -34,34 +34,27 @@ function validateForm(f)
   }
   return true;
 }
-</script>
-{/literal}
 
-
-{literal}
-<script type="text/javascript">
 window.onload=function()
 {
  focusInputField('reqDocId');
 }
-</script>
 {/literal}
+</script>
 </head>
-
-
+{* ------------------------------------------------------------------------- *}
 <body>
-<h1 class="title">{$gui->main_descr|escape}</h1>
-
-<div class="workBack">
-{if $gui->action_descr != ''}
-    <h1 class="title">{$gui->action_descr|escape}</h1>
-    <br />
- {/if}
+<h1 class="title">{$gui->main_descr|escape}
+	{if $gui->action_descr != ''}
+	{$tlCfg->gui_title_separator_2}{$gui->action_descr|escape}
+	{/if}
+</h1>
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
-
+<div class="workBack">
 <form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this);">
+
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 
@@ -104,11 +97,12 @@ window.onload=function()
 
 	<div class="groupBtn">
 		<input type="hidden" name="doAction" value="" />
-		<input type="submit" name="create_req" value="{$gui->submit_button_label}"
+		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="doAction.value='{$gui->operation}'"/>
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+			onclick="javascript: history.back();"/>
 	</div>
 </form>
-
 </div>
 
 </body>

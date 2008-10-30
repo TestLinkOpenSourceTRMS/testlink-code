@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.9 2008/05/06 06:26:08 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.10 2008/10/30 11:24:27 havlat Exp $
 
 rev: 20080415 - franciscom - refactoring
 *}
+{* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels" s="btn_reorder_req_spec,btn_new_req_spec"}
 {assign var="req_module" value='lib/requirements/'}
@@ -15,10 +16,11 @@ rev: 20080415 - franciscom - refactoring
 
 {include file="inc_head.tpl"}
 
+{* ------------------------------------------------------------------------- *}
 <body>
-<div class="workBack">
 <h1 class="title">{$gui->main_descr|escape}</h1>
-	<div>
+<div class="workBack">
+	<div class="groupBtn">
 		<form method="post">
 			<input type="button" id="new_req_spec" name="new_req_spec"
 			       value="{$labels.btn_new_req_spec}"
@@ -29,10 +31,11 @@ rev: 20080415 - franciscom - refactoring
 		         onclick="location='{$req_spec_reorder_url}{$gui->tproject_id}'" />
 		</form>
 	</div>
-{* {/if} *}
 </div>
+
 {if $gui->refresh_tree == "yes"}
    {include file="inc_refreshTree.tpl"}
 {/if}
+
 </body>
 </html>

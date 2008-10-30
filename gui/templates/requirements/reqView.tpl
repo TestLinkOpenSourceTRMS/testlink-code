@@ -1,14 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.15 2008/09/22 19:14:08 schlundus Exp $
+$Id: reqView.tpl,v 1.16 2008/10/30 11:24:27 havlat Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
 
 *}
+{* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s="req,req_doc_id,scope,status,coverage,req_msg_notestcase,
+          s="req,scope,status,coverage,req_msg_notestcase,
              title_created,by,title_last_mod,btn_edit,btn_delete"}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -26,22 +27,58 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 </script>
 </head>
 
+{* ------------------------------------------------------------------------- *}
 <body {$body_onload}>
 
-<div class="workBack">
-{if $gui->showReqSpecTitle}
-<h1 class="title">{$gui->parent_descr|escape}</h1>
-{/if}
+<h1 class="title">
+	{if $gui->showReqSpecTitle}{$gui->parent_descr|escape}{$tlCfg->gui_title_separator_2}{/if}
+	{$gui->main_descr|escape}
+</h1>
 
-<h1 class="title">{$gui->main_descr|escape}</h1>
+<div class="workBack">
+
+	{if $gui->grants->req_mgmt == "yes"}
+	<div class="groupBtn">
+    <form id="req" name="req" action="lib/requirements/reqEdit.php" method="post">
+    	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
+    	<input type="hidden" name="doAction" value="" />
+    	
+    	<input type="submit" name="edit_req" 
+    	       value="{$labels.btn_edit}" 
+    	       onclick="doAction.value='edit'"/>
+    	
+    	
+    	<input type="button" name="delete_req" value="{$labels.btn_delete}"
+    	       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'|escape}',
+ 					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
+    </form>
+	</div>
+   	{/if}
+
 
 <table class="simple" style="width: 90%">
 	<tr>
-		<th>{$gui->main_descr|escape}</th>
+		<th>{$gui->req.req_doc_id|escape}{$tlCfg->gui_title_separator_1}{$gui->main_descr|escape}</th>
 	</tr>
+
   <tr>
-  <td>{$labels.req_doc_id}{$smarty.const.TITLE_SEP}{$gui->req.req_doc_id|escape}</td>
+  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$gui->reqStatus[$gui->req.status]}</td>
   </tr>
+
+  <tr class="time_stamp_creation">
+  <td colspan="2">
+      {$labels.title_created}&nbsp;{localize_timestamp ts=$gui->req.creation_ts }&nbsp;
+      		{$labels.by}&nbsp;{$gui->req.author|escape}
+  </td>
+  </tr>
+  {if $gui->req.modifier != ""}
+    <tr class="time_stamp_creation">
+    <td colspan="2">
+    {$labels.title_last_mod}&nbsp;{localize_timestamp ts=$gui->req.modification_ts}
+		  &nbsp;{$labels.by}&nbsp;{$gui->req.modifier|escape}
+    </td>
+    </tr>
+  {/if}
 
   <tr>
 		<td>
@@ -49,9 +86,6 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 			{$gui->req.scope}
 			</fieldset>
 		</td>
-  </tr>
-  <tr>
-  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$gui->reqStatus[$gui->req.status]}</td>
   </tr>
   <tr>
 		<td>
@@ -75,20 +109,6 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
   	</td>
 	</tr>
 
-  <tr class="time_stamp_creation">
-  <td colspan="2">
-      {$labels.title_created}&nbsp;{localize_timestamp ts=$gui->req.creation_ts }&nbsp;
-      		{$labels.by}&nbsp;{$gui->req.author|escape}
-  </td>
-  </tr>
-  {if $gui->req.modifier != ""}
-    <tr class="time_stamp_creation">
-    <td colspan="2">
-    {$labels.title_last_mod}&nbsp;{localize_timestamp ts=$gui->req.modification_ts}
-		  &nbsp;{$labels.by}&nbsp;{$gui->req.modifier|escape}
-    </td>
-    </tr>
-  {/if}
 </table>
 
 {assign var="bDownloadOnly" value=true}
@@ -101,26 +121,5 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
          attach_attachmentInfos=$gui->attachments  
          attach_downloadOnly=$bDownloadOnly}
 
-
-
-
-  {* ----------------------------------------------------------------------------------------- *}
-  <div class="groupBtn">
-    <form id="req" name="req" action="lib/requirements/reqEdit.php" method="post">
-    	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
-    	<input type="hidden" name="doAction" value="" />
-    	
-    	{if $gui->grants->req_mgmt == "yes"}
-    	<input type="submit" name="edit_req" 
-    	       value="{$labels.btn_edit}" 
-    	       onclick="doAction.value='edit'"/>
-    	
-    	
-    	<input type="button" name="delete_req" value="{$labels.btn_delete}"
-    	       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'|escape}',
- 					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
-    	{/if}
-    </form>
-  </div>
 </div>
 </body>

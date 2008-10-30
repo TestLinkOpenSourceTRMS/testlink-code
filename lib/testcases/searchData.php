@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.34 2008/10/28 19:57:01 schlundus Exp $
+ * $Id: searchData.php,v 1.35 2008/10/30 20:00:51 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -125,16 +125,16 @@ function init_args()
    	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
   
-    $strnull=array('name','summary','steps','expected_results','custom_field_value','targetTestCase');
+    $strnull = array('name','summary','steps','expected_results','custom_field_value','targetTestCase');
     foreach($strnull as $keyvar)
     {
-        $args->$keyvar=isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
+        $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
     }
 
-    $int0=array('keyword_id','version','custom_field_id');
+    $int0 = array('keyword_id','version','custom_field_id');
     foreach($int0 as $keyvar)
     {
-        $args->$keyvar=isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;  
+        $args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;  
     }
     
     $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;

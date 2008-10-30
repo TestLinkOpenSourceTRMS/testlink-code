@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/09/25 20:20:04 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/10/30 20:00:50 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -651,20 +651,24 @@ class requirement_mgr extends tlObjectWithAttachments
   */
   function get_all_for_tcase($testcase_id, $srs_id = 'all')
   {
-  	$sql = " SELECT requirements.id,requirements.req_doc_id,requirements.title, RSPEC.title AS req_spec_title" .
+  	$sql = " SELECT requirements.id,requirements.req_doc_id,requirements.title, RSPEC.title AS req_spec_title,testcase_id" .
   	       " FROM {$this->object_table} requirements, " .
   	       "      {$this->req_coverage_table} req_coverage," .
-  	       "      {$this->requirement_spec_table} RSPEC " .
-  			   " WHERE req_coverage.testcase_id=" . $testcase_id .
-  			   " AND requirements.srs_id=RSPEC.id " .
-  			   " AND req_coverage.req_id=requirements.id";
+  	       "      {$this->requirement_spec_table} RSPEC " ;
+  	
+  	$idList = implode(",",(array)$testcase_id);
+  	$sql .= " WHERE req_coverage.testcase_id  IN (" . $idList . ")";
+	$sql .= " AND requirements.srs_id=RSPEC.id " .
+  		    " AND req_coverage.req_id=requirements.id";
 
   	// if only for one specification is required
   	if ($srs_id != 'all') {
   		$sql .= " AND requirements.srs_id=" . $srs_id;
   	}
-
-  	return $this->db->get_recordset($sql);
+	if (is_array($testcase_id))
+  		return $this->db->fetchRowsIntoMap($sql,'testcase_id',true);
+  	else
+  		return $this->db->get_recordset($sql);
   }
 
 

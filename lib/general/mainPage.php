@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.49 $ $Author: havlat $
- * @modified $Date: 2008/10/29 12:14:59 $
+ * @version $Revision: 1.50 $ $Author: franciscom $
+ * @modified $Date: 2008/10/30 16:39:16 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -16,6 +16,7 @@
  * There is also some javascript that handles the form information.
  *
  * Revisions :
+ *       20081030 - franciscom - BUGID 1698 - refixed
  *       20080905 - franciscom - BUGID 1698
  *       20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
  *       20080120 - franciscom - added logic to enable/disable test case search link
@@ -29,7 +30,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 
 // BUGID 1698
-if( function_exists('memory_get_usage') )
+if( function_exists('memory_get_usage') && function_exists('memory_get_peak_usage') )
 {
     tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
 }

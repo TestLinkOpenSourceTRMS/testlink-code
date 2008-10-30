@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/10/21 20:23:06 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2008/10/30 20:00:37 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,6 +34,7 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
+ *       20081030 - franciscom - added new rights -> system
  *       20070901 - franciscom - BUGID 1016
  *       20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
  */
@@ -58,10 +59,11 @@ init_global_rights_maps();
             init global map with user rights and user rights description localized.
             
 
-  args :
+  args: -
   
-  returns: 
+  returns:  
 
+  rev: added system rights, and moved event rights from users to system.
 */
 
 function init_global_rights_maps()
@@ -77,6 +79,7 @@ global $g_rights_product;
 global $g_rights_cf;
 global $g_rights_users_global;
 global $g_rights_users;
+global $g_rights_system;
 global $g_propRights_global;
 global $g_propRights_product;
 
@@ -108,24 +111,25 @@ $g_rights_product = array (
 							"mgt_modify_product" => lang_get('desc_mgt_modify_product'),
 						);						
 
-// 20061231 - franciscom
 $g_rights_cf = array (	
 							"cfield_view" => lang_get('desc_cfield_view'),
 							"cfield_management" => lang_get('desc_cfield_management'));
 
-
+// Global means test project indipendent.
 $g_rights_users_global = array (	
 							"mgt_users" => lang_get('desc_mgt_modify_users'),
 							"role_management" => lang_get('desc_role_management'),
-							"user_role_assignment" => lang_get('desc_user_role_assignment'),
-							"mgt_view_events" => lang_get('desc_mgt_view_events')
+							"user_role_assignment" => lang_get('desc_user_role_assignment')
 							); 
-						
-						
+
 $g_rights_users = $g_rights_users_global;
 						
+$g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
+                          "events_mgt" => lang_get('desc_events_mgt'));
 						
-$g_propRights_global = array_merge($g_rights_users_global,$g_rights_product);
+						
+						
+$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
 $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
 

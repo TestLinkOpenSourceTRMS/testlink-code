@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.18 2008/10/09 19:11:56 schlundus Exp $
+$Id: eventviewer.tpl,v 1.19 2008/10/30 20:00:08 franciscom Exp $
 
 Event Viewer
 
@@ -15,6 +15,7 @@ rev: 20080207 - franciscom - cleaup
 {lang_get var='labels'
           s='event_viewer,th_loglevel,th_timestamp,th_description,title_eventdetails,
              title_eventinfo,label_startdate,label_enddate,btn_apply,click_on_event_info,
+             btn_clear_events,th_event_description,
              message_please_wait,btn_close,th_role_description,th_user'}
 
 
@@ -130,6 +131,8 @@ fieldset
 		<form method="post" action="lib/events/eventviewer.php">
 			<input type="hidden" name="object_id" value="{$object_id}"/>
 			<input type="hidden" name="object_type" value="{$object_type|escape}"/>
+			<input type="hidden" name="doAction" id="doAction" value="filter"/>
+			
 			<div style="height:125px;">
 			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.th_loglevel}</legend>
 				<select size="5" multiple="multiple" name="logLevel[]">
@@ -148,20 +151,24 @@ fieldset
 			<div id="startDate-cal" style="position:absolute;width:240px;left:300px"></div>
 			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$endDate}" />
 			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','endDate');" value="^" />
-			<br /><br />
-			<input type="submit" value="{$labels.btn_apply}"/>
-			<span class="italic">{$labels.click_on_event_info}</span>
+			<input type="submit" value="{$labels.btn_apply}" onclick="doAction.value='filter'">
+			<br />
+			{if $gui->canDelete}
+			  <br />
+			  <input type="submit" value="{$labels.btn_clear_events}" onclick="doAction.value='clear'">
+			{/if}
 			</fieldset>
 			<br />
 			</div>
 		</form>
 		<br/>
 		<br/>
+		<span class="italic">{$labels.click_on_event_info}</span>
 		<table class="common sortable" width="95%" id="eventviewer">
 			<tr>
 				<th>{$sortHintIcon}{$labels.th_timestamp}</th>
 				<th>{$sortHintIcon}{$labels.th_loglevel}</th>
-				<th>{$sortHintIcon}{$labels.th_role_description}</th>
+				<th>{$sortHintIcon}{$labels.th_event_description}</th>
 				<th>{$sortHintIcon}{$labels.th_user}</th>
 			</tr>
 			{assign var=transID value="-1"}

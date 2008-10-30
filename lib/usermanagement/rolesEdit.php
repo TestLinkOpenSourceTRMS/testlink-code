@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/10/30 20:00:37 $ by $Author: franciscom $
  *
- * rev: 20080827 - franciscom - BUGID 1692
+ * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
+ *      20080827 - franciscom - BUGID 1692
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -214,7 +215,9 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 
   args : -
 
-  returns:
+  returns: object
+  
+  rev: 20081030 - franciscom - added system_mgmt member
 
 */
 function getRightsCfg()
@@ -227,7 +230,7 @@ function getRightsCfg()
     $cfg->user_mgmt=config_get('rights_users');
     $cfg->req_mgmt=config_get('rights_req');
     $cfg->cfield_mgmt=config_get('rights_cf');
-
+    $cfg->system_mgmt=config_get('rights_system');
     return $cfg;
 }
 
@@ -253,7 +256,7 @@ function initialize_gui($editorType)
 }
 
 /*
-  function: initialize_gui
+  function: initialize_op
 
   args : -
 
@@ -290,7 +293,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     $guiObj->role=$roleObj;
     $guiObj->grants=getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
     $guiObj->rightsCfg=getRightsCfg();
-	$guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+	  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
     // Create status for all checkboxes and set to unchecked
     foreach( $guiObj->rightsCfg as $grantDetails )
@@ -321,5 +324,4 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     $guiObj->notes=$webEditorObj->CreateHTML();
     return $guiObj;
 }
-
 ?>

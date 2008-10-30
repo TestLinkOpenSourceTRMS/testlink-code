@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.353 $
- * @modified $Date: 2008/10/16 12:34:12 $ by $Author: havlat $
+ * @version $Revision: 1.354 $
+ * @modified $Date: 2008/10/30 20:01:28 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -26,8 +26,6 @@
  * 20070930 - franciscom - show_tcase_spec
  * 20070520 - franciscom - milestones
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
- *
- *
  * ---------------------------------------------------------------------------------- */
 
 
@@ -733,6 +731,7 @@ $TLS_th_product_rights = "Test Project";
 $TLS_th_req_rights = "Requirement";
 $TLS_th_rights = "Rights";
 $TLS_th_rolename = "Role name";
+$TLS_th_system_rights="System rights";
 $TLS_th_tp_rights = "Test Plan";
 $TLS_th_user_rights = "User";
 $TLS_title_user_mgmt = "User Administration";
@@ -1627,6 +1626,7 @@ $TLS_desc_mgt_view_key = "Keyword view (read only access)";
 $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
+$TLS_desc_events_mgt = "Event management";
 $TLS_desc_role_management = "Role management";
 $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
@@ -2220,6 +2220,8 @@ $TLS_title_eventinfo = "Event information";
 $TLS_title_eventdetails = "Event details";
 $TLS_th_user = "User";
 $TLS_show_event_history = "Show the event history";
+$TLS_btn_clear_events = "Clear All Events";
+$TLS_th_event_description = "Description";
 
 
 // int_mantis.php

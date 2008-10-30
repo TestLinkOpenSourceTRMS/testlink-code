@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.16 2008/08/27 06:20:30 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.17 2008/10/30 20:00:08 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
+     20081030 - franciscom - new area system rights
      20080412 - franciscom - refactoring - reducing coupling with  php script
      20080409 - franciscom - refactoring
      20071227 - franciscom - look and feel.
@@ -28,7 +29,7 @@ rev :
           s='btn_save,warning,warning_modify_role,warning_empty_role_name,th_rights,
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
              title_user_mgmt,caption_define_role,th_mgttc_rights,th_req_rights,
-             th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,
+             th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
              th_rolename,th_tp_rights,btn_cancel'}
 
 var alert_box_title = "{$labels.warning}";
@@ -144,8 +145,13 @@ function validateForm(f)
 							{/foreach}
 						</fieldset>
 					</td>
+					<td><fieldset class="x-fieldset x-form-label-left"><legend >{$labels.th_system_rights}</legend>
+							{foreach from=$gui->rightsCfg->system_mgmt item=id key=k}
+							<input class="tl-input" type="checkbox" name="grant[{$k}]" {$gui->checkboxStatus[$k]} />{$id}<br />
+							{/foreach}
+						</fieldset>
+					</td>
 				</tr>
-
 			</table>
 			</td>
 		</tr>

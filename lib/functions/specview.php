@@ -2,12 +2,15 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.20 $ $Author: schlundus $
- * @modified $Date: 2008/10/25 19:25:40 $
+ * @version $Revision: 1.21 $ $Author: franciscom $
+ * @modified $Date: 2008/10/30 22:08:12 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
+ *                             refactored use of tproject_id on gen_spec_view()
+ *
  *     20081019 - franciscom - removed new option to prune empty test suites
  *                             till we understand were this will be used.
  *                             In today implementation causes problems
@@ -82,8 +85,17 @@ arguments:
                      1 -> will return only linked tcversion
                      0 -> returns all test cases specs. 
                         
-                        
-                        
+         [add_custom_fields]: default=0
+                              useful when working on spec_view_type='testproject'
+                              when doin test case assign to test plans.
+                              1 -> for every test case cfields of area 'testplan_design'
+                                   will be fetched and displayed.
+                              0 -> do nothing     
+         [$tproject_id]: default = null
+                         useful to improve performance in custom field method calls
+                         when add_custom_fields=1.
+                         @TODO probably this argument is not needed, but it will depend
+                         of how this feature (gen_spec_view) will be used on other TL areas.
                         
 returns: array where every element is an associative array with the following
          structure: (to get last updated info add debug code and print_r returned value)
@@ -162,6 +174,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 {
 	  $write_status = $write_button_only_if_linked ? 'no' : 'yes';
 	  $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
+
+    if( !$is_tplan_view_type && is_null($tproject_id) )
+    {
+        $tproject_id=$tobj_id;
+    }
+	  
 	  $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	  $out = array(); 
 	  
@@ -172,6 +190,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
     
     $filters=array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id);
     $test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
+    
     $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
@@ -383,80 +402,20 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	unset($out);
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
-	// that do not need to be displaye on user interface.
+	// that do not need to be displayed on user interface.
 	if( count($result['spec_view']) > 0)
 	{
-	  foreach($result['spec_view'] as $key => $value)
-	  {
-	      // We will remove test suites that meet the empty conditions:
-	      // - do not contain other test suites    OR
-	      // - do not contain test cases
-	      //
-	      if( is_null($value) ) 
-	      {
-	          unset($result['spec_view'][$key]);
-	      }
-	      else if ($prune_unlinked_tcversions && $is_tplan_view_type)
-	      {
-            // only linked tcversion must be returned, if test suite has no linked tcversion
-            // must be removed
-	          if( isset($value['linked_testcase_qty']) && $value['linked_testcase_qty']== 0)
-	          {
-	              unset($result['spec_view'][$key]);
-	          } 
-            else
-            {
-                // Only if test suite has children test cases we need to understand
-                // if they are linked or not
-           	    if( isset($value['testcases']) && count($value['testcases']) > 0 )
-           	    {
-                   foreach($value['testcases'] as $skey => $svalue)
-                   {
-                     if( $svalue['linked_version_id'] == 0)
-                     {
-                       unset($result['spec_view'][$key]['testcases'][$skey]);
-                     }
-                   }
-                } 
-            } // is_null($value)
-	      }
-	      else
-	      {
-            // list of children test suites if useful on smarty template, in order
-            // to draw nested div.
-	          $tsuite_id=$value['testsuite']['id'];  
-	          $result['spec_view'][$key]['children_testsuites']=
-	                  $tcase_mgr->tree_manager->get_subtree_list($tsuite_id,$hash_descr_id['testsuite']);  
-
-	          if( $value['testcase_qty'] == 0 && $result['spec_view'][$key]['children_testsuites']=='' )
-	          {
-	              unset($result['spec_view'][$key]);
-	          }
-	      }  
-	  }
-	  
+	  removeEmptyTestSuites($result['spec_view'],$tcase_mgr->tree_manager,
+	                        ($prune_unlinked_tcversions && $is_tplan_view_type),$hash_descr_id);
 	}
 	
   // -----------------------------------------------------------------------------------------------
   // Remove empty branches
   // Loop to compute test case qty on every level and prune test suite branchs that are empty
-  foreach($result['spec_view'] as $key => $elem)
-  {
-    $tsuite_id=$elem['testsuite']['id'];
-    if( $elem['children_testsuites'] != '' )
-    {
-        $children=explode(',',$elem['children_testsuites']);
-        foreach($children as $access_id)
-        {
-        	$tsuite_tcqty[$tsuite_id] += $tsuite_tcqty[$access_id];                
-        }
-    }
-    
-    if( !isset($tsuite_tcqty[$tsuite_id]) ||  $tsuite_tcqty[$tsuite_id]== 0 )
-    {
-        unset($result['spec_view'][$key]);
-    } 
-  }
+	if( count($result['spec_view']) > 0)
+	{
+      removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
+  }   
   // -----------------------------------------------------------------------------------------------
 
 	//@TODO: maybe we can integrate this into already present loops above?
@@ -496,37 +455,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  // Future implementation to improve function readability                      
     // addCustomFieldsToView($result['spec_view'])
     //
-	  // Important:
-	  // testplan_tcversions.id value, that is used to link to manage custom fields that are used
-	  // during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
-    foreach($result['spec_view'] as $key => $value) 
-    {
-      if( !is_null($value) )
-      {
-         if( isset($value['testcases']) && count($value['testcases']) > 0 )
-         {
-           foreach($value['testcases'] as $skey => $svalue)
-           {
-          
-             $linked_version_id=$svalue['linked_version_id'];
-             $result['spec_view'][$key]['testcases'][$skey]['custom_fields']='';
-            
-             // if( $linked_version_id != 0 && 
-             //     $svalue['tcversions_execution_type'][$linked_version_id]==TESTCASE_EXECUTION_TYPE_AUTO
-             //   )
-             //   
-             if( $linked_version_id != 0  )
-             {
-               $cf_name_suffix = "_" . $svalue['feature_id'];
-               $cf_map = $tcase_mgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
-                                                                     $cf_name_suffix,$svalue['feature_id'],$tproject_id);
-               $result['spec_view'][$key]['testcases'][$skey]['custom_fields'] = $cf_map;
-             }
-           }
-         } 
-         
-      } // is_null($value)
-    }
+    addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
   // --------------------------------------------------------------------------------------------
 
@@ -676,5 +605,132 @@ function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewTyp
     return $test_spec;
 }
 
+
+/*
+  function: removeEmptyTestSuites
+
+  args: $testSuiteSet: reference to set to analyse and clean.
+        $treeMgr: reference to object
+        $pruneUnlinkedTcversions: useful when working on test plans
+        $nodeTypes: hash key: node type description, value: code
+        
+  returns: -
+
+*/
+function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions,$nodeTypes)
+{
+	  foreach($testSuiteSet as $key => $value)
+	  {
+	      // We will remove test suites that meet the empty conditions:
+	      // - do not contain other test suites    OR
+	      // - do not contain test cases
+	      //
+	      if( is_null($value) ) 
+	      {
+	          unset($testSuiteSet[$key]);
+	      }
+	      else if ($pruneUnlinkedTcversions)
+	      {
+            // only linked tcversion must be returned, if test suite has no linked tcversion
+            // must be removed
+	          if( isset($value['linked_testcase_qty']) && $value['linked_testcase_qty']== 0)
+	          {
+	              unset($testSuiteSet[$key]);
+	          } 
+            else
+            {
+                // Only if test suite has children test cases we need to understand
+                // if they are linked or not
+           	    if( isset($value['testcases']) && count($value['testcases']) > 0 )
+           	    {
+                   foreach($value['testcases'] as $skey => $svalue)
+                   {
+                     if( $svalue['linked_version_id'] == 0)
+                     {
+                       unset($testSuiteSet[$key]['testcases'][$skey]);
+                     }
+                   }
+                } 
+            } // is_null($value)
+	      }
+	      else
+	      {
+            // list of children test suites if useful on smarty template, in order
+            // to draw nested div.
+	          $tsuite_id=$value['testsuite']['id'];  
+	          $testSuiteSet[$key]['children_testsuites']=
+	                       $treeMgr->get_subtree_list($tsuite_id,$nodeTypes['testsuite']);  
+
+	          if( $value['testcase_qty'] == 0 && $testSuiteSet[$key]['children_testsuites']=='' )
+	          {
+	              unset($testSuiteSet[$key]);
+	          }
+	      }  
+	  }
+	  
+} // function end	  
+
+
+function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
+{
+    foreach($testSuiteSet as $key => $elem)
+    {
+      $tsuite_id=$elem['testsuite']['id'];
+      if( !isset($tsuiteTestCaseQty[$tsuite_id]) )
+      {
+          $tsuiteTestCaseQty[$tsuite_id]=0;
+      }    
+      
+      if( $elem['children_testsuites'] != '' )
+      {
+          $children=explode(',',$elem['children_testsuites']);
+          foreach($children as $access_id)
+          {
+              if( isset($tsuiteTestCaseQty[$access_id]) )
+              {
+          	    $tsuiteTestCaseQty[$tsuite_id] += $tsuiteTestCaseQty[$access_id];                
+              }
+          }
+      }
+      
+      if( $tsuiteTestCaseQty[$tsuite_id]== 0 )
+      {
+          unset($testSuiteSet[$key]);
+      } 
+    }
+} // function end	  
+
+
+
+function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
+{
+	  // Important:
+	  // testplan_tcversions.id value, that is used to link to manage custom fields that are used
+	  // during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
+    foreach($testSuiteSet as $key => $value) 
+    {
+      if( !is_null($value) )
+      {
+         if( isset($value['testcases']) && count($value['testcases']) > 0 )
+         {
+           foreach($value['testcases'] as $skey => $svalue)
+           {
+          
+             $linked_version_id=$svalue['linked_version_id'];
+             $testSuiteSet[$key]['testcases'][$skey]['custom_fields']='';
+             if( $linked_version_id != 0  )
+             {
+               $cf_name_suffix = "_" . $svalue['feature_id'];
+               $cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+                                                                      $cf_name_suffix,$svalue['feature_id'],
+                                                                      $tprojectId);
+               $testSuiteSet[$key]['testcases'][$skey]['custom_fields'] = $cf_map;
+             }
+           }
+         } 
+         
+      } // is_null($value)
+    }
+} // function end	  
 
 ?>

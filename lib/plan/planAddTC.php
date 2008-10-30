@@ -1,11 +1,12 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.67 2008/10/25 19:25:41 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.68 2008/10/30 22:08:12 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
+//      20081030 - franciscom - improved use of custom fields on gen_spec_view()
 //      20081019 - franciscom - removed new argument in call gen_spec_view()
 //                              that remove empty test suite because generates
 //                              a bug, due to implementation in gen_spec_view():
@@ -108,20 +109,21 @@ if($do_display)
 	    $testCaseSet = array_keys($keywordsTestCases);
 	}
 	define('DONT_PRUNE',0);
-	// 1. this CAN NOT BE DEACTIVATED becuase destroy other implementations, then next time ask before
-	//    disabling a feture 
-	// 2. if you want to disable feature do not do in a wrong way i.e. redefining a constant
-	//    ADD_CUSTOM_FIELDS is 1 and MUST remain 1, redefing to 0 is ABSOLUTY WRONG.
-	define('ADD_CUSTOM_FIELDS',1);
-	define('DONOT_ADD_CUSTOM_FIELDS',0);
 	define('WRITE_BUTTON_ALWAYS',0);
+	
+	// Choose enable/disable display of custom fields, analysing if this kind of custom fields
+	// exists on this test project.
+	$cfields=$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
+	$add_custom_fields=count($cfields) > 0 ? 1 : 0;
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$args->keyword_id,
-	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,ADD_CUSTOM_FIELDS,$args->tproject_id);
+	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,$add_custom_fields);
 	  
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
+  $gui->add_custom_fields=$add_custom_fields;
+  
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }

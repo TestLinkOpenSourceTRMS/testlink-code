@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/10/22 06:02:14 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/10/30 11:25:50 $ $Author: havlat $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -206,8 +206,8 @@ which have a newest version is displayed (against the current set of the Test Pl
 
 
 // requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h2>Requirements Coverage</h2>
-<h3>General</h3>
+$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
+<br />
 <p>This feature allows to map a coverage of user or system requirements by
 test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
 
@@ -218,9 +218,9 @@ and Requirements itself. So, version of document should be added after
 a Specification <b>Title</b>.
 An user can add simple description or notes to <b>Scope</b> field.</p> 
 
-<p><b><a name='total_count'>Total count</a></b> of all Requirements serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) to TestLink. 
-The value <b>n/a</b> means that current count of requirements is used for metrics.</p> 
+<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
+evaluation Req. coverage in case that not all requirements are added (imported) in. 
+The value <b>0</b> means that current count of requirements is used for metrics.</p> 
 <p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
 coverage is 25% (if all these added requirements will be tested).</i></p>
 

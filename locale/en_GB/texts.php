@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/10/16 12:34:12 $ by $Author: havlat $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2008/10/30 11:25:50 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -124,9 +124,9 @@ and Requirements itself. So, version of document should be added after
 a Specification <b>Title</b>.
 An user can add simple description or notes to <b>Scope</b> field.</p>
 
-<p><b><a name='total_count'>Total count</a></b> of all Requirements serves for
+<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for
 evaluation Req. coverage in case that not all requirements are added to TestLink.
-The value <b>n/a</b> means that current count of requirements is used
+The value <b>0</b> means that current count of requirements is used
 for metrics.</p>
 <p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test
 coverage is 25% (if all these added requirements will be tested).</i></p>

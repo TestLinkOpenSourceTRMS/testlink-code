@@ -1,5 +1,5 @@
--- $Revision: 1.1 $
--- $Date: 2008/10/18 17:49:22 $
+-- $Revision: 1.2 $
+-- $Date: 2008/10/30 09:12:14 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
@@ -165,7 +165,7 @@ ALTER TABLE custom_fields ADD enable_on_testplan_design tinyint NOT NULL DEFAULT
 ALTER TABLE db_version ADD notes TEXT NULL;
 
 -- data update
-INSERT INTO rights (id,description) VALUES (19,'system_configuraton');
+INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
 

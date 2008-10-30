@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.18 $
-$Date: 2008/10/18 17:47:55 $
+$Revision: 1.19 $
+$Date: 2008/10/30 09:12:20 $
 $Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
@@ -165,7 +165,7 @@ ALTER TABLE custom_fields COMMENT = 'Updated to TL 1.8 RC3  - DB 1.2';
 
 
 /* data update */
-INSERT INTO rights (id,description) VALUES (19,'system_configuraton');
+INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
 

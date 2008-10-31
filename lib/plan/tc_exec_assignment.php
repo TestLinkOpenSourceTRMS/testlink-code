@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.27 2008/10/16 18:50:53 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.28 2008/10/31 20:16:43 schlundus Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -36,9 +36,8 @@ if(is_array($args->keyword_id))
 {
     $keywordsFilter = new stdClass();
     $keywordsFilter->items = $args->keyword_id;
-    $keywordsFilter->type = $gui->keywordsFilterType->selected;
+    $keywordsFilter->type = $gui->keywordsFilterType;
 }
-
 $arrData = array();
 
 if(!is_null($args->doAction))
@@ -155,7 +154,7 @@ function init_args()
     
 	$key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	  	              'version_id' => 0, 'has_prev_assignment' => null,
-	  	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'assigned_to' => 0);
+	  	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => 0);
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -184,7 +183,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
-
+								  
     $gui->keywordsFilterType = $argsObj->keywordsFilterType;
 
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);

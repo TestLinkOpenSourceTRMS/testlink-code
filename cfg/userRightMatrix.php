@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/01/20 15:37:19 $  $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/10/31 20:16:43 $  $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -52,7 +52,7 @@ $user_admin=array("$user_admin_url/usersnew.php"  => array("mgt_users",),
 						      "$user_admin_url/usersassign.php"  => array ("user_role_assignment",));														
                   
                   
-$proj_admin=array("$proj_admin_url/projectedit.php" => array("mgt_modify_product",));
+$proj_admin=array("$proj_admin_url/projectEdit.php" => array("mgt_modify_product",));
 
 $test_exec=array("$test_exec_url/execnavigator.php" => array("testplan_execute",));
 

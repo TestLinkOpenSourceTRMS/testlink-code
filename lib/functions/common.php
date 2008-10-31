@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.123 $ $Author: schlundus $
- * @modified $Date: 2008/10/29 19:38:37 $
+ * @version $Revision: 1.124 $ $Author: schlundus $
+ * @modified $Date: 2008/10/31 20:16:43 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -163,7 +163,7 @@ function setSessionTestProject($tproject_info)
 {
 	if ($tproject_info)
 	{
-		/** @todo check if the session product is updated when its modified per projectedit.php  */
+		/** @todo check if the session product is updated when its modified per projectEdit.php  */
 		$_SESSION['testprojectID'] = $tproject_info['id'];
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];

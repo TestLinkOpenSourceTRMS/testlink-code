@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.21 $ $Author: franciscom $
- * @modified $Date: 2008/10/30 22:08:12 $
+ * @version $Revision: 1.22 $ $Author: schlundus $
+ * @modified $Date: 2008/10/31 20:16:43 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -190,7 +190,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
     
     $filters=array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id);
     $test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
-    
     $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
@@ -215,13 +214,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		{
   			if(is_null($current))
   				continue;
-  				
+
   			if($hash_id_descr[$current['node_type_id']] == "testcase")
   			{
   				$tc_id = $current['id'];
   				$parent_idx = $hash_id_pos[$current['parent_id']];
   				$a_tsuite_idx[$tc_id] = $parent_idx;
-  				
   				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
@@ -261,8 +259,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   					else 
   						$the_level = $level[$current['parent_id']];
   				}
-  	            
-      		$out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);
+  				$out[$idx]['testsuite']=array('id' => $current['id'], 'name' => $current['name']);
   				$out[$idx]['testcases'] = array();
   				$out[$idx]['testcase_qty'] = 0;
   				$out[$idx]['linked_testcase_qty'] = 0;
@@ -282,11 +279,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		if($parent_idx >= 0)
   		{ 
   		    $xdx=$out[$parent_idx]['testsuite']['id'];
-  		    $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
+  			$tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
   		}
 	} // count($test_spec))
-
-
+	$tsuite_tcqty[$id] = $out[$hash_id_pos[$id]]['testcase_qty'];
   // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
@@ -395,9 +391,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		} //foreach($tcase_set
   	} 
   	$result['spec_view'] = $out;
-  	
-	} // !is_null($out[0])
-
+  	} // !is_null($out[0])
 	// --------------------------------------------------------------------------------------------
 	unset($out);
 	
@@ -412,7 +406,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   // -----------------------------------------------------------------------------------------------
   // Remove empty branches
   // Loop to compute test case qty on every level and prune test suite branchs that are empty
-	if( count($result['spec_view']) > 0)
+ 	if( count($result['spec_view']) > 0)
 	{
       removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
   }   
@@ -521,20 +515,18 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	  // BUGID 1041
 	  $tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
 	                                                              $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
-	                                                              $argsObj->assigned_to);
-    
+	                                                              $argsObj->filter_assigned_to);
 	  // This does filter on keywords ALWAYS in OR mode.
 	  $tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
-    
 	  // With this pieces we implement the AND type of keyword filter.
 	  $testCaseSet = null;
-    if(!is_null($keywordsFilter))
+	if(!is_null($keywordsFilter))
 	  { 
 		  $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
 		                                                         $keywordsFilter->items,$keywordsFilter->type);
 		  $testCaseSet = array_keys($keywordsTestCases);
     }
-	  $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
+    $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
                          $tplan_linked_tcversions,null,
                          $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,1,0,1);
 
@@ -673,15 +665,14 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
 
 function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
 {
-    foreach($testSuiteSet as $key => $elem)
+	foreach($testSuiteSet as $key => $elem)
     {
       $tsuite_id=$elem['testsuite']['id'];
       if( !isset($tsuiteTestCaseQty[$tsuite_id]) )
       {
           $tsuiteTestCaseQty[$tsuite_id]=0;
       }    
-      
-      if( $elem['children_testsuites'] != '' )
+	  if( $elem['children_testsuites'] != '' )
       {
           $children=explode(',',$elem['children_testsuites']);
           foreach($children as $access_id)
@@ -692,7 +683,6 @@ function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
               }
           }
       }
-      
       if( $tsuiteTestCaseQty[$tsuite_id]== 0 )
       {
           unset($testSuiteSet[$key]);

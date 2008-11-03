@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/10/14 20:30:18 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2008/11/03 22:01:35 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -18,6 +18,7 @@
  *-----------------------------------------------------------------------------
 */
 
+$g_interface_bugs = 'GFORGE';
 
 // Example How to add not_available status
 

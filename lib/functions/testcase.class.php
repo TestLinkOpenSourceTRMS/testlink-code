@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.129 $
- * @modified $Date: 2008/10/30 20:00:50 $ $Author: schlundus $
+ * @version $Revision: 1.130 $
+ * @modified $Date: 2008/11/03 22:02:50 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20081103 - franciscom - minor refactoring on show()
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
  * 20080812 - franciscom - BUGID 1650 (REQ)
  *                         html_table_of_custom_field_inputs() interface changes
@@ -426,7 +427,6 @@ function get_all()
 function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewer_args = null)
 {
   $gui = new stdClass();
-  
   $status_ok = 1;
   $viewer_defaults=array('action' => '', 'msg_result' => '','user_feedback' => '',
                          'refresh_tree' => 'yes', 'disable_edit' => 0,
@@ -464,7 +464,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 	}
 	else
 	{
-	    $status_ok = $id > 0 ? 1 : 0;
+	  $status_ok = $id > 0 ? 1 : 0;
 		$a_id = array($id);
 	}
 
@@ -494,9 +494,9 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
   }
   
   
-  	$cf_smarty = array();
-  	if (sizeof($a_id))
-  	{
+  $cf_smarty = array();
+  if (sizeof($a_id))
+  {
 		$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY KEYWORD ASC ');
 		$allReqs = $req_mgr->get_all_for_tcase($a_id);
 		foreach($a_id as $key => $tc_id)
@@ -509,17 +509,21 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 			//get the status quo of execution and links of tc versions
 			$status_quo_map[] = $this->get_versions_status_quo($tc_id);
 			
-			$tcKeywordMap = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
-			$keywords_map[] = $tcKeywordMap; 
-			$tc_current = array($tc_array[0]);
-			$gui->tc_current_version[] = $tc_current;
+			$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+			
+			// $keywords_map[] = $tcKeywordMap; 
+			// $tc_current = array($tc_array[0]);
+			// $gui->tc_current_version[] = $tc_current;
+			// 
+			// //Get UserID and Updater ID for current Version
+			// $tc_current = $tc_current[0];
+			
+			$tc_current = $tc_array[0];
+			$gui->tc_current_version[] = array($tc_current);
 			
 			//Get UserID and Updater ID for current Version
-			$tc_current = $tc_current[0];
-			$author_id = $tc_current['author_id'];
-			$updater_id = $tc_current['updater_id'];
-			$userid_array[$author_id] = null;
-			$userid_array[$updater_id] = null;
+			$userid_array[$tc_current['author_id']] = null;
+			$userid_array[$tc_current['updater_id']] = null;
 
 			if(count($tc_array) > 1)
 				$tc_other_versions[] = array_slice($tc_array,1);
@@ -531,19 +535,17 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 			{
 				foreach($tc_other_versions[0] as $key => $version)
 				{				
-					$author_id = $version['author_id'];
-		  			$updater_id = $version['updater_id'];
-		  			$userid_array[$author_id] = null;
-		  			$userid_array[$updater_id] = null;				
+		  			$userid_array[$version['author_id']] = null;
+		  			$userid_array[$version['updater_id']] = null;				
 				}
 			}
 			$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 			$arrReqs[] = $tcReqs; 
-			// custom fields
 			$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tprojectID);
-		}
-  	}
-  	//Removing duplicate and NULL id's
+		} // foreach($a_id as $key => $tc_id)
+  } // if (sizeof($a_id))
+  
+  //Removing duplicate and NULL id's
 	unset($userid_array['']);
 	$passeduserarray = array_keys($userid_array);
 	

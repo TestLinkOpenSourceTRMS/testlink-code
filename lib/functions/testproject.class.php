@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/10/28 19:57:01 $  $Author: schlundus $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/11/03 22:02:50 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20081103 - franciscom - get_all_testcases_id() minor refactoring
  * 20080518 - franciscom - create() interface changes
  * 20080507 - franciscom - get_keywords_tcases() - changed return type
  *                                                 add AND type filter 
@@ -1437,7 +1438,7 @@ function delete($id)
             All testproject testcases node id.
 
   args :idList: comma-separated list of IDs (should be the projectID, but could
-		also be an arbitrary suiteID
+		            also be an arbitrary suiteID
 
   returns: array with testcases node id in parameter tcIDs.
            null is nothing found
@@ -1445,15 +1446,15 @@ function delete($id)
 */
 	function get_all_testcases_id($idList,&$tcIDs)
 	{
-		static $s_tcNodeTypeID;
-		if (!$s_tcNodeTypeID)
-			$s_tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
-		static $s_suiteNodeTypeID;
-		if (!$s_suiteNodeTypeID)
-			$s_suiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
-		
+		static $tcNodeTypeID;
+		static $tsuiteNodeTypeID;
+		if (!$tcNodeTypeID)
+		{
+			$tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
+			$tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
+		}
 		$sql = "SELECT id,node_type_id from {$this->tree_manager->obj_table} WHERE parent_id IN ({$idList})";
-		$sql .=  " AND node_type_id IN ({$s_tcNodeTypeID},{$s_suiteNodeTypeID}) "; 
+		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
 		$result = $this->db->exec_query($sql);
 		if ($result)
@@ -1461,8 +1462,7 @@ function delete($id)
 			$suiteIDs = array();
 			while($row = $this->db->fetch_array($result))
 			{
-				$nodeTypeID = $row['node_type_id'];
-				if ($nodeTypeID == $s_tcNodeTypeID)
+				if ($row['node_type_id'] == $tcNodeTypeID)
 					$tcIDs[] = $row['id'];
 				$suiteIDs[] = $row['id'];
 			}

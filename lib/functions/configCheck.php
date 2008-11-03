@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/10/18 16:10:11 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2008/11/03 07:32:10 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -284,11 +284,11 @@ function getSecurityNotes(&$db)
  **/
 function checkForBTSConnection()
 {
+  
 	global $g_bugInterface;
 	$status_ok = true;
 	if($g_bugInterface && !$g_bugInterface->connect())
 		$status_ok = false;
-
 	return $status_ok; 
 }
 

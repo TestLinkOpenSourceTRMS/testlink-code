@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/09/29 19:48:06 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/11/03 07:32:10 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -18,40 +18,47 @@
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
  *
  *
- * 20080207 - needles - added notation for Seapine's TestTrackPro
- * 20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
- * 20070304 - franciscom - added new method checkBugID_existence()
+ * rev:
+ *     20081102 - franciscom - refactored to ease configuration 
+ *     20080207 - needles - added notation for Seapine's TestTrackPro
+ *     20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
+ *     20070304 - franciscom - added new method checkBugID_existence()
  *
  *
 **/
-//Add new bugtracking interfaces here
-//Please use only lowercase file names!
-//This holds the configuration file names for the bugtracking interfaces
-//located in the cfg directory
 require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 
-$configFiles = array(
-					'BUGZILLA' => 'bugzilla.cfg.php',
-					'MANTIS' => 'mantis.cfg.php',
-					'JIRA' => 'jira.cfg.php',
-					'TRACKPLUS' => 'trackplus.cfg.php',
-					'EVENTUM' => 'eventum.cfg.php',
-					'TRAC' => 'trac.cfg.php',
-					'SEAPINE' => 'seapine.cfg.php',
-					'REDMINE' => 'redmine.cfg.php'
-				);
-//This holds the interface defintion file names for the bugtracking interfaces
-//located in the lib/bugtracking diectory
-$interfaceFiles = array(
-					'BUGZILLA' => 'int_bugzilla.php',
-					'MANTIS' => 'int_mantis.php',
-					'JIRA' => 'int_jira.php',
-					'TRACKPLUS' => 'int_trackplus.php',
-					'EVENTUM' => 'int_eventum.php',
-					'TRAC' => 'int_trac.php',
-					'SEAPINE' => 'int_seapine.php',
-					'REDMINE' => 'int_redmine.php'
-				);
+// Add new bugtracking interfaces here
+$btslist=array('BUGZILLA','MANTIS','JIRA','TRACKPLUS',
+				    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE');
+
+$bts=array_flip($btslist);
+
+// $configFiles = array(
+// 					'BUGZILLA' => 'bugzilla.cfg.php',
+// 					'MANTIS' => 'mantis.cfg.php',
+// 					'JIRA' => 'jira.cfg.php',
+// 					'TRACKPLUS' => 'trackplus.cfg.php',
+// 					'EVENTUM' => 'eventum.cfg.php',
+// 					'TRAC' => 'trac.cfg.php',
+// 					'SEAPINE' => 'seapine.cfg.php',
+// 					'REDMINE' => 'redmine.cfg.php',
+// 					'GFORGE' => 'gforge.cfg.php',
+// 				);
+// 
+// //This holds the interface defintion file names for the bugtracking interfaces
+// //located in the lib/bugtracking diectory
+// $interfaceFiles = array(
+// 					'BUGZILLA' => 'int_bugzilla.php',
+// 					'MANTIS' => 'int_mantis.php',
+// 					'JIRA' => 'int_jira.php',
+// 					'TRACKPLUS' => 'int_trackplus.php',
+// 					'EVENTUM' => 'int_eventum.php',
+// 					'TRAC' => 'int_trac.php',
+// 					'SEAPINE' => 'int_seapine.php',
+// 					'REDMINE' => 'int_redmine.php',
+// 					'GFORGE' => 'int_gforge.php'
+// 				);
 
 				
 //Set the bug tracking system Interface
@@ -317,10 +324,17 @@ $g_bugInterface = null;
 
 global $g_interface_bugs;
 
-if (isset($configFiles[$g_interface_bugs]))
+if (isset($bts[$g_interface_bugs]))
 {
-	require_once(TL_ABS_PATH . 'cfg/'. $configFiles[$g_interface_bugs]);
-	require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfaceFiles[$g_interface_bugs]);
+  $btsname=strtolower($g_interface_bugs);
+  $configPHP=$btsname . '.cfg.php';
+  $interfacePHP='int_' . $btsname . '.php';  
+
+	// require_once(TL_ABS_PATH . 'cfg/'. $configFiles[$g_interface_bugs]);
+	// require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfaceFiles[$g_interface_bugs]);
+	require_once(TL_ABS_PATH . 'cfg/'. $configPHP);
+	require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfacePHP);
+	
 	$g_bugInterfaceName = BUG_INTERFACE_CLASSNAME;
 	$g_bugInterface = new $g_bugInterfaceName();
 	if ($g_bugInterface)

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.204 $
- * @modified $Date: 2008/11/04 18:03:42 $ by $Author: franciscom $
+ * @version $Revision: 1.205 $
+ * @modified $Date: 2008/11/04 19:58:04 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20081104 - franciscom - Added FOGBUGZ as BTS type
  *     20081103 - franciscom - Added GFORGE as BTS type
  *     20081006 - franciscom - config for rounding via nifty corners
  *     20080925 - franciscom - refactoring of urgencyImportance config
@@ -209,6 +210,7 @@ $g_removeEventsOlderThan = 30;
  * 'EVENTUM'   : edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
  * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
  * 'GFORGE'    : edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
+ * 'FOGBUGZ'   : edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
  * ]
  */
 $g_interface_bugs = 'NO';

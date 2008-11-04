@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/11/03 07:32:10 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/11/04 19:58:04 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -30,36 +30,9 @@ require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 
 // Add new bugtracking interfaces here
 $btslist=array('BUGZILLA','MANTIS','JIRA','TRACKPLUS',
-				    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE');
+				    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ');
 
 $bts=array_flip($btslist);
-
-// $configFiles = array(
-// 					'BUGZILLA' => 'bugzilla.cfg.php',
-// 					'MANTIS' => 'mantis.cfg.php',
-// 					'JIRA' => 'jira.cfg.php',
-// 					'TRACKPLUS' => 'trackplus.cfg.php',
-// 					'EVENTUM' => 'eventum.cfg.php',
-// 					'TRAC' => 'trac.cfg.php',
-// 					'SEAPINE' => 'seapine.cfg.php',
-// 					'REDMINE' => 'redmine.cfg.php',
-// 					'GFORGE' => 'gforge.cfg.php',
-// 				);
-// 
-// //This holds the interface defintion file names for the bugtracking interfaces
-// //located in the lib/bugtracking diectory
-// $interfaceFiles = array(
-// 					'BUGZILLA' => 'int_bugzilla.php',
-// 					'MANTIS' => 'int_mantis.php',
-// 					'JIRA' => 'int_jira.php',
-// 					'TRACKPLUS' => 'int_trackplus.php',
-// 					'EVENTUM' => 'int_eventum.php',
-// 					'TRAC' => 'int_trac.php',
-// 					'SEAPINE' => 'int_seapine.php',
-// 					'REDMINE' => 'int_redmine.php',
-// 					'GFORGE' => 'int_gforge.php'
-// 				);
-
 				
 //Set the bug tracking system Interface
 class bugtrackingInterface
@@ -330,8 +303,6 @@ if (isset($bts[$g_interface_bugs]))
   $configPHP=$btsname . '.cfg.php';
   $interfacePHP='int_' . $btsname . '.php';  
 
-	// require_once(TL_ABS_PATH . 'cfg/'. $configFiles[$g_interface_bugs]);
-	// require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfaceFiles[$g_interface_bugs]);
 	require_once(TL_ABS_PATH . 'cfg/'. $configPHP);
 	require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfacePHP);
 	
@@ -341,6 +312,4 @@ if (isset($bts[$g_interface_bugs]))
 		$g_bugInterface->connect();
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());			
 }
-
-unset($configFiles);
 ?>

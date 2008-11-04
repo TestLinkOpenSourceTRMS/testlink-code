@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/10/06 19:01:32 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/11/04 19:25:48 $ $Author: schlundus $
  *
  */
 
@@ -122,7 +122,6 @@ class tlUser extends tlDBObject
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
 		$info = $db->fetchFirstRow($query);	
-
 		if ($info)
 		{
 			$this->dbID = $info['id'];
@@ -460,7 +459,6 @@ class tlUser extends tlDBObject
 			$query .= ' '.$whereClause;
 	
 		$query .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
-	
 		return tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.28 2008/10/31 20:16:43 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.29 2008/11/04 19:25:48 schlundus Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -29,7 +29,7 @@ $assignment_mgr = new assignment_mgr($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args();
-$gui=initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+$gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
@@ -180,18 +180,22 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
-    
-    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
-    $gui->testCasePrefix .= $tcase_cfg->glue_character;
-								  
-    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+    if ($argsObj->level != 'testproject')
+    {
+	    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
+	    $gui->testCasePrefix .= $tcase_cfg->glue_character;
+									  
+	    $gui->keywordsFilterType = $argsObj->keywordsFilterType;
+	
+	    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
+	    $gui->testPlanName = $tplan_info['name'];
+	    $gui->main_descr = lang_get('title_tc_exec_assignment') . $gui->testPlanName;
+	    
+	    $users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+	    $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$users);
+	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$users);
+	}
 
-    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
-    $gui->testPlanName = $tplan_info['name'];
-    $gui->main_descr = lang_get('title_tc_exec_assignment') . $gui->testPlanName;
-    
-    $gui->users = getUsersForHtmlOptions($dbHandler);
-    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
     return $gui;
 }
 ?>

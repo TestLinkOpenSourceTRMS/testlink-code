@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2008/08/22 14:29:00 $ $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2008/11/04 19:25:48 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -88,10 +88,11 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   rev :
        20071228 - franciscom - added active_filter
 */
-function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null)
+function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null,$users = null)
 {
 	$users_map = null;
-	$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+	if (!$users)
+		$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 
 	$the_users=$users;
 	if ($users)
@@ -253,17 +254,16 @@ function getAllUsersRoles(&$db,$order_by = null)
   returns:
 
 */
-//SCHLUNDUS: removed the SQL queries by using the objects
-function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID)
+function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null)
 {
-    $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID);
+    $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID,null,$users);
     $userFilter = array();
-	  foreach($users_roles as $keyUserID => $roleInfo)
+    foreach($users_roles as $keyUserID => $roleInfo)
     {
 		    if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
 			     $userFilter[$keyUserID] = $roleInfo['user'];
     }
-	  return buildUserMap($userFilter,true);
+	return buildUserMap($userFilter,true);
 }
 
 

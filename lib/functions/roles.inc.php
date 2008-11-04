@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2008/10/30 20:00:37 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2008/11/04 19:25:48 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -226,9 +226,6 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
   
 
 */
-//SCHLUNDUS: removed code by using the roles in the tlUser class, so additional queries for the testproject-user-roles aren't needed
-//also removed the SQL related code, should be done inside the users class
-//added the user and the effective role object to avoid queries later
 function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = null)
 {
 	$effective_role = array();
@@ -294,11 +291,9 @@ function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = 
   
 
 */
-//SCHLUNDUS: combined the two loops to one
-//added the user and the effective role object to avoid queries later
-function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id = null)
+function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id = null,$users = null)
 {
-	$effective_role = get_tproject_effective_role($db,$tproject_id,$user_id);   
+	$effective_role = get_tproject_effective_role($db,$tproject_id,$user_id,$users);   
 
 	foreach($effective_role as $user_id => $row)
 	{

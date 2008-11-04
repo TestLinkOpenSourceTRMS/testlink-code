@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/10/10 19:35:12 $  $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/11/04 10:12:36 $  $Author: havlat $
  * 
  * @author Martin Havlat
  *
@@ -142,13 +142,23 @@ function init_args()
     $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
     $args->edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
     $args->idReq = isset($_REQUEST['req']) ? intval($_REQUEST['req']) : null;
-    $args->idReqSpec = isset($_REQUEST['idSRS']) ? intval($_REQUEST['idSRS']) : null;
     $args->reqIdSet = isset($_REQUEST['req_id']) ? $_REQUEST['req_id'] : null;
     $args->showCloseButton = isset($_REQUEST['showCloseButton']) ? 1 : 0;
     $args->doAction = isset($_REQUEST['assign']) ? 'assign' : null;
     if(is_null($args->doAction))
         $args->doAction = isset($_REQUEST['unassign']) ? 'unassign' : null;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+	// 20081103 - sisajr - hold choosen SRS (saved for a session)
+	if (isset($_REQUEST['idSRS']))
+	{
+		$args->idReqSpec = $_REQUEST['idSRS'];
+		$_SESSION['currentSrsId'] = $_REQUEST['idSRS'];
+	}
+	else if(isset($_SESSION['currentSrsId']))
+		$args->idReqSpec = $_SESSION['currentSrsId'];
+	else
+		$args->idReqSpec = null;
 
     return $args;
 }

@@ -1,11 +1,10 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: bugzilla.cfg.php,v 1.9 2008/09/29 19:47:57 schlundus Exp $ 
+* $Id: bugzilla.cfg.php,v 1.10 2008/11/04 19:58:22 franciscom Exp $ 
 * 
-* Currently the only bug tracking system is bugzilla. 
 * TestLink uses bugzilla to check if displayed bugs resolved, verified, 
-* and closed bugs. If they are it will strike through them
+* and closed bugs. 
 * 
 */
 
@@ -15,6 +14,7 @@ define('BUG_TRACK_DB_HOST', '[CONFIGURE_BUG_TRACK_DB_HOST]');
 
 /** name of the database that contains the Bugzilla tables */
 define('BUG_TRACK_DB_NAME', '[CONFIGURE_BUG_TRACK_DB_NAME]');
+
 /** charset of the database that contains the Bugzilla tables */
 define('BUG_TRACK_DB_CHARSET', '[CONFIGURE_BUG_TRACK_DB_CHARSET]');
 

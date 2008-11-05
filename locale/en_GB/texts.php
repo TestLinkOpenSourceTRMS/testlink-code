@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/10/30 11:25:50 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/11/05 15:56:45 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -38,7 +38,8 @@ analyse serves as input for the next planning.</p>
 <ol>
 	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
 	Specifications is shown at the top of workarea.</li>
-	<li>Choose a Requirements Specification. TestLink automatically reload the page.</li>
+	<li>Choose a Requirements Specification Document if more once defined. 
+	TestLink automatically reload the page.</li>
 	<li>A middle block of workarea lists all requirements (from choosen Specification), which
 	are connected with the test case. Bottom block 'Available Requirements' lists all
 	requirements which have not relation
@@ -51,20 +52,26 @@ analyse serves as input for the next planning.</p>
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Test Specification";
 $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<p>The <span class=\"help\" onclick=\"javascript:open_help_window('glosary','$locale');\">Test
-Specification</span> is a place where a user can view and edit all of the
-existing <span class=\"help\"
-onclick=\"javascript:open_help_window('glosary','$locale');\">Test project</span>, test suite,and <span class=\"help\"
-onclick=\"javascript:open_help_window('glosary','$locale');\">Test case</span> information.
+<p>The <i>Test Specification</i> is a place where a user can view and edit all of the
+existing <i>Test suite</i> and <i>Test case</i> information. Test cases holds all own history.
 A user can look at a different versions of test cases. </p>
 
-<h2>Get Started:</h2>
-
+<h2>Get Stsarted:</h2>
 <ol>
-	<li>Select Test project name in navigation pane. (You can change test project,selectable in top right corner.)</li>
-	<li>Create a new Test suites. Test Suite structualize your Test Specification according your need.
-			You can differ components, functional and non-functional tests, etc.</li>
-	<li>Create a new Test cases into active Test Suite. Test case specifies particular testing scenario, expected results and more</li>
+	<li>Select Test project name in navigation pane. <i>(You can change Test project, " .
+			"selectable in top right corner.)</i></li>
+	<li>Create a new Test suites <i>(select the button)</i>. Test Suite structualize " .
+		"your Test Specification according your conventions <i>(functional/non-functional tests, " .
+		"a product components or features, Change requests, etc.)</i>. Description text " .
+		"of Test Suites could hold scope of included test cases, default configuration, links" .
+		"to relevant document (references), limitations, etc. Generally you should add all" .
+		"information shared for included Test suites and Test cases.</li>
+	<li>Test suites are scalable folders. User can move or copy Test Suites within " .
+	"the Test project. Test suites could be imported or exported (include Test cases)." .
+	"<li>Create a new Test cases into active Test Suite. Test case specifies particular " .
+		"testing scenario, expected results and custom fields " .
+		"defined in the Test Project<i>(see User manual for more)</i><br />" .
+		"User can also assign <b>keywords</b> to improve tarceability.</li>
 	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
 	<li>Assign your created Test Specification to <span class=\"help\" onclick=
 	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when Test cases are ready.</li>
@@ -364,7 +371,7 @@ Specification is changed. It often happens that some functionality is clarified 
 $TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
 $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
 <p>TestLink allows set urgency of Test Suite to affect a testing Priority of test cases. 
-		Test priority depends on both Importance of Test cases and urgency defined in 
+		Test priority depends on both Importance of Test cases and Urgency defined in 
 		the Test Plan. Test leader should specify a set of test cases that could be tested
 		at first. It helps to assure that testing will cover the most important tests
 		also under time pressure.</p>
@@ -377,7 +384,9 @@ $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
 	decrease priority for untouched parts of product and increase for components with
 	significant changes.</li>
 	<li>Press the button 'Save' to submit changes.</li>
-</ol>";
+</ol>
+<p><i>For example, a Test case with a High importance in a Test suite with Low urgency " .
+		"will be Medium priority.</i>";
 
 
 // ------------------------------------------------------------------------------------------

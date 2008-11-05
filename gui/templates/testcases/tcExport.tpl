@@ -1,10 +1,12 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcExport.tpl,v 1.5 2008/10/29 12:26:31 havlat Exp $ *}
-{* Purpose: smarty template - keyword export initial page *}
-{* rev:
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: tcExport.tpl,v 1.6 2008/11/05 15:53:01 havlat Exp $ 
+Purpose: smarty template - keyword export initial page 
+Revisions:
        20071013 - franciscom - file name management
        20070113 - franciscom - added message when there is nothing to export 
-*}
+* ----------------------------------------------------------------- *}
+
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -25,7 +27,6 @@ function validateForm(f)
 {/literal}
 </script>
 </head>
-
 
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$object_name|escape}</h1>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.354 $
- * @modified $Date: 2008/10/30 20:01:28 $ by $Author: franciscom $
+ * @version $Revision: 1.355 $
+ * @modified $Date: 2008/11/05 15:56:05 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1660,6 +1660,7 @@ $TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - CSV type requires three fields for each row: 'req_doc_id','title','description'";
 $TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
+$TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
 $TLS_req_status_not_testable = "Not testable";

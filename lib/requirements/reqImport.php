@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/11/05 15:56:04 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
- * Supported: simple CSV, Doors CSV, XML
+ * Supported: simple CSV, Doors CSV, XML, DocBook
  * 
+ * 20081103 - sisajr     - DocBook XML extension
  * 20080504 - franciscom - removed tmp file after import
  * 20061014 - franciscom - added check on file mime type
  *                         using check_valid_ftype()
@@ -141,6 +142,8 @@ function check_valid_ftype($upload_info,$import_type)
 	$mime_import_types['text/plain'] = array('CSV' => 'CSV', 'CSV_DOORS' => 'CSV_DOORS');
 	$mime_import_types['application/octet-stream'] = array('CSV' => 'CSV');
 	$mime_import_types['text/xml'] = array('XML' => 'XML');
+	// 20081103 - sisajr
+	$mime_import_types['text/xml'] = array('DocBook' => 'XML');
 	
 	if(isset($mime_import_types[$upload_info['type']])) 
 	{

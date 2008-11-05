@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/09/21 19:35:47 $ by $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/11/05 15:56:05 $ by $Author: havlat $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -13,6 +13,7 @@
  *
  * Revisions:
  *
+ * 20081103 - sisajr     - DocBook XML import
  * 20070710 - franciscom - BUGID 939
  * 20070705 - franciscom - improved management of arrReqStatus
  * 20070617 - franciscom - removed include of deprecated file
@@ -31,7 +32,8 @@ require_once("requirement_mgr.class.php");
 $g_reqFormatStrings = array (
 							"csv" => lang_get('req_import_format_description1'),
 							"csv_doors" => lang_get('req_import_format_description2'),
-							"XML" => lang_get('the_format_req_xml_import')
+							"XML" => lang_get('the_format_req_xml_import'),
+							"DocBook" => lang_get('req_import_format_docbook')
 							);
 
 /**
@@ -248,6 +250,10 @@ function loadImportedReq($CSVfile, $importType)
 		case 'XML':
 			$pfn = "importReqDataFromXML";
 			break;
+		// 20081103 - sisajr
+		case 'DocBook':
+			$pfn = "importReqDataFromDocBook";
+			break;
 	}
 	if ($pfn)
 	{
@@ -336,6 +342,200 @@ function importReqDataFromXML($fileName)
 		$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
 	}
 
+	return $xmlData;
+}
+
+
+// 20081103 - sisajr
+/** Constants used for parsing DocBook XML files */
+define("DOCBOOK_REQUIREMENT", "sect3");
+define("DOCBOOK_TITLE", "title");
+define("DOCBOOK_PARAGRAPH", "para");
+define("DOCBOOK_ORDERED_LIST", "orderedlist");
+define("DOCBOOK_LIST_ITEM", "listitem");
+define("DOCBOOK_TABLE", "informaltable");
+define("DOCBOOK_TABLE_GROUP", "tgroup");
+define("DOCBOOK_TABLE_HEAD", "thead");
+define("DOCBOOK_TABLE_BODY", "tbody");
+define("DOCBOOK_TABLE_ROW", "row");
+define("DOCBOOK_TABLE_ENTRY", "entry");
+
+/**
+ * Parses one 'informaltable' XML entry and produces HTML table as string.
+ *
+ * XML relationship:
+ * informaltable -> tgroup -> thead -> row -> entry
+ *                         -> tbody -> row -> entry
+ *
+ * 20081103 - sisajr
+ */
+function getDocBookTableAsHtmlString($docTable)
+{
+	$resultTable = "";
+	foreach ($docTable->child_nodes() as $tgroup)
+	{
+		if ($tgroup->node_name() != DOCBOOK_TABLE_GROUP)
+			continue;
+
+		$table = "";
+		foreach ($tgroup->child_nodes() as $tbody)
+		{
+			// get table head
+			if ($tbody->node_name() == DOCBOOK_TABLE_HEAD)
+			{
+				foreach ($tbody->child_nodes() as $row)
+				{
+					if ($row->node_name() != DOCBOOK_TABLE_ROW)
+						continue;
+
+					$table_row = "<tr>";
+
+					foreach ($row->child_nodes() as $entry)
+						if ($entry->node_name() == DOCBOOK_TABLE_ENTRY)
+							$table_row .= "<th>" . $entry->get_content() . "</th>";
+
+					$table_row .= "</tr>";
+
+					$table .= $table_row;
+				}
+			}
+
+			// get table body - rows
+			if ($tbody->node_name() == DOCBOOK_TABLE_BODY)
+			{
+				foreach ($tbody->child_nodes() as $row)
+				{
+					if ($row->node_name() != DOCBOOK_TABLE_ROW)
+						continue;
+
+					$table_row = "<tr>";
+
+					foreach ($row->child_nodes() as $entry)
+						if ($entry->node_name() == DOCBOOK_TABLE_ENTRY)
+							$table_row .= "<td>" . $entry->get_content() . "</td>";
+
+					$table_row .= "</tr>";
+
+					$table .= $table_row;
+				}
+			}
+		}
+
+		$resultTable .= "<table>" . $table . "</table>";
+	}
+
+	return $resultTable;
+}
+
+/**
+ * Imports data from DocBook XML
+ *
+ * 20081103 - sisajr
+ */
+function importReqDataFromDocBook($fileName)
+{
+	$dom = domxml_open_file($fileName);
+	$xmlReqs = null;
+  $field_size=config_get('field_size');  
+
+	// get all Requirement elements in the document
+	if ($dom)
+		$xmlReqs = $dom->get_elements_by_tagname(DOCBOOK_REQUIREMENT);
+	
+	$xmlData = null;
+	$num_elem=sizeof($xmlReqs);
+
+	$counter = array();
+	
+	// for each Requirement we need this: Req_doc_id, Title, Description
+	for($i = 0;$i < $num_elem ;$i++)
+	{
+		$xmlReq = $xmlReqs[$i];
+		if ($xmlReq->node_type() != XML_ELEMENT_NODE)
+			continue;
+
+		// get all child elements of this requirement
+		$children = $xmlReq->child_nodes();
+
+		$description = "";
+		foreach ($children as $child)
+		{
+			// requirement title
+			if ($child->node_name() == DOCBOOK_TITLE )
+			{
+				foreach ($child->child_nodes() as $a)
+					if ($a->node_name() == "remark" || $a->node_name() == "note" )
+						$child->remove_child($a);
+
+				$title = $child->get_content();
+				continue;
+			}
+
+			// part of description as ordered list
+			if ($child->node_name() == DOCBOOK_ORDERED_LIST)
+			{
+				$list = "";
+				foreach ($child->child_nodes() as $item)
+					if ($item->node_name() == DOCBOOK_LIST_ITEM)
+						$list .= "<li>" . $item->get_content() . "</li>";
+					else
+						$list .= "<p>" . $item->get_content() . "</p>";
+
+				$description .= "<ul>" . $list . "</ul>";
+				continue;
+			}
+
+			// part of description as table
+			if ($child->node_name() == DOCBOOK_TABLE)
+			{
+				$description .= getDocBookTableAsHtmlString($child);
+				continue;
+			}
+
+			// part of description as paragraph
+			if ($child->node_name() == DOCBOOK_PARAGRAPH)
+			{
+				$description .= "<p>" . $child->get_content() . "</p>";
+				continue;
+			}
+
+			// default behaviour: use unknown node content as part of description
+			$description .= "<p>" . $child->get_content() . "</p>";
+		}
+
+		$xmlData[$i]['description'] = $description; 
+		$xmlData[$i]['title'] = trim_and_limit($title,$field_size->req_title);
+
+		// parse Doc ID from requirement title
+
+		// first remove any weird characters before the title. This could be probably omitted
+		$xmlData[$i]['title'] = preg_replace("/^[^a-zA-Z_0-9]*/","",$xmlData[$i]['title']);
+
+		// get Doc ID
+
+		// this will create Doc ID as words ended with number
+		// Example: Req BL 20 Business Logic
+		// Doc ID: Req BL 20
+		//if (preg_match("/[ a-zA-Z_]*[0-9]*/", $xmlData[$i]['title'], $matches))
+		//{
+		//	$xmlData[$i]['req_doc_id'] = $matches[0];
+		//}
+
+		// this matches first two words in Title and adds counter started from 1
+		// Doc ID is grouped (case insensitive), so different groups have their own counter running
+		// Example: Req BL Business Logic
+		// Doc ID: Req BL 1
+		if (preg_match("/[ ]*[a-zA-Z_0-9]*[ ][a-zA-Z_0-9]*/", $xmlData[$i]['title'], $matches))
+		{
+			$index = strtolower($matches[0]);
+			if( !isset($counter[$index]) )
+				$counter[$index] = 0;
+			$counter[$index]++;
+			$xmlData[$i]['req_doc_id'] = $matches[0] . " " . $counter[$index];
+		}
+		// Note: Doc ID doesn't need trim_and_limit since it is parsed from Title
+	}
+	
 	return $xmlData;
 }
 
@@ -494,6 +694,10 @@ function check_syntax($fileName,$importType)
 			break;
 
 		case 'XML':
+			$pfn = "check_syntax_xml";
+			break;
+		// 20081103 - sisajr
+		case 'DocBook':
 			$pfn = "check_syntax_xml";
 			break;
 	}

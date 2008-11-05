@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/09/25 10:35:57 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/11/05 15:56:05 $ by $Author: havlat $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -39,7 +39,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)",
-                                 "XML" => "XML");
+                                 "XML" => "XML",
+								 "DocBook" => "DocBook");
 
   var $export_file_types = array("XML" => "XML");
   var $my_node_type;

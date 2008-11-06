@@ -1,12 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.11 2008/09/20 21:02:53 schlundus Exp $
-show test specification tree 
+$Id: planAddTCNavigator.tpl,v 1.12 2008/11/06 15:12:42 havlat Exp $
 
-rev:20080629 - franciscom - fixed missed variable bug
+Scope: show test specification tree for Test Plan related features
+		(the name of scripts is not correct; used more)
+
+Revisions:
+	20080629 - franciscom - fixed missed variable bug
     20080622 - franciscom - ext js tree support
     20080429 - franciscom - keyword filter multiselect
-*}
+* ------------------------------------------------------------------------ *}
 
 {lang_get var="labels" 
           s='keywords_filter_help,
@@ -59,8 +62,8 @@ function pre_submit()
 	return true;
 }
 </script>
-{/literal}
 </head>
+
 <body>
 
 <h1 class="title">{$labels.title_navigator}</h1>
@@ -72,7 +75,7 @@ function pre_submit()
 	<table class="smallGrey" width="100%">
 		<caption>
 			{$labels.caption_nav_filter_settings}
-			{include file="inc_help.tpl" helptopic="hlp_executeFilter"}
+			{* include file="inc_help.tpl" helptopic="hlp_executeFilter" *}
 		</caption>
 		<tr>
 			<td>{$labels.test_plan}</td>

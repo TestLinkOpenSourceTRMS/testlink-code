@@ -1,10 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.11 2008/09/20 21:02:53 schlundus Exp $
-show test plan tree
+$Id: planTCNavigator.tpl,v 1.12 2008/11/06 15:12:42 havlat Exp $
+Scope: show test plan tree for execution
 
-rev : 20080311 - franciscom - BUGID 1427 - first developments
-*}
+Revisions : 
+	20080311 - franciscom - BUGID 1427 - first developments
+* ---------------------------------------------------------------------- *}
+
 {lang_get var="labels" 
           s='btn_update_menu,keyword,keywords_filter_help,title_navigator,
              btn_update_all_testcases_to_latest_version,
@@ -51,9 +53,7 @@ function pre_submit()
 /*
   function: update2latest
   args :
-
   returns:
-
 */
 function update2latest(id)
 {

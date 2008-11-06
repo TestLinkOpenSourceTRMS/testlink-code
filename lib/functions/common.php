@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.124 $ $Author: schlundus $
- * @modified $Date: 2008/10/31 20:16:43 $
+ * @version $Revision: 1.125 $ $Author: franciscom $
+ * @modified $Date: 2008/11/06 08:27:22 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -247,10 +247,15 @@ function checkSessionValid(&$db)
 	}
 	else
 	{
-		/** @TODO martin: remove this stupid code >| 
+		/** @TODO martin: 
+		    Talk with Andreas to understand:
+		    1. advantages of this approach
+		    2. do we need to recreate it every time ? why ?
+		   
 		 * a) store just data -not all object
 		 * b) do not read again and again the same data from DB
 		 * c) this function check JUST session validity
+		 **/
 		 **/
 		$user = new tlUser($_SESSION['userID']);
 		$user->readFromDB($db);

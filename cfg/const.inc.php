@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/10/28 09:53:42 $ by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/11/06 22:02:51 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -21,7 +21,7 @@
 /** [GLOBAL SETTINGS] */
 
 /** TestLink Release (MUST BE changed before the release day) */
-define('TL_VERSION', '1.8.0 DEV FALL 2008'); 
+define('TL_VERSION', '1.8 RC1'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

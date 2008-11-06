@@ -5,6 +5,84 @@
 
 Testlink 1.8 Release Candidate 1 (include Beta releases)
 =========================================
+- 0001821: [TL API] Re: bug 1698 The 'better' solution still causes error. (fman) - resolved.
+- 0001741: [User Interface General] Help-Button (left frame) within Test urgency shows inappropriate help text (mhavlat) - resolved.
+- 0001841: [Requirement Management] DocBook import for requirements (mhavlat) - resolved.
+- 0001815: [New Feature] Contribution of GForge bugtracking integration files (fman) - resolved.
+- 0001794: [Test Plan (builds, milestones, test assign)] The Test Plan assign page doesn't return correct results when Assigned to Parameter is used. (schlundus) - resolved.
+- 0001805: [Users and Rights] Memory and Performance for large number of users prevents reasonable usage of "Assign User Roles" (schlundus) - resolved.
+- 0001827: [Test Specification] Clicking link to (edit) test project name generates error. (schlundus) - resolved.
+- 0001830: [Test Specification] Edit Test Case(s) Fatal error (fman) - resolved.
+- 0001826: [Event viewer] Allow delete of events from user interface (fman) - resolved.
+- 0001789: [Test Execute] cvs head 10-09-08. Call to a member function getDisplayName() on a non-object error. (schlundus) - resolved.
+- 0001745: [Test Plan (builds, milestones, test assign)] documentation <-> reality discrepancy in planUrgency (mhavlat) - resolved.
+- 0001737: [Documentation (Install, User Manual, help)] small documentation correction in requirements needed (mhavlat) - resolved.
+- 0001807: [Reports, Metrics, Export and Print] Integrate pChart in TestLink (fman) - resolved.
+- 0001816: [Installer] Migration from 1.7 -> 1.8 Beta3 does not create two tables (fman) - resolved.
+- 0001699: [General] config.inc.php uses undefined constants which lead to NOTICEs (fman) - resolved.
+- 0001778: [TL API] Contribution: implement getTestSuitesForTestPlan() in xmlrpc.php (fman) - resolved.
+- 0001692: [User Interface General] Possibility to configure different webeditor in different TL sections/areas (fman) - resolved.
+- 0001695: [Test Execute] Importing Results (fman) - resolved.
+- 0001670: [New Feature] Contribution - Using Custom Field to obtain estimated time on testplan report. (fman) - resolved.
+- 0001320: [Test Plan (builds, milestones, test assign)] Cannot create TestPlan properly (fman) - resolved.
+- 0001537: [TL API] TL API issue with the XMLRPC method : getTestCaseIDByName (azl) - resolved.
+- 0001296: [TL API] API table refactoring (azl) - resolved.
+- 0000841: [Localization] LOCALIZE: requirement was successfully LOCALIZE: assigned! was shown (azl) - resolved.
+- 0001333: [Localization] "LOCALIZE: builds_description" text displayed on the build management page! (azl) - resolved.
+- 0001548: [User Interface General] Localization issue - Changing the launguage to "English(US)" - missing string (azl) - resolved.
+- 0001472: [TL API] APIErrors.php missing require_once statement for common.php / lang_api.php (azl) - resolved.
+- 0001802: [TL API] Update Testlink API Documentation (azl) - resolved.
+- 0000843: [Localization] LOCALIZE: menu_edit_user shown (azl) - resolved.
+- 0001491: [Localization] TLS_link_bts_create_bug not defined for en_US locale (azl) - resolved.
+- 0001742: [User Interface General] Help-Button (left frame) within /planTCNavigator.php?feature=tc_exec_assignment shows inappropriate help text (mhavlat) - resolved.
+- 0001756: [Test Execute] Execute forum filter inconsistent (mhavlat) - resolved.
+- 0001797: [Custom fields] Cannot filter executables by custom field (fman) - resolved.
+- 0001573: [Requirement Management] Requirement Scope field is not shown in edit screen (schlundus) - resolved.
+- 0001645: [Requirement Management] Empty Requirements is displayed in Assign Requirements Pop-up (schlundus) - resolved.
+- 0001783: [Requirement Management] edit Requirements throws different SQL Errors (schlundus) - resolved.
+- 0001611: [TL API] php client example is missing php closing tag (schlundus) - resolved.
+- 0001582: [User Interface General] double quotes not right displayed in execute test screen (schlundus) - resolved.
+- 0001762: [Internal issue] resultsSend.tpl and resultsSend.php seems to be obsolete and should be removed (schlundus) - resolved.
+- 0001471: [TL API] getTestCaseIDByName in xmlrpc.php missing code to handle testsuite argument (azl) - resolved.
+- 0001307: [Test Execute] Assign test Case execution - Bulk user assignment does not work (fman) - resolved.
+- 0001765: [New Feature] Bulk Assignment for Assigning Test Case Execution (fman) - resolved.
+ - 0001720: [User Interface General] "Bulk user assignment" - the button for feature "check all" is not recognizable as a button (fman) - resolved.
+  - 0001764: [New Feature] assign all the test cases to a user in one go. (fman) - resolved.
+  - 0001426: [Test Plan (builds, milestones, test assign)] "bulk user assignment" on all underlying testsuites (fman) - resolved.
+- 0001759: [Event viewer] When open calendar, it strechts till got windows (schlundus) - resolved.
+- 0001760: [Event viewer] if date is not a valid date, calendar gives weird message (schlundus) - resolved.
+- 0001781: [Requirement Management] Cannon open requiremen document from "Assign Requirements" page. (schlundus) - resolved.
+- 0001676: [Reports, Metrics, Export and Print] Database ID for requirement is printed (schlundus) - resolved.
+- 0001776: [Reports, Metrics, Export and Print] If one chooses a TP in resultsNavigator.php then the combo box remains empty and no TP's can be selected (schlundus) - resolved.
+- 0001775: [Reports, Metrics, Export and Print] The Email Subject is having the incorrect Test Plan Name (schlundus) - resolved.
+- 0001735: [Test Specification] Error on Importing xls Test cases (fman) - resolved.
+- 0001299: [TL API] API: User rights && Test_Plan open must be checked (azl) - resolved.
+- 0001211: [Reports, Metrics, Export and Print] Print Test Plan must include Test Plan description (schlundus) - resolved.
+- 0001485: [Reports, Metrics, Export and Print] Emailing reports does not work (schlundus) - resolved.
+- 0001757: [General] DB events cleanup (schlundus) - resolved.
+- 0001017: [Integration with Other Systems] garbled characters in Bugzilla integration (fman) - resolved.
+- 0000550: [Internal issue] Add Test Case(s) / Remove Test Case(s) still needed? (schlundus) - resolved.
+- 0001708: [Custom fields] Export Custom fields definition in XML format (fman) - resolved.
+- 0001746: [Test Plan (builds, milestones, test assign)] Wrong action for Root node of planUrgency (fman) - resolved.
+- 0001451: [Test Specification] Edit test case: increase the html area size (schlundus) - resolved.
+- 0001728: [Requirement Management] SQL Error when clicking on "Create Testcases" on a ReqSpec which has no requiremenrs (fman) - resolved.
+- 0000025: [Test Execute] [SF 1243217 ] provide filter by priority while in test execution mode (mhavlat) - resolved.
+- 0001740: [Test Specification] If the TC-Prefix contains non_alphanumeric charactes SQL errors occurs in planUrgency.php (fman) - resolved.
+- 0001734: [Requirement Management] Number of Tcs and Req are not correct in certain cases (schlundus) - resolved.
+- 0001732: [Requirement Management] Deleting an Requirement succeeds but simply shows a white page (schlundus) - resolved.
+- 0001731: [Requirement Management] missing stripslashes of $_REQUEST in reqEdit.php (initArgs) is causing backslashes.... to repeat (schlundus) - resolved.
+- 0001729: [0 - Undefined] Missing File? inc_jsCfieldsValidation.tpl (fman) - resolved.
+- 0001724: [User Interface General] Testcaseprefixes not correctly escaped in projectview.tpl if they contain HTM Code -> HTML code injection possible (schlundus) - resolved.
+- 0001723: [User Interface General] Testproject Names not correctly escaped in planEdit.php if it contains special chars like " -> HTML code injection possible (schlundus) - resolved.
+- 0001722: [User Interface General] Testplan Names not correctly escaped in planEdit.php if it contains special chars like " -> HTML code injection possible (schlundus) - resolved.
+- 0001725: [User Interface General] Special chars like ' in ProjectNames are not correctly escape when using EXTJS-Tree (schlundus) - resolved.
+- 0001721: [User Interface General] Special chars like ' in ProjectNames are not correctly escape when using EXTJS-Tree (schlundus) - resolved.
+- 0001717: [Reports, Metrics, Export and Print] 'Requirements based Report' has a link to a mis-named directory (fman) - resolved.
+- 0001716: [Test Plan (builds, milestones, test assign)] Add Test Cases: navigation filter causes MySQL error for keyword 'AND' update (fman) - resolved.
+- 0001701: [Documentation (Install, User Manual, help)] User Manual Spelling mistakes (mhavlat) - resolved.
+- 0001788: [Test Execute] Call to undefined function in treeMenu.inc.php - closed.
+- 0001726: [Test Project Management] Can't create new project with 1.8beta3 (schlundus) - closed.
+
 - 0000537: [Internal issue] Discussion: Priority = Urgency + Importance (mhavlat) - resolved.
 - 0001675: [Reports, Metrics, Export and Print] Not possible to print test plan (fman) - resolved.
 - 0001661: [Third party software components] Remove from user interface "Reorder Button" if tree component support drag & drop (fman) - resolved.

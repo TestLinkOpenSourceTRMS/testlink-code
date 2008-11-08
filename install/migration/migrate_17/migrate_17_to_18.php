@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.5 2008/09/28 10:02:11 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.6 2008/11/08 17:42:27 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -15,7 +15,10 @@ tasks:
 
 - Update executiosn.tcversion_number updateExecutionsTCVersionInfo()
 
-rev: 20080627 - franciscom -   
+rev: 20081108 - franciscom - 
+     fixed wrong control on requirements that do not create req nodes on node_hierarchy
+      
+     20080627 - franciscom -   
 
 */
 require_once(dirname(__FILE__) . "/../../../config.inc.php");
@@ -194,8 +197,8 @@ echo '<span class="headers">' . $start_message . "</span></b><br><br>";
 ob_flush();flush();
 
 
-
-if( checkPreconditions($source_db,$tree_mgr) )
+$last_message='';
+if( checkReqMigrationPreconditions($source_db,$tree_mgr) )
 {
     echo "<p><b>Please be patient this may take some time!</b><br /><hr /></p>";
     $oldNew=reqSpecMigration($source_db,$tree_mgr);
@@ -204,14 +207,14 @@ if( checkPreconditions($source_db,$tree_mgr) )
 }   
 else
 {
-  $last_message='Requirements Migration NOT REQUIRED';  
+  $last_message='Requirements Migration NOT REQUIRED<br>';  
 }
 
 updateTProjectInfo($source_db,$tproject_mgr);
 
 // 20080627 - franciscom
 updateExecutionsTCVersionInfo($source_db);
-$last_message="Migration process finished! :: " . date("H:i:s");
+$last_message .= "Migration process finished! :: " . date("H:i:s");
 
 
 //---FINISHED WITH MIGRATION---
@@ -243,30 +246,20 @@ $last_message="Migration process finished! :: " . date("H:i:s");
 </html>
 
 <?php
-function checkPreconditions(&$source_db,&$tree_mgr)
+/*
+function: checkReqMigrationPreconditions
+          check is we have req spec to migrate
+
+*/
+function checkReqMigrationPreconditions(&$source_db,&$tree_mgr)
 {
-  $do_action=1; 
-  $sql="SELECT count(NH.parent_id) AS qta_req_spec " .
-       " FROM nodes_hierarchy NH,node_types NT" .
-       " WHERE NH.node_type_id=NT.id " .
-       " AND NT.description='requirement_spec' ";
-       
-  $rs=$source_db->get_recordset($sql);
-  $qta_req_spec=$rs[0]['qta_req_spec'];
-  
-  $sql="SELECT count(NH.parent_id) AS qta_req " .
-       " FROM nodes_hierarchy NH,node_types NT" .
-       " WHERE NH.node_type_id=NT.id " .
-       " AND NT.description='requirement' ";
-       
-  $rs=$source_db->get_recordset($sql);
-  $qta_req=$rs[0]['qta_req'];
-  
-  
-  if($qta_req==0 and $qta_req_spec==0)
-  {
-    $do_action=0;
-  }
+     
+  $sql="SELECT * from req_specs";                   
+  $rspec=$source_db->fetchRowsIntoMap($sql,'id');
+  $sql="SELECT * from requirements";
+  $req=$source_db->fetchRowsIntoMap($sql,'id');
+  $do_action= ( is_null($req) && is_null($req_spec) ) ? 0 : 1; 
+
   return $do_action;     
 }
 ?>

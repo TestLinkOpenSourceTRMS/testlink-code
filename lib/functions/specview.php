@@ -2,12 +2,15 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.22 $ $Author: schlundus $
- * @modified $Date: 2008/10/31 20:16:43 $
+ * @version $Revision: 1.23 $ $Author: franciscom $
+ * @modified $Date: 2008/11/09 16:25:38 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20081109 - franciscom - fixed filter on getTestSpecFromNode()
+ *                             added new value for spec_view_type='uncoveredtestcases'.
+ *
  *     20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
  *                             refactored use of tproject_id on gen_spec_view()
  *
@@ -36,14 +39,15 @@
 /*
 arguments:
           spec_view_type: can get one of the following values:
-                          'testproject','testplan'
+                          'testproject','testplan','uncoveredtestcases'
                           
                           This setting change the processing done 
                           to get the keywords.
                           And indicates the type of id (testproject/testplan) 
                           contained in the argument tobj_id.
+                          when using uncoveredtestcases tobj_id = testproject id
 
-         tobj_id
+         tobj_id: can be a testproject id, or testplan id.
          
          id: node id, that we are using as root for the view we want to build
 
@@ -141,7 +145,6 @@ returns: array where every element is an associative array with the following
 
        [level] =  
        [write_buttons] => yes or no
-
        level and write_buttons are used to generate the user interface
        
        
@@ -174,6 +177,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 {
 	  $write_status = $write_button_only_if_linked ? 'no' : 'yes';
 	  $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
+	  $is_uncovered_view_type=$spec_view_type == 'uncoveredtestcases' ? 1 : 0;
 
     if( !$is_tplan_view_type && is_null($tproject_id) )
     {
@@ -188,8 +192,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
 	  $hash_id_descr = array_flip($hash_descr_id);
     
-    $filters=array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id);
+    $filters=array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id, 
+                   'tcase_node_type_id' => $hash_descr_id['testcase']);
     $test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
+    
     $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
@@ -283,6 +289,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		}
 	} // count($test_spec))
 	$tsuite_tcqty[$id] = $out[$hash_id_pos[$id]]['testcase_qty'];
+
   // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
@@ -305,9 +312,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				}
 			}
 	}
+
 	   
-  // and now ???
-	if( !is_null($out[0]) )
+  // 20081109 - franciscom
+  // Collect information related to linked testcase versions
+	if( !is_null($out[0]) && !$is_uncovered_view_type)
 	{
 	  $result['has_linked_items'] = 0;
     if(count($a_tcid))
@@ -390,9 +399,13 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   			} 
   		} //foreach($tcase_set
   	} 
-  	$result['spec_view'] = $out;
-  	} // !is_null($out[0])
+  } // !is_null($out[0])
 	// --------------------------------------------------------------------------------------------
+	
+	if( !is_null($out[0]) )
+	{
+	    $result['spec_view'] = $out;
+	}
 	unset($out);
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
@@ -557,7 +570,7 @@ function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewTyp
     $applyFilters=false;
     $testCaseSet=null;
     $tobj_mgr = new testproject($dbHandler);
-	$test_spec = $tobj_mgr->get_subtree($nodeId);
+	  $test_spec = $tobj_mgr->get_subtree($nodeId);
     $useFilter=array('keyword_id' => false, 'tcase_id' => false);
 
   	if(($useFilter['keyword_id']=$filters['keyword_id'] > 0))
@@ -582,18 +595,20 @@ function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewTyp
 	  {
 	      foreach($test_spec as $key => $node)
 	      {
-		       if( ($node['node_type_id'] == $tcase_node_type) &&
-		       		 ($useFilter['keyword_id'] && !isset($tck_map[$node['id']])) ||
-		       		 ($useFilter['tcase_id'] && !in_array($node['id'],$testCaseSet))  
-		         )
-		       {
-		        
+	         if( ($node['node_type_id'] == $filters['tcase_node_type_id']) && 
+	         		 ( 
+	         		   ($useFilter['keyword_id'] && !isset($tck_map[$node['id']]) ) ||
+		       		   ($useFilter['tcase_id'] && !in_array($node['id'],$testCaseSet))
+		       		 )  
+	           )
+	         {
 		           $test_spec[$key]=null; 
 		       }
 		    }
 	  }
 
     unset($tobj_mgr);
+  
     return $test_spec;
 }
 

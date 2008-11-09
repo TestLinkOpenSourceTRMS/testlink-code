@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/08/13 15:06:56 $ by $Author: havlat $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/11/09 16:24:53 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * Revision:
+ *  20081109 - franciscom - added uncovered_testcases
  * 	20080813 - havlatm - removed metrics_tp_builds
  *
  * *********************************************************************************** */
@@ -95,7 +96,11 @@ $tlCfg->reports_list['list_problems'] = array(
 	'enabled' => 'bts',
 	'format' => 'HTML'
 );
-
-
+$tlCfg->reports_list['uncovered_testcases'] = array( 
+	'title' => 'link_report_uncovered_testcases',
+	'url' => 'lib/results/uncoveredTestCases.php',
+	'enabled' => 'req',
+	'format' => 'HTML'
+);
 // -------------------------------------------------------------------
 ?>

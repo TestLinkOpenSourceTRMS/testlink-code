@@ -1,8 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.5 2008/05/09 17:14:19 schlundus Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.6 2008/11/09 16:25:05 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
-        20070929 - franciscom - 
+        20081109 - franciscom - refactoring 
         20070113 - franciscom - use of smarty config file
 *}
 {include file="inc_head.tpl" openHead="yes"}
@@ -46,7 +46,7 @@ function pre_submit()
   <table>
 	<tr><td style="padding-right: 10px">{lang_get s='test_plan'}</td><td>
 	<select name="tplan_id" onchange="pre_submit();this.form.submit()">
-		{html_options options=$tplans selected=$tplan_id}
+		{html_options options=$gui->tplans selected=$gui->tplan_id}
 	</select><br />
 	</td></tr>
 	<tr><td style="padding-right: 10px"></td><td>
@@ -58,21 +58,22 @@ function pre_submit()
 
 <div style="margin:3px; padding: 15px 0px" >
 {* Build href menu *}
-{if $do_report.status_ok }
-  {section name=Row loop=$arrData}
-	<span><img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	  <a href="{$arrData[Row].href}format={$selectedReportType}&amp;tplan_id={$tplan_id}" 
-	     target="workframe">{$arrData[Row].name}</a></span><br />
-  {/section}
+{if $gui->do_report.status_ok }
+  {foreach from=$gui->menuItems item=menu}
+    <span><img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}" 
+	       target="workframe">{$menu.name}</a></span><br />
+  
+  {/foreach}
 {else}
-  {$do_report.msg}
+  {$gui->do_report.msg}
 {/if}
 </div>
 
 
 <script type="text/javascript">
-{if $workframe != ''}
-	parent.workframe.location='{$workframe}';
+{if $gui->workframe != ''}
+	parent.workframe.location='{$gui->workframe}';
 {/if}
 </script>
 

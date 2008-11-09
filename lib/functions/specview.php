@@ -2,13 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.23 $ $Author: franciscom $
- * @modified $Date: 2008/11/09 16:25:38 $
+ * @version $Revision: 1.24 $ $Author: franciscom $
+ * @modified $Date: 2008/11/09 21:38:47 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
  *     20081109 - franciscom - fixed filter on getTestSpecFromNode()
+ *                             fixed minor bug on $tsuite_tcqty processing
  *                             added new value for spec_view_type='uncoveredtestcases'.
  *
  *     20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
@@ -205,59 +206,96 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$out[$idx]['write_buttons'] = 'no';
   	$out[$idx]['testcase_qty'] = 0;
   	$out[$idx]['level'] = 1;
+		$out[$idx]['linked_testcase_qty'] = 0;
     
     $idx++;
     $tsuite_tcqty=array($id => 0);
     $parent_idx=-1;
-    
+
   	if(count($test_spec))
   	{
-  		$pivot = $test_spec[0];
+  		$pivot_tsuite = $test_spec[0];
   		$the_level = $out[0]['level']+1;
   		$level = array();
-  
+  		$tcase_memory = null;
   		foreach ($test_spec as $current)
   		{
   			if(is_null($current))
   				continue;
 
+        // In some situations during processing of testcase, a change of parent can
+        // exists, then we need to update $tsuite_tcqty
   			if($hash_id_descr[$current['node_type_id']] == "testcase")
-  			{
+  			{                                         
   				$tc_id = $current['id'];
   				$parent_idx = $hash_id_pos[$current['parent_id']];
   				$a_tsuite_idx[$tc_id] = $parent_idx;
   				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
-  				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
-  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
 
-  				// 20080811 - franciscom - BUGID 1650 (REQ)
-  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'] = array();
-  				
-  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
-  				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
-  				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
-
-  				$out[$parent_idx]['write_buttons'] = $write_status;
+          if($is_uncovered_view_type)
+          {
+              $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $linked_items[$tc_id]['external_id'];      
+          } 
+          else
+          {
+  				    $out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
+  				    $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
+              
+  				    // 20080811 - franciscom - BUGID 1650 (REQ)
+  				    $out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'] = array();
+  				    
+  				    $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
+  				    $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
+  				    $out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
+              
+  				    $out[$parent_idx]['write_buttons'] = $write_status;
+  				    $out[$parent_idx]['linked_testcase_qty'] = 0;
+  				    
+  				    // useful for tc_exec_assignment.php          
+  				    $out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
+  				    $out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
+          }
   				$out[$parent_idx]['testcase_qty']++;
-  				$out[$parent_idx]['linked_testcase_qty'] = 0;
-  				
-  				// useful for tc_exec_assignment.php          
-  				$out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
-  				$out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
-  				
   				$a_tcid[] = $current['id'];
+  				
+          // This piece is needed initialize in right way $tsuite_tcqty 
+          // in this kind of situation, for SubSuite2 
+          //
+          // Tsuite 1
+          //    |__ SubSuite1
+          //    |      |__TCX1
+          //    |      |__TCX2
+          //    |
+          //    |__ SubSuite2
+          //    |      |__TCY1
+          //    |      |__TCY2
+          //    |
+          //    |__ TCZ1
+          //
+          //               
+  				if( $tcase_memory['parent_id'] != $current['parent_id'] )
+  				{
+  				    if( !is_null($tcase_memory) )
+  				    {
+  				        $pidx = $hash_id_pos[$tcase_memory['parent_id']];
+  		            $xdx=$out[$pidx]['testsuite']['id'];
+   			          $tsuite_tcqty[$xdx]=$out[$pidx]['testcase_qty'];
+   			      }
+  				    $tcase_memory=$current;
+   				}  
   			}
   			else
   			{
+  			  // This node is a Test Suite
   			  if($parent_idx >= 0)
   			  { 
   			      $xdx=$out[$parent_idx]['testsuite']['id'];
   			      $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
   			  }
   			  
-  				if($pivot['parent_id'] != $current['parent_id'])
+  				if($pivot_tsuite['parent_id'] != $current['parent_id'])
   				{
-  					if ($pivot['id'] == $current['parent_id'])
+  					if ($pivot_tsuite['id'] == $current['parent_id'])
   					{
   						$the_level++;
   						$level[$current['parent_id']] = $the_level;
@@ -276,20 +314,21 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				    
   				// update pivot.
   				$level[$current['parent_id']] = $the_level;
-      		$pivot = $current;
-  	 
-  		    }
+      		$pivot_tsuite = $current;
+  		  }
   		} // foreach
   		
   		// Update after finished loop
   		if($parent_idx >= 0)
   		{ 
   		    $xdx=$out[$parent_idx]['testsuite']['id'];
-  			$tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
+   			  $tsuite_tcqty[$xdx]=$out[$parent_idx]['testcase_qty'];
   		}
 	} // count($test_spec))
+	
+	unset($tcase_memory);
 	$tsuite_tcqty[$id] = $out[$hash_id_pos[$id]]['testcase_qty'];
-
+    
   // This code has been replace (see below on Remove empty branches)
   // Once we have created array with testsuite and children testsuites
   // we are trying to remove nodes that has 0 test case count.
@@ -312,7 +351,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				}
 			}
 	}
-
 	   
   // 20081109 - franciscom
   // Collect information related to linked testcase versions
@@ -418,7 +456,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	
   // -----------------------------------------------------------------------------------------------
   // Remove empty branches
-  // Loop to compute test case qty on every level and prune test suite branchs that are empty
+  // Loop to compute test case qty ($tsuite_tcqty) on every level and prune test suite branchs that are empty
  	if( count($result['spec_view']) > 0)
 	{
       removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
@@ -459,13 +497,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   // We want to manage custom fields when user is doing test case execution assigment
 	if( count($result['spec_view']) > 0 && $add_custom_fields)
 	{    
-	  // Future implementation to improve function readability                      
-    // addCustomFieldsToView($result['spec_view'])
-    //
     addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
   }
   // --------------------------------------------------------------------------------------------
-
+  unset($tcase_mgr);
+  
   // 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
   $result['spec_view']= array_values($result['spec_view']);
   return $result;
@@ -533,7 +569,7 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	  $tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
 	  // With this pieces we implement the AND type of keyword filter.
 	  $testCaseSet = null;
-	if(!is_null($keywordsFilter))
+	  if(!is_null($keywordsFilter))
 	  { 
 		  $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
 		                                                         $keywordsFilter->items,$keywordsFilter->type);
@@ -677,7 +713,14 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
 	  
 } // function end	  
 
+/*
+  function: 
 
+  args :
+  
+  returns: 
+
+*/
 function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
 {
 	foreach($testSuiteSet as $key => $elem)
@@ -687,7 +730,7 @@ function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
       {
           $tsuiteTestCaseQty[$tsuite_id]=0;
       }    
-	  if( $elem['children_testsuites'] != '' )
+	    if( $elem['children_testsuites'] != '' )
       {
           $children=explode(',',$elem['children_testsuites']);
           foreach($children as $access_id)
@@ -706,7 +749,14 @@ function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
 } // function end	  
 
 
+/*
+  function: 
 
+  args :
+  
+  returns: 
+
+*/
 function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
 {
 	  // Important:
@@ -737,5 +787,4 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
       } // is_null($value)
     }
 } // function end	  
-
 ?>

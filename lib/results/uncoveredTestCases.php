@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: uncoveredTestCases.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/11/09 16:25:38 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/11/09 21:38:47 $ by $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
@@ -32,6 +32,7 @@ $gui->items = null;
 $gui->tproject_name = $args->tproject_name;
 $gui->has_reqspec = count($reqSpec) > 0;
 $gui->has_requirements = false;
+$gui->has_tc = false;
 
 if( $gui->has_reqspec )
 {
@@ -60,13 +61,26 @@ if($gui->has_requirements)
            " WHERE NT.description='testcase' AND NHA.id IN (" . implode(",",$tcasesID) . ") " .
            " and REQC.req_id IS NULL " ;
       $uncovered=$db->fetchRowsIntoMap($sql,'tc_id');
-    }
+   }
 }
 
 if( $gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
 {
-    $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
-                         $uncovered,null,null,array_keys($uncovered),1,0,0);
+    // Get external  ID
+    $testSet=array_keys($uncovered);
+    $inClause = implode(',',$testSet);
+    $sql=" SELECT distinct NHA.id AS tc_id, TCV.tc_external_id " .
+         " FROM nodes_hierarchy NHA,nodes_hierarchy NHB,tcversions TCV, node_types NT " .
+         " WHERE NHA.node_type_id=NT.id AND NHA.id=NHB.parent_id AND NHB.id=TCV.id " .
+         " AND NHA.id IN ({$inClause})  AND NT.description='testcase' ";
+    $external_id=$db->fetchRowsIntoMap($sql,'tc_id');
+    foreach($external_id as $key => $value)
+    {
+        $uncovered[$key]['external_id']=$value['tc_external_id'];  
+    }
+  
+    $out=gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
+                       $uncovered,null,null,$testSet,1,0,0);
     $gui->items = $out['spec_view'];
 }
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: uncoveredTestCases.tpl,v 1.1 2008/11/09 16:25:05 franciscom Exp $
+$Id: uncoveredTestCases.tpl,v 1.2 2008/11/09 21:38:26 franciscom Exp $
 
 Purpose: For a test project, list test cases that has no requirement assigned
 
@@ -22,7 +22,7 @@ rev: 20081109 - franciscom - BUGID 512
   {assign var=doit value=0}
 {/if}
 
-{if !$gui->has_requirements}
+{if $doit && !$gui->has_requirements}
 	<h2>{$labels.testproject_has_no_requirements}</h2>
   {assign var=doit value=0}
 {/if}
@@ -31,15 +31,11 @@ rev: 20081109 - franciscom - BUGID 512
     {if $gui->has_tc }
     {include file="inc_result_tproject_tplan.tpl" arg_tproject_name=$gui->tproject_name arg_tplan_name=''}	
     	{foreach from=$gui->items item=ts}
-    		{assign var="item_number" value=$item_number+1}
-    		{assign var="ts_id" value=$ts.testsuite.id}
-    		{assign var="div_id" value=div_$ts_id}
-    		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
+    		<div style="margin:0px 0px 0px {$ts.level}0px;">
         	<h3 class="testlink" style="padding:0px; margin:0px">{$ts.testsuite.name|escape}</h3> 
          {if $ts.testcase_qty gt 0 }
             <table border="0" cellspacing="0" style="font-size:small;" width="100%">
             {foreach from=$ts.testcases item=tcase}
-                {assign var='linked_version_id' value=$tcase.linked_version_id}
                 {assign var='tcID' value=$tcase.id}
                 <tr>
        			      <td>

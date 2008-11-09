@@ -1,13 +1,12 @@
--- $Revision: 1.6 $
--- $Date: 2008/10/30 09:12:26 $
+-- $Revision: 1.7 $
+-- $Date: 2008/11/09 16:29:18 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
+-- 20081109 - franciscom - added new right events_mgt
 -- 20081018 - franciscom - new indexes (suggested by schlundus) on events table 
---
 -- 20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
---
 -- 20080927 - franciscom - fix bug when migration tcversions.importance
 --
 -- Step 1 - Drops if needed
@@ -149,7 +148,9 @@ COMMENT ON TABLE db_version IS 'Updated to TL 1.8.0 Development - DB 1.2';
 INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
+INSERT INTO rights (id,description) VALUES (22,'events_mgt');
 
 INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,21);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,22);

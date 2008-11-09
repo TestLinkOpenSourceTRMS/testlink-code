@@ -1,10 +1,10 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.22 2008/10/30 09:08:36 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.23 2008/11/09 16:29:36 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
 #
-# 20081029 - franciscom - add events_mgmt right
+# 20081029 - franciscom - add events_mgt right
 #                         fixed typo error system_configuraton -> system_configuration
 # 20070724 - franciscom - BUGID 950 
 #            removed right with id=19
@@ -59,7 +59,7 @@ INSERT INTO `rights` (id,description) VALUES (18,'cfield_management');
 INSERT INTO `rights` (id,description) VALUES (19,'system_configuration');
 INSERT INTO `rights` (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO `rights` (id,description) VALUES (21,'mgt_view_usergroups');
-INSERT INTO `rights` (id,description) VALUES (22,'events_mgmt');
+INSERT INTO `rights` (id,description) VALUES (22,'events_mgt');
 
 
 # Rights for Administrator (admin role)

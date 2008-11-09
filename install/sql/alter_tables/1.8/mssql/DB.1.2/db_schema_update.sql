@@ -1,8 +1,10 @@
--- $Revision: 1.2 $
--- $Date: 2008/10/30 09:12:14 $
+-- $Revision: 1.3 $
+-- $Date: 2008/11/09 16:28:50 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
+--
+-- rev: 20081109 - franciscom - added new right events_mgt
 --
 -- DO NOT USE YET NEED TO BE COMPLETED 
 --
@@ -168,7 +170,9 @@ ALTER TABLE db_version ADD notes TEXT NULL;
 INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
+INSERT INTO rights (id,description) VALUES (22,'events_mgt');
 
 INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,21);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,22);

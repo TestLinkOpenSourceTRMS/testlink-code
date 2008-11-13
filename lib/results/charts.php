@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/10/28 09:54:49 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/11/13 14:22:37 $ by $Author: franciscom $
  * @author kevin
  *
  * Revisions:
@@ -48,14 +48,10 @@ $chartsUrl->topLevelSuitesBarChart = $pathToScripts . "topLevelSuitesBarChart.ph
 
 $gui->charts = array(lang_get('overall_metrics') => $chartsUrl->overallPieChart,
                      lang_get('results_by_keyword') => $chartsUrl->keywordBarChart,
-                lang_get('results_by_tester') => $chartsUrl->ownerBarChart,
-                lang_get('results_top_level_suites') => $chartsUrl->topLevelSuitesBarChart );
-                 
+                     lang_get('results_by_tester') => $chartsUrl->ownerBarChart,
+                     lang_get('results_top_level_suites') => $chartsUrl->topLevelSuitesBarChart );
        
 $smarty = new TLSmarty();
-// $smarty->assign("tplan_name",$tplan_name);
-// $smarty->assign('tproject_name', $tproject_name);
-// $smarty->assign("charts",$charts);
 $smarty->assign("gui",$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

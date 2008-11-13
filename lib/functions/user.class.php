@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/11/04 19:25:48 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
  *
  */
 
@@ -46,7 +46,7 @@ class tlUser extends tlDBObject
 	const E_PWDEMPTY = -64;
 	const E_PWDDONTMATCH = -128;
 	const E_LOGINALREADYEXISTS = -256;
-	
+	const E_EMAILFORMAT = -512;
 	const S_PWDMGTEXTERNAL = 2;
 	
 	//search options
@@ -410,7 +410,15 @@ class tlUser extends tlDBObject
 	
 	static public function checkEmailAdress($email)
 	{
-		return is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
+		global $tlCfg;
+			
+		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
+		if ($result == tl::OK)
+		{
+			if (!preg_match(config_get('user_email_valid_regex'),$email))
+				$result = self::E_EMAILFORMAT;
+		}
+		return $result;
 	}
 	
 	static public function checkFirstName($first)

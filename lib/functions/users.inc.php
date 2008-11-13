@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2008/11/04 19:25:48 $ $Author: schlundus $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -191,7 +191,10 @@ function getUserErrorMessage($code)
 		case tlUser::E_EMAILLENGTH:
 			$msg = lang_get('empty_email_address');
 			break;
-
+		case tlUser::E_EMAILFORMAT:
+			$msg = lang_get('no_good_email_address');
+			break;
+			
 		case tlUser::E_NOTALLOWED:
 			$msg = lang_get('user_login_valid_regex');
 			break;

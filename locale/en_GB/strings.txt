@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.356 $
- * @modified $Date: 2008/11/09 16:26:34 $ by $Author: franciscom $
+ * @version $Revision: 1.357 $
+ * @modified $Date: 2008/11/13 20:12:39 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -849,7 +849,7 @@ $TLS_choose_container = "Choose Test Suite";
 $TLS_inst_copy = "Copy Test Case to any Test Suite.";
 $TLS_inst_move = "Move Test Case to a different Test Suite.";
 $TLS_inst_copy_move_warning = "Important: You can only choose Test Suites belonging to this Test Project.";
-$TLS_title_mv_cp_tc = "Move/Copy Test Case";
+$TLS_title_mv_cp_tc = "Move / Copy Test Case";
 
 
 
@@ -1093,7 +1093,7 @@ $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test P
                             "Are you sure to delete the Test Project?";
 
 $TLS_tcase_id_prefix="Test Case ID prefix";
-$TLS_warning_empty_tcase_prefix = "Test Case prefix cannot be empty!";
+$TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
 // gui/templates/projectView.tpl
@@ -1668,9 +1668,9 @@ $TLS_req_status_not_testable = "Not testable";
 $TLS_req_status_valid = "Valid";
 $TLS_req_status_draft = 'Draft';
 $TLS_req_status_approved = 'Approved';
-$TLS_req_status_obsolete='Obsolete';
-$TLS_req_status_todo='To do';
-$TLS_req_status_changed='Modified';
+$TLS_req_status_obsolete = 'Obsolete';
+$TLS_req_status_todo = 'To do';
+$TLS_req_status_changed = 'Modified';
 
 $TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITLE</title><description>DESCRIPTION</description></requirement> ... </requirements>");
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
@@ -1864,11 +1864,9 @@ $TLS_opt_show_tc_keys = "TC related Keywords";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 
-
-
 // lib/project/projectedit.php
 $TLS_error_product_name_duplicate = "There's already Test Project named %s.";
-$TLS_error_tcase_prefix_exists = "Test Case prefix %s already exists";
+$TLS_error_tcase_prefix_exists = "Test Case ID prefix %s already exists";
 $TLS_info_no_more_prods = "No more Test Projects.";
 $TLS_info_product_activated = "Test Project was activated.";
 $TLS_info_product_inactivated = "Test Project was deactivated.";

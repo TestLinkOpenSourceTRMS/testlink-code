@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.27 $
-* @modified $Date: 2008/10/21 20:23:06 $ $Author: schlundus $
+* @version $Revision: 1.28 $
+* @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -173,8 +173,6 @@ function doCreate(&$dbHandler,&$argsObj)
 
     return $op;
 }
-
-
 
 
 /*

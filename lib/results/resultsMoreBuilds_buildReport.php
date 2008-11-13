@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.60 2008/09/28 10:04:43 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.61 2008/11/13 19:31:52 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -22,7 +22,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $args = init_args();
-$gui=initializeGui($db,$args);
+$gui = initializeGui($db,$args);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -47,10 +47,7 @@ if (!isset($_GET['report_type']))
 }
 
 displayReport($templateCfg->template_dir . 'resultsMoreBuilds_report.tpl', $smarty, $report_type);
-?>
 
-
-<?php
 function get_date_range($hash)
 {
     $date_range=new stdClass();

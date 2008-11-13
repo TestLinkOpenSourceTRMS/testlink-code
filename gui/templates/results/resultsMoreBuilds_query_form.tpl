@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.10 2008/09/24 20:17:54 schlundus Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.11 2008/11/13 19:31:52 schlundus Exp $
 @author Francisco Mancardi
 
 rev :
@@ -89,6 +89,7 @@ rev :
 		<tr>
 			<td>
 				<select name="keyword" size="{$keyword_qty}" >
+					<option value="0" >{lang_get s='any'}</option>
 					{foreach key=keyword_id item=keyword_name from=$gui->keywords->items}
 						<option value="{$keyword_id}" >{$gui->keywords->items[$keyword_id]|escape}</option>
 					{/foreach}

@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.63 2008/05/18 16:56:09 franciscom Exp $
+* $Id: resultsMoreBuilds.php,v 1.64 2008/11/13 19:31:52 schlundus Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -13,20 +13,18 @@
 *      20070901 - franciscom - refactoring
 *                              using reports_cfg
 **/
-require('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
 require_once('exec.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-
-$template_dir='results/';
-$gui=initializeGui($db);
+$template_dir = 'results/';
+$gui = initializeGui($db);
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($template_dir .'resultsMoreBuilds_query_form.tpl');
-
 
 /*
   function: get_status_for_reports_html_options
@@ -62,13 +60,13 @@ function get_status_for_reports_html_options()
 */
 function initializeGui(&$dbHandler)
 {
-    $gui=new stdClass();  
+    $gui = new stdClass();  
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
     
 
-    $gui->tplan_id=$_REQUEST['tplan_id'];
-    $gui->tproject_id=$_SESSION['testprojectID'];
+    $gui->tplan_id = $_REQUEST['tplan_id'];
+    $gui->tproject_id = $_SESSION['testprojectID'];
     
     
     $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
@@ -100,15 +98,13 @@ function initializeGui(&$dbHandler)
     $gui->report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
     $gui->build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
 
-
-
     $reports_cfg = config_get('reportsCfg');
     $startDate = time() - ($reports_cfg->start_date_offset);
-    $gui->selected_start_date=$startDate;
-    $gui->selected_start_time='00:00';
+    $gui->selected_start_date = $startDate;
+    $gui->selected_start_time = '00:00';
 
-    $gui->selected_end_date=null;
-    $gui->selected_end_time=null;
+    $gui->selected_end_date = null;
+    $gui->selected_end_time = null;
 
     return $gui;
 }

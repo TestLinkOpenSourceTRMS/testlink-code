@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.206 $
- * @modified $Date: 2008/11/14 17:32:42 $ by $Author: schlundus $
+ * @version $Revision: 1.207 $
+ * @modified $Date: 2008/11/14 18:01:44 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -277,6 +277,8 @@ $g_user_login_valid_regex='/^[\w \-]+$/';
 // TRUE => allow feature [STANDARD BEHAVIOUR]
 $g_user_self_signup = TRUE; 
 
+
+/** Regular expression to use when validating user email addresses */
 $g_user_email_valid_regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/";
 
 // ----------------------------------------------------------------------------

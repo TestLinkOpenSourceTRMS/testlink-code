@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2008/11/14 18:01:44 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -63,7 +63,7 @@ $TLS_problems_loading_xml_content="Unable to load XML data, Check your file.";
 $TLS_not_imported = "Not imported";
 $TLS_imported = "Imported";
 
-$TLS_exec_assign_no_testcase="Please select at least one Test Case.";
+$TLS_exec_assign_no_testcase="Bitte wählen Sie mindestens einen Testfall!";
 $TLS_select_at_least_one_testcase = "Bitte wählen Sie mindestens einen Testfall und ein Ziel!";
 $TLS_no_testcases_available = "Keine Testfälle oder Ziel-Testsuites verfügbar!";
 
@@ -93,12 +93,12 @@ $TLS_low = "Niedrig";
 $TLS_estimated_time_hours = "Geschätzte Zeit (Stunden):";
 $TLS_estimated_time_min = "Geschätzte Zeit (Minuten):";
 
-$TLS_config_check_warnings = "There are warnings on your configuration";
-$TLS_see_details_on_file="See details on file: %s";
-$TLS_start_warning='---- Warning ----';
-$TLS_testlink_warning='Test Link Warning';
-$TLS_testcase_name_too_long='test case name is too long (%s chars) > %s => has been truncated';
-$TLS_original_name='Original name';
+$TLS_config_check_warnings = "Es gibt Warnungen über Ihre Konfiguration";
+$TLS_see_details_on_file = "Details finden Sie unter: %s";
+$TLS_start_warning = '---- Warnung ----';
+$TLS_testlink_warning='TestLink Warnung';
+$TLS_testcase_name_too_long = 'Der Name des Testfalls ist zu lang (%s zeichen) > %s => wurde abgeschnitten';
+$TLS_original_name='Original Name';
 $TLS_end_warning='---- *** ----';
 
 
@@ -107,7 +107,7 @@ $TLS_btn_apply = "Anwenden";
 $TLS_btn_add = "Hinzufügen";
 $TLS_btn_assign = "Hinzufügen";
 $TLS_btn_cancel = "Abbrechen";
-$TLS_btn_close = "Schliessen";
+$TLS_btn_close = "Schließen";
 $TLS_btn_cp = "Kopieren";
 $TLS_btn_create = "Erstellen";
 $TLS_btn_delete = "Löschen";
@@ -138,9 +138,9 @@ $TLS_test_status_unknown = "Unbekannt";
 
 
 // Used on javascript logic to validate Custom Field values
-$TLS_warning_numeric_cf = "Benutzerdefiniertes Feld %s erlaubt nur numerische Werte";
-$TLS_warning_float_cf = "Benutzerdefiniertes Feld %s erlaubt nur numerische oder Fließkomma Werte";
-$TLS_warning_email_cf = "Benutzerdefiniertes Feld %s erlaubt nur Email-Adressen";
+$TLS_warning_numeric_cf = "Das Benutzerdefinierte Feld %s erlaubt nur numerische Werte";
+$TLS_warning_float_cf = "Das Benutzerdefinierte Feld %s erlaubt nur numerische oder Fließkomma Werte";
+$TLS_warning_email_cf = "Das Benutzerdefinierte Feld %s erlaubt nur Email-Adressen";
  
 // --------------------------------------------------------------------------------------
 // firstLogin.php
@@ -242,7 +242,7 @@ $TLS_tcexec_result = "Ergebnis:";
 $TLS_tcexec_results_for = "Ergebnis für:";
 
 // gui/templates/attachment404.tpl
-$TLS_error_attachment_not_found = "Fehler: Anhang nicht gefunden!";
+$TLS_error_attachment_not_found = "Fehler: Der Anhang wurde nicht gefunden!";
 $TLS_title_downloading_attachment = "Lade Anhang herunter";
 
 
@@ -296,8 +296,8 @@ $TLS_copy_keywords = "Stichwörter kopieren";
 $TLS_defined_exclam = "definiert !";
 $TLS_include_nested = "Inklusive Daten (nur Kopieren).";
 $TLS_sorry_further = "Es sind keine weiteren ";
-$TLS_title_move_cp = "Verschieben/Kopieren";
-$TLS_title_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_title_move_cp = "Verschieben / Kopieren";
+$TLS_title_move_cp_testcases = "Testfälle verschieben / kopieren";
 
 
 
@@ -325,7 +325,7 @@ $TLS_node_type_dbtable_testcases = $TLS_testcase;
 $TLS_alt_del_testsuite = "Diese Testsuite löschen";
 $TLS_alt_edit_testsuite = "Daten und Titel dieser Testsuite bearbeiten";
 $TLS_alt_move_cp_testsuite = "Diese Testsuite zu einem anderen Testprojekt verschieben oder kopieren";
-$TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_alt_move_cp_testcases = $TLS_title_move_cp_testcases;
 $TLS_btn_del_testsuite = "Löschen";
 $TLS_btn_edit_testsuite = "Ändern";
 $TLS_btn_execute_automatic_testcases = "Alle automatischen Testfälle ausführen";
@@ -335,7 +335,7 @@ $TLS_btn_export_testsuite = "Testsuite exportieren";
 $TLS_btn_import_tc = "Testfälle importieren";
 $TLS_btn_import_testsuite = "Testsuite importieren";
 $TLS_btn_move_cp_testsuite = "Verschieben / Kopieren";
-$TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_btn_move_cp_testcases = $TLS_title_move_cp_testcases;
 $TLS_btn_new_testsuite = "Neue Testsuite";
 $TLS_btn_new_tc = "Testfälle erstellen";
 $TLS_btn_reorder = "Testsuites umordnen";
@@ -350,7 +350,7 @@ $TLS_available_on = "Verfügbar für";
 $TLS_custom_field = "Benutzerdefiniertes Feld";
 $TLS_enable_on_design = "Verfügbar während <br>Test-Definition";
 $TLS_enable_on_exec = "Verfügbar während <br>Test-Ausführung";
-$TLS_enable_on_testplan_design = "Enable on <br />test plan design";
+$TLS_enable_on_testplan_design = "Verfügbar während <br />Testplan Erstellung";
 $TLS_label = "Beschriftung";
 $TLS_name = "Name";
 $TLS_popup_delete_custom_field = "Sind Sie sicher, dass Sie das benutzerdefinierte Feld löschen wollen?";
@@ -1920,7 +1920,7 @@ $TLS_link_report_overall_build = "Der gesamte Build Status";
 $TLS_link_report_reqs_coverage = "Report basierend auf Anforderungen";
 $TLS_link_report_test = "Testreport";
 $TLS_link_report_total_bugs = "Gesamtanzahl Fehler für jeden Testfall";
-
+$TLS_link_report_uncovered_testcases = "Report über nicht abgedeckte Testfälle";
 
 // lib/results/resultsSend.php
 $TLS_send_to_empty_email_warning = "Ohne Emailadresse kann die EMail nicht verschickt werden, das Feld darf nicht leer sein! Bitte geben Sie eine EmailAdresse ein.";

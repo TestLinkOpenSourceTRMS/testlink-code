@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.207 $
- * @modified $Date: 2008/11/14 18:01:44 $ by $Author: schlundus $
+ * @version $Revision: 1.208 $
+ * @modified $Date: 2008/11/15 18:08:59 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20081115 - franciscom - $tlCfg->testcase_cfg->search
  *     20081104 - franciscom - Added FOGBUGZ as BTS type
  *     20081103 - franciscom - Added GFORGE as BTS type
  *     20081006 - franciscom - config for rounding via nifty corners
@@ -573,6 +574,12 @@ $g_spec_cfg->automatic_tree_refresh = ENABLED;
 // DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
 $tlCfg->testcase_cfg->can_edit_executed = DISABLED;
 
+
+// To avoid perfomance problems on search test case feature,
+// we can decide when to inform user that results can not be displayed
+// due to too many results.
+$tlCfg->testcase_cfg->search=new stdClass();
+$tlCfg->testcase_cfg->search->max_qty_for_display=200;
         
 /** text template for a new Test Case summary, steps and expected_results */
 // object members has SAME NAME that FCK editor objects.

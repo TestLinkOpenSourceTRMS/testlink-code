@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.14 2008/10/26 11:49:12 schlundus Exp $
+$Id: tcView.tpl,v 1.15 2008/11/15 18:06:11 franciscom Exp $
 Purpose: smarty template - view test case in test specification
-rev: 20080322 - franciscom - php errors clean up
+
+rev: 20081115 - franciscom - refactoring to improve display when using on search feature 
+
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -11,28 +13,47 @@ rev: 20080322 - franciscom - php errors clean up
 {if $smarty.const.USE_EXT_JS_LIBRARY}
   {include file="inc_ext_js.tpl" css_only=1}
 {/if}
-
 </head>
+
+{assign var="my_style" value=""}
+{if $gui->hilite_testcase_name}
+    {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
+{/if}
 
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,version,title_test_case'}
+          s='no_records_found,other_versions,version,title_test_case,match_count'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
-<h1 class="title">{$labels.title_test_case}{$tlCfg->gui_title_separator_1}</h1>
-
+<h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
+</h1>
 {include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
 
 <div class="workBack">
+
+
 {if $gui->tc_current_version}
 {section name=idx loop=$gui->tc_current_version}
+
+		{assign var="tcID" value=$gui->tc_current_version[idx][0].testcase_id}
+
     {* Current active version *}
     {if $testcase_other_versions[idx] neq null}
         {assign var="my_delete_version" value="yes"}
     {else}
         {assign var="my_delete_version" value="no"}
     {/if}
-	<h2 class="title">{$gui->tc_current_version[idx][0].name|escape}</h2>
+  
+    <h2 style="{$my_style}">
+	  {if $gui->display_testcase_path}
+	      {foreach from=$gui->path_info[$tcID] item=path_part}
+	          {$path_part|escape} /
+	      {/foreach}
+	      <br>
+	  {/if}
+	  {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
+
+	
     {* added args_cf *}
 		{include file="$this_template_dir/tcView_viewer.tpl" 
 		         args_testcase=$gui->tc_current_version[idx][0]
@@ -53,13 +74,12 @@ rev: 20080322 - franciscom - php errors clean up
 		         args_tcase_cfg=$tcase_cfg
 		         args_users=$users
 
-		         args_tproject_name=$tprojectName
-		         args_tsuite_name=$parentTestSuiteName
+		         args_tproject_name=$gui->tprojectName
+		         args_tsuite_name=$gui->parentTestSuiteName
 		         }
 		
-		{assign var="tcID" value=$gui->tc_current_version[idx][0].testcase_id}
 		{assign var="bDownloadOnly" value=false}
-		{if $can_edit neq 'yes'}
+		{if $can_edit != 'yes'}
 			{assign var="bDownloadOnly" value=true}
 		{/if}
 		{include file="inc_attachments.tpl" 
@@ -129,7 +149,6 @@ rev: 20080322 - franciscom - php errors clean up
       	<script type="text/javascript">
       	{/literal}
  	  	      viewElement(document.getElementById('vers_{$vid}'),false);
-
     	  		{foreach item=my_testcase from=$testcase_other_versions[idx]}
   	  	      viewElement(document.getElementById('v_{$vid}_{$my_testcase.version}'),false);
 			      {/foreach}
@@ -138,6 +157,7 @@ rev: 20080322 - franciscom - php errors clean up
       	{/literal}
       	{* ---------------------------------------------------------------- *}
     {/if}
+    <br>
 {/section}
 {else}
 	{$labels.no_records_found}

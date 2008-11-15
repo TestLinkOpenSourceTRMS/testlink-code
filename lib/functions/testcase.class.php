@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.130 $
- * @modified $Date: 2008/11/03 22:02:50 $ $Author: franciscom $
+ * @version $Revision: 1.131 $
+ * @modified $Date: 2008/11/15 18:09:42 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20081103 - franciscom - change to show() to improve display when used in search test cases.
  * 20081103 - franciscom - minor refactoring on show()
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
  * 20080812 - franciscom - BUGID 1650 (REQ)
@@ -420,17 +421,34 @@ function get_all()
   returns:
 
   rev :
+       20081114 - franciscom -
+       added arguments and options that are useful when this method is
+       used to display test case search results.
+       path_info: map: key: testcase id
+                       value: array with path to test case, where:
+                              element 0 -> test project name
+                              other elements test suites name
+       
+       new options on viewer_args: hilite_testcase_name,show_match_count
+       
        20070930 - franciscom - REQ - BUGID 1078
        added disable_edit argument
 
 */
-function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewer_args = null)
+function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
+              $viewer_args = null,$path_info=null)
 {
   $gui = new stdClass();
+  $gui->parentTestSuiteName='';
+  $gui->path_info=$path_info;
+	$gui->tprojectName='';
+    
   $status_ok = 1;
-  $viewer_defaults=array('action' => '', 'msg_result' => '','user_feedback' => '',
+  $viewer_defaults=array('title' => lang_get('title_test_case'),
+                         'action' => '', 'msg_result' => '','user_feedback' => '',
                          'refresh_tree' => 'yes', 'disable_edit' => 0,
-                         'display_testproject' => 0,'display_parent_testsuite' => 0);
+                         'display_testproject' => 0,'display_parent_testsuite' => 0,
+                         'hilite_testcase_name' => 0,'show_match_count' => 0);
 
   if( !is_null($viewer_args) && is_array($viewer_args) )
   {
@@ -442,13 +460,19 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
           }
       }
   }
+  $gui->display_testcase_path=!is_null($path_info);
+  $gui->hilite_testcase_name=$viewer_defaults['hilite_testcase_name'];
+  $gui->pageTitle=$viewer_defaults['title'];
+  $gui->show_match_count=$viewer_defaults['show_match_count'];
+  if($gui->show_match_count && $gui->display_testcase_path )
+  {
+      $gui->match_count=count($path_info);  
+  }
 
 	$req_mgr = new requirement_mgr($this->db);
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
-	$tprojectName='';
-	$parentTestSuiteName='';
 	$requirements_feature=null;
 	$gui->tc_current_version = array();
 	$tc_other_versions = array();
@@ -477,13 +501,13 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 
       if( $viewer_defaults['display_testproject'] )
       {
-          $tprojectName=$info['name'];
+          $gui->tprojectName=$info['name'];
       }
 
       if( $viewer_defaults['display_parent_testsuite'] )
       {
           $parent_idx=count($path2root)-2;
-          $parentTestSuiteName=$path2root[$parent_idx]['name'];
+          $gui->parentTestSuiteName=$path2root[$parent_idx]['name'];
       }
 
       $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
@@ -555,8 +579,6 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,$viewe
 	$smarty->assign('sqlResult',$viewer_defaults['msg_result']);
 	$smarty->assign('action',$viewer_defaults['action']);
 	$smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
-	$smarty->assign('tprojectName',$tprojectName);
-	$smarty->assign('parentTestSuiteName',$parentTestSuiteName);
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('users',tlUser::getByIDs($this->db,$passeduserarray,'id'));

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2008/09/24 20:17:54 $ by $Author: schlundus $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2008/11/15 15:11:06 $ by $Author: schlundus $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -42,9 +42,8 @@ $gui->optResult['a'] = $str_option_any;
 $gui->users[0] = $str_option_any; 
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
-// $gui->tree=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
-
-$treeMenu=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);                                                
+$treeMenu=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);
+                                               
 $gui->tree=$treeMenu->menustring;
 
 if( !is_null($treeMenu->rootnode) )
@@ -324,11 +323,10 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->urgencyImportance = $argsObj->urgencyImportance;
     
     $filters->cf_hash = $exec_cfield_mgr->get_set_values();
-    $guiObj->args=initializeGetArguments($argsObj,$cfgObj,$filters->cf_hash);
+    $guiObj->args = initializeGetArguments($argsObj,$cfgObj,$filters->cf_hash);
     
-    //
-    $additionalInfo->useCounters=$cfgObj->exec->enable_tree_testcase_counters;
-    $additionalInfo->useColours=$cfgObj->exec->enable_tree_colouring;
+    $additionalInfo->useCounters = $cfgObj->exec->enable_tree_testcase_counters;
+    $additionalInfo->useColours = $cfgObj->exec->enable_tree_colouring;
 
 
     // link to load frame named 'workframe' when the update button is pressed
@@ -338,16 +336,14 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 	                              "?level=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
     }
        
-    // 20080620 - francisco.mancardi@gruppotesi.com
     $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
                                  $argsObj->tproject_id,$argsObj->tproject_name,
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
 
-     
-    if( $cfgObj->treemenu_type != 'EXTJS' )
+ 	if( $cfgObj->treemenu_type != 'EXTJS' )
     {
-        $treeMenu->menustring=invokeMenu($treeMenu->menustring,null,null);
+        $treeMenu->menustring = invokeMenu($treeMenu->menustring,null,null);
     }
 
     return $treeMenu;

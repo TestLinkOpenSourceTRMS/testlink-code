@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2008/11/14 18:01:44 $ $Author: schlundus $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -842,7 +842,7 @@ $TLS_password_reset = "Passwort zurücksetzen";
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "Ihre Suche lieferte keine Ergebnisse!";
 $TLS_other_versions = "Andere Versionen";
-
+$TLS_match_count = "Anzahl Treffer";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "Anhänge";

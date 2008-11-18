@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/11/04 19:58:04 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -29,10 +29,10 @@
 require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 
 // Add new bugtracking interfaces here
-$btslist=array('BUGZILLA','MANTIS','JIRA','TRACKPLUS',
+$btslist = array('BUGZILLA','MANTIS','JIRA','TRACKPLUS',
 				    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ');
 
-$bts=array_flip($btslist);
+$bts = array_flip($btslist);
 				
 //Set the bug tracking system Interface
 class bugtrackingInterface
@@ -299,9 +299,9 @@ global $g_interface_bugs;
 
 if (isset($bts[$g_interface_bugs]))
 {
-  $btsname=strtolower($g_interface_bugs);
-  $configPHP=$btsname . '.cfg.php';
-  $interfacePHP='int_' . $btsname . '.php';  
+	$btsname = strtolower($g_interface_bugs);
+	$configPHP = $btsname . '.cfg.php';
+	$interfacePHP = 'int_' . $btsname . '.php';  
 
 	require_once(TL_ABS_PATH . 'cfg/'. $configPHP);
 	require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfacePHP);

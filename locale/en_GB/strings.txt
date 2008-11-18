@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.357 $
- * @modified $Date: 2008/11/13 20:12:39 $ by $Author: schlundus $
+ * @version $Revision: 1.358 $
+ * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -862,7 +862,7 @@ $TLS_password_reset = "Reset password";
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "Your search delivered no results!";
 $TLS_other_versions = 'Other versions';
-
+$TLS_match_count = "Match count";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "attachments";

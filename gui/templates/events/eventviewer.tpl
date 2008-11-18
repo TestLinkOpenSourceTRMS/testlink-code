@@ -1,13 +1,8 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.19 2008/10/30 20:00:08 franciscom Exp $
+$Id: eventviewer.tpl,v 1.20 2008/11/18 20:54:42 schlundus Exp $
 
 Event Viewer
-
-rev: 20080207 - franciscom - cleaup
-
-//SCHLUNDUS: i will cleanup this file, when i'm finished
-
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}

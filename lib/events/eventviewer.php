@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/10/30 20:00:37 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
  *
  * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
@@ -15,7 +15,6 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
-
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -34,26 +33,25 @@ $endTime = null;
 
 switch($args->doAction)
 {
-  
     case 'clear':
-    $g_tlLogger->deleteEventsFor();
-    break;
+	    $g_tlLogger->deleteEventsFor();
+	    break;
     
     case 'filter':
-    default:
-    if (strlen($args->startDate))
-    {
-    	$startTime = strToTime($args->startDate);
-    	if (!$startTime)
-    		$startTime = null;
-    }
-    if (strlen($args->endDate))
-    {
-    	$endTime = strToTime($args->endDate) + (24*60*60-1);
-    	if (!$endTime)
-    		$endTime = null;
-    }
-    break;
+	default:
+	    if (strlen($args->startDate))
+	    {
+	    	$startTime = strToTime($args->startDate);
+	    	if (!$startTime)
+	    		$startTime = null;
+	    }
+	    if (strlen($args->endDate))
+	    {
+	    	$endTime = strToTime($args->endDate) + (24*60*60-1);
+	    	if (!$endTime)
+	    		$endTime = null;
+	    }
+    	break;
 }
 
 $events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
@@ -62,7 +60,7 @@ $users = getUsersForHtmlOptions($db,null,false,null);
 $users[0] = false;
 
 $gui = new stdClass();
-$gui->canDelete=has_rights($db,"events_mgt") ? 1: 0;
+$gui->canDelete = has_rights($db,"events_mgt") ? 1: 0;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -78,13 +76,13 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	  $args = new stdClass();
+	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
     $nullable_keys = array('logLevel','startDate','endDate','object_id',"object_type",'doAction');
-	  foreach($nullable_keys as $value)
-	  {
+	foreach($nullable_keys as $value)
+	{
 	  	$args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
-	  }
+	}
     return $args;
 }
 ?>

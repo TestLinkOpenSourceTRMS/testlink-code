@@ -5,24 +5,14 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/10/12 08:11:56 $ $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
  *
  */
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 
-$_POST = strings_stripSlashes($_POST);
-$bEditUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;
-$login = isset($_POST['loginName']) ? $_POST['loginName'] : null;
-$password = isset($_POST['password']) ? $_POST['password'] : null;
-$password2 = isset($_POST['password2']) ? $_POST['password2'] : null;
-$first = isset($_POST['first']) ? $_POST['first'] : null;
-$last = isset($_POST['last']) ? $_POST['last'] : null;
-$email = isset($_POST['email']) ? $_POST['email'] : null;
-
-doDBConnect($db);
 if (!config_get('user_self_signup'))
 {
 	$smarty = new TLSmarty();
@@ -34,6 +24,17 @@ if (!config_get('user_self_signup'))
 	exit();
 }
 
+$_POST = strings_stripSlashes($_POST);
+$bEditUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;
+$login = isset($_POST['loginName']) ? $_POST['loginName'] : null;
+$password = isset($_POST['password']) ? $_POST['password'] : null;
+$password2 = isset($_POST['password2']) ? $_POST['password2'] : null;
+$first = isset($_POST['first']) ? $_POST['first'] : null;
+$last = isset($_POST['last']) ? $_POST['last'] : null;
+$email = isset($_POST['email']) ? $_POST['email'] : null;
+
+doDBConnect($db);
+
 $message = lang_get('your_info_please');
 if($bEditUser)
 {
@@ -42,23 +43,23 @@ if($bEditUser)
 	else
 	{
 		$user = new tlUser();	
-		$sqlResult = $user->setPassword($password);
-		if ($sqlResult >= tl::OK)
+		$result = $user->setPassword($password);
+		if ($result >= tl::OK)
 		{
 			$user->login = $login;
 			$user->emailAddress = $email;
 			$user->firstName = $first;
 			$user->lastName = $last;
-			$sqlResult = $user->writeToDB($db);
+			$result = $user->writeToDB($db);
 		}
-		if ($sqlResult >= tl::OK)
+		if ($result >= tl::OK)
 		{
 			logAuditEvent(TLS("audit_users_self_signup",$login),"CREATE",$user->dbID,"users");
 			redirect(TL_BASE_HREF . "login.php?note=first");
 			exit();
 		}
 		else 
-			$message = getUserErrorMessage($sqlResult);
+			$message = getUserErrorMessage($result);
 	}
 }
 

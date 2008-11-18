@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2008/10/18 16:10:11 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -20,6 +20,7 @@ require_once('common.php');
 require_once('doAuthorize.php');
 
 $op = doDBConnect($db);
+//@TODO: schlundus, this kind of code should be contained within doDBConnect!
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
@@ -82,10 +83,9 @@ if (!is_null($login))
 $securityNotes = getSecurityNotes($db);
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method) ? 1 : 0;
-$login_disabled=($external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
+$login_disabled = ($external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
 
-// do not access config parameters in direct way USE ALWAYS config_get();
-$logPeriodToDelete=config_get('removeEventsOlderThan');
+$logPeriodToDelete = config_get('removeEventsOlderThan');
 $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
 
 $smarty = new TLSmarty();

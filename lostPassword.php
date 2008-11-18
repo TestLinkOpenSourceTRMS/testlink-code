@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/06/03 09:22:47 $ $Author: havlat $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
  *
  * rev: 20080212 - franciscom - fixed minor bug on call to logAuditEvent
 **/
@@ -19,6 +19,7 @@ $_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login']: null;
 
 $op = doDBConnect($db);
+//@TODO: schlundus, this kind of code should be contained within doDBConnect!
 if ($op['status'] == 0)
 {
 	$smarty = new TLSmarty();

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/05/09 20:15:15 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -20,8 +20,8 @@ require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once("keyword.class.php");
-
 testlinkInitPage($db);
+
 $smarty = new TLSmarty();
 
 $template_dir = 'keywords/';
@@ -60,8 +60,6 @@ else
 	$msg = getKeywordErrorMessage($op->status);
 
 $keywords = $tprojectMgr->getKeywords($args->testproject_id);
-$keyword = new tlKeyword();
-$export_types = $keyword->getSupportedSerializationInterfaces();
 
 $smarty->assign('user_feedback',$msg);
 $smarty->assign('canManage',$canManage);
@@ -92,8 +90,6 @@ function init_args()
 	$args->keyword_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
 	$args->keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
 	$args->notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
-	$args->do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
-	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
 
@@ -246,25 +242,25 @@ function getKeywordErrorMessage($code)
 {
 	switch($code)
 	{
-			case tlKeyword::E_NAMENOTALLOWED:
-				$msg = lang_get('keywords_char_not_allowed'); 
-				break;
+		case tlKeyword::E_NAMENOTALLOWED:
+			$msg = lang_get('keywords_char_not_allowed'); 
+			break;
 
-			case tlKeyword::E_NAMELENGTH:
-				$msg = lang_get('empty_keyword_no');
-				break;
+		case tlKeyword::E_NAMELENGTH:
+			$msg = lang_get('empty_keyword_no');
+			break;
 
-			case tlKeyword::E_DBERROR:
-			case ERROR: 
-				$msg = lang_get('kw_update_fails');
-				break;
+		case tlKeyword::E_DBERROR:
+		case ERROR: 
+			$msg = lang_get('kw_update_fails');
+			break;
 
-			case tlKeyword::E_NAMEALREADYEXISTS:
-				$msg = lang_get('keyword_already_exists');
-				break;
+		case tlKeyword::E_NAMEALREADYEXISTS:
+			$msg = lang_get('keyword_already_exists');
+			break;
 
-			default:
-				$msg = 'ok';
+		default:
+			$msg = 'ok';
   }
   return $msg;
 }

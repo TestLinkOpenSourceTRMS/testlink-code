@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -22,9 +22,9 @@ $id = isset($_GET['id'])? intval($_GET['id']) : 0;
 //the table to which the fk_id refers to (attachments.fk_table) of the attachment 
 $tableName = isset($_GET['tableName'])? $_GET['tableName'] : null;
 
-$bPostBack = sizeof($_POST);
 $bUploaded = false;
 $msg = null;
+$bPostBack = sizeof($_POST);
 if ($bPostBack > 2)
 {
 	$fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;

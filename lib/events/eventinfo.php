@@ -5,18 +5,16 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 
-$template_dir = 'events/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-$eventID = isset($_POST['id']) ? $_POST['id'] : null;
 $user = null;
+$eventID = isset($_POST['id']) ? intval($_POST['id']) : null;
 if ($eventID)
 {
 	$event = new tlEvent($eventID);
@@ -33,5 +31,5 @@ if ($eventID)
 $smarty = new TLSmarty();
 $smarty->assign("event",$event);
 $smarty->assign("user",$user);
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

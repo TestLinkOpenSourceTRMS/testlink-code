@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.28 $
-* @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
+* @version $Revision: 1.29 $
+* @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -36,8 +36,6 @@ $op->user_feedback = '';
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                        'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
                        'resetPassword' => 'doUpdate');
-
-// echo "<pre>debug 20080821 - \ - " . __FUNCTION__ . " --- "; print_r($args); echo "</pre>";
 
 switch($args->doAction)
 {
@@ -241,10 +239,8 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 		logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
 		$op->user_feedback = lang_get('password_reseted');
 	}
-	
-	echo "<pre>debug 20080821 - \ - " . __FUNCTION__ . " --- "; print_r($op); echo "</pre>";
+
 	return $op;
-	
 }
 
 

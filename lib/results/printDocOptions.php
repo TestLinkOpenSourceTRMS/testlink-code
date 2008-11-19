@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/10/02 19:18:44 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/11/19 07:22:56 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,8 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ *      20081116 - franciscom - fixed bug caused by missed $gui->ajaxTree->loadFromChildren=true
+ *                              
  *      20080819 - franciscom - fixed internal bug due to changes in return
  *                              values of generate*tree()
  *                              IMPORTANT: 
@@ -37,7 +39,6 @@ $arrFormat = array('html' => 'HTML', 'msword' => 'MS Word');
 // Important Notice:
 // If you made add/remove elements from this array, you must update
 // $printingOptions in printData.php
-
 $arrCheckboxes = array(
 	array( 'value' => 'toc', 'description' => lang_get('opt_show_toc'), 'checked' => 'n'),
 	array( 'value' => 'header', 'description' => lang_get('opt_show_doc_header'), 'checked' => 'n'),
@@ -89,33 +90,34 @@ switch($gui->report_type)
 	    $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
 	      
 	    $filters = new stdClass();
-  	    $additionalInfo = new stdClass();
+  	  $additionalInfo = new stdClass();
         
 	    $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
-  	    $filters->keywordsFilterType=null;
-  	    $filters->tc_id = FILTER_BY_TC_OFF;
-  	    $filters->build_id = $latestBuild;
-  	    $filters->hide_testcases=HIDE_TESTCASES;
-  	    $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-  	    $filters->status = FILTER_BY_TC_STATUS_OFF;
-  	    $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-  	    $filters->include_unassigned=1;
-  	    $filters->show_testsuite_contents=1;
+  	  $filters->keywordsFilterType=null;
+  	  $filters->tc_id = FILTER_BY_TC_OFF;
+  	  $filters->build_id = $latestBuild;
+  	  $filters->hide_testcases=HIDE_TESTCASES;
+  	  $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+  	  $filters->status = FILTER_BY_TC_STATUS_OFF;
+  	  $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+  	  $filters->include_unassigned=1;
+  	  $filters->show_testsuite_contents=1;
         
-  	    $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
-  	    $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+  	  $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+  	  $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
 	    $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
+	                                     $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
-        $treeString = $treeContents->menustring;
-        $gui->ajaxTree = new stdClass();
-        if($treemenu_type == 'EXTJS')
-        {
-            $gui->ajaxTree->root_node = $treeContents->rootnode;
-            $gui->ajaxTree->children = $treeContents->menustring;
-            $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
-        }
+      $treeString = $treeContents->menustring;
+      $gui->ajaxTree = new stdClass();
+      if($treemenu_type == 'EXTJS')
+      {
+          $gui->ajaxTree->root_node = $treeContents->rootnode;
+          $gui->ajaxTree->children = $treeContents->menustring;
+          $gui->ajaxTree->loadFromChildren=true;
+          $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+      }
     break;
 
     default:

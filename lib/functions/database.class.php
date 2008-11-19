@@ -3,10 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/09/28 10:03:03 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/11/19 07:24:54 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20081116 - franciscom - fetchColumnsIntoMap() added cumulative argument
  *
  * 20080722 - franciscom -  trying to solve memory usage problems, have add option
  *                          to enable/disable query execution log.
@@ -521,6 +523,8 @@ class database
 	 *
 	 * @param string $query the query to be executed
 	 * @param string $column the name of the column
+	 * @param booleam $bCumulative default 0
+	 *
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
@@ -547,10 +551,24 @@ class database
 	 * @param string $query the query to be executed
 	 * @param string $column1 the name of the column (keys for the map)
 	 * @param string $column2 the name of the second column (values of the map)
-	 * @return array return an assoc array whose keys are the values of column1 
-	 *				 and the values are the values of column2 
+	 * @param boolean $cumulative
+	 *                useful in situations with results set like
+	 *                col1   col2
+	 *                 X      A
+	 *                 X      B
+	 *                 Y      B
+	 *
+	 *        cumulative=0 -> return items= array('X' => 'B', 'Y' => 'B')
+	 *
+	 *        cumulative=1 -> return items= array('X' => array('A','B'), 'Y' => array('B') )
+	 *               
+	 * @return assoc array whose keys are the values of column1 and the values are:
+	 *
+	 *         cumulative=0  => the values of column2 
+	 *         cumulative=1  => array with the values of column2 
+	 *
 	 **/
-	function fetchColumnsIntoMap($query,$column1,$column2,$limit = -1)
+	function fetchColumnsIntoMap($query,$column1,$column2,$cumulative=0,$limit = -1)
 	{
 		$result = $this->exec_query($query,$limit);
 		$items = null;
@@ -558,7 +576,14 @@ class database
 		{
 			while ($myrow = $this->fetch_array($result))
 			{
-				$items[$myrow[$column1]] = $myrow[$column2];
+			  if($cumulative)
+			  {
+				  $items[$myrow[$column1]][] = $myrow[$column2];
+				}
+				else
+				{
+				  $items[$myrow[$column1]] = $myrow[$column2];
+				}  
 			}	
 		}
 		

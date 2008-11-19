@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/10/07 19:13:44 $ $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/11/19 17:57:22 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -499,7 +499,6 @@ class tlEventManager extends tlObjectWithDB
 		$query = "DELETE FROM events";
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
-		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
 		
 		$this->db->exec_query($query);
 		$query = "SELECT id FROM transactions t WHERE (SELECT COUNT(*) FROM events e WHERE e.transaction_id = t.id) = 0";

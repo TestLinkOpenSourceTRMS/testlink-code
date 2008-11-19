@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/03/18 20:11:26 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
  *
  * test case and test suites export
  *
@@ -24,9 +24,7 @@ require_once("xml.inc.php");
 require_once("keyword.class.php");
 testlinkInitPage($db);
 
-$template_dir = 'keywords/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
+$templateCfg = templateConfiguration();
 $args = init_args();
 
 $main_descr = lang_get('testproject') . TITLE_SEP . $args->testproject_name;
@@ -34,10 +32,6 @@ $fileName = is_null($args->export_filename) ? 'keywords.xml' : $args->export_fil
 
 switch ($args->doAction)
 {
-	case "export":
-		$op = export($smarty,$args);
-		break;
-
 	case "do_export":
 		$op = do_export($db,$smarty,$args);
 		break;
@@ -51,7 +45,7 @@ $smarty->assign('export_filename',$fileName);
 $smarty->assign('main_descr',$main_descr);
 $smarty->assign('action_descr', lang_get('export_keywords'));
 $smarty->assign('exportTypes',$exportTypes);
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
@@ -67,25 +61,6 @@ function init_args()
 
 	return $args;
 }
-
-/*
-  function: do_export
-            generate export file
-
-  args :
-  
-  returns: 
-
-*/
-function export(&$smarty,&$args)
-{
-	$ret = new stdClass();
-	$ret->template = 'keywordsExport.tpl';
-	$ret->status = 1;
-
-	return $ret;
-}
-
 
 
 /*
@@ -122,5 +97,4 @@ function do_export(&$db,&$smarty,&$args)
 		exit();
 	}
 }
-
 ?>

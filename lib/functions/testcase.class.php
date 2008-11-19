@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.131 $
- * @modified $Date: 2008/11/15 18:09:42 $ $Author: franciscom $
+ * @version $Revision: 1.132 $
+ * @modified $Date: 2008/11/19 20:44:01 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081103 - franciscom - change to show() to improve display when used in search test cases.
@@ -1936,7 +1936,7 @@ function addKeyword($id,$kw_id,$audit=self::AUDIT_ON)
   returns: 
 
 */
-function addKeywords($id,$kw_ids,$audit=self::AUDIT_ON)
+function addKeywords($id,$kw_ids,$audit = self::AUDIT_ON)
 {
 	$bSuccess = 1;
 	$num_kws = sizeof($kw_ids);
@@ -1946,6 +1946,21 @@ function addKeywords($id,$kw_ids,$audit=self::AUDIT_ON)
 	}
 
 	return $bSuccess;
+}
+/*
+  function: set's the keywords of the given testcase to the passed keywords
+
+  args :
+  
+  returns: 
+
+*/
+function setKeywords($id,$kw_ids,$audit = self::AUDIT_ON)
+{
+	$result = $this->deleteKeywords($id);   	 
+	if ($result && sizeof($kw_ids))
+		$result = $this->addKeywords($id,$kw_ids);
+	return $result;
 }
 
 function copyKeywordsTo($id,$destID)

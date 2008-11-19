@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.358 $
- * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
+ * @version $Revision: 1.359 $
+ * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1743,7 +1743,7 @@ $TLS_ldap_extension_not_loaded="Login method is configured as LDAP<br />" .
 $TLS_sec_note_admin_default_pwd = "You should change the default password for the 'admin' account!";
 $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 $TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
-
+$TLS_error_GD2_missing = "GD2 extension doesn't seem to be present. Charts will probably not work!";
 
 // lib/general/frmWorkArea.php
 $TLS_create_a_build = "Create a new build";

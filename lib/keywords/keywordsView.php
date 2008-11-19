@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  */
@@ -17,9 +17,6 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-
-$tlKeyword = new tlKeyword();
-$exportTypes = $tlKeyword->getSupportedSerializationInterfaces();
 
 $tproject = new testproject($db);
 $keywords = $tproject->getKeywords($args->testproject_id);

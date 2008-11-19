@@ -6,17 +6,17 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/09/20 21:02:54 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
  */
-require('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once('keyword.class.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
 
-$template_dir = 'keywords/';
+$templateCfg = templateConfiguration();
 
 $fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
 $source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;
@@ -49,7 +49,9 @@ if(!$msg && $bUpload)
 			if($pfn)
 			{
 				$tproject = new testproject($db);
-				if ($tproject->$pfn($testproject_id,$dest) != tl::OK)
+				$result = $tproject->$pfn($testproject_id,$dest);
+				@unlink($dest);
+				if ($result != tl::OK)
 					$msg = lang_get('wrong_keywords_file'); 
 				else
 				{
@@ -75,7 +77,6 @@ $smarty->assign('importTypes',$importTypes);
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tproject_id', $testproject_id);
 $smarty->assign('importLimit',TL_IMPORT_LIMIT);
-
-$smarty->display($template_dir . 'keywordsImport.tpl');
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>
 	

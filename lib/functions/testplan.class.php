@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/10/26 11:49:13 $ by $Author: schlundus $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1642,18 +1642,19 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
   rev :
         20061231 - franciscom - added $parent_id
 */
+//@TODO: schlundus, should be refactored, see testcase::getTestProjectFromTestCase and testcase::get_linked_cfields_at_design
 function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null)
 {
-  $enabled=1;
-  $tproject_mgr= new testproject($this->db);
-  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-  $path_len=count($the_path);
-  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+  $enabled = 1;
+  $tproject_mgr = new testproject($this->db);
+  $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
+  $path_len = count($the_path);
+  $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
                                                           $show_on_execution,'testplan',$id);
 
-  return($cf_map);
+  return $cf_map;
 }
 
 
@@ -1672,6 +1673,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
   rev :
         20061231 - franciscom - added $parent_id
 */
+//@TODO: schlundus, should be refactored, see testcase::getTestProjectFromTestCase and testcase::get_linked_cfields_at_design
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null)
 {
   $enabled=1;
@@ -1705,7 +1707,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
 
   if( $scope=='design' )
   {
-    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
+	$cf_map = $this->get_linked_cfields_at_design($id,$parent_id);
   }
   else
   {
@@ -1716,8 +1718,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   {
     foreach($cf_map as $cf_id => $cf_info)
     {
-      // 20070501 - franciscom
-      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+       $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
       $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                     $this->cfield_mgr->string_custom_field_input($cf_info) .
                     "</td></tr>\n";

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2008/11/03 07:32:10 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2008/11/19 20:44:01 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -112,6 +112,9 @@ function checkForExtensions(&$msg)
 	if (!function_exists('domxml_open_file'))
 		$msg[] = lang_get("error_domxml_missing");
 	
+	if (!checkForGD2Extension())
+		$msg[] = lang_get("error_GD2_missing");
+		
 	return $bSuccess;
 }
 
@@ -171,6 +174,11 @@ function checkForLDAPExtension()
 	return extension_loaded("ldap");
 }
 
+function checkForGD2Extension()
+{
+	return extension_loaded("gd");
+}
+
 /**
  * builds the security notes while checking some security issues
  * these notes should be displayed!
@@ -187,8 +195,6 @@ function checkForLDAPExtension()
  **/
 function getSecurityNotes(&$db)
 {
-  
-
 	$repository['type'] = config_get('repositoryType');
 	$repository['path'] = config_get('repositoryPath');
   

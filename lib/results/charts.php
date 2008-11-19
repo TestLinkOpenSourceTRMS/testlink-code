@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/11/13 14:22:37 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/11/19 07:23:30 $ by $Author: franciscom $
  * @author kevin
  *
  * Revisions:
@@ -32,6 +32,8 @@ $resultsCfg=config_get('results');
 
 // Save in session to improve perfomance.
 // This data will be used in different *chart.php to generate on the fly image
+unset($_SESSION['statistics']);
+
 $re=new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 $_SESSION['statistics']['getTotalsForPlan']=$re->getTotalsForPlan();
 $_SESSION['statistics']['getTopLevelSuites'] = $re->getTopLevelSuites();

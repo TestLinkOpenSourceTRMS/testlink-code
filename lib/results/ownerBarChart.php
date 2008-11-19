@@ -1,11 +1,12 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.12 2008/11/13 14:22:37 franciscom Exp $ 
+* $Id: ownerBarChart.php,v 1.13 2008/11/19 07:23:30 franciscom Exp $ 
 *
 * @author	Kevin Levy
 *
-* rev: 20081113 - franciscom - BUGID 1848
+* rev: 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
+*      20081113 - franciscom - BUGID 1848
 * 
 */
 require_once('../../config.inc.php');
@@ -41,14 +42,24 @@ function getDataAndScale(&$dbHandler)
     $obj->canDraw=!is_null($dataSet);
     if($obj->canDraw)
     {
+        // -----------------------------------------------------
+        // Process to enable alphabetical order
         foreach($dataSet as $tester_id => $elem)
         {
-            $items[] = htmlspecialchars($elem['tester_name']);   
-            foreach($elem['details'] as $status => $value)
+            $item_descr[$elem['tester_name']] = $tester_id;
+        }  
+        ksort($item_descr);
+        // -----------------------------------------------------
+
+        foreach($item_descr as $name => $tester_id)
+        {
+            $items[]=htmlspecialchars($name);
+            foreach($dataSet[$tester_id]['details'] as $status => $value)
             {
                 $totals[$status][]=$value['qty'];  
             }    
-        }  
+        }
+
     }
     $obj->xAxis=new stdClass();
     $obj->xAxis->values = $items;

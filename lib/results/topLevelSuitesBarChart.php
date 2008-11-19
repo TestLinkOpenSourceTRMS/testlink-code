@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: topLevelSuitesBarChart.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/11/13 14:22:37 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/11/19 07:23:30 $ by $Author: franciscom $
  *
  * @author	Kevin Levy
  *
- * rev: 20081113 - franciscom - BUGID 1848
+* rev: 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
+*      20081113 - franciscom - BUGID 1848
  *
  */
 require_once('../../config.inc.php');
@@ -47,19 +48,28 @@ function getDataAndScale(&$dbHandler)
     $obj->canDraw=!is_null($dataSet);
     if($obj->canDraw) 
     {
-        foreach($dataSet as $tsuite )
+        // -----------------------------------------------------
+        // Process to enable alphabetical order
+        foreach($dataSet as $tsuite)
         {
-            $rmap = $mapOfAggregate[$tsuite['id']];
-        	  $items[] = htmlspecialchars($tsuite['name']);
-
+            $item_descr[$tsuite['name']] = $tsuite['id'];
+        }  
+        ksort($item_descr);
+        // -----------------------------------------------------
+        
+        foreach($item_descr as $name => $tsuite_id)
+        {
+            $items[]=htmlspecialchars($name);
+            $rmap = $mapOfAggregate[$tsuite_id];
+             
             unset($rmap['total']);
         	  foreach($rmap as $key => $value)
         	  {
         		    $totals[$key][]=$value;  
         	  }
-        } 
+        }
     } // end if 
-
+    
     $obj->xAxis=new stdClass();
     $obj->xAxis->values = $items;
     $obj->xAxis->serieName = 'Serie8';

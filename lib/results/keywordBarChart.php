@@ -1,13 +1,14 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: keywordBarChart.php,v 1.12 2008/11/13 14:22:37 franciscom Exp $ 
+ * $Id: keywordBarChart.php,v 1.13 2008/11/19 07:23:30 franciscom Exp $ 
  *
  * @author	Kevin Levy
  *
  * - PHP autoload feature is used to load classes on demand
  *
- * rev: 20081113 - franciscom - BUGID 1848
+ * rev: 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
+ *      20081113 - franciscom - BUGID 1848
  */
 require_once('../../config.inc.php');
 require_once('charts.inc.php');
@@ -18,7 +19,7 @@ $cfg->chartTitle=lang_get('results_by_keyword');
 $cfg->XSize=650;
 $cfg->YSize=250;
 $cfg->scale=new stdClass();
-$cfg->scale->legendXAngle=0;
+$cfg->scale->legendXAngle=25;
 
 $info=getDataAndScale($db);
 createChart($info,$cfg);
@@ -43,15 +44,26 @@ $totals = null;
 
 if($obj->canDraw)
 {
+    // -----------------------------------------------------
+    // Process to enable alphabetical order
     foreach($dataSet as $keyword_id => $elem)
     {
-        $items[] = htmlspecialchars($elem['keyword_name']);
-        foreach($elem['details'] as $status => $value)
+        $item_descr[$elem['keyword_name']] = $keyword_id;
+    }  
+    ksort($item_descr);
+    // -----------------------------------------------------
+    
+    foreach($item_descr as $name => $keyword_id)
+    {
+        $items[]=htmlspecialchars($name);
+        // $elem=$dataSet[$keyword_id];
+        foreach($dataSet[$keyword_id]['details'] as $status => $value)
         {
             $totals[$status][]=$value['qty'];  
         }    
-    }  
+    }
 } 
+
 $obj->xAxis=new stdClass();
 $obj->xAxis->values = $items;
 $obj->xAxis->serieName = 'Serie8';
@@ -77,17 +89,17 @@ if(!is_null($totals))
         $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
   
         // needed to get values to set scale
-        rsort($values);
-        if( $values[0] > $obj->scale->maxY )
-        {
-           $obj->scale->maxY = $values[0];
-        }
-        if( $values[$minPos] < $obj->scale->minY )
-        {
-           $obj->scale->minY = $values[$minPos];
-        }
+        // rsort($values);
+        // if( $values[0] > $obj->scale->maxY )
+        // {
+        //    $obj->scale->maxY = $values[0];
+        // }
+        // if( $values[$minPos] < $obj->scale->minY )
+        // {
+        //    $obj->scale->minY = $values[$minPos];
+        // }
     }
-    $obj->scale->divisions=$obj->scale->maxY;
+    // $obj->scale->divisions=$obj->scale->maxY;
 }
     
     

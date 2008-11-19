@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.24 $ $Author: franciscom $
- * @modified $Date: 2008/11/09 21:38:47 $
+ * @version $Revision: 1.25 $ $Author: franciscom $
+ * @modified $Date: 2008/11/19 07:24:00 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20081116 - franciscom - BUGID
  *     20081109 - franciscom - fixed filter on getTestSpecFromNode()
  *                             fixed minor bug on $tsuite_tcqty processing
  *                             added new value for spec_view_type='uncoveredtestcases'.
@@ -542,7 +543,7 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 
 
 /*
-  function: 
+  function: keywordFilteredSpecView
 
   args :
   
@@ -551,6 +552,7 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 */
 function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
+    define('PRUNE_REMOVE_UNLINKED_TCVERSIONS',1);
 	  $tsuiteMgr = new testsuite($dbHandler); 
 	  $tprojectMgr = new testproject($dbHandler); 
 	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
@@ -576,8 +578,8 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 		  $testCaseSet = array_keys($keywordsTestCases);
     }
     $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-                         $tplan_linked_tcversions,null,
-                         $argsObj->keyword_id,$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,1,0,1);
+                         $tplan_linked_tcversions,null,$argsObj->keyword_id,
+                         $testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,PRUNE_REMOVE_UNLINKED_TCVERSIONS);
 
     return $out;
 }
@@ -664,6 +666,8 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
 {
 	  foreach($testSuiteSet as $key => $value)
 	  {
+        //echo "<pre>debug 20081116 - \ - " . __FUNCTION__ . " --- "; print_r($value); echo "</pre>";
+
 	      // We will remove test suites that meet the empty conditions:
 	      // - do not contain other test suites    OR
 	      // - do not contain test cases
@@ -672,10 +676,11 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
 	      {
 	          unset($testSuiteSet[$key]);
 	      }
-	      else if ($pruneUnlinkedTcversions)
+	      else if ($pruneUnlinkedTcversions &&
+	               (isset($value['testcase_qty']) && $value['testcase_qty'] > 0) )
 	      {
-            // only linked tcversion must be returned, if test suite has no linked tcversion
-            // must be removed
+            // only linked tcversion must be returned, but this analisys must be done
+            // for test suites that has test cases.
 	          if( isset($value['linked_testcase_qty']) && $value['linked_testcase_qty']== 0)
 	          {
 	              unset($testSuiteSet[$key]);

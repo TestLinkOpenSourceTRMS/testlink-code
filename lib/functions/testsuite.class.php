@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/10/29 19:38:37 $ - $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2008/11/19 21:02:58 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -952,7 +952,8 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 		return $cf_map;
 	}
 	
-	//@TODO: schlundus, same as in Testcase.class => refactor
+	//@TODO: schlundus, same function as in Testcase.class / TestPlan.class / Testsuite => refactor as it's always the same principle
+	// get the project Node from one of different node types
 	function getTestProjectFromTestSuite($id,$parent_id)
 	{
 		$tproject_mgr = new testproject($this->db);

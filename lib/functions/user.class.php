@@ -5,13 +5,10 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2008/11/19 21:02:58 $ $Author: schlundus $
  *
  */
-
-//SCHLUNDUS: I will cleanup this file step by step
-//SCHLUNDUS: not completed
 class tlUser extends tlDBObject
 {
 	private $object_table = "users";
@@ -31,7 +28,6 @@ class tlUser extends tlDBObject
 	protected $password;
 	
 	//configuration options
-	protected $showRealname;
 	protected $usernameFormat;
 	protected $loginMethod;
 	protected $maxLoginLength;
@@ -62,7 +58,6 @@ class tlUser extends tlDBObject
 		
 		parent::__construct($dbID);
 		
-		$this->showRealname = config_get('show_realname');
 		$this->usernameFormat = config_get('username_format');
 		$this->loginRegExp = config_get('user_login_valid_regex');
 		$this->maxLoginLength = 30; 
@@ -245,9 +240,6 @@ class tlUser extends tlDBObject
 
 	public function getDisplayName()
 	{
-		if (!$this->showRealname)
-			return $this->login;
-
 		$keys = array('%first%','%last%','%login%','%email%');
 		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
 		

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.208 $
- * @modified $Date: 2008/11/15 18:08:59 $ by $Author: franciscom $
+ * @version $Revision: 1.209 $
+ * @modified $Date: 2008/11/19 21:02:58 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -328,16 +328,6 @@ $tlCfg->gui->round_corners=new stdClass();
 $tlCfg->gui->round_corners->exec_history=ENABLED;
 $tlCfg->gui->round_corners->tc_title=ENABLED;
 $tlCfg->gui->round_corners->tc_spec=ENABLED;
-
-
-/** 
- * Display name and surname in all user lists using a format defined in $g_username_format
- * TRUE - build a human readable display 
- * FALSE - show login name
- * @TODO - remove these useless parameter and use a format only (via $tlCfg->username_format)
- *         20080902 - franciscom - need to think if is really useless
- */ 
-$tlCfg->show_realname = FALSE;
 
 /** Display name definition (used to build a human readable display name for users) */
 // '%first% %last%'          -> John Cook
@@ -870,7 +860,6 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width);
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
 $g_login_method = $tlCfg->authentication['method'];
 $g_log_level=$tlCfg->log_level;
-$g_show_realname = $tlCfg->show_realname;
 $g_username_format = $tlCfg->username_format;
 $g_dashboard_precision = $tlCfg->dashboard_precision;
 $g_tree_show_testcase_id = $tlCfg->treemenu_show_testcase_id;

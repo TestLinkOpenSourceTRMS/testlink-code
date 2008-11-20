@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/10/30 20:00:37 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -15,7 +15,8 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("web_editor.php");
-$editorCfg=getWebEditorCfg('role');
+
+$editorCfg = getWebEditorCfg('role');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
@@ -28,42 +29,35 @@ $op = initialize_op();
 
 $owebeditor = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $owebeditor->Value = null;
-$canManage=has_rights($db,"role_management") ? true : false;
-
+$canManage = has_rights($db,"role_management") ? true : false;
 
 switch($args->doAction)
 {
-    case 'create':
+	case 'create':
 		break;
 
-	  case 'edit':
-		    $op->role = tlRole::getByID($db,$args->roleid);
+	case 'edit':
+	    $op->role = tlRole::getByID($db,$args->roleid);
 		break;
 
-	  case 'doCreate':
-	  	  if($canManage)
-	  	  {
-	  	  	$op = doCreate($db,$args);
-	  	  	$templateCfg->template=$op->template;
+	case 'doCreate':
+	case 'doUpdate':
+		if($canManage)
+	  	{
+	  	  	$op = doOperation($db,$args,$args->doAction);
+	  	  	$templateCfg->template = $op->template;
         }
-	  break;
-
-	  case 'doUpdate':
-	  	  if($canManage)
-	  	  {
-	  	  	$op = doUpdate($db,$args);
-	  	  	$templateCfg->template=$op->template;
-        }
-	  break;
+		break;
+	default:
+		break;
 }
 
-$gui=complete_gui($db,$gui,$args,$op->role,$owebeditor);
-$gui->userFeedback=$op->userFeedback;
+$gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
+$gui->userFeedback = $op->userFeedback;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->assign('highlight',$gui->highlight);
-
 renderGui($smarty,$args,$templateCfg);
 
 /*
@@ -76,43 +70,15 @@ renderGui($smarty,$args,$templateCfg);
 */
 function init_args()
 {
-  $args = new stdClass();
+	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-
+	
 	$key2loop = array('doAction' => null,'rolename' => null , 'roleid' => 0, 'notes' => '', 'grant' => null);
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
 	}
 	return $args;
-}
-
-/*
-  function: doCreate
-
-  args:
-
-  returns:
-
-*/
-function doCreate(&$dbHandler,$argsObj)
-{
-  $op=doOperation($dbHandler,$argsObj,'doCreate');
-	return $op;
-}
-
-/*
-  function: doUpdate
-
-  args:
-
-  returns:
-
-*/
-function doUpdate(&$dbHandler,$argsObj)
-{
-  $op=doOperation($dbHandler,$argsObj,'doUpdate');
-	return $op;
 }
 
 
@@ -128,45 +94,42 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 {
 	$rights = implode("','",array_keys($argsObj->grant));
 
-  $op = new stdClass();
+	$op = new stdClass();
  	$op->role = new tlRole();
 	$op->role->rights = tlRight::getAll($dbHandler,"WHERE description IN ('{$rights}')");
 	$op->role->name = $argsObj->rolename;
 	$op->role->description = $argsObj->notes;
 	$op->role->dbID = $argsObj->roleid;
-  $op->userFeedback = null;
-  $op->template = 'rolesEdit.tpl';
-
-  switch($operation)
-  {
-      case 'doCreate':
-          $auditCfg['msg']="audit_role_created";
-          $auditCfg['activity']="CREATE";
-      break;
-
-      case 'doUpdate':
-          $auditCfg['msg']="audit_role_saved";
-          $auditCfg['activity']="SAVE";
-      break;
-
-  }
+	$op->userFeedback = null;
+	$op->template = 'rolesEdit.tpl';
 
 	$result = $op->role->writeToDB($dbHandler);
 	if ($result >= tl::OK)
 	{
-		  logAuditEvent(TLS($auditCfg['msg'],$argsObj->rolename),$auditCfg['activity'],$op->role->dbID,"roles");
-		  $op->template = null;
-  }
-  else
-  {
-      $op->userFeedback = getRoleErrorMessage($result);
-  }
+		$auditCfg = null;
+		switch($operation)
+		{
+	    	case 'doCreate':
+				$auditCfg['msg'] = "audit_role_created";
+				$auditCfg['activity'] = "CREATE";
+				break;
+	
+			case 'doUpdate':
+	        	$auditCfg['msg'] = "audit_role_saved";
+				$auditCfg['activity'] = "SAVE";
+				break;
+		}
+		
+		logAuditEvent(TLS($auditCfg['msg'],$argsObj->rolename),$auditCfg['activity'],$op->role->dbID,"roles");
+		$op->template = null;
+	}
+	else
+	{
+    	$op->userFeedback = getRoleErrorMessage($result);
+	}
 
-  return $op;
+	return $op;
 }
-
-
-
 
 /*
   function: renderGui
@@ -178,35 +141,34 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 */
 function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 {
-    $doRender=false;
+    $doRender = false;
     switch($argsObj->doAction)
     {
-        case "edit":
+		case "edit":
         case "create":
-        $doRender=true;
+        	$doRender = true;
     		$tpl = $templateCfg->default_template;
     		break;
 
-	      case "doCreate":
+		case "doCreate":
         case "doUpdate":
-        if( !is_null($templateCfg->template) )
-        {
-            $doRender=true;
-            $tpl = $templateCfg->template;
-        }
-        else
-        {
- 	  				header("Location: rolesView.php");
-	  				exit();
-        }
+        	if(!is_null($templateCfg->template))
+        	{
+            	$doRender = true;
+            	$tpl = $templateCfg->template;
+        	}
+        	else
+        	{
+ 	  			header("Location: rolesView.php");
+	  			exit();
+        	}
     		break;
-
-    }
+	}
 
     if($doRender)
     {
-		    $smartyObj->display($templateCfg->template_dir . $tpl);
-	  }
+		$smartyObj->display($templateCfg->template_dir . $tpl);
+	}
 }
 
 
@@ -222,15 +184,16 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 */
 function getRightsCfg()
 {
-    $cfg=new stdClass();
-    $cfg->tplan_mgmt=config_get('rights_tp');
-    $cfg->tcase_mgmt=config_get('rights_mgttc');
-    $cfg->kword_mgmt=config_get('rights_kw');
-    $cfg->tproject_mgmt=config_get('rights_product');
-    $cfg->user_mgmt=config_get('rights_users');
-    $cfg->req_mgmt=config_get('rights_req');
-    $cfg->cfield_mgmt=config_get('rights_cf');
-    $cfg->system_mgmt=config_get('rights_system');
+    $cfg = new stdClass();
+    $cfg->tplan_mgmt = config_get('rights_tp');
+    $cfg->tcase_mgmt = config_get('rights_mgttc');
+    $cfg->kword_mgmt = config_get('rights_kw');
+    $cfg->tproject_mgmt = config_get('rights_product');
+    $cfg->user_mgmt = config_get('rights_users');
+    $cfg->req_mgmt = config_get('rights_req');
+    $cfg->cfield_mgmt = config_get('rights_cf');
+    $cfg->system_mgmt = config_get('rights_system');
+    
     return $cfg;
 }
 
@@ -245,12 +208,12 @@ function getRightsCfg()
 */
 function initialize_gui($editorType)
 {
-    $gui=new stdClass();
+    $gui = new stdClass();
     $gui->checkboxStatus = null;
     $gui->userFeedback = null;
     $gui->affectedUsers = null;
     $gui->highlight = initialize_tabsmenu();
-    $gui->editorType=$editorType;
+    $gui->editorType = $editorType;
 
     return $gui;
 }
@@ -265,9 +228,10 @@ function initialize_gui($editorType)
 */
 function initialize_op()
 {
-    $op=new stdClass();
-    $op->role=new tlRole();
-    $op->userFeedback='';
+    $op = new stdClass();
+    $op->role = new tlRole();
+    $op->userFeedback = '';
+    
     return $op;
 }
 
@@ -288,22 +252,21 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
                                   'doCreate' => 'create_role', 'doUpdate' => 'edit_role');
 
 
-    $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction]=1;
+    $guiObj->highlight->$actionCfg['highlight'][$argsObj->doAction] = 1;
     $guiObj->operation = $actionCfg['operation'][$argsObj->doAction];
-    $guiObj->role=$roleObj;
-    $guiObj->grants=getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
-    $guiObj->rightsCfg=getRightsCfg();
-	  $guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+    $guiObj->role = $roleObj;
+    $guiObj->grants = getGrantsForUserMgmt($dbHandler,$_SESSION['currentUser']);
+    $guiObj->rightsCfg = getRightsCfg();
+	$guiObj->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
 
     // Create status for all checkboxes and set to unchecked
-    foreach( $guiObj->rightsCfg as $grantDetails )
+    foreach($guiObj->rightsCfg as $grantDetails)
     {
         foreach( $grantDetails as $grantCode => $grantDescription )
         {
-            $guiObj->checkboxStatus[$grantCode] ="";
+			$guiObj->checkboxStatus[$grantCode] = "";
         }
     }
-
 
     if($roleObj->dbID)
     {
@@ -318,10 +281,10 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     	    }
     	}
     	//get all users which are affected by changing the role definition
-      $guiObj->affectedUsers = $roleObj->getAllUsersWithRole($dbHandler);
+		$guiObj->affectedUsers = $roleObj->getAllUsersWithRole($dbHandler);
     }
 
-    $guiObj->notes=$webEditorObj->CreateHTML();
+    $guiObj->notes = $webEditorObj->CreateHTML();
     return $guiObj;
 }
 ?>

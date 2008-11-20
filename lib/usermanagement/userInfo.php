@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.25 $
-* @modified $Date: 2008/08/12 19:21:23 $
+* @version $Revision: 1.26 $
+* @modified $Date: 2008/11/20 21:10:45 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -16,9 +16,7 @@ require_once('users.inc.php');
 require_once('../../lib/api/APIKey.php');
 testlinkInitPage($db);
 
-$template_dir = 'usermanagement/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
+$templateCfg = templateConfiguration();
 $args = init_args();
 
 $user = new tlUser($args->userID);
@@ -27,10 +25,9 @@ $user->readFromDB($db);
 $op = new stdClass();
 $op->auditMsg = null;
 $op->user_feedback = null;
-$doUpdate = 0;
-
 $op->status = tl::OK;
 
+$doUpdate = 0;
 switch($args->doAction)
 {
     case 'editUser':
@@ -46,11 +43,11 @@ switch($args->doAction)
 
     case 'changePassword':
 	    $op = changePassword($args,$user);
-	    $doUpdate = $op->status >= tl::OK ? 1 : 0;
+	    $doUpdate = ($op->status >= tl::OK) ? 1 : 0;
 	    break;
 
     case 'genApiKey':
-	    $op = generateApiKey($args);
+	    $op = generateApiKey($args,$user);
 	    break;
 }
 
@@ -69,7 +66,6 @@ $loginHistory = new stdClass();
 $loginHistory->failed = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN_FAILED",10);
 $loginHistory->ok = $g_tlLogger->getAuditEventsFor($args->userID,"users","LOGIN",10);
 
-
 if ($op->status != tl::OK)
 	$op->user_feedback = getUserErrorMessage($op->status);
 
@@ -87,7 +83,7 @@ $smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
 $smarty->assign('loginHistory', $loginHistory);
 $smarty->assign('user_feedback', $op->user_feedback);
 $smarty->assign('update_title_bar',0);
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /*
   function:
@@ -99,14 +95,14 @@ $smarty->display($template_dir . $default_template);
 */
 function init_args()
 {
-    $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
+    $args = new stdClass();
     $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 
+    $args->user = new stdClass();
     $key2loop = array('firstName','lastName','emailAddress','locale');
-	$args->user = new stdClass();
-    foreach($key2loop as $key)
+	foreach($key2loop as $key)
     {
        $args->user->$key = isset($_REQUEST[$key]) ? trim($_REQUEST[$key]) : null;
     }
@@ -124,8 +120,8 @@ function init_args()
            break;
        }
     }
-
     $args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
+
     return $args;
 }
 
@@ -156,26 +152,29 @@ function changePassword(&$argsObj,&$userMgr)
 }
 
 /*
-  function: changePassword
+  function: generateApiKey
 
   args :
 
   returns:
 
 */
-function generateApiKey(&$argsObj)
+function generateApiKey(&$argsObj,&$user)
 {
 	$op = new stdClass();
     $op->status = tl::OK;
     $op->user_feedback = null;
 
-    $APIKey = new APIKey();
-    $api_key = $APIKey->addKeyForUser($argsObj->userID);
-	if (strlen($api_key))
-	{
-		logAuditEvent(TLS("audit_user_apikey_set"),"CREATE",$argsObj->userID,"users");
-		$op->user_feedback = lang_get('result_apikey_create_ok');
-	}
+    if ($user)
+    {
+	    $APIKey = new APIKey();
+	    $api_key = $APIKey->addKeyForUser($argsObj->userID);
+		if (strlen($api_key))
+		{
+			logAuditEvent(TLS("audit_user_apikey_set",$user->login),"CREATE",$user->login,"users");
+			$op->user_feedback = lang_get('result_apikey_create_ok');
+		}
+    }
     return $op;
 }
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/05/07 21:01:25 $ -  $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/11/20 21:10:45 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -18,21 +18,19 @@ require_once("users.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+$args = init_args();
 
 $sqlResult = null;
 $action = null;
 $user_feedback = '';
 
-$orderBy=new stdClass();
+$orderBy = new stdClass();
 $orderBy->type = 'order_by_login';
 $orderBy->dir = array('order_by_login_dir' => 'asc');
-
-$args=init_args();
 
 switch($args->operation)
 {
 	case 'delete':
-
 		//user cannot delete itself
 		if ($args->user_id != $_SESSION['currentUser']->dbID)
 		{
@@ -85,21 +83,15 @@ $smarty->assign('user_order_by',$args->user_order_by);
 $smarty->assign('order_by_role_dir',$args->order_by_dir['order_by_role_dir']);
 $smarty->assign('order_by_login_dir',$args->order_by_dir['order_by_login_dir']);
 $smarty->assign('role_colour',getRoleColourCfg($db));
-
-$grants=getGrantsForUserMgmt($db,$_SESSION['currentUser']);
-
-
-$smarty->assign('grants',$grants);
-
 $smarty->assign('update_title_bar',0);
 $smarty->assign('reload',0);
 $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('base_href', $_SESSION['basehref']);
+$grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
+$smarty->assign('grants',$grants);
 $smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
-
-
 
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
@@ -150,7 +142,7 @@ function init_args()
     $key2loop=array('operation' => '', 'user_order_by' => 'order_by_login');
     foreach($key2loop as $key => $value)
     {
-        $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+        $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
     }
 
     $key2loop=array('order_by_role_dir' => 'asc', 'order_by_login_dir' => 'asc');
@@ -180,17 +172,16 @@ function init_args()
 */
 function getRoleColourCfg(&$dbHandler)
 {
-    $role_colour=config_get('role_colour');
+    $role_colour = config_get('role_colour');
     $roles = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
     unset($roles[TL_ROLES_UNDEFINED]);
     foreach($roles as $roleObj)
     {
-        if( !isset($role_colour[$roleObj->name]) )
+        if(!isset($role_colour[$roleObj->name]))
         {
-            $role_colour[$roleObj->name]='';
+            $role_colour[$roleObj->name] = '';
         }
     }
     return $role_colour;
 }
-
 ?>

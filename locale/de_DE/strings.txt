@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2008/11/19 20:44:01 $ $Author: schlundus $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2008/11/20 21:10:45 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -53,17 +53,17 @@ $TLS_test_case = "Testfall";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "Testplan";
 $TLS_testplan = $TLS_test_plan;
-$TLS_testproject 	= "Test Project";
-$TLS_test_report 	= "Test Report";
+$TLS_testproject 	= "Testprojekt";
+$TLS_test_report 	= "Testreport";
 $TLS_test_suite = "Testsuite";
 $TLS_testsuite_created = "Testsuite erstellt";
 $TLS_title = "Title";
 $TLS_urgency = "Dringlichkeit";
-$TLS_problems_loading_xml_content="Unable to load XML data, Check your file."; 
-$TLS_not_imported = "Not imported";
-$TLS_imported = "Imported";
+$TLS_problems_loading_xml_content = "Die XML Daten konnten nicht geladen werden, überprüfen Sie das Dateiformat!"; 
+$TLS_not_imported = "Nicht importiert";
+$TLS_imported = "Importiert";
 
-$TLS_exec_assign_no_testcase="Bitte wählen Sie mindestens einen Testfall!";
+$TLS_exec_assign_no_testcase = "Bitte wählen Sie mindestens einen Testfall!";
 $TLS_select_at_least_one_testcase = "Bitte wählen Sie mindestens einen Testfall und ein Ziel!";
 $TLS_no_testcases_available = "Keine Testfälle oder Ziel-Testsuites verfügbar!";
 
@@ -2164,7 +2164,7 @@ $TLS_audit_milestone_saved = "Meilenstein '{%1}' wurde gespeichert";
 $TLS_audit_tc_added_to_testplan = "Testfall '{%1}' Version {%2} wurde zum Testplan {%3} hinzugefügt";
 $TLS_audit_tc_removed_from_testplan = "Testfall '{%1}' Version {%2} wurde aus dem Testplan {%3} gelöscht";
 
-$TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
+$TLS_audit_missing_localization = "Der String '{%1}' ist für die Sprache '{%2}' nicht lokalisiert";
 
 
 //eventviewer.php
@@ -2201,13 +2201,13 @@ $TLS_issue_status_acknowledged="Acknowledged issue ";
 $TLS_issue_status_confirmed="Confirmed issue";
 $TLS_issue_status_assigned="Assigned issue";
 $TLS_issue_status_resolved="Resolved issue";
-$TLS_issue_status_closed="Closed issue";
+$TLS_issue_status_closed = "Closed issue";
 $TLS_access_to_bts="Access issue tracking system";
 
 
 // uncoveredTestCases.php
-$TLS_report_testcases_without_requirement=$TLS_link_report_uncovered_testcases;
-$TLS_no_uncovered_testcases='No uncovered Test Cases';
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'Keine nicht abgedeckten Testfälle';
 $TLS_testproject_has_no_reqspec='There are no Requirement Spec. defined';
 $TLS_testproject_has_no_requirements='There are no Requirements defined';
 

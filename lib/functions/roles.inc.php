@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/11/04 19:25:48 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -68,69 +68,69 @@ init_global_rights_maps();
 
 function init_global_rights_maps()
 {
-// Important:
-// Every array, defines a section in the define role page
-//
-global $g_rights_tp;
-global $g_rights_mgttc;
-global $g_rights_kw;
-global $g_rights_req;
-global $g_rights_product;
-global $g_rights_cf;
-global $g_rights_users_global;
-global $g_rights_users;
-global $g_rights_system;
-global $g_propRights_global;
-global $g_propRights_product;
-
-
-$g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
-						"testplan_create_build" => lang_get('desc_testplan_create_build'),
-						"testplan_metrics" => lang_get('desc_testplan_metrics'),
-						"testplan_planning" => lang_get('desc_testplan_planning'),
-						"testplan_user_role_assignment" => lang_get('desc_user_role_assignment'),
-					);
-
-					
-$g_rights_mgttc = array (	"mgt_view_tc" => lang_get('desc_mgt_view_tc'),
-							"mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
-							"mgt_testplan_create" => lang_get('mgt_testplan_create'),
+	// Important:
+	// Every array, defines a section in the define role page
+	//
+	global $g_rights_tp;
+	global $g_rights_mgttc;
+	global $g_rights_kw;
+	global $g_rights_req;
+	global $g_rights_product;
+	global $g_rights_cf;
+	global $g_rights_users_global;
+	global $g_rights_users;
+	global $g_rights_system;
+	global $g_propRights_global;
+	global $g_propRights_product;
+	
+	
+	$g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
+							"testplan_create_build" => lang_get('desc_testplan_create_build'),
+							"testplan_metrics" => lang_get('desc_testplan_metrics'),
+							"testplan_planning" => lang_get('desc_testplan_planning'),
+							"testplan_user_role_assignment" => lang_get('desc_user_role_assignment'),
 						);
-
-$g_rights_kw = array (	
-							"mgt_view_key" => lang_get('desc_mgt_view_key'),
-							"mgt_modify_key" => lang_get('desc_mgt_modify_key'),
-						);
-$g_rights_req = array (	
-							"mgt_view_req" => lang_get('desc_mgt_view_req'),
-							"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
-						);
-
+	
 						
-$g_rights_product = array (	
-							"mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-						);						
-
-$g_rights_cf = array (	
-							"cfield_view" => lang_get('desc_cfield_view'),
-							"cfield_management" => lang_get('desc_cfield_management'));
-
-// Global means test project indipendent.
-$g_rights_users_global = array (	
-							"mgt_users" => lang_get('desc_mgt_modify_users'),
-							"role_management" => lang_get('desc_role_management'),
-							"user_role_assignment" => lang_get('desc_user_role_assignment')
-							); 
-
-$g_rights_users = $g_rights_users_global;
-						
-$g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
-                          "events_mgt" => lang_get('desc_events_mgt'));
-						
-						
-						
-$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
-$g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
+	$g_rights_mgttc = array (	"mgt_view_tc" => lang_get('desc_mgt_view_tc'),
+								"mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
+								"mgt_testplan_create" => lang_get('mgt_testplan_create'),
+							);
+	
+	$g_rights_kw = array (	
+								"mgt_view_key" => lang_get('desc_mgt_view_key'),
+								"mgt_modify_key" => lang_get('desc_mgt_modify_key'),
+							);
+	$g_rights_req = array (	
+								"mgt_view_req" => lang_get('desc_mgt_view_req'),
+								"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
+							);
+	
+							
+	$g_rights_product = array (	
+								"mgt_modify_product" => lang_get('desc_mgt_modify_product'),
+							);						
+	
+	$g_rights_cf = array (	
+								"cfield_view" => lang_get('desc_cfield_view'),
+								"cfield_management" => lang_get('desc_cfield_management'));
+	
+	// Global means test project indipendent.
+	$g_rights_users_global = array (	
+								"mgt_users" => lang_get('desc_mgt_modify_users'),
+								"role_management" => lang_get('desc_role_management'),
+								"user_role_assignment" => lang_get('desc_user_role_assignment')
+								); 
+	
+	$g_rights_users = $g_rights_users_global;
+							
+	$g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
+	                          "events_mgt" => lang_get('desc_events_mgt'));
+							
+							
+							
+	$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
+	$g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
 
 /** 

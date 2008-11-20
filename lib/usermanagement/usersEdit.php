@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.29 $
-* @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
+* @version $Revision: 1.30 $
+* @modified $Date: 2008/11/20 21:10:45 $ $Author: schlundus $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -27,11 +27,10 @@ $templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SC
 $templateCfg->template = null;
 
 $args = init_args();
-$user_id = $args->user_id;
 
 $op = new stdClass();
-$highlight = initialize_tabsmenu();
 $op->user_feedback = '';
+$highlight = initialize_tabsmenu();
 
 $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                        'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
@@ -67,7 +66,7 @@ switch($args->doAction)
 		break;
 	
 	case "create":
-		default:
+	default:
 		$highlight->create_user = 1;
 		$user = new tlUser();
 		break;
@@ -87,7 +86,6 @@ $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_vi
 $smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
 $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
-
 renderGui($smarty,$args,$templateCfg);
 
 
@@ -149,7 +147,7 @@ function doCreate(&$dbHandler,&$argsObj)
 	$op->template = 'usersEdit.tpl';
 	$op->operation = '';
 
-    $statusOk=false;
+    $statusOk = false;
 	if ($op->status >= tl::OK)
 	{
 	  	initializeUserProperties($op->user,$argsObj);
@@ -183,13 +181,13 @@ function doCreate(&$dbHandler,&$argsObj)
 */
 function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 {
-    $op=new stdClass();
+    $op = new stdClass();
     $op->user_feedback = '';
     $op->user = new tlUser($argsObj->user_id);
 	$op->status = $op->user->readFromDB($dbHandler);
 	if ($op->status >= tl::OK)
 	{
-		$changes=checkUserPropertiesChanges($dbHandler,$op->user,$argsObj);
+		//$changes = checkUserPropertiesChanges($dbHandler,$op->user,$argsObj);
 
 		initializeUserProperties($op->user,$argsObj);
 		$op->status = $op->user->writeToDB($dbHandler);
@@ -360,7 +358,7 @@ function decodeRoleId(&$dbHandler,$roleID)
 */
 function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 {
-    $doRender=false;
+    $doRender = false;
     switch($argsObj->doAction)
     {
         case "edit":

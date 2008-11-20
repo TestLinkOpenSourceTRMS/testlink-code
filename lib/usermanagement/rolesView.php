@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/05/07 21:01:24 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -14,13 +14,10 @@ require_once("users.inc.php");
 require_once("roles.inc.php");
 testlinkInitPage($db);
 
-$template_dir = 'usermanagement/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
+$templateCfg = templateConfiguration();
 init_global_rights_maps();
 $args = init_args();
 
-$userFeedback = null;
 $affectedUsers = null;
 $doDelete = false;
 $role = null;
@@ -29,20 +26,25 @@ switch ($args->doAction)
 {
 	case 'delete':
 		$role = tlRole::getByID($db,$args->roleid,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-		$affectedUsers = $role->getAllUsersWithRole($db);
-		$doDelete = (sizeof($affectedUsers) == 0);
+		if ($role)
+		{
+			$affectedUsers = $role->getAllUsersWithRole($db);
+			$doDelete = (sizeof($affectedUsers) == 0);
+		}
 		break;
 
 	case 'confirmDelete':
 		$doDelete = 1;
 		break;
 }
+$userFeedback = null;
 if($doDelete)
 {
-    $userFeedback = deleteRole($db,$args->roleid);
-	  //refresh the current user
-	  checkSessionValid($db);
+	$userFeedback = deleteRole($db,$args->roleid);
+	//refresh the current user
+	checkSessionValid($db);
 }
+
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 
 $highlight = initialize_tabsmenu();
@@ -56,18 +58,17 @@ $smarty->assign('id',$args->roleid);
 $smarty->assign('sqlResult',$userFeedback);
 $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('role_id_replacement',config_get('role_replace_for_deleted_roles'));
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-    $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
-
-	  $args->roleid = isset($_REQUEST['roleid']) ? intval($_REQUEST['roleid']) : 0;
+	
+    $args = new stdClass();
+    $args->roleid = isset($_REQUEST['roleid']) ? intval($_REQUEST['roleid']) : 0;
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
     $args->userID = $_SESSION['currentUser']->dbID;
 
     return $args;
 }
-
 ?>

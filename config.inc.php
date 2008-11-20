@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.209 $
- * @modified $Date: 2008/11/19 21:02:58 $ by $Author: schlundus $
+ * @version $Revision: 1.210 $
+ * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -286,7 +286,7 @@ $g_user_email_valid_regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+
 /** [API] */
 
 /** XML-RPC API availability (disabled by default) */ 
-$tlCfg->api->enabled=FALSE;
+$tlCfg->api->enabled = FALSE;
 
 // used to display API ID info in the *View pages 
 $tlCfg->api->id_format = "[ID: %s ]";

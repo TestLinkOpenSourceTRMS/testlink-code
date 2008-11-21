@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/11/19 21:02:58 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/11/21 21:00:41 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -33,25 +33,20 @@ $msg = '';
 
 $args = init_args();
 $canManage = has_rights($db,"mgt_modify_key");
-
 $tprojectMgr = new testproject($db);
-switch ($args->doAction)
+
+$action = $args->doAction;
+switch ($action)
 {
-	case "create":
-		$op = create($smarty,$args);
-		break;
-	case "edit":
-		$op = edit($smarty,$args,$tprojectMgr);
-		break;
 	case "do_create":
-		$op = do_create($smarty,$args,$tprojectMgr);
-		break;
 	case "do_update":
-		$op = do_update($smarty,$args,$tprojectMgr);
-		break;
 	case "do_delete":
-		$op = do_delete($smarty,$args,$tprojectMgr);
-		break;
+		if (!$canManage)
+			break;
+	case "edit":
+	case "create":
+		$op = $action($smarty,$args,$tprojectMgr);
+	break;
 }
 
 if($op->status == 1)

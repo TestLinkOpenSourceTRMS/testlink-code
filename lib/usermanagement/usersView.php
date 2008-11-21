@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/11/20 21:10:45 $ -  $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/11/21 21:00:41 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -139,13 +139,13 @@ function init_args()
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $key2loop=array('operation' => '', 'user_order_by' => 'order_by_login');
+    $key2loop = array('operation' => '', 'user_order_by' => 'order_by_login');
     foreach($key2loop as $key => $value)
     {
         $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
     }
 
-    $key2loop=array('order_by_role_dir' => 'asc', 'order_by_login_dir' => 'asc');
+    $key2loop = array('order_by_role_dir' => 'asc', 'order_by_login_dir' => 'asc');
     foreach($key2loop as $key => $value)
     {
         $args->order_by_dir[$key]=isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;

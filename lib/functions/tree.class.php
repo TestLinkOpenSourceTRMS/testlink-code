@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/10/26 11:49:13 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2008/11/21 21:00:41 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
@@ -830,6 +830,10 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                           $order_cfg = array("type" =>'spec_order'),
                           $key_type = 'std')
 {
+	static $s_testCaseNodeTypeID;
+	if (!$s_testCaseNodeTypeID)
+		$s_testCaseNodeTypeID = $this->node_descr_id['testcase'];
+		
     switch($order_cfg['type'])
     {
         case 'spec_order':
@@ -842,20 +846,18 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
 		        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 		             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 		             "                NH.name, NH.node_type_id" .
-		             "                FROM nodes_hierarchy NH,node_types NT" .
+		             "                FROM nodes_hierarchy NH" .
 		             "                WHERE parent_id = {$node_id}" .
-		             "                AND NH.node_type_id=NT.id" .
-		             "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
+		             "                AND node_type_id <> {$s_testCaseNodeTypeID} {$and_not_in_clause}" .
 		             "                UNION" .
 		             "                SELECT NHA.node_order AS spec_order, " .
 		             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
 		             "                       NHA.name, NHA.node_type_id" .
 		             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
-		             "                     testplan_tcversions T,node_types NT" .
+		             "                     testplan_tcversions T" .
 		             "                WHERE NHA.id=NHB.parent_id " .
-		             "                AND NHA.node_type_id=NT.id" .
+		             "                AND NHA.node_type_id = {$s_testCaseNodeTypeID}" .
 		             "                AND NHB.id=T.tcversion_id " .
-		             "                AND NT.description = 'testcase'" .
 		             "                AND NHA.parent_id = {$node_id}" .
 		             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
 		             "                ORDER BY node_order,spec_order,id";

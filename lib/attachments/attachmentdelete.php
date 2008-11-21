@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/11/21 21:00:41 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
  */
@@ -16,8 +16,8 @@ require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
 //the id (attachments.id) of the attachment to be deleted 
-$id = isset($_GET['id'])? intval($_GET['id']) : 0;
 $bDeleted = false;
+$id = isset($_GET['id'])? intval($_GET['id']) : 0;
 if ($id)
 {
 	$attachmentRepository = tlAttachmentRepository::create($db);

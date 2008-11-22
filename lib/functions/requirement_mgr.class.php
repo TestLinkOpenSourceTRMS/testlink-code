@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/10/30 20:00:50 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -570,8 +570,8 @@ class requirement_mgr extends tlObjectWithAttachments
 	  			if ($this->db->affected_rows() == 1)
 	  			{
 	  				$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
-					$reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
-					if($tcInfo && $reqInfo)
+					  $reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
+					  if($tcInfo && $reqInfo)
 						logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),"ASSIGN",$this->object_table);
 					$output = 1;
 	  			}
@@ -612,6 +612,43 @@ class requirement_mgr extends tlObjectWithAttachments
 		}
 		return $output;
 	}
+
+  /*
+    function: bulk_assignment
+              assign N requirements to M test cases
+              Do not write audit info              
+
+    args: req_id: can be an array
+          testcase_id: can be an array
+
+    returns: -
+
+
+  */
+  function bulk_assignment($req_id,$testcase_id)
+  {
+  	$requirementSet=$req_id;
+  	$tcaseSet=$testcase_id;
+  	
+    if( !is_array($req_id) )
+    {
+       $requirementsSet=array($req_id);  
+    }
+    if( !is_array($testcase_id) )
+    {
+       $tcaseSet=array($testcase_id);  
+    }
+    
+  	$insert_sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) ";
+  	foreach($tcaseSet as $tcid)
+  	{
+  	    foreach($requirementSet as $reqid)
+  	    {
+  	        $sql = $insert_sql . "VALUES ({$reqid},{$tcid})";
+            $this->db->exec_query($sql);
+  	    }
+  	}
+  }
 
 
   /*

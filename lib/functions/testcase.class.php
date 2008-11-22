@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.132 $
- * @modified $Date: 2008/11/19 20:44:01 $ $Author: schlundus $
+ * @version $Revision: 1.133 $
+ * @modified $Date: 2008/11/22 10:44:33 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20081103 - franciscom - new method setKeywords() - added by schlundus
+ *                         removed useless code from getTestProjectFromTestCase()
  *
  * 20081103 - franciscom - change to show() to improve display when used in search test cases.
  * 20081103 - franciscom - minor refactoring on show()
@@ -101,6 +104,7 @@ class testcase extends tlObjectWithAttachments
   const AUDIT_ON=1;
   const CHECK_DUPLICATE_NAME=1;
   const DONT_CHECK_DUPLICATE_NAME=0;
+  const ENABLED=1;
     
   
 	var $db;
@@ -1019,7 +1023,6 @@ function formatTestCaseIdentity($id,$external_id)
     $path2root=$this->tree_manager->get_path($tc_id);
     $tprojectID=$path2root[0]['parent_id'];
     $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
-
 }
 
 
@@ -1959,7 +1962,9 @@ function setKeywords($id,$kw_ids,$audit = self::AUDIT_ON)
 {
 	$result = $this->deleteKeywords($id);   	 
 	if ($result && sizeof($kw_ids))
+	{
 		$result = $this->addKeywords($id,$kw_ids);
+	}	
 	return $result;
 }
 
@@ -2558,23 +2563,36 @@ function copy_attachments($source_id,$target_id)
 	function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
 	{
 		if (!$tproject_id)
+		{
 			$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
-		
-		$enabled = 1;
-		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testcase',$id);
-	
+		}
+		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,$filters,'testcase',$id);
 		return $cf_map;
 	}
 
 
+
+/*
+  function: getTestProjectFromTestCase
+
+  args: id: testcase id
+        [parent_id]: node id of parent testsuite of testcase.
+                     need to understand to which testproject the testcase belongs.
+                     this information is vital, to get the linked custom fields.
+                     Presence /absence of this value changes starting point
+                     on procedure to build tree path to get testproject id.
+
+                     null -> use testcase_id as starting point.
+                     !is_null -> use this value as starting point.
+*/
 	function getTestProjectFromTestCase($id,$parent_id)
 	{
-		$tproject_mgr = new testproject($this->db);
 		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
 		$path_len = count($the_path);
 		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
 		return $tproject_id;
 	}
+	
 /*
   function: html_table_of_custom_field_inputs
             Return html code, implementing a table with custom fields labels
@@ -2617,13 +2635,17 @@ function copy_attachments($source_id,$target_id)
                    to access CF values on new table that hold values assigned
                    to CF used on the 'tesplan_design' scope.
                    
+        [tproject_id]: default null
+                       used to speedup feature when this value is available.
+
 
   returns: html string
   
   rev: 20080811 - franciscom - BUGID 1650 (REQ)
 
 */
-function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$link_id=null,$tproject_id = null)
+function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
+                                           $link_id=null,$tproject_id = null)
 {
 	$cf_smarty = '';
 
@@ -2640,6 +2662,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
       case 'design':
       		$cf_map = $this->$method_name($id,$parent_id,null,$tproject_id);    
       	break;
+      	
       case 'execution':
           $cf_map = $this->$method_name($id,$parent_id,null,null,null,$tproject_id);    
       break;
@@ -2795,15 +2818,17 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
                                          $execution_id=null,$testplan_id=null,$tproject_id = null)
 {
 	if (!$tproject_id)
-		$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
+	{
+	    $tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
+	}
+		
 	// Warning:
 	// I'm setting node type to test case, but $id is the tcversion_id, because
 	// execution data is related to tcversion NO testcase
 	//
-	$enabled = 1;
-	$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,'testcase',
-	                                                         $id,$execution_id,$testplan_id);
-	return $cf_map ;
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,'testcase',
+	                                                             $id,$execution_id,$testplan_id);
+	return $cf_map;
 }
 
 
@@ -2898,13 +2923,15 @@ function get_linked_cfields_at_testplan_design($id,$parent_id=null,$filters=null
                                                $link_id=null,$testplan_id=null,$tproject_id = null)
 {
 	if (!$tproject_id)
-		$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
+	{
+	    $tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
+	}	
+	
 	// Warning:
 	// I'm setting node type to test case, but $id is the tcversion_id, because
 	// link data is related to tcversion NO testcase
 	//
-	$enabled = 1;
-	$cf_map = $this->cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,$enabled,'testcase',
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_testplan_design($tproject_id,self::ENABLED,'testcase',
 	                                                                   $id,$link_id,$testplan_id);
 	return $cf_map;
 }

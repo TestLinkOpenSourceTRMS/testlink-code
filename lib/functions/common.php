@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.126 $ $Author: franciscom $
- * @modified $Date: 2008/11/06 13:03:56 $
+ * @version $Revision: 1.127 $ $Author: franciscom $
+ * @modified $Date: 2008/11/22 10:44:33 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -82,6 +82,7 @@ if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 	require_once(TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 
 		'domxml-php4-to-php5.php');
 }
+
 function printPageStatistics($startupMemory,$startupTime)
 {
 /*

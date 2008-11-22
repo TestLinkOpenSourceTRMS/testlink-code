@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/10/22 19:01:25 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/11/22 10:44:33 $ $Author: franciscom $
  *
  * rev: 20080412 - franciscom - typo error
  */
@@ -79,6 +79,15 @@ class tlRole extends tlDBObject
 		}
 		return $rightInfo ? tl::OK : tl::ERROR;
 	}
+
+	/*
+    function: writeToDB
+
+    args: db: dbHandler
+    
+    returns: 
+
+  */
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);
@@ -90,26 +99,29 @@ class tlRole extends tlDBObject
 				if ($result >= tl::OK)
 				{
 					$query = "UPDATE roles SET description = '".$db->prepare_string($this->name)."',".
-							"notes ='".$db->prepare_string($this->description)."'".
-							" WHERE id = {$this->dbID}";
+							     "notes ='".$db->prepare_string($this->description)."'".
+							     " WHERE id = {$this->dbID}";
 					$result = $db->exec_query($query);	
 				}
 			}
 			else
 			{
 				$query = "INSERT INTO roles (description,notes) VALUES ('".$db->prepare_string($this->name)."',".
-						 "'".$db->prepare_string($this->description)."')";
+						     "'".$db->prepare_string($this->description)."')";
 				$result = $db->exec_query($query);	
 				if($result)
 					$this->dbID = $db->insert_id('users');
 			}
 			$result = $result ? tl::OK : self::E_DBERROR;
 			if ($result >= tl::OK)
+			{
 				$result = $this->addRightsToDB($db);
+			}	
 		}
 		
 		return $result;
 	}
+	
 	public function checkDetails(&$db)
 	{
 		$this->name = trim($this->name);
@@ -245,6 +257,15 @@ class tlRole extends tlDBObject
 		
 		return $result ? tl::OK : tl::ERROR;
 	}
+
+	/*
+    function: 
+
+    args :
+    
+    returns: 
+
+  */
 	protected function addRightsToDB(&$db)
 	{
 		$bSuccess = 1;

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/10/25 19:25:40 $  $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/11/22 10:44:33 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -66,6 +66,7 @@ class cfield_mgr
   const TEXTAREA_DEFAULT_COLS = 40;
   const TEXTAREA_DEFAULT_ROWS = 6;
 
+  const CF_ENABLED = 1;
 
 	var $db;
 	var $tree_manager;
@@ -1738,7 +1739,6 @@ function getXMLServerParams($node_id){
 		       "FROM cfield_design_values cfdv,custom_fields cf " .
 		       "WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
 
-		// $server_info = $this->db->fetchColumnsIntoMap($query,0,1);
 		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
     $server_cfg_is_ok=0;
     $server_use_host_port=0;

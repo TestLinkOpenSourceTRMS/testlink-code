@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -23,6 +23,12 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *  20081122 - franciscom - get_linked_cfields_at_design() - 
+ *                          refactored to:
+ *                                        - removed useless code 
+ *                                        - removed function calls that can be avoided
+ *
+ *  20080822 - franciscom - fixed bug in get_keywords_tcases()
  *  20080822 - franciscom - get_linked_and_newest_tcversions() improved query documentation
  *  20080820 - franciscom - added get_estimated_execution_time() as result of contributed idea.
  *
@@ -87,6 +93,7 @@ class testplan extends tlObjectWithAttachments
 	const GET_OPEN_BUILD=1;
 	const GET_CLOSED_BUILD=0;
 	const ACTIVE_BUILDS=1;
+	const ENABLED=1;
 
 	var $db;
 	var $tree_manager;
@@ -850,6 +857,7 @@ function get_keywords_map($id,$order_by_clause='')
 */
 function get_keywords_tcases($id,$keyword_id=0)
 {
+  $CUMULATIVE=1;
   $map_keywords=null;
 
   // keywords are associated to testcase id, then first
@@ -871,14 +879,22 @@ function get_keywords_tcases($id,$keyword_id=0)
      
      $tc_id_list = implode(",",array_keys($linked_items));
 
+     // 20081116 - franciscom -
+     // Does DISTINCT is needed ? Humm now I think no.
   	 $sql = "SELECT DISTINCT testcase_id,keyword_id,keyword
 	           FROM testcase_keywords,keywords
 	           WHERE keyword_id = keywords.id
 	           AND testcase_id IN ( {$tc_id_list} )
  		         {$keyword_filter}
 			       ORDER BY keyword ASC ";
-		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+			       
+		// 20081116 - franciscom
+		// CUMULATIVE is needed to get all keywords assigned to each testcase linked to testplan	       
+		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id',$CUMULATIVE);
   }
+  
+  echo "<pre>debug 20081116 - \ - " . __FUNCTION__ . " --- ";  echo "</pre>";
+  new dBug($map_keywords);
   return ($map_keywords);
 } // end function
 
@@ -1632,7 +1648,7 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
   function: get_linked_cfields_at_design
 
   args: $id
-        [$parent_id]:
+        [$parent_id]: testproject id
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
@@ -1642,17 +1658,20 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
   rev :
         20061231 - franciscom - added $parent_id
 */
-//@TODO: schlundus, should be refactored, see testcase::getTestProjectFromTestCase and testcase::get_linked_cfields_at_design
 function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null)
 {
-  $enabled = 1;
-  $tproject_mgr = new testproject($this->db);
-  $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-  $path_len = count($the_path);
-  $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+  $path_len=0;
+  if( is_null($parent_id) )
+  {
+      // Need to get testplan parent (testproject id) in order to get custom fields
+      // 20081122 - franciscom - need to check when we can call this with ID=NULL
+      $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
+      $path_len = count($the_path);
+  }
+  $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
 
-  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-                                                          $show_on_execution,'testplan',$id);
+  $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,
+                                                            $show_on_execution,'testplan',$id);
 
   return $cf_map;
 }
@@ -1663,7 +1682,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
   function: get_linked_cfields_at_execution
 
   args: $id
-        [$parent_id]
+        [$parent_id]: if present is testproject id
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
@@ -1673,17 +1692,20 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
   rev :
         20061231 - franciscom - added $parent_id
 */
-//@TODO: schlundus, should be refactored, see testcase::getTestProjectFromTestCase and testcase::get_linked_cfields_at_design
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null)
 {
-  $enabled=1;
-  $tproject_mgr= new testproject($this->db);
+  $path_len=0;
+  if( is_null($parent_id) )
+  {
+      // Need to get testplan parent (testproject id) in order to get custom fields
+      // 20081122 - franciscom - need to check when we can call this with ID=NULL
+      $the_path = $this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
+      $path_len = count($the_path);
+  }
+  $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
 
-  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
-  $path_len=count($the_path);
-  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+  // 20081122 - franciscom - humm!! need to look better IMHO this call is done to wrong function
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,
                                                           $show_on_execution,'testplan',$id);
   return($cf_map);
 }

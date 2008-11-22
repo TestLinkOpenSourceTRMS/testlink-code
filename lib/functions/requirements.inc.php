@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/11/05 15:56:05 $ by $Author: havlat $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -244,12 +244,15 @@ function loadImportedReq($CSVfile, $importType)
 		case 'csv':
 			$pfn = "importReqDataFromCSV";
 			break;
+			
 		case 'csv_doors':
 			$pfn = "importReqDataFromCSVDoors";
 			break;
+			
 		case 'XML':
 			$pfn = "importReqDataFromXML";
 			break;
+			
 		// 20081103 - sisajr
 		case 'DocBook':
 			$pfn = "importReqDataFromDocBook";

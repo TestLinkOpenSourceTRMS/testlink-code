@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2008/11/15 15:11:06 $ by $Author: schlundus $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -169,7 +169,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                               $ignore_inactive_testcases=0,$exclude_branches=null)
 {
 	$resultsCfg=config_get('results');
-	$showTestCaseID=config_get('tree_show_testcase_id');
+	$showTestCaseID=config_get('treemenu_show_testcase_id');
 	$menustring = null;
 
 	$tproject_mgr = new testproject($db);

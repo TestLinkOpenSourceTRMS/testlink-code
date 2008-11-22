@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2008/11/19 21:02:58 $ - $Author: schlundus $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2008/11/22 10:44:33 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
@@ -163,8 +163,7 @@ function create($parent_id,$name,$details,$order=null,
 	
 	if( is_null($order) )
 	{
-	  $order_cfg = config_get('tree_node_ordering');
-	  $node_order = $order_cfg->default_testsuite_order;
+	  $node_order = config_get('treemenu_default_testsuite_order');
 	}
 	else
 	{
@@ -956,7 +955,6 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 	// get the project Node from one of different node types
 	function getTestProjectFromTestSuite($id,$parent_id)
 	{
-		$tproject_mgr = new testproject($this->db);
 		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
 		$path_len = count($the_path);
 		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
@@ -981,8 +979,6 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
 {
   $enabled=1;
-  $tproject_mgr= new testproject($this->db);
-  
   $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;

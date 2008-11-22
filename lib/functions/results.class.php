@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
+ * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20080928 - franciscom - some minor refactoring regarding keywords
  * 20080928 - franciscom - refactoring on buildExecutionsMap()
  * 20080602 - franciscom - added logic to manage version using tcversion_number
  * 20080513 - franciscom - getTCLink() added external_id 
@@ -263,15 +264,20 @@ class results
 
      
 			// get keyword id -> keyword name pairs used in this test plan
-			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID);
-
-			// get owner id -> owner name pairs used in this test plan
-			$arrOwners = getUsersForHtmlOptions($db, null, false);
+			$keywords_in_tplan = $tplan_mgr->get_keywords_map($this->testPlanID,'ORDER BY keyword');
 
 			// KL - 20061229 - this call may not be necessary for all reports
 			// only those that require info on results for keywords
 			// Map of test case ids to array of associated keywords
-			$this->keywordData = $this->getKeywordData($arrKeywords);
+			$this->keywordData = $this->getKeywordData(array_keys($keywords_in_tplan));
+
+      //new dBug($this->keywordData);
+      //$tplan_mgr->get_keywords_tcases($this->testPlanID);
+      
+
+			// get owner id -> owner name pairs used in this test plan
+			$arrOwners = getUsersForHtmlOptions($db, null, false);
+
 
 			// create data object which tallies last result for each test case
 			// this function now also creates mapOfLastResultByKeyword ???
@@ -288,7 +294,7 @@ class results
 			                                                 $search_notes_string, $linkExecutionBuild);
       
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
-			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
+			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $keywords_in_tplan);
 			$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
 			
 			// create data object which tallies totals for individual suites
@@ -403,6 +409,8 @@ class results
 			$rValue[$keywordId] = $element;
 		} // foreach
 
+    // echo "<pre>debug 20081115 - \ - " . __FUNCTION__ . " --- "; echo "</pre>";
+    // new dBug($rValue); 
 		return $rValue;
 	} // end function
 
@@ -741,8 +749,10 @@ class results
 
 		$associatedKeywords = null;
 		if ($this->keywordData != null && array_key_exists($testcase_id, $this->keywordData))
+		{
 			$associatedKeywords = $this->keywordData[$testcase_id];
-
+    }
+    
 		$bInsert = false;
 		$bClean = false;
 		// handle case where suite has already been added to mapOfLastResult
@@ -767,10 +777,13 @@ class results
 			// owner assignments
 			$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
 			// keyword assignments
-			for ($i = 0;$i < sizeof($associatedKeywords); $i++)
+			$qta_loops=sizeof($associatedKeywords);
+			
+			for ($i = 0;$i <$qta_loops ; $i++)
 			{
 				$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
 			}
+			
 			$this->mapOfCaseResults[$testcase_id]['buildNumber'] = $buildNumber;
 			$this->mapOfCaseResults[$testcase_id]['execID'] = $executions_id;
 
@@ -939,25 +952,21 @@ class results
 	/**
 	*
 	*/
-	private function getKeywordData($keywordsInPlan) {
+	private function getKeywordData($keywordsInPlan) 
+	{
+	  $CUMULATIVE=1;
+		
 		// limit the sql query to just those keys in this test plan
 		if ($keywordsInPlan == null) {
-			return;
+			return null;
 		}
-		$keys = implode(array_keys($keywordsInPlan), ',');
-		$sql = "select testcase_id, keyword_id from testcase_keywords where keyword_id IN ($keys)";
-		$tempKeywordStructure =  $this->db->fetchRowsIntoMap($sql,'testcase_id', 1);
-		$returnMap = null;
-		while ($testcase_id = key($tempKeywordStructure)){
-			$arrayOfData = $tempKeywordStructure[$testcase_id];
-			$arrKeyIds = array();
-			for ($i = 0 ;$i < sizeof($arrayOfData); $i++) {
-				$keywordId = $arrayOfData[$i]['keyword_id'];
-				array_push($arrKeyIds, $keywordId);
-			}
-			$returnMap[$testcase_id] = $arrKeyIds;
-			next($tempKeywordStructure);
-		} // end while
+
+		$keys = implode(',',$keywordsInPlan);
+		$sql = " SELECT testcase_id, keyword_id" .
+		       " FROM testcase_keywords" .
+		       " WHERE keyword_id IN ($keys)";
+		
+		$returnMap =  $this->db->fetchColumnsIntoMap($sql,'testcase_id', 'keyword_id',$CUMULATIVE);
 		return $returnMap;
 	} // end function
 

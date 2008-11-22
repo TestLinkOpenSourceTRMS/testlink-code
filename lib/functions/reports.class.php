@@ -6,7 +6,7 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2008/04/19 21:52:21 $ by $Author: havlat $
+ * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
  *
  * Scope:
  * This class is encapsulates most functionality necessary to query the database
@@ -58,16 +58,15 @@ class tlReports
 	 **/
 	public function get_list_reports($bug_interface_on,$req_mgmt_enabled, $format)
 	{
-		global $tlCfg;
-		$arrItems = array();
+		$reportList=config_get('reports_list');
+		$items = array();
 
-		foreach ($tlCfg->reports_list as &$reportItem) {
+		foreach ($reportList as &$reportItem) {
 
 			// check validity of report		
 			if (($reportItem['enabled'] == 'all') || (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||
-			(($reportItem['enabled'] == 'bts') && $bug_interface_on)) 
+			    (($reportItem['enabled'] == 'bts') && $bug_interface_on)) 
 			{
-				
 				// check format availability
 				if (strpos(",".$reportItem['format'],$format) > 0)
 				{
@@ -77,24 +76,11 @@ class tlReports
 					} else {
 						$reportUrl = $reportItem['url'].'?';
 					}
-    			   	$arrItems[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl);
+    			$items[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl);
 				}
 			}
 		}
-
-		/** @TODO: these reports are not available in 1.7 */
-		// 20070826 - has problems
-		// array('name' => lang_get('link_results_import'), 'href' => 'resultsImport.php?report_type='));
-	
-		// not ready yet
-		// array('name' => lang_get('time_charts'), 'href' => 'timeCharts.php?report_type=')
-
-	  	// this results are related to selected build
-		//  $arrDataB = array(
-		//		array('name' => lang_get('link_report_metrics_active_build'), 'href' => 'resultsBuild.php'),
-  		//	);
-
-		return $arrItems;
+		return $items;
 	}
 
 

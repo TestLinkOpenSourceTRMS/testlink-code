@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/11/06 22:02:51 $ by $Author: havlat $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/11/22 08:49:20 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -21,7 +21,7 @@
 /** [GLOBAL SETTINGS] */
 
 /** TestLink Release (MUST BE changed before the release day) */
-define('TL_VERSION', '1.8 RC1'); 
+define('TL_VERSION', '1.8 - Development - Q4 2008'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -511,6 +511,8 @@ $g_bugInterface = null;
 // --------------------------------------------------------------------------------------
 /** [Requirements] */
 // martin: @TODO statuses should be the same for both REQ and TC
+// franciscom: why ?
+//
 define('TL_REQ_STATUS_VALID', 		'V');
 define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
 define('TL_REQ_STATUS_DRAFT', 		'D');

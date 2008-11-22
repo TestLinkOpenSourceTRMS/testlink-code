@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.210 $
- * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
+ * @version $Revision: 1.211 $
+ * @modified $Date: 2008/11/22 09:40:48 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20081122 - franciscom - removed some old $g_* config parameters.
  *     20081115 - franciscom - $tlCfg->testcase_cfg->search
  *     20081104 - franciscom - Added FOGBUGZ as BTS type
  *     20081103 - franciscom - Added GFORGE as BTS type
@@ -703,7 +704,7 @@ $tlCfg->default_roleid = TL_ROLES_GUEST;
  * 'generate_new' => generate a new name using $g_prefix_name_for_copy
  * 'block'        => return with an error 
  **/    
-$tlCfg->name_duplicity_checking = 'generate_new';
+$tlCfg->action_on_duplicate_name = 'generate_new';
 
 /** 
  * String checking and conversions
@@ -860,11 +861,6 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width);
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
 $g_login_method = $tlCfg->authentication['method'];
 $g_log_level=$tlCfg->log_level;
-$g_username_format = $tlCfg->username_format;
-$g_dashboard_precision = $tlCfg->dashboard_precision;
-$g_tree_show_testcase_id = $tlCfg->treemenu_show_testcase_id;
-$g_tree_node_ordering->default_testcase_order  = $tlCfg->treemenu_default_testcase_order;
-$g_tree_node_ordering->default_testsuite_order = $tlCfg->treemenu_default_testsuite_order;
 $g_show_tp_without_prodid = $g_show_tp_without_tproject_id; // obsolete (use $g_show_tp_without_tproject_id)
 $tlCfg->document_generator->company_logo = $tlCfg->company_logo; 
 $g_tc_status = $tlCfg->results['status_code'];
@@ -872,10 +868,7 @@ $g_tc_status_css = $tlCfg->results['code_status'];
 $g_tc_status_verbose_labels = $tlCfg->results['status_label'];
 $g_tc_status_for_ui = $tlCfg->results['status_label']; 
 $g_tc_status_for_ui_default = $tlCfg->results['default_status'];
-$g_action_on_duplicate_name = $tlCfg->name_duplicity_checking;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
-
-
 // ----- END OF FILE --------------------------------------------------
 ?>

@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2008/10/29 19:38:36 $ $Author: schlundus $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2008/11/22 09:40:22 $ $Author: franciscom $
  *
  * rev:
+ *     20081122 - franciscom - added some comments
  *     20080827 - franciscom - BUGID 1692
  *     20080811 - franciscom - BUGID 1650 (REQ)
  *     20080224 - franciscom - to avoid performance problems
@@ -798,8 +799,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->bn_view_status=$argsObj->bn_view_status;
     $gui->bc_view_status=$argsObj->bc_view_status;
     	
-	$tprojectMgr = new testproject($dbHandler);
-	$gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+    // 20081122 - franciscom
+    // Just for the record:	
+    // doing this here, we avoid to do on processTestSuite() and processTestCase(),
+    // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
+    // over these two functions. 	
+	  $tprojectMgr = new testproject($dbHandler);
+	  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
 	
     // $gui->default_status=config_get('tc_status_for_ui_default');
 
@@ -831,6 +837,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
     //@TODO: schlundus, can this be speed up with tprojectID?
+    //       retrieving testproject ID using test plan id is a single query that do not can consume
+    //       a significative time.
     $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'execution',
                                                                           $cf_filters);
 
@@ -984,6 +992,13 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
                          $linked_tcversions,null,$argsObj->keyword_id,
                          FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);
+       
+    // $filters['keyword_id']=$argsObj->keyword_id;   
+    // $options['writeButtons']=1;
+    // $options['pruneUnliked']=1;
+    // 
+    // $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
+    //                      $linked_tcversions,null,$filters,$options);
                          
     $testSet->tcase_id = array();
     $testSet->tcversion_id = array();
@@ -998,7 +1013,6 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
        }  
      }
     }
-    $guiObj->tcasePrefix=$tcaseMgr->getPrefix($testSet->tcase_id[0]);
     // ---------------------------------------------------------------------------------
     
     // Get the path for every test case, grouping test cases that

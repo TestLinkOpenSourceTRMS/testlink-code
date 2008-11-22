@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/11/19 20:44:01 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2008/11/22 09:42:13 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
  * Check configuration functions
  *
- * rev: 20081015 - franciscom - getSecurityNotes() - refactoring
+ * rev: 20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
+ *      20081015 - franciscom - getSecurityNotes() - refactoring
  *
  **/
 // ---------------------------------------------------------------------------------------------------
@@ -104,18 +105,23 @@ function checkConfiguration()
  *
  * @version 1.0
  * @author Andreas Morsing 
+ *
+ *
+ * rev: 20081122 - franciscom - added gd2 check
  **/
 function checkForExtensions(&$msg)
 {
-	$bSuccess = true;
-	
 	if (!function_exists('domxml_open_file'))
+	{
 		$msg[] = lang_get("error_domxml_missing");
+	}
 	
-	if (!checkForGD2Extension())
-		$msg[] = lang_get("error_GD2_missing");
-		
-	return $bSuccess;
+	// without this pChart do not work
+	if( !extension_loaded('gd2') )
+	{
+		$msg[] = lang_get("error_gd_missing");
+	}
+	return true;
 }
 
 /**
@@ -172,11 +178,6 @@ function checkForAdminDefaultPwd(&$db)
 function checkForLDAPExtension()
 {
 	return extension_loaded("ldap");
-}
-
-function checkForGD2Extension()
-{
-	return extension_loaded("gd");
 }
 
 /**

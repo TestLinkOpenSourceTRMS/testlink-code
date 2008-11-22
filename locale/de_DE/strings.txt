@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2008/11/20 21:10:45 $ $Author: schlundus $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2008/11/22 09:42:06 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1714,7 +1714,7 @@ $TLS_ldap_extension_not_loaded = "LDAP ist als Login-Methode eingerichtet.<br>Es
 $TLS_sec_note_admin_default_pwd = "Sie sollten das Standard-Passwort für den 'admin' Account ändern!";
 $TLS_sec_note_remove_install_dir = "Bitte entfernen Sie das install-Verzeichnis!";
 $TLS_error_domxml_missing = "Die DOMXML-Erweiterung scheint nicht aktiviert zu sein. XML-Importe werden nicht funktionieren!";
-$TLS_error_GD2_missing = "Die GD2-Erweiterung scheint nicht aktiviert zu sein. die grafischen Reporte werden nicht funktionieren!";
+$TLS_error_gd_missing = "Die GD-Erweiterung scheint nicht aktiviert zu sein. die grafischen Reporte werden nicht funktionieren!";
 
 // lib/general/frmWorkArea.php
 $TLS_create_a_build = "Neuen Build erstellen";

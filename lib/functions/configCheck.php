@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/11/22 09:42:13 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2008/11/23 08:31:56 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -117,7 +117,7 @@ function checkForExtensions(&$msg)
 	}
 	
 	// without this pChart do not work
-	if( !extension_loaded('gd2') )
+	if( !extension_loaded('gd') )
 	{
 		$msg[] = lang_get("error_gd_missing");
 	}

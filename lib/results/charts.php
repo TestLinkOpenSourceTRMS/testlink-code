@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/11/22 08:53:47 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/11/23 08:31:56 $ by $Author: franciscom $
  * @author kevin
  *
  * Revisions:
@@ -26,7 +26,7 @@ $tproject_id=$_SESSION['testprojectID'];
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 
-$gui->can_use_charts=extension_loaded('gd2');
+$gui->can_use_charts=extension_loaded('gd');
 
 if($gui->can_use_charts)  
 {

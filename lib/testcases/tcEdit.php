@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2008/09/02 16:39:49 $  by $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2008/11/24 08:03:02 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -160,7 +160,7 @@ else if($args->do_create)
     $sqlResult = 'ko';
 		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->steps,
 		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
-		                            $cfg->node_ordering->default_testcase_order,testcase::AUTOMATIC_ID,
+		                            $cfg->treemenu_default_testcase_order,testcase::AUTOMATIC_ID,
 		                            config_get('check_names_for_duplicates'),'block',$args->exec_type,
 		                            $args->importance);
 
@@ -596,7 +596,7 @@ function createWebEditors($basehref,$editorCfg)
 function getCfg()
 {
     $cfg=new stdClass();
-    $cfg->node_ordering = config_get('tree_node_ordering');
+    $cfg->treemenu_default_testcase_order = config_get('treemenu_default_testcase_order');
     $cfg->spec = config_get('spec_cfg');
     $cfg->exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
     $cfg->tcase_template = config_get('testcase_template');

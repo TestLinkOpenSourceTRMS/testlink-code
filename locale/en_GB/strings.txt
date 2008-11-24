@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.360 $
- * @modified $Date: 2008/11/22 09:41:50 $ by $Author: franciscom $
+ * @version $Revision: 1.361 $
+ * @modified $Date: 2008/11/24 08:06:25 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1912,7 +1912,7 @@ $TLS_req_created = "Requirement %s was successfully created";
 // lib/req/reqTcAssign.php
 $TLS_req_msg_noselect = "Nothing selected";
 $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements ";
-
+$TLS_bulk_req_assign_msg='This operation will assign selected requirements to %s test cases';
 
 
 // lib/results/resultsBugs.php

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/11/22 10:44:33 $  $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/11/25 18:09:18 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -1711,8 +1711,10 @@ class cfield_mgr
 *     20071102 - franciscom - refactoring
 *     200710xx - creation - Swanand
 **/
-function getXMLServerParams($node_id){
-
+function getXMLServerParams($node_id)
+{
+  $srv_cfg = new stdClass();
+  
   $node_type=$this->tree_manager->get_available_node_types();
 	$node_info=$this->tree_manager->get_node_hierachy_info($node_id);
   $ret=null;

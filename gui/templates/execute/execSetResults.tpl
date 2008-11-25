@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.27 2008/10/03 05:21:14 asielb Exp $
+$Id: execSetResults.tpl,v 1.28 2008/11/25 18:07:21 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20081125 - franciscom - BUGID 1902 - fixed check to display button to launch remote executions
+  
   20080528 - franciscom - BUGID 1504 - version number management
 	20080515 - havlatm - updated help link
   20080322 - franciscom - feature: allow edit of execution notes
@@ -290,7 +292,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     		         value="{$labels.import_xml_results}"
     		         onclick="javascript: openImportResult(import_xml_results);" />
 
-		      {if $test_automation_enabled}
+          {* 20081125 - franciscom - BUGID 1902*}
+		      {if $tlCfg->exec_cfg->enable_test_automation }
 		      <input type="submit" id="execute_cases" name="execute_cases"
 		             value="{$labels.execute_and_save_results}"/>
 		      {/if}

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.211 $
- * @modified $Date: 2008/11/22 09:40:48 $ by $Author: franciscom $
+ * @version $Revision: 1.212 $
+ * @modified $Date: 2008/11/25 20:18:33 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -755,11 +755,20 @@ if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) )
   require_once( TL_ABS_PATH . 'custom_config.inc.php' ); 
 
 /** Support for localization */
-// martin: @TODO move the code out of config
+//	@TODO schlundus, move the code out of config and do it only once and not always in any include!
+//	@TODO schlundus, a better parsing function should be include
 $serverLanguage = false;
-// check for !== false because getenv() returns false on error
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+{
+	@list($code) = explode(",",$_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	@list($a,$b) = explode("-",$code);
+	if ($a && $b)
+	{
+		$a = strtolower($a);
+		$b = strtoupper($a);
+		$serverLanguage = $a."_".$b;
+	}
+}
 	
 if(false !== $serverLanguage)
 {

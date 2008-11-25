@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
+ * @modified $Date: 2008/11/25 19:55:28 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -61,7 +61,7 @@ class results
 	private	$tprojectID = -1;
 	private	$testCasePrefix='';
 
-  private $priorityLevelsCfg='';
+	private $priorityLevelsCfg='';
 	private $resultsCfg;
 	private $testCaseCfg='';
 	private $map_tc_status;
@@ -253,10 +253,10 @@ class results
 		{
 		    $this->suiteStructure = $this->generateExecTree($db,$keywordId, $owner);
 		}
-    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-    // $xmem=current($mem);
-    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-    // ob_flush();flush();
+	    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
+	    // $xmem=current($mem);
+	    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
+	    // ob_flush();flush();
 
 		// KL - if no builds are specified, no need to execute the following block of code
 		if ($builds_to_query != -1) {
@@ -271,9 +271,9 @@ class results
 			// Map of test case ids to array of associated keywords
 			$this->keywordData = $this->getKeywordData(array_keys($keywords_in_tplan));
 
-      //new dBug($this->keywordData);
-      //$tplan_mgr->get_keywords_tcases($this->testPlanID);
-      
+			//new dBug($this->keywordData);
+			//$tplan_mgr->get_keywords_tcases($this->testPlanID);
+	      
 
 			// get owner id -> owner name pairs used in this test plan
 			$arrOwners = getUsersForHtmlOptions($db, null, false);
@@ -304,7 +304,7 @@ class results
 			// create data object which tallies totals for suites taking
 			// child suites into account
 			$this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
-   		$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
+   			$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
 			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID);
@@ -399,21 +399,17 @@ class results
 			return null;
 		}
 
-	  // OK go ahead
 		$rValue = null;
-	  foreach($keywordResults as $keywordId => $results)
-	  {
-	    $item_name='keyword_name';
-      $element=$this->tallyResults($results,sizeOf($results),$item_name);
-		  $element[$item_name]=$keywordIdNamePairs[$keywordId];
+	  	foreach($keywordResults as $keywordId => $results)
+	  	{
+	    	$item_name = 'keyword_name';
+      		$element = $this->tallyResults($results,sizeOf($results),$item_name);
+		  	$element[$item_name] = $keywordIdNamePairs[$keywordId];
 			$rValue[$keywordId] = $element;
-		} // foreach
+		}
 
-    // echo "<pre>debug 20081115 - \ - " . __FUNCTION__ . " --- "; echo "</pre>";
-    // new dBug($rValue); 
 		return $rValue;
-	} // end function
-
+	}
 
 
 	/**
@@ -467,23 +463,23 @@ class results
 	*/
 	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs)
 	{
-		if ($ownerResults == null) {
+		if ($ownerResults == null)
+		{
 			return;
 		}
 
-	  // OK go ahead
-	  $no_tester_assigned=lang_get('unassigned');
+		$no_tester_assigned = lang_get('unassigned');
 		$rValue = null;
-    foreach($ownerResults as $ownerId => $results)
-    {
-	    $item_name='tester_name';
-      $element=$this->tallyResults($results,sizeOf($results),$item_name);
-		  $element[$item_name]= ($ownerId == -1) ? $no_tester_assigned : $ownerIdNamePairs[$ownerId];
+    	foreach($ownerResults as $ownerId => $results)
+    	{
+	    	$item_name = 'tester_name';
+      		$element = $this->tallyResults($results,sizeOf($results),$item_name);
+		  	$element[$item_name] = ($ownerId == -1) ? $no_tester_assigned : $ownerIdNamePairs[$ownerId];
 			$rValue[$ownerId] = $element;
 		}
 
 		return $rValue;
-	} // end function
+	}
 
 
 	/**
@@ -1068,13 +1064,11 @@ class results
 		    $sqlFilters .= " AND notes LIKE '%" . $search_notes_string ."%' ";
 		}
 		// ------------------------------------------------------
-		
-		$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $executeLinkBuild;
-    $suffixLink = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character);
+
+		$suffixLink = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character);
     
-    foreach($this->linked_tcversions as $testcaseID => $info)
+    	foreach($this->linked_tcversions as $testcaseID => $info)
 		{
-	
 			$executionExists = true;
 			$currentSuite = null;
 			if (!$executionsMap || !(array_key_exists($info['testsuite_id'], $executionsMap))){
@@ -1084,19 +1078,13 @@ class results
 				$currentSuite = $executionsMap[$info['testsuite_id']];
 			}
 			
-	    $version = $info['version'];
-		  if( isset($info['tcversion_number']) && !is_null($info['tcversion_number']) )
-		  {
+	    	$version = $info['version'];
+			if(isset($info['tcversion_number']) && !is_null($info['tcversion_number']))
+		  	{
 			    $version = $info['tcversion_number'];
 			}
 			
-			$executeLink = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . '">' .
-			               $suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
-			
-			// $this->getTCLink($bCanExecute,$testcaseID,$info['external_id'],
-			//                                 $info['tcversion_id'],$info['name'],$executeLinkBuild);
-
-      $infoToSave = array('testcaseID' => $testcaseID,
+      		$infoToSave = array('testcaseID' => $testcaseID,
 			                    'external_id' => $info['external_id'],
 			                    'tcversion_id' => $info['tcversion_id'],
 			                    'version' => $version,
@@ -1110,7 +1098,7 @@ class results
 			                    'name' => $info['name'],
 			                    'assigner_id' => $info['assigner_id'],
 			                    'feature_id' => $info['feature_id'],
-			                    'execute_link' => $executeLink);
+			                    'execute_link' => '');
       
 
 			if ($info['tcversion_id'] != $info['executed'])
@@ -1128,13 +1116,10 @@ class results
 				// TO-DO - this is where we can include the searching of results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids
-        //
-        // 20080928 - franciscom - Be careful about memory usage problems
-        //  
 				$sql = "SELECT * FROM executions " .
 				       "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " ;
 
-        $sql .= $sqlFilters;
+		        $sql .= $sqlFilters;
 
 				// mht: fix 966
 				// mike_h - 20070806 - when ordering executions by the timestamp, 
@@ -1144,15 +1129,12 @@ class results
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
 				{
-  				if ($lastResult != $this->map_tc_status['not_run']) 
-  				{
-              foreach($execQuery as $executions_id => $execInfo)
-					    {
-					    	//$notSureA = $execInfo;
-					    	//$exec_row = $notSureA[0];
-					    	// $testplan_id = $exec_row['testplan_id'];
+	  				if ($lastResult != $this->map_tc_status['not_run']) 
+	  				{
+	              		foreach($execQuery as $executions_id => $execInfo)
+						{
 					    	$exec_row = $execInfo[0];
-					    	
+						    	
 					    	$infoToSave['build_id'] = $exec_row['build_id'];
 					    	$infoToSave['tester_id'] = $exec_row['tester_id'];
 					    	$infoToSave['status'] = $exec_row['status'];
@@ -1160,10 +1142,14 @@ class results
 					    	$infoToSave['executions_id'] = $executions_id;
 					    	$infoToSave['bugString'] = $searchBugs ? $this->buildBugString($this->db, $executions_id) : '';
 
-					    	$dummy=null;
+					    	$dummy = null;
 					    	$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
 					    	                                                       $exec_row['execution_ts']);
 
+					 		$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
+    						$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . '">' .
+			               	$suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
+								    	                                                       
 					   		array_push($currentSuite, $infoToSave);
 					    } // end foreach
 					}  

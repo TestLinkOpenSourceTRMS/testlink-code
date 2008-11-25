@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.61 2008/11/13 19:31:52 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.62 2008/11/25 19:55:28 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -72,7 +72,7 @@ function get_date_range($hash)
     $mm=sprintf("%02d",$date_range->end->month);
     $dd=sprintf("%02d",$date_range->end->day);
     $date_range->end->date=$date_range->end->year . "-" . $mm . "-" . $dd;
-    $date_range->end->time=$date_range->end->date . " " . $date_range->end->hour . ":00:00";
+    $date_range->end->time=$date_range->end->date . " " . $date_range->end->hour . ":59:59";
     
     return $date_range;
 }

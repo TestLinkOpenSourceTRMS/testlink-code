@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: remote_exec.php,v $
- * @version $Revision: 1.1 $ $Author: franciscom $
- * @modified $Date: 2008/11/25 18:12:05 $
+ * @version $Revision: 1.2 $ $Author: franciscom $
+ * @modified $Date: 2008/11/25 18:18:14 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * ----------------------------------------------------------------------------------- */
@@ -54,7 +54,11 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager)
 		$server_host = $server_params["xml_server_host"];
 		$server_port = $server_params["xml_server_port"];
 		$server_path = $server_params["xml_server_path"];
-	  $do_it=true;
+	
+	  if( !is_null($server_host) ||  !is_null($server_path) )
+	  {
+	      $do_it=true;
+	  }    
 	}
 
   if($do_it)

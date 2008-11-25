@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/09/21 19:02:48 $ - $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/11/25 20:44:07 $ - $Author: schlundus $
  *
  * Revision :
  *      20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -51,10 +51,9 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 		$t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : null;
 	if (null === $t_lang)
 		$t_lang = TL_DEFAULT_LOCALE;
-
+	
 	lang_ensure_loaded($t_lang);
 	global $g_lang_strings;
-	
 	$loc_str = null;
 	if (isset($g_lang_strings[$t_lang][$p_string]))
 		$loc_str = $g_lang_strings[$t_lang][$p_string];
@@ -151,20 +150,19 @@ function lang_load( $p_lang ) {
 
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
 	if (file_exists($lang_resource_path))
-		require_once( $lang_resource_path );
+		require($lang_resource_path);
 	else
-		require_once( $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt' );
-		
+		require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt');
+
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
 	if (file_exists($lang_resource_path))
-		require_once( $lang_resource_path );
+		require($lang_resource_path );
 	else
-		require_once( $t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php' );
-	
+		require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
 	# Allow overriding strings declared in the language file.
 	# custom_strings_inc.php can use $g_active_language
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
-	if ( file_exists( $lang_resource_path ) ) {
+	if (file_exists( $lang_resource_path ) ) {
 	     require_once( $lang_resource_path );
 	}
 

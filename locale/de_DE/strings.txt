@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2008/11/22 09:42:06 $ $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2008/11/26 19:52:02 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -697,7 +697,6 @@ $TLS_btn_edit_role = "Rolle editieren";
 $TLS_caption_define_role = "Rollen definieren";
 $TLS_caption_possible_affected_users = "Mögliche betroffene Benutzer";
 $TLS_enter_role_notes = "Rollenbeschreibung eingeben";
-$TLS_menu_assign_product_roles = "Testprojekt-Rollen zuweisen";
 $TLS_menu_assign_testplan_roles = "Testplan-Rollen zuweisen";
 $TLS_menu_define_roles = "Rollen definieren";
 $TLS_menu_mod_user = "Bestehende Benutzer bearbeiten";
@@ -1396,12 +1395,12 @@ $TLS_never_logged = "Noch nie angemeldet";
 $TLS_TestProject = "Testprojekt";
 $TLS_User = "Benutzer";
 $TLS_btn_change = "Ändern";
-$TLS_caption_assign_testplan_user_roles = "Testplan Benutzerrollen zuweisen";
-$TLS_caption_assign_testproject_user_roles = "Testprojekt Benutzerrollen zuweisen";
-$TLS_menu_assign_testproject_roles = "Testprojekt Benutzerrollen zuweisen";
+$TLS_caption_assign_testplan_user_roles = "Testplan-Rollen zuweisen";
+$TLS_caption_assign_testproject_user_roles = "Testprojekt-Rollen zuweisen";
+$TLS_menu_assign_testproject_roles = "Testprojekt-Rollen zuweisen";
 $TLS_th_roles = "Rollen";
-$TLS_th_roles_testplan = "Test Plan Role";
-$TLS_th_roles_testproject = "Test Project Role";
+$TLS_th_roles_testplan = "Testplan Rolle";
+$TLS_th_roles_testproject = "Testprojekt Rolle";
 $TLS_title_assign_roles = "Rollen zuweisen";
 
 

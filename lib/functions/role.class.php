@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/11/22 10:44:33 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2008/11/26 19:52:02 $ $Author: schlundus $
  *
  * rev: 20080412 - franciscom - typo error
  */
@@ -57,7 +57,7 @@ class tlRole extends tlDBObject
 			$query .= " ,c.id AS right_id,c.description ";
 		$query .= " FROM roles a ";
 		if ($bFullDetails)
-			$query .= " JOIN role_rights b ON a.id = b.role_id JOIN rights c ON b.right_id = c.id ";
+			$query .= " LEFT OUTER JOIN role_rights b ON a.id = b.role_id LEFT OUTER JOIN rights c ON b.right_id = c.id ";
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)

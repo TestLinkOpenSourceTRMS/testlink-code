@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2008/11/26 19:52:02 $ $Author: schlundus $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2008/11/26 20:34:37 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -95,12 +95,12 @@ $TLS_estimated_time_min = "Geschätzte Zeit (Minuten):";
 
 $TLS_config_check_warnings = "Es gibt Warnungen über Ihre Konfiguration";
 $TLS_see_details_on_file = "Details finden Sie unter: %s";
+
 $TLS_start_warning = '---- Warnung ----';
 $TLS_testlink_warning='TestLink Warnung';
 $TLS_testcase_name_too_long = 'Der Name des Testfalls ist zu lang (%s zeichen) > %s => wurde abgeschnitten';
 $TLS_original_name='Original Name';
 $TLS_end_warning='---- *** ----';
-
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Anwenden";
@@ -1315,8 +1315,8 @@ $TLS_tp_status_for_build = "Testplan-Status für Build";
 $TLS_generated_by_TestLink_on = "Erstellt von TestLink am ";
 
 // gui/templates/resultsImport.tpl
-$TLS_results_import_format = "XML Datei muss in folgendem Format sein: ";
-$TLS_title_results_import_to = "TBD: --TLS_title_results_import_to-- = Import results";
+$TLS_results_import_format = "Die XML Datei muss in folgendem Format sein: ";
+$TLS_title_results_import_to = "importiere Ergebnisse";
 
 
 // gui/templates/plan/setUrgency.tpl
@@ -1691,9 +1691,9 @@ $TLS_stmp_host_unconfigured = "Der SMTP Server ist nicht konfiguriert!";
 
 
 // lib/functions/common.php
-$TLS_test_automation_exec_ok = "TBD: --TLS_test_automation_exec_ok-- =  Execution Successful!";
-$TLS_test_automation_server_conn_failure = "TBD: --TLS_test_automation_server_conn_failure-- =  Could not connect to HTTP server.";
-$TLS_XMLRPC_error_number = "TBD: --TLS_XMLRPC_error_number-- = XML-RPC Fault number:- ";
+$TLS_test_automation_exec_ok = " Ausführung erfolgreich!";
+$TLS_test_automation_server_conn_failure = "Der Automatisierungs-Server konnte nicht erreicht werden";
+$TLS_XMLRPC_error_number = "XML-RPC Fehlercode:- ";
 
 
 // lib/functions/configCheck.php
@@ -1807,7 +1807,7 @@ $TLS_num_of_updated="%d Test Cases has been updated";
 
 
 // lib/plan/testSetNavigator.php
-$TLS_title_test_plan_navigator = "TestPlan - Navigator";
+$TLS_title_test_plan_navigator = "Testplan - Navigator";
 
 // lib/plan/testSetRemove.php
 $TLS_tcase_removed_from_tplan = "Der Testfall wurde vom Testplan entfernt";
@@ -1861,9 +1861,9 @@ $TLS_results_by_keyword = "Ergebnis nach Stichwort";
 $TLS_results_by_tester = "Ergebnisse nach Tester";
 $TLS_results_top_level_suites = "Ergebnisse für Top Level Suites";
 $TLS_chart_report = "Report";
-$TLS_chart_assigned_testers = "Owners";
-$TLS_chart_keywords = "Keywords";
-$TLS_chart_testsuites="Test Suites";
+$TLS_chart_assigned_testers = "Besitzer";
+$TLS_chart_keywords = "Stichwörter";
+$TLS_chart_testsuites="Testsuiten";
 
 
 // lib/req/reqImport.php
@@ -2006,17 +2006,17 @@ $TLS_error_creating_cf = "Das benutzerdefinierte Feld konnte nicht erstellt werd
 $TLS_do_update = "aktualisiert";
 $TLS_do_delete = "gelöscht";
 $TLS_do_add = "erstellt";
-$TLS_warning_delete_cf = "TBD: --TLS_warning_delete_cf-- = You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_delete_cf = "You are going to delete: %s <br /><br /> Are you sure?";
 
 
 
 // lib/project/fix_tplans.php
-$TLS_list_inactive_tplans1 = "TBD: --TLS_list_inactive_tplans1-- = Listing ";
-$TLS_list_inactive_tplans2 = "TBD: --TLS_list_inactive_tplans2-- = Active Test Plans that are currently not associated with a Test Project";
-$TLS_assoc_test_project = "TBD: --TLS_assoc_test_project-- = Associated Test Project";
-$TLS_btn_fix_tplans = "TBD: --TLS_btn_fix_tplans-- = Update";
-$TLS_fix_tplans_no_rights = "TBD: --TLS_fix_tplans_no_rights-- = You do not have rights to manage test projects<br />Please contact your administrator";
-$TLS_no_tplans_to_fix = "TBD: --TLS_no_tplans_to_fix-- = You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+$TLS_list_inactive_tplans1 = "Listing ";
+$TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
+$TLS_assoc_test_project = "Associated Test Project";
+$TLS_btn_fix_tplans = "Update";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
 
 
 // lib/project/project_req_spec_mgmt.tpl
@@ -2207,8 +2207,8 @@ $TLS_access_to_bts="Access issue tracking system";
 // uncoveredTestCases.php
 $TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
 $TLS_no_uncovered_testcases = 'Keine nicht abgedeckten Testfälle';
-$TLS_testproject_has_no_reqspec='There are no Requirement Spec. defined';
-$TLS_testproject_has_no_requirements='There are no Requirements defined';
+$TLS_testproject_has_no_reqspec = 'Es ist keine Anforderungsspezifikation erstellt';
+$TLS_testproject_has_no_requirements = 'Es sind keine Anforderungen definiert';
 
 // ----- END ------------------------------------------------------------------
 ?>

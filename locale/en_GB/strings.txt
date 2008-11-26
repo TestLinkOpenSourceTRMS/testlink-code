@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.361 $
- * @modified $Date: 2008/11/24 08:06:25 $ by $Author: franciscom $
+ * @version $Revision: 1.362 $
+ * @modified $Date: 2008/11/26 20:34:37 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -116,8 +116,6 @@ $TLS_testlink_warning='Test Link Warning';
 $TLS_testcase_name_too_long='test case name is too long (%s chars) > %s => has been truncated';
 $TLS_original_name='Original name';
 $TLS_end_warning='---- *** ----';
-
-$TLS_match_count = "Number of matches";
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Apply";
@@ -863,7 +861,7 @@ $TLS_password_reset = "Reset password";
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "Your search delivered no results!";
 $TLS_other_versions = 'Other versions';
-$TLS_match_count = "Match count";
+$TLS_match_count = "Number of matches";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "attachments";
@@ -2239,10 +2237,10 @@ $TLS_access_to_bts="Access issue tracking system";
 
 
 // uncoveredTestCases.php
-$TLS_report_testcases_without_requirement=$TLS_link_report_uncovered_testcases;
-$TLS_no_uncovered_testcases='No uncovered Test Cases';
-$TLS_testproject_has_no_reqspec='There are no Requirement Spec. defined';
-$TLS_testproject_has_no_requirements='There are no Requirements defined';
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'No uncovered Test Cases';
+$TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
+$TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 
 // ----- END ------------------------------------------------------------------
 ?>

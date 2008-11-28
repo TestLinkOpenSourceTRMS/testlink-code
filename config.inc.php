@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.212 $
- * @modified $Date: 2008/11/25 20:18:33 $ by $Author: schlundus $
+ * @version $Revision: 1.213 $
+ * @modified $Date: 2008/11/28 15:33:35 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -103,7 +103,6 @@ $tlCfg->testcase_cfg = new stdClass();
 $tlCfg->req_cfg = new stdClass();
 
 
-
 /** Include database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
 
@@ -142,6 +141,7 @@ $tlCfg->gui_title_separator_2 = ' - '; // parent - child
 // testCasePrefix . g_testcase_cfg->glue_character . external_id
 // CAN NOT BE EMPTY
 $tlCfg->testcase_cfg->glue_character = '-';
+
 
 // ----------------------------------------------------------------------------
 /** [SERVER ENVIRONMENT] */
@@ -191,11 +191,10 @@ $tlCfg->show_config_check_warning=FALSE;
  * 		$g_loggerCfg['file']['enable']=true/false;
  */
 $g_loggerCfg = null;
-/*
- * All events older this value [days] are removed from the db, during login
- * 
- */
+
+/** All events older this value [days] are removed from the db, during login */
 $g_removeEventsOlderThan = 30;
+
 
 // ----------------------------------------------------------------------------
 /** [Bug Tracking systems] */
@@ -255,10 +254,10 @@ $g_smtp_password    = '';  # password
  * 		'MD5' => use password stored on db
  *    'LDAP' => use password from LDAP Server
  */ 
-$tlCfg->authentication['method'] 		= 'MD5';
+$tlCfg->authentication['method'] = 'MD5';
 
 /** LDAP authentication credentials */
-$tlCfg->authentication['ldap_server']			= 'localhost';
+$tlCfg->authentication['ldap_server']		= 'localhost';
 $tlCfg->authentication['ldap_port']			= '389';
 $tlCfg->authentication['ldap_version']		= '3'; // could be '2' in some cases
 $tlCfg->authentication['ldap_root_dn']		= 'dc=mycompany,dc=com';
@@ -267,23 +266,18 @@ $tlCfg->authentication['ldap_uid_field']	= 'uid'; // Use 'sAMAccountName' for Ac
 $tlCfg->authentication['ldap_bind_dn']		= ''; // Left empty for anonymous LDAP binding 
 $tlCfg->authentication['ldap_bind_passwd']	= ''; // Left empty for anonymous LDAP binding 
 
-/** Regular expression to use when validating new user login names */
-// This default regular expression: '/^[\w \-]+$/'
-// allows a-z, A-z, 0-9, as well as space and underscore.  
-// IMPORTANT: If you change this, you may want to update the $TLS_valid_user_name_format
-//            string in the language files to explain the rules you are using on your site
-// Reused MANTIS BTS code
+/** Validating new user login names */
 $g_user_login_valid_regex='/^[\w \-]+$/';
 
-/** Enable/disable Users to create accounts with default role by "new user" link on login page */
-// TRUE => allow feature [STANDARD BEHAVIOUR]
+/** Enable/disable Users to create accounts on login page */
 $g_user_self_signup = TRUE; 
 
+/** Validating user email addresses */
+$g_user_email_valid_regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`" .
+		"{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/";
 
-/** Regular expression to use when validating user email addresses */
-$g_user_email_valid_regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/";
 
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [API] */
 
 /** XML-RPC API availability (disabled by default) */ 
@@ -293,7 +287,7 @@ $tlCfg->api->enabled = FALSE;
 $tlCfg->api->id_format = "[ID: %s ]";
 
 
-// ----------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** [GUI LAYOUT] */
 
 /** GUI themes (base for CSS and images)- modify if you create own one */
@@ -377,9 +371,9 @@ $tlCfg->gui->text_editor = array();
 // Hint: After doing configuration changes, clean you Browser's cookies and cache 
 //
 $tlCfg->gui->text_editor['all'] = array( 
-										 'type' => 'fckeditor', 
-                                         'toolbar' => 'tl_default', 
-                                         'configFile' => 'cfg/tl_fckeditor_config.js',
+									'type' => 'fckeditor', 
+                                    'toolbar' => 'tl_default', 
+                                    'configFile' => 'cfg/tl_fckeditor_config.js',
 								);
 
 // Copy this to custom_config.inc.php if you want use 'tinymce' as default.
@@ -407,8 +401,8 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
 
-/** fckeditor Toolbar 
- * modify which icons will be available in html edit pages
+/** 
+ * fckeditor Toolbar - modify which icons will be available in html edit pages
  * refer to fckeditor configuration file 
  **/
 // $tlCfg->fckeditor_default_toolbar = 'tl_default';
@@ -417,20 +411,11 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 /** [GUI: TREE] */
 
 /** 
- * TREE MENU 
- *	Definition of tree menu component: dTree, jTree or phplayersmenu.
- *	jTree has the best performance but others have a better functionality  
- *	[LAYERSMENU, DTREE, JTREE, EXTJS]
+ * TREE MENU - Configure using of external tree menu component: 
+ * [EXTJS, LAYERSMENU, DTREE, JTREE]
  */
 $tlCfg->treemenu_type = 'EXTJS';
 
-// 20080525 - franciscom
-// To allow two different type of tree menu engine
-// while testing EXT JS.
-// if = '' => $tlCfg->treemenu_type will be used
-// MHT: This is temporary parameter and will be removed 
-// $tlCfg->spectreemenu_type = 'EXTJS';
- 
 /** Default ordering value for new Test Suites and Test Cases to separate them */
 $tlCfg->treemenu_default_testsuite_order = 1;
 $tlCfg->treemenu_default_testcase_order = 100;
@@ -492,7 +477,6 @@ $tlCfg->exec_cfg->history_order = 'DESC';
 // TRUE  -> the whole execution history for the choosen build will be showed
 // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->history_on = FALSE;
-
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status will be displayed
 // FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
@@ -564,7 +548,6 @@ $g_spec_cfg->automatic_tree_refresh = ENABLED;
 // ENABLED -> user can edit executed tc versions
 // DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
 $tlCfg->testcase_cfg->can_edit_executed = DISABLED;
-
 
 // To avoid perfomance problems on search test case feature,
 // we can decide when to inform user that results can not be displayed
@@ -667,10 +650,10 @@ $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
 
 /** 
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name
-  	FALSE -> test cases are created and assigned to a test suite 
-  	         with name $tlCfg->req_cfg->default_testsuite_name
-  	TRUE  -> REQuirement Specification Title is used as testsuite name     
-*/
+ *	FALSE => test cases are created and assigned to a test suite 
+ * 	         with name $tlCfg->req_cfg->default_testsuite_name
+ * 	TRUE  => REQuirement Specification Title is used as testsuite name     
+ */
 $tlCfg->req_cfg->use_req_spec_as_testsuite_name = TRUE;
 $tlCfg->req_cfg->default_testsuite_name = "Auto-created Test cases";
 $tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
@@ -678,10 +661,9 @@ $tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated
 $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
 
 
-// 20080925 - franciscom
 // ENABLED: allow N level depth tree 
 // DISABLED: just one level
-$tlCfg->req_cfg->child_requirements_mgmt=DISABLED;
+$tlCfg->req_cfg->child_requirements_mgmt = DISABLED;
 
 // ----------------------------------------------------------------------------
 /** [MISC FUNCTIONALITY] */
@@ -724,20 +706,20 @@ $tlCfg->html_valid_tags_single_line = 'i, b, u, em';
 
 /**
  * Defines the threshold values for filtering TC by a priority according to the formula
- *  ui =	(urgency*importance) 
- *  LOW = all Tc's with ui < LOW_Threshold
- *  HIGH = all Tc's with ui >= HIGH_Threshold
- *  MEDIUM = all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
+ *  ui 		=>	(urgency*importance) 
+ *  LOW 	=> all Tc's with ui < LOW_Threshold
+ *  HIGH 	=> all Tc's with ui >= HIGH_Threshold
+ *  MEDIUM  => all Tc's with ui >= LOW_Threshold AND ui < HIGH_Threshold
  */
 $tlCfg->urgencyImportance = new stdClass();
 $tlCfg->urgencyImportance->threshold['low'] = 3;
 $tlCfg->urgencyImportance->threshold['high'] = 6;
 
 
-// ----- End of Config ------------------------------------------------
-// --------------------------------------------------------------------
+// ----- End of Config ------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // DO NOT CHANGE NOTHING BELOW
-// --------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 
 // havlatm: @TODO move the next code out of config - configCheck.php -> included via common.php
 /** Functions for check request status */
@@ -789,7 +771,7 @@ $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 
 
 
-// --------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
 define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
 define('TL_SORT_TABLE_ENGINE',$g_sort_table_engine);
@@ -804,7 +786,7 @@ define('TL_TESTLINK_CSS', TL_THEME_CSS_DIR . TL_CSS_MAIN);
 define('TL_PRINT_CSS', TL_THEME_CSS_DIR . TL_CSS_PRINT);
 define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
 
-// --------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // when a role is deleted, a new role must be assigned to all users
 // having role to be deleted
 // A right choice seems to be using $g_default_roleid.
@@ -879,5 +861,5 @@ $g_tc_status_for_ui = $tlCfg->results['status_label'];
 $g_tc_status_for_ui_default = $tlCfg->results['default_status'];
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
-// ----- END OF FILE --------------------------------------------------
+// ----- END OF FILE --------------------------------------------------------------------
 ?>

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/11/30 16:41:24 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20080512 - franciscom - get_all_for_tcase() new fields in recordset
+ * rev : 20081129 - franciscom - BUGID 1852 - bulk_assignment() 
+ :       20080512 - franciscom - get_all_for_tcase() new fields in recordset
  *       20080416 - franciscom - update() - fixed bug on return type 
  *       20080318 - franciscom - thanks to Postgres have found code that must be removed
  *                               after requirements get it's id from nodes hierarchy
@@ -557,28 +558,33 @@ class requirement_mgr extends tlObjectWithAttachments
   		$sql = " SELECT COUNT(*) AS num_cov FROM {$this->req_coverage_table} " .
   		       " WHERE req_id={$req_id}  AND testcase_id = {$testcase_id}";
   		$result = $this->db->exec_query($sql);
-		if ($result)
-		{
-	      	$row = $this->db->fetch_array($result);
-	  		if ($row['num_cov'] == 0)
-	  		{
-	  			// create coverage dependency
-	  			$sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
-	  			       "VALUES ({$req_id},{$testcase_id})";
-
-	  			$result = $this->db->exec_query($sql);
-	  			if ($this->db->affected_rows() == 1)
-	  			{
-	  				$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
-					  $reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
-					  if($tcInfo && $reqInfo)
-						logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),"ASSIGN",$this->object_table);
-					$output = 1;
-	  			}
-	  		}
-			else
-  				$output = 1;
-  		}
+  		
+  		
+		  if ($result)
+		  {
+	        $row = $this->db->fetch_array($result);
+	    		if ($row['num_cov'] == 0)
+	    		{
+	    			// create coverage dependency
+	    			$sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
+	    			       "VALUES ({$req_id},{$testcase_id})";
+      
+	    			$result = $this->db->exec_query($sql);
+	    			if ($this->db->affected_rows() == 1)
+	    			{
+		  			  $output = 1;
+	    				$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
+		  			  $reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
+		  			  if($tcInfo && $reqInfo)
+		  				    logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
+		  				                  "ASSIGN",$this->object_table);
+	    			}
+	    		}
+		  	  else
+		  	  {
+  	  			$output = 1;
+  	  		}	
+  	  }
   	}
 
   	return $output;
@@ -621,33 +627,49 @@ class requirement_mgr extends tlObjectWithAttachments
     args: req_id: can be an array
           testcase_id: can be an array
 
-    returns: -
+    returns: number of assignments done
 
 
   */
   function bulk_assignment($req_id,$testcase_id)
   {
+    $insertCounter=0;  // just for debug
   	$requirementSet=$req_id;
   	$tcaseSet=$testcase_id;
   	
     if( !is_array($req_id) )
     {
-       $requirementsSet=array($req_id);  
+       $requirementSet=array($req_id);  
     }
     if( !is_array($testcase_id) )
     {
        $tcaseSet=array($testcase_id);  
     }
+
+    $req_list=implode(",",$requirementSet);
+    $tcase_list=implode(",",$tcaseSet);
     
+    // Get coverage for this set of requirements and testcase, to be used
+    // to understand if insert if needed
+ 		$sql = " SELECT * FROM {$this->req_coverage_table} " .
+  		       " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
+    $coverage = $this->db->fetchMapRowsIntoMap($sql,'req_id','testcase_id');
+   
+   
   	$insert_sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) ";
   	foreach($tcaseSet as $tcid)
   	{
   	    foreach($requirementSet as $reqid)
   	    {
-  	        $sql = $insert_sql . "VALUES ({$reqid},{$tcid})";
-            $this->db->exec_query($sql);
+            if( !isset($coverage[$reqid][$tcid]) )
+            {
+                $insertCounter++;
+  	            $sql = $insert_sql . "VALUES ({$reqid},{$tcid})";
+                $this->db->exec_query($sql);
+            }    
   	    }
   	}
+  	return $insertCounter;
   }
 
 

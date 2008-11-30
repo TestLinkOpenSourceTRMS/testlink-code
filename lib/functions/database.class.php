@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/11/19 07:24:54 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/11/30 16:41:24 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
+ * 20081129 - franciscom - Added CUMULATIVE constant
  * 20081116 - franciscom - fetchColumnsIntoMap() added cumulative argument
  *
  * 20080722 - franciscom -  trying to solve memory usage problems, have add option
@@ -47,6 +48,8 @@ require_once( dirname(__FILE__). '/logging.inc.php' );
 
 class database 
 {
+  const CUMULATIVE=1;
+  
 	var $db;
 	var $queries_array = array();
 	var $is_connected=false;

@@ -46,14 +46,14 @@ function check_action_precondition(form_id,action)
 <body>
 
 <h1 class="title">
-	{$labels.test_case}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
+	{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
 <div class="workBack">
 
-{include file="inc_update.tpl" user_feedback=$user_feedback}
-{if $arrReqSpec eq "" }
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
+{if $gui->arrReqSpec eq "" }
    {$labels.warning_req_tc_assignment_impossible}
 {else}
 
@@ -61,20 +61,20 @@ function check_action_precondition(form_id,action)
   <form id="SRS_switch" name="SRS_switch" method="post">
     <p><span class="labelHolder">{$labels.req_spec}</span>
   	<select name="idSRS" onchange="form.submit()">
-  	{html_options options=$arrReqSpec selected=$selectedReqSpec}</select>
+  	{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}</select>
   </form>
 </div>
 
 <div class="workBack">
   <h2>{$labels.req_title_assigned}</h2>
-  {if $arrAssignedReq ne ""}
+  {if $gui->arrAssignedReq ne ""}
     <form id="reqList" method="post">
     <div id="div_assigned_req">
  	    {* used as memory for the check/uncheck all checkbox javascript logic *}
        <input type="hidden" name="memory_assigned_req"
                             id="memory_assigned_req"  value="0" />
 
-    <input type="hidden" name="idSRS" value="{$selectedReqSpec}" />
+    <input type="hidden" name="idSRS" value="{$gui->selectedReqSpec}" />
     <table class="simple">
     	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;">
@@ -86,14 +86,14 @@ function check_action_precondition(form_id,action)
     		<th>{lang_get s="req"}</th>
     		<th>{lang_get s="scope"}</th>
     	</tr>
-    	{section name=row loop=$arrAssignedReq}
+    	{section name=row loop=$gui->arrAssignedReq}
     	<tr>
-    		<td><input type="checkbox" id="assigned_req{$arrAssignedReq[row].id}"
-    		                           name="req_id[{$arrAssignedReq[row].id}]" /></td>
-    		<td><span class="bold">{$arrAssignedReq[row].req_doc_id|escape}</span></td>
-    		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$arrAssignedReq[row].id}">
-    			{$arrAssignedReq[row].title|escape}</a></span></td>
-    		<td>{$arrAssignedReq[row].scope|strip_tags|strip|truncate:30}</td>
+    		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}"
+    		                           name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
+    		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
+    		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
+    			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
+    		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:30}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
@@ -113,7 +113,7 @@ function check_action_precondition(form_id,action)
   </div>
 
 
-    {if $arrUnassignedReq ne ""}
+    {if $gui->arrUnassignedReq ne ""}
       <div class="workBack">
       <h2>{$labels.req_title_unassigned}</h2>
       <form id="reqList2" method="post">
@@ -123,7 +123,7 @@ function check_action_precondition(form_id,action)
        <input type="hidden" name="memory_free_req"
                             id="memory_free_req"  value="0" />
 
-      <input type="hidden" name="idSRS" value="{$selectedReqSpec}" />
+      <input type="hidden" name="idSRS" value="{$gui->selectedReqSpec}" />
       <table class="simple">
       	<tr>
       		<th align="center"  style="width: 5px;background-color:#005498;">
@@ -136,16 +136,16 @@ function check_action_precondition(form_id,action)
       		<th>{lang_get s="req"}</th>
       		<th>{lang_get s="scope"}</th>
       	</tr>
-      	{section name=row2 loop=$arrUnassignedReq}
+      	{section name=row2 loop=$gui->arrUnassignedReq}
       	<tr>
       		<td><input type="checkbox"
-      		           id="free_req{$arrUnassignedReq[row2].id}"
-      		           name="req_id[{$arrUnassignedReq[row2].id}]" /></td>
+      		           id="free_req{$gui->arrUnassignedReq[row2].id}"
+      		           name="req_id[{$gui->arrUnassignedReq[row2].id}]" /></td>
 
-      		<td><span class="bold">{$arrUnassignedReq[row2].req_doc_id|escape}</span></td>
-      		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$arrUnassignedReq[row2].id}">
-      			{$arrUnassignedReq[row2].title|escape}</a></span></td>
-      		<td>{$arrUnassignedReq[row2].scope|strip_tags|strip|truncate:30}</td>
+      		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>
+      		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrUnassignedReq[row2].id}">
+      			{$gui->arrUnassignedReq[row2].title|escape}</a></span></td>
+      		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:30}</td>
       	</tr>
       	{sectionelse}
       	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement66}</span></td></tr>

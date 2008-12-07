@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.133 $
- * @modified $Date: 2008/11/22 10:44:33 $ $Author: franciscom $
+ * @version $Revision: 1.134 $
+ * @modified $Date: 2008/12/07 19:02:35 $ $Author: franciscom $
  * @author franciscom
  *
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
@@ -77,8 +77,6 @@ require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
-// require_once ("../../third_party/dBug/dBug.php");
-
 
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
 
@@ -1796,7 +1794,6 @@ function filterByKeyword($id,$keyword_id=0, $keyword_filter_type='OR')
         $testcase_filter = " AND testcase_id = {$id} ";
     }    
     
-    //echo $keyword_filter_type;
     if( is_array($keyword_id) )
     {
         $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
@@ -2702,7 +2699,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
             of html_table_of_custom_field_inputs.
 
 
-  args: $id
+  args: $id: Very Important!!!
+             scope='design'    -> this is a testcase id
+             scope='execution' -> this is a testcase VERSION id
+              
         [$scope]: 'design' -> use custom fields that can be used at design time (specification)
                   'execution' -> use custom fields that can be used at execution time.
 
@@ -2741,17 +2741,16 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,
                                            $execution_id=null,$testplan_id=null,$tprojectID = null)
 {
 	$cf_smarty = '';
-	$PID_NO_NEEDED = null;
-
 	if($scope == 'design')
 	{
-		$cf_map = $this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$filters,$tprojectID);
+		$cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tprojectID);
 	}
 	else
 	{
-		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$filters,
+		$cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
 		                                                 $execution_id,$testplan_id,$tprojectID);
 	}
+  
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
@@ -2822,7 +2821,7 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
 	    $tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
 	}
 		
-	// Warning:
+	// VERY IMPORTANT WARNING:
 	// I'm setting node type to test case, but $id is the tcversion_id, because
 	// execution data is related to tcversion NO testcase
 	//

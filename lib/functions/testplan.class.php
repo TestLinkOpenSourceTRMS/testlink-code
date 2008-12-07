@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/12/07 10:10:04 $ by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/12/07 19:02:35 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,7 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20081207 - franciscom - added get_execution_time()
  *  20081206 - franciscom - BUGID 1910 - get_estimated_execution_time() - added new filter
  *                                       get_linked_tcversions() - added test suites filter 
  *  20081122 - franciscom - get_linked_cfields_at_design() - 
@@ -641,8 +642,6 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 
 	// BUGID 989 - added NHB.node_order
 	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
-
-
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
 	// 20070913 - jbarchibald
@@ -657,7 +656,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 
 // --------------------------------------------------------------------------------------
 /*
-  function: get_linked_and_last_tcversions
+  function: get_linked_and_newest_tcversions
             returns for every test case in a test plan
             the tc version linked and the newest available version
 
@@ -1940,6 +1939,70 @@ function get_estimated_execution_time($id,$tcase_set=null)
     }
     
     return $estimated;
+}    
+
+
+/*
+  function: get_execution_time
+            Takes all testcases (or a subset of executions) linked to testplan 
+            that has been executed and computes SUM of values assigned AT EXECUTION TIME 
+            to customa field named CF_EXEC_TIME
+
+            IMPORTANT:
+            1. at time of this writting (20081207) this CF can be of type: string,numeric or float.
+            2. YOU NEED TO USE . (dot) as decimal separator (US decimal separator?) or
+               sum will be wrong. 
+            
+  args:id testplan id
+       $execution_set: default null
+
+  returns: sum of CF values for all testcases linked to testplan
+
+  rev: 20081207 - franciscom
+*/
+function get_execution_time($id,$execution_set=null)
+{
+    $total_time=0;
+    $cf_info = $this->cfield_mgr->get_by_name('CF_EXEC_TIME');
+
+    // CF exists ?
+    if( ($status_ok=!is_null($cf_info)) )
+    {
+      $cfield_id=key($cf_info);
+    }
+
+    if( $status_ok)
+    {
+        if( is_null($execution_set) )
+        {
+            // we will compute time for ALL linked and executed test cases,
+            // just for LAST executed TCVERSION
+            $linked_executed=$this->get_linked_tcversions($id,null,0,'just_executed'); 
+            if( ($status_ok=!is_null($linked_executed)) )
+            {
+                foreach($linked_executed as $tcase_id => $info)
+                {
+                    $execution_ids[]=$info['exec_id'];
+                }    
+            }    
+        }
+        else
+        {
+            $execution_ids=$execution_set;  
+        }
+    }  
+    
+    if($status_ok)
+    {
+        $sql="SELECT SUM(value) AS SUM_VALUE FROM {$this->cfield_execution_values_table} CFEV " .
+             " WHERE CFEV.field_id={$cfield_id} " .
+             " AND testplan_id={$id} " .
+             " AND execution_id IN (" . implode(',',$execution_ids) . ")";
+     
+        $total_time=$this->db->fetchOneValue($sql);
+        $total_time=is_null($total_time) ? 0 :$total_time;
+    }
+    return $total_time;
 }    
 
 

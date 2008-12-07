@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.11 2008/12/07 10:10:04 franciscom Exp $
+*  @version 	$Id: printDocument.php,v 1.12 2008/12/07 19:02:35 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -17,6 +17,7 @@ require_once("common.php");
 require_once("print.inc.php");
 testlinkInitPage($db);
 
+$statistics=null;
 
 $args = init_args();
 
@@ -83,7 +84,9 @@ switch ($args->print_scope)
     
     case 'testplan':
     	   $tplan_mgr = new testplan($db);
-         $tcase_filter=null;
+         $tcase_filter = null;
+         $execid_filter = null;
+         $executed_qty = 0;
          
          switch($item_type)
          {
@@ -113,7 +116,7 @@ switch ($args->print_scope)
     	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,null,null,0,null,false,null, 
     	   	                                                   $branch_tsuites);
     	   	       $tcase_filter=array_keys($tp_tcs);
-       	       
+    	         
     	   	       $tInfo['node_type_id'] = $hash_descr_id['testsuite'];
     	   	       $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
     	   	       
@@ -124,7 +127,27 @@ switch ($args->print_scope)
     	   	       $tree['childNodes'] = array($tInfo);
              break;
          }  // switch($item_type)
-         $estimated_minutes = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
+         
+         // Create list of execution id, that will be used to compute execution time if
+    	   // CF_EXEC_TIME custom field exists and is linked to current testproject                                            
+         $executed_qty=0;
+    	   foreach($tp_tcs as $tcase_id => $info)
+         {
+             if( $info['exec_status'] != $status_descr_code['not_run'] )
+             {  
+                 $execid_filter[]=$info['exec_id'];
+                 $executed_qty++;
+             }    
+         }    
+         
+         $statistics['estimated_execution']['minutes']=$tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
+         $statistics['estimated_execution']['tcase_qty']=count($tp_tcs);
+         
+         if( $executed_qty > 0)
+         { 
+             $statistics['real_execution']['minutes']=$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
+             $statistics['real_execution']['tcase_qty']=$executed_qty;
+         }
     break;
 }
 
@@ -142,7 +165,7 @@ if($tree)
 		case 'testplan':
 			$code = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
 		                                    $args->user_id,$args->tplan_id,$args->tproject_id,
-		                                    $estimated_minutes);
+		                                    $statistics);
     break;
 	}
 }

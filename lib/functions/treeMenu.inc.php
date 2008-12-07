@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2008/12/07 19:02:35 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -335,6 +335,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			}
 			else
 			{
+			  $externalID='';
 				$node['tcversion_id'] = $tpNode['tcversion_id'];		
 				$node['version'] = $tpNode['version'];		
 				if ($bGetExternalTcID)
@@ -821,10 +822,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	        if($doFilterByKeyword && $keywordsFilterType == 'AND')
 	        {
             	$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-              	$testCaseSet = array_keys($filteredSet);   
-              
-				$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
-	          }
+              $testCaseSet = array_keys($filteredSet);   
+				      $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
+	        }
 	    }   
         // --------------------------------------------------------------------------------------
 	    if (is_null($tplan_tcases))
@@ -841,12 +841,12 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$bForPrinting = $bHideTCs;
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-										$tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
+										                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
 		foreach($testcase_counters as $key => $value)
 		{
 			$test_spec[$key] = $testcase_counters[$key];
 		}
-		 // 20071111 - franciscom
+		  // 20071111 - franciscom
 	    // added map $tplan_tcases.
 	    // key -> testcase id.
 	    // value -> map with info about execution status
@@ -862,7 +862,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	    $treeMenu->rootnode->id=$test_spec['id'];
 	    $treeMenu->rootnode->leaf=$test_spec['leaf'];
 	    $treeMenu->rootnode->text=$test_spec['text'];
-		$treeMenu->rootnode->position=$test_spec['position'];	    
+		  $treeMenu->rootnode->position=$test_spec['position'];	    
 	    $treeMenu->rootnode->href=$test_spec['href'];
 	
 	     // Change key ('childNodes')  to the one required by Ext JS tree.
@@ -870,12 +870,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	    
 	    // Remove null elements (Ext JS tree do not like it ).
 	    $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
-	     $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
-	      $menustring = str_ireplace('null', '', $dummy_string); 
-	      }
+	    $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
+	    $menustring = str_ireplace('null', '', $dummy_string); 
+	   }
 	  $treeMenu->menustring = $menustring;  
-	  
-	  return $treeMenu;
+    return $treeMenu;
 }
 
 

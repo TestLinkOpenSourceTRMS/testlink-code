@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.363 $
- * @modified $Date: 2008/11/30 16:42:26 $ by $Author: franciscom $
+ * @version $Revision: 1.364 $
+ * @modified $Date: 2008/12/07 19:06:37 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -21,6 +21,7 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ * 20081207 - franciscom -
  * 20071102 - franciscom - tcexecute strings
  * 20071101 - franciscom - view_file_format_doc
  * 20070930 - franciscom - show_tcase_spec
@@ -105,8 +106,12 @@ $TLS_high = "High";
 $TLS_medium = "Medium";
 $TLS_low = "Low";
 
-$TLS_estimated_time_hours = "Estimated time (hours):";
-$TLS_estimated_time_min = "Estimated time (min):";
+$TLS_estimated_time_hours = "Estimated time for executing %s test cases (hours):";
+$TLS_estimated_time_min = "Estimated time for executing %s test cases (min):";
+
+$TLS_real_time_hours = "Time used for executing %s test cases (hours):";
+$TLS_real_time_min = "Time used for executing %s test cases (min):";
+
 
 $TLS_config_check_warnings = "There are warnings on your configuration";
 $TLS_see_details_on_file="See details on file: %s";
@@ -1693,6 +1698,7 @@ $TLS_printed_by_TestLink_on = "Printed by TestLink on";
 $TLS_title_toc = "Table Of Contents";
 $TLS_passfail = "Pass / Fail";
 $TLS_testnotes = "Test Notes";
+$TLS_last_exec_result = "Last Result";
 
 
 // lib/functions/testcase.class.php

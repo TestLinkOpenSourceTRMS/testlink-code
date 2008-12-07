@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/11/25 18:09:18 $  $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2008/12/07 19:02:35 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -1367,7 +1367,6 @@ class cfield_mgr
                           " AND CFEV.testplan_id={$testplan_id} ";
     }
 
-    // 20070526 - added CF.id to order by
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM custom_fields CF " .
@@ -1378,7 +1377,7 @@ class cfield_mgr
          " AND   CF.enable_on_execution={$enabled} " .
          " AND   CF.show_on_execution=1 " .
          " ORDER BY display_order,CF.id ";
-
+ 
     $map = $this->db->fetchRowsIntoMap($sql,'id');
     return($map);
   }

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/11/19 07:22:56 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/12/07 19:53:56 $ $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,13 +14,9 @@
  *		Test specification/ Test plan.
  *
  * rev :
- *      20081116 - franciscom - fixed bug caused by missed $gui->ajaxTree->loadFromChildren=true
- *                              
- *      20080819 - franciscom - fixed internal bug due to changes in return
- *                              values of generate*tree()
- *                              IMPORTANT: 
- *                                        TEMPLATE DO NOT WORK YET with EXTJS tree
- * 
+ *      20081116 - franciscom - fixed bug (missed $gui->ajaxTree->loadFromChildren=true)
+ *      20080819 - franciscom - fixed bug due to changes in return values of generate*tree()
+ *                              TEMPLATE DO NOT WORK YET with EXTJS tree 
  *      20070509 - franciscom - added contribution BUGID
  *
  */
@@ -28,9 +24,9 @@
 require('../../config.inc.php');
 require("common.php");
 require_once("treeMenu.inc.php");
+
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-
 $args=init_args();
 $gui=initializeGui($db,$args,$_SESSION['basehref']);
 
@@ -90,41 +86,42 @@ switch($gui->report_type)
 	    $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
 	      
 	    $filters = new stdClass();
-  	  $additionalInfo = new stdClass();
+  	  	$additionalInfo = new stdClass();
         
 	    $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
-  	  $filters->keywordsFilterType=null;
-  	  $filters->tc_id = FILTER_BY_TC_OFF;
-  	  $filters->build_id = $latestBuild;
-  	  $filters->hide_testcases=HIDE_TESTCASES;
-  	  $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-  	  $filters->status = FILTER_BY_TC_STATUS_OFF;
-  	  $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
-  	  $filters->include_unassigned=1;
-  	  $filters->show_testsuite_contents=1;
+  	  	$filters->keywordsFilterType=null;
+  	  	$filters->tc_id = FILTER_BY_TC_OFF;
+  	  	$filters->build_id = $latestBuild;
+  	  	$filters->hide_testcases=HIDE_TESTCASES;
+  	  	$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
+  	  	$filters->status = FILTER_BY_TC_STATUS_OFF;
+  	  	$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+  	  	$filters->include_unassigned=1;
+  	  	$filters->show_testsuite_contents=1;
         
-  	  $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
-  	  $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+  	  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
+  	  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
 	    $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
 	                                     $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
-      $treeString = $treeContents->menustring;
-      $gui->ajaxTree = new stdClass();
-      if($treemenu_type == 'EXTJS')
-      {
-          $gui->ajaxTree->root_node = $treeContents->rootnode;
-          $gui->ajaxTree->children = $treeContents->menustring;
-          $gui->ajaxTree->loadFromChildren=true;
-          $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
-      }
-    break;
+      	$treeString = $treeContents->menustring;
+      	$gui->ajaxTree = new stdClass();
+      	if($treemenu_type == 'EXTJS')
+      	{
+          	$gui->ajaxTree->root_node = $treeContents->rootnode;
+          	$gui->ajaxTree->children = $treeContents->menustring;
+          	$gui->ajaxTree->loadFromChildren=true;
+          	$gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+      	}
+    	break;
 
     default:
 	      tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
 	      exit();
-    break;
+    	break;
 }
+
 $tree = ($treemenu_type == 'EXTJS') ? $treeString :invokeMenu($treeString);
 
 $smarty = new TLSmarty();
@@ -140,17 +137,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 
-/*
-  function: init_args
-            get user input and create an object with properties representing
-            this inputs.
-            You can think in ths like some sort of namespace.
-
-  args:
-  
-  returns: stdClass() object 
-
-*/
+/**
+ * get user input and create an object with properties representing this inputs.
+ * 
+ * @return stdClass object 
+ */
 function init_args()
 {
     $args=new stdClass();
@@ -167,25 +158,21 @@ function init_args()
     return $args;
 }
 
-/*
-  function: initializeGui
-            initialize gui (stdClass) object that will be used as argument
-            in call to Template Engine.
- 
-  args: argsObj: object containing User Input and some session values
-        basehref: URL to web home of your testlink installation.
-        tprojectMgr: test project manager object.
-        treeDragDropEnabled: true/false. Controls Tree drag and drop behaivor.
-        
-  
-  
-  returns: stdClass object
-  
-  rev: 20080817 - franciscom
-       added code to get total number of testcases in a test project, to display
-       it on root tree node.
-
-*/
+/**
+ * Initialize gui (stdClass) object that will be used as argument
+ * in call to Template Engine.
+ *
+ * @param class pointer argsObj: object containing User Input and some session values
+ * 		TBD structure
+ * @param string basehref: URL to web home of your testlink installation.
+ * 
+ * ?     tprojectMgr: test project manager object.
+ * ?     treeDragDropEnabled: true/false. Controls Tree drag and drop behaivor.
+ * 
+ * @return stdClass TBD structure
+ */ 
+//  rev: 20080817 - franciscom - added code to get total number of testcases 
+//  in a test project, to display it on root tree node.
 function initializeGui(&$dbHandler,$argsObj,$basehref)
 {
     $tcaseCfg=config_get('testcase_cfg');

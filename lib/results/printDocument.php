@@ -1,17 +1,22 @@
 <?php
 /**
-* 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-*
-*  @version 	$Id: printDocument.php,v 1.12 2008/12/07 19:02:35 franciscom Exp $
-*  @author 	Martin Havlat
-* 
-* Shows the data that will be printed.
-*
-* rev :
-*      20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
-*      20070509 - franciscom - added Contribution BUGID
-*
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: printDocument.php,v $
+ *
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2008/12/07 19:47:08 $ by $Author: havlat $
+ * @author Martin Havlat
+ *
+ * SCOPE:
+ * Generate documentation Test report based on Test plan data.
+ *
+ * Revisions :
+ *      20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
+ *      20070509 - franciscom - added Contribution BUGID
+ *
+ */
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("print.inc.php");
@@ -21,11 +26,7 @@ $statistics=null;
 
 $args = init_args();
 
-// Important Notice:
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
-//
-// 20070509 - Contribution - BUGID - 
-// 20071209 - MHT"contribution - JMU: requirements and keywords added
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0,
 						               'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0);
 
@@ -35,6 +36,7 @@ foreach($printingOptions as $opt => $val)
 }					
 
 $dummy = null;
+
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
 
@@ -43,9 +45,9 @@ $hash_id_descr = array_flip($hash_descr_id);
 $status_descr_code = config_get('tc_status');
 $status_code_descr = array_flip($status_descr_code);
 
-$decoding_hash  =array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
+$decoding_hash = array('node_id_descr' => $hash_id_descr,
+                     'status_descr_code' =>  $status_descr_code,
+                     'status_code_descr' =>  $status_code_descr);
 
 
 $test_spec = $tree_manager->get_subtree($args->itemID,
@@ -59,7 +61,7 @@ $test_spec = $tree_manager->get_subtree($args->itemID,
 										);
 
 $tree = null;
-$code = null;					
+$generatedText = null;					
 $item_type = $args->level;
 
 switch ($args->print_scope)
@@ -159,18 +161,17 @@ if($tree)
 	switch ($args->print_scope)
 	{
 		case 'testproject':
-			$code = renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$args->user_id);
-		break;
+			$generatedText = renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$args->user_id);
+			break;
 	
 		case 'testplan':
-			$code = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
-		                                    $args->user_id,$args->tplan_id,$args->tproject_id,
-		                                    $statistics);
-    break;
+			$generatedText = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
+		                $args->user_id,$args->tplan_id,$args->tproject_id);
+		    break;
 	}
 }
 
-// add MS Word header 
+// add MS Word header to HTTP 
 if ($args->format == 'msword')
 {
 	header("Content-Disposition: inline; filename=testplan.doc");
@@ -178,17 +179,10 @@ if ($args->format == 'msword')
 	header("Content-type: application/vnd.ms-word; name='My_Word'");
 	flush();
 }
-echo $code;
+echo $generatedText;
 
 
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
+/** Process input data */
 function init_args()
 {
 	$args = new stdClass();

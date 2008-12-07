@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2008/10/28 19:57:01 $ by $Author: schlundus $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2008/12/07 10:10:04 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
  * rev:
+ *     20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
+ *
  *     20080820 - franciscom - added contribution (BUGID 1670)
  *                             Test Plan report:
  *                             Total Estimated execution time will be printed
@@ -73,7 +75,8 @@ function printHeader($title, $base_href)
   print HTML - initial page of document
 */
 function printFirstPage(&$db, $item_type, $title, $tproject_info, 
-                        $userID, $printingOptions = null, $tplan_info = null)
+                        $userID, $printingOptions = null, $tplan_info = null,
+                        $estimated_minutes=0)
 {
 	$docCfg = config_get('document_generator');
 	
@@ -120,22 +123,19 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	{
 		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
 
-    	// Based on contribution (BUGID 1670)
+    // Based on contribution (BUGID 1670)
 		if(!is_null($tplan_info))
-	  	{
-		   	$tplan_mgr = new testplan($db);
-	        $estimated_minutes = $tplan_mgr->get_estimated_execution_time($tplan_info['id']);
-	        if( $estimated_minutes > 60)
+	  {
+       if( $estimated_minutes > 60)
+       {
 	    		$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
-		    else
-		        $estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
-
-		        
-	      
-		        
-		        $output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' .
-			               $estimated_string . "</p>\n";
-	    }
+		   } 
+		   else
+		   {
+		      $estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
+       }
+		   $output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $estimated_string . "</p>\n";
+	  }
 	}
 	$output .= "</div>\n";
 
@@ -181,17 +181,22 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 
 */
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
-                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id = 0,$tcPrefix = null,$tProjectID = 0)
+                                       $tocPrefix,$tcCnt,$level,$user_id,
+                                       $tplan_id = 0,$tcPrefix = null,
+                                       $tProjectID = 0,$estimated_minutes=0)
 {
+	
 	$tree_mgr = new tree($db);
  	$map_id_descr = $tree_mgr->node_types;
  	$code = null;
  	$verbose_node_type = $map_id_descr[intval($node['node_type_id'])];
-  	switch($verbose_node_type)
+	
+  switch($verbose_node_type)
 	{
 		case 'testproject':
 			$code .= renderProjectNodeForPrinting($db,$node,$printingOptions,$item_type,
-			                                      $printingOptions['title'],$user_id,$tplan_id);
+			                                      $printingOptions['title'],
+			                                      $user_id,$tplan_id,$estimated_minutes);
 			break;
 
 		case 'testsuite':
@@ -422,7 +427,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 
 */
 function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
-                                      $title,$user_id,$tplan_id=0)
+                                      $title,$user_id,$tplan_id=0,$estimated_minutes=0)
 {
 
 	$tproject = new testproject($db);
@@ -436,7 +441,8 @@ function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
 	}
 
 	$code = printHeader($title,$_SESSION['basehref']);
-	$code .= printFirstPage($db, $item_type, $title, $tproject_info, $user_id, $printingOptions, $tplan_info);
+	$code .= printFirstPage($db, $item_type, $title, $tproject_info, 
+	                        $user_id, $printingOptions, $tplan_info,$estimated_minutes);
 	$printingOptions['toc_numbers'][1] = 0;
 	if ($printingOptions['toc'])
 	{
@@ -482,21 +488,23 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 
 
 /*
-  function:
+  function: renderTestPlanForPrinting
 
-  args :
+  args:
 
   returns:
 
 */
 function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
-                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,$tProjectID)
+                                   $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,
+                                   $tProjectID,$estimated_minutes)
 
 {
 	$tProjectMgr = new testproject($db);
 	$tcPrefix = $tProjectMgr->getTestCasePrefix($tProjectID);
 	$code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
-                                         $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,$tcPrefix,$tProjectID);
+                                         $tocPrefix,$tcCnt,$level,$user_id,
+                                         $tplan_id,$tcPrefix,$tProjectID,$estimated_minutes);
 	return $code;
 }
 ?>

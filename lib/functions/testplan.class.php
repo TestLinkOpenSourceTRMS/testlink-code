@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/12/07 10:10:04 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -23,6 +23,9 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *
+ *  20081206 - franciscom - BUGID 1910 - get_estimated_execution_time() - added new filter
+ *                                       get_linked_tcversions() - added test suites filter 
  *  20081122 - franciscom - get_linked_cfields_at_design() - 
  *                          refactored to:
  *                                        - removed useless code 
@@ -50,34 +53,14 @@
  *  20080224 - franciscom - get_linked_tcversions() interface changes
  *  20080217 - franciscom - interface changes - check_build_name_existence()
  *  20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
- *  20080119 - franciscom - improved logic in copy_as to avoid bug due to
- *                          missing methods.
- *  20080114 - franciscom - get_linked_tcversions()
- *  20071205 - franciscom - copy_as() - added reactored code from contribution
+ *  20080119 - franciscom - improved logic in copy_as to avoid bug due to  missing methods.
  *  20071010 - franciscom - BUGID     MSSQL reserved word problem - open
  *  20070927 - franciscom - BUGID 1069
  *                          added _natsort_builds() (see natsort info on PHP manual).
  *                          get_builds() add call to _natsort_builds()
  *                          get_builds_for_html_options() add call to natsort()
- *  20070917 - franciscom - get_linked_tcversions() added version on recordset
- *  20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
- *  20070630 - franciscom - get_linked_tcversions(), added active column
- *                          in output recordset.
- *                          html_table_of_custom_field_values()
- *  20070519 - franciscom - added Class milestone_mgr
- *     						copy_milestones()- changed date to target_date, because date
- *                        	is an Oracle reverved word.
- *  20070501 - franciscom - added localization of custom field labels
- *                          added use of htmlspecialchars() on labels
- *  20070425 - franciscom - added get_linked_and_newest_tcversions()
  *  20070310 - franciscom - BUGID 731
  *  20070306 - franciscom - BUGID 705 - changes in get_linked_tcversions()
- *  20070127 - franciscom - added insert_default_priorities()
- *  20070127 - franciscom - custom field management
- *  20070120 - franciscom - added Class build_mgr
- *  20070120 - franciscom - added active and open argument to build functions
- *                          get_builds_for_html_options(), get_builds()
- *
  * ----------------------------------------------------------------------------------- */
 
 require_once( dirname(__FILE__) . '/tree.class.php' );
@@ -453,6 +436,7 @@ function setExecutionOrder($id,&$executionOrder)
 }
 
 
+
 // --------------------------------------------------------------------------------------
 /*
   function: get_linked_tcversions
@@ -483,7 +467,13 @@ function setExecutionOrder($id,&$executionOrder)
          [include_unassigned]: has effects only if [assigned_to] <> null.
                                default: false
                                true: also testcase not assigned will be retreived
-		 [urgencyImportance] : filter only Tc's with certain (urgency*importance)-value 
+		     
+		     [urgencyImportance] : filter only Tc's with certain (urgency*importance)-value 
+		     
+		     [tsuites_id]: default null.
+		                   If present only tcversions that are children of this testsuites
+		                   will be included
+		     
   returns: map
            key: testcase id
            value: map with following keys:
@@ -503,8 +493,9 @@ function setExecutionOrder($id,&$executionOrder)
     	20070306 - franciscom - BUGID 705
 */
 public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
-                               $assigned_to=null,$exec_status=null,$build_id=0,
-                               $cf_hash = null, $include_unassigned=false, $urgencyImportance = null)
+                                          $assigned_to=null,$exec_status=null,$build_id=0,
+                                          $cf_hash = null, $include_unassigned=false,
+                                          $urgencyImportance = null, $tsuites_id=null)
 {
 	$tc_status=config_get('tc_status');
 	$status_not_run=$tc_status['not_run'];
@@ -627,6 +618,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 		}
 		$sql .= " UA.user_id = {$assigned_to} " . $sql_unassigned;
 	}
+	
 	if (!is_null($urgencyImportance))
 	{
 		$urgencyImportanceCfg = config_get("urgencyImportance");
@@ -638,10 +630,18 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 			$sql .= " AND ( ((urgency * importance) >= ".$urgencyImportanceCfg->threshold['low']." AND  ((urgency * importance) < ".$urgencyImportanceCfg->threshold['high']."))) ";
 	}
 	
-	$sql .=$sql_subquery;
+	// test suites filter
+	if (!is_null($tsuites_id))
+	{
+	   $tsuiteSet = is_array($tsuites_id) ? $tsuites_id : array($tsuites_id);
+	   $sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
+	}
+	
+	$sql .= $sql_subquery;
 
 	// BUGID 989 - added NHB.node_order
 	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
+
 
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
@@ -893,8 +893,6 @@ function get_keywords_tcases($id,$keyword_id=0)
 		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id',$CUMULATIVE);
   }
   
-  echo "<pre>debug 20081116 - \ - " . __FUNCTION__ . " --- ";  echo "</pre>";
-  new dBug($map_keywords);
   return ($map_keywords);
 } // end function
 
@@ -1897,12 +1895,13 @@ function filter_cf_selection ($tp_tcs, $cf_hash)
             
             
   args:id testplan id
+       tcase_set: default null
 
   returns: sum of CF values for all testcases linked to testplan
 
   rev: 20080820 - franciscom
 */
-function get_estimated_execution_time($id)
+function get_estimated_execution_time($id,$tcase_set=null)
 {
     // Get list of test cases on test plan
     $estimated=0;
@@ -1914,19 +1913,30 @@ function get_estimated_execution_time($id)
       $cfield_id=key($cf_info);
     }
 
-    if( $status_ok )
+    if( $status_ok)
     {
-        $linked_testcases=$this->get_linked_tcversions($id);
-        if( ($status_ok=!is_null($linked_testcases)) )
+        if( is_null($tcase_set) )
         {
-            $tcase_ids=array_keys($linked_testcases);
-            
-            $sql="SELECT SUM(value) AS SUM_VALUE FROM {$this->cfield_design_values_table} CFDV " .
-                 " WHERE CFDV.field_id={$cfield_id} " .
-                 " AND node_id IN (" . implode(',',$tcase_ids) . ")";
-            $estimated=$this->db->fetchOneValue($sql);
-            $estimated=is_null($estimated) ? 0 :$estimated;
+            // we will compute time for ALL linked test cases
+            $linked_testcases=$this->get_linked_tcversions($id);  
+            if( ($status_ok=!is_null($linked_testcases)) )
+            {
+                $tcase_ids=array_keys($linked_testcases);
+            }    
         }
+        else
+        {
+            $tcase_ids=$tcase_set;  
+        }
+    }  
+    
+    if($status_ok)
+    {
+        $sql="SELECT SUM(value) AS SUM_VALUE FROM {$this->cfield_design_values_table} CFDV " .
+             " WHERE CFDV.field_id={$cfield_id} " .
+             " AND node_id IN (" . implode(',',$tcase_ids) . ")";
+        $estimated=$this->db->fetchOneValue($sql);
+        $estimated=is_null($estimated) ? 0 :$estimated;
     }
     
     return $estimated;

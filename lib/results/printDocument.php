@@ -2,12 +2,13 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.10 2008/10/21 17:23:53 schlundus Exp $
+*  @version 	$Id: printDocument.php,v 1.11 2008/12/07 10:10:04 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
 *
 * rev :
+*      20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
 *      20070509 - franciscom - added Contribution BUGID
 *
 */
@@ -16,7 +17,9 @@ require_once("common.php");
 require_once("print.inc.php");
 testlinkInitPage($db);
 
+
 $args = init_args();
+
 // Important Notice:
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
 //
@@ -31,7 +34,6 @@ foreach($printingOptions as $opt => $val)
 }					
 
 $dummy = null;
-
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
 
@@ -41,8 +43,8 @@ $status_descr_code = config_get('tc_status');
 $status_code_descr = array_flip($status_descr_code);
 
 $decoding_hash  =array('node_id_descr' => $hash_id_descr,
-                     'status_descr_code' =>  $status_descr_code,
-                     'status_code_descr' =>  $status_code_descr);
+                       'status_descr_code' =>  $status_descr_code,
+                       'status_code_descr' =>  $status_code_descr);
 
 
 $test_spec = $tree_manager->get_subtree($args->itemID,
@@ -61,53 +63,71 @@ $item_type = $args->level;
 
 switch ($args->print_scope)
 {
-	case 'testproject':
-		if ($item_type == 'testproject')
-		{
-			$tree = &$test_spec;
-			$printingOptions['title'] = '';
-		}
-		else if ($item_type == 'testsuite')
-		{
-			$tsuite = new testsuite($db);
-			$tInfo = $tsuite->get_by_id($args->itemID);
-			$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-			$tree['childNodes'] = array($tInfo);
-			$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
-		}
-		break;
-
-	case 'testplan':
-		if ($item_type == 'testproject')
-		{
-			$tplan_mgr = new testplan($db);
-			$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-			$tree = &$test_spec;
-			if (!$tp_tcs)
-				$tree['childNodes'] = null;
-			//@TODO:REFACTOR	
-			prepareNode($db,$tree,$decoding_hash,$dummy,
-			                     $dummy,$tp_tcs,SHOW_TESTCASES,0,null,0,1,0);
-			$printingOptions['title'] = $args->tproject_name;
-		}
-		else if ($item_type == 'testsuite')
-		{
-			$tsuite = new testsuite($db);
-			$tInfo = $tsuite->get_by_id($args->itemID);
-			$tplan_mgr = new testplan($db);
-			$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-			
-			$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
-			$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-			//@TODO: schlundus, can we speed up with NO_EXTERNAL?
-			prepareNode($db,$tInfo,$decoding_hash,$dummy,
-			                     $dummy,$tp_tcs,SHOW_TESTCASES);
-			$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
-
-			$tree['childNodes'] = array($tInfo);
-		}
-	break;
+    case 'testproject':
+    	  switch($item_type)
+    	  {
+    	      case 'testproject':
+    	          $tree = &$test_spec;
+    	  	      $printingOptions['title'] = '';
+    	      break;
+    	      
+    	      case 'testsuite':
+    	      	  $tsuite = new testsuite($db);
+    	  	      $tInfo = $tsuite->get_by_id($args->itemID);
+    	  	      $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	  	      $tree['childNodes'] = array($tInfo);
+    	  	      $printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
+    	  	  break;    
+    	  }
+    	  break;
+    
+    case 'testplan':
+    	   $tplan_mgr = new testplan($db);
+         $tcase_filter=null;
+         
+         switch($item_type)
+         {
+             case 'testproject':
+    	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
+    	   	       $tree = &$test_spec;
+    	   	       if (!$tp_tcs)
+    	   	       	$tree['childNodes'] = null;
+    	   	       //@TODO:REFACTOR	
+    	   	       prepareNode($db,$tree,$decoding_hash,$dummy,
+    	   	                            $dummy,$tp_tcs,SHOW_TESTCASES,0,null,0,1,0);
+    	   	       $printingOptions['title'] = $args->tproject_name;
+             break;
+    	       
+    	       case 'testsuite':
+                 $tsuite = new testsuite($db);
+    	   	       $tInfo = $tsuite->get_by_id($args->itemID);
+                 
+    	           $children_tsuites=$tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
+    	           if( !is_null($children_tsuites) and strlen(trim($children_tsuites)) > 0)
+    	           {
+                     $branch_tsuites = explode(',',$children_tsuites);
+                 }
+                 $branch_tsuites[]=$args->itemID;
+    	   	       
+    	   	       
+    	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,null,null,0,null,false,null, 
+    	   	                                                   $branch_tsuites);
+    	   	       $tcase_filter=array_keys($tp_tcs);
+       	       
+    	   	       $tInfo['node_type_id'] = $hash_descr_id['testsuite'];
+    	   	       $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	   	       
+    	   	       //@TODO: schlundus, can we speed up with NO_EXTERNAL?
+    	   	       prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
+    	   	       $printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
+                  
+    	   	       $tree['childNodes'] = array($tInfo);
+             break;
+         }  // switch($item_type)
+         $estimated_minutes = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
+    break;
 }
+
 if($tree)
 {
 	$tree['name'] = $args->tproject_name;
@@ -117,12 +137,13 @@ if($tree)
 	{
 		case 'testproject':
 			$code = renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$args->user_id);
-			break;
+		break;
 	
 		case 'testplan':
 			$code = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
-		                $args->user_id,$args->tplan_id,$args->tproject_id);
-		    break;
+		                                    $args->user_id,$args->tplan_id,$args->tproject_id,
+		                                    $estimated_minutes);
+    break;
 	}
 }
 
@@ -136,6 +157,15 @@ if ($args->format == 'msword')
 }
 echo $code;
 
+
+/*
+  function: init_args
+
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {
 	$args = new stdClass();

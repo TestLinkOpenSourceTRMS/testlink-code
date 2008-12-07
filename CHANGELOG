@@ -3,6 +3,36 @@
    Changelog for TestLink
 ***************************************************************
 
+Testlink - next development 1.8 RC 2
+====================================
+
+- 0001273: [New Feature] Activity History Log module (schlundus) - resolved.
+- 0001909: [Test Specification] ext-all.css makes not to render the HTML generated from fckeditor (mhavlat) - resolved.
+- 0001901: [Test Execute] Refactor function (executeTestCase()) contributed by manish (fman) - resolved.
+- 0001885: [Requirement Management] Migration from v.1.7.3 - Requirements list empty after migration. (fman) - resolved.
+- 0001655: [Reports, Metrics, Export and Print] Printing the TestPlan with testresult and notes could only work correctly with mySQL-Database (schlundus) - resolved.
+- 0001903: [Users and Rights] Can't assign one user to one project with <no rights> (schlundus) - resolved.
+- 0001454: [Localization] smarty error "unable to read resource: editTc.html" (schlundus) - resolved.
+- 0001900: [Reports, Metrics, Export and Print] Query Metrics will always report on build_id=1 (schlundus) - resolved.
+- 0001902: [Test Execute] Display of button to launch remote execute must obey config parameter (fman) - resolved.
+- 0001851: [Third party software components] pCharts gives divide by 0 error when no test case has been executed (fman) - resolved.
+- 0001896: [General] Add new check on GD PHP extension enabled to avoid bug with pChart (fman) - resolved.
+- 0001847: [Database General] Please increase size of tcversions/steps from TEXT to LONGTEXT (mhavlat) - resolved.
+- 0001897: [TL API] Generation of API Key throws incomplete Audit-Event (schlundus) - resolved.
+- 0001848: [Reports, Metrics, Export and Print] Charts not working (fman) - resolved.
+- 0001891: [General] Error deleting old Events before login (schlundus) - resolved.
+- 0001882: [Reports, Metrics, Export and Print] Bar Charts - order value on X axis using on values displayed criteria (fman) - resolved.
+- 0001881: [Reports, Metrics, Export and Print] Print Test plan - tree never displays (fman) - resolved.
+- 0001861: [Reports, Metrics, Export and Print] When I use Results-->Charts, I got a frozen window (fman) - resolved.
+- 0001866: [User Interface General] inconsistency while checking the email address format (schlundus) - resolved.
+- 0001870: [Reports, Metrics, Export and Print] Error - Query Metrics (schlundus) - resolved.
+- 0001697: [Reports, Metrics, Export and Print] Results generating blank reports, Charts timing out (fman) - resolved.
+- 0001530: [Reports, Metrics, Export and Print] Charts are not working in TL1.8 Beta1 (fman) - resolved.
+- 0000512: [Requirement Management] Cannot view test cases which are not marked to any requirements (fman) - resolved.
+- 0001593: [Reports, Metrics, Export and Print] Testcase ID displayed in results should be using external ID instead of the testcase id from the database - closed.
+
+
+
 Testlink 1.8 Release Candidate 1 (include Beta releases)
 =========================================
 - 0001821: [TL API] Re: bug 1698 The 'better' solution still causes error. (fman) - resolved.

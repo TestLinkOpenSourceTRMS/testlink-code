@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.364 $
- * @modified $Date: 2008/12/07 19:06:37 $ by $Author: franciscom $
+ * @version $Revision: 1.365 $
+ * @modified $Date: 2008/12/08 20:26:06 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1152,12 +1152,6 @@ $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not availa
 $TLS_btn_remove_selected_tc = "Remove selected tcs";
 $TLS_remove_ok = "Remove ok";
 $TLS_title_remove_test_from_plan = "Remove tc from test plan";
-
-
-
-// gui/templates/planTesters.tpl
-// $TLS_btn_save = "Save";
-
 
 
 // gui/templates/keywordsAssign.tpl

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2008/11/26 20:34:37 $ $Author: schlundus $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2008/12/08 20:26:06 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -92,6 +92,10 @@ $TLS_low = "Niedrig";
 
 $TLS_estimated_time_hours = "Geschätzte Zeit (Stunden):";
 $TLS_estimated_time_min = "Geschätzte Zeit (Minuten):";
+
+$TLS_real_time_hours = "Benötigte Zeit in Stunden zum Ausführen von %s Testfällen:";
+$TLS_real_time_min = "Benötigte Zeit in Minuten zum Ausführen von %s Testfällen:";
+
 
 $TLS_config_check_warnings = "Es gibt Warnungen über Ihre Konfiguration";
 $TLS_see_details_on_file = "Details finden Sie unter: %s";
@@ -1125,12 +1129,6 @@ $TLS_remove_ok = "Das Entfernen war erfolgreich";
 $TLS_title_remove_test_from_plan = "Entferne Testfall aus dem Testplan";
 
 
-
-// gui/templates/planTesters.tpl
-// $TLS_btn_save = "";
-
-
-
 // gui/templates/keywordsAssign.tpl
 $TLS_keyword_assignment_empty_tsuite = "Es gibt keine Testfälle in dieser Testsuite!";
 $TLS_menu_assign_kw_to_tc = "Zum Testfall hinzufügen";
@@ -1202,8 +1200,6 @@ $TLS_title_test_suite_name = "Testsuite Name";
 
 
 
-
-
 // gui/templates/resultsByStatus.tpl
 $TLS_info_test_results = "Es sind nur die letzten Ergebnisse aufgeführt. Z.Bsp. Testfall wird nicht angezeigt, wenn das Testergebnis für einen späteren Build einen anderen Status hat (Ausnahme 'nicht durchgeführt').";
 
@@ -1216,19 +1212,19 @@ $TLS_th_run_by = "Getestet von";
 
 // gui/templates/resultsGeneral.tpl
 $TLS_title_gen_test_rep = "Überblick Testergebnisse";
-$TLS_title_report_tc_priorities = "Test results according to test priorities";
-$TLS_title_report_milestones = "Status of Milestones";
-$TLS_th_completed = "Completed";
-$TLS_th_milestone = "Milestone [date]";
-$TLS_th_not_run = "Not run";
-$TLS_th_tc_priority_high = "High priority";
-$TLS_th_tc_priority_medium = "Medium priority";
-$TLS_th_tc_priority_low = "Low priority";
-$TLS_th_progress = "Test progress [%]";
-$TLS_th_goal = "Execution goal [%]";
-$TLS_th_overall_priority = "Overall test priority";
-$TLS_th_expected = "Expected";
-$TLS_th_overall = "Overall";
+$TLS_title_report_tc_priorities = "Testergebnisse nach Testpriorität";
+$TLS_title_report_milestones = "Status der Meilensteine";
+$TLS_th_completed = "Erfüllt";
+$TLS_th_milestone = "Meilenstein [Datum]";
+$TLS_th_not_run = "Nicht ausgeführt";
+$TLS_th_tc_priority_high = "Hohe Priorität";
+$TLS_th_tc_priority_medium = "Mittlere Priorität";
+$TLS_th_tc_priority_low = "Niedrige Priorität";
+$TLS_th_progress = "Testfortschritt [%]";
+$TLS_th_goal = "Auführungsziel[%]";
+$TLS_th_overall_priority = "Gesamt Testpriorität";
+$TLS_th_expected = "Erwartet";
+$TLS_th_overall = "Gesamt";
 
 
 
@@ -1328,8 +1324,8 @@ $TLS_urgency_description = "Urgency value affects priority of test cases for exe
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
 $TLS_feedback_urgency_ok = "Test-Dringlichkeit wurde geändert.";
 
-$TLS_testsuite_is_empty = 'Die ausgewählte TestSuite hat keine Testfälle.';
 
+$TLS_testsuite_is_empty = 'Die ausgewählte TestSuite hat keine Testfälle.';
 
 // gui/templates/tcPrintNavigator.tpl
 $TLS_caption_print_opt = "Druckeinstellungen";
@@ -2031,6 +2027,8 @@ $TLS_req_spec_deleted = "Spezifikation: %s wurde erfolgreich gelöscht";
 $TLS_title_req_spec = "Spezifikationen definieren";
 $TLS_warning_empty_req_spec_title = "Der Titel der Anforderungsspezifikation darf nicht leer sein!";
 $TLS_create_req_spec = "Neue Spezifikation anlegen";
+$TLS_create_child_req_spec = "Neue Kind-Spezifikation anlegen";
+
 $TLS_edit_req_spec = "Spezifikation Editieren";
 
 // reqEdit.php
@@ -2181,7 +2179,7 @@ $TLS_event_viewer = "Ereignisviewer";
 $TLS_th_session_info = "Sitzungsinformation";
 $TLS_th_sessionID = "SitzungsID";
 $TLS_th_source = "Quelle";
-$TLS_click_on_event_info = "Auf Ereignis klicken zur Detailansicht.";
+$TLS_click_on_event_info = "Klicken Sie auf das Ereignis, um zur Detailansicht zu gelangen.";
 $TLS_th_activity_code = "Aktivität";
 $TLS_th_object_id = "ObjektID";
 $TLS_th_object_type = "Objekttyp";

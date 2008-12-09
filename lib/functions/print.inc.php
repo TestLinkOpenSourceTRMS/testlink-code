@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2008/12/07 19:02:35 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2008/12/09 20:28:35 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -75,8 +75,8 @@ function printFirstPage(&$db, $docCfg, $item_type, $title, $tproject_info,
                         $userID, $printingOptions = null, $tplan_info = null,
                         $statistics=null)
 {
-  $estimated_string='';
-  $real_string='';
+	$estimated_string = '';
+	$real_string = '';
   
 	$date_format_cfg = config_get('date_format');
 	$tproject_name = htmlspecialchars($tproject_info['name']);
@@ -87,9 +87,8 @@ function printFirstPage(&$db, $docCfg, $item_type, $title, $tproject_info,
 	if ($user)
 	{
 		$author = htmlspecialchars($user->getDisplayName());
-  }
-  
-	$output = "<body>\n<div>";
+  	}
+  	$output = "<body>\n<div>";
 	if ($docCfg->company_name != '' )
 	{
 		$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) ."</div>\n";
@@ -120,47 +119,45 @@ function printFirstPage(&$db, $docCfg, $item_type, $title, $tproject_info,
 	{
 		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
 
-    // Based on contribution (BUGID 1670)
+    	// Based on contribution (BUGID 1670)
 		if(!is_null($tplan_info))
-	  {
-	     if( !is_null($statistics) &&  isset($statistics['estimated_execution']) ) 
-	     {
-	         $estimated_minutes = $statistics['estimated_execution']['minutes'];
-	         $tcase_qty = $statistics['estimated_execution']['tcase_qty'];
-	         
-           if( $estimated_minutes > 60)
-           {
-	    	    	$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
-		       } 
-		       else
-		       {
-		          $estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
-           }
-           $estimated_string = sprintf($estimated_string,$tcase_qty);
-           
-		   }
-		   $output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $estimated_string . "</p>\n";
-	     if( !is_null($statistics) &&  isset($statistics['real_execution']) ) 
-	     {
-	         $real_minutes = $statistics['real_execution']['minutes'];
-	         $tcase_qty = $statistics['real_execution']['tcase_qty'];
-	         
-	         if( $real_minutes > 0 )
-	         {
-               if( $real_minutes > 60)
-               {
-	    	        	$real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
-		           } 
-		           else
-		           {
-		              $real_string = lang_get('real_time_min') . $real_minutes;
-               }
-               $real_string = sprintf($real_string,$tcase_qty);    
-           }
-
-		   }
-		   $output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $real_string . "</p>\n";
-	  }
+		{
+			if( !is_null($statistics) &&  isset($statistics['estimated_execution']) ) 
+		    {
+		    	$estimated_minutes = $statistics['estimated_execution']['minutes'];
+		        $tcase_qty = $statistics['estimated_execution']['tcase_qty'];
+		         
+	           	if($estimated_minutes > 60)
+	           	{
+		    		$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
+			    } 
+			    else
+			    {
+			    	$estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
+	           	}
+				$estimated_string = sprintf($estimated_string,$tcase_qty);
+			}
+			$output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $estimated_string . "</p>\n";
+		    if(!is_null($statistics) &&  isset($statistics['real_execution'])) 
+		    {
+		    	$real_minutes = $statistics['real_execution']['minutes'];
+		        $tcase_qty = $statistics['real_execution']['tcase_qty'];
+		         
+		        if($real_minutes > 0)
+		        {
+	               if($real_minutes > 60)
+	               {
+		    	      $real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
+					} 
+			        else
+			        {
+			        	$real_string = lang_get('real_time_min') . $real_minutes;
+					}
+					$real_string = sprintf($real_string,$tcase_qty);    
+				}
+			}
+			$output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $real_string . "</p>\n";
+	  	}
 	}
 	$output .= "</div>\n";
 
@@ -183,15 +180,15 @@ function printFirstPage(&$db, $docCfg, $item_type, $title, $tproject_info,
 	{
 		$output .= '<div class="pagefooter" id="confidential">' . 
 		           htmlspecialchars($docCfg->confidential_msg)."</div>\n";
-  }
+	}
 	
 	if (strlen($tproject_notes))
 	{
 		$output .= '<h1>'.lang_get('introduction').'</h1><p id="prodnotes">'. $tproject_notes . "</p>\n";
-  }
+	}
   
-  if (strlen($tplan_info['notes']))
-  {
+	if (strlen($tplan_info['notes']))
+	{
 		$output .= '<p id="prodnotes">'. $tplan_info['notes'] . "</p>\n";
 	}	
 

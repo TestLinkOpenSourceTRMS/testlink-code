@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.10 2008/09/20 21:02:54 schlundus Exp $ 
+   $Id: tcTree.tpl,v 1.11 2008/12/10 19:37:46 schlundus Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -16,7 +16,7 @@ rev:
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl"}
+    {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
     {literal}
     <script type="text/javascript">

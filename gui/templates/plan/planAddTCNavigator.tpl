@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.12 2008/11/06 15:12:42 havlat Exp $
+$Id: planAddTCNavigator.tpl,v 1.13 2008/12/10 19:37:46 schlundus Exp $
 
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -22,7 +22,7 @@ Revisions:
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl"}
+    {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
     {literal}
     <script type="text/javascript">

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.5 2008/09/20 21:02:53 schlundus Exp $ 
+$Id: reqSpecListTree.tpl,v 1.6 2008/12/10 19:37:46 schlundus Exp $ 
 show requirement specifications tree menu
 
 rev: 20080831 - franciscom - treeCfg
@@ -10,7 +10,7 @@ rev: 20080831 - franciscom - treeCfg
 *}
 {if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl"}
+    {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
     {literal}
     <script type="text/javascript">

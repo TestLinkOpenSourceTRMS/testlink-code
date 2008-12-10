@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.8 2008/11/22 08:49:39 franciscom Exp $ 
+$Id: printDocOptions.tpl,v 1.9 2008/12/10 19:37:46 schlundus Exp $ 
 Purpose: show tree on print feature
 
 rev: 20080820 - franciscom - added code to manage EXTJS tree component
@@ -9,7 +9,7 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
-    {include file="inc_ext_js.tpl"}
+    {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
     {if $gui->ajaxTree->loadFromChildren}
         {literal}

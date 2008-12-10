@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.17 2008/10/29 12:27:57 havlat Exp $ *}
+{* $Id: execNavigator.tpl,v 1.18 2008/12/10 19:37:46 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -24,7 +24,7 @@ rev :
 {* ===================================================================== *}
 {include file="inc_head.tpl" openHead="yes"}
 {if $smarty.const.USE_EXT_JS_LIBRARY || $tlCfg->treemenu_type == 'EXTJS'}
-    {include file="inc_ext_js.tpl"}
+    {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {/if}
           
 {if $tlCfg->treemenu_type == 'EXTJS'}

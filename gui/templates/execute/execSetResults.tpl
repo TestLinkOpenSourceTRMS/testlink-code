@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.28 2008/11/25 18:07:21 franciscom Exp $
+$Id: execSetResults.tpl,v 1.29 2008/12/11 07:39:40 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+
+  20081210 - franciscom - BUGID 1905 
   20081125 - franciscom - BUGID 1902 - fixed check to display button to launch remote executions
   
   20080528 - franciscom - BUGID 1504 - version number management
@@ -361,7 +363,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 		<div class="exec_tc_title">
 		{* 20080126 - franciscom - external id - $tc_exec.testcase_id *}
-		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}<br />
+		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
 		      {$labels.has_no_assignment}
@@ -601,7 +603,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   </div>
 
   <br />
-
   {* ----------------------------------------------------------------------------------- *}
   <div>
     {include file="execute/inc_exec_test_spec.tpl"

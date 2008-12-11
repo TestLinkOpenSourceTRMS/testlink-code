@@ -1,13 +1,14 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.6 2008/10/26 11:49:12 schlundus Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.7 2008/12/11 07:39:08 franciscom Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
 Author: franciscom
 
-rev: added updateExecutionsTCVersionInfo()
+rev: 20081210 - BUGID 1921 - missing update of attachment table
+     added updateExecutionsTCVersionInfo()
 */
 ?>
 
@@ -169,10 +170,14 @@ function updateReqInfo(&$source_db,&$treeMgr,&$oldNewMapping)
              " SET req_id={$newID} " .
              " WHERE req_id={$oldID}";
         $source_db->exec_query($sql);       
+
+        // BUGID - Missing update of attachments
+        $sql="UPDATE attachments " .
+             "SET fk_id={$newID} ".
+             " WHERE fk_id={$oldID} AND fk_table='requirements'";
+        $source_db->exec_query($sql);       
         
     } 
-        
-  
 }
 
 

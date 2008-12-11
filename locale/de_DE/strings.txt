@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2008/12/11 20:30:16 $ $Author: schlundus $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2008/12/11 21:36:07 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -194,7 +194,7 @@ $TLS_mail_empty_address = "Sie haben in Ihrem Benutzerprofil keine Email-Adresse
 $TLS_mail_passwd_subject = "Ihr neues TestLink Passwort";
 $TLS_mail_problems = "Das Emailsystem wurde nicht korrekt installiert. Bitte informieren Sie Ihren Administrator über dieses Problem";
 $TLS_page_title_lost_passwd = "TestLink - Passwort vergessen";
-$TLS_your_info_for_passwd = "Geben Sie bitte Ihren Benutzername ein, damit Ihnen ein neues Passwort zugeschickt wird.";
+$TLS_your_info_for_passwd = "Geben Sie bitte Ihren Benutzernamen ein, damit Ihnen ein neues Passwort zugeschickt wird.";
 $TLS_your_password_is = "Ihr neues TestLink Passwort lautet: <br>";
 
 

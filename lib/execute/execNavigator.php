@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2008/11/15 15:11:06 $ by $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2008/12/11 21:36:07 $ by $Author: schlundus $
  *
  * rev: 
  *      20080517 - franciscom - fixed testcase filter bug
@@ -42,7 +42,7 @@ $gui->optResult['a'] = $str_option_any;
 $gui->users[0] = $str_option_any; 
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
-$treeMenu=buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);
+$treeMenu = buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);
                                                
 $gui->tree=$treeMenu->menustring;
 
@@ -90,18 +90,18 @@ function init_args(&$dbHandler,$cfgObj)
     
     // 20080517 - franciscom
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
- 		if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
+ 	if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
+	{
+		// need to get internal Id from External ID
+		$item_mgr = new testcase($dbHandler);
+		$cfg = config_get('testcase_cfg');
+		$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+		
+		if( $args->tcase_id == 0 )
 		{
-			// need to get internal Id from External ID
-			$item_mgr = new testcase($dbHandler);
-			$cfg = config_get('testcase_cfg');
-			$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
-			
-			if( $args->tcase_id == 0 )
-			{
-			    $args->tcase_id=-1;  
-			}
+		    $args->tcase_id=-1;  
 		}
+	}
 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.365 $
- * @modified $Date: 2008/12/08 20:26:06 $ by $Author: schlundus $
+ * @version $Revision: 1.366 $
+ * @modified $Date: 2008/12/11 21:36:08 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1526,7 +1526,7 @@ $TLS_href_plan_define_priority = "Test Plan priority";
 // gui/templates/mainPage_right.tpl
 $TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
-$TLS_href_build_new = "Builds/Releases";
+$TLS_href_build_new = "Builds / Releases";
 $TLS_href_execute_test = "Execute Tests";
 $TLS_href_metrics_dashboard = "Metrics dashboard";
 $TLS_href_newest_tcversions = "Show Test Cases newest versions";

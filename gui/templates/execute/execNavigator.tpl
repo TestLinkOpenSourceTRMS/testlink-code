@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.18 2008/12/10 19:37:46 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.19 2008/12/11 21:36:07 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -58,7 +58,7 @@ rev :
 
 <h1 class="title">{lang_get s='TestPlan'}{$tlCfg->gui_title_separator_1} {$gui->tplan_name|escape}
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
-{$gui->optBuild.$build_number}{$tlCfg->gui_separator_close}</h1>
+{$gui->optBuild.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
 <input type='hidden' id="tpn_view_settings"
          name="tpn_view_status"  value="0" />

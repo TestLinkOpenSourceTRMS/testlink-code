@@ -6,7 +6,7 @@
  * http://extjs.com/license
  */
 
--el-mask{z-index:20000;position:absolute;top:0;left:0;-moz-opacity:0.5;opacity:.50;filter:alpha(opacity=50);background-color:#CCC;width:100%;height:100%;zoom:1;}
+.ext-el-mask{z-index:20000;position:absolute;top:0;left:0;-moz-opacity:0.5;opacity:.50;filter:alpha(opacity=50);background-color:#CCC;width:100%;height:100%;zoom:1;}
 .ext-el-mask-msg{z-index:20001;position:absolute;top:0;left:0;border:1px solid #6593cf;background:#c3daf9 url(../images/default/box/tb-blue.gif) repeat-x 0 -16px;padding:2px;}
 .ext-el-mask-msg div{padding:5px 10px 5px 10px;background:#eee;border:1px solid #a3bad9;color:#222;font:normal 11px tahoma,arial,helvetica,sans-serif;cursor:wait;}
 .ext-shim{position:absolute;visibility:hidden;left:0;top:0;overflow:hidden;}

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2008/12/08 20:26:06 $ $Author: schlundus $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2008/12/11 20:30:16 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -2102,20 +2102,20 @@ $TLS_audit_cfield_display_order_changed = "Anzeigereihenfolde des benutzerdefini
 $TLS_audit_cfield_activated = "Benutzerdefiniertes Feld wurde aktiviert";
 $TLS_audit_cfield_deactivated = "Benutzerdefiniertes Feld wurde deaktiviert";
 
-$TLS_audit_user_apikey_set = "API-Key für '{%1}' wurde erzeugt";
-$TLS_audit_user_saved = "Benutzer '{%1}' wurde gespeichert";
-$TLS_audit_user_pwd_saved = "Passwort für Benutzer '{%1}' wurde gespeichert";
-$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
-$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
-$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
-$TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
+$TLS_audit_user_apikey_set = "Der API-Key für '{%1}' wurde erzeugt";
+$TLS_audit_user_saved = "Der Benutzer '{%1}' wurde gespeichert";
+$TLS_audit_user_pwd_saved = "Das Passwort für Benutzer '{%1}' wurde gespeichert";
+$TLS_audit_users_roles_added_testproject = "Dem Benutzer '{%1}' wurde die Rolle '{%3}' für das Test Projekt '{%2}' zugewiesen";
+$TLS_audit_users_roles_added_testplan = "Dem Benutzer '{%1}' wurde die Rolle '{%3}' für den Test Plan '{%2}' zugewiesen";
+$TLS_audit_all_user_roles_removed_testplan = "Alle Benutzerrollen wurden vom Test Plan '{%1}' enternt";
+$TLS_audit_all_user_roles_removed_testproject = "Alle Benutzerrollen wurden vom Test Projekt '{%1}' entfernt";
 $TLS_audit_user_created = "Benutzer '{%1}' wurde erstellt";
 $TLS_audit_user_deleted = "Benutzer '{%1}' wurde gelöscht";
 $TLS_audit_user_logout = "Logout von '{%1}'";
 $TLS_audit_users_self_signup = "Benutzer '{%1}' hat sich selbst registriert";
 $TLS_audit_pwd_reset_requested = "Passwort rücksetzen für '{%1}' angefordert";
-$TLS_audit_user_role_changed="User '{%1}' role changed old='{%2}' new='{%3}'";
-$TLS_audit_user_active_status_changed="User '{%1}' active status changed old='{%2}' new='{%3}'";
+$TLS_audit_user_role_changed="Benutzerrolle '{%1}' hat sich geändert alt='{%2}' neu='{%3}'";
+$TLS_audit_user_active_status_changed="Der Aktivitäts-Status von Benutzer '{%1}' hat sich verändert alt ='{%2}' neu='{%3}'";
 
 
 

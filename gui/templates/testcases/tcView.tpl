@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.15 2008/11/15 18:06:11 franciscom Exp $
+$Id: tcView.tpl,v 1.16 2008/12/11 20:30:16 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 
 rev: 20081115 - franciscom - refactoring to improve display when using on search feature 
@@ -135,7 +135,7 @@ rev: 20081115 - franciscom - refactoring to improve display when using on search
                        args_show_version="no" 
                        args_show_title="no"
                        args_users=$users
-                       args_cf=$cf[idx] 
+                       args_cf=$cf[idx]
                        }
   	         </div>
   	         <br />

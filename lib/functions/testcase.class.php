@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.134 $
- * @modified $Date: 2008/12/07 19:02:35 $ $Author: franciscom $
+ * @version $Revision: 1.135 $
+ * @modified $Date: 2008/12/11 20:30:16 $ $Author: schlundus $
  * @author franciscom
  *
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
@@ -518,8 +518,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
            $tcasePrefix .= $tcase_cfg->glue_character;
       }
   }
-  
-  
+  $userid_array = array();
   $cf_smarty = array();
   if (sizeof($a_id))
   {

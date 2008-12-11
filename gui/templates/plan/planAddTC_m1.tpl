@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.18 2008/10/25 19:25:40 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.19 2008/12/11 20:30:16 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 *}
 
@@ -266,7 +266,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 </form>
 
 {else}
-	<h2>{$labesl.no_testcase_available}</h2>
+	<h2>{$labels.no_testcase_available}</h2>
 {/if}
 
 {* 

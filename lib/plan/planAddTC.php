@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.68 2008/10/30 22:08:12 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.69 2008/12/11 20:30:16 schlundus Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -17,9 +17,6 @@
 //      20080510 - franciscom - multiple keyword filter with AND type
 //      20080404 - franciscom - reorder logic
 //      20080114 - franciscom - added testCasePrefix management
-//      20070930 - franciscom - BUGID
-//      20070912 - franciscom - BUGID 905
-//      20070124 - franciscom
 //      use show_help.php to apply css configuration to help pages
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +103,9 @@ if($do_display)
 	    // With this pieces we implement the AND type of keyword filter.
 	    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
 	                                                                             $keywordsFilter->type);
-	    $testCaseSet = array_keys($keywordsTestCases);
+	    
+		if (sizeof($keywordsTestCases))
+			$testCaseSet = array_keys($keywordsTestCases);
 	}
 	define('DONT_PRUNE',0);
 	define('WRITE_BUTTON_ALWAYS',0);
@@ -122,7 +121,7 @@ if($do_display)
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
-  $gui->add_custom_fields=$add_custom_fields;
+	$gui->add_custom_fields = $add_custom_fields;
   
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');

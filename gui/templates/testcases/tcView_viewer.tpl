@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.20 2008/10/28 19:57:01 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.21 2008/12/11 20:30:16 schlundus Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -63,7 +63,7 @@ viewer for test case in test specification
       {assign var="warning_edit_msg" value=""}
 
   {else}
-     {if $args_tcase_cfg->can_edit_executed eq 1}
+     {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed eq 1}
        {assign var="edit_enabled" value=1}
        {assign var="has_been_executed" value=1}
        {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}

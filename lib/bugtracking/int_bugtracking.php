@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/12/11 14:18:36 $ $Author: havlat $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/12/11 21:04:29 $ $Author: havlat $
  *
  * @author Andreas Morsing
  *
@@ -112,7 +112,6 @@ class bugtrackingInterface
 		{
 			if ($this->dbCharSet == 'UTF-8')
 			{
-				$this->dbCharSet = $tlCfg->charset;
 				$r = $db->exec_query("SET CHARACTER SET utf8");
 				$r = $db->exec_query("SET NAMES utf8");
 				$r = $db->exec_query("SET collation_connection = 'utf8_general_ci'");

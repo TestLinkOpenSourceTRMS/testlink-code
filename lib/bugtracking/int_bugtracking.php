@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2008/12/11 14:18:36 $ $Author: havlat $
  *
  * @author Andreas Morsing
  *
@@ -69,10 +69,10 @@ class bugtrackingInterface
 	 **/
 	function bugtrackingInterface()
 	{
-		global $tlCfg;
-		$this->dbCharSet = $tlCfg->charset;
-		if (defined('BUG_TRACK_DB_CHARSET')) 
+		if (defined('BUG_TRACK_DB_CHARSET'))
  	    	$this->dbCharSet = BUG_TRACK_DB_CHARSET;
+ 	    else
+			$this->dbCharSet = $tlCfg->charset;
 	}
 
 	/**
@@ -92,14 +92,37 @@ class bugtrackingInterface
 	 **/
 	function connect()
 	{
+		global $tlCfg;
+
 		if (is_null($this->dbHost) || is_null($this->dbUser))
 		{
 			return false;
 		}	
+
 		$this->dbConnection = new database($this->dbType);
 		$result = $this->dbConnection->connect(false, $this->dbHost,$this->dbUser,$this->dbPass, $this->dbName);
+
 		if (!$result['status'])
+		{
+			tLog('Connect to Bug Tracker database fails!!! ' . $result['dbms_msg'], 'ERROR');
 			$this->dbConnection = null;
+		}
+
+		elseif (BUG_TRACK_DB_TYPE == 'mysql')
+		{
+			if ($this->dbCharSet == 'UTF-8')
+			{
+				$this->dbCharSet = $tlCfg->charset;
+				$r = $db->exec_query("SET CHARACTER SET utf8");
+				$r = $db->exec_query("SET NAMES utf8");
+				$r = $db->exec_query("SET collation_connection = 'utf8_general_ci'");
+			}
+			else
+			{
+				$r = $db->exec_query("SET CHARACTER SET ".$this->dbCharSet);
+				$r = $db->exec_query("SET NAMES ".$this->dbCharSet);
+			} 
+		}
 			
 		$this->bConnected = $result['status'] ? 1 : 0;
 

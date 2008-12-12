@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/11/21 21:00:41 $ -  $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2008/12/12 20:35:41 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -15,10 +15,11 @@
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+$grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
 
 $sqlResult = null;
 $action = null;
@@ -27,7 +28,7 @@ $user_feedback = '';
 $orderBy = new stdClass();
 $orderBy->type = 'order_by_login';
 $orderBy->dir = array('order_by_login_dir' => 'asc');
-
+	
 switch($args->operation)
 {
 	case 'delete':
@@ -89,9 +90,12 @@ $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('base_href', $_SESSION['basehref']);
-$grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
 $smarty->assign('grants',$grants);
 $smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
+
+
+
+
 
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
@@ -183,5 +187,10 @@ function getRoleColourCfg(&$dbHandler)
         }
     }
     return $role_colour;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_users');
 }
 ?>

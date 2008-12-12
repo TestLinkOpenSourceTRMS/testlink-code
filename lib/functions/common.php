@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.127 $ $Author: franciscom $
- * @modified $Date: 2008/11/22 10:44:33 $
+ * @version $Revision: 1.128 $ $Author: schlundus $
+ * @modified $Date: 2008/12/12 20:35:41 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -279,6 +279,8 @@ function doSessionStart()
 
 // --------------------------------------------------------------------------------------
 /** @TODO martin: should be removed? purpose? */
+/*
+ * 
 function checkUserRights(&$db)
 {
 	//bypassed as long roles and rights aren't fully defined
@@ -303,6 +305,7 @@ function checkUserRights(&$db)
 	}
 
 }
+*/
 
 
 // --------------------------------------------------------------------------------------
@@ -394,7 +397,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 * @param boolean $bDontCheckSession (optional) Set to true if no session should be
 * 		 started
 */
-function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false)
+function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false,$userRightsCheckFunction = null)
 {
 	doSessionStart();
 	setPaths();
@@ -404,9 +407,9 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 	if (!$bDontCheckSession)
 		checkSessionValid($db);
 
-//	checkUserRights($db); - martin: disabled as it miss appropriate code
-
-
+	if ($userRightsCheckFunction)
+		checkUserRightsFor($db,$userRightsCheckFunction);
+		
 	// adjust Product and Test Plan to $_SESSION
 	if ($initProject)
 		upd_session_tplan_tproject($db,$_REQUEST);
@@ -1027,7 +1030,7 @@ function show_instructions($key, $refreshTree=0)
 */
 function templateConfiguration()
 {
-    $path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
+	$path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
     $last_part=array_pop($path_parts);
     
     $tcfg = new stdClass();
@@ -1061,5 +1064,19 @@ function isValidISODateTime($ISODateTime)
        $status_ok=checkdate($matches[$dateParts['MONTH']],$matches[$dateParts['DAY']],$matches[$dateParts['YEAR']]);
    }
    return $status_ok;
+}
+
+function checkUserRightsFor(&$db,$pfn,$action = 'any')
+{
+	$script = basename($_SERVER['PHP_SELF']);
+	$currentUser = $_SESSION['currentUser'];
+	$bExit = false;
+	if (!$pfn($db,$currentUser))
+	{
+		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),$action,$currentUser->dbID,"users");
+		$bExit = true;
+	}
+	if ($bExit)
+		exit();
 }
 ?>

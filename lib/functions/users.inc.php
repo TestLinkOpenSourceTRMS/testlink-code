@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2008/11/13 20:12:39 $ $Author: schlundus $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2008/12/12 20:35:41 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -308,18 +308,18 @@ function initialize_tabsmenu()
 function getGrantsForUserMgmt(&$dbHandler,&$userObj)
 {
     $grants = new stdClass();
-    $grants->user_mgmt=$userObj->hasRight($dbHandler,"mgt_users");
-    $grants->role_mgmt=$userObj->hasRight($dbHandler,"role_management");
+    $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
+    $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
     
     if($grants->user_mgmt == 'yes')
     {
-        $grants->tplan_user_role_assignment='yes';
-        $grants->tproject_user_role_assignment='yes';  
+        $grants->tplan_user_role_assignment = 'yes';
+        $grants->tproject_user_role_assignment = 'yes';  
     }
     else
     {
-        $grants->tplan_user_role_assignment=$userObj->hasRight($dbHandler,"testplan_user_role_assignment");
-        $grants->tproject_user_role_assignment=$userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
+        $grants->tplan_user_role_assignment = $userObj->hasRight($dbHandler,"testplan_user_role_assignment");
+        $grants->tproject_user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
     }
     return $grants;
 }

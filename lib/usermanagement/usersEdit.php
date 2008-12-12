@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.30 $
-* @modified $Date: 2008/11/20 21:10:45 $ $Author: schlundus $
+* @version $Revision: 1.31 $
+* @modified $Date: 2008/12/12 20:35:41 $ $Author: schlundus $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -19,7 +19,7 @@ require_once('../../config.inc.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = new stdClass();
 $templateCfg->template_dir = 'usermanagement/';
@@ -386,5 +386,10 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 
     if($doRender)
         $smartyObj->display($templateCfg->template_dir . $tpl);
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_users');
 }
 ?>

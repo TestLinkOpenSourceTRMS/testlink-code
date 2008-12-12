@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/10/16 19:14:22 $ by $Author: asielb $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/12/12 21:34:13 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -167,7 +167,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.getProjects'				=> 'this:getProjects',
 			'tl.getProjectTestPlans'		=> 'this:getProjectTestPlans',
 			'tl.createBuild'				=> 'this:createBuild',
-			'tl.getBuildsForTestPlan' 		=> 'this:getBuildsForTestPlan',	
+			'tl.getBuildsForTestPlan' 		=> 'this:getBuildsForTestPlan',
+			'tl.getLatestBuildForTestPlan' 	=> 'this:getLatestBuildForTestPlan',	
 			'tl.getTestSuitesForTestPlan' 	=> 'this:getTestSuitesForTestPlan',
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
 			'tl.getTestCasesForTestPlan' 	=> 'this:getTestCasesForTestPlan',
@@ -1100,7 +1101,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return int
 	 * @access private
 	 */		
-	protected function getLatestBuildForTestPlan($tplan_id)
+	private function _getLatestBuildForTestPlan($tplan_id)
 	{     	                		
     	$devKey = $this->dbObj->prepare_int($tplan_id);
     	$query = "SELECT max(id) AS id FROM {$this->builds_table} WHERE testplan_id={$tplan_id}";
@@ -1114,6 +1115,35 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{
     		return $result;
     	}              		 
+	}
+	
+	/**
+	 * Gets the latest build by choosing the maximum build id for a specific test plan 
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["tplanid"]
+	 * @return mixed $resultInfo
+	 * 				
+	 * @access public
+	 */		
+	
+	public function getLatestBuildForTestPlan($args)
+	{
+		$Builds = $this->getBuildsForTestPlan($args);
+		$maxid = -1;
+		$maxkey = -1;
+		foreach ($Builds as $key => $build) {
+    		if ($build['id'] > $maxid)
+    		{
+    			$maxkey = $key;
+    			$maxid = $build['id'];
+    		}
+		}
+		$maxbuild = array();
+		$maxbuild[] = $Builds[$maxkey];
+		
+		return $maxbuild;
 	}
 
  	/**

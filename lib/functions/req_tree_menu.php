@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: req_tree_menu.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/05/05 09:11:43 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  *
  * Rev :
  *      20071125 - franciscom - added dtree_render_req_node_open
@@ -45,7 +45,9 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
-  $status_descr_code=config_get('tc_status');
+
+  $resultsCfg = config_get('results');
+  $status_descr_code = $resultsCfg['status_code'];
   $status_code_descr=array_flip($status_descr_code);
 
   $decoding_hash=array('node_id_descr' => $hash_id_descr,

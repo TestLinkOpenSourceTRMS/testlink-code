@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.9 2008/04/09 12:51:50 havlat Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.10 2008/12/13 19:23:01 franciscom Exp $
  *
  * rev :
  *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
@@ -625,7 +625,11 @@ function create_build(&$db,$build_id,$buildName,$testplanID,$notes = '')
 */
 function migrate_results(&$source_db,&$target_db,&$tmp_table_name,&$builds,&$users,&$tc_tcversion,&$old_new,&$migrator)
 {
-  $map_tc_status = config_get('tc_status');
+  // $map_tc_status = config_get('tc_status');
+  $resultsCfg = config_get('results');
+  $map_tc_status = $resultsCfg['status_code'];
+
+  
   $db_now = $target_db->db_now();
   $admin_id=1;
   $items_processed=0;

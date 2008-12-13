@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/11/09 16:24:53 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/12/13 19:28:40 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * Revision:
+ *  20081213 - franciscom - replace of old $g_ variables
  *  20081109 - franciscom - added uncovered_testcases
  * 	20080813 - havlatm - removed metrics_tp_builds
  *
@@ -56,19 +57,19 @@ $tlCfg->reports_list['results_custom_query'] = array(
 );
 $tlCfg->reports_list['list_tc_failed'] = array( 
 	'title' => 'link_report_failed',
-	'url' => 'lib/results/resultsByStatus.php?type='.$g_tc_status['failed'],
+	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['failed'],
 	'enabled' => 'all',
 	'format' => 'HTML,MS Excel,Email'
 );
 $tlCfg->reports_list['list_tc_blocked'] = array( 
 	'title' => 'link_report_blocked_tcs',
-	'url' => 'lib/results/resultsByStatus.php?type='.$g_tc_status['blocked'],
+	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['blocked'],
 	'enabled' => 'all',
 	'format' => 'HTML,MS Excel,Email'
 );
 $tlCfg->reports_list['list_tc_norun'] = array( 
 	'title' => 'link_report_not_run',
-	'url' => 'lib/results/resultsByStatus.php?type='.$g_tc_status['not_run'],
+	'url' => 'lib/results/resultsByStatus.php?type=' . $tlCfg->results['status_code']['not_run'],
 	'enabled' => 'all',
 	'format' => 'HTML,MS Excel,Email'
 );

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/09/29 19:48:10 $ $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -97,7 +97,10 @@ function createResultsMenu()
 */
 function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build_id,$map_last_exec)
 {
-	$map_tc_status = config_get('tc_status');
+	// $map_tc_status = config_get('tc_status');
+  $resultsCfg = config_get('results');
+  $map_tc_status = $resultsCfg['status_code'];
+
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
 	$cfield_mgr=New cfield_mgr($db);

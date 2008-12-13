@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.59 2008/09/28 10:04:43 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.60 2008/12/13 19:25:41 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,6 +9,7 @@
 *
 *
 * rev :
+*       20081213 - franciscom - refactoring to remove old $g_ config variables
 *       20080602 - franciscom - changes due to BUGID 1504
 *       20070908 - franciscom - change column qty on arrData is status not_run
 *                               to have nice html table
@@ -22,6 +23,9 @@ require_once('users.inc.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+
+$resultsCfg = config_get('results');
+$statusCode = $resultsCfg['status_code'];
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
 $report_type = isset($_GET['format']) ? intval($_GET['format']) : null;
@@ -43,18 +47,32 @@ $tproject_name = $tproject_info['name'];
 $testCaseCfg=config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
-
-if($type == $g_tc_status['failed'])
-	$title = lang_get('list_of_failed');
-else if($type == $g_tc_status['blocked'])
-	$title = lang_get('list_of_blocked');
-else if($type == $g_tc_status['not_run'])
-	$title = lang_get('list_of_not_run');
-else
+$title = null;
+foreach( array('failed','blocked','not_run') as $verbose_status )
+{
+    if( $type == $statusCode[$verbose_status] )
+    {
+        $title = lang_get('list_of_' . $verbose_status);
+        break;
+    }  
+}
+if( is_null($title) )
 {
 	tlog('wrong value of GET type');
 	exit();
 }
+
+/*
+if($type == $statusCode['failed'])
+	$title = lang_get('list_of_failed');
+else if($type == $statusCode['blocked'])
+	$title = lang_get('list_of_blocked');
+else if($type == $statusCode['not_run'])
+	$title = lang_get('list_of_not_run');
+else
+{
+}
+*/
 
 $arrBuilds = $tplan_mgr->get_builds($tplan_id);
 $lastBuildID = $tplan_mgr->get_max_build_id($tplan_id,1,1);
@@ -79,7 +97,7 @@ if (is_array($mapOfLastResult))
 	  	    	if ($lastBuildIdExecuted) {
 	  	    		$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
 	  	    	}
-	  	    	else if ($type == $g_tc_status['not_run'])
+	  	    	else if ($type == $statusCode['not_run'])
 	  	    	{
 	  	    		$lastBuildIdExecuted = $lastBuildID;
 	  	    	}
@@ -119,17 +137,17 @@ if (is_array($mapOfLastResult))
 	            // $testVersion = $tcInfo[0]['version'];
 	          
 	  	    	$suiteName = htmlspecialchars($suiteName);
-	  	    	if($type == $g_tc_status['not_run'])
+	  	    	if($type == $statusCode['not_run'])
 	  	    	{
 	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion);
 	  	    	}
 	  	    	else
 				{
 	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion,
-                                        htmlspecialchars($buildName),
-                                        htmlspecialchars($testerName),
-                                        htmlspecialchars($localizedTS),
-        		                        strip_tags($notes),$bugString);
+                                 htmlspecialchars($buildName),
+                                 htmlspecialchars($testerName),
+                                 htmlspecialchars($localizedTS),
+        		                     strip_tags($notes),$bugString);
       			}
 	  	    }
 	  	

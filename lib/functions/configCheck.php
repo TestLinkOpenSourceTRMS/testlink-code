@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2008/11/23 08:31:56 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2008/12/13 19:25:41 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -201,10 +201,12 @@ function getSecurityNotes(&$db)
   
 	$securityNotes = null;
 	if (checkForInstallDir())
+	{
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
-
- 	$login_method = config_get('login_method');
-  if( 'LDAP' == $login_method  )
+  }
+  
+  $authCfg = config_get('authentication');
+  if( 'LDAP' == $authCfg['method']  )
   {
     if( !checkForLDAPExtension() )
     {
@@ -219,28 +221,35 @@ function getSecurityNotes(&$db)
 		}
   }
 
-	
   
 	if (!checkForBTSConnection())
+	{
 		$securityNotes[] = lang_get("bts_connection_problems");
+	}
 		
 	if($repository['type'] == TL_REPOSITORY_TYPE_FS)
 	{
 		$ret = checkForRepositoryDir($repository['path']);
 		if(!$ret['status_ok'])
+		{
 			$securityNotes[] = $ret['msg'];
+		}	
 	}
 
 	// 20070121 - needed when schemas change has been done
 	// This call can be removed when release is stable
 	$msg = checkSchemaVersion($db);
 	if(strlen($msg))
+	{
 		$securityNotes[] = $msg;
+	}
 	
 	// 20070911 - fixing bug 1021 
 	$msg = checkForTestPlansWithoutTestProjects($db);
 	if(strlen($msg))
+	{
 		$securityNotes[] = $msg;
+	}
 	
 	// 20080308 - franciscom
 	$msg = checkEmailConfig();

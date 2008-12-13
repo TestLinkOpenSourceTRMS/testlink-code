@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/12/07 19:47:08 $ by $Author: havlat $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -42,7 +42,12 @@ $tree_manager = &$tproject_mgr->tree_manager;
 
 $hash_descr_id = $tree_manager->get_available_node_types();
 $hash_id_descr = array_flip($hash_descr_id);
-$status_descr_code = config_get('tc_status');
+
+$resultsCfg = config_get('results');
+// $statusCode = $resultsCfg['status_code'];
+// $status_descr_code = config_get('tc_status');
+$status_descr_code = $resultsCfg['status_code'];
+
 $status_code_descr = array_flip($status_descr_code);
 
 $decoding_hash = array('node_id_descr' => $hash_id_descr,
@@ -166,7 +171,8 @@ if($tree)
 	
 		case 'testplan':
 			$generatedText = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
-		                $args->user_id,$args->tplan_id,$args->tproject_id);
+		                                             $args->user_id,$args->tplan_id,$args->tproject_id,
+		                                             $statistics);
 		    break;
 	}
 }

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2008/11/22 09:40:22 $ $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
  *
  * rev:
  *     20081122 - franciscom - added some comments
@@ -486,7 +486,10 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
 */
 function do_remote_execution(&$db,$tc_versions)
 {
-  $tc_status = config_get('tc_status');
+  $resultsCfg = config_get('results');
+  $tc_status = $resultsCfg['status_code'];
+ 
+  
   $tree_mgr = new tree($db);
   $cfield_mgr = new cfield_mgr($db);
   
@@ -806,16 +809,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     // over these two functions. 	
 	  $tprojectMgr = new testproject($dbHandler);
 	  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
-	
-    // $gui->default_status=config_get('tc_status_for_ui_default');
-
     $build_info = $buildMgr->get_by_id($argsObj->build_id);
     $gui->build_notes=$build_info['notes'];
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
-    
     $gui->execution_types=$tcaseMgr->get_execution_types();
-   
-
 
     if ($argsObj->filter_assigned_to)
     {

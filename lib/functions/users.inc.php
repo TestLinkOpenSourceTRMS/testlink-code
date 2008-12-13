@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2008/12/12 20:35:41 $ $Author: schlundus $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * rev: 20080822 - franciscom - resetPassword() - added generatePassword()
+ * rev: 20081213 - franciscom - refactoring removing old config options 
+ *      20080822 - franciscom - resetPassword() - added generatePassword()
  *      20080405 - franciscom - getGrantsForUserMgmt()
  *      20080315 - franciscom - added initalize_tabsmenu()
  *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
@@ -18,8 +19,11 @@
  */
 require_once("common.php");
 require_once("user.class.php");
-if('LDAP' == config_get('login_method') )
+$authCfg = config_get('authentication');
+if( 'LDAP' == $authCfg['method'] )
+{
 	require_once(dirname(__FILE__) . "/ldap_api.php");
+}
 
 /**
  * set session data after modification or authorization

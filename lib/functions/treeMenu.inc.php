@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2008/12/07 19:02:35 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -1407,7 +1407,7 @@ function create_counters_info(&$node,$useColors)
 		        $keys2display[$key]=$key;  
 		    }  
 		}
-	  $status_verbose=$resultsCfg['status_label']; //config_get('tc_status_verbose_labels');
+	  $status_verbose=$resultsCfg['status_label'];
 
 		$add_html='';
 		foreach($keys2display as $key => $value)

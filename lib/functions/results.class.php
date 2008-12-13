@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/11/25 19:55:28 $ by $Author: schlundus $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -206,11 +206,7 @@ class results
 							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
 							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
-	    
-      // $mem=array();		
-      // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-		  
-		$this->priorityLevelsCfg = config_get('priority_levels');
+		  $this->priorityLevelsCfg = config_get('priority_levels');
     	$this->resultsCfg = config_get('results');
     	$this->testCaseCfg = config_get('testcase_cfg');
 
@@ -269,8 +265,11 @@ class results
 			// KL - 20061229 - this call may not be necessary for all reports
 			// only those that require info on results for keywords
 			// Map of test case ids to array of associated keywords
-			$this->keywordData = $this->getKeywordData(array_keys($keywords_in_tplan));
-
+			$this->keywordData = null;
+			if( !is_null($keywords_in_tplan) )
+			{
+			    $this->keywordData = $this->getKeywordData(array_keys($keywords_in_tplan));
+      } 
 			//new dBug($this->keywordData);
 			//$tplan_mgr->get_keywords_tcases($this->testPlanID);
 	      
@@ -390,7 +389,7 @@ class results
   	*      )
 	*
 	*      IMPORTANT:
-	*                keys on details map dependends of configuration map $g_tc_status_for_ui
+	*                keys on details map dependends of configuration map $tlCfg->results['status_label']
 	*/
 	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs)
 	{
@@ -458,7 +457,7 @@ class results
   *      )
 	*
 	*      IMPORTANT:
-	*                keys on details map dependends of configuration map $g_tc_status_for_ui
+	*                keys on details map dependends of configuration map $tlCfg->results['status_label']
 	*
 	*/
 	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs)

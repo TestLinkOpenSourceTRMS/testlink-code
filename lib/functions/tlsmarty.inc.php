@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/10/29 12:25:11 $ $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -24,10 +24,6 @@
  * 20070218 - franciscom - g_interface_bugs
  * 20070218 - franciscom - gsmarty_spec_cfg
  * 20070214 - franciscom - gsmarty_tc_status_verbose_labels
- * 20061223 - franciscom - added g_gui
- * 20060820 - franciscom - added config_dir
- * 20060602 - franciscom - added new global var $g_attachments
- * 20060528 - franciscom - added new global var $g_tc_status_for_ui
  *
  * ----------------------------------------------------------------------------------- */
 
@@ -39,12 +35,12 @@ class TLSmarty extends Smarty
 {
     function TLSmarty()
 	{
-		global $tlCfg;
-		global $g_attachments;
-		global $g_spec_cfg;
-		global $g_bugInterfaceOn;
-		global $g_interface_bugs;
-		global $g_locales;
+		  global $tlCfg;
+		  global $g_attachments;
+		  global $g_spec_cfg;
+		  global $g_bugInterfaceOn;
+		  global $g_interface_bugs;
+		  global $g_locales;
 	    global $g_locales_html_select_date_field_order;
     	global $g_locales_date_format;
     	global $g_locales_timestamp_format;

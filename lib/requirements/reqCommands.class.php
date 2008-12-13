@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/12/09 20:28:35 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
+ * rev: 20081213 - franciscom - fixed minor bug on doCreate()
  */
 
 class reqCommands
@@ -37,17 +38,17 @@ class reqCommands
 	function create(&$argsObj)
 	{
 	    $obj = new stdClass();
-		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-      
-		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
-		$obj->action_descr = lang_get('create_req');
-		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-      	$obj->template = 'reqEdit.tpl';
-		$obj->submit_button_label = lang_get('btn_save');
-      	$obj->reqStatusDomain = $this->reqStatusDomain;
- 		$obj->req_spec_id = $argsObj->req_spec_id;
-      	$obj->req_id = null;
-      	$obj->req = null;
+		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+        
+		  $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		  $obj->action_descr = lang_get('create_req');
+		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+      $obj->template = 'reqEdit.tpl';
+		  $obj->submit_button_label = lang_get('btn_save');
+      $obj->reqStatusDomain = $this->reqStatusDomain;
+ 		  $obj->req_spec_id = $argsObj->req_spec_id;
+      $obj->req_id = null;
+      $obj->req = null;
       	
  		return $obj;	
 	}
@@ -71,7 +72,7 @@ class reqCommands
 		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
 		$obj->template = 'reqEdit.tpl';
 		$obj->submit_button_label = lang_get('btn_save');
-	    $obj->reqStatusDomain = $this->reqStatusDomain;
+	  $obj->reqStatusDomain = $this->reqStatusDomain;
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = $argsObj->req_id;
 
@@ -91,6 +92,7 @@ class reqCommands
 		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 
       $obj=new stdClass();
+      $obj->req = null;
 		  $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
 		  $obj->action_descr = lang_get('create_req');
 		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);

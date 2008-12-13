@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2008/12/13 19:28:40 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Login management
@@ -81,7 +81,8 @@ if (!is_null($login))
 }
 
 $securityNotes = getSecurityNotes($db);
-$login_method = config_get('login_method');
+$authCfg = config_get('authentication');
+$login_method = $authCfg['method'];
 $external_password_mgmt = ('LDAP' == $login_method) ? 1 : 0;
 $login_disabled = ($external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
 

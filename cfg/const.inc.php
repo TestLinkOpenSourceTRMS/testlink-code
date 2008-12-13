@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/12/11 16:20:23 $ by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2008/12/13 19:28:40 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -374,7 +374,7 @@ $tlCfg->results['status_label'] = array(
 // Used to generate radio and buttons at user interface level.
 // Order is important, because this will be display order on User Interface
 //
-// key   => verbose status as defined in $g_tc_status
+// key   => verbose status as defined in $tlCfg->results['status_code']
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
 //

@@ -5,9 +5,10 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/11/19 21:02:58 $ $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
  *
+ * rev: 20081213 - franciscom - removed global coupling to access config parameters
  */
 class tlUser extends tlDBObject
 {
@@ -54,17 +55,16 @@ class tlUser extends tlDBObject
 	
 	function __construct($dbID = null)
 	{
-		global $tlCfg;
-		
 		parent::__construct($dbID);
 		
+		$authCfg = config_get('authentication');
 		$this->usernameFormat = config_get('username_format');
 		$this->loginRegExp = config_get('user_login_valid_regex');
 		$this->maxLoginLength = 30; 
-		$this->loginMethod = config_get('login_method');
+		$this->loginMethod = $authCfg['method'];
 		
-		$this->globalRoleID = $tlCfg->default_roleid;
-		$this->locale = $tlCfg->default_language;
+		$this->globalRoleID = config_get('default_roleid');
+		$this->locale = config_get('default_language');
 		$this->bActive = 1;
 		$this->tprojectRoles = null;
 		$this->tplanRoles = null;
@@ -91,7 +91,8 @@ class tlUser extends tlDBObject
 	
 	static public function isPasswordMgtExternal()
 	{
-		$loginMethod = config_get('login_method');
+		$authCfg = config_get('authentication');
+		$loginMethod = $authCfg['method'];
 		if ($loginMethod != '' &&  $loginMethod != 'MD5')
 			return true;
 		return false;
@@ -402,8 +403,6 @@ class tlUser extends tlDBObject
 	
 	static public function checkEmailAdress($email)
 	{
-		global $tlCfg;
-			
 		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
 		if ($result == tl::OK)
 		{

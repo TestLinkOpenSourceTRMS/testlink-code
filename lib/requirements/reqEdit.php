@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/12/09 20:28:35 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -23,8 +23,8 @@ require_once('requirements.inc.php');
 require_once('attachments.inc.php');
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-require_once('requirement_spec_mgr.class.php');
-require_once('requirement_mgr.class.php');
+// require_once('requirement_spec_mgr.class.php');
+// require_once('requirement_mgr.class.php');
 require_once("configCheck.php");
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('requirement');

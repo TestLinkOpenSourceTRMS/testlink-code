@@ -1,11 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.15 2008/10/30 11:24:27 havlat Exp $
+$Id: reqEdit.tpl,v 1.16 2008/12/13 19:22:38 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 {* ------------------------------------------------------------------------- *}
 
-{lang_get var='labels' s='btn_save,cancel'}
+{lang_get var='labels' s='btn_save,cancel,status,scope'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -78,10 +78,10 @@ window.onload=function()
   		    {include file="error_icon.tpl" field="req_title"}
  	 </div>
   	<br />
-  	<div class="labelHolder"> <label for="scope">{lang_get s='scope'}</label></div>
+  	<div class="labelHolder"> <label for="scope">{$labels.scope}</label></div>
 	<div>{$gui->scope}</div>
  	<br />
-  	<div class="labelHolder"> <label for="reqStatus">{lang_get s='status'}</label>
+  	<div class="labelHolder"> <label for="reqStatus">{$labels.status}</label>
      	<select name="reqStatus">
   			{html_options options=$gui->reqStatusDomain selected=$gui->req.status}
   		</select>

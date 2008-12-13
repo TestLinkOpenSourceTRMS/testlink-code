@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.36 2008/11/15 18:07:00 franciscom Exp $
+ * $Id: searchData.php,v 1.37 2008/12/13 19:25:41 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -10,8 +10,6 @@
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-// require_once("users.inc.php");
-// require_once("attachments.inc.php");
 testlinkInitPage($db);
 
 $template_dir = 'testcases/';
@@ -109,22 +107,7 @@ $smarty = new TLSmarty();
 $gui->row_qty=count($map);
 if($gui->row_qty)
 {
-	// $tcase_mgr = new testcase($db);   
-  // $tcase_set=array_keys($map);
-  // $path_info=get_full_path_verbose($tcase_set,$tcase_mgr->tree_manager,$db);  
-  // 
-  // $attachmentRepository = tlAttachmentRepository::create($db);
-	// $attachments = null;
-	// foreach($map as $id => $dd)
-	// {
-	// 	$attachments[$id] = getAttachmentInfos($attachmentRepository,$id,'nodes_hierarchy',true,1);
-	// }
-	// $smarty->assign('attachments',$attachments);
-	// $viewerArgs = array('hilite_testcase_name' => 1, 'show_match_count' => 1,
-	//                     'title' => $gui->pageTitle);
-  //
-	// $tcase_mgr->show($smarty, $template_dir,$tcase_set,TC_ALL_VERSIONS,$viewerArgs,$path_info);
-
+	$tpl = 'tcSearchResults.tpl';
   $gui->pageTitle .= " - " . lang_get('match_count') . ":" . $gui->row_qty;
   if($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
   {	
@@ -140,14 +123,14 @@ if($gui->row_qty)
 	{
 	    $gui->warning_msg=lang_get('too_wide_search_criteria');
 	}
-	$smarty->assign('gui',$gui);
-	$smarty->display($template_dir . 'tcSearchResults.tpl');
 }
 else
 {
 	$the_tpl = config_get('tpl');
-	$smarty->display($template_dir . $the_tpl['tcView']);
+	$tpl=$the_tpl['tcView'];
 }
+$smarty->assign('gui',$gui);
+$smarty->display($template_dir . $tpl);
 
 /*
   function: 

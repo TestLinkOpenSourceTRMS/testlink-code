@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/12/07 19:02:35 $ by $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -498,8 +498,11 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
                                           $cf_hash = null, $include_unassigned=false,
                                           $urgencyImportance = null, $tsuites_id=null)
 {
-	$tc_status=config_get('tc_status');
-	$status_not_run=$tc_status['not_run'];
+  $resultsCfg = config_get('results');
+	// $tc_status=config_get('tc_status');
+  // $resultsCfg['status_code'];
+	// $status_not_run=$tc_status['not_run'];
+	$status_not_run=$resultsCfg['status_code']['not_run'];
 
 	$keywords_join = " ";
 	$keywords_filter = " ";

@@ -1,11 +1,11 @@
-#<?php
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.214 $
- * @modified $Date: 2008/12/12 20:35:41 $ by $Author: schlundus $
+ * @version $Revision: 1.215 $
+ * @modified $Date: 2008/12/13 16:02:55 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 

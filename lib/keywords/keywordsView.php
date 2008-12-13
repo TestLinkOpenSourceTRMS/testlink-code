@@ -5,15 +5,15 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/12/13 23:47:01 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("keyword.class.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -42,5 +42,10 @@ function init_args()
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 	return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_key');
 }
 ?>

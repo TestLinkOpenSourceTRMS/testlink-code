@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/11/21 21:00:41 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2008/12/13 23:47:01 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -20,7 +20,7 @@ require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once("keyword.class.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
 
@@ -257,5 +257,10 @@ function getKeywordErrorMessage($code)
 			$msg = 'ok';
   }
   return $msg;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_modify_key');
 }
 ?>

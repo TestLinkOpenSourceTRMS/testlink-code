@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/12/13 23:47:01 $ by $Author: schlundus $
  *
  * test case and test suites export
  *
@@ -22,7 +22,7 @@ require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once("keyword.class.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -96,5 +96,10 @@ function do_export(&$db,&$smarty,&$args)
 		// the contents of the smarty template.
 		exit();
 	}
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_key');
 }
 ?>

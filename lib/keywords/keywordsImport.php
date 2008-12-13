@@ -6,15 +6,15 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/11/19 20:44:01 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/12/13 23:47:01 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
 require_once('keyword.class.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
@@ -78,5 +78,10 @@ $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tproject_id', $testproject_id);
 $smarty->assign('importLimit',TL_IMPORT_LIMIT);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_modify_key');
+}
 ?>
 	

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2008/11/19 21:02:58 $ $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2008/12/13 23:47:01 $ $Author: schlundus $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -17,7 +17,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -132,5 +132,12 @@ function init_args()
     $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     
     return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	//@todo open for discussion
+	//return ($user->hasRight($db,'mgt_modify_key') && 
+	return $user->hasRight($db,'mgt_view_key');
 }
 ?>

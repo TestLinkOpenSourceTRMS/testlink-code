@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/10/16 18:50:53 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/12/13 08:37:57 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -46,17 +46,12 @@ $gui->tplan_name = $args->tplan_name;
 if($args->urgency != OFF)
 {
 	$gui->user_feedback['type'] = $tplan_mgr->setSuiteUrgency($args->tplan_id, $args->node_id, $args->urgency);
-	
-	if ($gui->user_feedback['type'] == OK)
-		$feedback = lang_get("feedback_urgency_ok");
-	else
-		$feedback = lang_get("feedback_urgency_fail");
-		
-	$gui->user_feedback['message'] = $feedback;
+	$msg_key = ($gui->user_feedback['type'] == OK) ? "feedback_urgency_ok" : "feedback_urgency_fail";
+	$gui->user_feedback['message'] = lang_get($msg_key);
 }
 
 // get the current urgency for child test cases
-$gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id);
+$gui->listTestCases = $tplan_mgr->getSuiteUrgency($args->tplan_id, $args->node_id,$args->tproject_id);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -78,6 +73,7 @@ function init_args()
     $args = new stdClass();
     $args->show_help = (isset($_REQUEST['level']) && $_REQUEST['level']=='testproject');
     
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
     $args->tplan_name = $_SESSION['testPlanName'];
     $args->node_type = isset($_REQUEST['level']) ? $_REQUEST['level'] : OFF;

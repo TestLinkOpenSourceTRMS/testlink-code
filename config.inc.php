@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.215 $
- * @modified $Date: 2008/12/13 16:02:55 $ by $Author: schlundus $
+ * @version $Revision: 1.216 $
+ * @modified $Date: 2008/12/13 19:25:57 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -26,6 +26,7 @@
  *
  * Revisions:
  * 
+ *     20081213 - franciscom - more remove of old $g_* config parameters.
  *     20081122 - franciscom - removed some old $g_* config parameters.
  *     20081115 - franciscom - $tlCfg->testcase_cfg->search
  *     20081104 - franciscom - Added FOGBUGZ as BTS type
@@ -850,15 +851,17 @@ define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width); 
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
-$g_login_method = $tlCfg->authentication['method'];
 $g_log_level=$tlCfg->log_level;
 $g_show_tp_without_prodid = $g_show_tp_without_tproject_id; // obsolete (use $g_show_tp_without_tproject_id)
 $tlCfg->document_generator->company_logo = $tlCfg->company_logo; 
-$g_tc_status = $tlCfg->results['status_code'];
-$g_tc_status_css = $tlCfg->results['code_status'];
-$g_tc_status_verbose_labels = $tlCfg->results['status_label'];
-$g_tc_status_for_ui = $tlCfg->results['status_label']; 
-$g_tc_status_for_ui_default = $tlCfg->results['default_status'];
+
+// 20081213 - franciscom
+// $g_login_method = $tlCfg->authentication['method'];
+// $g_tc_status = $tlCfg->results['status_code'];
+// $g_tc_status_css = $tlCfg->results['code_status'];
+// $g_tc_status_verbose_labels = $tlCfg->results['status_label'];
+// $g_tc_status_for_ui = $tlCfg->results['status_label']; 
+// $g_tc_status_for_ui_default = $tlCfg->results['default_status'];
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
 // ----- END OF FILE --------------------------------------------------------------------

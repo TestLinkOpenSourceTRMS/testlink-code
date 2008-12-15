@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2008/12/15 08:31:53 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,7 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20081214 - franciscom - generateExecTree() fixed bug on config_get() call
  *      20080705 - franciscom - found another null to replace in order to 
  *                              make menustring good for extjs.
  *                              Fixed json string whe array is empty [null] KO -> [] OK for extjs.
@@ -749,9 +750,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $treeMenu->menustring = '';
     $treemenu_type = config_get('treemenu_type');
     $resultsCfg = config_get('results');
-    $showTestCaseID = config_get('tree_show_testcase_id');
-	$menustring = null;
-	$any_exec_status = null;
+    $showTestCaseID = config_get('treemenu_show_testcase_id');
+	  $menustring = null;
+	  $any_exec_status = null;
     $tplan_tcases = null;
     $tck_map = null;
 
@@ -769,50 +770,48 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $urgencyImportance = isset($filters->urgencyImportance) ? $filters->urgencyImportance : null;
     $useCounters=$additionalInfo->useCounters;
     $useColors=$additionalInfo->useColours;
-	$tplan_mgr = new testplan($db);
-	$tproject_mgr = new testproject($db);
+	  $tplan_mgr = new testplan($db);
+	  $tproject_mgr = new testproject($db);
     $tcase_mgr = new testcase($db);
 	  
-	$tree_manager = $tplan_mgr->tree_manager;
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	$hash_descr_id = $tree_manager->get_available_node_types();
-
-	$hash_id_descr = array_flip($hash_descr_id);
-	  
-	$status_descr_code = $resultsCfg['status_code'];
+	  $tree_manager = $tplan_mgr->tree_manager;
+	  $tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	  $hash_descr_id = $tree_manager->get_available_node_types();
+    
+	  $hash_id_descr = array_flip($hash_descr_id);	    
+    $status_descr_code = $resultsCfg['status_code'];
     $status_code_descr = $resultsCfg['code_status'];
 
     $decoding_hash = array('node_id_descr' => $hash_id_descr,
-                         'status_descr_code' =>  $status_descr_code,
-                         'status_code_descr' =>  $status_code_descr);
+                           'status_descr_code' =>  $status_descr_code,
+                           'status_code_descr' =>  $status_code_descr);
 
-	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
+	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
 
     $nt2exclude = array('testplan' => 'exclude_me',
-	                    'requirement_spec'=> 'exclude_me',
-	                    'requirement'=> 'exclude_me');
+	                      'requirement_spec'=> 'exclude_me',
+	                      'requirement'=> 'exclude_me');
     
     $nt2exclude_children = array('testcase' => 'exclude_my_children',
 												       'requirement_spec'=> 'exclude_my_children');
    
    	$order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
-	$test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
+	  $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
 	                                          null,'',RECURSIVE_MODE,$order_cfg);
-	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	$map_node_tccount = array();
+	  $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
+	  $test_spec['id'] = $tproject_id;
+	  $test_spec['node_type_id'] = $hash_descr_id['testproject'];
+	  $map_node_tccount = array();
     if($test_spec)
-	{
-		if(is_null($tc_id) || $tc_id >= 0)
-	  	{
+	  {
+		    if(is_null($tc_id) || $tc_id >= 0)
+	  	  {
             $doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
-    	      
-	  	    if($doFilterByKeyword)
-	  	    {
-	  	      	$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id,$keywordsFilterType);
-	        }
-            
+	  	      if($doFilterByKeyword)
+	  	      {
+	  	        	$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id,$keywordsFilterType);
+	          }
+              
             // Multiple step algoritm to apply keyword filter on type=AND
             // get_linked_tcversions filters by keyword ALWAYS in OR mode.
 	        $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
@@ -931,7 +930,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
       break;
       
       case 'EXTJS':
-         
+         // echo '$testCasePrefix' . $testCasePrefix;
          extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 	                                      $tc_action_enabled,$bHideTCs,
 	                                      $useCounters,$useColors,$showTestCaseID,
@@ -1490,7 +1489,9 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		if($showTestCaseID)
 		{
 			if(strlen(trim($testCasePrefix)))
+			{
 				$testCasePrefix .= $cfg->glue_character;
+			}
 			$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
 		} 
 		$label .= $name . "</span>";

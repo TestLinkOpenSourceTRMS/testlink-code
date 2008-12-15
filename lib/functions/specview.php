@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.25 $ $Author: franciscom $
- * @modified $Date: 2008/11/19 07:24:00 $
+ * @version $Revision: 1.26 $ $Author: franciscom $
+ * @modified $Date: 2008/12/15 08:31:53 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -735,7 +735,7 @@ function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
       {
           $tsuiteTestCaseQty[$tsuite_id]=0;
       }    
-	    if( $elem['children_testsuites'] != '' )
+	    if( isset($elem['children_testsuites']) && $elem['children_testsuites'] != '' )
       {
           $children=explode(',',$elem['children_testsuites']);
           foreach($children as $access_id)

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.216 $
- * @modified $Date: 2008/12/13 19:25:57 $ by $Author: franciscom $
+ * @version $Revision: 1.217 $
+ * @modified $Date: 2008/12/15 08:33:47 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -40,8 +40,6 @@
  *     20080525 - franciscom - added spectreemenu_type (temporary solution)
  *     20080504 - franciscom - removed gui->enable_custom_fields
  * 		 20080419 - havlatm - documentation update; minor refactorization
- *     20080418 - franciscom -  new document_generation
- *     20080330 - franciscom -  
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
  *
  * 	   20080423 - havlatm - added $tlCfg as standard configuration holder
@@ -49,18 +47,6 @@
  *     20080308 - franciscom - changed initial values for email settings
  *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
  *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
- *     20080124 - franciscom - $g_dashboard_precision
- *     20080110 - franciscom - $g_tree_show_testcase_id
- *     20080109 - franciscom - $g_sort_table_engine
- *     20080105 - franciscom - $g_testsuite_template
- *     20080102 - franciscom - new default for $g_log_path
- *     20071229 - franciscom - $g_exec_cfg->enable_tree_testcase_counters
- *                             $g_exec_cfg->enable_tree_colouring;
- *
- *
- *     20071227 - franciscom - now default is theme_m2
- *     20071130 - franciscom - $g_gui->webeditor (work in progress)
- *     20071113 - franciscom - $g_exec_cfg->show_history_all_builds
  *     20071112 - franciscom - config changes due to upgrade of Smarty
  *     20071106 - franciscom - BUGID 1165 - $g_testcase_template
  *

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.89 $
- * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2008/12/15 08:31:53 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,7 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20081214 - franciscom - Thanks to postgres found missing CAST() on SUM() 
  *  20081207 - franciscom - added get_execution_time()
  *  20081206 - franciscom - BUGID 1910 - get_estimated_execution_time() - added new filter
  *                                       get_linked_tcversions() - added test suites filter 
@@ -1934,9 +1935,18 @@ function get_estimated_execution_time($id,$tcase_set=null)
     
     if($status_ok)
     {
-        $sql="SELECT SUM(value) AS SUM_VALUE FROM {$this->cfield_design_values_table} CFDV " .
-             " WHERE CFDV.field_id={$cfield_id} " .
-             " AND node_id IN (" . implode(',',$tcase_ids) . ")";
+        $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
+        if( DB_TYPE == 'mysql')
+        {
+            $sql="SELECT SUM(value) ";
+        } 
+        else if ( DB_TYPE == 'postgres')
+        {
+            $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
+        }        
+        $sql .= " AS SUM_VALUE FROM {$this->cfield_design_values_table} CFDV " .
+                " WHERE CFDV.field_id={$cfield_id} " .
+                " AND node_id IN (" . implode(',',$tcase_ids) . ")";
         $estimated=$this->db->fetchOneValue($sql);
         $estimated=is_null($estimated) ? 0 :$estimated;
     }
@@ -1997,10 +2007,20 @@ function get_execution_time($id,$execution_set=null)
     
     if($status_ok)
     {
-        $sql="SELECT SUM(value) AS SUM_VALUE FROM {$this->cfield_execution_values_table} CFEV " .
-             " WHERE CFEV.field_id={$cfield_id} " .
-             " AND testplan_id={$id} " .
-             " AND execution_id IN (" . implode(',',$execution_ids) . ")";
+        $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
+        if( DB_TYPE == 'mysql')
+        {
+            $sql="SELECT SUM(value) ";
+        } 
+        else if ( DB_TYPE == 'postgres')
+        {
+            $sql="SELECT SUM(CAST(value AS NUMERIC)) ";
+        }        
+
+        $sql .= " AS SUM_VALUE FROM {$this->cfield_execution_values_table} CFEV " .
+                " WHERE CFEV.field_id={$cfield_id} " .
+                " AND testplan_id={$id} " .
+                " AND execution_id IN (" . implode(',',$execution_ids) . ")";
      
         $total_time=$this->db->fetchOneValue($sql);
         $total_time=is_null($total_time) ? 0 :$total_time;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2008/12/15 20:22:41 $ by $Author: schlundus $
  *
  * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
@@ -15,7 +15,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
@@ -35,6 +35,7 @@ switch($args->doAction)
 {
     case 'clear':
 	    $g_tlLogger->deleteEventsFor();
+	    logAuditEvent(TLS("audit_events_deleted",$_SESSION['currentUser']->login),"DELETE",null,"events");
 	    break;
     
     case 'filter':
@@ -84,5 +85,17 @@ function init_args()
 	  	$args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
 	}
     return $args;
+}
+
+function checkRights(&$db,&$user,&$action)
+{
+	$action = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+	
+	if (!$user->hasRight($db,"mgt_view_events"))
+		return false;
+	if ($action == 'clear')
+		return $user->hasRight($db,'events_mgt');
+	
+	return true;
 }
 ?>

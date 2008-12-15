@@ -5,12 +5,12 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/12/15 20:22:41 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 $user = null;
@@ -32,4 +32,11 @@ $smarty = new TLSmarty();
 $smarty->assign("event",$event);
 $smarty->assign("user",$user);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+function checkRights(&$db,&$user,&$action)
+{
+	if (!$user->hasRight($db,"mgt_view_events"))
+		return false;
+	return true;
+}
 ?>

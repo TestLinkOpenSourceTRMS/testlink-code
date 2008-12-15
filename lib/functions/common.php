@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.128 $ $Author: schlundus $
- * @modified $Date: 2008/12/12 20:35:41 $
+ * @version $Revision: 1.129 $ $Author: schlundus $
+ * @modified $Date: 2008/12/15 20:22:41 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -1066,13 +1066,16 @@ function isValidISODateTime($ISODateTime)
    return $status_ok;
 }
 
-function checkUserRightsFor(&$db,$pfn,$action = 'any')
+function checkUserRightsFor(&$db,$pfn)
 {
 	$script = basename($_SERVER['PHP_SELF']);
 	$currentUser = $_SESSION['currentUser'];
 	$bExit = false;
-	if (!$pfn($db,$currentUser))
+	$action = null;
+	if (!$pfn($db,$currentUser,$action))
 	{
+		if (!$action)
+			$action = "any";
 		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),$action,$currentUser->dbID,"users");
 		$bExit = true;
 	}

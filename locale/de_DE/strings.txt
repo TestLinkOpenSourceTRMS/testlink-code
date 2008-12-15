@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2008/12/11 21:36:07 $ $Author: schlundus $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2008/12/15 20:22:41 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -2163,6 +2163,7 @@ $TLS_audit_tc_removed_from_testplan = "Testfall '{%1}' Version {%2} wurde aus de
 
 $TLS_audit_missing_localization = "Der String '{%1}' ist für die Sprache '{%2}' nicht lokalisiert";
 
+$TLS_audit_events_deleted = "Der Benutzer '{%1}' hat alle Ereignisse gelöscht";
 
 //eventviewer.php
 $TLS_th_loglevel = "Log level";

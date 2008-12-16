@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/10/09 18:42:29 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -18,7 +18,7 @@ require_once('attachments.inc.php');
 require_once('requirements.inc.php');
 require_once('requirement_mgr.class.php');
 require_once('users.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $req_mgr = new requirement_mgr($db);
@@ -43,4 +43,9 @@ $gui->reqStatus = init_labels(config_get('req_status'));
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_req');
+}
 ?>

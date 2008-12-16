@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/11/30 16:41:24 $  $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2008/12/16 20:11:53 $  $Author: schlundus $
  * 
  * @author Martin Havlat
  *
@@ -19,7 +19,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args=init_args();
@@ -294,5 +294,10 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 	   	}
 	 }  // if( $SRS_qty > 0 )	
 	 return $guiObj;
+}
+
+function checkRights(&$db,&$user)
+{
+	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
 }
 ?>

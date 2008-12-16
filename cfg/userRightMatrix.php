@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/10/31 20:16:43 $  $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/12/16 20:11:53 $  $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -44,10 +44,7 @@ $print_url='lib/print';
 
 
 // 
-$user_admin=array("$user_admin_url/usersnew.php"  => array("mgt_users",),														
-						      "$user_admin_url/usersedit.php" => array("mgt_users",),														
-						      "$user_admin_url/usersview.php" => array("mgt_users",),														
-						      "$user_admin_url/rolesview.php" => array("role_view",),														
+$user_admin=array(	      "$user_admin_url/rolesview.php" => array("role_view",),														
 						      "$user_admin_url/rolesedit.php" => array("role_management",),														
 						      "$user_admin_url/usersassign.php"  => array ("user_role_assignment",));														
                   
@@ -56,8 +53,6 @@ $proj_admin=array("$proj_admin_url/projectEdit.php" => array("mgt_modify_product
 
 $test_exec=array("$test_exec_url/execnavigator.php" => array("testplan_execute",));
 
-$kword_admin=array("$kword_admin_url/keywordsview.php"   => array("mgt_view_key",),
- 						       "$kword_admin_url/keywordsassign.php" => array("mgt_modify_key",));
 
 $build_admin=array("$tplan_admin_url/buildedit.php" => array("testplan_create_build",));
 
@@ -72,14 +67,6 @@ $tplan_admin=array("$tplan_admin_url/planupdatetc.php" => array("testplan_planni
        						 "$tplan_admin_url/planmilestoneedit.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/plantcnavigator.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/plantcremove.php" => array("testplan_planning",));														
-
-
-$req_admin=array("$req_admin_url/reqspeclist.php" => array("mgt_view_req",),														
-						     "$req_admin_url/reqspecanalyse.php" => array("mgt_view_req",),														
-						     "$req_admin_url/reqspecprint.php" => array("mgt_view_req",),														
-						     "$req_admin_url/reqspecview.php" => array("mgt_view_req",),														
-						     "$req_admin_url/reqtcassign.php" => array("mgt_modify_req",));
-
 
 $reports=array("$reports_url/resultsallbuilds.php" => array("testplan_metrics",),														
 						   "$reports_url/resultsbugs.php" => array("testplan_metrics",),														
@@ -111,7 +98,7 @@ $cf_admin=array("$cf_admin_url/cfieldsEdit.php" => array("cfield_management",),
 
 
 // build rigth matrix
-$g_userRights=$user_admin+$proj_admin+$test_exec+$kword_admin+$print_data+
-              $build_admin+$tplan_admin+$req_admin+$reports+$tc_admin+$cf_admin;
+$g_userRights=$user_admin+$proj_admin+$test_exec+$print_data+
+              $build_admin+$tplan_admin+$reports+$tc_admin+$cf_admin;
 
 ?>

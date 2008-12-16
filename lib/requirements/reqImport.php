@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/11/05 15:56:04 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -25,7 +25,7 @@ require_once('xml.inc.php');
 require_once('csv.inc.php');
 require_once('requirement_spec_mgr.class.php');
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -171,5 +171,11 @@ function check_valid_ftype($upload_info,$import_type)
 	}
 	
 	return $ret;
+}
+
+
+function checkRights(&$db,&$user)
+{
+	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
 }
 ?>

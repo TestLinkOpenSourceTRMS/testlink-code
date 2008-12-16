@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/09/22 19:14:09 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/12/16 20:11:53 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -26,53 +26,22 @@ require_once("web_editor.php");
 $editorCfg=getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($db);
-$commandMgr=new reqSpecCommands($db);
+$commandMgr = new reqSpecCommands($db);
 
-$auditContext=new stdClass();
-$auditContext->tproject=$args->tproject_name;
+$auditContext = new stdClass();
+$auditContext->tproject = $args->tproject_name;
 $commandMgr->setAuditContext($auditContext);
 
-switch($args->doAction)
-{
-	case "create":
- 	  $op=$commandMgr->create($args);
-		break;
 
-	case "edit":
-	  $op=$commandMgr->edit($args);
-		break;
-
-	case "doCreate":
-	  $op=$commandMgr->doCreate($args,$_REQUEST);
-		break;
-
-	case "doUpdate":
-	  $op=$commandMgr->doUpdate($args,$_REQUEST);
-		break;
-
-	case "doDelete":
-	  $op=$commandMgr->doDelete($args);
-		break;
-
-	case "reorder":
-	  $op=$commandMgr->reorder($args);
-		break;
-
-  case "doReorder":
-		$op=$commandMgr->doReorder($args);
-		break;
-
-  case "createChild":
-    // Will be use in future when we clarify how we will want to manage
-    // requirements with unlimited depth
- 	  $op=$commandMgr->createChild($args);
-	  break;
-}
+$pFn = $args->doAction;
+$op = null;
+if(method_exists($commandMgr,$pFn))
+	$op = $commandMgr->$pFn($args,$_REQUEST);
 
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
@@ -214,15 +183,20 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 */
 function initialize_gui(&$dbHandler)
 {
-    $gui=new stdClass();
+    $gui = new stdClass();
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;
     $gui->refresh_tree = 'no';
 
-    $gui->grants=new stdClass();
+    $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 
     return $gui;
+}
+
+function checkRights(&$db,&$user)
+{
+	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
 }
 ?>

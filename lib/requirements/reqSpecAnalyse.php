@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/09/22 19:28:18 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -15,7 +15,7 @@ require_once("common.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $template_dir = 'requirements/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
@@ -68,5 +68,10 @@ function init_args()
     $args->reqSpecID = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : 0;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_req');
 }
 ?>

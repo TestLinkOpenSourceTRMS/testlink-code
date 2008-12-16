@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/03/12 21:27:38 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
  *
  * This page this allows users to export requirements.
  *
@@ -17,8 +17,8 @@ require_once("xml.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
 require_once('requirement_spec_mgr.class.php');
+testlinkInitPage($db,false,false,"checkRights");
 
-testlinkInitPage($db);
 $template_dir = "requirements/";
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
@@ -62,4 +62,9 @@ $smarty->assign('req_spec', $req_spec);
 $smarty->assign('exportTypes',$export_types);
 $smarty->assign('export_filename',$export_filename);
 $smarty->display($template_dir . $default_template);
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_req');
+}
 ?>

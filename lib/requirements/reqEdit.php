@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -23,14 +23,13 @@ require_once('requirements.inc.php');
 require_once('attachments.inc.php');
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-// require_once('requirement_spec_mgr.class.php');
-// require_once('requirement_mgr.class.php');
 require_once("configCheck.php");
 require_once("web_editor.php");
+
 $editorCfg = getWebEditorCfg('requirement');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -186,5 +185,11 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
 	
 	return $gui;
+}
+
+
+function checkRights(&$db,&$user)
+{
+	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
 }
 ?>

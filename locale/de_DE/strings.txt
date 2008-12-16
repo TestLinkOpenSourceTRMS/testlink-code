@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2008/12/15 20:22:41 $ $Author: schlundus $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2008/12/16 20:11:53 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -57,7 +57,7 @@ $TLS_testproject 	= "Testprojekt";
 $TLS_test_report 	= "Testreport";
 $TLS_test_suite = "Testsuite";
 $TLS_testsuite_created = "Testsuite erstellt";
-$TLS_title = "Title";
+$TLS_title = "Titel";
 $TLS_urgency = "Dringlichkeit";
 $TLS_problems_loading_xml_content = "Die XML Daten konnten nicht geladen werden, überprüfen Sie das Dateiformat!"; 
 $TLS_not_imported = "Nicht importiert";
@@ -310,7 +310,7 @@ $TLS_req_create = "Anforderung erstellen";
 $TLS_req_doc_id = "Dok. ID";
 $TLS_warning_empty_req_title = "Sie müssen der Anforderung einen Titel geben!";
 $TLS_warning_empty_reqdoc_id = "Die Anforderungs-Dokumenten ID darf nicht leer sein!";
-
+$TLS_create_testcase_from_req = "Testfälle aus Anforderungen erstellen";
 
 
 // gui/templates/containerOrder.tpl
@@ -716,6 +716,7 @@ $TLS_th_product_rights = "Testprojekt Rechte";
 $TLS_th_req_rights = "Anforderungs Rechte";
 $TLS_th_rights = "Rechte";
 $TLS_th_rolename = "Rollenname";
+$TLS_th_system_rights = "System Rechte";
 $TLS_th_tp_rights = "Testplan Rechte";
 $TLS_th_user_rights = "Benutzerrechte";
 $TLS_title_user_mgmt = "Benutzerverwaltung";
@@ -1495,7 +1496,7 @@ $TLS_href_plan_define_priority = "Test Plan priority";
 
 // gui/templates/mainPage_right.tpl
 $TLS_filter_tp_by_product = "Testpläne nach Testprojekt filtern";
-$TLS_href_add_test_case = "Testfälle zuordnen";
+$TLS_href_add_remove_test_cases = "Testfälle hinzufügen / entfernen";
 $TLS_href_build_new = "Builds verwalten";
 $TLS_href_execute_test = "Test ausführen";
 $TLS_href_metrics_dashboard = "Metriken-Übersicht";
@@ -2189,7 +2190,8 @@ $TLS_title_eventinfo = "Ereignisinformation";
 $TLS_title_eventdetails = "Ereignisdetails";
 $TLS_th_user = "Benutzer";
 $TLS_show_event_history = "Zeige die Ereignishistorie an";
-
+$TLS_btn_clear_events = "Alle Ereignisse löschen";
+$TLS_th_event_description = "Beschreibung";
 
 // int_mantis.php
 // Used to display at User interface label as title attribute

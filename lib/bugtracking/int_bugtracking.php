@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/12/11 21:04:29 $ $Author: havlat $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2008/12/17 17:21:56 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -19,6 +19,8 @@
  *
  *
  * rev:
+ *     20081217 - franciscom - BUGID 1939
+ *                             removed global coupling, usign config_get()
  *     20081102 - franciscom - refactored to ease configuration 
  *     20080207 - needles - added notation for Seapine's TestTrackPro
  *     20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
@@ -47,7 +49,8 @@ class bugtrackingInterface
 	var $showBugURL = null;
 	var $enterBugURL = null;
 	var $dbCharSet = null; 
-	
+  var $tlCharSet = null;
+  	
 	//private vars don't touch
 	var $dbConnection = null;	
 	var $bConnected = false;
@@ -69,10 +72,15 @@ class bugtrackingInterface
 	 **/
 	function bugtrackingInterface()
 	{
+    $this->tlCharSet = config_get('charset');
 		if (defined('BUG_TRACK_DB_CHARSET'))
+		{
  	    	$this->dbCharSet = BUG_TRACK_DB_CHARSET;
- 	    else
-			$this->dbCharSet = $tlCfg->charset;
+ 	  }  
+ 	  else
+ 	  {
+			$this->dbCharSet = $this->tlCharSet;
+		}
 	}
 
 	/**
@@ -92,8 +100,6 @@ class bugtrackingInterface
 	 **/
 	function connect()
 	{
-		global $tlCfg;
-
 		if (is_null($this->dbHost) || is_null($this->dbUser))
 		{
 			return false;
@@ -112,14 +118,14 @@ class bugtrackingInterface
 		{
 			if ($this->dbCharSet == 'UTF-8')
 			{
-				$r = $db->exec_query("SET CHARACTER SET utf8");
-				$r = $db->exec_query("SET NAMES utf8");
-				$r = $db->exec_query("SET collation_connection = 'utf8_general_ci'");
+				$r = $this->dbConnection->exec_query("SET CHARACTER SET utf8");
+				$r = $this->dbConnection->exec_query("SET NAMES utf8");
+				$r = $this->dbConnection->exec_query("SET collation_connection = 'utf8_general_ci'");
 			}
 			else
 			{
-				$r = $db->exec_query("SET CHARACTER SET ".$this->dbCharSet);
-				$r = $db->exec_query("SET NAMES ".$this->dbCharSet);
+				$r = $this->dbConnection->exec_query("SET CHARACTER SET ".$this->dbCharSet);
+				$r = $this->dbConnection->exec_query("SET NAMES ".$this->dbCharSet);
 			} 
 		}
 			
@@ -275,14 +281,12 @@ class bugtrackingInterface
 	 **/
 	function buildViewBugLink($bugID,$bWithSummary = false)
 	{
-		global $tlCfg;
 		$link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
-		
 		$status = $this->getBugStatusString($bugID);
 		
 		if (!is_null($status))
 		{
-			$status = iconv($this->dbCharSet,$tlCfg->charset,$status);
+			$status = iconv($this->dbCharSet,$this->tlCharSet,$status);
 			$link .= $status;
 		}
 		else
@@ -292,7 +296,7 @@ class bugtrackingInterface
 			$summary = $this->getBugSummaryString($bugID);
 			if (!is_null($summary))
 			{
-				$summary = iconv($this->dbCharSet,$tlCfg->charset,$summary);
+				$summary = iconv($this->dbCharSet,$this->tlCharSet,$summary);
 				$link .= " - " . $summary;
 			}
 		}

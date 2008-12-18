@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.217 $
- * @modified $Date: 2008/12/15 08:33:47 $ by $Author: franciscom $
+ * @version $Revision: 1.218 $
+ * @modified $Date: 2008/12/18 08:16:26 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,7 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
- * 
+ *     20081217 - franciscom - exec_cfg->simple_tester_roles
  *     20081213 - franciscom - more remove of old $g_* config parameters.
  *     20081122 - franciscom - removed some old $g_* config parameters.
  *     20081115 - franciscom - $tlCfg->testcase_cfg->search
@@ -56,10 +56,6 @@
  *     20070930 - franciscom - BUGID 1086 - configure order by in attachment
  *     20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
  *     20070819 - franciscom - $g_default_roleid
- *     20070706 - franciscom - $g_exec_cfg->user_filter_default
- *     20070706 - franciscom - $g_exec_cfg->view_mode->tester
- *                             $g_exec_cfg->exec_mode->tester
- *
  *     20070523 - franciscom - $g_user_login_valid_regex
  *     20070523 - franciscom - $g_main_menu_item_bullet_img
  *     20070505 - franciscom - following mantis bug tracking style, if file
@@ -495,6 +491,18 @@ $tlCfg->exec_cfg->show_testsuite_contents = DISABLED;
 // ENABLED -> enable testcase counters by status on tree
 $tlCfg->exec_cfg->enable_tree_testcase_counters = ENABLED;
 
+
+// Define list of roles that are affected by: 
+// $tlCfg->exec_cfg->view_mode and $tlCfg->exec_cfg->exec_mode
+// User must reconfigure if define other simple tester roles
+//
+// In addition (till code changes) also roles that verify this condition:
+// $effective_role->hasRight('testplan_execute') and !$effective_role->hasRight('testplan_planning')
+// Will be affected by:
+// $tlCfg->exec_cfg->view_mode and $tlCfg->exec_cfg->exec_mode
+// 
+$tlCfg->exec_cfg->simple_tester_roles=array(TL_ROLES_TESTER);
+
 // Filter Test cases a user with tester role can VIEW depending on
 // test execution assignment.
 // all: all test cases.
@@ -513,6 +521,7 @@ $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default 
 $tlCfg->exec_cfg->user_filter_default='none';
+
 
 
 

@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2008/12/18 08:19:46 $ $Author: franciscom $
  *
  * rev:
+ *     20081217 - franciscom - initializeExecMode() - algorithm changed.
  *     20081122 - franciscom - added some comments
  *     20080827 - franciscom - BUGID 1692
  *     20080811 - franciscom - BUGID 1650 (REQ)
@@ -543,6 +544,8 @@ function do_remote_execution(&$db,$tc_versions)
 */
 function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
 {
+
+    $simple_tester_roles=array_flip($exec_cfg->simple_tester_roles);
     $effective_role = $userObj->getEffectiveRole($db,$tproject_id,$tplan_id);
     
 	  // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
@@ -560,8 +563,10 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
 	  //
 	  $can_execute = $effective_role->hasRight('testplan_execute');
 	  $can_manage = $effective_role->hasRight('testplan_planning');
-	  $use_exec_cfg = $effective_role->dbID == TL_ROLES_TESTER || ($can_execute && !$can_manage);
 
+	  // 20081217 - franciscom
+	  // $use_exec_cfg = $effective_role->dbID == TL_ROLES_TESTER || ($can_execute && !$can_manage);
+    $use_exec_cfg = isset($simple_tester_roles[$effective_role->dbID]) || ($can_execute && !$can_manage);
 	  return  $use_exec_cfg ? $exec_cfg->exec_mode->tester : 'all';
 } // function end
 

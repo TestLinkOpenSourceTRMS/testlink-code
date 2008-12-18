@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2008/12/18 08:17:31 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -107,14 +107,23 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 			foreach($users as $id => $user)
 			{
 				if($user->bActive == $active_filter)
+				{
 					$the_users[$id] = $users[$id];
+				}	
 			}
 		}
 	}
-
 	return buildUserMap($the_users,$add_blank_option);
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function buildUserMap($users,$add_blank_option = false)
 {
 	$usersMap = null;
@@ -180,6 +189,14 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	return $result;
 }
 
+/*
+  function: getUserErrorMessage
+
+  args :
+  
+  returns: 
+
+*/
 function getUserErrorMessage($code)
 {
 	$msg = 'ok';
@@ -231,6 +248,7 @@ function getUserErrorMessage($code)
 		case tlUser::E_DBERROR:
 		default:
 			$msg = lang_get('error_user_not_updated');
+		break;	
 	}
 	return $msg;
 }
@@ -256,7 +274,7 @@ function getAllUsersRoles(&$db,$order_by = null)
 /*
   function: getTestersForHtmlOptions
 
-  args :
+  args: 
 
   returns:
 
@@ -268,14 +286,16 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null)
     foreach($users_roles as $keyUserID => $roleInfo)
     {
 		    if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
+		    {
 			     $userFilter[$keyUserID] = $roleInfo['user'];
+			  }   
     }
-	return buildUserMap($userFilter,true);
+	  return buildUserMap($userFilter,true);
 }
 
 
 /*
-  function:
+  function: initialize_tabsmenu
 
   args:
 
@@ -346,10 +366,7 @@ function generatePassword($numAlpha=6,$numNonAlpha=2)
 {
   $listAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   $listNonAlpha = ',;:!?.$/*-+&@_+;./*&?$-!,';
-  return str_shuffle(
-     substr(str_shuffle($listAlpha),0,$numAlpha) .
-     substr(str_shuffle($listNonAlpha),0,$numNonAlpha)
-   );
+  return str_shuffle( substr(str_shuffle($listAlpha),0,$numAlpha) .
+                      substr(str_shuffle($listNonAlpha),0,$numNonAlpha) );
 }
-
 ?>

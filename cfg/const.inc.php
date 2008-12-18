@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2008/12/13 19:28:40 $ by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2008/12/18 08:22:37 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -428,8 +428,6 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 define("TL_ROLES_TESTER", 7);
 define("TL_ROLES_GUEST", 5);
 define("TL_ROLES_NO_RIGHTS", 3);
-define("TL_ROLES_NONE", 3); // obsolete, use TL_ROLES_NO_RIGHTS
-
 define("TL_ROLES_UNDEFINED", 0);
 define("TL_ROLES_INHERITED", 0);
 

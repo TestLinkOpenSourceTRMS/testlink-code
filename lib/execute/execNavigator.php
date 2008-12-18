@@ -5,10 +5,14 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2008/12/11 21:36:07 $ by $Author: schlundus $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2008/12/18 08:19:46 $ by $Author: franciscom $
  *
  * rev: 
+ *      20081217 - franciscom - only users that have effective role with right 
+ *                              that allow test case execution are displayed on
+ *                              filter by user combo.
+ *                             
  *      20080517 - franciscom - fixed testcase filter bug
  *      20080428 - franciscom - keyword filter can be done on multiple keywords
  *      20080224 - franciscom - refactoring
@@ -56,7 +60,7 @@ if( !is_null($treeMenu->rootnode) )
     $gui->ajaxTree->cookiePrefix='exec_tplan_id_' . $args->tplan_id;
 }
 
-                      
+                     
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 // Warning: the following variable names CAN NOT BE Changed,
@@ -90,43 +94,46 @@ function init_args(&$dbHandler,$cfgObj)
     
     // 20080517 - franciscom
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
- 	if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
-	{
-		// need to get internal Id from External ID
-		$item_mgr = new testcase($dbHandler);
-		$cfg = config_get('testcase_cfg');
-		$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
-		
-		if( $args->tcase_id == 0 )
-		{
-		    $args->tcase_id=-1;  
-		}
-	}
+ 	  if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
+	  {
+	  	// need to get internal Id from External ID
+	  	$item_mgr = new testcase($dbHandler);
+	  	$cfg = config_get('testcase_cfg');
+	  	$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+	  	
+	  	if( $args->tcase_id == 0 )
+	  	{
+	  	    $args->tcase_id=-1;  
+	  	}
+	  }
 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-    
     $args->doUpdateTree=isset($_REQUEST['submitOptions']) ? 1 : 0;
     
     $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : null;
     if ($args->optResultSelected == $cfgObj->results['status_code']['all'])
+    {
         $args->optResultSelected = null;
-   
+    }
+     
     $user_filter_default = 0;
     switch($cfgObj->exec->user_filter_default)
     {
     	case 'logged_user':
-    		$user_filter_default = $args->user->dbID;
-    		break;
+          $user_filter_default = $args->user->dbID;
+      break;
 
     	case 'none':
     	default:
-    		break;
+    	break;
     }
     
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
     $args->urgencyImportance = isset($_REQUEST['urgencyImportance']) ? intval($_REQUEST['urgencyImportance']) : null;
     if ($args->urgencyImportance == 0)
+    {
     	$args->urgencyImportance = null;
+    }
     $args->optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
 
     // Checkbox
@@ -207,15 +214,16 @@ function getCfg()
 
 
 /*
-  function: 
+  function: buildAssigneeFilter
 
-  args :
+  args:
   
   returns: 
 
 */
 function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
 {
+    
     $guiObj->disable_filter_assigned_to = false;
     $guiObj->assigned_to_user = '';
     
@@ -223,8 +231,29 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     
     // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
     // Need to check right no role
-    $exec_view_mode = ($effective_role->dbID == TL_ROLES_TESTER) ? $cfgObj->exec->view_mode->tester : 'all';
-    
+    //
+    // 20081217 - franciscom
+    // If we check right 'testplan_execute', we do not get desired effect, because we are not able
+    // to treat in a different way a SIMPLE TESTER from a SENIOR TESTER.
+    // Possible solutions:
+    // 1- Check again a set of configurable roles
+    //
+    // 2- Create a set of execute rights, one that allows limited execution that is affected by
+    //    exec->view_mode and exec->exec_mode, and other that is immune.
+    //
+    // 3- on execSetResults.php has been done 
+ 	  //    Role is considered simple tester if:
+	  //    role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
+    //
+    // 4- we can support option 1 and 2, or 1 and 3
+    //
+    //
+    //
+    $simple_tester_roles=array_flip($cfgObj->exec->simple_tester_roles);
+ 	  $can_execute = $effective_role->hasRight('testplan_execute');
+	  $can_manage = $effective_role->hasRight('testplan_planning');
+    $use_exec_cfg = isset($simple_tester_roles[$effective_role->dbID]) || ($can_execute && !$can_manage);
+    $exec_view_mode = $use_exec_cfg ? $cfgObj->exec->view_mode->tester : 'all';
     switch ($exec_view_mode)
     {
     	case 'all':
@@ -341,7 +370,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
 
- 	if( $cfgObj->treemenu_type != 'EXTJS' )
+ 	  if( $cfgObj->treemenu_type != 'EXTJS' )
     {
         $treeMenu->menustring = invokeMenu($treeMenu->menustring,null,null);
     }
@@ -386,8 +415,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
     {
         $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
     }
+                 
+    // 20081217 - franciscom             
+    // $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
+    $users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+	  $gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$users);
 
-    $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
+
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     $gui->treeKind=TL_TREE_KIND;
     $gui->optResult=createResultsMenu();

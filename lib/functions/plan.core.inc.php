@@ -3,20 +3,14 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/01/05 22:00:53 $ $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2008/12/18 08:18:45 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
  *
  *
- * rev:
- *       20070911 - asielb
- *      getTestPlansWithoutProject(&$db)
- *
- *      20070906 - franciscom - getAccessibleTestPlans() 
- *                              interface changes
- *
+ * rev: 20081218 - franciscom - TL_ROLES_NO_RIGHTS
  *      20070821 - franciscom - BUGID: 951
 **/
 
@@ -44,22 +38,22 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 	if ($filter_by_product)
 		$query .= "(testproject_id = {$testproject_id} OR testproject_id = 0) AND ";
 	
-	$bGlobalNo = ($currentUser->globalRoleID == TL_ROLES_NONE);
+	$bGlobalNo = ($currentUser->globalRoleID == TL_ROLES_NO_RIGHTS);
 	$bProductNo = 0;
 	$analyse_global_role = 1;
 	if (isset($currentUser->tprojectRoles[$testproject_id]->dbID))
 	{
-		$bProductNo = ($currentUser->tprojectRoles[$testproject_id]->dbID == TL_ROLES_NONE); 
+		$bProductNo = ($currentUser->tprojectRoles[$testproject_id]->dbID == TL_ROLES_NO_RIGHTS); 
 		$analyse_global_role = 0;	
 	}
 	
   if( $bProductNo || ($analyse_global_role && $bGlobalNo))
   {
-    $query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+    $query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
   }	
   else
   {
-    $query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+    $query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
   }
    
 	if (!is_null($tpID))

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.89 $
- * @modified $Date: 2008/11/03 22:02:50 $  $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2008/12/18 08:17:09 $  $Author: franciscom $
  * @author franciscom
  *
  * 20081103 - franciscom - get_all_testcases_id() minor refactoring
@@ -328,10 +328,10 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 		        ON testprojects.id = user_testproject_roles.testproject_id AND
 		 	      user_testproject_roles.user_ID = {$user_id} WHERE ";
 
-	if ($role_id != TL_ROLES_NONE)
-		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+	if ($role_id != TL_ROLES_NO_RIGHTS)
+		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
 	else
-		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
 
 
 	if (has_rights($this->db,'mgt_modify_product') != 'yes')

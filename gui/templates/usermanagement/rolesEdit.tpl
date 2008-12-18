@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.17 2008/10/30 20:00:08 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.18 2008/12/18 08:22:07 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -162,7 +162,7 @@ function validateForm(f)
 
 	</table>
 	<div class="groupBtn">
-	{if $gui->grants->role_mgmt == "yes" && $gui->role->dbID != $smarty.const.TL_ROLES_NONE}
+	{if $gui->grants->role_mgmt == "yes" && $gui->role->dbID != $smarty.const.TL_ROLES_NO_RIGHTS}
 
 		<input type="hidden" name="doAction" value="{$gui->operation}" />
 		<input type="submit" name="role_mgmt" value="{$labels.btn_save}"

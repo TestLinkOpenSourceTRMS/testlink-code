@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2008/12/18 08:22:37 $ by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2008/12/22 10:03:27 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -55,6 +55,8 @@ define('HIGH',		3 );
 define('MEDIUM', 	2 );
 define('LOW', 		1 );
 
+
+define('TL_FILTER_OFF',null);
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS', 0);
@@ -425,6 +427,11 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 // --------------------------------------------------------------------------------------
 /** [Users & Roles] */
+define("TL_USER_NOBODY", -1);
+define("TL_NO_USER", TL_USER_NOBODY);
+define("TL_USER_ANYBODY", 0);
+
+
 define("TL_ROLES_TESTER", 7);
 define("TL_ROLES_GUEST", 5);
 define("TL_ROLES_NO_RIGHTS", 3);
@@ -433,6 +440,8 @@ define("TL_ROLES_INHERITED", 0);
 
 // Roles with id > to this role can be deleted from user interface
 define("TL_LAST_SYSTEM_ROLE", 9);
+
+
 
 
 // used on user management page to give different colour 

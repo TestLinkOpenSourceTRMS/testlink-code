@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.26 $ $Author: franciscom $
- * @modified $Date: 2008/12/15 08:31:53 $
+ * @version $Revision: 1.27 $ $Author: franciscom $
+ * @modified $Date: 2008/12/22 10:03:46 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -557,6 +557,7 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	  $tprojectMgr = new testproject($dbHandler); 
 	  $tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
 	  	
+	  $filterAssignedTo = property_exists($argsObj,'filter_assigned_to') ? $argsObj->filter_assigned_to : null;	
 	  	
 	  // @TODO - 20081019 
 	  // Really understand differences between:
@@ -566,12 +567,12 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	  // BUGID 1041
 	  $tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
 	                                                              $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF,
-	                                                              $argsObj->filter_assigned_to);
+	                                                              $filterAssignedTo);
 	  // This does filter on keywords ALWAYS in OR mode.
 	  $tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
 	  // With this pieces we implement the AND type of keyword filter.
 	  $testCaseSet = null;
-	  if(!is_null($keywordsFilter))
+	  if(!is_null($keywordsFilter) && !is_null($keywordsFilter->items))
 	  { 
 		  $keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
 		                                                         $keywordsFilter->items,$keywordsFilter->type);

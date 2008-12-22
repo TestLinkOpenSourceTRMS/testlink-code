@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.368 $
- * @modified $Date: 2008/12/15 20:22:41 $ by $Author: schlundus $
+ * @version $Revision: 1.369 $
+ * @modified $Date: 2008/12/22 10:03:38 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -77,6 +77,8 @@ $TLS_urgency = "Urgency";
 $TLS_problems_loading_xml_content="Unable to load XML data, Check your file."; 
 $TLS_not_imported = "Not imported";
 $TLS_imported = "Imported";
+$TLS_nobody = "nobody";
+
 
 $TLS_exec_assign_no_testcase="Please select at least one Test Case.";
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
@@ -146,6 +148,9 @@ $TLS_btn_save = "Save";
 $TLS_btn_unassign = "Unassign";
 $TLS_btn_update = "Update";
 $TLS_btn_upd = $TLS_btn_update;
+$TLS_btn_advanced_filters="Advanced Filters";
+$TLS_btn_simple_filters="Simple Filters"; 
+
 
 // Status
 $TLS_test_status_all = "All";

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/12/23 21:08:20 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -23,7 +23,6 @@ require_once("print.inc.php");
 testlinkInitPage($db);
 
 $statistics=null;
-
 $args = init_args();
 
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
@@ -101,10 +100,12 @@ switch ($args->print_scope)
     	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
     	   	       $tree = &$test_spec;
     	   	       if (!$tp_tcs)
-    	   	       	$tree['childNodes'] = null;
+    	   	       {
+    	   	           $tree['childNodes'] = null;
+    	   	       }
     	   	       //@TODO:REFACTOR	
     	   	       prepareNode($db,$tree,$decoding_hash,$dummy,
-    	   	                            $dummy,$tp_tcs,SHOW_TESTCASES,0,null,0,1,0);
+    	   	                   $dummy,$tp_tcs,SHOW_TESTCASES,null,null,0,1,0);
     	   	       $printingOptions['title'] = $args->tproject_name;
              break;
     	       

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.107 $
- * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2008/12/23 21:08:20 $ $Author: franciscom $
  *
  * rev:
  *     20081217 - franciscom - initializeExecMode() - algorithm changed.
@@ -177,28 +177,43 @@ if(!is_null($linked_tcversions))
     }
     
     $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
-   
+
     // Get attachment,bugs, etc
     if(!is_null($gui->other_execs))
     {
-    	
     	//Get the Tester ID for all previous executions
-		foreach ($gui->other_execs as $key => $execution)
-		{    	
-	    	foreach ($execution as $singleExecution)
-	    	{    			  
-			      $testerid = $singleExecution['tester_id'];
-			      $userid_array[$testerid] = $testerid;
-	    	}    	
-		}
+		  foreach ($gui->other_execs as $key => $execution)
+		  {    	
+	      	foreach ($execution as $singleExecution)
+	      	{    			  
+		  	      $testerid = $singleExecution['tester_id'];
+		  	      $userid_array[$testerid] = $testerid;
+	      	}    	
+		  }
 
       $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id,$args->tproject_id);
  			$gui->attachments=$other_info['attachment'];
       $gui->bugs=$other_info['bugs'];
       $gui->other_exec_cfields=$other_info['cfexec_values'];
-    }
 
-}
+
+      // this piece of code is useful to avoid error on smarty template due to undefined value   
+      if( is_array($tcversion_id) && 
+          (count($gui->other_execs) != count($gui->map_last_exec)) )
+      {
+        foreach($tcversion_id as $version_id)
+        {
+            if( !isset($gui->other_execs[$version_id]) )
+            {
+                $gui->other_execs[$version_id]=null;  
+            }  
+        }
+      }
+
+    } // if(!is_null($gui->other_execs))
+
+} // if(!is_null($linked_tcversions))
+
 
 //Removing duplicate and NULL id's
 unset($userid_array['']);

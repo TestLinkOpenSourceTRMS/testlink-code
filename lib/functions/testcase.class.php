@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.135 $
- * @modified $Date: 2008/12/11 20:30:16 $ $Author: schlundus $
+ * @version $Revision: 1.136 $
+ * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20081220 - franciscom - get_executions() - now build_id can be an array
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
  *                         removed useless code from getTestProjectFromTestCase()
  *
@@ -2087,9 +2088,13 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
   // Contribution
   // Can get execution for any build
 	$build_id_filter='';
+	
+	// use always IN CLAUSE, because theorically do not have performance impacts.
 	if ( !is_null($build_id) )
 	{
-		$build_id_filter=" AND e.build_id = {$build_id} ";
+	  $build_set = implode(',', (array)$build_id);
+		// $build_id_filter=" AND e.build_id = {$build_id} ";
+		$build_id_filter=" AND e.build_id IN ({$build_set}) ";
 	}
 
 
@@ -2155,7 +2160,6 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
         LEFT OUTER JOIN users ON e.tester_id = users.id
         $where_clause
         ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$exec_id_order}";
-
 
   $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
   return($recordset ? $recordset : null);

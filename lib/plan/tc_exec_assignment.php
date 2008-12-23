@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.29 2008/11/04 19:25:48 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.30 2008/12/23 18:28:54 franciscom Exp $ 
  * 
  * rev :
  *       20080312 - franciscom - BUGID 1427
@@ -10,12 +10,9 @@
  *                               that can execute test cases in testplan.
  * 
  *       20070912 - franciscom - BUGID 1041
- *       20070124 - franciscom
- *       use show_help.php to apply css configuration to help pages
  */         
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
-require_once("assignment_mgr.class.php");
 require_once("treeMenu.inc.php");
 require("specview.php");
 
@@ -31,10 +28,11 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-$keywordsFilter = null;
+$keywordsFilter = new stdClass();
+$keywordsFilter->items = null;
+$keywordsFilter->type = null;
 if(is_array($args->keyword_id))
 {
-    $keywordsFilter = new stdClass();
     $keywordsFilter->items = $args->keyword_id;
     $keywordsFilter->type = $gui->keywordsFilterType;
 }
@@ -106,8 +104,7 @@ switch($args->level)
 		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-				    		    $linked_items,null,
-							    $keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+				    		            $linked_items,null,$keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
@@ -126,6 +123,9 @@ switch($args->level)
 }
 
 $gui->items = $out['spec_view'];
+
+// useful to avoid error messages on smarty template.
+$gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
@@ -144,26 +144,31 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
-	$args = new stdClass();
-	$args->user_id = $_SESSION['userID'];
-	$args->tproject_id = $_SESSION['testprojectID'];
-	$args->tproject_name = $_SESSION['testprojectName'];
-    
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
-    
-	$key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-	  	              'version_id' => 0, 'has_prev_assignment' => null,
-	  	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => 0);
-	foreach($key2loop as $key => $value)
-	{
-		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-	}
+	  $_REQUEST = strings_stripSlashes($_REQUEST);
+	  $args = new stdClass();
+	  $args->user_id = $_SESSION['userID'];
+	  $args->tproject_id = $_SESSION['testprojectID'];
+	  $args->tproject_name = $_SESSION['testprojectName'];
+      
+	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+      
+	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+	    	              'version_id' => 0, 'has_prev_assignment' => null,
+	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
+	  foreach($key2loop as $key => $value)
+	  {
+	  	$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
+	  }
     
     // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
     $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
     $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
     $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+    
+    if( !is_null($args->filter_assigned_to) )
+    {
+        $args->filter_assigned_to = (array)$args->filter_assigned_to;  
+    }
     
 	return $args;
 }

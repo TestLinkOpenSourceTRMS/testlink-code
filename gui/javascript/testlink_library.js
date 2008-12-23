@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.64 2008/10/23 13:24:07 havlat Exp $
+// $Id: testlink_library.js,v 1.65 2008/12/23 18:28:34 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -22,6 +22,7 @@
 //
 // ----------------------------------------------------------------------------
 //
+// 20081220 - franciscom - toogleInput()
 // 20080724 - havlatm - bug 1638, 1639
 // 20080322 - franciscom - openExecNotesWindow()
 // 20080118 - franciscom - showHideByClass()
@@ -812,4 +813,24 @@ function openReqWindow(tcase_id)
   feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
 	window.open(fRoot+feature_url,"Test Case - Requirement link",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
+}
+
+/*
+  function: toogleInput
+
+  args: oid - object id
+  
+  returns: 
+
+*/
+function toogleInput(oid)
+{
+    if(document.getElementById(oid).value == 1)
+    {
+        document.getElementById(oid).value=0;
+    }
+    else
+    {
+        document.getElementById(oid).value=1;
+    }
 }

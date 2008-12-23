@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.19 2008/12/11 21:36:07 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.20 2008/12/23 18:28:41 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+     20081220 - franciscom - advanced/simple filters
      20080621 - franciscom - adding ext js treemenu
      20080427 - franciscom - refactoring
      20080224 - franciscom - BUGID 1056
@@ -12,7 +13,7 @@ rev :
 
 *}
 {lang_get var="labels"
-          s="filter_result,caption_nav_filter_settings,filter_owner,
+          s="filter_result,caption_nav_filter_settings,filter_owner,TestPlan,
              btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases,priority"}
        
        
@@ -56,12 +57,10 @@ rev :
 {assign var="build_number" value=$gui->optBuildSelected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1 class="title">{lang_get s='TestPlan'}{$tlCfg->gui_title_separator_1} {$gui->tplan_name|escape}
+<h1 class="title">{$labels.TestPlan}{$tlCfg->gui_title_separator_1} {$gui->tplan_name|escape}
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
 {$gui->optBuild.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
-<input type='hidden' id="tpn_view_settings"
-         name="tpn_view_status"  value="0" />
 <div class="x-panel-header x-unselectable">
 	<div class="x-tool x-tool-toggle" style="background-position:0 -75px; float:left;"
 		onclick="show_hide('tplan_settings', 'tpn_view_settings',
@@ -75,7 +74,10 @@ rev :
 </div>
 
 <div id="tplan_settings" class="exec_additional_info" style="margin: 3px;">
-<form method="post">
+<form method="post" id="filters">
+  <input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
+	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
+	
 	<table class="smallGrey" width="100%">
 		<caption>
 			{$labels.caption_nav_filter_settings}
@@ -111,7 +113,11 @@ rev :
 		<tr>
 				<td>{$labels.filter_result}</td>
 			<td>
+			  {if $gui->advancedFilterMode }
+			  <select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
+			  {else}
 			  <select name="filter_status">
+			  {/if}
 			  {html_options options=$gui->optResult selected=$gui->optResultSelected}
 			  </select>
 			</td>
@@ -122,7 +128,11 @@ rev :
  			{if $gui->disable_filter_assigned_to}
 			  {$gui->assigned_to_user}
 			{else}
+			  {if $gui->advancedFilterMode }
+			  <select name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}>
+			  {else}
 				<select name="filter_assigned_to">
+			  {/if}
 					{html_options options=$gui->users selected=$gui->filter_assigned_to}
 				</select>
 			{/if}
@@ -141,6 +151,10 @@ rev :
 		<tr>
 			<td>&nbsp;</td>
 			<td><input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" style="font-size: 90%;" /></td>
+			<td><input type="submit" id="toogleFilterMode"  name="toogleFilterMode" 
+			           value="{$gui->toogleFilterModeLabel}"  
+			           onclick="toogleInput('advancedFilterMode');"
+			           style="font-size: 90%;"  /></td>
 		</tr>
 	</table>
 </form>

@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2008/12/18 08:19:46 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2008/12/23 18:28:54 $ by $Author: franciscom $
  *
  * rev: 
+ *      20081220 - franciscom - advanced/simple filters
  *      20081217 - franciscom - only users that have effective role with right 
  *                              that allow test case execution are displayed on
  *                              filter by user combo.
@@ -35,19 +36,15 @@ $tplan_mgr = new testplan($db);
 
 $templateCfg = templateConfiguration();
 
+
 $cfg = getCfg();
 $args = init_args($db,$cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
+$gui = initializeGui($db,$args,$cfg,$exec_cfield_mgr,$tplan_mgr);
 
-$gui = initializeGui($db,$args,$exec_cfield_mgr,$tplan_mgr);
-$str_option_any = $tlCfg->gui_separator_open . lang_get('any') . $tlCfg->gui_separator_close;
-$gui->str_option_any = $str_option_any;
-$gui->optResult['a'] = $str_option_any;
-$gui->users[0] = $str_option_any; 
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
 $treeMenu = buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);
-                                               
 $gui->tree=$treeMenu->menustring;
 
 if( !is_null($treeMenu->rootnode) )
@@ -60,7 +57,6 @@ if( !is_null($treeMenu->rootnode) )
     $gui->ajaxTree->cookiePrefix='exec_tplan_id_' . $args->tplan_id;
 }
 
-                     
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 // Warning: the following variable names CAN NOT BE Changed,
@@ -81,6 +77,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args(&$dbHandler,$cfgObj)
 {
+  	$_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
 
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -90,9 +87,9 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
-    
-    
-    // 20080517 - franciscom
+
+
+    $args->advancedFilterMode=isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
  	  if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
 	  {
@@ -110,13 +107,23 @@ function init_args(&$dbHandler,$cfgObj)
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->doUpdateTree=isset($_REQUEST['submitOptions']) ? 1 : 0;
     
-    $args->optResultSelected = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : null;
-    if ($args->optResultSelected == $cfgObj->results['status_code']['all'])
+    // 20081220 - franciscom
+    // Now can be multivalued
+    $args->optResultSelected = isset($_REQUEST['filter_status']) ? (array)$_REQUEST['filter_status'] : null;
+    if( !is_null($args->optResultSelected) )
     {
-        $args->optResultSelected = null;
+        if( in_array($cfgObj->results['status_code']['all'], $args->optResultSelected) )
+        {
+            $args->optResultSelected = array($cfgObj->results['status_code']['all']);
+        }
+        else if( !$args->advancedFilterMode && count($args->optResultSelected) > 0)
+        {
+            // Because user has switched to simple mode we will get ONLY first status
+            $args->optResultSelected=array($args->optResultSelected[0]);
+        }
     }
-     
-    $user_filter_default = 0;
+    
+    $user_filter_default = null;
     switch($cfgObj->exec->user_filter_default)
     {
     	case 'logged_user':
@@ -128,7 +135,27 @@ function init_args(&$dbHandler,$cfgObj)
     	break;
     }
     
-    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
+    // $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
+    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? $_REQUEST['filter_assigned_to'] : $user_filter_default;
+    
+    if( !is_null($args->filter_assigned_to) )
+    {
+        $args->filter_assigned_to = (array)$args->filter_assigned_to;
+        if( in_array(TL_USER_ANYBODY, $args->filter_assigned_to) )
+        {
+            $args->filter_assigned_to = array(TL_USER_ANYBODY);  
+        }
+        else if( in_array(TL_USER_NOBODY, $args->filter_assigned_to) )
+        {
+            $args->filter_assigned_to = array(TL_USER_NOBODY);    
+        } 
+        else if( !$args->advancedFilterMode && count($args->filter_assigned_to) > 0)
+        {
+            // Because user has switched to simple mode we will get ONLY first status
+            $args->filter_assigned_to=array($args->filter_assigned_to[0]);
+        }
+    }  
+    
     $args->urgencyImportance = isset($_REQUEST['urgencyImportance']) ? intval($_REQUEST['urgencyImportance']) : null;
     if ($args->urgencyImportance == 0)
     {
@@ -174,21 +201,34 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     }
     
     if($argsObj->tcase_id != 0)
+    {
         $settings .= '&tc_id='.$argsObj->tcase_id;
-
+    }
+    
     if ($argsObj->urgencyImportance > 0)
+    {
     	$settings .= "&urgencyImportance={$argsObj->urgencyImportance}";
+    }
         
-    if($argsObj->filter_assigned_to)
-    	  $settings .= '&filter_assigned_to='.$argsObj->filter_assigned_to;
-    
-    if($argsObj->optResultSelected != $cfgObj->results['status_code']['all'])
-        $settings .= '&filter_status='.$argsObj->optResultSelected;
-    
+    // 20081220 - franciscom
+    if( !is_null($argsObj->filter_assigned_to) &&
+        !in_array(TL_USER_ANYBODY,$argsObj->filter_assigned_to) )
+    {
+    	  $settings .= '&filter_assigned_to='. serialize($argsObj->filter_assigned_to);
+    }   
+       
+       
+    // 20081220 - franciscom
+    if( !is_null($argsObj->optResultSelected) && 
+        !in_array($cfgObj->results['status_code']['all'],$argsObj->optResultSelected) )
+    {
+        $settings .= '&filter_status='. serialize($argsObj->optResultSelected);
+    }
 
     if ($customFieldSelected)
+    {
     	 $settings .= '&cfields='. serialize($customFieldSelected);
-
+    }
     return $settings;
 }
 
@@ -257,14 +297,13 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     switch ($exec_view_mode)
     {
     	case 'all':
- 		    $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
+ 		    $guiObj->filter_assigned_to = is_null($argsObj->filter_assigned_to) ? null : $argsObj->filter_assigned_to;
     		break;
     
     	case 'assigned_to_me':
     		$guiObj->disable_filter_assigned_to = true;
-    		$argsObj->filter_assigned_to = $argsObj->user->dbID;
+    		$argsObj->filter_assigned_to = (array)$argsObj->user->dbID;
         $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
-
     		$guiObj->assigned_to_user = $argsObj->user->getDisplayName();
     		break;
     }
@@ -344,8 +383,47 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     $filters->tc_id = $argsObj->tcase_id;
     $filters->build_id = $argsObj->optBuildSelected;
+   
+    // 20081220 - francisco.mancardi@gruppotesi.com
+    // in this way we have code as key
     $filters->assignedTo = $guiObj->filter_assigned_to;
+    if( !is_null($filters->assignedTo) )
+    {
+        if( in_array(TL_USER_ANYBODY, $guiObj->filter_assigned_to) )
+        {
+            $filters->assignedTo = null;
+        }
+        else
+        {
+            $dummy = array_flip($guiObj->filter_assigned_to);
+            foreach( $dummy as $key => $value)
+            {
+                $dummy[$key] = $key;  
+            }
+            $filters->assignedTo = $dummy;
+        }
+    }
+    
+    
+    // 20081220 - francisco.mancardi@gruppotesi.com
     $filters->status = $guiObj->optResultSelected;
+    if( !is_null($filters->status) )
+    {
+        if( in_array($cfgObj->results['status_code']['all'], $guiObj->optResultSelected) )
+        {
+            $filters->status = null;  
+        }
+        else 
+        {
+            // in this way we have code as key
+            $dummy = array_flip($guiObj->optResultSelected);
+            foreach( $dummy as $status_code => $value)
+            {
+                $dummy[$status_code] = $status_code;  
+            }
+            $filters->status = $dummy;
+        }
+    }
     
     $filters->hide_testcases = false;
     $filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
@@ -356,7 +434,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     $additionalInfo->useCounters = $cfgObj->exec->enable_tree_testcase_counters;
     $additionalInfo->useColours = $cfgObj->exec->enable_tree_colouring;
-
 
     // link to load frame named 'workframe' when the update button is pressed
     if($argsObj->doUpdateTree)
@@ -386,9 +463,15 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 
   rev: 20080429 - franciscom
 */
-function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanMgr)
 {
     $gui = new stdClass();
+    $gui_open = config_get('gui_separator_open');
+    $gui_close = config_get('gui_separator_close');
+    
+    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+    $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
+        
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs();
     $gui->menuUrl = 'lib/execute/execSetResults.php';
     $gui->src_workframe=null;    
@@ -419,12 +502,32 @@ function initializeGui(&$dbHandler,&$argsObj,&$exec_cfield_mgr,&$tplanMgr)
     // 20081217 - franciscom             
     // $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
     $users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-	  $gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$users);
+	  $gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
+	                                         $users, 
+	                                         array(TL_USER_ANYBODY => $gui->str_option_any,
+	                                               TL_USER_NOBODY => $gui->str_option_none) );
 
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     $gui->treeKind=TL_TREE_KIND;
+    
     $gui->optResult=createResultsMenu();
+    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
+
+    $gui->advancedFilterMode=$argsObj->advancedFilterMode;
+    if( $gui->advancedFilterMode )
+    {
+        $label = 'btn_simple_filters';
+        $gui->statusFilterItemQty=4;  // Standard: not run,passed,failed,blocked
+        $gui->assigneeFilterItemQty=4; // as good as any other number
+    }
+    else
+    {
+        $label='btn_advanced_filters';
+        $gui->statusFilterItemQty=1;   
+        $gui->assigneeFilterItemQty=1;
+    }
+    $gui->toogleFilterModeLabel=lang_get($label);
  
     return $gui;
 }

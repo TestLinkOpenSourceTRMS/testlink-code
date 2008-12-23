@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.12 2008/10/15 20:36:52 schlundus Exp $
+$Id: tc_exec_assignment.tpl,v 1.13 2008/12/23 18:28:41 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -48,9 +48,11 @@ function check_action_precondition(container_id,action)
 {if $gui->has_tc }
 
 {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
+{* 20081221 - franciscom
 {if $key ne ''}
 	<div style="margin-left: 20px; font-size: smaller;"><p>{$labels.note_keyword_filter} '{$key|escape}'</p></div>
 {/if}
+*}
 
 {* prefix for checkbox name ADD*}   
 {assign var="add_cb" value="achecked_tc"}
@@ -148,9 +150,14 @@ function check_action_precondition(container_id,action)
             </table>
         {/if}
       {/if} {* write buttons*}
-    
-      {if $ts.level gte $gui->items[$smarty.foreach.div_drawing.iteration].level }
-          {assign var="max_loop" value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
+
+      {if $gui->items_qty eq $smarty.foreach.div_drawing.iteration }
+          {assign var=next_level value=0}
+      {else}
+          {assign var=next_level value=$gui->items[$smarty.foreach.div_drawing.iteration].level}
+      {/if}
+      {if $ts.level gte $next_level}
+          {assign var="max_loop" value=$next_level}
           {assign var="max_loop" value=$ts.level-$max_loop+1}
           {section name="div_closure" loop=$gui->support_array max=$max_loop} </div> {/section}
       {/if}

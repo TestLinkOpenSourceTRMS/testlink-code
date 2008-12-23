@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/12/15 08:31:53 $ by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2008/12/23 18:28:54 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -23,6 +23,9 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *
+ *  20081220 - franciscom - get_linked_tcversions() - changes in queries to support advanced
+ *                                                    filters.
  *
  *  20081214 - franciscom - Thanks to postgres found missing CAST() on SUM() 
  *  20081207 - franciscom - added get_execution_time()
@@ -456,7 +459,7 @@ function setExecutionOrder($id,&$executionOrder)
                                      get only executed tcversions
 
          [assigned_to]: default NULL => do not filter by user assign.
-                        numeric > 0     => filter by user id
+                        array() with user id to be used on filter
 
          [exec_status]: default NULL => do not filter by execution status
                         character    => filter by execution status=character
@@ -486,7 +489,8 @@ function setExecutionOrder($id,&$executionOrder)
                            tcversion_id if has executions
 
 	rev :
-		20080714 - havlatm - added urgency
+		  20081220 - franciscom - exec_status can be an array to allow OR filtering 
+		  20080714 - havlatm - added urgency
     	20080602 - franciscom - tcversion_number in output
     	20080309 - sbouffard - added NHB.name to recordset
     	20080114 - franciscom - added external_id in output
@@ -500,9 +504,6 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
                                           $urgencyImportance = null, $tsuites_id=null)
 {
   $resultsCfg = config_get('results');
-	// $tc_status=config_get('tc_status');
-  // $resultsCfg['status_code'];
-	// $status_not_run=$tc_status['not_run'];
 	$status_not_run=$resultsCfg['status_code']['not_run'];
 
 	$keywords_join = " ";
@@ -552,19 +553,59 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	// --------------------------------------------------------------
 	if(!is_null($exec_status) )
 	{
-	    if( $exec_status == $status_not_run)
+	    // if( $exec_status == $status_not_run)
+	    // {
+	    //   $executions_filter=" AND E.status IS NULL ";
+	    // }
+	    // else
+	    // {
+	    //   // 20081220 - franciscom
+	    //   // $executions_filter=" AND E.status='" . $exec_status . "' ";
+	    //   // Remember status code are characters non numbers, then we need to use
+	    //   // single quotes on IN clause elements
+	    //   $executions_filter=" AND E.status IN ('" . implode("','",$exec_status) . "') ";
+	    //   $sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
+      //                 "               FROM  executions " .
+      //                 "               WHERE testplan_id={$id} " .
+      //                 "               GROUP BY tcversion_id,testplan_id )";
+	    // }
+	    $executions_filter='';
+	    $notrun_filter=null;
+	    $otherexec_filter=null;
+	    
+	    if( isset($exec_status[$status_not_run]) )
 	    {
-	      $executions_filter=" AND E.status IS NULL ";
+	        $notrun_filter=" E.status IS NULL ";
+	        unset($exec_status[$status_not_run]);  
 	    }
-	    else
+	    
+	    if( count($exec_status) > 0 )
 	    {
-	      $executions_filter=" AND E.status='" . $exec_status . "' ";
-	      $sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
-                      "               FROM  executions " .
-                      "               WHERE testplan_id={$id} " .
-                      "               GROUP BY tcversion_id,testplan_id )";
+          $otherexec_filter=" E.status IN ('" . implode("','",$exec_status) . "') ";
+	        $sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
+                        "               FROM  executions " .
+                        "               WHERE testplan_id={$id} " .
+                        "               GROUP BY tcversion_id,testplan_id )";
+                        
+                        
 	    }
-
+      if( !is_null($otherexec_filter) )
+      {
+          $executions_filter = " ( {$otherexec_filter} {$sql_subquery} ) ";  
+      }
+      if( !is_null($notrun_filter) )
+      {
+        if( strlen(($executions_filter)) > 0)
+        {
+            $executions_filter .= " OR ";
+        }
+        $executions_filter .= $notrun_filter;
+      }
+      
+      if( strlen(($executions_filter)) > 0)
+      {
+          $executions_filter = " AND ({$executions_filter} )";     
+      }
 	}
 
 	// --------------------------------------------------------------
@@ -608,20 +649,37 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	     " {$keywords_join} " .
 	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
 	     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
-	     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] .
-	     " OR UA.type IS NULL) " . $executions_filter;
+	     " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
+	     $executions_filter;
 
 
-	if (!is_null($assigned_to) && $assigned_to > 0)
-	{
-		$sql .= " AND ";
-		$sql_unassigned="";
-		if( $include_unassigned )
-		{
-		    $sql .= "(";
-		    $sql_unassigned=" OR UA.user_id IS NULL)";
+  // 20081220 - franciscom
+	// if (!is_null($assigned_to) && $assigned_to > 0)
+	// {
+	//
+	// If special user id TL_USER_ANYBODY is present in set of user id,
+	// we will DO NOT FILTER by user ID
+	if( !is_null($assigned_to) && !in_array(TL_USER_ANYBODY,(array)$assigned_to) )
+	{  
+    $sql .= " AND ";
+
+	  // Warning!!!:
+	  // If special user id TL_USER_NOBODY is present in set of user id
+	  // we will ignore any other user id present on set.
+	  if( in_array(TL_USER_NOBODY,(array)$assigned_to) )
+	  {
+	      $sql .= " UA.user_id IS NULL "; 
+	  } 
+	  else
+	  {
+		    $sql_unassigned="";
+		    if( $include_unassigned )
+		    {
+		        $sql .= "(";
+		        $sql_unassigned=" OR UA.user_id IS NULL)";
+		    }
+		    $sql .= " UA.user_id IN (" . implode(",",$assigned_to) . ") " . $sql_unassigned;
 		}
-		$sql .= " UA.user_id = {$assigned_to} " . $sql_unassigned;
 	}
 	
 	if (!is_null($urgencyImportance))
@@ -642,7 +700,8 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	   $sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
 	}
 	
-	$sql .= $sql_subquery;
+	// 20081221 - franciscom
+	// $sql .= $sql_subquery;
 
 	// BUGID 989 - added NHB.node_order
 	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";

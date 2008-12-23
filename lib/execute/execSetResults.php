@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2008/12/18 08:19:46 $ $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
  *
  * rev:
  *     20081217 - franciscom - initializeExecMode() - algorithm changed.
@@ -124,6 +124,8 @@ if($args->doExec == 1)
 // 20070306 - franciscom - BUGID 705
 // 20070914 - jbarchibald - added $cf_selected parameter
 //
+
+// 20081221 - franciscom
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc_id,$args->keyword_id,$get_mode,
                                                        $args->filter_assigned_to,
                                                        $args->filter_status,$args->build_id,
@@ -166,12 +168,12 @@ if(!is_null($linked_tcversions))
     if( $cfg->exec_cfg->show_last_exec_any_build )
     {
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
-                                                                       ANY_BUILD,GET_NO_EXEC);
-                                                                       
-         //Get UserID and Updater ID for current Version
-         $tc_current = $gui->map_last_exec_any_build;
-		 $testerid = $tc_current['tester_id'];
-		 $userid_array[$testerid] = $testerid;
+                                                                           ANY_BUILD,GET_NO_EXEC);
+                                                                           
+        //Get UserID and Updater ID for current Version
+        $tc_current = $gui->map_last_exec_any_build;
+		    $testerid = $tc_current['tester_id'];
+		    $userid_array[$testerid] = $testerid;
     }
     
     $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
@@ -185,8 +187,8 @@ if(!is_null($linked_tcversions))
 		{    	
 	    	foreach ($execution as $singleExecution)
 	    	{    			  
-			  $testerid = $singleExecution['tester_id'];
-			  $userid_array[$testerid] = $testerid;
+			      $testerid = $singleExecution['tester_id'];
+			      $userid_array[$testerid] = $testerid;
 	    	}    	
 		}
 
@@ -242,7 +244,8 @@ function init_args()
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
   
 	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 
-	                  'save_results' => 0, 'filter_status' => null);
+	                  'save_results' => 0, 'filter_status' => null,'filter_assigned_to' => null);
+
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -253,7 +256,20 @@ function init_args()
   {
       $args->filter_status = null;  
   }
+  else
+  {
+      $args->filter_status = unserialize($args->filter_status);
+  }
 
+  // 20081221 - franciscom
+  if( strlen(trim($args->filter_assigned_to)) == 0 )
+  {
+      $args->filter_assigned_to = null;  
+  }
+  else
+  {
+      $args->filter_assigned_to = unserialize($args->filter_assigned_to);
+  }
   
   switch($args->level)
   {
@@ -271,8 +287,8 @@ function init_args()
 
 
 	$key2loop = array('id' => 0,'build_id' =>0, 'exec_to_delete' => 0, 
-				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0, 
-				            'filter_assigned_to' => null);
+				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0);
+				            
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -292,7 +308,6 @@ function init_args()
   {
       $args->keyword_id=0;  
   }
-
 
   // Checkbox
   $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
@@ -819,12 +834,18 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
     $gui->execution_types=$tcaseMgr->get_execution_types();
 
-    if ($argsObj->filter_assigned_to)
+    if($argsObj->filter_assigned_to)
     {
-    	$user = tlUser::getById($dbHandler,$argsObj->filter_assigned_to);
-    	if ($user)
-    		$gui->ownerDisplayName = $user->getDisplayName();
+    	$userSet = tlUser::getByIds($dbHandler,array_values($argsObj->filter_assigned_to));
+    	if ($userSet)
+    	{
+    	    foreach($userSet as $key => $userObj) 
+    	    {
+    	        $gui->ownerDisplayName[$key] = $userObj->getDisplayName();
+    	    }    
+    	}    
     }
+    // ------------------------------------------------------------------
 
     $the_builds = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id);
     $gui->build_name = isset($the_builds[$argsObj->build_id]) ? $the_builds[$argsObj->build_id] : '';
@@ -847,6 +868,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                          'btn_history_on','btn_history_off','history_on');
     $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
+
+
+    // $gui->filter_mode = manage_filter_mode($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
+    //                                        'btn_advanced','btn_simple','filterMode');
+    // 
+    // $gui->filter_mode_name = 
+
 
     return $gui;
 }

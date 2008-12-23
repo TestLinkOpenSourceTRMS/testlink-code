@@ -3,12 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.24 2008/09/27 16:50:46 schlundus Exp $
+ * @version $Id: planTCNavigator.php,v 1.25 2008/12/23 18:28:54 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
  *
  * rev :
+ *  20081223 - franciscom - advanced/simple filter feature
+ *  20081221 - franciscom - refactoring
  *  20080702 - havlatm - added urgency support
  *  20080629 - franciscom - fixed missing variables bugs
  *  20080621 - franciscom - added code to use ext js tree
@@ -31,18 +33,6 @@ $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr);
 $gui->additional_string='';
 $gui->tree=buildTree($db,$gui,$args);
-
-// $treeMenu=buildTree($db,$gui,$args);                                                
-// $gui->tree=$treeMenu->menustring;
-// if( !is_null($treeMenu->rootnode) )
-// {
-//     $gui->ajaxTree=new stdClass();
-//     $gui->ajaxTree->loader='';
-//     $gui->ajaxTree->root_node=new stdClass();
-//     $gui->ajaxTree->root_node=$treeMenu->rootnode;
-//     $gui->ajaxTree->children=$treeMenu->menustring;
-//     $gui->ajaxTree->cookiePrefix=$args->feature;
-// }
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -92,22 +82,42 @@ function init_args(&$tplanMgr)
     // Array because is a multiselect input
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-   
-    
     $args->help_topic = isset($_REQUEST['help_topic']) ? $_REQUEST['help_topic'] : $args->feature;
+
+    $args->advancedFilterMode=isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
 
     if(isset($_REQUEST['doUpdateTree']) || isset($_REQUEST['called_by_me']))
     {
 		$args->src_workframe = $_SESSION['basehref'] . 
                       "lib/general/staticPage.php?key={$args->help_topic}";
     }
-	else
-	{
-		$args->src_workframe = '';
-	}
+	  else
+	  {
+	  	$args->src_workframe = '';
+	  }
 
-    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : 0;
-
+    // 20081221 - franciscom
+    // $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : 0;
+    $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? $_REQUEST['filter_assigned_to'] : null;                                                                                                                        
+    if( !is_null($args->filter_assigned_to) )
+    {
+        $args->filter_assigned_to = (array)$args->filter_assigned_to;
+        if( in_array(TL_USER_ANYBODY, $args->filter_assigned_to) )
+        {
+            $args->filter_assigned_to = array(TL_USER_ANYBODY);  
+        }
+        else if( in_array(TL_USER_NOBODY, $args->filter_assigned_to) )
+        {
+            $args->filter_assigned_to = array(TL_USER_NOBODY);    
+        } 
+        else if( !$args->advancedFilterMode && count($args->filter_assigned_to) > 0)
+        {
+            // Because user has switched to simple mode we will get ONLY first status
+            $args->filter_assigned_to=array($args->filter_assigned_to[0]);
+        }
+    }  
+               
+                                                                                                                        
     // 20070120 - franciscom -
     // is possible to call this page using a Test Project that have no test plans
     // in this situation the next to entries are undefined in SESSION
@@ -131,11 +141,16 @@ function init_args(&$tplanMgr)
   
   returns:
    
-  rev: 20080429 - franciscom
+  rev: 
 */
 function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
 {
     $gui = new stdClass();
+    $gui_open = config_get('gui_separator_open');
+    $gui_close = config_get('gui_separator_close');
+    
+    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+    $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
 
     $gui->treeKind=TL_TREE_KIND;
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
@@ -181,7 +196,25 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
       case 'tc_exec_assignment':
     	// BUGID 1427
     	$gui->menuUrl = "lib/plan/tc_exec_assignment.php";
-    	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
+    	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
+    	                                         null,
+     	                                         array(TL_USER_ANYBODY => $gui->str_option_any,
+	                                                   TL_USER_NOBODY => $gui->str_option_none) );
+
+    	
+    	
+    	$gui->advancedFilterMode=$argsObj->advancedFilterMode;
+      if( $gui->advancedFilterMode )
+      {
+          $label = 'btn_simple_filters';
+          $gui->assigneeFilterItemQty=4; // as good as any other number
+      }
+      else
+      {
+          $label='btn_advanced_filters';
+          $gui->assigneeFilterItemQty=1;
+      }
+      $gui->toogleFilterModeLabel=lang_get($label);
     	break;
     }
 
@@ -196,7 +229,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
   returns: string used by different tree components to render tree.
            also add ajaxTree property to guiObj
   
-  rev: 20080821 - franciscom - added management of ajaxTree property
+  rev: 20081221 - franciscom -
+       20080821 - franciscom - added management of ajaxTree property
+       
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 {
@@ -215,19 +250,21 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
     $filters->keyword_id = $argsObj->keyword_id;
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
-    
-    $filters->tc_id = FILTER_BY_TC_OFF;
-    $filters->build_id = FILTER_BY_BUILD_OFF;
-    $filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-    $filters->status = FILTER_BY_TC_STATUS_OFF;
-    $filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
+
     $filters->include_unassigned=1;
     $filters->show_testsuite_contents=1;
-    
    	$filters->hide_testcases = 0;
+
+    // Set of filters Off
+    $filters->tc_id = null;
+    $filters->build_id = 0;
+    $filters->assignedTo = null;
+    $filters->status = null;
+    $filters->cf_hash = null;
+
+
     switch($argsObj->feature)
     {
-    
       case 'test_urgency':
     	$filters->hide_testcases = 1;
       break;
@@ -235,9 +272,26 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
       case 'tc_exec_assignment':
     	$filters->assignedTo = $argsObj->filter_assigned_to;
     	$filters->include_unassigned = 0;
+      if( !is_null($filters->assignedTo) )
+      {
+          if( in_array(TL_USER_ANYBODY, $argsObj->filter_assigned_to) )
+          {
+              $filters->assignedTo = null;
+          }
+          else
+          {
+              $dummy = array_flip($guiObj->filter_assigned_to);
+              foreach( $dummy as $key => $value)
+              {
+                  $dummy[$key] = $key;  
+              }
+              $filters->assignedTo = $dummy;
+          }
+      }
     	break;
     }
-
+    
+    
     $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
     $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
 
@@ -267,10 +321,9 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
 /*
   function: initializeGetArguments
-            build arguments that will be passed to execSetResults.php
-            with a http call
-            This arguments that will be passed from tree menu 
-            to launched pages, when user do some action on tree (example clicks on a folder)
+            build arguments that will be passed to tc_exec_assignment.php with a http call
+            This arguments that will be passed from tree menu to launched pages, 
+            when user do some action on tree (example clicks on a folder)
 
   args:
 
@@ -297,7 +350,9 @@ function initializeGetArguments($argsObj,$filtersObj)
     $settings .= '&keywordsFilterType='.$argsObj->keywordsFilterType;
     
     if($filtersObj->assignedTo)
-    	  $settings .= '&filter_assigned_to=' . $filtersObj->assignedTo;
+    {
+    	  $settings .= '&filter_assigned_to=' . serialize($filtersObj->assignedTo);
+    }
     
     $settings .= '&tplan_id=' . $argsObj->tplan_id;
     

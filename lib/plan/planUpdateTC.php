@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.31 2008/10/25 19:25:41 schlundus Exp $
+ * @version $Id: planUpdateTC.php,v 1.32 2008/12/23 18:28:54 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -195,6 +195,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
+    $gui->refreshTree=false;
     $gui->instructions='';
     $gui->buttonAction="doUpdate";
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);

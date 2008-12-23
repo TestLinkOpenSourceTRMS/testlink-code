@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2008/12/15 08:31:53 $ by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2008/12/23 18:28:54 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,10 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev:
+ *      20081223 - franciscom - extjs_renderExecTreeNodeOnOpen() - changes to show colors
+ *      20081220 - franciscom - prepareNode() - status can be an array, to allow
+ *                              filtring in OR mode several exec status.
+ *
  *      20081214 - franciscom - generateExecTree() fixed bug on config_get() call
  *      20080705 - franciscom - found another null to replace in order to 
  *                              make menustring good for extjs.
@@ -36,11 +40,6 @@
  *                              renderExecTreeNode()
  *      20071111 - franciscom - added contribution to show number of
  *                              testcases with different exec status on DTREE
- *      
- *      20071024 - franciscom - DTREE bug
- *
- *      20071014 - franciscom - generateTestSpecTree() interface changes
- *                              minor change in prepareNode.
  *
  *      20071002 - jbarchibald - BUGID 1051
  *      20070306 - franciscom - BUGID 705 
@@ -255,6 +254,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 //         to null, but null can be the result of no tcversion linked.
 //
 //
+// 20081220 - franciscom - status can be an array with multple values, to do OR search.
+//
 // 20071014 - franciscom - added version info fro test cases in return data structure.
 //
 // 20061105 - franciscom
@@ -290,19 +291,20 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 // 
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
                      $tck_map = null,$tplan_tcases = null,$bHideTCs = 0,
-                     $assignedTo = 0,$status = null, 
+                     $assignedTo = null,$status = null, 
                      $ignore_inactive_testcases=0,$show_tc_id=1,$bGetExternalTcID = 1)
 {
   
-	static $hash_id_descr;
-	if (!$hash_id_descr)
-		$hash_id_descr = $decoding_info['node_id_descr'];
-	static $status_descr_code;
-  	if (!$status_descr_code)
-		$status_descr_code = $decoding_info['status_descr_code'];
-  	static $status_code_descr;
-  	if (!$status_code_descr)
-  		$status_code_descr = $decoding_info['status_code_descr'];
+    static $hash_id_descr;
+    static $status_descr_code;
+    static $status_code_descr;
+    
+	  if (!$hash_id_descr)
+	  	$hash_id_descr = $decoding_info['node_id_descr'];
+	  if (!$status_descr_code)
+	  	$status_descr_code = $decoding_info['status_descr_code'];
+ 	  if (!$status_code_descr)
+    		$status_code_descr = $decoding_info['status_code_descr'];
   
 	$tcase_counters = array('testcase_count' => 0);
 	foreach($status_descr_code as $status_descr => $status_code)
@@ -310,7 +312,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		$tcase_counters[$status_descr]=0;
 	}
 
-	
 	$node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
 	$tcase_counters['testcase_count']=0;
   
@@ -325,38 +326,63 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	
 	  if ($node && $viewType == 'executionTree')
 		{
-			$tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
+			  $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
 		  	// We are building a execution tree.
-			if (!$tpNode ||
-			     ($assignedTo && ($assignedTo != $tpNode['user_id'])) ||
-			     ($status && ($status != $tpNode['exec_status']))
+			  // if (!$tpNode ||
+			  //      ($assignedTo && ($assignedTo != $tpNode['user_id'])) ||
+			  //      ($status && ($status != $tpNode['exec_status']))
+			  //      )
+			  // {
+			  // 	$node = null;
+			  // }
+			  //
+			  // 20081220 - franciscom
+			  // if (!$tpNode ||
+			  //      ( $assignedTo && ($assignedTo != $tpNode['user_id'])) ||
+			  //      ( !is_null($status) && !isset($status[$tpNode['exec_status']]))
+			  //    )
+			  // {
+			  // 	$node = null;
+			  // }
+			  //
+			  // 20081220 - franciscom
+			  // echo "<pre>debug 20081221 - \ - " . __FUNCTION__ . " --- "; print_r($tpNode); echo "</pre>";
+        // echo 'status<br>';
+        // new dBug($status);
+        // 
+        // echo 'tpNode<br>';
+        // new dBug($tpNode);
+			  if (!$tpNode || (!is_null($assignedTo)) && 
+			                   ((isset($assignedTo[TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
+                         (!isset($assignedTo[TL_USER_NOBODY]) && !isset($assignedTo[$tpNode['user_id']]))) || 
+			                  (!is_null($status) && !isset($status[$tpNode['exec_status']]))
 			     )
-			{
-				$node = null;
-			}
-			else
-			{
-			  $externalID='';
-				$node['tcversion_id'] = $tpNode['tcversion_id'];		
-				$node['version'] = $tpNode['version'];		
-				if ($bGetExternalTcID)
-				{
-					if (!isset($tpNode['external_id']))
-					{
-						$sql=" SELECT TCV.tc_external_id AS external_id " .
-				       		" FROM tcversions TCV " .
-				       		" WHERE TCV.id=" . $node['tcversion_id'];
-				  		
-						$result = $db->exec_query($sql);
-				  		$myrow = $db->fetch_array($result);
-						$externalID = $myrow['external_id'];
-					}
-					else
-						$externalID = $tpNode['external_id'];
-				}
-				$node['external_id'] = $externalID;
-				unset($tplan_tcases[$node['id']]);
-			}
+			  {
+			  	$node = null;
+			  }
+			  else
+			  {
+			    $externalID='';
+			  	$node['tcversion_id'] = $tpNode['tcversion_id'];		
+			  	$node['version'] = $tpNode['version'];		
+			  	if ($bGetExternalTcID)
+			  	{
+			  		if (!isset($tpNode['external_id']))
+			  		{
+			  			$sql=" SELECT TCV.tc_external_id AS external_id " .
+			  	       		" FROM tcversions TCV " .
+			  	       		" WHERE TCV.id=" . $node['tcversion_id'];
+			  	  		
+			  			$result = $db->exec_query($sql);
+			  	  		$myrow = $db->fetch_array($result);
+			  			$externalID = $myrow['external_id'];
+			  		}
+			  		else
+			  			$externalID = $tpNode['external_id'];
+			  	}
+			  	$node['external_id'] = $externalID;
+			  	unset($tplan_tcases[$node['id']]);
+			  }
 		}
 	
 		if ($node && $ignore_inactive_testcases)
@@ -835,8 +861,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// has been filtered.
 		// Then to avoid changes to prepareNode() due to include_unassigned,
 		// seems enough to set assignedTo to 0, if include_unassigned==true
-		$assignedTo = $include_unassigned ? 0 : $assignedTo;
-		    
+		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
+    //
+    // 20081220 - franciscom
+    $assignedTo = $include_unassigned ? null : $assignedTo;		                                                       
+		                                                       
 		$bForPrinting = $bHideTCs;
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
@@ -930,7 +959,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
       break;
       
       case 'EXTJS':
-         // echo '$testCasePrefix' . $testCasePrefix;
          extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
 	                                      $tc_action_enabled,$bHideTCs,
 	                                      $useCounters,$useColors,$showTestCaseID,
@@ -1481,10 +1509,15 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	  	$status_code = $tcase_node[$node['id']]['exec_status'];
 	  	$status_descr = $status_code_descr[$status_code];
 
-   		$css_class = $useColors ? (" class=\"tree_{$status_descr}\" ") : '';   
-		// @TODO, schlundus, still not working as expected, need to give closer look at the ext-js styles
+   	// @TODO, schlundus, still not working as expected, need to give closer look at the ext-js styles
 		//which are defined a tree node to be black
-		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
+    // 20081223 - franciscom
+		//	$css_class = $useColors ? (" class=\"tree_{$status_descr}\" ") : '';   
+		//  $label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
+		$css_class = $useColors ? (" class=\"{$status_descr}\" ") : '';   
+		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">'.
+		         "&nbsp</span>";
+		
 		
 		if($showTestCaseID)
 		{
@@ -1494,7 +1527,9 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			}
 			$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
 		} 
-		$label .= $name . "</span>";
+		// $label .= $name . "</span>";
+    $label .= "{$name}";
+		
 		$versionID = $node['tcversion_id'];
     break;
 	}

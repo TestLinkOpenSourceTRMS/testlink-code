@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/12/07 19:53:56 $ $Author: havlat $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -82,28 +82,30 @@ switch($gui->report_type)
     break;
 
     case 'testplan':
-    	$tplan_mgr = new testplan($db);
-	    $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
+    	  $tplan_mgr = new testplan($db);
+	      $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
 	      
-	    $filters = new stdClass();
+	      $filters = new stdClass();
   	  	$additionalInfo = new stdClass();
         
-	    $filters->keyword_id = FILTER_BY_KEYWORD_OFF;
+        // Set of filters Off
+	      $filters->keyword_id = null;
   	  	$filters->keywordsFilterType=null;
-  	  	$filters->tc_id = FILTER_BY_TC_OFF;
+  	  	$filters->tc_id = null;
+  	  	$filters->assignedTo = null;
+  	  	$filters->status = null;
+  	  	$filters->cf_hash = null;
+
   	  	$filters->build_id = $latestBuild;
   	  	$filters->hide_testcases=HIDE_TESTCASES;
-  	  	$filters->assignedTo = FILTER_BY_ASSIGNED_TO_OFF;
-  	  	$filters->status = FILTER_BY_TC_STATUS_OFF;
-  	  	$filters->cf_hash = SEARCH_BY_CUSTOM_FIELDS_OFF;
   	  	$filters->include_unassigned=1;
   	  	$filters->show_testsuite_contents=1;
         
   	  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
-	    $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-	                                     $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
+	      $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
+	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
       	$treeString = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();

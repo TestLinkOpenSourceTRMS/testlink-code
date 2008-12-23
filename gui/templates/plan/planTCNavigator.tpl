@@ -1,14 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.13 2008/12/10 19:37:46 schlundus Exp $
+$Id: planTCNavigator.tpl,v 1.14 2008/12/23 18:28:41 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
-	20080311 - franciscom - BUGID 1427 - first developments
+	20081223 - franciscom - advanced/simple filters
+	20080311 - franciscom - BUGID 1427
 * ---------------------------------------------------------------------- *}
 
 {lang_get var="labels" 
-          s='btn_update_menu,keyword,keywords_filter_help,title_navigator,
+          s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
              btn_update_all_testcases_to_latest_version,
              filter_owner,TestPlan,test_plan,caption_nav_filter_settings'}
 
@@ -70,6 +71,7 @@ function update2latest(id)
 <form method="post" id="testSetNavigator" onSubmit="javascript:return pre_submit();">
 	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
 	<input type="hidden" id="called_url" name="called_url" value="" />
+	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 
 	<table class="smallGrey" style="width:100%;">
 		<caption>
@@ -104,7 +106,11 @@ function update2latest(id)
 		<tr>
 			<td>{$labels.filter_owner}</td>
 			<td>
+			  {if $gui->advancedFilterMode }
+			  <select name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}>
+			  {else}
 				<select name="filter_assigned_to">
+			  {/if}
 					{html_options options=$gui->testers selected=$gui->filter_assigned_to}
 				</select>
 			</td>
@@ -113,8 +119,14 @@ function update2latest(id)
 
 		<tr>
 			<td colspan="2">
-			<input type="submit" value="{$labels.btn_update_menu}" name="doUpdateTree" />
+			<input type="submit" value="{$labels.btn_apply_filter}" 
+			       id="doUpdateTree" name="doUpdateTree" style="font-size: 90%;" />
 			</td>
+			<td><input type="submit" id="toogleFilterMode"  name="toogleFilterMode" 
+			     value="{$gui->toogleFilterModeLabel}"  
+			     onclick="toogleInput('advancedFilterMode');"
+			     style="font-size: 90%;"  /></td>
+
 		</tr>
 	</table>
 </form>

@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2008/12/18 08:17:31 $ $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * rev: 20081213 - franciscom - refactoring removing old config options 
+ * rev: 20081221 - franciscom - buildUserMap() interface changes
+ *      20081213 - franciscom - refactoring removing old config options 
  *      20080822 - franciscom - resetPassword() - added generatePassword()
  *      20080405 - franciscom - getGrantsForUserMgmt()
  *      20080315 - franciscom - added initalize_tabsmenu()
@@ -117,20 +118,33 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 }
 
 /*
-  function: 
+  function: buildUserMap
 
-  args :
+  args:
+       $users: map of user objects
+       [add_options]: default false.
+                      true, elements present on additional_options arguments
+                      will be will added to result map.
+       
+       [additional_options]: default null
+                             map with key=user id, value=verbose description 
   
-  returns: 
+  returns: map ready to be used on a HTML select input.
 
 */
-function buildUserMap($users,$add_blank_option = false)
+function buildUserMap($users,$add_options = false, $additional_options=null)
 {
 	$usersMap = null;
 	if ($users)
 	{
-		if($add_blank_option)
-			$usersMap[0] = '';
+		if($add_options)
+		{
+		  $my_options=is_null($additional_options) ? array( 0 => '') : $additional_options;
+		  foreach($my_options as $code => $verbose_code)
+		  {
+			    $usersMap[$code] = $verbose_code;
+			}
+		}
 		foreach($users as $id => $user)
 		{
 			$usersMap[$id] = $user->getDisplayName();
@@ -279,7 +293,7 @@ function getAllUsersRoles(&$db,$order_by = null)
   returns:
 
 */
-function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null)
+function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null, $additional_testers=null)
 {
     $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID,null,$users);
     $userFilter = array();
@@ -290,7 +304,7 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null)
 			     $userFilter[$keyUserID] = $roleInfo['user'];
 			  }   
     }
-	  return buildUserMap($userFilter,true);
+	  return buildUserMap($userFilter,true,$additional_testers);
 }
 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.13 2008/12/10 19:37:46 schlundus Exp $
+$Id: planAddTCNavigator.tpl,v 1.14 2008/12/23 18:28:41 franciscom Exp $
 
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -12,7 +12,7 @@ Revisions:
 * ------------------------------------------------------------------------ *}
 
 {lang_get var="labels" 
-          s='keywords_filter_help,
+          s='keywords_filter_help,btn_apply_filter,
              btn_update_menu,title_navigator,keyword,test_plan,keyword,caption_nav_filter_settings'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -100,7 +100,7 @@ function pre_submit()
 		</tr>
 		<tr>
 			<td>
-				<input type="submit" value="{$labels.btn_update_menu}" name="doUpdateTree" />
+				<input type="submit" value="{$labels.btn_apply_filter}" name="doUpdateTree" />
 			</td>
 		</tr>
 	</table>

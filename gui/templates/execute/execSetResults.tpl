@@ -1,28 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.29 2008/12/11 07:39:40 franciscom Exp $
+$Id: execSetResults.tpl,v 1.30 2008/12/23 18:28:41 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
-
+  20081221 - franciscom -
   20081210 - franciscom - BUGID 1905 
   20081125 - franciscom - BUGID 1902 - fixed check to display button to launch remote executions
-  
   20080528 - franciscom - BUGID 1504 - version number management
 	20080515 - havlatm - updated help link
-  20080322 - franciscom - feature: allow edit of execution notes
-                          minor refactoring.
-  20071231 - franciscom - new show/hide section to show exec notes
   20071103 - franciscom - BUGID 700
-  20071101 - franciscom - added test automation code
-  20070826 - franciscom - added some niftycube effects
-  20070519 - franciscom -
-  BUGID 856: Guest user can execute test case
-
-  20070211 - franciscom - added delete logic
-  20070205 - franciscom - display test plan custom fields.
-  20070125 - franciscom - management of closed build
-  20070104 - franciscom - custom field management for test cases
-  20070101 - franciscom - custom field management for test suite div
+  20070519 - franciscom - BUGID 856: Guest user can execute test case
 *}
 
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
@@ -181,14 +168,18 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}">
 
 <h1 class="title">
-	{$labels.title_t_r_on_build} {$my_build_name}
+	{$labels.title_t_r_on_build} {$my_build_name} 
+	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
+	<br>
 	{if $gui->ownerDisplayName != ""}
-	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$gui->ownerDisplayName|escape}
+	  {$labels.only_test_cases_assigned_to}{$title_sep}
+	  {foreach item=assignee from=$gui->ownerDisplayName }
+	      {$assignee|escape} {$title_sep_type3}
+	  {/foreach}
 	  {if $gui->include_unassigned}
 	    {$labels.or_unassigned_test_cases}
 	  {/if}
 	{/if}
-	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
 </h1>
 
 

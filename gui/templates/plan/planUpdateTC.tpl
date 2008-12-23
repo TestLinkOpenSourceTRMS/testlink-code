@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.9 2008/09/24 20:17:54 schlundus Exp $
+$Id: planUpdateTC.tpl,v 1.10 2008/12/23 18:28:41 franciscom Exp $
 
 Author: franciscom
 
@@ -58,11 +58,13 @@ function validateForm(f)
    <h1 class="title">{$action_descr}</h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
+  {*  20081221 - franciscom
   {if $key ne ''}
 	  <div style="margin-left: 20px; font-size: smaller;">
 		  <br />{$labels.note_keyword_filter}{$key|escape}</p>
 	  </div>
   {/if}
+  *}
   
 <div class="workBack" style="height: 380px; overflow-y: auto;">
 
@@ -109,7 +111,7 @@ function validateForm(f)
 			     <th class="clickable_icon">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$update_cb}","update_value_{$ts_id}");'
-                    title="{$labelscheck_uncheck_all_checkboxes}" />
+                    title="{$labels.check_uncheck_all_checkboxes}" />
 			     </th>
 			     <th class="tcase_id_cell">{$labels.th_id}</th> 
 			     <th>{lang_get s='th_test_case'}</th>
@@ -223,7 +225,7 @@ function validateForm(f)
  refresh is useful when operating in full_control=0 => just remove,
  because tree is test plan tree.
 *}
-{if $refreshTree}
+{if $gui->refreshTree}
    {include file="inc_refreshTree.tpl"}
 {/if}
 

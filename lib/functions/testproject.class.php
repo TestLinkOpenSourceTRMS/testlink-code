@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/12/18 08:17:09 $  $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2008/12/27 16:31:29 $  $Author: franciscom $
  * @author franciscom
  *
  * 20081103 - franciscom - get_all_testcases_id() minor refactoring
@@ -484,7 +484,7 @@ function count_testcases($id)
 
 
     args :  $id: test project id
-            [$exclude_branches]: array with test case id to exclude
+            [$exclude_branches]: array with testsuite id to exclude
                                  useful to exclude myself ($id)
             [$mode]: dotted -> $level number of dot characters are appended to
                                the left of test suite name to create an indent effect.

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.369 $
- * @modified $Date: 2008/12/22 10:03:38 $ by $Author: franciscom $
+ * @version $Revision: 1.370 $
+ * @modified $Date: 2008/12/27 16:32:50 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -418,7 +418,7 @@ $TLS_filter_tcID = "Test Case ID";
 $TLS_include_unassigned_testcases = " - include unassigned Test Cases";
 $TLS_keyword = "Keyword";
 $TLS_test_status_all_status = $TLS_test_status_all;
-
+$TLS_filter_result_all_prev_builds="Result on ALL Previous Builds";
 
 // gui/templates/mainPage.tpl
 $TLS_th_my_perc_completed = "My completed [%]";

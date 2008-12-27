@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/12/27 16:31:29 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
+ *     20081225 - franciscom - Postgres SQL Error
  *     20080827 - franciscom - BUGID 1692
  *     20080602 - franciscom - doTestSuiteReorder() - fixed typo error
  *     20080504 - franciscom - removed references to gui->enable_custom_fields
@@ -216,7 +217,7 @@ switch($action)
 
 }
 
-if ($the_tpl)
+if($the_tpl)
 {
 	$smarty->assign('refreshTree',$refreshTree && $spec_cfg->automatic_tree_refresh);
 	$smarty->display($template_dir . $the_tpl);
@@ -655,12 +656,26 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
 {
 	$testcase_cfg = config_get('testcase_cfg');
 	$glue = $testcase_cfg->glue_character;
-	$testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID,
-	                                                  array($argsObj->testsuiteID => 'exclude'));
+	
+	// $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID),
+	//                                                   array($argsObj->testsuiteID => 'exclude'));
+	//                                                   
+  // 20081225 - franciscom have discovered che exclude selected testsuite branch is not good
+  //            when you want to move lots of testcases from one testsuite to it's children
+  //            testsuites. (in this situation tree drag & drop is not ergonomic).
+  $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);	                                                  
+  
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
+   // 20081225 - franciscom
+   // While testing with PostGres have found this behaivour:
+   // No matter is UPPER CASE has used on field aliases, keys on hash returned by
+   // ADODB are lower case.
+   // Accessing this keys on Smarty template using UPPER CASE fails.
+   // Solution: have changed case on Smarty to lower case.
+   //         
  	 $sql = "SELECT NHA.id AS TCID, NHA.name AS TCNAME, NHA.node_order AS TCORDER," .
-        " MAX(TCV.version) AS TCLASTVERSION, TCV.tc_external_id TCEXTERNALID" .
+        " MAX(TCV.version) AS TCLASTVERSION, TCV.tc_external_id AS TCEXTERNALID" .
         " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, node_types NT, tcversions TCV " .
         " WHERE NHB.parent_id=NHA.id " .
         " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
@@ -668,8 +683,13 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
         " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
         " ORDER BY TCORDER,TCNAME";
 
-  $children = $dbHandler->get_recordset($sql);
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
+  $children = $dbHandler->get_recordset($sql);
+  new dBug($children);
+  new dBug($testsuites);
+
+    
  	// check if operation can be done
 	$user_feedback = '';
 	if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites))

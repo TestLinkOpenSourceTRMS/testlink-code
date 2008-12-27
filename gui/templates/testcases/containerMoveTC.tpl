@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.3 2008/05/07 21:01:22 schlundus Exp $
+$Id: containerMoveTC.tpl,v 1.4 2008/12/27 16:30:54 franciscom Exp $
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
@@ -84,13 +84,13 @@ function check_action_precondition(container_id,action,msg)
         {foreach from=$testcases key=rowid item=tcinfo}
             <tr>
                 <td>
-                    <input type="checkbox" name="tcaseSet[]" value="{$tcinfo.TCID}" />
+                    <input type="checkbox" name="tcaseSet[]" value="{$tcinfo.tcid}" />
                 </td>
                 <td>
-                    {$tcprefix|escape}{$tcinfo.TCEXTERNALID|escape}&nbsp;&nbsp;
+                    {$tcprefix|escape}{$tcinfo.tcexternalid|escape}&nbsp;&nbsp;
                 </td>
                 <td>
-                    {$tcinfo.TCNAME|escape}
+                    {$tcinfo.tcname|escape}
                 </td>
             </tr>
         {/foreach}

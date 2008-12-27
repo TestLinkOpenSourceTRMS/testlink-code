@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name=""><details><![CDATA[
+
+]]></details><testsuite name="Communications"><details><![CDATA[
+
+
+<p>Communication Systems of all types</p>
+
+
+]]></details><testsuite name="Handheld devices"><details><![CDATA[
+
+
+
+
+
+]]></details><testsuite name="medium range devices"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="58" name="100% moisture conditions"><externalid><![CDATA[
+5
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+<testsuite name="subatomic powered"><details><![CDATA[
+
+
+
+]]></details></testsuite><testsuite name="nickel cadmiun powered"><details><![CDATA[
+
+
+
+]]></details></testsuite></testsuite><testsuite name="short range devices"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="53" name="100% moisture conditions"><externalid><![CDATA[
+3
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="55" name="acid rain half power"><externalid><![CDATA[
+4
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite>	<testcase internalid="50" name="Gamma Ray Storm"><externalid><![CDATA[
+2
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="48" name="10 G shock"><externalid><![CDATA[
+1
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Subspace channels"><details><![CDATA[
+
+
+<p>Only basic subspace features</p>
+
+
+]]></details><testsuite name="short range devices"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="218" name="100% moisture conditions"><externalid><![CDATA[
+68
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="220" name="acid rain half power"><externalid><![CDATA[
+69
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="medium range devices"><details><![CDATA[
+
+
+
+]]></details>	<testcase internalid="213" name="100% moisture conditions"><externalid><![CDATA[
+67
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+<testsuite name="subatomic powered"><details><![CDATA[
+
+
+
+]]></details></testsuite><testsuite name="nickel cadmiun powered"><details><![CDATA[
+
+
+
+]]></details></testsuite></testsuite>	<testcase internalid="63" name="Black hole test"><externalid><![CDATA[
+6
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Holodeck"><details><![CDATA[
+
+
+
+
+
+]]></details><testsuite name="Apollo 10  Simulation"><details><![CDATA[
+
+]]></details><testsuite name="Deploy"><details><![CDATA[
+
+]]></details>	<testcase internalid="185" name="From Disk"><externalid><![CDATA[
+55
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="187" name="From Network"><externalid><![CDATA[
+56
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="189" name="From USB device"><externalid><![CDATA[
+57
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="191" name="From flash device"><externalid><![CDATA[
+58
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Rewind"><details><![CDATA[
+
+]]></details>	<testcase internalid="194" name="Full speed unload"><externalid><![CDATA[
+59
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="196" name="Half speed unload"><externalid><![CDATA[
+60
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Reload"><details><![CDATA[
+
+]]></details>	<testcase internalid="199" name="From USB device"><externalid><![CDATA[
+61
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="201" name="From flash device"><externalid><![CDATA[
+62
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="203" name="From Network"><externalid><![CDATA[
+63
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="205" name="From Disk"><externalid><![CDATA[
+64
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Unload"><details><![CDATA[
+
+]]></details>	<testcase internalid="208" name="Full speed unload"><externalid><![CDATA[
+65
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="210" name="Half speed unload"><externalid><![CDATA[
+66
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Antartic Simulation"><details><![CDATA[
+
+]]></details><testsuite name="Deploy"><details><![CDATA[
+
+]]></details>	<testcase internalid="107" name="From Disk"><externalid><![CDATA[
+21
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="109" name="From Network"><externalid><![CDATA[
+22
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="111" name="From USB device"><externalid><![CDATA[
+23
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="113" name="From flash device"><externalid><![CDATA[
+24
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Rewind"><details><![CDATA[
+
+]]></details>	<testcase internalid="115" name="Full speed unload"><externalid><![CDATA[
+25
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="117" name="Half speed unload"><externalid><![CDATA[
+26
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Reload"><details><![CDATA[
+
+]]></details>	<testcase internalid="99" name="From USB device"><externalid><![CDATA[
+17
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="101" name="From flash device"><externalid><![CDATA[
+18
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="103" name="From Network"><externalid><![CDATA[
+19
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="105" name="From Disk"><externalid><![CDATA[
+20
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Unload"><details><![CDATA[
+
+]]></details>	<testcase internalid="95" name="Full speed unload"><externalid><![CDATA[
+15
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="97" name="Half speed unload"><externalid><![CDATA[
+16
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Wild West Simulation"><details><![CDATA[
+
+]]></details><testsuite name="Deploy"><details><![CDATA[
+
+]]></details>	<testcase internalid="158" name="From Disk"><externalid><![CDATA[
+43
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="160" name="From Network"><externalid><![CDATA[
+44
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="162" name="From USB device"><externalid><![CDATA[
+45
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="164" name="From flash device"><externalid><![CDATA[
+46
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Rewind"><details><![CDATA[
+
+]]></details>	<testcase internalid="148" name="Full speed unload"><externalid><![CDATA[
+39
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="150" name="Half speed unload"><externalid><![CDATA[
+40
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Reload"><details><![CDATA[
+
+]]></details>	<testcase internalid="130" name="From USB device"><externalid><![CDATA[
+31
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="132" name="From flash device"><externalid><![CDATA[
+32
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="134" name="From Network"><externalid><![CDATA[
+33
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="136" name="From Disk"><externalid><![CDATA[
+34
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Unload"><details><![CDATA[
+
+]]></details>	<testcase internalid="125" name="Full speed unload"><externalid><![CDATA[
+29
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="127" name="Half speed unload"><externalid><![CDATA[
+30
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="UnderSea Life Simulation"><details><![CDATA[
+
+]]></details><testsuite name="Deploy"><details><![CDATA[
+
+]]></details>	<testcase internalid="167" name="From Disk"><externalid><![CDATA[
+47
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="169" name="From Network"><externalid><![CDATA[
+48
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="171" name="From USB device"><externalid><![CDATA[
+49
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="173" name="From flash device"><externalid><![CDATA[
+50
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Rewind"><details><![CDATA[
+
+]]></details>	<testcase internalid="153" name="Full speed unload"><externalid><![CDATA[
+41
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="155" name="Half speed unload"><externalid><![CDATA[
+42
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Reload"><details><![CDATA[
+
+]]></details>	<testcase internalid="139" name="From USB device"><externalid><![CDATA[
+35
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="141" name="From flash device"><externalid><![CDATA[
+36
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="143" name="From Network"><externalid><![CDATA[
+37
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="145" name="From Disk"><externalid><![CDATA[
+38
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Unload"><details><![CDATA[
+
+]]></details>	<testcase internalid="120" name="Full speed unload"><externalid><![CDATA[
+27
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="122" name="Half speed unload"><externalid><![CDATA[
+28
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite>	<testcase internalid="66" name="Light settings"><externalid><![CDATA[
+7
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="179" name="Sound Settings"><externalid><![CDATA[
+53
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="181" name="3D Settings"><externalid><![CDATA[
+54
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="177" name="Stop"><externalid><![CDATA[
+52
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="175" name="Start"><externalid><![CDATA[
+51
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Propulsion Systems"><details><![CDATA[
+
+
+
+
+
+]]></details><testsuite name="Main engine"><details><![CDATA[
+
+
+
+
+
+]]></details>	<testcase internalid="70" name="Emergency stop"><externalid><![CDATA[
+8
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Transportation"><details><![CDATA[
+
+
+
+
+
+]]></details><testsuite name="Individual"><details><![CDATA[
+
+
+
+
+
+]]></details>	<testcase internalid="74" name="High speed"><externalid><![CDATA[
+9
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="76" name="Half speed stop"><externalid><![CDATA[
+10
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="78" name="Jump start"><externalid><![CDATA[
+11
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Terrestrial"><details><![CDATA[
+
+
+
+
+
+]]></details>	<testcase internalid="81" name="Infrared guidance on moon eclipse"><externalid><![CDATA[
+12
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="HyperSpace"><details><![CDATA[
+
+
+
+
+
+]]></details>	<testcase internalid="84" name="Start gate connection"><externalid><![CDATA[
+13
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="86" name="Stop gate connection"><externalid><![CDATA[
+14
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite></testsuite>

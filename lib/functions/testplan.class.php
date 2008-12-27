@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.92 $
- * @modified $Date: 2008/12/27 16:29:58 $ by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2008/12/27 18:27:01 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -311,7 +311,7 @@ function get_all()
   returns: number
 
 */
-private function count_testcases($id)
+public function count_testcases($id)
 {
 	$sql = "SELECT COUNT(testplan_id) AS qty FROM {$this->testplan_tcversions_table}
 	        WHERE testplan_id={$id}";
@@ -2154,15 +2154,15 @@ function get_same_status_for_build_set($id,$buildSet,$status)
     }
     else
     {
-        $sql = " SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS TCASE_ID, COUNT(EE.status) AS EXEC_QTY " .
+        $sql = " SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id, COUNT(EE.status) AS exec_qty " .
                " FROM executions EE, nodes_hierarchy NH," .
-               " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS LAST_EXEC_ID " .
+               " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
                " FROM executions E " .
                " WHERE E.build_id IN ({$build_in}) " .
                " GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
                " WHERE EE.build_id IN ({$build_in}) " .
                " AND EE.status IN ('" . $status . "') AND NH.node_type_id={$node_types['testcase_version']} " .
-               " AND SQ1.LAST_EXEC_ID=EE.id AND SQ1.tcversion_id=NH.id " .
+               " AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
                " GROUP BY status,SQ1.tcversion_id,NH.parent_id" .
                " HAVING count(EE.status)= {$num_exec} " ;
     }

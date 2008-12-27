@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.370 $
- * @modified $Date: 2008/12/27 16:32:50 $ by $Author: franciscom $
+ * @version $Revision: 1.371 $
+ * @modified $Date: 2008/12/27 18:28:10 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1956,8 +1956,8 @@ $TLS_link_report_overall_build = "Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
-$TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
 $TLS_link_report_uncovered_testcases="Test Cases without Requirements Assignment";
+$TLS_link_report_tcases_without_tester="Test Cases without Tester Assignment";
 
 // lib/results/resultsSend.php
 $TLS_send_to_empty_email_warning = "I'm sorry but email cannot be sent with a blank to field. Please enter a valid address.";
@@ -2253,6 +2253,11 @@ $TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases
 $TLS_no_uncovered_testcases = 'No uncovered Test Cases';
 $TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
 $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
+
+
+// testCasesWithoutTester
+$TLS_caption_testCasesWithoutTester=$TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester='All Test Cases have Tester Assigned';
 
 // ----- END ------------------------------------------------------------------
 ?>

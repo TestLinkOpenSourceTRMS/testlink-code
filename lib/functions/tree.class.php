@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2008/11/21 21:00:41 $ by $Author: schlundus $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2008/12/27 18:27:01 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20081227 - franciscom - new method - get_full_path_verbose()
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
  *                         to create map with keys useful for ext js tree
  *
@@ -935,6 +936,40 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
   		} // if(!isset($exclude_branches[$rowID]))
   	} //while
 }
+
+/*
+  function: get_full_path_verbose
+
+  args:
+  
+  returns: 
+
+*/
+function get_full_path_verbose(&$items)
+{
+   $goto_root=null;
+   $path_to=null;
+   $all_nodes=array();
+   foreach($items as $item_id)
+   {
+       $path_to[$item_id]=$this->get_path($item_id,$goto_root,'simple'); 
+       $all_nodes = array_merge($all_nodes,$path_to[$item_id]);
+   }
+   
+   // get only different items, to get descriptions
+   $unique_nodes=implode(',',array_unique($all_nodes));
+   $sql="SELECT id,name FROM nodes_hierarchy WHERE id IN ({$unique_nodes})"; 
+   $decode=$this->db->fetchRowsIntoMap($sql,'id');
+   foreach($path_to as $key => $elem)
+   {
+        foreach($elem as $idx => $node_id)
+        {
+              $path_to[$key][$idx]=$decode[$node_id]['name'];
+        }
+   }   
+   return $path_to; 
+}
+
  
 }// end class
 ?>

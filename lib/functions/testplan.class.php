@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.91 $
- * @modified $Date: 2008/12/23 18:28:54 $ by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2008/12/27 16:29:58 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,9 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
+ *                          get_same_status_for_build_set(), get_prev_builds()
+ *                          
  *  20081220 - franciscom - get_linked_tcversions() - changes in queries to support advanced
  *                                                    filters.
  *
@@ -517,7 +520,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	// Based on work by Eugenia Drosdezki
 	if( is_array($keyword_id) )
 	{
-    	// 0 -> no keyword, remove it
+    	// 0 -> no keyword, remove 
     	if( $keyword_id[0] == 0 )
     	{
     	   array_shift($keyword_id);
@@ -693,27 +696,27 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 			$sql .= " AND ( ((urgency * importance) >= ".$urgencyImportanceCfg->threshold['low']." AND  ((urgency * importance) < ".$urgencyImportanceCfg->threshold['high']."))) ";
 	}
 	
-	// test suites filter
-	if (!is_null($tsuites_id))
-	{
-	   $tsuiteSet = is_array($tsuites_id) ? $tsuites_id : array($tsuites_id);
-	   $sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
-	}
+	  // test suites filter
+	  if (!is_null($tsuites_id))
+	  {
+	     $tsuiteSet = is_array($tsuites_id) ? $tsuites_id : array($tsuites_id);
+	     $sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
+	  }
 	
-	// 20081221 - franciscom
-	// $sql .= $sql_subquery;
+	  // 20081221 - franciscom
+	  // $sql .= $sql_subquery;
 
-	// BUGID 989 - added NHB.node_order
-	$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
-	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
+	  // BUGID 989 - added NHB.node_order
+	  $sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
+	  $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
-	// 20070913 - jbarchibald
-	// here we add functionality to filter out the custom field selections
+	  // 20070913 - jbarchibald
+	  // here we add functionality to filter out the custom field selections
     if (!is_null($cf_hash)) {
         $recordset = $this->filter_cf_selection($recordset, $cf_hash);
     }
-
-	return $recordset;
+    
+	  return $recordset;
 }
 
 
@@ -2088,6 +2091,88 @@ function get_execution_time($id,$execution_set=null)
 }    
 
 
+/*
+  function: get_prev_builds() 
+
+  args: id: testplan id
+        build_id: all builds belonging to choosen testplan,
+                  with id < build_id will be retreived.
+        [active]: default null  -> do not filter on active status
+  
+  returns: 
+
+*/
+function get_prev_builds($id,$build_id,$active=null)
+{
+	$sql = " SELECT id,testplan_id, name, notes, active, is_open " .
+	       " FROM {$this->builds_table} " . 
+	       " WHERE testplan_id = {$id} AND id < {$build_id}" ;
+
+ 	if( !is_null($active) )
+ 	{
+ 	   $sql .= " AND active=" . intval($active) . " ";
+ 	}
+
+ 	$recordset = $this->db->fetchRowsIntoMap($sql,'id');
+  return $recordset;
+}
+
+
+/*
+  function: get_same_status_for_build_set() 
+            returns set of tcversions that has same execution status
+            in every build present on buildSet.
+
+            ATTENTION!!!: this does not work for not_run status
+            
+  args: id: testplan id
+        buildSet: builds to analise.
+        status: status code
+          
+  returns: 
+
+*/
+function get_same_status_for_build_set($id,$buildSet,$status)
+{
+    $node_types=$this->tree_manager->get_available_node_types();
+    $resultsCfg = config_get('results');
+
+    $num_exec = count($buildSet);
+    $build_in = implode(",", $buildSet);
+    $status_in = implode("',", (array)$status);
+    
+    if( in_array($resultsCfg['status_code']['not_run'], (array)$status) )
+    {
+      
+        $sql = " SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
+               " FROM testplan_tcversions T " .
+               " JOIN nodes_hierarchy NH ON T.tcversion_id=NH.id " .
+               " AND NH.node_type_id={$node_types['testcase_version']} " .
+               " LEFT OUTER JOIN executions E ON T.tcversion_id = E.tcversion_id " .
+               " AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
+               " WHERE T.testplan_id={$id} AND E.build_id IS NULL ";
+    }
+    else
+    {
+        $sql = " SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS TCASE_ID, COUNT(EE.status) AS EXEC_QTY " .
+               " FROM executions EE, nodes_hierarchy NH," .
+               " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS LAST_EXEC_ID " .
+               " FROM executions E " .
+               " WHERE E.build_id IN ({$build_in}) " .
+               " GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
+               " WHERE EE.build_id IN ({$build_in}) " .
+               " AND EE.status IN ('" . $status . "') AND NH.node_type_id={$node_types['testcase_version']} " .
+               " AND SQ1.LAST_EXEC_ID=EE.id AND SQ1.tcversion_id=NH.id " .
+               " GROUP BY status,SQ1.tcversion_id,NH.parent_id" .
+               " HAVING count(EE.status)= {$num_exec} " ;
+    }
+   
+    // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+    $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+    return $recordset;
+}
+
+
 } // end class testplan
 // ######################################################################################
 
@@ -2163,8 +2248,8 @@ class build_mgr
           $id
           $name
           $notes
-          [$active]: default: 1
-          [$open]: default: 1
+          [$active]: default: null
+          [$open]: default: null
 
 
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2008/12/23 18:28:54 $ by $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2008/12/27 16:29:58 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -14,7 +14,7 @@
  *                                              LAYERSMENU, DTREE,	and JTREE. 
  *  Used type is defined in config.inc.php.
  * 
- * Rev:
+ * Rev: 20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081223 - franciscom - extjs_renderExecTreeNodeOnOpen() - changes to show colors
  *      20081220 - franciscom - prepareNode() - status can be an array, to allow
  *                              filtring in OR mode several exec status.
@@ -348,10 +348,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 			  // 20081220 - franciscom
 			  // echo "<pre>debug 20081221 - \ - " . __FUNCTION__ . " --- "; print_r($tpNode); echo "</pre>";
         // echo 'status<br>';
-        // new dBug($status);
-        // 
         // echo 'tpNode<br>';
-        // new dBug($tpNode);
 			  if (!$tpNode || (!is_null($assignedTo)) && 
 			                   ((isset($assignedTo[TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
                          (!isset($assignedTo[TL_USER_NOBODY]) && !isset($assignedTo[$tpNode['user_id']]))) || 
@@ -791,7 +788,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $assignedTo = $filters->assignedTo; 
     $status = $filters->status;
     $cf_hash = $filters->cf_hash;
-    $include_unassigned = $filters->include_unassigned;
+    // $include_unassigned = $filters->include_unassigned;
     $show_testsuite_contents = $filters->show_testsuite_contents;
     $urgencyImportance = isset($filters->urgencyImportance) ? $filters->urgencyImportance : null;
     $useCounters=$additionalInfo->useCounters;
@@ -800,17 +797,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  $tproject_mgr = new testproject($db);
     $tcase_mgr = new testcase($db);
 	  
+	  
 	  $tree_manager = $tplan_mgr->tree_manager;
 	  $tcase_node_type = $tree_manager->node_descr_id['testcase'];
 	  $hash_descr_id = $tree_manager->get_available_node_types();
     
 	  $hash_id_descr = array_flip($hash_descr_id);	    
-    $status_descr_code = $resultsCfg['status_code'];
-    $status_code_descr = $resultsCfg['code_status'];
-
     $decoding_hash = array('node_id_descr' => $hash_id_descr,
-                           'status_descr_code' =>  $status_descr_code,
-                           'status_code_descr' =>  $status_code_descr);
+                           'status_descr_code' =>  $resultsCfg['status_code'],
+                           'status_code_descr' =>  $resultsCfg['code_status']);
 
 	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
 
@@ -828,8 +823,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  $test_spec['id'] = $tproject_id;
 	  $test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	  $map_node_tccount = array();
+   
+    $tplan_tcases = null;
     if($test_spec)
 	  {
+        // --------------------------------------------------------------------------------------
 		    if(is_null($tc_id) || $tc_id >= 0)
 	  	  {
             $doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
@@ -840,49 +838,56 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
               
             // Multiple step algoritm to apply keyword filter on type=AND
             // get_linked_tcversions filters by keyword ALWAYS in OR mode.
-	        $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
-	                                                          null,$assignedTo,$status,$build_id,
-                                                              $cf_hash,$include_unassigned,$urgencyImportance);
+	          $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
+	                                                            null,$assignedTo,$status,$build_id,
+                                                              $cf_hash,$filters->include_unassigned,
+                                                              $urgencyImportance);
             
-	        if($doFilterByKeyword && $keywordsFilterType == 'AND')
-	        {
-            	$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-              $testCaseSet = array_keys($filteredSet);   
-				      $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
-	        }
-	    }   
+	          if($doFilterByKeyword && $keywordsFilterType == 'AND')
+	          {
+              	$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
+                $testCaseSet = array_keys($filteredSet);   
+				        $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
+	          }
+	      }   
         // --------------------------------------------------------------------------------------
-	    if (is_null($tplan_tcases))
-	    {
-	  		$tplan_tcases = array();
-	  	}
-		// 20080224 - franciscom - 
-		// After reviewing code, seems that assignedTo has no sense because tp_tcs
-		// has been filtered.
-		// Then to avoid changes to prepareNode() due to include_unassigned,
-		// seems enough to set assignedTo to 0, if include_unassigned==true
-		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
-    //
-    // 20081220 - franciscom
-    $assignedTo = $include_unassigned ? null : $assignedTo;		                                                       
-		                                                       
-		$bForPrinting = $bHideTCs;
-		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-										                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
-		foreach($testcase_counters as $key => $value)
-		{
-			$test_spec[$key] = $testcase_counters[$key];
-		}
-		  // 20071111 - franciscom
-	    // added map $tplan_tcases.
-	    // key -> testcase id.
-	    // value -> map with info about execution status
-	    //
-	    $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,$hash_id_descr,1,
-	  	                                   $menuUrl,$bHideTCs,$useCounters,$useColors,
-	  	                                   $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-	}
+
+	      $apply_other_filters=true;
+	      if (is_null($tplan_tcases))
+	      {
+	  	  	$tplan_tcases = array();
+	  	  	$apply_other_filters=false;
+	  	  }
+
+		    if( $apply_other_filters && !is_null($filters->statusAllPrevBuilds) &&
+		        !in_array($resultsCfg['status_code']['all'],(array)$filters->statusAllPrevBuilds) )
+		    {
+		        $tplan_tcases = filter_by_same_status_for_build_set($tplan_mgr,$tplan_tcases,$tplan_id,$filters);
+		    }
+		    
+		    // 20080224 - franciscom - 
+		    // After reviewing code, seems that assignedTo has no sense because tp_tcs
+		    // has been filtered.
+		    // Then to avoid changes to prepareNode() due to include_unassigned,
+		    // seems enough to set assignedTo to 0, if include_unassigned==true
+		    // $assignedTo = $include_unassigned ? 0 : $assignedTo;
+        //
+        // 20081220 - franciscom
+        $assignedTo = $filters->include_unassigned ? null : $assignedTo;		                                                       
+	      
+    		                                                       
+		    $bForPrinting = $bHideTCs;
+		    //@TODO: schlundus, can we speed up with NO_EXTERNAL?
+		    $testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
+		    								                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
+		    foreach($testcase_counters as $key => $value)
+		    {
+		    	$test_spec[$key] = $testcase_counters[$key];
+		    }
+	      $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,$hash_id_descr,1,
+	  	                                     $menuUrl,$bHideTCs,$useCounters,$useColors,
+	  	                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+	  }
 	   if($treemenu_type=='EXTJS')
 	   {
 	    $treeMenu->rootnode=new stdClass();
@@ -892,7 +897,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	    $treeMenu->rootnode->text=$test_spec['text'];
 		  $treeMenu->rootnode->position=$test_spec['position'];	    
 	    $treeMenu->rootnode->href=$test_spec['href'];
-	
+
 	     // Change key ('childNodes')  to the one required by Ext JS tree.
 	    $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
 	    
@@ -901,7 +906,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	    $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
 	    $menustring = str_ireplace('null', '', $dummy_string); 
 	   }
-	  $treeMenu->menustring = $menustring;  
+    
+    $treeMenu->menustring = $menustring;  
     return $treeMenu;
 }
 
@@ -1320,12 +1326,13 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	$resultsCfg = config_get('results');
-	$status_descr_code = $resultsCfg['status_code'];
-	$status_code_descr = $resultsCfg['code_status'];
+	// $status_descr_code = $resultsCfg['status_code'];
+	// $status_code_descr = $resultsCfg['code_status'];
   
 	$decoding_hash = array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
+                       'status_descr_code' =>  $resultsCfg['status_code'],
+                       'status_code_descr' =>  $resultsCfg['code_status']);
+	
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 	
 	$test_spec['name'] = $tproject_name;
@@ -1373,20 +1380,20 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	$resultsCfg=config_get('results');
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
+  // $status_descr_code=$resultsCfg['status_code'];
+  // $status_code_descr=$resultsCfg['code_status'];
   
   $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
+                       'status_descr_code' =>  $resultsCfg['status_code'],
+                       'status_code_descr' =>  $resultsCfg['code_status']);
 
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 	
-  // 20080510 - franciscom
 	$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,0,$keywordsFilter->items);
 	if (is_null($tplan_tcases))
+	{
 		$tplan_tcases = array();
-	
+	}
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -1572,5 +1579,66 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
           unset($node[$key]); 
       }  
   }
+}
+
+
+  /*
+    function: filter_by_same_status_for_build_set
+
+    args: tplan_mgr: reference to test plan manager object
+          tcase_set: reference to test case set to filter
+   
+    returns: new tcase_set
+
+  */
+function filter_by_same_status_for_build_set(&$tplan_mgr,&$tcase_set,$tplan_id,$filters)
+{
+    $key2remove=null;
+    $buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
+    if( !is_null($buildSet) )
+    {
+        $target_status=current($filters->statusAllPrevBuilds);
+        $tcase_build_set = $tplan_mgr->get_same_status_for_build_set($tplan_id,array_keys($buildSet),$target_status);  
+        if($filters->statusAllPrevBuildsFilterType == 'IN')
+        {
+            if( is_null($tcase_build_set) )
+            {
+                $tcase_set = array();   
+            }
+            else
+            {
+                $key2remove=null;
+                foreach($tcase_set as $key_tcase_id => $value)
+                {
+                    if( !isset($tcase_build_set[$key_tcase_id]) )
+                    {
+                        $key2remove[]=$key_tcase_id;  
+                    }  
+                }  
+            }
+        }
+        else
+        {
+            if( !is_null($tcase_build_set) )
+            {
+                $key2remove=null;
+                foreach($tcase_set as $key_tcase_id => $value)
+                {
+                    if( isset($tcase_build_set[$key_tcase_id]) )
+                    {
+                        $key2remove[]=$key_tcase_id;  
+                    }  
+                }  
+            }		          
+        }
+        if( !is_null($key2remove) )
+        {
+             foreach($key2remove as $key)
+             {
+                 unset($tcase_set[$key]); 
+             }
+        }
+    }
+    return $tcase_set;
 }
 ?>

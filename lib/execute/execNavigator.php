@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/12/23 18:28:54 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2008/12/27 16:29:58 $ by $Author: franciscom $
  *
  * rev: 
+ *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081220 - franciscom - advanced/simple filters
  *      20081217 - franciscom - only users that have effective role with right 
  *                              that allow test case execution are displayed on
@@ -79,7 +80,7 @@ function init_args(&$dbHandler,$cfgObj)
 {
   	$_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
-
+    
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user = $_SESSION['currentUser'];
@@ -135,9 +136,7 @@ function init_args(&$dbHandler,$cfgObj)
     	break;
     }
     
-    // $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : $user_filter_default;
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? $_REQUEST['filter_assigned_to'] : $user_filter_default;
-    
     if( !is_null($args->filter_assigned_to) )
     {
         $args->filter_assigned_to = (array)$args->filter_assigned_to;
@@ -166,6 +165,28 @@ function init_args(&$dbHandler,$cfgObj)
     // Checkbox
     $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
+    // 20081225 - franciscom 
+    $keyname="resultAllPrevBuildsFilterType";
+    $args->resultAllPrevBuildsFilterType=isset($_REQUEST[$keyname]) ? $_REQUEST[$keyname] : 'IN';
+
+    
+    // 20081227 - BUGID 1913
+    $key='resultAllPrevBuildsSelected';
+    $args->$key = isset($_REQUEST['filter_status_all_prev_builds']) ? 
+                  (array)$_REQUEST['filter_status_all_prev_builds'] : null;
+    if( !is_null($args->$key) )
+    {
+        if( in_array($cfgObj->results['status_code']['all'], $args->$key) )
+        {
+            $args->$key = array($cfgObj->results['status_code']['all']);
+        }
+        else if( !$args->advancedFilterMode && count($args->$key) > 0)
+        {
+            // Because user has switched to simple mode we will get ONLY first status
+            $dummy=$args->$key;
+            $args->$key=array($dummy[0]);
+        }
+    }
     return $args;
 }
 
@@ -224,6 +245,14 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     {
         $settings .= '&filter_status='. serialize($argsObj->optResultSelected);
     }
+
+    // BUGID 1913
+    if( !is_null($argsObj->resultAllPrevBuildsSelected) && 
+        !in_array($cfgObj->results['status_code']['all'],$argsObj->resultAllPrevBuildsSelected) )
+    {
+        $settings .= '&filter_status_all_prev_builds='. serialize($argsObj->resultAllPrevBuildsSelected);
+    }
+
 
     if ($customFieldSelected)
     {
@@ -384,7 +413,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->tc_id = $argsObj->tcase_id;
     $filters->build_id = $argsObj->optBuildSelected;
    
-    // 20081220 - francisco.mancardi@gruppotesi.com
     // in this way we have code as key
     $filters->assignedTo = $guiObj->filter_assigned_to;
     if( !is_null($filters->assignedTo) )
@@ -404,8 +432,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
         }
     }
     
-    
-    // 20081220 - francisco.mancardi@gruppotesi.com
     $filters->status = $guiObj->optResultSelected;
     if( !is_null($filters->status) )
     {
@@ -424,6 +450,28 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
             $filters->status = $dummy;
         }
     }
+    
+    // BUGID 1913
+    $filters->statusAllPrevBuilds = $guiObj->resultAllPrevBuildsSelected;
+    if( !is_null($filters->statusAllPrevBuilds) )
+    {
+        if( in_array($cfgObj->results['status_code']['all'], $guiObj->resultAllPrevBuildsSelected) )
+        {
+            $filters->statusAllPrevBuilds = null;  
+        }
+        else 
+        {
+            // in this way we have code as key
+            $dummy = array_flip($guiObj->resultAllPrevBuildsSelected);
+            foreach( $dummy as $status_code => $value)
+            {
+                $dummy[$status_code] = $status_code;  
+            }
+            $filters->statusAllPrevBuilds = $dummy;
+        }
+    }
+    $filters->statusAllPrevBuildsFilterType = $guiObj->resultAllPrevBuildsFilterType->selected;
+    
     
     $filters->hide_testcases = false;
     $filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
@@ -485,7 +533,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->include_unassigned=$argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
     $gui->targetTestCase=$argsObj->targetTestCase;
-    
+    $gui->resultAllPrevBuildsSelected = $argsObj->resultAllPrevBuildsSelected;
     
     // Only active builds no matter user role
     $gui->optBuild = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
@@ -514,6 +562,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->optResult=createResultsMenu();
     $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
 
+    $gui->resultAllPrevBuilds=$gui->optResult;
+    $gui->resultAllPrevBuilds[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
+
+
     $gui->advancedFilterMode=$argsObj->advancedFilterMode;
     if( $gui->advancedFilterMode )
     {
@@ -529,6 +581,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     }
     $gui->toogleFilterModeLabel=lang_get($label);
  
+ 
+    // BUGID 1913
+    $gui->resultAllPrevBuildsFilterType=new stdClass();                                 
+    $gui->resultAllPrevBuildsFilterType->options = array('IN' => 'In' , 'OUT' =>'Out'); 
+    $gui->resultAllPrevBuildsFilterType->selected=$argsObj->resultAllPrevBuildsFilterType;         
+
     return $gui;
 }
 

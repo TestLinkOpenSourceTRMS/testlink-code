@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.20 2008/12/23 18:28:41 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.21 2008/12/27 16:28:55 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+     20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
      20081220 - franciscom - advanced/simple filters
      20080621 - franciscom - adding ext js treemenu
      20080427 - franciscom - refactoring
@@ -14,6 +15,7 @@ rev :
 *}
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,TestPlan,
+             filter_result_all_prev_builds,
              btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases,priority"}
        
        
@@ -79,10 +81,7 @@ rev :
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 	
 	<table class="smallGrey" width="100%">
-		<caption>
-			{$labels.caption_nav_filter_settings}
-			
-		</caption>
+		<caption>{$labels.caption_nav_filter_settings}</caption>
 		<tr>
 			<td>{$labels.build}</td>
 			<td><select name="build_id">
@@ -122,6 +121,21 @@ rev :
 			  </select>
 			</td>
 		</tr>
+		
+		<tr>
+				<td>{$labels.filter_result_all_prev_builds}</td>
+			<td>
+			  <select name="filter_status_all_prev_builds" onchange=''>
+			  {html_options options=$gui->resultAllPrevBuilds selected=$gui->resultAllPrevBuildsSelected}
+			</td>
+			<td>
+			  {html_radios name='resultAllPrevBuildsFilterType' 
+                     options=$gui->resultAllPrevBuildsFilterType->options
+                   	 selected=$gui->resultAllPrevBuildsFilterType->selected }
+      </td>
+		</tr>
+		
+		
 		<tr>
 			<td>{$labels.filter_owner}</td>
 			<td>
@@ -147,7 +161,8 @@ rev :
   		           {if $gui->include_unassigned} checked="checked" {/if} />
   		</td>
   	</tr>
-        	{$gui->design_time_cfields}
+    {$gui->design_time_cfields}
+		
 		<tr>
 			<td>&nbsp;</td>
 			<td><input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" style="font-size: 90%;" /></td>

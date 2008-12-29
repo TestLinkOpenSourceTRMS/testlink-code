@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/10/03 17:01:17 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2008/12/29 09:27:37 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -147,32 +147,34 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
                                    $userID,$bRecursive,$importIntoProject = 0)
 {
-	tLog('importTestCaseDataFromXML called for file: '.$fileName);
+	tLog('importTestCaseDataFromXML called for file: '. $fileName);
 	$xmlTCs = null;
 	$resultMap  = null;
-	$dom = domxml_open_file($fileName);
-	
-	if ($dom)
+	if (file_exists($fileName))
 	{
-		$root = $dom->document_element();
-		
-		$xmlKeywords = $root->get_elements_by_tagname("keywords");
-		$kwMap = null;
-		if ($xmlKeywords)
+		$dom = domxml_open_file($fileName);
+		if ($dom)
 		{
-			$tproject = new testproject($db);
-			for($i = 0;$i < sizeof($xmlKeywords);$i++)
-			{
-				$tproject->importKeywordsFromXML($tproject_id,$xmlKeywords[$i]->dump_node());
-			}
-			$kwMap = $tproject->get_keywords_map($tproject_id);
-			$kwMap = array_flip($kwMap);
+			$root = $dom->document_element();
 			
+			$xmlKeywords = $root->get_elements_by_tagname("keywords");
+			$kwMap = null;
+			if ($xmlKeywords)
+			{
+				$tproject = new testproject($db);
+				for($i = 0;$i < sizeof($xmlKeywords);$i++)
+				{
+					$tproject->importKeywordsFromXML($tproject_id,$xmlKeywords[$i]->dump_node());
+				}
+				$kwMap = $tproject->get_keywords_map($tproject_id);
+				$kwMap = array_flip($kwMap);
+				
+			}
+			if ($bRecursive && $root->tagname == 'testsuite')
+				$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
+			else if (!$bRecursive && $root->tagname == 'testcases')
+				$resultMap = importTestCases($db,$root,$parentID,$tproject_id,$userID,$kwMap);
 		}
-		if ($bRecursive && $root->tagname == 'testsuite')
-			$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
-		else if (!$bRecursive && $root->tagname == 'testcases')
-			$resultMap = importTestCases($db,$root,$parentID,$tproject_id,$userID,$kwMap);
 	}
 	return $resultMap;
 }
@@ -503,7 +505,7 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	$xls_rows = $xls_handle->sheets[0]['cells'];
 	$xls_row_qty = sizeof($xls_rows);
   
-	if($xls_row_qty <= FIRST_DATA_ROW)
+	if($xls_row_qty < FIRST_DATA_ROW)
     	return;  // >>>----> bye!
   
 	$xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");

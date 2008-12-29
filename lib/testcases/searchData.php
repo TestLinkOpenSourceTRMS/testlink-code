@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.37 2008/12/13 19:25:41 franciscom Exp $
+ * $Id: searchData.php,v 1.38 2008/12/29 09:27:37 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -17,15 +17,14 @@ $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
 $gui = new stdClass();
-$gui->pageTitle=lang_get('caption_search_form');
-$gui->warning_msg='';
-$gui->tcasePrefix='';
-$gui->path_info=null;
-$gui->resultSet=null;
+$gui->pageTitle = lang_get('caption_search_form');
+$gui->warning_msg = '';
+$gui->tcasePrefix = '';
+$gui->path_info = null;
+$gui->resultSet = null;
 
 $map = null;
 $args = init_args();
-
 if ($args->tprojectID)
 {
     $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
@@ -33,7 +32,7 @@ if ($args->tprojectID)
     if($args->targetTestCase)
     {
         $tcase_mgr = new testcase ($db);
-        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character);  
+        $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character); 
         $filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
     }
     else

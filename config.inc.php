@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.218 $
- * @modified $Date: 2008/12/18 08:16:26 $ by $Author: franciscom $
+ * @version $Revision: 1.219 $
+ * @modified $Date: 2008/12/29 17:59:56 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,6 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
+ *     20081228 - franciscom - gui->layoutMainPageLeft,gui->layoutMainPageRight
  *     20081217 - franciscom - exec_cfg->simple_tester_roles
  *     20081213 - franciscom - more remove of old $g_* config parameters.
  *     20081122 - franciscom - removed some old $g_* config parameters.
@@ -389,6 +390,13 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
  * refer to fckeditor configuration file 
  **/
 // $tlCfg->fckeditor_default_toolbar = 'tl_default';
+
+/* User can choose order of menu areas */
+$tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,
+                                         'requirements' => 3, 'testSpecification' => 4);
+
+$tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 ,
+                                          'testPlanContents' => 3);
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */

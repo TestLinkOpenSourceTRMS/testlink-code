@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.39 2008/07/21 09:25:01 havlat Exp $     
+ $Id: mainPage.tpl,v 1.40 2008/12/30 13:34:24 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -18,14 +18,52 @@
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" popup="yes" openHead="yes"}
 
-<script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" 
-	type="text/javascript"></script>
-{literal}<script type="text/javascript">
-window.onload=function(){
- Nifty("div.menu_bubble");
-}
-</script>{/literal}
+{include file="inc_ext_js.tpl"}
 
+<script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
+{literal}
+<script type="text/javascript">
+window.onload=function()
+{
+    // Nifty("div.menu_bubble");
+    if( typeof display_left_block_1 != 'undefined')
+    {
+        display_left_block_1();
+    }
+
+    if( typeof display_left_block_2 != 'undefined')
+    {
+        display_left_block_2();
+    }
+
+    if( typeof display_left_block_3 != 'undefined')
+    {
+        display_left_block_3();
+    }
+    
+    if( typeof display_left_block_4 != 'undefined')
+    {
+        display_left_block_4();
+    }
+
+    if( typeof display_right_block_1 != 'undefined')
+    {
+        display_right_block_1();
+    }
+
+    if( typeof display_right_block_2 != 'undefined')
+    {
+        display_right_block_2();
+    }
+
+    if( typeof display_right_block_3 != 'undefined')
+    {
+        display_right_block_3();
+    }
+   
+}
+</script>
+{/literal}
 </head>
 
 <body>

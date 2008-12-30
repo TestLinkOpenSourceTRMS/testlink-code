@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -60,20 +60,22 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	$arrProducts = $tproject_mgr->get_accessible_for_user($id,'map',$order_by);
 
 	 // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
-    $cookedProduct = 'lastProductForUser'. $id;
-    if (isset($_COOKIE[$cookedProduct]))
+  $tproject_cookie = 'TL_lastTestProjectForUserID_'. $id;
+  if (isset($_COOKIE[$tproject_cookie]))
 	{
-		if (isset($arrProducts[$_COOKIE[$cookedProduct]]) && $arrProducts[$_COOKIE[$cookedProduct]])
-    	{
-			$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
-    		tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);
-    	}
+		  if (isset($arrProducts[$_COOKIE[$tproject_cookie]]) && $arrProducts[$_COOKIE[$tproject_cookie]])
+      {
+		  	  $_SESSION['testprojectID'] = $_COOKIE[$tproject_cookie];
+      		tLog('Cookie: {$tproject_cookie}='.$_SESSION['testprojectID']);
+      }
 	}
 	if (!$_SESSION['testprojectID'])
 	{
     	$tpID = null;
     	if (sizeof($arrProducts))
+    	{
     		$tpID = key($arrProducts);
+    	}	
    		$_SESSION['testprojectID'] = $tpID;
 	}
 

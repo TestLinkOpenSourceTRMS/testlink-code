@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2008/06/03 12:40:40 $ $Author: havlat $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
@@ -63,7 +63,7 @@ if (isset($_GET['testproject']))
 {
 	$gui->updateMainPage = 1;
 	// set test project ID for the next session
-	setcookie('lastProductForUser'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
+	setcookie('TL_lastTestProjectForUserID_'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
 $gui->grants=getGrants($db);

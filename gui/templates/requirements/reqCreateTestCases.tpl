@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.8 2008/05/19 10:23:54 havlat Exp $
+$Id: reqCreateTestCases.tpl,v 1.9 2008/12/30 13:34:40 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -87,7 +87,7 @@ function check_action_precondition(form_id,action,msg)
 
      <div id="req_div"  style="margin:0px 0px 0px 0px;">
         {* used as memory for the check/uncheck all checkbox javascript logic *}
-        <input type="hidden" name="toogle_req"  id="toogle_req"  value="0" />
+        <input type="hidden" name="toggle_req"  id="toggle_req"  value="0" />
      
 
      <table class="simple">
@@ -95,7 +95,7 @@ function check_action_precondition(form_id,action,msg)
     		{if $gui->grants->req_mgmt == "yes"}
     		<th style="width: 15px;">
     						    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
-                         onclick='cs_all_checkbox_in_div("req_div","req_id_cbox","toogle_req");'
+                         onclick='cs_all_checkbox_in_div("req_div","req_id_cbox","toggle_req");'
                          title="{lang_get s='check_uncheck_all_checkboxes'}" /></th>
         {/if}
     		

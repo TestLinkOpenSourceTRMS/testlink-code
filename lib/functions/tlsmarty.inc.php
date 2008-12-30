@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -181,10 +181,10 @@ class TLSmarty extends Smarty
     	$this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
 
     	$msg = lang_get('show_hide_api_info');
-	    $toogle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
+	    $toggle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
                    " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
                    " src=\"{$api_info_img}\" align=\"left\" />";
-	    $this->assign("toogle_api_info_img",$toogle_api_info_img);
+	    $this->assign("toggle_api_info_img",$toggle_api_info_img);
 
 
 	    // Some useful values for Sort Table Engine

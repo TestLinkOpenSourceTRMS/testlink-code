@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/12/27 18:27:01 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2008/12/30 13:34:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20081227 - franciscom - new method - get_full_path_verbose()
@@ -950,7 +950,7 @@ function get_full_path_verbose(&$items)
    $goto_root=null;
    $path_to=null;
    $all_nodes=array();
-   foreach($items as $item_id)
+   foreach((array)$items as $item_id)
    {
        $path_to[$item_id]=$this->get_path($item_id,$goto_root,'simple'); 
        $all_nodes = array_merge($all_nodes,$path_to[$item_id]);

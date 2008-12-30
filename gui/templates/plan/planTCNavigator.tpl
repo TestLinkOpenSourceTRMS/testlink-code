@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.14 2008/12/23 18:28:41 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.15 2008/12/30 13:34:40 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -122,9 +122,9 @@ function update2latest(id)
 			<input type="submit" value="{$labels.btn_apply_filter}" 
 			       id="doUpdateTree" name="doUpdateTree" style="font-size: 90%;" />
 			</td>
-			<td><input type="submit" id="toogleFilterMode"  name="toogleFilterMode" 
-			     value="{$gui->toogleFilterModeLabel}"  
-			     onclick="toogleInput('advancedFilterMode');"
+			<td><input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
+			     value="{$gui->toggleFilterModeLabel}"  
+			     onclick="toggleInput('advancedFilterMode');"
 			     style="font-size: 90%;"  /></td>
 
 		</tr>

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.65 2008/12/23 18:28:34 franciscom Exp $
+// $Id: testlink_library.js,v 1.66 2008/12/30 13:34:24 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -22,7 +22,7 @@
 //
 // ----------------------------------------------------------------------------
 //
-// 20081220 - franciscom - toogleInput()
+// 20081220 - franciscom - toggleInput()
 // 20080724 - havlatm - bug 1638, 1639
 // 20080322 - franciscom - openExecNotesWindow()
 // 20080118 - franciscom - showHideByClass()
@@ -816,14 +816,14 @@ function openReqWindow(tcase_id)
 }
 
 /*
-  function: toogleInput
+  function: toggleInput
 
   args: oid - object id
   
   returns: 
 
 */
-function toogleInput(oid)
+function toggleInput(oid)
 {
     if(document.getElementById(oid).value == 1)
     {

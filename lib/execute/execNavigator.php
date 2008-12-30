@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2008/12/27 16:29:58 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2008/12/30 13:34:49 $ by $Author: franciscom $
  *
  * rev: 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -579,7 +579,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
         $gui->statusFilterItemQty=1;   
         $gui->assigneeFilterItemQty=1;
     }
-    $gui->toogleFilterModeLabel=lang_get($label);
+    $gui->toggleFilterModeLabel=lang_get($label);
  
  
     // BUGID 1913

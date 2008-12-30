@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.371 $
- * @modified $Date: 2008/12/27 18:28:10 $ by $Author: franciscom $
+ * @version $Revision: 1.372 $
+ * @modified $Date: 2008/12/30 13:35:02 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -40,7 +40,7 @@ $TLS_any = "any";
 $TLS_assigned = "assigned";
 $TLS_automated = "Automated";
 $TLS_automatic = "Automatic";
-$TLS_check_uncheck_all = "Toogle all";
+$TLS_check_uncheck_all = "Toggle all";
 $TLS_unassigned = "unassigned";
 $TLS_desc = "descending";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
@@ -1380,7 +1380,7 @@ $TLS_assign_to = "Assign to";
 $TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Save";
 $TLS_can_not_execute = " (No execution right)";
-$TLS_check_uncheck_children_checkboxes="Toogle all test case selections (incluing children test suites)";
+$TLS_check_uncheck_children_checkboxes="Toggle all test case selections (incluing children test suites)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
 $TLS_user = "User";
 $TLS_user_bulk_assignment = "Bulk user assignment";

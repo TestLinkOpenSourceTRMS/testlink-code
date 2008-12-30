@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.17 2008/09/21 19:02:47 schlundus Exp $ 
+$Id: planView.tpl,v 1.18 2008/12/30 13:34:40 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -60,7 +60,7 @@ var del_action=fRoot+'{$deleteAction}';
 {else}
 	<table id='item_view'class="simple sortable" width="95%">
 		<tr>
-			<th>{$toogle_api_info_img}{$sortHintIcon}{$labels.testplan_th_name}</th> 			
+			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>

@@ -7,7 +7,7 @@ Purpose: smarty template - assign REQ to one test case
                         Is used when this feature is called on a new window, not from menu.
                         
 20070617 - franciscom - manage checkboxes as arrays
-                        added js logic to toogle/untoggle all
+                        added js logic to toggle/untoggle all
 
 20070104 - franciscom -
 1. added feedback message when there are not requirements

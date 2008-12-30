@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.21 2008/12/27 16:28:55 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.22 2008/12/30 13:34:40 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -166,9 +166,9 @@ rev :
 		<tr>
 			<td>&nbsp;</td>
 			<td><input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" style="font-size: 90%;" /></td>
-			<td><input type="submit" id="toogleFilterMode"  name="toogleFilterMode" 
-			           value="{$gui->toogleFilterModeLabel}"  
-			           onclick="toogleInput('advancedFilterMode');"
+			<td><input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
+			           value="{$gui->toggleFilterModeLabel}"  
+			           onclick="toggleInput('advancedFilterMode');"
 			           style="font-size: 90%;"  /></td>
 		</tr>
 	</table>

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.25 2008/12/23 18:28:54 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.26 2008/12/30 13:34:49 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -214,7 +214,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
           $label='btn_advanced_filters';
           $gui->assigneeFilterItemQty=1;
       }
-      $gui->toogleFilterModeLabel=lang_get($label);
+      $gui->toggleFilterModeLabel=lang_get($label);
     	break;
     }
 

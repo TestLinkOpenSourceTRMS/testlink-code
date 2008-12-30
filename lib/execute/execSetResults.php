@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2008/12/23 21:08:20 $ $Author: franciscom $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
  *
  * rev:
+ *     20081230 - franciscom - display full path on test suite name
  *     20081217 - franciscom - initializeExecMode() - algorithm changed.
  *     20081122 - franciscom - added some comments
  *     20080827 - franciscom - BUGID 1692
@@ -227,7 +228,7 @@ if ($userid_array)
 }
 
 $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
-smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id,$args->tproject_id);
+smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
 
 // To silence smarty errors
 //  future must be initialized in a right way
@@ -403,6 +404,8 @@ function get_ts_name_details(&$db,$tcase_id)
 	}
 	if($do_query)
 	{
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
 		$rs = $db->fetchRowsIntoMap($sql,'tc_id');
 	}
 	
@@ -416,10 +419,16 @@ function get_ts_name_details(&$db,$tcase_id)
   returns: 
 
 */
-function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id,$tproject_id)
+function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
-
+  $fpath=$tree_mgr->get_full_path_verbose($tcase_id);
   $tsuite_info = get_ts_name_details($db,$tcase_id);
+  foreach($fpath as $key => $value)
+  {
+      unset($value[0]);  // Remove test plan name
+      $tsuite_info[$key]['tsuite_name']=implode('/',$value);  
+  }
+  
   $smarty->assign('tsuite_info',$tsuite_info);
   
   // --------------------------------------------------------------------------------
@@ -1059,42 +1068,49 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
      }
     }
     // ---------------------------------------------------------------------------------
-    
-    // Get the path for every test case, grouping test cases that
-    // have same parent.
-    $idx = 0;
-    foreach($linked_tcversions as $item)
+   
+    // Get the path for every test case, grouping test cases that have same parent.
+    if( count($testSet->tcase_id) > 0 )
     {
-    	$path_f = $treeMgr->get_path($item['tc_id'],null,'full');
-    	foreach($path_f as $key => $path_elem)
-    	{
-    		if( $path_elem['parent_id'] == $argsObj->id )
-    		{
-    		 // Can be added because is present in the branch the user wants to view
-    		 // ID of branch starting node is in $argsObj->id
-    		 $guiObj->tcAttachments[$item['tc_id']] = getAttachmentInfos($docRepository,$item['tc_id'],
-    		                                                             'nodes_hierarchy',true,1);
-    
-         // --------------------------------------------------------------------------------------
-         //@TODO: schlundus, can this be speed up with tprojectID?
-    		 $guiObj->design_time_cfields[$item['tc_id']] = $tcaseMgr->html_table_of_custom_field_values($item['tc_id'],
-    				                                                                       'design',$cf_filters);
-    				                                                                        
-         // BUGID 856: Guest user can execute test case
-    		 if($guiObj->grants->execute)
-    	   {
-    				$guiObj->execution_time_cfields[$item['tc_id']] = 
-    				         $tcaseMgr->html_table_of_custom_field_inputs($item['tc_id'], null,'execution',
-    				                                                      "_".$item['tc_id'],null,$argsObj->tproject_id);
-         }
-    		} // if( $path_elem['parent_id'] == $argsObj->id )
-    		
-    	  if($path_elem['node_table'] == 'testsuites' && !isset($guiObj->tSuiteAttachments[$path_elem['id']]))
-    		   $guiObj->tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($docRepository,$path_elem['id'],
-    		                                                             'nodes_hierarchy',true,1);
-    		   
-      } //foreach($path_f as $key => $path_elem) 
-    } // foreach($linked_tcversions as $item)
+        foreach($testSet->tcase_id as $testcase_id)
+        {
+            $path_f = $treeMgr->get_path($testcase_id,null,'full');
+            foreach($path_f as $key => $path_elem)
+            {
+            	if( $path_elem['parent_id'] == $argsObj->id )
+            	{
+            	 // Can be added because is present in the branch the user wants to view
+            	 // ID of branch starting node is in $argsObj->id
+            	 $guiObj->tcAttachments[$testcase_id] = getAttachmentInfos($docRepository,$testcase_id,
+            	                                                             'nodes_hierarchy',true,1);
+            
+                // --------------------------------------------------------------------------------------
+                //@TODO: schlundus, can this be speed up with tprojectID?
+            	 $guiObj->design_time_cfields[$testcase_id] = $tcaseMgr->html_table_of_custom_field_values($testcase_id,
+            			                                                                       'design',$cf_filters);
+            			                                                                        
+                // BUGID 856: Guest user can execute test case
+            	 if($guiObj->grants->execute)
+               {
+            			$guiObj->execution_time_cfields[$testcase_id] = 
+            			         $tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution',
+            			                                                      "_".$testcase_id,null,$argsObj->tproject_id);
+                }
+            	} // if( $path_elem['parent_id'] == $argsObj->id )
+            	
+              // We do this because do not know if some test case not yet analised will be direct
+              // child of this test suite, then we get this info in advance.
+              // In situations where only last test suite on branch have test cases, we are colleting
+              // info we will never use.
+              if($path_elem['node_table'] == 'testsuites' && !isset($guiObj->tSuiteAttachments[$path_elem['id']]))
+              {
+            	   $guiObj->tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($docRepository,$path_elem['id'],
+            	                                                                     'nodes_hierarchy',true,1);
+            	}
+            	   
+             } //foreach($path_f as $key => $path_elem) 
+        }  
+    }
 
     return array($testSet->tcase_id,$testSet->tcversion_id);  
 }

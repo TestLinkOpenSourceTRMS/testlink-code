@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/12/12 20:35:41 $ -  $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2008/12/30 13:34:49 $ -  $Author: franciscom $
  *
  * shows all users
  *
@@ -97,7 +97,7 @@ $smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
 
 
 
-function toogle_order_by_dir($which_order_by,$order_by_dir_map)
+function toggle_order_by_dir($which_order_by,$order_by_dir_map)
 {
 	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc';
 	return $obm;

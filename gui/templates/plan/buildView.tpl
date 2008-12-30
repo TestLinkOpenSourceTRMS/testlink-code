@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.14 2008/09/21 19:02:47 schlundus Exp $
+$Id: buildView.tpl,v 1.15 2008/12/30 13:34:40 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -53,7 +53,7 @@ var del_action=fRoot+'{$deleteAction}';
     {* table id MUST BE item_view to use show/hide API info *}
   	<table id="item_view" class="simple  sortable" style="width:80%">
   		<tr>
-  			<th>{$toogle_api_info_img}{$sortHintIcon}{$labels.th_title}</th>
+  			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>

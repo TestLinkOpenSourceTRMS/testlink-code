@@ -1,15 +1,30 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.30 2008/12/23 18:28:41 franciscom Exp $
+$Id: execSetResults.tpl,v 1.31 2008/12/31 15:06:00 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
-  20081221 - franciscom -
+
+  20081231 - franciscom - new implementation of Bulk TC Status 
+                          BUGID 1635
   20081210 - franciscom - BUGID 1905 
   20081125 - franciscom - BUGID 1902 - fixed check to display button to launch remote executions
+  
   20080528 - franciscom - BUGID 1504 - version number management
 	20080515 - havlatm - updated help link
+  20080322 - franciscom - feature: allow edit of execution notes
+                          minor refactoring.
+  20071231 - franciscom - new show/hide section to show exec notes
   20071103 - franciscom - BUGID 700
-  20070519 - franciscom - BUGID 856: Guest user can execute test case
+  20071101 - franciscom - added test automation code
+  20070826 - franciscom - added some niftycube effects
+  20070519 - franciscom -
+  BUGID 856: Guest user can execute test case
+
+  20070211 - franciscom - added delete logic
+  20070205 - franciscom - display test plan custom fields.
+  20070125 - franciscom - management of closed build
+  20070104 - franciscom - custom field management for test cases
+  20070101 - franciscom - custom field management for test suite div
 *}
 
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
@@ -35,7 +50,7 @@ Rev:
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
 	           img_title_bug_mgmt,img_title_delete_execution,test_exec_summary,title_t_r_on_build,
 	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
-	           no_data_available,import_xml_results,btn_save_all_tests_results,
+	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
 
@@ -78,6 +93,34 @@ function load_notes(panel,exec_id)
 {/literal}
 </script>
 
+<script language="JavaScript" type="text/javascript">
+{literal}
+/*
+Set value for a group of combo (have same prefix).
+*/
+function set_combo_group(formid,combo_id_prefix,value_to_assign)
+{
+  var f=document.getElementById(formid);
+	var all_comboboxes = f.getElementsByTagName('select');
+	var input_element;
+	var idx=0;
+		
+	for(idx = 0; idx < all_comboboxes.length; idx++)
+	{
+	  input_element=all_comboboxes[idx];
+		if( input_element.type == "select-one" && 
+		    input_element.id.indexOf(combo_id_prefix)==0 &&
+		   !input_element.disabled)
+		{
+       input_element.value=value_to_assign;
+		}	
+	}
+}
+{/literal}
+</script>
+
+
+
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -94,14 +137,16 @@ function validateForm(f)
   cfield_container=document.getElementById('save_button_clicked').value;
   access_key='cfields_exec_time_tcversionid_'+cfield_container; 
     
-    
- 	cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
-  cfChecks=validateCustomFields(cfields_inputs);
-  if( !cfChecks.status_ok )
-  {
-      var warning_msg=cfMessages[cfChecks.msg_id];
-      alert_message(alert_box_title,warning_msg.replace(/%s/, cfChecks.cfield_label));
-      return false;
+  if( document.getElementById(access_key) != null )
+  {    
+ 	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
+      cfChecks=validateCustomFields(cfields_inputs);
+      if( !cfChecks.status_ok )
+      {
+          var warning_msg=cfMessages[cfChecks.msg_id];
+          alert_message(alert_box_title,warning_msg.replace(/%s/, cfChecks.cfield_label));
+          return false;
+      }
   }
   return true;
 }
@@ -168,18 +213,14 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}">
 
 <h1 class="title">
-	{$labels.title_t_r_on_build} {$my_build_name} 
-	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
-	<br>
+	{$labels.title_t_r_on_build} {$my_build_name}
 	{if $gui->ownerDisplayName != ""}
-	  {$labels.only_test_cases_assigned_to}{$title_sep}
-	  {foreach item=assignee from=$gui->ownerDisplayName }
-	      {$assignee|escape} {$title_sep_type3}
-	  {/foreach}
+	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$gui->ownerDisplayName|escape}
 	  {if $gui->include_unassigned}
 	    {$labels.or_unassigned_test_cases}
 	  {/if}
 	{/if}
+	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
 </h1>
 
 
@@ -248,7 +289,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {assign var="draw_submit_button" value=true}
 
 
-        {if $cfg->exec_cfg->show_testsuite_contents}
+        {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op }
             {lang_get s='bulk_tc_status_management' var='container_title'}
             {assign var="div_id" value='bulk_controls'}
             {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
@@ -259,369 +300,77 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
-            
+
             <div id="{$div_id}" name="{$div_id}">
-            	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-            	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
-            	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
-            	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
-            	{/foreach}
-              <br />
-              <br />
-      	    	  <input type="submit" id="do_bulk_save" name="do_bulk_save"
-      	    	         value="{$labels.btn_save_all_tests_results}"/>
+              {include file="execute/inc_exec_controls.tpl"
+                       args_save_type='bulk'
+                       args_input_enable_mgmt=$input_enabled_disabled
+                       args_tcversion_id='bulk'
+                       args_webeditor=$gui->bulk_exec_notes_editor
+                       args_labels=$labels}
             </div>
         {/if}
     	{/if}
 
+      {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op) }
+          <hr />
+          <div class="groupBtn">
+    	    	  <input type="button" name="print" id="print" value="{$labels.btn_print}"
+    	    	         onclick="javascript:window.print();" />
+    	    	  <input type="submit" id="toggle_history_on_off"
+    	    	         name="{$gui->history_status_btn_name}"
+    	    	         value="{lang_get s=$gui->history_status_btn_name}" />
+    	    	  <input type="button" id="pop_up_import_button" name="import_xml_button"
+    	    	         value="{$labels.import_xml_results}"
+    	    	         onclick="javascript: openImportResult(import_xml_results);" />
+          
+              {* 20081125 - franciscom - BUGID 1902*}
+		          {if $tlCfg->exec_cfg->enable_test_automation }
+		          <input type="submit" id="execute_cases" name="execute_cases"
+		                 value="{$labels.execute_and_save_results}"/>
+		          {/if}
+    	    	  <input type="hidden" id="history_on"
+    	    	         name="history_on" value="{$gui->history_on}" />
+          </div>
+      {/if}
       <hr />
-      <div class="groupBtn">
-    		  <input type="button" name="print" value="{$labels.btn_print}"
-    		         onclick="javascript:window.print();" />
-    		  <input type="submit" id="toggle_history_on_off"
-    		         name="{$gui->history_status_btn_name}"
-    		         value="{lang_get s=$gui->history_status_btn_name}" />
-    		  <input type="button" id="pop_up_import_button" name="import_xml_button"
-    		         value="{$labels.import_xml_results}"
-    		         onclick="javascript: openImportResult(import_xml_results);" />
-
-          {* 20081125 - franciscom - BUGID 1902*}
-		      {if $tlCfg->exec_cfg->enable_test_automation }
-		      <input type="submit" id="execute_cases" name="execute_cases"
-		             value="{$labels.execute_and_save_results}"/>
-		      {/if}
-    		  <input type="hidden" id="history_on"
-    		         name="history_on" value="{$gui->history_on}" />
-      </div>
-    <hr />
-
 	{/if}
 
- 	{foreach item=tc_exec from=$gui->map_last_exec}
-
-    {assign var="tc_id" value=$tc_exec.testcase_id}
-	  {assign var="tcversion_id" value=$tc_exec.id}
-	  {* IMPORTANT:
-	               Here we use version_number, which is related to tcversion_id SPECIFICATION.
-	               When we need to display executed version number, we use tcversion_number
-	  *}
-	  {assign var="version_number" value=$tc_exec.version}
-	  
-		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_id}' />
-		<input type='hidden' name='version_number[{$tcversion_id}]' value='{$version_number}' />
-
-    {* ------------------------------------------------------------------------------------ *}
-    {lang_get s='th_testsuite' var='container_title'}
-    {assign var="div_id" value=tsdetails_$tc_id}
-    {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
-    {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
-    {assign var="container_title" value="$container_title$title_sep$ts_name"}
-
-    {include file="inc_show_hide_mgmt.tpl"
-             show_hide_container_title=$container_title
-             show_hide_container_id=$div_id
-             show_hide_container_draw=false
-             show_hide_container_class='exec_additional_info'
-             show_hide_container_view_status_id=$memstatus_id}
-
-		<div id="{$div_id}" name="{$div_id}" class="exec_additional_info">
-      <br />
-      <div class="exec_testsuite_details" style="width:95%;">
-      <span class="legend_container">{$labels.details}</span><br />
-		  {$tsuite_info[$tc_id].details}
-		  </div>
-
-		  {if $ts_cf_smarty[$tc_id] neq ''}
-		    <br />
-		    <div class="custom_field_container" style="border-color:black;width:95%;">
-         {$ts_cf_smarty[$tc_id]}
-        </div>
-		  {/if}
-
-  		{if $gui->tSuiteAttachments != null && $gui->tSuiteAttachments[$tc_exec.tsuite_id] != null}
-  		  <br />
-		    {include file="inc_attachments.tpl" 
-		             attach_tableName="nodes_hierarchy" 
-		             attach_downloadOnly=true
-			        	 attach_attachmentInfos=$gui->tSuiteAttachments[$tc_exec.tsuite_id]
-			        	 attach_inheritStyle=1
-			        	 attach_tableClassName="none"
-				         attach_tableStyles="background-color:#ffffcc;width:100%" }
-	    {/if}
-	    <br />
-    </div>
-
-
-		<div class="exec_tc_title">
-		{* 20080126 - franciscom - external id - $tc_exec.testcase_id *}
-		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}<br />
-		    {$tc_exec.name|escape}<br />
-		    {if $tc_exec.assigned_user eq ''}
-		      {$labels.has_no_assignment}
-		    {else}
-          {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
-        {/if}
-    </div>
-
- 		{if $cfg->exec_cfg->show_last_exec_any_build}
-   		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
- 		  {assign var="my_build_name" value=$abs_last_exec.build_name|escape}
- 		  {assign var="show_current_build" value=1}
-    {/if}
-    {assign var="exec_build_title" value="$build_title $title_sep $my_build_name"}
-
-
-		<div id="execution_history" class="exec_history">
-  		<div class="exec_history_title">
-  		{if $gui->history_on}
-  		    {$labels.execution_history} {$title_sep_type3}
-  		    {if !$cfg->exec_cfg->show_history_all_builds}
-  		      {$exec_build_title}
-  		    {/if}
-  		{else}
-  			  {$labels.last_execution}
-  			  {if $show_current_build} {$labels.exec_any_build} {/if}
-  			  {$title_sep_type3} {$exec_build_title}
-  		{/if}
-  		</div>
-
-		{* The very last execution for any build of this test plan *}
-		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on==0}
-        {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}
-			    {assign var="status_code" value=$abs_last_exec.status}
-
-     			<div class="{$gsmarty_tc_status_css.$status_code}">
-     			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
-     			{$title_sep_type3}
-     			{$labels.test_exec_by} {$title_sep} {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
-     			{$title_sep_type3}
-     			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
-     			{$title_sep_type3}
-     			{$labels.exec_status} {$title_sep} {localize_tc_status s=$status_code}
-     			</div>
-
-  		  {else}
-    		   <div class="not_run">{$labels.test_status_not_run}</div>
-    			   {$labels.tc_not_tested_yet}
-   		  {/if}
-    {/if}
-
-    {* -------------------------------------------------------------------------------------------------- *}
-    {if $gui->other_execs.$tcversion_id}
-      {if $gui->history_on == 0 && $show_current_build}
-   		   <div class="exec_history_title">
-  			    {$labels.last_execution} {$labels.exec_current_build}
-  			    {$title_sep_type3} {$exec_build_title}
-  			 </div>
-		  {/if}
-
-		  <table cellspacing="0" class="exec_history">
-			 <tr>
-				<th style="text-align:left">{$labels.date_time_run}</th>
-				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
-				  <th style="text-align:left">{$labels.build}</th>
-				{/if}
-				<th style="text-align:left">{$labels.test_exec_by}</th>
-				<th style="text-align:center">{$labels.exec_status}</th>
-				<th style="text-align:center">{$labels.testcaseversion}</th>
-
-				{if $attachment_model->show_upload_column && !$att_download_only}
-						<th style="text-align:center">{$labels.attachment_mgmt}</th>
-            {assign var="my_colspan" value=$attachment_model->num_cols}
-        {/if}
-
-				{if $g_bugInterfaceOn}
-          <th style="text-align:left">{$labels.bug_mgmt}</th>
-          {assign var="my_colspan" value=$my_colspan+1}
-        {/if}
-
-				{if $gui->grants->delete_execution}
-          <th style="text-align:left">{$labels.delete}</th>
-          {assign var="my_colspan" value=$my_colspan+1}
-        {/if}
-
-        <th style="text-align:left">{$labels.run_mode}</th>
-        {assign var="my_colspan" value=$my_colspan+1}
-
-			 </tr>
-
-			{* ----------------------------------------------------------------------------------- *}
-			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
-  	     {assign var="tc_status_code" value=$tc_old_exec.status}
-
-   			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
-  				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
-
-				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
-  				<td>{if !$tc_old_exec.build_is_open}
-  				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
-  				    {$tc_old_exec.build_name|escape}
-  				</td>
-  				{/if}
-
-  				<td>{$users[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
-  				<td class="{$gsmarty_tc_status_css.$tc_status_code}" style="text-align:center">
-  				    {localize_tc_status s=$tc_old_exec.status}
-  				</td>
-  				
-  		   {* IMPORTANT:
-	               Here we use tcversion_number because we want to display
-	               version number used when this execution was recorded.
-      	  *}
-
-  				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
-
-          {if $attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
-      			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
-      			         alt="{$labels.alt_attachment_mgmt}"
-      			         style="border:none" /></a>
-              </td>
-  	      {/if}
-
-    			{if $g_bugInterfaceOn}
-       		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
-      			         style="border:none" /></a>
-              </td>
-          {/if}
-
-
-    			{if $gui->grants->delete_execution}
-       		  	<td align="center">
-             	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
-             	                                       {$tc_old_exec.execution_id},'do_delete',1);">
-      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{$labels.img_title_delete_execution}"
-      			         style="border:none" /></a>
-              </td>
-          {/if}
-
-       		<td class="icon_cell" align="center">
-       		  {if $tc_old_exec.execution_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
-      		            style="border:none" />
-       		  {else}
-      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bullet_wrench.png" title="{$labels.execution_type_auto}"
-      		            style="border:none" />
-       		  {/if}
-          </td>
-
-
-
-  			</tr>
- 			  {if $tc_old_exec.execution_notes neq ""}
-  			<script>
-        {literal}
-        Ext.onReady(function(){
-		    var p = new Ext.Panel({
-        title: {/literal}'{$labels.exec_notes}'{literal},
-        collapsible:true,
-        collapsed: true,
-        baseCls: 'x-tl-panel',
-        renderTo: {/literal}'exec_notes_container_{$tc_old_exec.execution_id}'{literal},
-        width:'100%',
-        html:''
-        });
-
-        p.on({'expand' : function(){load_notes(this,{/literal}{$tc_old_exec.execution_id}{literal});}});
-        });
-        {/literal}
-
-  			</script>
-  			<tr>
-  			 <td colspan="{$my_colspan}" id="exec_notes_container_{$tc_old_exec.execution_id}"
-  			     style="padding:5px 5px 5px 5px;">
-  			</td>
-   			</tr>
- 			  {/if}
-
-  			{* 20080322 - franciscom - edit execution notes *}
-  			{if $gui->grants->edit_exec_notes }
-  			<tr>
-  			<td colspan="{$my_colspan}">
-  		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
-  		         onclick="javascript: openExecNotesWindow({$tc_old_exec.execution_id});">
-  			</td>
-  			</tr>
- 			  {/if}
-
-  			{* 20070105 - Custom field values  *}
-  			<tr>
-  			<td colspan="{$my_colspan}">
-  				{assign var="execID" value=$tc_old_exec.execution_id}
-  				{assign var="cf_value_info" value=$gui->other_exec_cfields[$execID]}
-          {$cf_value_info}
-  			</td>
-  			</tr>
-
-
-
-  			{* Attachments *}
-  			<tr>
-  			<td colspan="{$my_colspan}">
-  				{assign var="execID" value=$tc_old_exec.execution_id}
-
-  				{assign var="attach_info" value=$gui->attachments[$execID]}
-  				{include file="inc_attachments.tpl"
-  				         attach_attachmentInfos=$attach_info
-  				         attach_id=$execID 
-  				         attach_tableName="executions"
-  				         attach_show_upload_btn=$attachment_model->show_upload_btn
-  				         attach_show_title=$attachment_model->show_title
-  				         attach_downloadOnly=$att_download_only 
-  				         attach_tableClassName=null
-                   attach_inheritStyle=0
-                   attach_tableStyles=null}
-  			</td>
-  			</tr>
-
-        {* Execution Bugs (if any) *}
-        {if $gui->bugs[$execID] neq ""}
-   		<tr>
-   			<td colspan="{$my_colspan}">
-   				{include file="inc_show_bug_table.tpl"
-   			         bugs_map=$gui->bugs[$execID]
-   			         can_delete=true
-   			         exec_id=$execID}
-   			</td>
-   		</tr>
-   		{/if}
-		{/foreach}
-			{* ----------------------------------------------------------------------------------- *}
-
-			</table>
-		{/if}
-  </div>
-
-  <br />
-  {* ----------------------------------------------------------------------------------- *}
-  <div>
-    {include file="execute/inc_exec_test_spec.tpl"
-             args_tc_exec=$tc_exec
-             args_labels=$labels
-             args_enable_custom_field=$enable_custom_fields
-             args_execution_time_cf=$gui->execution_time_cfields
-             args_design_time_cf=$gui->design_time_cfields
-             args_execution_types=$gui->execution_types
-             args_tcAttachments=$gui->tcAttachments }
-
-
-    {if $tc_exec.can_be_executed}
-      {include file="execute/inc_exec_controls.tpl"
-               args_input_enable_mgmt=$input_enabled_disabled
-               args_tcversion_id=$tcversion_id
-               args_webeditor=$gui->exec_notes_editors[$tc_id]
-               args_labels=$labels}
-	  {/if}
- 	  {if $tc_exec.active eq 0}
- 	   <h1 class="title"><center>{$labels.testcase_version_is_inactive_on_exec}</center></h1>
- 	  {/if}
-	<hr />
-	</div>
-  {* ----------------------------------------------------------------------------------- *}
-
-	{/foreach}
-
+  {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op }
+      <div>
+ 	    <table class="mainTable-x" width="100%">
+ 	    <tr>
+ 	    <th>{$labels.th_testsuite}</th>{* <th>&nbsp;</th> *}<th>{$labels.title_test_case}</th><th>{$labels.test_exec_result}</th>
+ 	    </tr>
+ 	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
+      
+        {assign var="tc_id" value=$tc_exec.testcase_id}
+	      {assign var="tcversion_id" value=$tc_exec.id}
+	      {* IMPORTANT:
+	                   Here we use version_number, which is related to tcversion_id SPECIFICATION.
+	                   When we need to display executed version number, we use tcversion_number
+	      *}
+	      {assign var="version_number" value=$tc_exec.version}
+	      
+	    	<input type="hidden" id="tc_version_{$tcversion_id}" name="tc_version[{$tcversion_id}]" value='{$tc_id}' />
+	    	<input type="hidden" id="version_number_{$tcversion_id}" name="version_number[{$tcversion_id}]" value='{$version_number}' />
+      
+        {* ------------------------------------------------------------------------------------ *}
+        <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
+        <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
+        <td>{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}</td>
+   			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
+				    {html_options options=$gui->execStatusValues}
+				</select>
+			   </td>
+        </tr>
+      {/foreach}
+      </table>
+      </div>
+  {else}
+    {include file="execute/inc_exec_show_tc_exec.tpl"}
+  {/if}
+  
 </form>
 </div>
 </body>

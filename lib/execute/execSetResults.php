@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.109 $
- * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2008/12/31 15:07:19 $ $Author: franciscom $
  *
  * rev:
  *     20081230 - franciscom - display full path on test suite name
@@ -226,9 +226,28 @@ if ($userid_array)
 		$passeduserarray[] = $value;
 	}
 }
-
-$gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
+
+$gui->can_use_bulk_op=(!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
+if( $gui->can_use_bulk_op )
+{
+    $gui->execStatusValues=createResultsMenu();
+    if( isset($gui->execStatusValues[$cfg->tc_status['all']]) )
+    {
+        unset($gui->execStatusValues[$cfg->tc_status['all']]);
+    }
+
+    $of=web_editor("bulk_exec_notes",$_SESSION['basehref'],$cfg->editorCfg);
+    $of->Value = null;
+    
+    // Magic numbers that can be determined by trial and error
+    $gui->bulk_exec_notes_editor=$of->CreateHTML(10,60);         
+    unset($of);    
+}
+else
+{
+    $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
+}
 
 // To silence smarty errors
 //  future must be initialized in a right way
@@ -238,6 +257,7 @@ $smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
 
 /*
   function: 
@@ -303,7 +323,7 @@ function init_args()
 
 
 	$key2loop = array('id' => 0,'build_id' =>0, 'exec_to_delete' => 0, 
-				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 0);
+				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1);
 				            
 	foreach($key2loop as $key => $value)
 	{
@@ -404,8 +424,6 @@ function get_ts_name_details(&$db,$tcase_id)
 	}
 	if($do_query)
 	{
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 		$rs = $db->fetchRowsIntoMap($sql,'tc_id');
 	}
 	
@@ -736,13 +754,6 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
     //
     // Rows and Cols values are useless for FCKeditor.
     //
-    //
-    $a_oWebEditor_cfg = array('summary' => array('rows'=> null,'cols' => null),
-                              'steps' => array('rows'=> null,'cols' => 38) ,
-                              'expected_results' => array('rows'=> null,'cols' => 38));
-
-
-    $idx=0;
     foreach($tcversions as $key => $tcv)
     {
         $tcversion_id=$tcv['id'];
@@ -830,9 +841,14 @@ function initializeRights(&$dbHandler,$user_id,$tproject_id,$tplan_id)
 */
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 {
-    $gui = new stdClass();
-    $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
     $buildMgr = new build_mgr($dbHandler);
+
+    $gui = new stdClass();
+    $gui->execStatusValues=null;
+    $gui->can_use_bulk_op=0;
+    $gui->exec_notes_editors=null;
+    $gui->bulk_exec_notes_editor=null;
+    
 
     $gui->editorType=$cfgObj->editorCfg['type'];
     $gui->ownerDisplayName = null;
@@ -887,7 +903,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     //       retrieving testproject ID using test plan id is a single query that do not can consume
     //       a significative time.
     $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'execution',
-                                                                          $cf_filters);
+                                                                          array('show_on_execution' => 1));
 
     $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                          'btn_history_on','btn_history_off','history_on');

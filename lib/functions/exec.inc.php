@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2008/12/31 15:07:19 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
+ * 20081231 - franciscom - write_execution() changes to manage bulks exec notes
  * 20080528 - franciscom - BUGID 1504 - changes in write_execution
  *                                      using version_number
  *
@@ -42,7 +43,7 @@ require_once('common.php');
  */  
 function buildsNumber(&$db,$tpID=0)
 {
-	$sql = "SELECT count(*) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
+	$sql = "SELECT count(id) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
 	$buildCount=0;
 	if ($tpID)
 	{
@@ -62,21 +63,17 @@ function buildsNumber(&$db,$tpID=0)
 function createResultsMenu()
 {
   $resultsCfg=config_get('results');
-  $map_verbose_status_code=$resultsCfg['status_code'];
-  $tc_status_verbose_labels = $resultsCfg['status_label'];
-  $tc_status_for_ui = $resultsCfg['status_label_for_exec_ui'];
   
   // Fixed values, that has to be added always
-  $my_all= isset($tc_status_verbose_labels['all'])?$tc_status_verbose_labels['all']:'';
-  $menu_data[$map_verbose_status_code['all']] = $my_all;
-	$menu_data[$map_verbose_status_code['not_run']] = lang_get($tc_status_verbose_labels['not_run']);
+  $my_all= isset($resultsCfg['status_label']['all'])?$resultsCfg['status_label']['all']:'';
+  $menu_data[$resultsCfg['status_code']['all']] = $my_all;
+	$menu_data[$resultsCfg['status_code']['not_run']] = lang_get($resultsCfg['status_label']['not_run']);
 	
-	// loop over tc_status_for_ui, because these are the statuses
+	// loop over status for user interface, because these are the statuses
 	// user can assign while executing test cases
-	//
-	foreach($tc_status_for_ui as $verbose_status => $status_label)
+	foreach($resultsCfg['status_label_for_exec_ui'] as $verbose_status => $status_label)
 	{
-	   $code=$map_verbose_status_code[$verbose_status];
+	   $code=$resultsCfg['status_code'][$verbose_status];
 	   $menu_data[$code]=lang_get($status_label); 
   }
 
@@ -97,16 +94,14 @@ function createResultsMenu()
 */
 function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build_id,$map_last_exec)
 {
-	// $map_tc_status = config_get('tc_status');
   $resultsCfg = config_get('results');
-  $map_tc_status = $resultsCfg['status_code'];
-
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
 	$cfield_mgr=New cfield_mgr($db);
   $cf_prefix=$cfield_mgr->get_name_prefix();
 	$len_cfp=strlen($cf_prefix);
   $cf_nodeid_pos=4;
+  $bulk_notes='';
 	
 	// --------------------------------------------------------------------------------------
 	$ENABLED=1;
@@ -132,10 +127,13 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
   {
       // create structure to use common algoritm
       $item2loop= $exec_data['status'];
+      $is_bulk_save=1;
+			$bulk_notes = $db->prepare_string(trim($exec_data['bulk_exec_notes']));		
   }	
 	else
 	{
 	    $item2loop= $exec_data['save_results'];
+	    $is_bulk_save=0;
 	}
 
 	foreach ( $item2loop as $tcversion_id => $val)
@@ -143,10 +141,11 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 	  $tcase_id=$exec_data['tc_version'][$tcversion_id];
 		$current_status = $exec_data['status'][$tcversion_id];
 		$version_number=$exec_data['version_number'][$tcversion_id];;
-		$has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
+		$has_been_executed = ($current_status != $resultsCfg['status_code']['not_run'] ? TRUE : FALSE);
 		if($has_been_executed)
 		{ 
-			$my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
+		  
+			$my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
 			$sql = "INSERT INTO executions ".
 				     "(build_id,tester_id,status,testplan_id,tcversion_id," .
 				     " execution_ts,notes,tcversion_number)".
@@ -156,8 +155,7 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 				     ")";
 			$db->exec_query($sql);  	
 			
-			// 20070617 - franciscom - BUGID : at least for Postgres DBMS table name is needed. 
-			//    
+			// at least for Postgres DBMS table name is needed. 
 			$execution_id=$db->insert_id('executions');
 			
       if( $has_custom_fields )
@@ -173,7 +171,6 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
              $hash_cf[$cf_v]=$exec_data[$cf_v];
           }  
 			  }                                     
-		    // 20070105 - custom field management
 		    $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $tplan_id,$cf_map);
 			}                                     
 		}

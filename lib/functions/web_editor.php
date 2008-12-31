@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.9 $ $Author: schlundus $
- * @modified $Date: 2008/09/25 19:34:16 $
+ * @version $Revision: 1.10 $ $Author: franciscom $
+ * @modified $Date: 2008/12/31 15:07:19 $
  *
  *
  * rev: 20080826 - franciscom - BUGID 1692
@@ -24,16 +24,17 @@ require_once("common.php");
 */
 function getWebEditorCfg($feature='all')
 {
-	$cfg = config_get('gui');
+    $cfg = config_get('gui');
     $defaultCfg = $cfg->text_editor['all'];
-    
-	$webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
+	  $webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
   
-	foreach($defaultCfg as $key => $value)
+	  foreach($defaultCfg as $key => $value)
   	{
-    	if(!isset($webEditorCfg[$key]))
-        	$webEditorCfg[$key] = $defaultCfg[$key];
-	} 
+    	  if(!isset($webEditorCfg[$key]))
+    	  {
+          	$webEditorCfg[$key] = $defaultCfg[$key];
+        }  	
+	  } 
     return $webEditorCfg;
 }
 

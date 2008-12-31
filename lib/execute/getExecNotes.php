@@ -5,22 +5,23 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/01/31 22:15:47 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2008/12/31 15:07:19 $ by $Author: franciscom $
+ *
+ * rev: 20081231 - franciscom - 
  */
 require_once('../../config.inc.php');
 require_once('common.php');
+require_once("web_editor.php");
 require_once('exec.inc.php');
+
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 
-$template_dir = 'execute/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-$webeditorType = config_get('gui')->webeditor;
+$webeditorCfg=getWebEditorCfg('execution');
 $map = get_execution($db,$_REQUEST['exec_id']);
-
 $smarty = new TLSmarty();
 $smarty->assign('notes',$map[0]['notes']);
-$smarty->assign('webeditorType',$webeditorType);
-$smarty->display($template_dir . $default_template);
+$smarty->assign('webeditorType',$webeditorCfg['type']);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

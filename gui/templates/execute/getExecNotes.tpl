@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: getExecNotes.tpl,v 1.2 2008/01/04 16:17:49 franciscom Exp $
+$Id: getExecNotes.tpl,v 1.3 2008/12/31 15:06:00 franciscom Exp $
 Purpose: smarty template - template for show execution notes 
 
 rev : 20080104 - francisco.mancardi@gruppotesi.com
@@ -10,11 +10,11 @@ rev : 20080104 - francisco.mancardi@gruppotesi.com
 <head></head>
 <body>
 {if $webeditorType == 'none'}
-<textarea readonly name='notes' cols=80 rows=10 style="background:transparent;">
+<textarea readonly name='notes' cols=70 rows=10 style="background:transparent;">
 {$notes|escape}
+</textarea>
 {else}
 {$notes}
 {/if}
-</textarea>			
 </body>
 </html>

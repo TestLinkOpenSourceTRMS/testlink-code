@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.7 2008/09/09 10:22:47 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.8 2008/12/31 15:06:00 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -27,7 +27,7 @@ Rev:
 			<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
 		</tr>
 		<tr>
-      		<td colspan="2">{lang_get s='execution_type'}
+      		<td colspan="2">{$args_labels.execution_type}
 			                {$smarty.const.TITLE_SEP}
 			                {$args_execution_types[$args_tc_exec.execution_type]}</td>
 		</tr>

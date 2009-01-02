@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.7 2008/09/24 18:25:23 schlundus Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.8 2009/01/02 08:07:58 schlundus Exp $
 
 rev :
      20080524 - franciscom - BUGID 1430
@@ -223,13 +223,14 @@ rev :
 			    			{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
 			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
 			          {if $gui->displayResults[$inst.status] }
-			          	<td>{$inst.execute_link}</td>
-                  {if $inst.status == $resultsCfg.status_code.not_run}
-			    				    <td>&nbsp;</td>
+			       	{if $inst.status == $resultsCfg.status_code.not_run}
+			    			<td>{$inst.name|escape}</td>
+			      				    <td>&nbsp;</td>
 			    				    <td>&nbsp;</td>
 			    				    <td>&nbsp;</td>
                   {else}
-			          	    <td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
+			            		<td>{$inst.execute_link}</td>
+                	  	    	<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
 			    				    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
 			    				    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
                   {/if}

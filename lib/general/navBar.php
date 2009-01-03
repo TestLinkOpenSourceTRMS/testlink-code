@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/01/03 17:30:30 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
@@ -27,9 +27,9 @@ $gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;
 
-$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map', $tlCfg->gui->tprojects_combo_order_by);
+$gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map',$tlCfg->gui->tprojects_combo_order_by);
 $gui->TestProjectCount = sizeof($gui->TestProjects);
-$gui->TestPlanCount = getNumberOfAccessibleTestPlans($db,$gui->tprojectID, $_SESSION['filter_tp_by_product'],null);
+$gui->TestPlanCount = getNumberOfAccessibleTestPlans($db,$gui->tprojectID);
 $gui->docs = getUserDocumentation();
 
 

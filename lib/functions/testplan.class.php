@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.93 $
- * @modified $Date: 2008/12/27 18:27:01 $ by $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/01/03 17:30:29 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -2172,7 +2172,6 @@ function get_same_status_for_build_set($id,$buildSet,$status)
     return $recordset;
 }
 
-
 } // end class testplan
 // ######################################################################################
 
@@ -2382,20 +2381,19 @@ class milestone_mgr
             $tplan_id
             $name
             $target_date
-            $A: percentage
-            $B: percentage
-            $C: percentage
+            $low_priority: percentage
+            $medium_priority: percentage
+            $high_priority: percentage
 
     returns:
 
   */
-  function create($tplan_id,$name,$date,$A,$B,$C)
+  function create($tplan_id,$name,$date,$low_priority,$medium_priority,$high_priority)
   {
     $new_milestone_id=0;
   	$sql = "INSERT INTO {$this->milestones_table} (testplan_id,name,target_date,A,B,C) " .
-  	       " VALUES (" . $tplan_id . ",'" .
-  	       $this->db->prepare_string($name) . "','" .
-  	       $this->db->prepare_string($date) . "'," . $A . "," .  $B . "," . $C . ")";
+  	       " VALUES (" . $tplan_id . ",'{$this->db->prepare_string($name)}','{$this->db->prepare_string($date)}'," . 
+  	       $low_priority . "," .  $medium_priority . "," . $high_priority . ")";
   	$result = $this->db->exec_query($sql);
 
   	if ($result)
@@ -2422,11 +2420,11 @@ class milestone_mgr
 
     rev :
   */
-  function update($id,$name,$date,$A,$B,$C)
+  function update($id,$name,$date,$low_priority,$medium_priority,$high_priority)
   {
-	  $sql = "UPDATE {$this->milestones_table} SET name='" . $this->db->prepare_string($name) . "', " .
-	         " target_date='" . $this->db->prepare_string($date) . "', " .
-	         " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
+	  $sql = "UPDATE {$this->milestones_table} SET name='{$this->db->prepare_string($name)}', " .
+	         " target_date='{$this->db->prepare_string($date)}', " .
+	         " A={$low_priority}, B={$medium_priority}, C={$high_priority} WHERE id={$id}";
 	  $result = $this->db->exec_query($sql);
 	  return $result ? 1 : 0;
   }
@@ -2460,14 +2458,61 @@ class milestone_mgr
 
     returns:
 
-    rev :
+    rev: 20090103 - franciscom - get test plan name.
   */
   function get_by_id($id)
   {
-  	$sql = "SELECT * FROM {$this->milestones_table} WHERE id = {$id}";
+  	$sql = "SELECT M.*, NH.name as testplan_name " . 
+  	       "FROM {$this->milestones_table} M, {$this->nodes_hierarchy_table} NH " .
+  	       "WHERE M.id = {$id} AND NH.id=M.testplan_id";
   	$myrow = $this->db->fetchRowsIntoMap($sql,'id');
   	return $myrow;
   }
+
+/*
+  function: check_name_existence
+
+  args:
+       tplan_id: test plan id.
+       milestone_name
+      [milestone_id}: default: null
+                      when is not null we add milestone_id as filter, this is useful
+                      to understand if is really a duplicate when using this method
+                      while managing update operations via GUI
+
+  returns: 1 => name exists
+
+  rev: 
+
+*/
+function check_name_existence($tplan_id,$milestone_name,$milestone_id=null,$case_sensitive=0)
+{
+ 	$sql = " SELECT id, name" .
+	       " FROM {$this->milestones_table} " .
+	       " WHERE testplan_id = {$tplan_id} ";
+
+
+	if($case_sensitive)
+	{
+	    $sql .= " AND name=";
+	}
+	else
+	{
+      $milestone_name=strtoupper($milestone_name);
+	    $sql .= " AND UPPER(name)=";
+	}
+	$sql .= "'{$this->db->prepare_string($milestone_name)}'";
+
+	if( !is_null($milestone_id) )
+	{
+	    $sql .= " AND id <> " . $this->db->prepare_int($milestone_id);
+	}
+
+  $result = $this->db->exec_query($sql);
+  $status= $this->db->num_rows($result) ? 1 : 0;
+
+	return $status;
+}
 
 
   /*
@@ -2483,7 +2528,11 @@ class milestone_mgr
   */
   function get_all_by_testplan($tplan_id)
   {
-    $sql="SELECT * FROM {$this->milestones_table} WHERE testplan_id={$tplan_id} ORDER BY target_date";
+    $sql=" SELECT M.*, NH.name as testplan_name " .
+         " FROM {$this->milestones_table} M, {$this->nodes_hierarchy_table} NH " .
+         " WHERE testplan_id={$tplan_id} AND NH.id = testplan_id " .
+         " ORDER BY target_date,M.name";
+    
     $rs=$this->db->get_recordset($sql);
     return $rs;
   }

@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.45 2008/10/18 17:48:39 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.46 2009/01/03 17:27:41 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090103 - franciscom - milestones table - added new unique index
 # 20081018 - franciscom - renamed indexes on events table according to dev standards
 # 20080810 - franciscom - BUGID 1650 (REQ)
 #                         custom_fields.show_on_testplan_design
@@ -170,7 +171,8 @@ CREATE TABLE `milestones` (
   `C` tinyint(3) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
   PRIMARY KEY  (`id`),
-  KEY `testplan_id` (`testplan_id`)
+  KEY `testplan_id` (`testplan_id`),
+  UNIQUE KEY `name_testplan_id` (`name`,`testplan_id`)
 ) DEFAULT CHARSET=utf8;
 
 

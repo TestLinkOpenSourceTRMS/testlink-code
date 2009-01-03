@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfield_validation.js,v 1.1 2008/09/09 10:22:55 franciscom Exp $
+$Id: cfield_validation.js,v 1.2 2009/01/03 17:30:06 franciscom Exp $
 
 functions to validate custom field contents
 
@@ -9,8 +9,12 @@ regular expressions was taken from:
     http://tetlaw.id.au/view/javascript/really-easy-field-validation
     Andrew Tetlaw
     Version 1.5.4.1 (2007-01-05)
+   
+IMPORTANT
+Global Dependencies:  cfChecks declared and initialized in inc_jsCfieldsValidation.tpl   
     
-rev:
+rev: 20090101 - franciscom - changes email_check regexp with one taken
+                from EXT-JS Vtypes.js
 
 */
 
@@ -29,7 +33,7 @@ rev:
 */
 function validateCustomFields(cfields_inputs)
 {
-
+  
   var CFIELD_TYPE_IDX=2;
   var cfields_container='';
   var custom_field_types = new Array();
@@ -82,7 +86,7 @@ function validateCustomFields(cfields_inputs)
             var doNextCheck=!((cfield_value == null) || (cfield_value.length == 0));
             if(doNextCheck)
             {		    
-                checkStatus.status_ok=/\w{1,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/.test(cfield_value);
+                checkStatus.status_ok=cfChecks.email.test(cfield_value);
             }    
 		    break; 
 		} /* end switch */

@@ -1,8 +1,13 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.17 2008/10/30 09:12:33 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.18 2009/01/03 17:27:50 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
+--
+--  20090101 - franciscom - found some problem with serial column fo role table.
+--                          Postgers 8.2 Windows, seem do not increment serial
+--                          when explicit insert like done here.
+--                          Solved working on roles_id_seq
 --
 --  20080628 - franciscom - 
 --  20070724 - franciscom - BUGID 950 
@@ -27,13 +32,15 @@ INSERT INTO node_types (id,description) VALUES (7, 'requirement');
 
 
 --  Roles -
-INSERT INTO roles (id,description) VALUES (8, 'admin');
-INSERT INTO roles (id,description) VALUES (9, 'leader');
+INSERT INTO roles (id,description) VALUES (3, '<no rights>');
+INSERT INTO roles (id,description) VALUES (4, 'test designer');
+INSERT INTO roles (id,description) VALUES (5, 'guest');
 INSERT INTO roles (id,description) VALUES (6, 'senior tester');
 INSERT INTO roles (id,description) VALUES (7, 'tester');
-INSERT INTO roles (id,description) VALUES (5, 'guest');
-INSERT INTO roles (id,description) VALUES (4, 'test designer');
-INSERT INTO roles (id,description) VALUES (3, '<no rights>');
+INSERT INTO roles (id,description) VALUES (8, 'admin');
+INSERT INTO roles (id,description) VALUES (9, 'leader');
+SELECT setval('roles_id_seq', 9);           
+
 
 --  Rights - 
 INSERT INTO rights (id,description) VALUES (1 ,'testplan_execute'      );

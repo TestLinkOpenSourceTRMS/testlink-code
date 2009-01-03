@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/12/23 18:28:54 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/01/03 17:30:30 $ $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -100,6 +100,7 @@ switch($gui->report_type)
   	  	$filters->hide_testcases=HIDE_TESTCASES;
   	  	$filters->include_unassigned=1;
   	  	$filters->show_testsuite_contents=1;
+  	  	$filters->statusAllPrevBuilds=null;
         
   	  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;

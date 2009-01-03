@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2008/12/13 19:28:40 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/01/03 17:28:40 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Login management
  *
- * rev: 20081015 - franciscom - access to config parameters following development standard
+ * rev: 20081231 - franciscom - minor refactoring
+ *      20081015 - franciscom - access to config parameters following development standard
  **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -30,71 +31,110 @@ if (!$op['status'])
 	tLog('Connection fail page shown.','ERROR'); 
 	exit();
 }
-$_GET = strings_stripSlashes($_GET);
-$note = isset($_GET['note']) ? $_GET['note'] : null;
-$reqURI = isset($_GET['req']) ? $_GET['req'] : null;
-$_POST = strings_stripSlashes($_POST);
-$login = isset($_POST['tl_login']) ? $_POST['tl_login'] : null;
-$pwd = isset($_POST['tl_password']) ? $_POST['tl_password'] : null;
-$preqURI = (isset($_POST['reqURI']) && strlen($_POST['reqURI'])) ? $_POST['reqURI'] : null;
 
-switch($note)
-{
-	case 'expired':
-		if(!isset($_SESSION))
-			session_start();
-		session_unset();
-		session_destroy();
-		$note = lang_get('session_expired');
-		$reqURI = null;
-		break;
-	case 'first':
-		$note = lang_get('your_first_login');
-		$reqURI = null;
-		break;
-	case 'lost':
-		$note = lang_get('passwd_lost');
-		$reqURI = null;
-		break;
-	default:
-		$note = lang_get('please_login');
-		break;
-}
-if (!is_null($login))
+$args=init_args();
+
+if(!is_null($args->login))
 {
 	doSessionStart();
 	unset($_SESSION['basehref']);
 	setPaths();
-	if (doAuthorize($db,$login,$pwd,$msg) < tl::OK)
+	
+	if(doAuthorize($db,$args->login,$args->pwd,$msg) < tl::OK)
 	{
 		if (!$msg)
-			$note = lang_get('bad_user_passwd');
+		{
+			$args->note = lang_get('bad_user_passwd');
+		}
 		else
-			$note = $msg;
+		{
+			$args->note = $msg;
+		}	
 	}
 	else
 	{
-		logAuditEvent(TLS("audit_login_succeeded",$login,$_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
-		redirect($_SESSION['basehref']."index.php".($preqURI ? "?reqURI=".urlencode($preqURI) :""));
+		logAuditEvent(TLS("audit_login_succeeded",$args->login,
+		                  $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
+		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
 		exit();
 	}
 }
 
-$securityNotes = getSecurityNotes($db);
-$authCfg = config_get('authentication');
-$login_method = $authCfg['method'];
-$external_password_mgmt = ('LDAP' == $login_method) ? 1 : 0;
-$login_disabled = ($external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
 
 $logPeriodToDelete = config_get('removeEventsOlderThan');
 $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
 
+$authCfg = config_get('authentication');
+
+$gui = new stdClass();
+$gui->note = $args->note;
+$gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
+$gui->securityNotes = getSecurityNotes($db);
+$gui->external_password_mgmt = ('LDAP' == $authCfg['method']) ? 1 : 0;
+$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
+$gui->user_self_signup = config_get('user_self_signup');
+
 $smarty = new TLSmarty();
-$smarty->assign('g_user_self_signup', config_get('user_self_signup'));
-$smarty->assign('securityNotes',$securityNotes);
-$smarty->assign('note',$note);
-$smarty->assign('reqURI',$reqURI ? $reqURI : $preqURI);
-$smarty->assign('login_disabled', $login_disabled);
-$smarty->assign('external_password_mgmt', $external_password_mgmt);
+$smarty->assign('gui', $gui);
+
+// $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
+// $smarty->assign('securityNotes',$securityNotes);
+// $smarty->assign('note',$args->note);
+// $smarty->assign('reqURI',$args->reqURI ? $args->reqURI : $args->preqURI);
+// $smarty->assign('login_disabled', $login_disabled);
+// $smarty->assign('external_password_mgmt', $external_password_mgmt);
 $smarty->display('login.tpl');
+
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $args = new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    
+    $args->note = isset($_REQUEST['note']) ? $_REQUEST['note'] : null;
+    $args->login = isset($_REQUEST['tl_login']) ? trim($_REQUEST['tl_login']) : null;
+    $args->pwd = isset($_REQUEST['tl_password']) ? $_REQUEST['tl_password'] : null;
+
+    $args->reqURI = isset($_REQUEST['req']) ? $_REQUEST['req'] : null;
+    $args->preqURI = (isset($_REQUEST['reqURI']) && strlen($_REQUEST['reqURI'])) ? $_REQUEST['reqURI'] : null;
+
+    switch($args->note)
+    {
+    	case 'expired':
+    		if(!isset($_SESSION))
+    		{
+    			session_start();
+    		}
+    		session_unset();
+    		session_destroy();
+    		$args->note = lang_get('session_expired');
+    		$args->reqURI = null;
+    		break;
+    		
+    	case 'first':
+    		$args->note = lang_get('your_first_login');
+    		$args->reqURI = null;
+    		break;
+    		
+    	case 'lost':
+    		$args->note = lang_get('passwd_lost');
+    		$args->reqURI = null;
+    		break;
+    		
+    	default:
+    		$args->note = lang_get('please_login');
+    		break;
+    }
+  
+    return $args;
+}
+
 ?>

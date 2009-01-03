@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.8 2008/05/11 22:13:22 schlundus Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.9 2009/01/03 17:25:35 franciscom Exp $ 
  * 
  *
  * rev :
@@ -46,7 +46,7 @@ if($qty_linked)
 else
 	$user_feedback = lang_get('no_linked_tcversions');  
 
-$tplans = getAccessibleTestPlans($db,$args->tproject_id,$args->user_id,1);
+$tplans = getAccessibleTestPlans($db,$args->tproject_id,$args->user_id);
 $map_tplans = array();
 foreach($tplans as $key => $value)
 {

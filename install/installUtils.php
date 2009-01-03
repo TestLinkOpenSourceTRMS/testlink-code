@@ -1,10 +1,14 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.33 2008/09/16 06:10:18 franciscom Exp $ 
+$Id: installUtils.php,v 1.34 2009/01/03 17:27:22 franciscom Exp $ 
 
 
 rev :
+     20090101 - franciscom - check_php_version() - minimun version 5.2.0.
+                             this is version need to use ext-js tree due to
+                             need of json_* functions.
+                             
      20080914 - franciscom - check_php_resource_settings()
      20080219 - franciscom - improvements on getDirSqlFiles
      20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
@@ -434,7 +438,7 @@ return($ret);
 */
 function check_php_version($info_location="./info/")
 {
-$min_ver = "5.0.0";
+$min_ver = "5.2.0";
 $ver_not_tested="";
 
 

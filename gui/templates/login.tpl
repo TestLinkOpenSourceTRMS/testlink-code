@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.24 2008/07/21 09:25:01 havlat Exp $
+$Id: login.tpl,v 1.25 2009/01/03 17:26:39 franciscom Exp $
 Purpose: smarty template - login page 
 -------------------------------------------------------------------------------------- *}
+{lang_get var='labels' s='login_name,password,btn_login,new_user_q,lost_password_q'}
 {config_load file="input_dimensions.conf" section="login"}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
 
@@ -28,38 +29,38 @@ window.onload=function()
 <div class="forms" id="login_div">
 
 	<form method="post" name="login_form" action="login.php">
-    {if $login_disabled eq 0}		
-  	  <div class="messages" style="text-align:center;">{$note}</div>
-		  <input type="hidden" name="reqURI" value="{$reqURI}"/>
-  		<p class="label">{lang_get s='login_name'}<br />
+    {if $gui->login_disabled eq 0}		
+  	  <div class="messages" style="text-align:center;">{$gui->note}</div>
+		  <input type="hidden" name="reqURI" value="{$gui->reqURI}"/>
+  		<p class="label">{$labels.login_name}<br />
 			<input type="text" name="tl_login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
 		</p>
-  		<p class="label">{lang_get s='password'}<br />
+  		<p class="label">{$labels.password}<br />
 			<input type="password" name="tl_password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />
 		</p>
-		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
+		<input type="submit" name="login_submit" value="{$labels.btn_login}" />
 		{/if}
 	</form>
 	
 	<p>
-	{if $g_user_self_signup}
-		<a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
+	{if $gui->user_self_signup}
+		<a href="firstLogin.php">{$labels.new_user_q}</a><br />
 	{/if}
 	
 	{* the configured authentication method don't allow users to reset his/her password *}		
-	{if $external_password_mgmt eq 0}
-		<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
+	{if $gui->external_password_mgmt eq 0}
+		<a href="lostPassword.php">{$labels.lost_password_q}</a>
 	</p>
 	{/if}
 
 	
 	{include file="inc_copyrightnotice.tpl"}
 
-	{if $securityNotes}
-    	{include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="messages"}
+	{if $gui->securityNotes}
+    	{include file="inc_msg_from_array.tpl" array_of_msg=$gui->securityNotes arg_css_class="messages"}
 	{/if}
 	
-	{if $tlCfg->login_info ne ""}
+	{if $tlCfg->login_info != ""}
 		<div>{$tlCfg->login_info}</div>
 	{/if}
 

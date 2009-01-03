@@ -1,13 +1,10 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.11 2008/12/30 13:34:24 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.12 2009/01/03 17:26:39 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
        20081228 - franciscom - new feature user can choose vertical order of link groups
-       20070523 - franciscom - new config constant $smarty.const.TL_ITEM_BULLET_IMG
-       20070508 - franciscom - milestones re-enabled
-                               improving test plan messaging
 *}
 {lang_get var="labels"
           s="title_test_plan,ok,testplan_role,msg_no_rights_for_tp,
@@ -166,7 +163,7 @@
 	    {if $testplan_planning == "yes" and $countPlans > 0 }
             <br />
         	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-           	<a href="lib/plan/planMilestones.php">{$labels.href_plan_mstones}</a>
+           	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
 	    {/if}
 	    
     </div>

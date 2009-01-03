@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.8 2008/09/09 10:22:52 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.9 2009/01/03 17:30:13 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev:20080908 - franciscom - added logic to validate Custom Field user input
@@ -36,7 +36,7 @@ function validateForm(f)
 {
   var status_ok=true;
   var cfields_container='';
-  var cfChecks;
+  var cfieldsChecks;
   
   if (isWhitespace(f.testcase_name.value)) 
   {
@@ -46,11 +46,11 @@ function validateForm(f)
   }
   
  	cfields_container = document.getElementById('cfields_design_time').getElementsByTagName('input');
-  cfChecks=validateCustomFields(cfields_container);
-  if( !cfChecks.status_ok )
+  cfieldsChecks=validateCustomFields(cfields_container);
+  if( !cfieldsChecks.status_ok )
   {
-      var warning_msg=cfMessages[cfChecks.msg_id];
-      alert_message(alert_box_title,warning_msg.replace(/%s/, cfChecks.cfield_label));
+      var warning_msg=cfMessages[cfieldsChecks.msg_id];
+      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
       return false;
   }
   return true;

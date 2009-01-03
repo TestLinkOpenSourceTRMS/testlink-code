@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.10 2008/10/30 11:24:27 havlat Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.11 2009/01/03 17:30:13 franciscom Exp $
 
 rev: 20080415 - franciscom - refactoring
 *}
@@ -26,9 +26,11 @@ rev: 20080415 - franciscom - refactoring
 			       value="{$labels.btn_new_req_spec}"
 			       onclick="location='{$req_spec_new_url}{$gui->tproject_id}'" />
 
+      {if $tlCfg->treemenu_type != 'EXTJS'}
 		  <input type="button" id="reorder_req_spec" name="reorder_req_spec"
 		         value="{$labels.btn_reorder_req_spec}"
 		         onclick="location='{$req_spec_reorder_url}{$gui->tproject_id}'" />
+		  {/if}       
 		</form>
 	</div>
 </div>

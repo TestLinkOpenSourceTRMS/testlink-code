@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2008/12/07 19:02:35 $  $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/01/03 17:30:29 $  $Author: franciscom $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -1079,7 +1079,7 @@ class cfield_mgr
 
    	if ($result)
   	{
-  	  // 20070617 - franciscom - at least for Postgres DBMS table name is needed.
+  	  // at least for Postgres DBMS table name is needed.
   	  $field_id=$this->db->insert_id('custom_fields');
 
       $sql="INSERT INTO cfield_node_types " .

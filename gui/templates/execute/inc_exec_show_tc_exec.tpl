@@ -88,10 +88,10 @@
 
 		{* The very last execution for any build of this test plan *}
 		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on==0}
-        {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}
+        {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {assign var="status_code" value=$abs_last_exec.status}
 
-     			<div class="{$gsmarty_tc_status_css.$status_code}">
+     			<div class="{$tlCfg->results.code_status.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
      			{$labels.test_exec_by} {$title_sep} {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
@@ -161,7 +161,7 @@
   				{/if}
 
   				<td>{$users[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
-  				<td class="{$gsmarty_tc_status_css.$tc_status_code}" style="text-align:center">
+  				<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>
   				

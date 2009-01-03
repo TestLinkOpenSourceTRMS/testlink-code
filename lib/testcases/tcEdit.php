@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2008/11/24 08:03:02 $  by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2009/01/03 17:30:30 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -438,6 +438,7 @@ if ($show_newTC_form)
 	} // foreach ($a_oWebEditor_cfg as $key)
   // ------------------------------------------------------------------------
 
+  $tc_default=array('id' => 0, 'name' => '', 'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
 	$tc_default['importance'] = $tlCfg->testcase_importance_default;
 	$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
  	$smarty->assign('cf',$cf_smarty);

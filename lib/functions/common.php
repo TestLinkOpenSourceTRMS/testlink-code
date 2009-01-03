@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.129 $ $Author: schlundus $
- * @modified $Date: 2008/12/15 20:22:41 $
+ * @version $Revision: 1.130 $ $Author: franciscom $
+ * @modified $Date: 2009/01/03 17:30:29 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -360,14 +360,15 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	setSessionTestProject($tproject_data);
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-	$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+	$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 	// Now we need to validate the TestPlan
 	if($user_sel["tplan_id"] != 0)
+	{
 		$tplan_id = $user_sel["tplan_id"];
-
+  }
+  
 	//check if the specific combination of testprojectid and testplanid is valid
-	$tplan_data = getAccessibleTestPlans($db,$tproject_id,
-	                                     $_SESSION['userID'],$filter_tp_by_product,$tplan_id);
+	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],$tplan_id);
 	if(!is_null($tplan_data))
 	{
 		$tplan_data = $tplan_data[0];
@@ -376,7 +377,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	}
 
 	//get the first accessible TestPlan
-	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],$filter_tp_by_product,null);
+	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID']);
 	if(!is_null($tplan_data))
 		$tplan_data = $tplan_data[0];
 

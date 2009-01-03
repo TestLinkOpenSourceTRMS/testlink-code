@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.46 2008/11/09 16:25:38 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.47 2009/01/03 17:30:30 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -82,7 +82,7 @@ if($gui->do_report['status_ok'])
 		                                                   $tlCfg->reports_formats[$selectedReportType]);
 
 }
-$tplans = getAccessibleTestPlans($db, $tproject_id, $_SESSION['userID'], 1);
+$tplans = getAccessibleTestPlans($db, $tproject_id, $_SESSION['userID']);
 foreach($tplans as $key => $value)
 {
   	$gui->tplans[$value['id']] = $value['name'];

@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/11/26 19:52:02 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/01/03 17:30:29 $ $Author: franciscom $
  *
- * rev: 20080412 - franciscom - typo error
+ * rev: 20090101 - franciscom - writeToDB() problems with Postgres
+ *                              due to wrong table name in insert_id() call.
+ *     
  */
 class tlRole extends tlDBObject
 {
@@ -110,7 +112,9 @@ class tlRole extends tlDBObject
 						     "'".$db->prepare_string($this->description)."')";
 				$result = $db->exec_query($query);	
 				if($result)
-					$this->dbID = $db->insert_id('users');
+				{
+					$this->dbID = $db->insert_id('roles');
+				}	
 			}
 			$result = $result ? tl::OK : self::E_DBERROR;
 			if ($result >= tl::OK)
@@ -283,7 +287,8 @@ class tlRole extends tlDBObject
 	
 	protected function readRights(&$db)
 	{
-		$query = "SELECT right_id,description FROM role_rights a JOIN rights b ON a.right_id = b.id WHERE role_id = {$this->dbID}";
+		$query = "SELECT right_id,description FROM role_rights a JOIN rights b ON a.right_id = b.id " .
+		         "WHERE role_id = {$this->dbID}";
 		$rightInfo = $db->get_recordset($query);
 		$this->rights = buildRightsArray($rightInfo);
 		return tl::OK;

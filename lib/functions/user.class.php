@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2008/12/13 19:25:41 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/01/03 17:30:29 $ $Author: franciscom $
  *
- * rev: 20081213 - franciscom - removed global coupling to access config parameters
+ * rev: 20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
+ *      20081213 - franciscom - removed global coupling to access config parameters
  */
 class tlUser extends tlDBObject
 {
@@ -59,7 +60,7 @@ class tlUser extends tlDBObject
 		
 		$authCfg = config_get('authentication');
 		$this->usernameFormat = config_get('username_format');
-		$this->loginRegExp = config_get('user_login_valid_regex');
+		$this->loginRegExp = config_get('validation_cfg')->user_login_valid_regex;
 		$this->maxLoginLength = 30; 
 		$this->loginMethod = $authCfg['method'];
 		
@@ -80,22 +81,25 @@ class tlUser extends tlDBObject
 		$this->bActive = null;
 		$this->defaultTestprojectID = null;
 		$this->globalRoleID = null;
-		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-			$this->dbID = null;
-		if (!($options & self::USER_O_SEARCH_BYLOGIN))
-			$this->login = null;
 		$this->tprojectRoles = null;
 		$this->tplanRoles = null;
 		$this->userApiKey = null;
+
+		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
+			$this->dbID = null;
+		}
+
+		if (!($options & self::USER_O_SEARCH_BYLOGIN))
+		{
+			$this->login = null;
+		}
 	}
 	
 	static public function isPasswordMgtExternal()
 	{
 		$authCfg = config_get('authentication');
-		$loginMethod = $authCfg['method'];
-		if ($loginMethod != '' &&  $loginMethod != 'MD5')
-			return true;
-		return false;
+		return ($authCfg['method'] != '' &&  $authCfg['method'] != 'MD5') ? true : false;
 	}
 	
 	/* fills the members  */
@@ -209,7 +213,9 @@ class tlUser extends tlDBObject
 							$db->prepare_string($this->locale). "'," . $this->bActive . ")";
 				$result = $db->exec_query($query);
 				if($result)
+				{
 					$this->dbID = $db->insert_id('users');
+				}	
 			}
 			$result = $result ? tl::OK : self::E_DBERROR;
 		}
@@ -218,11 +224,23 @@ class tlUser extends tlDBObject
 	
 	public function deleteFromDB(&$db)
 	{
-		$query = "DELETE FROM users WHERE id=" . $this->dbID;
-		$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
+	  $querySet = array();
+	  $querySet[] = "DELETE FROM user_assignments WHERE user_id={$this->dbID}";
+		$querySet[] = "DELETE FROM users WHERE id={$this->dbID}";
+
+    foreach( $querySet as $query )
+    {
+	      $result = $db->exec_query($query) ? tl::OK : tl::ERROR;
+		    if($result == tl::ERROR) 
+		    {
+		        break;  
+		    }
+		}
+	
 		if ($result == tl::OK)
+		{
 			$result = $this->deleteTestProjectRoles($db);
-		
+		}
 		return $result;
 	}
 
@@ -403,11 +421,16 @@ class tlUser extends tlDBObject
 	
 	static public function checkEmailAdress($email)
 	{
+	  
 		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
 		if ($result == tl::OK)
 		{
-			if (!preg_match(config_get('user_email_valid_regex'),$email))
+	    $matches=array();
+	    $email_regex=config_get('validation_cfg')->user_email_valid_regex;
+			if (!preg_match($email_regex,$email,$matches))
+			{
 				$result = self::E_EMAILFORMAT;
+			}	
 		}
 		return $result;
 	}

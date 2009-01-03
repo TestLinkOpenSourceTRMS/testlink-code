@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/12/18 08:22:45 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/01/03 17:30:29 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -326,14 +326,18 @@ function getRoleErrorMessage($code)
 		case tlRole::E_NAMEALREADYEXISTS:
 			$msg = lang_get('error_duplicate_rolename');
 			break;
+		
 		case tlRole::E_NAMELENGTH:
 			$msg = lang_get('error_role_no_rolename');
 			break;
+			
 		case tlRole::E_EMPTYROLE:
 			$msg = lang_get('error_role_no_rights');
 			break;
+		
 		case tl::OK:
 			break;
+		
 		case ERROR:
 		case tlRole::E_DBERROR:
 		default:

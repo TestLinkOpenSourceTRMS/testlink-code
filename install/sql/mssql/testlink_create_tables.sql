@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.30 2008/10/18 17:48:39 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.31 2009/01/03 17:27:32 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -10,6 +10,8 @@
 --
 -- 
 -- Rev :
+--
+--      20090103 - franciscom - milestones table - added new unique index
 --      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 --                              refactored index names
 --
@@ -351,6 +353,13 @@ CREATE NONCLUSTERED INDEX [idx_Testplan] ON [milestones]
 (
 	[testplan_id] ASC
 ) ON [PRIMARY]
+
+CREATE UNIQUE NONCLUSTERED INDEX [IX_name_testplan_id] ON [milestones] 
+(
+	[name] ASC,
+	[testplan_id] ASC
+) ON [PRIMARY]
+
 
 CREATE TABLE [attachments](
 	[id] [int] IDENTITY(1,1) NOT NULL,

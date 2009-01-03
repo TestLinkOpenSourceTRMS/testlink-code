@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.7 2008/08/21 14:39:43 franciscom Exp $
+$Id: tcTree.js,v 1.8 2009/01/03 17:30:06 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -85,7 +85,6 @@ TreePanelState.prototype.init = function()
 TreePanelState.prototype.saveState = function(newState) 
 {
     this.state = newState;
-    // this.cp.set('TreePanelState_' + this.mytree.id, this.state);
     this.cp.set(this.cookiePrefix + this.mytree.id, this.state);
 }
 

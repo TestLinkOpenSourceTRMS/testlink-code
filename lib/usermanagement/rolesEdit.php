@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/01/03 17:30:30 $ by $Author: franciscom $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -115,7 +115,7 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 				break;
 	
 			case 'doUpdate':
-	        	$auditCfg['msg'] = "audit_role_saved";
+	      $auditCfg['msg'] = "audit_role_saved";
 				$auditCfg['activity'] = "SAVE";
 				break;
 		}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/09/28 10:04:43 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/01/03 17:30:30 $ $Author: franciscom $
  *
  * @author franciscom
  *
@@ -42,7 +42,7 @@ function getMetrics(&$db,$user_id,$tproject_id)
   
   // BUGID 1215
   // get all tesplans accessibles  for user, for $tproject_id
-  $test_plans = getAccessibleTestPlans($db,$tproject_id,$user_id,FILTER_BY_PRODUCT);
+  $test_plans = getAccessibleTestPlans($db,$tproject_id,$user_id);
 
   // Get count of testcases linked to every testplan
   foreach($test_plans as $key => $value)

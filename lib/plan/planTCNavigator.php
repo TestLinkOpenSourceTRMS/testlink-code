@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.26 2008/12/30 13:34:49 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.27 2009/01/03 17:25:35 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -156,6 +156,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
     $gui->keywordsFilterItemQty=0;
     $gui->keyword_id=$argsObj->keyword_id; 
+   	$gui->toggleFilterModeLabel='';
+    $gui->advancedFilterMode=0;
+    $gui->chooseFilterModeEnabled=0;
+
 
     // We only want to use in the filter, keywords present in the test cases that are
     // linked to test plan, and NOT all keywords defined for test project
@@ -170,7 +174,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;         
 
     // filter using user roles
-    $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id,1);
+    $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id);
     $gui->map_tplans = array();
     foreach($tplans as $key => $value)
     {
@@ -180,41 +184,42 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->testers=null;
    	$gui->title = lang_get('title_test_plan_navigator');
     $gui->src_workframe=$argsObj->src_workframe;
-
     $gui->draw_bulk_update_button=false;
+
     switch($argsObj->feature)
     {
       case 'planUpdateTC':
-    	$gui->menuUrl = "lib/plan/planUpdateTC.php";
-    	$gui->draw_bulk_update_button=true;
+    	    $gui->menuUrl = "lib/plan/planUpdateTC.php";
+    	    $gui->draw_bulk_update_button=true;
     	break;
     
       case 'test_urgency':
-    	$gui->menuUrl = "lib/plan/planUrgency.php";
+    	    $gui->menuUrl = "lib/plan/planUrgency.php";
 	    break;
     
       case 'tc_exec_assignment':
-    	// BUGID 1427
-    	$gui->menuUrl = "lib/plan/tc_exec_assignment.php";
-    	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
-    	                                         null,
-     	                                         array(TL_USER_ANYBODY => $gui->str_option_any,
-	                                                   TL_USER_NOBODY => $gui->str_option_none) );
-
-    	
-    	
-    	$gui->advancedFilterMode=$argsObj->advancedFilterMode;
-      if( $gui->advancedFilterMode )
-      {
-          $label = 'btn_simple_filters';
-          $gui->assigneeFilterItemQty=4; // as good as any other number
-      }
-      else
-      {
-          $label='btn_advanced_filters';
-          $gui->assigneeFilterItemQty=1;
-      }
-      $gui->toggleFilterModeLabel=lang_get($label);
+    	    // BUGID 1427
+    	    $gui->menuUrl = "lib/plan/tc_exec_assignment.php";
+    	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
+    	                                             null,
+     	                                             array(TL_USER_ANYBODY => $gui->str_option_any,
+	                                                       TL_USER_NOBODY => $gui->str_option_none) );
+          
+    	    
+    	    
+    	    $gui->advancedFilterMode=$argsObj->advancedFilterMode;
+          if( $gui->advancedFilterMode )
+          {
+              $label = 'btn_simple_filters';
+              $gui->assigneeFilterItemQty=4; // as good as any other number
+          }
+          else
+          {
+              $label='btn_advanced_filters';
+              $gui->assigneeFilterItemQty=1;
+          }
+          $gui->chooseFilterModeEnabled=1;  
+          $gui->toggleFilterModeLabel=lang_get($label);
     	break;
     }
 
@@ -262,6 +267,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $filters->status = null;
     $filters->cf_hash = null;
 
+    $filters->statusAllPrevBuilds=null;
 
     switch($argsObj->feature)
     {

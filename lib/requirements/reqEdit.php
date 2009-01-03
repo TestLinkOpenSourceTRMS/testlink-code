@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/01/03 17:30:30 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -141,13 +141,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     {
         case 'template':
         	$smartyObj->assign('gui',$guiObj);
-		    $smartyObj->display($tpl);
+		      $smartyObj->display($tpl);
         	break;  
  
         case 'redirect':
-		    header("Location: {$tpl}");
-	  		exit();
-        	break;
+		      header("Location: {$tpl}");
+	  		  exit();
+        break;
 
         default:
         	break;

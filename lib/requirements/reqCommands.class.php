@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/01/03 17:30:30 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -153,7 +153,7 @@ class reqCommands
 		  {
 		      // Action has failed => no change done on DB.
 	        $old = $this->reqMgr->get_by_id($argsObj->req_id);
-	        $obj->main_descr = $descr_prefix . $req['title'];
+	        $obj->main_descr = $descr_prefix . $old['title'];
           $obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
 		  }
       return $obj;	

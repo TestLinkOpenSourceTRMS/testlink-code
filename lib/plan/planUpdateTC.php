@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.32 2008/12/23 18:28:54 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.33 2009/01/03 17:25:35 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -68,7 +68,7 @@ switch($args->level)
 		break;
 
 	case 'testsuite':
-	    $out = processTestSuite($db,$args,$map_node_tccount,$keywordsFilter,$tplan_mgr,$tcase_mgr);
+	    $out = processTestSuite($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr);
 		break;
 
 	case 'testplan':
@@ -217,11 +217,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
   returns: 
 
 */
-function processTestSuite(&$dbHandler,&$argsObj,$map_node_tccount,
-                          $keywordsFilter,&$tplanMgr,&$tcaseMgr)
+function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
     $out=keywordFilteredSpecView($dbHandler,$argsObj,$keywordsFilter,$tplanMgr,$tcaseMgr);
-
     return $out;
 }
 

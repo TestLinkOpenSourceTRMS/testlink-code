@@ -1,8 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.3 2008/05/06 06:26:11 franciscom Exp $
+$Id: resultsByStatus.tpl,v 1.4 2009/01/03 17:30:13 franciscom Exp $
 Purpose: show Test Results and Metrics
 *}
+
+{lang_get var='labels' s='th_test_suite,test_case,version,th_build,th_run_by,
+                          th_date,th_notes,th_bugs,info_test_results'}
+
 {include file="inc_head.tpl"}
 
 <body>
@@ -14,16 +18,16 @@ Purpose: show Test Results and Metrics
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}
 <table class="simple" style="width: 100%; text-align: left; margin-left: 0px;">
 <tr>
-	<th>{lang_get s='th_test_suite'}</th>
-	<th>{lang_get s='test_case'}</th>
-    <th>{lang_get s='version'}</th>
-    {if $type != $gsmarty_tc_status.not_run}
-		<th>{lang_get s='th_build'}</th>
-		<th>{lang_get s='th_run_by'}</th>
-		<th>{lang_get s='th_date'}</th>
-		<th>{lang_get s='th_notes'}</th>
-		<th>{lang_get s='th_bugs'}</th>
-	{/if}
+	<th>{$labels.th_test_suite}</th>
+	<th>{$labels.test_case}</th>
+    <th>{$labels.version}</th>
+    {if $type != $tlCfg->results.status_code.not_run}
+		    <th>{$labels.th_build}</th>
+		    <th>{$labels.th_run_by}</th>
+		    <th>{$labels.th_date}</th>
+		    <th>{$labels.th_notes}</th>
+		    <th>{$labels.th_bugs}</th>
+	  {/if}
 </tr>
 {section name=Row loop=$arrData}
 <tr>
@@ -34,7 +38,7 @@ Purpose: show Test Results and Metrics
 {/section}
 </table>
 
-<p class="italic">{lang_get s='info_test_results'}</p>
+<p class="italic">{$labels.info_test_results}</p>
 
 {lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div>

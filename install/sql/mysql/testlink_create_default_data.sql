@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.23 2008/11/09 16:29:36 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.24 2009/01/03 18:53:38 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
@@ -29,13 +29,15 @@ INSERT INTO `node_types` (id,description) VALUES (7, 'requirement');
 
 
 # Roles -
-INSERT INTO `roles` (id,description) VALUES (8, 'admin');
-INSERT INTO `roles` (id,description) VALUES (9, 'leader');
+INSERT INTO `roles` (id,description) VALUES (1, '<reserved system role 1>');
+INSERT INTO `roles` (id,description) VALUES (2, '<reserved system role 2>');
+INSERT INTO `roles` (id,description) VALUES (3, '<no rights>');
+INSERT INTO `roles` (id,description) VALUES (4, 'test designer');
+INSERT INTO `roles` (id,description) VALUES (5, 'guest');
 INSERT INTO `roles` (id,description) VALUES (6, 'senior tester');
 INSERT INTO `roles` (id,description) VALUES (7, 'tester');
-INSERT INTO `roles` (id,description) VALUES (5, 'guest');
-INSERT INTO `roles` (id,description) VALUES (4, 'test designer');
-INSERT INTO `roles` (id,description) VALUES (3, '<no rights>');
+INSERT INTO `roles` (id,description) VALUES (8, 'admin');
+INSERT INTO `roles` (id,description) VALUES (9, 'leader');
 
 # Rights - 
 INSERT INTO `rights` (id,description) VALUES (1 ,'testplan_execute');

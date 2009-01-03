@@ -1,7 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.19 2008/12/11 20:30:16 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.20 2009/01/03 18:53:24 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
+
+rev: 20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
 *}
 
 {lang_get var="labels" 
@@ -9,6 +11,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
              th_id,th_test_case,version,execution_order,
              no_testcase_available,btn_save_custom_fields,
              has_been_executed,inactive_testcase,btn_save_exec_order,
+             executed_can_not_be_removed,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
@@ -28,6 +31,13 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
    {lang_get s='btn_remove_selected_tc' var="buttonValue"}
    {assign var="execution_order_html_disabled" value='disabled="disabled"'}
 {/if}    
+
+{if $tlCfg->testcase_cfg->can_remove_executed }
+    {assign var="executed_warning" value=$labels.has_been_executed}
+{else}
+    {assign var="executed_warning" value=$labels.executed_can_not_be_removed}                         
+{/if}   
+
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 
@@ -203,7 +213,8 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
                 {if $ts.linked_testcase_qty gt 0 }
           				<td>&nbsp;</td>
           				<td>
-          				   {if $linked_version_id ne 0} 
+          				   {if $linked_version_id ne 0 && $tcase.executed == 'yes' && 
+          				       $tlCfg->testcase_cfg->can_remove_executed} 
           						<input type='checkbox' 
           						       name='{$rm_cb}[{$tcID}]' 
           						       id='{$rm_cb}{$tcID}' 
@@ -212,7 +223,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
           						&nbsp;
           				   {/if}
                      {if $tcase.executed eq 'yes'}
-                            &nbsp;&nbsp;&nbsp;{$labels.has_been_executed}
+                         &nbsp;&nbsp;&nbsp;{$executed_warning}
                      {/if}    
                      {if $is_active eq 0}
                            &nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}

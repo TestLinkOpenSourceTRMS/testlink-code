@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.220 $
- * @modified $Date: 2009/01/03 17:28:40 $ by $Author: franciscom $
+ * @version $Revision: 1.221 $
+ * @modified $Date: 2009/01/03 18:53:24 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,6 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
+ *     20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
  *     20090101 - franciscom - changes in regex used to validate an email address
  *     20081228 - franciscom - gui->layoutMainPageLeft,gui->layoutMainPageRight
  *     20081217 - franciscom - exec_cfg->simple_tester_roles
@@ -557,6 +558,11 @@ $g_spec_cfg->automatic_tree_refresh = ENABLED;
 // ENABLED -> user can edit executed tc versions
 // DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
 $tlCfg->testcase_cfg->can_edit_executed = DISABLED;
+
+// ENABLED -> user can removed from a testplan executed tc versions. [STANDARD BEHAVIOUR]
+// DISABLED -> user can NOT remove from a testplan executed tc versions.  
+$tlCfg->testcase_cfg->can_remove_executed = ENABLED;
+
 
 // To avoid perfomance problems on search test case feature,
 // we can decide when to inform user that results can not be displayed

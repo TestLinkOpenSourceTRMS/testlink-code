@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.373 $
- * @modified $Date: 2009/01/03 17:30:44 $ by $Author: franciscom $
+ * @version $Revision: 1.374 $
+ * @modified $Date: 2009/01/03 18:53:24 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -974,6 +974,7 @@ $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_check_uncheck_all_checkboxes = "check/uncheck all";
 $TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
 $TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
+$TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
 $TLS_execution_order = "Execution order";
 
 $TLS_has_been_executed = "has been executed";
@@ -986,7 +987,6 @@ $TLS_th_test_case = "Test Case";
 $TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to/from Test Plan";
 $TLS_title_add_test_to_plan = "Add Test Cases to Test Plan";
 $TLS_warning_add_remove_selected_tc = "Warning! Are you sure to remove the selected Test Cases from Test Plan?";
-
 
 
 // gui/templates/planAddTCNavigator.tpl

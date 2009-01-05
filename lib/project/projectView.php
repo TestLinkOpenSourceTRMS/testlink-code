@@ -5,15 +5,15 @@
  *
  * Filename $RCSfile: projectView.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/11/20 21:10:45 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/01/05 21:38:57 $ $Author: schlundus $
  *
  * Display list of test projects
  *
 */
 require_once('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -46,5 +46,10 @@ function init_args()
    $args->userID =isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     
    return $args;  
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_modify_product');
 }
 ?>

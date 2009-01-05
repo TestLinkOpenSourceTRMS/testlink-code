@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/09/02 16:39:49 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/01/05 21:38:57 $ $Author: schlundus $
  *
  * rev :
  *      20080827 - franciscom - BUGID 1692
@@ -18,10 +18,10 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
 require_once("web_editor.php");
-$editorCfg=getWebEditorCfg('build');
+$editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
 $op = new stdClass();
@@ -394,5 +394,10 @@ function doCopyToTestPlans(&$argsObj,&$buildMgr,&$tplanMgr)
             }
         }
     }
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_create_build');
 }
 ?>

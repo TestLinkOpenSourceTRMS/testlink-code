@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/01/03 17:30:30 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/01/05 21:38:57 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -19,7 +19,7 @@ require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('role');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 init_global_rights_maps();
 
 $templateCfg = templateConfiguration();
@@ -286,5 +286,10 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 
     $guiObj->notes = $webEditorObj->CreateHTML();
     return $guiObj;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"role_management");
 }
 ?>

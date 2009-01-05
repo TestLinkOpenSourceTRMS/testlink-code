@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2008/11/20 21:10:45 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/01/05 21:38:57 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once("roles.inc.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 init_global_rights_maps();
@@ -70,5 +70,10 @@ function init_args()
     $args->userID = $_SESSION['currentUser']->dbID;
 
     return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"role_management");
 }
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/03/10 21:52:00 $ $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/01/05 21:38:57 $ $Author: schlundus $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -16,9 +16,10 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
-$template_dir = 'plan/';
+$templateCfg = templateConfiguration();
+
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
@@ -32,5 +33,10 @@ $smarty->assign('user_feedback',null); // disable notice
 $smarty->assign('tplan_name', $tplan_name);
 $smarty->assign('tplan_id', $tplan_id);
 $smarty->assign('the_builds', $the_builds);
-$smarty->display($template_dir . 'buildView.tpl');
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_create_build');
+}
 ?>

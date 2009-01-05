@@ -54,9 +54,13 @@ var del_action=fRoot+'{$deleteAction}';
 			<td>
 				{$milestone.target_date|date_format:$gsmarty_date_format}
 			</td>
-			{if $session['testprojectOptPriority']}<td style="text-align: right">{$milestone.a|escape}</td>{/if}
-			{if $session['testprojectOptPriority']}<td style="text-align: right">{$milestone.b|escape}</td>{/if}
-			{if $session['testprojectOptPriority']}<td style="text-align: right">{$milestone.c|escape}</td>{/if}
+			{if $session['testprojectOptPriority']}
+				<td style="text-align: right">{$milestone.A|escape}</td>
+				<td style="text-align: right">{$milestone.B|escape}</td>
+				<td style="text-align: right">{$milestone.C|escape}</td>
+			{else}
+				<td style="text-align: right">???</td>
+			{/if}
 			<td class="clickable_icon">
 				       <img style="border:none;cursor: pointer;" 
   				            title="{$labels.alt_delete_milestone}" 

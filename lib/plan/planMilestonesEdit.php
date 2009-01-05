@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/01/03 17:25:35 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/01/05 20:05:30 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * rev: 
@@ -172,8 +172,8 @@ function initialize_gui(&$dbHandler,&$argsObj)
 
     $gui->grants = new stdClass();
     $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
-	  $gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
-	  return $gui;
+	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+	return $gui;
 }
 
 

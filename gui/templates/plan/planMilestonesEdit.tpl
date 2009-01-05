@@ -106,7 +106,7 @@ function validateForm(f)
 <div class="workBack">
   {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 	<h2>
-	{$gui->action_descr}
+	{$gui->action_descr|escape}
 	{if $gui->milestone.id > 0}
 		{if $gui->grants->mgt_view_events eq "yes"}
 			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
@@ -151,7 +151,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="low_priority_tcases" name="low_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.a|escape}"/>
+		          		       value="{$gui->milestone.A|escape}"/>
 	                {include file="error_icon.tpl" field="low_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -160,7 +160,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" name="medium_priority_tcases" id="medium_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.b|escape}"/>
+		          		       value="{$gui->milestone.B|escape}"/>
 	                {include file="error_icon.tpl" field="medium_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -169,7 +169,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" name="high_priority_tcases" id="high_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.c|escape}"/>
+		          		       value="{$gui->milestone.C|escape}"/>
 	                {include file="error_icon.tpl" field="high_priority_tcases"}
 		          	</td>
 		          </tr>

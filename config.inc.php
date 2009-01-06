@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.221 $
- * @modified $Date: 2009/01/03 18:53:24 $ by $Author: franciscom $
+ * @version $Revision: 1.222 $
+ * @modified $Date: 2009/01/06 15:34:05 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -253,7 +253,7 @@ $tlCfg->authentication['ldap_bind_passwd']	= ''; // Left empty for anonymous LDA
 
 
 /** Enable/disable Users to create accounts on login page */
-$g_user_self_signup = TRUE; 
+$tlCfg->user_self_signup = TRUE; 
 
 /** Validating new user login names */
 $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \-]+$/';
@@ -856,7 +856,7 @@ define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width); 
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
-$g_log_level=$tlCfg->log_level;
+// $g_log_level=$tlCfg->log_level;
 
 $tlCfg->document_generator->company_logo = $tlCfg->company_logo; 
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;

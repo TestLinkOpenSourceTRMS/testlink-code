@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2008/12/29 09:27:37 $ by $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *  20090106 - BUGID - franciscom - added logic to import Test Cases custom field values
  *  20081001 - franciscom - added logic to manage too long testcase name
  * 	20080813 - havlatm - added a few logging
  * 
@@ -87,6 +88,7 @@ if ($do_upload)
 					$pcheck_fn = "check_xml_tc_tsuite";
 					$pimport_fn = "importTestCaseDataFromXML";
 					break;
+
 				case 'XLS':
 					$pcheck_fn = null;
 					$pimport_fn = "importTestCaseDataFromSpreadsheet";
@@ -194,7 +196,9 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 		$xmlTCs = $node->get_elements_by_tagname("testcase");
 		$tcData = importTCsFromXML($xmlTCs);
 		if ($tcData)
+		{
 			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap);
+		}	
 	}
 	return $resultMap;
 }
@@ -279,6 +283,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 		
 	$resultMap = array();
 	$fieldSizeCfg=config_get('field_size');
+  $cf_msg = lang_get('cf_value_not_imported_missing_cf_on_testproject');
+  $tc_msg = lang_get('testcase');
+  $missingCfMsg = null;
 	
 	// because name can be changed automatically during item creation
 	// to avoid name conflict adding a suffix automatically generated,
@@ -289,9 +296,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 	$tc_qty = sizeof($tcData);
 	if($tc_qty)
 	{
+	  
 		$tcase_mgr = new testcase($db);
 		$tproject = new testproject($db);
+	
+	  // Get CF with scope design time and allowed for test cases linked to this test project
+	  $customFields=$tproject->get_linked_custom_fields($tproject_id,'testcase','name');
+
+	  
 	}
+	
 	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
 		$tc = $tcData[$idx];
@@ -324,6 +338,34 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
     {
         $resultMap[] = array($name,$ret['msg']);
     }                              
+			
+		// 20090106 - franciscom
+		// Custom Fields Management
+		// Check if CF with this name and that can be used on Test Cases is defined in current Test Project.
+		// If Check fails => give message to user.
+		// Else Import CF data
+		// 	
+		if( !is_null($customFields) )
+		{                         
+		    $cfValues=null;
+		    foreach($tc['customfields'] as $value)
+		    {
+		       if( isset($customFields[$value['name']]) )
+		       {
+		           $cfValues[$customFields[$value['name']]['id']]=array('type_id' => $customFields[$value['name']]['type'],
+		                                                                'cf_value' => $value['value']);         
+		       }
+		       else
+		       {
+		           if( !isset($missingCfMsg[$value['name']]) )
+		           {
+		               $missingCfMsg[$value['name']] = sprintf($cf_msg,$value['name'],$tc_msg);
+		           }
+		           $resultMap[] = array($name,$missingCfMsg[$value['name']]); 
+		       }
+		    }  
+		    $tcase_mgr->cfield_mgr->design_values_to_db($cfValues,$ret['id'],null,'simple');
+		}	
 			
 	}
 
@@ -358,9 +400,9 @@ function buildKeywordList($kwMap,$keywords,$bList = false)
 */
 function importTCsFromXML($xmlTCs)
 {
-	$tcs = null;
+	$tcSet = null;
 	if (!$xmlTCs)
-		return $tcs;
+		return $tcSet;
 		
 	$jdx = 0;
 	for($idx = 0; $idx < sizeof($xmlTCs); $idx++)
@@ -373,11 +415,19 @@ function importTCsFromXML($xmlTCs)
 		{
 			$keywords = importKeywordsFromXML($xmlTC->get_elements_by_tagname("keyword"));
 			if ($keywords)
+			{
 				$tc['keywords'] = $keywords;
-			$tcs[$jdx++] = $tc;
+			}
+			$cf = importCustomFieldsFromXML($xmlTC->get_elements_by_tagname("custom_field"));
+			
+			if($cf)
+			{
+			    $tc['customfields'] = $cf;  
+			} 
+			$tcSet[$jdx++] = $tc;
 		}
 	}
-	return $tcs;
+	return $tcSet;
 }
 
 
@@ -574,5 +624,36 @@ function importKeywordFromXML(&$xmlKeyword)
 	return $keyword;
 }
 
+
+/*
+  function: importCustomFieldsFromXML
+
+  args:
+  
+  returns: 
+
+*/
+function importCustomFieldsFromXML($xmlItems)
+{
+	if (!$xmlItems)
+	{
+		return null;
+	}
+
+  $items = null;
+  $items_counter=0;
+  
+  $loop_qty = count($xmlItems);
+  for($idx=0; $idx < $loop_qty; $idx++)
+  {
+	    foreach( array('name','value') as $key )
+	    {
+	        $dummy[$key] = trim(getNodeContent($xmlItems[$idx],$key));
+	    }
+			$items[$items_counter++] = $dummy;
+  }
+
+	return $items;
+}
 // ----- END ----------------------------------------------------------------------------
 ?>

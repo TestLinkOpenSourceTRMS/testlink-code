@@ -2,16 +2,16 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.137 $
- * @modified $Date: 2008/12/29 09:27:37 $ $Author: schlundus $
+ * @version $Revision: 1.138 $
+ * @modified $Date: 2009/01/06 15:34:06 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
  * 20081220 - franciscom - get_executions() - now build_id can be an array
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
  *                         removed useless code from getTestProjectFromTestCase()
  *
  * 20081103 - franciscom - change to show() to improve display when used in search test cases.
- * 20081103 - franciscom - minor refactoring on show()
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
  * 20080812 - franciscom - BUGID 1650 (REQ)
  *                         html_table_of_custom_field_inputs() interface changes
@@ -40,39 +40,8 @@
  *                                   - no display of custom fields when executing TC
  *                         generated due to changes in get_path implementation
  *
- * 20071204 - franciscom - get_execution_types()
- * 20071203 - franciscom - get_last_execution(), added build_is_active, build_is_open
- *
- * 20071128 - franciscom - create_tcase_only() added key on ret struct
  * 20071113 - franciscom - added contribution on get_executions()
- * 20071101 - franciscom - import_file_types, export_file_types
- *
  * 20070930 - franciscom - REQ - BUGID 1078 -> show() interface changes
- *
- * 20070701 - franciscom - create_new_version(), changes in return map.
- * 20070617 - franciscom - added include of users.inc.php
- * 20070602 - franciscom - added attachment copy on copy_to() method.
- *                         added attachment delete.
- *                         added remove of custom field values
- *                         (design and execution) when removing
- *                         test case or test case version.
- *
- * 20070525 - franciscom - copy_cfields_design_values()
- * 20070501 - franciscom - added localization of custom field labels
- *
- * 20070302 - franciscom - fixed bug on get_linked_cfields_at_design()
- * 20070222 - franciscom - minor fix html_table_of_custom_field_values()
- * 20070105 - franciscom - changes in copy_to(),get_by_id()
- *
- * 20070104 - franciscom
- * 1. removed wrong method viewer_edit_new();
- * 2. custom field management continues.
- *
- * 20070102 - franciscom - solved bugs on delete,
- *                         that produce a negative impact on performance.
- * 20061230 - franciscom - custom fields management
- *
- *
  */
 require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
@@ -605,7 +574,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
                 $expected_results,$user_id,$keywords_id='',
-                $tc_order=self::DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=TL_DEFAULT_IMPORTANCE)
+                $tc_order=self::DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=2)
 {
 	$ret['status_ok'] = 1;
 	$ret['msg'] = '';
@@ -2313,9 +2282,28 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   rev: 20080206 - franciscom - added externalid
 
 */
-function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$optExport = array())
+function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
+                                 $bNoXMLHeader = false,$optExport = array())
 {
 	$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
+	
+	// 20090106 - franciscom - custom fields
+	if (!$tproject_id)
+	{
+		$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
+	}
+
+	$cfMap = $this->get_linked_cfields_at_design($tcase_id,null,null,$tproject_id);
+	
+	if( !is_null($cfMap) && count($cfMap) > 0 )
+	{
+      $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+	    $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+	    	                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+	    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+	    $tc_data[0]['xmlcustomfields'] = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+	} 
+	
 	if ($optExport['KEYWORDS'])
 	{
 		$keywords = $this->getKeywords($tcase_id);
@@ -2328,13 +2316,15 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 	}
 	$rootElem = "{{XMLCODE}}";
 	if (isset($optExport['ROOTELEM']))
+	{
 		$rootElem = $optExport['ROOTELEM'];
+	}
 	$elemTpl = "\t".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">'.
 						'<externalid><![CDATA['."\n||EXTERNALID||\n]]>".'</externalid>'.
 						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
 						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
 						'<expectedresults><![CDATA['."\n||RESULTS||\n]]>".'</expectedresults>'.
-						'||KEYWORDS||</testcase>'."\n";
+						'||KEYWORDS||||CUSTOMFIELDS||</testcase>'."\n";
 
 	$info = array (
 							"{{TESTCASE_ID}}" => "testcase_id",
@@ -2344,10 +2334,9 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 							"||STEPS||" => "steps",
 							"||RESULTS||" => "expected_results",
 							"||KEYWORDS||" => "xmlkeywords",
+							"||CUSTOMFIELDS||" => "xmlcustomfields",
 						);
-
 	$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
-
 	return $xmlTC;
 }
 

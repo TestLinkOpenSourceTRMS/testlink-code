@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/10/29 12:26:31 $ by $Author: havlat $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
@@ -24,43 +24,35 @@
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 
-$template_dir='testcases/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-
-$bExport = isset($_POST['export']) ? $_POST['export'] : null;
-$bKeywords = isset($_POST['bKeywords']) ? 1 : 0;
-$exportType = isset($_POST['exportType']) ? $_POST['exportType'] : null;
-$tcase_id = isset($_POST['testcase_id']) ? intval($_POST['testcase_id']) : 0;
-$tcversion_id = isset($_POST['tcversion_id']) ? intval($_POST['tcversion_id']) : 0;
-$container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-$bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : false;
-$testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$testprojectName = $_SESSION['testprojectName'];
-
-$export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+$tree_mgr = new tree($db);
+$args = init_args();
+$gui = new stdClass();
+$gui->do_it = 1;
+$gui->nothing_todo_msg = '';
+$gui->export_filename = '';
+$gui->page_title = '';
+$gui->object_name='';
 
 $exporting_just_one_tc = 0;
-$node_id = $container_id;
-$do_it = 1;
-$nothing_todo_msg = '';
+$node_id = $args->container_id;
 $check_children = 0;
 
-
-if($bRecursive)
+if($args->bRecursive)
 {
 	// Exporting situations:
 	// All test suites in test project
 	// One test suite 
-	$page_title=lang_get('title_tsuite_export');
+	$gui->page_title=lang_get('title_tsuite_export');
 
-	$fileName = 'testsuites.xml';
-	if($node_id == $testproject_id)
+	$gui->export_filename = 'testsuites.xml';
+	if($node_id == $args->tproject_id)
 	{
-		$page_title=lang_get('title_tsuite_export_all');
-		$fileName = 'all_testsuites.xml';
+		$gui->page_title=lang_get('title_tsuite_export_all');
+		$gui->export_filename = 'all_testsuites.xml';
 		$check_children=1; 
-		$nothing_todo_msg=lang_get('no_testsuites_to_export');
+		$gui->nothing_todo_msg=lang_get('no_testsuites_to_export');
 	}
 } 
 else
@@ -68,57 +60,48 @@ else
 	// Exporting situations:
 	// All test cases in test suite.
 	// One test case.
-	$exporting_just_one_tc = ($tcase_id && $tcversion_id);
-	$fileName = 'testcases.xml';
+	$exporting_just_one_tc = ($args->tcase_id && $args->tcversion_id);
+	$gui->export_filename = 'testcases.xml';
 	
 	if($exporting_just_one_tc)
 	{
-		$node_id = $tcase_id;
-		$page_title = lang_get('title_tc_export');
+		$node_id = $args->tcase_id;
+		$gui->page_title = lang_get('title_tc_export');
 	}
 	else
 	{
-		$page_title = lang_get('title_tc_export_all');
+		$gui->page_title = lang_get('title_tc_export_all');
 		$check_children = 1;
-		$nothing_todo_msg = lang_get('no_testcases_to_export');
+		$gui->nothing_todo_msg = lang_get('no_testcases_to_export');
 	}
 }
-
-$fileName = is_null($export_filename) ? $fileName : $export_filename;
+$gui->export_filename = is_null($args->export_filename) ? $gui->export_filename : $args->export_filename;
 
 
 if( $check_children )
 {
 	// Check if there is something to export
-	$tree_mgr = new tree($db);
-	
-	// 20071111 - franciscom
 	$children=$tree_mgr->get_children($node_id, 
 	                                  array("testplan" => "exclude_me",
 	                                        "requirement_spec" => "exclude_me",
 	                                        "requirement" => "exclude_me"));	
 	if(count($children)==0)
-		$do_it = 0 ;
+		$gui->do_it = 0 ;
 	else
-		$nothing_todo_msg='';
+		$gui->nothing_todo_msg='';
 }
-
-$tree_mgr = new tree($db);
 $node = $tree_mgr->get_node_hierachy_info($node_id);
 
 
-if ($bExport)
+if ($args->bExport)
 {
 	$tcase_mgr = new testcase($db);
 	$tsuite_mgr = new testsuite($db);
 	
-	$optExport = array(
-						'KEYWORDS' => $bKeywords,
-					    'RECURSIVE' => $bRecursive
-					  );
+	$optExport = array('KEYWORDS' => $args->bKeywords,'RECURSIVE' => $args->bRecursive);
 	
 	$pfn = null;
-	switch($exportType)
+	switch($args->exportType)
 	{
 		case 'XML':
 			if ($exporting_just_one_tc)
@@ -132,44 +115,67 @@ if ($bExport)
 		if ($exporting_just_one_tc)
 		{
 			$optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
-			$content = $tcase_mgr->$pfn($tcase_id,$tcversion_id,null,$optExport);
+			$content = $tcase_mgr->$pfn($args->tcase_id,$args->tcversion_id,$args->tproject_id,null,$optExport);
 		}	
 		else
 		{
 			$content = TL_XMLEXPORT_HEADER;
-			$content .= $tsuite_mgr->$pfn($container_id,$optExport);
+			$content .= $tsuite_mgr->$pfn($args->container_id,$args->tproject_id,$optExport);
 		}
 			
-		downloadContentsToFile($content,$fileName);
+		downloadContentsToFile($content,$gui->export_filename);
 		exit();
 	}
 }
 
-if( $bRecursive )
+if( $args->bRecursive )
 {
-  // we are importing a testsuite
+  // we are working on a testsuite
   $obj_mgr = new testsuite($db);
 }
 else
 {
   $obj_mgr = new testcase($db);
 }
-$export_file_types=$obj_mgr->get_export_file_types();
 
+$gui->object_name=$node['name'];
+$gui->exportTypes=$obj_mgr->get_export_file_types();
+$gui->tproject_name=$args->tproject_name;
+$gui->tproject_id=$args->tproject_id;
+$gui->tcID=$args->tcase_id; 
+$gui->bRecursive=$args->bRecursive ? 1 : 0;
+$gui->tcVersionID=$args->tcversion_id;
+$gui->containerID=$args->container_id;
 
 $smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-$smarty->assign('export_filename',$fileName);
-$smarty->assign('do_it',$do_it);
-$smarty->assign('nothing_todo_msg',$nothing_todo_msg);
-$smarty->assign('object_name',$node['name']);
-$smarty->assign('page_title',$page_title);
-$smarty->assign('productName', $testprojectName);
-$smarty->assign('productID', $testproject_id);
-$smarty->assign('tcID', $tcase_id);
-$smarty->assign('bRecursive',$bRecursive ? 1 : 0);
-$smarty->assign('tcVersionID', $tcversion_id);
-$smarty->assign('containerID', $container_id);
-$smarty->assign('exportTypes',$export_file_types);
-$smarty->display($template_dir . $default_template);
+
+/*
+  function: init_args
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+    
+    $args = new stdClass();
+    $args->bExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
+    $args->bKeywords = isset($_REQUEST['bKeywords']) ? 1 : 0;
+    $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+    $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
+    $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
+    $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+    $args->bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : false;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = $_SESSION['testprojectName'];
+    $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+
+    return $args;
+}
 ?>

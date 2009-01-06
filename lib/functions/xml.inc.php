@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xml.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2008/10/29 12:25:11 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
  *
  * Scope: support for XML
  * 
@@ -26,7 +26,10 @@
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
 	if (!$items)
+	{
 		return;
+	}
+
 	$xmlCode = '';
 	reset($items);
 	while($item = each($items))
@@ -41,12 +44,14 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 			{
 				case '||':
 					break;
+
 				case '{{':
 				default:
 					$content = htmlspecialchars($content);
 					break;
 			}
-			$xmlElemCode = str_replace($subject,$content,$xmlElemCode);	 
+			
+			$xmlElemCode = str_replace($subject,$content,$xmlElemCode);
 		}
 		$xmlCode .= $xmlElemCode;
 	}
@@ -54,7 +59,10 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 	
 	$result = null;
 	if (!$bNoXMLHeader)
+	{
 		$result .= TL_XMLEXPORT_HEADER."\n";
+	}
+	
 	$result .= str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
 	return $result;
 }

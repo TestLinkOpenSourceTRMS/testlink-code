@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.28 2009/01/03 17:27:50 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.29 2009/01/06 15:34:05 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -9,6 +9,7 @@
 -- 
 -- Rev :
 --      20090103 - franciscom - milestones table - added new unique index
+--                              custom_fields - added missing unique constraint
 --      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 --      20080831 - franciscom - BUGID 1650 (REQ)
 --                 custom_fields.show_on_testplan_design
@@ -232,7 +233,8 @@ CREATE TABLE "custom_fields" (
   "enable_on_execution" SMALLINT NOT NULL DEFAULT '0',
   "show_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
   "enable_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE ("name")
 ); 
 CREATE INDEX "custom_fields_idx_custom_fields_name" ON "custom_fields" ("name");
 

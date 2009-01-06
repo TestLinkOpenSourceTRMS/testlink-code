@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.374 $
- * @modified $Date: 2009/01/03 18:53:24 $ by $Author: franciscom $
+ * @version $Revision: 1.375 $
+ * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1992,6 +1992,9 @@ $TLS_title_tc_import_to = "Import Test Cases";
 $TLS_title_tsuite_import_to = "Import Test Suite";
 $TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
 $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
+$TLS_cf_value_not_imported_missing_cf_on_testproject="Value of Custom Field '%s' can not be imported " .
+                                                     "because there is no Custom Field with this name " .
+                                                     "and Available for %s on this Test Project"; 
 
 
 

@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2008/11/22 10:44:33 $ - $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/01/06 15:34:06 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090106 - franciscom - BUGID - exportTestSuiteDataToXML()
+ *                         export custom field values
+ *  
  * 20080106 - franciscom - viewer_edit_new() changes to use user templates
  *                         to fill details when creating a new test suites.
  *                         new private method related to this feature:
@@ -874,50 +877,70 @@ function deleteKeywords($id,$kw_id = null)
   returns: 
 
 */
-function exportTestSuiteDataToXML($container_id,$optExport = array())
+function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
 {
   $USE_RECURSIVE_MODE=true;
-   
 	$xmlTC = null;
 	$bRecursive = @$optExport['RECURSIVE'];
 	if ($bRecursive)
 	{
-		$tsuiteData = $this->get_by_id($container_id);
+	  $cfXML = null;
 		$kwXML = null;
+		$tsuiteData = $this->get_by_id($container_id);
 		if (@$optExport['KEYWORDS'])
 		{
 			$kwMap = $this->getKeywords($container_id);
 			if ($kwMap)
+			{
 				$kwXML = exportKeywordDataToXML($kwMap,true);
+			}	
 		}
-		$xmlTC = "<testsuite name=\"".htmlspecialchars($tsuiteData['name'])."\"><details><![CDATA[\n{$tsuiteData['details']}\n]]>{$kwXML}</details>";
+		
+		// 20090106 - franciscom - custom fields
+    $cfMap=$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+		if( !is_null($cfMap) && count($cfMap) > 0 )
+	  {
+        $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+	      $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+	      	                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+	      $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+	      $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+	  } 
+	
+		$xmlTC = "<testsuite name=\"".htmlspecialchars($tsuiteData['name']).
+		         "\"><details><![CDATA[\n{$tsuiteData['details']}\n]]>{$kwXML}{$cfXML}</details>";
 	}
 	else
+	{
 		$xmlTC = "<testcases>";
-
-  // 20071111 - franciscom
+  }
+  
 	$test_spec = $this->get_subtree($container_id,$USE_RECURSIVE_MODE);
 
 	$childNodes = @$test_spec['childNodes'];
-	for($i = 0;$i < sizeof($childNodes);$i++)
+	$tcase_mgr=null;
+	for($idx = 0;$idx < sizeof($childNodes);$idx++)
 	{
-		$cNode = $childNodes[$i];
+		$cNode = $childNodes[$idx];
 		$nTable = $cNode['node_table'];
 		if ($bRecursive && $nTable == 'testsuites')
 		{
-			$ts = new testsuite($this->db);
-			$xmlTC .= $ts->exportTestSuiteDataToXML($cNode['id'],$optExport);
+			$xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
 		}
 		else if ($nTable == 'testcases')
 		{
-			$tc = new testcase($this->db);
-			$xmlTC .= $tc->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,true,$optExport);
+		  if( is_null($tcase_mgr) )
+		  {
+			    $tcase_mgr = new testcase($this->db);
+			}
+			$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,$tproject_id,true,$optExport);
 		}
 	}
 	if ($bRecursive)
 		$xmlTC .= "</testsuite>";
 	else
 		$xmlTC .= "</testcases>";
+		
 	return $xmlTC;
 }
 
@@ -944,10 +967,12 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 	function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null,$tproject_id = null) 
 	{
 		if (!$tproject_id)
+		{
 			$tproject_id = $this->getTestProjectFromTestSuite($id,$parent_id);
+		}
 		$enabled = 1;
 		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-	                                                          $show_on_execution,'testsuite',$id);
+	                                                            $show_on_execution,'testsuite',$id);
 		return $cf_map;
 	}
 	

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.91 $
- * @modified $Date: 2008/12/27 16:31:29 $  $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2009/01/06 15:34:06 $  $Author: franciscom $
  * @author franciscom
  *
  * 20081103 - franciscom - get_all_testcases_id() minor refactoring
@@ -1740,7 +1740,7 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
 
 
 */
-function get_linked_custom_fields($id,$node_type=null)
+function get_linked_custom_fields($id,$node_type=null,$access_key='id')
 {
   $additional_table="";
   $additional_join="";
@@ -1753,6 +1753,7 @@ function get_linked_custom_fields($id,$node_type=null)
     $additional_table=",{$this->cfield_node_types_table} CFNT ";
     $additional_join=" AND CFNT.field_id=CF.id AND CFNT.node_type_id={$node_type_id} ";
   }
+  
   $sql="SELECT CF.*,CFTP.display_order " .
        " FROM {$this->custom_fields_table} CF, {$this->cfield_testprojects_table} CFTP " .
        $additional_table .
@@ -1761,7 +1762,9 @@ function get_linked_custom_fields($id,$node_type=null)
        $additional_join .
        " ORDER BY display_order";
 
-  $map = $this->db->fetchRowsIntoMap($sql,'id');
+  // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+  $map = $this->db->fetchRowsIntoMap($sql,$access_key);
   return($map);
 }
 

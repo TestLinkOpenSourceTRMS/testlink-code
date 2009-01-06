@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/12/12 21:34:13 $ by $Author: asielb $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/01/06 18:42:32 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,8 @@
  * 
  *
  * rev :
+ *      20090106 - franciscom - createTestCase() - first implementation
+ *
  * 		  20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
  *      20080307 - franciscom - now is possible to use test case external or internal ID
@@ -78,6 +80,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   private $builds_table="builds";
   private $executions_table="executions";  
   private $testplan_tcversions_table="testplan_tcversions";
+  private $keywords_table="keywords";  
   
 	
 	/**
@@ -139,7 +142,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $testProjectNameParamName = "testprojectname";
 	public static $testCasePrefixParamName = "testcaseprefix";
 	public static $customFieldNameParamName = "customfieldname";
-
+	public static $summaryParamName = "summary";
+	public static $stepsParamName = "steps";
+  public static $expectedResultsParamName = "expectedresults";
+  public static $authorLoginParamName = "authorlogin";
+  public static $executionTypeParamName = "executiontype";
+  public static $importanceParamName = "importance";
+  public static $orderParamName = "order";
+  public static $internalIDParamName = "internalid";
+  public static $checkDuplicatedNameParamName = "checkduplicatedname";
+  public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
+  public static $keywordNameParamName = "keywords";
+	
 
 	
 	/**#@-*/
@@ -1607,10 +1621,96 @@ class TestlinkXMLRPCServer extends IXR_Server
 	  */
 	 public function createTestCase($args)
 	 {
-	 	// should be able to use this function in the testcase class
-		//	 	function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
-		//                           $check_duplicate_name=0,
-		//                           $action_on_duplicate_name='generate_new')
+	     $keywordSet='';
+	     $this->_setArgs($args);
+       $checkFunctions = array('authenticate','checkTestProjectID','checkTestSuiteID','checkTestCaseName');
+       
+       foreach($checkFunctions as $pfn)
+       {
+         if( !($status_ok = $this->$pfn()) )
+         {
+             break; 
+         }
+       } 
+
+       if( $status_ok )
+       {
+            $keys2check = array(self::$authorLoginParamName,
+                                self::$summaryParamName,
+                                self::$stepsParamName,
+                                self::$expectedResultsParamName);
+
+		        foreach($keys2check as $key)
+		        {
+		            if(!$this->_isParamPresent($key))
+		            {
+		                $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,$key);
+		                $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+		            }   
+		        }
+       }                        
+
+       if( $status_ok )
+       {
+          $author_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$authorLoginParamName]);		    	
+          $status_ok = !is_null($author_id);
+     	    $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, NO_USER_BY_THIS_LOGIN_STR);				
+       }
+
+       if( $status_ok )
+       {
+         if($this->_isParamPresent(self::$keywordNameParamName))
+         {
+             // Check that all keyword exists for target test project
+             $keywordSet=$this->getValidKeywordSetByName($this->args[self::$keywordNameParamName],
+                                                         $this->args[self::$testProjectIDParamName]);
+         }
+		     else if ($this->_isParamPresent(self::$keywordIDParamName))
+		     {
+             $keywordSet=$this->getValidKeywordSetById($this->args[self::$keywordIDParamName],
+                                                       $this->args[self::$testProjectIDParamName]);
+		     }
+       }
+
+       if( $status_ok )
+       {
+           // Optional parameters
+           $opt=array(self::$importanceParamName => 2,
+                      self::$executionTypeParamName => TESTCASE_EXECUTION_TYPE_MANUAL,
+                      self::$orderParamName => testcase::DEFAULT_ORDER,
+                      self::$internalIDParamName => testcase::AUTOMATIC_ID,
+                      self::$checkDuplicatedNameParamName => testcase::DONT_CHECK_DUPLICATE_NAME,
+                      self::$actionOnDuplicatedNameParamName => 'generate_new');
+
+		       foreach($opt as $key => $value)
+		       {
+		           if($this->_isParamPresent($key))
+		           {
+		               $opt[$key]=$this->args[$key];      
+		           }   
+		       }
+       }
+       
+            
+       if( $status_ok )
+       {
+           $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
+                                              $this->args[self::$testCaseNameParamName],
+                                              $this->args[self::$summaryParamName],
+                                              $this->args[self::$stepsParamName],
+                                              $this->args[self::$expectedResultsParamName],
+                                              $author_id,$keywordSet,
+                                              $opt[self::$orderParamName],
+                                              $opt[self::$internalIDParamName],
+                                              $opt[self::$checkDuplicatedNameParamName],                        
+                                              $opt[self::$actionOnDuplicatedNameParamName],
+                                              $opt[self::$executionTypeParamName],
+                                              $opt[self::$importanceParamName]);
+       } 
+
+
+
+       return ($status_ok ? $op_result : $this->errors);
 	 }	
 	 
 	 /**
@@ -1801,10 +1901,6 @@ class TestlinkXMLRPCServer extends IXR_Server
                self::$executeStatusParamName => null,);
 	 	
    	$this->_setArgs($args);
-   	$this->errors[]=$opt;
-		//echo "<pre>debug 20080310 - \ - " . __FUNCTION__ . " --- "; print_r($this); echo "</pre>";
-		//die();
-		
 		
 		// Test Case ID, Build ID are checked if present
 		if(!$this->_checkGetTestCasesForTestPlanRequest() && $this->UserHasRight("mgt_view_tc"))
@@ -1923,6 +2019,91 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 
 
+  /**
+	 * getValidKeywordSetByName()
+	 *  
+	 * @return string that represent a list of keyword id (comma is character separator)
+	 *
+	 * @access private
+	 */
+	 private function getValidKeywordSetByName($keywords,$tproject_id)
+   { 
+      $keywordSet='';
+      $keywords=trim($keywords);
+      if(strlen(trim($keywords)))
+	    {
+	         $a_keywords = explode(",",$keywords);
+	         $items_qty = count($a_keywords);
+	         for($idx=0; $idx < $items_qty; $idx++)
+	         {
+	             $a_keywords[$idx]=trim($a_keywords[$idx]);
+	         }
+	         $itemsSet=implode("','",$a_keywords);
+	         $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
+	                " WHERE testproject_id = {$tproject_id} " .
+	                " AND keyword IN ('{$itemsSet}')";
+	         $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
+	         if( !is_null($keywordMap) )
+	         {
+	             $a_items = null;
+	             for($idx=0; $idx < $items_qty; $idx++)
+	             {
+	                 if( isset($keywordMap[$a_keywords[$idx]]) )
+	                 {
+	                     $a_items[]=$keywordMap[$a_keywords[$idx]]['id'];  
+	                 }
+	             }
+	             if( !is_null($a_items))
+	             {
+	                 $keywordSet = implode(",",$a_items);
+	             }    
+	         }
+      }  
+      return $keywordSet;
+  }
+
+  /**
+	 * getValidKeywordSetById()
+	 *  
+	 * @return string that represent a list of keyword id (comma is character separator)
+	 *
+	 * @access private
+	 */
+  private function  getValidKeywordSetById($keywords,$tproject_id)
+  {
+      $keywordSet='';
+      $keywords=trim($keywords);
+      if(strlen(trim($keywords)))
+	    {
+	         $a_keywords = explode(",",$keywords);
+	         $items_qty = count($a_keywords);
+	         for($idx=0; $idx < $items_qty; $idx++)
+	         {
+	             $a_keywords[$idx]=trim($a_keywords[$idx]);
+	         }
+	         $itemsSet=implode(",",$a_keywords);
+	         $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
+	                " WHERE testproject_id = {$tproject_id} " .
+	                " AND id IN ({$itemsSet})";
+	         $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'id');
+	         if( !is_null($keywordMap) )
+	         {
+	             $a_items = null;
+	             for($idx=0; $idx < $items_qty; $idx++)
+	             {
+	                 if( isset($keywordMap[$a_keywords[$idx]]) )
+	                 {
+	                     $a_items[]=$keywordMap[$a_keywords[$idx]]['id'];  
+	                 }
+	             }
+	             if( !is_null($a_items))
+	             {
+	                 $keywordSet = implode(",",$a_items);
+	             }    
+	         }
+      }  
+      return $keywordSet;
+  }
 
 
 

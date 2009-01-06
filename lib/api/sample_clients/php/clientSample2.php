@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientSample2.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/10/13 20:08:36 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/01/06 18:42:32 $ by $Author: franciscom $
  *
  *
  * A sample client implementation in php
@@ -31,8 +31,18 @@ define("THIRD_PARTY_CODE","/../../../../third_party");
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
 require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
 
-$dummy=explode('sample_clients',$_SERVER['HTTP_REFERER']);
-$server_url=$dummy[0] . "xmlrpc.php";
+if( isset($_SERVER['HTTP_REFERER']) )
+{
+    $target = $_SERVER['HTTP_REFERER'];
+    $prefix = '';
+}
+else
+{
+    $target = $_SERVER['REQUEST_URI'];
+    $prefix = "http://" . $_SERVER['HTTP_HOST'] . ":" . $_SERVER['SERVER_PORT'];
+} 
+$dummy=explode('sample_clients',$target);
+$server_url=$prefix . $dummy[0] . "xmlrpc.php";
 
 // substitute your Dev Key Here
 define("DEV_KEY", "1111");

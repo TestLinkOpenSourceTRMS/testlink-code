@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.375 $
- * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
+ * @version $Revision: 1.376 $
+ * @modified $Date: 2009/01/06 18:43:42 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -2140,6 +2140,10 @@ $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase
 $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
 $TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
                                      "No Custom Field exists with the name provided!";
+
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER="Parameter %s is required, but has not been provided";
+ 
 
 //audit log entries
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

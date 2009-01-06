@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.6 2008/10/03 04:55:18 asielb Exp $
+ * $Id: APIErrors.php,v 1.7 2009/01/06 18:42:32 franciscom Exp $
  */
 
 /** 
@@ -75,6 +75,9 @@ define('NO_TESTCASENAME_STR', lang_get('API_NO_TESTCASENAME',null,1));
 
 define('NO_TESTSUITEID', 180);
 define('NO_TESTSUITEID_STR', lang_get('API_NO_TESTSUITEID',null,1));
+
+define('MISSING_REQUIRED_PARAMETER', 200);
+define('MISSING_REQUIRED_PARAMETER_STR', lang_get('API_MISSING_REQUIRED_PARAMETER',null,1));
 
 
 /**
@@ -153,8 +156,14 @@ define('INVALID_TESTSUITEID_STR', lang_get('API_INVALID_TESTSUITEID',null,1));
 /**
  * 9000 level - Custom Fields
  */
-define('NO_CUSTOMFIELD_BY_THIS_NAME', 5030);
+define('NO_CUSTOMFIELD_BY_THIS_NAME', 9000);
 define('NO_CUSTOMFIELD_BY_THIS_NAME_STR', lang_get('API_NO_CUSTOMFIELD_BY_THIS_NAME',null,1));
 
+
+/**
+ * 10000 level - User
+ */
+define('NO_USER_BY_THIS_LOGIN', 10000);
+define('NO_USER_BY_THIS_LOGIN', lang_get('API_NO_USER_BY_THIS_LOGIN',null,1));
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.6 2008/11/08 17:42:27 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.7 2009/01/07 17:28:32 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -187,7 +187,7 @@ if( $qta_nodes >= CRITICAL_TC_SPECS_QTY)
 }
 // -----------------------------------------------------------------------------------------------
 
-if( function_exists('memory_get_usage') and $show_memory)
+if( function_exists('memory_get_usage') && function_exists('memory_get_peak_usage') && $show_memory)
 {
    echo "(Memory Usage: ".memory_get_usage() . " | Peak: " . memory_get_peak_usage() . ")<br><br>";
 }

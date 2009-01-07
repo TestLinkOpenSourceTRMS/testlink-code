@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.64 2008/11/13 19:31:52 schlundus Exp $
+* $Id: resultsMoreBuilds.php,v 1.65 2009/01/07 22:19:46 franciscom Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev:
+*      20090107 - franciscom - show [any] instead of blank option on assigned to, executed by
 *      20080517 - franciscom - refactoring
 *      20070901 - franciscom - refactoring
 *                              using reports_cfg
@@ -65,6 +66,11 @@ function initializeGui(&$dbHandler)
     $tproject_mgr = new testproject($dbHandler);
     
 
+    $gui_open = config_get('gui_separator_open');
+    $gui_close = config_get('gui_separator_close');
+    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+    $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
+    
     $gui->tplan_id = $_REQUEST['tplan_id'];
     $gui->tproject_id = $_SESSION['testprojectID'];
     
@@ -82,10 +88,25 @@ function initializeGui(&$dbHandler)
     $gui->builds = new stdClass();
     $gui->testsuites = new stdClass();
 
-    $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+    // 20090107 - franciscom
+    // Show only users that are able to execute test cases ?
+    // What happens if a user that has loose right to execute, but
+    // before loosing this right has been assigned some tests, or have executed it?
+    // 
+    // $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+    // $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
+    // 	                                                   array(TL_USER_ANYBODY => $gui->str_option_any,
+	  //                                                            TL_USER_NOBODY => $gui->str_option_none) );
+    //
+    $gui->assigned_users->items = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER,
+    	                                                   array(TL_USER_ANYBODY => $gui->str_option_any) );
+
     $gui->assigned_users->qty = count($gui->assigned_users->items);
     
-    $gui->keywords->items = $tplan_mgr->get_keywords_map($gui->tplan_id);
+    $gui->keywords->items[0]=$gui->str_option_any;
+    $gui->keywords->items += $tplan_mgr->get_keywords_map($gui->tplan_id);
+    
+    
     $gui->builds->items = $tplan_mgr->get_builds($gui->tplan_id,testplan::ACTIVE_BUILDS);
     $gui->testsuites->items = $re->getTopLevelSuites();
 
@@ -105,7 +126,6 @@ function initializeGui(&$dbHandler)
 
     $gui->selected_end_date = null;
     $gui->selected_end_time = null;
-
     return $gui;
 }
 ?>

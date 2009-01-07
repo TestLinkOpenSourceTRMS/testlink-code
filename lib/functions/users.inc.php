@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2008/12/30 13:34:49 $ $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2009/01/07 22:19:46 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -95,12 +95,15 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   rev :
        20071228 - franciscom - added active_filter
 */
-function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null,$users = null)
+// function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null,$users = null)
+function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter=null,$users = null)
 {
 	$users_map = null;
 	if (!$users)
+	{
 		$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-
+  }
+  
 	$the_users=$users;
 	if ($users)
 	{
@@ -116,7 +119,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = fal
 			}
 		}
 	}
-	return buildUserMap($the_users,$add_blank_option);
+	return buildUserMap($the_users,!is_null($additional_users),$additional_users);
 }
 
 /*

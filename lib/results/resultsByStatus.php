@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.60 2008/12/13 19:25:41 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.61 2009/01/07 22:19:46 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -79,7 +79,7 @@ $lastBuildID = $tplan_mgr->get_max_build_id($tplan_id,1,1);
 $results = new results($db, $tplan_mgr, $tproject_info, $tplan_info, ALL_TEST_SUITES, ALL_BUILDS);
 
 $mapOfLastResult = $results->getMapOfLastResult();
-$arrOwners = getUsersForHtmlOptions($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
+$arrOwners = getUsersForHtmlOptions($db);
 $arrDataIndex = 0;
 $arrData = null;
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.8 2009/01/02 08:07:58 schlundus Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.9 2009/01/07 22:20:58 franciscom Exp $
 
 rev :
      20080524 - franciscom - BUGID 1430
@@ -26,8 +26,6 @@ rev :
 <body>
 
 {assign var=depth value=0}
-{assign var='resultsCfg' value=$tlCfg->results}
-
 <h1 class="title"> {$labels.query_metrics_report}</h1>
 {include file="inc_result_tproject_tplan.tpl"
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}
@@ -52,29 +50,21 @@ rev :
 				{$gui->tplan_name|escape}
 			</td>
 			<td>
-				{foreach key=buildrow item=array from=$gui->buildsSelected}
-					{assign var=buildid value=$gui->buildsSelected[$buildrow]}
-					{$mapBuilds[$buildid]|escape} <br />
+				{foreach item=build_id from=$gui->buildsSelected}
+				    {$gui->builds_html[$build_id]|escape} <br />
 				{/foreach}
 			</td>
 			<td>
-				{foreach key=x item=array from=$gui->testsuitesSelected}
-						{$gui->testsuitesSelected[$x]|escape} <br />
+				{foreach item=tsuite_name from=$gui->testsuitesSelected}
+						{$tsuite_name|escape} <br />
 				{/foreach}
 			</td>
 			<td>
-				{foreach key=keywordrow item=array from=$gui->keywordsSelected}
-					{assign var=keywordid value=$gui->keywordsSelected[$keywordrow]}
-					{$arrKeywords[$keywordid]}	<br />
-				{/foreach}
+				{$gui->keywordSelected|escape}	<br />
 			</td>
 
 			<td>
-			  {if $gui->ownerSelected == ''}
-			    {$labels.any|escape}
-			  {else}
-				  {$gui->ownerSelected|escape}
-				{/if}
+			  {$gui->ownerSelected|escape}
 				&nbsp;
 			</td>
       <td>
@@ -86,11 +76,7 @@ rev :
 			<td>{$gui->startTime}</td>
 			<td>{$gui->endTime}</td>
 			<td>
-			  {if $gui->executorSelected == ''}
-			    {$labels.any|escape}
-			  {else}
-				  {$gui->executorSelected|escape}
-				{/if}
+			  {$gui->executorSelected|escape}
 				&nbsp;
 			</td>
 			<td>{$gui->search_notes_string}</td>
@@ -160,9 +146,9 @@ rev :
 
 			{assign var=previousDepth value=$depth}
 			{if $gui->mapOfSuiteSummary[$currentSuiteId]}
-			    <!-- KL 20061021 - Only display title of category if it has test cases in the test plan -->
-			    <!-- not a total fix - I need to adjust results.class.php to not pass suite names in
-				       which are not in the plan -->
+			    {* KL 20061021 - Only display title of category if it has test cases in the test plan *}
+			    {* not a total fix - I need to adjust results.class.php to not pass suite names in
+				       which are not in the plan *}
 
 			{if $gui->display->suite_summaries}
 			<h2>{$suiteNameText}</h2>
@@ -172,7 +158,7 @@ rev :
               {if $status == 'total'} 
                   <th>{$labels.th_total_cases}</th>
               {else}
-                  <th>{lang_get s=$resultsCfg.status_label[$status]}</th>
+                  <th>{lang_get s=$gui->resultsCfg.status_label[$status]}</th>
               {/if}
           {/foreach}
 				</tr>
@@ -223,19 +209,20 @@ rev :
 			    			{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
 			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
 			          {if $gui->displayResults[$inst.status] }
-			       	{if $inst.status == $resultsCfg.status_code.not_run}
-			    			<td>{$inst.name|escape}</td>
-			      				    <td>&nbsp;</td>
-			    				    <td>&nbsp;</td>
-			    				    <td>&nbsp;</td>
+			       	    {if $inst.status == $gui->resultsCfg.status_code.not_run}
+			    			      <td>{$inst.testcasePrefix|escape}{$inst.external_id}:&nbsp;{$inst.name|escape}</td>
+			      		  		<td>&nbsp;</td>
+			    			  	  <td>&nbsp;</td>
+			    			  	  <td>&nbsp;</td>
                   {else}
-			            		<td>{$inst.execute_link}</td>
-                	  	    	<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
-			    				    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
-			    				    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
+			              		<td>{$inst.execute_link}</td>
+                  	  	<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
+			    			  	    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
+			    			  	    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
                   {/if}
-			    				<td class="{$resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$resultsCfg.code_status[$inst.status]|escape}</td>
-                  {if $inst.status == $resultsCfg.status_code.not_run}
+			    				
+			    				<td class="{$gui->resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$gui->statusLabels[$inst.status]|escape}</td>
+                  {if $inst.status == $gui->resultsCfg.status_code.not_run}
 			    				    <td>&nbsp;</td>
 			    				    <td>&nbsp;</td>
 			    				{else}

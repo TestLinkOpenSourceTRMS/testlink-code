@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.62 2008/11/25 19:55:28 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.63 2009/01/07 22:19:46 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -25,21 +25,11 @@ $args = init_args();
 $gui = initializeGui($db,$args);
 
 $smarty = new TLSmarty();
+
 $smarty->assign('gui', $gui);
-
-if ($args->ownerSelected) {
-	$smarty->assign('ownerSelected', $gui->users[$args->ownerSelected]);
-}
-if ($args->executorSelected) {
-	$smarty->assign('executorSelected', $gui->users[$args->executorSelected]);
-}
-if ($args->search_notes_string) {
-	$smarty->assign('search_notes_string', $args->search_notes_string);
-}
-
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
-
 $smarty->assign('report_type', $report_type);
+
 if (!isset($_GET['report_type']))
 {
 	tlog('$_GET["report_type"] is not defined');
@@ -48,6 +38,14 @@ if (!isset($_GET['report_type']))
 
 displayReport($templateCfg->template_dir . 'resultsMoreBuilds_report.tpl', $smarty, $report_type);
 
+/*
+  function: get_date_range()
+
+  args:
+  
+  returns: 
+
+*/
 function get_date_range($hash)
 {
     $date_range=new stdClass();
@@ -89,16 +87,23 @@ function get_date_range($hash)
 function initializeGui(&$dbHandler,&$argsObj)
 {
     $reports_cfg=config_get('reportsCfg');
-    $results_cfg=config_get('results');
-
+    
     $gui=new stdClass();  
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
     
+    $gui->resultsCfg = config_get('results');
+
     $date_range=get_date_range($_REQUEST);
     $gui->startTime=$date_range->start->time;
     $gui->endTime=$date_range->end->time;
     
+    $gui_open = config_get('gui_separator_open');
+    $gui_close = config_get('gui_separator_close');
+    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+    $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
+
+    $gui->search_notes_string = $argsObj->search_notes_string;
 
     $gui->tplan_id=$_REQUEST['tplan_id'];
     $gui->tproject_id=$_SESSION['testprojectID'];
@@ -107,7 +112,6 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->tplan_name = $tplan_info['name'];
     $gui->tproject_name = $tproject_info['name'];
 
-    $execution_link_build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
     
     $testsuiteIds = null;
     $testsuiteNames = null;
@@ -125,15 +129,19 @@ function initializeGui(&$dbHandler,&$argsObj)
     	$buildsToQuery = implode(",", $argsObj->buildsSelected);
     }
 
+
     // statusForClass is used for results.class.php
     // lastStatus is used to be displayed 
     $statusForClass = 'a';
     
+    $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
+    $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
+    // $keyword_filter = $argsObj->keywordSelected ?
     $re = new results($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
                       $testsuiteIds, $buildsToQuery, $statusForClass, 
-                      $argsObj->keywordSelected, $argsObj->ownerSelected, 
+                      $argsObj->keywordSelected,$assignee, 
                       $date_range->start->time, $date_range->end->time, 
-                      $argsObj->executorSelected, $argsObj->search_notes_string, $execution_link_build);
+                      $tester, $argsObj->search_notes_string, $argsObj->execution_link_build);
                       
     $gui->suiteList = $re->getSuiteList();  // test executions results
     $gui->flatArray = $re->getFlatArray();
@@ -145,20 +153,25 @@ function initializeGui(&$dbHandler,&$argsObj)
     
     foreach($gui->totals->items as $key => $value)
     {
-        $l18n = $key == 'total' ? 'th_total_cases' : $results_cfg['status_label'][$key];
+        $l18n = $key == 'total' ? 'th_total_cases' : $gui->resultsCfg['status_label'][$key];
         $gui->totals->labels[$key]=lang_get($l18n);  
     }
 
     $gui->keywords = new stdClass();             
-    $gui->keywords->items = $tplan_mgr->get_keywords_map($gui->tplan_id); 
+    $gui->keywords->items[0]=$gui->str_option_any;
+    $gui->keywords->items += $tplan_mgr->get_keywords_map($gui->tplan_id); 
     $gui->keywords->qty = count($gui->keywords->items);
     
-    $gui->builds = $tplan_mgr->get_builds($gui->tplan_id); 
+    $gui->keywordSelected=$gui->keywords->items[$argsObj->keywordSelected];
+    
+    // $gui->builds = $tplan_mgr->get_builds($gui->tplan_id); 
     $gui->builds_html = $tplan_mgr->get_builds_for_html_options($gui->tplan_id);
-    $gui->users = getUsersForHtmlOptions($dbHandler, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
+    $gui->users = getUsersForHtmlOptions($dbHandler,ALL_USERS_FILTER,
+                                         array(TL_USER_ANYBODY => $gui->str_option_any));
 
+    $gui->ownerSelected=$gui->users[$argsObj->ownerSelected];      
+    $gui->executorSelected=$gui->users[$argsObj->executorSelected];
 
-    // $gui->testsuitesSelected=$argsObj->testsuitesSelected;
     $gui->testsuitesSelected=$testsuiteNames;
     $gui->buildsSelected=$argsObj->buildsSelected;
     
@@ -170,21 +183,32 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->lastStatus=array();
     foreach($reports_cfg->exec_status as $verbose => $label)
     {
-      $gui->displayResults[$results_cfg['status_code'][$verbose]]=false;
+      $gui->displayResults[$gui->resultsCfg['status_code'][$verbose]]=false;
     }
+
+	  foreach($gui->resultsCfg['status_label'] as $status_verbose => $label_key)
+	  {
+	  	$gui->statusLabels[$gui->resultsCfg['status_code'][$status_verbose]] = lang_get($label_key);
+	  }
     
     foreach($argsObj->lastStatus	as $key => $status_code)
     {
-       $verbose=$results_cfg['code_status'][$status_code];
+       $verbose=$gui->resultsCfg['code_status'][$status_code];
        $gui->displayResults[$status_code]=true;
-       $lastStatus_localized[]=lang_get($results_cfg['status_label'][$verbose]);
+      $lastStatus_localized[]=lang_get($gui->resultsCfg['status_label'][$verbose]);
     }	
     $gui->lastStatus=$lastStatus_localized;
-
     return $gui;
 }
 
+/*
+  function: init_args
 
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {
     $args = new stdClass();  
@@ -200,14 +224,15 @@ function init_args()
     $args->lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : array();
 
     $args->keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
-    $args->ownerSelected = (isset($_REQUEST['owner']) && $_REQUEST['owner'] > 0 ) ? $_REQUEST['owner'] : null;
-    $args->executorSelected = (isset($_REQUEST['executor']) && $_REQUEST['executor'] > 0) ? $_REQUEST['executor'] : null;
+    $args->ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : TL_USER_ANYBODY;
+    $args->executorSelected = isset($_REQUEST['executor']) ? $_REQUEST['executor'] : TL_USER_ANYBODY;
+    
     
     $args->buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
     $args->testsuitesSelected = isset($_REQUEST['testsuite']) ? $_REQUEST['testsuite'] : array();
     $args->search_notes_string = isset($_REQUEST['search_notes_string']) ? $_REQUEST['search_notes_string'] : null;
 
-
+    $args->execution_link_build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
     return $args;  
 }
 ?>

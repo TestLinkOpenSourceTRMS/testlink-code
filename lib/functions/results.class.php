@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2008/12/13 19:25:41 $ by $Author: franciscom $
+ * @modified $Date: 2009/01/07 22:19:46 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -210,9 +210,8 @@ class results
     	$this->resultsCfg = config_get('results');
     	$this->testCaseCfg = config_get('testcase_cfg');
 
-		$this->db = $db;
-		$this->tplanMgr = $tplan_mgr;
-    
+		  $this->db = $db;
+		  $this->tplanMgr = $tplan_mgr;
     	$this->map_tc_status = $this->resultsCfg['status_code'];
     
 
@@ -249,16 +248,11 @@ class results
 		{
 		    $this->suiteStructure = $this->generateExecTree($db,$keywordId, $owner);
 		}
-	    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-	    // $xmem=current($mem);
-	    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-	    // ob_flush();flush();
 
 		// KL - if no builds are specified, no need to execute the following block of code
 		if ($builds_to_query != -1) {
 			// retrieve results from executions table
-
-     
+    
 			// get keyword id -> keyword name pairs used in this test plan
 			$keywords_in_tplan = $tplan_mgr->get_keywords_map($this->testPlanID,'ORDER BY keyword');
 
@@ -272,11 +266,8 @@ class results
       } 
 			//new dBug($this->keywordData);
 			//$tplan_mgr->get_keywords_tcases($this->testPlanID);
-	      
-
 			// get owner id -> owner name pairs used in this test plan
-			$arrOwners = getUsersForHtmlOptions($db, null, false);
-
+			$arrOwners = getUsersForHtmlOptions($db);
 
 			// create data object which tallies last result for each test case
 			// this function now also creates mapOfLastResultByKeyword ???
@@ -1084,20 +1075,21 @@ class results
 			}
 			
       		$infoToSave = array('testcaseID' => $testcaseID,
-			                    'external_id' => $info['external_id'],
-			                    'tcversion_id' => $info['tcversion_id'],
-			                    'version' => $version,
-			                    'build_id' => '',
-			                    'tester_id' => '',
-			                    'execution_ts' => '',
-			                    'status' => $this->map_tc_status['not_run'],
-			                    'executions_id' => '',
-			                    'notes' => '',
-			                    'bugString' => '',
-			                    'name' => $info['name'],
-			                    'assigner_id' => $info['assigner_id'],
-			                    'feature_id' => $info['feature_id'],
-			                    'execute_link' => '');
+      		                    'testcasePrefix' => $this->testCasePrefix . $this->testCaseCfg->glue_character,
+			                        'external_id' => $info['external_id'],
+			                        'tcversion_id' => $info['tcversion_id'],
+			                        'version' => $version,
+			                        'build_id' => '',
+			                        'tester_id' => '',
+			                        'execution_ts' => '',
+			                        'status' => $this->map_tc_status['not_run'],
+			                        'executions_id' => '',
+			                        'notes' => '',
+			                        'bugString' => '',
+			                        'name' => $info['name'],
+			                        'assigner_id' => $info['assigner_id'],
+			                        'feature_id' => $info['feature_id'],
+			                        'execute_link' => '');
       
 
 			if ($info['tcversion_id'] != $info['executed'])
@@ -1145,7 +1137,7 @@ class results
 					    	$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
 					    	                                                       $exec_row['execution_ts']);
 
-					 		$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
+					 		  $prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
     						$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . '">' .
 			               	$suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
 								    	                                                       

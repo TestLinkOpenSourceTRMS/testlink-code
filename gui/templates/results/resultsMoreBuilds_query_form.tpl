@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.11 2008/11/13 19:31:52 schlundus Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.12 2009/01/07 22:20:58 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
@@ -45,11 +45,15 @@ rev :
   {assign var="testsuite_qty" value=$gui->testsuites->qty }
 {/if}
 
+{assign var="keyword_qty" value=1}
+{* 
+franciscom - may be in the future - 20090107
 {if $gui->keywords->qty > #KEYWORDS_COMBO_NUM_ITEMS# }
   {assign var="keyword_qty" value=#KEYWORDS_COMBO_NUM_ITEMS# }
 {else}
   {assign var="keyword_qty" value=$gui->keywords->qty }
 {/if}
+*}
 
 {* ------------------------------------------------------------------------------- *}
 
@@ -89,7 +93,6 @@ rev :
 		<tr>
 			<td>
 				<select name="keyword" size="{$keyword_qty}" >
-					<option value="0" >{lang_get s='any'}</option>
 					{foreach key=keyword_id item=keyword_name from=$gui->keywords->items}
 						<option value="{$keyword_id}" >{$gui->keywords->items[$keyword_id]|escape}</option>
 					{/foreach}

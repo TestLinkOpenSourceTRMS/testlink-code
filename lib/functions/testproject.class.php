@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.92 $
- * @modified $Date: 2009/01/06 15:34:06 $  $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2009/01/07 22:19:46 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090106 - franciscom - get_by_prefix()
  * 20081103 - franciscom - get_all_testcases_id() minor refactoring
  * 20080518 - franciscom - create() interface changes
  * 20080507 - franciscom - get_keywords_tcases() - changed return type
@@ -250,6 +251,26 @@ function get_by_id($id)
 	return ($recordset ? $recordset[0] : null);
 }
 
+
+/*
+  function: get_by_prefix
+
+
+  args : prefix
+
+  returns: null if query fails
+           map with test project info
+
+*/
+function get_by_prefix($prefix)
+{
+	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
+	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
+	       " WHERE testprojects.id = nodes_hierarchy.id ".
+	       " AND testprojects.prefix = {$prefix}";
+	$recordset = $this->db->get_recordset($sql);
+	return ($recordset ? $recordset[0] : null);
+}
 
 /*
  function: get_all

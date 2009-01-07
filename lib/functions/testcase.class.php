@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.138 $
- * @modified $Date: 2009/01/06 15:34:06 $ $Author: franciscom $
+ * @version $Revision: 1.139 $
+ * @modified $Date: 2009/01/07 22:19:46 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
@@ -1696,7 +1696,7 @@ function getInternalID($stringID,$glueCharacter)
 	$pieces = explode($glueCharacter,$stringID);
 	if(count($pieces) == 2)
 	{
-    	$testCasePrefix=$pieces[0];
+    $testCasePrefix=$pieces[0];
 		$externalID=$pieces[1];
 
 		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
@@ -1708,7 +1708,7 @@ function getInternalID($stringID,$glueCharacter)
 
 		if(!is_null($testCases))
 		{
-        	$sql = "SELECT id" .
+      $sql = "SELECT id" .
                " FROM {$this->testprojects_table} " .
                " WHERE prefix='" . $this->db->prepare_string($testCasePrefix) . "'";
 			$recordset = $this->db->get_recordset($sql);
@@ -1717,13 +1717,13 @@ function getInternalID($stringID,$glueCharacter)
 			$tprojectSet = array();
 			foreach($testCases as $tcaseID => $value )
 			{
-            	$path2root=$this->tree_manager->get_path($tcaseID);
+        $path2root=$this->tree_manager->get_path($tcaseID);
 				if($tprojectID == $path2root[0]['parent_id'])
 				{
-                	$internalID = $tcaseID;
+          $internalID = $tcaseID;
 					break;
-             	}
-         	}
+        }
+      }
 		}
 	}
 	return $internalID;

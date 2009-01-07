@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/01/03 17:30:29 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/01/07 19:55:34 $ $Author: schlundus $
  *
  * rev: 20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
  *      20081213 - franciscom - removed global coupling to access config parameters
@@ -224,13 +224,13 @@ class tlUser extends tlDBObject
 	
 	public function deleteFromDB(&$db)
 	{
-	  $querySet = array();
-	  $querySet[] = "DELETE FROM user_assignments WHERE user_id={$this->dbID}";
-		$querySet[] = "DELETE FROM users WHERE id={$this->dbID}";
+		$querySet = array();
+		$querySet[] = "DELETE FROM user_assignments WHERE user_id = {$this->dbID}";
+		$querySet[] = "DELETE FROM users WHERE id = {$this->dbID}";
 
-    foreach( $querySet as $query )
-    {
-	      $result = $db->exec_query($query) ? tl::OK : tl::ERROR;
+	    foreach($querySet as $query)
+	    {
+			$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
 		    if($result == tl::ERROR) 
 		    {
 		        break;  
@@ -418,15 +418,14 @@ class tlUser extends tlDBObject
 		return checkForRights($allRights,$roleQuestion);
 	}
 	
-	
 	static public function checkEmailAdress($email)
 	{
-	  
-		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
+		$email = trim($email);
+	 	$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
 		if ($result == tl::OK)
 		{
-	    $matches=array();
-	    $email_regex=config_get('validation_cfg')->user_email_valid_regex;
+	    	$matches = array();
+	    	$email_regex = config_get('validation_cfg')->user_email_valid_regex;
 			if (!preg_match($email_regex,$email,$matches))
 			{
 				$result = self::E_EMAILFORMAT;

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/01/03 17:30:30 $ $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/01/07 19:55:34 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -32,17 +32,16 @@ $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = getNumberOfAccessibleTestPlans($db,$gui->tprojectID);
 $gui->docs = getUserDocumentation();
 
-
 if ($gui->tprojectID)
 {
-  $tplanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+	$tplanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 	getAccessibleTestPlans($db,$gui->tprojectID,$userID,1,$tplanID);
 }	
 
 if ($gui->tprojectID && isset($user->tprojectRoles[$gui->tprojectID]))
 {
 	// test project specific role applied
-	$role = $user->tprojectRoles[$gui->currentTprojectID];
+	$role = $user->tprojectRoles[$gui->tprojectID];
 	$testprojectRole = $role->name;
 }
 else
@@ -66,7 +65,7 @@ if (isset($_GET['testproject']))
 	setcookie('TL_lastTestProjectForUserID_'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
-$gui->grants=getGrants($db);
+$gui->grants = getGrants($db);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

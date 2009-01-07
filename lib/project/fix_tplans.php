@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: fix_tplans.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/02 17:29:51 $  $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/01/07 19:55:35 $  $Author: schlundus $
  * @author asielb
  *
  * fixes bug 1021
@@ -56,7 +56,7 @@ if ($can_manage_tprojects)
 }
 else
 {
-	echo "<p>lang_get('fix_tplans_no_rights')</p>";
+	echo "<p>".lang_get('fix_tplans_no_rights')."</p>";
 }
 
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.51 $ $Author: franciscom $
- * @modified $Date: 2009/01/03 17:30:30 $
+ * @version $Revision: 1.52 $ $Author: schlundus $
+ * @modified $Date: 2009/01/07 19:55:34 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -55,17 +55,22 @@ if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 // ----------------------------------------------------------------------
 
 // ----- Test Project Section ----------------------------------  
+$view_tc_rights = null;
+$modify_tc_rights = null;
+$hasTestCases = 0;
 if(has_rights($db,"mgt_view_tc"))
 { 
-  	//user can view tcs 
-    $smarty->assign('view_tc_rights', 'yes');
+  	//user can view tcs
+  	$view_tc_rights = 'yes'; 
     
     //users can modify tcs
-    $smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc")); 
+    $modify_tc_rights = has_rights($db,"mgt_modify_tc"); 
     
 	$hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
-   	$smarty->assign('hasTestCases',$hasTestCases);
 }
+$smarty->assign('view_tc_rights', $view_tc_rights);
+$smarty->assign('modify_tc_rights', $modify_tc_rights); 
+$smarty->assign('hasTestCases',$hasTestCases);
 
 // REQS
 $smarty->assign('rights_reqs_view', has_rights($db,"mgt_view_req")); 
@@ -97,7 +102,7 @@ $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
 // ----- Test Plan Section ----------------------------------
-$filters=array('plan_status' => ACTIVE);
+$filters = array('plan_status' => ACTIVE);
 $num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
 
 // get Test Plans available for the user 

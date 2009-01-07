@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/01/03 17:28:40 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/01/07 19:55:34 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -32,7 +32,8 @@ if (!$op['status'])
 	exit();
 }
 
-$args=init_args();
+$args = init_args();
+$gui = init_gui($db,$args);
 
 if(!is_null($args->login))
 {
@@ -44,11 +45,11 @@ if(!is_null($args->login))
 	{
 		if (!$msg)
 		{
-			$args->note = lang_get('bad_user_passwd');
+			$gui->note = lang_get('bad_user_passwd');
 		}
 		else
 		{
-			$args->note = $msg;
+			$gui->note = $msg;
 		}	
 	}
 	else
@@ -60,31 +61,12 @@ if(!is_null($args->login))
 	}
 }
 
-
 $logPeriodToDelete = config_get('removeEventsOlderThan');
 $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
 
-$authCfg = config_get('authentication');
-
-$gui = new stdClass();
-$gui->note = $args->note;
-$gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
-$gui->securityNotes = getSecurityNotes($db);
-$gui->external_password_mgmt = ('LDAP' == $authCfg['method']) ? 1 : 0;
-$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
-$gui->user_self_signup = config_get('user_self_signup');
-
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-
-// $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
-// $smarty->assign('securityNotes',$securityNotes);
-// $smarty->assign('note',$args->note);
-// $smarty->assign('reqURI',$args->reqURI ? $args->reqURI : $args->preqURI);
-// $smarty->assign('login_disabled', $login_disabled);
-// $smarty->assign('external_password_mgmt', $external_password_mgmt);
 $smarty->display('login.tpl');
-
 
 /*
   function: 
@@ -105,8 +87,21 @@ function init_args()
 
     $args->reqURI = isset($_REQUEST['req']) ? $_REQUEST['req'] : null;
     $args->preqURI = (isset($_REQUEST['reqURI']) && strlen($_REQUEST['reqURI'])) ? $_REQUEST['reqURI'] : null;
+  
+    return $args;
+}
 
-    switch($args->note)
+function init_gui(&$db,$args)
+{
+	$gui = new stdClass();
+	
+	$authCfg = config_get('authentication');
+	$gui->securityNotes = getSecurityNotes($db);
+	$gui->external_password_mgmt = ('LDAP' == $authCfg['method']) ? 1 : 0;
+	$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
+	$gui->user_self_signup = config_get('user_self_signup');
+
+	switch($args->note)
     {
     	case 'expired':
     		if(!isset($_SESSION))
@@ -115,26 +110,26 @@ function init_args()
     		}
     		session_unset();
     		session_destroy();
-    		$args->note = lang_get('session_expired');
-    		$args->reqURI = null;
+    		$gui->note = lang_get('session_expired');
+    		$gui->reqURI = null;
     		break;
     		
     	case 'first':
-    		$args->note = lang_get('your_first_login');
-    		$args->reqURI = null;
+    		$gui->note = lang_get('your_first_login');
+    		$gui->reqURI = null;
     		break;
     		
     	case 'lost':
-    		$args->note = lang_get('passwd_lost');
-    		$args->reqURI = null;
+    		$gui->note = lang_get('passwd_lost');
+    		$gui->reqURI = null;
     		break;
     		
     	default:
-    		$args->note = lang_get('please_login');
+    		$gui->note = lang_get('please_login');
     		break;
     }
-  
-    return $args;
+	$gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
+    
+	return $gui;
 }
-
 ?>

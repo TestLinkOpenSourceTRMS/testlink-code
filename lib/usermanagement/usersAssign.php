@@ -5,24 +5,14 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.16 $
-* @modified $Date: 2008/10/25 19:25:41 $ $Author: schlundus $
+* @version $Revision: 1.17 $
+* @modified $Date: 2009/01/07 19:55:35 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
-*
-* rev :
-*      20070819 - franciscom -
-*      refactoring of delete and insert calls
-*      new functions to generate $userFeatureRoles
-*
-*      20070227 - franciscom - refatoring to solve refresh problem
-*                              when changing test project on navBar
-*
-*      20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
@@ -35,7 +25,8 @@ $bUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$userID = $_SESSION['currentUser']->dbID;
+$currentUser = $_SESSION['currentUser'];
+$userID = $currentUser->dbID;
 
 $user_feedback = '';
 $no_features = '';
@@ -64,6 +55,7 @@ else if ($feature == "testplan")
 
 if ($featureID && $bUpdate && $mgr)
 {
+	checkRightsForUpdate($db,$currentUser,$testprojectID,$feature,$featureID);
 	$mgr->deleteUserRoles($featureID);
 	foreach($map_userid_roleid as $user_id => $role_id)
 	{
@@ -134,7 +126,7 @@ if(is_null($features))
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
 $smarty->assign('user_feedback',$user_feedback);
-$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+$smarty->assign('grants',getGrantsForUserMgmt($db,$currentUser));
 $smarty->assign('tproject_name',$testprojectName);
 $smarty->assign('optRights', tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM));
 $smarty->assign('userData',$users);
@@ -143,4 +135,27 @@ $smarty->assign('featureID',$featureID);
 $smarty->assign('feature',$feature);
 $smarty->assign('features',$features);
 $smarty->display($template_dir . $default_template);
+
+function checkRights(&$db,&$user)
+{
+	$result = false;
+	if ($user->hasRight($db,"role_management")
+		|| ($user->hasRight($db,"testplan_user_role_assignment") || $user->hasRight($db,"user_role_assignment",null,-1))
+	  )
+	  	$result = true;
+	return $result;
+}
+function checkRightsForUpdate($db,$user,$testprojectID,$feature,$featureID)
+{
+	if ($feature == "testplan")
+	{
+		if (!$user->hasRight($db,"testplan_user_role_assignment",$testprojectID,$featureID))
+			exit();
+	}
+	if ($feature == "testproject")
+	{
+		if (!$user->hasRight($db,"user_role_assignment",$featureID,-1))
+			exit();
+	}
+}
 ?>

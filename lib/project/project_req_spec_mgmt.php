@@ -3,15 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: project_req_spec_mgmt.php,v 1.5 2008/12/16 20:11:53 schlundus Exp $
+ * @version $Id: project_req_spec_mgmt.php,v 1.6 2009/01/07 19:55:35 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
- *
- * rev :
- *      20080415 - franciscom - refactoring
- *      20070930 - franciscom - REQ - BUGID 1078
  *
  */
 require_once('../../config.inc.php');

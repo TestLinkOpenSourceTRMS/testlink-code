@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2009/01/07 19:55:35 $ $Author: schlundus $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2009/01/10 21:39:04 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -933,7 +933,7 @@ $TLS_title_events = "Ereignisse";
 $TLS_title_execute = "Ausführen";
 $TLS_title_results = "Ergebnisse";
 $TLS_title_specification = "Definition";
-
+$TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 
 // gui/templates/inc_testsuite_viewer_rw.tpl

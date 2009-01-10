@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.130 $ $Author: franciscom $
- * @modified $Date: 2009/01/03 17:30:29 $
+ * @version $Revision: 1.131 $ $Author: schlundus $
+ * @modified $Date: 2009/01/10 21:39:04 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -226,27 +226,8 @@ function setPaths()
 /** Verify if user is log in. Redirect to login page if not. */
 function checkSessionValid(&$db)
 {
-	if (!isset($_SESSION['userID']))
-	{
-		$ip = getenv ("REMOTE_ADDR");
-	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
-		$fName = "login.php";
-		$requestURI = null;
-		if (strlen($_SERVER['REQUEST_URI']))
-			$requestURI = "&req=".urlencode($_SERVER['REQUEST_URI']);
-
-		for($i = 0;$i < 5;$i++)
-		{
-			if (file_exists($fName))
-			{
-				redirect($_SESSION['basehref'] . $fName."?note=expired".$requestURI,"top.location");
-				break;
-			}
-			$fName = "../".$fName;
-		}
-		exit();
-	}
-	else
+	$bSessionValid = false;
+	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
 	{
 		/** @TODO martin: 
 		    Talk with Andreas to understand:
@@ -257,9 +238,38 @@ function checkSessionValid(&$db)
 		 * b) do not read again and again the same data from DB
 		 * c) this function check JUST session validity
 		 **/
-		$user = new tlUser($_SESSION['userID']);
-		$user->readFromDB($db);
-		$_SESSION['currentUser'] = $user;
+		global $tlCfg;
+		
+		$now = time();
+		$lastActivity = $_SESSION['lastActivity'];
+		if (($now - $lastActivity) <= ($tlCfg->sessionInactivityTimeout * 60))
+		{
+			$_SESSION['lastActivity'] = $now;
+			$user = new tlUser($_SESSION['userID']);
+			$user->readFromDB($db);
+			$_SESSION['currentUser'] = $user;
+			$bSessionValid = true;
+		}
+	}
+	if (!$bSessionValid)
+	{
+		$ip = $_SERVER["REMOTE_ADDR"];
+	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
+		$requestURI = null;
+		if (strlen($_SERVER['REQUEST_URI']))
+			$requestURI = "&req=".urlencode($_SERVER['REQUEST_URI']);
+		
+		$fName = "login.php";
+		for($i = 0;$i < 5;$i++)
+		{
+			if (file_exists($fName))
+			{
+				redirect($_SESSION['basehref'] . $fName."?note=expired".$requestURI,"top.location");
+				break;
+			}
+			$fName = "../".$fName;
+		}
+		exit();
 	}
 }
 
@@ -275,38 +285,6 @@ function doSessionStart()
 	if(!isset($_SESSION))
 		session_start();
 }
-
-
-// --------------------------------------------------------------------------------------
-/** @TODO martin: should be removed? purpose? */
-/*
- * 
-function checkUserRights(&$db)
-{
-	//bypassed as long roles and rights aren't fully defined
-	return;
-
-	// global $g_userRights;
-	$g_userRights = config_get('userRights');
-
-	$self = strtolower($_SERVER['SCRIPT_FILENAME']);
-	$fName = str_replace(strtolower(str_replace("\\","/",TL_ABS_PATH)),"",$self);
-
-	if (isset($g_userRights[$fName]) && !is_null($g_userRights[$fName]))
-	{
-		$fRights = $g_userRights[$fName];
-		if (has_rights($db,$fRights) != 'yes')
-		{
-			tLog("Warning: Insufficient rights for ".$self);
-			die("Insufficient rights");
-		}
-		else
-			tLog("Sufficient rights for ".$self);
-	}
-
-}
-*/
-
 
 // --------------------------------------------------------------------------------------
 // If we receive TestPlan ID in the _SESSION

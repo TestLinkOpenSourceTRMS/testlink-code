@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.222 $
- * @modified $Date: 2009/01/06 15:34:05 $ by $Author: franciscom $
+ * @version $Revision: 1.223 $
+ * @modified $Date: 2009/01/10 21:39:04 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -134,6 +134,10 @@ $tlCfg->testcase_cfg->glue_character = '-';
 /** Error reporting - do we want php errors to show up for users */
 error_reporting(E_ALL);
 
+/** Set the session timeout for inactivity (in seconds).
+* Default is 60 minutes
+*/
+$tlCfg->sessionInactivityTimeout = 60;
 /** Set the session timeout value (in minutes).
  * This will prevent sessions timing out after very short periods of time 
  * Warning: your server could block this settings

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/08/07 14:27:13 $ by $Author: havlat $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/01/10 21:39:04 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial authentication for login and creates all user session variables.
@@ -47,6 +47,7 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 					$_SESSION['filter_tp_by_product'] = 1;
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
+					$_SESSION['lastActivity'] = time();
 					global $g_tlLogger;
 					$g_tlLogger->endTransaction();
 					$g_tlLogger->startTransaction();

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.139 $
- * @modified $Date: 2009/01/07 22:19:46 $ $Author: franciscom $
+ * @version $Revision: 1.140 $
+ * @modified $Date: 2009/01/10 21:47:25 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
@@ -2429,16 +2429,16 @@ function update_active_status($id,$tcversion_id,$active_status)
   returns: -
 
 */
-//SCHLUNDUS: copy attachments should be repository functionality
+//@ TODO schlundus, copy attachments should be repository functionality
 function copy_attachments($source_id,$target_id)
 {
   $table_name = $this->attachmentTableName;
-  $f_parts=null;
-  $destFPath=null;
-  $mangled_fname='';
-  $status_ok=false;
-  $repo_type=config_get('repositoryType');
-  $repo_path=config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
+  $f_parts = null;
+  $destFPath = null;
+  $mangled_fname = '';
+  $status_ok = false;
+  $repo_type = config_get('repositoryType');
+  $repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
 
   $attachments = $this->getAttachmentInfos($source_id);
   if(count($attachments) > 0)
@@ -2465,7 +2465,7 @@ function copy_attachments($source_id,$target_id)
 				$attachment->create($target_id,$table_name,$value['file_name'],
 				                    $destFPath,$file_contents,$value['file_type'],
 				                    $value['file_size'],$value['title']);
-				$attachment->writeToDb($db);
+				$attachment->writeToDb($this->db);
 			}
 		}
 	}

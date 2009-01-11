@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.17 2008/12/16 20:11:53 schlundus Exp $
+$Id: reqView.tpl,v 1.18 2009/01/11 17:10:56 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -91,7 +91,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 		<td>
 			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.coverage}</legend>
 					  {section name=row loop=$gui->req.coverage}
-			  <span>{$gui->req.coverage[row].name|escape}</span><br />
+			  <span>{$gui->tcasePrefix|escape}{$gui->glueChar}{$gui->req.coverage[row].tc_external_id}{$gui->pieceSep}{$gui->req.coverage[row].name|escape}</span><br />
 		   {sectionelse}
 			<span>{$labels.req_msg_notestcase}</span>
 		  {/section}

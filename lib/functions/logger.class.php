@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/11/19 17:57:22 $ $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/01/11 17:13:52 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -970,6 +970,7 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 		// suppress some kind of errors
 		// strftime(),strtotime(),date()
 		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
+        ($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"mktime()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||

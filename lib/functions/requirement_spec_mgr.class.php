@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2008/11/05 15:56:05 $ by $Author: havlat $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  *
- * rev: 20080830 - franciscom - changes in create() for future use
+ * rev: 20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
+ *                                           get_linked_cfields()
+ *
+ *      20080830 - franciscom - changes in create() for future use
  *                              changes to use node_order field from nodes hierachy
  *                              table when manage requirements. (get_requirements())
  * 
@@ -23,6 +26,9 @@
  * 
  *      20080309 - franciscom - changed return value for get_by_id()
 */
+require_once("attachment.class.php");
+require_once( dirname(__FILE__) . '/attachments.inc.php' );
+
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
   const CASE_SENSITIVE=0;
@@ -288,11 +294,6 @@ function get_metrics($id)
 
 	return $output;
 }
-
-
-
-
-
 
 
   /*
@@ -681,14 +682,14 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 
 
   args: id: requirement spec id
-        [parent_id]: node id of parent testproject of requirement spec.
-                     need to understand to which testproject requirement spec belongs.
-                     this information is vital, to get the linked custom fields.
-                     Presence /absence of this value changes starting point
-                     on procedure to build tree path to get testproject id.
+        [tproject_id]: node id of parent testproject of requirement spec.
+                       need to understand to which testproject requirement spec belongs.
+                       this information is vital, to get the linked custom fields.
+                       Presence /absence of this value changes starting point
+                       on procedure to build tree path to get testproject id.
 
-                     null -> use requirement spec id as starting point.
-                     !is_null -> use this value as starting point.
+                       null -> use requirement spec id as starting point.
+                       !is_null -> use this value as starting point.
 
   returns: map/hash
            key: custom field id
@@ -720,17 +721,13 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
        20070302 - check for $id not null, is not enough, need to check is > 0
 
 */
-function get_linked_cfields($id,$parent_id=null)
+function get_linked_cfields($id,$tproject_id=null)
 {
 	$enabled = 1;
 	if (!is_null($id) && $id > 0)
 	{
 		$req_spec_info = $this->get_by_id($id);
 		$tproject_id = $req_spec_info['testproject_id'];
-	}
-	else
-	{
-		$tproject_id = $parent_id;
 	}
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
 	                                                          'requirement_spec',$id);
@@ -746,11 +743,14 @@ function get_linked_cfields($id,$parent_id=null)
 
 
   args: $id
-        [parent_id]: node id of testproject (req spec parent).
-                     this information is vital, to get the linked custom fields.
+        [tproject_id]: node id of testproject (req spec parent).
+                       this information is vital, to get the linked custom fields,
+                       because custom fields are system wide, but to be used are
+                       assigned to a test project.
+                       is null this method or other called will use get_path() 
+                       method to get test project id.
 
-                     null -> use id as starting point.
-                     !is_null -> use this value as starting point.
+        [parent_id]: Need to e rethinked, may be remove (20090111 - franciscom)
 
         [$name_suffix]: must start with '_' (underscore).
                         Used when we display in a page several items
@@ -762,10 +762,10 @@ function get_linked_cfields($id,$parent_id=null)
   returns: html string
 
 */
-function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
+function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null,$name_suffix='')
 {
 	$cf_smarty = '';
-  $cf_map = $this->get_linked_cfields($id,$parent_id);
+  $cf_map = $this->get_linked_cfields($id,$tproject_id);
 
 	if(!is_null($cf_map))
 	{
@@ -800,12 +800,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
   returns: html string
 
 */
-function html_table_of_custom_field_values($id)
+function html_table_of_custom_field_values($id,$tproject_id)
 {
 	$cf_smarty = '';
-	$PID_NO_NEEDED = null;
-
-  $cf_map = $this->get_linked_cfields($id,$PID_NO_NEEDED);
+  $cf_map = $this->get_linked_cfields($id,$tproject_id);
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)

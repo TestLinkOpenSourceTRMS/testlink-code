@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.72 $
- * @modified $Date: 2008/12/09 20:28:35 $ by $Author: schlundus $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -593,8 +593,19 @@ function exportReqDataToCSV($reqData)
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function getReqCoverage($reqs,$execMap,&$coveredReqs)
 {
+
+  $resultsCfg = config_get('results');
+  
 	$arrCoverage = array(
 						"passed" => array(),
 						"failed" => array(),
@@ -610,25 +621,28 @@ function getReqCoverage($reqs,$execMap,&$coveredReqs)
 			$nPassed = 0;
 			$nBlocked = 0;
 			$nFailed = 0;
-			$req = array("id" => $id,
-						 "title" => "",
-						 );
+			$req = array("id" => $id, "title" => "");
+			
 			if (sizeof($tc))
 				$coveredReqs[$id] = 1;
 			for($i = 0;$i < sizeof($tc);$i++)
 			{
 				$tcInfo = $tc[$i];
 				if (!$i)
-					$req['title'] = $tcInfo['title'];
+					$req['title'] = $tcInfo['req_title'];
 				$execTc = $tcInfo['testcase_id'];
 
 				// BUGID 1063
 				if ($execTc)
 					$req['tcList'][] = array(
 												"tcID" => $execTc,
-												"title" => $tcInfo['testcase_name']
+												"title" => $tcInfo['testcase_name'],
+												"tcaseExternalID" => $tcInfo['tc_external_id'],
+												"status" => $resultsCfg['status_code']['not_run'],
+												"status_label" => $resultsCfg['status_label']['not_run']
 											);
-
+        $current_index = count($req['tcList']);
+        $current_index = $current_index > 0 ? $current_index-1 : 0;
 
 				$exec = 'n';
 				if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
@@ -636,6 +650,10 @@ function getReqCoverage($reqs,$execMap,&$coveredReqs)
 					$execInfo = end($execMap[$execTc]);
 					$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
 				}
+				$req['tcList'][$current_index]['status']=$exec;
+				$req['tcList'][$current_index]['status_label']=$resultsCfg['status_label'][$resultsCfg['code_status'][$exec]];
+				
+				
 				if ($exec == 'p')
 					$nPassed++;
 				else if ($exec == 'b')

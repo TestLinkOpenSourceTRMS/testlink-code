@@ -11,7 +11,7 @@
 
 {* Configure Actions *}
 {assign var="managerURL" value="lib/plan/planMilestonesEdit.php"}
-{assign var="editAction" value="$managerURL?doAction=edit;tplan_id="}
+{assign var="editAction" value="$managerURL?doAction=edit&tplan_id="}
 {assign var="deleteAction" value="$managerURL?doAction=doDelete&tplan_id="}
 {assign var="createAction" value="$managerURL?doAction=create&tplan_id="}
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.223 $
- * @modified $Date: 2009/01/10 21:39:04 $ by $Author: schlundus $
+ * @version $Revision: 1.224 $
+ * @modified $Date: 2009/01/12 07:58:30 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,6 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
+ *     20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
  *     20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
  *     20090101 - franciscom - changes in regex used to validate an email address
  *     20081228 - franciscom - gui->layoutMainPageLeft,gui->layoutMainPageRight
@@ -138,6 +139,7 @@ error_reporting(E_ALL);
 * Default is 60 minutes
 */
 $tlCfg->sessionInactivityTimeout = 60;
+
 /** Set the session timeout value (in minutes).
  * This will prevent sessions timing out after very short periods of time 
  * Warning: your server could block this settings
@@ -683,6 +685,26 @@ $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from 
 // ENABLED: allow N level depth tree 
 // DISABLED: just one level
 $tlCfg->req_cfg->child_requirements_mgmt = DISABLED;
+
+// 20090111 - franciscom
+// Order of test cases status in this array, is used to undestand
+// to what status set requirement in the requirements report.
+// Standard algorithm, present in getReqCoverage(), is:
+//
+// 
+// if at least one of Test Cases linked to Requirement has status FAILED
+//    Requirement Coverage Status = FAILED
+// else if at least one of Test Cases linked to Requirement has status BLOCKED
+//    Requirement Coverage Status = BLOCKED
+// else if ALL Test Cases linked to Requirement has status NOT RUN
+//    Requirement Coverage Status = NOT RUN
+// else if ALL Test Cases linked to Requirement has status PASSED
+//    Requirement Coverage Status = PASSED
+//
+// This logic is implemented using following config parameter
+$tlCfg->req_cfg->coverageStatusAlgorithm['checkOrder']=array('atLeastOne','all');
+$tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['atLeastOne']=array('failed','blocked');
+$tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','passed');
 
 // ----------------------------------------------------------------------------
 /** [MISC FUNCTIONALITY] */

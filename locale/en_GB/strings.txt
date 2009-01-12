@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.378 $
- * @modified $Date: 2009/01/10 21:39:04 $ by $Author: schlundus $
+ * @version $Revision: 1.379 $
+ * @modified $Date: 2009/01/12 07:58:55 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1326,10 +1326,17 @@ $TLS_report_display_options = "Report display options";
 
 // gui/templates/resultsReqs.tpl
 $TLS_no_srs_defined = "No Requirements Specification available for this Test Project";
+$TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
+
+
+// IMPORTANT for dynamic generation labels
+// $TLS_req_title_<test case status> 
+// If user add a new test case status he/she MUST add a new label
 $TLS_req_title_blocked = "Blocked Requirements";
 $TLS_req_title_failed = "Failed Requirements";
-$TLS_req_title_notrun = "Unexecuted Requirements";
+$TLS_req_title_not_run = "Unexecuted Requirements";
 $TLS_req_title_passed = "Passed Requirements";
+
 $TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
 $TLS_title_test_plan = $TLS_testplan;
 

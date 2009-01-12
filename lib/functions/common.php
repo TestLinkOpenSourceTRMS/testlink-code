@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.131 $ $Author: schlundus $
- * @modified $Date: 2009/01/10 21:39:04 $
+ * @version $Revision: 1.132 $ $Author: franciscom $
+ * @modified $Date: 2009/01/12 08:01:00 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -18,6 +18,7 @@
  *
  * -----------------------------------------------------------------------------------
  * Revisions:
+ * 20090111 - franciscom - commented some required_once and some global coupling
  * 20081027 - havlatm - refactorization, description
  * 						removed unused $g_cache_config and some functions 
  * 20080907 - franciscom - isValidISODateTime()
@@ -64,15 +65,18 @@ require_once("role.class.php");
 require_once("attachment.class.php");
 
 /** @TODO use the next include only if it is used -> must be removed */
-require_once("testproject.class.php");
+// require_once("testproject.class.php");
 require_once("user.class.php");
 require_once("keyword.class.php");
-require_once("testplan.class.php");
-require_once("tree.class.php");
 require_once("treeMenu.inc.php");
-require_once("cfield_mgr.class.php");
 require_once("exec_cfield_mgr.class.php");
 require_once("plan.core.inc.php");
+
+// 20090111 - francisco.mancardi@gruppotesi.com
+// require_once("testplan.class.php");
+// require_once("tree.class.php");
+// require_once("cfield_mgr.class.php");
+
 
 /** load the php4 to php5 domxml wrapper if the php5 is used and 
  * the domxml extension is not loaded 
@@ -107,6 +111,7 @@ $db = 0;
 
 // --------------------------------------------------------------------------------------
 /** @TODO martin: using must be discussed (leads to inpropper using of classes) ; describe */
+/** See PHP Manual for details */
 function __autoload($class_name) {
    require_once $class_name . '.class.php';
 }
@@ -164,7 +169,7 @@ function setSessionTestProject($tproject_info)
 {
 	if ($tproject_info)
 	{
-		/** @todo check if the session product is updated when its modified per projectEdit.php  */
+		/** @todo check if the session test project is updated when its modified per projectEdit.php  */
 		$_SESSION['testprojectID'] = $tproject_info['id'];
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
@@ -172,8 +177,8 @@ function setSessionTestProject($tproject_info)
 		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
 		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
 
-		tLog("Product was adjusted to [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
-		tLog("Product features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
+		tLog("Test Project was setted to [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
+		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
 	}
 	else
 	{
@@ -371,7 +376,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 * - check rights
 * 
 * @param integer $db DB connection identifier
-* @param boolean $initProduct (optional) Set true if adjustment of Product or
+* @param boolean $initProject (optional) Set true if adjustment of Product or
 * 		Test Plan is required; default is FALSE
 * @param boolean $bDontCheckSession (optional) Set to true if no session should be
 * 		 started
@@ -391,8 +396,10 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 		
 	// adjust Product and Test Plan to $_SESSION
 	if ($initProject)
+	{
 		upd_session_tplan_tproject($db,$_REQUEST);
-
+  }
+   
 	// used to disable the attachment feature if there are problems with repository path
 	/** @TODO this check should not be done anytime but on login and using */
 	global $g_repositoryType;
@@ -652,11 +659,12 @@ function is_blank( $p_var ) {
 **/
 function downloadContentsToFile($content,$fileName)
 {
-	global $tlCfg;
+  // global $tlCfg;	
+	$charSet = config_get('charset');
 
 	ob_get_clean();
 	header('Pragma: public' );
-	header('Content-Type: text/plain; charset='. $tlCfg->charset .'; name=' . $fileName );
+	header('Content-Type: text/plain; charset='. $charSet . '; name=' . $fileName );
 	header('Content-Transfer-Encoding: BASE64;' );
 	header('Content-Disposition: attachment; filename="' . $fileName .'"');
 	echo $content;

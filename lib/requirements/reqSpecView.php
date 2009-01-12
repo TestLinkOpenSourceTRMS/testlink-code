@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/01/12 21:53:43 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -21,10 +21,7 @@ require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once('attachments.inc.php');
 require_once("configCheck.php");
-
-testlinkInitPage($db);
-
-echo "<pre>debug 20090111 - \ - " . __FILE__ . " --- "; print_r($_REQUEST); echo "</pre>";
+testlinkInitPage($db,false,false,"checkRights");
 
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
@@ -71,5 +68,10 @@ function init_args()
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     
     return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_req');
 }
 ?>

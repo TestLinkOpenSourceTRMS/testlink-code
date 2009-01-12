@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.6 2008/09/02 16:39:49 franciscom Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.7 2009/01/12 21:53:43 schlundus Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -14,7 +14,7 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $treemenu_type=config_get('treemenu_type');
@@ -108,5 +108,8 @@ function initializeGui($argsObj,$basehref)
     $gui->ajaxTree->cookiePrefix='requirement_spec' . $gui->ajaxTree->root_node->id . "_" ;
     return $gui;  
 }
-
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_view_req');
+}
 ?>

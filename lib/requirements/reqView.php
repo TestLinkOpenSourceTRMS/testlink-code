@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/01/12 21:53:43 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -98,7 +98,7 @@ function initialize_gui(&$dbHandler,$argsObj)
    returns: 
 
  */
- function checkRights(&$db,&$user)
+function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_view_req');
 }

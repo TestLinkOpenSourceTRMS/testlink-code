@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/01/07 19:55:34 $ $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/01/12 21:11:18 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -35,7 +35,7 @@ $gui->docs = getUserDocumentation();
 if ($gui->tprojectID)
 {
 	$tplanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
-	getAccessibleTestPlans($db,$gui->tprojectID,$userID,1,$tplanID);
+	getAccessibleTestPlans($db,$gui->tprojectID,$userID,$tplanID);
 }	
 
 if ($gui->tprojectID && isset($user->tprojectRoles[$gui->tprojectID]))

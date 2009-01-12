@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2008/06/26 21:46:47 $ by $Author: havlat $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/01/12 21:11:18 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -35,7 +35,7 @@ testlinkInitPage($db);
 // key  : feature
 // value: page to lauch
 //
-$req_cfg=config_get('req_cfg');
+$req_cfg = config_get('req_cfg');
 
 $aa_tfp = array( 
      'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',

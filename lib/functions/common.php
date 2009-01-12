@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.132 $ $Author: franciscom $
- * @modified $Date: 2009/01/12 08:01:00 $
+ * @version $Revision: 1.133 $ $Author: schlundus $
+ * @modified $Date: 2009/01/12 21:11:17 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -247,7 +247,7 @@ function checkSessionValid(&$db)
 		
 		$now = time();
 		$lastActivity = $_SESSION['lastActivity'];
-		if (($now - $lastActivity) <= ($tlCfg->sessionInactivityTimeout * 60))
+		if (($now - $lastActivity) <= (config_get("sessionInactivityTimeout") * 60))
 		{
 			$_SESSION['lastActivity'] = $now;
 			$user = new tlUser($_SESSION['userID']);
@@ -659,7 +659,6 @@ function is_blank( $p_var ) {
 **/
 function downloadContentsToFile($content,$fileName)
 {
-  // global $tlCfg;	
 	$charSet = config_get('charset');
 
 	ob_get_clean();

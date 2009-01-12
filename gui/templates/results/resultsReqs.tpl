@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.8 2009/01/11 17:10:56 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.9 2009/01/12 07:55:20 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
-rev: 20090111 - franciscom - BUGID 1967
+rev: 20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
           s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcases,
+             req_without_tcase,
              req_title_covered,req_title_uncovered,req,req_title_not_in_tl,req_title_nottestable,none'}
 
 {* Configure Actions *}
@@ -53,6 +54,8 @@ rev: 20090111 - franciscom - BUGID 1967
 </div>
 {* --------------------------------------------------------------------------------------------------- *}  
 
+  {* ------------------------------------------------------------------------------------------------- *}  
+  {* Display by Coverage Status *}
   {foreach item=key from=$gui->coverageKeys} 
     <div class="workBack">
     {assign var="label_id" value=req_title_$key}
@@ -86,6 +89,29 @@ rev: 20090111 - franciscom - BUGID 1967
     {/section}
     </div>
   {/foreach}
+  {* ------------------------------------------------------------------------------------------------- *}  
+
+  {* ------------------------------------------------------------------------------------------------- *}  
+  {* Requierements without Test Cases *}
+   <div class="workBack">
+    <h2>{$labels.req_without_tcase}</h2>
+    {if $gui->withoutTestCase != ''}
+       <table class="simple">
+       	<tr>
+       		<th>{$labels.req}</th>
+       	</tr>
+         {foreach item=reqnotest from=$gui->withoutTestCase}
+         	<tr>
+         		<td><span class="bold"><a href="{$reqViewAction}{$reqnotest.id}">
+         			  {$reqnotest.title|escape}</a></span></td>
+         	</tr>
+         {/foreach}
+       </table>
+    {else}
+    	<p class="bold">{$labels.none}</p>
+    {/if}
+    </div>
+  {* ------------------------------------------------------------------------------------------------- *}  
 {/if}
 
 </body>

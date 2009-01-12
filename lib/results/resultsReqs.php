@@ -4,13 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/01/12 07:55:27 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
  *
- * 20090111 - franciscom - BUGID 1967
+ * 20090111 - franciscom - BUGID 1967 + improvements
  * 20060104 - fm - BUGID 0000311: Requirements based Report shows errors 
  *
  * 
@@ -96,16 +96,16 @@ if(!is_null($args->req_spec_id))
 	       " LEFT OUTER JOIN tcversions TCV ON TCV.id=NHB.id " .
 	       " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
 
-  // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-  	       
-	$reqs = $db->fetchRowsIntoMap($sql,'req_id',1);
+	$reqs = $db->fetchRowsIntoMap($sql,'req_id',database::CUMULATIVE);
 	$execMap = getLastExecutions($db,$tcs,$args->tplan_id);
 	$gui->metrics = $req_spec_mgr->get_metrics($args->req_spec_id);
-	$coveredReqs = 0;
-	$gui->coverage = getReqCoverage($reqs,$execMap,$coveredReqs);
-  // getNewReqCoverage($reqs,$execMap,$coveredReqs);                                                               
+	
+	// $gui->coverage = getReqCoverage($reqs,$execMap,$coveredReqs);
+  $coverage = getReqCoverage($reqs,$execMap);                                                               
+  $gui->coverage = $coverage['byStatus'];
+  $gui->withoutTestCase = $coverage['withoutTestCase'];
                                                                
-	$gui->metrics['coveredByTestPlan'] = sizeof($coveredReqs);
+	$gui->metrics['coveredByTestPlan'] = sizeof($coverage['withTestCase']);
 	$gui->metrics['uncoveredByTestPlan'] = $gui->metrics['expectedTotal'] - $gui->metrics['coveredByTestPlan'] - 
 	                                       $gui->metrics['notTestable'];
 }
@@ -140,83 +140,4 @@ function init_args()
     
     return $args;
 }
-
-function getNewReqCoverage($reqs,$execMap,&$coveredReqs)
-{
-
-  $resultsCfg=config_get('results');
-  $status2check=array_keys($resultsCfg['status_label_for_exec_ui']);
- 
-  
-  $coverage=$resultsCfg['status_label_for_exec_ui'];
-  $status_counters=array();
-  foreach($coverage as $status_code => $value)
-  {
-      $coverage[$status_code]=array();
-      $status_counters[$resultsCfg['status_code'][$status_code]]=0;
-  }
-	$coveredReqs = null;
-	$reqs_qty=count($reqs);
-	//new dBug($coverage);
-	//new dBug($status_counters);
-	
-	if($reqs_qty > 0)
-	{
-		foreach($reqs as $requirement_id => $req_tcase_set)
-		{
-			$req = array("id" => $id, "title" => "");
-			foreach($status_counters as $key => $value)
-			{
-			    $status_counters[$key]=0;
-			}
-
-			$item_qty = count($req_tcase_set);
-			if( $items_qty > 0 )
-			{
-				$coveredReqs[$requirement_id] = 1;
-			}
-				
-			for($idx = 0; $idx < $item_qty; $idx++)
-			{
-			  //new dBug($req_tcase_set[$idx]);
-			  $item_info=$req_tcase_set[$idx];
-			  
-			  // just to avoid useless assignments
-			  if( $idx=0 )
-			  {
-			      $req['title']=$item_info['req_title'];  
-			  } 
-
-				// BUGID 1063
-				if( $item_info['testcase_id'] > 0 )
-				{
-			     $req['tcList'][] = array("tcID" => $item_info['testcase_id'],"title" => $item_info['testcase_name']);
-           $exec_status = $resultCfg['status_code']['not_run'];
-				   if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
-				   {
-				       $execInfo = end($execMap[$execTc]);
-				   	   $exec_status = isset($execInfo['status']) ? $execInfo['status'] : $resultCfg['status_code']['not_run'];
-				   }
-				   $status_counters[$exec_status]++;
-				   
-        }
-			} // for($idx = 0; $idx < $item_qty; $idx++)
-			
-			// if ($nFailed)
-			// 	$arrCoverage['failed'][] = $req;
-			// else if ($nBlocked)
-			// 	$arrCoverage['blocked'][] = $req;
-			// else if (!$nPassed)
-			// 	$arrCoverage['not_run'][] = $req;
-			// else if ($nPassed == $n)
-			// 	$arrCoverage['passed'][] = $req;
-			// else
-			// 	$arrCoverage['failed'][] = $req;
-		}
-	}
-	return $arrCoverage;
-}
-
-
-
 ?>

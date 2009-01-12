@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.73 $
- * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2009/01/12 07:55:27 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -601,81 +601,199 @@ function exportReqDataToCSV($reqData)
   returns: 
 
 */
-function getReqCoverage($reqs,$execMap,&$coveredReqs)
+// function getReqCoverage($reqs,$execMap,&$coveredReqs)
+// {
+// 
+//   $resultsCfg = config_get('results');
+//   
+// 	$arrCoverage = array(
+// 						"passed" => array(),
+// 						"failed" => array(),
+// 						"blocked" => array(),
+// 						"not_run" => array(),
+// 					);
+// 	$coveredReqs = null;
+// 	if (sizeof($reqs))
+// 	{
+// 		foreach($reqs as $id => $tc)
+// 		{
+// 			$n = sizeof($tc);
+// 			$nPassed = 0;
+// 			$nBlocked = 0;
+// 			$nFailed = 0;
+// 			$req = array("id" => $id, "title" => "");
+// 			
+// 			if (sizeof($tc))
+// 				$coveredReqs[$id] = 1;
+// 			for($i = 0;$i < sizeof($tc);$i++)
+// 			{
+// 				$tcInfo = $tc[$i];
+// 				if (!$i)
+// 					$req['title'] = $tcInfo['req_title'];
+// 				$execTc = $tcInfo['testcase_id'];
+// 
+// 				// BUGID 1063
+// 				if ($execTc)
+// 					$req['tcList'][] = array(
+// 												"tcID" => $execTc,
+// 												"title" => $tcInfo['testcase_name'],
+// 												"tcaseExternalID" => $tcInfo['tc_external_id'],
+// 												"status" => $resultsCfg['status_code']['not_run'],
+// 												"status_label" => $resultsCfg['status_label']['not_run']
+// 											);
+//         $current_index = count($req['tcList']);
+//         $current_index = $current_index > 0 ? $current_index-1 : 0;
+// 
+// 				$exec = 'n';
+// 				if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
+// 				{
+// 					$execInfo = end($execMap[$execTc]);
+// 					$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
+// 				}
+// 				$req['tcList'][$current_index]['status']=$exec;
+// 				$req['tcList'][$current_index]['status_label']=$resultsCfg['status_label'][$resultsCfg['code_status'][$exec]];
+// 				
+// 				
+// 				if ($exec == 'p')
+// 					$nPassed++;
+// 				else if ($exec == 'b')
+// 					$nBlocked++;
+// 				else if ($exec == 'f')
+// 					$nFailed++;
+// 			}
+// 			if ($nFailed)
+// 				$arrCoverage['failed'][] = $req;
+// 			else if ($nBlocked)
+// 				$arrCoverage['blocked'][] = $req;
+// 			else if (!$nPassed)
+// 				$arrCoverage['not_run'][] = $req;
+// 			else if ($nPassed == $n)
+// 				$arrCoverage['passed'][] = $req;
+// 			else
+// 				$arrCoverage['failed'][] = $req;
+// 		}
+// 	}
+// 	return $arrCoverage;
+// }
+//
+// 20090111 - franciscom
+function getReqCoverage($reqs,&$execMap)
 {
-
-  $resultsCfg = config_get('results');
+  $coverageAlgorithm=config_get('req_cfg')->coverageStatusAlgorithm;
+  $resultsCfg=config_get('results');
+  $status2check=array_keys($resultsCfg['status_label_for_exec_ui']);
+ 
+  $coverage['byStatus']=null;
+  $coverage['withTestCase']=null;
+  $coverage['withoutTestCase']=null;
   
-	$arrCoverage = array(
-						"passed" => array(),
-						"failed" => array(),
-						"blocked" => array(),
-						"not_run" => array(),
-					);
-	$coveredReqs = null;
-	if (sizeof($reqs))
+  
+  $coverage['byStatus']=$resultsCfg['status_label_for_exec_ui'];
+  $status_counters=array();
+  foreach($coverage['byStatus'] as $status_code => $value)
+  {
+      $coverage['byStatus'][$status_code]=array();
+      $status_counters[$resultsCfg['status_code'][$status_code]]=0;
+  }
+
+	$reqs_qty=count($reqs);
+	if($reqs_qty > 0)
 	{
-		foreach($reqs as $id => $tc)
+		foreach($reqs as $requirement_id => $req_tcase_set)
 		{
-			$n = sizeof($tc);
-			$nPassed = 0;
-			$nBlocked = 0;
-			$nFailed = 0;
-			$req = array("id" => $id, "title" => "");
-			
-			if (sizeof($tc))
-				$coveredReqs[$id] = 1;
-			for($i = 0;$i < sizeof($tc);$i++)
-			{
-				$tcInfo = $tc[$i];
-				if (!$i)
-					$req['title'] = $tcInfo['req_title'];
-				$execTc = $tcInfo['testcase_id'];
+        $first_key=key($req_tcase_set);
+			  $item_qty = count($req_tcase_set);
 
-				// BUGID 1063
-				if ($execTc)
-					$req['tcList'][] = array(
-												"tcID" => $execTc,
-												"title" => $tcInfo['testcase_name'],
-												"tcaseExternalID" => $tcInfo['tc_external_id'],
-												"status" => $resultsCfg['status_code']['not_run'],
-												"status_label" => $resultsCfg['status_label']['not_run']
-											);
-        $current_index = count($req['tcList']);
-        $current_index = $current_index > 0 ? $current_index-1 : 0;
-
-				$exec = 'n';
-				if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
-				{
-					$execInfo = end($execMap[$execTc]);
-					$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
-				}
-				$req['tcList'][$current_index]['status']=$exec;
-				$req['tcList'][$current_index]['status_label']=$resultsCfg['status_label'][$resultsCfg['code_status'][$exec]];
-				
-				
-				if ($exec == 'p')
-					$nPassed++;
-				else if ($exec == 'b')
-					$nBlocked++;
-				else if ($exec == 'f')
-					$nFailed++;
-			}
-			if ($nFailed)
-				$arrCoverage['failed'][] = $req;
-			else if ($nBlocked)
-				$arrCoverage['blocked'][] = $req;
-			else if (!$nPassed)
-				$arrCoverage['not_run'][] = $req;
-			else if ($nPassed == $n)
-				$arrCoverage['passed'][] = $req;
-			else
-				$arrCoverage['failed'][] = $req;
-		}
+			  $req = array("id" => $requirement_id, 
+			                "title" => $req_tcase_set[$first_key]['req_title']);
+			  foreach($status_counters as $key => $value)
+			  {
+			      $status_counters[$key]=0;
+			  }
+        
+			  if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
+			  {
+			  	$coverage['withTestCase'][$requirement_id] = 1;
+			  }
+			  else
+			  {
+			    $coverage['withoutTestCase'][$requirement_id] = $req;  
+			  }
+			  	
+			  for($idx = 0; $idx < $item_qty; $idx++)
+			  {
+			       $item_info=$req_tcase_set[$idx];
+			       if( $idx==0 ) // just to avoid useless assignments
+			       {
+			           $req['title']=$item_info['req_title'];  
+			       } 
+             
+			  	   // BUGID 1063
+			  	   if( $item_info['testcase_id'] > 0 )
+			  	   {
+                  $exec_status = $resultsCfg['status_code']['not_run'];
+			  	        if (isset($execMap[$item_info['testcase_id']]) && sizeof($execMap[$item_info['testcase_id']]))
+			  	        {
+			  	            $execInfo = end($execMap[$item_info['testcase_id']]);
+			  	            if( isset($execInfo['status']) && trim($execInfo['status']) !='')
+			  	            {
+			  	        	       $exec_status = $execInfo['status'];
+			  	        	   }    
+			  	        }
+			  	        $status_counters[$exec_status]++;
+			            $req['tcList'][] = array("tcID" => $item_info['testcase_id'],
+			                                     "title" => $item_info['testcase_name'],
+			             						            "tcaseExternalID" => $item_info['tc_external_id'],
+			  	   		  						            "status" => $exec_status,
+			  	   		  						            "status_label" => $resultsCfg['status_label']
+			  	   		  						                                         [$resultsCfg['code_status'][$exec_status]]);
+             }
+			   } // for($idx = 0; $idx < $item_qty; $idx++)
+		    
+			   // We analyse counters
+			   $go_away=0;
+         foreach( $coverageAlgorithm['checkOrder'] as $checkKey )
+         {
+             foreach( $coverageAlgorithm['checkType'][$checkKey] as $tcase_status )
+             {
+                 if($checkKey == 'atLeastOne')
+                 {
+                     if($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0 )
+                     {
+                         $coverage['byStatus'][$tcase_status][] = $req;
+                         $go_away=1;
+                         break;
+                     }
+                 }
+                 if($checkKey == 'all')
+                 {
+                     if($status_counters[$resultsCfg['status_code'][$tcase_status]] == $item_qty )
+                     {
+                         $coverage['byStatus'][$tcase_status][] = $req;
+                         $go_away=1;
+                         break;
+                     }
+                 }
+             }  
+             if($go_away)
+             {
+                break;
+             }
+         }
+		} // foreach($reqs as $requirement_id => $req_tcase_set)
 	}
-	return $arrCoverage;
+	return $coverage;
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function getLastExecutions(&$db,$tcs,$tpID)
 {
 	$execMap = array();
@@ -684,12 +802,13 @@ function getLastExecutions(&$db,$tcs,$tpID)
 		$tcase_mgr = new testcase($db);
 		foreach($tcs as $tcID => $tcInfo)
 		{
-			$tcversion_id = $tcInfo['tcversion_id'];
+			  $tcversion_id = $tcInfo['tcversion_id'];
 		    $execMap[$tcID] = $tcase_mgr->get_last_execution($tcID,$tcversion_id,$tpID,ANY_BUILD,GET_NO_EXEC);
 		}
 	}
 	return $execMap;
 }
+
 
 // 20061009 - franciscom
 function getReqByReqdocId(&$db,$reqdoc_id)
@@ -730,6 +849,14 @@ function check_syntax($fileName,$importType)
 	return;
 }
 
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function check_syntax_xml($fileName)
 {
   $ret=array();
@@ -777,3 +904,4 @@ function get_srs_by_id(&$db,$srs_id)
 	return($output);
 }
 ?>
+

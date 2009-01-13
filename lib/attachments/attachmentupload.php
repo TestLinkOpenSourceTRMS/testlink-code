@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2008/11/18 20:54:42 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/01/13 20:21:23 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -16,6 +16,9 @@ require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
+if (!config_get("attachments")->enabled)
+	exit();
+	
 //the id (attachments.fk_id) of the object, to which the attachment belongs to 
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;
 

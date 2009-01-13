@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/11/21 21:00:41 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/01/13 20:21:23 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  */
@@ -15,6 +15,9 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
+
+if (!config_get("attachments")->enabled)
+	exit();
 
 //the id (attachments.id) of the attachment to be downloaded
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;

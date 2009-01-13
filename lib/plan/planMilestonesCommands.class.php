@@ -4,12 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/01/05 20:05:30 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/01/13 13:10:09 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  */
-
+require_once("testplan.class.php");  // needed because milestone_mgr is inside
 class planMilestonesCommands
 {
   private $db;

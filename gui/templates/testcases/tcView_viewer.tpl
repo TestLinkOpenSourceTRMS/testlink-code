@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.21 2008/12/11 20:30:16 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.22 2009/01/13 19:34:01 schlundus Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -135,10 +135,10 @@ viewer for test case in test specification
 
 {* --------------------------------------------------------------------------------------- *}
   {if $args_testcase.active eq 0}
-    <br /><div class="warning_message" align="center">{$labels.tcversion_is_inactive_msg}</div>
+    <br /><div class="messages" align="center">{$labels.tcversion_is_inactive_msg}</div>
   {/if}
  	{if $warning_edit_msg neq ""}
- 	    <br /><div class="warning_message" align="center">{$warning_edit_msg}</div>
+ 	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
  	{/if}
  
 <table class="simple">
@@ -153,7 +153,7 @@ viewer for test case in test specification
 
 {*     {if $warning_edit_msg neq ""}
 	    <tr>
-	      <td class="warning_message" align="center" colspan="2">{$warning_edit_msg}</td>
+	      <td class="messages" align="center" colspan="2">{$warning_edit_msg}</td>
 	    </tr>
     {/if}
 *}    

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginLost.tpl,v 1.9 2008/06/03 08:40:49 havlat Exp $ 
+$Id: loginLost.tpl,v 1.10 2009/01/13 19:34:01 schlundus Exp $ 
 Purpose: smarty template - lost password page 
 
 rev :
@@ -14,7 +14,7 @@ rev :
 	{literal}
 	window.onload=function(){
  		Nifty("div#login_div","big");
- 		Nifty("div.warning_message","normal");
+ 		Nifty("div.messages","normal");
  		// set focus on login text box
 		focusInputField('login');
 	}
@@ -32,7 +32,7 @@ rev :
     <p class="title">{lang_get s='password_reset'}</p>
 
     <form method="post" action="lostPassword.php">
- 		  <div class="warning_message" style="text-align:center;">{$note|escape}</div>
+ 		  <div class="messages" style="text-align:center;">{$note|escape}</div>
     	
     	<p class="label">{lang_get s='login_name'}<br />
     	<input type="text" name="login" id="login" 
@@ -41,7 +41,7 @@ rev :
     </form>
     
 	{else}
-     <p>{lang_get s='password_mgmt_is_external'}<p>
+     <p>{lang_get s='password_mgmt_is_external'}</p>
 	{/if}
 
     <hr />

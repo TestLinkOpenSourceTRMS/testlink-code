@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.18 2008/07/01 20:01:26 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.19 2009/01/13 19:34:01 schlundus Exp $
 Generic attachment management
 
 Input:
@@ -34,7 +34,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 {/literal}
 
 {if $gsmarty_attachments->enabled eq FALSE}
- 	  <div class="warning_message">{lang_get s='attachment_feature_disabled'}<p>
+ 	  <div class="messages">{lang_get s='attachment_feature_disabled'}<p>
     {$gsmarty_attachments->disabled_msg}
     </div>
 {/if}

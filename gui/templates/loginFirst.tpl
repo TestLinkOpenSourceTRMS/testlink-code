@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.14 2008/09/09 10:22:49 franciscom Exp $
+$Id: loginFirst.tpl,v 1.15 2009/01/13 19:34:01 schlundus Exp $
 Purpose: smarty template - first login
 *}
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
@@ -14,7 +14,7 @@ Purpose: smarty template - first login
 <script type="text/javascript">
 window.onload=function(){
  Nifty("div#login_div","big");
- Nifty("div.warning_message","normal");
+ Nifty("div.messages","normal");
  // set focus on login text box
  focusInputField('loginName');
 }
@@ -27,7 +27,7 @@ window.onload=function(){
 {include file="inc_login_title.tpl"}
 
 <div class="forms" id="login_div">
-<div class="warning_message" style="text-align:center;">{$message}</div>
+<div class="messages" style="text-align:center;">{$message}</div>
 
 <form method="post" action="firstLogin.php">
 

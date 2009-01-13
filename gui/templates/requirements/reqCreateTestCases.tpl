@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.9 2008/12/30 13:34:40 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.10 2009/01/13 19:34:01 schlundus Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -74,7 +74,7 @@ function check_action_precondition(form_id,action,msg)
   
   {if $gui->array_of_msg != ''}
     <br />
- 	  {include file="inc_msg_from_array.tpl" array_of_msg=$gui->array_of_msg arg_css_class="warning_message"}
+ 	  {include file="inc_msg_from_array.tpl" array_of_msg=$gui->array_of_msg arg_css_class="messages"}
   {/if}
   
   <form id="frmReqList" enctype="multipart/form-data" method="post">

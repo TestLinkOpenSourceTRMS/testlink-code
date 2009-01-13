@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.31 2008/12/31 15:06:00 franciscom Exp $
+$Id: execSetResults.tpl,v 1.32 2009/01/13 19:34:01 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -226,7 +226,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 <div id="main_content" class="workBack">
   {if $gui->build_is_open == 0}
-  <div class="warning_message" style="align:center;">
+  <div class="messages" style="align:center;">
      {$labels.build_is_closed}<br />
      {$labels.test_cases_cannot_be_executed}
   </div>
@@ -280,7 +280,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 
   {if $gui->map_last_exec eq ""}
-     <div class="warning_message" style="text-align:center"> {$labels.no_data_available}</div>
+     <div class="messages" style="text-align:center"> {$labels.no_data_available}</div>
   {else}
       {if $gui->grants->execute == 1 and $gui->build_is_open == 1}
         {assign var="input_enabled_disabled" value=""}

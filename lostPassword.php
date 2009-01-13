@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/01/13 19:34:01 $ $Author: schlundus $
  *
  * rev: 20080212 - franciscom - fixed minor bug on call to logAuditEvent
 **/
@@ -28,8 +28,10 @@ if ($op['status'] == 0)
 	$smarty->display('fatal_error.tpl');
 	exit();
 }
+
+$bPasswordMgtExternal = tlUser::isPasswordMgtExternal();
 $note = lang_get('your_info_for_passwd');
-if (strlen($login))
+if (strlen($login) && !$bPasswordMgtExternal)
 {
 	$userID = tlUser::doesUserExist($db,$login);
 	if (!$userID)
@@ -54,7 +56,7 @@ if (strlen($login))
 
 $smarty = new TLSmarty();
 $smarty->assign('note',$note);
-$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
+$smarty->assign('external_password_mgmt',$bPasswordMgtExternal);
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));
 $smarty->display('loginLost.tpl');
 ?>

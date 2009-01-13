@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.9 2009/01/03 17:30:13 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.10 2009/01/13 19:34:01 schlundus Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev:20080908 - franciscom - added logic to validate Custom Field user input
@@ -69,7 +69,7 @@ function validateForm(f)
 
 {if $has_been_executed}
     {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
-    <div class="warning_message" align="center">{$warning_edit_msg}</div>
+    <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"

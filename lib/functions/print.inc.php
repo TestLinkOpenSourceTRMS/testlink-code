@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2008/12/09 20:28:35 $ by $Author: schlundus $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2009/01/13 20:13:40 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -54,14 +54,17 @@ require_once("exec.inc.php");
  * build HTML header
  * Standard: HTML 4.01 trans (because is more flexible to bugs in user data)
  */
-function buildHTMLHeader($title,$cfg,$base_href)
+function buildHTMLHeader($title,$base_href)
 {
+	$docCfg = config_get('document_generator');
+  	$docCfg->css_template;
+  
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
-	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . $cfg->charset . '" />'.
+	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '" />'.
 		"\n<base href=\"".$base_href."\"/>\n";
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
-	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $cfg->css_template ."\" />\n";
+	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
 	$output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';
 	$output .= "\n</head>\n";
 
@@ -71,12 +74,13 @@ function buildHTMLHeader($title,$cfg,$base_href)
 /**
   print HTML - initial page of document
 */
-function printFirstPage(&$db, $docCfg, $item_type, $title, $tproject_info, 
+function printFirstPage(&$db, $item_type, $title, $tproject_info, 
                         $userID, $printingOptions = null, $tplan_info = null,
                         $statistics=null)
 {
 	$estimated_string = '';
 	$real_string = '';
+  	$docCfg = config_get('document_generator');
   
 	$date_format_cfg = config_get('date_format');
 	$tproject_name = htmlspecialchars($tproject_info['name']);
@@ -548,12 +552,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
                                       $title,$user_id,$tplan_id=0,$estimated_minutes=0)
 {
-  $docCfg = config_get('document_generator');
-  
-  $cfg = new stdClass();
-  $cfg->charset=config_get('charset');
-  $cfg->css_template = $docCfg->css_template;
-  
 	$tproject = new testproject($db);
 	$tproject_info = $tproject->get_by_id($node['id']);
 	$tplan_info = null;
@@ -564,8 +562,8 @@ function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
 		$tplan_info = $tplan_mgr->get_by_id($tplan_id);
 	}
 
-	$code = buildHTMLHeader($title,$cfg,$_SESSION['basehref']);
-	$code .= printFirstPage($db, $docCfg, $item_type, $title, $tproject_info, 
+	$code = buildHTMLHeader($title,$_SESSION['basehref']);
+	$code .= printFirstPage($db, $item_type, $title, $tproject_info, 
 	                        $user_id, $printingOptions, $tplan_info,$estimated_minutes);
 	                        
 	$printingOptions['toc_numbers'][1] = 0;

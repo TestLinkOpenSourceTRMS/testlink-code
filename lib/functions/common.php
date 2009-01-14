@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.134 $ $Author: schlundus $
- * @modified $Date: 2009/01/12 21:53:43 $
+ * @version $Revision: 1.135 $ $Author: schlundus $
+ * @modified $Date: 2009/01/14 19:17:22 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -265,7 +265,17 @@ function checkSessionValid(&$db)
 			$requestURI = "&req=".urlencode($_SERVER['REQUEST_URI']);
 		
 		$fName = "login.php";
-		redirect($_SESSION['basehref'] . $fName."?note=expired".$requestURI,"top.location");
+		$i = 0;
+		$baseDir = dirname(__FILE__);
+		$redirect = $_SESSION['basehref'];
+		while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
+		{
+			$fName = ".." . DIRECTORY_SEPARATOR . $fName;
+			$redirect .= "../";
+			if ($i++ == 5)
+				break; 
+		}
+		redirect($redirect . "login.php?note=expired","top.location");
 		exit();
 	}
 }

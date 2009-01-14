@@ -8,7 +8,8 @@
  * 
  * @author Asiel Brumfield <asielb@users.sourceforge.net>
  */
- require_once('../functions/builds.inc.php');
+//@TODO, schlundus, delete if not needed
+ //require_once('../functions/builds.inc.php');
  require_once('Spreadsheet/Excel/Writer.php');
  
  class TestPlanResultsObj

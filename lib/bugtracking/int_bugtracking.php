@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2008/12/17 17:21:56 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/01/14 20:06:24 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -49,7 +49,7 @@ class bugtrackingInterface
 	var $showBugURL = null;
 	var $enterBugURL = null;
 	var $dbCharSet = null; 
-  var $tlCharSet = null;
+	var $tlCharSet = null;
   	
 	//private vars don't touch
 	var $dbConnection = null;	

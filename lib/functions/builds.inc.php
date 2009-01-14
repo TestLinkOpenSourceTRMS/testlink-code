@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.24 2008/01/08 19:50:44 schlundus Exp $
+* $Id: builds.inc.php,v 1.25 2009/01/14 20:06:24 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -22,7 +22,8 @@ require_once("../functions/common.php");
  *       [active]: default:null -> all, 1 -> active, 0 -> inactive
  *       [open]  : default:null -> all, 1 -> open  , 0 -> closed/completed
  */
-function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC",$active=null,$open=null)
+//@TODO, schlundus, delete if not needed
+function DEPR_getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC",$active=null,$open=null)
 {
  	$sql = "SELECT builds.id, name FROM builds WHERE testplan_id = " . $idPlan;
  	
@@ -45,13 +46,15 @@ function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC",$active=nul
 	return getBuildInfo($db,$sql);
 }
 
-function getBuildInfo(&$db,$sql)
+//@TODO, schlundus, delete if not needed
+function DEPR_getBuildInfo(&$db,$sql)
 {
 	$arrBuilds = $db->fetchColumnsIntoMap($sql,'id','name');
 
  	return $arrBuilds;
 }
 
+//@TODO: schlundus, should be moved inside class testplan
 function getBuild_by_id(&$db,$buildID)
 {
 	$sql = "SELECT builds.* FROM builds WHERE builds.id = " . $buildID;
@@ -61,7 +64,8 @@ function getBuild_by_id(&$db,$buildID)
 	return $myrow;
 }
 
-function delete_build(&$db,$build_id)
+//@TODO, schlundus, delete if not needed
+function DEPR_delete_build(&$db,$build_id)
 {
 	//DEPENDENT DATA?
 	$sql = "DELETE FROM builds WHERE builds.id = {$build_id}";

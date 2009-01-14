@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2008/12/30 13:34:49 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2009/01/14 20:06:24 $ by $Author: schlundus $
  *
  * rev: 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -30,7 +30,8 @@ require_once('common.php');
 require_once("users.inc.php");
 require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
-require_once('builds.inc.php');
+//@TODO, schlundus, delete if not needed
+//require_once('builds.inc.php');
 testlinkInitPage($db);
 
 $tplan_mgr = new testplan($db);

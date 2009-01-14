@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/01/05 21:38:57 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/01/14 20:06:24 $ $Author: schlundus $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -15,7 +15,8 @@
 */
 require('../../config.inc.php');
 require_once("common.php");
-require_once("builds.inc.php");
+//@TODO, schlundus, delete if not needed
+//require_once("builds.inc.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

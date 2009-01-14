@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.27 2009/01/03 17:25:35 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.28 2009/01/14 19:33:01 schlundus Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -31,8 +31,8 @@ $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr);
-$gui->additional_string='';
-$gui->tree=buildTree($db,$gui,$args);
+$gui->additional_string = '';
+$gui->tree = buildTree($db,$gui,$args);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -306,8 +306,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
                                  $argsObj->tproject_id,$argsObj->tproject_name,
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
-
-    if( $treemenu_type == 'EXTJS' )
+    
+    if($treemenu_type == 'EXTJS' )
     {
         $guiObj->ajaxTree = new stdClass();
         $guiObj->ajaxTree->loader = '';
@@ -318,7 +318,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     else
     {
         $guiObj->ajaxTree = null;
-        $treeMenu->menustring = invokeMenu($treeMenu->menustring,null,null);
+        $treeMenu = invokeMenu($treeMenu->menustring,null,null);
     }
     
     return $treeMenu;

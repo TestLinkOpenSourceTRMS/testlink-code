@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/12/23 21:08:20 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/01/14 19:33:01 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -139,15 +139,17 @@ switch ($args->print_scope)
          // Create list of execution id, that will be used to compute execution time if
     	   // CF_EXEC_TIME custom field exists and is linked to current testproject                                            
          $executed_qty=0;
-    	   foreach($tp_tcs as $tcase_id => $info)
-         {
-             if( $info['exec_status'] != $status_descr_code['not_run'] )
-             {  
-                 $execid_filter[]=$info['exec_id'];
-                 $executed_qty++;
-             }    
-         }    
-         
+    	 if ($tp_tcs)
+    	 {
+    	 	foreach($tp_tcs as $tcase_id => $info)
+	    	{
+	             if( $info['exec_status'] != $status_descr_code['not_run'] )
+	             {  
+	                 $execid_filter[]=$info['exec_id'];
+	                 $executed_qty++;
+	             }    
+	         }    
+    	 }
          $statistics['estimated_execution']['minutes']=$tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
          $statistics['estimated_execution']['tcase_qty']=count($tp_tcs);
          

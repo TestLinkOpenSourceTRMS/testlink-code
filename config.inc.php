@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.224 $
- * @modified $Date: 2009/01/12 07:58:30 $ by $Author: franciscom $
+ * @version $Revision: 1.225 $
+ * @modified $Date: 2009/01/14 17:56:48 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -705,6 +705,8 @@ $tlCfg->req_cfg->child_requirements_mgmt = DISABLED;
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkOrder']=array('atLeastOne','all');
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['atLeastOne']=array('failed','blocked');
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','passed');
+$tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
+
 
 // ----------------------------------------------------------------------------
 /** [MISC FUNCTIONALITY] */

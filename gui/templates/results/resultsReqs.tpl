@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.9 2009/01/12 07:55:20 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.10 2009/01/14 13:01:37 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
-rev: 20090111 - franciscom - BUGID 1967 + Refactoring
+rev: 20090114 - franciscom - BUGID 1977
+     20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
           s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcases,
@@ -38,7 +39,7 @@ rev: 20090111 - franciscom - BUGID 1967 + Refactoring
   <form method="get">
   <table class="invisible">
     <tr><td>{$labels.req_spec}
-      	<select name="idSRS" onchange="form.submit()">
+      	<select name="req_spec_id" onchange="form.submit()">
   		{html_options options=$gui->reqSpecSet selected=$gui->req_spec_id}
   	</select></td></tr>
   

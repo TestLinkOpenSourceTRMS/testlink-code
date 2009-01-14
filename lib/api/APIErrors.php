@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.7 2009/01/06 18:42:32 franciscom Exp $
+ * $Id: APIErrors.php,v 1.8 2009/01/14 07:41:21 franciscom Exp $
  */
 
 /** 
@@ -79,6 +79,9 @@ define('NO_TESTSUITEID_STR', lang_get('API_NO_TESTSUITEID',null,1));
 define('MISSING_REQUIRED_PARAMETER', 200);
 define('MISSING_REQUIRED_PARAMETER_STR', lang_get('API_MISSING_REQUIRED_PARAMETER',null,1));
 
+define('PARAMETER_NOT_INT',210);
+define('PARAMETER_NOT_INT_STR', lang_get('API_PARAMETER_NOT_INT',null,1));
+
 
 /**
  * 2000 level - authentication errors
@@ -100,6 +103,7 @@ define('NO_BUILD_FOR_TPLANID', 3020);
 define('NO_BUILD_FOR_TPLANID_STR', lang_get('API_NO_BUILD_FOR_TPLANID',null,1));
 define('TCASEID_NOT_IN_TPLANID', 3030);
 define('TCASEID_NOT_IN_TPLANID_STR', lang_get('API_TCASEID_NOT_IN_TPLANID',null,1));
+
 
 /**
  * 4000 level - Build errors
@@ -125,7 +129,10 @@ define('NO_TESTCASE_BY_THIS_NAME', 5030);
 define('NO_TESTCASE_BY_THIS_NAME_STR', lang_get('API_NO_TESTCASE_BY_THIS_NAME',null,1));
 define('INVALID_TESTCASE_EXTERNAL_ID', 5040);
 define('INVALID_TESTCASE_EXTERNAL_ID_STR', lang_get('API_INVALID_TESTCASE_EXTERNAL_ID',null,1));
-
+define('INVALID_TESTCASE_VERSION_NUMBER', 5050);
+define('INVALID_TESTCASE_VERSION_NUMBER_STR', lang_get('API_INVALID_TESTCASE_VERSION_NUMBER',null,1));
+define('TCASE_VERSION_NUMBER_KO',5051);
+define('TCASE_VERSION_NUMBER_KO_STR', lang_get('API_TCASE_VERSION_NUMBER_KO',null,1));
 
 
 /**
@@ -145,6 +152,12 @@ define('TESTPROJECTNAME_EXISTS', 7002);
 define('TESTPROJECT_TESTCASEPREFIX_EXISTS', 7003);
 define('TESTPROJECT_TESTCASEPREFIX_IS_EMPTY', 7004);
 define('TESTPROJECT_TESTCASEPREFIX_IS_TOO_LONG', 7005);
+
+define('TPLAN_TPROJECT_KO',7006);
+define('TPLAN_TPROJECT_KO_STR',lang_get('API_TPLAN_TPROJECT_KO',null,1));
+
+define('TCASE_TPROJECT_KO',7007);
+define('TCASE_TPROJECT_KO_STR',lang_get('API_TCASE_TPROJECT_KO',null,1));
 
 
 /**

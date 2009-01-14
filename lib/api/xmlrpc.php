@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/01/06 18:42:32 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/01/14 07:41:34 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,8 +22,8 @@
  * 
  *
  * rev :
+ *      20090113 - franciscom - addTestCaseToTestPlan() - implementation started
  *      20090106 - franciscom - createTestCase() - first implementation
- *
  * 		  20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
  *      20080307 - franciscom - now is possible to use test case external or internal ID
@@ -47,7 +47,7 @@ require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
 require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
 require_once(dirname(__FILE__) . "/../functions/user.class.php");
 // require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
-require_once(dirname(__FILE__) . "/../functions/testplan.class.php");
+// require_once(dirname(__FILE__) . "/../functions/testplan.class.php");
 
 /**
  * The entry class for serving XML-RPC Requests
@@ -65,7 +65,7 @@ require_once(dirname(__FILE__) . "/../functions/testplan.class.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-	public static $version = "1.0 Beta 3";
+	public static $version = "1.0 Beta 4";
 
   const   OFF=false;
   const   ON=true;
@@ -81,6 +81,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   private $executions_table="executions";  
   private $testplan_tcversions_table="testplan_tcversions";
   private $keywords_table="keywords";  
+  private $tcversions_table="tcversions";
   
 	
 	/**
@@ -153,6 +154,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $checkDuplicatedNameParamName = "checkduplicatedname";
   public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
   public static $keywordNameParamName = "keywords";
+  public static $versionNumberParamName = "version";
 	
 
 	
@@ -175,27 +177,29 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 		$this->tcaseMgr=new testcase($this->dbObj);
 		$this->tprojectMgr=new testproject($this->dbObj);
+		$this->tplanMgr=new testplan($this->dbObj);
 
 		$this->methods = array(
-			'tl.reportTCResult' 			=> 'this:reportTCResult',
-			'tl.getProjects'				=> 'this:getProjects',
-			'tl.getProjectTestPlans'		=> 'this:getProjectTestPlans',
-			'tl.createBuild'				=> 'this:createBuild',
-			'tl.getBuildsForTestPlan' 		=> 'this:getBuildsForTestPlan',
-			'tl.getLatestBuildForTestPlan' 	=> 'this:getLatestBuildForTestPlan',	
-			'tl.getTestSuitesForTestPlan' 	=> 'this:getTestSuitesForTestPlan',
+			'tl.reportTCResult' => 'this:reportTCResult',
+			'tl.getProjects' => 'this:getProjects',
+			'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
+			'tl.createBuild' => 'this:createBuild',
+			'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
+			'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
+			'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
-			'tl.getTestCasesForTestPlan' 	=> 'this:getTestCasesForTestPlan',
-			'tl.getTestCaseIDByName'		=> 'this:getTestCaseIDByName',
-			'tl.createTestCase'				=> 'this:createTestCase',
-			'tl.createTestProject'				=> 'this:createTestProject',
+			'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
+			'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
+			'tl.createTestCase' => 'this:createTestCase',
+			'tl.createTestProject' => 'this:createTestProject',
       'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
-			'tl.about'						=> 'this:about',
-			'tl.setTestMode'				=> 'this:setTestMode',
+      'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
+			'tl.about' => 'this:about',
+			'tl.setTestMode' => 'this:setTestMode',
 			// ping is an alias for sayHello
-			'tl.ping'						=> 'this:sayHello', 
-			'tl.sayHello' 					=> 'this:sayHello',
-			'tl.repeat'						=> 'this:repeat'
+			'tl.ping' => 'this:sayHello', 
+			'tl.sayHello' => 'this:sayHello',
+			'tl.repeat' => 'this:repeat'
 		);				
 		
 		$this->IXR_Server($this->methods);		
@@ -413,7 +417,7 @@ class TestlinkXMLRPCServer extends IXR_Server
           	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
           	if(null == $result)
           	{
-          		  $this->errors[] = new IXR_Error(INVALID_TPLANID, INVALID_TPLANID_STR);
+          		  $this->errors[] = new IXR_Error(INVALID_TPLANID, sprintf(INVALID_TPLANID_STR,$tplanid));
           		  $status=false;        		
           	}
 			      // tplanid exists and its valid
@@ -929,17 +933,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			return false;
 		}
-
-		// if(!$this->checkTestCaseID())
-		// {
-		// 	return false;
-		// }					
-		   
+	   
 		if(!$this->checkTestCaseIdentity())
 		{
 			return false;
 		}					
-		   
 		   
 		if(!$this->checkTestPlanID())
 		{
@@ -950,7 +948,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			return false;	
 		}	
-		
 		
 		if(!$this->checkStatus())
 		{
@@ -963,7 +960,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}	
 		else
 		{
-			// Hurray the request is valid!			
 			return true;
 		}
 	}
@@ -1721,6 +1717,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 	// TODO: Implement
 	 } 	 	
 
+
+
+
+
+
+
+
+
+
+
+
+
 	 /**
 	 * Reports a result for a single test case
 	 *
@@ -1806,73 +1814,71 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkTestCaseIdentity()
     {
-		//Three Cases - Internal ID, External ID, No Id        
+		    // Three Cases - Internal ID, External ID, No Id        
         $status=true;
         $tcaseID=0;
         $my_errors=array();
 
-		$fromExternal=false;
-		$fromInternal=false;
+		    $fromExternal=false;
+		    $fromInternal=false;
 
-	    if($this->_isTestCaseIDPresent())
-	    {
-		      $fromInternal=true;
-		      $tcaseID = $this->args[self::$testCaseIDParamName];
-		      $status = true;
-		      
-	    }
-		elseif ($this->_isTestCaseExternalIDPresent())
-		{
-			$fromExternal = true;
-			$tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
-		    $tcaseCfg=config_get('testcase_cfg');
-		    $glueCharacter=$tcaseCfg->glue_character;
-		    $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
+	      if($this->_isTestCaseIDPresent())
+	      {
+		        $fromInternal=true;
+		        $tcaseID = $this->args[self::$testCaseIDParamName];
+		        $status = true;
+	      }
+		    elseif ($this->_isTestCaseExternalIDPresent())
+		    {
+		    	  $fromExternal = true;
+		    	  $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
+		        $tcaseCfg=config_get('testcase_cfg');
+		        $glueCharacter=$tcaseCfg->glue_character;
+		        $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
             $status = $tcaseID > 0 ? true : false;
+            
             //Invalid TestCase ID
-            if( !status )
+            if( !$status )
             {
               	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
-                                                 INVALID_TESTCASE_EXTERNAL_ID_STR);                  
+                                             sprintf(INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
             }
-		}
+		    }
         else
-		{  
-		  	$my_errors[] = new IXR_Error(NO_TCASEID, NO_TCASEID_STR);
-		   	$status=false;
-		}
-
-	    
-	    if( $status )
-	    {
-	        $my_errors=null;
-	        if($this->_isTestCaseIDValid($tcaseID))
-	        {
-	            $this->_setTestCaseID($tcaseID);  
-	        }  
-	        else
-	        {  
-	        	  if ($fromInternal)
-	        	  {
-	        	  	$my_errors[] = new IXR_Error(INVALID_TCASEID, INVALID_TCASEID_STR);
-	        	  } elseif ($fromExternal) {
-	        	  	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
-                                                 INVALID_TESTCASE_EXTERNAL_ID_STR);
-	        	  }
-	        	  $status=false;
-	        }    	
-	    }
+		    {  
+		  	    $my_errors[] = new IXR_Error(NO_TCASEID, NO_TCASEID_STR);
+		   	    $status=false;
+		    }
+	      if( $status )
+	      {
+	          $my_errors=null;
+	          if($this->_isTestCaseIDValid($tcaseID))
+	          {
+	              $this->_setTestCaseID($tcaseID);  
+	          }  
+	          else
+	          {  
+	          	  if ($fromInternal)
+	          	  {
+	          	  	$my_errors[] = new IXR_Error(INVALID_TCASEID, INVALID_TCASEID_STR);
+	          	  } elseif ($fromExternal) {
+	          	  	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
+                                               sprintf(INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));
+	          	  }
+	          	  $status=false;
+	          }    	
+	      }
 	    
 	    
-	    if (!$status)
-	    {
+	      if (!$status)
+	      {
             foreach($my_errors as $error_msg)
-		    {
-		        $this->errors[] = $error_msg; 
-		    } 
-	    }
-	    return $status;
-    }
+		        {
+		            $this->errors[] = $error_msg; 
+		        } 
+	      }
+	      return $status;
+    }   
 
 	 /**
 	 * getTestCasesForTestPlan
@@ -2104,6 +2110,128 @@ class TestlinkXMLRPCServer extends IXR_Server
       }  
       return $keywordSet;
   }
+
+
+  //
+  protected function checkTestCaseVersionNumber()
+  {
+        $status=true;
+    	  if(!($status=$this->_isParamPresent(self::$versionNumberParamName)))
+    	  {
+            $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$versionNumberParamName);
+		        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+    	  }
+    	  else
+    	  {
+    	      if(!($status=is_int($this->args[self::$versionNumberParamName])))
+    	      {
+    	      	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, PARAMETER_NOT_INT_STR);
+    	      	$status=false;
+    	      }
+    	  }
+    	  return $status;
+  }
+
+	 /**
+	  * Add a test case version to a test plan 
+	  */
+	 public function addTestCaseToTestPlan($args)
+	 {
+	     $msg_prefix="(" .__FUNCTION__ . ") - ";
+	     $this->_setArgs($args);
+       $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
+                               'checkTestCaseIdentity','checkTestPlanID');
+       
+       foreach($checkFunctions as $pfn)
+       {
+         if( !($status_ok = $this->$pfn()) )
+         {
+             break; 
+         }
+       } 
+        
+       // Test Plan belongs to test project ?
+       if( $status_ok )
+       {
+          $tproject_id=$this->args[self::$testProjectIDParamName];
+          $tplan_id=$this->args[self::$testPlanIDParamName];
+          
+          $sql=" SELECT id FROM {$this->testplans_table}" .
+               " WHERE testproject_id={$tproject_id} AND id = {$tplan_id}";         
+           
+          $rs=$this->dbObj->get_recordset($sql);
+
+          if( count($rs) != 1 )
+          {
+             $status_ok=false;
+             $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+             $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+             $msg = sprintf(TPLAN_TPROJECT_KO_STR,$tplan_info['name'],$tplan_id,
+                                                  $tproject_info['name'],$tproject_id);  
+             $this->errors[] = new IXR_Error(TPLAN_TPROJECT_KO,$msg_prefix . $msg); 
+          }
+                     
+       } 
+       
+       // Test Case belongs to test project ?
+       if( $status_ok )
+       {
+           $tcase_id=$this->args[self::$testCaseIDParamName];
+           $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
+           $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
+
+           if($tcase_tproject_id != $tproject_id)
+           {
+               $status_ok=false;
+               $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+               $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+               $msg = sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
+                                                    $tproject_info['name'],$tproject_id);  
+               $this->errors[] = new IXR_Error(TCASE_TPROJECT_KO,$msg_prefix . $msg); 
+           } 
+       }
+       
+       // Does this Version number exist for this test case ?     
+       if( $status_ok )
+       {
+           $version_number=$this->args[self::$versionNumberParamName];
+           $sql = " SELECT TCV.version,TCV.id " . 
+                  " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
+                  " WHERE NH.parent_id = {$tcase_id} " .
+                  " AND TCV.version = {$version_number} " .
+                  " AND TCV.id = NH.id " .  
+                  " ORDER BY TCV.version DESC ";
+
+          $tcversions=$this->dbObj->fetchRowsIntoMap($sql,'id');
+          if( !is_null($tcversions) && count($tcversions) != 1 )
+          {
+             $status_ok=false;
+             $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+             $msg = sprintf(TCASE_VERSION_NUMBER_KO_STR,$version_number,$tcase_external_id,$tcase_info[0]['name']);  
+             $this->errors[] = new IXR_Error(TCASE_VERSION_NUMBER_KO,$msg_prefix . $msg); 
+          }                  
+                  
+       }     
+       
+       if( $status_ok )
+       {
+          // Other versions must be unlinked
+          // $tcversion_id = array_keys($tcversions);
+          // if( count($tcversion_id) > 0 )
+          // {
+          //     $in_clause=implode(",",$tcversion_id);
+          //     
+          //     $sql=" DELETE FROM {$this->testplan_tcversions_table} " .
+          //          " WHERE testplan_id={$tplan_id}  AND tcversion_id IN({$in_clause}) ";
+          //  		$this->dbObj->exec_query($query);
+          // }
+          // $sql=" INSERT INTO {$this->testplan_tcversions_table}";
+          
+              
+       }
+       
+       return ($status_ok ? $op_result : $this->errors);
+	 }	
 
 
 

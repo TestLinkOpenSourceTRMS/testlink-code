@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.93 $
- * @modified $Date: 2009/01/07 22:19:46 $  $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/01/15 11:31:56 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090106 - franciscom - get_by_prefix()
@@ -1608,10 +1608,10 @@ function get_all_testplans($testproject_id,$filters=null)
           $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
       }                
       
-      if($get_tp_without_tproject_id)
-	    {
-	    		$where .= " OR testproject_id = 0 ";
-	    }
+      // if($get_tp_without_tproject_id)
+	    // {
+	    // 		$where .= " OR testproject_id = 0 ";
+	    // }
 	    $where .= " ) ";
 
 	    if(!is_null($plan_status))

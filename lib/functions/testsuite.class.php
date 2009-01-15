@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/01/06 15:34:06 $ - $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/01/15 11:31:56 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20090106 - franciscom - BUGID - exportTestSuiteDataToXML()
@@ -917,25 +917,30 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
   
 	$test_spec = $this->get_subtree($container_id,$USE_RECURSIVE_MODE);
 
-	$childNodes = @$test_spec['childNodes'];
+ 
+	$childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
 	$tcase_mgr=null;
-	for($idx = 0;$idx < sizeof($childNodes);$idx++)
+	if( !is_null($childNodes) )
 	{
-		$cNode = $childNodes[$idx];
-		$nTable = $cNode['node_table'];
-		if ($bRecursive && $nTable == 'testsuites')
-		{
-			$xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
-		}
-		else if ($nTable == 'testcases')
-		{
-		  if( is_null($tcase_mgr) )
-		  {
-			    $tcase_mgr = new testcase($this->db);
-			}
-			$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,$tproject_id,true,$optExport);
-		}
-	}
+	    $loop_qty=sizeof($childNodes); 
+	    for($idx = 0;$idx < $loop_qty;$idx++)
+	    {
+	    	$cNode = $childNodes[$idx];
+	    	$nTable = $cNode['node_table'];
+	    	if ($bRecursive && $nTable == 'testsuites')
+	    	{
+	    		$xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
+	    	}
+	    	else if ($nTable == 'testcases')
+	    	{
+	    	  if( is_null($tcase_mgr) )
+	    	  {
+	    		    $tcase_mgr = new testcase($this->db);
+	    		}
+	    		$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,$tproject_id,true,$optExport);
+	    	}
+	    }
+	}    
 	if ($bRecursive)
 		$xmlTC .= "</testsuite>";
 	else

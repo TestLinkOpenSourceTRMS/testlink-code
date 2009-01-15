@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.10 2009/01/14 13:01:37 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.11 2009/01/15 17:53:50 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -66,21 +66,17 @@ rev: 20090114 - franciscom - BUGID 1977
     <table class="simple">
     	<tr>
     		<th>{$labels.req}</th>
-    		{if $key != 'not_run'}
     		  <th>{$labels.testcases}</th>
-    		{/if}
     	</tr>
     {/if}
     	<tr>
     		<td><span class="bold"><a href="{$reqViewAction}{$gui->coverage.$key[row].id}">
     			  {$gui->coverage.$key[row].title|escape}</a></span></td>
-    		{if $key != 'not_run'}
     		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
     			{section name=idx loop=$tcList}
     				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$gui->prefixStr}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
     			{/section} 
     		</td>
-    		{/if}
     	</tr>
     {if $smarty.section.row.last}
     </table>

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/01/14 07:41:34 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/01/15 07:49:56 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,7 +22,7 @@
  * 
  *
  * rev :
- *      20090113 - franciscom - addTestCaseToTestPlan() - implementation started
+ *      20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan() - implementation started
  *      20090106 - franciscom - createTestCase() - first implementation
  * 		  20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
@@ -155,8 +155,9 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
   public static $keywordNameParamName = "keywords";
   public static $versionNumberParamName = "version";
+  public static $executionOrderParamName = "executionorder";
+  public static $urgencyParamName = "urgency";
 	
-
 	
 	/**#@-*/
 	
@@ -1195,7 +1196,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 				     "{$tcversion_id},{$execution_type} {$notes_value})";
 
 		$this->dbObj->exec_query($query);
-		return $this->dbObj->insert_id();		
+		return $this->dbObj->insert_id($this->executions_table);		
 	}
 	
  		
@@ -2134,11 +2135,21 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 	 /**
 	  * Add a test case version to a test plan 
+	  *
+	  * @param args[self::$testProjectIDParamName]
+	  * @param args[self::$testPlanIDParamName]
+	  * @param args[self::$testCaseExternalIDParamName]
+	  * @param args[self::$versionNumberParamName]
+	  * @param args[self::$executionOrderParamName] - OPTIONAL
+	  * @param args[self::$urgencyParamName] - OPTIONAL
+	  *
 	  */
 	 public function addTestCaseToTestPlan($args)
 	 {
 	     $msg_prefix="(" .__FUNCTION__ . ") - ";
 	     $this->_setArgs($args);
+	     $op_result=null;
+	     $additional_fields='';
        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
                                'checkTestCaseIdentity','checkTestPlanID');
        
@@ -2199,11 +2210,10 @@ class TestlinkXMLRPCServer extends IXR_Server
                   " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
                   " WHERE NH.parent_id = {$tcase_id} " .
                   " AND TCV.version = {$version_number} " .
-                  " AND TCV.id = NH.id " .  
-                  " ORDER BY TCV.version DESC ";
+                  " AND TCV.id = NH.id ";
 
-          $tcversions=$this->dbObj->fetchRowsIntoMap($sql,'id');
-          if( !is_null($tcversions) && count($tcversions) != 1 )
+          $target_tcversion=$this->dbObj->fetchRowsIntoMap($sql,'version');
+          if( !is_null($target_tcversion) && count($target_tcversion) != 1 )
           {
              $status_ok=false;
              $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
@@ -2212,28 +2222,71 @@ class TestlinkXMLRPCServer extends IXR_Server
           }                  
                   
        }     
+
+       if( $status_ok )
+       {
+           // Optional parameters
+           $additional_fields=null;
+           $additional_values=null;
+           $opt_fields=array(self::$urgencyParamName => 'urgency', self::$executionOrderParamName => 'node_order');
+           $opt_values=array(self::$urgencyParamName => null, self::$executionOrderParamName => 1);
+		       foreach($opt_fields as $key => $field_name)
+		       {
+		           if($this->_isParamPresent($key))
+		           {
+		                   $additional_values[]=$this->args[$key];
+		                   $additional_fields[]=$field_name;              
+		           }   
+		           else
+		           {
+                   if( !is_null($opt_values[$key]) )
+                   {
+		                   $additional_values[]=$opt_values[$key];
+		                   $additional_fields[]=$field_name;              
+		               }
+               }
+		       }
+       }
        
        if( $status_ok )
        {
           // Other versions must be unlinked
-          // $tcversion_id = array_keys($tcversions);
-          // if( count($tcversion_id) > 0 )
-          // {
-          //     $in_clause=implode(",",$tcversion_id);
-          //     
-          //     $sql=" DELETE FROM {$this->testplan_tcversions_table} " .
-          //          " WHERE testplan_id={$tplan_id}  AND tcversion_id IN({$in_clause}) ";
-          //  		$this->dbObj->exec_query($query);
-          // }
-          // $sql=" INSERT INTO {$this->testplan_tcversions_table}";
+          $sql = " SELECT TCV.version,TCV.id " . 
+                 " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
+                 " WHERE NH.parent_id = {$tcase_id} " .
+                 " AND TCV.id = NH.id ";
+                 
+          $all_tcversions=$this->dbObj->fetchRowsIntoMap($sql,'id');
+          $id_set = array_keys($all_tcversions);
+          if( count($id_set) > 0 )
+          {
+              $in_clause=implode(",",$id_set);
+              $sql=" DELETE FROM {$this->testplan_tcversions_table} " .
+                   " WHERE testplan_id={$tplan_id}  AND tcversion_id IN({$in_clause}) ";
+           		$this->dbObj->exec_query($sql);
+          }
           
-              
+          $fields="testplan_id,tcversion_id";
+          if( !is_null($additional_fields) )
+          {
+             $dummy = implode(",",$additional_fields);
+             $fields .= ',' . $dummy; 
+          }
+          
+          $sql_values="{$tplan_id},{$target_tcversion[$version_number]['id']}";
+          if( !is_null($additional_values) )
+          {
+             $dummy = implode(",",$additional_values);
+             $sql_values .= ',' . $dummy; 
+          }
+
+          $sql=" INSERT INTO {$this->testplan_tcversions_table} ({$fields}) VALUES({$sql_values})"; 
+          $this->dbObj->exec_query($sql);
+          $op_result['feature_id']=$this->dbObj->insert_id($this->testplan_tcversions_table);
        }
        
        return ($status_ok ? $op_result : $this->errors);
 	 }	
-
-
 
 } // class end
 

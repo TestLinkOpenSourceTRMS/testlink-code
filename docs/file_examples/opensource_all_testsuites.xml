@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name=""><details><![CDATA[
+
+]]></details><testsuite name="Issue Tracking"><details><![CDATA[
+
+]]></details><testsuite name="Mantis Bugtracking System"><details><![CDATA[
+
+]]></details>	<testcase internalid="11555" name="Installation"><externalid><![CDATA[
+1
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11557" name="Configuration"><externalid><![CDATA[
+2
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11559" name="Upgrade"><externalid><![CDATA[
+3
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11561" name="Reports"><externalid><![CDATA[
+4
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Bugzilla"><details><![CDATA[
+
+]]></details>	<testcase internalid="11563" name="Configuration"><externalid><![CDATA[
+5
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11565" name="Installation"><externalid><![CDATA[
+6
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11567" name="Reports"><externalid><![CDATA[
+7
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11569" name="Upgrade"><externalid><![CDATA[
+8
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Test Management"><details><![CDATA[
+
+]]></details><testsuite name="Testlink"><details><![CDATA[
+
+]]></details>	<testcase internalid="11571" name="Configuration"><externalid><![CDATA[
+9
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11573" name="Installation"><externalid><![CDATA[
+10
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11575" name="Reports"><externalid><![CDATA[
+11
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11577" name="Upgrade"><externalid><![CDATA[
+12
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Qa-traq"><details><![CDATA[
+
+]]></details>	<testcase internalid="11579" name="Configuration"><externalid><![CDATA[
+13
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11581" name="Installation"><externalid><![CDATA[
+14
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11583" name="Reports"><externalid><![CDATA[
+15
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11585" name="Upgrade"><externalid><![CDATA[
+16
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite><testsuite name="Test Automation"><details><![CDATA[
+
+]]></details><testsuite name="Selenium"><details><![CDATA[
+
+]]></details>	<testcase internalid="11587" name="Configuration"><externalid><![CDATA[
+17
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11589" name="Installation"><externalid><![CDATA[
+18
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11591" name="Reports"><externalid><![CDATA[
+19
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11593" name="Upgrade"><externalid><![CDATA[
+20
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite><testsuite name="Badboy"><details><![CDATA[
+
+]]></details>	<testcase internalid="11595" name="Configuration"><externalid><![CDATA[
+21
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11597" name="Installation"><externalid><![CDATA[
+22
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11599" name="Reports"><externalid><![CDATA[
+23
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+	<testcase internalid="11601" name="Upgrade"><externalid><![CDATA[
+24
+]]></externalid><summary><![CDATA[
+
+]]></summary><steps><![CDATA[
+
+]]></steps><expectedresults><![CDATA[
+
+]]></expectedresults></testcase>
+</testsuite></testsuite></testsuite>

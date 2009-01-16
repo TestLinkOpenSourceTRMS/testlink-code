@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2009/01/10 21:39:04 $ $Author: schlundus $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2009/01/16 20:02:02 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -2168,9 +2168,9 @@ $TLS_audit_executionbug_deleted = "Fehler '{%1}' wurde beim Test gelöscht";
 $TLS_audit_attachment_deleted = "Anhang '{%1}' wurde entfernt";
 $TLS_audit_attachment_created = "Anhang '{%1}' wurde hinzugefügt";
 
-$TLS_audit_req_spec_created = "Anforderungsspezifikation '{%1}' wurde erstellt";
-$TLS_audit_req_spec_saved = "Anforderungsspezifikation '{%1}' wurde gespeichert";
-$TLS_audit_req_spec_deleted = "Anforderungsspezifikation '{%1}' wurde gelöscht";
+$TLS_audit_req_spec_created =  $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde erstellt";
+$TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde gespeichert";
+$TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde gelöscht";
 $TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde in '{%3}' umbenannt";
 
 $TLS_audit_requirement_created = "Anforderung '{%1}' wurde erstellt";
@@ -2183,12 +2183,12 @@ $TLS_audit_build_created = "Build '{%1}' wurde erstellt";
 $TLS_audit_build_saved = "Build '{%1}' wurde gespeichert";
 $TLS_audit_build_deleted = "Ein Build wurde gelöscht";
 
-$TLS_audit_testplan_deleted = "Ein Testplan wurde gelöscht";
-$TLS_audit_testplan_saved = "Testplan '{%1}' wurde gespeichert";
-$TLS_audit_testplan_created = "Testplan '{%1}' wurde erstellt";
-$TLS_audit_milestone_deleted = "EinMeilenstein wurde gelöscht";
-$TLS_audit_milestone_created = "Meilenstein '{%1}' wurde erstellt";
-$TLS_audit_milestone_saved = "Meilenstein '{%1}' wurde gespeichert";
+$TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - Testplan '{%2}' wurde gelöscht";
+$TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - Testplan '{%2}' wurde gespeichert";
+$TLS_audit_testplan_created = $TLS_testproject . " '{%1}' - Testplan '{%2}' wurde erstellt";
+$TLS_audit_milestone_deleted = $TLS_testproject . " '{%1}' - Meilenstein '{%2}' wurde gelöscht";
+$TLS_audit_milestone_created = $TLS_testproject . " '{%1}' - Meilenstein '{%2}' wurde erstellt";
+$TLS_audit_milestone_saved = $TLS_testproject . " '{%1}' - Meilenstein '{%1}' wurde gespeichert";
 
 $TLS_audit_tc_added_to_testplan = "Testfall '{%1}' Version {%2} wurde zum Testplan {%3} hinzugefügt";
 $TLS_audit_tc_removed_from_testplan = "Testfall '{%1}' Version {%2} wurde aus dem Testplan {%3} gelöscht";

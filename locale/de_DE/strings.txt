@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2009/01/16 20:02:02 $ $Author: schlundus $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2009/01/16 20:26:14 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -367,7 +367,7 @@ $TLS_popup_delete_custom_field = "Sind Sie sicher, dass Sie das benutzerdefinier
 $TLS_possible_values = "Mögliche Werte";
 $TLS_show_on_design = "Anzeigen während <br>Test-Definition";
 $TLS_show_on_exec = "Anzeigen während <br>Test-Ausführung";
-$TLS_show_on_testplan_design = "Display on <br />test plan design";
+$TLS_show_on_testplan_design = "Anzeigen während<br />Testplan Erstellung";
 $TLS_testcase = "Testfall";
 $TLS_title_cfields_mgmt = "Benutzerdefinierte Felder";
 $TLS_title_cfield_edit = "Edit ";
@@ -954,7 +954,7 @@ $TLS_check_uncheck_all_checkboxes = "Alle markieren / demarkieren";
 $TLS_check_uncheck_all_checkboxes_for_add = "alle an-/abwählen (zum Hinuzufügen)";
 $TLS_check_uncheck_all_checkboxes_for_rm = "alle an-/abwählen (zum Entfernen)";
 $TLS_executed_can_not_be_removed = "Bereits ausgeführte Testfälle können nicht entfernt werden";
-$TLS_execution_order = "Execution order";
+$TLS_execution_order = "Ausführungsreihenfolge";
 
 $TLS_has_been_executed = "wurde ausgeführt";
 $TLS_inactive_testcase = "inaktiv";
@@ -974,7 +974,7 @@ $TLS_title_navigator = "Navigator";
 $TLS_keywords_filter_help = "You can use OR/AND filtering";
 
 // gui/templates/planTCNavigator.tpl
-$TLS_btn_update_all_testcases_to_latest_version ="Update all Test Cases to latest version";
+$TLS_btn_update_all_testcases_to_latest_version = "Alle Testfälle aktualisieren";
 
 // gui/templates/planPriority.tpl
 $TLS_btn_upd_prio = "Speichern";
@@ -986,11 +986,11 @@ $TLS_tr_th_risk = "Risiko";
 // gui/templates/planUpdateTC.tpl
 $TLS_btn_update_testplan_tcversions = "Testplan aktualisieren";
 $TLS_update_to_version = "Aktualisieren auf Version";
-$TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
+$TLS_update_all_testcase_versions = "Verlinkte Testfälle aktualisieren";
 $TLS_update_testcase_versions = "Verlinkte Testfälle aktualisieren";
 $TLS_no_testcase_checked = "Sie haben keinen Testfall ausgewählt.";
-$TLS_tplan_updated = "Test Plan was updated";
-$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+$TLS_tplan_updated = "Der Testplan wurde aktualisiert";
+$TLS_update2latest = "<p>Alle Testfälle des Testplans werden auf die neuste Version aktualisiert.</p>";
 
 
 
@@ -1471,7 +1471,7 @@ $TLS_title_build_list = "Liste der vorhandenen Builds";
 $TLS_warning_delete_build = "Wollen Sie den Build wirklich löschen? Dadurch werden auch alle abhängigen Daten gelöscht!";
                             
 $TLS_builds_description = "Jeder Build wird durch einen Titel identifiziert. Er hat zwei Attribute:<br /> Aktiv / Inaktiv - bestimmt, ob der Build für TestLink verfügbar ist. Inaktive builds werden in der Ausführung und in Berichten nicht angezeigt.
-<br /> Offen / Geschlosse - bestimmt, ob Testergebnisse für diese Build geändert werden können.";
+<br /> Offen / Geschlossen - bestimmt, ob Testergebnisse für diese Build geändert werden können.";
 
 
 $TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
@@ -2179,9 +2179,9 @@ $TLS_audit_requirement_deleted = "Anforderung '{%1}' wurde gelöscht";
 $TLS_audit_req_assigned_tc = "Die Anforderung '{%1}' wurde zum Testfall '{%2}' zugewiesen";
 $TLS_audit_req_assignment_removed_tc = "Die Zuweisung der Anforderung '{%1}' zum Testfall '{%2}' wurde aufgehoben";
 
-$TLS_audit_build_created = "Build '{%1}' wurde erstellt";
-$TLS_audit_build_saved = "Build '{%1}' wurde gespeichert";
-$TLS_audit_build_deleted = "Ein Build wurde gelöscht";
+$TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde erstellt";
+$TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde gespeichert";
+$TLS_audit_build_deleted = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde gelöscht";
 
 $TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - Testplan '{%2}' wurde gelöscht";
 $TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - Testplan '{%2}' wurde gespeichert";

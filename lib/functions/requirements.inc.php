@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.75 $
- * @modified $Date: 2009/01/13 20:13:40 $ by $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2009/01/16 20:26:13 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -904,4 +904,3 @@ function get_srs_by_id(&$db,$srs_id)
 	return($output);
 }
 ?>
-

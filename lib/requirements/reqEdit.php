@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/01/03 17:30:30 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/01/16 20:26:14 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -115,7 +115,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "doReorder":
         case "createTestCases":
         case "doCreateTestCases":
-		    case "doCreate":
+		case "doCreate":
       	case "doUpdate":
             $renderType = 'template';
             $key2loop = get_object_vars($opObj);
@@ -141,7 +141,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     {
         case 'template':
         	$smartyObj->assign('gui',$guiObj);
-		      $smartyObj->display($tpl);
+		    $smartyObj->display($tpl);
         	break;  
  
         case 'redirect':

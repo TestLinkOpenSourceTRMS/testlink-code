@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.14 2008/10/30 11:24:27 havlat Exp $
+$Id: reqSpecEdit.tpl,v 1.15 2009/01/16 20:26:13 schlundus Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20080415 - franciscom - refactoring
@@ -9,7 +9,7 @@ rev: 20080415 - franciscom - refactoring
 {* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s='warning,warning_empty_req_spec_title,title,scope,req_total,cancel'}
+          s='warning,warning_empty_req_spec_title,title,scope,req_total,cancel,show_event_history'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 

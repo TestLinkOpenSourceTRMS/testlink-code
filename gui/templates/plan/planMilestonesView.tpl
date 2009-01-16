@@ -55,9 +55,9 @@ var del_action=fRoot+'{$deleteAction}';
 				{$milestone.target_date|date_format:$gsmarty_date_format}
 			</td>
 			{if $session['testprojectOptPriority']}
-				<td style="text-align: right">{$milestone.a|escape}</td>
-				<td style="text-align: right">{$milestone.b|escape}</td>
-				<td style="text-align: right">{$milestone.c|escape}</td>
+				<td style="text-align: right">{$milestone.A|escape}</td>
+				<td style="text-align: right">{$milestone.B|escape}</td>
+				<td style="text-align: right">{$milestone.C|escape}</td>
 			{else}
 				<td style="text-align: right">???</td>
 			{/if}

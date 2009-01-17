@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.9 2009/01/17 08:37:54 franciscom Exp $
+ * $Id: APIErrors.php,v 1.10 2009/01/17 17:43:41 franciscom Exp $
  */
 
 /** 
@@ -161,6 +161,11 @@ define('TCASE_TPROJECT_KO_STR',lang_get('API_TCASE_TPROJECT_KO',null,1));
 
 define('TPROJECT_IS_EMPTY',7008);
 define('TPROJECT_IS_EMPTY_STR',lang_get('API_TPROJECT_IS_EMPTY',null,1));
+
+define('TPROJECT_PREFIX_ALREADY_EXISTS',7009);
+define('TPROJECT_PREFIX_ALREADY_EXISTS_STR',
+       lang_get('API_TPROJECT_PREFIX_ALREADY_EXISTS',null,1));
+
 
 
 /**

@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/01/17 17:43:41 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *  20090117 - BUGID 1991 - franciscom
+ *             BUGID 1992 - contribution for XLS import - franciscom
  *  20090106 - BUGID - franciscom - added logic to import Test Cases custom field values
  *  20081001 - franciscom - added logic to manage too long testcase name
  * 	20080813 - havlatm - added a few logging
@@ -556,25 +558,32 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	$xls_row_qty = sizeof($xls_rows);
   
 	if($xls_row_qty < FIRST_DATA_ROW)
+	{
     	return;  // >>>----> bye!
+  }
   
 	$xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
 	fwrite($xmlFileHandle,"<testcases>\n");
 
 	for($idx = FIRST_DATA_ROW;$idx <= $xls_row_qty; $idx++ )
 	{                       
-		$name = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_NAME]));
-		fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
+		  $name = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_NAME]));
+		  fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
 	    
-		$summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
+		  // $summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
+	    // 20090117 - contribution - BUGID 1992
+	    $summary = str_replace('…',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
+		  $summary = nl2p(htmlspecialchars(iconv("CP1252","UTF-8", $summary)));
 	    fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
 	    
+	    // 20090117 - BUGID 1991,1992
 	    $steps = str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
-	    $steps = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_STEPS]));
+	    $steps = nl2p(htmlspecialchars(iconv("CP1252","UTF-8",$steps)));
 	    fwrite($xmlFileHandle,"<steps><![CDATA[".$steps."]]></steps>\n");
 	    
+	    // 20090117 - BUGID 1991,1992
 	    $expresults = str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
-	    $expresults = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_EXPRESULTS]));
+	    $expresults = nl2p(htmlspecialchars(iconv("CP1252","UTF-8",$expresults)));
 	    fwrite($xmlFileHandle,"<expectedresults><![CDATA[".$expresults."]]></expectedresults>\n");
 	    
 	    fwrite($xmlFileHandle,"</testcase>\n");
@@ -655,5 +664,16 @@ function importCustomFieldsFromXML($xmlItems)
 
 	return $items;
 }
+
+/* 20090117 - 
+ contribution by mirosvad - 
+ Convert new line characters from XLS to HTML 
+*/
+function nl2p($str)  
+{
+  return str_replace('<p></p>', '', '<p>' . preg_replace('#\n|\r#', '</p>$0<p>', $str) . '</p>'); //MS
+}
+
+
 // ----- END ----------------------------------------------------------------------------
 ?>

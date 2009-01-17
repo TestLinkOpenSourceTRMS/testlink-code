@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.95 $
- * @modified $Date: 2009/01/17 08:37:54 $  $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2009/01/17 17:43:41 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090106 - franciscom - get_by_prefix()
@@ -108,7 +108,6 @@ class testproject extends tlObjectWithAttachments
  *                         added new optional argument active
  *
  */
-// function create($name,$color,$optReq,$optPriority,$optAutomation,$notes,$active=1,$tcasePrefix='')
 function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
 {
   
@@ -267,7 +266,7 @@ function get_by_prefix($prefix)
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
 	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ".
-	       " AND testprojects.prefix = {$prefix}";
+	       " AND testprojects.prefix = '{$prefix}'";
 	$recordset = $this->db->get_recordset($sql);
 	return ($recordset ? $recordset[0] : null);
 }

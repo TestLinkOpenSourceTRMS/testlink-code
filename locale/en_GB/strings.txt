@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.381 $
- * @modified $Date: 2009/01/17 08:31:08 $ by $Author: franciscom $
+ * @version $Revision: 1.382 $
+ * @modified $Date: 2009/01/17 17:45:12 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -2160,7 +2160,7 @@ $TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (n
 $TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
 
 $TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
-
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
 
 //audit log entries
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

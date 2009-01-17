@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/01/17 08:37:54 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/01/17 17:43:41 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,10 +22,11 @@
  * 
  *
  * rev :
+ *      20090117 - franciscom - createTestProject()
  *      20090116 - franciscom - getFirstLevelTestSuitesForTestProject()
  *                              getTestCaseIDByName() - added testprojectname param
  *
- *      20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan() - implementation started
+ *      20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan()
  *      20090106 - franciscom - createTestCase() - first implementation
  * 		  20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
  *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
@@ -160,7 +161,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $versionNumberParamName = "version";
   public static $executionOrderParamName = "executionorder";
   public static $urgencyParamName = "urgency";
-	
+
 	
 	/**#@-*/
 	
@@ -1356,16 +1357,41 @@ class TestlinkXMLRPCServer extends IXR_Server
 		} 
 	 }
 	
-	// 20080518 - franciscom
+	/**
+	 * create a test project
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testprojectname"]
+	 * @param int $args["testcaseprefix"]
+	 * @param int $args["notes"]
+   *	 
+	 * @return mixed $resultInfo
+	 */
 	public function createTestProject($args)
 	{
 	    
 	    $this->_setArgs($args);
+      $msg_prefix="(" . __FUNCTION__ . ") - ";
 	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
 	
-	    if( $this->$checkRequestMethod() && $this->userHasRight("mgt_modify_product"))
+	    if( $this->$checkRequestMethod($msg_prefix) && $this->userHasRight("mgt_modify_product"))
 	    {
-	        return true;
+	       // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
+	       $options = new stdClass();
+	       $options->requirement_mgmt=1;
+	       $options->priority_mgmt=1;
+	       $options->automated_execution=1;
+		     
+	       $name=htmlspecialchars($this->args[self::$testProjectNameParamName]);
+         $prefix=htmlspecialchars($this->args[self::$testCasePrefixParamName]);
+         $notes=htmlspecialchars($this->args[self::$noteParamName]);
+      
+	       $info=$this->tprojectMgr->create($name,'',$options,$notes,1,$prefix);
+			   $resultInfo = array();
+			   $resultInfo[] = array("operation" => __FUNCTION__,
+			                         "status" => true, "id" => $info, "message" => 'ok');
+	       return $resultInfo;
 	    }
 	    else
 	    {
@@ -1375,7 +1401,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 	
   // 20080518 - franciscom
-  private function _checkCreateTestProjectRequest()
+  private function _checkCreateTestProjectRequest($msg_prefix)
 	{
       $status_ok=$this->authenticate();
       $name=$this->args[self::$testProjectNameParamName];
@@ -1410,7 +1436,16 @@ class TestlinkXMLRPCServer extends IXR_Server
           }
       }
 
-       
+      if( $status_ok ) 
+      {
+           $info=$this->tprojectMgr->get_by_prefix($prefix);
+           if( !($status_ok = is_null($info)) )
+           {
+              $msg = $msg_prefix . sprintf(TPROJECT_PREFIX_ALREADY_EXISTS_STR,$prefix,$info['name']);
+              $this->errors[] = new IXR_Error(TPROJECT_PREFIX_ALREADY_EXISTS,$msg);
+           }
+      }
+
   	  return $status_ok;
 	}
 

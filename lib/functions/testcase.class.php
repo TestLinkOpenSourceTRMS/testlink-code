@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.140 $
- * @modified $Date: 2009/01/10 21:47:25 $ $Author: schlundus $
+ * @version $Revision: 1.141 $
+ * @modified $Date: 2009/01/17 08:37:54 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090116 - franciscom - get_by_name() refactoring
+ *                         get_linked_versions() - added tplan_id argument
  * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
  * 20081220 - franciscom - get_executions() - now build_id can be an array
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
@@ -324,32 +326,48 @@ function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
 /*
   function: get_by_name
 
-  args: $name, [$testSuite]
+  args: $name
+        [$tsuite_name]: name of parent test suite
+        [$tproject_name]
 
   returns: hash
 */
-function get_by_name($name, $testSuite='')
+function get_by_name($name, $tsuite_name='', $tproject_name='')
 {
-	if($testSuite!='')
-	{
-		$sql = " SELECT distinct nh.id, nh.name, nh.parent_id
-						 FROM nodes_hierarchy nh, node_types nt
-		         WHERE nh.node_type_id = {$this->my_node_type}
-		         AND nh.name = '" . $this->db->prepare_string($name) . "'
-						 AND nh.parent_id in (select nh2.id from nodes_hierarchy nh2 where nh2.name = '" .
-	  				 $this->db->prepare_string($testSuite) . "')";
-	}
-	else
-	{
-		$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name
-		         FROM nodes_hierarchy
-		         WHERE nodes_hierarchy.node_type_id = {$this->my_node_type}
-		         AND nodes_hierarchy.name = '" .  $this->db->prepare_string($name) . "'";
-	}
+    $filters_on=array('tsuite_name' => false, 'tproject_name' => false);
 
-  $recordset = $this->db->get_recordset($sql);
+    $tsuite_name=trim($tsuite_name);
+    $tproject_name=trim($tproject_name);
 
-  return $recordset;
+    $sql = " SELECT NHA.id,NHA.name,NHB.parent_id,NHB.name AS tsuite_name " .
+		       " FROM nodes_hierarchy NHA, nodes_hierarchy NHB  " .
+		       " WHERE NHA.node_type_id = {$this->my_node_type} " .
+		       " AND NHA.name = '{$this->db->prepare_string($name)}' " .
+		       " AND NHA.parent_id=NHB.id ";
+    
+    
+	  if( strlen($tsuite_name) > 0)
+	  {
+	   $sql .= " AND NHB.name = '{$this->db->prepare_string($tsuite_name)}' " .
+	           " AND NHB.node_type_id = {$this->node_types_descr_id['testsuite']} ";
+	  }
+    $recordset = $this->db->get_recordset($sql);
+    
+    if( count($recordset) > 0 and strlen($tproject_name) > 0 )
+    {    
+        list($tproject_info)=$this->tproject_mgr->get_by_name($tproject_name);
+        foreach($recordset as $idx => $tcase_info)
+        { 
+            // $my_tproject=$this->get_testproject($tcase_info['id']);
+            if( $this->get_testproject($tcase_info['id']) != $tproject_info['id'] )
+            {
+                unset($recordset[$idx]);  
+            }        
+        }    
+    }
+
+
+    return $recordset;
 }
 
 
@@ -815,6 +833,7 @@ function delete($id,$version_id = self::ALL_VERSIONS)
   args : id: testcase id
          [exec_status]: default: ALL, range: ALL,EXECUTED,NOT_EXECUTED
          [active_status]: default: ALL, range: ALL,ACTIVE,INACTIVE
+         [tplan_id]
 
     returns: map.
            key: version id
@@ -839,7 +858,7 @@ function delete($id,$version_id = self::ALL_VERSIONS)
                   testplan_id
                   tplan_name
 */
-function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
+function get_linked_versions($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
 {
   $active_filter='';
   $active_status=strtoupper($active_status);
@@ -861,15 +880,20 @@ function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 					    AND    tcversions.id = NH.id
 					    AND    NHB.id = TTC.testplan_id
 					    AND    NH.parent_id = {$id}";
+					    
+      if(!is_null($tplan_id))
+      {
+          $sql .= " AND TTC.testplan_id={$tplan_id} ";  
+      }  					    
       $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
 	  break;
 
     case "EXECUTED":
-	      $recordset=$this->get_exec_status($id,$exec_status,$active_status);
+	      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id);
 	  break;
 
 	  case "NOT_EXECUTED":
-	      $recordset=$this->get_exec_status($id,$exec_status,$active_status);
+	      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id);
     break;
   }
     
@@ -1508,7 +1532,7 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
        maintaining the really executed version in tcversion_number (version number displayed
        on User Interface) field we need to change algorithm.
 */
-function get_exec_status($id,$exec_status="ALL",$active_status='ALL')
+function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
 {
     $active_status=strtoupper($active_status);
   
@@ -1516,8 +1540,16 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL')
     $sqlx=" SELECT TCV.id,TCV.version,TCV.active" .
           " FROM nodes_hierarchy NHA " .
           " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
-          " JOIN tcversions TCV ON NHA.id = TCV.id " .
-          " WHERE  NHA.parent_id = {$id}";
+          " JOIN tcversions TCV ON NHA.id = TCV.id ";
+          
+    $where_clause = " WHERE  NHA.parent_id = {$id}";
+          
+    if( !is_null($tplan_id) )
+    {
+        $sqlx .= " JOIN testplan_tcversions TTCV ON TTCV.tcversion_id = TCV.id ";
+        $where_clause .= " AND TTCV.tplan_id = {$tplan_id} "; 
+    }    
+    $sqlx .= $where_clause; 
 		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
 
   
@@ -1530,10 +1562,15 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL')
 		      JOIN testplan_tcversions T ON T.tcversion_id = NH.id
 		      JOIN tcversions TCV ON T.tcversion_id = TCV.id
 		      JOIN nodes_hierarchy NHB ON T.testplan_id = NHB.id
-		      LEFT OUTER JOIN executions E ON 
-		      (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
-		      WHERE  NH.parent_id = {$id}
-		      ORDER BY version,tplan_name";
+		      LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
+		      WHERE  NH.parent_id = {$id} ";
+		
+		if( !is_null($tplan_id) )
+    {
+        $sql .= " AND T.tplan_id = {$tplan_id} "; 
+    }    
+    $sql .= " ORDER BY version,tplan_name";
+
 		      
     $rs = $this->db->get_recordset($sql);
 
@@ -1551,22 +1588,18 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL')
         // (see below fix not executed section)
         $link_info[$elem['tcversion_id']][]=$elem;    
 
-	      // We are working with a test case version, that
-	      // was used in a previous life of this test plan
-	      // information about his tcversion_id is not anymore
-	      // present in tables:
+	      // We are working with a test case version, that was used in a previous life of this test plan
+	      // information about his tcversion_id is not anymore present in tables:
 	      //
 	      // testplan_tcversions
 	      // executions
 	      // cfield_execution_values.
 	      //
-	      // if has been executed, but after this operation User
-	      // has choosen to upgrade tcversion linked to testplan
-	      // to a different (may be a newest) test case version.
+	      // if has been executed, but after this operation User has choosen to upgrade tcversion 
+	      // linked to testplan to a different (may be a newest) test case version.
 	      //
-	      // We can get this information using table tcversions using
-	      // tcase id and version number (value displayed at User Interface)
-	      // as search key.
+	      // We can get this information using table tcversions using tcase id and version number 
+	      // (value displayed at User Interface) as search key.
 	      //
 	      // Important:
 	      // executions.tcversion_number:  maintain info about right test case version executed

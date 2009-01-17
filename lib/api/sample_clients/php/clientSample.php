@@ -32,8 +32,7 @@ $dummy=explode('sample_clients',$target);
 $server_url=$prefix . $dummy[0] . "xmlrpc.php";
 
 // substitute your Dev Key Here
-// define("DEV_KEY", "f2a979d533cdd9761434bba60a88e4d8");
-define("DEV_KEY", "11111111111111111111111111111111");
+define("DEV_KEY", "1111");
 
 $tcaseStatusCode['passed']='p';
 $tcaseStatusCode['blocked']='b';
@@ -43,11 +42,12 @@ $tcaseStatusCode['wrong']='w';
 
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
-$testPlanID=95;
-$testCaseID=83;
+$testPlanID=222;
+$testCaseID=185;
 $testCaseExternalID=null;
-$buildID=5;
+$buildID=1;
 $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status= {$tcaseStatusCode['blocked']}";
+
 //$exec_notes=null;
 
 //$debug=true;
@@ -61,65 +61,65 @@ echo "<br> Result was: ";
 // print_r($response);
 new dBug($response);
 echo "<br>";
-
-
-// Now do a wrong build call
-$unitTestDescription="Test - Call with at least one NON EXISTENT parameters: testPlanID,testCaseID,buildID";
-$testPlanID=95;
-$testCaseID=86;
-$testCaseExternalID=null;
-$buildID=50;
-$exec_notes="";
-
-//$debug=true;
-$debug=false;
-echo $unitTestDescription;
-$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
-                         $buildID,null,$tcaseStatusCode['passed'],$exec_notes,$debug);
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
-
-// ----------------------------------------------------------------------------------------
-// Now do a build name call
-$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildName";
-$testPlanID=95;
-$testCaseID=83;
-$testCaseExternalID='';
-$buildName="Spock";
-$exec_notes="Call using all Build by name ({$testCaseID})";
-
-//$debug=true;
-$debug=false;
-echo $unitTestDescription;
-$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,null,
-                         $buildName,$tcaseStatusCode['blocked'],$exec_notes,$debug);
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
-// ----------------------------------------------------------------------------------------
-
-
-// Now do a build name call
-$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseExternalID,buildName";
-$testPlanID=95;
-$testCaseID=null;
-$testCaseExternalID='ESP-3';
-$buildName="Spock";
-// $exec_notes="Call using Test Case External ID and Build by Name";
-$exec_notes=null;
-
-//$debug=true;
-$debug=false;
-echo $unitTestDescription;
-$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,null,
-                         $buildName,$tcaseStatusCode['failed'],$exec_notes,$debug);
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
+// 
+// 
+// // Now do a wrong build call
+// $unitTestDescription="Test - Call with at least one NON EXISTENT parameters: testPlanID,testCaseID,buildID";
+// $testPlanID=95;
+// $testCaseID=86;
+// $testCaseExternalID=null;
+// $buildID=50;
+// $exec_notes="";
+// 
+// //$debug=true;
+// $debug=false;
+// echo $unitTestDescription;
+// $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
+//                          $buildID,null,$tcaseStatusCode['passed'],$exec_notes,$debug);
+// 
+// echo "<br> Result was: ";
+// new dBug($response);
+// echo "<br>";
+// 
+// // ----------------------------------------------------------------------------------------
+// // Now do a build name call
+// $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildName";
+// $testPlanID=95;
+// $testCaseID=83;
+// $testCaseExternalID='';
+// $buildName="Spock";
+// $exec_notes="Call using all Build by name ({$testCaseID})";
+// 
+// //$debug=true;
+// $debug=false;
+// echo $unitTestDescription;
+// $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,null,
+//                          $buildName,$tcaseStatusCode['blocked'],$exec_notes,$debug);
+// 
+// echo "<br> Result was: ";
+// new dBug($response);
+// echo "<br>";
+// // ----------------------------------------------------------------------------------------
+// 
+// 
+// // Now do a build name call
+// $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseExternalID,buildName";
+// $testPlanID=95;
+// $testCaseID=null;
+// $testCaseExternalID='ESP-3';
+// $buildName="Spock";
+// // $exec_notes="Call using Test Case External ID and Build by Name";
+// $exec_notes=null;
+// 
+// //$debug=true;
+// $debug=false;
+// echo $unitTestDescription;
+// $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,null,
+//                          $buildName,$tcaseStatusCode['failed'],$exec_notes,$debug);
+// 
+// echo "<br> Result was: ";
+// new dBug($response);
+// echo "<br>";
 
 
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.94 $
- * @modified $Date: 2009/01/15 11:31:56 $  $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2009/01/17 08:37:54 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090106 - franciscom - get_by_prefix()
@@ -1691,11 +1691,10 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 */
 function get_first_level_test_suites($tproject_id,$mode='simple')
 {
-  // 20071111 - franciscom
   $fl=$this->tree_manager->get_children($tproject_id,
-                                        array('testplan' => 'exclude_me',
-                                              'requirement_spec' => 'exclude_me' ));
-
+                                        array( 'testcase', 'exclude_me',
+                                               'testplan' => 'exclude_me',
+                                               'requirement_spec' => 'exclude_me' ));
   switch ($mode)
   {
     case 'simple':

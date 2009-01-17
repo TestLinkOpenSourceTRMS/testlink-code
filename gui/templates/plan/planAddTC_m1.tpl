@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.20 2009/01/03 18:53:24 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.21 2009/01/17 13:17:43 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-rev: 20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
+rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
+     20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
 *}
 
 {lang_get var="labels" 
@@ -32,7 +33,7 @@ rev: 20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_execut
    {assign var="execution_order_html_disabled" value='disabled="disabled"'}
 {/if}    
 
-{if $tlCfg->testcase_cfg->can_remove_executed }
+{if $gui->can_remove_executed_testcases }
     {assign var="executed_warning" value=$labels.has_been_executed}
 {else}
     {assign var="executed_warning" value=$labels.executed_can_not_be_removed}                         
@@ -213,21 +214,32 @@ rev: 20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_execut
                 {if $ts.linked_testcase_qty gt 0 }
           				<td>&nbsp;</td>
           				<td>
-          				   {if $linked_version_id ne 0 && $tcase.executed == 'yes' && 
-          				       $tlCfg->testcase_cfg->can_remove_executed} 
+          				   {* BUGID 1970 *}
+        				     {assign var="show_remove_check" value=0}
+          				   {if $linked_version_id }
+          				      {assign var="show_remove_check" value=1}
+          				      
+       				          {if $tcase.executed == 'yes' }
+       				            {assign var="show_remove_check" 
+       				                    value=$gui->can_remove_executed_testcases}
+          				      {/if}      
+                    {/if} 
+          				    
+          					{if $show_remove_check }
           						<input type='checkbox' 
           						       name='{$rm_cb}[{$tcID}]' 
           						       id='{$rm_cb}{$tcID}' 
           				           value='{$linked_version_id}' />
           				   {else}
           						&nbsp;
-          				   {/if}
-                     {if $tcase.executed eq 'yes'}
+          				  {/if}
+                    
+                    {if $tcase.executed eq 'yes'}
                          &nbsp;&nbsp;&nbsp;{$executed_warning}
-                     {/if}    
-                     {if $is_active eq 0}
+                    {/if}    
+                    {if $is_active eq 0}
                            &nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}
-                     {/if}
+                    {/if}
           				</td>
                 {/if}
                 {* ------------------------------------------------------------------------- *}      

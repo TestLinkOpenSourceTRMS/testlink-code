@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.69 2008/12/11 20:30:16 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.70 2009/01/17 13:18:04 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -228,6 +228,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui = new stdClass();
     $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->testCasePrefix .= $tcase_cfg->glue_character;
+    
+    $gui->can_remove_executed_testcases=$tcase_cfg->can_remove_executed;
 
     $gui->keywordsFilterType = $argsObj->keywordsFilterType;
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/01/17 08:31:00 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -19,13 +19,13 @@
 require_once('../../../config.inc.php');
 require_once('common.php');
 require_once('tree.class.php');
-require_once('dBug.php');
+// require_once('dBug.php');
 
 testlinkInitPage($db);
 
 echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
 $tcase_mgr=new testcase($db);
-new dBug($tcase_mgr);
+// new dBug($tcase_mgr);
 
 $tcase_id=4;
 echo "<pre> testcase - get_by_id(\$id,\$version_id = TC_ALL_VERSIONS, \$active_status='ALL',\$open_status='ALL')";echo "</pre>";
@@ -38,6 +38,35 @@ $set_of_tcase_id=array(4,6);
 echo "<pre>            get_by_id($set_of_tcase_id)";echo "</pre>";
 $set_of_tcase_info=$tcase_mgr->get_by_id($set_of_tcase_id);
 new dBug($set_of_tcase_info);
+
+$tcase_name='Configuration';
+$method='get_by_name';
+$tsuite_name='';
+$tproject_name='';
+echo "<pre>            $method('{$tcase_name}')";echo "</pre>";
+$info=$tcase_mgr->$method($tcase_name);
+new dBug($info);
+
+$tcase_name='Configuration';
+$tsuite_name='Bugzilla';
+$tproject_name='';
+$method='get_by_name';
+echo "<pre>            $method('{$tcase_name}','{$tsuite_name}')";echo "</pre>";
+$info=$tcase_mgr->$method($tcase_name,$tsuite_name);
+new dBug($info);
+
+$tcase_name='Configuration';
+$tsuite_name='Bugzilla';
+$tproject_name='IMPORT_TEST';
+$method='get_by_name';
+echo "<pre>            $method('{$tcase_name}','{$tsuite_name}','{$tproject_name}')";echo "</pre>";
+$info=$tcase_mgr->$method($tcase_name,$tsuite_name,$tproject_name);
+new dBug($info);
+
+
+die();
+
+
 
 $tcase_id=4;
 echo "<pre> testcase - check_link_and_exec_status(\$id)";echo "</pre>";
@@ -153,6 +182,8 @@ echo "<pre><xmp>"; echo $table_of_custom_field_values; echo "</xmp></pre>";
 
 
 
+
+
 /*
 	function testcase(&$db)
 function get_by_name($name)
@@ -191,6 +222,4 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
 function copy_cfields_design_values($from_id,$to_id)                                         
-*/
-
-?>
+*/?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testproject.class.test.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/10/23 16:37:40 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/01/17 08:31:00 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -16,9 +16,6 @@
 
 require_once('../../../config.inc.php');
 require_once('common.php');
-require_once('tree.class.php');
-require_once('dBug.php');
-
 testlinkInitPage($db);
 
 echo "<pre> testproject - constructor - testproject(&\$db)";echo "</pre>";
@@ -32,6 +29,12 @@ echo "<pre>               getKeywords($tproject_id)";echo "</pre>";
 $keywords=$tproject_mgr->getKeywords($tproject_id);
 new dBug($keywords);
 
+$tproject_id=1;
+echo "<pre> testproject - get_first_level_test_suites($tproject_id,$mode='simple')";echo "</pre>";
+echo "<pre>               get_first_level_test_suites($tproject_id,$mode='simple')";echo "</pre>";
+$info=$tproject_mgr->get_first_level_test_suites($tproject_id,$mode='simple');
+new dBug($info);
+die();
 
 echo "<pre> testproject - get_keywords_map(\$testproject_id)";echo "</pre>";
 $tproject_id=1;

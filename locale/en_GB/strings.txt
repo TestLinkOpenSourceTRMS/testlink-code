@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.380 $
- * @modified $Date: 2009/01/14 17:45:41 $ by $Author: franciscom $
+ * @version $Revision: 1.381 $
+ * @modified $Date: 2009/01/17 08:31:08 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -2158,6 +2158,8 @@ $TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
 $TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
 $TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
 $TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
 
 
 //audit log entries

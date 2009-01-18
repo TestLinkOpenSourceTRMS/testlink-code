@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.35 2008/10/28 19:57:01 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.36 2009/01/18 18:50:55 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -83,19 +83,45 @@ if($spec_cfg->show_tsuite_filter)
 }
 
 $treemenu_type = config_get('treemenu_type');
-if($treemenu_type != 'EXTJS')
+
+$applyFilter=($args->keyword_id > 0);
+$keywordsFilter=null;
+if( $applyFilter )
 {
-    $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
-                                       $workPath,NOT_FOR_PRINTING,
-                                       SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
-                                       NO_ADDITIONAL_ARGS, null,
-                                       DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
-    
-    $tree = null;
-    if (strlen($treeString))
-    	$tree = invokeMenu($treeString,"",null);
+    $keywordsFilter = new stdClass();
+    $keywordsFilter->items = $args->keyword_id;
+    $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
-	
+
+$buildCompleteTree = $treemenu_type != 'EXTJS' || ($treemenu_type == 'EXTJS' && $applyFilter);
+
+if($buildCompleteTree)
+{
+    $treeMenu = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
+                                     $workPath,NOT_FOR_PRINTING,
+                                     SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
+                                     NO_ADDITIONAL_ARGS, $keywordsFilter,
+                                     DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
+    
+    if($treemenu_type == 'EXTJS' )
+    {
+        $gui->ajaxTree->loader = '';
+        $gui->ajaxTree->root_node = $treeMenu->rootnode;
+        $gui->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
+        $gui->ajaxTree->cookiePrefix = $args->feature;
+    }
+    else
+    {
+        $gui->ajaxTree = null;
+        $treeMenu = invokeMenu($treeMenu->menustring,null,null);
+    }
+
+    if( $applyFilter )
+    {
+        $gui->ajaxTree->loader='';  
+    }
+}
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 
@@ -195,6 +221,11 @@ function init_args()
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->tsuites_to_show = isset($_REQUEST['tsuites_to_show']) ? $_REQUEST['tsuites_to_show'] : 0;
   
+  
+    // Is an array because is a multiselect 
+    $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+    $args->keywordsFilterType =isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+
     return $args;  
 }
 
@@ -266,11 +297,19 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
 
     
     $gui->tsuite_choice=$argsObj->tsuites_to_show;  
+    
+    // 20090118 - franciscom    
+    $gui->keywordsFilterType = new stdClass();
+    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+
+    $gui->keyword_id = $argsObj->keyword_id; 
+    $gui->keywords_map = $tprojectMgr->get_keywords_map($argsObj->tproject_id); 
+    if(!is_null($gui->keywords_map))
+    {
+        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
+    }
+
     return $gui;  
 }
-
-
-
-
-
 ?>

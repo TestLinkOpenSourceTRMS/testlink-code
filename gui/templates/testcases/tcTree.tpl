@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.12 2009/01/18 17:20:31 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.13 2009/01/18 18:50:10 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -13,6 +13,10 @@ rev:
                              changes to form method to allow automatic refresh
                              without browser warning
 *}
+{lang_get var="labels"
+          s="caption_nav_filter_settings,testsuite,do_auto_update,keywords_filter_help,
+             button_update_tree,no_tc_spec_av,keyword"}
+
 
 {if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
@@ -54,7 +58,6 @@ rev:
         treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
         treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
         </script>
-        
         <script type="text/javascript" src='gui/javascript/treebyloader.js'>
         </script>
     {/if}
@@ -66,10 +69,12 @@ rev:
 </head>
 
 <body>
+{assign var="keywordsFilterDisplayStyle" value=""}
+{if $gui->keywordsFilterItemQty == 0}
+    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
+{/if}
 
 <h1 class="title">{$treeHeader}</h1>
-
-
 <div style="margin: 3px;">
 
   <form method="get" id="tree_filter_and_settings"> 
@@ -77,17 +82,33 @@ rev:
 	    <input type="hidden" name="feature" value="{$smarty.get.feature}" />
 	  	<table class="smallGrey" width="100%">
 	    		<caption>
-	    			{lang_get s='caption_nav_filter_settings'}
+	    			{$labels.caption_nav_filter_settings}
 	    		</caption>
 	    		<tr>
-	    			<td>{lang_get s='testsuite'}</td>
+	    			<td>{$labels.testsuite}</td>
 	    			<td>
 	    			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$gui->tsuite_choice}
 	    			</td>
 	    		</tr>
+		      <tr style="{$keywordsFilterDisplayStyle}">
+		      	<td>{$labels.keyword}</td>
+		      	<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
+		      	            multiple="multiple" size={$gui->keywordsFilterItemQty}>
+		      	    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
+		      		</select>
+		      	</td>
+		      	<td>
+           			 {html_radios name='keywordsFilterType' 
+                         	options=$gui->keywordsFilterType->options
+                         	selected=$gui->keywordsFilterType->selected }
+		      	</td>
+		      </tr>
+		      <tr>
+
+
 	 
 	  		<tr>
-	   			<td>{lang_get s='do_auto_update'}</td>
+	   			<td>{$labels.do_auto_update}</td>
 	  			<td>
 	  			   <input type="hidden" id="hidden_tcspec_refresh_on_action"   
 	  			           name="hidden_tcspec_refresh_on_action" />
@@ -103,7 +124,7 @@ rev:
 	  		<tr>
 	  			<td>&nbsp;</td>
 	  			<td><input type="submit" name="refresh_view" id="refresh_view" 
-	  			           value="{lang_get s='button_update_tree'}" style="font-size: 90%;" /></td>
+	  			           value="{$labels.button_update_tree}" style="font-size: 90%;" /></td>
 	  		</tr>
 	  	</table>
 	
@@ -111,7 +132,7 @@ rev:
 	  	<table class="smallGrey" width="100%">
 	  		<tr>
 	  			<td>&nbsp;</td>
-	  	    <td><input type="button" value="{lang_get s='button_update_tree'}" style="font-size: 90%;"
+	  	    <td><input type="button" value="{$labels.button_update_tree}" style="font-size: 90%;"
 	  	       onClick="javascript: parent.treeframe.location.reload();" />
 	  	    </td>   
 	  	  </tr>  
@@ -126,7 +147,7 @@ rev:
 {else}
     <div class="tree" id="tree">
         {if $tree eq ''}
-          {lang_get s='no_tc_spec_av'}
+          {$labels.no_tc_spec_av}
         {/if}
         {$tree}
         <br />

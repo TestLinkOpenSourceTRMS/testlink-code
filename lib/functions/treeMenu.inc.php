@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2009/01/18 17:20:44 $ by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2009/01/18 18:50:55 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,7 @@
  *  Used type is defined in config.inc.php.
  * 
  * Rev: 20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
+ *                              added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081223 - franciscom - extjs_renderExecTreeNodeOnOpen() - changes to show colors
  *      20081220 - franciscom - prepareNode() - status can be an array, to allow
@@ -205,7 +206,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	if($test_spec)
 	{
 		$tck_map = null;  // means no filter
-
 		if(!is_null($keywordsFilter))
 		{
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keywordsFilter->items,$keywordsFilter->type);
@@ -224,7 +224,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 		{
 		  $test_spec[$key]=$testcase_counters[$key];
 		}
-		
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
 		                             $tc_action_enabled,$linkto,$tcase_prefix,
 		                             $bForPrinting,$showTestCaseID);
@@ -236,14 +235,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	    $treeMenu->rootnode=new stdClass();
 	    $treeMenu->rootnode->name=$test_spec['text'];
 	    $treeMenu->rootnode->id=$test_spec['id'];
-	    $treeMenu->rootnode->leaf=$test_spec['leaf'];
+	    $treeMenu->rootnode->leaf=isset($test_spec['leaf'])?$test_spec['leaf']:false;
 	    $treeMenu->rootnode->text=$test_spec['text'];
 	    $treeMenu->rootnode->position=$test_spec['position'];	    
 	    $treeMenu->rootnode->href=$test_spec['href'];
       
 	    // Change key ('childNodes')  to the one required by Ext JS tree.
 	    $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-	    
 	    // Remove null elements (Ext JS tree do not like it ).
 	    $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
 	    $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
@@ -336,8 +334,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	  $node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
 	  $tcase_counters['testcase_count']=0;
   
-	if($node_type == 'testcase')
-	{
+	  if($node_type == 'testcase')
+	  {
       $viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
 	    if (!is_null($tck_map))
 	    {
@@ -433,6 +431,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		      $result = $db->exec_query($sql);
 		  	  $myrow = $db->fetch_array($result);
 		  		$node['external_id'] = $myrow['external_id'];		
+
+          // needed to avoid problems when using json_encode with EXTJS
+          unset($node['childNodes']);
+          $node['leaf']=true;;
 		  }
 		  // -------------------------------------------------------------------
 		  
@@ -516,6 +518,8 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
                         $tc_action_enabled,$linkto,$testCasePrefix,
                         $bForPrinting=0,$showTestCaseID)
 {
+	$menustring='';
+	
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')

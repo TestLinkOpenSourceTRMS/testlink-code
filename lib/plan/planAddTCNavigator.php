@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.40 2009/01/18 17:20:44 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.41 2009/01/18 18:50:55 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -74,7 +74,7 @@ function init_args()
     $args->called_url = isset($_REQUEST['called_url']) ? $_REQUEST['called_url'] : null;
  
     $args->keywordsFilterType =isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
- 
+
     return $args;
 }
 
@@ -167,7 +167,7 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
 
   
     // Prefix for cookie used to save tree state
-    $gui->ajaxTree->cookiePrefix='planaddtc_' . $gui->ajaxTree->root_node->id . "_" ;
+    $gui->ajaxTree->cookiePrefix="planaddtc_{$gui->ajaxTree->root_node->id}_{$argsObj->user_id}_";
 
     // not allowed in this feature
     $gui->ajaxTree->dragDrop=new stdClass();
@@ -245,7 +245,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
             $guiObj->ajaxTree->loader = '';
             $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
             $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
-            $guiObj->ajaxTree->cookiePrefix = $argsObj->feature;
         }
         else
         {

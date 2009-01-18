@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2009/01/03 17:30:29 $ by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2009/01/18 17:20:44 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -14,7 +14,8 @@
  *                                              LAYERSMENU, DTREE,	and JTREE. 
  *  Used type is defined in config.inc.php.
  * 
- * Rev: 20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
+ * Rev: 20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
+ *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081223 - franciscom - extjs_renderExecTreeNodeOnOpen() - changes to show colors
  *      20081220 - franciscom - prepareNode() - status can be an array, to allow
  *                              filtring in OR mode several exec status.
@@ -31,16 +32,6 @@
  *      20080304 - franciscom - added management of exec_cfg->show_testsuite_contents
  *      20080223 - franciscom - fixed call to get_subtree() on generateTestSpecTree()
  *      20080114 - franciscom - changes to *_renderExecTreeNode*
- *
- *      20080113 - franciscom - changes to *_renderTestSpec* functions
- *                              to manage new external_id and testcase prefix.
- *
- *      20080111 - franciscom - added logic to manage show/hide testcase id
- *      20071229 - franciscom - added new arguments in generateExecTree()
- *                              renderExecTreeNode()
- *      20071111 - franciscom - added contribution to show number of
- *                              testcases with different exec status on DTREE
- *
  *      20071002 - jbarchibald - BUGID 1051
  *      20070306 - franciscom - BUGID 705 
  *
@@ -74,7 +65,8 @@ if (TL_TREE_KIND == 'LAYERSMENU')
 function invokeMenu($menustring, $highLight = "",$target = "workframe")
 {
 	tLog('invokeMenu started');
-	
+
+  $data='';	
 	if (TL_TREE_KIND == 'LAYERSMENU') 
 	{
 		$mid = new TreeMenu();
@@ -168,8 +160,14 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                               $keywordsFilter=null,
                               $ignore_inactive_testcases=0,$exclude_branches=null)
 {
+  $treeMenu = new stdClass(); 
+  $treeMenu->rootnode = null;
+  $treeMenu->menustring = '';
+  
 	$resultsCfg=config_get('results');
 	$showTestCaseID=config_get('treemenu_show_testcase_id');
+	$glueChar=config_get('testcase_cfg')->glue_character;
+  $treemenu_type = config_get('treemenu_type');
 	$menustring = null;
 
 	$tproject_mgr = new testproject($db);
@@ -186,7 +184,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                        'status_descr_code' =>  $status_descr_code,
                        'status_code_descr' =>  $status_code_descr);
 	
-	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id);
+	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,
 	                                        testproject::RECURSIVE_MODE,
 	                                        testproject::INCLUDE_TESTCASES,
@@ -226,11 +224,34 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 		{
 		  $test_spec[$key]=$testcase_counters[$key];
 		}
+		
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
 		                             $tc_action_enabled,$linkto,$tcase_prefix,
 		                             $bForPrinting,$showTestCaseID);
 	}
-	return $menustring;
+	
+	// 20090118 - franciscom
+	if($treemenu_type=='EXTJS')
+	{
+	    $treeMenu->rootnode=new stdClass();
+	    $treeMenu->rootnode->name=$test_spec['text'];
+	    $treeMenu->rootnode->id=$test_spec['id'];
+	    $treeMenu->rootnode->leaf=$test_spec['leaf'];
+	    $treeMenu->rootnode->text=$test_spec['text'];
+	    $treeMenu->rootnode->position=$test_spec['position'];	    
+	    $treeMenu->rootnode->href=$test_spec['href'];
+      
+	    // Change key ('childNodes')  to the one required by Ext JS tree.
+	    $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+	    
+	    // Remove null elements (Ext JS tree do not like it ).
+	    $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
+	    $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
+	    $menustring = str_ireplace('null', '', $dummy_string); 
+	}
+
+  $treeMenu->menustring = $menustring;  
+  return $treeMenu;
 }
 
 //
@@ -306,160 +327,150 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
  	  if (!$status_code_descr)
     		$status_code_descr = $decoding_info['status_code_descr'];
   
-	$tcase_counters = array('testcase_count' => 0);
-	foreach($status_descr_code as $status_descr => $status_code)
-	{
-		$tcase_counters[$status_descr]=0;
-	}
-
-	$node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
-	$tcase_counters['testcase_count']=0;
+	  $tcase_counters = array('testcase_count' => 0);
+	  foreach($status_descr_code as $status_descr => $status_code)
+	  {
+	  	$tcase_counters[$status_descr]=0;
+	  }
+    
+	  $node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
+	  $tcase_counters['testcase_count']=0;
   
 	if($node_type == 'testcase')
 	{
-    	$viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
-		if (!is_null($tck_map))
-		{
-			if (!isset($tck_map[$node['id']]))
-				$node = null;
-		}
-	
-	  if ($node && $viewType == 'executionTree')
-		{
-			  $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
-		  	// We are building a execution tree.
-			  // if (!$tpNode ||
-			  //      ($assignedTo && ($assignedTo != $tpNode['user_id'])) ||
-			  //      ($status && ($status != $tpNode['exec_status']))
-			  //      )
-			  // {
-			  // 	$node = null;
-			  // }
-			  //
-			  // 20081220 - franciscom
-			  // if (!$tpNode ||
-			  //      ( $assignedTo && ($assignedTo != $tpNode['user_id'])) ||
-			  //      ( !is_null($status) && !isset($status[$tpNode['exec_status']]))
-			  //    )
-			  // {
-			  // 	$node = null;
-			  // }
-			  //
-			  // 20081220 - franciscom
-			  // echo "<pre>debug 20081221 - \ - " . __FUNCTION__ . " --- "; print_r($tpNode); echo "</pre>";
-        // echo 'status<br>';
-        // echo 'tpNode<br>';
-			  if (!$tpNode || (!is_null($assignedTo)) && 
-			                   ((isset($assignedTo[TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
-                         (!isset($assignedTo[TL_USER_NOBODY]) && !isset($assignedTo[$tpNode['user_id']]))) || 
-			                  (!is_null($status) && !isset($status[$tpNode['exec_status']]))
-			     )
-			  {
-			  	$node = null;
-			  }
-			  else
-			  {
-			    $externalID='';
-			  	$node['tcversion_id'] = $tpNode['tcversion_id'];		
-			  	$node['version'] = $tpNode['version'];		
-			  	if ($bGetExternalTcID)
-			  	{
-			  		if (!isset($tpNode['external_id']))
-			  		{
-			  			$sql=" SELECT TCV.tc_external_id AS external_id " .
-			  	       		" FROM tcversions TCV " .
-			  	       		" WHERE TCV.id=" . $node['tcversion_id'];
-			  	  		
-			  			$result = $db->exec_query($sql);
-			  	  		$myrow = $db->fetch_array($result);
-			  			$externalID = $myrow['external_id'];
-			  		}
-			  		else
-			  			$externalID = $tpNode['external_id'];
-			  	}
-			  	$node['external_id'] = $externalID;
-			  	unset($tplan_tcases[$node['id']]);
-			  }
-		}
-	
-		if ($node && $ignore_inactive_testcases)
-		{
-			// there are active tcversions for this node ???
-			// I'm doing this instead of creating a test case manager object, because
-			// I think is better for performance.
-			//
-			// =======================================================================================
-			// 20070106 - franciscom
-			// Postgres Problems
-			// =======================================================================================
-			// Problem 1 - SQL Sintax
-			//   While testing with postgres
-			//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
-			//
-			//   At least for what I remember using AS to create COLUMN ALIAS IS REQUIRED and Standard
-			//   while AS is NOT REQUIRED (and with some DBMS causes errors) when you want to give a 
-			//   TABLE ALIAS
-			//
-			// Problem 2 - alias cas
-			//   At least in my installation the aliases column name is returned lower case, then
-			//   PHP fails when:
-			//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
-			//
-			//
-			$sql=" SELECT count(TCV.id) AS num_active_versions " .
-			     " FROM tcversions TCV, nodes_hierarchy NH " .
-			     " WHERE NH.parent_id=" . $node['id'] .
-			     " AND NH.id = TCV.id AND TCV.active=1";
-			
-			$result = $db->exec_query($sql);
-			$myrow = $db->fetch_array($result);
-			if($myrow['num_active_versions'] == 0)
-			{
-				$node = null;
-			}
-		}
+      $viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
+	    if (!is_null($tck_map))
+	    {
+	    	if (!isset($tck_map[$node['id']]))
+	    	{
+	    		$node = null;
+	    	}	
+	    }
 		
-		if ($node && $viewType=='testSpecTree')
-		{
-			  $sql=" SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
-			       " FROM tcversions TCV, nodes_hierarchy NH " .
-			       " WHERE  NH.id = TCV.id " .
-			       " AND NH.parent_id=" . $node['id'];
+	    if ($node && $viewType == 'executionTree')
+		  {
+		  	  $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
+		  	  if (!$tpNode || (!is_null($assignedTo)) && 
+		  	                   ((isset($assignedTo[TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
+                           (!isset($assignedTo[TL_USER_NOBODY]) && !isset($assignedTo[$tpNode['user_id']]))) || 
+		  	                  (!is_null($status) && !isset($status[$tpNode['exec_status']]))
+		  	     )
+		  	  {
+		  	  	$node = null;
+		  	  }
+		  	  else
+		  	  {
+		  	    $externalID='';
+		  	  	$node['tcversion_id'] = $tpNode['tcversion_id'];		
+		  	  	$node['version'] = $tpNode['version'];		
+		  	  	if ($bGetExternalTcID)
+		  	  	{
+		  	  		if (!isset($tpNode['external_id']))
+		  	  		{
+		  	  		    $sql = " SELECT TCV.tc_external_id AS external_id " .
+		  	  	         		 " FROM tcversions TCV " .
+		  	  	         		 " WHERE TCV.id=" . $node['tcversion_id'];
+		  	  	      	
+		  	  		    $result = $db->exec_query($sql);
+		  	  	      $myrow = $db->fetch_array($result);
+		  	  		    $externalID = $myrow['external_id'];
+		  	  		}
+		  	  		else
+		  	  		{
+		  	  			$externalID = $tpNode['external_id'];
+		  	  		}	
+		  	  	}
+		  	  	$node['external_id'] = $externalID;
+		  	  	unset($tplan_tcases[$node['id']]);
+		  	  }
+		  }
 	
-		    $result = $db->exec_query($sql);
-			  $myrow = $db->fetch_array($result);
-				$node['external_id'] = $myrow['external_id'];		
-		}
+		  if ($node && $ignore_inactive_testcases)
+		  {
+		  	// there are active tcversions for this node ???
+		  	// I'm doing this instead of creating a test case manager object, because
+		  	// I think is better for performance.
+		  	//
+		  	// =======================================================================================
+		  	// 20070106 - franciscom
+		  	// Postgres Problems
+		  	// =======================================================================================
+		  	// Problem 1 - SQL Sintax
+		  	//   While testing with postgres
+		  	//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
+		  	//
+		  	//   At least for what I remember using AS to create COLUMN ALIAS IS REQUIRED and Standard
+		  	//   while AS is NOT REQUIRED (and with some DBMS causes errors) when you want to give a 
+		  	//   TABLE ALIAS
+		  	//
+		  	// Problem 2 - alias cas
+		  	//   At least in my installation the aliases column name is returned lower case, then
+		  	//   PHP fails when:
+		  	//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
+		  	//
+		  	//
+		  	$sql=" SELECT count(TCV.id) AS num_active_versions " .
+		  	     " FROM tcversions TCV, nodes_hierarchy NH " .
+		  	     " WHERE NH.parent_id=" . $node['id'] .
+		  	     " AND NH.id = TCV.id AND TCV.active=1";
+		  	
+		  	$result = $db->exec_query($sql);
+		  	$myrow = $db->fetch_array($result);
+		  	if($myrow['num_active_versions'] == 0)
+		  	{
+		  		$node = null;
+		  	}
+		  }
 		
-		foreach($tcase_counters as $key => $value)
-		{
-		  $tcase_counters[$key]=0;
-		}
+		  // -------------------------------------------------------------------
+		  if ($node && $viewType=='testSpecTree')
+		  {
+		  	  $sql=" SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
+		  	       " FROM tcversions TCV, nodes_hierarchy NH " .
+		  	       " WHERE  NH.id = TCV.id " .
+		  	       " AND NH.parent_id=" . $node['id'];
+	    
+		      $result = $db->exec_query($sql);
+		  	  $myrow = $db->fetch_array($result);
+		  		$node['external_id'] = $myrow['external_id'];		
+		  }
+		  // -------------------------------------------------------------------
+		  
+		  
+		  foreach($tcase_counters as $key => $value)
+		  {
+		    $tcase_counters[$key]=0;
+		  }
 		
-		$tc_status_descr = "not_run";
-		$tc_status_code = 'n';
-		if(isset($tpNode['exec_status']) )
-		{
-		   $tc_status_code = $tpNode['exec_status'];
-		   $tc_status_descr = $status_code_descr[$tc_status_code];   
-		}
+		  $tc_status_descr = "not_run";
+		  $tc_status_code = 'n';
+		  if(isset($tpNode['exec_status']) )
+		  {
+		     $tc_status_code = $tpNode['exec_status'];
+		     $tc_status_descr = $status_code_descr[$tc_status_code];   
+		  }
   
     	$init_value = $node ? 1 : 0;
-		$tcase_counters[$tc_status_descr]=$init_value;
-		$tcase_counters['testcase_count']=$init_value;
-		if ($bHideTCs)
-			$node = null;
+		  $tcase_counters[$tc_status_descr]=$init_value;
+		  $tcase_counters['testcase_count']=$init_value;
+		  if ($bHideTCs)
+		  {
+			    $node = null;
+			} 
 	}
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = &$node['childNodes'];
-		for($i = 0;$i < sizeof($childNodes);$i++)
+		$childNodesQty = sizeof($childNodes);
+		for($idx = 0;$idx < $childNodesQty ;$idx++)
 		{
-			$current = &$childNodes[$i];
+			$current = &$childNodes[$idx];
 			// I use set an element to null to filter out leaf menu items
 			if(is_null($current))
+			{
 				continue;
+  		}
   		$counters_map = prepareNode($db,$current,$decoding_info,$map_node_tccount,
 			                            $tck_map,$tplan_tcases,$bHideTCs,
 			                            $assignedTo,$status,
@@ -468,7 +479,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
       {
         $tcase_counters[$key] += $counters_map[$key];   
       }  
-
 		}
     foreach($tcase_counters as $key => $value)
     {
@@ -509,37 +519,57 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
+	{
 		$menustring = jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
 		                                                 $bForPrinting,$showTestCaseID,
 		                                                 $testCasePrefix);
+	}
 	else if (TL_TREE_KIND == 'DTREE')
+	{
 		$menustring = dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
 		                                                 $getArguments,$tc_action_enabled,
 		                                                 $bForPrinting,$showTestCaseID,
 		                                                 $testCasePrefix);
-	else 
+	}
+	else if (TL_TREE_KIND == 'LAYERSMENU')
+	{ 
 		$menustring = layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArguments,
 		                                                      $level,$tc_action_enabled,
 		                                                      $bForPrinting,$showTestCaseID,
 		                                                      $testCasePrefix);
+	}
+	else if (TL_TREE_KIND == 'EXTJS')
+	{
+		extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
+		                                   $bForPrinting,$showTestCaseID,
+		                                   $testCasePrefix);
+  }
+	
 		
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
-		$childNodes = $node['childNodes'];
-		$nChildren = sizeof($childNodes);
-		for($i = 0;$i < $nChildren;$i++)
+	  // 20090118 - franciscom - need to work always original object
+	  //                         in order to change it's values using reference .
+	  // Can not assign anymore to intermediate variables.
+	  //
+   	$nChildren = sizeof($node['childNodes']);
+		for($idx = 0;$idx < $nChildren;$idx++)
 		{
-			$current = $childNodes[$i];
-			if(is_null($current))
+			if(is_null($node['childNodes'][$idx]))
+			{
 				continue;
-			
-			$menustring .= renderTreeNode($level+1,$current,$getArguments,$hash_id_descr,
+			}
+			$menustring .= renderTreeNode($level+1,$node['childNodes'][$idx],$getArguments,$hash_id_descr,
 			                              $tc_action_enabled,$linkto,$testCasePrefix,
 			                              $bForPrinting,$showTestCaseID);
 		}
 	}
+	
+	
 	if (TL_TREE_KIND == 'JTREE')
+	{
 		$menustring .= jtree_renderTestSpecTreeNodeOnClose($node,$node_type);
+	}
 	
 	return $menustring;
 }
@@ -559,8 +589,6 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
                                                  $getArguments,$level,$tc_action_enabled,
                                                  $bForPrinting,$showTestCaseID,$testCasePrefix)
 {
-	$cfg=config_get('testcase_cfg');
-
 	$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
 	$name = filterString($node['name']);
 	$icon = "";
@@ -585,10 +613,6 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
     $label='';  
 		if($showTestCaseID)
 		{
-		   if( strlen(trim($testCasePrefix)) > 0 )
-       {
-            $testCasePrefix .= $cfg->glue_character;
-       }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
@@ -622,7 +646,6 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
                                             $tc_action_enabled,$bForPrinting,
                                             $showTestCaseID,$testCasePrefix)
 {
-	$cfg=config_get('testcase_cfg');
 	$dtreeCounter = $node['id'];
 
 	$parentID = isset($node['parent_id']) ? $node['parent_id'] : -1;
@@ -646,10 +669,6 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
 		$label = "";
 		if($showTestCaseID)
 		{
- 		   if( strlen(trim($testCasePrefix)) > 0 )
-       {
-            $testCasePrefix .= $cfg->glue_character;
-       }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
@@ -685,7 +704,6 @@ function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArgumen
 function jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
                                             $bForPrinting,$showTestCaseID,$testCasePrefix)
 {
-	$cfg=config_get('testcase_cfg');
 	$menustring = "['";
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
@@ -712,11 +730,6 @@ function jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
 		$label = "";
 		if($showTestCaseID)
 		{
-		   // $label .= "<b>{$node['id']}</b>:";
- 		   if( strlen(trim($testCasePrefix)) > 0 )
-       {
-            $testCasePrefix .= $cfg->glue_character;
-       }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name;
@@ -774,6 +787,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $treemenu_type = config_get('treemenu_type');
     $resultsCfg = config_get('results');
     $showTestCaseID = config_get('treemenu_show_testcase_id');
+    $glueChar=config_get('testcase_cfg')->glue_character;
+	    
 	  $menustring = null;
 	  $any_exec_status = null;
     $tplan_tcases = null;
@@ -807,7 +822,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                            'status_descr_code' =>  $resultsCfg['status_code'],
                            'status_code_descr' =>  $resultsCfg['code_status']);
 
-	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id);
+	  $tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 
     $nt2exclude = array('testplan' => 'exclude_me',
 	                      'requirement_spec'=> 'exclude_me',
@@ -878,6 +893,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     		                                                       
 		    $bForPrinting = $bHideTCs;
 		    //@TODO: schlundus, can we speed up with NO_EXTERNAL?
+		    //franciscom -  but we need EXTERNAL ID!!!!
 		    $testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		    								                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
 		    foreach($testcase_counters as $key => $value)
@@ -888,24 +904,25 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  	                                     $menuUrl,$bHideTCs,$useCounters,$useColors,
 	  	                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
 	  }
-	   if($treemenu_type=='EXTJS')
-	   {
-	    $treeMenu->rootnode=new stdClass();
-	    $treeMenu->rootnode->name=$test_spec['text'];
-	    $treeMenu->rootnode->id=$test_spec['id'];
-	    $treeMenu->rootnode->leaf=$test_spec['leaf'];
-	    $treeMenu->rootnode->text=$test_spec['text'];
-		  $treeMenu->rootnode->position=$test_spec['position'];	    
-	    $treeMenu->rootnode->href=$test_spec['href'];
-
-	     // Change key ('childNodes')  to the one required by Ext JS tree.
-	    $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-	    
-	    // Remove null elements (Ext JS tree do not like it ).
-	    $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
-	    $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
-	    $menustring = str_ireplace('null', '', $dummy_string); 
-	   }
+	  
+	  if($treemenu_type=='EXTJS')
+	  {
+	       $treeMenu->rootnode=new stdClass();
+	       $treeMenu->rootnode->name=$test_spec['text'];
+	       $treeMenu->rootnode->id=$test_spec['id'];
+	       $treeMenu->rootnode->leaf=$test_spec['leaf'];
+	       $treeMenu->rootnode->text=$test_spec['text'];
+		     $treeMenu->rootnode->position=$test_spec['position'];	    
+	       $treeMenu->rootnode->href=$test_spec['href'];
+         
+	        // Change key ('childNodes')  to the one required by Ext JS tree.
+	       $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+	       
+	       // Remove null elements (Ext JS tree do not like it ).
+	       $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
+	       $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
+	       $menustring = str_ireplace('null', '', $dummy_string); 
+	  }
     
     $treeMenu->menustring = $menustring;  
     return $treeMenu;
@@ -974,14 +991,14 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
             
     
   }
-  	unset($tcase_node[$node['id']]);
+  unset($tcase_node[$node['id']]);
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 	  // 20080615 - franciscom - need to work always original object
 	  //                         in order to change it's values using reference .
 	  // Can not assign anymore to intermediate variables.
 	  //
-   		$nodes_qty = sizeof($node['childNodes']);
+   	$nodes_qty = sizeof($node['childNodes']);
 		for($idx = 0;$idx <$nodes_qty ;$idx++)
 		{
 			if(is_null($node['childNodes'][$idx]))
@@ -1002,8 +1019,9 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
   }
   
 	if (TL_TREE_KIND == 'JTREE')
+	{
 		$menustring .= jtree_renderTestSpecTreeNodeOnClose($node,$node_type);
-	
+	}
 	return $menustring;
 }
 
@@ -1024,7 +1042,6 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
                                              $useCounters=1,$useColors=1,$showTestCaseID=1,
                                              $testCasePrefix,$showTestSuiteContents=1)
 {
-	$cfg=config_get('testcase_cfg');
 	$resultsCfg=config_get('results');
 	
   $status_descr_code=$resultsCfg['status_code'];
@@ -1067,10 +1084,6 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 
 		if($showTestCaseID)
 		{
-		   if( strlen(trim($testCasePrefix)) > 0 )
-       {
-            $testCasePrefix .= $cfg->glue_character;
-       }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name . "</span>";
@@ -1127,7 +1140,6 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
                                         $useCounters=1,$useColors=1,$showTestCaseID=1,
                                         $testCasePrefix,$showTestSuiteContents=1)
 {
- 	$cfg=config_get('testcase_cfg');
 	$resultsCfg=config_get('results');
 	
   $status_descr_code=$resultsCfg['status_code'];
@@ -1163,10 +1175,6 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 		  
 		  if($showTestCaseID)
 		  {
-		     if( strlen(trim($testCasePrefix)) > 0 )
-         {
-            $testCasePrefix .= $cfg->glue_character;
-         }
   	     $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		  } 
 		  $label .= $name . "</span>";
@@ -1228,7 +1236,6 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
                                         $bForPrinting,$useCounters=1,$useColors=1,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
- 	$cfg=config_get('testcase_cfg');
 	$resultsCfg=config_get('results');
 	
   $status_descr_code=$resultsCfg['status_code'];
@@ -1277,10 +1284,6 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 		
 		if($showTestCaseID)
 		{
- 		   if( strlen(trim($testCasePrefix)) > 0 )
-       {
-            $testCasePrefix .= $cfg->glue_character;
-       }
   	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
 		} 
 		$label .= $name . "</span>";
@@ -1470,7 +1473,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
                                         $bForPrinting,$useCounters=1,$useColors=1,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
-	$cfg=config_get('testcase_cfg');
 	$resultsCfg=config_get('results');
 	  
 	$status_descr_code=$resultsCfg['status_code'];
@@ -1516,11 +1518,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	  	$status_code = $tcase_node[$node['id']]['exec_status'];
 	  	$status_descr = $status_code_descr[$status_code];
 
-   	// @TODO, schlundus, still not working as expected, need to give closer look at the ext-js styles
-		//which are defined a tree node to be black
-    // 20081223 - franciscom
-		//	$css_class = $useColors ? (" class=\"tree_{$status_descr}\" ") : '';   
-		//  $label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 		$css_class = $useColors ? (" class=\"{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">'.
 		         "&nbsp</span>";
@@ -1528,10 +1525,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		
 		if($showTestCaseID)
 		{
-			if(strlen(trim($testCasePrefix)))
-			{
-				$testCasePrefix .= $cfg->glue_character;
-			}
 			$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
 		} 
 		// $label .= $name . "</span>";
@@ -1548,10 +1541,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$label = $name ." (" . $testcase_count . ")";
     if($useCounters)
     {
-		    // @TODO - francisco - 20080621
-		    // Need to ask Martin to help to fix CSS conflicts with ext js
-		    //
-        	//$add_html=create_counters_info($node,$useColors);
         	$add_html=create_counters_info($node,false);        
 	      	$label .= $add_html; 
 	  }
@@ -1640,5 +1629,74 @@ function filter_by_same_status_for_build_set(&$tplan_mgr,&$tcase_set,$tplan_id,$
         }
     }
     return $tcase_set;
+}
+
+
+// VERY IMPORTANT:
+// node must be passed BY REFERENCE
+//
+//
+function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,
+                                            $bForPrinting,$showTestCaseID,$testCasePrefix)
+{
+	$name = filterString($node['name']);
+	$buildLinkTo = 1;
+	$pfn = "ET";
+	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
+
+  switch($node_type)
+  {
+	  case 'testproject':
+		$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
+		$label =  $name . " (" . $testcase_count . ")";
+	  break;
+
+	  case 'testsuite':
+		$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
+		$label =  $name . " (" . $testcase_count . ")";	
+	  break;
+    
+	  case 'testcase':
+		$buildLinkTo = $tc_action_enabled;
+		if (!$buildLinkTo)
+		{
+			$pfn = "void";
+    }
+    
+		$label = "";
+		if($showTestCaseID)
+		{
+  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
+		} 
+		$label .= $name;
+	  break;
+
+  } // switch	
+
+  $node['text']=$label;
+  $node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
+  $node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']})";
+  
+  // Remove useless keys
+ 	$resultsCfg=config_get('results');
+	$status_descr_code=$resultsCfg['status_code'];
+
+  foreach($status_descr_code as $key => $code)
+  {
+     if(isset($node[$key]))
+     {
+        unset($node[$key]); 
+     }  
+  }
+  $key2del=array('node_type_id','parent_id','node_order','node_table',
+                 'tcversion_id','external_id','version','testcase_count');  
+
+  foreach($key2del as $key)
+  {
+      if(isset($node[$key]))
+      {
+          unset($node[$key]); 
+      }  
+  }
 }
 ?>

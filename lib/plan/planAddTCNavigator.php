@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.39 2009/01/03 17:25:35 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.40 2009/01/18 17:20:44 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -11,6 +11,9 @@
  *	Test specification. Keywords should be used for filter.
  * 
  * rev :
+ *      20090118 - franciscom - added logic to switch for EXTJS tree type
+ *                              how to build tree when there are filters
+ *
  *      20080629 - franciscom - fixed undefined variables bug
  *      20080622 - franciscom - added support for ext js tree.
  *      20080507 - franciscom - added type for keyword filter (or/and)
@@ -28,6 +31,7 @@ require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+
 $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION['basehref']);
 $gui->tree = buildTree($db,$gui,$args);
@@ -194,9 +198,11 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     if($argsObj->doUpdateTree)
     {
 	     $guiObj->src_workframe = $my_workframe; 
-	}
+	  }
     else if($argsObj->called_by_me)
     {
+       // -------------------------------------------------------------------------------
+       // Explain what is objective of this chunck of code 
        // Warning:
        // Algorithm based on field order on URL call
        // 
@@ -204,31 +210,53 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
        $qs = explode('&',$dummy[1]);
        if($qs[0] == 'edit=testsuite')
- 			$guiObj->src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $guiObj->args;
-       else
- 			$guiObj->src_workframe = $my_workframe; 
+       {
+ 			    $guiObj->src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $guiObj->args;
+       }
+       else 
+       {
+ 			    $guiObj->src_workframe = $my_workframe; 
+ 			 }   
+ 			 // -------------------------------------------------------------------------------
     }
     
-    if($argsObj->keyword_id > 0)
+    $applyFilter=($argsObj->keyword_id > 0);
+    if( $applyFilter )
     {
         $keywordsFilter = new stdClass();
         $keywordsFilter->items = $argsObj->keyword_id;
         $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
     }
 
-    // 20080622 - franciscom
     $treemenu_type=config_get('treemenu_type');
     $treeMenu=null;
-    if($treemenu_type != 'EXTJS')
+    $buildCompleteTree = $treemenu_type != 'EXTJS' || ($treemenu_type == 'EXTJS' && $applyFilter);
+
+    if($buildCompleteTree)
     {
-        $treeString = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
-                                           $guiObj->menuUrl,NOT_FOR_PRINTING,
-                                           HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
-                                           $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
-           
-                                        
-        // return invokeMenu($treeString,'',null);
-        $treeMenu=invokeMenu($treeString,'',null);
+        $treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
+                                         $guiObj->menuUrl,NOT_FOR_PRINTING,
+                                         HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
+                                         $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
+        
+        if($treemenu_type == 'EXTJS' )
+        {
+            $guiObj->ajaxTree = new stdClass();
+            $guiObj->ajaxTree->loader = '';
+            $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
+            $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
+            $guiObj->ajaxTree->cookiePrefix = $argsObj->feature;
+        }
+        else
+        {
+            $guiObj->ajaxTree = null;
+            $treeMenu = invokeMenu($treeMenu->menustring,null,null);
+        }
+    }
+    
+    if( $applyFilter )
+    {
+        $guiObj->ajaxTree->loader='';  
     }
 
     return $treeMenu;

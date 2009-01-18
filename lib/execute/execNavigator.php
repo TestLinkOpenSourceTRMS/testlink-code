@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2009/01/14 20:06:24 $ by $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2009/01/18 17:20:44 $ by $Author: franciscom $
  *
  * rev: 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -496,6 +496,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
 
+    new dBug($treeMenu);
  	  if( $cfgObj->treemenu_type != 'EXTJS' )
     {
         $treeMenu->menustring = invokeMenu($treeMenu->menustring,null,null);

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/10/16 20:08:01 $ $Author: asielb $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/01/18 17:21:28 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1803,4 +1803,5 @@ $TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does no
 $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
 $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
 
+$TLS_copy_to_all_tplans = "Copy to all Test Plans";
 ?>

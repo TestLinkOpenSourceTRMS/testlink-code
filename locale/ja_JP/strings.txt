@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/12/30 13:35:02 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/01/18 17:21:28 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -50,7 +50,7 @@
  * Toshinori Sawaguchi,  Toshiyuki Kawanishi,  Yasuhiko Okada,
  * Yoichi Kunihiro,      Yoshihiro Yoshimura,  Yukiko Kajino
  *
- * @modified $Date: 2008/12/30 13:35:02 $ $Author: franciscom $
+ * @modified $Date: 2009/01/18 17:21:28 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 
@@ -2258,5 +2258,6 @@ $TLS_issue_status_resolved="Resolved issue";
 $TLS_issue_status_closed="Closed issue";
 $TLS_access_to_bts="Access issue tracking system";
 
+$TLS_copy_to_all_tplans = "Copy to all Test Plans";
 // ----- END ------------------------------------------------------------------
 ?>

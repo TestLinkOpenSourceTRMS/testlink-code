@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.11 2008/12/10 19:37:46 schlundus Exp $ 
+   $Id: tcTree.tpl,v 1.12 2009/01/18 17:20:31 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -18,28 +18,47 @@ rev:
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-    {literal}
-    <script type="text/javascript">
-    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-               root_testlink_node_type:'',useBeforeMoveNode:false,
-               loader:"", enableDD:false, dragDropBackEndUrl:''};
-    </script>
-    {/literal}
+    {if $gui->ajaxTree->loader == '' }
+        {literal}
+        <script type="text/javascript">
+        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                   loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+        </script>
+        {/literal}
+
+        <script type="text/javascript">
+        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+        treeCfg.root_id={$gui->ajaxTree->root_node->id};
+        treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+        treeCfg.children={$gui->ajaxTree->children};
+        </script>
+        <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     
-    <script type="text/javascript">
-    treeCfg.loader='{$gui->ajaxTree->loader}';
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
-    treeCfg.root_id={$gui->ajaxTree->root_node->id};
-    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-    treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
-    treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
-    treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
-    treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
-    treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
-    </script>
-    
-    <script type="text/javascript" src='gui/javascript/treebyloader.js'>
-    </script>
+    {else}
+        {literal}
+        <script type="text/javascript">
+        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                   root_testlink_node_type:'',useBeforeMoveNode:false,
+                   loader:"", enableDD:false, dragDropBackEndUrl:''};
+        </script>
+        {/literal}
+        
+        <script type="text/javascript">
+        treeCfg.loader='{$gui->ajaxTree->loader}';
+        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
+        treeCfg.root_id={$gui->ajaxTree->root_node->id};
+        treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+        treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+        treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+        treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+        treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
+        treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
+        </script>
+        
+        <script type="text/javascript" src='gui/javascript/treebyloader.js'>
+        </script>
+    {/if}
+    {*  --------------------------------------------------------------------------- *}
 
 {else}
     {include file="inc_head.tpl" jsTree="yes" openHead="yes"}

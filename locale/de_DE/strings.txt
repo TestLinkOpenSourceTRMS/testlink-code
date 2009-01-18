@@ -1,10 +1,10 @@
-<?php
+?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2009/01/16 20:26:14 $ $Author: schlundus $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2009/01/18 17:21:28 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -2247,5 +2247,7 @@ $TLS_testproject_has_no_requirements = 'Es sind keine Anforderungen definiert';
 $TLS_caption_testCasesWithoutTester = "Testfälle ohne zugewiesenen Tester";
 $TLS_all_testcases_have_tester = "Allen Testfällen wurden Tester zugewiesen!";
 
+
+$TLS_copy_to_all_tplans = "Copy to all Test Plans";
 // ----- END ------------------------------------------------------------------
 ?>

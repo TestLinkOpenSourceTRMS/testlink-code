@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.14 2009/01/19 09:58:08 havlat Exp $
+$Id: testlink.css,v 1.15 2009/01/19 15:48:56 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -240,15 +240,21 @@ span.help
 	padding: 		3px;
 }
 
-.error {
+.tab-error, .tab-warning, .tab-success{
+	text-align:		left;
+	font-weight:    bold;
+}
+
+
+.error, .tab-error {
 	color:			#B22222; /* firebrick (red) */
 }
 
-.warning {
+.warning, .tab-warning {
 	color:			#FF6600; /* safety orange */
 }
 
-.success {
+.success, .tab-success {
 	color:			#006400; /* darkgreen */
 }
 

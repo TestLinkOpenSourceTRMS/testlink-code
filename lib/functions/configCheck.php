@@ -3,29 +3,31 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: configCheck.php,v ${file_name} $
- *
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/12/13 19:25:41 ${date} ${time} $ by $Author: franciscom $
+ * Filename $RCSfile: configCheck.php,v $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/01/19 15:48:56 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
- * Check configuration functions
+ * Scope: Check configuration and system 
+ * Using: Installer, sysinfo.php and Login
  *
- * rev: 20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
- *      20081015 - franciscom - getSecurityNotes() - refactoring
+ * Revisions:
+ * 	
+ *  20090109 - havlatm - import checking functions from Installer 
+ * 	20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
+ *  20081015 - franciscom - getSecurityNotes() - refactoring
  *
  **/
 // ---------------------------------------------------------------------------------------------------
+/** @TODO martin: remove this include (obsolete) */
 require_once('plan.core.inc.php');
 
-/*
-  function: 
-           try to get home url.
-           Code from Mantis Bugtracking system
-  
-  returns: 
-*/
+/**
+ * get home url.
+ * @author adapted from Mantis Bugtracking system
+ * @return string URL 
+ */
 function get_home_url()
 {
   if ( isset ( $_SERVER['PHP_SELF'] ) ) {
@@ -69,6 +71,7 @@ function get_home_url()
 /** check language acceptance by web client */
 function checkServerLanguageSettings($defaultLanguage)
 {
+	global $g_locales;
 	$language = $defaultLanguage;
 
 	// check for !== false because getenv() returns false on error
@@ -97,15 +100,28 @@ function checkConfiguration()
 	}
 }
 
+
+/** 
+ * check if TL is installed
+ * @return boolean true = installed 
+ **/
+function checkInstallStatus()
+{
+	if (defined('DB_TYPE'))
+		return true;
+	else
+		return false;
+}
+
+
+
 /**
  * checks if needed functions and extensions are defined 
  *
  * @param array [ref] msgs will be appended
  * @return bool returns true if all extension or functions ar present or defined
  *
- * @version 1.0
  * @author Andreas Morsing 
- *
  *
  * rev: 20081122 - franciscom - added gd2 check
  **/
@@ -167,13 +183,8 @@ function checkForAdminDefaultPwd(&$db)
 
 /*
   function: checkForLDAPExtension
-
   args :
-  
   returns: 
-  
-  rev: 
-
 */
 function checkForLDAPExtension()
 {
@@ -311,11 +322,8 @@ function checkForBTSConnection()
 
 /*
   function: checkForRepositoryDir
-
   args :
-  
   returns: 
-
 */
 function checkForRepositoryDir($the_dir)
 {
@@ -453,11 +461,8 @@ function checkForTestPlansWithoutTestProjects(&$db)
 
 /*
   function: checkEmailConfig 
-
   args :
-  
   returns: 
-
 */
 function checkEmailConfig()
 {
@@ -476,5 +481,311 @@ function checkEmailConfig()
 	}
 	return is_null($msg) ? null : $common+$msg; 
 }
+
+/** 
+ * checking register global = OFF (doesn't cause error')
+ * @return string html table row
+ */
+function check_php_settings(&$errCounter)
+{
+	$out = "<tr><td>Checking if Register Globals = OFF</td>";
+
+	if(ini_get('register_globals')) 
+		$out .=  "<td><span class='tab-warning'>Failed! is ON - Please change the setting in your php.ini file</span></td></tr>";
+	else 
+		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+
+	return ($out);
+}  //function end
+
+
+/** 
+ * check php extensions
+ * @return string html table rows
+ */
+function check_php_extensions(&$errCounter)
+{
+	$out = '<tr><td>Checking graphic library (GD)</td>';
+
+	if(extension_loaded('gd'))
+		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+	else 
+		$out .=  '<td><span class="tab-warning">Failed! Graph rendering requires it. ' .
+			'This feature will be disabled. It\'s recommended to install it.</span></td></tr>';
+
+	$out .= '<tr><td>Checking LDAP library</td>';
+	if(extension_loaded('ldap'))
+		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+	else 
+		$out .=  "<td><span class='tab-warning'>Failed! LDAP authentication cannot be used" .
+				" (default internal works)</span></td></tr>";
+
+	$out .= '<tr><td>Checking DOM XML support</td>';
+	if (function_exists('domxml_open_file'))
+		$out .= '<td><span class="tab-success">OK</span></td></tr>\n;';
+	else 
+	{
+		$out .=  '<td><span class="tab-error">ERROR - XML Import/Export cannot work. ' .
+				'Please install related library to your web server (You can do it later).' .
+				'</span></td></tr>';
+//        $errCounter++;
+	}
+
+	return ($out);
+}  
+
+
+/*
+  function: check_php_resource_settings
+  returns: 
+*/
+function check_php_resource_settings(&$errCounter)
+{
+    $max_execution_time_recommended = 120;
+    $max_execution_time = ini_get('max_execution_time');
+    $memory_limit_recommended = 64;
+    $memory_limit = intval(str_ireplace('M','',ini_get('memory_limit')));
+
+    $final_msg = '<tr><td>Checking max. execution time' .
+    		"(Parameter max_execution_time = {$max_execution_time} seconds)</td>";
+    if($max_execution_time < $max_execution_time_recommended)
+        $final_msg .=  "<td><span class='tab-warning'>We suggest {$max_execution_time_recommended} " .
+                  "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
+    else
+        $final_msg .= '<td><span class="tab-success">OK</span></td></tr>';
+
+    $final_msg .=  "<tr><td>Check maximal allowed memory (memory_limit = {$memory_limit})</td>";
+    if($memory_limit < $memory_limit_recommended)
+       $final_msg .= "<td><span class='tab-warning'>We suggest {$memory_limit_recommended} MegaBytes" .
+                     " in order to manage hundred of test cases</span></td></tr>";
+    else
+        $final_msg .= '<td><span class="tab-success">OK</span></td></tr>';
+    
+    return ($final_msg);
+}
+
+
+
+/**
+ * Check if web server support session data
+ * @param integer &$errCounter pointer to error counter
+ * @return string html row with result 
+ */
+function check_session(&$errCounter)
+{
+	$out = "<tr><td>Checking if sessions are properly configured</td>";
+
+	if( !isset($_SESSION) )
+		session_start();
+
+	if( $_SESSION['session_test'] != 1 ) 
+	{
+    	$color = 'success';
+    	$msg = 'OK';
+	} else {
+    	$color = 'error';
+    	$msg = 'Failed!';
+        $errCounter++;
+    }
+
+	$out .= "<td><span class='tab-$color'>$msg</span></td></tr>\n";
+	return ($out);
+}  //function end
+
+
+
+function check_timeout(&$errCounter)
+{
+    $out = '<tr><td>Maximum Session Idle Time before Timeout</td>';
+
+	$timeout = ini_get("session.gc_maxlifetime");
+	$gc_maxlifetime_min = floor($timeout/60);
+	$gc_maxlifetime_sec = $timeout % 60;
+	
+    if ($gc_maxlifetime_min > 30) {
+    	$color = 'success';
+    	$res = 'OK';
+	} else if ($gc_maxlifetime_min > 10){
+    	$color = 'warning';
+    	$res = 'Short - consider to extend';
+	} else {
+    	$color = 'error';
+    	$res = 'Too short - must be extended!';
+        $errCounter++;
+    }
+    $out .= "<td><span class='tab-$color'>$res (".$gc_maxlifetime_min .
+    		" minutes and $gc_maxlifetime_sec seconds)</span></td></tr>\n";
+    
+	return $out;
+}
+
+
+/**
+ *  Display OS
+ * @return string html table row
+ */
+function check_os()
+{
+	$final_msg = '<tr><td>Server Operating System (no constrains)</td>';
+	$final_msg .= '<td>'.PHP_OS.'</td></tr>';
+	
+/*
+$os_id = strtoupper(substr(PHP_OS, 0, 3));
+if( strcmp('WIN',$os_id) == 0 )
+{
+  $final_msg .= "<p><center><span class='notok'>" . 
+  	            "Warning!: You are using a M$ Operating System, " .
+  	            "be careful with authentication problems <br>" .
+  	            "          between PHP 4 and the new MySQL 4.1.x passwords<br>" . 
+  	            'Read this <A href="' . $info_location . 'MySQL-RefManual-A.2.3.pdf">' .
+  	            "MySQL - A.2.3. Client does not support authentication protocol</A>" .
+  	            "</span></center><p>";
+}*/
+
+	return ($final_msg);
+}  
+
+
+/*
+  function: check_php_version() - check minimal required PHP version
+ * @param integer &$errCounter pointer to error counter
+ * @return string html row with result 
+
+  rev :
+  		- havlatm: converted to table format, error passed via argument, 
+  			disabled unused "not tested version"
+        - added argument to point to info
+        - added warning regarding possible problems between MySQL and PHP 
+          on windows systems due to MySQL password algorithm.
+*/
+function check_php_version(&$errCounter)
+{
+	// 5.2 is required because json is used in ext-js component
+	$min_version = '5.2.0'; 
+	$my_version = phpversion();
+
+	// version_compare:
+	// -1 if left is less, 0 if equal, +1 if left is higher
+	$php_ver_comp = version_compare($my_version, $min_version);
+
+/* not used
+	$ver_not_tested="";
+	$has_ver_not_tested=strlen(trim($ver_not_tested)) > 0;
+	$check_not_tested = -1;
+	if($has_ver_not_tested)
+	{
+		$check_not_tested = version_compare($my_version, $ver_not_tested);
+	}
+*/
+	$final_msg = '<tr><td>PHP version</td>';
+
+	if($php_ver_comp < 0) 
+	{
+		$final_msg .= "<td><span class='tab-error'>Failed!</span> - You are running on PHP " . 
+	        $my_version . ", and TestLink requires PHP " . $min_version . ' or greater. ' .
+	        'This is fatal problem. You must upgrade it.</td>';
+		$errCounter += 1;
+	} 
+/*else if($check_not_tested >= 0) 
+{
+  // Just a Warning
+  $final_msg .= "<br><span class='ok'>WARNING! You are running on PHP " . $my_version . 
+                ", and TestLink has not been tested on versions >= " . $ver_not_tested . "</span>";
+}*/
+	else 
+	{
+		$final_msg .= "<td><span class='tab-success'>OK ( {$min_version} [minimun version] ";
+		$final_msg .= ($php_ver_comp == 0 ? " = " : " <= ");
+		$final_msg .=	$my_version . " [your version] " ;
+	              
+/*	if( $has_ver_not_tested )
+	{
+	  $final_msg .= " < {$ver_not_tested} [not tested yet]";
+	}*/              
+		$final_msg .= " ) </span></td></tr>";
+	}
+
+	return ($final_msg);
+}  
+
+/**
+ * Check read/write permissions for directories
+ * based on check_with_feedback($dirs_to_check);
+ * @param integer &$errCounter pointer to error counter
+ * @return string html row with result 
+ */
+function check_dir_permissions(&$errCounter)
+{
+	$dirs_to_check = array('../gui/templates_c', '../logs');
+	$final_msg = '';
+
+	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
+	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
+
+	foreach ($dirs_to_check as $the_d) 
+	{
+  		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
+  
+		if(!file_exists($the_d)) 
+		{
+  			$errCounter += 1;
+  			$final_msg .= $msg_ko; 
+  		} 
+		else 
+		{
+  			$final_msg .= $msg_ok;
+    		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable</td>";
+    		
+  			if(!is_writable($the_d)) 
+    		{
+				$errCounter += 1;
+  	  			$final_msg .= $msg_ko;  
+  			}
+    		else
+    		{
+				$final_msg .= $msg_ok;  
+			}
+   		}
+	}
+
+	return($final_msg);
+}
+
+
+
+
+/** print table with system checking results */
+function reportCheckingSystem(&$errCounter)
+{
+	echo '<h2>System requirements</h2><table class="common">';
+	echo check_os();
+	echo check_php_version($errCounter);
+//	echo check_php_version($errCounter);
+	echo '</table>';
+}
+
+
+/** print table with system checking results */
+function reportCheckingWeb(&$errCounter)
+{
+	echo '<h2>Web and PHP configuration</h2><table class="common">';
+	echo check_session($errCounter);
+	echo check_timeout($errCounter);
+	echo check_php_settings($errCounter);
+	echo check_php_extensions($errCounter);
+	echo check_php_resource_settings($errCounter);
+	echo '</table>';
+}
+
+
+/** print table with system checking results */
+function reportCheckingPermissions(&$errCounter)
+{
+	echo '<h2>Read/write permissions</h2><table class="common">';
+	echo check_dir_permissions($errCounter);
+	echo '</table>';
+}
+
+
 
 ?>

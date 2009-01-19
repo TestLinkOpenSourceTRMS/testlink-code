@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.34 2009/01/03 17:27:22 franciscom Exp $ 
+$Id: installUtils.php,v 1.35 2009/01/19 15:48:56 havlat Exp $ 
 
 
 rev :
@@ -371,142 +371,6 @@ exit;
 
 
 /*
-  function: check_with_feedback()
-
-  args : $dirs_to_check
-  
-  returns: 
-
-*/
-function check_with_feedback($dirs_to_check)
-{
-$errors=0;	
-$final_msg ='';
-
-$msg_ko = "<span class='notok'>Failed!</span>";
-$msg_ok = "<span class='ok'>OK!</span>";
-
-$msg_check_dir_existence = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory exists:<b> ";
-$msg_check_dir_is_w = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory is writable:<b> ";
-
-foreach ($dirs_to_check as $the_d) 
-{
-	
-  $final_msg .= str_replace('PLACE_HOLDER',$the_d,$msg_check_dir_existence);
-  
-  if(!file_exists($the_d)) {
-  	$errors += 1;
-  	$final_msg .= $msg_ko; 
-  } 
-  else 
-  {
-  	$final_msg .= $msg_ok;
-    $final_msg .= str_replace('PLACE_HOLDER',$the_d,$msg_check_dir_is_w);
-  	if(!is_writable($the_d)) 
-    {
-    	$errors += 1;
-  	  $final_msg .= $msg_ko;  
-  	}
-    else
-    {
-  	  $final_msg .= $msg_ok;  
-    }
-   }
-
-}
-
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-              
-return($ret);
-
-}  //function end
-
-
-/*
-  function: check_php_version()
-
-  args : [$info_location]
-  
-  returns: 
-
-  rev :
-        - added argument to point to info
-        - added warning regarding possible problems between MySQL and PHP 
-          on windows systems due to MySQL password algorithm.
-*/
-function check_php_version($info_location="./info/")
-{
-$min_ver = "5.2.0";
-$ver_not_tested="";
-
-
-$errors=0;	
-$check_title="Checking PHP version:";
-$final_msg = "<p>{$check_title}<b> ";
-$my_version = phpversion();
-
-// version_compare:
-// -1 if left is less, 0 if equal, +1 if left is higher
-$php_ver_comp =  version_compare($my_version, $min_ver);
-
-$has_ver_not_tested=strlen(trim($ver_not_tested)) > 0;
-$check_not_tested = -1;
-if($has_ver_not_tested)
-{
-  $check_not_tested = version_compare($my_version, $ver_not_tested);
-}
-
-if($php_ver_comp < 0) 
-{
-	$final_msg .= "<br><span class='notok'>Failed!</span> - You are running on PHP " . 
-	        $my_version . ", and TestLink requires PHP " . $min_ver . " or greater";
-	$errors += 1;
-} 
-else if($check_not_tested >= 0) 
-{
-  // Just a Warning
-  $final_msg .= "<br><span class='ok'>WARNING! You are running on PHP " . $my_version . 
-                ", and TestLink has not been tested on versions >= " . $ver_not_tested . "</span>";
-}
-else 
-{
-	$final_msg .= "<span class='ok'>OK! ( {$min_ver} [minimun version] ";
-	$final_msg .= ($php_ver_comp == 0 ? " = " : " <= ");
-	$final_msg .=	$my_version . " [your version] " ;
-	              
-	if( $has_ver_not_tested )
-	{
-	  $final_msg .= " < {$ver_not_tested} [not tested yet]";
-	}              
-  $final_msg .= " ) </span>";
-}
-
-
-$os_id = strtoupper(substr(PHP_OS, 0, 3));
-if( strcmp('WIN',$os_id) == 0 )
-{
-  $final_msg .= "<p><center><span class='notok'>" . 
-  	            "Warning!: You are using a M$ Operating System, " .
-  	            "be careful with authentication problems <br>" .
-  	            "          between PHP 4 and the new MySQL 4.1.x passwords<br>" . 
-  	            'Read this <A href="' . $info_location . 'MySQL-RefManual-A.2.3.pdf">' .
-  	            "MySQL - A.2.3. Client does not support authentication protocol</A>" .
-  	            "</span></center><p>";
-}
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
-
-
-
-
-/*
   function: check_mysql_version()
 
   args : [$conn]
@@ -577,128 +441,6 @@ return ($ret);
 }  //function end
 
 
-
-/*
-  function: check_session()
-
-  args : -
-  
-  returns: 
-
-  rev :
-
-*/
-function check_session()
-{
-$errors = 0;
-$final_msg = "</b><br />Checking if sessions are properly configured:<b> ";
-
-if($_SESSION['session_test']!=1 ) 
-{
-	$final_msg .=  "<span class='notok'>Failed!</span>";
-	$errors += 1;
-} 
-else 
-{
-	$final_msg .= "<span class='ok'>OK!</span>";
-}
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
-
-
-
-/*
-Explain What is Going To Happen (ewigth)
-*/
-function ewigth($inst_type)
-{
-
-$msg = '';
-if ($inst_type == "upgrade" )
-{
-	$many_warnings =  "<center><h1>Warning!!! Warning!!! Warning!!! Warning!!! Warning!!!</h1></center>";
-	$msg ='';
-  $msg .= $many_warnings; 
-
-  $msg .= "<h1>You have requested an Upgrade, " .
-          "this process WILL MODIFY your TestLink Database <br>" .
-          "We STRONGLY recomend you to backup your Database Before starting this upgrade process"; 
-  $msg .= '<br>' . $many_warnings . "<br><br>"; 
-}
-
-return($msg);
-}  //function end
-
-
-// 
-// - added warning regarding valid database names
-function db_msg($inst_type)
-{
-
-$msg = '';
-
-$msg .=	"Please enter the name of the database you want to use for TestLink. <br>" .
-				'<br><span class="notok">
-				  Your attention please<br>' .
-				"The database name can contain any character that is allowed in a directory name, except '/', '\', or '.'  
-				  </span> <br><br>" .
-				"If you haven't created a database yet, the installer will attempt to do so for you, <br>" . 
-				"but this may fail depending on the DBMS setup your host uses.<br>";
-
-if ($inst_type == "upgrade" )
-{
-  $msg =	"Please enter the name of the TestLink database you want to UPGRADE. <br>";
- 
-}
-
-return($msg);
-}  //function end
-
-
-function tl_admin_msg($inst_type)
-{
-
-$msg = '';
-$msg .= 'After installation You will have the following login for TestLink Administrator.<br />' .
-        'login name: admin <br /> password  : admin <br />';
-
-if ($inst_type == "upgrade" )
-{
-	$msg = '';
-}
-
-
-return($msg);
-}  //function end
-
-
-
-function check_php_settings()
-{
-$errors = 0;
-$final_msg = "</b><br />Checking if Register Globals = OFF:<b> ";
-
-if(ini_get('register_globals')) 
-{
-	$final_msg .=  "<span class='notok'>Failed! is ON - Please change the setting in your php.ini file</span>";
-	$errors += 1;
-} 
-else 
-{
-	$final_msg .= "<span class='ok'>OK!</span>";
-}
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
 
 // check to see if required PEAR modules are installed
 function check_pear_modules()
@@ -793,9 +535,7 @@ return ($ret);
 
 /*
   function: check_db_loaded_extension
-
   args :
-  
   returns: 
 
   rev :
@@ -1302,53 +1042,5 @@ echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a 
 }  /* Function ends */
 
 
-/*
-  function: check_php_resource_settings
-
-  args:
-  
-  returns: 
-
-*/
-function check_php_resource_settings()
-{
-    $errors = 0;
-
-    $limits=array();
-    $limits['max_execution_time']=120;
-    $limits['memory_limit']=64;
-      
-    $max_execution_time=ini_get('max_execution_time');
-    $memory_limit=intval(str_ireplace('M','',ini_get('memory_limit')));
-
-    $final_msg = "</b><br />Checking PHP Resource Settings on your php configuration file:<b> ";
-    $final_msg .=  "<br><span>max_execution_time setting is {$max_execution_time} seconds";
-    if($max_execution_time < $limits['max_execution_time'])
-    {
-        $final_msg .=  "</span><br><span class='notok'>  " .
-                       "We suggest {$limits['max_execution_time']} " .
-                       "seconds in order to manage hundred of test cases </span><br>";
-    } 
-    else
-    {
-        $final_msg .=" OK!</span><br>";
-    }
-    $final_msg .=  "<br><span>memory_limit setting is {$memory_limit}";
-    
-    if($memory_limit < $limits['memory_limit'])
-    {
-       $final_msg .= "</span><br><span class='notok'> " .
-                     "We suggest {$limits['memory_limit']} MegaBytes" .
-                     "MegaByte in order to manage hundred of test cases </span><br>";
-    } 
-    else
-    {
-        $final_msg .=" OK!</span><br>";
-    }
-    
-    $ret = array ('errors' => $errors,
-                  'msg' => $final_msg);
-    return ($ret);
-}  //function end
 
 ?>

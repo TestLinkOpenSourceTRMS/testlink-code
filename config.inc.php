@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.227 $
- * @modified $Date: 2009/01/19 19:10:35 $ by $Author: franciscom $
+ * @version $Revision: 1.228 $
+ * @modified $Date: 2009/01/19 19:42:22 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -802,7 +802,7 @@ if(false !== $serverLanguage)
 }
 define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 
-require_once(TL_ABS_PATH . 'cfg/userRightMatrix.php');
+require_once(TL_ABS_PATH .'cfg'.DIRECTORY_SEPARATOR.'userRightMatrix.php');
 
 // Reverted execution status is used for two applications.
 // 1. To map code to CSS, Please if you add an status you need to add a corresponding CSS Class

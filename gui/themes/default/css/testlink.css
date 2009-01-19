@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.13 2008/11/15 15:11:06 schlundus Exp $
+$Id: testlink.css,v 1.14 2009/01/19 09:58:08 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -240,8 +240,16 @@ span.help
 	padding: 		3px;
 }
 
-.error, .warning {
+.error {
 	color:			#B22222; /* firebrick (red) */
+}
+
+.warning {
+	color:			#FF6600; /* safety orange */
+}
+
+.success {
+	color:			#006400; /* darkgreen */
 }
 
 .info, div.user_feedback{

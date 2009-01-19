@@ -3,7 +3,57 @@
    Changelog for TestLink
 ***************************************************************
 
-Testlink - next development 1.8 RC 2
+
+Testlink 1.8 RC 3
+====================================
+
+- 0001754: [Internal issue] Environment check in extra page (mhavlat) - resolved.
+- 0001862: [Localization] Localization pt_BR (mhavlat) - resolved.
+- 0001554: [TL API] New method - createTestProject (fman) - resolved.
+- 0001718: [Test Plan (builds, milestones, test assign)] When using EXTJS tree filtering by keyword do not prune test suites (fman) - resolved.
+- 0001987: [Localization] Undefined variable in localization files: TLS_copy_to_all_tplans (fman) - resolved.
+- 0001932: [Test Specification] Boldface/italic does not function (schlundus) - resolved.
+- 0001992: [New Feature] Contribution - XLS import - Convert new line characters from XLS to HTML <P></P> in order to let testlink display them correctly (fman) - resolved.
+- 0001991: [Reports, Metrics, Export and Print] XLS import function create_xml_tcspec_from_xls in tclimport.php - incorrect use of variables (fman) - resolved.
+- 0001970: [Test Plan (builds, milestones, test assign)] Remove buttons missing from the Add/Remove Test Cases page. (fman) - resolved.
+- 0001977: [Requirement Management] Incorrect variable name in form submit of resultsReq.tpl file (fman) - resolved.
+- 0001982: [TL API] new method addTestCaseToTestPlan() (fman) - resolved.
+- 0001978: [Test Plan (builds, milestones, test assign)] Problem tree in Assign Test Case execution (schlundus) - resolved.
+- 0001969: [General] The Execute / Results link on Navbar behave in incorrect manner (schlundus) - resolved.
+- 0001967: [Reports, Metrics, Export and Print] SQL Error in Requirements based Report sublinks (fman) - resolved.
+- 0001975: [Test Specification] Copying a Test Case with an Attachment causes an Error (schlundus) - resolved.
+- 0001960: [Users and Rights] The title does not reflect the role anymore (schlundus) - resolved.
+- 0001957: [Reports, Metrics, Export and Print] CT Not executed in Query Metrics (schlundus) - resolved.
+- 0001715: [Localization] German translations (schlundus) - resolved.
+- 0001894: [Installer] DB Migration script for 1.74 to 1.8 RC1 is not functional (fman) - resolved.
+- 0001964: [Test Specification] Test Cases Import/export XML Format - manage Custom fields values (fman) - resolved.
+- 0001945: [Test Execute] Filter Mode - Advanced/Simple (fman) - resolved.
+- 0001739: [User Interface General] Layout of Milestones-GUI (planMilestones.tpl) is not equal to GUI of Plans and project (mhavlat) - resolved.
+- 0001635: [New Feature] Bulk TC Note under Bulk TC status management? (fman) - resolved.
+- 0001936: [Test Plan (builds, milestones, test assign)] Importing Excell with 1 header row and 1 data row fails (fix included) (schlundus) - resolved.
+- 0001956: [Reports, Metrics, Export and Print] Report to display Test Cases linked to a test plan, that has not been assigned to a Tester (fman) - resolved.
+- 0001921: [Requirement Management] Problem with Requirements attachments after migration (fman) - resolved.
+- 0001852: [Requirement Management] Bulk Assignment of Requirements when we already have test cases created (fman) - resolved.
+- 0001868: [New Feature] Ability to assign execution time for a test case (fman) - resolved.
+- 0001938: [Integration with Other Systems] BTS trac and redmine interfaces migration to 1.8 (toshi) - resolved.
+ - 0001926: [Integration with Other Systems] Trac: Unclear configuration (mhavlat) - resolved.
+- 0001939: [Integration with Other Systems] head code: int_bugtracking.php - > system crash (fman) - resolved.
+- 0001933: [Requirement Management] Requirements coverage not escaped in reqView.tpl (schlundus) - resolved.
+- 0001905: [Test Execute] Test Case separator missin Test Case ID in Execution Page (fman) - resolved.
+- 0001928: [Test Specification] Patch: Config option treemenu_show_testcase_id to affect ExtJS testcase tree (fman) - resolved.
+- 0001533: [New Feature] It would be nice to be able to add multiple testcases to a requirement at once (fman) - resolved.
+- 0001452: [User Interface General] Display the result of search testcase in a table or list (fman) - resolved.
+- 0001922: [Test Plan (builds, milestones, test assign)] set urgent tests fails to get information for a suite (fman) - resolved.
+- 0001929: [Internal issue] Build name not correctly escape in exectcnavigator.tpl (schlundus) - resolved.
+- 0001859: [New Feature] Test case search result does not show to which test suite the test case does belong (fman) - resolved.
+- 0001876: [Test Specification] Numbering not shown on execute and test specification (schlundus) - resolved.
+- 0001925: [Requirement Management] Cannot print requirements - PHP error: "Call to undefined function printHeader()" (schlundus) - resolved.
+- 0001920: [User Interface General] Fatal error while printing requirement (schlundus) - resolved.
+- 0001910: [Reports, Metrics, Export and Print] EstimatedExecuteTime is always calculated over the whole testplan (fman) - resolved.
+- 0001860: [Test Plan (builds, milestones, test assign)] Test Case Assignment Page not functioning properly. (fman) - resolved.
+
+
+Testlink 1.8 RC 2
 ====================================
 
 - 0001273: [New Feature] Activity History Log module (schlundus) - resolved.
@@ -30,7 +80,6 @@ Testlink - next development 1.8 RC 2
 - 0001530: [Reports, Metrics, Export and Print] Charts are not working in TL1.8 Beta1 (fman) - resolved.
 - 0000512: [Requirement Management] Cannot view test cases which are not marked to any requirements (fman) - resolved.
 - 0001593: [Reports, Metrics, Export and Print] Testcase ID displayed in results should be using external ID instead of the testcase id from the database - closed.
-
 
 
 Testlink 1.8 Release Candidate 1 (include Beta releases)

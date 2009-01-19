@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2008/12/27 16:31:29 $ by $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2009/01/19 19:09:05 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -683,12 +683,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
         " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
         " ORDER BY TCORDER,TCNAME";
 
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
   $children = $dbHandler->get_recordset($sql);
-  new dBug($children);
-  new dBug($testsuites);
-
     
  	// check if operation can be done
 	$user_feedback = '';

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2009/01/07 22:19:46 $ by $Author: franciscom $
+ * @modified $Date: 2009/01/19 19:09:05 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -264,7 +264,6 @@ class results
 			{
 			    $this->keywordData = $this->getKeywordData(array_keys($keywords_in_tplan));
       } 
-			//new dBug($this->keywordData);
 			//$tplan_mgr->get_keywords_tcases($this->testPlanID);
 			// get owner id -> owner name pairs used in this test plan
 			$arrOwners = getUsersForHtmlOptions($db);

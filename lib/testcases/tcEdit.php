@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2009/01/03 17:30:30 $  by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2009/01/19 19:09:05 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -192,9 +192,8 @@ else if($args->delete_tc)
  	$msg = '';
 	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-  // new dBug($exec_status_quo);  
- 
- switch($my_ret)
+
+  switch($my_ret)
 	{
 		case "linked_and_executed":
 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');

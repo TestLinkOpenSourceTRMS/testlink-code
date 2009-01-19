@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/01/14 19:33:01 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/01/19 19:09:05 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -43,8 +43,6 @@ $hash_descr_id = $tree_manager->get_available_node_types();
 $hash_id_descr = array_flip($hash_descr_id);
 
 $resultsCfg = config_get('results');
-// $statusCode = $resultsCfg['status_code'];
-// $status_descr_code = config_get('tc_status');
 $status_descr_code = $resultsCfg['status_code'];
 
 $status_code_descr = array_flip($status_descr_code);

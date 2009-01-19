@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.25 2008/09/09 10:22:49 franciscom Exp $
+$Id: inc_head.tpl,v 1.26 2009/01/19 10:25:30 havlat Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -21,32 +21,45 @@ rev :
 	<meta name="robots" content="NOFOLLOW" />
 	<base href="{$basehref}"/>
 	<title>{$pageTitle|default:"TestLink"}</title>
-	<link rel="TL shortcut icon" href="{$basehref}/{$smarty.const.TL_THEME_IMG_DIR}/favicon.ico" />
+	<link rel="TestLink icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}/favicon.ico" />
+	
+{* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>
 	{if $testproject_coloring eq 'background'}
   	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
-  {/if}
+	{/if}
   
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 
+{* ----- load javascripts libraries -------------------------------------------------- *} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
 	
-	
-  {if $jsValidate == "yes"} 
-	  <script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
+	{if $jsValidate == "yes"} 
+	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
     {include file="inc_jsCfieldsValidation.tpl"}
-  {/if}
+	{/if}
    
-  {if $jsTree == "yes"} {* 'no' is default defined in config *}
+	{if $jsTree == "yes"} {* 'no' is default defined in config *}
    	{include file="inc_jsTree.tpl"}
-  {/if}
+	{/if}
+
+	{if $editorType == 'tinymce'}
+    <script type="text/javascript" language="javascript"
+    	src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    {include file="inc_tinymce_init.tpl"}
+	{/if}
+
+	{if $smarty.const.TL_SORT_TABLE_ENGINE == 'kryogenix.org'}
+	<script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" 
+		language="javascript"></script>
+	{/if}
+
 	<script type="text/javascript" language="javascript">
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
 	
-	// 20050528 - fm
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';
 	
@@ -55,22 +68,10 @@ rev :
 	var attachmentDlg_refLocation = null;
 	var attachmentDlg_bNoRefresh = false;
 	
-	// 20060916 - franciscom
 	// bug management (using logic similar to attachment)
-	var bug_dialog=new bug_dialog();
+	var bug_dialog = new bug_dialog();
 	</script> 
 	
-  {if $editorType == 'tinymce'}
-    <script type="text/javascript" src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js" language="javascript" ></script>
-    {include file="inc_tinymce_init.tpl"}
-	{/if}
-
-  {* 20080109 - franciscom *}
-      {if $smarty.const.TL_SORT_TABLE_ENGINE == 'kryogenix.org'}
-          <script type="text/javascript" src="{$basehref}gui/javascript/sorttable.js" language="javascript"></script>
-      {/if}
-
-
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>
 {/if}

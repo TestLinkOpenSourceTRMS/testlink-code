@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2009/01/13 20:13:40 $ by $Author: schlundus $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2009/01/19 19:10:35 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -411,11 +411,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
  	  $code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . htmlspecialchars($external_id) . ": " . $name;
     
 	  // add test case version
-	  // mht: is it possible that version is not set? - remove condition
 	  if($doc_cfg->tc_version_enabled && isset($node['version']) ) 
 	  {
 	  	$code .= '&nbsp;<span style="font-size: 80%;"' . $gui_cfg->role_separator_open . $label['version'] . 
-	  	         $gui_cfg->title_sep_1 .  $node['version'] . $gui_cfg->role_separator_close . '</span>';
+	  	         $gui_cfg->title_separator_1 .  $node['version'] . $gui_cfg->role_separator_close . '</span>';
 	  }
  	  $code .= '</th></tr>';
 

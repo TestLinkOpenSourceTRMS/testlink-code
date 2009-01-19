@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.226 $
- * @modified $Date: 2009/01/16 20:02:02 $ by $Author: schlundus $
+ * @version $Revision: 1.227 $
+ * @modified $Date: 2009/01/19 19:10:35 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -887,6 +887,9 @@ define('TL_TEMP_PATH', $tlCfg->temp_dir);
 // $g_log_level=$tlCfg->log_level;
 
 $tlCfg->document_generator->company_logo = $tlCfg->company_logo; 
+
+$tlCfg->gui->title_separator_1 =  $tlCfg->gui_title_separator_1;
+$tlCfg->gui->title_separator_2 =  $tlCfg->gui_title_separator_2;
 $tlCfg->gui->role_separator_open =  $tlCfg->gui_separator_open;
 $tlCfg->gui->role_separator_close = $tlCfg->gui_separator_close;
 // ----- END OF FILE --------------------------------------------------------------------

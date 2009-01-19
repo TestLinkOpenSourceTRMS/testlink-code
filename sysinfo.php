@@ -4,12 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: sysinfo.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/01/19 15:48:56 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/01/19 22:47:28 $ by $Author: havlat $
  *
  * @author	Martin Havlat 
  * 
  * Report about system and background services
+ * 
+ * @todo check if custom_config, config_db are writable and remove/rewrite commented part of code
+ * @todo test database (if installed only)
  *
  */
 
@@ -145,6 +148,7 @@ function reload() {
 	<input type="button" name="Re-check" value="Re-check" onClick="reload();" tabindex="1">
 </div>
 
+<!---
 <h2>Web server Check</h2>
 <div id="content">
 
@@ -222,38 +226,17 @@ function reload() {
 		</table>
 		<br />
 </div>
+ -->
 
-<h2>TestLink configuration</h2>
 
 <div>
 <?php
 $errors = 0;
 
-//$check = check_php_version();
-//$errors += $check['errors'];
-//echo $check['msg'];
-
-//$check = check_php_settings();
-//$errors += $check['errors'];
-//echo $check['msg'];
-
-// 20080914 - francisco.mancardi@gruppotesi.com
-//$check = check_php_resource_settings();
-//$errors += $check['errors'];
-//echo $check['msg'];
-
-// 20071107 - franciscom
-// $check = check_db_loaded_extension();
-// $errors += $check['errors'];
-// echo $check['msg'];
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);
-/*
-$dirs_to_check=array('../gui/templates_c', '../logs');
-$check = check_with_feedback($dirs_to_check);
-echo $check['msg'];
-$errors += $check['errors'];
-*/
+reportCheckingPermissions($errors);
+
 echo '<p>Error counter = '.$errors.'</p>';
 ?>
 </div>

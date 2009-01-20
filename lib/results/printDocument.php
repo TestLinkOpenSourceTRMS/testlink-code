@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/01/19 19:09:05 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/01/20 07:35:27 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -121,7 +121,7 @@ switch ($args->print_scope)
     	   	       
     	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,null,null,0,null,false,null, 
     	   	                                                   $branch_tsuites);
-    	   	       $tcase_filter=array_keys($tp_tcs);
+    	   	       $tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
     	         
     	   	       $tInfo['node_type_id'] = $hash_descr_id['testsuite'];
     	   	       $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2009/01/19 19:10:35 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2009/01/20 07:35:02 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -123,45 +123,45 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	{
 		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
 
-    	// Based on contribution (BUGID 1670)
+    // Based on contribution (BUGID 1670)
 		if(!is_null($tplan_info))
 		{
 			if( !is_null($statistics) &&  isset($statistics['estimated_execution']) ) 
-		    {
+		  {
 		    	$estimated_minutes = $statistics['estimated_execution']['minutes'];
-		        $tcase_qty = $statistics['estimated_execution']['tcase_qty'];
+		      $tcase_qty = $statistics['estimated_execution']['tcase_qty'];
 		         
-	           	if($estimated_minutes > 60)
-	           	{
-		    		$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
+	       	if($estimated_minutes > 60)
+	        {
+		    		  $estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
 			    } 
 			    else
 			    {
 			    	$estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
-	           	}
-				$estimated_string = sprintf($estimated_string,$tcase_qty);
+	        }
+				  $estimated_string = sprintf($estimated_string,$tcase_qty);
 			}
 			$output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $estimated_string . "</p>\n";
-		    if(!is_null($statistics) &&  isset($statistics['real_execution'])) 
-		    {
-		    	$real_minutes = $statistics['real_execution']['minutes'];
-		        $tcase_qty = $statistics['real_execution']['tcase_qty'];
-		         
-		        if($real_minutes > 0)
-		        {
-	               if($real_minutes > 60)
-	               {
-		    	      $real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
-					} 
-			        else
-			        {
-			        	$real_string = lang_get('real_time_min') . $real_minutes;
-					}
-					$real_string = sprintf($real_string,$tcase_qty);    
+		  
+		  if(!is_null($statistics) &&  isset($statistics['real_execution'])) 
+		  {
+		      $real_minutes = $statistics['real_execution']['minutes'];
+		      $tcase_qty = $statistics['real_execution']['tcase_qty'];
+		      if($real_minutes > 0)
+		      {
+	          if($real_minutes > 60)
+	          {
+		          $real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
+			      } 
+			      else
+			      {
+			      	$real_string = lang_get('real_time_min') . $real_minutes;
+			      }
+					  $real_string = sprintf($real_string,$tcase_qty);    
 				}
 			}
 			$output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $real_string . "</p>\n";
-	  	}
+	  }
 	}
 	$output .= "</div>\n";
 
@@ -186,16 +186,26 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 		           htmlspecialchars($docCfg->confidential_msg)."</div>\n";
 	}
 	
-	if (strlen($tproject_notes))
+	$add_hr=false;
+	if (strlen($tproject_notes) > 0)
 	{
-		$output .= '<h1>'.lang_get('introduction').'</h1><p id="prodnotes">'. $tproject_notes . "</p>\n";
+	  $add_hr=true;
+		$output .= '<h1>'.lang_get('introduction').'</h1>';
+		$output .= '<h2>'.lang_get('test_project_notes').'</h2>';
+		$output .= '<p id="prodnotes">' .$tproject_notes . "</p>\n";
 	}
   
-	if (strlen($tplan_info['notes']))
+	if (strlen($tplan_info['notes']) > 0)
 	{
+		$add_hr=true;
+		$output .= '<h2>'.lang_get('test_plan_notes').'</h2>';
 		$output .= '<p id="prodnotes">'. $tplan_info['notes'] . "</p>\n";
 	}	
 
+  if($add_hr)
+  {
+      $output .= "<hr>";  
+  }
 	return $output;
 }
 
@@ -239,12 +249,6 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 		break;
 
 		case 'testsuite':
-			  // if (!is_null($tocPrefix))
-			  // {
-			  // 	$tocPrefix .= ".";
-			  // }
-			  // $tocPrefix .= $tcCnt;
-			  
 				$tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $tcCnt;
 			  $code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level);
 		break;
@@ -413,7 +417,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  // add test case version
 	  if($doc_cfg->tc_version_enabled && isset($node['version']) ) 
 	  {
-	  	$code .= '&nbsp;<span style="font-size: 80%;"' . $gui_cfg->role_separator_open . $label['version'] . 
+	  	$code .= '&nbsp;<span style="font-size: 80%;"' . $gui_cfg->role_separator_open . $labels['version'] . 
 	  	         $gui_cfg->title_separator_1 .  $node['version'] . $gui_cfg->role_separator_close . '</span>';
 	  }
  	  $code .= '</th></tr>';

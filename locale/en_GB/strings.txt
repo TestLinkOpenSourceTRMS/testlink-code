@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.383 $
- * @modified $Date: 2009/01/20 07:35:35 $ by $Author: franciscom $
+ * @version $Revision: 1.384 $
+ * @modified $Date: 2009/01/21 07:49:43 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1996,6 +1996,7 @@ $TLS_error_sendreport_no_email_credentials = "Email for this user is not specifi
 
 
 // lib/testcases/tcImport.php
+$TLS_action_on_duplicated_name="Action for duplicated names";
 $TLS_please_choose_file_to_import = "Please choose file to import";
 $TLS_title_tc_import_to = "Import Test Cases";
 $TLS_title_tsuite_import_to = "Import Test Suite";
@@ -2004,6 +2005,11 @@ $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
 $TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' can not be imported " .
                                                      "because there is no Custom Field with this name " .
                                                      "and Available for %s on this Test Project"; 
+
+
+$TLS_update_last_testcase_version='Update data on Latest version';
+$TLS_create_new_testcase_version='Create a new version';
+$TLS_generate_new_testcase='Create a new test case with different title';
 
 
 

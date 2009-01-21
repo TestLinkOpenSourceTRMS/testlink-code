@@ -1,10 +1,16 @@
 <?php
-/* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.35 2009/01/19 15:48:56 havlat Exp $ 
-
-
-rev :
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: installUtils.php,v $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/01/21 16:24:01 $ by $Author: havlat $
+ * 
+ * Functions for installation process
+ *
+ * Revisions :
+ * 	20090120 - havlatm - some functions moved to checkConfig.php; fixed reader
      20090101 - franciscom - check_php_version() - minimun version 5.2.0.
                              this is version need to use ext-js tree due to
                              need of json_* functions.
@@ -15,14 +21,13 @@ rev :
      20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
      20070302 - franciscom - changed PHP minimun required versions
 
-*/
+ * ----------------------------------------------------------------------------------- */
 
 
-// Code extracted from several places:
-
-// +----------------------------------------------------------------------+
-// From PHP Manual - User's Notes
-// +----------------------------------------------------------------------+
+/** 
+ * @author fman
+ * @author Code extracted from several places
+ */
 //
 // rev:
 //     20080219 - franciscom - after having problems with some directories
@@ -77,27 +82,13 @@ return $aFileSets;
 // +----------------------------------------------------------------------+
 
 
-
-// Code taken from:
-//
-// +----------------------------------------------------------------------+
-// | Eventum - Issue Tracking System                                      |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 2003, 2004, 2005 MySQL AB                              |
-// |                                                                      |
-// +----------------------------------------------------------------------+
-// | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
-// +----------------------------------------------------------------------+
-//
-//
-
-/*
+/**
   function: getTableList
             a foolish wrapper - 20051231 - fm
   args :
   
   returns: map or null
-
+  @author Jo�o Prado Maia <jpm@mysql.com> Eventum - Issue Tracking System
 */
 function getTableList($db)
 {

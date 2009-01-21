@@ -1,11 +1,19 @@
 <?php 
-/* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newInstallStart_TL.php,v 1.23 2009/01/19 15:48:56 havlat Exp $
-
-rev:20080914 - franciscom - check_php_resource_settings() 
-    20080219 - franciscom - fixed dir permission checking
-*/
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: newInstallStart_TL.php,v $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/01/21 16:24:01 $ by $Author: havlat $
+ * 
+ * Verify environment and collect DB input data
+ *
+ * Revisions:
+ * 20080914 - franciscom - check_php_resource_settings() 
+ * 20080219 - franciscom - fixed dir permission checking
+ * 
+ * ----------------------------------------------------------------------------------- */
 
 require_once("installUtils.php");
 require_once('..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'configCheck.php');

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/01/19 15:48:56 $ by $Author: havlat $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/01/21 16:24:01 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
@@ -388,11 +388,8 @@ function checkForRepositoryDir($the_dir)
 
 /*
   function: checkSchemaVersion
-
   args :
-  
   returns: 
-
 */
 function checkSchemaVersion(&$db)
 {
@@ -484,24 +481,46 @@ function checkEmailConfig()
 
 /** 
  * checking register global = OFF (doesn't cause error')
+ * @param integer &$errCounter pointer to error counter
  * @return string html table row
  */
 function check_php_settings(&$errCounter)
 {
-	$out = "<tr><td>Checking if Register Globals = OFF</td>";
+    $max_execution_time_recommended = 120;
+    $max_execution_time = ini_get('max_execution_time');
+    $memory_limit_recommended = 64;
+    $memory_limit = intval(str_ireplace('M','',ini_get('memory_limit')));
 
+    $final_msg = '<tr><td>Checking max. execution time (Parameter max_execution_time)</td>';
+    if($max_execution_time < $max_execution_time_recommended)
+        $final_msg .=  "<td><span class='tab-warning'>{$max_execution_time} seconds - We suggest {$max_execution_time_recommended} " .
+                  "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
+    else
+        $final_msg .= '<td><span class="tab-success">OK ('.$max_execution_time.' seconds)</span></td></tr>';
+
+    $final_msg .=  "<tr><td>Check maximal allowed memory (Parameter memory_limit)</td>";
+    if($memory_limit < $memory_limit_recommended)
+       $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - We suggest {$memory_limit_recommended} MB" .
+                     " in order to manage hundred of test cases</span></td></tr>";
+    else
+        $final_msg .= '<td><span class="tab-success">OK ('.$memory_limit.' MegaBytes)</span></td></tr>';
+    
+	$final_msg .= "<tr><td>Checking if Register Globals is disabled</td>";
 	if(ini_get('register_globals')) 
-		$out .=  "<td><span class='tab-warning'>Failed! is ON - Please change the setting in your php.ini file</span></td></tr>";
+		$final_msg .=  "<td><span class='tab-warning'>Failed! is enabled - Please change the setting in your php.ini file</span></td></tr>";
 	else 
-		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+		$final_msg .= "<td><span class='tab-success'>OK</span></td></tr>\n";
 
-	return ($out);
-}  //function end
+	return ($final_msg);
+}
 
 
 /** 
  * check php extensions
+ * @param integer &$errCounter pointer to error counter
  * @return string html table rows
+ * 
+ * @todo martin: Do we require "Checking DOM XML support"?
  */
 function check_php_extensions(&$errCounter)
 {
@@ -518,9 +537,9 @@ function check_php_extensions(&$errCounter)
 		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
 	else 
 		$out .=  "<td><span class='tab-warning'>Failed! LDAP authentication cannot be used" .
-				" (default internal works)</span></td></tr>";
+				" (default internal authentication will works)</span></td></tr>";
 
-	$out .= '<tr><td>Checking DOM XML support</td>';
+/*	$out .= '<tr><td>Checking DOM XML support</td>';
 	if (function_exists('domxml_open_file'))
 		$out .= '<td><span class="tab-success">OK</span></td></tr>\n;';
 	else 
@@ -528,41 +547,11 @@ function check_php_extensions(&$errCounter)
 		$out .=  '<td><span class="tab-error">ERROR - XML Import/Export cannot work. ' .
 				'Please install related library to your web server (You can do it later).' .
 				'</span></td></tr>';
-//        $errCounter++;
+        $errCounter++;
 	}
-
+*/
 	return ($out);
 }  
-
-
-/*
-  function: check_php_resource_settings
-  returns: 
-*/
-function check_php_resource_settings(&$errCounter)
-{
-    $max_execution_time_recommended = 120;
-    $max_execution_time = ini_get('max_execution_time');
-    $memory_limit_recommended = 64;
-    $memory_limit = intval(str_ireplace('M','',ini_get('memory_limit')));
-
-    $final_msg = '<tr><td>Checking max. execution time' .
-    		"(Parameter max_execution_time = {$max_execution_time} seconds)</td>";
-    if($max_execution_time < $max_execution_time_recommended)
-        $final_msg .=  "<td><span class='tab-warning'>We suggest {$max_execution_time_recommended} " .
-                  "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
-    else
-        $final_msg .= '<td><span class="tab-success">OK</span></td></tr>';
-
-    $final_msg .=  "<tr><td>Check maximal allowed memory (memory_limit = {$memory_limit})</td>";
-    if($memory_limit < $memory_limit_recommended)
-       $final_msg .= "<td><span class='tab-warning'>We suggest {$memory_limit_recommended} MegaBytes" .
-                     " in order to manage hundred of test cases</span></td></tr>";
-    else
-        $final_msg .= '<td><span class="tab-success">OK</span></td></tr>';
-    
-    return ($final_msg);
-}
 
 
 
@@ -593,7 +582,11 @@ function check_session(&$errCounter)
 }  //function end
 
 
-
+/**
+ * check PHP defined timeout
+ * @param integer &$errCounter pointer to error counter
+ * @return string html row with result 
+ */
 function check_timeout(&$errCounter)
 {
     $out = '<tr><td>Maximum Session Idle Time before Timeout</td>';
@@ -607,21 +600,21 @@ function check_timeout(&$errCounter)
     	$res = 'OK';
 	} else if ($gc_maxlifetime_min > 10){
     	$color = 'warning';
-    	$res = 'Short - consider to extend';
+    	$res = 'Short. Consider to extend.';
 	} else {
     	$color = 'error';
-    	$res = 'Too short - must be extended!';
+    	$res = 'Too short. It must be extended!';
         $errCounter++;
     }
-    $out .= "<td><span class='tab-$color'>$res (".$gc_maxlifetime_min .
-    		" minutes and $gc_maxlifetime_sec seconds)</span></td></tr>\n";
+    $out .= "<td><span class='tab-$color'>".$gc_maxlifetime_min .
+    		" minutes and $gc_maxlifetime_sec seconds - ($res)</span></td></tr>\n";
     
 	return $out;
 }
 
 
 /**
- *  Display OS
+ * Display OS
  * @return string html table row
  */
 function check_os()
@@ -646,8 +639,8 @@ if( strcmp('WIN',$os_id) == 0 )
 }  
 
 
-/*
-  function: check_php_version() - check minimal required PHP version
+/**
+ * check minimal required PHP version
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
 
@@ -657,7 +650,7 @@ if( strcmp('WIN',$os_id) == 0 )
         - added argument to point to info
         - added warning regarding possible problems between MySQL and PHP 
           on windows systems due to MySQL password algorithm.
-*/
+ */
 function check_php_version(&$errCounter)
 {
 	// 5.2 is required because json is used in ext-js component
@@ -716,7 +709,7 @@ function check_php_version(&$errCounter)
  */
 function check_dir_permissions(&$errCounter)
 {
-	$dirs_to_check = array('../gui/templates_c', '../logs');
+	$dirs_to_check = array('gui'.DIRECTORY_SEPARATOR.'templates_c', 'logs', 'upload_area');
 	$final_msg = '';
 
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
@@ -724,6 +717,11 @@ function check_dir_permissions(&$errCounter)
 
 	foreach ($dirs_to_check as $the_d) 
 	{
+  		// Correct relative path for installer (var $inst_type is defined in newInstallStart_TL.php)
+  		global $inst_type;
+  		if (isset($inst_type))
+  			$the_d = '..'.DIRECTORY_SEPARATOR.$the_d;
+  			
   		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
   
 		if(!file_exists($the_d)) 
@@ -754,10 +752,13 @@ function check_dir_permissions(&$errCounter)
 
 
 
-/** print table with system checking results */
+/** 
+ * print table with system checking results 
+ * @param integer &$errCounter pointer to error counter
+ **/
 function reportCheckingSystem(&$errCounter)
 {
-	echo '<h2>System requirements</h2><table class="common">';
+	echo '<h2>System requirements</h2><table class="common" style="width: 100%;">';
 	echo check_os();
 	echo check_php_version($errCounter);
 //	echo check_php_version($errCounter);
@@ -765,23 +766,28 @@ function reportCheckingSystem(&$errCounter)
 }
 
 
-/** print table with system checking results */
+/** 
+ * print table with system checking results 
+ * @param integer &$errCounter pointer to error counter
+ **/
 function reportCheckingWeb(&$errCounter)
 {
-	echo '<h2>Web and PHP configuration</h2><table class="common">';
-	echo check_session($errCounter);
+	echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
+//	echo check_session($errCounter); // broken dependencies
 	echo check_timeout($errCounter);
 	echo check_php_settings($errCounter);
 	echo check_php_extensions($errCounter);
-	echo check_php_resource_settings($errCounter);
 	echo '</table>';
 }
 
 
-/** print table with system checking results */
+/** 
+ * print table with system checking results 
+ * @param integer &$errCounter pointer to error counter
+ **/
 function reportCheckingPermissions(&$errCounter)
 {
-	echo '<h2>Read/write permissions</h2><table class="common">';
+	echo '<h2>Read/write permissions</h2><table class="common" style="width: 100%;">';
 	echo check_dir_permissions($errCounter);
 	echo '</table>';
 }

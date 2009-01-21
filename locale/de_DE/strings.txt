@@ -1,10 +1,10 @@
-?php
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  *
- * @version $Revision: 1.107 $
- * @modified $Date: 2009/01/18 17:21:28 $ $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2009/01/21 08:06:57 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk

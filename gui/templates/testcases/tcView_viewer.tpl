@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.22 2009/01/13 19:34:01 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.23 2009/01/22 20:57:47 schlundus Exp $
 viewer for test case in test specification
 
 20080425 - franciscom - removed php notice
@@ -45,7 +45,7 @@ viewer for test case in test specification
 
 	<h2>{$labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
-
+{assign var="warning_edit_msg" value=""}
 
 {if $args_can_edit == "yes" }
 

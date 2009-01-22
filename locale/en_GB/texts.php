@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/11/05 15:56:45 $ by $Author: havlat $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/01/22 10:13:32 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -74,12 +74,12 @@ A user can look at a different versions of test cases. </p>
 		"User can also assign <b>keywords</b> to improve tarceability.</li>
 	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
 	<li>Assign your created Test Specification to <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when Test cases are ready.</li>
+	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
 </ol>
 
-<p>TestLink offers organize test cases into N levels of test suites.
-You can describe a content of test suites.
-This information could be printed together with test cases.</p>";
+<p>With TestLink you organize test cases into test suites." .
+"Test suites can be nested within other test suites, enabling you to create hierarchies of test suites.
+ You can then print this information together with the test cases.</p>";
 
 
 // ------------------------------------------------------------------------------------------

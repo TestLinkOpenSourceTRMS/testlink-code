@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/01/17 17:43:41 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/01/22 20:52:53 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1389,8 +1389,9 @@ class TestlinkXMLRPCServer extends IXR_Server
       
 	       $info=$this->tprojectMgr->create($name,'',$options,$notes,1,$prefix);
 			   $resultInfo = array();
-			   $resultInfo[] = array("operation" => __FUNCTION__,
-			                         "status" => true, "id" => $info, "message" => 'ok');
+			   $resultInfo[]= array("operation" => __FUNCTION__,
+			                        "additionalInfo" => null,
+			                        "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
 	       return $resultInfo;
 	    }
 	    else
@@ -1662,11 +1663,20 @@ class TestlinkXMLRPCServer extends IXR_Server
                                               $opt[self::$actionOnDuplicatedNameParamName],
                                               $opt[self::$executionTypeParamName],
                                               $opt[self::$importanceParamName]);
+       
+
+			      $resultInfo=array();
+   			    $resultInfo[] = array("operation" => __FUNCTION__,
+   			                          "status" => true, 
+			                            "id" => $op_result['external_id'], 
+			                            "additionalInfo" => $op_result,
+			                            "message" => GENERAL_SUCCESS_STR);
+           
        } 
 
 
 
-       return ($status_ok ? $op_result : $this->errors);
+       return ($status_ok ? $resultInfo : $this->errors);
 	 }	
 	 
 	 /**

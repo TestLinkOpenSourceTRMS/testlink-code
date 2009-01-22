@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientCreateTestCase.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/01/06 18:42:32 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/01/22 20:52:53 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -39,8 +39,8 @@ $unitTestDescription="Test - createTestCase";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=11260;
-$args["testsuiteid"]=11465;
+$args["testprojectid"]=1;
+$args["testsuiteid"]=133;
 $args["testcasename"]='Francisco';
 $args["summary"]='Test Case created via API';
 $args["steps"]="These are the steps";

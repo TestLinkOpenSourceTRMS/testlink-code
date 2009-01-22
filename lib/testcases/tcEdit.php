@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2009/01/19 19:09:05 $  by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2009/01/22 20:54:28 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -60,6 +60,7 @@ $gui=new stdClass();
 $gui->editorType=$cfg->webEditorCfg['type'];
 $gui->grants=getGrants($db);
 $gui->opt_requirements=isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
+$gui->action_on_duplicated_name='generate_new';
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -339,37 +340,43 @@ else if($args->do_move)
 }
 else if($args->do_copy)
 {
-	$user_feedback='';
-	$msg = '';
-	$action_result = 'copied';
+	  $user_feedback='';
+	  $msg = '';
+	  $action_result = 'copied';
 
-	$result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
-	                                config_get('check_names_for_duplicates'),'block');
-	$msg = $result['msg'];
+	  // $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
+	  //                               config_get('check_names_for_duplicates'),'block');
+
+    // 20090120 - franciscom
+	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
+	                                config_get('check_names_for_duplicates'),
+	                                config_get('action_on_duplicate_name'));
+	  
+	  $msg = $result['msg'];
     if($msg == "ok")
     {
-		$tree_mgr->change_child_order($args->new_container_id,$result['id'],
-		                            $args->target_position,$cfg->exclude_node_types);
-
-		$ts_sep = config_get('testsuite_sep');
-		$tc_info = $tcase_mgr->get_by_id($args->tcase_id);
-		$container_info = $tree_mgr->get_node_hierachy_info($args->new_container_id);
-		$container_path = $tree_mgr->get_path($args->new_container_id);
-		$path = '';
-		foreach($container_path as $key => $value)
-		{
-			$path .= $value['name'] . $ts_sep;
-		}
-		$path = trim($path,$ts_sep);
-		$user_feedback = sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
+		    $tree_mgr->change_child_order($args->new_container_id,$result['id'],
+		                                $args->target_position,$cfg->exclude_node_types);
+        
+		    $ts_sep = config_get('testsuite_sep');
+		    $tc_info = $tcase_mgr->get_by_id($args->tcase_id);
+		    $container_info = $tree_mgr->get_node_hierachy_info($args->new_container_id);
+		    $container_path = $tree_mgr->get_path($args->new_container_id);
+		    $path = '';
+		    foreach($container_path as $key => $value)
+		    {
+		    	$path .= $value['name'] . $ts_sep;
+		    }
+		    $path = trim($path,$ts_sep);
+		    $user_feedback = sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
     }
-	$smarty->assign('refreshTree',$args->do_refresh);
+	  $smarty->assign('refreshTree',$args->do_refresh);
 
-	$viewer_args['action'] = $action_result;
-	$viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
-	$viewer_args['msg_result'] = $msg;
-	$viewer_args['user_feedback'] = $user_feedback;
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,$args->tcversion_id,$viewer_args);
+	  $viewer_args['action'] = $action_result;
+	  $viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
+	  $viewer_args['msg_result'] = $msg;
+	  $viewer_args['user_feedback'] = $user_feedback;
+	  $tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,$args->tcversion_id,$viewer_args);
 
 }
 else if($args->do_create_new_version)
@@ -524,8 +531,9 @@ function init_args($spec_cfg,$otName)
     $args->user_id = $_SESSION['userID'];
     $args->do_refresh = $spec_cfg->automatic_tree_refresh;
     if(isset($_SESSION['tcspec_refresh_on_action']))
+    {
     	$args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
-
+    }
     return $args;
 }
 

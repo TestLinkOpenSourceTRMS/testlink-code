@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.141 $
- * @modified $Date: 2009/01/17 08:37:54 $ $Author: franciscom $
+ * @version $Revision: 1.142 $
+ * @modified $Date: 2009/01/22 20:54:28 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090120 - franciscom - create_tcase_only() - added new action_on_duplicate_name	     
  * 20090116 - franciscom - get_by_name() refactoring
  *                         get_linked_versions() - added tplan_id argument
  * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
@@ -191,24 +192,36 @@ function create($parent_id,$name,$summary,$steps,
                 $action_on_duplicate_name='generate_new',
                 $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 {
-	$first_version = 1;
 	$status_ok = 1;
 	
 	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
                                   $check_duplicate_name,
                                   $action_on_duplicate_name);
-	if($ret['msg'] == 'ok')
+	// if($ret['msg'] == 'ok')
+	if($ret["status_ok"])
 	{
 		if(strlen(trim($keywords_id)))
 		{
 			$a_keywords = explode(",",$keywords_id);
 			$this->addKeywords($ret['id'],$a_keywords);
 		}
-
-		$op = $this->create_tcversion($ret['id'],$ret['external_id'],$first_version,$summary,$steps,
+		
+		$version_number=1;
+		if( isset($ret['version_number']) && $ret['version_number'] < 0 )
+		{
+		   // We are in the special situation we are only creating a new version,
+		   // useful when importing test cases. Need to get last version number.
+		   // I do not use create_new_version() because it does a copy ot last version
+		   // and do not allow to set new values in different fields while doing this operation.
+       $last_version_info =  $this->get_last_version_info($ret['id']);
+       $version_number=$last_version_info['version']+1;
+       $ret['msg']=sprintf($ret['msg'],$version_number);       
+       
+		}
+		$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,$steps,
 		                              $expected_results,$author_id,$execution_type,$importance);
 
-		$ret['msg']=$op['msg'];
+		$ret['msg']=$op['status_ok'] ? $ret['msg'] : $op['msg'];
 	}
 	return $ret;
 }
@@ -228,9 +241,12 @@ function create($parent_id,$name,$summary,$steps,
 
 return:
        $ret['id']
+       $ret['external_id']
        $ret['status_ok']
        $ret['msg'] = 'ok';
 	     $ret['new_name']
+	     
+rev: 20090120 - franciscom - added new action_on_duplicate_name	     
 */
 function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                            $check_duplicate_name=0,
@@ -241,37 +257,51 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
   $ret['status_ok'] = 1;
   $ret['msg'] = 'ok';
 	$ret['new_name'] = '';
+	$ret['version_number'] = 1;
+	$ret['has_duplicate'] = false;
+	
 
+  $doCreate=true;
   
  	if ($check_duplicate_name)
 	{
-    $sql = " SELECT count(*) AS qty FROM nodes_hierarchy " .
-		       " WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'" .
-		       " AND node_type_id = {$this->my_node_type} " .
-		       " AND nodes_hierarchy.parent_id={$parent_id} ";
-
-		$result = $this->db->exec_query($sql);
-		$myrow = $this->db->fetch_array($result);
-		if( $myrow['qty'])
+    $myrow = $this->getDuplicatesByName($name,$parent_id);		
+		if( !is_null($myrow) && count($myrow) > 0 )
 		{
-			if ($action_on_duplicate_name == 'block')
-			{
-				$ret['status_ok'] = 0;
-				$ret['msg'] = lang_get('testcase_name_already_exists');
-			}
-			else
-			{
-				$ret['status_ok'] = 1;
-				if ($action_on_duplicate_name == 'generate_new')
-				{
-					$name = config_get('prefix_name_for_copy') . " " . $name ;
-					$ret['new_name'] = $name;
-				}
+	    $ret['has_duplicate'] = true;
+		  switch($action_on_duplicate_name)
+		  {
+			    case 'block':
+	            $doCreate=true;
+			    	  $ret['status_ok'] = 0;
+			    	  $ret['msg'] = sprintf(lang_get('testcase_name_already_exists'),$name);
+			    break;
+			    
+			    case 'generate_new':
+			        $doCreate=true;
+			        $ret['status_ok'] = 1;
+					    $ret['new_name'] = $name;
+					    $name = config_get('prefix_name_for_copy') . " " . $name ;
+					    $ret['msg'] = sprintf(lang_get('created_with_title'),$name);
+					break;
+			        
+			    case 'create_new_version':
+			        $doCreate=false;
+              $ret['id'] = key($myrow);            
+	            $ret['external_id']=$myrow[$ret['id']]['tc_external_id'];
+			        $ret['status_ok'] = 1;
+					    $ret['new_name'] = $name;
+	            $ret['version_number'] = -1;
+					    $ret['msg'] = lang_get('create_new_version');
+			    break;
+			    
+			    default:
+			    break;
 			}
 		}
 	}
 
-  if( $ret['status_ok'] )
+  if( $ret['status_ok'] && $doCreate)
   {
     // Get tproject id
     $path2root=$this->tree_manager->get_path($parent_id);
@@ -282,7 +312,6 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
                                                $this->my_node_type,$name,$order,$id);
     $ret['id'] = $tcase_id;
     $ret['external_id'] = $tcaseNumber;
-    $ret['msg'] = 'ok';
   }
 
   return $ret;
@@ -314,14 +343,48 @@ function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
 	$result = $this->db->exec_query($sql);
 	$ret['msg']='ok';
 	$ret['id']=$tcase_version_id;
+	$ret['status_ok']=1;
 
 	if (!$result)
 	{
 		$ret['msg'] = $this->db->error_msg();
+	  $ret['status_ok']=0;
+	  $ret['id']=-1;
 	}
 
 	return $ret;
 }
+
+
+/*
+  function: getDuplicatesByname
+
+  args: $name
+        $parent_id
+
+  returns: hash
+*/
+function getDuplicatesByName($name, $parent_id)
+{
+    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
+		       " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions TCV  " .
+		       " WHERE NHA.node_type_id = {$this->my_node_type} " .
+		       " AND NHA.name = '{$this->db->prepare_string($name)}' " .
+		       " AND NHB.parent_id=NHA.id " .
+		       " AND TCV.id=NHB.id " .
+		       " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
+		       " AND NHA.parent_id={$parent_id} ";
+
+		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+    if( is_null($rs) || count($rs) == 0 )
+    {
+        $rs=null;   
+    }
+    return $rs;
+}
+
+
+
 
 /*
   function: get_by_name
@@ -339,8 +402,9 @@ function get_by_name($name, $tsuite_name='', $tproject_name='')
     $tsuite_name=trim($tsuite_name);
     $tproject_name=trim($tproject_name);
 
-    $sql = " SELECT NHA.id,NHA.name,NHB.parent_id,NHB.name AS tsuite_name " .
-		       " FROM nodes_hierarchy NHA, nodes_hierarchy NHB  " .
+    $sql = " SELECT DISTINCT NHA.id,NHA.name,NHB.parent_id," .
+           " NHB.name AS tsuite_name, TCV.tc_external_id " .
+		       " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions TCV  " .
 		       " WHERE NHA.node_type_id = {$this->my_node_type} " .
 		       " AND NHA.name = '{$this->db->prepare_string($name)}' " .
 		       " AND NHA.parent_id=NHB.id ";
@@ -592,7 +656,8 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
                 $expected_results,$user_id,$keywords_id='',
-                $tc_order=self::DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL,$importance=2)
+                $tc_order=self::DEFAULT_ORDER,
+                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 {
 	$ret['status_ok'] = 1;
 	$ret['msg'] = '';
@@ -1072,8 +1137,7 @@ function copy_to($id,$parent_id,$user_id,
 	{
 		$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
 		                                   $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
-                                       $check_duplicate_name,
-                                       'generate_new');
+                                       $check_duplicate_name,$action_on_duplicate_name);
 		if ($new_tc['status_ok'])
 		{
 	    $ret['status_ok']=1;

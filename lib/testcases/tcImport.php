@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/01/17 17:43:41 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/01/22 20:54:28 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -28,31 +28,26 @@ require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
 
+$gui = new stdClass();
+
 $templateCfg = templateConfiguration();
-
-$importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-$bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
-$location = isset($_REQUEST['location']) ? strings_stripSlashes($_REQUEST['location']) : null; 
-$container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-$bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
+$pcheck_fn=null;
+$args = init_args();
 $resultMap = null;
-$containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
-$do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
-
-$userID = $_SESSION['userID'];
-$tproject_id = $_SESSION['testprojectID'];
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
 $dest_files = array('XML' => $dest_common . ".csv",
-                  'XLS' => $dest_common . ".xls");
+                    'XLS' => $dest_common . ".xls");
 
 $dest=$dest_files['XML'];
-if(!is_null($importType))
-	$dest = $dest_files[$importType];
+if(!is_null($args->importType))
+{
+	$dest = $dest_files[$args->importType];
+}
 
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
-if($bRecursive)
+if($args->bRecursive)
 {
 	$import_title = lang_get('title_tsuite_import_to');  
 	$container_description = lang_get('test_suite');
@@ -64,17 +59,20 @@ else
 }
 
 $container_name = '';
-if($container_id)
+if($args->container_id)
 {
 	$tree_mgr = new tree($db);
-	$node_info = $tree_mgr->get_node_hierachy_info($container_id);    
+	$node_info = $tree_mgr->get_node_hierachy_info($args->container_id);    
 	$container_name = $node_info['name'];
-	if($container_id == $tproject_id)
+	if($args->container_id == $args->tproject_id)
+	{
 		$container_description=lang_get('testproject');
+	}	
 }
 
-if ($do_upload)
+if ($args->do_upload)
 {
+  
 	// check the uploaded file
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
 	tLog('Uploaded file: '.$source);
@@ -83,62 +81,72 @@ if ($do_upload)
 		$file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
 		{
-			tLog('Renamed uploaded file: '.$source);
-			switch($importType)
-			{
-				case 'XML':
-					$pcheck_fn = "check_xml_tc_tsuite";
-					$pimport_fn = "importTestCaseDataFromXML";
-					break;
-
-				case 'XLS':
-					$pcheck_fn = null;
-					$pimport_fn = "importTestCaseDataFromSpreadsheet";
-					break;
-			}
-	        if(!is_null($pcheck_fn))
-				$file_check = $pcheck_fn($dest,$bRecursive);
+			  tLog('Renamed uploaded file: '.$source);
+			  switch($args->importType)
+			  {
+			  	case 'XML':
+			  		$pcheck_fn = "check_xml_tc_tsuite";
+			  		$pimport_fn = "importTestCaseDataFromXML";
+			  		break;
+        
+			  	case 'XLS':
+			  		$pcheck_fn = null;
+			  		$pimport_fn = "importTestCaseDataFromSpreadsheet";
+			  		break;
+			  }
+	      if(!is_null($pcheck_fn))
+	      {
+				    $file_check = $pcheck_fn($dest,$args->bRecursive);
+				}
 		}
 		if($file_check['status_ok'] && $pimport_fn)
 		{
 			tLog('Check is Ok.');
-			$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
-										                 $userID,$bRecursive,$bIntoProject);
+			$resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,
+										           $args->userID,$args->bRecursive,
+										           $args->bIntoProject,$args->action_on_duplicated_name);
 		}
 	}
 	else
 	{
 		tLog('Missing upload file','WARNING');
 		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
-		$importType = null;
+		$args->importType = null;
 	}
 }
 
-if($bRecursive)
+if($args->bRecursive)
 {
   $obj_mgr = new testsuite($db);
+  $gui->actionOptions=null;
 }
 else
 {
   $obj_mgr = new testcase($db);
+  $gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
+                            'generate_new' => lang_get('generate_new_testcase'),
+                            'create_new_version' => lang_get('create_new_testcase_version'));
+
 }
 
-$gui = new stdClass();
 $gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $obj_mgr->get_import_file_types();
 $gui->importLimitKB=(TL_IMPORT_LIMIT / 1024);
+                          
+$gui->action_on_duplicated_name=$args->action_on_duplicated_name;
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->assign('import_title',$import_title);  
 $smarty->assign('file_check',$file_check);  
-$smarty->assign('bRecursive',$bRecursive); 
+$smarty->assign('bRecursive',$args->bRecursive); 
 $smarty->assign('resultMap',$resultMap); 
-$smarty->assign('containerID', $container_id);
+$smarty->assign('containerID', $args->container_id);
 $smarty->assign('container_name', $container_name);
 $smarty->assign('container_description', $container_description);
-$smarty->assign('bIntoProject',$bIntoProject);
-$smarty->assign('bImport',strlen($importType));
+$smarty->assign('bIntoProject',$args->bIntoProject);
+$smarty->assign('bImport',strlen($args->importType));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -149,7 +157,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 */
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
-                                   $userID,$bRecursive,$importIntoProject = 0)
+                                   $userID,$bRecursive,$importIntoProject = 0,
+                                   $duplicateLogic=null)
 {
 	tLog('importTestCaseDataFromXML called for file: '. $fileName);
 	$xmlTCs = null;
@@ -174,10 +183,15 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 				$kwMap = array_flip($kwMap);
 				
 			}
+			
 			if ($bRecursive && $root->tagname == 'testsuite')
+			{
 				$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
+			}
 			else if (!$bRecursive && $root->tagname == 'testcases')
-				$resultMap = importTestCases($db,$root,$parentID,$tproject_id,$userID,$kwMap);
+			{
+				$resultMap = importTestCases($db,$root,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic);
+			}	
 		}
 	}
 	return $resultMap;
@@ -190,7 +204,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
   args :
   returns: 
 */
-function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
+function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic)
 {
 	$resultMap = null;
 	if ($node->tagname == 'testcases')
@@ -199,7 +213,7 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 		$tcData = importTCsFromXML($xmlTCs);
 		if ($tcData)
 		{
-			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap);
+			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
 		}	
 	}
 	return $resultMap;
@@ -278,10 +292,13 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
   rev:
       configure create to rename test case if exists 
 */
-function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
+function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
+                            $userID,$kwMap,$actionOnDuplicatedName='generate_new')
 {
 	if (!$tcData)
+	{
 		return;
+	}
 		
 	$resultMap = array();
 	$fieldSizeCfg=config_get('field_size');
@@ -298,14 +315,11 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 	$tc_qty = sizeof($tcData);
 	if($tc_qty)
 	{
-	  
 		$tcase_mgr = new testcase($db);
 		$tproject = new testproject($db);
 	
 	  // Get CF with scope design time and allowed for test cases linked to this test project
 	  $customFields=$tproject->get_linked_custom_fields($tproject_id,'testcase','name');
-
-	  
 	}
 	
 	for($idx = 0; $idx <$tc_qty ; $idx++)
@@ -331,15 +345,52 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 		
 		$kwIDs = null;
 		if (isset($tc['keywords']) && $tc['keywords'])
+		{
 			$kwIDs = buildKeywordList($kwMap,$tc['keywords'],true);
-			
-		if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,
-		                              $expected_results,$userID,$kwIDs,
-		                              testcase::DEFAULT_ORDER,testcase::AUTOMATIC_ID,
-                                  testcase::CHECK_DUPLICATE_NAME,'generate_new'))
-    {
-        $resultMap[] = array($name,$ret['msg']);
-    }                              
+		}	
+		
+		$doCreate=true;
+		if( $actionOnDuplicatedName == 'update_last_version' )
+		{
+       $info=$tcase_mgr->getDuplicatesByName($name,$container_id);
+   		 if( !is_null($info) )
+   		 {
+   		     $tcase_qty = count($info);
+		       switch($tcase_qty)
+		       {
+		           case 1:
+		               $doCreate=false;
+		               $tcase_id = key($info); 
+                   $last_version=$tcase_mgr->get_last_version_info($tcase_id);
+                   $tcversion_id=$last_version['id'];
+                   $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,
+                                             $expected_results,$userID,$kwIDs);
+                                             
+                   $resultMap[] = array($name,lang_get('already_exists_updated'));
+	             break;
+		           
+		           case 0:
+		               $doCreate=true; 
+		           break;
+		           
+		           default:
+		               $doCreate=false; 
+		           break;
+		       }
+		   }
+
+		}
+		
+		if( $doCreate )
+		{
+		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,
+		                                  $expected_results,$userID,$kwIDs,
+		                                  testcase::DEFAULT_ORDER,testcase::AUTOMATIC_ID,
+                                      testcase::CHECK_DUPLICATE_NAME,$actionOnDuplicatedName))
+        {
+            $resultMap[] = array($name,$ret['msg']);
+        }                              
+		}
 			
 		// 20090106 - franciscom
 		// Custom Fields Management
@@ -388,8 +439,11 @@ function buildKeywordList($kwMap,$keywords,$bList = false)
 	{
 		$kwIDs[] = $kwMap[$keywords[$jdx]['keyword']];
 	}
+	
 	if ($bList)
+	{
 		$kwIDs = implode(",",$kwIDs);
+	}	
 	return $kwIDs;
 }
 
@@ -675,5 +729,35 @@ function nl2p($str)
 }
 
 
-// ----- END ----------------------------------------------------------------------------
+/*
+  function: 
+  
+  args :
+  
+  returns: 
+  
+*/
+function init_args()
+{
+    $args = new stdClass();
+    $_REQUEST = strings_stripSlashes($_REQUEST);
+
+    $key='action_on_duplicated_name';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'generate_new';
+       
+        
+    $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
+    $args->bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
+    $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
+    $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
+    $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
+    
+    $args->containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
+    $args->do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
+    
+    $args->userID = $_SESSION['userID'];
+    $args->tproject_id = $_SESSION['testprojectID'];
+    
+    return $args;
+}
 ?>

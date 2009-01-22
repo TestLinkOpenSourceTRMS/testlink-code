@@ -1,0 +1,54 @@
+This file has been created using and adapting information found at:
+http://binnyva.blogspot.com/ a
+
+Bin-Blog - Enabling Image Uploading in FCKEditor for PHP
+
+FCKEditor is one of the most feature rich web based WYSWYG editors. 
+I use it for almost all my projects. However, if you wish to enable image uploading in it, 
+you have to jump through some hoops. 
+This is a small tutorial on how to enable image uploading in FCKEditor. 
+This tutorial is aimed at FCKEditor 2.3.2 - but the principle works in other versions of FCKEditor as well
+
+-- Configuration --
+
+Open the file FCKEditor/fckconfig.js
+
+Make sure that the default php connector is selected.
+Search for:
+var _FileBrowserLanguage = 'php' ; // asp | aspx | cfm | lasso | perl | php | py
+var _QuickUploadLanguage = 'php' ; // asp | aspx | cfm | lasso | php
+
+By default, the ASP connector is enabled. 
+
+-- Connector --
+Open FCKeditor/editor/filemanager/browser/default/connectors/php/config.php
+
+Enable the connector
+// SECURITY: You must explicitelly enable this "connector". (Set it to "true").
+$Config['Enabled'] = true ;
+
+Make sure that the given 'UserFilesPath' folder exists in the server and has write permission.
+$Config['UserFilesPath'] = '/UserFiles/' ;
+
+For TestLink we suggest:
+<TL_HOME>/upload_area/fckeditor_upload_area/
+
+Comment line:
+$Config['UserFilesAbsolutePath'] = '' ;
+
+-- Uploader --
+
+Open file FCKeditor/editor/filemanager/upload/php/config.php
+
+Enable the uploader
+// SECURITY: You must explicitelly enable this "uploader". 
+$Config['Enabled'] = true ;
+
+Make sure that the given 'UserFilesPath' folder exists in the server and has write permission.
+$Config['UserFilesPath'] = '/UserFiles/' ;
+
+For TestLink we suggest:
+<TL_HOME>/upload_area/fckeditor_upload_area/
+
+Comment line:
+$Config['UserFilesAbsolutePath'] = '' ;

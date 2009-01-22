@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.4 2008/05/28 20:57:52 franciscom Exp $
+$Id: tcImport.tpl,v 1.5 2009/01/22 20:52:17 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20080329 - franciscom - lang_get() refactoring
@@ -9,6 +9,7 @@ rev: 20080329 - franciscom - lang_get() refactoring
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
+             action_on_duplicated_name,
              btn_cancel,title_imp_tc_data'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -38,6 +39,15 @@ rev: 20080329 - franciscom - lang_get() refactoring
 	    <td><input type="file" name="uploadedFile" 
 	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
 	</tr>
+	{if $gui->actionOptions != ''}
+	<tr><td>{$labels.action_on_duplicated_name} </td>
+	    <td><select name="action_on_duplicated_name">
+				  {html_options options=$gui->actionOptions selected=$gui->action_on_duplicated_name}
+			    </select>
+    </td>
+	</tr>
+	{/if}
+
 	</table>
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">

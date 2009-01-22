@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.384 $
- * @modified $Date: 2009/01/21 07:49:43 $ by $Author: franciscom $
+ * @version $Revision: 1.385 $
+ * @modified $Date: 2009/01/22 17:09:57 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -115,14 +115,15 @@ $TLS_real_time_hours = "Time used for executing %s test cases (hours):";
 $TLS_real_time_min = "Time used for executing %s test cases (min):";
 
 
-$TLS_config_check_warnings = "There are warnings on your configuration";
-$TLS_see_details_on_file="See details on file: %s";
+$TLS_config_check_warnings = "There are security warnings for your consideration. See 
+details on file: %s. To disable this checking set \$tlCfg->show_config_check_warning = FALSE;";
 
-$TLS_start_warning='---- Warning ----';
-$TLS_testlink_warning='Test Link Warning';
-$TLS_testcase_name_too_long='test case name is too long (%s chars) > %s => has been truncated';
-$TLS_original_name='Original name';
-$TLS_end_warning='---- *** ----';
+
+$TLS_start_warning = '---- Warning ----';
+$TLS_testlink_warning = 'TestLink Warning';
+$TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name = 'Original name';
+$TLS_end_warning = '---- *** ----';
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Apply";

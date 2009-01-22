@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.228 $
- * @modified $Date: 2009/01/19 19:42:22 $ by $Author: havlat $
+ * @version $Revision: 1.229 $
+ * @modified $Date: 2009/01/22 17:09:57 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -167,12 +167,12 @@ $tlCfg->smarty_debug = false;
 /** Path to store logs */
 $tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
 
-/** TRUE -> show result of config checks 
-* TRUE: messages are displayed on login screen, and tl desktop
-* FALSE: a two line message is displayed with indication about a file with
-*        check results
-*/
-$tlCfg->show_config_check_warning=FALSE;
+/** 
+ * Show warning on login page if there are security weak points 
+ * TRUE: a messages is displayed on login screen, and tl desktop (default)
+ * FALSE: a file with a list is created but users are not notified via GUI
+ */
+$tlCfg->show_config_check_warning = TRUE;
 
 /** 
  * Configure if individual logging data stores are enabled of disabled

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/01/21 16:24:01 $ by $Author: havlat $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/01/22 17:09:57 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
@@ -273,29 +273,31 @@ function getSecurityNotes(&$db)
 	}
 	checkForExtensions($securityNotes);
   
-  if( !config_get('show_config_check_warning') && !is_null($securityNotes))
-  {
-      $warnings='';
-      $file_ok=true;
-      $filename=config_get('log_path') . 'config_check.txt';
+	// write problems to a file
+	if(!is_null($securityNotes))
+	{
+      	$warnings='';
+		$filename = config_get('log_path') . 'config_check.txt';
       
-      if (@!$handle = fopen($filename, 'w')) 
-      {
-	       $securityNotes[] = lang_get('unable_to_create_file');
-	       $file_ok=false;
-      }
+      	if (@$handle = fopen($filename, 'w')) 
+      	{
+      		$warnings=implode("\n",$securityNotes);
+      		@fwrite($handle, $warnings);
+
+			$securityNotes=null;
+			// based on configuration show warning on login page
+			if (config_get('show_config_check_warning'))
+				$securityNotes[] = sprintf(lang_get('config_check_warnings'),$filename);
+      	}
+      	else
+      	{
+			// show problems on login page
+	    	$securityNotes[] = lang_get('unable_to_create_file');
+      	}
+		@fclose($handle);	
       
-      if( $file_ok )
-      {
-        $warnings=implode("\n",$securityNotes);
-        @fwrite($handle, $warnings);
-      }
-      @fclose($handle);	
-      
-      $securityNotes=null;
-      $securityNotes[]=lang_get('config_check_warnings');
-      $securityNotes[]=sprintf(lang_get('see_details_on_file'),$filename);;
-  }
+	}
+	
 	return $securityNotes;
 }
 

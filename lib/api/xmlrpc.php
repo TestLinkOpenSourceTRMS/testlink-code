@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/01/22 20:52:53 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/01/23 20:28:27 $ by $Author: asielb $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -191,6 +191,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.createBuild' => 'this:createBuild',
 			'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
 			'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
+            'tl.getLastTestResult'          => 'this:getLastTestResult',
 			'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
 			'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
@@ -257,7 +258,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */ 
 	private function _setBuildIDFromTPID()
 	{
-		$result = $this->_setBuildID($this->getLatestBuildForTestPlan($this->args[self::$testPlanIDParamName]));
+		$latestBuild = $this->_getLatestBuildForTestPlan($this->args);
+        $result = $this->_setBuildID($latestBuild[0]['id']);
 		return $result;
 	}	
 		
@@ -820,7 +822,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     private function _isTestCaseIDValid($tcaseid)
     {
       
-    	if(!is_int($tcaseid))
+    	if(!is_numeric($tcaseid))
     	{
     		$this->errors[] = new IXR_Error(TCASEID_NOT_INTEGER, TCASEID_NOT_INTEGER_STR);
     		return false;
@@ -1025,29 +1027,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    return $status_ok;
 	}
 
- 	/**
-	 * Gets the latest build by date for a specific test plan 
-	 *
-	 * @param int $tplanid
-	 * @return int
-	 * @access private
-	 */		
-	private function _getLatestBuildForTestPlan($tplan_id)
-	{     	                		
-    	$devKey = $this->dbObj->prepare_int($tplan_id);
-    	$query = "SELECT max(id) AS id FROM {$this->builds_table} WHERE testplan_id={$tplan_id}";
-    	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
-    	if(null == $result)
-    	{
-    		// Return generic error code signifying no build
-    		return GENERAL_ERROR_CODE;        		
-    	}
-    	else
-    	{
-    		return $result;
-    	}              		 
-	}
-	
 	/**
 	 * Gets the latest build by choosing the maximum build id for a specific test plan 
 	 *
@@ -1061,8 +1040,21 @@ class TestlinkXMLRPCServer extends IXR_Server
 	
 	public function getLatestBuildForTestPlan($args)
 	{
-		$Builds = $this->getBuildsForTestPlan($args);
-		$maxid = -1;
+       if ($this->_checkGetBuildRequest())
+       {
+           return _getLatestBuildForTestPlan($args);
+       } else {
+           return $this->errors;
+       }
+	}
+
+    private function _getLatestBuildForTestPlan($args)
+	{
+        $Builds = $this->_getBuildsForTestPlan($args);
+
+		
+
+        $maxid = -1;
 		$maxkey = -1;
 		foreach ($Builds as $key => $build) {
     		if ($build['id'] > $maxid)
@@ -1073,9 +1065,65 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		$maxbuild = array();
 		$maxbuild[] = $Builds[$maxkey];
-		
+
 		return $maxbuild;
 	}
+	
+	/**
+     * Gets the last test result for a particular testcase
+     *
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["tplanid"]
+     * @param int $args["testcaseid"]
+     * @return mixed $resultInfo
+     *
+     * @access public
+     */
+
+    public function getLastTestResult($args)
+    {
+        $this->_setArgs($args);
+        if ($this->_checkGetLastTestCaseResult() && $this->UserHasRight("mgt_view_tc") && $this->checkTestCaseIdentity())
+        {
+            $LastTestResultArray = array();
+            $LastTestResultArray[] = $this->_getLastTestResult();
+            return $LastTestResultArray;
+        } else {
+            return $this->errors;
+        }
+    }
+
+    /**
+     * Gets the last test result
+     *
+     * @return string
+     * @access private
+     */
+    private function _getLastTestResult()
+    {
+
+        $query = "SELECT * FROM {$this->executions_table} WHERE tcversion_id in (" .
+        "SELECT id FROM {$this->testcase_versions_table} WHERE id in (" .
+        "SELECT id FROM {$this->nodes_hierarchy_table} WHERE parent_id = " . $this->args[self::$testCaseIDParamName] . ")) " .
+        "AND testplan_id = " . $this->args[self::$testPlanIDParamName] . " ORDER BY id DESC";
+        $result = $this->dbObj->fetchFirstRow($query);
+
+        //Scrub the Result so as not to include primary keys etc..
+        unset($result['id']);
+        unset($result['tester_id']);
+
+        if(null == $result)
+        {
+            // Return generic error code signifying no build
+            return GENERAL_ERROR_CODE;
+        }
+        else
+        {
+            return $result;
+        }
+    }
+	
 
  	/**
 	 * Adds the result to the database 
@@ -1311,11 +1359,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public function getBuildsForTestPlan($args)
 	{
 		$this->_setArgs($args);
-		// check the tpid
+		
+        // check the tpid
 		//need a right to associate with
 		if($this->_checkGetBuildRequest())
 		{
-			$testPlanObj = new testplan($this->dbObj);
+			return _getBuildsForTestPlan;
+		}
+		else
+		{
+			return $this->errors;
+		} 
+	}
+
+    private function _getBuildsForTestPlan($args)
+	{
+		$this->_setArgs($args);
+
+            $testPlanObj = new testplan($this->dbObj);
 			$testPlanID = $this->args[self::$testPlanIDParamName];
 			$newResult = $testPlanObj->get_builds($testPlanID);
 			$scrubbedResult = array();
@@ -1323,13 +1384,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 			{
 				$scrubbedResult[] = $tempBuild;
 			}
-			
+
 			return $scrubbedResult;
-		}
-		else
-		{
-			return $this->errors;
-		} 
+
 	}
 	
 	/**
@@ -1918,6 +1975,28 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		return $status;
 	}
+	
+	/**
+     * Run all the necessary checks to see if ...
+     *
+     * @return boolean
+     * @access private
+     */
+    private function _checkGetLastTestCaseResult()
+    {
+        $status=$this->authenticate();
+
+        if($status)
+        {
+            $status &=$this->checkTestPlanID();
+
+            if($status && $this->_isTestCaseIDPresent())
+            {
+                $status &=$this->_checkTCIDAndTPIDValid();
+            }	    
+        }
+        return $status;
+    }
 
   
   /**

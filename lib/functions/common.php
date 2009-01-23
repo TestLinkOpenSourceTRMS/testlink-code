@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.136 $ $Author: schlundus $
- * @modified $Date: 2009/01/23 19:57:24 $
+ * @version $Revision: 1.137 $ $Author: schlundus $
+ * @modified $Date: 2009/01/23 20:07:10 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -260,10 +260,7 @@ function checkSessionValid(&$db)
 	{
 		$ip = $_SERVER["REMOTE_ADDR"];
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
-		$requestURI = null;
-		if (strlen($_SERVER['REQUEST_URI']))
-			$requestURI = "&req=".urlencode($_SERVER['REQUEST_URI']);
-		
+	
 		$fName = "login.php";
 		$baseDir = dirname(__FILE__);
 		while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))

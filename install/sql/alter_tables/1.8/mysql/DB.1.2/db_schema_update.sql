@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.20 $
-$Date: 2008/11/09 16:29:02 $
-$Author: franciscom $
+$Revision: 1.21 $
+$Date: 2009/01/23 10:07:44 $
+$Author: havlat $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
@@ -14,6 +14,7 @@ want to change NAME  -> CHANGE
 want to change column properties -> MODIFY
 
 rev: 
+     20090123 - havlatm - BUG 2013 (remove right ID=19 before add; it was there a minute in 1.7)
      20081109 - franciscom - added new right events_mgt
      20081018 - franciscom - renamed new events indexes to follow standard naming convention
      20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
@@ -163,11 +164,13 @@ ALTER TABLE custom_fields COMMENT = 'Updated to TL 1.8 RC3  - DB 1.2';
 
 
 /* data update */
+DELETE FROM rights WHERE id=19;
 INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO rights (id,description) VALUES (22,'events_mgt');
 
+DELETE FROM `role_rights` WHERE `right_id`=19;
 INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,21);

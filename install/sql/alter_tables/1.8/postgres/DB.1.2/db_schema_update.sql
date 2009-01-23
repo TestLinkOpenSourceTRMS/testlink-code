@@ -1,15 +1,18 @@
--- $Revision: 1.7 $
--- $Date: 2008/11/09 16:29:18 $
--- $Author: franciscom $
+-- $Revision: 1.8 $
+-- $Date: 2009/01/23 10:07:44 $
+-- $Author: havlat $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
+-- 20090123 - havlatm - BUG 2013 (remove right ID=19 before add; it was there a minute in 1.7)
 -- 20081109 - franciscom - added new right events_mgt
 -- 20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 -- 20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
 -- 20080927 - franciscom - fix bug when migration tcversions.importance
---
+
+
 -- Step 1 - Drops if needed
+
 DROP TABLE IF EXISTS priorities;
 DROP TABLE IF EXISTS risk_assignments;
 DROP TABLE IF EXISTS events;
@@ -22,7 +25,6 @@ DROP TABLE IF EXISTS user_group_assign;
 
 -- Step 2 - new tables
 
---
 CREATE TABLE "events" (
   "id" BIGSERIAL NOT NULL,
   "transaction_id" BIGINT NOT NULL default '0',
@@ -38,7 +40,7 @@ CREATE TABLE "events" (
 CREATE INDEX "events_transaction_id" ON "events" ("transaction_id");
 CREATE INDEX "events_fired_at" ON "events" ("fired_at");
 
---
+
 CREATE TABLE  "transactions" (
   "id" BIGSERIAL NOT NULL,
   "entry_point" varchar(45) NOT NULL default '',
@@ -49,7 +51,7 @@ CREATE TABLE  "transactions" (
   PRIMARY KEY ("id")
 );
 
---
+
 CREATE TABLE text_templates (
   "id" BIGSERIAL NOT NULL,
   type INT NOT NULL,
@@ -63,7 +65,7 @@ CREATE TABLE text_templates (
 );
 COMMENT ON TABLE text_templates IS 'Global Project Templates';
 
---
+
 CREATE TABLE user_group (
   "id" BIGSERIAL NOT NULL,
   title varchar(100) NOT NULL,
@@ -73,7 +75,7 @@ CREATE TABLE user_group (
   UNIQUE (title)
 );
 
---
+
 CREATE TABLE user_group_assign (
   usergroup_id BIGINT NOT NULL,
   user_id BIGINT NOT NULL
@@ -145,11 +147,13 @@ ALTER TABLE db_version ADD COLUMN notes  text;
 COMMENT ON TABLE db_version IS 'Updated to TL 1.8.0 Development - DB 1.2';
 
 -- data update
+DELETE FROM rights WHERE id=19;
 INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO rights (id,description) VALUES (22,'events_mgt');
 
+DELETE FROM role_rights WHERE right_id=19;
 INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,21);

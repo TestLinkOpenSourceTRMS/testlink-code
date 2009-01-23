@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.385 $
- * @modified $Date: 2009/01/22 17:09:57 $ by $Author: havlat $
+ * @version $Revision: 1.386 $
+ * @modified $Date: 2009/01/23 08:13:34 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1721,14 +1721,14 @@ $TLS_test_project_notes = "Test Project notes";
 
 
 // lib/functions/testcase.class.php
+$TLS_create_new_version="Created new version %s"; 
 $TLS_testcase_name_already_exists = "There's already a Test Case with this title (%s)";
+$TLS_created_with_title = "Created with title (%s)";
 $TLS_the_format_tc_xml_import = "";
-
 
 
 // lib/functions/info.inc.php
 $TLS_email_sent_message = "Your mail has been sent";
-
 
 
 // lib/functions/users.inc.php
@@ -1998,6 +1998,7 @@ $TLS_error_sendreport_no_email_credentials = "Email for this user is not specifi
 
 // lib/testcases/tcImport.php
 $TLS_action_on_duplicated_name="Action for duplicated names";
+$TLS_already_exists_updated="Already exists, data of LAST version has been updated.";
 $TLS_please_choose_file_to_import = "Please choose file to import";
 $TLS_title_tc_import_to = "Import Test Cases";
 $TLS_title_tsuite_import_to = "Import Test Suite";

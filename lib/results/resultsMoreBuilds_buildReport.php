@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.63 2009/01/07 22:19:46 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.64 2009/01/23 08:08:14 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev :
+*      20090122 - franciscom - BUGID 2012 
 *      20080524 - franciscom - BUGID 1430
 *      20070901 - franciscom - refactoring
 * 
@@ -157,26 +158,25 @@ function initializeGui(&$dbHandler,&$argsObj)
         $gui->totals->labels[$key]=lang_get($l18n);  
     }
 
+    // BUGID 2012 - franciscom
     $gui->keywords = new stdClass();             
     $gui->keywords->items[0]=$gui->str_option_any;
-    $gui->keywords->items += $tplan_mgr->get_keywords_map($gui->tplan_id); 
+    if( !is_null($tplan_keywords_map=$tplan_mgr->get_keywords_map($gui->tplan_id)) )
+    {
+        $gui->keywords->items += $tplan_keywords_map; 
+    }    
     $gui->keywords->qty = count($gui->keywords->items);
-    
     $gui->keywordSelected=$gui->keywords->items[$argsObj->keywordSelected];
     
-    // $gui->builds = $tplan_mgr->get_builds($gui->tplan_id); 
     $gui->builds_html = $tplan_mgr->get_builds_for_html_options($gui->tplan_id);
     $gui->users = getUsersForHtmlOptions($dbHandler,ALL_USERS_FILTER,
                                          array(TL_USER_ANYBODY => $gui->str_option_any));
 
     $gui->ownerSelected=$gui->users[$argsObj->ownerSelected];      
     $gui->executorSelected=$gui->users[$argsObj->executorSelected];
-
     $gui->testsuitesSelected=$testsuiteNames;
     $gui->buildsSelected=$argsObj->buildsSelected;
-    
     $gui->display=$argsObj->display;
-
 
     // init display rows attribute and some status localized labels
     $gui->displayResults=array();

@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.65 2009/01/07 22:19:46 franciscom Exp $
+* $Id: resultsMoreBuilds.php,v 1.66 2009/01/23 08:08:14 franciscom Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev:
+*      20090122 - franciscom - BUGID 2012 
 *      20090107 - franciscom - show [any] instead of blank option on assigned to, executed by
 *      20080517 - franciscom - refactoring
 *      20070901 - franciscom - refactoring
@@ -103,19 +104,20 @@ function initializeGui(&$dbHandler)
 
     $gui->assigned_users->qty = count($gui->assigned_users->items);
     
+    // BUGID 2012 - franciscom
     $gui->keywords->items[0]=$gui->str_option_any;
-    $gui->keywords->items += $tplan_mgr->get_keywords_map($gui->tplan_id);
-    
-    
+    if(!is_null($tplan_keywords_map=$tplan_mgr->get_keywords_map($gui->tplan_id)) ) 
+    {
+        $gui->keywords->items += $tplan_keywords_map;
+    }
+       
     $gui->builds->items = $tplan_mgr->get_builds($gui->tplan_id,testplan::ACTIVE_BUILDS);
     $gui->testsuites->items = $re->getTopLevelSuites();
 
     $gui->keywords->qty = count($gui->keywords->items);
     $gui->builds->qty = count($gui->builds->items);
     $gui->testsuites->qty = count($gui->testsuites->items);
-
     $gui->status_code_label = get_status_for_reports_html_options();
-
     $gui->report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
     $gui->build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
 

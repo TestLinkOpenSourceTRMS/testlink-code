@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.36 2009/01/18 18:50:55 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.37 2009/01/23 08:08:14 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -302,7 +302,7 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
-
+    $gui->keywordsFilterItemQty = 0;
     $gui->keyword_id = $argsObj->keyword_id; 
     $gui->keywords_map = $tprojectMgr->get_keywords_map($argsObj->tproject_id); 
     if(!is_null($gui->keywords_map))

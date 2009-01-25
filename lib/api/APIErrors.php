@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.10 2009/01/17 17:43:41 franciscom Exp $
+ * $Id: APIErrors.php,v 1.11 2009/01/25 09:06:58 franciscom Exp $
  */
 
 /** 
@@ -166,6 +166,8 @@ define('TPROJECT_PREFIX_ALREADY_EXISTS',7009);
 define('TPROJECT_PREFIX_ALREADY_EXISTS_STR',
        lang_get('API_TPROJECT_PREFIX_ALREADY_EXISTS',null,1));
 
+define('REQSPEC_TPROJECT_KO',7010);
+define('REQSPEC_TPROJECT_KO_STR',lang_get('API_REQSPEC_TPROJECT_KO',null,1));
 
 
 /**
@@ -186,5 +188,25 @@ define('NO_CUSTOMFIELD_BY_THIS_NAME_STR', lang_get('API_NO_CUSTOMFIELD_BY_THIS_N
  */
 define('NO_USER_BY_THIS_LOGIN', 10000);
 define('NO_USER_BY_THIS_LOGIN', lang_get('API_NO_USER_BY_THIS_LOGIN',null,1));
+
+
+/**
+ * 11000 level - Requirements
+ */
+define('REQSPEC_KO', 11000);
+define('REQSPEC_KO_STR', lang_get('API_REQSPEC_KO',null,1));
+
+define('REQSPEC_IS_EMPTY', 11001);
+define('REQSPEC_IS_EMPTY_STR', lang_get('API_REQSPEC_IS_EMPTY',null,1));
+
+define('REQ_REQSPEC_KO', 11002);
+define('REQ_REQSPEC_KO_STR', lang_get('API_REQ_REQSPEC_KO',null,1));
+
+define('REQ_KO', 11003);
+define('REQ_KO_STR', lang_get('API_REQ_KO',null,1));
+
+
+
+
 
 ?>

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/01/23 20:28:27 $ by $Author: asielb $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/01/25 16:03:58 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,8 @@
  * 
  *
  * rev :
+ *      20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
+ *      20090122 - franciscom - assignRequirements()
  *      20090117 - franciscom - createTestProject()
  *      20090116 - franciscom - getFirstLevelTestSuitesForTestProject()
  *                              getTestCaseIDByName() - added testprojectname param
@@ -161,6 +163,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $versionNumberParamName = "version";
   public static $executionOrderParamName = "executionorder";
   public static $urgencyParamName = "urgency";
+  public static $requirementsParamName = "requirements";
+  
 
 	
 	/**#@-*/
@@ -183,6 +187,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->tcaseMgr=new testcase($this->dbObj);
 		$this->tprojectMgr=new testproject($this->dbObj);
 		$this->tplanMgr=new testplan($this->dbObj);
+		$this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
+    $this->reqMgr=new requirement_mgr($this->dbObj);
 
 		$this->methods = array(
 			'tl.reportTCResult' => 'this:reportTCResult',
@@ -191,7 +197,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.createBuild' => 'this:createBuild',
 			'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
 			'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
-            'tl.getLastTestResult'          => 'this:getLastTestResult',
+      'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
 			'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
 			'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
@@ -201,6 +207,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
       'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
       'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
+      'tl.assignRequirements' => 'this:assignRequirements',     
 			'tl.about' => 'this:about',
 			'tl.setTestMode' => 'this:setTestMode',
 			// ping is an alias for sayHello
@@ -251,16 +258,21 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 	
 	/**
-	 * Helper method set the buildID based on the tplanid
+	 * Set Build Id to latest build id (if test plan has builds)
 	 * 
 	 * @return boolean
 	 * @access private
 	 */ 
-	private function _setBuildIDFromTPID()
+	private function _setBuildID2Latest()
 	{
-		$latestBuild = $this->_getLatestBuildForTestPlan($this->args);
-        $result = $this->_setBuildID($latestBuild[0]['id']);
-		return $result;
+	    $tplan_id=$this->args[self::$testPlanIDParamName];
+      $maxbuildid = $this->tplanMgr->get_max_build_id($tplan_id);
+	    $status_ok=($maxbuildid >0);
+	    if($status_ok)
+	    {
+	        $this->_setBuildID($maxbuildid);  
+	    } 
+	    return $status_ok;
 	}	
 		
 	/**
@@ -314,15 +326,23 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }				
     }
     
+    
+    /*
+     function: userHasRight
+
+     args :
+    
+     returns: 
+    */
     protected function userHasRight($roleQuestion)
     {
-    	if ($this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
+      $status_ok=true;
+    	if( !$this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
     	{
-    		return true;
-    	} else {
+    		$status_ok=false;
     		$this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, INSUFFICIENT_RIGHTS_STR);
-    		return false;
     	}
+    	return $status_ok;
     }
 
 	/**
@@ -437,7 +457,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			      	      // can only set the build id for the test plan if guessing is enabled
     	  			      if(true == $this->checkGuess())
     	  			      {
-    	  			      	$status = $this->_setBuildIDFromTPID();
+    	  			      	$status = $this->_setBuildID2Latest();
     	  			      }
 		      	    }
 		      	    else
@@ -539,9 +559,8 @@ class TestlinkXMLRPCServer extends IXR_Server
          $try_again=true;
 			   if($this->_isBuildNamePresent())
 			   {
-			      $tplanMgr = new testplan($this->dbObj);  
-            $buildInfo=$tplanMgr->get_build_by_name($this->args[self::$testPlanIDParamName],
-                                                    trim($this->args[self::$buildNameParamName])); 
+            $buildInfo=$this->tplanMgr->get_build_by_name($this->args[self::$testPlanIDParamName],
+                                                          trim($this->args[self::$buildNameParamName])); 
             if( !is_null($buildInfo) )
             {
                 $this->args[self::$buildIDParamName]=$buildInfo['id'];
@@ -561,7 +580,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			    }
 			    else
 			    {
-			    	$setBuildResult = $this->_setBuildIDFromTPID();
+			    	$setBuildResult = $this->_setBuildID2Latest();
 			    	if(false == $setBuildResult)
 			    	{
 			    		$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
@@ -905,7 +924,11 @@ class TestlinkXMLRPCServer extends IXR_Server
       }
       else
       {
-          $this->errors[] = new IXR_Error(TCID_NOT_IN_TPLANID, TCID_NOT_IN_TPLANID_STR);
+          $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+          $tcase_info = $testCaseMgr->get_by_id($tcase_id);
+          $msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
+                         $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
+          $this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID, $msg);
       }
       return $status_ok;      
     }
@@ -1033,20 +1056,51 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param struct $args
 	 * @param string $args["devKey"]
 	 * @param int $args["tplanid"]
-	 * @return mixed $resultInfo
+	 * @return mixed 
 	 * 				
 	 * @access public
 	 */		
-	
 	public function getLatestBuildForTestPlan($args)
 	{
-       if ($this->_checkGetBuildRequest())
+ 	     $msg_prefix="(" .__FUNCTION__ . ") - ";
+	     $status_ok=true;
+	     $this->_setArgs($args);
+			 $resultInfo=array();
+
+       $checkFunctions = array('authenticate','checkTestPlanID');       
+       foreach($checkFunctions as $pfn)
        {
-           return _getLatestBuildForTestPlan($args);
-       } else {
-           return $this->errors;
+           if( !($status_ok = $this->$pfn()) )
+           {
+               break; 
+           }
+       } 
+
+       if( $status_ok )
+       {
+          $testPlanID = $this->args[self::$testPlanIDParamName];
+			    $build_id = $this->tplanMgr->get_max_build_id($testPlanID);
+        
+          if( ($status_ok=$build_id > 0) )
+          {
+              $builds = $this->tplanMgr->get_builds($testPlanID);  
+              $build_info = $builds[$build_id];
+          }
+          else
+          {
+              $tplan_info=$this->tplanMgr->get_by_id($testPlanID);
+              $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],$tplan_info['id']);
+              $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
+          }
        }
+
+       return $status_ok ? $build_info : $this->errors;
 	}
+
+
+
+
+
 
     private function _getLatestBuildForTestPlan($args)
 	{
@@ -1070,7 +1124,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 	
 	/**
-     * Gets the last test result for a particular testcase
+     * Gets the result of LAST EXECUTION for a particular testcase 
+     * on a test plan, but WITHOUT checking for a particular build
      *
      * @param struct $args
      * @param string $args["devKey"]
@@ -1081,49 +1136,50 @@ class TestlinkXMLRPCServer extends IXR_Server
      * @access public
      */
 
-    public function getLastTestResult($args)
+    public function getLastExecutionResult($args)
     {
         $this->_setArgs($args);
-        if ($this->_checkGetLastTestCaseResult() && $this->UserHasRight("mgt_view_tc") && $this->checkTestCaseIdentity())
+        $resultInfo = array();
+        $status_ok=true;
+                
+        // Checks are done in order
+        $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity',
+                                '_checkTCIDAndTPIDValid',);       
+
+        foreach($checkFunctions as $pfn)
         {
-            $LastTestResultArray = array();
-            $LastTestResultArray[] = $this->_getLastTestResult();
-            return $LastTestResultArray;
-        } else {
-            return $this->errors;
+            if( !($status_ok = $this->$pfn()) )
+            {
+                break; 
+            }
+        } 
+
+        if( $status_ok && $this->userHasRight("mgt_view_tc") )
+        {
+            $sql = " SELECT * FROM {$this->executions_table} " .
+                   " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
+                   " AND tcversion_id IN (" .
+                   " SELECT id FROM {$this->nodes_hierarchy_table} " .
+                   " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})" .
+                   " ORDER BY id DESC";
+            $result = $this->dbObj->fetchFirstRow($sql);
+
+            if(null == $result)
+            {
+               // has not been executed
+               $resultInfo[]=GENERAL_ERROR_CODE;               
+            } 
+            else
+            {
+               $resultInfo[]=$result;  
+            }
         }
+        
+        return $status_ok ? $resultInfo : $this->errors;
     }
 
-    /**
-     * Gets the last test result
-     *
-     * @return string
-     * @access private
-     */
-    private function _getLastTestResult()
-    {
 
-        $query = "SELECT * FROM {$this->executions_table} WHERE tcversion_id in (" .
-        "SELECT id FROM {$this->testcase_versions_table} WHERE id in (" .
-        "SELECT id FROM {$this->nodes_hierarchy_table} WHERE parent_id = " . $this->args[self::$testCaseIDParamName] . ")) " .
-        "AND testplan_id = " . $this->args[self::$testPlanIDParamName] . " ORDER BY id DESC";
-        $result = $this->dbObj->fetchFirstRow($query);
 
-        //Scrub the Result so as not to include primary keys etc..
-        unset($result['id']);
-        unset($result['tester_id']);
-
-        if(null == $result)
-        {
-            // Return generic error code signifying no build
-            return GENERAL_ERROR_CODE;
-        }
-        else
-        {
-            return $result;
-        }
-    }
-	
 
  	/**
 	 * Adds the result to the database 
@@ -1239,8 +1295,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public function about($args)
 	{
 		$this->_setArgs($args);
-		$str = " Testlink API Version: " . self::$version . " written by Asiel Brumfield\n" .
-		       " contribution by TestLink development Team";
+		$str = " Testlink API Version: " . self::$version . " initially written by Asiel Brumfield\n" .
+		       " with contributions by TestLink development Team";
 		return $str;				
 	}
 	
@@ -1347,48 +1403,47 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 	
 	/**
-	 * Gets a list of active builds within a test plan
+	 * Gets a list of builds within a test plan
 	 *
 	 * @param struct $args
 	 * @param string $args["devKey"]
 	 * @param int $args["testplanid"]
-	 * @return mixed $resultInfo
+	 * @return 
+	 *         if no errors
+	 *            no build present => null
+	 *            array of builds
+	 *         
 	 * 				
 	 * @access public
 	 */		
 	public function getBuildsForTestPlan($args)
 	{
-		$this->_setArgs($args);
-		
-        // check the tpid
-		//need a right to associate with
-		if($this->_checkGetBuildRequest())
-		{
-			return _getBuildsForTestPlan;
-		}
-		else
-		{
-			return $this->errors;
-		} 
+	    $this->_setArgs($args);
+      $builds=null;
+      $status_ok=true;
+      $checkFunctions = array('authenticate','checkTestPlanID');       
+      foreach($checkFunctions as $pfn)
+      {
+          if( !($status_ok = $this->$pfn()) )
+          {
+              break; 
+          }
+      } 
+      
+      if( $status_ok )
+      {
+          $testPlanID = $this->args[self::$testPlanIDParamName];
+			    $dummy = $this->tplanMgr->get_builds($testPlanID);
+			    
+			    if( !is_null($dummy) )
+			    {
+			       $builds=array_values($dummy);
+			    }
+      }
+	 	  return $status_ok ? $builds : $this->errors;
 	}
 
-    private function _getBuildsForTestPlan($args)
-	{
-		$this->_setArgs($args);
 
-            $testPlanObj = new testplan($this->dbObj);
-			$testPlanID = $this->args[self::$testPlanIDParamName];
-			$newResult = $testPlanObj->get_builds($testPlanID);
-			$scrubbedResult = array();
-			foreach ($newResult as $tempBuild)
-			{
-				$scrubbedResult[] = $tempBuild;
-			}
-
-			return $scrubbedResult;
-
-	}
-	
 	/**
 	 * List test suites within a test plan alphabetically
 	 * 
@@ -2219,24 +2274,30 @@ class TestlinkXMLRPCServer extends IXR_Server
        // Test Case belongs to test project ?
        if( $status_ok )
        {
-           $tcase_id=$this->args[self::$testCaseIDParamName];
-           $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
-           $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
-
-           if($tcase_tproject_id != $tproject_id)
+           // $tcase_id=$this->args[self::$testCaseIDParamName];
+           // $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
+           // $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
+           // 
+           // if($tcase_tproject_id != $tproject_id)
+           // {
+           //     $status_ok=false;
+           //     $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+           //     $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+           //     $msg = sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
+           //                                          $tproject_info['name'],$tproject_id);  
+           //     $this->errors[] = new IXR_Error(TCASE_TPROJECT_KO,$msg_prefix . $msg); 
+           // }
+           $ret = $this->checkTestCaseAncestry();
+           if( !$ret['status_ok'] )
            {
-               $status_ok=false;
-               $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
-               $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
-               $msg = sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
-                                                    $tproject_info['name'],$tproject_id);  
-               $this->errors[] = new IXR_Error(TCASE_TPROJECT_KO,$msg_prefix . $msg); 
-           } 
+               $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+           }           
        }
        
        // Does this Version number exist for this test case ?     
        if( $status_ok )
        {
+           $tcase_id=$this->args[self::$testCaseIDParamName];
            $version_number=$this->args[self::$versionNumberParamName];
            $sql = " SELECT TCV.version,TCV.id " . 
                   " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
@@ -2358,6 +2419,206 @@ class TestlinkXMLRPCServer extends IXR_Server
        return $status_ok ? $result : $this->errors;       
    }
    
+
+   /*
+    function: assignRequirements
+              we can assign multiple requirements.
+              Requirements can belong to different Requirement Spec
+             
+	  @param struct $args
+	  @param string $args["devKey"]
+	  @param int $args["testcaseexternalid"]
+	  @param int $args["testprojectid"] 
+    @param string $args["requirements"] 
+                  array(array('req_spec' => 1,'requirements' => array(2,4)),
+                        array('req_spec' => 3,'requirements' => array(22,42))
+    returns: 
+   */
+   public function assignRequirements($args)
+   {
+	     $msg_prefix="(" .__FUNCTION__ . ") - ";
+	     $status_ok=true;
+	     $this->_setArgs($args);
+			 $resultInfo=array();
+       $checkFunctions = array('authenticate','checkTestProjectID',
+                               'checkTestCaseIdentity');       
+
+       foreach($checkFunctions as $pfn)
+       {
+         if( !($status_ok = $this->$pfn()) )
+         {
+             break; 
+         }
+       } 
+
+       if( $status_ok )
+       {
+           $ret = $this->checkTestCaseAncestry();
+           $status_ok=$ret['status_ok'];
+           if( !$status_ok )
+           {
+               $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+           }           
+       }
+       
+       if( $status_ok )
+       {
+           $ret = $this->checkReqSpecQuality();
+           $status_ok=$ret['status_ok'];
+           if( !$status_ok )
+           {
+               $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+           }           
+       }
+       
+       if($status_ok)
+       {
+           // assignment
+           // Note: when test case identity is checked this args key is setted
+           //       this does not means that this mut be present on method call.
+           //
+           $tcase_id=$this->args[self::$testCaseIDParamName];
+           foreach($this->args[self::$requirementsParamName] as $item)
+           {
+               foreach($item['requirements'] as $req_id)
+               {
+                    $this->reqMgr->assign_to_tcase($req_id,$tcase_id);
+               }          
+           }
+   		     $resultInfo[] = array("operation" => __FUNCTION__,
+   			                         "status" => true, 
+			                           "id" => -1, 
+   		                           "additionalInfo" => '',
+			                           "message" => GENERAL_SUCCESS_STR);
+       }
+       
+       return ($status_ok ? $resultInfo : $this->errors);
+  }
+
+
+  /*
+    function: checkTestCaseAncestry
+              check if a test case belongs to test project
+
+    args:
+    
+    returns: 
+
+  */
+  function checkTestCaseAncestry()
+  {
+      $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+      $tproject_id=$this->args[self::$testProjectIDParamName];
+      $tcase_id=$this->args[self::$testCaseIDParamName];
+      $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
+      $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
+      
+      if($tcase_tproject_id != $tproject_id)
+      {
+          $status_ok=false;
+          $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
+          $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+          $msg = sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
+                                               $tproject_info['name'],$tproject_id);  
+          $ret=array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_TPROJECT_KO);                                               
+      } 
+      return $ret;
+  } // function end
+
+
+  /*
+    function: checkReqSpecQuality
+              checks:
+              Requirements Specification is present on system
+              Requirements Specification belongs to test project
+
+    args:
+    
+    returns: 
+
+  */
+  function checkReqSpecQuality()
+  {
+      $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+      $tproject_id=$this->args[self::$testProjectIDParamName];
+      $nodes_types = $this->tprojectMgr->tree_manager->get_available_node_types();
+          
+      foreach($this->args[self::$requirementsParamName] as $item)
+      {
+          // does it exist ?
+          $req_spec_id=$item['req_spec'];
+          $reqspec_info=$this->reqSpecMgr->get_by_id($req_spec_id);      
+          if(is_null($reqspec_info))
+          {
+              $status_ok=false;
+              $msg = sprintf(REQSPEC_KO_STR,$req_spec_id);
+              $error_code=REQSPEC_KO;
+              break;  
+          }       
+          
+          // does it belongs to test project ?
+          $a_path=$this->tprojectMgr->tree_manager->get_path($req_spec_id);
+          $req_spec_tproject_id=$a_path[0]['parent_id'];
+          if($req_spec_tproject_id != $tproject_id)
+          {
+              $status_ok=false;
+              $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+              $msg = sprintf(REQSPEC_TPROJECT_KO_STR,$reqspec_info['title'],$req_spec_id,
+                                                     $tproject_info['name'],$tproject_id);  
+              $error_code=REQSPEC_TPROJECT_KO;
+              break;  
+          }
+          
+          // does this specification have requirements ?
+          $my_requirements=$this->tprojectMgr->tree_manager->get_subtree_list($req_spec_id,$nodes_types['requirement']);
+          
+          if( !($status_ok= strlen(trim($my_requirements)) > 0) )
+          {
+              $msg = sprintf(REQSPEC_IS_EMPTY_STR,$reqspec_info['title'],$req_spec_id);
+              $error_code=REQSPEC_IS_EMPTY;
+              break;
+          }
+          
+          // if everything is OK, analise requirements
+          if( $status_ok )
+          {
+              $dummy=array_flip(explode(",",$my_requirements));
+              foreach($item['requirements'] as $req_id)
+              {
+                  if( !isset($dummy[$req_id]) )
+                  {
+                      $status_ok=false;
+                      $req_info = $this->reqMgr->get_by_id($req_id);
+                      
+                      if( is_null($req_info) )
+                      {
+                          $msg = sprintf(REQ_KO_STR,$req_id);
+                          $error_code=REQ_KO;
+                      }
+                      else 
+                      {  
+                          $msg = sprintf(REQ_REQSPEC_KO_STR,$req_info['req_doc_id'],$req_info['title'],$req_id,
+                                         $reqspec_info['title'],$req_spec_id);
+                          $error_code=REQ_REQSPEC_KO;
+                      }
+                      break;
+                  }      
+              }
+          }
+          
+          if( !$status_ok )
+          {
+              break;
+          }
+      }
+
+      if(!$status_ok)
+      {
+          $ret=array('status_ok' => false, 'error_msg' => $msg , 'error_code' => $error_code);                                               
+      } 
+      return $ret;
+  }
+
 
 
 } // class end

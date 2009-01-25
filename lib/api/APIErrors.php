@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.11 2009/01/25 09:06:58 franciscom Exp $
+ * $Id: APIErrors.php,v 1.12 2009/01/25 16:03:58 franciscom Exp $
  */
 
 /** 
@@ -103,6 +103,9 @@ define('NO_BUILD_FOR_TPLANID', 3020);
 define('NO_BUILD_FOR_TPLANID_STR', lang_get('API_NO_BUILD_FOR_TPLANID',null,1));
 define('TCASEID_NOT_IN_TPLANID', 3030);
 define('TCASEID_NOT_IN_TPLANID_STR', lang_get('API_TCASEID_NOT_IN_TPLANID',null,1));
+
+define('TPLAN_HAS_NO_BUILDS',3031);
+define('TPLAN_HAS_NO_BUILDS_STR', lang_get('API_TPLAN_HAS_NO_BUILDS',null,1));
 
 
 /**

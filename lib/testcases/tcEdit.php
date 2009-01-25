@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2009/01/22 20:54:28 $  by $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/01/25 18:56:33 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -66,6 +66,8 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->assign('has_been_executed',$args->has_been_executed);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
+$smarty->assign('attachments',null);
+
 
 $active_status = 0;
 $action_result = "deactivate_this_version";

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.39 2008/10/29 12:26:56 havlat Exp $
+ * @version $Id: archiveData.php,v 1.40 2009/01/25 18:56:33 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -52,7 +52,7 @@ switch($args->feature)
 			$args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
 		}
 
-    	// need to be managed in a different way that for testproject and testsuites
+    // need to be managed in a different way that for testproject and testsuites
 		$attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);;
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);

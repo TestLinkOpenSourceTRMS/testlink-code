@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2009/01/19 19:09:05 $ by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2009/01/25 18:56:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -660,11 +660,10 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
 	// $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID),
 	//                                                   array($argsObj->testsuiteID => 'exclude'));
 	//                                                   
-  // 20081225 - franciscom have discovered che exclude selected testsuite branch is not good
+  // 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
   //            when you want to move lots of testcases from one testsuite to it's children
   //            testsuites. (in this situation tree drag & drop is not ergonomic).
   $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);	                                                  
-  
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
    // 20081225 - franciscom

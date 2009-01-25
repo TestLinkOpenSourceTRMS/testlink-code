@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.388 $
- * @modified $Date: 2009/01/25 16:06:53 $ by $Author: franciscom $
+ * @version $Revision: 1.389 $
+ * @modified $Date: 2009/01/25 18:58:12 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -78,7 +78,7 @@ $TLS_problems_loading_xml_content="Unable to load XML data, Check your file.";
 $TLS_not_imported = "Not imported";
 $TLS_imported = "Imported";
 $TLS_nobody = "nobody";
-
+$TLS_search_type_like="Search on this value will be done on LIKE mode";
 
 $TLS_exec_assign_no_testcase="Please select at least one Test Case.";
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
@@ -761,6 +761,7 @@ $TLS_th_tcid = "Test Case ID";
 $TLS_th_tcversion = "Version";
 $TLS_th_title = "Title";
 $TLS_title_search_tcs = "Search";
+$TLS_requirement_document_id = "Req. Doc. ID";
 
 
 

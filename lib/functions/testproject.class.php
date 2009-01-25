@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.96 $
- * @modified $Date: 2009/01/17 17:43:41 $  $Author: franciscom $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2009/01/25 18:56:33 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090125 - franciscom - added utility method _createHierarchyMap()
  * 20090106 - franciscom - get_by_prefix()
  * 20081103 - franciscom - get_all_testcases_id() minor refactoring
  * 20080518 - franciscom - create() interface changes
@@ -44,6 +45,8 @@ class testproject extends tlObjectWithAttachments
   const EXCLUDE_TESTCASES=true;
   const INCLUDE_TESTCASES=false;
   const TESTCASE_PREFIX_MAXLEN=16; // must be changed if field dimension changes
+  const GET_NOT_EMPTY_REQSPEC=1;
+  const GET_EMPTY_REQSPEC=0;
 
 
 	private $object_table='testprojects';
@@ -550,47 +553,14 @@ function count_testcases($id)
   */
 	function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
 	{
-		$aa = array();
+		$ret = array();
 		$test_spec = $this->get_subtree($id,!self::RECURSIVE_MODE,self::EXCLUDE_TESTCASES,$exclude_branches);
 
 		if(count($test_spec))
 		{
-			$pivot = $test_spec[0];
-			$the_level = 1;
-			$level = array();
-
-			foreach($test_spec as $elem)
-			{
-				$current = $elem;
-
-				if ($pivot['id'] == $current['parent_id'])
-				{
-					$the_level++;
-					$level[$current['parent_id']]=$the_level;
-				}
-				else if ($pivot['parent_id'] != $current['parent_id'])
-				{
-					$the_level = $level[$current['parent_id']];
-				}
-
-				switch($mode)
-				{
-  				case 'dotted':
-				  $aa[$current['id']] = str_repeat('.',$the_level) . $current['name'];
-          break;
-
-  				case 'array':
-				  $aa[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
-				  break;
-        }
-
-				// update pivot
-				$level[$current['parent_id']]= $the_level;
-				$pivot=$elem;
-			}
+		  $ret = $this->_createHierarchyMap($test_spec);
 		}
-
-		return $aa;
+		return $ret;
 	}
 
 	/**
@@ -1012,7 +982,7 @@ function count_testcases($id)
    * rev :
    *      20070104 - franciscom - added [$get_not_empy]
    **/
-  function getOptionReqSpec($tproject_id,$get_not_empty=0)
+  function getOptionReqSpec($tproject_id,$get_not_empty=self::GET_EMPTY_REQSPEC)
   {
     $additional_table='';
     $additional_join='';
@@ -1028,6 +998,109 @@ function count_testcases($id)
   		     " ORDER BY SRS.title";
   	return $this->db->fetchColumnsIntoMap($sql,'id','title');
   } // function end
+
+
+  /**
+   *
+   * @author Francisco Mancardi - francisco.mancardi@gmail.com
+   *
+   * rev :
+   *      20090125 - franciscom
+   **/
+	function genComboReqSpec($id,$mode='dotted')
+	{
+		$ret = array();
+    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+	                            'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+
+	  $subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,null,null,null,false);
+ 		if(count($subtree))
+		{
+		  $ret = $this->_createHierarchyMap($subtree);
+    }
+
+		return $ret;
+	}
+
+  /*
+  
+              [$mode]: dotted -> $level number of dot characters are appended to
+                               the left of item name to create an indent effect.
+                               Level indicates on what tree layer item is positioned.
+                               Example:
+
+                                null
+                                \
+                               id=1   <--- Tree Root = Level 0
+                                 |
+                                 + ------+
+                               /   \      \
+                            id=9   id=2   id=8  <----- Level 1
+                                    \
+                                     id=3       <----- Level 2
+                                      \
+                                       id=4     <----- Level 3
+
+
+                               key: item id (= node id on tree).
+                               value: every array element is an string, containing item name.
+
+                               Result example:
+
+                                2  .TS1
+                                3 	..TS2
+                                9 	.20071014-16:22:07 TS1
+                               10 	..TS2
+
+
+                     array  -> key: item id (= node id on tree).
+                               value: every array element is a map with the following keys
+                               'name', 'level'
+
+                                2  	array(name => 'TS1',level =>	1)
+                                3   array(name => 'TS2',level =>	2)
+                                9	  array(name => '20071014-16:22:07 TS1',level =>1)
+                               10   array(name =>	'TS2', level 	=> 2)
+
+  */
+  private function _createHierarchyMap($array2map,$mode='dotted')
+  {
+      $hmap=array();
+			$the_level = 1;
+			$level = array();
+  		$pivot = $array2map[0];
+
+			foreach($array2map as $elem)
+			{
+				$current = $elem;
+
+				if ($pivot['id'] == $current['parent_id'])
+				{
+					$the_level++;
+					$level[$current['parent_id']]=$the_level;
+				}
+				else if ($pivot['parent_id'] != $current['parent_id'])
+				{
+					$the_level = $level[$current['parent_id']];
+				}
+
+				switch($mode)
+				{
+  				case 'dotted':
+				  $hmap[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+          break;
+
+  				case 'array':
+				  $hmap[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
+				  break;
+        }
+
+				// update pivot
+				$level[$current['parent_id']]= $the_level;
+				$pivot=$elem;
+			}
+	    return $hmap;
+  }
 
 
 
@@ -1780,9 +1853,6 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
        " AND   CFTP.testproject_id={$id} " .
        $additional_join .
        " ORDER BY display_order";
-
-  // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
   $map = $this->db->fetchRowsIntoMap($sql,$access_key);
   return($map);
 }

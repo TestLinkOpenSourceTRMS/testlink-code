@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.7 2008/09/21 19:02:47 schlundus Exp $
+$Id: tcSearchForm.tpl,v 1.8 2009/01/25 18:53:33 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
-
+     20090125 - franciscom - BUGID - search by requirement doc id
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -12,13 +12,14 @@ rev :
 {lang_get var="labels" 
           s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
              th_title,summary,steps,expected_results,keyword,custom_field,
-             custom_field_value,btn_find'}
+             search_type_like,
+             custom_field_value,btn_find,requirement_document_id'}
 
 
 {include file="inc_head.tpl"}
 <body>
 
-<h1 class="title">{$mainCaption|escape}</h1>
+<h1 class="title">{$gui->mainCaption|escape}</h1>
 
 <div style="margin: 1px;">
 <form method="post" action="lib/testcases/searchData.php" target="workframe">
@@ -52,33 +53,50 @@ rev :
 			<td><input type="text" name="expected_results" 
 			           size="{#RESULTS_SIZE#}" maxlength="{#RESULTS_MAXLEN#}" /></td>
 		</tr>
+		
+		{if $gui->filter_by.keyword}
 		<tr>
 			<td>{$labels.keyword}</td>
 			<td><select name="keyword_id">
 					<option value="0">&nbsp;</option>
-					{section name=Row loop=$keywords}
-					<option value="{$keywords[Row]->dbID}">{$keywords[Row]->name|escape}</option>
+					{section name=Row loop=$gui->keywords}
+					<option value="{$gui->keywords[Row]->dbID}">{$gui->keywords[Row]->name|escape}</option>
 				{/section}
 				</select>
 			</td>
 		</tr>
-		<tr>
-     		<td>{$labels.custom_field}</td>
-			<td><select name="custom_field_id">
-					<option value="0">&nbsp;</option>
-					{foreach from=$design_cf key=cf_id item=cf}
-						<option value="{$cf_id}">{$cf.name}</option>
-					{/foreach}
-				</select>
-			</td>
-	  	</tr>
-		<tr>
-	   		<td>{$labels.custom_field_value}</td>
-     		<td>
-				<input type="text" name="custom_field_value" 
-			         size="{#CFVALUE_SIZE#}" maxlength="{#CFVALUE_MAXLEN#}"/>
-			</td>
-	  	</tr>
+		{/if}
+		
+    {if $gui->filter_by.design_scope_custom_fields}
+		    <tr>
+   	    	<td>{$labels.custom_field}</td>
+		    	<td><select name="custom_field_id">
+		    			<option value="0">&nbsp;</option>
+		    			{foreach from=$gui->design_cf key=cf_id item=cf}
+		    				<option value="{$cf_id}">{$cf.name}</option>
+		    			{/foreach}
+		    		</select>
+		    	</td>
+	      	</tr>
+		    <tr>
+	       		<td>{$labels.custom_field_value}</td>
+         		<td>
+		    		<input type="text" name="custom_field_value" 
+		    	         size="{#CFVALUE_SIZE#}" maxlength="{#CFVALUE_MAXLEN#}"/>
+		    	</td>
+	      </tr>
+	  {/if}
+	  
+	  {if $gui->filter_by.requirement_doc_id}
+		    <tr>
+	       		<td>{$labels.requirement_document_id}</td>
+         		<td>
+		    		<input type="text" name="requirement_doc_id" id="requirement_doc_id"
+		    		       title="{$labels.search_type_like}"
+		    	         size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}"/>
+		    	</td>
+	      </tr>
+	  {/if}    
 	</table>
 	
 	<p style="padding-left: 20px;">

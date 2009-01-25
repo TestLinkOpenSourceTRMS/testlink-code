@@ -1,9 +1,10 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.38 2008/12/29 09:27:37 schlundus Exp $
+ * $Id: searchData.php,v 1.39 2009/01/25 18:53:49 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
+ *     20090125 - franciscom - BUGID - search by requirement doc id
  *     20081115 - franciscom - refactored to improve:
  *     performance and information displayed.
  *              
@@ -27,7 +28,7 @@ $map = null;
 $args = init_args();
 if ($args->tprojectID)
 {
-    $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
+    $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
     $filter = null;
     if($args->targetTestCase)
     {
@@ -88,19 +89,31 @@ if ($args->tprojectID)
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }
    
+   
+    // BUGID
+    if( !is_null($args->requirement_doc_id) )
+    {
+       $args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
+       $from['by_requirement_doc_id']= " ,requirements REQ, req_coverage RC";  
+       $filter['by_requirement_doc_id']=" AND RC.testcase_id = NHA.id " .
+                                        " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' " .
+                                        " AND REQ.id=RC.req_id "; 
+    }   
+    
+    
     // ------------------------------------------------------------------------------------
     $sql = " SELECT NHA.id AS testcase_id,NHA.name,tcversions.id AS tcversion_id," .
            " summary,steps,expected_results,version,tc_external_id".
            " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions " .
-           " {$from['by_keyword_id']} {$from['by_custom_field']}".
+           " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']}".
            " WHERE NHA.id = NHB.parent_id AND NHB.id = tcversions.id ";
+           
     if ($filter)
     {
         $sql .= implode("",$filter);
     }
     $map = $db->fetchRowsIntoMap($sql,'testcase_id');	
 }
-
 
 $smarty = new TLSmarty();
 $gui->row_qty=count($map);
@@ -144,10 +157,12 @@ function init_args()
    	$args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
   
-    $strnull = array('name','summary','steps','expected_results','custom_field_value','targetTestCase');
+    $strnull = array('name','summary','steps','expected_results','custom_field_value',
+                     'targetTestCase','requirement_doc_id');
     foreach($strnull as $keyvar)
     {
         $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
+        $args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? $args->$keyvar : null;
     }
 
     $int0 = array('keyword_id','version','custom_field_id');

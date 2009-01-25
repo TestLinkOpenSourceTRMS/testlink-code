@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.94 $
- * @modified $Date: 2009/01/03 17:30:29 $ by $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2009/01/25 16:04:53 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1381,8 +1381,9 @@ function get_max_build_id($id,$active = null,$open = null)
 	$recordset = $this->db->get_recordset($sql);
 	$maxBuildID = 0;
 	if ($recordset)
+	{
 		$maxBuildID = intval($recordset[0]['maxbuildid']);
-
+  }
 	return $maxBuildID;
 }
 

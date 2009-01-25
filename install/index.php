@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.11 2008/01/20 15:37:19 franciscom Exp $ 
+$Id: index.php,v 1.12 2009/01/25 16:38:05 havlat Exp $ 
 
 rev:
     20080120 - franciscom - added link to README
@@ -27,7 +27,8 @@ $_SESSION['testlink_version']=TL_VERSION;
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> </span></td>
+    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />
+    &nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> </span></td>
     <td align="right"><span class="headers">Installation</span></td>
   </tr>
   <tr class="fancyRow2">
@@ -38,17 +39,20 @@ $_SESSION['testlink_version']=TL_VERSION;
       <tr align="left" valign="top">
         <td class="pad" id="content" colspan="2">
 
-			<p><b>TestLink Setup</b></p>
-			<a href="newInstallStart_TL.php?installationType=new">New installation</a>
-			<p />
-			<a href="newInstallStart_TL.php?installationType=upgrade">Upgrade Database</a>
-			<p />
-			<a href="./migration/index.php">Migration from 1.6.2 to 1.7.x </a>
-			<p />
-			<a href="./migration/migrate_17/index.php">Migration from 1.7.2 (or greater) to 1.8.0 </a>
-			<p />
-			<p />
-			<a href="../README">Access README for install/upgrade details </a>
+			<h2>TestLink Setup</h2>
+			<p>Show <a target="_blank" href="../docs/installation_manual.pdf">Installation manual</a>,
+			<a href="../README">README</a> and
+			<a href="../CHANGELOG">Changes Log</a></p>
+			<p><a href="newInstallStart_TL.php?installationType=new">New installation</a>
+			</p>
+			<p><a href="javascript: alert('Not applicable in 1.8');">Minor upgrade of Database </a>
+<!--			<p><a href="newInstallStart_TL.php?installationType=upgrade">Minor upgrade of Database </a> -->
+			for changes during bug fixing on one major version only. 
+			</p>
+			<p><a href="./migration/migrate_17/index.php">Migration from 1.7.2 (or greater) to 1.8.0 </a>
+			</p>
+			<p><a href="./migration/index.php">Migration from 1.6.2 to 1.7.x </a>
+			</p>
 			
 			
 		</td>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/01/22 17:09:57 $ by $Author: havlat $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/01/25 16:38:05 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
@@ -522,11 +522,24 @@ function check_php_settings(&$errCounter)
  * @param integer &$errCounter pointer to error counter
  * @return string html table rows
  * 
- * @todo martin: Do we require "Checking DOM XML support"?
+ * @todo martin: Do we require "Checking DOM XML support"? It seems that we use internal library.
+ *			if (function_exists('domxml_open_file'))
  */
 function check_php_extensions(&$errCounter)
 {
-	$out = '<tr><td>Checking graphic library (GD)</td>';
+	$out = '<tr><td>Checking MySQL support in PHP</td>';
+	if(extension_loaded('mysql'))
+		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+	else 
+		$out .=  '<td><span class="tab-warning">Failed! MySQL Database cannot be used.</span></td></tr>';
+
+	$out .= '<tr><td>Checking Postgres support in PHP</td>';
+	if(extension_loaded('pgsql'))
+		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
+	else 
+		$out .=  '<td><span class="tab-warning">Failed! Postgres Database cannot be used.</span></td></tr>';
+
+	$out .= '<tr><td>Checking graphic library (GD)</td>';
 
 	if(extension_loaded('gd'))
 		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
@@ -541,17 +554,13 @@ function check_php_extensions(&$errCounter)
 		$out .=  "<td><span class='tab-warning'>Failed! LDAP authentication cannot be used" .
 				" (default internal authentication will works)</span></td></tr>";
 
-/*	$out .= '<tr><td>Checking DOM XML support</td>';
-	if (function_exists('domxml_open_file'))
-		$out .= '<td><span class="tab-success">OK</span></td></tr>\n;';
+	$out .= '<tr><td>Checking JSON library</td>';
+	if(extension_loaded('json'))
+		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
 	else 
-	{
-		$out .=  '<td><span class="tab-error">ERROR - XML Import/Export cannot work. ' .
-				'Please install related library to your web server (You can do it later).' .
-				'</span></td></tr>';
-        $errCounter++;
-	}
-*/
+		$out .=  "<td><span class='tab-warning'>Failed! JSON support is not available. " .
+				"You must install it or configure TestLink withot EXT-JS component.</span></td></tr>";
+
 	return ($out);
 }  
 
@@ -703,6 +712,87 @@ function check_php_version(&$errCounter)
 	return ($final_msg);
 }  
 
+
+/**
+ * verify that files are writable/readable
+ * OK result is for state:
+ * 		a) installation - writable
+ * 		b) installed - readable
+ * @param integer &$errCounter pointer to error counter
+ * @return string html row with result 
+ */
+function check_file_permissions(&$errCounter, $checked_filename, $bCritical=FALSE)
+{
+	global $inst_type;
+	$checked_path = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..');
+	$checked_file = $checked_path.DIRECTORY_SEPARATOR.$checked_filename;
+	$out = '<tr><td>Access to file ('.$checked_file.')</td>';
+
+	if ($inst_type == 'new')
+	{
+		if(file_exists($checked_file)) 
+		{
+  			if (is_writable($checked_file))
+  				$out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n"; 
+  			else
+  			{
+ 				if ($bCritical)
+ 				{
+ 					$out .= "<td><span class='tab-error'>Failed! Please fix the file " .
+ 							$checked_file . " permissions and reload the page.</span></td></tr>"; 
+					$errCounter += 1;
+ 				}
+ 				else
+ 					$out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
+ 							$checked_file . " permissions.</span></td></tr>"; 
+  			}
+  		} 
+		else 
+		{
+  			if (is_writable($checked_path))
+  				$out .= "<td><span class='tab-success'>OK</span></td></tr>\n"; 
+  			else
+  			{
+ 				if ($bCritical)
+ 				{
+	 				$out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
+ 							$checked_path . " permissions and reload the page.</span></td></tr>"; 
+					$errCounter += 1;
+ 				}
+ 				else
+ 					$out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
+ 							$checked_path . " permissions.</span></td></tr>"; 
+  			}
+		}
+	}
+	else
+	{
+		if(file_exists($checked_file)) 
+		{
+  			if (!is_writable($checked_file))
+  				$out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n"; 
+  			else
+  			{
+ 				$out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
+  			}
+  		} 
+		else 
+		{
+			if ($bCritical)
+			{
+				$out .= "<td><span class='tab-error'>Failed! The file is not on place.</span></td></tr>"; 
+				$errCounter += 1;
+ 			}
+			else
+				$out .= "<td><span class='tab-warning'>The file is not on place.</span></td></tr>"; 
+		}
+	}
+
+	return($out);
+}
+
+
+
 /**
  * Check read/write permissions for directories
  * based on check_with_feedback($dirs_to_check);
@@ -712,17 +802,16 @@ function check_php_version(&$errCounter)
 function check_dir_permissions(&$errCounter)
 {
 	$dirs_to_check = array('gui'.DIRECTORY_SEPARATOR.'templates_c', 'logs', 'upload_area');
+	
 	$final_msg = '';
-
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
 	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
+	$checked_path_base = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..');
 
 	foreach ($dirs_to_check as $the_d) 
 	{
   		// Correct relative path for installer (var $inst_type is defined in newInstallStart_TL.php)
-  		global $inst_type;
-  		if (isset($inst_type))
-  			$the_d = '..'.DIRECTORY_SEPARATOR.$the_d;
+		$the_d = $checked_path_base.DIRECTORY_SEPARATOR.$the_d;
   			
   		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
   
@@ -763,7 +852,6 @@ function reportCheckingSystem(&$errCounter)
 	echo '<h2>System requirements</h2><table class="common" style="width: 100%;">';
 	echo check_os();
 	echo check_php_version($errCounter);
-//	echo check_php_version($errCounter);
 	echo '</table>';
 }
 
@@ -780,6 +868,7 @@ function reportCheckingWeb(&$errCounter)
 	echo check_php_settings($errCounter);
 	echo check_php_extensions($errCounter);
 	echo '</table>';
+
 }
 
 
@@ -791,6 +880,8 @@ function reportCheckingPermissions(&$errCounter)
 {
 	echo '<h2>Read/write permissions</h2><table class="common" style="width: 100%;">';
 	echo check_dir_permissions($errCounter);
+	echo check_file_permissions($errCounter, 'config_db.inc.php', TRUE);
+	echo check_file_permissions($errCounter, 'custom_config.inc.php');
 	echo '</table>';
 }
 

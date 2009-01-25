@@ -1,11 +1,13 @@
 <?php 
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migration_start.php,v 1.3 2008/08/20 16:58:54 franciscom Exp $ 
+$Id: migration_start.php,v 1.4 2009/01/25 16:38:05 havlat Exp $ 
 
 Author: franciscom
 */
 require_once("../../installUtils.php");
+require_once('..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.
+		'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
 
 session_start(); 
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
@@ -15,7 +17,9 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<title><?php echo $tl_and_version ?>Installer</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link href="../../../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
+	<link href="../../../gui/themes/default/css/testlink.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
              @import url('../../css/style.css');
         </style>
@@ -99,12 +103,12 @@ $the_msg = '<p><b>' . $main_title . '</b></p>' . $explain_msg;
 
 <?php
 echo $the_msg;
-$errors = do_migration_checks();
-?>
 
+$errors = 0;
+reportCheckingSystem($errors);
+reportCheckingWeb($errors);
+reportCheckingPermissions($errors);
 
-
-<?php
 if($errors>0) {
 ?>
 <br />
@@ -138,10 +142,6 @@ exit;
 
          <input type="hidden" name="installationType" value="<?php  echo $inst_type; ?>">
          <input type="hidden" name="page2launch" value="./migration/migrate_17/migrate_17_to_18.php">
-
-         <?php 
-          echo ewigth($inst_type); 
-         ?>
 
          <div>
 					Database Configuration <p/>
@@ -217,7 +217,7 @@ exit;
 					</div>
 					<input type="password" id="tl_loginpassword" name="tl_loginpassword" style="width:200px" /><br />
 				</p>
-				--->
+				- -->
 				
 				<p> &nbsp;</p>
 				<p>

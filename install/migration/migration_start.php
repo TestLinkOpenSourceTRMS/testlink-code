@@ -1,11 +1,13 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: migration_start.php,v 1.5 2008/02/20 07:49:13 franciscom Exp $ */
+/* $Id: migration_start.php,v 1.6 2009/01/25 16:38:05 havlat Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
 // 20050824 - fm
 require_once("../installUtils.php");
+require_once('..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.
+		'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
 
 session_start(); 
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
@@ -15,7 +17,9 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<title><?php echo $tl_and_version ?>Installer</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link href="../../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
+	<link href="../../gui/themes/default/css/testlink.css" rel="stylesheet" type="text/css" />
         <style type="text/css">
              @import url('../css/style.css');
         </style>
@@ -93,18 +97,20 @@ $the_msg = '<p><b>' . $main_title . '</b></p>' . $explain_msg;
     <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
   </tr>
   <tr align="left" valign="top">
-    <td colspan="2"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
+    <td colspan="2">
+
+   	<table width="100%"  border="0" cellspacing="0" cellpadding="1">
       <tr align="left" valign="top">
         <td class="pad" id="content" colspan="2">
 
 <?php
 echo $the_msg;
-$errors = do_migration_checks();
-?>
 
+$errors = 0;
+reportCheckingSystem($errors);
+reportCheckingWeb($errors);
+reportCheckingPermissions($errors);
 
-
-<?php
 if($errors>0) {
 ?>
 <br />
@@ -131,23 +137,17 @@ please visit the <a href="http://www.teamst.org" target="_blank">TestLink Forums
 exit;
 }
 ?>
-<br />
-<br />
+		<h2>Database Configuration</h2>
 
-				<form action="../license.php" method="post" name="myForm" onsubmit="return validate()">
+		<form action="../license.php" method="post" name="myForm" onsubmit="return validate()">
 
-         <input type="hidden" name="installationType" value="<?php  echo $inst_type; ?>">
-         <input type="hidden" name="page2launch" value="./migration/migrate_16_to_17.php">
+        <input type="hidden" name="installationType" value="<?php  echo $inst_type; ?>">
+        <input type="hidden" name="page2launch" value="./migration/migrate_16_to_17.php">
 
-         <?php 
-          echo ewigth($inst_type); 
-         ?>
-
-         <div>
-					Database Configuration <p/>
-				  	<div class="labelHolder">
-					  	<label for="databasetype">Database Type</label>
-					  </div>
+        <div>
+		  	<div class="labelHolder">
+		  		<label for="databasetype">Database Type</label>
+			</div>
 
 					<select id="databasetype" name="databasetype">
 						<option value="mysql" selected>MySQL</option>
@@ -156,7 +156,7 @@ exit;
             Migration only for MySQL
 						<option value="postgres" >Postgres 8.0/8.1 (not tested)</option>
 						<option value="mssql" >Microsoft SQL Server (not tested)</option>
-						--->
+						- -->
 					</select>	
 					<br />
 					
@@ -170,7 +170,7 @@ exit;
 				<p>
 				
 				<div class="fancy">
-				 Name of your existent TestLink 1.6.2 database<p>
+				 Name of your existing TestLink 1.6.2 database<p>
 				<div class="labelHolder"><label for="source_databasename">Source Database name:</label></div>
 					<input type="text" id="source_databasename" name="source_databasename" 
                  maxlength="50" 
@@ -207,9 +207,6 @@ exit;
 					<div class="labelHolder"><label for="databaseloginpassword">Database password:</label></div><input type="password" id="databaseloginpassword" name="databaseloginpassword" style="width:200px" /><br />
 				</p>
 
-
-        <!---
-				20060831 - franciscom
 				<p class="headers">
 					Database User for Normal Testlink use.
 				</p>
@@ -229,7 +226,6 @@ exit;
 					</div>
 					<input type="password" id="tl_loginpassword" name="tl_loginpassword" style="width:200px" /><br />
 				</p>
-				--->
 				
 				<p> &nbsp;</p>
 				<p>
@@ -253,32 +249,3 @@ exit;
 
 
 
-<?php
-function do_migration_checks()
-{
-$errors = 0;
-
-$check = check_php_version("../info/");
-$errors += $check['errors'];
-echo $check['msg'];
-
-$check = check_php_settings();
-$errors += $check['errors'];
-echo $check['msg'];
-
-$check = check_db_loaded_extension('mysql');
-$errors += $check['errors'];
-echo $check['msg'];
-
-
-$check = check_session();
-$errors += $check['errors'];
-echo $check['msg'];
-
-$dirs_to_check=array('../../gui/templates_c,../../logs');
-$check = check_with_feedback($dirs_to_check);
-echo $check['msg'];
-$errors += $check['errors'];
-
-return($errors);
-}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2008/12/13 23:47:01 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/01/26 19:16:42 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -261,6 +261,6 @@ function getKeywordErrorMessage($code)
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'mgt_modify_key');
+	return $user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_view_key');
 }
 ?>

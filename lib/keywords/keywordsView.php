@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/01/26 19:16:42 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  */
@@ -46,6 +46,6 @@ function init_args()
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'mgt_view_req');
+	return $user->hasRight($db,'mgt_view_key');
 }
 ?>

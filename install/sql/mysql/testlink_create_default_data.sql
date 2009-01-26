@@ -1,9 +1,10 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.24 2009/01/03 18:53:38 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.25 2009/01/26 22:23:57 havlat Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
 #
+# 20090126 - havlatm - role definition update
 # 20081029 - franciscom - add events_mgt right
 #                         fixed typo error system_configuraton -> system_configuration
 # 20070724 - franciscom - BUGID 950 
@@ -12,11 +13,8 @@
 #            updated db version- due to changes in milestone table
 # ---------------------------------------------------------------------------------
 
-# admin account 
-# SECURITY: change password after first login
-INSERT INTO `users` (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
-
+# Database version
+INSERT INTO db_version (version,notes,upgrade_ts) VALUES('DB 1.2', 'first version with API feature',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO `node_types` (id,description) VALUES (1, 'testproject');
@@ -64,7 +62,7 @@ INSERT INTO `rights` (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO `rights` (id,description) VALUES (22,'events_mgt');
 
 
-# Rights for Administrator (admin role)
+# Rights for Administrator role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,1 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,2 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,3 );
@@ -88,33 +86,37 @@ INSERT INTO `role_rights` (role_id,right_id) VALUES (8,20);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,21);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,22);
 
-# Rights for guest (guest role)
+# Rights for guest role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (5,3 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (5,6 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (5,8 );
 
-
-# Rights for test designer (test dsigner role)
+# Rights for test designer role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,3 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,6 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,7 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,8 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,9 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,10);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,11);
 
-# Rights for tester (tester role)
+# Rights for tester role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (7,1 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (7,3 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (7,6 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (7,8 );
 
-# Rights for senior tester (senior tester role)
+# Rights for senior tester role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,1 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,2 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,3 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,6 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,7 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,8 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,9 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (6,11);
 
-# Rights for leader (leader role)
+# Rights for leader role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,1 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,2 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,3 );
@@ -124,10 +126,15 @@ INSERT INTO `role_rights` (role_id,right_id) VALUES (9,6 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,7 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,8 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,9 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,10);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,11);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,15);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,16);
 
+# admin account 
+# SECURITY: change password after first login
+INSERT INTO `users` (login,password,role_id,email,first,last,locale,active)
+             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
 
 # Assignment types
 INSERT INTO assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
@@ -140,6 +147,3 @@ INSERT INTO assignment_status (id,description) VALUES(2,'closed');
 INSERT INTO assignment_status (id,description) VALUES(3,'completed');
 INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
 INSERT INTO assignment_status (id,description) VALUES(5,'todo');
-
-# Database version
-INSERT INTO db_version (version,notes,upgrade_ts) VALUES('DB 1.2', 'first version with API feature',CURRENT_TIMESTAMP());

@@ -1,10 +1,11 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.16 2008/11/09 16:29:36 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.17 2009/01/26 22:23:57 havlat Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
 --
+--  20090126 - havlatm - role definition update
 --  20080102 - franciscom - added note on db_version
 --  20070724 - franciscom - BUGID 950 
 --             removed right with id=19
@@ -15,12 +16,6 @@
 
 --  Database version
 INSERT INTO db_version (version,notes,upgrade_ts) VALUES ('DB 1.2','first version with API feature',GETDATE());
-
---  admin account 
---  SECURITY: change password after first login
-INSERT INTO users (login,password,role_id,email,first,last,locale,active)
-             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
-
 
 --  Node types -
 SET IDENTITY_INSERT node_types ON
@@ -71,22 +66,7 @@ INSERT INTO rights (id,description) VALUES (22,'events_mgt');
 
 SET IDENTITY_INSERT rights OFF
 
--- Assignment status
-SET IDENTITY_INSERT assignment_status ON
-INSERT INTO assignment_status (id,description) VALUES(1,'open');
-INSERT INTO assignment_status (id,description) VALUES(2,'closed');
-INSERT INTO assignment_status (id,description) VALUES(3,'completed');
-INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
-INSERT INTO assignment_status (id,description) VALUES(5,'todo');
-SET IDENTITY_INSERT assignment_status OFF
-
--- Assignment types
-SET IDENTITY_INSERT assignment_types ON
-INSERT INTO assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
-INSERT INTO assignment_types (id,fk_table,description) VALUES(2,'tcversions','testcase_review');
-SET IDENTITY_INSERT assignment_types OFF
-
---  Rights for Administrator (admin role)
+--  Rights for Administrator role
 INSERT INTO role_rights (role_id,right_id) VALUES (8,1 );
 INSERT INTO role_rights (role_id,right_id) VALUES (8,2 );
 INSERT INTO role_rights (role_id,right_id) VALUES (8,3 );
@@ -107,34 +87,41 @@ INSERT INTO role_rights (role_id,right_id) VALUES (8,17);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,18);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,21);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,22);
 
 
---  Rights for guest (guest role)
+--  Rights for guest role
 INSERT INTO role_rights (role_id,right_id) VALUES (5,3 );
 INSERT INTO role_rights (role_id,right_id) VALUES (5,6 );
 INSERT INTO role_rights (role_id,right_id) VALUES (5,8 );
 
---  Rights for test dsigner (test designer role)
+--  Rights for test designer role
 INSERT INTO role_rights (role_id,right_id) VALUES (4,3 );
 INSERT INTO role_rights (role_id,right_id) VALUES (4,6 );
 INSERT INTO role_rights (role_id,right_id) VALUES (4,7 );
 INSERT INTO role_rights (role_id,right_id) VALUES (4,8 );
+INSERT INTO role_rights (role_id,right_id) VALUES (4,9 );
+INSERT INTO role_rights (role_id,right_id) VALUES (4,10);
 INSERT INTO role_rights (role_id,right_id) VALUES (4,11);
 
---  Rights for tester (tester role)
+--  Rights for tester role
 INSERT INTO role_rights (role_id,right_id) VALUES (7,1 );
 INSERT INTO role_rights (role_id,right_id) VALUES (7,3 );
+INSERT INTO role_rights (role_id,right_id) VALUES (7,6 );
+INSERT INTO role_rights (role_id,right_id) VALUES (7,8 );
 
---  Rights for senior tester (senior tester role)
+--  Rights for test analyst (senior tester) role
 INSERT INTO role_rights (role_id,right_id) VALUES (6,1 );
 INSERT INTO role_rights (role_id,right_id) VALUES (6,2 );
 INSERT INTO role_rights (role_id,right_id) VALUES (6,3 );
 INSERT INTO role_rights (role_id,right_id) VALUES (6,6 );
 INSERT INTO role_rights (role_id,right_id) VALUES (6,7 );
 INSERT INTO role_rights (role_id,right_id) VALUES (6,8 );
+INSERT INTO role_rights (role_id,right_id) VALUES (6,9 );
 INSERT INTO role_rights (role_id,right_id) VALUES (6,11);
 
---  Rights for leader (leader role)
+--  Rights for leader role
 INSERT INTO role_rights (role_id,right_id) VALUES (9,1 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,2 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,3 );
@@ -144,7 +131,27 @@ INSERT INTO role_rights (role_id,right_id) VALUES (9,6 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,7 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,8 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,9 );
+INSERT INTO role_rights (role_id,right_id) VALUES (9,10);
 INSERT INTO role_rights (role_id,right_id) VALUES (9,11);
 INSERT INTO role_rights (role_id,right_id) VALUES (9,15);
 INSERT INTO role_rights (role_id,right_id) VALUES (9,16);
--- 
+
+--  admin account 
+--  SECURITY: change password after first login
+INSERT INTO users (login,password,role_id,email,first,last,locale,active)
+             VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
+
+-- Assignment types
+SET IDENTITY_INSERT assignment_types ON
+INSERT INTO assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
+INSERT INTO assignment_types (id,fk_table,description) VALUES(2,'tcversions','testcase_review');
+SET IDENTITY_INSERT assignment_types OFF
+
+-- Assignment status
+SET IDENTITY_INSERT assignment_status ON
+INSERT INTO assignment_status (id,description) VALUES(1,'open');
+INSERT INTO assignment_status (id,description) VALUES(2,'closed');
+INSERT INTO assignment_status (id,description) VALUES(3,'completed');
+INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
+INSERT INTO assignment_status (id,description) VALUES(5,'todo');
+SET IDENTITY_INSERT assignment_status OFF

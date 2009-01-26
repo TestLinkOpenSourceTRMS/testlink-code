@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.137 $ $Author: schlundus $
- * @modified $Date: 2009/01/23 20:07:10 $
+ * @version $Revision: 1.138 $ $Author: franciscom $
+ * @modified $Date: 2009/01/26 21:52:49 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -65,17 +65,11 @@ require_once("role.class.php");
 require_once("attachment.class.php");
 
 /** @TODO use the next include only if it is used -> must be removed */
-// require_once("testproject.class.php");
 require_once("user.class.php");
 require_once("keyword.class.php");
 require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
 require_once("plan.core.inc.php");
-
-// 20090111 - francisco.mancardi@gruppotesi.com
-// require_once("testplan.class.php");
-// require_once("tree.class.php");
-// require_once("cfield_mgr.class.php");
 
 
 /** load the php4 to php5 domxml wrapper if the php5 is used and 
@@ -110,8 +104,7 @@ $db = 0;
 
 
 // --------------------------------------------------------------------------------------
-/** @TODO martin: using must be discussed (leads to inpropper using of classes) ; describe */
-/** See PHP Manual for details */
+/* See PHP Manual for details */
 function __autoload($class_name) {
    require_once $class_name . '.class.php';
 }
@@ -130,7 +123,9 @@ function __autoload($class_name) {
 */
 function doDBConnect(&$db)
 {
-	global $tlCfg;
+	global $g_tlLogger;
+	// global $tlCfg;
+	$charSet = config_get('charset');
 	$result = array('status' => 1, 'dbms_msg' => 'ok');
 
 	$db = new database(DB_TYPE);
@@ -141,18 +136,17 @@ function doDBConnect(&$db)
 		echo $result['dbms_msg'];
 		$result['status'] = 0;
 		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
-  	}
-  	else
+  }
+  else
 	{
-		if((DB_TYPE == 'mysql') && ($tlCfg->charset == 'UTF-8'))
+		if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
 		{
-				$r = $db->exec_query("SET CHARACTER SET utf8");
-				$r = $db->exec_query("SET collation_connection = 'utf8_general_ci'");
+				$db->exec_query("SET CHARACTER SET utf8");
+				$db->exec_query("SET collation_connection = 'utf8_general_ci'");
 		}
 	}
 
 	//if we establish a DB connection, we reopen the session, to attach the db connection
-	global $g_tlLogger;
 	$g_tlLogger->endTransaction();
 	$g_tlLogger->startTransaction();
 
@@ -243,8 +237,6 @@ function checkSessionValid(&$db)
 		 * b) do not read again and again the same data from DB
 		 * c) this function check JUST session validity
 		 **/
-		global $tlCfg;
-		
 		$now = time();
 		$lastActivity = $_SESSION['lastActivity'];
 		if (($now - $lastActivity) <= (config_get("sessionInactivityTimeout") * 60))
@@ -263,11 +255,14 @@ function checkSessionValid(&$db)
 	
 		$fName = "login.php";
 		$baseDir = dirname(__FILE__);
+		$idx=0;
 		while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
 		{
 			$fName = "../{$fName}";
-			if ($i++ == 5)
-				break; 
+			if ($idx++ == 5) // WHAT IS THIS MAGIC NUMBER ???
+			{
+			    break;   
+			}
 		}
 		redirect($fName."?note=expired","top.location");
 		exit();

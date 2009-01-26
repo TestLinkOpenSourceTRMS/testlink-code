@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/01/25 16:38:05 $ by $Author: havlat $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/01/26 21:47:05 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -14,6 +14,7 @@
  *
  * Revisions:
  * 	
+ *  20090126 - franciscom - check_php_extensions() refactoring
  *  20090109 - havlatm - import checking functions from Installer 
  * 	20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
  *  20081015 - franciscom - getSecurityNotes() - refactoring
@@ -262,7 +263,6 @@ function getSecurityNotes(&$db)
 		$securityNotes[] = $msg;
 	}
 	
-	// 20080308 - franciscom
 	$msg = checkEmailConfig();
 	if(!is_null($msg))
 	{
@@ -273,31 +273,33 @@ function getSecurityNotes(&$db)
 	}
 	checkForExtensions($securityNotes);
   
-	// write problems to a file
 	if(!is_null($securityNotes))
 	{
-      	$warnings='';
-		$filename = config_get('log_path') . 'config_check.txt';
-      
-      	if (@$handle = fopen($filename, 'w')) 
-      	{
-      		$warnings=implode("\n",$securityNotes);
-      		@fwrite($handle, $warnings);
-
-			$securityNotes=null;
-			// based on configuration show warning on login page
-			if (config_get('show_config_check_warning'))
-				$securityNotes[] = sprintf(lang_get('config_check_warnings'),$filename);
-      	}
-      	else
-      	{
-			// show problems on login page
-	    	$securityNotes[] = lang_get('unable_to_create_file');
-      	}
-		@fclose($handle);	
-      
+	  $user_feedback=config_get('config_check_warning_mode');
+	  
+	  switch($user_feedback)
+	  {
+	      case 'SCREEN':
+	      break;
+	      
+	      case 'FILE':
+	      case 'SILENT':
+            $warnings='';
+		        $filename = config_get('log_path') . 'config_check.txt';
+            if (@$handle = fopen($filename, 'w')) 
+            {
+              		$warnings=implode("\n",$securityNotes);
+              		@fwrite($handle, $warnings);
+		              @fclose($handle);	
+	          }
+       	    $securityNotes=null;
+	          if($user_feedback=='FILE')
+	          {
+        	      $securityNotes[] = sprintf(lang_get('config_check_warnings'),$filename);
+	          } 
+	      break;
+	  }
 	}
-	
 	return $securityNotes;
 }
 
@@ -527,39 +529,48 @@ function check_php_settings(&$errCounter)
  */
 function check_php_extensions(&$errCounter)
 {
-	$out = '<tr><td>Checking MySQL support in PHP</td>';
-	if(extension_loaded('mysql'))
-		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-	else 
-		$out .=  '<td><span class="tab-warning">Failed! MySQL Database cannot be used.</span></td></tr>';
-
-	$out .= '<tr><td>Checking Postgres support in PHP</td>';
-	if(extension_loaded('pgsql'))
-		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-	else 
-		$out .=  '<td><span class="tab-warning">Failed! Postgres Database cannot be used.</span></td></tr>';
-
-	$out .= '<tr><td>Checking graphic library (GD)</td>';
-
-	if(extension_loaded('gd'))
-		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-	else 
-		$out .=  '<td><span class="tab-warning">Failed! Graph rendering requires it. ' .
-			'This feature will be disabled. It\'s recommended to install it.</span></td></tr>';
-
-	$out .= '<tr><td>Checking LDAP library</td>';
-	if(extension_loaded('ldap'))
-		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-	else 
-		$out .=  "<td><span class='tab-warning'>Failed! LDAP authentication cannot be used" .
-				" (default internal authentication will works)</span></td></tr>";
-
-	$out .= '<tr><td>Checking JSON library</td>';
-	if(extension_loaded('json'))
-		$out .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-	else 
-		$out .=  "<td><span class='tab-warning'>Failed! JSON support is not available. " .
-				"You must install it or configure TestLink withot EXT-JS component.</span></td></tr>";
+ 
+  $cannot_use='cannot be used';
+  $td_ok = "<td><span class='tab-success'>OK</span></td></tr>\n";
+  $td_failed = '<td><span class="tab-warning">Failed! %s %s.</span></td></tr>';
+  
+  $msg_support='<tr><td>Checking %s </td>';
+  $checks=array();
+  $checks[]=array('extension' => 'mysql',
+                  'msg' => array('feedback' => 'MySQL Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
+ 
+  $checks[]=array('extension' => 'pgsql',
+                  'msg' => array('feedback' => 'Postgres Database', 'ok' => $td_ok, 'ko' => 'cannot be used') );
+ 
+  
+  $checks[]=array('extension' => 'gd',
+                  'msg' => array('feedback' => 'GD Graphic library', 'ok' => $td_ok, 
+                                 'ko' => " not enabled.<br>Graph rendering requires it. This feature will be disabled." .
+                                         " It's recommended to install it.") );
+  
+  $checks[]=array('extension' => 'ldap',
+                  'msg' => array('feedback' => 'LDAP library', 'ok' => $td_ok, 
+                                 'ko' => " not enabled. LDAP authentication cannot be used. " .
+                                         "(default internal authentication will works)"));
+  
+  $checks[]=array('extension' => 'json',
+                  'msg' => array('feedback' => 'JSON library', 'ok' => $td_ok, 
+                                 'ko' => " not enabled. You MUST install it to use EXT-JS tree component. "));
+  
+  $out='';
+  foreach($checks as $test)
+  {
+      $out .= sprintf($msg_support,$test['msg']['feedback']);
+      if( extension_loaded($test['extension']) )
+      {
+          $msg=$test['msg']['ok'];
+      }
+      else
+      {
+          $msg=sprintf($td_failed,$test['msg']['feedback'],$test['msg']['ko']);  
+      }
+      $out .= $msg;
+  }
 
 	return ($out);
 }  
@@ -672,15 +683,6 @@ function check_php_version(&$errCounter)
 	// -1 if left is less, 0 if equal, +1 if left is higher
 	$php_ver_comp = version_compare($my_version, $min_version);
 
-/* not used
-	$ver_not_tested="";
-	$has_ver_not_tested=strlen(trim($ver_not_tested)) > 0;
-	$check_not_tested = -1;
-	if($has_ver_not_tested)
-	{
-		$check_not_tested = version_compare($my_version, $ver_not_tested);
-	}
-*/
 	$final_msg = '<tr><td>PHP version</td>';
 
 	if($php_ver_comp < 0) 
@@ -690,22 +692,11 @@ function check_php_version(&$errCounter)
 	        'This is fatal problem. You must upgrade it.</td>';
 		$errCounter += 1;
 	} 
-/*else if($check_not_tested >= 0) 
-{
-  // Just a Warning
-  $final_msg .= "<br><span class='ok'>WARNING! You are running on PHP " . $my_version . 
-                ", and TestLink has not been tested on versions >= " . $ver_not_tested . "</span>";
-}*/
 	else 
 	{
 		$final_msg .= "<td><span class='tab-success'>OK ( {$min_version} [minimun version] ";
 		$final_msg .= ($php_ver_comp == 0 ? " = " : " <= ");
 		$final_msg .=	$my_version . " [your version] " ;
-	              
-/*	if( $has_ver_not_tested )
-	{
-	  $final_msg .= " < {$ver_not_tested} [not tested yet]";
-	}*/              
 		$final_msg .= " ) </span></td></tr>";
 	}
 
@@ -724,7 +715,7 @@ function check_php_version(&$errCounter)
 function check_file_permissions(&$errCounter, $checked_filename, $bCritical=FALSE)
 {
 	global $inst_type;
-	$checked_path = realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..');
+	$checked_path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 	$checked_file = $checked_path.DIRECTORY_SEPARATOR.$checked_filename;
 	$out = '<tr><td>Access to file ('.$checked_file.')</td>';
 
@@ -792,7 +783,6 @@ function check_file_permissions(&$errCounter, $checked_filename, $bCritical=FALS
 }
 
 
-
 /**
  * Check read/write permissions for directories
  * based on check_with_feedback($dirs_to_check);
@@ -802,7 +792,6 @@ function check_file_permissions(&$errCounter, $checked_filename, $bCritical=FALS
 function check_dir_permissions(&$errCounter)
 {
 	$dirs_to_check = array('gui'.DIRECTORY_SEPARATOR.'templates_c', 'logs', 'upload_area');
-	
 	$final_msg = '';
 	$msg_ko = "<td><span class='tab-error'>Failed!</span></td></tr>";
 	$msg_ok = "<td><span class='tab-success'>OK</span></td></tr>";
@@ -810,38 +799,34 @@ function check_dir_permissions(&$errCounter)
 
 	foreach ($dirs_to_check as $the_d) 
 	{
-  		// Correct relative path for installer (var $inst_type is defined in newInstallStart_TL.php)
-		$the_d = $checked_path_base.DIRECTORY_SEPARATOR.$the_d;
+  	// Correct relative path for installer (var $inst_type is defined in newInstallStart_TL.php)
+		$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
   			
-  		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
+  	$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
   
 		if(!file_exists($the_d)) 
 		{
   			$errCounter += 1;
   			$final_msg .= $msg_ko; 
-  		} 
+  	} 
 		else 
 		{
   			$final_msg .= $msg_ok;
     		$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory is writable</td>";
-    		
   			if(!is_writable($the_d)) 
     		{
-				$errCounter += 1;
-  	  			$final_msg .= $msg_ko;  
+				    $errCounter += 1;
+  	  	    $final_msg .= $msg_ko;  
   			}
     		else
     		{
-				$final_msg .= $msg_ok;  
-			}
-   		}
+				    $final_msg .= $msg_ok;  
+			  }
+   	}
 	}
 
 	return($final_msg);
 }
-
-
-
 
 /** 
  * print table with system checking results 
@@ -863,7 +848,6 @@ function reportCheckingSystem(&$errCounter)
 function reportCheckingWeb(&$errCounter)
 {
 	echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
-//	echo check_session($errCounter); // broken dependencies
 	echo check_timeout($errCounter);
 	echo check_php_settings($errCounter);
 	echo check_php_extensions($errCounter);
@@ -884,7 +868,4 @@ function reportCheckingPermissions(&$errCounter)
 	echo check_file_permissions($errCounter, 'custom_config.inc.php');
 	echo '</table>';
 }
-
-
-
 ?>

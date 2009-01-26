@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.229 $
- * @modified $Date: 2009/01/22 17:09:57 $ by $Author: havlat $
+ * @version $Revision: 1.230 $
+ * @modified $Date: 2009/01/26 21:46:59 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,6 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
+ *     20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
  *     20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
  *     20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
  *     20090101 - franciscom - changes in regex used to validate an email address
@@ -167,12 +168,16 @@ $tlCfg->smarty_debug = false;
 /** Path to store logs */
 $tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
 
+
 /** 
- * Show warning on login page if there are security weak points 
- * TRUE: a messages is displayed on login screen, and tl desktop (default)
- * FALSE: a file with a list is created but users are not notified via GUI
+ *  How to warning user when security weak points exists.
+ *
+ * 'SCREEN': messages will displayed on login screen, and tl desktop (default)
+ * 'FILE': a file with a list is created but users are not notified via GUI
+ *         user will receive a message on screen.
+ * 'SILENT': same that FILE, but user will not receive message on screen.
  */
-$tlCfg->show_config_check_warning = TRUE;
+$tlCfg->config_check_warning_mode = 'FILE';
 
 /** 
  * Configure if individual logging data stores are enabled of disabled
@@ -723,8 +728,16 @@ $tlCfg->import_max_row = '10000'; // in chars
 // - created using user management features
 $tlCfg->default_roleid = TL_ROLES_GUEST;
 
+
 /** 
- * Action for duplication check (only if $g_check_names_for_duplicates=TRUE)
+ * Check unique titles of Test Project, Test Suite and Test Case
+ *  ENABLED  => Check              [STANDARD BEHAVIOUR]
+ *  DISABLED => don't check
+ **/
+$tlCfg->check_names_for_duplicates = ENABLED;
+
+/** 
+ * Action for duplication check (only if check_names_for_duplicates=ENABLED)
  * 'allow_repeat' => allow the name to be repeated (backward compatibility)
  * 'generate_new' => generate a new name using $g_prefix_name_for_copy
  * 'block'        => return with an error 
@@ -866,7 +879,7 @@ $g_allow_duplicate_keywords = FALSE;
  *  TRUE  => Check              [STANDARD BEHAVIOUR]
  *  FALSE => don't check
  **/
-$g_check_names_for_duplicates = TRUE;
+// $g_check_names_for_duplicates = TRUE;
 
 
 /** 

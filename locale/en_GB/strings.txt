@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.390 $
- * @modified $Date: 2009/01/26 21:47:05 $ by $Author: franciscom $
+ * @version $Revision: 1.391 $
+ * @modified $Date: 2009/01/27 07:50:47 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -2179,6 +2179,8 @@ $TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
 $TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
 $TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
 $TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
 
 //audit log entries
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.12 2009/01/25 16:03:58 franciscom Exp $
+ * $Id: APIErrors.php,v 1.13 2009/01/27 07:50:37 franciscom Exp $
  */
 
 /** 
@@ -137,6 +137,8 @@ define('INVALID_TESTCASE_VERSION_NUMBER_STR', lang_get('API_INVALID_TESTCASE_VER
 define('TCASE_VERSION_NUMBER_KO',5051);
 define('TCASE_VERSION_NUMBER_KO_STR', lang_get('API_TCASE_VERSION_NUMBER_KO',null,1));
 
+define('VERSION_NOT_VALID',5052);
+define('VERSION_NOT_VALID_STR', lang_get('API_VERSION_NOT_VALID',null,1));
 
 /**
  * 6000 level - Status errors

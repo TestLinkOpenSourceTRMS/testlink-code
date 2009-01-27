@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/01/25 16:03:58 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/01/27 07:50:37 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090126 - franciscom - added some contributions by hnishiyama. 
  *      20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
  *      20090122 - franciscom - assignRequirements()
  *      20090117 - franciscom - createTestProject()
@@ -2200,7 +2201,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 
 
-  //
+  // 20090126 - franciscom
+  // check version > 0 - contribution 
   protected function checkTestCaseVersionNumber()
   {
         $status=true;
@@ -2211,10 +2213,18 @@ class TestlinkXMLRPCServer extends IXR_Server
     	  }
     	  else
     	  {
-    	      if(!($status=is_int($this->args[self::$versionNumberParamName])))
+    	      $version=$this->args[self::$versionNumberParamName];
+    	      if( !($status=is_int($version)) )
     	      {
     	      	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, PARAMETER_NOT_INT_STR);
-    	      	$status=false;
+    	      }
+    	      else 
+    	      {
+    	          if( !($status = ($version > 0)) )
+    	          {
+    	              $this->errors[] = new IXR_Error(VERSION_NOT_VALID, 
+    	                                              sprintf(VERSION_NOT_VALID_STR,$version));  
+    	          }
     	      }
     	  }
     	  return $status;

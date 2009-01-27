@@ -1,9 +1,10 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.12 2009/01/25 16:38:05 havlat Exp $ 
+$Id: index.php,v 1.13 2009/01/27 07:50:23 franciscom Exp $ 
 
 rev:
+    20090127 - franciscom - removed upgrade block
     20080120 - franciscom - added link to README
     20080103 - franciscom - minor adjustments on link descriptions
 */
@@ -45,9 +46,7 @@ $_SESSION['testlink_version']=TL_VERSION;
 			<a href="../CHANGELOG">Changes Log</a></p>
 			<p><a href="newInstallStart_TL.php?installationType=new">New installation</a>
 			</p>
-			<p><a href="javascript: alert('Not applicable in 1.8');">Minor upgrade of Database </a>
-<!--			<p><a href="newInstallStart_TL.php?installationType=upgrade">Minor upgrade of Database </a> -->
-			for changes during bug fixing on one major version only. 
+      <p><a href="newInstallStart_TL.php?installationType=upgrade">Upgrade Database (Needed while migrating from 1.7.2)</a>
 			</p>
 			<p><a href="./migration/migrate_17/index.php">Migration from 1.7.2 (or greater) to 1.8.0 </a>
 			</p>

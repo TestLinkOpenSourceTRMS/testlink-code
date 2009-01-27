@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: newInstallStart_TL.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/01/21 16:24:01 $ by $Author: havlat $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/01/27 07:50:25 $ by $Author: franciscom $
  * 
  * Verify environment and collect DB input data
  *
  * Revisions:
+ * 20090127 - franciscom - missing variable error 
  * 20080914 - franciscom - check_php_resource_settings() 
  * 20080219 - franciscom - fixed dir permission checking
  * 
@@ -24,11 +25,9 @@ if( !isset($_SESSION) )
 }
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 
+$msg='';
 $inst_type = $_GET['installationType'];
-if ($_GET['installationType'] == "upgrade")
-	$isUpgrade = TRUE;
-else
-	$isUpgrade = FALSE;	
+$isUpgrade = ($inst_type == "upgrade") ? TRUE: FALSE;
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 

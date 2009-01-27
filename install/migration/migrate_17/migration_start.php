@@ -1,7 +1,7 @@
 <?php 
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migration_start.php,v 1.4 2009/01/25 16:38:05 havlat Exp $ 
+$Id: migration_start.php,v 1.5 2009/01/27 07:50:25 franciscom Exp $ 
 
 Author: franciscom
 */
@@ -79,7 +79,7 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 </head>	
 
 <?php
-$inst_type = 'Migration from 1.7.2';
+$inst_type = 'Migration from 1.7.2 or greater';
 $main_title = "Testlink Migration";
 $explain_msg = '<p>' . $main_title . 
                ' will carry out a number of checks ' .

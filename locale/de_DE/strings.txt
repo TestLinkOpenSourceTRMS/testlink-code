@@ -1,14 +1,23 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
+ * Filename $RCSfile: strings.txt,v $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2009/01/27 19:28:19 $ by $Author: schlundus $
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2009/01/21 08:06:57 $ $Author: franciscom $
+ * @copyright Copyright (c) 2008, TestLink community
+ * @author Francisco Mancardi
+ * --------------------------------------------------------------------------------------
+ * 
+ * English (en_GB) strings
  *
- * @author Andreas Morsing
- * @author Fabian Woelk
- * @author Christoph Becker
+ * This list of labels is defined as GLOBAL string variables. The first sections is general 
+ * for strings used over all GUI. Next sections are related to particular pages.
+ * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
+ * This must be a reserved prefix.
+ * 
  *
  * German strings
  *
@@ -103,10 +112,10 @@ $TLS_config_check_warnings = "Es gibt Warnungen über Ihre Konfiguration";
 $TLS_see_details_on_file = "Details finden Sie unter: %s";
 
 $TLS_start_warning = '---- Warnung ----';
-$TLS_testlink_warning='TestLink Warnung';
+$TLS_testlink_warning = 'TestLink Warnung';
 $TLS_testcase_name_too_long = 'Der Name des Testfalls ist zu lang (%s zeichen) > %s => wurde abgeschnitten';
-$TLS_original_name='Original Name';
-$TLS_end_warning='---- *** ----';
+$TLS_original_name = 'Original Name';
+$TLS_end_warning =  '---- *** ----';
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Anwenden";
@@ -122,9 +131,9 @@ $TLS_btn_export = "Exportieren";
 $TLS_btn_find = "Suchen";
 $TLS_btn_goback = "Go back";
 $TLS_btn_import = "Importieren";
-$TLS_btn_high 		= $TLS_high;
-$TLS_btn_low 		= $TLS_low;
-$TLS_btn_medium 	= $TLS_medium;
+$TLS_btn_high = $TLS_high;
+$TLS_btn_low = $TLS_low;
+$TLS_btn_medium = $TLS_medium;
 $TLS_btn_move = "Verschieben";
 $TLS_btn_no = "Nein";
 $TLS_btn_ok = "Ok";
@@ -220,7 +229,7 @@ $TLS_your_first_login = "Willkommen bei TestLink! Sie haben jetzt Gast-Zugang. B
 
 // newest_tcversions.php
 $TLS_no_linked_tcversions = "keine verlinkten Testfall-Versionen";
-// resultsGeneral.php 
+// resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "Für dieses Projekt sind keine Testsuiten definiert, <br>daher existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
 
 
@@ -308,7 +317,6 @@ $TLS_include_nested = "Inklusive Daten (nur Kopieren).";
 $TLS_sorry_further = "Es sind keine weiteren ";
 $TLS_title_move_cp = "Verschieben / Kopieren";
 $TLS_title_move_cp_testcases = "Testfälle verschieben / kopieren";
-
 
 
 // gui/templates/reqCreate.tpl
@@ -480,7 +488,7 @@ $TLS_link_results_import = "Import Ergebnisse";
 
 
 
-// gui/templates/cfields_view.tpl
+// gui/templates/cfields/cfields_view.tpl
 $TLS_btn_cfields_create = "Erstellen";
 $TLS_manage_cfield = "Benutzerdefiniertes Feld bearbeiten";
 
@@ -1091,7 +1099,7 @@ $TLS_popup_product_delete = "Achtung! Diese Aktion löscht unwiderrufbar alle Tes
 
 
 
-                        
+
 $TLS_tcase_id_prefix = "Testfall Prefix";
 $TLS_warning_empty_tcase_prefix = "Testfall Prefix darf nicht leer sein!";
 $TLS_warning_empty_tproject_name = "Der Name eines Testprojektes darf nicht leer sein!";
@@ -1303,10 +1311,16 @@ $TLS_report_display_options = "Report-Anzeigeoptionen";
 
 // gui/templates/resultsReqs.tpl
 $TLS_no_srs_defined = "Keine Anforderungs-Definition für dieses Testprojekt vorhanden.";
+$TLS_req_without_tcase = "Nicht durch Testfälle abgedeckte Anforderungen";
+
+// IMPORTANT for dynamic generation labels
+// $TLS_req_title_<test case status> 
+// If user add a new test case status he/she MUST add a new label$TLS_req_title_blocked = "Blockierte Anforderungen";
 $TLS_req_title_blocked = "Blockierte Anforderungen";
 $TLS_req_title_failed = "Nicht erfüllte Anforderungen";
-$TLS_req_title_notrun = "Nicht überprüfte Anforderungen";
+$TLS_req_title_not_run = "Nicht überprüfte Anforderungen";
 $TLS_req_title_passed = "Erfüllte Anforderungen";
+
 $TLS_title_result_req_testplan = "Testergebnisse basierend auf Anforderungsspezifikation";
 $TLS_title_test_plan = "Testplan";
 
@@ -1341,7 +1355,6 @@ $TLS_urgency_description = "Urgency value affects priority of test cases for exe
                            "Medium test urgency is default value.";
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
 $TLS_feedback_urgency_ok = "Test-Dringlichkeit wurde geändert.";
-
 
 $TLS_testsuite_is_empty = 'Die ausgewählte TestSuite hat keine Testfälle.';
 
@@ -1470,11 +1483,12 @@ $TLS_th_open = "Offen";
 $TLS_title_build_list = "Liste der vorhandenen Builds";
 $TLS_warning_delete_build = "Wollen Sie den Build wirklich löschen? Dadurch werden auch alle abhängigen Daten gelöscht!";
                             
+
 $TLS_builds_description = "Jeder Build wird durch einen Titel identifiziert. Er hat zwei Attribute:<br /> Aktiv / Inaktiv - bestimmt, ob der Build für TestLink verfügbar ist. Inaktive builds werden in der Ausführung und in Berichten nicht angezeigt.
 <br /> Offen / Geschlossen - bestimmt, ob Testergebnisse für diese Build geändert werden können.";
 
 
-$TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+$TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
                      "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
                      "and if name does not exist, build will be created.";
 
@@ -1683,7 +1697,9 @@ $TLS_last_exec_result = "Letztes Ergebnis";
 
 
 // lib/functions/testcase.class.php
+$TLS_create_new_version="Neue Version '%s' erstellt"; 
 $TLS_testcase_name_already_exists = "Es ist bereits ein Testfall mit diesem Titel vorhanden!";
+$TLS_created_with_title = "Erstellt mit Titel '%s'";
 $TLS_the_format_tc_xml_import = "";
 
 
@@ -1879,7 +1895,7 @@ $TLS_results_top_level_suites = "Ergebnisse für Top Level Suites";
 $TLS_chart_report = "Report";
 $TLS_chart_assigned_testers = "Besitzer";
 $TLS_chart_keywords = "Stichwörter";
-$TLS_chart_testsuites="Testsuiten";
+$TLS_chart_testsuites = "Testsuiten";
 
 
 // lib/req/reqImport.php
@@ -1961,12 +1977,18 @@ $TLS_error_sendreport_no_email_credentials = "Für diesen Benutzer ist keine Emai
 
 
 // lib/testcases/tcImport.php
+$TLS_action_on_duplicated_name = "Aktion im Falle von doppelten Namen";
+$TLS_already_exists_updated = "Schon vorhanden, die Daten der letzten Version wurden aktualisiert.";
 $TLS_please_choose_file_to_import = "Datei zum Import auswählen";
 $TLS_title_tc_import_to = "Testfälle importieren";
 $TLS_title_tsuite_import_to = "Testsuite importieren";
 $TLS_wrong_xml_tcase_file = "Falsche XML Testfall Datei";
 $TLS_wrong_xml_tsuite_file = "Falsche XML Testsuite Datei";
 $TLS_cf_value_not_imported_missing_cf_on_testproject = "Wert für benutzerdefiniertes Feld '%s' konnte nicht importiert werden da kein benutzerdefiniertes Feld für %s und dieses Testprojekt verfügbar ist."; 
+
+$TLS_update_last_testcase_version = 'Daten der letzten Version aktualisieren';
+$TLS_create_new_testcase_version = 'Neue Version erstellt';
+$TLS_generate_new_testcase = 'Neuer Testfall mit unterschiedlichem Titel erstellten';
 
 
 
@@ -2094,9 +2116,9 @@ $TLS_API_NO_TPID = "No testplan ID (tpid) provided. A valid tpid must be provide
 $TLS_API_NO_TCID = "No testcase ID (tcid) provided. A valid tcid must be provided!";
 $TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
-$TLS_API_INVALID_TPLANID = "The Test Plan ID (tpid) provided does not exist!";
+$TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
 $TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
-$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID provided does not exist!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
 
 $TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
 $TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
@@ -2104,7 +2126,7 @@ $TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build 
 $TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
 $TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
 $TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
-$TLS_API_TCASEID_NOT_IN_TPLANID = "The Test Case (tpid) provided is not associated with the Test Plan (tpid).";
+$TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
 $TLS_API_GENERAL_SUCCESS = "Success!";
 $TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided does not exist!";
 $TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does not exist!";
@@ -2116,6 +2138,25 @@ $TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
 $TLS_API_NO_USER_BY_THIS_LOGIN = "Konnte keinen Benutzer zum Login finden.";
 $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is erforderlich aber wurde nicht übergeben";
  
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO="Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
 
 //audit log entries
 $TLS_audit_login_succeeded = "Login für '{%1}' von '{%2}' erfolgreich";
@@ -2146,8 +2187,8 @@ $TLS_audit_user_deleted = "Benutzer '{%1}' wurde gelöscht";
 $TLS_audit_user_logout = "Logout von '{%1}'";
 $TLS_audit_users_self_signup = "Benutzer '{%1}' hat sich selbst registriert";
 $TLS_audit_pwd_reset_requested = "Passwort rücksetzen für '{%1}' angefordert";
-$TLS_audit_user_role_changed="Benutzerrolle '{%1}' hat sich geändert alt='{%2}' neu='{%3}'";
-$TLS_audit_user_active_status_changed="Der Aktivitäts-Status von Benutzer '{%1}' hat sich verändert alt ='{%2}' neu='{%3}'";
+$TLS_audit_user_role_changed = "Benutzerrolle '{%1}' hat sich geändert alt='{%2}' neu='{%3}'";
+$TLS_audit_user_active_status_changed = "Der Aktivitäts-Status von Benutzer '{%1}' hat sich verändert alt ='{%2}' neu='{%3}'";
 
 $TLS_audit_security_user_right_missing = "Benutzer '{%1}' hat keine Rechte  für '{%3}' auf '{%2}'! Abbruch!";
 
@@ -2168,7 +2209,7 @@ $TLS_audit_executionbug_deleted = "Fehler '{%1}' wurde beim Test gelöscht";
 $TLS_audit_attachment_deleted = "Anhang '{%1}' wurde entfernt";
 $TLS_audit_attachment_created = "Anhang '{%1}' wurde hinzugefügt";
 
-$TLS_audit_req_spec_created =  $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde erstellt";
+$TLS_audit_req_spec_created = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde erstellt";
 $TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde gespeichert";
 $TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde gelöscht";
 $TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - Anforderungsspezifikation '{%2}' wurde in '{%3}' umbenannt";
@@ -2248,6 +2289,5 @@ $TLS_caption_testCasesWithoutTester = "Testfälle ohne zugewiesenen Tester";
 $TLS_all_testcases_have_tester = "Allen Testfällen wurden Tester zugewiesen!";
 
 
-$TLS_copy_to_all_tplans = "Copy to all Test Plans";
 // ----- END ------------------------------------------------------------------
 ?>

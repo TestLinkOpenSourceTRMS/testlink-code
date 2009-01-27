@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.391 $
- * @modified $Date: 2009/01/27 07:50:47 $ by $Author: franciscom $
+ * @version $Revision: 1.392 $
+ * @modified $Date: 2009/01/27 19:28:22 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -31,8 +31,7 @@
 
 
 // BUGID 1133 - needed by email_api
-$TLS_charset		= 'utf-8';
-
+$TLS_charset = 'utf-8';
 
 // General terms - Leave it here in this way can be reused !!!
 $TLS_asc = "ascending";
@@ -51,7 +50,7 @@ $TLS_importance		= "Importance";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
 $TLS_not_aplicable = "N/A";
-$TLS_none			= "None";
+$TLS_none = "None";
 $TLS_priority		= "Priority";
 $TLS_project		= "Project";
 $TLS_requirement = "Requirement";
@@ -60,7 +59,7 @@ $TLS_req_spec = "Requirements Specification Document";
 $TLS_req_spec_short = "Req. Spec.";
 $TLS_SRS = "SRS";
 $TLS_Role = "Role";
-$TLS_sort_table_by_column="Click to change sort order";
+$TLS_sort_table_by_column = "Click to change sort order";
 $TLS_scope = "Scope";
 $TLS_status = "Status";
 $TLS_Keyword = "Keyword";
@@ -74,7 +73,7 @@ $TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title = "Title";
 $TLS_urgency = "Urgency";
-$TLS_problems_loading_xml_content="Unable to load XML data, Check your file."; 
+$TLS_problems_loading_xml_content = "Unable to load XML data, Check your file."; 
 $TLS_not_imported = "Not imported";
 $TLS_imported = "Imported";
 $TLS_nobody = "nobody";
@@ -89,7 +88,7 @@ $TLS_th_delete = "Delete";
 $TLS_th_name = "Name";
 $TLS_th_notes = "Description";
 $TLS_th_testcase = "Test Case";
-$TLS_th_requirement_feature="Requirement Feature";
+$TLS_th_requirement_feature = "Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
@@ -118,7 +117,6 @@ $TLS_config_check_warnings = "There are security warnings for your consideration
                              "See details on file: %s. " .
                              "To disable any reference to these checkings, set \$tlCfg->config_check_warning_mode = SILENT;";
 
-
 $TLS_start_warning = '---- Warning ----';
 $TLS_testlink_warning = 'TestLink Warning';
 $TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
@@ -128,13 +126,13 @@ $TLS_end_warning = '---- *** ----';
 // Buttons (one word) - Leave it here in this way can be reused !!!
 $TLS_btn_apply = "Apply";
 $TLS_btn_add = "Add";
-$TLS_btn_assign		= "Assign";
-$TLS_btn_cancel		= "Cancel";
+$TLS_btn_assign = "Assign";
+$TLS_btn_cancel = "Cancel";
 $TLS_btn_close = "Close";
 $TLS_btn_cp = "Copy";
 $TLS_btn_create = "Create";
 $TLS_btn_delete = "Delete";
-$TLS_btn_edit		= "Edit";
+$TLS_btn_edit = "Edit";
 $TLS_btn_export = "Export";
 $TLS_btn_find = "Find";
 $TLS_btn_goback = "Go back";
@@ -149,8 +147,8 @@ $TLS_btn_save = "Save";
 $TLS_btn_unassign = "Unassign";
 $TLS_btn_update = "Update";
 $TLS_btn_upd = $TLS_btn_update;
-$TLS_btn_advanced_filters="Advanced Filters";
-$TLS_btn_simple_filters="Simple Filters"; 
+$TLS_btn_advanced_filters = "Advanced Filters";
+$TLS_btn_simple_filters = "Simple Filters"; 
 
 
 // Status
@@ -161,7 +159,7 @@ $TLS_test_status_blocked = "Blocked";
 $TLS_test_status_failed = "Failed";
 $TLS_test_status_passed = "Passed";
 $TLS_test_status_not_available = "Not Available";
-$TLS_test_status_unknown	= "Unknown";
+$TLS_test_status_unknown = "Unknown";
 
 
 $TLS_warning_must_be_number = "Value must be a number";
@@ -179,7 +177,7 @@ $TLS_empty_first_name = " You can't use an empty First Name!";
 $TLS_empty_last_name = " You can't use an empty Last Name!";
 $TLS_fatal_page_title = "TestLink ::: Fatal Error";
 $TLS_invalid_user_name = "Login/User name is  not valid. Please select another one.";
-$TLS_no_good_email_address="Email address format seems no good";
+$TLS_no_good_email_address = "Email address format seems no good";
 $TLS_passwd_dont_match = "The two passwords entered did not match. Note that passwords are case sensitive. " .
                          "Please try again.";
 $TLS_user_cant_be_created_because = "Your account can't be created because:";
@@ -232,7 +230,7 @@ $TLS_logout_link = "Logout";
 $TLS_passwd_lost = "Your password has been sent to the email account you specified during " .
                    "your user creation. Please check your mailbox. " .
                    "If you have other problems please contact your TestLink administrator.";
-$TLS_password_reseted="New password has been sent via mail";
+$TLS_password_reseted = "New password has been sent via mail";
 $TLS_please_login = "Please log in ...";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
@@ -332,12 +330,12 @@ $TLS_title_move_cp = "Move/Copy";
 $TLS_title_move_cp_testcases = "Move/Copy Test Cases";
 
 
-
+// gui/templates/reqCreate.tpl
 $TLS_req_create = "Create requirement";
 $TLS_req_doc_id = "Document ID";
 $TLS_warning_empty_req_title = "Requirement title cannot be empty!";
 $TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
-$TLS_create_testcase_from_req="Create Test Cases from Requirements";
+$TLS_create_testcase_from_req = "Create Test Cases from Requirements";
 
 
 // gui/templates/containerOrder.tpl
@@ -421,7 +419,7 @@ $TLS_filter_tcID = "Test Case ID";
 $TLS_include_unassigned_testcases = " - include unassigned Test Cases";
 $TLS_keyword = "Keyword";
 $TLS_test_status_all_status = $TLS_test_status_all;
-$TLS_filter_result_all_prev_builds="Result on ALL Previous Builds";
+$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
 
 // gui/templates/mainPage.tpl
 $TLS_th_my_perc_completed = "My completed [%]";
@@ -696,7 +694,7 @@ $TLS_req_total_description = "Use this parameter to overwrite real count of requ
 // gui/templates/inc_show_bug_table.tpl
 $TLS_build = "Build";
 $TLS_caption_bugtable = "Relevant bugs";
-$TLS_delete_bug="delete bug";
+$TLS_delete_bug ="delete bug";
 $TLS_del_bug_warning_msg = "Really delete this bug?";
 
 
@@ -744,7 +742,7 @@ $TLS_th_product_rights = "Test Project";
 $TLS_th_req_rights = "Requirement";
 $TLS_th_rights = "Rights";
 $TLS_th_rolename = "Role name";
-$TLS_th_system_rights="System rights";
+$TLS_th_system_rights = "System rights";
 $TLS_th_tp_rights = "Test Plan";
 $TLS_th_user_rights = "User";
 $TLS_title_user_mgmt = "User Administration";
@@ -891,7 +889,7 @@ $TLS_bug_mgmt = "BUG management";
 $TLS_build_is_closed = "Build is closed";
 $TLS_builds_notes = "Build description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
-$TLS_closed_build="close build. no operation can be done";
+$TLS_closed_build = "close build. no operation can be done";
 $TLS_date_time_run = "Date";
 $TLS_details = "Details";
 $TLS_edit_notes = "edit notes";
@@ -934,7 +932,7 @@ $TLS_title_t_r_owner = " Assigned to";
 $TLS_title_test_case = "Test Case";
 $TLS_version = "Version";
 $TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
-$TLS_warning_nothing_will_be_saved="For the selected execution result nothing will be written to database";
+$TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
 
 
 // gui/templates/inc_testsuite_viewer_ro.tpl
@@ -1081,10 +1079,10 @@ $TLS_delete_milestone = "Delete milestone";
 $TLS_milestone_deleted = "Milestone %s was successfully deleted";
 $TLS_create_milestone = "Create Milestone";
 $TLS_edit_milestone = "Edit Milestone %s";
-$TLS_warning_empty_low_priority_tcases="Value can not be empty";
-$TLS_warning_empty_medium_priority_tcases="Value can not be empty";
-$TLS_warning_empty_high_priority_tcases="Value can not be empty";
-$TLS_milestone_created="Milestone Created";
+$TLS_warning_empty_low_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_high_priority_tcases = "Value can not be empty";
+$TLS_milestone_created = "Milestone Created";
 
 
 
@@ -1119,7 +1117,7 @@ $TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
 // gui/templates/projectView.tpl
-$TLS_title_testproject_management="Test Project Management";
+$TLS_title_testproject_management = "Test Project Management";
 
 // gui/templates/reqAssign.tpl
 $TLS_please_select_a_req = "Please select a requirement";
@@ -1400,7 +1398,7 @@ $TLS_assign_to = "Assign to";
 $TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Save";
 $TLS_can_not_execute = " (No execution right)";
-$TLS_check_uncheck_children_checkboxes="Toggle all test case selections (incluing children test suites)";
+$TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
 $TLS_user = "User";
 $TLS_user_bulk_assignment = "Bulk user assignment";
@@ -1510,7 +1508,7 @@ $TLS_builds_description = "A build is identified by its title. Each build is rel
                           "Inactive builds are not listed on the execution and reports pages.<br />" .
                           "Open / Closed &ndash; Only for open builds, test results can be modified.";
 
-$TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+$TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
                      "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
                      "and if name does not exist, build will be created.";
 
@@ -1966,7 +1964,7 @@ $TLS_list_of_not_run = "Not Run Test Cases";
 
 
 // lib/results/resultsNavigator.php
-$TLS_link_charts="Charts";
+$TLS_link_charts = "Charts";
 $TLS_link_report_blocked_tcs = "Blocked Test Cases";
 $TLS_link_report_failed = "Failed Test Cases";
 $TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
@@ -1998,7 +1996,7 @@ $TLS_error_sendreport_no_email_credentials = "Email for this user is not specifi
 
 
 // lib/testcases/tcImport.php
-$TLS_action_on_duplicated_name="Action for duplicated names";
+$TLS_action_on_duplicated_name = "Action for duplicated names";
 $TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
 $TLS_please_choose_file_to_import = "Please choose file to import";
 $TLS_title_tc_import_to = "Import Test Cases";
@@ -2211,7 +2209,7 @@ $TLS_audit_user_deleted = "User '{%1}' was deleted";
 $TLS_audit_user_logout = "Logout of '{%1}'";
 $TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
 $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
-$TLS_audit_user_role_changed="User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
 $TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
 
 $TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
@@ -2310,8 +2308,8 @@ $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 
 
 // testCasesWithoutTester
-$TLS_caption_testCasesWithoutTester=$TLS_link_report_tcases_without_tester;
-$TLS_all_testcases_have_tester='All Test Cases have Tester Assigned';
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
 
 // ----- END ------------------------------------------------------------------
 ?>

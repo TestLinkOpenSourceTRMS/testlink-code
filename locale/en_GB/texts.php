@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/01/22 10:13:32 $ by $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/01/27 17:00:09 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -52,26 +52,31 @@ analyse serves as input for the next planning.</p>
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Test Specification";
 $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<p>The <i>Test Specification</i> is a place where a user can view and edit all of the
-existing <i>Test suite</i> and <i>Test case</i> information. Test cases holds all own history.
-A user can look at a different versions of test cases. </p>
+<h2>Purpose:</h2>
+<p>The <i>Test Specification</i> allows users to view and edit all of the existing " .
+		"<i>Test Suites</i> and <i>Test Cases</i>. Test Cases are versioned and all " .
+		"of the previous versions are available and can be viewed and managed here.</p>
 
-<h2>Get Stsarted:</h2>
+<h2>Getting Started:</h2>
 <ol>
-	<li>Select Test project name in navigation pane. <i>(You can change Test project, " .
-			"selectable in top right corner.)</i></li>
-	<li>Create a new Test suites <i>(select the button)</i>. Test Suite structualize " .
-		"your Test Specification according your conventions <i>(functional/non-functional tests, " .
-		"a product components or features, Change requests, etc.)</i>. Description text " .
-		"of Test Suites could hold scope of included test cases, default configuration, links" .
-		"to relevant document (references), limitations, etc. Generally you should add all" .
-		"information shared for included Test suites and Test cases.</li>
+	<li>Select your Test Project in the navigation tree (the root node). <i>Pleasen note: " .
+	"You can always change the activate Test Project by selecting a different one from the " .
+	"drop-down list in the top-right corner.</i></li>
+	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .
+	"bring structure to your test documents according to your conventions (functional/non-functional " .
+	"tests, product components or features, change requests, etc.). The description of " .
+	"a Test Suite could hold the scope of the included test cases, default configuration, " .
+	"links to relevant documents, limitations and other useful information. In general, " .
+	"all annotations that are common to the Child Test Cases. Test Suites follow " .
+	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
+	"the Test project. Also, they can be imported or exported (including the contained Test cases).</li>
 	<li>Test suites are scalable folders. User can move or copy Test Suites within " .
-	"the Test project. Test suites could be imported or exported (include Test cases)." .
-	"<li>Create a new Test cases into active Test Suite. Test case specifies particular " .
-		"testing scenario, expected results and custom fields " .
-		"defined in the Test Project<i>(see User manual for more)</i><br />" .
-		"User can also assign <b>keywords</b> to improve tarceability.</li>
+	"the Test project. Test suites could be imported or exported (include Test cases).
+	<li>Select your newly created Test Suite in the navigation tree and create " .
+	"a new Test Case by clicking on <b>Create Test Case</b>. A Test Case specifies " .
+	"a particular testing scenario, expected results and custom fields defined " .
+	"in the Test Project (refer to the user manual for more information). It is also possible " .
+	"to assign <b>keywords</b> for improved traceability.</li>
 	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
 	<li>Assign your created Test Specification to <span class=\"help\" onclick=
 	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>

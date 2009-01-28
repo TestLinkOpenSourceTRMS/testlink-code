@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: sysinfo.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/01/19 22:47:28 $ by $Author: havlat $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/01/28 09:43:22 $ by $Author: franciscom $
  *
  * @author	Martin Havlat 
  * 

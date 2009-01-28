@@ -4,23 +4,24 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: installUtils.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/01/21 16:24:01 $ by $Author: havlat $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/01/28 09:43:22 $ by $Author: franciscom $
  * 
  * Functions for installation process
  *
  * Revisions :
- * 	20090120 - havlatm - some functions moved to checkConfig.php; fixed reader
-     20090101 - franciscom - check_php_version() - minimun version 5.2.0.
-                             this is version need to use ext-js tree due to
-                             need of json_* functions.
-                             
-     20080914 - franciscom - check_php_resource_settings()
-     20080219 - franciscom - improvements on getDirSqlFiles
-     20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
-     20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
-     20070302 - franciscom - changed PHP minimun required versions
-
+ *   20090120 - havlatm - some functions moved to checkConfig.php. 
+ *                         fixed reader
+ *   20090101 - franciscom - check_php_version() - minimun version 5.2.0.
+ *                           this is version need to use ext-js tree due to
+ *                           need of json_* functions.
+ *                           
+ *   20080914 - franciscom - check_php_resource_settings()
+ *   20080219 - franciscom - improvements on getDirSqlFiles
+ *   20080102 - franciscom - fix bug with postgres on check_db_loaded_extension()
+ *   20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
+ *   20070302 - franciscom - changed PHP minimun required versions
+ *
  * ----------------------------------------------------------------------------------- */
 
 
@@ -738,7 +739,6 @@ if( $op->status_ok )
 
 if( $op->status_ok )
 {
-    // 20060523 - franciscom
     $sql = 'ALTER SCHEMA public OWNER TO ' .  '"' . $db->prepare_string($login) . '"';
     if (!@$db->exec_query($sql)) 
     {

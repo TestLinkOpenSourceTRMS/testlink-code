@@ -1,10 +1,16 @@
--- $Revision: 1.8 $
--- $Date: 2009/01/23 10:07:44 $
--- $Author: havlat $
+-- $Revision: 1.9 $
+-- $Date: 2009/01/28 09:43:22 $
+-- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
--- 20090123 - havlatm - BUG 2013 (remove right ID=19 before add; it was there a minute in 1.7)
+-- Important Warning: 
+-- This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
+-- It is not intelligent enough to ignore  SEMICOLONS inside comments, then PLEASE
+-- USE SEMICOLONS ONLY to signal END of SQL Statements.
+--
+--
+-- 20090123 - havlatm - BUG 2013 (remove right ID=19 before add, it was there a minute in 1.7)
 -- 20081109 - franciscom - added new right events_mgt
 -- 20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 -- 20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values

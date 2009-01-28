@@ -1,12 +1,15 @@
 /* 
-$Revision: 1.21 $
-$Date: 2009/01/23 10:07:44 $
-$Author: havlat $
+$Revision: 1.22 $
+$Date: 2009/01/28 09:43:22 $
+$Author: franciscom $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
 
-Important:
+Important Warning: 
+This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
+It is not intelligent enough to ignore  SEMICOLONS inside comments, then PLEASE
+USE SEMICOLONS ONLY to signal END of SQL Statements.
 
 Change/Modify operation on columns:
 
@@ -14,17 +17,13 @@ want to change NAME  -> CHANGE
 want to change column properties -> MODIFY
 
 rev: 
-     20090123 - havlatm - BUG 2013 (remove right ID=19 before add; it was there a minute in 1.7)
+     20090123 - havlatm - BUG 2013 (remove right ID=19 before add, it was there a minute in 1.7)
      20081109 - franciscom - added new right events_mgt
      20081018 - franciscom - renamed new events indexes to follow standard naming convention
      20081003 - franciscom - added  CREATE TABLE cfield_testplan_design_values
      20080927 - franciscom - fix bug when migration tcversions.importance
-     20080810 - franciscom
-     ALTER custom_fields table
-     
-     20080622 - franciscom
-     added executions.tcversion_number
-    
+     20080810 - franciscom - ALTER custom_fields table
+     20080622 - franciscom - added executions.tcversion_number
 */
 
 /* Step 1 - Drops if needed */

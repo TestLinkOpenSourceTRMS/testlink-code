@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.8 2007/10/21 16:00:55 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.9 2009/01/28 09:43:22 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
@@ -22,7 +22,6 @@ class SqlParser {
 	var $install_failed;
 	var $db_type;
 
-  // 20060523 - franciscom - interface changes
 	function SqlParser(&$db_conn,$db_type) {
 		$this->db_conn   = $db_conn;
 		$this->db_type   = $db_type;

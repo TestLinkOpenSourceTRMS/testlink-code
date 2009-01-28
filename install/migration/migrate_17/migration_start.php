@@ -1,13 +1,13 @@
 <?php 
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migration_start.php,v 1.5 2009/01/27 07:50:25 franciscom Exp $ 
+$Id: migration_start.php,v 1.6 2009/01/28 09:43:22 franciscom Exp $ 
 
 Author: franciscom
 */
 require_once("../../installUtils.php");
 require_once('..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.
-		'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
+		         'functions'.DIRECTORY_SEPARATOR.'configCheck.php');
 
 session_start(); 
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
@@ -32,7 +32,6 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 				return false;
 			}
       
-			// 20060215 - franciscom
 			if( f.source_databasename.value.indexOf('/') >= 0 ||
 			    f.source_databasename.value.indexOf('\\') >= 0 ||
           f.source_databasename.value.indexOf('.') >= 0 )
@@ -59,20 +58,6 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 				alert('You need to enter your database login name (with Administrative Rights)!');
 				return false;
 			}
-
-      /*			
-			20060831 - franciscom
-			if(f.tl_loginname.value=="") {
-				alert('You need to enter your TestLink database login name (For Normal TestLink Operation)!');
-				return false;
-			}
-
-			if(f.tl_loginpassword.value=="") {
-				alert('You need to enter your TestLink database password (For Security empty password is not allowed)!');
-				return false;
-			}
-			*/
-			
 			return true;
 		}
 		</script>
@@ -107,7 +92,7 @@ echo $the_msg;
 $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);
-reportCheckingPermissions($errors);
+reportCheckingPermissions($errors,$inst_type);
 
 if($errors>0) {
 ?>

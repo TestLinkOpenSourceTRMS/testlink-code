@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/01/26 21:47:05 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/01/28 09:43:29 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -712,9 +712,8 @@ function check_php_version(&$errCounter)
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
  */
-function check_file_permissions(&$errCounter, $checked_filename, $bCritical=FALSE)
+function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bCritical=FALSE)
 {
-	global $inst_type;
 	$checked_path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 	$checked_file = $checked_path.DIRECTORY_SEPARATOR.$checked_filename;
 	$out = '<tr><td>Access to file ('.$checked_file.')</td>';
@@ -799,9 +798,8 @@ function check_dir_permissions(&$errCounter)
 
 	foreach ($dirs_to_check as $the_d) 
 	{
-  	// Correct relative path for installer (var $inst_type is defined in newInstallStart_TL.php)
+  	// Correct relative path for installer.
 		$the_d = $checked_path_base . DIRECTORY_SEPARATOR . $the_d;
-  			
   	$final_msg .= "<tr><td>Checking if <span class='mono'>{$the_d}</span> directory exists</td>";
   
 		if(!file_exists($the_d)) 
@@ -859,13 +857,14 @@ function reportCheckingWeb(&$errCounter)
 /** 
  * print table with system checking results 
  * @param integer &$errCounter pointer to error counter
+ * @param string inst_type: useful when this function is used on installer
  **/
-function reportCheckingPermissions(&$errCounter)
+function reportCheckingPermissions(&$errCounter,$inst_type='none')
 {
 	echo '<h2>Read/write permissions</h2><table class="common" style="width: 100%;">';
 	echo check_dir_permissions($errCounter);
-	echo check_file_permissions($errCounter, 'config_db.inc.php', TRUE);
-	echo check_file_permissions($errCounter, 'custom_config.inc.php');
+	echo check_file_permissions($errCounter,$inst_type,'config_db.inc.php', TRUE);
+	echo check_file_permissions($errCounter,$inst_type,'custom_config.inc.php');
 	echo '</table>';
 }
 ?>

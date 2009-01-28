@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.7 2009/01/07 17:28:32 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.8 2009/01/28 09:43:22 franciscom Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -15,11 +15,10 @@ tasks:
 
 - Update executiosn.tcversion_number updateExecutionsTCVersionInfo()
 
-rev: 20081108 - franciscom - 
+rev: 20090127 - franciscom - BUGID - adding new checks 
+     20081108 - franciscom - 
      fixed wrong control on requirements that do not create req nodes on node_hierarchy
       
-     20080627 - franciscom -   
-
 */
 require_once(dirname(__FILE__) . "/../../../config.inc.php");
 require_once(dirname(__FILE__) . '/../../../lib/functions/database.class.php' );
@@ -32,9 +31,9 @@ require_once("migrate_17_to_18_functions.php");
 define('CRITICAL_TC_SPECS_QTY',2000);
 define('FEEDBACK_STEP',2500);
 define('FULL_FEEDBACK',FALSE);
+define('DBVERSION4MIG', 'DB 1.2');
 
 $show_memory=true;
-
 if( !isset($_SESSION) )
 { 
   session_start();
@@ -123,7 +122,6 @@ $a_sql=array();
 
 
 // -------------------------------------------------------------------------------
-// 20070515 - franciscom 
 // Give warning to user if version of source db is not ok to be migrated
 $my_ado=$source_db->get_dbmgr_object();
 $the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
@@ -140,7 +138,10 @@ $the_cols=$my_ado->MetaColumns('db_version');
 // why I'm using upper case? because ado returns upper case.
 if(isset($the_cols['UPGRADE_TS']) )
 {
-  $do_it=1;
+    $do_it=1;
+    $sql=" SELECT * from db_version ORDER by upgrade_ts DESC";
+    $version_arr=$source_db->get_recordset($sql);
+    $version=trim($version_arr[0]['version']);
 }
 
 if( $do_it== 0 )
@@ -167,6 +168,36 @@ if( $do_it== 0 )
 }
 // -------------------------------------------------------------------------------     
 
+// 20090127 - franciscom
+// new check.
+// . check db version
+// To allow Migration must be DB 1.2
+
+if( $version !== DBVERSION4MIG)
+{
+      echo "<br>Your DB version ({$version}) seems not good, it must be " . DBVERSION4MIG .
+           "<br>we are unable to continue"; 	
+      close_html_and_exit();          
+}
+
+// . check for needed new fields
+// . Add here if you add new columns on alter sentences
+$tableChecks=array('testprojects' => array('prefix','tc_counter','option_automation'),
+                   'executions' => array('tcversion_number','execution_type'),
+                   'db_version' => array('notes'),
+                   'users' => array('script_key'),
+                   'custom_fields' => array('show_on_testplan_design','enable_on_testplan_design'),
+                   'testplan_tcversions' => array('node_order','urgency'),
+                   'tcversions' => array('execution_type','tc_external_id'));
+foreach($tableChecks as $table_name => $fields2check)
+{
+    list($status_ok,$message)=checkTableFields($my_ado,$table_name,$fields2check);
+    if( !$status_ok )
+    {
+          echo "<br>{$message} <br>we are unable to continue"; 	
+          close_html_and_exit();          
+    }
+}
 
 // ---STARTING MIGRATION---
 // -----------------------------------------------------------------------------------------------

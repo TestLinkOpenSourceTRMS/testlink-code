@@ -1,13 +1,15 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.8 2009/01/07 17:28:32 franciscom Exp $ 
+$Id: migrate_17_to_18_functions.php,v 1.9 2009/01/28 09:43:22 franciscom Exp $ 
 
 Support function for migration from 1.7.2 to 1.8.0
 
 Author: franciscom
 
-rev: 20081210 - BUGID 1921 - missing update of attachment table
+rev: 20090127 - franciscom - added checkTableFields()
+
+     20081210 - BUGID 1921 - missing update of attachment table
      added updateExecutionsTCVersionInfo()
 */
 ?>
@@ -308,4 +310,37 @@ function updateExecutionsTCVersionInfo(&$db)
          "where TCV.id = E.tcversion_id";
     $db->exec_query($sql);
 }
+
+
+/*
+  function: checkTableFields
+
+  args: adoObj: reference to ado object
+        table: table name
+        fields2check: array with field names
+  
+  returns: array($status_ok,$msg)
+  
+  rev: 20090127 - franciscom
+
+*/ 
+function checkTableFields(&$adoObj,$table,$fields2check)
+{
+    $status_ok=true;
+    $msg='';
+    $fields=$adoObj->MetaColumns($table);
+    foreach($fields2check as $field_name)
+    {
+        if( !isset($fields[strtoupper($field_name)]) )  
+        {
+            $msg="Table {$table} - Missing field {$field_name}";
+            $status_ok=false;
+            break;  
+        }
+    }
+    return array($status_ok,$msg);
+}
+    
+
+
 ?>

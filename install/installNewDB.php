@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.44 2008/09/02 16:38:41 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.45 2009/01/28 09:43:22 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -219,10 +219,7 @@ else
 // ------------------------------------------------------------------------------------------------
 if($create) 
 {
-	
-	// 20060214 - franciscom
 	// check database name for invalid characters (now only for MySQL)
-	
 	$db->close();
 	$db = null;
 	
@@ -420,8 +417,6 @@ if ( $inst_type == "upgrade")
 $db->close();
 $db=null;
 $user_host = explode('@',$tl_db_login);
-
-// 20071010 - franciscom
 $msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
                           $tl_db_login, $tl_db_passwd);
   
@@ -473,10 +468,6 @@ if( $inst_type=='new' && $conn_result['status'] != 0 )
   // Drop tables
   $my_ado=$db->get_dbmgr_object();
   $the_tables =$my_ado->MetaTables('TABLES');  
-
-  // echo "<pre>debug 20071010 - \$the_tables - " . __FUNCTION__ . " --- "; print_r($the_tables); echo "</pre>";
-  // echo "<pre>debug 20071010 - \count($the_tables) - " . __FUNCTION__ . " --- "; print_r(count($the_tables)); echo "</pre>";
-  
   if( count($the_tables) > 0 && isset($the_tables[0]))
   {
     echo "<br>Dropping all existent tables:";
@@ -488,15 +479,12 @@ if( $inst_type=='new' && $conn_result['status'] != 0 )
       $db->exec_query($sql);
     }
    echo "<span class='ok'>Done!</span>";
-
   }
 }  
 // --------------------------------------------------------------------------------------------
 
 
-// 20060523 - franciscom
 $sqlParser = new SqlParser($db,$db_type);
-
 foreach($a_sql_schema as $sql_schema)
 {
   foreach ($sql_schema as $sql_file) 

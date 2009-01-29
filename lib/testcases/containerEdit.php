@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2009/01/25 18:56:33 $ by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2009/01/29 21:21:08 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * rev:
@@ -673,8 +673,8 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
    // Accessing this keys on Smarty template using UPPER CASE fails.
    // Solution: have changed case on Smarty to lower case.
    //         
- 	 $sql = "SELECT NHA.id AS TCID, NHA.name AS TCNAME, NHA.node_order AS TCORDER," .
-        " MAX(TCV.version) AS TCLASTVERSION, TCV.tc_external_id AS TCEXTERNALID" .
+ 	 $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
+        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
         " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, node_types NT, tcversions TCV " .
         " WHERE NHB.parent_id=NHA.id " .
         " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .

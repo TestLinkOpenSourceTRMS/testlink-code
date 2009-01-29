@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2009/01/20 07:35:02 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2009/01/29 14:25:38 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support printing of documents.
  *
  * rev:
+ * 	20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
  *     20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
  *                             added code to display CF with scope='execution'
  * 
@@ -61,8 +62,7 @@ function buildHTMLHeader($title,$base_href)
   
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
-	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '" />'.
-		"\n<base href=\"".$base_href."\"/>\n";
+	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '" />';
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
 	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
 	$output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';

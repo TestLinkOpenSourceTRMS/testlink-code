@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.66 2008/12/30 13:34:24 franciscom Exp $
+// $Id: testlink_library.js,v 1.67 2009/01/29 20:58:21 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -409,11 +409,23 @@ function attachmentDlg_onLoad()
 	{}
 }
 
-function attachmentDlg_onSubmit()
+function attachmentDlg_onSubmit(bAllowEmptyTitle)
 {
+	var bSuccess = true;
 	attachmentDlg_bNoRefresh = true;
 
-	return true;
+	if (!bAllowEmptyTitle)
+	{
+		var titleField = document.getElementById('title');
+		if (isWhitespace(titleField.value))
+		{
+			var aForm = document.getElementById('aForm');
+			alert_message(alert_box_title,warning_empty_title);
+		    selectField(aForm, 'title');
+		    bSuccess = false;
+		}
+	}
+	return bSuccess;
 }
 
 

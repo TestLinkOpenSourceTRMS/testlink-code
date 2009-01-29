@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.11 2008/12/30 13:34:24 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.12 2009/01/29 20:58:22 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -31,7 +31,7 @@
        $cfield_management == "yes" || $rights_keywords_view == "yes")	}
     {assign var="display_left_block_1" value=true}
 
-    <script>
+    <script  type="text/javascript">
     {literal}
     function display_left_block_1()
     {
@@ -54,7 +54,7 @@
 {if $usermanagement_rights == "yes" }
     {assign var="display_left_block_2" value=true}
 
-    <script>
+    <script type="text/javascript">
     {literal}
     function display_left_block_2()
     {
@@ -77,7 +77,7 @@
 {if $sessionProductID && $opt_requirements == TRUE && ($rights_reqs_view == "yes" || $rights_reqs_edit == "yes")}
     {assign var="display_left_block_3" value=true}
 
-    <script>
+    <script type="text/javascript">
     {literal}
     function display_left_block_3()
     {
@@ -99,7 +99,7 @@
 {if $sessionProductID && $view_tc_rights == "yes"}
     {assign var="display_left_block_4" value=true}
 
-    <script>
+    <script type="text/javascript">
     {literal}
     function display_left_block_4()
     {
@@ -121,10 +121,10 @@
 
 <div class="vertical_menu" style="float: left">
   {* ---------------------------------------------------------------------------------------- *}
-  <div id='menu_left_block_1'></div><br>
-  <div id='menu_left_block_2'></div><br>
-  <div id="menu_left_block_3"></div><br>
-  <div id="menu_left_block_4"></div><vr>
+  <div id='menu_left_block_1'></div><br />
+  <div id='menu_left_block_2'></div><br />
+  <div id="menu_left_block_3"></div><br />
+  <div id="menu_left_block_4"></div><br />
   
 	{if $display_left_block_1 }
     <div id='testproject_topics'>

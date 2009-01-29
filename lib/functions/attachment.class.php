@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/01/29 20:58:22 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -17,6 +17,7 @@ require_once( dirname(__FILE__) . '/object.class.php' );
 */
 class tlAttachment extends tlDBObject 
 {
+	const E_TITLELENGTH = -1;
 	/*
 	 * @param object $db [ref] the db-object
 	 * @param int $fkid the foreign key id (attachments.fk_id)
@@ -92,17 +93,11 @@ class tlAttachment extends tlDBObject
 	{
 		$this->_clean();
 		
-		$this->fkID = $fkid;
-		$this->fkTableName = trim($fkTableName);
-		$this->fType = trim($fType);
-		$this->fSize = $fSize;
-		$this->fName = $fName; 
-		$this->destFPath = trim($destFPath); 
-		$this->fContents = $fContents;
-		
-		if(!strlen(trim($title)))
+		$title = trim($title);
+		$config = $this->attachmentCfg;
+		if(!strlen($title))
 		{
-			switch($this->attachmentCfg->action_on_save_empty_title)
+			switch($config->action_on_save_empty_title)
 			{
 				case 'use_filename':
 					$title = $fName;
@@ -112,6 +107,17 @@ class tlAttachment extends tlDBObject
 			}
 
 		}
+		if(!$config->allow_empty_title && !strlen($title))
+			return self::E_TITLELENGTH; 
+		
+		$this->fkID = $fkid;
+		$this->fkTableName = trim($fkTableName);
+		$this->fType = trim($fType);
+		$this->fSize = $fSize;
+		$this->fName = $fName; 
+		$this->destFPath = trim($destFPath); 
+		$this->fContents = $fContents;
+
 		//for FS-repository, the path to the repository itself is cut off, so the path is
 		//					relative to the repository itself
 		$this->destFPath = str_replace($this->repositoryPath.DIRECTORY_SEPARATOR,"",$destFPath);

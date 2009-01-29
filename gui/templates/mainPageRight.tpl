@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.12 2009/01/03 17:26:39 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.13 2009/01/29 20:58:22 schlundus Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -26,7 +26,7 @@
 	  $tp_user_role_assignment == "yes" or $testplan_create_build == "yes"}
    {assign var="display_right_block_1" value=true}
 
-    <script>
+    <script  type="text/javascript">
     {literal}
     function display_right_block_1()
     {
@@ -50,7 +50,7 @@
 {if $countPlans > 0 }
    {assign var="display_right_block_2" value=true}
 
-    <script>
+    <script  type="text/javascript">
     {literal}
     function display_right_block_2()
     {
@@ -73,7 +73,7 @@
 {if $countPlans > 0 && $testplan_planning == "yes"}
    {assign var="display_right_block_3" value=true}
 
-    <script>
+    <script  type="text/javascript">
     {literal}
     function display_right_block_3()
     {
@@ -135,9 +135,9 @@
   {/if}
 	<br />
 
-  <div id='menu_right_block_1'></div><br>
-  <div id='menu_right_block_2'></div><br>
-  <div id="menu_right_block_3"></div><br>
+  <div id='menu_right_block_1'></div><br />
+  <div id='menu_right_block_2'></div><br />
+  <div id="menu_right_block_3"></div><br />
   
   {* ----------------------------------------------------------------------------------- *}
 	{if $display_right_block_1 }

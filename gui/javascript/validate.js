@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
-// $Id: validate.js,v 1.5 2008/02/14 21:26:20 schlundus Exp $
+// $Id: validate.js,v 1.6 2009/01/29 20:58:21 schlundus Exp $
 //
 // Functions for validation of input on client side
 //
@@ -9,10 +9,12 @@
 //
 
 // Function validate length of field
-// fieldName = e.g. document.forms[0].login
-function valTextLength(fieldName, maxLength,  minLength)
+// field = e.g. document.forms[0].login
+function valTextLength(field, maxLength,  minLength)
 {
-    var fieldValue  = fieldName.value;
+	if (!field)
+		return false;
+	var fieldValue  = field.value;
     var fieldLength = fieldValue.length;
 
     var err03 = warning_enter_at_least1 + " " + minLength + " "+warning_enter_at_least2;
@@ -28,8 +30,8 @@ function valTextLength(fieldName, maxLength,  minLength)
 
     if (!bSuccess)
 	{
-        fieldName.focus();
-		fieldName.style.backgroundColor = '#F99';
+        field.focus();
+		field.style.backgroundColor = '#F99';
 	}
 	return bSuccess;
 }

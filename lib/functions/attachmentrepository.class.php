@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/01/29 20:58:22 $ by $Author: schlundus $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -19,10 +19,11 @@ class tlAttachmentRepository extends tlObjectWithDB
 {
 	  //the one and only attachment repository object
 	  private static $s_instance;
-
-    private $repositoryType;
+	
+	  private $repositoryType;
 	  private $repositoryCompressionType;
-   	protected $repositoryPath;
+
+	  protected $repositoryPath;
 	  protected $attachmentCfg;
 
 
@@ -33,8 +34,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 		global $g_repositoryPath;
 
 		tlObjectWithDB::__construct($db);
-    $this->repositoryType = $g_repositoryType;
-    $this->repositoryCompressionType = $g_repositoryCompressionType;
+    	$this->repositoryType = $g_repositoryType;
+    	$this->repositoryCompressionType = $g_repositoryCompressionType;
 		$this->repositoryPath = $g_repositoryPath;
 		$this->attachmentCfg = config_get('attachments');
 	}
@@ -84,15 +85,17 @@ class tlAttachmentRepository extends tlObjectWithDB
 			$fContents = $this->getFileContentsForDBRepository($fTmpName,$destFName);
 			$bUploaded = sizeof($fContents);
 			if($bUploaded)
-		    @unlink($fTmpName);	
+		    	@unlink($fTmpName);	
 		}
 
 		if ($bUploaded)
 		{
 			$attachment = new tlAttachment();
-			$attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
-			$bUploaded = $attachment->writeToDb($this->db);
-			
+			$bUploaded = ($attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
+			if ($bUploaded)
+				$bUploaded = $attachment->writeToDb($this->db);
+			else 
+				@unlink($destFPath);
 		}
 
 		return $bUploaded;

@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.15 2009/01/19 15:48:56 havlat Exp $
+$Id: testlink.css,v 1.16 2009/01/29 12:54:28 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -194,8 +194,8 @@ div.menu_bubble {
 }
 
 div.menu_bubble h3{
-  margin: 0px 0px 8px 8px;
-  /* border-bottom: 1px solid #005498; */
+	margin: 0px 0px 8px 8px;
+	line-height:1.4em;
 }
 
 

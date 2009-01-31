@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirements>	
+  <requirement>
+   <docid><![CDATA[MAZDA3-0001]]></docid>
+   <title><![CDATA[Breaks]]></title>
+   <description><![CDATA[]]>Heavy Rain Conditions</description>
+  </requirement>
+	<requirement>
+	  <docid><![CDATA[MAZDA3-0002]]></docid>
+	  <title><![CDATA[Lights]]></title>
+	  <description><![CDATA[<p>Fog features</p>]]></description>
+	</requirement>
+	<requirement>
+	  <docid><![CDATA[MAZDA3-1002]]></docid>
+	  <title><![CDATA[Airbags]]></title>
+	  <description><![CDATA[<p>Passenger Airbag - off</p>]]></description>
+	</requirement>
+</requirements>

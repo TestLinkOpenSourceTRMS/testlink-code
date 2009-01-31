@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.142 $
- * @modified $Date: 2009/01/22 20:54:28 $ $Author: franciscom $
+ * @version $Revision: 1.143 $
+ * @modified $Date: 2009/01/31 19:51:27 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090131 - franciscom - new method get_assigned_to_user()
  * 20090120 - franciscom - create_tcase_only() - added new action_on_duplicate_name	     
  * 20090116 - franciscom - get_by_name() refactoring
  *                         get_linked_versions() - added tplan_id argument
@@ -76,7 +77,7 @@ class testcase extends tlObjectWithAttachments
   const CHECK_DUPLICATE_NAME=1;
   const DONT_CHECK_DUPLICATE_NAME=0;
   const ENABLED=1;
-    
+  const ALL_TESTPLANS=null;    
   
 	var $db;
 	var $tree_manager;
@@ -2491,6 +2492,127 @@ function get_version_exec_assignment($tcversion_id,$tplan_id)
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 	return $recordset;
 }
+
+
+/**
+ * get_assigned_to_user()
+ * Given a user and a tesplan id, get all test case version id linked to
+ * test plan, that has been assigned for execution to user.
+ *
+ * @param int user_id
+ *
+ * @param mixed tproject_id list of test project id to search.  
+ *                          int or array
+ *
+ * @param array [tplan_id] list of test plan id to search.  
+ *                         null => all test plans
+ *
+ * @param object [options] options->mode='full_path'
+ *                         testcase name full path will be returned
+ *                         Only available when acces_keys ='testplan_testcase'
+ *                        
+ *                         options->access_keys
+ *                         possible values: 'testplan_testcase','testcase_testplan'
+ *                         changes access key in result map of maps.
+ *                         if not defined or null -> 'testplan_testcase' 
+ *
+ * @return map key: (test plan id or test case id depending on options->access_keys,
+ *                   default is test plan).
+ *
+ *             value: map key: (test case id or test plan id depending on options->access_keys,
+ *                              default is test case). 
+ *                        value:
+ *                         
+ * @since 20090131 - franciscom
+ *
+ */
+function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null)
+{
+    $filters=null;
+    $has_options=!is_null($options);
+    $access_key=array('testplan_id','testcase_id');
+    
+    
+    $sql="SELECT testprojects.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
+         "TCV.version,TCV.tc_external_id, NHB.id AS testcase_id, NHB.name, testprojects.prefix, " .
+         "UA.creation_ts ,UA.deadline_ts " .
+         "FROM user_assignments UA, testplan_tcversions TPTCV, " .
+         "tcversions TCV, nodes_hierarchy NHA, nodes_hierarchy NHB, nodes_hierarchy NHC, testprojects " .
+         "WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
+         "AND UA.user_id = {$user_id} " .
+         "AND testprojects.id IN (" . implode(',', array($tproject_id)) .") " .
+         "AND UA.feature_id=TPTCV.id AND TPTCV.tcversion_id=TCV.id  " .
+         "AND NHC.id=TPTCV.testplan_id AND NHC.parent_id=testprojects.id " .
+         "AND NHB.id=NHA.parent_id AND NHA.id=TCV.id " ;
+         
+         
+    if( !is_null($tplan_id) )
+    {
+        $filters=" AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
+    }     
+    $sql .= $filters;
+    
+    if( $has_options && isset($options->access_keys) )
+    {
+        switch($options->access_keys)
+        {
+            case 'testplan_testcase':
+            break;
+            
+            case 'testcase_testplan':   
+                $access_key=array('testcase_id','testplan_id');
+            break;
+        }
+    }
+    
+    $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1]);
+
+    if( $has_options && !is_null($rs))
+    {
+        if( isset($options->mode) )
+        {
+            switch($options->mode)
+            {
+                case 'full_path':
+                    if( !isset($options->access_keys) || 
+                        (is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
+                    { 
+                        $tcaseSet=null;
+                        foreach($rs as $container)
+                        {
+                            foreach($container as $item)
+                            {
+                                if(!isset($tcaseSet[$item['testcase_id']]))
+                                {
+                                    $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
+                                }  
+                            }    
+                        }
+                        $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
+                        // Remove test project piece and convert to string
+                        $flat_path=null;
+                        foreach($path_info as $tcase_id => $pieces)
+                        {
+                            unset($pieces[0]);
+                            $flat_path[$tcase_id]=implode('/',$pieces) . '/';  
+                        }
+
+                        $container_keys=array_keys($rs);
+                        foreach($container_keys as $idx)
+                        {
+                            foreach($rs[$idx] as $jdx => $item)
+                            {
+                                $rs[$idx][$jdx]['tcase_full_path']=$flat_path[$item['testcase_id']];
+                            }    
+                        }
+                    }
+                break;  
+            }  
+        }
+    }
+    return $rs;
+}
+
 
 
 /*

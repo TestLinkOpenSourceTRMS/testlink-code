@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.52 $ $Author: schlundus $
- * @modified $Date: 2009/01/07 19:55:34 $
+ * @version $Revision: 1.53 $ $Author: franciscom $
+ * @modified $Date: 2009/01/31 19:51:27 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -126,6 +126,7 @@ foreach($rights2check as $key => $the_right)
 }                         
 
 $smarty->assign('metrics_dashboard_url','lib/results/metricsDashboard.php');
+$smarty->assign('my_testcase_assignments_url','lib/testcases/tcAssignedToUser.php');
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.392 $
- * @modified $Date: 2009/01/27 19:28:22 $ by $Author: schlundus $
+ * @version $Revision: 1.393 $
+ * @modified $Date: 2009/01/31 19:52:29 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -198,6 +198,10 @@ $TLS_high_risk = "High";
 $TLS_medium_risk = "Medium";
 $TLS_low_risk = "Low";
 $TLS_test_importance = "Test importance";
+
+$TLS_testcases_assigned_to_user='Test Project: %s - Test Cases Assigned to User: %s';
+$TLS_assigned_on='Assigment date';
+
 
 // index.php
 $TLS_main_page_title = "TestLink ::: Main Page";
@@ -1545,6 +1549,7 @@ $TLS_title_requirements = "Requirements";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_product_mgmt = "Test Project";
 $TLS_href_plan_define_priority = "Test Plan priority";
+$TLS_href_my_testcase_assignments="Test Cases assigned to me";
 
 // gui/templates/mainPage_right.tpl
 $TLS_filter_tp_by_product = "Filter Test Plans by Test Project";

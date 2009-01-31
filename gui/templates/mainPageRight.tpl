@@ -1,15 +1,17 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.13 2009/01/29 20:58:22 schlundus Exp $
+ $Id: mainPageRight.tpl,v 1.14 2009/01/31 19:50:40 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
+       20090131 - franciscom - new link to access to test cases assigned to logged user
        20081228 - franciscom - new feature user can choose vertical order of link groups
 *}
 {lang_get var="labels"
           s="title_test_plan,ok,testplan_role,msg_no_rights_for_tp,
              title_test_execution,href_execute_test,href_rep_and_metrics,
              href_update_tplan,href_newest_tcversions,
+             href_my_testcase_assignments,
              href_tc_exec_assignment,href_plan_assign_urgency,
              href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
              href_plan_management,href_assign_user_roles,
@@ -187,6 +189,9 @@
  	    <br />
  		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	         <a href="{$metrics_dashboard_url}">{$labels.href_metrics_dashboard}</a>
+ 	    <br />
+ 		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	         <a href="{$my_testcase_assignments_url}">{$labels.href_my_testcase_assignments}</a>
 	    </p>
     </div>
 	{/if}

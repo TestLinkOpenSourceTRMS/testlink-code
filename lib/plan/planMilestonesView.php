@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesView.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/01/13 13:08:58 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/02/01 11:58:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * rev: 
@@ -68,7 +68,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui->action_descr = null;
     $gui->tplan_name = $argsObj->tplan_name;
     $gui->tplan_id = $argsObj->tplan_id;
-	$gui->items = $manager->get_all_by_testplan($argsObj->tplan_id);
+	  $gui->items = $manager->get_all_by_testplan($argsObj->tplan_id);
     $gui->grants = new stdClass();
     $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
 	  $gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");

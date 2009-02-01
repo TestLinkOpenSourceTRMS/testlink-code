@@ -5,14 +5,12 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/02/01 11:58:59 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
  * rev : 20080827 - franciscom - BUGID 1692
- *       20080119 - franciscom - remove priority code
- *       20071201 - franciscom - new web editor code
  *
  */
 require_once('../../config.inc.php');
@@ -24,6 +22,8 @@ require_once(require_web_editor($editorCfg['type']));
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+
+
 
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
@@ -113,8 +113,10 @@ switch($args->do_action)
 			}
 		}
 		else
+		{
 			$user_feedback = lang_get("warning_duplicate_tplan_name");
-
+    }
+    
 		if(!$status_ok)
 		{
 			$smarty->assign('tplan_id',$args->tplan_id);
@@ -137,7 +139,9 @@ switch($args->do_action)
 			$tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,$args->tproject_id);
 
 			if ($tplan_id == 0)
+			{
 				$user_feedback = $db->error_msg();
+			}
 			else
 			{
 				logAuditEvent(TLS("audit_testplan_created",$args->tproject_name,$args->testplan_name),"CREATED",$tplan_id,"testplans");
@@ -157,14 +161,16 @@ switch($args->do_action)
 				if($args->copy)
 				{
 					$tplan_mgr->copy_as($args->source_tpid, $tplan_id,
-					$args->testplan_name,$args->tproject_id,
-					$args->copy_options,$args->tcversion_type);
+					                    $args->testplan_name,$args->tproject_id,
+					                    $args->copy_options,$args->tcversion_type);
 				}
 			}
 		}
 		else
+		{
 			$user_feedback = lang_get("warning_duplicate_tplan_name");
-
+    }
+    
 		if(!$status_ok)
 		{
 			$smarty->assign('tplan_id',$args->tplan_id);

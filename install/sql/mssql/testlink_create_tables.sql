@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.31 2009/01/03 17:27:32 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.32 2009/02/01 11:57:56 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,6 +11,7 @@
 -- 
 -- Rev :
 --
+--      20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
 --      20090103 - franciscom - milestones table - added new unique index
 --      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
 --                              refactored index names
@@ -339,9 +340,9 @@ CREATE TABLE [milestones](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_milestones_testplan_id]  DEFAULT ((0)),
 	[target_date] [datetime] NOT NULL,
-	[A] [tinyint] NOT NULL CONSTRAINT [DF_milestones_A]  DEFAULT ((0)),
-	[B] [tinyint] NOT NULL CONSTRAINT [DF_milestones_B]  DEFAULT ((0)),
-	[C] [tinyint] NOT NULL CONSTRAINT [DF_milestones_C]  DEFAULT ((0)),
+	[a] [tinyint] NOT NULL CONSTRAINT [DF_milestones_A]  DEFAULT ((0)),
+	[b] [tinyint] NOT NULL CONSTRAINT [DF_milestones_B]  DEFAULT ((0)),
+	[c] [tinyint] NOT NULL CONSTRAINT [DF_milestones_C]  DEFAULT ((0)),
 	[name] [varchar](100)  NOT NULL CONSTRAINT [DF_milestones_name]  DEFAULT (N'undefined'),
  CONSTRAINT [PK_Milestones] PRIMARY KEY CLUSTERED 
 (

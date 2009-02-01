@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.46 2009/01/03 17:27:41 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.47 2009/02/01 11:57:56 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
 # 20090103 - franciscom - milestones table - added new unique index
 # 20081018 - franciscom - renamed indexes on events table according to dev standards
 # 20080810 - franciscom - BUGID 1650 (REQ)
@@ -166,9 +167,9 @@ CREATE TABLE `milestones` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `target_date` date NOT NULL default '0000-00-00',
-  `A` tinyint(3) unsigned NOT NULL default '0',
-  `B` tinyint(3) unsigned NOT NULL default '0',
-  `C` tinyint(3) unsigned NOT NULL default '0',
+  `a` tinyint(3) unsigned NOT NULL default '0',
+  `b` tinyint(3) unsigned NOT NULL default '0',
+  `c` tinyint(3) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
   PRIMARY KEY  (`id`),
   KEY `testplan_id` (`testplan_id`),

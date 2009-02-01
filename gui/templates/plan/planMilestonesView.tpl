@@ -1,3 +1,9 @@
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: planMilestonesView.tpl,v 1.5 2009/02/01 11:57:20 franciscom Exp $
+
+Rev:
+*}
 {lang_get var='labels' s='no_milestones,title_milestones,title_existing_milestones,th_name,
                          th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
                          btn_new_milestone,
@@ -55,9 +61,9 @@ var del_action=fRoot+'{$deleteAction}';
 				{$milestone.target_date|date_format:$gsmarty_date_format}
 			</td>
 			{if $session['testprojectOptPriority']}
-				<td style="text-align: right">{$milestone.A|escape}</td>
-				<td style="text-align: right">{$milestone.B|escape}</td>
-				<td style="text-align: right">{$milestone.C|escape}</td>
+				<td style="text-align: right">{$milestone.high_percentage|escape}</td>
+				<td style="text-align: right">{$milestone.medium_percentage|escape}</td>
+				<td style="text-align: right">{$milestone.low_percentage|escape}</td>
 			{else}
 				<td style="text-align: right">???</td>
 			{/if}

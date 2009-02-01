@@ -1,3 +1,9 @@
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: planMilestonesEdit.tpl,v 1.4 2009/02/01 11:57:20 franciscom Exp $
+
+Rev:
+*}
 {lang_get var='labels' s='show_event_history,warning_empty_milestone_name,
                           warning_empty_low_priority_tcases,warning_empty_medium_priority_tcases,
                           warning_empty_high_priority_tcases,info_milestones_date,
@@ -151,7 +157,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" id="low_priority_tcases" name="low_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.A|escape}"/>
+		          		       value="{$gui->milestone.high_percentage|escape}"/>
 	                {include file="error_icon.tpl" field="low_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -160,7 +166,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" name="medium_priority_tcases" id="medium_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.B|escape}"/>
+		          		       value="{$gui->milestone.medium_percentage|escape}"/>
 	                {include file="error_icon.tpl" field="medium_priority_tcases"}
 		          	</td>
 		          </tr>
@@ -169,7 +175,7 @@ function validateForm(f)
 		          	<td>
 		          		<input type="text" name="high_priority_tcases" id="high_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
-		          		       value="{$gui->milestone.C|escape}"/>
+		          		       value="{$gui->milestone.low_percentage|escape}"/>
 	                {include file="error_icon.tpl" field="high_priority_tcases"}
 		          	</td>
 		          </tr>

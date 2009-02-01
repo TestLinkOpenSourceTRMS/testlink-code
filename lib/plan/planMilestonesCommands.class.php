@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/01/13 13:10:09 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/02/01 11:58:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  */
@@ -47,9 +47,10 @@ class planMilestonesCommands
 		$guiObj->template = $this->defaultTemplate;
 		$guiObj->submit_button_label = $this->submit_button_label;
 		$guiObj->milestone = array('id' => 0, 'name' => '', 'target_date' => '', 
-		                             'A' => '', 'B' => '', 'C' => '', 
-		                             'testplan_id' => $argsObj->tplan_id,
-		                             'testplan_name' => $argsObj->tplan_name,);
+		                           'high_percentage' => '', 'medium_percentage' => '', 
+		                           'low_percentage' => '', 
+		                           'testplan_id' => $argsObj->tplan_id,
+		                           'testplan_name' => $argsObj->tplan_name,);
 		return $guiObj;	
 	}
 
@@ -63,16 +64,14 @@ class planMilestonesCommands
   */
 	function edit(&$argsObj)
 	{
-		$guiObj = new stdClass();
-		$dummy = $this->milestone_mgr->get_by_id($argsObj->id);
-		$guiObj->milestone = $dummy[$argsObj->id];
-		  
-		$guiObj->main_descr = lang_get('testplan') . TITLE_SEP;
-		$guiObj->action_descr = sprintf(lang_get('edit_milestone'),$guiObj->milestone['name']);
-      	$guiObj->template = $this->defaultTemplate;
-	    $guiObj->submit_button_label = $this->submit_button_label;
-		  
-		return $guiObj;	
+	    $guiObj = new stdClass();
+	    $dummy = $this->milestone_mgr->get_by_id($argsObj->id);
+	    $guiObj->milestone = $dummy[$argsObj->id];
+	    $guiObj->main_descr = lang_get('testplan') . TITLE_SEP;
+	    $guiObj->action_descr = sprintf(lang_get('edit_milestone'),$guiObj->milestone['name']);
+      $guiObj->template = $this->defaultTemplate;
+      $guiObj->submit_button_label = $this->submit_button_label;
+	    return $guiObj;	
 	}
 
 

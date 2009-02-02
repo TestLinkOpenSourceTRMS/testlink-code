@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.143 $
- * @modified $Date: 2009/01/31 19:51:27 $ $Author: franciscom $
+ * @version $Revision: 1.144 $
+ * @modified $Date: 2009/02/02 11:12:41 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090201 - franciscom - get_by_id_bulk() - added version_id filter
  * 20090131 - franciscom - new method get_assigned_to_user()
  * 20090120 - franciscom - create_tcase_only() - added new action_on_duplicate_name	     
  * 20090116 - franciscom - get_by_name() refactoring
@@ -1274,6 +1275,7 @@ function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_
 	$where_clause="";
 	$where_clause_names="";
 	$tcid_list ="";
+	$tcversion_id_filter="";
 	$sql = "";
 	$the_names = null;
 
@@ -1288,15 +1290,18 @@ function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_
 		$where_clause = " WHERE nodes_hierarchy.parent_id = {$id} ";
 		$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
 	}
+  if( $version_id != self::ALL_VERSIONS )
+  {
+      $tcversion_id_filter=" AND tcversions.id IN (" . implode(",",(array)$version_id) . ") ";
+  }
 
 	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id,
 	                tcversions.*, users.first AS author_first_name, users.last AS author_last_name,
 	                '' AS updater_first_name, '' AS updater_last_name
 	         FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id
                           LEFT OUTER JOIN users ON tcversions.author_id = users.id
-           {$where_clause} ORDER BY tcversions.version DESC";
+           {$where_clause} {$tcversion_id_filter} ORDER BY tcversions.version DESC";
   $recordset = $this->db->get_recordset($sql);
-
 
   if($recordset)
   {

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.13 2008/12/23 18:28:41 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.14 2009/02/02 11:12:31 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -16,6 +16,7 @@ rev :
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
+                          send_mail_to_tester,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter'}
 
@@ -61,6 +62,8 @@ function check_action_precondition(container_id,action)
 <div class="workBack" style="height: 450px; overflow-y: auto;">
 	
 	{assign var=top_level value=$gui->items[0].level}
+	<div style="text-align:center;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
+	{$labels.send_mail_to_tester}</div>
 	
 	{foreach from=$gui->items item=ts key=idx name="div_drawing"}
 	  {assign var="ts_id" value=$ts.testsuite.id}

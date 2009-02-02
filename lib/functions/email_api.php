@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: email_api.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/11/18 20:54:42 $  $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/02/02 11:12:41 $  $Author: franciscom $
  * @author franciscom
  *
  * rev:
@@ -45,7 +45,8 @@ $g_phpMailer_smtp = null;
 #         this is ok for now as nothing uses it
 # 20070107 - KL - modified signature to allow caller to specify htmlFormat = true if they so choose
 function email_send( $p_from, $p_recipient, $p_subject, $p_message,
-                     $p_cc='', $p_category='', $p_exit_on_error=false, $htmlFormat = 'false' ) {
+                     $p_cc='', $p_category='', $p_exit_on_error=false, $htmlFormat = false ) 
+{
 
 	global $g_phpMailer_smtp;
 
@@ -88,8 +89,10 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 
 	$mail->PluginDir = PHPMAILER_PATH;
 	//@TODO: schlundus, what's this, phpmailer_language?
-  $mail->SetLanguage( lang_get( 'phpmailer_language'),
-	                    PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
+  // 20090201 - franciscom
+  // Need to get strings file for php mailer
+  // To avoid problems I choose ENglish
+  $mail->SetLanguage( 'en', PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
 
 	# Select the method to send mail
 	switch ( config_get( 'phpMailer_method' ) ) {
@@ -158,16 +161,6 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 		}
 	}
 
-  /*
-	# add to the BCC list
-	$t_debug_bcc = '';
-	$t_bcc_list = split(',', $p_header);
-	while(list(, $t_bcc) = each($t_bcc_list)) {
-		if ( !is_blank( $t_bcc ) ) {
-				$mail->AddBCC( $t_bcc, '' );
-		}
-	}
-  */
   // 20051106 - fm
   $t_cc_list = split(',', $p_cc);
 	while(list(, $t_cc) = each($t_cc_list)) {

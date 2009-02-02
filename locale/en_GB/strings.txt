@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.393 $
- * @modified $Date: 2009/01/31 19:52:29 $ by $Author: franciscom $
+ * @version $Revision: 1.394 $
+ * @modified $Date: 2009/02/02 11:12:50 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1395,7 +1395,13 @@ $TLS_button_update_tree = "Update tree";
 $TLS_do_auto_update = "Update tree after every operation";
 $TLS_no_tc_spec_av = "No Test Specification available!";
 
+// tc_exec_assignment.php
+$TLS_mail_subject_testcase_assigned='Test Link - Test Case Assignment - Test Plan';
+$TLS_mail_subject_testcase_assignment_removed='Test Link - Test Case Assignment REMOVED - Test Plan';
 
+$TLS_mail_testcase_assigned= "Following Test Cases has been assigned to you %s by %s <br><br>";
+$TLS_mail_testcase_assignment_removed="%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br><br>";
+$TLS_send_mail_to_tester="Send mail notification to tester";
 
 // gui/templates/tc_exec_assignment.tpl
 $TLS_assign_to = "Assign to";

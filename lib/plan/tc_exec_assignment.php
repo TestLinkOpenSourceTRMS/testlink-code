@@ -1,9 +1,10 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.30 2008/12/23 18:28:54 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.31 2009/02/02 11:12:41 franciscom Exp $ 
  * 
  * rev :
+ *       20090201 - franciscom - new feature send mail to tester
  *       20080312 - franciscom - BUGID 1427
  *       20080114 - franciscom - added testcase external_id management
  *       20071228 - franciscom - BUG build combo of users using only users
@@ -14,7 +15,8 @@
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 require_once("treeMenu.inc.php");
-require("specview.php");
+require_once('email_api.php');
+require_once("specview.php");
 
 testlinkInitPage($db);
 
@@ -49,9 +51,9 @@ if(!is_null($args->doAction))
 		$open = $status_map['open']['id'];
 		$db_now = $db->db_now();
 
-		$features2upd = array();
-		$features2ins = array();
-		$features2del = array();
+		$features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
+	  $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id');
+	  $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
 		foreach($args->achecked_tc as $key_tc => $value_tcversion)
 		{
@@ -59,31 +61,68 @@ if(!is_null($args->doAction))
 
 			if($args->has_prev_assignment[$key_tc] > 0)
 			{
-				if($args->tester_for_tcid[$key_tc] > 0)
+         
+				if($args->tester_for_tcid[$key_tc] > 0)  
 				{
-					$features2upd[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
-					$features2upd[$feature_id]['type'] = $task_test_execution;
-					$features2upd[$feature_id]['status'] = $open;
-					$features2upd[$feature_id]['assigner_id'] = $args->user_id;
+          // Do only is tester has changed
+				  if( $args->has_prev_assignment[$key_tc] != $args->tester_for_tcid[$key_tc])
+				  {
+			        $op='upd';
+					    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
+					    $features2[$op][$feature_id]['type'] = $task_test_execution;
+					    $features2[$op][$feature_id]['status'] = $open;
+					    $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+					    $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+					    $features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
+              $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
+					}
 				} 
 				else
-					$features2del[$feature_id] = $feature_id;
+				{
+	          $op='del';
+					  $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+					  $features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
+            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
+				}	
 			}
 			else if($args->tester_for_tcid[$key_tc] > 0)
 			{
-				$features2ins[$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
-				$features2ins[$feature_id]['type'] = $task_test_execution;
-				$features2ins[$feature_id]['status'] = $open;
-				$features2ins[$feature_id]['creation_ts'] = $db_now;
-				$features2ins[$feature_id]['assigner_id'] = $args->user_id;
+			  $op='ins';
+				$features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
+				$features2[$op][$feature_id]['type'] = $task_test_execution;
+				$features2[$op][$feature_id]['status'] = $open;
+				$features2[$op][$feature_id]['creation_ts'] = $db_now;
+				$features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+				$features2[$op][$feature_id]['tcase_id'] = $key_tc;
+				$features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
 			}
 		}
-		if(count($features2upd) > 0)
-			$assignment_mgr->update($features2upd);
-		if(count($features2del) > 0)
-			$assignment_mgr->delete_by_feature_id($features2del);
-		if(count($features2ins) > 0)
-			$assignment_mgr->assign($features2ins);
+    foreach($features2 as $key => $values)
+    {
+        if( count($features2[$key]) > 0 )
+        {
+            if( $key == 'del' )
+            {
+                $assignment_mgr->$method2call[$key](array_keys($values));
+            }
+            else
+            {
+           	    $assignment_mgr->$method2call[$key]($values);
+           	}
+           	$called[$key]=true;
+        }  
+    }
+			
+		if($args->send_mail)
+		{
+		    foreach($called as $ope => $ope_status)
+		    {
+            if($ope_status)
+            {
+                send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
+		        }
+		    }
+		}	// if($args->send_mail)
 	}  
 }
 
@@ -153,7 +192,7 @@ function init_args()
 	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
       
 	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-	    	              'version_id' => 0, 'has_prev_assignment' => null,
+	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
 	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
 	  foreach($key2loop as $key => $value)
 	  {
@@ -170,7 +209,7 @@ function init_args()
         $args->filter_assigned_to = (array)$args->filter_assigned_to;  
     }
     
-	return $args;
+	  return $args;
 }
 
 /*
@@ -185,6 +224,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
+    $gui->send_mail=$argsObj->send_mail;
+    $gui->glueChar=$tcase_cfg->glue_character;
+    
     if ($argsObj->level != 'testproject')
     {
 	    $gui->testCasePrefix = $tcaseMgr->tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
@@ -196,11 +238,96 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	    $gui->testPlanName = $tplan_info['name'];
 	    $gui->main_descr = lang_get('title_tc_exec_assignment') . $gui->testPlanName;
 	    
-	    $users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-	    $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$users);
-	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$users);
-	}
+	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+	    $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
+	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$gui->all_users);
+	  }
 
     return $gui;
+}
+
+
+/**
+ * send_mail_to_testers
+ *
+ *
+ * @return void
+ */
+function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$features,$operation)
+{
+    $testers['new']=null;
+    $testers['old']=null;
+    $mail_details['new']=lang_get('mail_testcase_assigned');
+    $mail_details['old']=lang_get('mail_testcase_assignment_removed');
+    $mail_subject['new']=lang_get('mail_subject_testcase_assigned');
+    $mail_subject['old']=lang_get('mail_subject_testcase_assignment_removed');
+    $use_testers['new']= ($operation == 'del') ? false : true ;
+    $use_testers['old']= ($operation == 'ins') ? false : true ;
+   
+
+    $tcaseSet=null;
+    $tcnames=null;
+    $email=array();
+   
+    $assigner=$guiObj->all_users[$argsObj->user_id]->firstName . ' ' .
+              $guiObj->all_users[$argsObj->user_id]->lastName ;
+              
+    $email['from_address']=config_get('from_email');
+    $body_first_lines = lang_get('testproject') . ': ' . $argsObj->tproject_name . '<br>' .
+                        lang_get('testplan') . ': ' . $guiObj->testPlanName .'<br><br>';
+
+
+    // Get testers id
+    foreach($features as $feature_id => $value)
+    {
+        if($use_testers['new'])
+        {
+            $testers['new'][$value['user_id']][$value['tcase_id']]=$value['tcase_id'];              
+        }
+        if( $use_testers['old'] )
+        {
+            $testers['old'][$value['previous_user_id']][$value['tcase_id']]=$value['tcase_id'];              
+        }
+        
+        $tcaseSet[$value['tcase_id']]=$value['tcase_id'];
+        $tcversionSet[$value['tcversion_id']]=$value['tcversion_id'];
+    } 
+
+    $infoSet=$tcaseMgr->get_by_id_bulk($tcaseSet,$tcversionSet);
+    foreach($infoSet as $value)
+    {
+        $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    
+    }
+    
+    $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($tcaseSet);
+    $flat_path=null;
+    foreach($path_info as $tcase_id => $pieces)
+    {
+        $flat_path[$tcase_id]=implode('/',$pieces) . '/' . $tcnames[$tcase_id];  
+    }
+
+
+    foreach($testers as $tester_type => $tester_set)
+    {
+        if( !is_null($tester_set) )
+        {
+            $email['subject'] = $mail_subject[$tester_type] . ' ' . $guiObj->testPlanName;  
+            foreach($tester_set as $user_id => $value)
+            {
+                $userObj=$guiObj->all_users[$user_id];
+                $email['to_address']=$userObj->emailAddress;
+                $email['body'] = $body_first_lines;
+                $email['body'] .= sprintf($mail_details[$tester_type],
+                                          $userObj->firstName . ' ' .$userObj->lastName,$assigner);
+                foreach($value as $tcase_id)
+                {
+                    $email['body'] .= $flat_path[$tcase_id] . '<br>';  
+                }  
+                $email['body'] .= '<br>' . date(DATE_RFC1123);
+  	            $email_op = email_send($email['from_address'], $email['to_address'], 
+  	                                   $email['subject'], $email['body'],'','',true,true);
+            } // foreach($tester_set as $user_id => $value)
+  	    }                       
+    }
 }
 ?>

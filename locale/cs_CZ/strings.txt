@@ -4,101 +4,114 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/03/12 18:14:26 $ $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/02/02 22:30:52 $ $Author: havlat $
+ * @author Pavel Kalian
+ *
+ * Czech (cs_CZ) strings
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @author Pavel Kalian
  *
- * Czech (cs_CZ) strings
- * 
+ * Revisions:
  * 20080114 - initial translation
- *
- *       
-**/
-//If this file is coded in UTF-8 then enable the following line
-$TLS_STRINGFILE_CHARSET = "UTF-8";
+ * Scripted update according en_GB string file (version: 1.395) 
+ * ---------------------------------------------------------------------------------- */
 
-// BUGID 1133 - needed by email_api
-$TLS_charset		= 'utf-8';
 
-// General terms - Leave it here in this way can be reused !!!
+
+// ----- General terms (used wide) ----------------------------
+$TLS_active 		= "Aktivní";
 $TLS_asc 			= "vzestupně";
 $TLS_any 			= "jakýkoli";
 $TLS_assigned 		= "přiřazen";
 $TLS_automated 		= "Automatizovaný";
 $TLS_automatic 		= "Automatický";
+$TLS_check_uncheck_all = "Toggle all";
 $TLS_unassigned 	= "nepřiřazený";
 $TLS_desc 			= "sestupně";
+$TLS_description	= "Popis";
 $TLS_delete_confirm_question = "Jste si jist, že chcete mazat?";
 $TLS_file_type		= 'Typ souboru';
 $TLS_help 			= "Nápověda";
+$TLS_high 			= "Vysoký";
 $TLS_hour 			= "Hodina";
+$TLS_importance		= "Importance";
+$TLS_low 			= "Nízký";
 $TLS_manual 		= "Příručka";
+$TLS_medium 		= "Střední";
 $TLS_Milestone 		= "Milník";
+$TLS_name 			= "Název";
 $TLS_not_aplicable 	= "N/A";
 $TLS_none			= "Žádný";
+$TLS_priority		= "Priorita";
+$TLS_project		= "Projekt";
 $TLS_requirement 	= "Požadavek";
 $TLS_reqs 			= "Požadavky";
 $TLS_req_spec 		= "Dokument specifikace požadavků";
+$TLS_req_spec_short = "Spec. požadavků";
 $TLS_SRS 			= "SRS";
 $TLS_Role 			= "Role";
-$TLS_sort_table_by_column="Klikni pro změnu třídění"; 
+$TLS_sort_table_by_column = "Klikni pro změnu pořadí";
 $TLS_scope 			= "Rozsah";
 $TLS_status 		= "Stav";
 $TLS_Keyword 		= "Klíčové slovo";
 $TLS_test_case 		= "Testovací případ";
 $TLS_testcase 		= $TLS_test_case;
+$TLS_testcaseversion = 'Verze testovacího případu';
 $TLS_test_plan 		= "Testovací plán";
 $TLS_testplan 		= $TLS_test_plan;
+$TLS_testproject 	= "Testovací Projekt";
+$TLS_test_report 	= "Report testování";
 $TLS_test_suite 	= "Testovací sada";
 $TLS_testsuite_created = "Testovací sada vytvořena";
 $TLS_title 			= "Nadpis";
-
-$TLS_th_active = "Aktivní";
-$TLS_th_delete = "Smazat";
-$TLS_th_name = "Jméno";
-$TLS_th_notes = "Poznímky";
-$TLS_th_requirement_feature="Vlastnost požadavku";
-
-$TLS_import_file_type = "Typ importovaného souboru";
-$TLS_max_file_size_is = "Max. velikost souboru ";
-$TLS_supported_file_formats = "Podporované formáty souboru";
-$TLS_no_permissions_for_action = "Nemáte oprávnění pro tuto akci!" .
-                                 " Kontaktujte laskavě správce.";
+$TLS_urgency 		= "Urgentnost";
+$TLS_warning 		= "Upozornění!";
+$TLS_not_imported 	= "Ne importováno";
+$TLS_imported 		= "Importováno";
+$TLS_nobody 		= "Nikdo";
 
 
-// Actions  - Leave it here in this way can be reused !!!
+// Actions (used wide) 
 $TLS_add 			= "přidat";
 $TLS_create 		= "vytvořit";
 $TLS_remove 		= "odstranit";
+$TLS_th_delete 		= "Smazat";
 
 
-// Buttons (one word) - Leave it here in this way can be reused !!!
-$TLS_btn_add = "Přidat";
-$TLS_btn_assign	= "Přidělit";
-$TLS_btn_cancel	= "Zrušit";
-$TLS_btn_close = "Zavřít";
-$TLS_btn_cp = "Kopírovat";
-$TLS_btn_create = "Vytvořit";
-$TLS_btn_delete = "Smazat"; 
-$TLS_btn_edit	= "Upravit";
-$TLS_btn_export = "Exportovat";
-$TLS_btn_find = "Vyhledat";
-$TLS_btn_import = "Importovat";
-$TLS_btn_move = "Přesunout";
-$TLS_btn_no = "Ne";
-$TLS_btn_ok = "Ok";
-$TLS_btn_save = "Uložit";
-$TLS_btn_unassign = "Zruš přidělení";
-$TLS_btn_update = "Aktualizovat";
+// Buttons (used wide)
+$TLS_btn_apply 		= "Aplikovat";
+$TLS_btn_add 		= "Přidat";
+$TLS_btn_assign		= "Přidělit";
+$TLS_btn_cancel		= "Zrušit";
+$TLS_btn_close 		= "Zavřít";
+$TLS_btn_cp 		= "Kopírovat";
+$TLS_btn_create 	= "Vytvořit";
+$TLS_btn_delete 	= "Smazat"; 
+$TLS_btn_edit		= "Upravit";
+$TLS_btn_export 	= "Exportovat";
+$TLS_btn_find 		= "Vyhledat";
+$TLS_btn_goback 	= "Zpět";
+$TLS_btn_import 	= "Importovat";
+$TLS_btn_high 		= "Vysoký";
+$TLS_btn_low 		= "Nízký";
+$TLS_btn_medium 	= "Střední";
+$TLS_btn_move 		= "Přesunout";
+$TLS_btn_no 		= "Ne";
+$TLS_btn_ok 		= "Ok";
+$TLS_btn_save 		= "Uložit";
+$TLS_btn_unassign 	= "Zruš přidělení";
+$TLS_btn_update 	= "Aktualizovat";
 $TLS_btn_upd = $TLS_btn_update;
+$TLS_btn_advanced_filters = "Pokročilé filtery";
+$TLS_btn_simple_filters = "Základní filtry"; 
 
-// Status
+
+// Status (used wide)
 $TLS_test_status_all 		= "Vše";
 $TLS_test_status_any 		= "Jakýkoli";
 $TLS_test_status_not_run 	= "Neproveden";
@@ -109,14 +122,55 @@ $TLS_test_status_not_available  = "Nedostupný";
 $TLS_test_status_unknown	= "Neznámý";
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
-// firstLogin.php
+// ----- unsorted (TODO move) -------------------------------------
+$TLS_problems_loading_xml_content = "Unable to load XML data, Check your file."; 
+$TLS_search_type_like = "Search on this value will be done on LIKE mode";
+$TLS_exec_assign_no_testcase = "Please select at least one Test Case.";
+$TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
+$TLS_no_testcases_available = "No Test Cases or no destination Test Suites available!";
+$TLS_warning_must_be_number = "Value must be a number";
+
+$TLS_estimated_time_hours = "Estimated time for executing %s test cases (hours):";
+$TLS_estimated_time_min = "Estimated time for executing %s test cases (min):";
+$TLS_real_time_hours = "Time used for executing %s test cases (hours):";
+$TLS_real_time_min = "Time used for executing %s test cases (min):";
+
+$TLS_th_active = "Aktivní";
+$TLS_th_name = "Jméno";
+$TLS_th_notes = "Poznámky";
+$TLS_th_testcase 	= $TLS_test_case; // obsolete
+$TLS_th_requirement_feature = "Requirement Feature";
+
+$TLS_import_file_type = "Typ importovaného souboru";
+$TLS_max_file_size_is = "Max. velikost souboru ";
+$TLS_supported_file_formats = "Podporované formáty souboru";
+$TLS_no_permissions_for_action = "Nemáte oprávnění pro tuto akci!" .
+                                 " Kontaktujte laskavě správce.";
+
+// ----- JAVASCRIPT -----
+// Used on javascript logic to validate Custom Field values
+$TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
+$TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
+$TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
+
+
+// Installation/Migration
+$TLS_start_warning = '---- Warning ----';
+$TLS_testlink_warning = 'TestLink Warning';
+$TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name = 'Original name';
+$TLS_end_warning = '---- *** ----';
+
+
+// --------------------------------------------------------------------------------------
+// ----- firstLogin.php -----
 $TLS_cant_create_user = "Je  mi líto, ale Váše přihlašovací jméno nemůže být vytvořeno. Kontaktujte prosím správce!";
 $TLS_empty_email_address = " Nemůžete použít prázdnou e-mailovou adresu!";
 $TLS_empty_first_name = " Nemůžete použít prázdné křestní jméno!";
 $TLS_empty_last_name = " Nemůžete použít prázdné příjmení!";
 $TLS_fatal_page_title = "TestLink ::: Fatální chyba";
 $TLS_invalid_user_name = "Přihlašovací/uživatelské jméno není platné. Vyberte si prosím jiné.";
+$TLS_no_good_email_address = "Email address format seems no good";
 $TLS_passwd_dont_match = "Zadaná hesla nesouhlasí. Mějte na paměti, že hesla rozlišují malá a velká písmena. " .
                          "Zkuste to prosím znovu.";
 $TLS_user_cant_be_created_because = "Váš účet nemůže být vytvořen, protože:";
@@ -126,29 +180,48 @@ $TLS_warning_empty_pwd = "Vaše heslo by nemělo být prázdné!";
 $TLS_your_info_please = "Zadejte vaše přihlašovací údaje.";
 
 
+// ----- archiveData.php -----
+$TLS_container_title_testcase = $TLS_test_case;
+$TLS_high_priority 		= "Vysoká";
+$TLS_medium_priority 	= "Střední";
+$TLS_low_priority 		= "Nízká";
+$TLS_high_importance 	= "Vysoká";
+$TLS_medium_importance 	= "Střední";
+$TLS_low_importance 	= "Nízká";
+$TLS_high_risk 			= "Vysoké";
+$TLS_medium_risk 		= "Střední";
+$TLS_low_risk 			= "Nízké";
+$TLS_test_importance 	= "Důležitost testu";
+$TLS_testcases_assigned_to_user = 'Test Projekt: %s - Testy přiděleny uživateli: %s';
+$TLS_assigned_on		='Datum přidělení';
 
-// index.php
+
+// ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Hlavní strana";
+$TLS_config_check_warnings = "Prosím zvažte bezpečnostní slabiny. Detaily naleznete v souboru %s." .
+                 "Nastavením \$tlCfg->config_check_warning_mode = SILENT; potlačíte toto upozornění";
 
 
-// keywordsimport.php
+// ----- keywordsimport.php -----
 $TLS_please_choose_keywords_file = "Vyberte prosím soubor k nahrání";
 $TLS_keywords_file = "Soubor klíčových slov";
+$TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
-// lostPassword.php
-$TLS_bad_user = "Uživatel nenalezen, zkuste to prosím znovu";
-$TLS_contact_admin = "<br>Pokud máte další problémy, kontaktujte prosím svého správce.";
+
+// ----- lostPassword.php -----
+$TLS_bad_user 			= "Uživatel nenalezen, zkuste to prosím znovu";
+$TLS_contact_admin 		= "Pokud máte další problémy, kontaktujte prosím svého správce.";
 $TLS_mail_empty_address = "Nemáte v uživatelském profilu specifikovanou adresu elektronické pošty! " .
                           " Kontaktujte prosím svého správce TestLinku, aby změnil Vaše heslo!";
 $TLS_mail_passwd_subject = "Vaše nové heslo pro TestLink.";
-$TLS_mail_problems = "Chyby v nastavení pošty, kontaktujte prosím svého správce.";
+$TLS_mail_problems 		= "Chyby v nastavení pošty, kontaktujte prosím svého správce.";
 $TLS_page_title_lost_passwd = "TestLink - Ztracené heslo";
 $TLS_your_info_for_passwd = "Zadejte své přihlašovací informace, aby Vám mohlo být heslo zasláno elektronickou poštou.";
-$TLS_your_password_is = "Vaše nové heslo pro TestLink je: <br>";
+$TLS_your_password_is 	= "Vaše nové heslo pro TestLink je: <br>";
 
 
 
-// login.php
+// ----- login.php -----
 $TLS_bad_user_passwd = "Zkuste to znovu! Špatné uživatelské jméno nebo heslo!";
 $TLS_login_msg_session_exists1 = "Váš prohlížeč je stále přihlášen. <br> Použijte prosím nejprve tento odkaz >>> ";
 $TLS_login_msg_session_exists2 = " <<< pokud chcete Vaše přihlášení obnovit.";
@@ -156,41 +229,26 @@ $TLS_logout_link = "Odhlásit";
 $TLS_passwd_lost = "Vaše heslo bylo zasláno na e-mailovou adresu, kterou jste uvedl během " .
                    "vytváření svého úživatelského účtu. Zkontrolujte prosím svou schránku. " .
                    "Pokud máte další problémy, kontaktujte prosím svého správce TestLink.";
-$TLS_password_reseted="Nové heslo bylo zasláno elektronickou poštou.";
+$TLS_password_reseted = "New password has been sent via mail";
 $TLS_please_login = "Přihlaste se, prosím ...";
 $TLS_session_expired = "Vaše přihlášení vypršelo! Přihlaste se znovu.";
 $TLS_your_first_login = "Vátejte v TestLink! Máte přístup jako host. Přihlaste se, prosím ...";
 
-// newest_tcversions.php
+
+// ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "žádné verze testovacího případu nepřipojeny";
+// resultsGeneral.php
+$TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
+                                 "then no execution data can exist => no report can be created";
 
-// planPriority.php
-$TLS_high_priority = "Vysoká";
-$TLS_low_priority = "Nízká";
-$TLS_medium_priority = "Střední";
+// ----- resultsNavigator.php -----
+$TLS_title_nav_results = "Reports and Metrics";
+$TLS_report_tplan_has_no_build = "Test Plan has no build defined, <br />".
+                               "then no execution data can exist => no report can be created";
+$TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
+                                "then no execution data can exist => no report can be created";
 
-$TLS_high_risk = "Vysoké";
-$TLS_low_risk = "Nízké";
-$TLS_medium_risk = "Střední";
-
-$TLS_high_importance = "Vysoká";
-$TLS_low_importance = "Nízká";
-$TLS_medium_importance = "Střední";
-
-// resultsGeneral.php 
-$TLS_report_tspec_has_no_tsuites="Pro testovací projekt nejsou definovány žádné sady testů, <br>".
-                                 "proto nemohou existovat data o provádění => nemůže být vytvořen žádný report";
-
-// resultsNavigator.php
-$TLS_title_nav_results="Reporty a Metriky";
-$TLS_report_tplan_has_no_build="Testovací plán nemá definováno žádné sestavení, <br>".
-                               "proto nemohou existovat data o provádění => nemůže být vytvořen žádný report";
-
-
-$TLS_report_tplan_has_no_tcases="Testovací plán nemá připojeny žádné testovací případy, <br>".
-                                "proto nemohou existovat data o provádění => nemůže být vytvořen žádný report";
-
-// tcEdit.php
+// ----- tcEdit.php -----
 $TLS_tc_copied = "Testovací případ %s byl úspěšně zkopírován do <br> testovací sady %s";
 $TLS_tc_created = "Testovací případ %s byl úspěšně vytvořen";
 $TLS_tc_deleted = "Testovací případ %s byl úspěšně smazán";
@@ -199,39 +257,40 @@ $TLS_tc_new_version = "Verze testovacího případu %d byla úspěšně vytvoře
 $TLS_tc_updated = "Testovací případ %s byl úspěšně aktualizován";
 $TLS_tc_update_failed = "Aktualizace testovacího případu %s selhala!";
 $TLS_tc_version_deleted = "Testovací případ %s verze %d byl úspěšně smazán";
+$TLS_assign_requirements = "Assign Requirements";
 
 
-// tcexecute.php
-$TLS_check_test_automation_server="Prosím zkontrolujte nastavení serveru";
-$TLS_result_after_exec=" Výsledky po provedení: ";
-$TLS_service_not_supported="Tato služba není podporována";
-$TLS_tcexec_notes="Poznámky:";
-$TLS_tcexec_result="Výsledek:";
-$TLS_tcexec_results_for="Výsledek pro:";
+// ----- tcexecute.php -----
+$TLS_check_test_automation_server = "Please Check Server Settings";
+$TLS_result_after_exec = "Results after execution: ";
+$TLS_service_not_supported = "This service is not supported";
+$TLS_tcexec_notes = "Notes:";
+$TLS_tcexec_result = "Result:";
+$TLS_tcexec_results_for = "Result for:";
 
-// gui/templates/attachment404.tpl
+
+// ----- gui/templates/attachment404.tpl -----
 $TLS_error_attachment_not_found = "Chyba: P5íloha nenalezena!";
 $TLS_title_downloading_attachment = "Stáhnout přílohu";
 
 
-
-// gui/templates/attachmentdelete.tpl
+// ----- gui/templates/attachmentdelete.tpl -----
 $TLS_deleting_was_ok = "Příloha byla smazána!";
 $TLS_error_attachment_delete = "Chyba během mazání přílohy!";
 $TLS_title_delete_attachment = "Smazat přílohu";
 
 
 
-// gui/templates/containerDelete.tpl
+// ----- gui/templates/containerDelete.tpl -----
 $TLS_btn_yes_del_comp = "Ano, smazat testovací sadu";
-$TLS_container_title_testsuite =$TLS_test_suite;
-$TLS_linked_but_not_executed="Připojeno k jednomu nebo více testovacím plánům, ale neprovedeno";
+$TLS_container_title_testsuite = $TLS_test_suite;
+$TLS_linked_but_not_executed = "Linked to one or more Test Plan, but not executed";
 $TLS_question_del = "Skutečně smazat";
 $TLS_th_link_exec_status = "Stav napojení a provádění";
 
 
 
-// gui/templates/containerNew.tpl
+// ----- gui/templates/containerNew.tpl -----
 $TLS_btn_create_testsuite = "Vytvořit testovací sadu";
 $TLS_tc_keywords = "Klíčová slova";
 $TLS_title_create = "Vytvořit";
@@ -239,7 +298,7 @@ $TLS_warning_empty_testsuite_name = "Pojmenujte prosím testovací sadu";
 
 
 
-// gui/templates/bug_add.tpl
+// ----- gui/templates/bug_add.tpl -----
 $TLS_btn_add_bug = "Přidat chybu";
 $TLS_bug_id = "Id chyby";
 $TLS_button_enter_bug = "Zaevidovat chybu";
@@ -265,7 +324,7 @@ $TLS_defined_exclam = "definován !";
 $TLS_include_nested = "Včetně zapouzdřených dat (pouze kopírovat).";
 $TLS_sorry_further = "Je mi líto, další neexistují ";
 $TLS_title_move_cp = "Přesunout/Kopírovat";
-
+$TLS_title_move_cp_testcases = "Move/Copy Test Cases";
 
 
 // gui/templates/reqCreate.tpl
@@ -273,7 +332,7 @@ $TLS_req_create = "Vytvořit požadavek";
 $TLS_req_doc_id = "ID dokumentu";
 $TLS_warning_empty_req_title = "Nadpis požadavku nesmí být prázdný!";
 $TLS_warning_empty_reqdoc_id = "ID dokumentu požadavku nesmí být prázdné!";
-
+$TLS_create_testcase_from_req = "Create Test Cases from Requirements";
 
 
 // gui/templates/containerOrder.tpl
@@ -283,46 +342,50 @@ $TLS_th_id = "ID";
 $TLS_th_node_type = "Testovací případ / Testovací sada";
 $TLS_th_order = "Pořadí";
 $TLS_title_change_node_order = "Změna pořadí potomků";
-$TLS_node_type_dbtable_testsuites=$TLS_test_suite;
-$TLS_node_type_dbtable_testcases=$TLS_testcase;
+$TLS_node_type_dbtable_testsuites = $TLS_test_suite;
+$TLS_node_type_dbtable_testcases = $TLS_testcase;
 
 
 
 // gui/templates/containerView.tpl
-$TLS_alt_del_com = "Smazat tuto testovací sadu";
-$TLS_alt_edit_com = "Změnit data této tetsovací sady a nadpis";
-$TLS_alt_move_cp_com = "Přesunout nebo kopírovat tuto tetsovací sadu do jiného testovacího projektu";
-$TLS_btn_del_com = "Smazat";
-$TLS_btn_edit_com = "Upravit";
-$TLS_btn_execute_automatic_testcases="Provést všechny automatické testovací případy";
+$TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites and Test Cases)";
+$TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
+$TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
+$TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_btn_del_testsuite = "Delete Test Suite";
+$TLS_btn_edit_testsuite = "Edit";
+$TLS_btn_execute_automatic_testcases = "Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Exportovat všechny testovací sady";
 $TLS_btn_export_tc = "Exportovat testovací případ(y)";
 $TLS_btn_export_testsuite = "Exportovat testovací sadu";
 $TLS_btn_import_tc = "Importovat testovací případ(y)";
 $TLS_btn_import_testsuite = "Importovat testovací sadu";
-$TLS_btn_move_cp_com = "Přesunout/Kopírovat";
-$TLS_btn_new_cat = "Nová testovací sada";
-$TLS_btn_new_com = "Nová testovací sada";
+$TLS_btn_move_cp_testsuite = "Move/Copy";
+$TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_btn_new_testsuite = "New child Test Suite";
 $TLS_btn_new_tc = "Vytvořit testovací případ(y)";
-$TLS_btn_reorder_cat = "Přetřídit potomky";
+$TLS_btn_reorder = "Reorder children";
+$TLS_container_title_testproject = $TLS_testproject;
 $TLS_edit_testproject_basic_data = "Upravit základní data testovacího projektu";
 $TLS_th_product_name = "Jméno tetsovacího projektu";
 
 
-
-// gui/templates/cfields_edit.tpl
+// gui/templates/cfields/cfieldsEdit.tpl
 $TLS_available_on = "K dispozici pro";
 $TLS_custom_field = "Uživatelské pole";
 $TLS_enable_on_design = "Zapnout při <br>specifikaci testu";
 $TLS_enable_on_exec = "Zapnout při <br>provádění testu";
+$TLS_enable_on_testplan_design = "Enable on <br />test plan design";
 $TLS_label = "Popisek";
 $TLS_name = "Název";
 $TLS_popup_delete_custom_field = "Jste si jist, že chcete smazat uživatelské pole?";
 $TLS_possible_values = "Možné hodnoty";
 $TLS_show_on_design = "Zobrazit při <br>specifikaci testu";
 $TLS_show_on_exec = "Zobrazit při <br>provádění testu";
-$TLS_testcase = $TLS_test_case;
+$TLS_show_on_testplan_design = "Display on <br />test plan design";
+$TLS_testcase 		= $TLS_test_case;
 $TLS_title_cfields_mgmt = "Uživatelská pole";
+$TLS_title_cfield_edit = "Edit ";
 $TLS_type = "Typ";
 $TLS_warning_empty_cfield_label = "Zadejte prosím popisek tohoto uživatelského pole.";
 $TLS_warning_empty_cfield_name = "Zadejte prosím název tohoto uživatelského pole.";
@@ -331,14 +394,11 @@ $TLS_warning_is_in_use = "Nelze ani smazat, ani změnit typ, <br> " .
                          "během specifikace nebo provádění testu ";
 
 
-
 // gui/templates/inc_update.tpl
 $TLS_info_failed_db_upd = "Chyba při přístpu do databáze!";
 $TLS_info_failed_db_upd_details = "Chyba při přístpu do databáze! - detaily:";
 $TLS_invalid_query = "Chyba";
-$TLS_warning = "Upozornění!!";
 $TLS_was_success = " byl úspěšný ";
-
 
 
 // gui/templates/execNavigator.tpl
@@ -350,8 +410,10 @@ $TLS_current_build = "Aktuální sestavení";
 $TLS_filter_owner = "Přiřazen k";
 $TLS_filter_result = "Výsledek";
 $TLS_filter_tcID = "ID testovacího případu";
+$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
 $TLS_keyword = "Klíčové slovo";
 $TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
 
 
 // gui/templates/mainPage.tpl
@@ -361,11 +423,11 @@ $TLS_title_your_tp_metrics = "Metriky Vašeho testovacího plánu";
 
 
 // gui/templates/metrics_dashbord.tpl
-$TLS_th_total_tc="Počet testovacích případů";
-$TLS_th_active_tc="Aktivní testovací případy";
-$TLS_th_executed_tc="Provedené tetsovací případy";
-$TLS_th_executed_vs_active="Provedené/Aktivní [%]";
-$TLS_th_executed_vs_total="Provedené/Celkem [%]";
+$TLS_th_total_tc = "Test Case number";
+$TLS_th_active_tc = "Active Test Cases";
+$TLS_th_executed_tc = "Executed Test Cases";
+$TLS_th_executed_vs_active = "Executed/Active [%]";
+$TLS_th_executed_vs_total = "Executed/Total [%]";
 
 
 // gui/templates/newest_tcversions.tpl
@@ -374,9 +436,9 @@ $TLS_newest_version = "Nejnovější dostupná aktivní verze";
 $TLS_title_newest_tcversions = "Nejnovější verze napojených testovacích případů";
 $TLS_no_newest_version_of_linked_tcversions = "Všechny verze napojených testovacích případů jsou aktuální";
 
+
 // gui/templates/emailSent.tpl
 $TLS_send_test_report = "- Poslat report z testování";
-
 
 
 // gui/templates/reqImport.tpl
@@ -430,11 +492,18 @@ $TLS_link_results_import = "Importovat výsledky";
 
 
 
-// gui/templates/cfields_view.tpl
+// gui/templates/cfields/cfieldsView.tpl
 $TLS_btn_cfields_create = "Vytvořit";
 $TLS_manage_cfield = "Spravovat uživatelské pole";
 
 
+// cfieldsExport.php
+$TLS_export_cfields = "Export Custom fields";
+
+// cfieldsImport.php
+$TLS_import_cfields = "Import Custom fields";
+$TLS_custom_field_already_exists="Custom field %s already exists.";
+$TLS_custom_field_imported="Custom field %s imported.";
 
 // gui/templates/inc_cat_viewer_ro_m0.tpl
 $TLS_cat_scope = "Rozsah a cíl";
@@ -468,17 +537,19 @@ $TLS_title_last_mod = "Naposledy změněn ";
 
 
 
-// gui/templates/buildNew.tpl
+// gui/templates/buildEdit.tpl
 $TLS_active = "Aktivní";
 $TLS_enter_build = "Nadpis";
 $TLS_enter_build_notes = "Popis";
-$TLS_msg_build = "Poznámky: Každé sestavení je spojeno s aktivním testovacím plánem. " .
-                 "Popis vy měl obsahovat: seznam doručených balíků, povolení, stav, atd.";
+//$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
+//                 "Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_open = "Otevřít";
 $TLS_title_build_2 = "Správa sestavení";
 $TLS_title_build_create = "Vytvořit nové sestavení";
 $TLS_title_build_update = "Upravit sestavení";
+$TLS_title_build_edit = "Edit Build";
 $TLS_warning_empty_build_name = "Zadejte prosím jméno sestavení!";
+$TLS_copy_to_all_tplans = "Copy to all Test Plans";
 
 
 
@@ -518,6 +589,7 @@ $TLS_req_select_delete = "Smazat požadavky";
 $TLS_req_title_list = "Seznampožadavků";
 $TLS_req_total = "Přepsanýpočet požadavků";
 $TLS_req_reorder = "Přetřídit požadavky";
+$TLS_select_at_least_one_req = "Please select a requirement!";
 $TLS_warning_delete_requirements = "Jste si jist, že chcete smazat vybrané požadavky?";
 $TLS_warning_delete_req_spec = "Chystáte se smazat: %s <br><br> Jste si jist?"; 
 $TLS_title_change_req_order = "Změnit pořadí požadavků";
@@ -539,7 +611,7 @@ $TLS_title_edit_level = "Upravit";
 
 // gui/templates/reqSpecAnalyse.tpl
 $TLS_edit = "Upravit";
-$TLS_none = "Žádný";
+$TLS_none			= "Žádný";
 $TLS_req = "Požadavek";
 $TLS_req_spec_change = "Změnit dokument specifikace požadavku na";
 $TLS_req_title_analyse = "Analyzovat dokument specifikace požadavků ";
@@ -555,7 +627,6 @@ $TLS_testcases = "Testovací případy";
 
 // gui/templates/reqSpecCreate.tpl
 $TLS_action_create_srs = "Vytvořit dokument specifikace požadavku";
-$TLS_testproject = "Testovací Projekt";
 
 
 
@@ -617,7 +688,7 @@ $TLS_req_total_description = "Použijte tento parametr k přepsání skutečnéh
 // gui/templates/inc_show_bug_table.tpl
 $TLS_build = "Sestavení";
 $TLS_caption_bugtable = "Relevantní chyby";
-$TLS_delete_bug="smazat chybu";
+$TLS_delete_bug ="delete bug";
 $TLS_del_bug_warning_msg = "Skutečně smazat tuto chybu?";
 
 
@@ -655,6 +726,7 @@ $TLS_menu_define_roles = "Nová role";
 $TLS_menu_mod_user = "Upravit uživatele";
 $TLS_menu_new_user = "Nový uživatel";
 $TLS_menu_edit_user = "Upravit uživatele";
+$TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "Zobrazit uživatele";
 $TLS_menu_view_roles = "Zobrazit role";
 $TLS_th_cf_rights = "Uživatelské pole";
@@ -664,23 +736,28 @@ $TLS_th_product_rights = "Testovací projekt";
 $TLS_th_req_rights = "Požadavek";
 $TLS_th_rights = "Práva";
 $TLS_th_rolename = "Název role";
+$TLS_th_system_rights = "System rights";
 $TLS_th_tp_rights = "Testovací plán";
 $TLS_th_user_rights = "Uživatel";
 $TLS_title_user_mgmt = "Správa uživatelů";
-$TLS_warning_empty_role_name="Prosím, dejte roli jméno";
+$TLS_warning_empty_role_name = "Please give a name to Role";
 $TLS_warning_modify_role = "Skutečně upravit roli?";
 
 
 
 // gui/templates/tcSearchForm.tpl
 $TLS_caption_search_form = "Prohledat testovací případy";
-$TLS_custom_field_value ="Hodnota uživatelského pole";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_not_applied = "Nepoužité";
 $TLS_th_tcid = "ID testovacího případu";
 $TLS_th_tcversion = "Verze";
 $TLS_th_title = "Nadpis";
 $TLS_title_search_tcs = "Hledat";
+$TLS_requirement_document_id = "Req. Doc. ID";
 
+
+// gui/templates/testcases/searchData.tpl
+$TLS_too_wide_search_criteria = "Too many results. Please, set a more specific criteria for the search.";
 
 
 // gui/templates/infoWindow.tpl
@@ -715,7 +792,7 @@ $TLS_title_keyword_import = "Importovat klíčová slova";
 
 
 // gui/templates/keywordsExport.tpl
-$TLS_export_keywords="Exportovat klíčová slova";
+$TLS_export_keywords="Export keywords";
 $TLS_title_req_import_to = "Importovat požadavky do dokumentu";
 
 
@@ -745,9 +822,11 @@ $TLS_th_locale = "Locale";
 $TLS_th_login = "Uživ. jméno";
 $TLS_th_role = "Role";
 $TLS_th_api = "API Klíč";
-$TLS_api_gen_key_action = "generovat";
+//$TLS_api_gen_key_action = "generate";
 $TLS_warning_delete_user = "Chystáte se smazat: %s <br><br> Jste si jist?"; 
-
+$TLS_order_by_login_dir = "Order by login";
+$TLS_order_by_role_dir = "Order by role";
+$TLS_alt_active_user = "Active user";
 
 // gui/templates/login.tpl
 $TLS_btn_login = "Přihlásit";
@@ -766,7 +845,7 @@ $TLS_last_name = "Příjmení";
 $TLS_link_back_to_login = "Zpět na přihlášení";
 $TLS_password_again = "Opakovat heslo";
 $TLS_password_mgmt_is_external = "Správa hesel je externí";
-
+$TLS_user_login_valid_regex = "The Login Name contains invalid characters!";
 
 
 // gui/templates/tcMove.tpl
@@ -777,7 +856,7 @@ $TLS_btn_mv = "Přesunout";
 $TLS_choose_container = "Vybrat testovací sadu";
 $TLS_inst_copy = "Zkopírovat testovací případ do jakékoli testovací sady.";
 $TLS_inst_move = "Přesunout tetsovací  případ do jiné testovací sady.";
-$TLS_inst_copy_move_warning="Důležité: Můžete vybrat pouze testovací sady příslušné tomuto testovacímu projektu.";
+$TLS_inst_copy_move_warning = "Important: You can only choose Test Suites belonging to this Test Project.";
 $TLS_title_mv_cp_tc = "Přesunout/kopírovat testovací případ";
 
 
@@ -790,8 +869,8 @@ $TLS_password_reset = "Resetovat heslo";
 
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "Vaše hledání nepřineslo žádné výsledky!";
-$TLS_other_versions='Jiné verze';
-
+$TLS_other_versions = 'Other versions';
+$TLS_match_count = "Number of matches";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "přílohy";
@@ -807,31 +886,33 @@ $TLS_bug_mgmt = "Správa chyb";
 $TLS_build_is_closed = "Sestavení je uzavřeno";
 $TLS_builds_notes = "Popis sestavení";
 $TLS_bulk_tc_status_management = "Hromadná práva stavu testovacích případů";
-$TLS_closed_build="uzavřené sestavení. nelze provést žádnou operaci";
+$TLS_closed_build = "close build. no operation can be done";
 $TLS_date_time_run = "Datum";
 $TLS_details = "Detaily";
-$TLS_execute_and_save_results ="Provést a uložit výsledky";
-$TLS_exec_any_build="(jakékoli sestavení)";
-$TLS_exec_current_build="(aktuální sestavení)";
+$TLS_edit_notes = "edit notes";
+$TLS_execute_and_save_results ="Execute and Save Results";
+$TLS_exec_any_build = "(any build)";
+$TLS_exec_current_build = "(current build)";
 $TLS_exec_notes = "Poznámky";
 $TLS_exec_status = "Stav";
 $TLS_execution_history = "Historie provedení";
-$TLS_execution_type_manual="Ruční";
-$TLS_execution_type_auto="Automatické";
+$TLS_execution_type_manual = "Manual";
+$TLS_execution_type_auto = "Automated";
 $TLS_has_no_assignment = "Nepřiřazen žádný tester";
 $TLS_img_title_bug_mgmt = "Správa chyb";
 $TLS_img_title_delete_execution= "Smazat provedení";
-$TLS_import_xml_results="Importovat výsledky z XML";
+$TLS_import_xml_results = "Import XML Results";
 $TLS_just_last_execution_for_this_build = "Poslední porvedení pro sestavení";
 $TLS_last_execution = "Poslední provedení";
 $TLS_no_data_available = "Žádná data nejsou k dispozici";
-$TLS_only_test_cases_assigned_to="Pouze testovací případy přiřazené k";
-$TLS_run_mode="Prováděcí mód";
+$TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
+$TLS_or_unassigned_test_cases = " Or without tester assignment";
+$TLS_run_mode = "Run mode";
 $TLS_set_all_tc_to = "Nastavit vše na stav ";
 $TLS_show_hide = "Zobraz / skryj";
 $TLS_tc_not_tested_yet = "Ještě netestováno";
 $TLS_test_cases_cannot_be_executed = "Testovací případy nemohou být provedeny";
-$TLS_testcase_version_is_inactive_on_exec="Tato verze není aktivní => Neůže být vykonána";
+$TLS_testcase_version_is_inactive_on_exec = "This version is inactive => Can not be executed";
 $TLS_test_exec_by = "Testováno";
 $TLS_test_exec_expected_r = "Očekávané výsledky";
 $TLS_test_exec_last_run_date = "Poslední běh";
@@ -847,7 +928,8 @@ $TLS_title_t_r_on_build = "Výsledky testů k sestavení";
 $TLS_title_t_r_owner = " Přiřazeno k";
 $TLS_title_test_case = "Testovací případ";
 $TLS_version = "Verze";
-
+$TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
+$TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
 
 
 // gui/templates/inc_testsuite_viewer_ro.tpl
@@ -856,15 +938,19 @@ $TLS_keywords = "Klíčová slova";
 
 
 // gui/templates/navBar.tpl
+$TLS_access_doc = "documentation";
 $TLS_home = "Domů";
 $TLS_link_logout = "Odhlásit";
+$TLS_navbar_user_management = "Users";
 $TLS_product = "Testovací projekt";
 $TLS_product_role = "Role v testovacím projektu ";
 $TLS_search_testcase = "Hledat";
 $TLS_title_edit_personal_data = "Osobní";
+$TLS_title_events = "Events";
 $TLS_title_execute = "Provést";
 $TLS_title_results = "Výsledky";
 $TLS_title_specification = "Specifikace";
+$TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 
 
@@ -878,28 +964,35 @@ $TLS_add_remove_selected_tc_hint = "Operace bude provedena na VŠECH testovacíc
 $TLS_btn_add_remove_selected_tc = "Přidat / Odstranit vybrané";
 $TLS_btn_add_selected_tc = "Přidat vybrané";
 $TLS_btn_check = "Zaškrtnout";
+$TLS_btn_save_exec_order = "Save order";
+$TLS_btn_save_custom_fields ="Save custom fields";
 $TLS_btn_uncheck = "Odškrtnout";
 $TLS_check_uncheck_tc = "Všechny testovací případy v testovací sadě.";
-$TLS_check_uncheck_all_checkboxes="zaškrtnout/odškrtnout vše";
-$TLS_check_uncheck_all_checkboxes_for_add="zaškrtnout/odškrtnout vše (pro přidání)";
-$TLS_check_uncheck_all_checkboxes_for_rm="zaškrtnout/odškrtnout vše (pro odstranění)";
+$TLS_check_uncheck_all_checkboxes = "check/uncheck all";
+$TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
+$TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
+$TLS_execution_order = "Execution order";
 
 $TLS_has_been_executed = "byl proveden";
 $TLS_inactive_testcase = "neaktivní";
 $TLS_no_testcase_available = "Žádný testovací případ není k dispozici";
 $TLS_note_keyword_filter = "Testovací případy jsou filtrovány podle klíčového slova";
 $TLS_remove_tc = "Odstranit";
-$TLS_show_tcase_spec="Zobrazit specifikaci testovacího případu";
+$TLS_show_tcase_spec = "Show Test Case specification";
 $TLS_th_test_case = "Testovací případ";
 $TLS_title_add_remove_test_to_plan = "Přidat/Odstranit testovací případy do/z testovacího plánu";
 $TLS_title_add_test_to_plan = "Přidat testovací případy do testovacího plánu";
 $TLS_warning_add_remove_selected_tc = "Varování! Jste si jist, že chcete odstranit vybrané testovací případy z testovacího plánu?";
 
 
-
 // gui/templates/planAddTCNavigator.tpl
 $TLS_title_navigator = "Navigator";
+$TLS_keywords_filter_help = "You can use OR/AND filtering";
 
+
+// gui/templates/planTCNavigator.tpl
+$TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
 
 
 // gui/templates/planPriority.tpl
@@ -908,6 +1001,15 @@ $TLS_title_priority = "Definovat pravidla priority pro testovací plán";
 $TLS_tr_th_importance = "Důležitost";
 $TLS_tr_th_prio_cba = "Priorita (C/B/A)";
 $TLS_tr_th_risk = "Riziko/Důležitost";
+
+// gui/templates/planUpdateTC.tpl
+$TLS_btn_update_testplan_tcversions = "Update Test Plan";
+$TLS_update_to_version = "Update to version";
+$TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
+$TLS_update_testcase_versions = "Update Linked Test Case Versions";
+$TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
+$TLS_tplan_updated = "Test Plan was updated";
+$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
 
 
 
@@ -953,47 +1055,69 @@ $TLS_testplan_menu_list = "Seznam";
 
 
 
-// gui/templates/planMilestones.tpl
+// gui/templates/planMilestones*.tpl
 $TLS_alt_delete_milestone = "Smazat milník?";
 $TLS_btn_edit_milestone = "Upravit";
 $TLS_btn_new_milestone = "Vytvořit";
 $TLS_info_milestones_date = "Milník musí být vytvořen s dnešním nebo budoucím datem";
 $TLS_no_milestones = "Pro tento testovací plán neexistují žádné milníky!";
 $TLS_popup_delete_milestones = "Jste si jist, že chcete smazat milník %NAME% ?";
-$TLS_warning_empty_milestone_name="Název milníku nesmí být prázdný!";
+$TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
+$TLS_warning_empty_milestone_name="Milestone name cannot be empty!";
 
 
 $TLS_th_date_format = "Cílové datum";
 $TLS_th_perc_a_prio = "Dokončené testy s prioritou A [0-100%]";
 $TLS_th_perc_b_prio = "Dokončené testy s prioritou B [0-100%]";
 $TLS_th_perc_c_prio = "Dokončené testy s prioritou C [0-100%]";
+$TLS_th_perc_testcases = "Completed tests [0-100%]";
 $TLS_title_existing_milestones = "Existující milníky";
 $TLS_title_milestones = "Milníky pro testovací plán";
 $TLS_title_new_milestone = "Nový milník";
+$TLS_title_edit_milestone = "Edit Milestone";
+$TLS_delete_milestone = "Delete milestone";
+$TLS_milestone_deleted = "Milestone %s was successfully deleted";
+$TLS_create_milestone = "Create Milestone";
+$TLS_edit_milestone = "Edit Milestone %s";
+$TLS_warning_empty_low_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_high_priority_tcases = "Value can not be empty";
+$TLS_milestone_created = "Milestone Created";
 
 
 
-// gui/templates/projectedit.tpl
+// gui/templates/projectEdit.tpl
 $TLS_btn_activate = "Aktivovat";
 $TLS_btn_del = "Odstranit";
 $TLS_btn_edit_del = "Upravit / Smazat";
 $TLS_btn_inactivate = "Neaktivní";
-$TLS_caption_edit_product = "Upravit testovací projekt";
-$TLS_caption_new_product = "Nový testovací projekt";
+$TLS_caption_edit_tproject = "Edit %s";
+$TLS_caption_new_tproject = "Create new Test Project";
 $TLS_color = "Barva";
 $TLS_enable_requirements = "Povolit funkčnost pro požadavky";
+$TLS_enable_priority = "Priority Management";
+$TLS_enable_automation = "Test Automation";
 $TLS_info_failed_loc_prod = "Nepodařilo se lokalizovat testovací projekt.";
 $TLS_notes = "Přiřazené poznámky";
-// Warning!!! - if JS string you must use \\n to get \n                                       
+$TLS_testproject_alt_delete = "Delete Test Project";
+$TLS_testproject_alt_active = "Active";
+$TLS_testproject_alt_requirement_feature = "Requirements enabled";
+$TLS_testproject_alt_edit = "Edit Test Project";
+$TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
+
+// Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = "Varování! Tato akce nevratně maže všechna data spojená s testovacím projektem " .
                             "(ivčetně výsledků testů, plánů, atd.). " .
                             "Můžete také projekt místo odatranění deaktivovat.\\n" .
                             "Doporučení: Nejprve proveďte zálohu databáze.\\n" .
                             "Jste si jist, že chcete odstranit testovací projekt?"; 
+
+$TLS_tcase_id_prefix = "Test Case ID prefix";
+$TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
 $TLS_warning_empty_tproject_name = "Název testovacího projektu nesmí být prázdný!";
 
 // gui/templates/projectView.tpl
-$TLS_title_testproject_management="Správa testovacích projektů";
+$TLS_title_testproject_management = "Test Project Management";
 
 // gui/templates/reqAssign.tpl
 $TLS_please_select_a_req = "Prosím, vyberte požadavek";
@@ -1029,13 +1153,13 @@ $TLS_title_plan_ownership = "Vlastník testovacího plánu";
 $TLS_activate_this_tcversion = "Aktivovat tuto verzi";
 $TLS_Requirements = "požadavky";
 $TLS_btn_del_this_version = "Smazat tuto verzi";
-$TLS_btn_edit = "Upravit";
-$TLS_btn_execute_automatic_testcase="Provést automatizované testovací případy";
+$TLS_btn_edit	= "Upravit";
+$TLS_btn_execute_automatic_testcase = "Execute automatic test case";
 $TLS_btn_mv_cp = "Přesun / Kopie";
 $TLS_btn_new_version = "Vytvořit novou verzi";
 $TLS_can_not_edit_tc = "Nemůžete upravit tuto verzi, protože byla již provedena";
 $TLS_deactivate_this_tcversion = "Deaktivovat tuto verzi";
-$TLS_execution_type='Typ provedení';
+$TLS_execution_type = 'Execution type';
 $TLS_tcversion_is_inactive_msg = "Tato verze je NEAKTIVNÍ => nebude k dispozici k zahrnutí do testovacího plánu";
 
 
@@ -1044,12 +1168,6 @@ $TLS_tcversion_is_inactive_msg = "Tato verze je NEAKTIVNÍ => nebude k dispozici
 $TLS_btn_remove_selected_tc = "Smazat vybrané testovací případy";
 $TLS_remove_ok = "Odstranění v pořádku";
 $TLS_title_remove_test_from_plan = "Odstranit testovací případ z testovacího plánu";
-
-
-
-// gui/templates/planTesters.tpl
-// $TLS_btn_save = "Save";
-
 
 
 // gui/templates/keywordsAssign.tpl
@@ -1105,25 +1223,21 @@ $TLS_title_req_export = "Exportovat požadavky";
 // gui/templates/resultsAllBuilds.tpl
 $TLS_th_build = "Sestavení";
 $TLS_th_tc_total = "Testovacích případů celkem";
+$TLS_title_met_of_build = "Metriky sestavení";
 
 
 
 // gui/templates/resultsBugs.tpl
-$TLS_bugs_open="Otevřený";
-$TLS_bugs_resolved="Vyřešený";
-$TLS_bugs_total="celkem";
+$TLS_bugs_open = "Open";
+$TLS_bugs_resolved = "Resolved";
+$TLS_bugs_total = "total";
 $TLS_date = "Datum";
 $TLS_printed_by = "Vytiskl";
-$TLS_tcs_with_bugs="Testovací případy s chybami";
+$TLS_tcs_with_bugs = "Test Cases with bugs";
 $TLS_title_test_case_bugs = "Chyby testovaciho případu";
 $TLS_title_test_case_timestamp = "Časová značka testovacího případu";
 $TLS_title_test_case_title = $TLS_test_case;
 $TLS_title_test_suite_name = $TLS_test_suite;
-
-
-
-// gui/templates/resultsBuild.tpl
-$TLS_title_met_of_build = "Metriky sestavení";
 
 
 
@@ -1139,6 +1253,19 @@ $TLS_th_run_by = "Provedl";
 
 // gui/templates/resultsGeneral.tpl
 $TLS_title_gen_test_rep = "Celkové metriky testovacího plánu";
+$TLS_title_report_tc_priorities = "Test results according to test priorities";
+$TLS_title_report_milestones = "Status of Milestones";
+$TLS_th_completed = "Completed";
+$TLS_th_milestone = "Milestone [date]";
+$TLS_th_not_run = "Not run";
+$TLS_th_tc_priority_high = "High priority";
+$TLS_th_tc_priority_medium = "Medium priority";
+$TLS_th_tc_priority_low = "Low priority";
+$TLS_th_progress = "Test progress [%]";
+$TLS_th_goal = "Execution goal [%]";
+$TLS_th_overall_priority = "Overall test priority";
+$TLS_th_expected = "Expected";
+$TLS_th_overall = "Overall";
 
 
 
@@ -1164,7 +1291,7 @@ $TLS_enter_end_time = "Čas konce";
 $TLS_year = "rok";
 $TLS_month = "měsíc";
 $TLS_day = "den";
-$TLS_hour = "hodina";
+$TLS_hour 			= "Hodina";
 $TLS_search_in_notes = "hledat řetězec v poznámkách";
 $TLS_executor = "provedl";
 
@@ -1194,13 +1321,22 @@ $TLS_false = "ne";
 $TLS_display_suite_summaries = "Zobrazit shrnutí sad";
 $TLS_display_query_params  = "Zobrazit parametry dotazu";
 $TLS_display_totals = "Zobrazit soucty";
+$TLS_display_test_cases = "Test Cases";
+$TLS_report_display_options = "Report display options";
 
 // gui/templates/resultsReqs.tpl
-$TLS_no_srs_defined="Pro tento testovací projekt není k dispozici žádná specifikace požadavků";
+$TLS_no_srs_defined = "No Requirements Specification available for this Test Project";
+$TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
+
+
+// IMPORTANT for dynamic generation labels
+// $TLS_req_title_<test case status> 
+// If user add a new test case status he/she MUST add a new label
 $TLS_req_title_blocked = "Blokované požadavky";
 $TLS_req_title_failed = "Neúspěšné požadavky";
-$TLS_req_title_notrun = "Neprovedené požadavky";
+$TLS_req_title_not_run = "Unexecuted Requirements";
 $TLS_req_title_passed = "Proběhlé požadavky";
+
 $TLS_title_result_req_testplan = "Výsledky testů na základě specifikace požadavků";
 $TLS_title_test_plan = $TLS_testplan;
 
@@ -1220,15 +1356,22 @@ $TLS_tp_status_for_build = "Stav testovacího plánu pro sestavení";
 
 
 // gui/templates/resultsTC.tpl
-$TLS_generated_by_TestLink_on="Generováno pomocí TestLink ";
+$TLS_generated_by_TestLink_on = "Generated by TestLink on ";
 
 // gui/templates/resultsImport.tpl
 $TLS_results_import_format = "Soubor XML musí být v následujícím formátu: ";
-$TLS_title_results_import_to="Importovat výsledky";
+$TLS_title_results_import_to = "Import results";
 
-// gui/templates/tcEdit_m2.tpl
+// gui/templates/plan/setUrgency.tpl
+$TLS_title_plan_urgency = "Test urgency for the Test suite";
+$TLS_th_urgency = "Urgency";
+$TLS_label_set_urgency = "Set test urgency: ";
+$TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. " .
+                           "Medium test urgency is default value.";
+$TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
+$TLS_feedback_urgency_ok = "Test urgency was modified.";
 
-
+$TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
 // gui/templates/tcPrintNavigator.tpl
 $TLS_caption_print_opt = "Nastavení tisku";
@@ -1239,7 +1382,7 @@ $TLS_tr_td_show_as = "Zobrazit jako";
 // gui/templates/tcReorder.tpl
 $TLS_no_tc_to_reorder = "Nejsou žádné testovací případy ke změně pořadí!";
 $TLS_title_change_tc_order = "Změnit pořadí testovacích případů v této testovací sadě.";
-
+$TLS_drag_and_drop_to_reorder = "Drag and drop items to reorder them";
 
 
 // gui/templates/tcTree.tpl
@@ -1254,11 +1397,19 @@ $TLS_no_tc_spec_av = "Žádná specifikace testu není k dispozici!";
 $TLS_assign_to = "Přiřadi k";
 $TLS_btn_do = "Dělej";
 $TLS_btn_update_selected_tc = "Uložit";
-$TLS_can_not_execute=" (Žádné právo k provedení)";
+$TLS_can_not_execute = " (No execution right)";
+$TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
 $TLS_title_tc_exec_assignment = "Přiřazování úkolů k provádění testovacího případu pro testovací plán ";
 $TLS_user = "Uživatel";
 $TLS_user_bulk_assignment = "Hromadné přiřazení uživatelů";
 
+
+// tc_exec_assignment.php
+$TLS_mail_subject_testcase_assigned='Test Link - Test Case Assignment - Test Plan';
+$TLS_mail_subject_testcase_assignment_removed='Test Link - Test Case Assignment REMOVED - Test Plan';
+$TLS_mail_testcase_assigned= "Following Test Cases has been assigned to you %s by %s <br><br>";
+$TLS_mail_testcase_assignment_removed="%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br><br>";
+$TLS_send_mail_to_tester="Send mail notification to tester";
 
 
 // gui/templates/testSetNavigator.tpl
@@ -1268,15 +1419,28 @@ $TLS_user_bulk_assignment = "Hromadné přiřazení uživatelů";
 // gui/templates/userInfo.tpl
 $TLS_btn_change_passwd = "Změnit heslo";
 $TLS_btn_upd_user_data = "Aktualizovat";
+$TLS_btn_apikey_generate = "Generate a new key";
 $TLS_th_new_passwd = "Nové heslo";
 $TLS_th_new_passwd_again = "Potvrdit nové heslo";
 $TLS_th_old_passwd = "Staré heslo";
 $TLS_title_account_settings = "Nastavení účtu";
-$TLS_title_change_your_passwd = "Změnit Vaše heslo";
+$TLS_title_personal_data = "Personal data";
+$TLS_title_personal_passwd = "Personal password";
+$TLS_title_api_interface = "API interface";
 $TLS_warning_different_pwd = "Prosím, zadejte znovu své nové heslo. Vložené hodnoty se lišily.";
-$TLS_warning_empty_pwd = "Heslo nesmí být prázdné!";
+$TLS_warning_empty_pwd = "Vaše heslo by nemělo být prázdné!";
 $TLS_your_password_is_external = "Vaše heslo je spravováno externím systémem.<br>".
                                  "Nemůžete si ho změnit pomocí TestLink.";
+$TLS_user_api_key = "Personal API access key";
+$TLS_audit_login_history = "Login history";
+$TLS_audit_last_succesful_logins = "Last successful logins";
+$TLS_audit_last_failed_logins = "Last failed logins";
+$TLS_result_password_changed = "Your password was changed succesfully";
+$TLS_result_apikey_create_ok = "New API key was generated";
+$TLS_result_user_changed = "Personal data changed";
+$TLS_empty_old_passwd = "Empty Old Password. Please enter your Old Password";
+$TLS_never_logged = "Never logged";
+
 
 
 // gui/templates/usersassign.tpl
@@ -1303,7 +1467,7 @@ $TLS_warning_empty_login = "Prosím, vložte uživatelské jméno";
 
 
 // gui/templates/attachmentupload.tpl
-$TLS_attachment_upload_ok="Soubor nahrán";
+$TLS_attachment_upload_ok = "File uploaded";
 $TLS_enter_attachment_title = "Vložte nadpis pro přílohu";
 $TLS_import_was_ok = "Import byl v pořádku";
 $TLS_max_size_cvs_file = "Maximální velikost souboru je";
@@ -1344,13 +1508,15 @@ $TLS_title_build_list = "Seznam existujících sestavení";
 $TLS_warning_delete_build = "Chystáte se smazat: %s " .
                             "<br /> <br />Všechna navázaná data (výsledky testů) budou také odstraněny." .
                             "<br /> <br />Jste si jist?";
-                            
 $TLS_builds_description = "Každé sestavené je identifikováno nadpisem. Má dva atributy:<br /> " .
                           "Aktivní / Neaktivní – definuje, zda je sestaveni k dispozici pro " .
                           "funkcinalitu TestLink. Neaktivní sestavení není uvedeno ani na prováděcí, " .
                           "ani na reportovací stránce." .
                           "<br /> Otevřený / Uzavřený – definuje, zda výsledky testů pro sestavení mohou být měněny.";
 
+$TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+                     "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
+                     "and if name does not exist, build will be created.";
 
 
 // gui/templates/planView.tpl
@@ -1364,13 +1530,11 @@ $TLS_alt_active_testplan = "Aktivní testovací plán";
 $TLS_warning_delete_testplan = "Chystáte se odstranit: %s <br><br> Jste si jist?"; 
 
 
-// gui/templates/mainPage_left.tpl
+// ----- gui/templates/mainPage_left.tpl -----
 $TLS_href_assign_user_roles = "Přiřadit uživatelské role";
 $TLS_href_browse_tc = "Projít testovací případ(y)";
 $TLS_href_cfields_management = "Správa uživatelských polí";
 $TLS_href_cfields_tproject_assign = "Přiřadit uživatelská pole";
-$TLS_href_create_product = "Vytvořit nový testovací projekt";
-$TLS_href_edit_product = "Upravit / Smazat testovací projekt";
 $TLS_href_edit_tc = "Upravit testovací případ(y)";
 $TLS_href_keywords_assign = "Přiřadit klíčová slova";
 $TLS_href_keywords_manage = "Správa klíčových slov";
@@ -1380,28 +1544,30 @@ $TLS_href_req_assign = "Přiřadit požadavky";
 $TLS_href_req_spec = "Dokument specifikace požadavků";
 $TLS_href_roles_management = "Správa rolí";
 $TLS_href_search_tc = "Prohledat testovací případ(y)";
-$TLS_href_tproject_management="Správa testovacích projektů";
+$TLS_href_tproject_management = "Test Project Management";
 $TLS_href_user_management = "Správa uživatelů";
+$TLS_href_admin_modules = "System Configuration";
 $TLS_title_requirements = "Požadavky";
 $TLS_title_test_spec = "Specifikace testů";
 $TLS_title_product_mgmt = "Správa testovacích projektů";
+$TLS_href_plan_define_priority = "Definovat pravidla priorit";
+$TLS_href_my_testcase_assignments="Test Cases assigned to me";
 
 
-// gui/templates/mainPage_right.tpl
+// ----- gui/templates/mainPage_right.tpl -----
 $TLS_filter_tp_by_product = "Filtruj testovací plány podle testovacích projektů";
-$TLS_href_add_test_case = "Přidat testovací případ(y)";
+$TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Správa sestavení";
 $TLS_href_execute_test = "Provést testy";
 $TLS_href_metrics_dashboard = "Plocha metrik";
 $TLS_href_newest_tcversions = "Zobrazit nejnovější verze testovacích případů";
-$TLS_href_plan_assign_priority = "Přiřadit priority";
-$TLS_href_plan_define_priority = "Definovat pravidla priorit";
+$TLS_href_plan_assign_urgency = "Set urgent tests";
 $TLS_href_plan_management = "Správa testovacích plánů";
 $TLS_href_plan_mstones = "Správa milníků";
-$TLS_href_print_tc_suite = "Vytisknout testovací plán";
-$TLS_href_remove_test_case = "Odstranit testovací případ(y)";
 $TLS_href_rep_and_metrics = "Testovací reporty a metriky";
 $TLS_href_tc_exec_assignment = "Přiřadit provádění testovacích případů";
+$TLS_href_update_tplan = "Update Linked Test Case Versions";
+
 $TLS_href_upd_mod_tc = "Aktualizovat změněné testovací případy";
 $TLS_msg_no_rights_for_tp = "<br /> Nemáte oprávnění pro žádný AKTIVNÍ testovací plán";
 $TLS_testplan_role = "Role v testovacím plánu ";
@@ -1413,7 +1579,7 @@ $TLS_title_test_plan_mgmt = "Správa testovacích plánů";
 
 // lib/execute/bug_add.php
 $TLS_bug_added = "Chyba vložena";
-$TLS_error_bug_does_not_exist_on_bts="ID chyby neexistuje v systému pro správu chyb!";
+$TLS_error_bug_does_not_exist_on_bts = "Bug ID does not exist on BTS!";
 $TLS_error_wrong_BugID_format = "Chybný formát ID chyby!";
 
 
@@ -1437,9 +1603,17 @@ $TLS_info_product_delete_fails = "Při mazání testovacího projektu došlo k c
 
 
 // lib/results/resultsImport.php
+$TLS_imp_result_ko='- result not imported';
+$TLS_invalid_execution_timestamp="Test Case %s - invalid execution timestamp %s " . $TLS_imp_result_ko;
+$TLS_invalid_tester="Test Case %s - tester with login %s can not be found " . $TLS_imp_result_ko;
 $TLS_import_results_tc_not_found= "testovací případ %s nenalezen v testovacím plánu - pro případ nejsou vložena žádná data";
 $TLS_import_results_invalid_result= "testovací případ %s měl neplatný výsledek - pro případ nejsou vložena žádná data";
+$TLS_import_results_ok = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Imported!";
 $TLS_import_results_tc_exists = "testovací případ %s je v testovacím plánu, tcversion_id = %s ";
+$TLS_tcase_external_id_do_not_exists="Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;
+$TLS_tcase_internal_id_do_not_exists="Test Case with internal id=%s, can not be found "  . $TLS_imp_result_ko;
+$TLS_tcase_id_is_not_number="Test Case internal id=%s is not a number " . $TLS_imp_result_ko;
+
 
 
 // lib/functions/results.inc.php
@@ -1447,7 +1621,7 @@ $TLS_trep_failing = "Selhalo";
 $TLS_trep_passing = "Uspělo";
 $TLS_trep_status_for_build = "Stav pro sestavení";
 $TLS_trep_status_for_ts = "Stav pro testovací sadu";
-$TLS_unassigned = "nepřiřazen";
+$TLS_unassigned 	= "nepřiřazený";
 
 
 // lib/functions/resultsMoreBuilds.inc.php
@@ -1481,6 +1655,8 @@ $TLS_desc_mgt_modify_users = "Správa uživatelů";
 $TLS_desc_mgt_view_key = "Zobrazení klíčových slov (jen pro čtení)";
 $TLS_desc_mgt_view_req = "Zobrazení požadavků (jen pro čtení)";
 $TLS_desc_mgt_view_tc = "Zobrazení testovacích případů (jen pro čtení)";
+$TLS_desc_mgt_view_events = "Event viewer (read only access)";
+$TLS_desc_events_mgt = "Event management";
 $TLS_desc_role_management = "Správa rolí";
 $TLS_desc_testplan_create_build = "Vytvořit/změnit sestavení";
 $TLS_desc_testplan_execute = "Provést testovací plán";
@@ -1490,7 +1666,7 @@ $TLS_desc_user_role_assignment = "Přiřazení rolí";
 $TLS_error_duplicate_rolename = "Role tohoto jména již existuje!";
 $TLS_error_role_no_rights = "Nen můžete uložit roli bez jakýchkoli oprávnění!";
 $TLS_error_role_no_rolename = "Musíte vložit název role!";
-$TLS_inherited_role="<zděděno>";
+$TLS_inherited_role = "<inherited>";
 $TLS_mgt_testplan_create = "Vytvořit/změnit testovací plán";
 
 
@@ -1514,10 +1690,17 @@ $TLS_file_is_not_xml = "Soubor neobsahuje správně formátované XML. Nemůže 
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - Typ CSV vužaduje tři položky na každé řádce: 'req_doc_id','nadpis','popis'";
 $TLS_req_import_format_description2 = " - CSV exportované z DOORS vyžaduje řádku s hlavičkou (seznam sloupců).";
+$TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "přepsáno!";
 $TLS_req_import_result_skipped = "vynecháno";
 $TLS_req_status_not_testable = "Netestovatelné";
 $TLS_req_status_valid = "Validní";
+$TLS_req_status_draft = 'Draft';
+$TLS_req_status_approved = 'Approved';
+$TLS_req_status_obsolete = 'Obsolete';
+$TLS_req_status_todo = 'To do';
+$TLS_req_status_changed = 'Modified';
+
 $TLS_the_format_req_xml_import = "Chybný formát XML pro import požadavků";
 $TLS_warning_duplicate_reqdoc_id = "Duplicitní ID dokumentu";
 
@@ -1540,17 +1723,19 @@ $TLS_printed_by_TestLink_on = "Vitištěno v TestLink";
 $TLS_title_toc = "Obsah";
 $TLS_passfail = "Úspěch / Neúspěch";
 $TLS_testnotes = "Poznámky k testu";
+$TLS_last_exec_result = "Last Result";
+$TLS_test_project_notes = "Test Project notes";
 
 
 // lib/functions/testcase.class.php
+$TLS_create_new_version="Created new version %s"; 
 $TLS_testcase_name_already_exists = "Již existuje testovací případ s tímto nadpisem!";
+$TLS_created_with_title = "Created with title (%s)";
 $TLS_the_format_tc_xml_import = "";
-
 
 
 // lib/functions/info.inc.php
 $TLS_email_sent_message = "Vaše pošta byla odeslána";
-
 
 
 // lib/functions/users.inc.php
@@ -1567,9 +1752,9 @@ $TLS_stmp_host_unconfigured = "SMTP server není správně nastaven!";
 
 
 // lib/functions/common.php
-$TLS_test_automation_exec_ok=" Provedení bylo úspěšné!";
-$TLS_test_automation_server_conn_failure=" Nezdařilo se připojení k HTTP serveru.";
-$TLS_XMLRPC_error_number="Číslo XML-RPC chyby:- ";
+$TLS_test_automation_exec_ok = " Execution Successful!";
+$TLS_test_automation_server_conn_failure = " Could not connect to HTTP server.";
+$TLS_XMLRPC_error_number = "XML-RPC Fault number:- ";
 
 
 // lib/functions/configCheck.php
@@ -1578,17 +1763,18 @@ $TLS_bts_connection_problems = "Připojení k Vašemu systému pro správu chyb 
                                 Zkontrolujte prosím své nastavení.<br>
                                 Dejte pozor, tento problém sníží výkon TestLink.";
 $TLS_but_directory_is_not_writable = "Složka neumožňuje zápis!";
+$TLS_check_email_config="Check following parameters of email feature:";
 $TLS_directory_is_writable = "Složka umožňuje zápis";
 $TLS_does_not_exist = "neexistuje";
 $TLS_exists = "existuje";
-$TLS_ldap_extension_not_loaded="Způsob přihlašování je nastaven na LDAP, <br>" .
-                               "ale LDAP rozšíření PHP není zavedeno => " .
-                               "Nebudete se moci přihlásit.<br>".
-                               "Prosím, kontaktujte správce TestLink";
+$TLS_ldap_extension_not_loaded = "Login method is configured as LDAP<br />" .
+                               "but PHP LDAP extension is not loaded => " .
+                               "You will not be able to login.<br />".
+                               "Please contact your TestLink administrator";
 $TLS_sec_note_admin_default_pwd = "Přednastavené heslo pro účet 'admin' by mělo být změněno!";
 $TLS_sec_note_remove_install_dir = "Instalační složka by měla být odstraněna!";
 $TLS_error_domxml_missing = "Domxml se zdá nedostupný. Importování XML dat nebude fungovat!";
-
+$TLS_error_gd_missing = "GD PHP extension doesn't seem to be present. Charts will not work!";
 
 // lib/general/frmWorkArea.php
 $TLS_create_a_build = "Vytvořit nové sestavení";
@@ -1603,7 +1789,7 @@ $TLS_no_testplans_available = "Je mi líto, nejsou k dispozici žádné testovac
 
 
 // lib/general/tlsmarty.inc.php
-
+$TLS_show_hide_api_info = "Show / Hide API Info";
 
 
 // lib/keywords/keywords.inc.php
@@ -1637,7 +1823,6 @@ $TLS_warning_duplicate_build = "Již existuje sestavení s tímto identifikátor
 
 
 // lib/plan/plan.inc.php
-//$TLS_warning_empty_milestone_name = "You cannot enter a Milestone without a name!";
 $TLS_warning_enter_valid_date = "Musíte zadat validní datum!";
 $TLS_warning_invalid_percentage_value = "Procentní hodnoty musejí být v rozsahu od 0 do 100%";
 $TLS_warning_milestone_date = "Milníky musejí být vytvořeny s dnešním nebo pozdějším datem!";
@@ -1645,10 +1830,11 @@ $TLS_warning_percentage_value_higher_than_100 = "Všechny procentní hodnoty nem
 
 
 
-// lib/plan/planMilestones.php
+// lib/plan/planMilestone*.php
 $TLS_milestone_delete_fails = "Milník nemohl být odstraněn!";
 $TLS_warning_milestone_add_failed = "Milník nemohl být přidán!";
 $TLS_warning_milestone_update_failed = "Milník nemohl být aktualizován!";
+$TLS_milestone_name_already_exists = "There's already a Milestone with this name (%s)";
 
 
 
@@ -1672,26 +1858,21 @@ $TLS_nav_users = "Navigátor - Uživatelé";
 
 
 // lib/plan/planUpdateTC.php
-$TLS_category_has_changed = "Testovací sada se změnila";
-$TLS_component_has_changed = "Testovací sada se změnila";
 $TLS_deleted = "smazán";
 $TLS_different_versions = "Jiné verze";
 $TLS_plan_update_no_tc_updated = "Žádné testovací případy nebyly aktualizovány";
-$TLS_planupdate_tc_deleted1 = "Testovací případ";
-$TLS_planupdate_tc_deleted2 = "byl odstraněn.";
-$TLS_planupdate_tc_updated1 = "Testovací případ";
-$TLS_planupdate_tc_updated2 = "byl aktualizován.";
-$TLS_tcorder_has_changed = "Pořadí testovacích případů bylo změněno";
 $TLS_updated = "aktualizován";
+$TLS_all_versions_where_latest = "Nothing to do - All Test Cases version are the newest available";
 
+$TLS_num_of_updated = "%d Test Cases has been updated";
 
 
 // lib/plan/testSetNavigator.php
 $TLS_title_test_plan_navigator = "Navigátor testovacího plánu";
 
 // lib/plan/testSetRemove.php
-$TLS_tcase_removed_from_tplan="Testovací případ odebrán z testovacího plánu";
-$TLS_multiple_tcase_removed_from_tplan="Testovací případ odebrán z testovacího plánu";
+$TLS_tcase_removed_from_tplan = "Test Case removed from Test Plan";
+$TLS_multiple_tcase_removed_from_tplan = "Test Cases removed from Test Plan";
 
 
 // lib/plan/planEdit.php
@@ -1714,10 +1895,9 @@ $TLS_opt_show_tc_keys = "Související klíčová slova";
 $TLS_title_tc_print_navigator = "Navigátor - Vytisknout specifikaci testu";
 $TLS_title_tp_print_navigator = "Navigátor - Vytisknout testovací plán ";
 
-
-
 // lib/project/projectedit.php
 $TLS_error_product_name_duplicate = "Již existuje testovací projekt pojmenovaný %s. <br>Vyberte prosím jiné jméno.";
+$TLS_error_tcase_prefix_exists = "Test Case ID prefix %s already exists";
 $TLS_info_no_more_prods = "Žádné další testovací projekty.";
 $TLS_info_product_activated = "Testovací projekt byl aktivován.";
 $TLS_info_product_inactivated = "Testovací porjekt byl deaktivován.";
@@ -1739,6 +1919,10 @@ $TLS_overall_metrics = "Celkové metriky";
 $TLS_results_by_keyword = "Výsledky podle klíčového slova";
 $TLS_results_by_tester = "Výsledky podle testera";
 $TLS_results_top_level_suites = "Výsledky pro testovací sady nejvyšší úrovně";
+$TLS_chart_report = "Report";
+$TLS_chart_assigned_testers = "Owners";
+$TLS_chart_keywords = "Keywords";
+$TLS_chart_testsuites = "Test Suites";
 
 
 // lib/req/reqImport.php
@@ -1758,7 +1942,12 @@ $TLS_req_created = "Požadavek %s byl úspěšně vytvořen";
 // lib/req/reqTcAssign.php
 $TLS_req_msg_noselect = "Nic není nevybráno";
 $TLS_req_msg_notupdated_coverage = "Pokrytí nebylo aktualizováno pro požadavky ";
-
+$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
+                         '<br>belonging to test suites present on selected branch.';
+$TLS_bulk_assigment_done = '%s assignments has been done';
+$TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
+$TLS_req_title_available = 'Available Requirements';
+$TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
 
 
 // lib/results/resultsBugs.php
@@ -1783,18 +1972,19 @@ $TLS_list_of_not_run = "Neprovedené testovací případy";
 
 
 // lib/results/resultsNavigator.php
-$TLS_link_charts="Grafy";
+$TLS_link_charts = "Charts";
 $TLS_link_report_blocked_tcs = "Blokované testovací případy";
 $TLS_link_report_failed = "Neúspěšné testovací případy";
 $TLS_link_report_general_tp_metrics = "Celkové metriky testovacího plánu";
 $TLS_link_report_metrics_active_build = "Metriky aktivního sestavení";
 $TLS_link_report_metrics_more_builds = "Metriky dotazu";
-$TLS_link_report_not_run="Neprovedené testovací případy";
+$TLS_link_report_not_run = "Not run Test Cases";
 $TLS_link_report_overall_build = "Celkový stav sestavení";
 $TLS_link_report_reqs_coverage = "Report podle požadavků";
 $TLS_link_report_test = "Testovací report";
 $TLS_link_report_total_bugs = "Celkové chyby pro každý testovací případ";
-
+$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
+$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
 
 // lib/results/resultsSend.php
 $TLS_send_to_empty_email_warning = "Je mi líto, ale e-mail nelze poslat na prázdnou adresu. Zadejte prosím platnou adresu.";
@@ -1814,11 +2004,21 @@ $TLS_error_sendreport_no_email_credentials = "Tento uživatel nemá nastavený e
 
 
 // lib/testcases/tcImport.php
+$TLS_action_on_duplicated_name = "Action for duplicated names";
+$TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
 $TLS_please_choose_file_to_import = "Vyberte porsím soubor k importu";
 $TLS_title_tc_import_to = "Importovat testovací případ(y)";
 $TLS_title_tsuite_import_to = "Importovat testovací sadu";
 $TLS_wrong_xml_tcase_file = "Chybný xml soubor testovacího případu";
 $TLS_wrong_xml_tsuite_file = "Chybný xml soubor testovací sady";
+$TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' can not be imported " .
+                                                     "because there is no Custom Field with this name " .
+                                                     "and Available for %s on this Test Project"; 
+
+
+$TLS_update_last_testcase_version='Update data on Latest version';
+$TLS_create_new_testcase_version='Create a new version';
+$TLS_generate_new_testcase='Create a new test case with different title';
 
 
 
@@ -1859,7 +2059,7 @@ $TLS_test_project_user_roles_updated = "Uživatelské role aktualizovány";
 $TLS_test_plan_user_roles_updated = "Uživatelské role aktualizovány";
 
 
-// lib/usermanagement/usersedit.php
+// ----- lib/usermanagement/usersedit.php -----
 $TLS_user_created = "Uživatel %s byl úspěšně založen";
 $TLS_user_deleted = "Uživatel %s byl úspěšně odstraněn";
 $TLS_user_not_added = "Uživatel nebyl přidán!";
@@ -1869,13 +2069,13 @@ $TLS_error_user_login_length_error = "Přihlašovací jméno bylo příliš krá
 
 
 
-// lib/usermanagement/rolesedit.php
+// ----- lib/usermanagement/rolesedit.php -----
 $TLS_error_role_creation = "Roli nebylo možno založit!";
 $TLS_error_role_update = "Roli nebylo možno upravit!";
 
 
 
-// lib/cfields/cfields_edit.php
+// ----- lib/cfields/cfields_edit.php -----
 $TLS_cf_name_exists = "Název uživatelského pole již existuje. Vyberte prosím nový";
 $TLS_error_creating_cf = "Uživatelské pole nomohlo být vytvořeno!";
 $TLS_do_update = "aktualizováno";
@@ -1885,7 +2085,7 @@ $TLS_warning_delete_cf = "Chystáte se odstranit: %s <br><br> Jste si jist?";
 
 
 
-// lib/project/fix_tplans.php
+// ----- lib/project/fix_tplans.php -----
 $TLS_list_inactive_tplans1 = "Výpis ";
 $TLS_list_inactive_tplans2 = "Aktivní testovací plány, které momentálně nejsou přiřazeny testovacímu projektu";
 $TLS_assoc_test_project = "Přiřazené testovací projekty";
@@ -1894,63 +2094,237 @@ $TLS_fix_tplans_no_rights = "Nemáte oprávnění spravovat testovací projekty<
 $TLS_no_tplans_to_fix = "Momentálně nemáte žádné testovací plány nepřiřazené k testovacímu projektu - A to je dobře, pane vachmajstr!";
 
 
-// lib/project/project_req_spec_mgmt.tpl
+// ----- lib/project/project_req_spec_mgmt.tpl -----
 $TLS_btn_new_req_spec = "Specifikace nového požadavku";
 $TLS_btn_reorder_req_spec = "Přetřídit specifikace požadavků";
 
-// reqSpecEdit.php
+
+// ----- reqSpecEdit.php -----
 $TLS_delete_req_spec = "Odstranit specifikace požadavků";
 $TLS_req_spec_created = "Specifikace požadavku: %s byla úspěšně vytvořena";
 $TLS_req_spec_deleted = "Specifikace požadavku: %s byla úspěšně odstraněna";
 
-$TLS_title_req_spec="Specifikace požadavků";
+$TLS_title_req_spec = "Requirement Specifications";
 $TLS_warning_empty_req_spec_title = "Nadpis specifikace požadavku nemůže být prázdný!";
-$TLS_create_req_spec="Vytvořit specifikace požadavků";
-$TLS_edit_req_spec="Upravit specifikace požadavků";
+$TLS_create_req_spec = "Create Requirements Specification";
+$TLS_create_child_req_spec = "Create Child Req Specification";
 
-// reqEdit.php
-$TLS_create_req="Vytvořit požadavek";
+$TLS_edit_req_spec = "Edit Requirements Specification";
+
+
+// ----- reqEdit.php -----
+$TLS_create_req = "Create Requirement";
 $TLS_delete_req = "Odstranit požadavek";
-$TLS_edit_req="Upravit požadavek";
-$TLS_req_created = "Požadavek: %s byl úspěšně vytvořen";
+$TLS_edit_req = "Edit Requirement";
+$TLS_req_created = "Požadavek %s byl úspěšně vytvořen";
 $TLS_req_deleted = "Požadavek: %s byl úspěšně odstraněn";
 
-// reqSpecReorder.tpl
-$TLS_title_change_req_spec_order="Změnit pořadí specifikací požadavků";
 
-// requirement_mgr
-$TLS_created_on_testsuite="Testovací případy budou vytvořeny v testovací sadě %s";
-
-// keywordsEdit.php
-$TLS_keyword_management="Správa klíčových slov";
-$TLS_create_keyword="Vytvořit klíčové slovo";
-$TLS_edit_keyword="Upravit klíčové slovo";
+// ----- reqSpecReorder.tpl -----
+$TLS_title_change_req_spec_order = "Change Requirement Specifications order";
 
 
-// api/TestlinkXMLRPCServerErrors.php
+// ----- requirement_mgr -----
+$TLS_created_on_testsuite = "Test Cases has been created on Test Suite %s";
+$TLS_testsuite_name_created = "Test Suite %s has been created";
+
+
+// ----- keywordsEdit.php -----
+$TLS_keyword_management = "Keyword management";
+$TLS_create_keyword = "Create keyword";
+$TLS_edit_keyword = "Edit keyword";
+$TLS_warning_empty_keyword = "Keyword must not be empty!";
+
+// ----- api/TestlinkXMLRPCServerErrors.php -----
 $TLS_API_INVALID_AUTH = "Nemohu autentizovat klienta: neplatný klíč vývojáře";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
 $TLS_API_NO_DEV_KEY = "Nezadán klíč vývojáře (devKey). Musí být zadán platný devKey!";
-$TLS_API_NO_TCID = "Nezadáno tcid. Platné tcid musí být zadáno!";
-$TLS_API_NO_TPID = "Nezadáno tpid. Platné tpid musí být zadáno!";
+$TLS_API_NO_TCASEID = "No Test Case ID provided. A valid Test Case ID must be provided!";
+$TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided. A valid Test Case External ID must be provided!";
+$TLS_API_NO_TPLANID = "No test plan id provided. A valid test plan id must be provided!";
 $TLS_API_NO_TEST_MODE = "Mód testu musí být zadán!";
 $TLS_API_NO_STATUS = "Nezadán stav. Platný stav musí být zadán!";
 $TLS_API_NO_TESTCASENAME = "Nezadáno testcasename. Jméno testovacího případu musí být zadáno!";
 $TLS_API_NO_TESTPROJECTID = "Nezadáno testprojectid. Platné ID testovacího projektu musí být zadáno!";
 $TLS_API_NO_TESTSUITEID = "Nezadáno testsuiteid. Platné ID testovací sady musí být zadáno!";
-$TLS_API_INVALID_TCID= "Zadané ID testovacího případu (tcid) neexistuje!";
+$TLS_API_NO_TPID = "Nezadáno tpid. Platné tpid musí být zadáno!";
+$TLS_API_NO_TCID = "Nezadáno tcid. Platné tcid musí být zadáno!";
+$TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "Zadané ID sestavení (buildid) neexistuje!";
-$TLS_API_INVALID_TPID = "Zasané ID testovacího plánu (tpid) neexistuje!";
+$TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
 $TLS_API_INVALID_STATUS = "Zadaný stav (status) není platný!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
+
 $TLS_API_TCID_NOT_INTEGER = "TCID musí být celé číslo!";
 $TLS_API_TESTCASENAME_NOT_STRING = "testcasename musí být řetězec!";
-$TLS_API_NO_BUILD_FOR_TPID = "Pro zadané tpid neexistují žádná sestavení! Sestavení musí být vytvořeno, aby bylo možno reportovat výsledky.";
+$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
 $TLS_API_BUILDID_NOGUESS = "Odhadování je zakázáno, takže musíte zadat buildid!";
+$TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
 $TLS_API_NO_BUILDID = "Nezadáno buildid. Platné buildid musí být zadáno!";
-$TLS_API_TCID_NOT_IN_TPID = "Zadané ID testovacího případu (tcid) není asociováno s testovacím plánem (tpid).";
+$TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
 $TLS_API_GENERAL_SUCCESS = "Úspěch!";
 $TLS_API_INVALID_TESTPROJECTID = "Zadané ID testovacího projektu (testprojectid) neexistuje!";
 $TLS_API_INVALID_TESTSUITEID = "Zadané ID testovací sady (testsuiteid) neexistuje!";
 $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Nemohu najít vyhovující testovací případ. Neexistuje žádný testovací případ zadaného jména!";
 $TLS_API_NOT_YET_IMPLEMENTED = "Tato funkce ještě nebyla implementována!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
+                                     "No Custom Field exists with the name provided!";
 
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
+
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO="Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
+
+// ----- audit log entries -----
+$TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
+$TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
+$TLS_audit_role_saved = "Role '{%1}' was saved";
+$TLS_audit_role_created = "Role '{%1}' was created";
+$TLS_audit_role_deleted = "Role '{%1}' was deleted";
+
+
+$TLS_audit_cfield_created = "Custom field '{%1}' was created";
+$TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
+$TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
+$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned to Test Project '{%2}'";
+$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Project '{%2}'";
+$TLS_audit_cfield_display_order_changed = "Display order of custom fields from Test Project '{%1}' was saved";
+$TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
+$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
+
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
+$TLS_audit_user_saved = "User '{%1}' was saved";
+$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
+$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
+$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
+$TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
+$TLS_audit_user_created = "User '{%1}' was created";
+$TLS_audit_user_deleted = "User '{%1}' was deleted";
+$TLS_audit_user_logout = "Logout of '{%1}'";
+$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+$TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
+
+$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
+
+$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
+$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";
+$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' was deleted";
+
+$TLS_audit_keyword_created = "Keyword '{%1}' was created";
+$TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
+$TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
+
+$TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+
+$TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
+$TLS_audit_attachment_created = "Attachment '{%1}' - file '{%2}' was created";
+
+$TLS_audit_req_spec_created = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was created";
+$TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was saved";
+$TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was deleted";
+$TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' renamed to '{%3}'";
+
+$TLS_audit_requirement_created = "Requirement '{%1}' was created";
+$TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
+$TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+$TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
+
+$TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
+$TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";
+$TLS_audit_build_deleted = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was deleted";
+
+$TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was deleted";
+$TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was saved";
+$TLS_audit_testplan_created = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was created";
+$TLS_audit_milestone_deleted = "Test Plan '{%1}' - Milestone '{%2}' was deleted";
+$TLS_audit_milestone_created = "Test Plan '{%1}' - Milestone '{%2}' was created";
+$TLS_audit_milestone_saved = "Test Plan '{%1}' - Milestone '{%2}' was saved";
+
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' version {%2} was added to Test Plan {%3}";
+$TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed from Test Plan {%3}";
+
+$TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
+
+$TLS_audit_events_deleted = "User '{%1}' deleted all events";
+
+
+// ----- eventviewer.php -----
+$TLS_th_loglevel = "Log level";
+$TLS_th_timestamp = "Timestamp";
+$TLS_th_activity = "Activity";
+$TLS_label_startdate = "Start date";
+$TLS_label_enddate = "End date";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "Event viewer";
+$TLS_th_session_info = "Session information";
+$TLS_th_sessionID = "Session ID";
+$TLS_th_source = "Source";
+$TLS_click_on_event_info = "Click on any event to see it's details.";
+$TLS_th_activity_code = "Activity";
+$TLS_th_object_id = "Object ID";
+$TLS_th_object_type = "Object Type";
+$TLS_message_please_wait = "Please wait ...";
+$TLS_title_eventinfo = "Event information";
+$TLS_title_eventdetails = "Event details";
+$TLS_th_user = "User";
+$TLS_show_event_history = "Show the event history";
+$TLS_btn_clear_events = "Clear All Events";
+$TLS_th_event_description = "Description";
+
+
+// ----- int_mantis.php -----
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new = "New issue";
+$TLS_issue_status_feedback = "Feedback";
+$TLS_issue_status_acknowledged = "Acknowledged issue ";
+$TLS_issue_status_confirmed = "Confirmed issue";
+$TLS_issue_status_assigned = "Assigned issue";
+$TLS_issue_status_resolved = "Resolved issue";
+$TLS_issue_status_closed = "Closed issue";
+$TLS_access_to_bts="Access issue tracking system";
+
+
+// ----- uncoveredTestCases.php -----
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'No uncovered Test Cases';
+$TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
+$TLS_testproject_has_no_requirements = 'There are no Requirements defined';
+
+
+// ----- testCasesWithoutTester -----
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+
+
+// ----- END ------------------------------------------------------------------
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/01/18 17:21:28 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/02/02 22:30:53 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -50,18 +50,15 @@
  * Toshinori Sawaguchi,  Toshiyuki Kawanishi,  Yasuhiko Okada,
  * Yoichi Kunihiro,      Yoshihiro Yoshimura,  Yukiko Kajino
  *
- * @modified $Date: 2009/01/18 17:21:28 $ $Author: franciscom $
+ * @modified $Date: 2009/02/02 22:30:53 $ $Author: havlat $
  *-------------------------------------------------------------------
-**/
-
-//If this file is coded in UTF-8 then enable the following line
-$TLS_STRINGFILE_CHARSET = "UTF-8";
-
-// BUGID 1133 - needed by email_api
-$TLS_charset='utf-8';
+ * Scripted update according en_GB string file (version: 1.395) 
+ * ---------------------------------------------------------------------------------- */
 
 
-// General - Leave it here in this way can be reused !!!
+
+// ----- General terms (used wide) ----------------------------
+$TLS_active = "有効";
 $TLS_asc = "昇順";
 $TLS_any = "全て";
 $TLS_assigned = "アサイン";
@@ -70,13 +67,18 @@ $TLS_automatic = "Automatic";
 $TLS_check_uncheck_all = "Toggle all";
 $TLS_unassigned = "unassigned";
 $TLS_desc = "降順";
+$TLS_description	= "Description";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_file_type		= 'File type';
 $TLS_help = "Help";
+$TLS_high = "High";
 $TLS_hour = "時";
 $TLS_importance		= "Importance";
+$TLS_low = "Low";
 $TLS_manual = "Manual";
+$TLS_medium = "Medium";
 $TLS_Milestone = "マイルストーン";
+$TLS_name = "名前";
 $TLS_not_aplicable = "N/A";
 $TLS_none			= "None";
 $TLS_priority		= "Priority";
@@ -87,12 +89,13 @@ $TLS_req_spec = "Requirements Specification Document";
 $TLS_req_spec_short = "Req. Spec.";
 $TLS_SRS = "SRS";
 $TLS_Role = "役割";
-$TLS_sort_table_by_column="Click to change sort order";
+$TLS_sort_table_by_column = "Click to change sort order";
 $TLS_scope = "Scope";
 $TLS_status = "Status";
 $TLS_Keyword = "キーワード";
 $TLS_test_case = "テストケース";
 $TLS_testcase = $TLS_test_case;
+$TLS_testcaseversion = 'Test Case Version';
 $TLS_test_plan = "テスト計画";
 $TLS_testplan = $TLS_test_plan;
 $TLS_testproject = "テストプロジェクト";
@@ -101,52 +104,19 @@ $TLS_test_suite = "テストスイート";
 $TLS_testsuite_created = "テストスイート作成";
 $TLS_title = "Title";
 $TLS_urgency = "Urgency";
-$TLS_problems_loading_xml_content="Unable to load XML data, Check your file."; 
 $TLS_not_imported = "Not imported";
 $TLS_imported = "Imported";
+$TLS_nobody 		= "Nobody";
 
-$TLS_exec_assign_no_testcase="Please select at least one Test Case.";
-$TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
-$TLS_no_testcases_available="No Test Cases or no destination Test Suites available!";
 
-$TLS_th_active = "Active";
-$TLS_th_delete = "Delete";
-$TLS_th_name = "Name";
-$TLS_th_notes = "Description";
-$TLS_th_testcase = "Test Case";
-$TLS_th_requirement_feature="Requirement Feature";
-
-$TLS_import_file_type = "インポートファイルタイプ";
-$TLS_max_file_size_is = "最大ファイルサイズ";
-$TLS_supported_file_formats = "サポートしているファイルフォーマット";
-$TLS_no_permissions_for_action = "あなたはこの動作を実行する権限がありません!" .
-                                 " 管理者に連絡してください。";
-
-$TLS_testcaseversion = 'Test Case Version';
-
-// Actions  - Leave it here in this way can be reused !!!
+// Actions (used wide) 
 $TLS_add = "add";
 $TLS_create = "create";
 $TLS_remove = "remove";
-
-$TLS_high = "High";
-$TLS_medium = "Medium";
-$TLS_low = "Low";
-
-$TLS_estimated_time_hours = "Estimated time (hours):";
-$TLS_estimated_time_min = "Estimated time (min):";
-
-$TLS_config_check_warnings = "There are warnings on your configuration";
-$TLS_see_details_on_file="See details on file: %s";
-
-$TLS_start_warning='---- Warning ----';
-$TLS_testlink_warning='Test Link Warning';
-$TLS_testcase_name_too_long='test case name is too long (%s chars) > %s => has been truncated';
-$TLS_original_name='Original name';
-$TLS_end_warning='---- *** ----';
+$TLS_th_delete = "Delete";
 
 
-// Buttons (one word) - Leave it here in this way can be reused !!!
+// Buttons (used wide)
 $TLS_btn_apply = "適用";
 $TLS_btn_add = "追加";
 $TLS_btn_assign		= "アサイン";
@@ -170,8 +140,11 @@ $TLS_btn_save = "保存";
 $TLS_btn_unassign = "未アサイン";
 $TLS_btn_update = "更新";
 $TLS_btn_upd = $TLS_btn_update;
+$TLS_btn_advanced_filters = "Advanced Filters";
+$TLS_btn_simple_filters = "Simple Filters"; 
 
-// Status
+
+// Status (used wide)
 $TLS_test_status_all = "全て";
 $TLS_test_status_any = "全て";
 $TLS_test_status_not_run = "未実行";
@@ -182,20 +155,55 @@ $TLS_test_status_not_available = "存在しません";
 $TLS_test_status_unknown = "不明";
 
 
+// ----- unsorted (TODO move) -------------------------------------
+$TLS_problems_loading_xml_content = "Unable to load XML data, Check your file."; 
+$TLS_search_type_like = "Search on this value will be done on LIKE mode";
+$TLS_exec_assign_no_testcase = "Please select at least one Test Case.";
+$TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
+$TLS_no_testcases_available = "No Test Cases or no destination Test Suites available!";
+$TLS_warning_must_be_number = "Value must be a number";
+
+$TLS_estimated_time_hours = "Estimated time (hours):";
+$TLS_estimated_time_min = "Estimated time (min):";
+$TLS_real_time_hours = "Time used for executing %s test cases (hours):";
+$TLS_real_time_min = "Time used for executing %s test cases (min):";
+
+$TLS_th_active = "Active";
+$TLS_th_name = "Name";
+$TLS_th_notes = "Description";
+$TLS_th_testcase = "Test Case";
+$TLS_th_requirement_feature = "Requirement Feature";
+
+$TLS_import_file_type = "インポートファイルタイプ";
+$TLS_max_file_size_is = "最大ファイルサイズ";
+$TLS_supported_file_formats = "サポートしているファイルフォーマット";
+$TLS_no_permissions_for_action = "あなたはこの動作を実行する権限がありません!" .
+                                 " 管理者に連絡してください。";
+
+// ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values
 $TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
 $TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
 $TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
 
+
+// Installation/Migration
+$TLS_start_warning = '---- Warning ----';
+$TLS_testlink_warning = 'TestLink Warning';
+$TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name = 'Original name';
+$TLS_end_warning = '---- *** ----';
+
+
 // --------------------------------------------------------------------------------------
-// firstLogin.php
+// ----- firstLogin.php -----
 $TLS_cant_create_user = "申し訳ありませんがログインできません。管理者に連絡をお願いします!";
 $TLS_empty_email_address = " メールアドレスを空白にすることはできません!";
 $TLS_empty_first_name = " 名を空白にすることはできません!";
 $TLS_empty_last_name = " 姓を空白にすることはできません!";
 $TLS_fatal_page_title = "TestLink ::: 致命的なエラー";
 $TLS_invalid_user_name = "ユーザ名が無効です。他のユーザ名を指定してください。";
-$TLS_no_good_email_address="Email address format seems no good";
+$TLS_no_good_email_address = "Email address format seems no good";
 $TLS_passwd_dont_match = "ふたつのパスワードが一致しません。パスワードは大文字と小文字を区別します。" .
                          "再入力してください。";
 $TLS_user_cant_be_created_because = "あなたのアカウントは以下の理由で作成できません:";
@@ -204,7 +212,8 @@ $TLS_valid_user_name_format = "ユーザ名には、文字、数字、スペー�
 $TLS_warning_empty_pwd = "パスワードを空白にすることはできません!";
 $TLS_your_info_please = "ユーザ情報を入力してください";
 
-//archiveData.php
+
+// ----- archiveData.php -----
 $TLS_container_title_testcase = $TLS_test_case;
 $TLS_high_priority = "高";
 $TLS_medium_priority = "中";
@@ -216,18 +225,22 @@ $TLS_high_risk = "高";
 $TLS_medium_risk = "中";
 $TLS_low_risk = "低";
 $TLS_test_importance = "Test importance";
+$TLS_testcases_assigned_to_user='Test Project: %s - Test Cases Assigned to User: %s';
+$TLS_assigned_on='Assigment date';
 
-// index.php
+
+// ----- index.php -----
 $TLS_main_page_title = "TestLink ::: メインページ";
+$TLS_config_check_warnings = "There are warnings on your configuration";
 
 
-// keywordsimport.php
+// ----- keywordsimport.php -----
 $TLS_please_choose_keywords_file = "アップロードするファイルを入力してください";
 $TLS_keywords_file = "キーワードファイル";
 $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
 
-// lostPassword.php
+// ----- lostPassword.php -----
 $TLS_bad_user = "ユーザが見つかりません。再入力してださい。";
 $TLS_contact_admin = "<br>さらなる問題が発生している場合は管理者に連絡してください。";
 $TLS_mail_empty_address = "あなたのユーザプロファイルにはメールアドレスが設定されていません!" .
@@ -240,7 +253,7 @@ $TLS_your_password_is = "あなたの新しいTestLinkパスワード: <br>";
 
 
 
-// login.php
+// ----- login.php -----
 $TLS_bad_user_passwd = "再入力してください! ユーザ名またはパスワードが誤っています!";
 $TLS_login_msg_session_exists1 = "すでにログインしています。以下を使用してください ";
 $TLS_login_msg_session_exists2 = " 始めにセッションを更新してください。";
@@ -253,22 +266,21 @@ $TLS_please_login = "ログインしてください ...";
 $TLS_session_expired = "セッションの期限が切れています! 再度ログインしてください。";
 $TLS_your_first_login = "ようこそTestLinkへ! あなたは Guest アカウントを使用しています。 ログインしてください ...";
 
-// newest_tcversions.php
+
+// ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "関連付けられているテストケースのバージョンがありません";
-// resultsGeneral.php 
+// resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "このテストプロジェクトで定義されたテストスイートはありません。<br>".
                                  "テスト実行データが存在していない => レポートは作成できません";
 
-// resultsNavigator.php
+// ----- resultsNavigator.php -----
 $TLS_title_nav_results = "レポートとメトリクス";
 $TLS_report_tplan_has_no_build = "テスト計画にビルドが定義されていません。 <br>".
                                "テスト実行データが存在していない => レポートは作成できません";
-
-
 $TLS_report_tplan_has_no_tcases = "テスト計画にテストケースが関連付けられていません。<br>".
                                 "テスト実行データが存在していない => レポートは作成できません";
 
-// tcEdit.php
+// ----- tcEdit.php -----
 $TLS_tc_copied = "成功！テストケース %s は<br>テストスイート %s にコピーされました。";
 $TLS_tc_created = "テストケース %s の作成に成功しました。";
 $TLS_tc_deleted = "テストケース %s の削除に成功しました。";
@@ -277,11 +289,10 @@ $TLS_tc_new_version = "テストケースのバージョン %d の作成に成�
 $TLS_tc_updated = "テストケース %s の更新に成功しました。";
 $TLS_tc_update_failed = "テストケース %s の更新に失敗しました!";
 $TLS_tc_version_deleted = "テストケース %s のバージョン %d の削除に成功しました。";
-
 $TLS_assign_requirements = "Assign Requirements";
 
 
-// tcexecute.php
+// ----- tcexecute.php -----
 $TLS_check_test_automation_server = "Please Check Server Settings";
 $TLS_result_after_exec = "Results after execution: ";
 $TLS_service_not_supported = "This service is not supported";
@@ -289,29 +300,29 @@ $TLS_tcexec_notes = "Notes:";
 $TLS_tcexec_result = "Result:";
 $TLS_tcexec_results_for = "Result for:";
 
-// gui/templates/attachment404.tpl
+
+// ----- gui/templates/attachment404.tpl -----
 $TLS_error_attachment_not_found = "エラー: 添付ファイルが見つかりません!";
 $TLS_title_downloading_attachment = "添付ファイルをダウンロード";
 
 
-
-// gui/templates/attachmentdelete.tpl
+// ----- gui/templates/attachmentdelete.tpl -----
 $TLS_deleting_was_ok = "添付ファイルは削除されました!";
 $TLS_error_attachment_delete = "添付ファイルの削除中にエラーが発生しました!";
 $TLS_title_delete_attachment = "添付ファイルの削除";
 
 
 
-// gui/templates/containerDelete.tpl
+// ----- gui/templates/containerDelete.tpl -----
 $TLS_btn_yes_del_comp = "はい, テストスイートを削除します";
-$TLS_container_title_testsuite =$TLS_test_suite;
+$TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed = "いくつかのテスト計画とリンクしますが、ここでは実行されていません";
 $TLS_question_del = "本当に削除";
 $TLS_th_link_exec_status = "リンクおよび実行の状況";
 
 
 
-// gui/templates/containerNew.tpl
+// ----- gui/templates/containerNew.tpl -----
 $TLS_btn_create_testsuite = "テストスイートの作成";
 $TLS_tc_keywords = "キーワード";
 $TLS_title_create = "作成";
@@ -319,7 +330,7 @@ $TLS_warning_empty_testsuite_name = "テストスイートに名前をつけて�
 
 
 
-// gui/templates/bug_add.tpl
+// ----- gui/templates/bug_add.tpl -----
 $TLS_btn_add_bug = "バグの追加";
 $TLS_bug_id = "バグのID";
 $TLS_button_enter_bug = "新たなバグの追加";
@@ -348,12 +359,12 @@ $TLS_title_move_cp = "移動／コピー";
 $TLS_title_move_cp_testcases = "Move/Copy Test Cases";
 
 
-
+// gui/templates/reqCreate.tpl
 $TLS_req_create = "要件を作成";
 $TLS_req_doc_id = "DOC-ID";
 $TLS_warning_empty_req_title = "要件のタイトルは空白にできません!";
 $TLS_warning_empty_reqdoc_id = "要件のドキュメントIDは空白にできません!";
-$TLS_create_testcase_from_req="Create Test Cases from Requirements";
+$TLS_create_testcase_from_req = "Create Test Cases from Requirements";
 
 
 // gui/templates/containerOrder.tpl
@@ -391,7 +402,7 @@ $TLS_edit_testproject_basic_data = "テストプロジェクトの基本デー�
 $TLS_th_product_name = "テストプロジェクト名";
 
 
-// gui/templates/cfields_edit.tpl
+// gui/templates/cfields/cfieldsEdit.tpl
 $TLS_available_on = "利用箇所";
 $TLS_custom_field = "カスタムフィールド";
 $TLS_enable_on_design = "テスト仕様<br>を有効";
@@ -415,14 +426,12 @@ $TLS_warning_is_in_use = "You can neither delete, either change type <br /> " .
                          "by user on an test specification or execution ";
 
 
-
 // gui/templates/inc_update.tpl
 $TLS_info_failed_db_upd = "データベースの更新に失敗しました。!";
 $TLS_info_failed_db_upd_details = "データベースの更新に失敗しました! - 詳細:";
 $TLS_invalid_query = "エラー:";
 $TLS_warning = "警告!!";
 $TLS_was_success = " 成功しました";
-
 
 
 // gui/templates/execNavigator.tpl
@@ -437,6 +446,7 @@ $TLS_filter_tcID = "テストケースID";
 $TLS_include_unassigned_testcases = "include unassigned ";
 $TLS_keyword = "キーワード";
 $TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
 
 
 // gui/templates/mainPage.tpl
@@ -459,9 +469,9 @@ $TLS_newest_version = "利用可能な最新の有効バージョン";
 $TLS_title_newest_tcversions = "テストケースにリンクされている最新のバージョン";
 $TLS_no_newest_version_of_linked_tcversions = "リンクしているテストケースは全て最新です";
 
+
 // gui/templates/emailSent.tpl
 $TLS_send_test_report = "- テストレポートの送信";
-
 
 
 // gui/templates/reqImport.tpl
@@ -515,7 +525,7 @@ $TLS_link_results_import = "結果のインポート";
 
 
 
-// gui/templates/cfields_view.tpl
+// gui/templates/cfields/cfieldsView.tpl
 $TLS_btn_cfields_create = "作成";
 $TLS_manage_cfield = "カスタムフィールドの管理";
 
@@ -560,12 +570,12 @@ $TLS_title_last_mod = "修正 ";
 
 
 
-// gui/templates/buildNew.tpl
+// gui/templates/buildEdit.tpl
 $TLS_active = "有効";
 $TLS_enter_build = "タイトル";
 $TLS_enter_build_notes = "説明";
-//$TLS_msg_build = "注意：各ビルドは有効なテスト計画に関連づけられます。:" .
-//                 "説明には以下の項目を含めます: 配布パッケージ、承認、ステータスなど。";
+//$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
+//                 "Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_open = "オープン";
 $TLS_title_build_2 = "ビルド管理";
 $TLS_title_build_create = "新規ビルドの作成";
@@ -634,7 +644,7 @@ $TLS_title_edit_level = "編集";
 
 // gui/templates/reqSpecAnalyse.tpl
 $TLS_edit = "編集";
-$TLS_none = "なし";
+$TLS_none			= "None";
 $TLS_req = "要件";
 $TLS_req_spec_change = "要件仕様ドキュメント変更";
 $TLS_req_title_analyse = "要件仕様ドキュメント解析 ";
@@ -759,6 +769,7 @@ $TLS_th_product_rights = "テストプロジェクトに関する権限";
 $TLS_th_req_rights = "要件に関する権限";
 $TLS_th_rights = "権限";
 $TLS_th_rolename = "役割名";
+$TLS_th_system_rights = "System rights";
 $TLS_th_tp_rights = "テスト計画に関する権限";
 $TLS_th_user_rights = "ユーザに関する権限";
 $TLS_title_user_mgmt = "ユーザの管理";
@@ -769,13 +780,17 @@ $TLS_warning_modify_role = "本当に役割を修正しますか？";
 
 // gui/templates/tcSearchForm.tpl
 $TLS_caption_search_form = "テストケースの検索";
-$TLS_custom_field_value ="カスタムフィールドの値";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_not_applied = "適用しない";
 $TLS_th_tcid = "テストケースID";
 $TLS_th_tcversion = "バージョン";
 $TLS_th_title = "タイトル";
 $TLS_title_search_tcs = "検索";
+$TLS_requirement_document_id = "Req. Doc. ID";
 
+
+// gui/templates/testcases/searchData.tpl
+$TLS_too_wide_search_criteria = "Too many results. Please, set a more specific criteria for the search.";
 
 
 // gui/templates/infoWindow.tpl
@@ -809,7 +824,7 @@ $TLS_title_keyword_import = "キーワードのインポート";
 
 
 
-// gui/templates/keywordsexport.tpl
+// gui/templates/keywordsExport.tpl
 $TLS_export_keywords = "キーワードのエクスポート";
 $TLS_title_req_import_to = "要件の文書へのインポート";
 
@@ -888,7 +903,7 @@ $TLS_password_reset = "パスワードのリセット";
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "検索で何もヒットしませんでした!";
 $TLS_other_versions = 'Other versions';
-
+$TLS_match_count = "Number of matches";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "添付ファイル";
@@ -904,7 +919,7 @@ $TLS_bug_mgmt = "バグ管理";
 $TLS_build_is_closed = "ビルドは閉じられました";
 $TLS_builds_notes = "ビルドの説明";
 $TLS_bulk_tc_status_management = "テストケース ステータスの一括処理";
-$TLS_closed_build="close build. no operation can be done";
+$TLS_closed_build = "close build. no operation can be done";
 $TLS_date_time_run = "日付";
 $TLS_details = "詳細";
 $TLS_edit_notes = "edit notes";
@@ -947,7 +962,7 @@ $TLS_title_t_r_owner = " アサイン: ";
 $TLS_title_test_case = "テストケース";
 $TLS_version = "バージョン";
 $TLS_warning_delete_execution = "本当にテストの実行結果を削除しますか？";
-$TLS_warning_nothing_will_be_saved="For the selected execution result nothing will be written to database";
+$TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
 
 
 // gui/templates/inc_testsuite_viewer_ro.tpl
@@ -968,7 +983,7 @@ $TLS_title_events = "Events";
 $TLS_title_execute = "実行";
 $TLS_title_results = "結果";
 $TLS_title_specification = "仕様";
-
+$TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 
 
@@ -989,6 +1004,7 @@ $TLS_check_uncheck_tc = "テストスイートの全てのテストケース.";
 $TLS_check_uncheck_all_checkboxes = "全て 確認済/未確認";
 $TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
 $TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
+$TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
 $TLS_execution_order = "Execution order";
 
 $TLS_has_been_executed = "実行されました";
@@ -1003,13 +1019,14 @@ $TLS_title_add_test_to_plan = "テスト計画にテストケースを追加";
 $TLS_warning_add_remove_selected_tc = "警告! 本当に選択したテストケースをテスト計画から削除しますか?";
 
 
-
 // gui/templates/planAddTCNavigator.tpl
 $TLS_title_navigator = "ナビゲータ";
 $TLS_keywords_filter_help = "You can use OR/AND filtering";
 
+
 // gui/templates/planTCNavigator.tpl
 $TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
+
 
 // gui/templates/planPriority.tpl
 $TLS_btn_upd_prio = "更新";
@@ -1026,7 +1043,6 @@ $TLS_update_testcase_versions = "Update Linked Test Case Versions";
 $TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
 $TLS_tplan_updated = "Test Plan was updated";
 $TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
-
 
 
 
@@ -1070,13 +1086,14 @@ $TLS_testplan_menu_list = "一覧";
 
 
 
-// gui/templates/planMilestones.tpl
+// gui/templates/planMilestones*.tpl
 $TLS_alt_delete_milestone = "マイルストーンを削除しますか?";
 $TLS_btn_edit_milestone = "編集";
 $TLS_btn_new_milestone = "作成";
 $TLS_info_milestones_date = "マイルストーンは本日または本日以降の日付で作成されます";
 $TLS_no_milestones = "テスト計画に対してマイルストーンが存在しません!";
 $TLS_popup_delete_milestones = "本当にマイルストーン %NAME% を削除しますか?";
+$TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
 $TLS_warning_empty_milestone_name = "マイルストーン名は空ではいけません!";
 
 
@@ -1089,6 +1106,14 @@ $TLS_title_existing_milestones = "既存のマイルストーン";
 $TLS_title_milestones = "マイルストーン テスト計画 ";
 $TLS_title_new_milestone = "新規マイルストーン";
 $TLS_title_edit_milestone = "Edit Milestone";
+$TLS_delete_milestone = "Delete milestone";
+$TLS_milestone_deleted = "Milestone %s was successfully deleted";
+$TLS_create_milestone = "Create Milestone";
+$TLS_edit_milestone = "Edit Milestone %s";
+$TLS_warning_empty_low_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_high_priority_tcases = "Value can not be empty";
+$TLS_milestone_created = "Milestone Created";
 
 
 
@@ -1111,19 +1136,19 @@ $TLS_testproject_alt_requirement_feature = "Requirements enabled";
 $TLS_testproject_alt_edit = "Edit Test Project";
 $TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
 
-// Warning!!! - if JS string you must use \\n to get \n                                       
+// Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = "警告! この操作は、プロジェクトに関連した全ての" .
                             "データ (テスト結果、テスト計画等)を削除します。" .
                             "削除の代わりにプロジェクトを無効化することができます。\\n" .
                             "推奨: 最初にデータベースのバックアップを実行してください。\\n" .
                             "本当にテストプロジェクトを削除しますか?"; 
 
-$TLS_tcase_id_prefix="Test Case ID prefix";
+$TLS_tcase_id_prefix = "Test Case ID prefix";
 $TLS_warning_empty_tcase_prefix = "Test Case prefix cannot be empty!";
 $TLS_warning_empty_tproject_name = "テストプロジェクト名は空欄にできません!";
 
 // gui/templates/projectView.tpl
-$TLS_title_testproject_management="Test Project Management";
+$TLS_title_testproject_management = "Test Project Management";
 
 // gui/templates/reqAssign.tpl
 $TLS_please_select_a_req = "要件を選択してください";
@@ -1159,13 +1184,13 @@ $TLS_title_plan_ownership = "テスト計画所有権";
 $TLS_activate_this_tcversion = "このバージョンを有効にする";
 $TLS_Requirements = "要件";
 $TLS_btn_del_this_version = "このバージョンを削除";
-$TLS_btn_edit = "編集";
-$TLS_btn_execute_automatic_testcase="Execute automatic test case";
+$TLS_btn_edit		= "編集";
+$TLS_btn_execute_automatic_testcase = "Execute automatic test case";
 $TLS_btn_mv_cp = "移動 / コピー";
 $TLS_btn_new_version = "新バージョン作成";
 $TLS_can_not_edit_tc = "このバージョンは実行中なので編集できません";
 $TLS_deactivate_this_tcversion = "このバージョンを無効にする";
-$TLS_execution_type='Execution type';
+$TLS_execution_type = 'Execution type';
 $TLS_tcversion_is_inactive_msg = "このバージョンは無効です => テスト計画には含まれません";
 
 
@@ -1174,12 +1199,6 @@ $TLS_tcversion_is_inactive_msg = "このバージョンは無効です => テス
 $TLS_btn_remove_selected_tc = "選択したテストケースを削除";
 $TLS_remove_ok = "削除 OK";
 $TLS_title_remove_test_from_plan = "テスト計画からテストケースを削除";
-
-
-
-// gui/templates/planTesters.tpl
-// $TLS_btn_save = "保存";
-
 
 
 // gui/templates/keywordsAssign.tpl
@@ -1338,10 +1357,17 @@ $TLS_report_display_options = "Report display options";
 
 // gui/templates/resultsReqs.tpl
 $TLS_no_srs_defined = "このテストプロジェクトには要件仕様がありません";
+$TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
+
+
+// IMPORTANT for dynamic generation labels
+// $TLS_req_title_<test case status> 
+// If user add a new test case status he/she MUST add a new label
 $TLS_req_title_blocked = "ブロックされた要件";
 $TLS_req_title_failed = "失敗した要件";
-$TLS_req_title_notrun = "予想外の結果となった要件";
+$TLS_req_title_not_run = "Unexecuted Requirements";
 $TLS_req_title_passed = "成功した要件";
+
 $TLS_title_result_req_testplan = "要件仕様にもとづいたテスト結果";
 $TLS_title_test_plan = $TLS_testplan;
 
@@ -1376,7 +1402,7 @@ $TLS_urgency_description = "Urgency value affects priority of test cases for exe
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
 $TLS_feedback_urgency_ok = "Test urgency was modified.";
 
-$TLS_testsuite_is_empty='Test suite has no test cases. Nothing can be done';
+$TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
 // gui/templates/tcPrintNavigator.tpl
 $TLS_caption_print_opt = "印刷オプション";
@@ -1403,10 +1429,18 @@ $TLS_assign_to = "Assign to";
 $TLS_btn_do = "実行";
 $TLS_btn_update_selected_tc = "保存";
 $TLS_can_not_execute = " (No execution right)";
-$TLS_check_uncheck_children_checkboxes="Toggle all test case selections (incluing children test suites)";
+$TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
 $TLS_title_tc_exec_assignment = "テストケースに実行タスクをアサインするテスト計画 ";
 $TLS_user = "ユーザ";
 $TLS_user_bulk_assignment = "ユーザ一括アサイン";
+
+
+// tc_exec_assignment.php
+$TLS_mail_subject_testcase_assigned='Test Link - Test Case Assignment - Test Plan';
+$TLS_mail_subject_testcase_assignment_removed='Test Link - Test Case Assignment REMOVED - Test Plan';
+$TLS_mail_testcase_assigned= "Following Test Cases has been assigned to you %s by %s <br><br>";
+$TLS_mail_testcase_assignment_removed="%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br><br>";
+$TLS_send_mail_to_tester="Send mail notification to tester";
 
 
 // gui/templates/testSetNavigator.tpl
@@ -1425,7 +1459,7 @@ $TLS_title_personal_data = "Personal data";
 $TLS_title_personal_passwd = "Personal password";
 $TLS_title_api_interface = "API interface";
 $TLS_warning_different_pwd = "パスワードが異なります。再度パスワードを入力してください。";
-$TLS_warning_empty_pwd = "パスワードが空欄です!";
+$TLS_warning_empty_pwd = "パスワードを空白にすることはできません!";
 $TLS_your_password_is_external = "あなたのパスワードは外部システムで管理されています。br>".
                                  "TestLinkで変更することはできません。";
 $TLS_user_api_key = "Personal API access key";
@@ -1504,7 +1538,6 @@ $TLS_th_open = "オープン";
 $TLS_title_build_list = "既存のビルドの一覧";
 $TLS_warning_delete_build = "本当にこのビルドを削除しますか？" .
                             "<br /> <br />すべての依存するデータ（テスト結果）が削除されます!";
-                            "<br /> <br />本当によろしいですか?";
 $TLS_builds_description = "各ビルドはタイトルによって識別されています。" .
 						              "<br />Description should include:&nbsp;" .
 						              "list of delivered packages, fixes or features, approvals, status, etc.<br />" .
@@ -1513,7 +1546,7 @@ $TLS_builds_description = "各ビルドはタイトルによって識別され�
                           "インアクティブビルドはテスト実行とレポートのページには表示されません。<br />" .
                           "オープン / クローズ ― この属性は対象ビルドの結果が変更可能かどうかを決定します。";
 
-$TLS_build_copy_help="If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+$TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
                      "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
                      "and if name does not exist, build will be created.";
 
@@ -1529,7 +1562,7 @@ $TLS_alt_active_testplan = "有効なテスト計画";
 $TLS_warning_delete_testplan = "You are going to delete: %s <br /><br /> Are you sure?";
 
 
-// gui/templates/mainPage_left.tpl
+// ----- gui/templates/mainPage_left.tpl -----
 $TLS_href_assign_user_roles = "ユーザの役割のアサイン";
 $TLS_href_browse_tc = "テストケースの閲覧";
 $TLS_href_cfields_management = "カスタムフィールドの管理";
@@ -1550,8 +1583,10 @@ $TLS_title_requirements = "要件";
 $TLS_title_test_spec = "テスト仕様";
 $TLS_title_product_mgmt = "テストプロジェクト";
 $TLS_href_plan_define_priority = "Test Plan priority";
+$TLS_href_my_testcase_assignments="Test Cases assigned to me";
 
-// gui/templates/mainPage_right.tpl
+
+// ----- gui/templates/mainPage_right.tpl -----
 $TLS_filter_tp_by_product = "テスト計画をテストプロジェクトでフィルタリング";
 $TLS_href_add_remove_test_cases = "テストケースの追加";
 $TLS_href_build_new = "ビルド/リリース";
@@ -1618,7 +1653,7 @@ $TLS_trep_failing = "失敗";
 $TLS_trep_passing = "成功";
 $TLS_trep_status_for_build = "ビルドのステータス";
 $TLS_trep_status_for_ts = "テストスイートのステータス";
-$TLS_unassigned = "未アサイン";
+$TLS_unassigned = "unassigned";
 
 
 // lib/functions/resultsMoreBuilds.inc.php
@@ -1653,6 +1688,7 @@ $TLS_desc_mgt_view_key = "キーワード参照（読み取りのみ）";
 $TLS_desc_mgt_view_req = "要件参照（読み取りのみ）";
 $TLS_desc_mgt_view_tc = "テストケース参照（読み取りのみ）";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
+$TLS_desc_events_mgt = "Event management";
 $TLS_desc_role_management = "役割管理";
 $TLS_desc_testplan_create_build = "ビルドの作成／編集";
 $TLS_desc_testplan_execute = "テスト計画の実行";
@@ -1662,7 +1698,7 @@ $TLS_desc_user_role_assignment = "役割のアサイン";
 $TLS_error_duplicate_rolename = "その名称の役割は既に存在します!";
 $TLS_error_role_no_rights = "権限不足により役割を保存できません!";
 $TLS_error_role_no_rolename = "役割の名称を入力してください!";
-$TLS_inherited_role="<inherited>";
+$TLS_inherited_role = "<inherited>";
 $TLS_mgt_testplan_create = "テスト計画の作成／編集";
 
 
@@ -1686,15 +1722,16 @@ $TLS_file_is_not_xml = "ファイルのXMLフォーマットが不明です。�
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - CSV は以下の３つの列が必要です: 'req_doc_id','title','description'";
 $TLS_req_import_format_description2 = " - DOORS からの CSV エクスポートにはヘッダが必要です";
+$TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "上書き!";
 $TLS_req_import_result_skipped = "スキップ";
 $TLS_req_status_not_testable = "テスト不能";
 $TLS_req_status_valid = "有効";
 $TLS_req_status_draft = 'Draft';
 $TLS_req_status_approved = 'Approved';
-$TLS_req_status_obsolete='Obsolete';
-$TLS_req_status_todo='To do';
-$TLS_req_status_changed='Modified';
+$TLS_req_status_obsolete = 'Obsolete';
+$TLS_req_status_todo = 'To do';
+$TLS_req_status_changed = 'Modified';
 
 $TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITLE</title><description>DESCRIPTION</description></requirement> ... </requirements>");
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
@@ -1718,17 +1755,19 @@ $TLS_printed_by_TestLink_on = "印刷 by TestLink on";
 $TLS_title_toc = "目次";
 $TLS_passfail = "成功 / 失敗";
 $TLS_testnotes = "備考";
+$TLS_last_exec_result = "Last Result";
+$TLS_test_project_notes = "Test Project notes";
 
 
 // lib/functions/testcase.class.php
+$TLS_create_new_version="Created new version %s"; 
 $TLS_testcase_name_already_exists = "同じタイトルのテストケースが既に存在しています!";
+$TLS_created_with_title = "Created with title (%s)";
 $TLS_the_format_tc_xml_import = "";
-
 
 
 // lib/functions/info.inc.php
 $TLS_email_sent_message = "メールが送信されました";
-
 
 
 // lib/functions/users.inc.php
@@ -1767,15 +1806,15 @@ $TLS_ldap_extension_not_loaded = "ログイン方法がLDAPに指定されてい
 $TLS_sec_note_admin_default_pwd = "'admin' アカウントのパスワードをデフォルトのものから変更してください!";
 $TLS_sec_note_remove_install_dir = "インストールディレクトリを削除してください!";
 $TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
-
+$TLS_error_gd_missing = "GD PHP extension doesn't seem to be present. Charts will not work!";
 
 // lib/general/frmWorkArea.php
 $TLS_create_a_build = "新規ビルドの作成";
 $TLS_no_build_warning_part1 = "このテスト計画に対してビルドが作成されていません";
 $TLS_no_build_warning_part2 = "最初にビルドを作成をするか管理者に問い合わせてください";
- 
- 
- 
+
+
+
 // lib/general/myTPInfo.php
 $TLS_no_testplans_available = "申し訳ありません。テスト計画が存在しません";
 
@@ -1816,7 +1855,6 @@ $TLS_warning_duplicate_build = "このIDですでにビルドが存在してい�
 
 
 // lib/plan/plan.inc.php
-//$TLS_warning_empty_milestone_name = "マイルストーンは名前なしでは入力できません！";
 $TLS_warning_enter_valid_date = "有効な日付を入力してください！";
 $TLS_warning_invalid_percentage_value = "パーセンテージの範囲は0 から 100% までです";
 $TLS_warning_milestone_date = "マイルストーンは今日以降の日付で作ってください！";
@@ -1824,10 +1862,11 @@ $TLS_warning_percentage_value_higher_than_100 = "パーセンテージの合算�
 
 
 
-// lib/plan/planMilestones.php
+// lib/plan/planMilestone*.php
 $TLS_milestone_delete_fails = "マイルストーンを削除できませんでした!";
 $TLS_warning_milestone_add_failed = "マイルストーンを追加できません!";
 $TLS_warning_milestone_update_failed = "マイルストーンを更新できませんでした!";
+$TLS_milestone_name_already_exists = "There's already a Milestone with this name (%s)";
 
 
 
@@ -1855,9 +1894,9 @@ $TLS_deleted = "削除済";
 $TLS_different_versions = "Diff. Versions";
 $TLS_plan_update_no_tc_updated = "テストケースは更新されませんでした";
 $TLS_updated = "更新";
-$TLS_all_versions_where_latest="Nothing to do - All Test Cases version are the newest available";
+$TLS_all_versions_where_latest = "Nothing to do - All Test Cases version are the newest available";
 
-$TLS_num_of_updated="%d Test Cases has been updated";
+$TLS_num_of_updated = "%d Test Cases has been updated";
 
 
 // lib/plan/testSetNavigator.php
@@ -1888,8 +1927,6 @@ $TLS_opt_show_tc_keys = "TC related Keywords";
 $TLS_title_tc_print_navigator = "ナビゲーター - テスト仕様印刷";
 $TLS_title_tp_print_navigator = "ナビゲーター - テスト計画印刷";
 
-
-
 // lib/project/projectedit.php
 $TLS_error_product_name_duplicate = "テストプロジェクト名 %s は既に使われています<br>他の名前を選んでください";
 $TLS_error_tcase_prefix_exists = "Test Case prefix %s already exists";
@@ -1917,7 +1954,7 @@ $TLS_results_top_level_suites = "トップレベルスイートの結果";
 $TLS_chart_report = "Report";
 $TLS_chart_assigned_testers = "Owners";
 $TLS_chart_keywords = "Keywords";
-$TLS_chart_testsuites="Test Suites";
+$TLS_chart_testsuites = "Test Suites";
 
 
 // lib/req/reqImport.php
@@ -1937,7 +1974,12 @@ $TLS_req_created = "要件 %s を作成しました";
 // lib/req/reqTcAssign.php
 $TLS_req_msg_noselect = "選択されていません。";
 $TLS_req_msg_notupdated_coverage = "要件のカバレッジは更新されていませんでした。";
-
+$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
+                         '<br>belonging to test suites present on selected branch.';
+$TLS_bulk_assigment_done = '%s assignments has been done';
+$TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
+$TLS_req_title_available = 'Available Requirements';
+$TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
 
 
 // lib/results/resultsBugs.php
@@ -1973,7 +2015,8 @@ $TLS_link_report_overall_build = "全ビルドステータス";
 $TLS_link_report_reqs_coverage = "要件に基づくレポート";
 $TLS_link_report_test = "テストレポート";
 $TLS_link_report_total_bugs = "各テストケースの全バグ";
-
+$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
+$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
 
 // lib/results/resultsSend.php
 $TLS_send_to_empty_email_warning = "申し訳ありません。未設定領域があるため電子メールを送ることができません。<br>有効なアドレスを入力してください。";
@@ -1993,11 +2036,21 @@ $TLS_error_sendreport_no_email_credentials = "このユーザからのEメール
 
 
 // lib/testcases/tcImport.php
+$TLS_action_on_duplicated_name = "Action for duplicated names";
+$TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
 $TLS_please_choose_file_to_import = "インポートするファイルを選んでください。";
 $TLS_title_tc_import_to = "テストケースのインポート";
 $TLS_title_tsuite_import_to = "テストスイートのインポート";
 $TLS_wrong_xml_tcase_file = "対応できないXML形式のテストケースファイルです。";
 $TLS_wrong_xml_tsuite_file = "対応できないXML形式のテストスイートファイルです。";
+$TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' can not be imported " .
+                                                     "because there is no Custom Field with this name " .
+                                                     "and Available for %s on this Test Project"; 
+
+
+$TLS_update_last_testcase_version='Update data on Latest version';
+$TLS_create_new_testcase_version='Create a new version';
+$TLS_generate_new_testcase='Create a new test case with different title';
 
 
 
@@ -2038,7 +2091,7 @@ $TLS_test_project_user_roles_updated = "ユーザの役割を更新しました"
 $TLS_test_plan_user_roles_updated = "ユーザの役割を更新しました";
 
 
-// lib/usermanagement/usersedit.php
+// ----- lib/usermanagement/usersedit.php -----
 $TLS_user_created = "ユーザ %s を作成しました";
 $TLS_user_deleted = "ユーザ %s を削除しました。";
 $TLS_user_not_added = "そのユーザは追加できませんでした！";
@@ -2048,13 +2101,13 @@ $TLS_error_user_login_length_error = "The login was either too short or too long
 
 
 
-// lib/usermanagement/rolesedit.php
+// ----- lib/usermanagement/rolesedit.php -----
 $TLS_error_role_creation = "その役割は作成できませんでした！";
 $TLS_error_role_update = "その役割は更新できませんでした！";
 
 
 
-// lib/cfields/cfields_edit.php
+// ----- lib/cfields/cfields_edit.php -----
 $TLS_cf_name_exists = "そのカスタムフィールド名は既に使われています。違う名前をお選びください。";
 $TLS_error_creating_cf = "そのカスタムフィールドは作成できませんでした！";
 $TLS_do_update = "更新";
@@ -2064,7 +2117,7 @@ $TLS_warning_delete_cf = "You are going to delete: %s <br /><br /> Are you sure?
 
 
 
-// lib/project/fix_tplans.php
+// ----- lib/project/fix_tplans.php -----
 $TLS_list_inactive_tplans1 = "Listing ";
 $TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
 $TLS_assoc_test_project = "Associated Test Project";
@@ -2073,43 +2126,48 @@ $TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br /
 $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
 
 
-// lib/project/project_req_spec_mgmt.tpl
+// ----- lib/project/project_req_spec_mgmt.tpl -----
 $TLS_btn_new_req_spec = "New Requirement Specification";
 $TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
 
-// reqSpecEdit.php
+
+// ----- reqSpecEdit.php -----
 $TLS_delete_req_spec = "Delete Requirement Specification";
 $TLS_req_spec_created = "Requirement Specification: %s was successfully created";
 $TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
 
-$TLS_title_req_spec="Requirement Specifications";
+$TLS_title_req_spec = "Requirement Specifications";
 $TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
-$TLS_create_req_spec="Create Requirements Specification";
-$TLS_create_child_req_spec="Create Child Req Specification";
+$TLS_create_req_spec = "Create Requirements Specification";
+$TLS_create_child_req_spec = "Create Child Req Specification";
 
 $TLS_edit_req_spec = "Edit Requirements Specification";
 
-// reqEdit.php
+
+// ----- reqEdit.php -----
 $TLS_create_req = "Create Requirement";
 $TLS_delete_req = "Delete Requirement";
 $TLS_edit_req = "Edit Requirement";
-$TLS_req_created = "Requirement: %s was successfully created";
+$TLS_req_created = "要件 %s を作成しました";
 $TLS_req_deleted = "Requirement: %s was successfully deleted";
 
-// reqSpecReorder.tpl
+
+// ----- reqSpecReorder.tpl -----
 $TLS_title_change_req_spec_order = "Change Requirement Specifications order";
 
-// requirement_mgr
+
+// ----- requirement_mgr -----
 $TLS_created_on_testsuite = "Test Cases has been created on Test Suite %s";
 $TLS_testsuite_name_created = "Test Suite %s has been created";
 
-// keywordsEdit.php
+
+// ----- keywordsEdit.php -----
 $TLS_keyword_management = "Keyword management";
 $TLS_create_keyword = "Create keyword";
 $TLS_edit_keyword = "Edit keyword";
 $TLS_warning_empty_keyword = "Keyword must not be empty!";
 
-// api/TestlinkXMLRPCServerErrors.php
+// ----- api/TestlinkXMLRPCServerErrors.php -----
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
 $TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
 $TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
@@ -2127,12 +2185,13 @@ $TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
 $TLS_API_INVALID_TPLANID = "The Test Plan ID (tpid) provided does not exist!";
 $TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
-$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID provided does not exist!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
 
 $TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
 $TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
 $TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
 $TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
+$TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
 $TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
 $TLS_API_TCASEID_NOT_IN_TPLANID = "The Test Case (tpid) provided is not associated with the Test Plan (tpid).";
 $TLS_API_GENERAL_SUCCESS = "Success!";
@@ -2143,7 +2202,30 @@ $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!
 $TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
                                      "No Custom Field exists with the name provided!";
 
-//audit log entries
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
+
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO="Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
+
+// ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
 $TLS_audit_role_saved = "Role '{%1}' was saved";
@@ -2172,10 +2254,10 @@ $TLS_audit_user_deleted = "User '{%1}' was deleted";
 $TLS_audit_user_logout = "Logout of '{%1}'";
 $TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
 $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
-$TLS_audit_user_role_changed="User '{%1}' role changed old='{%2}' new='{%3}'";
-$TLS_audit_user_active_status_changed="User '{%1}' active status changed old='{%2}' new='{%3}'";
+$TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
 
-
+$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
 
 $TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
 $TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";
@@ -2221,7 +2303,10 @@ $TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed
 
 $TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
 
-//eventviewer.php
+$TLS_audit_events_deleted = "User '{%1}' deleted all events";
+
+
+// ----- eventviewer.php -----
 $TLS_th_loglevel = "Log level";
 $TLS_th_timestamp = "Timestamp";
 $TLS_th_activity = "Activity";
@@ -2245,19 +2330,33 @@ $TLS_title_eventinfo = "Event information";
 $TLS_title_eventdetails = "Event details";
 $TLS_th_user = "User";
 $TLS_show_event_history = "Show the event history";
+$TLS_btn_clear_events = "Clear All Events";
+$TLS_th_event_description = "Description";
 
 
-// int_mantis.php
+// ----- int_mantis.php -----
 // Used to display at User interface label as title attribute
-$TLS_issue_status_new="New issue";
-$TLS_issue_status_feedback="Feedback";
-$TLS_issue_status_acknowledged="Acknowledged issue ";
-$TLS_issue_status_confirmed="Confirmed issue";
-$TLS_issue_status_assigned="Assigned issue";
-$TLS_issue_status_resolved="Resolved issue";
-$TLS_issue_status_closed="Closed issue";
+$TLS_issue_status_new = "New issue";
+$TLS_issue_status_feedback = "Feedback";
+$TLS_issue_status_acknowledged = "Acknowledged issue ";
+$TLS_issue_status_confirmed = "Confirmed issue";
+$TLS_issue_status_assigned = "Assigned issue";
+$TLS_issue_status_resolved = "Resolved issue";
+$TLS_issue_status_closed = "Closed issue";
 $TLS_access_to_bts="Access issue tracking system";
 
-$TLS_copy_to_all_tplans = "Copy to all Test Plans";
+
+// ----- uncoveredTestCases.php -----
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'No uncovered Test Cases';
+$TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
+$TLS_testproject_has_no_requirements = 'There are no Requirements defined';
+
+
+// ----- testCasesWithoutTester -----
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+
+
 // ----- END ------------------------------------------------------------------
 ?>

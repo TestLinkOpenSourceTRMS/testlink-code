@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.31 2009/02/02 11:12:41 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.32 2009/02/02 17:11:32 franciscom Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -257,8 +257,8 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
 {
     $testers['new']=null;
     $testers['old']=null;
-    $mail_details['new']=lang_get('mail_testcase_assigned');
-    $mail_details['old']=lang_get('mail_testcase_assignment_removed');
+    $mail_details['new']=lang_get('mail_testcase_assigned') . "<br /><br />";
+    $mail_details['old']=lang_get('mail_testcase_assignment_removed'). "<br /><br />";
     $mail_subject['new']=lang_get('mail_subject_testcase_assigned');
     $mail_subject['old']=lang_get('mail_subject_testcase_assignment_removed');
     $use_testers['new']= ($operation == 'del') ? false : true ;
@@ -273,8 +273,8 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
               $guiObj->all_users[$argsObj->user_id]->lastName ;
               
     $email['from_address']=config_get('from_email');
-    $body_first_lines = lang_get('testproject') . ': ' . $argsObj->tproject_name . '<br>' .
-                        lang_get('testplan') . ': ' . $guiObj->testPlanName .'<br><br>';
+    $body_first_lines = lang_get('testproject') . ': ' . $argsObj->tproject_name . '<br />' .
+                        lang_get('testplan') . ': ' . $guiObj->testPlanName .'<br /><br />';
 
 
     // Get testers id
@@ -321,9 +321,9 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
                                           $userObj->firstName . ' ' .$userObj->lastName,$assigner);
                 foreach($value as $tcase_id)
                 {
-                    $email['body'] .= $flat_path[$tcase_id] . '<br>';  
+                    $email['body'] .= $flat_path[$tcase_id] . '<br />';  
                 }  
-                $email['body'] .= '<br>' . date(DATE_RFC1123);
+                $email['body'] .= '<br />' . date(DATE_RFC1123);
   	            $email_op = email_send($email['from_address'], $email['to_address'], 
   	                                   $email['subject'], $email['body'],'','',true,true);
             } // foreach($tester_set as $user_id => $value)

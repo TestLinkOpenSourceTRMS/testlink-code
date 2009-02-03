@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.19 2009/01/13 19:34:01 schlundus Exp $
+$Id: inc_attachments.tpl,v 1.20 2009/02/03 20:10:06 schlundus Exp $
 Generic attachment management
 
 Input:
@@ -29,6 +29,9 @@ $gsmarty_attachments
 <script type="text/javascript">
 {/literal}
 var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
+{if isset($attach_loadOnCancelURL)}
+ 	var attachment_reloadOnCancelURL = '{$attach_loadOnCancelURL}';
+{/if} 
 {literal}
 </script>
 {/literal}

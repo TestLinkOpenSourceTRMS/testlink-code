@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.16 2008/12/11 20:30:16 schlundus Exp $
+$Id: tcView.tpl,v 1.17 2009/02/03 20:10:06 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 
 rev: 20081115 - franciscom - refactoring to improve display when using on search feature 
@@ -14,7 +14,9 @@ rev: 20081115 - franciscom - refactoring to improve display when using on search
   {include file="inc_ext_js.tpl" css_only=1}
 {/if}
 </head>
-
+{if !isset($loadOnCancelURL)}
+ 	{assign var="loadOnCancelURL" value=""}
+{/if} 
 {assign var="my_style" value=""}
 {if $gui->hilite_testcase_name}
     {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
@@ -86,9 +88,10 @@ rev: 20081115 - franciscom - refactoring to improve display when using on search
 		         attach_id=$tcID  
 		         attach_tableName="nodes_hierarchy"
 		         attach_attachmentInfos=$attachments[$tcID]  
-		         attach_downloadOnly=$bDownloadOnly}
-
-    {* Other Versions *}
+		         attach_downloadOnly=$bDownloadOnly
+		         attach_loadOnCancelURL=$loadOnCancelURL
+		         }
+	{* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
         {assign var="vid" value=$gui->tc_current_version[idx][0].id}
         {assign var="div_id" value=vers_$vid}

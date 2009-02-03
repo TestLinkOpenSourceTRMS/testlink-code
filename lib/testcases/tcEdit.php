@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2009/01/25 18:56:33 $  by $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2009/02/03 20:10:06 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -398,7 +398,8 @@ else if($args->do_create_new_version)
 	$viewer_args['refresh_tree'] = DONT_REFRESH;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
-
+	$smarty->assign('loadOnCancelURL',$_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
+	
 	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS, $viewer_args);
 }
 
@@ -407,6 +408,8 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;
 	$viewer_args['refresh_tree']=DONT_REFRESH;
+	$smarty->assign('loadOnCancelURL',$_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
+	
 	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS,$viewer_args);
 }
 

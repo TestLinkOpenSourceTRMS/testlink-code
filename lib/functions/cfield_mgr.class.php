@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/01/03 17:30:29 $  $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/02/04 14:24:21 $  $Author: havlat $
  * @author franciscom
  *
  * 20080817 - franciscom - added logic give default logic to manage 
@@ -2025,7 +2025,7 @@ function getXMLServerParams($node_id)
   */
   function build_cfield_radio($custom_field_value) 
   {
-      if( count($value) > 1)
+      if( count($custom_field_value) > 1)
       {
         $value=implode('|',$custom_field_value);
       }

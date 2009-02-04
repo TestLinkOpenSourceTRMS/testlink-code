@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/01/22 20:54:28 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/02/04 22:03:50 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -211,6 +211,9 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$dupl
 	{
 		$xmlTCs = $node->get_elements_by_tagname("testcase");
 		$tcData = importTCsFromXML($xmlTCs);
+		
+		new dBug($tcData);
+		
 		if ($tcData)
 		{
 			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
@@ -225,6 +228,8 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$dupl
   function: importTestSuite
   args :
   returns: 
+  
+  rev: 20090204 - franciscom - added node_order
 */
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
@@ -232,13 +237,14 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 	if ($node->tagname() == 'testsuite')
 	{
 		$name = $node->get_attribute("name");
-		$details = getNodeContent($node,'details');
+		$details = trim(getNodeContent($node,'details'));
+		$node_order = intval(trim(getNodeContent($node,'node_order')));
 		
 		$ts = null;
 		if (strlen($name))
 		{
 			$ts = new testsuite($db);
-			$ret = $ts->create($parentID,$name,$details);
+			$ret = $ts->create($parentID,$name,$details,$node_order);
 			$tsID = $ret['id'];
 			if (!$tsID)
 				return null;
@@ -290,6 +296,8 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
   returns: 
   
   rev:
+      20090204 - franciscom - use value of node_order readed from file
+      
       configure create to rename test case if exists 
 */
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
@@ -330,6 +338,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$summary = $tc['summary'];
 		$expected_results = $tc['expectedresults'];
 		$steps = $tc['steps'];
+		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
+		$externalid = $tc['externalid'];
+				
     
     $name_len=strlen($name);  
     if( $name_len > $fieldSizeCfg->testcase_name)
@@ -364,7 +375,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                    $last_version=$tcase_mgr->get_last_version_info($tcase_id);
                    $tcversion_id=$last_version['id'];
                    $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,
-                                             $expected_results,$userID,$kwIDs);
+                                             $expected_results,$userID,$kwIDs,$node_order);
                                              
                    $resultMap[] = array($name,lang_get('already_exists_updated'));
 	             break;
@@ -385,7 +396,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		{
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,
 		                                  $expected_results,$userID,$kwIDs,
-		                                  testcase::DEFAULT_ORDER,testcase::AUTOMATIC_ID,
+		                                  $node_order,testcase::AUTOMATIC_ID,
                                       testcase::CHECK_DUPLICATE_NAME,$actionOnDuplicatedName))
         {
             $resultMap[] = array($name,$ret['msg']);
@@ -461,11 +472,15 @@ function importTCsFromXML($xmlTCs)
 		return $tcSet;
 		
 	$jdx = 0;
-	for($idx = 0; $idx < sizeof($xmlTCs); $idx++)
+	$loops2do=sizeof($xmlTCs);
+	for($idx = 0; $idx < $loops2do; $idx++)
 	{
 		$xmlTC = $xmlTCs[$idx];
 		if ($xmlTC->node_type() != XML_ELEMENT_NODE)
+		{
 			continue;
+		}
+		
 		$tc = importTCFromXML($xmlTC);
 		if ($tc)
 		{
@@ -492,17 +507,29 @@ function importTCsFromXML($xmlTCs)
   function: importTCFromXML()
   args :
   returns: 
+  
+  rev: 20090204 - franciscom - added node_order,externalid
 */
 function importTCFromXML(&$xmlTC)
 {
 	if (!$xmlTC)
+	{
 		return null;
-		
+	}
+	
+	$keyContent=array("summary","steps","expectedresults");
 	$tc = null;
 	$tc['name'] = $xmlTC->get_attribute("name");
-	$tc['summary'] = trim(getNodeContent($xmlTC,"summary"));
-	$tc['steps'] = trim(getNodeContent($xmlTC,"steps"));
-	$tc['expectedresults'] = trim(getNodeContent($xmlTC,"expectedresults"));
+  foreach($keyContent as $key)
+  {
+      $tc[$key] = trim(getNodeContent($xmlTC,$key));
+  }
+  
+  $keyContent=array("node_order","externalid");
+	foreach($keyContent as $key)
+  {
+      $tc[$key] = intval(trim(getNodeContent($xmlTC,$key)));
+  }
 	
 	return $tc; 		
 }

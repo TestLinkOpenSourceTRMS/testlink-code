@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.144 $
- * @modified $Date: 2009/02/02 11:12:41 $ $Author: franciscom $
+ * @version $Revision: 1.145 $
+ * @modified $Date: 2009/02/04 22:03:50 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090204 - franciscom - exportTestCaseDataToXML() - added node_order
  * 20090201 - franciscom - get_by_id_bulk() - added version_id filter
  * 20090131 - franciscom - new method get_assigned_to_user()
  * 20090120 - franciscom - create_tcase_only() - added new action_on_duplicate_name	     
@@ -196,6 +197,7 @@ function create($parent_id,$name,$summary,$steps,
 {
 	$status_ok = 1;
 	
+	
 	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
                                   $check_duplicate_name,
                                   $action_on_duplicate_name);
@@ -309,9 +311,7 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
     $path2root=$this->tree_manager->get_path($parent_id);
     $tprojectID=$path2root[0]['parent_id'];
     $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tprojectID);
-
-    $tcase_id = $this->tree_manager->new_node($parent_id,
-                                               $this->my_node_type,$name,$order,$id);
+    $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name,$order,$id);
     $ret['id'] = $tcase_id;
     $ret['external_id'] = $tcaseNumber;
   }
@@ -2382,7 +2382,8 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 
   returns:
 
-  rev: 20080206 - franciscom - added externalid
+  rev: 20090204 - franciscom - added export of node_order
+       20080206 - franciscom - added externalid
 
 */
 function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
@@ -2423,15 +2424,18 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 		$rootElem = $optExport['ROOTELEM'];
 	}
 	$elemTpl = "\t".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">'.
+						'<node_order><![CDATA['."\n||NODE_ORDER||\n]]>".'</node_order>'.
 						'<externalid><![CDATA['."\n||EXTERNALID||\n]]>".'</externalid>'.
 						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
 						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
 						'<expectedresults><![CDATA['."\n||RESULTS||\n]]>".'</expectedresults>'.
 						'||KEYWORDS||||CUSTOMFIELDS||</testcase>'."\n";
 
+  // ||yyy||-> tags,  {{xxx}} -> attribute 
 	$info = array (
 							"{{TESTCASE_ID}}" => "testcase_id",
 							"{{NAME}}" => "name",
+							"||NODE_ORDER||" => "node_order",
 							"||EXTERNALID||" => "tc_external_id",
 							"||SUMMARY||" => "summary",
 							"||STEPS||" => "steps",
@@ -2633,15 +2637,48 @@ function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null
 */
 function update_active_status($id,$tcversion_id,$active_status)
 {
-	// test case version
 	$sql = " UPDATE tcversions SET active={$active_status}" .
-			" WHERE tcversions.id = {$tcversion_id}";
+			   " WHERE tcversions.id = {$tcversion_id}";
 
 	$result = $this->db->exec_query($sql);
 
 	return $result ? 1: 0;
 }
 
+/*
+  function: update_order
+
+  args : id: testcase id
+         order
+
+  returns: -
+
+*/
+function update_order($id,$order)
+{
+  $result=$this->tree_manager->change_order_bulk(array($order => $id));  	
+	return $result ? 1: 0;
+}
+
+
+/*
+  function: update_external_id
+
+  args : id: testcase id
+         external_id
+
+  returns: -
+
+*/
+function update_external_id($id,$external_id)
+{
+  $sql="UPDATE {$this->tcversions_table} " .
+       "SET tc_external_id={$external_id} " .
+       "WHERE id IN ( SELECT id FROM {$this->nodes_hierarchy_table} WHERE parent_id={$id} ) ";
+      
+  $result=$this->db->exec_query($sql);
+	return $result ? 1: 0;
+}
 
 /*
   function: copy_attachments

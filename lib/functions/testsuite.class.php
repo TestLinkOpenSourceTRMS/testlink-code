@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/01/15 11:31:56 $ - $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/02/04 22:03:50 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090204 - franciscom - exportTestSuiteDataToXML() - added node_order
  * 20090106 - franciscom - BUGID - exportTestSuiteDataToXML()
  *                         export custom field values
  *  
@@ -875,6 +876,8 @@ function deleteKeywords($id,$kw_id = null)
   args :
   
   returns: 
+  
+  rev: 20090204 - franciscom - added node_order
 
 */
 function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
@@ -906,9 +909,10 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 	      $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 	      $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
 	  } 
-	
-		$xmlTC = "<testsuite name=\"".htmlspecialchars($tsuiteData['name']).
-		         "\"><details><![CDATA[\n{$tsuiteData['details']}\n]]>{$kwXML}{$cfXML}</details>";
+
+    $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+             "<node_order><![CDATA[\n{$tsuiteData['node_order']}\n]]></node_order>\n" .
+	           "<details><![CDATA[\n{$tsuiteData['details']}\n]]> {$kwXML}{$cfXML}</details>";
 	}
 	else
 	{

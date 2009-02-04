@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2008/12/30 13:34:49 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/02/04 22:03:50 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20081227 - franciscom - new method - get_full_path_verbose()
@@ -134,9 +134,9 @@ class tree
 	{
 		$sql = "INSERT INTO {$this->obj_table} " .
 		       "(name,node_type_id,node_order";
-		
+
 		$values=" VALUES('" . $this->db->prepare_string($name). "'," .
-		        " {$node_type_id},{$node_order}";
+		        " {$node_type_id}," . intval($node_order);
 		if ($node_id)
 		{
 			$sql .= ",id";

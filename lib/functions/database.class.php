@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2008/11/30 16:41:24 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/02/04 08:14:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
+ * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
  * 20081129 - franciscom - Added CUMULATIVE constant
  * 20081116 - franciscom - fetchColumnsIntoMap() added cumulative argument
  *
@@ -459,9 +460,12 @@ class database
 	{
 		$value = null;
 		$row = $this->fetchFirstRow($query);
-		if ($row)
-			$value = $row[$column];
 		
+		// BUGID 1318
+		if ($row && array_key_exists($column, $row))
+		{
+		    $value = $row[$column];
+		}
 		return $value;
 	}
 

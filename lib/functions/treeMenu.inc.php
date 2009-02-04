@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2009/01/18 18:50:55 $ by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2009/02/04 08:14:18 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -14,7 +14,8 @@
  *                                              LAYERSMENU, DTREE,	and JTREE. 
  *  Used type is defined in config.inc.php.
  * 
- * Rev: 20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
+ * Rev: 20090202 - franciscom - minor changes to avoid BUGID 2009
+ *      20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
  *                              added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081223 - franciscom - extjs_renderExecTreeNodeOnOpen() - changes to show colors
@@ -232,6 +233,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	// 20090118 - franciscom
 	if($treemenu_type=='EXTJS')
 	{
+      $dummy_stringA=null;
+      $menustring ='';
+
 	    $treeMenu->rootnode=new stdClass();
 	    $treeMenu->rootnode->name=$test_spec['text'];
 	    $treeMenu->rootnode->id=$test_spec['id'];
@@ -241,11 +245,18 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	    $treeMenu->rootnode->href=$test_spec['href'];
       
 	    // Change key ('childNodes')  to the one required by Ext JS tree.
-	    $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-	    // Remove null elements (Ext JS tree do not like it ).
-	    $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
-	    $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
-	    $menustring = str_ireplace('null', '', $dummy_string); 
+      if( isset($test_spec['childNodes']) )
+      {
+	        $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+	    }
+	    if( !is_null($dummy_stringA) )
+	    {
+	        // Remove null elements (Ext JS tree do not like it ).
+	        $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
+	        $dummy_string = str_ireplace(',null', '', $dummy_stringB);
+	        $menustring = str_ireplace('null', '', $dummy_string);     
+	    } 
+	    
 	}
 
   $treeMenu->menustring = $menustring;  

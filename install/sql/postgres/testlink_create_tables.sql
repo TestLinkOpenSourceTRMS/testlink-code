@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.29 2009/01/06 15:34:05 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.30 2009/02/04 22:04:22 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -8,6 +8,7 @@
 -- 
 -- 
 -- Rev :
+--      20090204 - franciscom - object_keywords - bad type for ID column
 --      20090103 - franciscom - milestones table - added new unique index
 --                              custom_fields - added missing unique constraint
 --      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
@@ -416,10 +417,8 @@ CREATE INDEX "milestones_testplan_id" ON "milestones" ("testplan_id");
 --
 -- Table structure for table `object_keywords`
 --
-
-
 CREATE TABLE "object_keywords" (  
-  "id" BIGINT NOT NULL ,
+  "id" BIGSERIAL NOT NULL ,
   "fk_id" BIGINT NOT NULL DEFAULT '0',
   "fk_table" VARCHAR(30) NULL DEFAULT '',
   "keyword_id" BIGINT NOT NULL DEFAULT '0' REFERENCES keywords (id),

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/01/13 20:21:23 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/02/05 19:42:40 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  */
@@ -45,4 +45,5 @@ if ($id)
 	}
 }
 $smarty = new TLSmarty();
-$smarty->display('attachment404.tpl');	
+$smarty->display('attachment404.tpl');
+?>

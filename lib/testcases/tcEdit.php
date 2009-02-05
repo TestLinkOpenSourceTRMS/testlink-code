@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2009/02/03 20:10:06 $  by $Author: schlundus $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2009/02/05 19:42:40 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -55,7 +55,6 @@ $show_newTC_form = 0;
 $optionTransferName='ot';
 $args = init_args($cfg->spec,$optionTransferName);
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
-
 $gui=new stdClass();
 $gui->editorType=$cfg->webEditorCfg['type'];
 $gui->grants=getGrants($db);
@@ -145,7 +144,6 @@ if($args->edit_tc)
   	$smarty->assign('opt_cfg', $opt_cfg);
   	$smarty->display($templateCfg->template_dir . $g_tpl['tcEdit']);
 }
-
 else if($args->create_tc)
 {
 	$show_newTC_form = 1;
@@ -153,7 +151,6 @@ else if($args->create_tc)
 	keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
 	$smarty->assign('opt_cfg', $opt_cfg);
 }
-
 else if($args->do_create)
 {
 	$show_newTC_form = 1;
@@ -193,10 +190,10 @@ else if($args->do_create)
 else if($args->delete_tc)
 {
  	$msg = '';
-	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
-	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-
-  switch($my_ret)
+ 	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
+ 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
+	
+  	switch($my_ret)
 	{
 		case "linked_and_executed":
 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
@@ -214,6 +211,7 @@ else if($args->delete_tc)
 	$smarty->assign('testcase_id', $args->tcase_id);
 	$smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
 	$smarty->assign('delete_message', $msg);
+	$gui->refresh_tree = "yes";
 	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->delete_tc_version)
@@ -250,10 +248,12 @@ else if($args->delete_tc_version)
 	$smarty->assign('tcversion_id', $args->tcversion_id);
 	$smarty->assign('delete_message', $msg);
 	$smarty->assign('exec_status_quo',$sq);
+	$gui->refresh_tree = "no";
 	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->do_delete)
 {
+	
  	$user_feedback = '';
 	$msg = '';
 	$action_result = 'deleted';
@@ -402,7 +402,6 @@ else if($args->do_create_new_version)
 	
 	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS, $viewer_args);
 }
-
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);

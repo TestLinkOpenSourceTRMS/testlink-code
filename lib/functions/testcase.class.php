@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.145 $
- * @modified $Date: 2009/02/04 22:03:50 $ $Author: franciscom $
+ * @version $Revision: 1.146 $
+ * @modified $Date: 2009/02/05 19:42:40 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090204 - franciscom - exportTestCaseDataToXML() - added node_order
@@ -1604,26 +1604,26 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 */
 function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
 {
-    $active_status=strtoupper($active_status);
+    $active_status = strtoupper($active_status);
   
     // Get info about tcversions of this test case
-    $sqlx=" SELECT TCV.id,TCV.version,TCV.active" .
+    $sqlx = " SELECT TCV.id,TCV.version,TCV.active" .
           " FROM nodes_hierarchy NHA " .
           " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
           " JOIN tcversions TCV ON NHA.id = TCV.id ";
           
     $where_clause = " WHERE  NHA.parent_id = {$id}";
           
-    if( !is_null($tplan_id) )
+    if(!is_null($tplan_id))
     {
         $sqlx .= " JOIN testplan_tcversions TTCV ON TTCV.tcversion_id = TCV.id ";
         $where_clause .= " AND TTCV.tplan_id = {$tplan_id} "; 
     }    
     $sqlx .= $where_clause; 
-		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
+	$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
 
   
-		$sql="SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
+	$sql = "SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
 		             T.tcversion_id AS linked,TCV.active,
 		             E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan,
 		             E.tcversion_number,
@@ -1635,82 +1635,85 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=n
 		      LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
 		      WHERE  NH.parent_id = {$id} ";
 		
-		if( !is_null($tplan_id) )
+	if(!is_null($tplan_id))
     {
         $sql .= " AND T.tplan_id = {$tplan_id} "; 
     }    
     $sql .= " ORDER BY version,tplan_name";
 
-		      
-    $rs = $this->db->get_recordset($sql);
+	$rs = $this->db->get_recordset($sql);
 
     // set right tcversion_id, based on tcversion_number,version comparison
-    $item_not_executed=null;
-    $item_executed=null;
-    $link_info=null;
-    $in_set=null;
+    $item_not_executed = null;
+    $item_executed = null;
+    $link_info = null;
+    $in_set = null;
     
-	  foreach($rs as $idx => $elem)
-	  {
-      if( $elem['tcversion_number'] != $elem['version'])
-	    {
-        // Save to generate record for linked but not executed if needed
-        // (see below fix not executed section)
-        $link_info[$elem['tcversion_id']][]=$elem;    
-
-	      // We are working with a test case version, that was used in a previous life of this test plan
-	      // information about his tcversion_id is not anymore present in tables:
-	      //
-	      // testplan_tcversions
-	      // executions
-	      // cfield_execution_values.
-	      //
-	      // if has been executed, but after this operation User has choosen to upgrade tcversion 
-	      // linked to testplan to a different (may be a newest) test case version.
-	      //
-	      // We can get this information using table tcversions using tcase id and version number 
-	      // (value displayed at User Interface) as search key.
-	      //
-	      // Important:
-	      // executions.tcversion_number:  maintain info about right test case version executed
-	      // executions.tcversion_id    :  test case version linked to test plan. 
-	      //
-	      //
-	      if( is_null($elem['tcversion_number']) )
-	      {
-	          // Not Executed
-	          $rs[$idx]['executed']=null;
-            $rs[$idx]['tcversion_id']=$elem['tcversion_id'];
-            $rs[$idx]['version']=$elem['version'];
-            $rs[$idx]['linked']=$elem['tcversion_id'];
-            $item_not_executed[]=$idx;  
+    if (sizeof($rs))
+    {
+		foreach($rs as $idx => $elem)
+		{
+	    	if( $elem['tcversion_number'] != $elem['version'])
+		    {
+		        // Save to generate record for linked but not executed if needed
+		        // (see below fix not executed section)
+		        $link_info[$elem['tcversion_id']][]=$elem;    
+	
+		      // We are working with a test case version, that was used in a previous life of this test plan
+		      // information about his tcversion_id is not anymore present in tables:
+		      //
+		      // testplan_tcversions
+		      // executions
+		      // cfield_execution_values.
+		      //
+		      // if has been executed, but after this operation User has choosen to upgrade tcversion 
+		      // linked to testplan to a different (may be a newest) test case version.
+		      //
+		      // We can get this information using table tcversions using tcase id and version number 
+		      // (value displayed at User Interface) as search key.
+		      //
+		      // Important:
+		      // executions.tcversion_number:  maintain info about right test case version executed
+		      // executions.tcversion_id    :  test case version linked to test plan. 
+		      //
+		      //
+		      if( is_null($elem['tcversion_number']) )
+		      {
+		          // Not Executed
+		          $rs[$idx]['executed']=null;
+	            $rs[$idx]['tcversion_id']=$elem['tcversion_id'];
+	            $rs[$idx]['version']=$elem['version'];
+	            $rs[$idx]['linked']=$elem['tcversion_id'];
+	            $item_not_executed[]=$idx;  
+		      }
+		      else
+		      {
+	            // Get right tcversion_id
+	            $rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
+	            $rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
+	            $rs[$idx]['version']=$elem['tcversion_number'];
+	            $rs[$idx]['linked']=$rs[$idx]['executed'];
+	            $item_executed[]=$idx;
+		      }
+		      $version=$rs[$idx]['version'];
+	        $rs[$idx]['active']=$version_id[$version]['active'];	      
 	      }
 	      else
 	      {
-            // Get right tcversion_id
-            $rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
-            $rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
-            $rs[$idx]['version']=$elem['tcversion_number'];
-            $rs[$idx]['linked']=$rs[$idx]['executed'];
-            $item_executed[]=$idx;
+	          $item_executed[]=$idx;  
 	      }
-	      $version=$rs[$idx]['version'];
-        $rs[$idx]['active']=$version_id[$version]['active'];	      
-      }
-      else
-      {
-          $item_executed[]=$idx;  
-      }
-
-      // needed for logic to avoid miss not executed (see below fix not executed)
-      $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
-	  }
-
+	
+		 	// needed for logic to avoid miss not executed (see below fix not executed)
+		    $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
+		}
+    }
+    else
+    	$rs = array();
     // fix not executed
     //
     // need to add record for linked but not executed, that due to new
     // logic to upate testplan-tcversions link can be absent
-    if( !is_null($link_info) )
+    if(!is_null($link_info))
     {
         foreach($link_info as $idx => $elem)
 	      {
@@ -1744,11 +1747,11 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=n
         break;
         
         default:
-             $target=array_keys($rs);
-        break;
+        	$target = array_keys($rs);
+        	break;
     }
 
-    $recordset=null;
+    $recordset = null;
     foreach($target as $idx)
 	  {
 	     $elem=$rs[$idx];

@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.13 2009/01/18 18:50:10 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.14 2009/02/05 19:42:40 schlundus Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -103,11 +103,7 @@ rev:
                          	selected=$gui->keywordsFilterType->selected }
 		      	</td>
 		      </tr>
-		      <tr>
-
-
-	 
-	  		<tr>
+			<tr>
 	   			<td>{$labels.do_auto_update}</td>
 	  			<td>
 	  			   <input type="hidden" id="hidden_tcspec_refresh_on_action"   

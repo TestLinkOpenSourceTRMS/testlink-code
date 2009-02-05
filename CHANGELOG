@@ -3,6 +3,44 @@
    Changelog for TestLink
 ***************************************************************
 
+Testlink 1.8 RC 4
+==============================
+- 0002072: [Event viewer] Delete Test case version (schlundus) - resolved.
+- 0002069: [General] Attachement crash (schlundus) - resolved.
+- 0001255: [New Feature] Notification - E-mail messages to assignee (fman) - resolved.
+- 0002050: [Test Plan (builds, milestones, test assign)] New feature - send mail to testers during execution assingment (fman) - resolved.
+- 0002059: [Custom fields] Warning Logged in Logs due to incorrect variable name in code (mhavlat) - resolved.
+- 0001318: [Database General] Reading possibly nonexistend array key (fman) - resolved.
+- 0002009: [Event viewer] E_NOTICE Undefined index: childNodes (fman) - resolved.
+- 0002046: [Test Specification] TestCase - when new file is upload (in newly created version of TC), white page is shown (schlundus) - resolved.
+- 0002010: [Event viewer] String 'phpmailer_language' is not localized for 'en_GB' (fman) - resolved.
+- 0002039: [Localization] Localization pt_BR (mhavlat) - resolved.
+- 0002038: [Internal issue] automated localization update (mhavlat) - resolved.
+- 0002037: [Test Specification] attachment config for attachment title not working (schlundus) - resolved.
+- 0002032: [Test Specification] Move/Copy Test cases from Suite selection doesn't work (schlundus) - resolved.
+- 0002031: [Keywords] Keyword view + Keyword management not displayed for role leader and senior tester (see bug 0002021 ) (schlundus) - resolved.
+- 0001999: [Reports, Metrics, Export and Print] Index in the Plan Test (mhavlat) - resolved.
+- 0001559: [User Interface General] Because the interlinear space is narrow, the top/bottom of the chars are cut. (mhavlat) - resolved.
+- 0002022: [User Interface General] Various spelling mistakes in the "Test Specification" introductory text (English version) (mhavlat) - resolved.
+- 0002018: [Installer] Migration 1.7 to 1.8 - SQL errors (fman) - resolved.
+- 0002020: [Installer] migration 1.7.3 -> 1.8 - testcase id porblems- Utility to align external ID with internal ID after migration (fman) - resolved.
+- 0002021: [Keywords] Keyword Management screen is not displayed with role leader (schlundus) - resolved.
+- 0002019: [Test Specification] Search test case by Requirement Document ID (fman) - resolved.
+- 0002016: [Installer] Migration from 1.7.3 to 1.8 (mhavlat) - resolved.
+- 0001980: [User Interface General] While attemtpting to upload an image to the server from the Edit Test Case form I get an invalid XML Response (fman) - resolved.
+- 0002017: [TL API] new method - assignRequirements() (fman) - resolved.
+- 0002015: [General] Session Timeout causes the page to give error 404 Not Found (schlundus) - resolved.
+- 0002012: [Reports, Metrics, Export and Print] Query Metrics report crashes (fman) - resolved.
+- 0002014: [Installer] Upgrade from TL 1.7.4 ti 1.8 RC3 : problem with db_schema_update.sql when trying to do insert into role_rights (mhavlat) - resolved.
+- 0002008: [Event viewer] E_NOTICE Undefined index: warning_edit_msg (schlundus) - resolved.
+- 0002013: [General] Disable security message (mhavlat) - resolved.
+- 0001363: [User Interface General] clean up English version of text displayed on Test Case Edit and Archive page (mhavlat) - resolved.
+- 0001591: [Test Execute] MainFrame freezes while loading a large TestSuite (mhavlat) - resolved.
+- 0002000: [Installer] reportCheckingWeb threw some errors during installation (mhavlat) - resolved.
+- 0002002: [Localization] German localization not working (fman) - resolved.
+- 0001996: [Event viewer] Errors in variable names (fman) - resolved.
+- 0001997: [Event viewer] Version Numbers missing in Printing the Test Plan (fman) - resolved.
+
 
 Testlink 1.8 RC 3
 ====================================

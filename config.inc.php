@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.230 $
- * @modified $Date: 2009/01/26 21:46:59 $ by $Author: franciscom $
+ * @version $Revision: 1.231 $
+ * @modified $Date: 2009/02/05 20:40:03 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -115,6 +115,10 @@ $tlCfg->default_language = 'en_GB';
  * users. However we have not resources to support such patches.
  **/
 $tlCfg->charset = 'UTF-8';
+
+// BUGID 1133 - needed by email_api
+$TLS_charset = 'utf-8';
+
 
 /** characters used to surround a description in the user interface (for example role)*/
 $tlCfg->gui_separator_open =  '[';

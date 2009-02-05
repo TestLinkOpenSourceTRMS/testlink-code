@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2009/02/05 20:44:30 $ by $Author: havlat $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2009/02/05 22:14:17 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -21,7 +21,7 @@
 /** [GLOBAL SETTINGS] */
 
 /** TestLink Release (MUST BE changed before the release day) */
-define('TL_VERSION', '1.8 RC4'); 
+define('TL_VERSION', '1.8 RC5'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -492,9 +492,9 @@ $tlCfg->testcase_urgency_default = MEDIUM;
  * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
  */
 $tlCfg->urgency['code_label'] = array(
-HIGH => 'high',
-MEDIUM => 'medium',
-LOW => 'low'
+	HIGH => 'urgency_high',
+	MEDIUM => 'urgency_medium',
+	LOW => 'urgency_low'
 );
 
 
@@ -522,9 +522,11 @@ $g_bugInterface = null;
 /** [Requirements] */
 // martin: @TODO statuses should be the same for both REQ and TC
 // franciscom: why ?
+// martin: both living text object have similar states with respect to review
+//			we should only remove "_REQ" from const name
 //
 define('TL_REQ_STATUS_VALID', 		'V');
-define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
+define('TL_REQ_STATUS_NOT_TESTABLE','N');
 define('TL_REQ_STATUS_DRAFT', 		'D');
 define('TL_REQ_STATUS_APPROVED', 	'A');
 define('TL_REQ_STATUS_OBSOLETE', 	'O');
@@ -533,7 +535,7 @@ define('TL_REQ_STATUS_CHANGED', 	'M');
 
 // key: status
 // value: text label
-$g_req_status=array(TL_REQ_STATUS_VALID => 'req_status_valid', 
+$g_req_status = array(TL_REQ_STATUS_VALID => 'req_status_valid', 
 					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
 					TL_REQ_STATUS_DRAFT => 'req_status_draft',
 					TL_REQ_STATUS_APPROVED => 'req_status_approved',
@@ -559,10 +561,6 @@ define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
 // Used to force the max len of this field, during the automatic creation of requirements
 // or other import features
-//
-// havlatm: @TODO move to smarty config
-// 20081001 - franciscom: how we can move to smarty config if we need during import procees?
-//
 $g_field_size = new stdClass();
 $g_field_size->testsuite_name = 100;
 $g_field_size->testcase_name = 100;

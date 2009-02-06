@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.32 2009/02/02 17:11:32 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.33 2009/02/06 19:54:27 schlundus Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -238,9 +238,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	    $gui->testPlanName = $tplan_info['name'];
 	    $gui->main_descr = lang_get('title_tc_exec_assignment') . $gui->testPlanName;
 	    
-	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-	    $gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
-	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$gui->all_users);
+	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
+	   	$gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
+	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$gui->all_users);
 	  }
 
     return $gui;

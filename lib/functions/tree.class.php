@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/02/04 22:03:50 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/02/07 18:34:02 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20090207 - franciscom - new method check_name_is_unique()
  * 20081227 - franciscom - new method - get_full_path_verbose()
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
  *                         to create map with keys useful for ext js tree
@@ -969,6 +970,42 @@ function get_full_path_verbose(&$items)
    }   
    return $path_to; 
 }
+
+
+/**
+ * check_name_is_unique
+ *
+ * 
+ *
+ * args:
+ * 
+ * returns: 
+ */
+function check_name_is_unique($id,$name,$node_type_id)
+{
+		$ret['status_ok'] = 1;
+		$ret['msg'] = '';
+    
+    $sql = " SELECT count(id) AS qty FROM {$this->obj_table} NHA " .
+		       " WHERE NHA.name = '" . $this->db->prepare_string($name) . "'" .
+		       " AND NHA.node_type_id = {$node_type_id} " .
+		       " AND NHA.id <> {$id} " .
+		       " AND NHA.parent_id=" .
+		       " (SELECT NHB.parent_id " .
+		       "  FROM {$this->obj_table} NHB" .
+		       "  WHERE NHB.id = {$id}) ";
+		       
+		$result = $this->db->exec_query($sql);
+		$myrow = $this->db->fetch_array($result);
+		if( $myrow['qty'] > 0)
+		{
+				$ret['status_ok'] = 0;
+				$ret['msg'] = sprintf(lang_get('name_already_exists'),$name);
+		}
+    return $ret;
+
+} // function end
+
 
  
 }// end class

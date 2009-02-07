@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/02/04 22:03:50 $ - $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/02/07 18:34:01 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090207 - franciscom - update() - added duplicated name check
+ *                         fixed problem in create() due new argument
  * 20090204 - franciscom - exportTestSuiteDataToXML() - added node_order
  * 20090106 - franciscom - BUGID - exportTestSuiteDataToXML()
  *                         export custom field values
@@ -59,6 +61,8 @@ class testsuite extends tlObjectWithAttachments
 	var $node_types_id_descr;
 	var $my_node_type;
   var $cfield_mgr;
+
+	private $nodes_hierarchy_table = "nodes_hierarchy";
 
   var $import_file_types = array("XML" => "XML");
   var $export_file_types = array("XML" => "XML");
@@ -160,11 +164,8 @@ function create($parent_id,$name,$details,$order=null,
   $ret['status_ok']=0;
   $ret['msg']='ok';
   $ret['id']=-1;
-  
-    
+
 	$prefix_name_for_copy = config_get('prefix_name_for_copy');
-	
-	
 	if( is_null($order) )
 	{
 	  $node_order = config_get('treemenu_default_testsuite_order');
@@ -179,16 +180,15 @@ function create($parent_id,$name,$details,$order=null,
 	if ($check_duplicate_name)
 	{
 		
-    $sql = " SELECT count(*) AS qty FROM testsuites,nodes_hierarchy 
-		         WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'" . 
-		       " AND testsuites.id=nodes_hierarchy.id
+    $sql = " SELECT count(TS.id) AS qty FROM testsuites TS,nodes_hierarchy NH
+		         WHERE NH.name = '" . $this->db->prepare_string($name) . "'" . 
+		       " AND TS.id=NH.id
 		         AND node_type_id = {$this->my_node_type} 
-		         AND nodes_hierarchy.parent_id={$parent_id} "; 
+		         AND NH.parent_id={$parent_id} "; 
 		
 		$result = $this->db->exec_query($sql);
 		$myrow = $this->db->fetch_array($result);
-		
-		if( $myrow['qty'])
+		if( $myrow['qty'] )
 		{
 			if ($action_on_duplicate_name == 'block')
 			{
@@ -200,8 +200,10 @@ function create($parent_id,$name,$details,$order=null,
 				$ret['status_ok'] = 1;      
 				if ($action_on_duplicate_name == 'generate_new')
 				{ 
-					$ret['status_ok'] = 1;      
-					$name = config_get('prefix_name_for_copy') . " " . $name ;      
+					$ret['status_ok'] = 1;
+					$desired_name=$name;      
+					$name = config_get('prefix_name_for_copy') . " " . $desired_name ;      
+				  $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);	
 				}
 			}
 		}       
@@ -224,27 +226,33 @@ function create($parent_id,$name,$details,$order=null,
 	return $ret;
 }
 
-
+/**
+ * update
+ *
+ */
 function update($id, $name, $details)
 {
-	//TODO - check for existent name
-	$sql = " UPDATE testsuites
-	         SET details = '" . $this->db->prepare_string($details) . "'" .
-	       " WHERE id = {$id}";
-	$result = $this->db->exec_query($sql);
-  
-	if ($result)
-	{
-		$sql = " UPDATE nodes_hierarchy SET name='" . 
-				$this->db->prepare_string($name) . "' WHERE id= {$id}";
-		$result = $this->db->exec_query($sql);
-	}
-
-	
-	$ret['msg']='ok';
-	if (!$result)
-	{
-		$ret['msg'] = $this->db->error_msg();
+  $ret = $this->tree_manager->check_name_is_unique($id,$name,$this->my_node_type);
+  if($ret['status_ok'])
+  {
+	    $sql = " UPDATE testsuites
+	             SET details = '" . $this->db->prepare_string($details) . "'" .
+	           " WHERE id = {$id}";
+	    $result = $this->db->exec_query($sql);
+      
+	    if ($result)
+	    {
+	    	$sql = " UPDATE nodes_hierarchy SET name='" . 
+	    			$this->db->prepare_string($name) . "' WHERE id= {$id}";
+	    	$result = $this->db->exec_query($sql);
+	    }
+      
+	    
+	    $ret['msg']='ok';
+	    if (!$result)
+	    {
+	    	$ret['msg'] = $this->db->error_msg();
+	    }
 	}
 	return $ret;
 }
@@ -493,7 +501,7 @@ function copy_to($id, $parent_id, $user_id,
 	$tsuite_info = $this->get_by_id($id);
 	$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
 	                    $tsuite_info['node_order'], 
-					           $check_duplicate_name,$action_on_duplicate_name);
+					            $check_duplicate_name,$action_on_duplicate_name);
 	
 	
 	$new_tsuite_id = $op['id'];
@@ -911,8 +919,8 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 	  } 
 
     $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
-             "<node_order><![CDATA[\n{$tsuiteData['node_order']}\n]]></node_order>\n" .
-	           "<details><![CDATA[\n{$tsuiteData['details']}\n]]> {$kwXML}{$cfXML}</details>";
+             "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
+	           "<details><![CDATA[{$tsuiteData['details']}]]> \n{$kwXML}{$cfXML}</details>";
 	}
 	else
 	{

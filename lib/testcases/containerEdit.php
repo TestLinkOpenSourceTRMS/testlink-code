@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2009/01/29 21:21:08 $ by $Author: schlundus $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2009/02/07 18:34:02 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -440,13 +440,18 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
 		$ret =$tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
-								             config_get('check_names_for_duplicates'),config_get('action_on_duplicate_name'));
+		                         null,config_get('check_names_for_duplicates'),
+		                         config_get('action_on_duplicate_name'));
+		                         
 		$messages['msg'] = $ret['msg'];
 		$messages['user_feedback']='';
 		if($ret['status_ok'])
 		{
-		  $messages['msg'] = 'ok';
 		  $messages['user_feedback']=lang_get('testsuite_created');
+		  if( $messages['msg'] != 'ok' )
+		  {
+		      $messages['user_feedback']=$messages['msg'];  
+		  }
 
       if( strlen(trim($argsObj->assigned_keyword_list)) > 0 )
       {
@@ -561,18 +566,19 @@ function  doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr
 function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
 	$msg = 'ok';
-	if ($tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details']))
+	$ret = $tsuiteMgr->update($argsObj->testsuiteID,$container['container_name'],$container['details']);
+	if($ret['status_ok'])
 	{
-    $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
-    if( strlen(trim($argsObj->assigned_keyword_list)) > 0 )
-    {
-       $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
-    }
-    writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
+      $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
+      if( strlen(trim($argsObj->assigned_keyword_list)) > 0 )
+      {
+         $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
+      }
+      writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
   }
   else
 	{
-	     $msg = $tsuiteMgr->db->error_msg();
+	    $msg = $ret['msg'];
 	}
 	return $msg;
 }

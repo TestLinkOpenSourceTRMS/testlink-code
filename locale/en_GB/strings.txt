@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.395 $
- * @modified $Date: 2009/02/02 16:27:06 $ by $Author: havlat $
+ * @version $Revision: 1.396 $
+ * @modified $Date: 2009/02/07 18:40:35 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -159,6 +159,10 @@ $TLS_max_file_size_is = "Max. file size ";
 $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
                                  " Please contact your administrator.";
+
+$TLS_name_already_exists="Name:%s already exists";
+$TLS_created_with_new_name="Create with name:%s, because name:%s already exists";
+
 
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values
@@ -1723,7 +1727,7 @@ $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
 
 
 // lib/functions/testsuite.class.php
-$TLS_component_name_already_exists = "There's already a Test Suite with that name";
+$TLS_component_name_already_exists = "There's already a Test Suite with name: %s";
 $TLS_testsuite = "Test Suite";
 
 
@@ -2030,6 +2034,11 @@ $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
 $TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' can not be imported " .
                                                      "because there is no Custom Field with this name " .
                                                      "and Available for %s on this Test Project"; 
+
+$TLS_req_not_in_req_spec_on_tcimport="Requirement DOCID=%s can not be linked to testcase," .
+                                     "because is not direct child of Req. Spec: %s";
+
+$TLS_req_spec_ko_on_tcimport="Req. Spec=%s do not exists, requirements can not be linked to testcase";
 
 
 $TLS_update_last_testcase_version='Update data on Latest version';

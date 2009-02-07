@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.97 $
- * @modified $Date: 2009/01/25 18:56:33 $  $Author: franciscom $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2009/02/07 18:37:19 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090205 - franciscom - getReqSpec() - interface additions
  * 20090125 - franciscom - added utility method _createHierarchyMap()
  * 20090106 - franciscom - get_by_prefix()
  * 20081103 - franciscom - get_all_testcases_id() minor refactoring
@@ -1127,16 +1128,17 @@ function count_testcases($id)
 	 *
 	 * @author Martin Havlat
 	 **/
-	function getReqSpec($testproject_id, $id = null)
+	function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
 	{
-		$sql = "SELECT * FROM req_specs WHERE testproject_id=" . $testproject_id;
-
+	  $fields = is_null($fields) ? '*' : implode(',',$fields);
+		$sql = "SELECT {$fields} FROM req_specs WHERE testproject_id={$testproject_id} ";
 		if (!is_null($id))
+		{
 			$sql .= " AND id=" . $id;
-
+    }
 		$sql .= "  ORDER BY title";
-
-		return $this->db->get_recordset($sql);
+    $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);  
+		return $rs;
 	}
 
 	/**
@@ -1297,7 +1299,10 @@ function deleteUserRoles($tproject_id)
 	{
 		$testProject = $this->get_by_id($tproject_id);
 		if ($testProject)
-			logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),"ASSIGN",$tproject_id,"testprojects");
+		{
+			logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),
+			                  "ASSIGN",$tproject_id,"testprojects");
+		}
 		return tl::OK;
 	}
 	return tl::ERROR;
@@ -1335,10 +1340,12 @@ function addUserRole($userID,$tproject_id,$roleID)
 		$role = tlRole::getByID($this->db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 		$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 		if ($user && $testProject && $role)
-			logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),$testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
+		{
+			logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),
+			                  $testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
+		}
 		return tl::OK;
 	}
-
 	return tl::ERROR;
 }
 /*

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.146 $
- * @modified $Date: 2009/02/05 19:42:40 $ $Author: schlundus $
+ * @version $Revision: 1.147 $
+ * @modified $Date: 2009/02/07 18:37:19 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090205 - franciscom - exportTestCaseDataToXML() - added requirements info
  * 20090204 - franciscom - exportTestCaseDataToXML() - added node_order
  * 20090201 - franciscom - get_by_id_bulk() - added version_id filter
  * 20090131 - franciscom - new method get_assigned_to_user()
@@ -2392,8 +2393,14 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
                                  $bNoXMLHeader = false,$optExport = array())
 {
+  static $reqMgr=null; 
+  if( is_null($reqMgr) )
+  {
+      $reqMgr = new requirement_mgr($this->db);      
+  }
+
 	$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
-	
+  
 	// 20090106 - franciscom - custom fields
 	if (!$tproject_id)
 	{
@@ -2405,8 +2412,9 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 	if( !is_null($cfMap) && count($cfMap) > 0 )
 	{
       $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-	    $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-	    	                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+	    $cfElemTemplate = "\t" . "<custom_field>\n" .
+	                             "\t<name><![CDATA[||NAME||]]></name>\n" .
+	    	                       "\t<value><![CDATA[||VALUE||\n]]></value>\n</custom_field>\n";
 	    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 	    $tc_data[0]['xmlcustomfields'] = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
 	} 
@@ -2421,18 +2429,35 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 			$tc_data[0]['xmlkeywords'] = $xmlKW;
 		}
 	}
+	
+	// BUGID - requirements
+  $requirements = $reqMgr->get_all_for_tcase($tcase_id);
+  if( !is_null($requirements) && count($requirements) > 0 )
+  {
+      $reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
+	    $reqElemTemplate = "\t\t<requirement>\n" .
+	                       "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
+	                       "\t\t\t<doc_id><![CDATA[||REQ_DOC_ID||]]></doc_id>\n" .
+	    	                 "\t\t\t<title><![CDATA[||REQ_TITLE||]]></title>\n" .
+	    	                 "\t\t</requirement>\n";
+	    	                 
+	    $reqDecode = array ("||REQ_SPEC_TITLE||" => "req_spec_title",
+	                        "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
+	    $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
+  }
+	
 	$rootElem = "{{XMLCODE}}";
 	if (isset($optExport['ROOTELEM']))
 	{
 		$rootElem = $optExport['ROOTELEM'];
 	}
-	$elemTpl = "\t".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">'.
-						'<node_order><![CDATA['."\n||NODE_ORDER||\n]]>".'</node_order>'.
-						'<externalid><![CDATA['."\n||EXTERNALID||\n]]>".'</externalid>'.
-						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
-						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
-						'<expectedresults><![CDATA['."\n||RESULTS||\n]]>".'</expectedresults>'.
-						'||KEYWORDS||||CUSTOMFIELDS||</testcase>'."\n";
+	$elemTpl = "\n".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">' . "\n" .
+						 "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n" .
+						 "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
+						 "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
+						 "\t<steps><![CDATA[||STEPS||]]></steps>\n" .
+						 "\t<expectedresults><![CDATA[||RESULTS||]]></expectedresults>\n" .
+						 "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
 
   // ||yyy||-> tags,  {{xxx}} -> attribute 
 	$info = array (
@@ -2445,6 +2470,7 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 							"||RESULTS||" => "expected_results",
 							"||KEYWORDS||" => "xmlkeywords",
 							"||CUSTOMFIELDS||" => "xmlcustomfields",
+							"||REQUIREMENTS||" => "xmlrequirements"
 						);
 	$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
 	return $xmlTC;

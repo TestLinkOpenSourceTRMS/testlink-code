@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/02/04 22:03:50 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/02/07 18:37:19 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *  20090206 - BUGID - Import TC-REQ relationship - franciscom
  *  20090117 - BUGID 1991 - franciscom
  *             BUGID 1992 - contribution for XLS import - franciscom
  *  20090106 - BUGID - franciscom - added logic to import Test Cases custom field values
@@ -211,9 +212,6 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$dupl
 	{
 		$xmlTCs = $node->get_elements_by_tagname("testcase");
 		$tcData = importTCsFromXML($xmlTCs);
-		
-		new dBug($tcData);
-		
 		if ($tcData)
 		{
 			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
@@ -233,7 +231,7 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$dupl
 */
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
-	$resultMap = null;
+	$resultMap = array();
 	if ($node->tagname() == 'testsuite')
 	{
 		$name = $node->get_attribute("name");
@@ -250,26 +248,35 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 				return null;
 		}
 		else if ($importIntoProject)
+		{
 			$tsID = $tproject_id;
+		}
 		else
+		{
 			$tsID = $parentID;
-
+    }
+    
 		$cNodes = $node->child_nodes();	
-		for($idx = 0; $idx < sizeof($cNodes); $idx++)
+		$loop2do=sizeof($cNodes);
+		
+		for($idx = 0; $idx < $loop2do; $idx++)
 		{
 			$cNode = $cNodes[$idx];
 			if ($cNode->node_type() != XML_ELEMENT_NODE)
+			{
 				continue;
+			}
+			
 			$tagName = $cNode->tagname();
 			switch($tagName)
 			{
 				case 'testcase':
 					$tcData = importTCsFromXML(array($cNode));
-					saveImportedTCData($db,$tcData,$tproject_id,$tsID,$userID,$kwMap);
+					$resultMap = array_merge($resultMap,saveImportedTCData($db,$tcData,$tproject_id,$tsID,$userID,$kwMap));
 					break;
 					
 				case 'testsuite':
-					importTestSuite($db,$cNode,$tsID,$tproject_id,$userID,$kwMap);
+					$resultMap = array_merge($resultMap,importTestSuite($db,$cNode,$tsID,$tproject_id,$userID,$kwMap));
 					break;
 					
 				case 'details':
@@ -286,6 +293,7 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 			}
 		}
 	}
+	return $resultMap;
 }
 
 
@@ -307,13 +315,15 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	{
 		return;
 	}
-		
+
 	$resultMap = array();
 	$fieldSizeCfg=config_get('field_size');
-  $cf_msg = lang_get('cf_value_not_imported_missing_cf_on_testproject');
-  $tc_msg = lang_get('testcase');
-  $missingCfMsg = null;
-	
+  $feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
+  $feedbackMsg['tcase'] = lang_get('testcase');
+  $feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
+  $feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
+
+  
 	// because name can be changed automatically during item creation
 	// to avoid name conflict adding a suffix automatically generated,
 	// is better to use a max size < max allowed size 
@@ -324,10 +334,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	if($tc_qty)
 	{
 		$tcase_mgr = new testcase($db);
-		$tproject = new testproject($db);
+		$tproject_mgr = new testproject($db);
+		$req_spec_mgr = new requirement_spec_mgr($db);
+		$req_mgr = new requirement_mgr($db);
 	
 	  // Get CF with scope design time and allowed for test cases linked to this test project
-	  $customFields=$tproject->get_linked_custom_fields($tproject_id,'testcase','name');
+	  $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
+
+    // BUGID - 20090205 - franciscom
+		$reqSpecSet=$tproject_mgr->getReqSpec($tproject_id,null,array('id','title'),'title');
+		$hasReqSpec=(!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 	}
 	
 	for($idx = 0; $idx <$tc_qty ; $idx++)
@@ -411,28 +427,29 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		// 	
 		if( !is_null($customFields) )
 		{                         
-		    $cfValues=null;
-		    foreach($tc['customfields'] as $value)
+		    $msg=processCustomFields($tcase_mgr,$name,$ret['id'],$tc['customfields'],$customFields,$feedbackMsg);
+		    if( !is_null($msg) )
 		    {
-		       if( isset($customFields[$value['name']]) )
-		       {
-		           $cfValues[$customFields[$value['name']]['id']]=array('type_id' => $customFields[$value['name']]['type'],
-		                                                                'cf_value' => $value['value']);         
-		       }
-		       else
-		       {
-		           if( !isset($missingCfMsg[$value['name']]) )
-		           {
-		               $missingCfMsg[$value['name']] = sprintf($cf_msg,$value['name'],$tc_msg);
-		           }
-		           $resultMap[] = array($name,$missingCfMsg[$value['name']]); 
-		       }
-		    }  
-		    $tcase_mgr->cfield_mgr->design_values_to_db($cfValues,$ret['id'],null,'simple');
-		}	
-			
+		        $resultMap = array_merge($resultMap,$msg);
+		    }
+	    
+		}
+		
+		// BUGID - 20090205 - franciscom
+		// Requirements Management
+		// Check if Requirement ...
+		// If Check fails => give message to user.
+		// Else Import 
+		// 	
+  	if( $hasReqSpec )
+		{
+		    $msg=processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
+		    if( !is_null($msg) )
+		    {
+		        $resultMap = array_merge($resultMap,$msg);
+		    }
+		}
 	}
-
 	return $resultMap;
 }
 
@@ -489,12 +506,20 @@ function importTCsFromXML($xmlTCs)
 			{
 				$tc['keywords'] = $keywords;
 			}
+
 			$cf = importCustomFieldsFromXML($xmlTC->get_elements_by_tagname("custom_field"));
-			
 			if($cf)
 			{
 			    $tc['customfields'] = $cf;  
 			} 
+
+      // BUGID - 20090205 - franciscom
+			$requirements = importRequirementsFromXML($xmlTC->get_elements_by_tagname("requirement"));
+			if($requirements)
+			{
+			    $tc['requirements'] = $requirements;  
+			} 
+
 			$tcSet[$jdx++] = $tc;
 		}
 	}
@@ -746,6 +771,41 @@ function importCustomFieldsFromXML($xmlItems)
 	return $items;
 }
 
+
+/*
+  function: importRequirementsFromXML
+
+  args:
+  
+  returns: 
+
+*/
+function importRequirementsFromXML($xmlItems)
+{
+	if (!$xmlItems)
+	{
+		return null;
+	}
+
+  $items = null;
+  $items_counter=0;
+  
+  $loop_qty = count($xmlItems);
+  for($idx=0; $idx < $loop_qty; $idx++)
+  {
+	    foreach( array('req_spec_title','doc_id','title') as $key )
+	    {
+	        $dummy[$key] = trim(getNodeContent($xmlItems[$idx],$key));
+	    }
+			$items[$items_counter++] = $dummy;
+  }
+
+	return $items;
+}
+
+
+
+
 /* 20090117 - 
  contribution by mirosvad - 
  Convert new line characters from XLS to HTML 
@@ -787,4 +847,125 @@ function init_args()
     
     return $args;
 }
+
+
+/**
+ * processCustomFields
+ *
+ * Analise custom field info related to test case being imported.
+ * If everything OK, assign to test case.
+ * Else return an array of messages.
+ *
+ *
+ */
+function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$cfValues,$cfDefinition,$messages)
+{
+    static $missingCfMsg;
+    $cf2insert=null;
+    $resultMsg=null;
+    
+    foreach($cfValues as $value)
+    {
+       if( isset($cfDefinition[$value['name']]) )
+       {
+           $cf2insert[$cfDefinition[$value['name']]['id']]=array('type_id' => $cfDefinition[$value['name']]['type'],
+                                                                 'cf_value' => $value['value']);         
+       }
+       else
+       {
+           if( !isset($missingCfMsg[$value['name']]) )
+           {
+               $missingCfMsg[$value['name']] = sprintf($messages['cfield'],$value['name'],$messages['tcase']);
+           }
+           $resultMsg[] = array($tcaseName,$missingCfMsg[$value['name']]); 
+       }
+    }  
+    $tcaseMgr->cfield_mgr->design_values_to_db($cf2insert,$tcaseId,null,'simple');
+    return $resultMsg;
+}
+
+/**
+ * processRequirements
+ *
+ * Analise requirements info related to test case being imported.
+ * If everything OK, assign to test case.
+ * Else return an array of messages.
+ *
+ *
+ */
+function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$reqSpecSet,$messages)
+{
+    static $missingReqMsg;
+    static $missingReqSpecMsg;
+    static $cachedReqSpec;
+    $resultMsg=null;
+
+    foreach($tcReq as $ydx => $value)
+    {
+      $doit=false;
+      if( ($doit=isset($reqSpecSet[$value['req_spec_title']])) )
+      {
+          if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
+          {
+              // $cachedReqSpec
+              // key: Requirement Specification Title
+              // value: map with follogin keys
+              //        id => requirement specification id
+              //        req => map with key: requirement document id
+              $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['req_spec_title']]['id'];
+              $cachedReqSpec[$value['req_spec_title']]['req']=null;
+          }
+      }
+    
+      if($doit)
+      {
+          $useit=false;
+          $req_spec_id=$cachedReqSpec[$value['req_spec_title']]['id'];
+    
+          // Check if requirement with desired document id exists on requirement specification.
+          // If not => create message for user feedback.
+          if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
+          {
+              $sql="SELECT id from requirements " .
+                   "WHERE req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
+                   "AND srs_id={$req_spec_id} ";     
+                   
+              $rsx=$dbHandler->get_recordset($sql);
+              if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
+              {
+                $cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']]=$rsx[0]['id'];
+              }  
+          }
+          
+          
+          if($useit)
+          {
+              $reqMgr->assign_to_tcase($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']],$tcaseId);
+          }
+          else
+          {
+              if( !isset($missingReqMsg[$value['doc_id']]) )
+              {
+                  $missingReqMsg[$value['doc_id']]=sprintf($messages['req'],
+                                                       $value['doc_id'],$value['req_spec_title']);  
+              }
+              $resultMsg[] = array($tcaseName,$missingReqMsg[$value['doc_id']]); 
+          }
+      } 
+      else
+      {
+          // Requirement Specification not found
+          if( !isset($missingReqSpecMsg[$value['req_spec_title']]) )
+          {
+              $missingReqSpecMsg[$value['req_spec_title']]=sprintf($messages['req_spec'],$value['req_spec_title']);  
+          }
+          $resultMsg[] = array($tcaseName,$missingReqSpecMsg[$value['req_spec_title']]); 
+      }
+      
+    } //foreach
+     
+    return $resultMsg;
+}
+
+
 ?>

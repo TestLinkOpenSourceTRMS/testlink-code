@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2008/09/23 06:59:59 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  *
  * rev: 20080921 - franciscom - minor refactoring
  *      20080810 - franciscom - BUGID 1650 
@@ -14,7 +14,7 @@
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $cfield_mgr = new cfield_mgr($db);
             
@@ -404,5 +404,10 @@ function renderGui(&$smartyObj,&$argsObj,&$guiObj,&$cfieldMgr,$templateCfg)
 		    $smartyObj->assign('gui',$guiObj);
 		    $smartyObj->display($templateCfg->template_dir . $tpl);
 	  }
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"cfield_management");
 }
 ?>

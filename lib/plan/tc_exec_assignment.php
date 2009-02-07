@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.33 2009/02/06 19:54:27 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.34 2009/02/07 19:44:03 schlundus Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -18,7 +18,7 @@ require_once("treeMenu.inc.php");
 require_once('email_api.php');
 require_once("specview.php");
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $tree_mgr = new tree($db); 
 $tplan_mgr = new testplan($db); 
@@ -329,5 +329,10 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
             } // foreach($tester_set as $user_id => $value)
   	    }                       
     }
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_planning');
 }
 ?>

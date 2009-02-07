@@ -5,13 +5,13 @@
  *
  * Filename $RCSfile: bugDelete.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/01/14 20:06:24 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('exec.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 //@TODO: schlundus, refactor!
 $template_dir = 'execute/';
@@ -32,4 +32,9 @@ if ($exec_id > 0 && !is_null($bug_id) && strlen($bug_id))
 $smarty = new TLSmarty();
 $smarty->assign('msg',$msg);
 $smarty->display($template_dir . $default_template);
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"testplan_execute");
+}
 ?>

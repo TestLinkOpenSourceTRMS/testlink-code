@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesView.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/02/01 11:58:59 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * rev: 
@@ -13,7 +13,7 @@
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("testplan.class.php");  // needed because milestone_mgr is inside
+require_once("testplan.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

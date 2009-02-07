@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/02/01 11:58:59 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -16,14 +16,12 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("web_editor.php");
-$editorCfg=getWebEditorCfg('testplan');
+$editorCfg = getWebEditorCfg('testplan');
 require_once(require_web_editor($editorCfg['type']));
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-
-
 
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
@@ -151,9 +149,7 @@ switch($args->do_action)
 				$status_ok = true;
 				$template = null;
 
-				// no need to disturb user
-				// $user_feedback = lang_get('testplan_created_ok');
-        $user_feedback ='';
+				$user_feedback ='';
 
 				if($args->rights == 'on')
 					$result = insertTestPlanUserRight($db, $tplan_id,$args->user_id);
@@ -231,37 +227,42 @@ switch($args->do_action)
 */
 function init_args($request_hash, $session_hash)
 {
-  	$args = new stdClass();
-	  $request_hash = strings_stripSlashes($request_hash);
+	$args = new stdClass();
+	$request_hash = strings_stripSlashes($request_hash);
 
-	  $nullable_keys = array('testplan_name','notes','rights','active','do_action');
-	  foreach($nullable_keys as $value)
-	  {
-	  	$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
-	  }
+	$nullable_keys = array('testplan_name','notes','rights','active','do_action');
+	foreach($nullable_keys as $value)
+ 	{
+		$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
+	}
 
-	  $intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
-	  foreach($intval_keys as $key => $value)
-	  {
-	  	$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
-	  }
-	  $args->source_tpid = $args->copy_from_tplan_id;
-	  $args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
+	$intval_keys = array('copy_from_tplan_id' => 0,'tplan_id' => 0);
+	foreach($intval_keys as $key => $value)
+	{
+	$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+	}
+	$args->source_tpid = $args->copy_from_tplan_id;
+	$args->copy = ($args->copy_from_tplan_id > 0) ? TRUE : FALSE;
 
-	  $args->copy_options=array();
-	  $boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
-	                        'copy_milestones' => 0, 'copy_user_roles' => 0, 'copy_builds' => 0);
+	$args->copy_options=array();
+	$boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
+                        'copy_milestones' => 0, 'copy_user_roles' => 0, 'copy_builds' => 0);
 
-	  foreach($boolean_keys as $key => $value)
-	  {
-	    $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
-	  }
+	foreach($boolean_keys as $key => $value)
+	{
+	$args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
+	}
 
-	  $args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
-	  $args->tproject_id = $session_hash['testprojectID'];
-	  $args->tproject_name = $session_hash['testprojectName'];
-	  $args->user_id = $session_hash['userID'];
+	$args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
+	$args->tproject_id = $session_hash['testprojectID'];
+	$args->tproject_name = $session_hash['testprojectName'];
+	$args->user_id = $session_hash['userID'];
 
-	  return $args;
+	return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'mgt_testplan_create');
 }
 ?>

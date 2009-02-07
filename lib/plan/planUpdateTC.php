@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.33 2009/01/03 17:25:35 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.34 2009/02/07 19:44:03 schlundus Exp $
  *
  * Author: franciscom
  *
@@ -20,7 +20,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("specview.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
@@ -288,4 +288,8 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
   return $msg;
 }
 
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_planning');
+}
 ?>

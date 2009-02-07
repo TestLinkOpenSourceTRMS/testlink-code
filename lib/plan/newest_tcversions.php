@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.9 2009/01/03 17:25:35 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.10 2009/02/07 19:44:03 schlundus Exp $ 
  * 
  *
  * rev :
@@ -11,7 +11,7 @@
 require('../../config.inc.php');
 require_once("common.php");
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $template_dir = 'plan/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
@@ -86,5 +86,10 @@ function init_args()
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
 
     return $args;  
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_planning');
 }
 ?>

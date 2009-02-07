@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsExport.tpl,v 1.1 2008/09/23 07:02:12 franciscom Exp $ 
+$Id: cfieldsExport.tpl,v 1.2 2009/02/07 19:44:03 schlundus Exp $ 
 Purpose: smarty template - custom fields export
 rev:
 
@@ -66,7 +66,7 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
-  	  <input type="hidden" name="doAction" id="doAction" value="">
+  	  <input type="hidden" name="doAction" id="doAction" value="" />
   		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}" 

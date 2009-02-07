@@ -5,13 +5,13 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/01/14 20:06:24 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('exec.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 //@TODO: schlundus, refactor!
 $template_dir = 'execute/';
@@ -43,4 +43,9 @@ $smarty->assign('bts_url',$g_bugInterface->getEnterBugURL());
 $smarty->assign('exec_id',$exec_id);
 $smarty->assign('msg',$msg);
 $smarty->display($template_dir . $default_template);
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"testplan_execute");
+}
 ?>

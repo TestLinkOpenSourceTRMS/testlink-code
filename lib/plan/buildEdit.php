@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/01/14 20:06:24 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/02/07 19:44:03 $ $Author: schlundus $
  *
  * rev :
  *      20080827 - franciscom - BUGID 1692
@@ -16,8 +16,6 @@
 */
 require('../../config.inc.php');
 require_once("common.php");
-//@TODO, schlundus, delete if not needed
-//require_once("builds.inc.php");
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('build');
 require_once(require_web_editor($editorCfg['type']));

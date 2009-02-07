@@ -5,15 +5,13 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/03/04 07:30:53 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  *
- * rev :
- *      20071218 - franciscom - refactoring
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $template_dir = 'cfields/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
@@ -91,5 +89,10 @@ function init_args()
 	  $args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
 
 	  return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"cfield_management");
 }
 ?>

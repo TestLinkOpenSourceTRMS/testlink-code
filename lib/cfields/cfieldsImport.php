@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: cfieldsImport.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/09/23 06:59:59 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  * 
  * Scope: custom fields definition import
  * 
@@ -19,7 +19,7 @@ require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $gui=new stdClass();
 $templateCfg = templateConfiguration();
 $gui->page_title=lang_get('import_cfields');
@@ -27,23 +27,23 @@ $gui->page_title=lang_get('import_cfields');
 $args = init_args();
 
 $resultMap = null;
-$gui->goback_url=!is_null($args->goback_url) ? $args->goback_url : ''; 
+$gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
 $gui->file_check = array('show_results' => 0, 'status_ok' => 1, 
                          'msg' => 'ok', 'filename' => '');
 
 switch( $args->doAction )
 {
     case 'doImport':
-        $gui->file_check=doImport($db);
-    break;  
+        $gui->file_check = doImport($db);
+    	break;  
     
     default:
-    break;  
+    	break;  
 }
 
 $obj_mgr = new cfield_mgr($db);
 $gui->importTypes = array('XML' => 'XML');
-$gui->importLimitKB=(TL_IMPORT_LIMIT / 1024);
+$gui->importLimitKB = (TL_IMPORT_LIMIT / 1024);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
@@ -130,5 +130,10 @@ function doImport(&$dbHandler)
   
   $file_check['import_msg']=$import_msg;
   return $file_check;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"cfield_management");
 }
 ?>

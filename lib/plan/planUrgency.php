@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/12/13 08:37:57 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -22,7 +22,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('priority.class.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 $args = init_args();
 
 if($args->show_help)
@@ -89,5 +89,10 @@ function init_args()
     	$args->urgency = OFF;
     	
     return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_planning');
 }
 ?>

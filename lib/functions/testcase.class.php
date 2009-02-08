@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.147 $
- * @modified $Date: 2009/02/07 18:37:19 $ $Author: franciscom $
+ * @version $Revision: 1.148 $
+ * @modified $Date: 2009/02/08 17:35:52 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090208 - franciscom - fixed bug on get_last_execution() regarding double execution_type field
  * 20090205 - franciscom - exportTestCaseDataToXML() - added requirements info
  * 20090204 - franciscom - exportTestCaseDataToXML() - added node_order
  * 20090201 - franciscom - get_by_id_bulk() - added version_id filter
@@ -2350,17 +2351,22 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
      $executions_join .= " AND e.status IS NOT NULL ";
   }
 
+  // 20090208 - franciscom
+  //            found bug due to use of tcversions.*, because field execution_type
+  //            exist on both execution and tcversion table.
+  //            At least with Postgres tcversions.execution_type was used always
+  //
   // 20080103 - franciscom - added execution_type in recordset
   // 20060921 - franciscom -
   // added NHB.parent_id  to get same order as in the navigator tree
   //
   $sql="SELECT e.id AS execution_id, e.status,e.execution_type,
         NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
-        tcversions.*,
-		    users.login AS tester_login,
-		    users.first AS tester_first_name,
-		    users.last AS tester_last_name,
-			  users.id AS tester_id,
+        tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary,
+        tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id,
+        tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active,
+        tcversions.is_open,users.login AS tester_login,users.first AS tester_first_name,
+		    users.last AS tester_last_name, users.id AS tester_id,
 		    e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
 		    builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open
 	      FROM nodes_hierarchy NHA
@@ -2372,8 +2378,6 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
         LEFT OUTER JOIN users ON e.tester_id = users.id
         $where_clause_2
         ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
-
-
   $recordset = $this->db->fetchRowsIntoMap($sql,'id');
   return($recordset ? $recordset : null);
 }

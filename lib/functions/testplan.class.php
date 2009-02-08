@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.96 $
- * @modified $Date: 2009/02/01 11:58:59 $ by $Author: franciscom $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2009/02/08 17:35:52 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,7 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20090208 - franciscom - testplan class - new method get_build_by_id()
  *  20090201 - franciscom - copy_milestones() - wrong SQL sentece 
  *                          A,B,C fields renamed to lower case a,b,c to avoid problems
  *                          between differnt database (case and no case sensitive)
@@ -1540,11 +1541,14 @@ function get_builds($id,$active=null,$open=null)
 
 
 // --------------------------------------------------------------------------------------
-/*
-  function:
-  args:
-  returns:
-*/
+/**
+ * get_build_by_name
+ * Get a build belonging to a test plan, using build name as access key
+ *
+ * @param int id: test plan id
+ * @param string build_name: 
+ *
+ */
 function get_build_by_name($id,$build_name)
 {
   $safe_build_name=$this->db->prepare_string(trim($build_name));
@@ -1562,6 +1566,31 @@ function get_build_by_name($id,$build_name)
   }
   return $rs;
 }
+
+/**
+ * get_build_by_id
+ * Get a build belonging to a test plan, using build id as access key
+ *
+ * @param int id: test plan id
+ * @param int build_id: 
+ *
+ */
+function get_build_by_id($id,$build_id)
+{
+	$sql = " SELECT id,testplan_id, name, notes, active, is_open " .
+	       " FROM {$this->builds_table} BUILDS " .
+	       " WHERE testplan_id = {$id} AND BUILDS.id={$build_id}";
+
+ 	$recordset = $this->db->get_recordset($sql);
+  $rs=null;
+  if( !is_null($recordset) )
+  {
+     $rs=$recordset[0];
+  }
+  return $rs;
+}
+
+
 
 
 
@@ -2463,12 +2492,6 @@ class milestone_mgr
   */
   function get_by_id($id)
   {
-	  // $sql=" SELECT M.id, M.name, M.a AS high_percentage, M.b AS medium_percentage, M.c AS low_percentage, " .
-	  //      " M.target_date, M.testplan_id, NH.name as testplan_name " .   
-    //      " FROM {$this->milestones_table} M, {$this->nodes_hierarchy_table} NH " .
-	  //      " WHERE testplan_id={$tplan_id} AND NH.id = testplan_id " .
-	  //      " ORDER BY M.target_date,M.name";
-
 	  $sql=" SELECT M.id, M.name, M.a AS high_percentage, M.b AS medium_percentage, M.c AS low_percentage, " .
 	       " M.target_date, M.testplan_id, NH.name as testplan_name " .   
          " FROM {$this->milestones_table} M, {$this->nodes_hierarchy_table} NH " .

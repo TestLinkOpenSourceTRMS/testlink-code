@@ -32,7 +32,14 @@ $dummy=explode('sample_clients',$target);
 $server_url=$prefix . $dummy[0] . "xmlrpc.php";
 
 // substitute your Dev Key Here
-define("DEV_KEY", "1111");
+define("DEV_KEY", "CLIENTSAMPLEDEVKEY");
+if( DEV_KEY == "CLIENTSAMPLEDEVKEY" )
+{
+    echo '<h1>Attention: DEVKEY is still setted to demo value</h1>';
+    echo 'Please check if this VALUE is defined for a user on yout DB Installation<b>';
+    echo '<hr>';
+}
+
 
 $tcaseStatusCode['passed']='p';
 $tcaseStatusCode['blocked']='b';
@@ -40,12 +47,13 @@ $tcaseStatusCode['failed']='f';
 $tcaseStatusCode['wrong']='w';
 
 
+
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
 $testPlanID=222;
 $testCaseID=185;
 $testCaseExternalID=null;
-$buildID=1;
+$buildID=15;
 $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status= {$tcaseStatusCode['blocked']}";
 
 //$exec_notes=null;
@@ -54,7 +62,7 @@ $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status= {$tcaseStatu
 $debug=false;
 echo $unitTestDescription;
 $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
-                         $buildID,null,$tcaseStatusCode['blocked'],$exec_notes,$debug);
+                         $buildID,null,$tcaseStatusCode['passed'],$exec_notes,$debug);
 
 echo "<br> Result was: ";
 // Typically you'd want to validate the result here and probably do something more useful with it

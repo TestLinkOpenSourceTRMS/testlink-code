@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientAssignRequirements.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/01/25 16:05:16 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/02/08 17:35:52 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -33,7 +33,13 @@ $dummy=explode('sample_clients',$target);
 $server_url=$prefix . $dummy[0] . "xmlrpc.php";
 
 // substitute your Dev Key Here
-define("DEV_KEY", "1111");
+define("DEV_KEY", "CLIENTSAMPLEDEVKEY");
+if( DEV_KEY == "CLIENTSAMPLEDEVKEY" )
+{
+    echo '<h1>Attention: DEVKEY is still setted to demo value</h1>';
+    echo 'Please check if this VALUE is defined for a user on yout DB Installation<b>';
+    echo '<hr>';
+}
 
 $method='assignRequirements';
 $unitTestDescription="Test - {$method}";

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/01/27 07:50:37 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/02/08 17:35:52 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090208 - franciscom - fixed bad check on checkBuildID()
  *      20090126 - franciscom - added some contributions by hnishiyama. 
  *      20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
  *      20090122 - franciscom - assignRequirements()
@@ -250,7 +251,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	/**
 	 * Set test case internal ID
 	 * 
-	 * @param int $buildID
+	 * @param int $tcaseID
 	 * @access private
 	 */
 	private function _setTestCaseID($tcaseID)
@@ -542,7 +543,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     }   	
     
 	/**
-	 * Helper method to see if the buildID provided is valid
+	 * Helper method to see if the buildID provided is valid for testplan
+	 *
 	 * 
 	 * This is the only method that should be called directly to check the buildID
 	 * 	
@@ -551,7 +553,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */    
     protected function checkBuildID()
     {
-	   	// buildid isn't already set
+      $tplan_id=$this->args[self::$testPlanIDParamName];
 	   	$status=true;
 	   	$try_again=false;
       
@@ -560,7 +562,7 @@ class TestlinkXMLRPCServer extends IXR_Server
          $try_again=true;
 			   if($this->_isBuildNamePresent())
 			   {
-            $buildInfo=$this->tplanMgr->get_build_by_name($this->args[self::$testPlanIDParamName],
+            $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,
                                                           trim($this->args[self::$buildNameParamName])); 
             if( !is_null($buildInfo) )
             {
@@ -592,16 +594,15 @@ class TestlinkXMLRPCServer extends IXR_Server
 	   	
 	   	if( $status)
 	   	{
-	   	    // actually check that the buildID thats set is valid
 	   	    $buildID = $this->dbObj->prepare_int($this->args[self::$buildIDParamName]);
-          $query = "SELECT id FROM {$this->builds_table} WHERE id={$buildID}";
-          $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
-          if( is_null($result) )
+          $buildInfo=$this->tplanMgr->get_build_by_id($tplan_id,$buildID); 
+          if( is_null($buildInfo) )
           {
-			    	  $this->errors[] = new IXR_Error(INVALID_BUILDID, INVALID_BUILDID_STR);				
+              $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+              $msg = sprintf(BAD_BUILD_FOR_TPLAN_STR,$buildID,$tplan_info['name'],$tplan_id);          
+			    	  $this->errors[] = new IXR_Error(BAD_BUILD_FOR_TPLAN, $msg);				
 			    	  $status=false;
           }
-          
       }
       
       return $status;
@@ -935,27 +936,6 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
 
 	/**
-	 * Run all the necessary checks to see if the reportTCResult request is valid
-	 *  
-	 * @return boolean
-	 * @access private
-	 */
-	private function _checkReportTCResultRequest()
-	{		
-      $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
-                              'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
-	
-	    return $status_ok;
-	}
-	
-	/**
 	 * Run all the necessary checks to see if the createBuild request is valid
 	 *  
 	 * @return boolean
@@ -1190,9 +1170,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */			
 	private function _insertResultToDB()
 	{
-		$build_id = 	$this->args[self::$buildIDParamName];
-		$tester_id = 	$this->userID;
-		$status = 		$this->args[self::$statusParamName];
+		$build_id = $this->args[self::$buildIDParamName];
+		$tester_id =  $this->userID;
+		$status = $this->args[self::$statusParamName];
 		$testplan_id =	$this->args[self::$testPlanIDParamName];
 		$tcversion_id =	$this->tcVersionID;
 		$db_now=$this->dbObj->db_now();
@@ -1815,24 +1795,45 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["devKey"]
 	 * @param int $args["testcaseid"]
 	 * @param int $args["testplanid"] 
-         * @param string $args["status"] - status is {@link $validStatusList}
-	 * @param int $args["buildid"] - optional
+   * @param string $args["status"] - status is {@link $validStatusList}
+	 * @param int $args["buildid"] - optional.
+	 *                               if not present and $args["buildname"] exists
+	 *	                             then 
+	 *                                    $args["buildname"] will be checked and used if valid
+	 *                               else 
+	 *                                    build with HIGHEST ID will be used
+	 *
+	 * @param int $args["buildname"] - optional.
+	 *                               if not present Build with higher internal ID will be used
+	 *
+   *
 	 * @param string $args["notes"] - optional
-	 * @param bool $args["guess"] - optional definiing whether to guess optinal params or require them 
-	 * 								explicitly default is true (guess by default)
+	 * @param bool $args["guess"] - optional defining whether to guess optinal params or require them 
+	 * 								              explicitly default is true (guess by default)
 	 * @return mixed $resultInfo 
 	 * 				[status]	=> true/false of success
-	 * 				[id]		=> result id or error code
+	 * 				[id]		  => result id or error code
 	 * 				[message]	=> optional message for error message string
 	 * @access public
 	 */
 	public function reportTCResult($args)
 	{		
+		$resultInfo = array();
 		$this->_setArgs($args);              
-		if($this->_checkReportTCResultRequest($this->args) && $this->userHasRight("testplan_execute"))
+		
+    $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
+                            'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');       
+    foreach($checkFunctions as $pfn)
+    {
+        if( !($status_ok = $this->$pfn()) )
+        {
+            break; 
+        }
+    } 
+		
+		if($status_ok && $this->userHasRight("testplan_execute"))
 		{			
 			$insertID = $this->_insertResultToDB();			
-			$resultInfo = array();
 			$resultInfo[0]["status"] = true;
 			$resultInfo[0]["id"] = $insertID;	
 			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;

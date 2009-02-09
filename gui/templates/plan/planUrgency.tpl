@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.7 2008/09/24 20:17:54 schlundus Exp $
+$Id: planUrgency.tpl,v 1.8 2009/02/09 21:41:22 havlat Exp $
 
 Purpose: smarty template - manage test case urgency
 
@@ -14,7 +14,7 @@ Revision: 20080901 - franciscom - display testcase external id
 *}
 {assign var="ownURL" value="lib/plan/planUrgency.php"}
 {lang_get var="labels" 
-          s='title_plan_urgency, th_testcase, th_urgency, btn_low, btn_medium, btn_high,
+          s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
              label_set_urgency, urgency_description,testsuite_is_empty'}
 
 {include file="inc_head.tpl"}
@@ -29,9 +29,9 @@ Revision: 20080901 - franciscom - display testcase external id
 	<div class="groupBtn">
     <form method="post" action="{$ownURL}" id="set_urgency">
 	<span>{$labels.label_set_urgency}
-    	<input type="submit" name="high_urgency" value="{$labels.btn_high}" />
-    	<input type="submit" name="medium_urgency" value="{$labels.btn_medium}" />
-    	<input type="submit" name="low_urgency" value="{$labels.btn_low}" />
+    	<input type="submit" name="high_urgency" value="{$labels.urgency_high}" />
+    	<input type="submit" name="medium_urgency" value="{$labels.urgency_medium}" />
+    	<input type="submit" name="low_urgency" value="{$labels.urgency_low}" />
 		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
 		<input type="hidden" name="id" value="{$gui->node_id}" />
     </span>

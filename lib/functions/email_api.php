@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: email_api.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/02/02 11:12:41 $  $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/02/09 20:37:38 $  $Author: schlundus $
  * @author franciscom
  *
  * rev:
@@ -88,7 +88,6 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 
 
 	$mail->PluginDir = PHPMAILER_PATH;
-	//@TODO: schlundus, what's this, phpmailer_language?
   // 20090201 - franciscom
   // Need to get strings file for php mailer
   // To avoid problems I choose ENglish

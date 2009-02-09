@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/01/07 22:19:46 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/02/09 20:37:38 $ by $Author: schlundus $
  *
  * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
@@ -56,7 +56,7 @@ switch($args->doAction)
 }
 
 $events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
-									                  $args->object_type ? $args->object_type : null,null,500,$startTime,$endTime);
+									$args->object_type ? $args->object_type : null,null,500,$startTime,$endTime);
 $users = getUsersForHtmlOptions($db);
 $users[0] = false;
 
@@ -87,7 +87,7 @@ function init_args()
     return $args;
 }
 
-function checkRights(&$db,&$user,&$action)
+function checkRights(&$db,&$user)
 {
 	$action = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 	

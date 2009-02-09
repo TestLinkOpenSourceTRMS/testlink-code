@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.111 $
- * @modified $Date: 2009/01/14 20:06:24 $ $Author: schlundus $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2009/02/09 20:37:38 $ $Author: schlundus $
  *
  * rev:
  *     20081230 - franciscom - display full path on test suite name
@@ -32,8 +32,6 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('exec.inc.php');
-//@TODO, schlundus, delete if not needed
-//require_once("builds.inc.php");
 require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");

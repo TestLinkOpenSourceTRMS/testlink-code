@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.36 2009/01/14 20:06:24 schlundus Exp $ 
+* $Id: resultsBuild.php,v 1.37 2009/02/09 20:37:39 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -30,7 +30,7 @@ if (!isset($_GET['format']))
 }
 $builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 
-//@TODO: schlundus, should be replace with a function of class testplan
+//@TODO: schlundus, should be replaced with a function of class testplan
 $buildInfo = getBuild_by_id($db,$builds_to_query);
 $buildName = "";
 if ($buildInfo)

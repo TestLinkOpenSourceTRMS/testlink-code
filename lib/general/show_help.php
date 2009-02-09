@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: show_help.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/03 07:36:11 $  $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/02/09 20:37:39 $  $Author: schlundus $
  *
  * manage launch of help pages.
  *
@@ -18,6 +18,7 @@ require_once("common.php");
 testlinkInitPage($db);
 
 $smarty = new TLSmarty();
+//@TODO security hole, directory traversal possible
 $td = TL_ABS_PATH . TL_HELP_RPATH . $_REQUEST['locale'];
 $smarty->template_dir = $td;
 

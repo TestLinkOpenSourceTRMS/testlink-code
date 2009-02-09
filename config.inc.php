@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.231 $
- * @modified $Date: 2009/02/05 20:40:03 $ by $Author: havlat $
+ * @version $Revision: 1.232 $
+ * @modified $Date: 2009/02/09 20:37:38 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -459,7 +459,7 @@ $g_sort_table_engine='kryogenix.org';
 $tlCfg->document_generator->company_name = 'Testlink Community [configure using $tlCfg->company->name]';
 
 /** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
-$tlCfg->document_generator->company_copyright = '2008 (c) Testlink Community';
+$tlCfg->document_generator->company_copyright = '2009 (c) Testlink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 /** CSS used in printed html documents */

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.39 2009/01/25 18:53:49 franciscom Exp $
+ * $Id: searchData.php,v 1.40 2009/02/09 20:37:39 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -186,6 +186,7 @@ function init_args()
   returns: 
 
 */
+//@TODO schlundus, looks very redundant to treeManager->get_full_path_verbose! 
 function get_full_path_verbose(&$items,&$tree_mgr,&$db_handler)
 {
    $goto_root=null;

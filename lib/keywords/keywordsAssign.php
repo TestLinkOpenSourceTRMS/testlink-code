@@ -5,13 +5,11 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2008/12/13 23:47:01 $ $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/02/09 20:37:39 $ $Author: schlundus $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
- * 20080925 - franciscom - refactoring
- * 20070106 - franciscom - give feedback is choosen a Test suite without test cases.
  *
 **/
 require_once("../../config.inc.php");
@@ -136,8 +134,6 @@ function init_args()
 
 function checkRights(&$db,&$user)
 {
-	//@todo open for discussion
-	//return ($user->hasRight($db,'mgt_modify_key') && 
-	return $user->hasRight($db,'mgt_view_key');
+	return ($user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_view_key'));
 }
 ?>

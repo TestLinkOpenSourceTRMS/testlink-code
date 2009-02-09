@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/02/07 18:34:01 $ - $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/02/09 15:09:46 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090209 - franciscom - new method - get_children_testcases()
+ * 20090208 - franciscom - get_testcases_deep() - interface changes
  * 20090207 - franciscom - update() - added duplicated name check
  *                         fixed problem in create() due new argument
  * 20090204 - franciscom - exportTestSuiteDataToXML() - added node_order
@@ -575,32 +577,39 @@ function get_subtree($id,$recursive_mode=false)
             no info about tcversions is returned.
 
   args : id: testsuite id
-         [bIdsOnly]: default false
-                     Structure of elements in returned array, changes according to
-                     this argument:
+         [details]: default 'simple'
+                    Structure of elements in returned array, changes according to
+                    this argument:
           
-                     bIdsOnly=true
-                     Array that contains ONLY testcase id, no other info.
-                     
-                     bIdsOnly=false
-                     Array where each element is a map with following keys.
-                     
-                     id: testcase id
-                     parent_id: testcase parent (a test suite id).
-                     node_type_id: type id, for a testcase node
-                     node_order
-                     node_table: node table, for a testcase.
-                     name: testcase name
+                    'only_id'
+                    Array that contains ONLY testcase id, no other info.
+                    
+                    'simple'
+                    Array where each element is a map with following keys.
+                    
+                    id: testcase id
+                    parent_id: testcase parent (a test suite id).
+                    node_type_id: type id, for a testcase node
+                    node_order
+                    node_table: node table, for a testcase.
+                    name: testcase name
+                    
+                    'full'
+                    Complete info about testcase for LAST TCVERSION 
+                    TO BE IMPLEMENTED
   
   returns: array
 
 */
-function get_testcases_deep($id,$bIdsOnly = false)
+function get_testcases_deep($id, $details = 'simple')
 {
-	$subtree = $this->get_subtree($id);
-	             					      
 	$testcases = null;
-	if(!is_null($subtree))
+	$subtree = $this->get_subtree($id);
+	$only_id=($details=='only_id') ? true : false;             				
+	$doit=!is_null($subtree);
+  $parentSet=null;
+  
+	if($doit)
 	{
 		$testcases = array();
 		$tcNodeType = $this->node_types_descr_id['testcase'];
@@ -608,16 +617,87 @@ function get_testcases_deep($id,$bIdsOnly = false)
 		{
 			if($elem['node_type_id'] == $tcNodeType)
 			{
-				if ($bIdsOnly)
+				if ($only_id)
+				{
 					$testcases[] = $elem['id'];
+				}
 				else
+				{
 					$testcases[]= $elem;
+					$parentSet[$elem['parent_id']]=$elem['parent_id'];
+				}	
 			}
 		}
+		$doit = count($testcases) > 0;
 	}
-	
+  
+  if($doit && $details=='full')
+  {
+      $parentNodes=$this->tree_manager->get_node_hierachy_info($parentSet);
+
+      $rs=array();
+      $tcase_mgr = new testcase($this->db);
+      foreach($testcases as $idx => $value)
+      {
+         $item=$tcase_mgr->get_last_version_info($value['id']);
+         $item['tcversion_id']=$item['id'];
+         $tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
+         unset($item['id']);
+         $rs[]=$value+$item+$tsuite;   
+      }
+      $testcases=$rs;
+  }
 	return $testcases; 
 }
+
+
+/**
+ * get_children_testcases
+ * get only test cases with parent=testsuite without doing a deep search
+ *
+ */
+function get_children_testcases($id, $details = 'simple')
+{
+    $testcases=null;
+    $only_id=($details=='only_id') ? true : false;             				
+    $subtree=$this->tree_manager->get_children($id,array('testsuite' => 'exclude_me'));
+	  $doit=!is_null($subtree);
+	  if($doit)
+	  {
+	    $tsuite=$this->get_by_id($id);
+	    $tsuiteName=$tsuite['name'];
+	  	$testcases = array();
+	  	foreach ($subtree as $the_key => $elem)
+	  	{
+	  		if ($only_id)
+	  		{
+	  			$testcases[] = $elem['id'];
+	  		}
+	  		else
+	  		{
+	  			$testcases[]= $elem;
+	  		}	
+	  	}
+	  	$doit = count($testcases) > 0;
+	  }
+    
+    if($doit && $details=='full')
+    {
+        $rs=array();
+        $tcase_mgr = new testcase($this->db);
+        foreach($testcases as $idx => $value)
+        {
+           $item=$tcase_mgr->get_last_version_info($value['id']);
+           $item['tcversion_id']=$item['id'];
+           $parent['tsuite_name']=$tsuiteName;
+           unset($item['id']);
+           $rs[]=$value+$item+$tsuite;   
+        }
+        $testcases=$rs;
+    }
+	  return $testcases; 
+}  
+
 
 
 
@@ -636,8 +716,6 @@ function delete_deep($id)
 {
   $tcase_mgr = New testcase($this->db);
 	$tsuite_info = $this->get_by_id($id);
-	
-	// 20071111 - franciscom
   $subtree = $this->tree_manager->get_subtree($id);
 	
 	// add me, to delete me 

@@ -45,6 +45,7 @@ $tcaseStatusCode['passed']='p';
 $tcaseStatusCode['blocked']='b';
 $tcaseStatusCode['failed']='f';
 $tcaseStatusCode['wrong']='w';
+$tcaseStatusCode['departed']='d';
 
 
 
@@ -54,15 +55,15 @@ $testPlanID=222;
 $testCaseID=185;
 $testCaseExternalID=null;
 $buildID=15;
-$exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status= {$tcaseStatusCode['blocked']}";
+// $status=$tcaseStatusCode['departed'];
+// $status=$tcaseStatusCode['blocked'];
+$status=$tcaseStatusCode['wrong'];
+$exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status={$status}";
 
-//$exec_notes=null;
-
-//$debug=true;
 $debug=false;
 echo $unitTestDescription;
 $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
-                         $buildID,null,$tcaseStatusCode['passed'],$exec_notes,$debug);
+                         $buildID,null,$status,$exec_notes,$debug);
 
 echo "<br> Result was: ";
 // Typically you'd want to validate the result here and probably do something more useful with it

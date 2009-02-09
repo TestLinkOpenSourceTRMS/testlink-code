@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/02/08 17:35:52 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/02/09 15:09:38 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,7 +22,9 @@
  * 
  *
  * rev :
- *      20090208 - franciscom - fixed bad check on checkBuildID()
+ *      20090209 - franciscom - getTestCasesForTestSuite() - refactoring
+ *      20090208 - franciscom - reading status from configuration using config_get()
+ *                              fixed bad check on checkBuildID()
  *      20090126 - franciscom - added some contributions by hnishiyama. 
  *      20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
  *      20090122 - franciscom - assignRequirements()
@@ -71,7 +73,7 @@ require_once(dirname(__FILE__) . "/../functions/user.class.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-	public static $version = "1.0 Beta 4";
+	public static $version = "1.0 Beta 5";
 
   const   OFF=false;
   const   ON=true;
@@ -166,16 +168,18 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $executionOrderParamName = "executionorder";
   public static $urgencyParamName = "urgency";
   public static $requirementsParamName = "requirements";
-  
-
+  public static $detailsParamName = "details";
+	
 	
 	/**#@-*/
 	
 	/**
 	 * An array containing strings for valid statuses 
+	 * Will be initialized using user configuration via config_get()
 	 */
-	public static $validStatusList = array("p", "f", "b");
-
+  public $statusCode;
+  public $codeStatus;
+  
 	
 	/**
 	 * Constructor sets up the IXR_Server and db connection
@@ -185,6 +189,19 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->dbObj = new database(DB_TYPE);
 		$this->dbObj->db->SetFetchMode(ADODB_FETCH_ASSOC);
 		$this->_connectToDB();
+		
+		$resultsCfg = config_get('results');
+    foreach($resultsCfg['status_label_for_exec_ui'] as $key => $label )
+    {
+        $this->statusCode[$key]=$resultsCfg['status_code'][$key];  
+    }
+    if( isset($this->statusCode['not_run']) )
+    {
+        unset($this->statusCode['not_run']);  
+    }   
+    $this->codeStatus=array_flip($this->statusCode);
+
+		
 
 		$this->tcaseMgr=new testcase($this->dbObj);
 		$this->tprojectMgr=new testproject($this->dbObj);
@@ -628,7 +645,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */  	     
     private function _isStatusValid($status)
     {
-    	return(in_array($status, self::$validStatusList));
+    	return(in_array($status, $this->statusCode));
     }           
 
     /**
@@ -1032,6 +1049,26 @@ class TestlinkXMLRPCServer extends IXR_Server
 	}
 
 	/**
+	 * Run a set of functions 
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
+	private function _runChecks($checkFunctions)
+	{
+      foreach($checkFunctions as $pfn)
+      {
+          if( !($status_ok = $this->$pfn()) )
+          {
+              break; 
+          }
+      } 
+	    return $status_ok;
+	}
+
+
+
+	/**
 	 * Gets the latest build by choosing the maximum build id for a specific test plan 
 	 *
 	 * @param struct $args
@@ -1204,41 +1241,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		return $this->dbObj->insert_id($this->executions_table);		
 	}
 	
- 		
-
-	/**
-	 * Performs a deep search for test cases within a test suite
-	 * 
-	 * Uses testsuite->get_testcases_deep method
-	 * 
-	 * @param int $testSuiteID
-	 * @return struct
-	 * @access private
-	 */
-	private function _getDeepTestCasesForSuite($testSuiteID)
-	{		
-		$testSuiteObj = new testsuite($this->dbObj);
-		$result = $testSuiteObj->get_testcases_deep($testSuiteID);
-
-		// these are the keys we want (everything but "node_table")
-		$wantedKeysArray = array(
-						"id" => null, 
-						"name" => null, 
-						"parent_id" => null,
-						"node_type_id" => null,
-						"node_order" => null
-					);
-
-		$filteredResult = array();
-		
-		foreach($result as $row)
-		{
-			// perform the filter based on array key comparison					
-			$filteredResult[] = array_intersect_key($row, $wantedKeysArray);			
-		}
-		
-		return $filteredResult;
-	}
 	
 	/**
 	 * Lets you see if the server is up and running
@@ -1549,56 +1551,46 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * List test cases within a test suite
 	 * 
 	 * By default test cases that are contained within child suites 
-	 * will be returned. Set the deep flag to false if you only want
-	 * test cases in the test suite provided and no child test cases.
+	 * will be returned. 
+	 * Set the deep flag to false if you only want test cases in the test suite provided 
+	 * and no child test cases.
 	 *  
 	 * @param struct $args
 	 * @param string $args["devKey"]
 	 * @param int $args["testsuiteid"]
 	 * @param boolean $args["deep"] - optional (default is true)
+	 * @param boolean $args["details"] - optional (default is simple)
+	 *                                use full if you want to get 
+	 *                                summary,steps & expected_results
+	 *
 	 * @return mixed $resultInfo
+	 *
+	 *
 	 */
 	 public function getTestCasesForTestSuite($args)
 	 {
 		$this->_setArgs($args);
-		if($this->_checkGetTestCasesForTestSuiteRequest() && $this->userHasRight("mgt_view_tc"))
+		$status_ok=$this->_runChecks(array('authenticate','checkTestSuiteID'));       
+		
+		$details='simple';
+		$key2search=self::$detailsParamName;
+		if( $this->_isParamPresent($key2search) )
+		{
+		    $details=$this->args[$key2search];  
+		}
+			
+		if($status_ok && $this->userHasRight("mgt_view_tc"))
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
-				
-			if(!$this->_isDeepPresent())
+      $tsuiteMgr = new testsuite($this->dbObj);
+
+			if(!$this->_isDeepPresent() || $this->args[self::$deepParamName] )
 			{
-				// go deep by default (return test cases in child suites)
-				return $this->_getDeepTestCasesForSuite($testSuiteID);
+				  return $this->get_testcases_deep($testSuiteID,$details);
 			}	
-			// deep has been set
 			else
 			{
-				if(false == $this->args[self::$deepParamName])
-				{					
-					// TODO: add method with this functionality to testsuite.class.php								
-					$query=	"SELECT nodes_hierarchy.*" .
-		              "FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
-							"WHERE nodes_hierarchy.parent_id={$testSuiteID} AND " .
-							"node_type_id=node_types.id AND " .
-							"node_types.description='testcase' ORDER BY node_order,id";
-
-					$resultMap = $this->dbObj->fetchArrayRowsIntoMap($query, "id");
-					// reformat the result to look just like testsuite->get_testcases_deep() 
-					// with node_table filtered
-					$newResult = array();
-					foreach($resultMap as $result)
-					{
-						foreach($result as $item)
-						{
-							$newResult[] = $item;
-						}
-					}
-					return $newResult;
-				}
-				else
-				{
-					return $this->_getDeepTestCasesForSuite($testSuiteID);
-				}
+				  return $tsuiteMgr->get_children_testcases($testSuiteID,$details);
 			}
 		}
 		else

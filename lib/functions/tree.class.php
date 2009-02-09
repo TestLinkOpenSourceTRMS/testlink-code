@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/02/07 18:34:02 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/02/09 15:09:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20090207 - franciscom - new method check_name_is_unique()
@@ -170,17 +170,30 @@ class tree
               
               get all node hierarchy info from hierarchy table
 
-    args : node_id: node id.
+    args : node_id: node id
+                    can be ana array
     
-    returns: array
+    returns: 
 
   */
 	function get_node_hierachy_info($node_id) 
 	{
-		$sql = "SELECT * FROM {$this->obj_table} WHERE id = {$node_id}";
-		$result = $this->db->exec_query($sql);
-		
-		return $this->db->fetch_array($result);
+	  $sql = "SELECT * FROM {$this->obj_table} WHERE id";
+	  $getidx=-1;
+	  $result=null;
+	  
+	  if( is_array($node_id) )
+	  {
+	      $sql .= " IN (" . implode(",",$node_id) . ") ";
+        $result=$this->db->fetchRowsIntoMap($sql,'id');    
+	  }
+	  else
+	  {
+	      $sql .= "= {$node_id}";
+		    $rs=$this->db->get_recordset($sql);
+		    $result=!is_null($rs) ? $rs[0] : null;
+	  } 
+		return $result;
 	}
 
   /*
@@ -452,8 +465,6 @@ function change_parent($node_id, $parent_id)
 }
  
  
-// 20061008 - franciscom - added ID in order by clause
-// 
 /*
   function: get_children
             get nodes that have id as parent node.
@@ -494,7 +505,6 @@ function get_children($id,$exclude_node_types=null)
   {
     // ----------------------------------------------------------------------------
     $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-
     if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
     {
       $node_list[] = array('id'        => $row['id'],

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.398 $
- * @modified $Date: 2009/02/09 21:53:42 $ by $Author: havlat $
+ * @version $Revision: 1.399 $
+ * @modified $Date: 2009/02/09 22:22:05 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -147,7 +147,7 @@ $TLS_th_active 		= $TLS_active; //obsolete
 $TLS_th_name 		= $TLS_name; //obsolete
 $TLS_th_notes 		= $TLS_description; //obsolete
 $TLS_th_testcase 	= $TLS_test_case; // obsolete
-$TLS_th_delete 		= "$TLS_delete; // obsolete
+$TLS_th_delete 		= $TLS_delete; // obsolete
 $TLS_th_requirement_feature = "Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
@@ -1869,7 +1869,7 @@ $TLS_different_versions = "Diff. versions";
 $TLS_plan_update_no_tc_updated = "No Test Cases were updated";
 $TLS_updated = "updated";
 $TLS_all_versions_where_latest = "Nothing to do - All Test Cases version are " .
-		the newest available";
+		"the newest available";
 $TLS_num_of_updated = "%d Test Cases has been updated";
 
 

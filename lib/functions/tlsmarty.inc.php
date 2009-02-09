@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/01/03 17:30:29 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/02/09 21:52:41 $ $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -139,7 +139,6 @@ class TLSmarty extends Smarty
         $this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
         $this->assign('gsmarty_option_priority', array(3 => lang_get('high_priority'), 2 => lang_get('medium_priority'), 1 => lang_get('low_priority')));
         $this->assign('gsmarty_option_importance', array(3 => lang_get('high_importance'), 2 => lang_get('medium_importance'), 1 => lang_get('low_importance')));
-        $this->assign('gsmarty_option_risk', array(3 => lang_get('high_risk'), 2 => lang_get('medium_risk'), 1 => lang_get('low_risk')));
         
         // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
         $this->assign('openHead', 'no');

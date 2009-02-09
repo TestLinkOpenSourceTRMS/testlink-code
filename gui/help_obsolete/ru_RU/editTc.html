@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="author" content="Martin Havlat" />
+<meta name="copyright" content="GNU" />
+<meta name="robots" content="NOFOLLOW" />
+<title>TestLink Instructions</title>
+<style media="all" type="text/css">
+@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
+</style>
+<script type="text/javascript" src="../../javascript/testlink_library.js">
+</script>
+</head>
+
+<body>
+<div class="workBack">
+<h1>Редактирование тестов</h1>
+
+<h2>Назначение:</h2>
+
+<p>Раздел "Описание тестов" – это место, где пользователь 
+может  просмотреть и отредактировать компоненты, категории тестов,а также <span class="help" 
+onclick="javascript:open_popup('./glosary.html#testcase');">описания тестовых примеров</span>, относящихся к заданному  
+<span class="help" onclick="javascript:open_popup('./glosary.html#product');">Продукту</span>. Пользователь не может 
+просмотреть различные версии теста – база данных содержит только последнюю (действующую) версию. 
+Рекомендуется распечатывать описания тестов в ходе тестирования.</p>
+
+<h2>Что делать:</h2>
+
+<ol>
+<li>Выберите название продукта в  из выпадающего меню, расположенного в правом верхнем углу экрана.</li>
+
+<li>Создайте новый компонент, категорию или тест для этого продукта.</li>
+
+<li>Используя древовидную структуру панели навигации слева, отредактируйте описания тестовых примеров.</li>
+
+<li>Когда тест будет готов, включите его в <span class="help" onclick=
+"javascript:open_popup('./glosary.html#testplan');">План тестирования</span>.</li>
+</ol>
+
+<p>Все тестовые примеры в TestLink’е распределяются по Компонентам и Категориям. Они имеют несколько 
+	полей для описания характеристик входящих в них групп тестов. Эта информация может быть 
+	распечатана вместе с описанием самого теста.</p>
+
+<h1 align=right > см. также: 
+     <span class="help" 
+onclick="javascript:open_popup('./content.html');"> Справка TestLink</span>
+</h1>
+
+</div>
+</body>
+</html>
+

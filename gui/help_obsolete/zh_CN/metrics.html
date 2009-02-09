@@ -1,0 +1,63 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink 帮助：结果和度量</title>
+ 	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+
+<h1>测试结果和度量</h1>
+
+<div id="menu">
+  <a href="javascript: window.close();" class="tlButton">关闭</a>  
+  <a href="javascript: history.back();" class="tlButton">后退</a>  
+  <a href="content.html" class="tlButton">内容</a>  
+</div>
+
+<h2>目标</h2>
+<p>显示测试结果的相关信息。</p>
+
+<h2>可用的度量</h2>
+
+<h2>查看项目中所有构建的状态</h2>
+<p>本页面显示的是整个项目中所有构造的完整状态。
+<br />
+这意味着如果一个测试用例在构造1中测试通过但在构造2中失败，在本页面中它的状态就被算作失败。</p>
+
+<h3>查看单独构建的状态</h3>
+<p>本页面显示的是一个被选中的构造的测试结果。</p>
+
+<h3>查看全部构建的状态</h3>
+<p>本页面显示的是每个构造的总体状态。</p>
+
+<h3>查询度量</h3>
+<p>按照构建、拥有者、关键字和最近结果为条件来查询并显示测试结果。</p>
+
+<h3>查看每个测试用例的状态</h3>
+<p>本页面显示每一个测试用例和它在每个构建中的测试结果。</p>
+
+<h3>锁定的测试用例</h3>
+<p>本页面中显示的是所有当前测试结果为锁定的测试用例。
+<br />例子：如果一个测试用例在构建1中是通过的，但接下来在构建2中是锁定的，那么它会被显示出来。
+<br />例子：如果一个测试用例在构建1中是锁定的，但接下来在构建2中是通过的，那么它不会被显示出来。</p>
+
+<h3>失败的测试用例</h3>
+<p>本页面中显示的是所有当前测试结果为失败的测试用例。</p>
+
+<h3>每个测试用例中的全部问题</h3>
+<p>本页面中显示的是项目中的每个测试用例以及对应的全部问题。</p>
+
+<h3>用电子邮件发送测试计划信息</h3>
+<p>本页面允许用户通过电子邮件发送整个项目或者他们想要的某个特定构建的测试结果。</p>
+
+
+</body>
+</html>

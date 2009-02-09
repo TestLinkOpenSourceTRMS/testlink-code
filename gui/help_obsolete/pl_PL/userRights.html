@@ -1,0 +1,53 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2" />
+	<meta http-equiv="Content-language" content="pl" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>Pomoc TestLink: Uprawnienia Użytkowników</title>
+ 	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+
+<h1>Uprawnienia Użytkowników</h1>
+
+{include file="nav.tpl"}
+<h2>Opis</h2>
+
+<p>Użytkownicy mogą mieć dostęp do różnych funkcji dostępnych dla przeglądania i edytowania.
+W systemie istnieją zdefiniowane zestawy uprawnień. Tylko administrator może nadawać uprawnienia.<br /> 
+Domyślne uprawnienia to prawa 'Guest'. 
+Prawa te pozwalają na przeglądanie Specyfikacji Testów i Rezultatów ( bez edycji ).
+Każdy może zarejestrować się jako gość za pomocą ekranu logowania.</p>
+
+
+<h2>Opis domyślnych uprawnień</h2>
+
+<h3>Guest ( Gość )</h3>
+<p>
+Może przeglądać Specyfikację Testów, Słowa Kluczowe i Rezultaty Testów oraz edytować dane personalne
+</p>
+
+<h3>Tester</h3>
+<p>Może przeglądać Specyfikację Testów, Słowa Kluczowe i Rezultaty Testów oraz edytować dane personalne oraz .</p>
+
+<h3>Test Designer</h3>
+<p>Może edytować Specyfikację Testów, Słowa kluczowe oraz Wymagania.</p>
+
+<h3>Senior Tester</h3>
+<p>Może edytować Specyfikację Testów, Słowa kluczowe, Wymagania, Wykonywać Testy oraz Tworzyć Builds.</p>
+
+<h3>Leader</h3>
+<p>Może edytować Specyfikację Testów, Słowa kluczowe, Wymagania, Wykonywać Testy,
+Plan Testów ( włączając priorytety, kamienie milowe oraz przypisywania) oraz zarządzać Builds.</p>
+
+<h3>Admin</h3>
+<p>Ma pełne uprawnienia. (Dodatkowo edytuje produkty i zarządza użytkownikami.)</p>
+
+</body>
+</html>

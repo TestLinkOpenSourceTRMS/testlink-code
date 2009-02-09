@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="author" content="Martin Havlat" />
+<meta name="copyright" content="GNU" />
+<meta name="robots" content="NOFOLLOW" />
+<title>TestLink 操作指南</title>
+<style media="all" type="text/css">
+@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
+</style>
+<script type="text/javascript" src="../../javascript/testlink_library.js">
+</script>
+</head>
+
+<body>
+<div class="workBack">
+<h1>测试用例编辑和存档</h1>
+
+<h2>目标：</h2>
+
+<p><span class="help" onclick=
+"javascript:open_popup('./glosary.html#testspec');">测试规范</span>是一个可以让用户查看和编辑所有已存在的<span class="help" 
+onclick="javascript:open_popup('./glosary.html#产品');">产品</span>，组件，分类，以及<span class="help" 
+onclick="javascript:open_popup('./glosary.html#testcase');">测试用例</span>信息的地方。
+用户不能看到测试用例的不同版本 - 数据库中只保存实际的版本。因此建议每执行完一个测试，就将测试规范打印出来。</p>
+
+<h2>开始：</h2>
+
+<ol>
+<li>在导航面板上选择产品名称。</li>
+
+<li>为产品创建一个新的组件，分类和测试用例（在右上方可以选择）。</li>
+
+<li>通过左边的分类树视图可以查看和编辑数据。</li>
+
+<li>测试用例准备好以后，可以将已经创建好的测试规范指派给一个<span class="help" onclick=
+"javascript:open_popup('./glosary.html#testplan');">测试计划</span>。</li>
+</ol>
+
+<p>TestLink 提供两种层次的容器来组织测试用例：组件和分类。这两类容器都通过五个方面进行描述。
+这些文字可以与测试用例一起被打印出来。</p>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,69 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Hilfe: Benutzerdefinierte Felder</title>
+ 	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+<h1>Benutzerdefinierte Felder</h1>
+Die Informationen wurde aus dem Benutzerhandbuch des Mantis Bug-Tracking-Systems uebernommen und angepasst.
+<h2>Beschreibung</h2>
+Im Folgenden einige Hinweise zur Implementation von benutzerdefininierten Feldern:<br>
+<ul>
+<li>Benutzerdefinierte Felder sind systemweit definiert.</li>
+<li>Benutzerdefinierte Felder werden an einen bestimmten Elementtyp gehaengt (z.B. Testsuite, Testfall)</li>
+<li>Benutzerdefinierte Felder koennen in verschiedenen Testprojekten verwendet werden.</li>
+<li>Die Reihenfolge der benutzerdefinierten Feldern kann von Projekt zu Projekt abweichen.</li>
+<li>Benutzerdefinierte Felder koennen fuer bestimmte Projekte auf inaktiv geschaltet werden.</li>
+<li>Es gibt keine Begrenzung fuer die Anzahl der benutzerdefinierten Felder.</li>
+</ul>
+<br>
+Die Definition eines benutzerdefinierten Feldes enthaelt folgende logische Attribute:<br>
+<ul>
+<li>Name des Feldes<br>
+</li>
+<li>Name der Beschriftung (z.B.: Dies wird als Wert fuer die API-Funktion lang_get verwendet,
+oder einfach direkt angezeigt, wenn der Wert nicht in der Sprachendatei gefunden wird)</li>
+<li>Typ des Feldes (String, Ganzzahlig, Fliesskommazahl, Aufzaehlung,
+E-Mail-Adresse)</li>
+<li>Die moeglichen Werte der Aufzaehlung (z.B.: ROT|GELB|BLAU),
+die bei normalen Listen, bei Multi-Selektions-Listen und bei Auswahlboxen
+verwendet werden koennen.<br>
+<div class="note">Benutze das Pipe-Symbol ('|') um die einzelnen Aufzaehlungswerte zu trennen.
+Einer der Werte kann dabei ein leerer String sein.</div>
+</li>
+<li>Default-Wert. <b>(NOT IMPLEMENTED YET)</b><br>
+</li>
+<li>Minimum/Maximum-Laenge fuer den Feldwert
+(0 fuer keine Begrenzung). <b>(NOT IMPLEMENTED YET)</b></li>
+<li>Ein regulaerer Ausdruck, um die Eingabe zu validieren.
+(benutzer <a href="http://au.php.net/manual/en/function.ereg.php">ereg()</a>
+-Syntax). <b>(NOT IMPLEMENTED YET)</b></li>
+<li>Alle benutzerdefinierten Felder werden derzeit in einem VARCHAR(255)-Feld in der Datenbank gespeichert.<br>
+</li>
+<li>Anzeige waehrend der Test-Spezifikation.</li>
+<li>Editieren waehrend der Test-Spezifikation. Der Benutzer kann den Wert waehrend des Designs der Test-Spezifikation aendern.<br>
+</li>
+<li>Anzeige waehrend der Testausfuehrung.</li>
+<li>Editieren waehrend der Testausfuehrung. Der Benutzer kann den Wert waehrend der Test-Ausfuehrung aendern.<br>
+</li>
+<li>Verfuegbar fuer. Der Benutzer waehlt aus, zu welcher Elementart das Feld gehoert.<br>
+</li>
+
+
+</ul>
+
+
+
+
+<br>
+</body>
+</html>

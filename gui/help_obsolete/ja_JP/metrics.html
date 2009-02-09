@@ -1,0 +1,57 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="jp">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-language" content="jp" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Help: Results and Metrics</title>
+ 	<link rel="stylesheet" type="text/css" href="{$basehref}{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+
+<h1>テスト結果とメトリクス</h1>
+{include file="nav.tpl"}
+<h2>スコープ</h2>
+<p>テスト結果の情報について表示します。</p>
+
+<h2>有効なメトリクス</h2>
+
+<h2>すべてのビルドについてプロジェクトステータスを表示します。</h2>
+<p>このページでは、すべてのビルドに関するプロジェクトのステータスを表示します。<br />
+例えば、テストケースがビルド１では成功して、次のビルド２では失敗した場合には、このページではそのテストケースは失敗として表示されます。</p>
+
+<h3>ビルドステータス表示（個別）</h3>
+<p>このページでは選択されたビルド毎にテストの結果を表示します。</p>
+
+<h3>ビルドステータス表示（全体）</h3>
+<p>このページでは選択されたビルトについてプロジェクトの全体のステータスを表示します。</p>
+
+<h3>メトリッククエリー</h3>
+<p>ビルド、オーナー、キーワード、最終結果にもとづいて情報を表示します。</p>
+
+<h3>テストケース別のステータス表示</h3>
+<p>このページでは個々のテスト及びビルドに対するテスト結果を表示します。</p>
+
+<h3>ブロックされたテストケース</h3>
+<p>このページでは現在ブロックされているテストケースのロールアップを表示します。ロールアップについては以下の例を参考にしてください。
+<br />例１: ビルド１では成功したてストケースがビルド２ではブロックされた場合に表示されます。
+<br />例２: ビルド１でブロックされたテストケースがビルド２では成功した場合には表示されません。</p>
+
+<h3>失敗したテストケース</h3>
+<p>このページはブロックされたテストケースと同様ですが、失敗したテストケースについて表示されます。</p>
+
+<h3>個別テストケースにおけるバグ</h3>
+<p>このページではプロジェクトにひもづくすべてのテストケースおよびすべてのバグについて表示します。</p>
+
+<h3>テスト計画をEmailで送信</h3>
+<p>このページでは、ユーザーがプロジェクト全体もしくは特定のビルドについてEmailで情報を送信できます。</p>
+
+
+</body>
+</html>

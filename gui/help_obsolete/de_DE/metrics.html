@@ -1,0 +1,60 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Help: Testresultate und Metriken</title>
+ 	<link rel="stylesheet" type="text/css" href="{$basehref}{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+
+<h1>Testresultate und Metriken</h1>
+
+{include file="nav.tpl"}
+<h2>Umfang</h2>
+<p>Zeige Testrgebnisse</p>
+
+<h2>Verfuegbare Metriken</h2>
+
+<h2>Zeige den Projekt-Status ueber aller Builds</h2>
+<p>Diese Seite zeigt den Gesamtstatus eines Projekts ueber alle Builds.<br />
+Das heisst, wenn ein Testfall in Build 1 durchläuft, allerdings in Build 2 nicht, dann wird er
+auf dieser Seite als Fehler gewertet.
+</p>
+
+<h3>Zeige den Projekt-Status eines ausgewaehlten Builds</h3>
+<p>Diese Seite zeigt die Testergebnisse gegen einen ausgewaehlten Build.
+</p>
+
+<h3>Zeige die Gesamtuebersicht aller Builds</h3>
+<p>Diese Seite zeigt den Projektstatus einen Builds</p>
+
+<h3>Abfrage-Metriken</h3>
+<p>Zeigt die Resultate je nach Build, Besitzer, Stichwoerter und letztem Ergebnis</p>
+
+<h3>Zeige den Status je nach Testfall</h3>
+<p>Diese Seite zeigt alle Testfaelle und ihre Resultate gegen alle Builds.</p>
+
+<h3>Blockierte Testfaelle</h3>
+<p>Diese Seite zeigt eine Übersicht aller derzeit blockierten Testfaelle.
+<br />Beispiel: Ein Testfall wird angezeigt, wenn er erst Build 1 durchlaeuft aber in Build 2 blockiert ist.
+<br />Beispiel: Wenn ein Testfall in Build 1 blockiert ist, in Build 2 aber durchlaeuft wird er hier nicht angezeigt.</p>
+
+<h3>Fehlgeschlagene Testfaelle</h3>
+<p>Diese Seite zeigt dasselbe wie die Seite mit den blockierten Testfaellen nur fuer fehlgeschlagene.</p>
+
+<h3>Alle Bugs eines Testfalls</h3>
+<p>Diese Seite zeigt alle Testfaelle eines Projekts und die jeweiligen Bugs, die aufgrund dieser eroeffnet wurden.</p>
+
+<h3>Email eines Testplans</h3>
+<p>Auf dieser Seite kann man Benutzern die Ergebnisse eines Projekts oder eines bestimmten Builds per Email schicken.</p>
+
+
+</body>
+</html>

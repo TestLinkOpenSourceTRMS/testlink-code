@@ -1,0 +1,78 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink 帮助：术语</title>
+ 	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+
+<h1>TestLink中使用的术语表</h1>
+
+<div id="menu">
+  <a href="javascript: window.close();" class="tlButton">关闭</a>  
+  <a href="javascript: history.back();" class="tlButton">后退</a>  
+  <a href="content.html" class="tlButton">内容</a>  
+</div>
+
+
+<h2>目的</h2>
+<p>本文档提出的概念、术语和定义是为帮助理解测试术语而设计的。斜体文字用来解释TestLink的用法。</p>
+
+<h2>定义</h2>
+
+<ul>
+	<li><a name="actualoutcome"></a><b>实际结果（Actual outcome）</b>
+		当对象在特定条件下被测试时，实际发生的行为。</li>
+	<li><a name="bug"></a><b>问题（Bug）</b>（等同于<a href="#fault">Fault</a>）
+		对软件错误的一种命名。</li>
+	<li><a name="coverageitem"></a><b>覆盖项（Coverage item）</b>
+		作为<a href="#testing">测试</a>依据的一个实体或属性。</li>
+	<li><a name="error"></a><b>错误（Error）</b>
+		产生了不正确的结果的一个动作。</li>
+	<li><a name="expectedresults"></a><b>预期结果（Expected results）</b>（等同于Predicted outcome 
+		或 Expected outcome）
+		在<a href="#testspec">测试规范</a>中期望的一个对象在特定条件下将会发生的行为。</li>
+	<li><a name="failure"></a><b>失败（Failure）</b>
+		与期望的软件结果或服务之间存在的误差。</li>
+	<li><a name="fault"></a><b>缺陷（Fault）</b> （等同于Bug）
+		软件中<a href="#error">错误</a>的一种表现。 
+		如果遇到了一个缺陷则会导致<a href="#failure">失败</a>。</li>
+	<li><a name="path"></a><b>路径（Path）</b>
+		一个<a href="#component">组件</a>中一系列的从起始点到结束点的可执行语句。</li>
+	<li><a name="产品"></a><b>产品</b>
+		<span class="italic">产品是TestLink中数据结构的最顶层。所有的数据（除了用户）都与一个活动的产品相关。</span></li>
+	<li><a name="testcasesuite"></a><b>测试用例集（Test case suite）</b> 
+		软件测试中一个或多个<a href="#testcase">测试用例</a>的集合。
+		<span class="italic">TestLink采用这个术语来表示测试计划中可用于执行的一组测试用例。
+		</span></li>
+	<li><a name="testcoverage"></a><b>测试覆盖率（Test Coverage）</b>
+		用百分比来表示，表示特定的<a href="#coverageitem">覆盖项</a>在<a 		href="#testcasesuite">测试用例集</a></li>中被测验到的程度。
+		
+	<li><b><a name="testexecution"></a>执行测试（Test executeion）</b>
+		对被测试软件中的<a href="#testcasesuite">测试用例集</a>进行的一种处理，
+		产生一个<a href="#actualoutcome">实际结果</a>。<br/>
+		<span class="italic">测试用例集是由测试规范中指派给测试计划的测试用例组成的。</span></li>
+	<li><a name="testplan"></a><b>测试计划（Test plan)</b> 
+		为测试过程所作的计划的记录。测试过程要详细到不依赖任何测试人员的程度,
+		包括测试环境，使用的测试用例设计技术和测试度量技术，
+		以及选择这些技术的基本理由。<br/><span class="italic">
+		TestLink允许在一个测试计划中定义测试用例集，创建构建和指派用户。</span></li>
+	<li><a name="testspec"></a><b>测试规范（Test specification）</b>
+		为每个<a href="#testcase">测试用例</a>定义的<a href="#coverageitem">覆盖项</a>，被测试软件的初始状态，<a href="#Input">步骤（输入）</a>，以及<a href="#expectedresults">预期的结果</a>。</li>
+	<li><a name="testing"></a><b>测试（Testing）</b> 
+		为了验证软件能够满足特定需求以及发现<a href="#error">错误</a>而操作软件的过程。</li>
+	<li><a name="testcase"></a><b>测试用例（Test case）</b>
+		为一个特定的目标而制定的一组<a href="#Input">输入</a>，执行的前提条件，以及
+		<a href="#expectedresults">预期的结果</a>。比如执行一个特定的程序	<a href="#path">路径</a>或者验证对一个特定需求的符合度。</li>
+</ul>
+
+</body>
+</html>

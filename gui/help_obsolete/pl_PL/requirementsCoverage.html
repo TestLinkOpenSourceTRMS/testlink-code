@@ -1,0 +1,57 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-2" />
+	<meta http-equiv="Content-language" content="pl" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>Pomoc TestLink: Plan testów</title>
+ 	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+
+<h1>Pokrycie wymagań</h1>
+
+<div id="menu">
+  <a href="javascript: window.close();" class="tlButton">Zamknij</a>  
+  <a href="javascript: history.back();" class="tlButton">Wróć</a>  
+  <a href="content.html" class="tlButton">Spis treści</a>  
+</div>
+
+<h2>Ogólna charakterystyka</h2>
+
+<p>Ten moduł pozwal na ustalenie pokrycia w testach wymagań i użytkowników. Użyj linka "Specyfikacja Wymagań" na głownej stronie.</p>
+
+<h2>Specyfikacja wymagań</h2>
+
+<p>Wymagania są zebrane za pomocą "Specyfikacji wymagań" która jest powiązana z produktem.<br />
+Testlink nie wspiera wersjonowania wymagań i specyfikacji wymagań. 
+Użyj miejsca po tytule specyfikacji aby wpisać nr wersji.
+Użytkownik może dodać prosty opis lub komentarz do pola <b>Zakres</b>.</p> 
+
+<p><b><a name="total_count">Total count</a></b> of all Requirements serves for 
+evaluation Req. coverage in case that not all requirements are added to TestLink. 
+The value <b>n/a</b> means that current count of requirements is used
+for metrics.</p> 
+<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
+coverage is 25% (if all these added requirements will be tested).</i></p>
+
+<h2><a name="req">Wymagania</a></h2>
+
+<p>Click on title of a created Requirements Specification. You can create, edit, delete
+or import requirements for the document. Each requirement has title, scope and status.
+Status should be "Normal" or "Not testable". Not testable requirements are not counted
+to metrics. This parameter should be used for both unimplemented features and 
+wrong designed requirements.</p> 
+
+<p>You can create new test cases for requirements by using multi action with checked 
+requirements within the specification screen. These Test Cases are created into component and
+category 'TODO'. Title and Scope are copied to these test cases.</p>
+
+
+</body>
+</html>

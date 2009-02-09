@@ -1,0 +1,70 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="jp">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-language" content="jp" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Help: Custom Fields</title>
+ 	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+<h1>カスタムフィールド</h1>
+ここでの情報はバグトラッキングシステム Mantis のマニュアルを参考にしています。
+<h2>説明</h2>
+カスタムフィールドは以下のように実装されています:<br>
+<ul>
+<li>定義したカスタムフィールドはシステム全体で使用することができます。</li>
+<li>カスタムフィールドはひとつのテスト要素に関連付けられます (テストスイート, テストケース)</li>
+<li>カスタムフィールドは複数のテストプロジェクトの要素に関連付ける事ができます。</li>
+<li>カスタムフィールドの表示順はテストプロジェクトごとに異なります。</li>
+<li>特定のテストプロジェクトに対して、あるカスタムフィールドを無効にすることができます。</li>
+<li>カスタムフィールドの数に制限はありません。</li>
+</ul>
+<br>
+カスタムフィールドの定義には以下の属性が含まれています:<br>
+<ul>
+<li>カスタムフィールドの名称<br>
+</li>
+<li>変数名 (例: lang_get() APIによって提供されている変数、
+または、言語ファイルではなく直接ソースに記載されている変数。</li>
+<li>カスタムフィールドの型 (string, numeric, float, enum,
+email)</li>
+<li>フィールドの設定可能な値の一覧 (例: RED|YELLOW|BLUE)。
+リスト、マルチセレクションリスト、コンボタイプに適用できます。<br>
+<div class="note">一覧の値を分割するために
+パイプ文字 ('|') を使用します。空白文字も設定可能です。</div>
+</li>
+<li>デフォルト値 <b>(TestLink 1.7.0 RC3ではまだ実装されていません)</b><br>
+</li>
+<li>カスタムフィールドの設定値の最大長/最小長。
+(0を設定すると無効フィールドが無効になります。) <b>(TestLink 1.7.0 RC3ではまだ実装されていません)</b></li>
+<li>入力にフィルターをかけるための正規表現。この正規表現にマッチした入力のみを受け付けます。
+(<a href="http://au.php.net/manual/en/function.ereg.php">ereg()</a>
+にある文法を使用します。) <b>(TestLink 1.7.0 RC3ではまだ実装されていません)</b></li>
+<li>すべてのカスタムフィールドは
+VARCHAR(255) 型としてデータベースに保存されます。<br>
+</li>
+<li>テスト仕様の画面上に表示されます。</li>
+<li>テスト仕様の画面上でカスタムフィールドを有効に設定することができます。テスト仕様の設計中にカスタムフィールドの値を変更することができます。<br>
+</li>
+<li>テスト実行の画面上に表示されます。</li>
+<li>テスト実行の画面上でカスタムフィールドを有効に設定することができます。テスト実行の設計中にカスタムフィールドの値を変更することができます。<br>
+</li>
+<li>カスタムフィールドがどんな項目に属しているかを選択することが可能です。<br>
+</li>
+
+
+</ul>
+
+
+
+
+<br>
+</body>
+</html>

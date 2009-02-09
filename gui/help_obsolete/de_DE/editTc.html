@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-language" content="en" />
+<meta name="author" content="Martin Havlat" />
+<meta name="copyright" content="GNU" />
+<meta name="robots" content="NOFOLLOW" />
+<title>TestLink Instructions</title>
+<style media="all" type="text/css">
+@import "{$basehref}{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
+</style>
+
+<script>
+// need due to global coupling in open_help_window()
+var fRoot='{$basehref}';
+</script>
+
+<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js">
+</script>
+</head>
+<body>
+<div class="workBack">
+<h1>Testfaelle bearbeiten und archivieren</h1>
+
+<h2>Ziel:</h2>
+
+<p>In der <span class="help" onclick=
+"javascript:open_help_window('glosary','{$locale}');">Testdefinition</span> kann der Benutzer alle existierenden
+<span class="help" 
+onclick="javascript:open_help_window('glosary','{$locale}');">Testprojekte</span>, Testsuiten und <span class="help" 
+onclick="javascript:open_help_window('glosary','{$locale}');">Testfaelle</span> sich anschauen und bearbeiten.
+Ein Benutzer kann dabei verschiedene Versionen eines Testfalls anschauen. </p>
+
+<h2>Anleitung:</h2>
+
+<ol>
+<li>Waehle eine Testprojekt im Navigationsbereich aus.</li>
+
+<li>Erstelle eine neue Tesuite und neue Testfaelle (das Testprojekt kann in der rechten oberen Ecke ausgewaehlt werden).</li>
+
+<li>Navigiere mit dem Baum auf der linken Seite und bearbeiten vorhandene Daten.</li>
+
+<li>Weise die erstellte Testdefinition einem <span class="help" onclick=
+"javascript:open_help_window('glosary','{$locale}');">Testplan</span> zu, wenn die Testdefinition
+fertig ist.</li>
+</ol>
+
+<p>Testlink bietet die Moeglichkeit Testsuiten beliebig zu verschachteln.
+Dabei kann der Inhalt einer Testsuite beschrieben werden.
+Diese Informationen koennen dann zusammen mit den Testdefinitionen ausgedruckt werden.
+</p>
+</div>
+</body>
+</html>
+

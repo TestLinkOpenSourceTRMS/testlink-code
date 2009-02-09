@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/01/27 17:00:09 $ by $Author: havlat $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/02/09 21:53:17 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -28,11 +28,11 @@
 
 $TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
 $TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>Users can set relations between requirements and test cases. A designer could
+<p>Users can set relations between requirements and test cases. A test designer could
 define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
-test cases and vice versa. Such traceability matrix helps to investigate test coverage
+requirements and vice versa. Such traceability matrix helps to investigate test coverage
 of requirements and find out which ones successfully failed during a testing. This
-analyse serves as input for the next planning.</p>
+analyse serves as confirmation that all defined expectations was met.</p>
 
 <h2>Get Started:</h2>
 <ol>

@@ -2,13 +2,14 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.37 2009/01/23 08:08:14 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.38 2009/02/10 20:02:29 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
 *   rev: 
+*        20090210 - BUGID 2062 - franciscom -
 *        20080817 - franciscom - initializeGui(): added code to get total number of 
 *                                                 testcases in a test project, to display
 *                                                 it on root tree node.
@@ -73,7 +74,6 @@ $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 $draw_filter = $spec_cfg->show_tsuite_filter;
 $exclude_branches = null;
 $tsuites_combo = null;
-$tree = null;
 if($spec_cfg->show_tsuite_filter)
 {
 	$mappy = tsuite_filter_mgmt($db,$tproject_mgr,$args->tproject_id,$args->tsuites_to_show);
@@ -113,7 +113,7 @@ if($buildCompleteTree)
     else
     {
         $gui->ajaxTree = null;
-        $treeMenu = invokeMenu($treeMenu->menustring,null,null);
+        $gui->tree = invokeMenu($treeMenu->menustring,null,null);
     }
 
     if( $applyFilter )
@@ -122,15 +122,14 @@ if($buildCompleteTree)
     }
 }
 
+$gui->treeHeader=$title;
+$gui->draw_filter=$draw_filter;
+$gui->tsuites_combo=$tsuites_combo;
+$gui->tcspec_refresh_on_action=$do_refresh_on_action;
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-
-$smarty->assign('tcspec_refresh_on_action',$do_refresh_on_action);
-$smarty->assign('tsuites_combo',$tsuites_combo);
-$smarty->assign('draw_filter',$draw_filter) ;
 $smarty->assign('treeKind', TL_TREE_KIND);
-$smarty->assign('tree', $tree);
-$smarty->assign('treeHeader', $title);
 $smarty->assign('menuUrl',$workPath);
 $smarty->display($template_dir . 'tcTree.tpl');
 
@@ -254,6 +253,7 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     $tcaseCfg=config_get('testcase_cfg');
         
     $gui = new stdClass();
+    $gui->tree=null;
     $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
     
     $gui->ajaxTree=new stdClass();

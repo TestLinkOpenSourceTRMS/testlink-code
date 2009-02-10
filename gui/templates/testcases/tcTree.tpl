@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.14 2009/02/05 19:42:40 schlundus Exp $ 
+   $Id: tcTree.tpl,v 1.15 2009/02/10 20:02:16 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -74,11 +74,11 @@ rev:
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
 
-<h1 class="title">{$treeHeader}</h1>
+<h1 class="title">{$gui->treeHeader}</h1>
 <div style="margin: 3px;">
 
   <form method="get" id="tree_filter_and_settings"> 
-	{if $draw_filter}
+	{if $gui->draw_filter}
 	    <input type="hidden" name="feature" value="{$smarty.get.feature}" />
 	  	<table class="smallGrey" width="100%">
 	    		<caption>
@@ -87,7 +87,7 @@ rev:
 	    		<tr>
 	    			<td>{$labels.testsuite}</td>
 	    			<td>
-	    			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$gui->tsuite_choice}
+	    			{html_options name="tsuites_to_show" options=$gui->tsuites_combo selected=$gui->tsuite_choice}
 	    			</td>
 	    		</tr>
 		      <tr style="{$keywordsFilterDisplayStyle}">
@@ -112,7 +112,7 @@ rev:
 	  			   <input type="checkbox" 
 	  			           id="cbtcspec_refresh_on_action"   name="tcspec_refresh_on_action"
 	  			           value="1"
-	  			           {if $tcspec_refresh_on_action eq "yes"} checked {/if}
+	  			           {if $gui->tcspec_refresh_on_action eq "yes"} checked {/if}
 	  			           style="font-size: 90%;" onclick="submit()"/>
 	  			</td>
 	  		</tr>
@@ -142,10 +142,10 @@ rev:
     <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 {else}
     <div class="tree" id="tree">
-        {if $tree eq ''}
+        {if $gui->tree eq ''}
           {$labels.no_tc_spec_av}
         {/if}
-        {$tree}
+        {$gui->tree}
         <br />
     </div>
 {/if}

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/02/09 15:09:38 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/02/10 14:09:07 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,10 @@
  * 
  *
  * rev :
+ *      20090209 - franciscom - getTestCasesForTestPlan()
+ *                              added summary,steps,expected_results,tsuite_name in returned info
+ *                              reportTCResult() - contribution by hnishiyama - optional bug id 
+ *
  *      20090209 - franciscom - getTestCasesForTestSuite() - refactoring
  *      20090208 - franciscom - reading status from configuration using config_get()
  *                              fixed bad check on checkBuildID()
@@ -90,7 +94,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   private $testplan_tcversions_table="testplan_tcversions";
   private $keywords_table="keywords";  
   private $tcversions_table="tcversions";
-  
+  private $execution_bugs_table="execution_bugs";		  
 	
 	/**
 	 * The DB object used throughout the class
@@ -169,6 +173,7 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $urgencyParamName = "urgency";
   public static $requirementsParamName = "requirements";
   public static $detailsParamName = "details";
+	public static $bugIDParamName		= "bugid";		
 	
 	
 	/**#@-*/
@@ -961,13 +966,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private function _checkCreateBuildRequest()
 	{		
       $checkFunctions = array('authenticate','checkTestPlanID','_isBuildNamePresent');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
+      $status_ok=$this->_runChecks($checkFunctions);       
 	    return $status_ok;
 	}	
 	
@@ -980,13 +979,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private function _checkGetBuildRequest()
 	{		
       $checkFunctions = array('authenticate','checkTestPlanID');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
+      $status_ok=$this->_runChecks($checkFunctions);       
 	    return $status_ok;
 	}
 
@@ -999,13 +992,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private function _checkGetTestSuitesRequest()
 	{
       $checkFunctions = array('authenticate','checkTestPlanID');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
+      $status_ok=$this->_runChecks($checkFunctions);       
 	    return $status_ok;
 	}
 	
@@ -1438,13 +1425,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 public function getTestSuitesForTestPlan($args)
 	 {
 	 	$this->_setArgs($args);
-		// check the tpid
-		if($this->_checkGetTestSuitesRequest())
+    $checkFunctions = array('authenticate','checkTestPlanID');       
+    $status_ok=$this->_runChecks($checkFunctions);       
+
+		if($status_ok)
 		{
-			$testPlanObj = new testplan($this->dbObj);
 			$testPlanID = $this->args[self::$testPlanIDParamName];			
-			$newResult = $testPlanObj->get_testsuites($testPlanID);
-			return 	$newResult;
+			$result = $this->tplanMgr->get_testsuites($testPlanID);
+			return 	$result;
 		}
 		else
 		{
@@ -1465,7 +1453,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	public function createTestProject($args)
 	{
-	    
 	    $this->_setArgs($args);
       $msg_prefix="(" . __FUNCTION__ . ") - ";
 	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
@@ -1802,6 +1789,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["notes"] - optional
 	 * @param bool $args["guess"] - optional defining whether to guess optinal params or require them 
 	 * 								              explicitly default is true (guess by default)
+	 *
+	 * @param string $args["bugid"] - optional
+   *
 	 * @return mixed $resultInfo 
 	 * 				[status]	=> true/false of success
 	 * 				[id]		  => result id or error code
@@ -1815,20 +1805,21 @@ class TestlinkXMLRPCServer extends IXR_Server
 		
     $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
                             'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');       
-    foreach($checkFunctions as $pfn)
-    {
-        if( !($status_ok = $this->$pfn()) )
-        {
-            break; 
-        }
-    } 
-		
+    $status_ok=$this->_runChecks($checkFunctions);       
+	
 		if($status_ok && $this->userHasRight("testplan_execute"))
 		{			
-			$insertID = $this->_insertResultToDB();			
-			$resultInfo[0]["status"] = true;
-			$resultInfo[0]["id"] = $insertID;	
+			$executionID = $this->_insertResultToDB();			
+    	$resultInfo[0]["status"] = true;
+			$resultInfo[0]["id"] = $executionID;	
 			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+			
+			// Do we need to insert a bug ?
+    	if($this->_isParamPresent(self::$bugIDParamName))
+    	{
+    	    $bugID = $this->args[self::$bugIDParamName];
+			    $resultInfo[0]["bugidstatus"] = $this->_insertExecutionBug($executionID, $bugID);
+    	}
 			return $resultInfo;
 		}
 		else
@@ -1988,13 +1979,20 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }   
 		}
 		$testplan = new testplan($this->dbObj);
+		
+		// public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
+    //                                       $assigned_to=null,$exec_status=null,$build_id=0,
+    //                                       $cf_hash = null, $include_unassigned=false,
+    //                                       $urgencyImportance = null, $tsuites_id=null,$details='simple')
+    // 
 		$recordset=$testplan->get_linked_tcversions($tplanid,
 		                                            $opt[self::$testCaseIDParamName],
                                                 $opt[self::$keywordIDParamName],
 		                                            $opt[self::$executedParamName],
                                                 $opt[self::$assignedToParamName],
                                                 $opt[self::$executeStatusParamName],
-	 	                                            $opt[self::$buildIDParamName]);
+	 	                                            $opt[self::$buildIDParamName],
+	 	                                            null,false,null,null,'full');
 		return $recordset;
 	 }
 
@@ -2621,6 +2619,41 @@ class TestlinkXMLRPCServer extends IXR_Server
       } 
       return $ret;
   }
+
+	/**
+	 * Insert record into execution_bugs table
+	 * @param  int    $executionID	 
+	 * @param  string $bugID
+	 * @return boolean
+	 * @access private
+   * contribution by hnishiyama
+	**/
+	private function _insertExecutionBug($executionID, $bugID)
+	{
+		
+		// Check for existence of executionID
+		$sql="SELECT id FROM {$this->executions_table} WHERE id={$executionID}";
+		$rs=$this->dbObj->fetchRowsIntoMap($sql,'id');
+    $status_ok = !(is_null($rs) || $bugID == '');		
+		if($status_ok)
+		{
+       $safeBugID=$this->dbObj->prepare_string($bugID);
+       
+		   $sql="SELECT execution_id FROM {$this->execution_bugs_table} " .  
+		        "WHERE execution_id={$executionID} AND bug_id='{$safeBugID}'";
+        
+       if( is_null($this->dbObj->fetchRowsIntoMap($sql, 'execution_id')) )
+       {
+			     $sql = "INSERT INTO {$this->execution_bugs_table} " .
+                  "(execution_id,bug_id) VALUES({$executionID},'{$safeBugID}')";
+           $result = $this->dbObj->exec_query($sql); 
+           $status_ok=$result ? true : false ;
+       }
+    
+		}
+		return $status_ok;
+	}
+
 
 
 

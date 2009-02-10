@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.97 $
- * @modified $Date: 2009/02/08 17:35:52 $ by $Author: franciscom $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2009/02/10 14:09:26 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -485,6 +485,8 @@ function setExecutionOrder($id,&$executionOrder)
 		     [tsuites_id]: default null.
 		                   If present only tcversions that are children of this testsuites
 		                   will be included
+         [details]: default 'simple'
+                    'full': add summary, steps and expected_results
 		     
   returns: map
            key: testcase id
@@ -508,7 +510,7 @@ function setExecutionOrder($id,&$executionOrder)
 public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
                                           $assigned_to=null,$exec_status=null,$build_id=0,
                                           $cf_hash = null, $include_unassigned=false,
-                                          $urgencyImportance = null, $tsuites_id=null)
+                                          $urgencyImportance = null, $tsuites_id=null,$details='simple')
 {
   $resultsCfg = config_get('results');
 	$status_not_run=$resultsCfg['status_code']['not_run'];
@@ -639,26 +641,36 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	//							and (IMHO) he is right
 	// 20070917 - added version
 	// 20080331 - added T.node_order
+  //	
+  $more_tcase_fields = '';
+  $join_for_parent = '';
+  $more_parent_fields = '';
+	if($details == 'full')
+	{
+	    $more_tcase_fields = 'TCV.summary,TCV.steps,TCV.expected_results,';
+	    $join_for_parent = " JOIN {$this->nodes_hierarchy_table} NHC ON NHB.parent_id = NHC.id ";
+	    $more_parent_fields = 'NHC.name as tsuite_name,';
+	}
 	
-	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
-	     " NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
-	     " T.tcversion_id AS tcversion_id, T.id AS feature_id, " .
-	     " T.node_order AS execution_order, TCV.version AS version, TCV.active," .
-	     " TCV.tc_external_id AS external_id, E.id AS exec_id, E.tcversion_number," .
-	     " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
-	     " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
-	     " COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
-	     " FROM {$this->nodes_hierarchy_table} NHA " .
-	     " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
-	     " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " .
-	     " JOIN  {$this->tcversions_table} TCV ON NHA.id = TCV.id " .
-	     " {$executions_join} " .
-	     " {$keywords_join} " .
-	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
-	     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
-	     " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
-	     $executions_filter;
-
+	$sql = " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
+	       " NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
+	       " T.tcversion_id AS tcversion_id, T.id AS feature_id, " .
+	       " T.node_order AS execution_order, TCV.version AS version, TCV.active," .
+	       " TCV.tc_external_id AS external_id, E.id AS exec_id, E.tcversion_number," .
+	       " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
+	       " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
+	       " COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
+	       " FROM {$this->nodes_hierarchy_table} NHA " .
+	       " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
+	       $join_for_parent .
+	       " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " .
+	       " JOIN  {$this->tcversions_table} TCV ON NHA.id = TCV.id " .
+	       " {$executions_join} " .
+	       " {$keywords_join} " .
+	       " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
+	       " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
+	       " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
+	       $executions_filter;
 
   // 20081220 - franciscom
 	// if (!is_null($assigned_to) && $assigned_to > 0)
@@ -707,9 +719,6 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	     $sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
 	  }
 	
-	  // 20081221 - franciscom
-	  // $sql .= $sql_subquery;
-
 	  // BUGID 989 - added NHB.node_order
 	  $sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
 	  $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');

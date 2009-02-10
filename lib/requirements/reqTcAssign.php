@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/12/16 20:11:53 $  $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/02/10 20:01:20 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -184,7 +184,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
        $guiObj->requirements=$req_spec_mgr->get_requirements($guiObj->selectedReqSpec);
        
        $tsuite_mgr = new testsuite($dbHandler);
-       $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,1);
+       $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
        $guiObj->tcase_number=count($tcase_set);    
        
        $guiObj->bulkassign_warning_msg=sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);

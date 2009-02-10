@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/02/09 20:37:39 $ $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/02/10 20:01:20 $ $Author: franciscom $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -56,8 +56,7 @@ if ($args->edit == 'testsuite')
 	$tsuite_mgr = new testsuite($db);
 	$testsuite = $tsuite_mgr->get_by_id($args->id);
 	$keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
-	
-	$tcs = $tsuite_mgr->get_testcases_deep($args->id,true);
+	$tcs = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
 	if (sizeof($tcs))
 	{
 		$can_do = 1;

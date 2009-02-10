@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2009/02/04 08:14:18 $ by $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/02/10 18:05:38 $ by $Author: asielb $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -1556,7 +1556,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$label = $name ." (" . $testcase_count . ")";
     if($useCounters)
     {
-        	$add_html=create_counters_info($node,false);        
+        	$add_html=create_counters_info($node,$useColors);        
 	      	$label .= $add_html; 
 	  }
   }

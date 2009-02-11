@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.232 $
- * @modified $Date: 2009/02/09 20:37:38 $ by $Author: schlundus $
+ * @version $Revision: 1.233 $
+ * @modified $Date: 2009/02/11 10:51:44 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,6 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
+ *     20090211 - franciscom - added $tlCfg->treemenu_counter_coloring
  *     20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
  *     20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
  *     20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
@@ -434,6 +435,8 @@ $tlCfg->treemenu_default_testcase_order = 100;
 
 /** show/hide testcase id on tree menu */
 $tlCfg->treemenu_show_testcase_id = TRUE;
+
+$tlCfg->treemenu_counter_coloring = ENABLED;
 
 
 // ----------------------------------------------------------------------------

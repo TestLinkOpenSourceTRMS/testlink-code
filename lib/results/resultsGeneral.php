@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2008/10/24 12:27:37 $ by $Author: havlat $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/02/11 07:32:05 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
  *
  * Revisions:
+ *  20090209 - franciscom - BUGID 2080
  *  20080928 - franciscom - removed useless requires
  * 	20050807 - fm - refactoring:  changes in getTestSuiteReport() call
  * 	20050905 - fm - reduce global coupling
@@ -79,7 +80,7 @@ else // do report
       		$element['tsuite_name'] = $suiteNameID['name'];
       		$element['total_tc'] = $results['total'];
       		$element['percentage_completed'] = get_percentage($results['total'], 
-      				$results['total'] - $results['not_run']);
+      		$results['total'] - $results['not_run']);
 
         	unset($results['total']);
         	foreach($results as $key => $value)
@@ -164,43 +165,50 @@ else // do report
 	  $arrPrioritizedTCs = $re->getPrioritizedTestCases();
 	  foreach($milestonesList as $item)
 	  {
-		$item['tc_total'] = $planMetrics['total'];
-		$item['results'] = $re->getPrioritizedResults($item['target_date']);
+		    $item['tc_total'] = $planMetrics['total'];
+		    $item['results'] = $re->getPrioritizedResults($item['target_date']);
+        
+        // BUGID 20280
+		    $low_percentage = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
+		    $medium_percentage = get_percentage($arrPrioritizedTCs[MEDIUM], $item['results'][MEDIUM]); 
+		    $high_percentage = get_percentage($arrPrioritizedTCs[HIGH], $item['results'][HIGH]); 
+		    
+		    $item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
+		    $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
+        
+        $item['low_incomplete'] = OFF;
+        $item['medium_incomplete'] = OFF;
+	    	$item['high_incomplete'] = OFF;
+	    	$item['all_incomplete'] = OFF;
+        
+		    if ($low_percentage < $item['low_percentage'])
+		    {
+		    	$item['low_incomplete'] = ON;
+		    }	
 
-		$item['low_percentage'] = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
-		$item['medium_percentage'] = get_percentage($arrPrioritizedTCs[MEDIUM], $item['results'][MEDIUM]); 
-		$item['high_percentage'] = get_percentage($arrPrioritizedTCs[HIGH], $item['results'][HIGH]); 
-		$item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
-		$item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
+		    if ($medium_percentage < $item['medium_percentage'])
+		    {
+		    	$item['medium_incomplete'] = ON;
+		    }	
+		    	
+		    if ($high_percentage < $item['high_percentage'])
+		    {
+		    	$item['high_incomplete'] = ON;
+		    }	
 
-		if ($item['low_percentage'] < $item['C'])
-			$item['low_incomplete'] = ON;
-		else
-			$item['low_incomplete'] = OFF;
-		if ($item['medium_percentage'] < $item['B'])
-			$item['medium_incomplete'] = ON;
-		else
-			$item['medium_incomplete'] = OFF;
-		if ($item['high_percentage'] < $item['A'])
-			$item['high_incomplete'] = ON;
-		else
-			$item['high_incomplete'] = OFF;
-		if ($item['percentage_completed'] < $item['B'])
-			$item['all_incomplete'] = ON;
-		else
-			$item['all_incomplete'] = OFF;
-
-		$item['B'] = number_format($item['B'], 2);
-		
-		// save array
-		$statistics->milestones[$item['target_date']] = $item;
+		    if ($item['percentage_completed'] < $item['low_percentage'])
+		    {
+		    	$item['all_incomplete'] = ON;
+        }
+        
+		    $item['low_percentage'] = number_format($item['low_percentage'], 2);
+		    
+		    // save array
+		    $statistics->milestones[$item['target_date']] = $item;
 	  } // end foreach
 	}
 
-	//debug	
-//	$arrPriority = $statistics->milestones;
-
-  
+ 
 	// ----------------------------------------------------------------------------
 	/* Keywords report */
 	$items2loop=array('keywords' => 'getAggregateKeywordResults',

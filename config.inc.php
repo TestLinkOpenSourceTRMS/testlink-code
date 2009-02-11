@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.233 $
- * @modified $Date: 2009/02/11 10:51:44 $ by $Author: franciscom $
+ * @version $Revision: 1.234 $
+ * @modified $Date: 2009/02/11 18:05:24 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,7 +25,9 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
- *     20090211 - franciscom - added $tlCfg->treemenu_counter_coloring
+ *     20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
+ *                                   $tlCfg->exec_cfg->enable_tree_counters_colouring
+ *
  *     20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
  *     20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
  *     20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
@@ -436,8 +438,6 @@ $tlCfg->treemenu_default_testcase_order = 100;
 /** show/hide testcase id on tree menu */
 $tlCfg->treemenu_show_testcase_id = TRUE;
 
-$tlCfg->treemenu_counter_coloring = ENABLED;
-
 
 // ----------------------------------------------------------------------------
 /** [GUI: Javascript libraries] */
@@ -511,7 +511,14 @@ $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 $tlCfg->exec_cfg->can_delete_execution = DISABLED;
 
 // ENABLED -> test cases and test case counters will be coloured according to test case status
-$tlCfg->exec_cfg->enable_tree_colouring = ENABLED;
+// $tlCfg->exec_cfg->enable_tree_colouring = ENABLED;
+
+// ENABLED -> test cases will be coloured according to test case status
+$tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;
+
+// ENABLED -> test case counters will be coloured according to test case status
+$tlCfg->exec_cfg->enable_tree_counters_colouring = ENABLED;
+
 
 // 20080303 - franciscom
 // This can help to avoid performance problems.

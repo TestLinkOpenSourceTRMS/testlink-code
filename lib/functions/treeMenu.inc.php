@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2009/02/11 17:58:12 $ by $Author: schlundus $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2009/02/11 18:04:50 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -14,7 +14,8 @@
  *                                              LAYERSMENU, DTREE,	and JTREE. 
  *  Used type is defined in config.inc.php.
  * 
- * Rev: 20090202 - franciscom - minor changes to avoid BUGID 2009
+ * Rev: 20090211 - franciscom - BUGID 2094 
+ *      20090202 - franciscom - minor changes to avoid BUGID 2009
  *      20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
  *                              added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -1051,7 +1052,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 */
 function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,$level,
                                              $tc_action_enabled,$bForPrinting,
-                                             $useCounters=1,$useColors=1,$showTestCaseID=1,
+                                             $useCounters=1,$useColors=null,$showTestCaseID=1,
                                              $testCasePrefix,$showTestSuiteContents=1)
 {
 	$resultsCfg=config_get('results');
@@ -1071,6 +1072,14 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
 	$create_counters=0;
 	$versionID = 0;
+
+  $testcaseColouring=1;
+	$countersColouring=1;
+	if( !is_null($useColors) )
+	{
+      $testcaseColouring=$useColors->testcases;
+	    $countersColouring=$useColors->counters;
+	}
 	
   switch($node_type)
   {
@@ -1091,7 +1100,7 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 
    	$status_code = $tcase_node[$node['id']]['exec_status'];
  	  $status_descr=$status_code_descr[$status_code];
-    $css_class= $useColors ? (" class=\"{$status_descr}\" ") : '';   
+    $css_class= $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 
 		if($showTestCaseID)
@@ -1121,7 +1130,7 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 		$label = $name ." (" . $testcase_count . ")";
     if($useCounters)
     {
-        $add_html=create_counters_info($node,$useColors);
+        $add_html=create_counters_info($node,$countersColouring);
 		    $label .= $add_html; 
     }
   }
@@ -1149,7 +1158,7 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 */
 function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,
                                         $tc_action_enabled,$bForPrinting,
-                                        $useCounters=1,$useColors=1,$showTestCaseID=1,
+                                        $useCounters=1,$useColors=null,$showTestCaseID=1,
                                         $testCasePrefix,$showTestSuiteContents=1)
 {
 	$resultsCfg=config_get('results');
@@ -1170,6 +1179,15 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
 	$versionID = 0;
 	
+  $testcaseColouring=1;
+	$countersColouring=1;
+	if( !is_null($useColors) )
+	{
+      $testcaseColouring=$useColors->testcases;
+	    $countersColouring=$useColors->counters;
+	}
+
+	
 	$create_counters=0;
 	switch($node_type)
 	{
@@ -1182,7 +1200,7 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 	  	$status_code = $tcase_node[$node['id']]['exec_status'];
   	  $status_descr=$status_code_descr[$status_code];
   		
-      $css_class= $useColors ? (" class=\"{$status_descr}\" ") : '';   
+      $css_class= $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
 		  $label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 		  
 		  if($showTestCaseID)
@@ -1216,7 +1234,7 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 		$label = $name ." (" . $testcase_count . ")";
     if($useCounters)
     {
-        $add_html=create_counters_info($node,$useColors);
+        $add_html=create_counters_info($node,$countersColouring);
 	      $label .= $add_html; 
 	  }
   }
@@ -1245,7 +1263,7 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
       20080110 - franciscom - added $showTestCaseID
 */
 function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,
-                                        $bForPrinting,$useCounters=1,$useColors=1,
+                                        $bForPrinting,$useCounters=1,$useColors=null,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
 	$resultsCfg=config_get('results');
@@ -1261,6 +1279,15 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 	$create_counters=0;
 	$versionID = 0;
+	
+  $testcaseColouring=1;
+	$countersColouring=1;
+	if( !is_null($useColors) )
+	{
+      $testcaseColouring=$useColors->testcases;
+	    $countersColouring=$useColors->counters;
+	}
+
 	
   switch($node_type)
   {
@@ -1291,7 +1318,7 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	  $status_code = $tcase_node[$node['id']]['exec_status'];
 	  $status_descr = $status_code_descr[$status_code];
 
-    $css_class= $useColors ? (" class=\"{$status_descr}\" ") : '';   
+    $css_class= $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 		
 		if($showTestCaseID)
@@ -1310,7 +1337,7 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 		$label = $name ." (" . $testcase_count . ")";
     if($useCounters)
     {
-        $add_html=create_counters_info($node,$useColors);
+        $add_html=create_counters_info($node,$countersColouring);
 	      $label .= $add_html; 
 	  }
   }
@@ -1482,7 +1509,7 @@ function create_counters_info(&$node,$useColors)
 // rev: 20080629 - franciscom - fixed bug missing argument for call to ST
 //
 function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action_enabled,
-                                        $bForPrinting,$useCounters=1,$useColors=1,
+                                        $bForPrinting,$useCounters=1,$useColors=null,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
 	$resultsCfg=config_get('results');
@@ -1497,8 +1524,16 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 	$create_counters=0;
 	$versionID = 0;
-
   $node['leaf']=false;
+
+  $testcaseColouring=1;
+	$countersColouring=1;
+	if( !is_null($useColors) )
+	{
+      $testcaseColouring=$useColors->testcases;
+	    $countersColouring=$useColors->counters;
+	}
+
 
   switch($node_type)
   {
@@ -1525,12 +1560,13 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
     	$node['leaf'] = true;
 		$buildLinkTo = $tc_action_enabled;
 		if (!$buildLinkTo)
+		{
 			$pfn = null;
-
-	  	$status_code = $tcase_node[$node['id']]['exec_status'];
-	  	$status_descr = $status_code_descr[$status_code];
-
-		$css_class = $useColors ? (" class=\"{$status_descr}\" ") : '';   
+    }
+	  
+	  $status_code = $tcase_node[$node['id']]['exec_status'];
+	  $status_descr = $status_code_descr[$status_code];
+ 	  $css_class = $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">'.
 		         "&nbsp</span>";
 		
@@ -1547,13 +1583,12 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	}
 
   // -------------------------------------------------------------------------------
-  // 20080305 - franciscom
   if($create_counters)
   {
 		$label = $name ." (" . $testcase_count . ")";
     if($useCounters)
     {
-        	$add_html=create_counters_info($node,$useColors);        
+        	$add_html=create_counters_info($node,$countersColouring);        
 	      	$label .= $add_html; 
 	  }
   }

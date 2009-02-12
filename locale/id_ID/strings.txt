@@ -1,0 +1,2307 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: strings.txt,v $
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2009/02/12 16:30:40 $ by $Author: havlat $
+ *
+ * @author Budi Agus Santoso
+ *
+ * Indonesian translation
+ *
+ * Scripted update according en_GB string file (version: 1.399) 
+ * ---------------------------------------------------------------------------------- */
+
+
+
+// ----- General terms (used wide) ----------------------------
+$TLS_active 		= "Active";
+$TLS_asc 			= "ascending";
+$TLS_any 			= "Any";
+$TLS_assigned = "terkenakan";
+$TLS_author = "Author";
+$TLS_automated 		= "Automated";
+$TLS_automatic 		= "Automatic";
+$TLS_check_uncheck_all = "Toggle all";
+$TLS_unassigned 	= "unassigned";
+$TLS_desc 			= "descending";
+$TLS_description	= "Description";
+$TLS_delete_confirm_question = "Are your sure you want to delete?";
+$TLS_file_type		= 'File type';
+$TLS_help = "Tolong";
+$TLS_hour 			= "Hour";
+$TLS_importance		= "Importance";
+$TLS_manual 		= "Manual";
+$TLS_Milestone 		= "Milestone";
+$TLS_name = "Nama";
+$TLS_not_aplicable 	= "N/A";
+$TLS_none = "kosong";
+$TLS_priority		= "Priority";
+$TLS_project		= "Project";
+$TLS_requirement 	= "Requirement";
+$TLS_reqs = "Kebutuhan";
+$TLS_req_spec = "Spesifikasi Kebutuhan";
+$TLS_req_spec_short = "Req. Spec.";
+$TLS_SRS 			= "SRS";
+$TLS_Role 			= "Role";
+$TLS_sort_table_by_column = "Click to change sort order";
+$TLS_scope = "Jangkauan";
+$TLS_status = "Status";
+$TLS_Keyword 		= "Keyword";
+$TLS_test_case = "Test Case";
+$TLS_testcase 		= $TLS_test_case; // obsolete
+$TLS_testcaseversion = 'Test Case Version';
+$TLS_test_plan 		= "Test Plan";
+$TLS_testplan 		= $TLS_test_plan; // obsolete
+$TLS_testproject 	= "Test Project";
+$TLS_test_report 	= "Test Report";
+$TLS_test_suite 	= "Test Suite";
+$TLS_testsuite_created = "Test Suite created";
+$TLS_title = "Judul";
+$TLS_urgency 		= "Urgency";
+$TLS_not_imported 	= "Not imported";
+$TLS_imported 		= "Imported";
+$TLS_nobody 		= "Nobody";
+
+
+// Actions (used wide) 
+$TLS_add = "tertambah";
+$TLS_create = "Terbuat";
+$TLS_remove 		= "remove";
+$TLS_delete = "Hapus";
+
+
+// Buttons (used wide)
+$TLS_btn_apply 		= "Apply";
+$TLS_btn_add = "Tambah";
+$TLS_btn_assign = "Kenakan";
+$TLS_btn_cancel = "Batal";
+$TLS_btn_close = "Tutup";
+$TLS_btn_cp = "Copy";
+$TLS_btn_create = "Buat baru";
+$TLS_btn_delete = "Hapus";
+$TLS_btn_edit = "Edit";
+$TLS_btn_export 	= "Export";
+$TLS_btn_find = "Cari";
+$TLS_btn_goback 	= "Go back";
+$TLS_btn_import = "Impor";
+$TLS_btn_move = "Pindahkan";
+$TLS_btn_no 		= "No";
+$TLS_btn_ok 		= "Ok";
+$TLS_btn_save = "Simpan";
+$TLS_btn_unassign = "Tak dikenakan";
+$TLS_btn_update = "Update";
+$TLS_btn_upd = "Update";
+$TLS_btn_advanced_filters = "Advanced Filters";
+$TLS_btn_simple_filters = "Simple Filters"; 
+
+
+// Status (used wide)
+$TLS_test_status_all 		= "All";
+$TLS_test_status_any 		= "Any";
+$TLS_test_status_not_run = "Tidak Jalan";
+$TLS_test_status_blocked = "Terblokir";
+$TLS_test_status_failed = "Gagal";
+$TLS_test_status_passed = "Pass";
+$TLS_test_status_not_available = "Not Available";
+$TLS_test_status_unknown 	= "Unknown";
+
+
+// ----- unsorted (TODO move) -------------------------------------
+$TLS_problems_loading_xml_content = "Unable to load XML data, Check your file."; 
+$TLS_search_type_like = "Search on this value will be done on LIKE mode";
+$TLS_exec_assign_no_testcase = "Please select at least one Test Case.";
+$TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
+$TLS_no_testcases_available = "No Test Cases or no destination Test Suites available!";
+$TLS_warning_must_be_number = "Value must be a number";
+
+$TLS_estimated_time_hours = "Estimated time for executing %s test cases (hours):";
+$TLS_estimated_time_min = "Estimated time for executing %s test cases (min):";
+$TLS_real_time_hours = "Time used for executing %s test cases (hours):";
+$TLS_real_time_min = "Time used for executing %s test cases (min):";
+
+$TLS_th_active = "Aktif";
+$TLS_th_name = "Nama";
+$TLS_th_notes = "Catatan";
+$TLS_th_testcase 	= $TLS_test_case; // obsolete
+$TLS_th_delete = "Hapus?";
+$TLS_th_requirement_feature = "Requirement Feature";
+
+$TLS_import_file_type = "Import file type";
+$TLS_max_file_size_is = "Max. file size ";
+$TLS_supported_file_formats = "Supported file formats";
+$TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
+                                 " Please contact your administrator.";
+
+$TLS_name_already_exists = "Name:%s already exists";
+$TLS_created_with_new_name = "Create with name:%s, because name:%s already exists";
+
+
+// ----- JAVASCRIPT -----
+// Used on javascript logic to validate Custom Field values
+$TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
+$TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
+$TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
+
+
+// Installation/Migration (TODO remove - migration is English only)
+$TLS_start_warning = '---- Warning ----';
+$TLS_testlink_warning = 'TestLink Warning';
+$TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name = 'Original name';
+$TLS_end_warning = '---- *** ----';
+
+
+// --------------------------------------------------------------------------------------
+// ----- firstLogin.php -----
+$TLS_cant_create_user = "Maaf, login anda tidak bisa dibuatkan. Harap kontak administrator Anda mengenai hal ini!";
+$TLS_empty_email_address = " Alamat email tidak boleh kosong!";
+$TLS_empty_first_name = " Nama Awal tidak boleh kosong!";
+$TLS_empty_last_name = " Nama Akhir tidak boleh kosong!";
+$TLS_fatal_page_title = "TestLink ::: Fatal Error";
+$TLS_invalid_user_name = "Nama user tidak betul. Pilih lainnya.";
+$TLS_no_good_email_address = "Email address format seems no good";
+$TLS_passwd_dont_match = "Dua Password yang dimasukkan tidak sama. Password adalah 'case sensitive'. Coba lagi.";
+$TLS_user_cant_be_created_because = "Akun anda tak bisa dibuat karena:";
+$TLS_user_name_exists = "Nama user ini sudah terpakai, harap pilih lainnya.";
+$TLS_valid_user_name_format = "Nama user hanya boleh berisi huruf, angka, spasi, minus dan garisbawah.";
+$TLS_warning_empty_pwd = "Password tidak boleh kosong!";
+$TLS_your_info_please = "Masukkan informasi user";
+
+
+// ----- archiveData.php -----
+$TLS_container_title_testcase = $TLS_test_case;
+$TLS_high_priority 		= "High";
+$TLS_medium_priority 	= "Medium";
+$TLS_low_priority 		= "Low";
+$TLS_high_importance 	= "High";
+$TLS_medium_importance 	= "Medium";
+$TLS_low_importance 	= "Low";
+$TLS_urgency_high 		= "High";
+$TLS_urgency_medium 	= "Medium";
+$TLS_urgency_low 		= "Low";
+$TLS_test_importance 	= "Test importance";
+$TLS_testcases_assigned_to_user = 'Test Project: %s - Test Cases Assigned to User: %s';
+$TLS_assigned_on = 'Assigment date';
+
+
+// ----- index.php -----
+$TLS_main_page_title = "TestLink ::: Halaman utama";
+$TLS_config_check_warnings = "There are security warnings for your consideration. " .
+                             "See details on file: %s. " .
+                             "To disable any reference to these checkings, set \$tlCfg->config_check_warning_mode = SILENT;";
+
+
+// ----- keywordsimport.php -----
+$TLS_please_choose_keywords_file = "Please choose the file to upload";
+$TLS_keywords_file = "Keywords file";
+$TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
+
+
+// ----- lostPassword.php -----
+$TLS_bad_user = "USer tak ketemu, coba lagi";
+$TLS_contact_admin = "<br>bila masih ada masalah lainnya, harap kontak administrator Anda.";
+$TLS_mail_empty_address = "Anda tidak menuliskan alamat email di Profil User Anda! Harap kontak administrator Test Link untuk me-reset Password Anda!";
+$TLS_mail_passwd_subject = "Password TestLink baru Anda.";
+$TLS_mail_problems = "Error saat setup email, harap kontak administrator Anda.";
+$TLS_page_title_lost_passwd = "TestLink - Password Hilang";
+$TLS_your_info_for_passwd = "Masukkan Informasi User sehingga Password Anda yang baru bisa di-emailkan.";
+$TLS_your_password_is = "Password Test Link Anda yang baru adalah: <br>";
+
+
+
+// ----- login.php -----
+$TLS_bad_user_passwd = "Coba lagi! Salah nama login dan/atau password!";
+$TLS_login_msg_session_exists1 = "Masih ada login yang valid untuk 'Browser' Anda. Pakai saja";
+$TLS_login_msg_session_exists2 = " dahulu, bila Anda mau memperbarui session.";
+$TLS_logout_link = "Logout";
+$TLS_passwd_lost = "Password Anda sudah diirimkan ke akun email yang telah Anda tuliskan saat pendaftaran, Harap Periksa kotak email Anda. Bila masih ada masalah lain, harap segera kontak Administrator TestLink Anda.";
+$TLS_password_reseted = "New password has been sent via mail";
+$TLS_please_login = "Harap login ...";
+$TLS_session_expired = "Session Anda sudah hangus! Harap login lagi.";
+$TLS_your_first_login = "Selamat Datang di TestLink! Anda mendapat hak akses 'GUEST'. Harap login ...";
+
+
+// ----- newest_tcversions.php -----
+$TLS_no_linked_tcversions = "no linked Test Case versions";
+// resultsGeneral.php
+$TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
+                                 "then no execution data can exist => no report can be created";
+
+// ----- resultsNavigator.php -----
+$TLS_title_nav_results = "Reports and Metrics";
+$TLS_report_tplan_has_no_build = "Test Plan has no build defined, <br />".
+                               "then no execution data can exist => no report can be created";
+$TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
+                                "then no execution data can exist => no report can be created";
+
+// ----- tcEdit.php -----
+$TLS_tc_copied = "Test Case %s was successfully copied to <br /> Test Suite %s";
+$TLS_tc_created = "Test Case %s was successfully created";
+$TLS_tc_deleted = "Test Case %s was successfully deleted";
+$TLS_tc_updated = "Test Case %s was successfully updated";
+$TLS_tc_new_version = "Test Case Version %d was successfully created";
+$TLS_tc_updated = "Test Case %s was successfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was successfully deleted";
+$TLS_assign_requirements = "Assign Requirements";
+
+
+// ----- tcexecute.php -----
+$TLS_check_test_automation_server = "Please Check Server Settings";
+$TLS_result_after_exec = "Results after execution: ";
+$TLS_service_not_supported = "This service is not supported";
+$TLS_tcexec_notes = "Notes:";
+$TLS_tcexec_result = "Result:";
+$TLS_tcexec_results_for = "Result for:";
+
+
+// ----- gui/templates/attachment404.tpl -----
+$TLS_error_attachment_not_found = "Error: Attachment not found!";
+$TLS_title_downloading_attachment = "Downloading attachment";
+
+
+// ----- gui/templates/attachmentdelete.tpl -----
+$TLS_deleting_was_ok = "Attachment was deleted!";
+$TLS_error_attachment_delete = "Error while deleting attachment!";
+$TLS_title_delete_attachment = "Delete attachment";
+
+
+
+// ----- gui/templates/containerDelete.tpl -----
+$TLS_btn_yes_del_comp = "Ya, hapus Komponen!";
+$TLS_container_title_testsuite = $TLS_test_suite;
+$TLS_linked_but_not_executed = "Linked to one or more Test Plan, but not executed";
+$TLS_question_del = "Benar mau hapus";
+$TLS_th_link_exec_status = "Link and execution status";
+
+
+
+// ----- gui/templates/containerNew.tpl -----
+$TLS_btn_create_testsuite = "Create Test Suite";
+$TLS_tc_keywords = "Katakunci";
+$TLS_title_create = "Buat Baru";
+$TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
+
+
+
+// ----- gui/templates/bug_add.tpl -----
+$TLS_btn_add_bug = "Add bug";
+$TLS_bug_id = "Bug id";
+$TLS_button_enter_bug = "Buat Bug baru";
+$TLS_link_bts_create_bug = "Access to Bug Tracking System ";
+$TLS_title_bug_add = "Add bug";
+
+
+// gui/templates/bug_delete.tpl
+$TLS_title_delete_bug = "Delete bug";
+
+
+
+// gui/templates/containerMove.tpl
+$TLS_as_first_testsuite = "Destination position top";
+$TLS_as_last_testsuite = "Destination position bottom";
+$TLS_choose_target = "Pilih target";
+$TLS_cont_copy_first = "Copy";
+$TLS_cont_copy_second = "to Any";
+$TLS_cont_move_first = "Pindahkan ini";
+$TLS_cont_move_second = "ke lainnya";
+$TLS_copy_keywords = "Copy Katakunci";
+$TLS_defined_exclam = "sudah terdefinisi !";
+$TLS_include_nested = "Termasuk data didalamnya (copy saja).";
+$TLS_sorry_further = "Maaf, tidak ada selebihnya ";
+$TLS_title_move_cp = "Pindahkan/Copy";
+$TLS_title_move_cp_testcases = "Move/Copy Test Cases";
+
+
+// gui/templates/reqCreate.tpl
+$TLS_req_create = "Buat Kebutuhan Baru";
+$TLS_req_doc_id = "DOC-ID";
+$TLS_warning_empty_req_title = "Requirement title cannot be empty!";
+$TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
+$TLS_create_testcase_from_req = "Create Test Cases from Requirements";
+
+
+// gui/templates/containerOrder.tpl
+$TLS_no_nodes_to_reorder = "I'm sorry there is nothing to reorder!";
+$TLS_node = "Name";
+$TLS_th_id = "ID";
+$TLS_th_node_type = "Test Case / Test Suite";
+$TLS_th_order = "Urut";
+$TLS_title_change_node_order = "Change children order";
+$TLS_node_type_dbtable_testsuites = $TLS_test_suite;
+$TLS_node_type_dbtable_testcases = $TLS_testcase;
+
+
+
+// gui/templates/containerView.tpl
+$TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites and Test Cases)";
+$TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
+$TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
+$TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_btn_del_testsuite = "Delete Test Suite";
+$TLS_btn_edit_testsuite = "Edit";
+$TLS_btn_execute_automatic_testcases = "Execute All Automatic Test Cases";
+$TLS_btn_export_all_testsuites = "Export All Test Suites";
+$TLS_btn_export_tc = "Export child Test Cases";
+$TLS_btn_export_testsuite = "Export Test Suite";
+$TLS_btn_import_tc = "Impor Test Case";
+$TLS_btn_import_testsuite = "Import Test Suite";
+$TLS_btn_move_cp_testsuite = "Move/Copy";
+$TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_btn_new_testsuite = "New child Test Suite";
+$TLS_btn_new_tc = "Buat Test Case";
+$TLS_btn_reorder = "Reorder children";
+$TLS_container_title_testproject = $TLS_testproject;
+$TLS_edit_testproject_basic_data = "Edit Test Project basic data";
+$TLS_th_product_name = "Nama Produk";
+
+
+// gui/templates/cfields/cfieldsEdit.tpl
+$TLS_available_on = "Available for";
+$TLS_custom_field = "Custom field";
+$TLS_enable_on_design = "Enable on <br />test specification";
+$TLS_enable_on_exec = "Enable on <br />test execution";
+$TLS_enable_on_testplan_design = "Enable on <br />test plan design";
+$TLS_label = "Label";
+$TLS_name = "Nama";
+$TLS_popup_delete_custom_field = "Are you sure you want to delete the custom field?";
+$TLS_possible_values = "Possible values";
+$TLS_show_on_design = "Display on <br />test specification";
+$TLS_show_on_exec = "Display on <br />test execution";
+$TLS_show_on_testplan_design = "Display on <br />test plan design";
+$TLS_testcase = $TLS_test_case;
+$TLS_title_cfields_mgmt = "Custom fields";
+$TLS_title_cfield_edit = "Edit ";
+$TLS_type = "Type";
+$TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";
+$TLS_warning_empty_cfield_name = "Please enter the name of this custom field.";
+$TLS_warning_is_in_use = "You can neither delete, either change type <br /> " .
+                         "because a value has been assigned to this custom field <br />" .
+                         "by user on an test specification or execution ";
+
+
+// gui/templates/inc_update.tpl
+$TLS_info_failed_db_upd = "Gagal meng-update database!";
+$TLS_info_failed_db_upd_details = "Gagal meng-update database! - detail:";
+$TLS_invalid_query = "Query salah";
+$TLS_warning = "Warning!!";
+$TLS_was_success = " telah sukses ";
+
+
+// gui/templates/execNavigator.tpl
+$TLS_TestPlan = "TestPlan";
+$TLS_btn_apply_filter = "Apply";
+$TLS_btn_update_menu = "Update menu";
+$TLS_caption_nav_filter_settings = "Filter Navigasi & Setting";
+$TLS_current_build = "Current build";
+$TLS_filter_owner = "Filter: Pemilik";
+$TLS_filter_result = "Filter: Hasil";
+$TLS_filter_tcID = "Filter: TestCase ID";
+$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
+$TLS_keyword = "Keyword";
+$TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
+
+
+// gui/templates/mainPage.tpl
+$TLS_th_my_perc_completed = "Penyelesaian Saya [%]";
+$TLS_th_perc_completed = "Terselesaikan[%]";
+$TLS_title_your_tp_metrics = "Test Plan Metrik Anda";
+
+
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc = "Test Case number";
+$TLS_th_active_tc = "Active Test Cases";
+$TLS_th_executed_tc = "Executed Test Cases";
+$TLS_th_executed_vs_active = "Executed/Active [%]";
+$TLS_th_executed_vs_total = "Executed/Total [%]";
+
+
+// gui/templates/newest_tcversions.tpl
+$TLS_linked_version = "Linked version";
+$TLS_newest_version = "Newest available active version";
+$TLS_title_newest_tcversions = "Newest versions of linked Test Cases";
+$TLS_no_newest_version_of_linked_tcversions = "All linked Test Case Versions are current";
+
+
+// gui/templates/emailSent.tpl
+$TLS_send_test_report = "- Kirim Laporan Tes";
+
+
+// gui/templates/reqImport.tpl
+$TLS_Result = "Hasil";
+$TLS_btn_back2srs = "Kembali ke Spesifikasi Kebutuhan";
+$TLS_btn_upload_file = "Upload file";
+$TLS_check_req_file_structure = "Please check the file format, seems is not possible get any requirement";
+$TLS_local_file = "File:";
+$TLS_max_size_cvs_file1 = "Ukuran maksimal file adalah";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_req_import_check_note = "Coba uji konflik yang mungkin, set solusi yang cocok dan mulai proses impor.";
+$TLS_req_import_dont_empty = "Jangan impor barang dengan jangkauan yang kosong";
+$TLS_req_import_option_double = "Tambahkan yang baru dengan judul yang sama";
+$TLS_req_import_option_header = "Set solusi konflik";
+$TLS_req_import_option_overwrite = "Update yang sudah ada";
+$TLS_req_import_option_skip = "Lewati impor kebutuhan yang dobel-dobel";
+$TLS_req_import_type = "Tipe:";
+$TLS_req_msg_norequirement = "Tak ada kebutuhan";
+$TLS_required_cvs_format = "Format File yang dibutuhkan adalah:";
+$TLS_title_choose_file_type = "Pilih Tipe File";
+$TLS_title_choose_local_file = "Pilih File lokal untuk di Upload";
+$TLS_title_req_import = "Import requirements";
+$TLS_title_req_import_check_input = "Periksa data impor";
+
+
+
+// gui/templates/inc_attachments.tpl
+$TLS_alt_delete_build = "Klik di sini untuk menghapus 'build' ini";
+$TLS_alt_delete_attachment = "Click here to delete this attachment";
+$TLS_attached_files = "Attached files";
+$TLS_attachment_feature_disabled = "attachment disabled";
+$TLS_button_upload = "Upload";
+$TLS_upload_file_new_file = "Upload new file";
+$TLS_warning_delete_attachment = "Really delete this attachment?";
+
+
+
+// gui/templates/resultsNavigator.tpl
+$TLS_btn_print = "Cetak";
+$TLS_note_email_sent_t = "note: email format sent to user's email";
+$TLS_send_results = "Kirim Hasil-hasil";
+$TLS_send_to = "To:";
+$TLS_subject = "Subject:";
+$TLS_title_active_build = "Build Aktif";
+$TLS_title_report_type = "Report Format";
+$TLS_via_email = "per eMail";
+$TLS_link_results_import = "Import Results";
+
+
+// gui/templates/inc_attachments_upload.tpl
+
+
+
+// gui/templates/cfields/cfieldsView.tpl
+$TLS_btn_cfields_create = "Create";
+$TLS_manage_cfield = "Manage custom field";
+
+
+// cfieldsExport.php
+$TLS_export_cfields = "Export Custom fields";
+
+// cfieldsImport.php
+$TLS_import_cfields = "Import Custom fields";
+$TLS_custom_field_already_exists="Custom field %s already exists.";
+$TLS_custom_field_imported="Custom field %s imported.";
+
+// gui/templates/inc_cat_viewer_ro_m0.tpl
+$TLS_cat_scope = "Jangkauan dan Tujuan";
+$TLS_category = "Kategori";
+$TLS_configuration = "Konfigurasi";
+$TLS_data = "Data";
+$TLS_not_defined = "Tak terdefinisi.";
+$TLS_tools = "Tools";
+
+
+
+// gui/templates/inc_cat_viewer_rw.tpl
+$TLS_cat_alt_name = "Tambahkan nama Kategori. Wajib diisi.";
+$TLS_cat_config = "Konfigurasi";
+$TLS_cat_data = "Data";
+$TLS_cat_name = "Nama Kategori";
+$TLS_cat_tools = "Tools";
+
+
+
+// gui/templates/reqEdit.tpl
+$TLS_by = "oleh";
+$TLS_coverage = "Cakupan";
+$TLS_popup_delete_req = "Apakah benar-benar mau menghapus kebutuhan ini?";
+$TLS_req_edit = "Edit Kebutuhan";
+$TLS_req_msg_notestcase = "Tidak ada Test Case yang terhubung";
+$TLS_requirement_spec = "Requirement Specification Document";
+$TLS_test_case_id = "ID";
+$TLS_title_created = "Dibuat pada";
+$TLS_title_last_mod = "Modifikasi terakhir pada ";
+
+
+
+// gui/templates/buildEdit.tpl
+$TLS_active = "Active";
+$TLS_enter_build = "Masukkan peng-identifikasi";
+$TLS_enter_build_notes = "Catatan:";
+//$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
+//                 "Description should include: list of delivered packages, approvals, status,etc.";
+$TLS_open = "Open";
+$TLS_title_build_2 = "Build management";
+$TLS_title_build_create = "Create a new Build";
+$TLS_title_build_update = "Update Build";
+$TLS_title_build_edit = "Edit Build";
+$TLS_warning_empty_build_name = "Please enter a name for the Build!";
+$TLS_copy_to_all_tplans = "Copy to all Test Plans";
+
+
+
+// gui/templates/inc_comp_viewer_ro.tpl
+$TLS_component = "Komponen";
+$TLS_introduction = "Pendahuluan";
+$TLS_limitations = "Batasan-batasan";
+$TLS_methodology = "Metodologi";
+$TLS_references = "Referensi";
+
+
+
+// gui/templates/inc_comp_viewer_rw.tpl
+$TLS_comp_alt_name = "Tambahkan Nama Komponen. Wajib diisi.";
+$TLS_comp_intro = "Pendahuluan";
+$TLS_comp_lim = "Batasan-batasan";
+$TLS_comp_method = "Metodologi";
+$TLS_comp_name = "Nama Komponen";
+$TLS_comp_ref = "Referensi";
+$TLS_comp_scope = "Jangkauan";
+
+
+
+// gui/templates/reqSpecView.tpl
+$TLS_btn_analyse = "Analisa";
+$TLS_btn_check_all = "Centang Semua";
+$TLS_btn_delete_spec = "Hapus Spec.";
+$TLS_btn_edit_spec = "Edit spec.";
+$TLS_btn_export_reqs = "Export requirements";
+$TLS_btn_req_create = "Buat Kebutuhan ";
+$TLS_btn_spec_list = "Daftar Kebutuhan";
+$TLS_btn_uncheck_all = "Hilangkan semua centang";
+$TLS_cant_delete_req_nothing_sel = "Please select a requirement!";
+$TLS_popup_sure_delete = "Benar mau hapus spesifikasi kebutuhan ?";
+$TLS_req_select_create_tc = "Buat Test Case Baru";
+$TLS_req_select_delete = "Hapus Kebutuhan";
+$TLS_req_title_list = "Daftar Semua Kebutuhan";
+$TLS_req_total = "Total Kebutuhan";
+$TLS_req_reorder = "Reorder requirements";
+$TLS_select_at_least_one_req = "Please select a requirement!";
+$TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
+$TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_title_change_req_order = "Change requirements order";
+
+
+// gui/templates/inc_copyrightnotice.tpl
+$TLS_gnu_gpl = "GNU GPL";
+$TLS_lic_home = "Depan";
+$TLS_lic_product = "Produk";
+$TLS_licensed_under = "TestLink berlisensi di bawah ";
+
+
+
+// gui/templates/containerEdit.tpl
+$TLS_btn_update_testsuite = "Update Test Suite";
+$TLS_title_edit_level = "Edit";
+
+
+
+// gui/templates/reqSpecAnalyse.tpl
+$TLS_edit = "Edit";
+$TLS_none = "kosong";
+$TLS_req = "Kebutuhan";
+$TLS_req_spec_change = "Ubah Spesifikasi Kebutuhan ke";
+$TLS_req_title_analyse = "Analisa Spesifikasi kebutuhan ";
+$TLS_req_title_covered = "Cakupan kebutuhan";
+$TLS_req_title_in_tl = "Requirements within TestLink";
+$TLS_req_title_nottestable = "Kebutuhan tak ter-tes";
+$TLS_req_title_uncovered = "Kebutuhan tercakup";
+$TLS_req_title_not_in_tl = "Uncovered or not-testable requirements";
+$TLS_req_total_count = "Total angka kebutuhan";
+$TLS_testcases = "Test Case";
+
+
+
+// gui/templates/reqSpecCreate.tpl
+$TLS_action_create_srs = "Create Requirement Specification document";
+
+
+
+// gui/templates/inc_reqView.tpl
+$TLS_Author = "Pengarang";
+$TLS_last_edit = "Edit Terakhir Oleh";
+$TLS_warning_delete_requirement = "You are going to delete: %s <br /><br /> Are you sure?";
+
+
+// gui/templates/inc_res_by_comp.tpl
+$TLS_title_res_by_top_level_suites = "Results by top level Test Suites";
+$TLS_trep_blocked = "Terblokir";
+$TLS_trep_comp = "Komponen";
+$TLS_trep_comp_perc = "Terselesaikan [%]";
+$TLS_trep_failed = "Gagal";
+$TLS_trep_not_run = "Tidak Jalan";
+$TLS_trep_passed = "Pass";
+$TLS_trep_total = "Total";
+
+
+
+// gui/templates/inc_res_by_keyw.tpl
+$TLS_title_res_by_kw = "Hasil terhadap Katakunci";
+$TLS_trep_kw = "Katakunci";
+
+
+
+// gui/templates/inc_res_by_owner.tpl
+$TLS_title_res_by_owner = "Hasil terhadap pemilik";
+$TLS_trep_owner = "Pemilik";
+$TLS_title_res_by_tester = "Results by Tester";
+$TLS_trep_tester = "Tester";
+
+
+
+// gui/templates/inc_res_by_prio.tpl
+$TLS_tit_end_date = "Tanggal Akhir";
+$TLS_tit_milestone = "Milestone";
+$TLS_title_res_by_prio = "Hasil terhadap Prioritas";
+$TLS_trep_milestone_goal = "Tujuan Milestone [%]";
+$TLS_trep_prio = "Prioritas";
+$TLS_trep_status = "Status";
+
+
+
+// gui/templates/inc_res_by_ts.tpl
+$TLS_title_res_by_ts = "Hasil terhadap Test Suite";
+$TLS_trep_imp = "Pentingnya";
+$TLS_trep_risk = "Risiko";
+$TLS_trep_ts = "Test Suite";
+
+
+
+// gui/templates/reqSpecEdit.tpl
+$TLS_req_total_description = "Use this parameter to overwrite real count " .
+		"of requirements within the document. '0' means unused.";
+
+
+
+// gui/templates/inc_show_bug_table.tpl
+$TLS_build = "Build";
+$TLS_caption_bugtable = "Bug yang relevan";
+$TLS_delete_bug ="delete bug";
+$TLS_del_bug_warning_msg = "Really delete this bug?";
+
+
+
+// gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc = "Kenakan Test Case";
+$TLS_no_docs = "Tak ada dokumen tersedia.";
+$TLS_req_list_docs = "Daftar Dokumen";
+
+
+
+// gui/templates/tcEdit_New_viewer.tpl
+$TLS_alt_add_tc_name = "Tambah nama Test Case. Harus diisi.";
+$TLS_expected_results = "Harapan hasil";
+$TLS_steps = "Langkah-langkah";
+$TLS_summary = "Ringkasan";
+$TLS_tc_title = "Judul Test Case";
+
+
+
+// gui/templates/show_exec_notes.tpl
+$TLS_title_execution_notes = "Execution notes";
+
+
+
+// gui/templates/rolesedit.tpl
+$TLS_btn_create_role = "Create";
+$TLS_btn_edit_role = "Save";
+$TLS_caption_define_role = "Define role";
+$TLS_caption_possible_affected_users = "Possibly affected users by role delete operation";
+$TLS_enter_role_notes = "Role description";
+$TLS_menu_assign_product_roles = "Assign Test Project roles";
+$TLS_menu_assign_testplan_roles = "Assign Test Plan roles";
+$TLS_menu_define_roles = "New role";
+$TLS_menu_mod_user = "Ubah User";
+$TLS_menu_new_user = "User baru";
+$TLS_menu_edit_user = "Edit User";
+$TLS_menu_edit_role = "Edit Role";
+$TLS_menu_view_users = "View Users";
+$TLS_menu_view_roles = "View roles";
+$TLS_th_cf_rights = "Custom field";
+$TLS_th_kw_rights = "Keyword";
+$TLS_th_mgttc_rights = "Test Case management";
+$TLS_th_product_rights = "Test Project";
+$TLS_th_req_rights = "Requirement";
+$TLS_th_rights = "Perizinan";
+$TLS_th_rolename = "Role name";
+$TLS_th_system_rights = "System rights";
+$TLS_th_tp_rights = "Test Plan";
+$TLS_th_user_rights = "User";
+$TLS_title_user_mgmt = "Administrasi User";
+$TLS_warning_empty_role_name = "Please give a name to Role";
+$TLS_warning_modify_role = "Really modify the role?";
+
+
+
+// gui/templates/tcSearchForm.tpl
+$TLS_caption_search_form = "Cari Test Cases";
+$TLS_custom_field_value ="Custom Field Value";
+$TLS_not_applied = "Tak bisa dipakai";
+$TLS_th_tcid = "TestCase ID";
+$TLS_th_tcversion = "Version";
+$TLS_th_title = "Judul";
+$TLS_title_search_tcs = "Cari";
+$TLS_requirement_document_id = "Req. Doc. ID";
+
+
+// gui/templates/testcases/searchData.tpl
+$TLS_too_wide_search_criteria = "Too many results. Please, set a more specific " .
+		"criteria for the search.";
+
+
+// gui/templates/infoWindow.tpl
+
+
+
+// gui/templates/tcDelete.tpl
+$TLS_btn_yes_iw2del = "Ya, Hapus Test Case!";
+$TLS_question_del_tc = "Benar-benar mau hapus Test Case?";
+$TLS_th_executed = "Executed";
+$TLS_th_linked_to_tplan = "Linked to Test Plan";
+$TLS_th_version = "Version";
+
+
+
+// gui/templates/tcNew.tpl
+$TLS_title_new_tc = "Buat Test Case";
+$TLS_warning_empty_tc_title = "Beri Judul Test Case";
+
+
+
+// gui/templates/tcImport.tpl
+$TLS_title_imp_tc_data = "Import TestCase data";
+$TLS_view_file_format_doc = "(View file formats documentation)";
+
+
+
+// gui/templates/keywordsimport.tpl
+$TLS_title_keyword_import_to = "Import keywords to";
+$TLS_title_keyword_import = "Import keywords";
+
+
+
+// gui/templates/keywordsExport.tpl
+$TLS_export_keywords="Export keywords";
+$TLS_title_req_import_to = "Impor kebutuhan ke dokumen:";
+
+
+
+// gui/templates/cfields_tproject_assign.tpl
+$TLS_btn_cfields_active_mgmt = "Update active status";
+$TLS_btn_cfields_display_order = "Save display order";
+$TLS_cfields_active = "Active";
+$TLS_cfields_tproject_assign = "Assign custom fields";
+$TLS_display_order = "Display order";
+$TLS_title_assigned_cfields = "Assigned custom fields";
+$TLS_title_available_cfields = "Available custom fields";
+
+
+
+// gui/templates/usersview.tpl
+$TLS_No = "Tidak";
+$TLS_Yes = "Ya";
+$TLS_alt_delete_user = "Really delete the selected user?";
+$TLS_alt_edit_user = "Edit user";
+$TLS_order_by_login = "Order by login";
+$TLS_order_by_role_descr = "Order by role description";
+$TLS_th_email = "Email";
+$TLS_th_first_name = "Nama Awal";
+$TLS_th_last_name = "Nama Akhir";
+$TLS_th_locale = "Locale";
+$TLS_th_login = "Login";
+$TLS_th_role = "Peranan";
+$TLS_th_api = "API Key";
+//$TLS_api_gen_key_action = "generate";
+$TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_order_by_login_dir = "Order by login";
+$TLS_order_by_role_dir = "Order by role";
+$TLS_alt_active_user = "Active user";
+
+
+// gui/templates/login.tpl
+$TLS_btn_login = "Login";
+$TLS_login_name = "Nama Login:";
+$TLS_lost_password_q = "Hilang Password?";
+$TLS_new_user_q = "User Baru?";
+$TLS_password = "Password:";
+
+
+
+// gui/templates/loginFirst.tpl
+$TLS_btn_add_user_data = "Tambah User Data";
+$TLS_e_mail = "Alamat E-mail (apabila lupa password):";
+$TLS_first_name = "Nama Awal:";
+$TLS_last_name = "Nama Akhir:";
+$TLS_link_back_to_login = "Kembali ke login";
+$TLS_password_again = "Password lagi:";
+$TLS_password_mgmt_is_external = "Password management is external";
+$TLS_user_login_valid_regex = "The Login Name contains invalid characters!";
+
+
+// gui/templates/tcMove.tpl
+$TLS_as_first_testcase = "Destination position top";
+$TLS_as_last_testcase = "Destination position bottom";
+$TLS_btn_mv = "Pindahkan";
+$TLS_choose_container = "Choose Test Suite";
+$TLS_inst_copy = "Copy Test Case to any Test Suite.";
+$TLS_inst_move = "Pindahkan Test Case ke Kategori Lainnya (komponen yang sama).";
+$TLS_inst_copy_move_warning = "Important: You can only choose Test Suites belonging to this Test Project.";
+$TLS_title_mv_cp_tc = "Pindahkan/Salin test case";
+
+
+
+// gui/templates/loginLost.tpl
+$TLS_btn_send = "Kirim";
+$TLS_password_reset = "Reset password";
+
+
+
+// gui/templates/tcView.tpl
+$TLS_no_records_found = "Pencarian Anda tak ada hasil!";
+$TLS_other_versions = 'Other versions';
+$TLS_match_count = "Number of matches";
+
+// gui/templates/execSetResults.tpl
+$TLS_alt_attachment_mgmt = "attachments";
+$TLS_alt_notes = "Notes";
+$TLS_assigned_to = "Assigned to";
+$TLS_attachment_mgmt = "attachments";
+$TLS_btn_history_off = "Show only last execution";
+$TLS_btn_history_off_any_build = "Show only last execution (any Build)";
+$TLS_btn_history_on = "Show complete execution history";
+$TLS_btn_save_all_tests_results = "Save all executions";
+$TLS_btn_save_tc_exec_results = "Simpan Hasil";
+$TLS_bug_mgmt = "BUG management";
+$TLS_build_is_closed = "Build is closed";
+$TLS_builds_notes = "Build description";
+$TLS_bulk_tc_status_management = "Bulk TC status management";
+$TLS_closed_build = "close build. no operation can be done";
+$TLS_date_time_run = "Date";
+$TLS_details = "Details";
+$TLS_edit_notes = "edit notes";
+$TLS_execute_and_save_results ="Execute and Save Results";
+$TLS_exec_any_build = "(any build)";
+$TLS_exec_current_build = "(current build)";
+$TLS_exec_notes = "Notes";
+$TLS_exec_status = "Status";
+$TLS_execution_history = "Execution history";
+$TLS_execution_type_manual = "Manual";
+$TLS_execution_type_auto = "Automated";
+$TLS_has_no_assignment = "No tester assigned";
+$TLS_img_title_bug_mgmt = "Bug management";
+$TLS_img_title_delete_execution = "Delete execution";
+$TLS_import_xml_results = "Import XML Results";
+$TLS_just_last_execution_for_this_build = "Last execution for build";
+$TLS_last_execution = "Last execution";
+$TLS_no_data_available = "No data available";
+$TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
+$TLS_or_unassigned_test_cases = " Or without tester assignment";
+$TLS_run_mode = "Run mode";
+$TLS_set_all_tc_to = "Set all to status ";
+$TLS_show_hide = "Show / hide";
+$TLS_tc_not_tested_yet = "Belum dites";
+$TLS_test_cases_cannot_be_executed = "Test cases can not be executed";
+$TLS_testcase_version_is_inactive_on_exec = "This version is inactive => Can not be executed";
+$TLS_test_exec_by = "oleh";
+$TLS_test_exec_expected_r = "Hasil yang diharapkan";
+$TLS_test_exec_last_run_date = "Run baru-baru ini:";
+$TLS_test_exec_notes = "Catatan / Deskripsi";
+$TLS_test_exec_on_build = "pada 'Build'";
+$TLS_test_exec_result = "Hasil";
+$TLS_test_exec_steps = "Langkah-langkah";
+$TLS_test_exec_summary = "Ringkasan";
+$TLS_test_plan_notes = "Test plan notes";
+$TLS_th_test_case_id = "ID ";
+$TLS_th_testsuite = $TLS_test_suite;
+$TLS_title_t_r_on_build = "Hasil Tes pada Build";
+$TLS_title_t_r_owner = "Pemilik:";
+$TLS_title_test_case = "Test Case";
+$TLS_version = "Versi";
+$TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
+$TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
+
+
+// gui/templates/inc_testsuite_viewer_ro.tpl
+$TLS_keywords = "Katakunci";
+
+
+
+// gui/templates/navBar.tpl
+$TLS_access_doc = "documentation";
+$TLS_home = "Depan";
+$TLS_link_logout = "Logout";
+$TLS_navbar_user_management = "Users";
+$TLS_product = "Produk";
+$TLS_product_role = "Test Project role ";
+$TLS_search_testcase = "Search";
+$TLS_title_edit_personal_data = "Personal";
+$TLS_title_events = "Events";
+$TLS_title_execute = "Jalankan";
+$TLS_title_results = "Hasil-hasil";
+$TLS_title_specification = "Spesifikasi";
+$TLS_session_inactivity_timeout_at = "Session idle timeout at";
+
+
+
+// gui/templates/inc_testsuite_viewer_rw.tpl
+
+
+
+// gui/templates/planAddTC_m1.tpl
+$TLS_add_tc = "Add";
+$TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
+$TLS_btn_add_remove_selected_tc = "Add / Remove selected";
+$TLS_btn_add_selected_tc = "Tambahkan Test Case Terpilih";
+$TLS_btn_check = "Cek";
+$TLS_btn_save_exec_order = "Save order";
+$TLS_btn_save_custom_fields ="Save custom fields";
+$TLS_btn_uncheck = "Hilangan Cek";
+$TLS_check_uncheck_tc = "Test Case di dalam Kategori";
+$TLS_check_uncheck_all_checkboxes = "check/uncheck all";
+$TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
+$TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
+$TLS_execution_order = "Execution order";
+
+$TLS_has_been_executed = "has been executed";
+$TLS_inactive_testcase = "inactive";
+$TLS_no_testcase_available = "No Test Case available";
+$TLS_note_keyword_filter = "Test Cases are filtered by keyword";
+$TLS_remove_tc = "Remove";
+$TLS_show_tcase_spec = "Show Test Case specification";
+$TLS_th_test_case = "Test Case";
+$TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to/from Test Plan";
+$TLS_title_add_test_to_plan = "Tambahkan Test Case ke Test Plan";
+$TLS_warning_add_remove_selected_tc = "Warning! Are you sure to remove the selected Test Cases from Test Plan?";
+
+
+// gui/templates/planAddTCNavigator.tpl
+$TLS_title_navigator = "Navigator";
+$TLS_keywords_filter_help = "You can use OR/AND filtering";
+
+
+// gui/templates/planTCNavigator.tpl
+$TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
+
+
+// gui/templates/planPriority.tpl
+$TLS_btn_upd_prio = "Update";
+$TLS_title_priority = "Definisikan aturan prioritas untuk Test Plan";
+$TLS_tr_th_importance = "Importance";
+$TLS_tr_th_prio_cba = "Prioritas (C/B/A)";
+$TLS_tr_th_risk = "Risiko/Kepentingan";
+
+// gui/templates/planUpdateTC.tpl
+$TLS_btn_update_testplan_tcversions = "Update Test Plan";
+$TLS_update_to_version = "Update to version";
+$TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
+$TLS_update_testcase_versions = "Update Linked Test Case Versions";
+$TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
+$TLS_tplan_updated = "Test Plan was updated";
+$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+
+
+
+// gui/templates/planEdit.tpl
+$TLS_btn_testplan_create = "Create";
+$TLS_cancel = "Cancel";
+$TLS_opt_no = "Tidak";
+$TLS_testplan_question_create_tp_from = "Create from existing Test Plan?";
+$TLS_testplan_th_active = "Active";
+$TLS_testplan_th_name = "Name";
+$TLS_testplan_th_notes = "Description";
+$TLS_testplan_title_create = "Create a new Test plan";
+$TLS_testplan_title_edit = "Edit " . $TLS_test_plan . " - ";
+$TLS_testplan_title_for_project = "for Test Project ";
+$TLS_testplan_title_tp_management = "Test Plan Management";
+$TLS_testplan_txt_notes = "Test plans should encompass a (set of) clearly defined tasks with a timeframe and content. " .
+                          "They can be created for everything from simple change requests to new product versions." .
+                          "It is recommended that the description field be used to document links to project plans " .
+                          "and related documentation, lists of features to be tested, risks, etc." .
+                          "You can create a new test plan from an existing one. " .
+                          "The items that are copied include: builds, test cases, priorities, milestones, and user roles." .
+                          "Test plans can be deactivated (i.e., editing and changing of results change are not allowed). " .
+                          "Deactivated test plans are visible only via 'Reporting' and this page.";
+$TLS_warning_empty_tp_name = "Anda tidak boleh memasukkan Test Plan tanpa nama!";
+
+$TLS_testplan_copy_tcases = "Copy Test Cases";
+$TLS_testplan_copy_tcases_latest = "Latest available version";
+$TLS_testplan_copy_tcases_current = "Current linked version";
+$TLS_testplan_copy_builds = "Copy Builds";
+$TLS_testplan_copy_priorities = "Copy Priorities";
+$TLS_testplan_copy_milestones = "Copy Milestones";
+$TLS_testplan_copy_user_roles = "Copy User Roles";
+
+
+// gui/templates/planNew.tpl
+$TLS_testplan_btn_edit = "Update";
+$TLS_testplan_btn_new = "Create";
+$TLS_testplan_menu_create = "Create";
+$TLS_testplan_menu_edit = "Edit";
+$TLS_testplan_menu_list = "List";
+
+
+
+// gui/templates/planMilestones*.tpl
+$TLS_alt_delete_milestone = "Delete milestone?";
+$TLS_btn_edit_milestone = "Edit";
+$TLS_btn_new_milestone = "Buat Baru";
+$TLS_info_milestones_date = "Milestone harus dibuat tanggal hari ini atau lebih";
+$TLS_no_milestones = "Tidak ada milestone untuk Test Plan ini!";
+$TLS_popup_delete_milestones = "Are you sure you want to delete milestone %NAME% ?";
+$TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
+$TLS_warning_empty_milestone_name = "Anda tidak boleh memasukkan Milestone tanpa nama!";
+
+
+$TLS_th_date_format = "Tanggal (YYYY-MM-DD)";
+$TLS_th_perc_a_prio = "% Prioritas A";
+$TLS_th_perc_b_prio = "% Prioritas B";
+$TLS_th_perc_c_prio = "% Prioritas C";
+$TLS_th_perc_testcases = "Completed tests [0-100%]";
+$TLS_title_existing_milestones = "Milestone yang ada";
+$TLS_title_milestones = "Milestones untuk Test Plan";
+$TLS_title_new_milestone = "Milestone";
+$TLS_title_edit_milestone = "Edit Milestone";
+$TLS_delete_milestone = "Delete milestone";
+$TLS_milestone_deleted = "Milestone %s was successfully deleted";
+$TLS_create_milestone = "Create Milestone";
+$TLS_edit_milestone = "Edit Milestone %s";
+$TLS_warning_empty_low_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
+$TLS_warning_empty_high_priority_tcases = "Value can not be empty";
+$TLS_milestone_created = "Milestone Created";
+
+
+
+// gui/templates/projectEdit.tpl
+$TLS_btn_activate = "Aktifkan";
+$TLS_btn_del = "Hapus";
+$TLS_btn_edit_del = "Edit / Hapus";
+$TLS_btn_inactivate = "Non-Aktifkan";
+$TLS_caption_edit_tproject = "Edit %s";
+$TLS_caption_new_tproject = "Create new Test Project";
+$TLS_color = "Warna";
+$TLS_enable_requirements = "Hidupkan Fungsi yang diperlukan";
+$TLS_enable_priority = "Priority Management";
+$TLS_enable_automation = "Test Automation";
+$TLS_info_failed_loc_prod = "Gagal melokalkan produk.";
+$TLS_notes = "Catatan yang Berhubungan";
+$TLS_testproject_alt_delete = "Delete Test Project";
+$TLS_testproject_alt_active = "Active";
+$TLS_testproject_alt_requirement_feature = "Requirements enabled";
+$TLS_testproject_alt_edit = "Edit Test Project";
+$TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
+
+// Warning!!! - if JS string you must use \\n to get \n
+$TLS_popup_product_delete = "Perhatian! Langkah berikut akan menghapus data yang ber-relasi dengan produk (termasuk hasil-hasil test, rencana-rencana, dll.). Anda dapat juga memakai cara Non-Aktif daripada menghapusnya.\\Rekomendasi: Eksekusi satu database 'dump' dahulu.\\Yakin mau menghapus produk tersebut?";
+
+$TLS_tcase_id_prefix = "Test Case ID prefix";
+$TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
+$TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
+
+// gui/templates/projectView.tpl
+$TLS_title_testproject_management = "Test Project Management";
+
+// gui/templates/reqAssign.tpl
+$TLS_please_select_a_req = "Please select a requirement";
+$TLS_req_msg_norequirement66 = "No requirement";
+$TLS_req_title_assign = "Kenakan Kebutuhan pada Test Case";
+$TLS_req_title_assigned = "Kebutuhan Terkenakan";
+$TLS_req_title_unassigned = "Kebutuhan yang telah ada";
+$TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment " .
+		"due to one of these causes:" .
+		"<br /><ul><li>There are no Requirement Specification document defined</li>" .
+		"<li>The Requirement Specifications document is empty.</li></ul>";
+
+
+
+// gui/templates/tcEdit.tpl
+$TLS_title_edit_tc = "Edit Test Case";
+$TLS_warning_editing_executed_tc = "Warning!: This Test Case version has been executed";
+
+
+
+// gui/templates/planOwner.tpl
+$TLS_assign_ownership = "Kenakan Kepemilikan";
+$TLS_def_prio_rules = "Definisikan aturan prioritas";
+$TLS_opt_label_none = "kosong";
+$TLS_th_imp = "Pentingnya";
+$TLS_th_owner = "Pemilik";
+$TLS_th_risk = "Risiko";
+$TLS_th_test_suite = "Test Suite";
+$TLS_title_plan_ownership = "Kepemilikan TestPlan";
+
+
+
+// gui/templates/tcView_viewer.tpl
+$TLS_activate_this_tcversion = "Activate this version";
+$TLS_Requirements = "Kebutuhan-kebutuhan";
+$TLS_btn_del_this_version = "Delete this version";
+$TLS_btn_edit = "Edit";
+$TLS_btn_execute_automatic_testcase = "Execute automatic test case";
+$TLS_btn_mv_cp = "Pindahkan / Salin";
+$TLS_btn_new_version = "Create a new version";
+$TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
+$TLS_deactivate_this_tcversion = "Deactivate this version";
+$TLS_execution_type = 'Execution type';
+$TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
+
+
+
+// gui/templates/planRemoveTC_m1.tpl
+$TLS_btn_remove_selected_tc = "Remove selected tcs";
+$TLS_remove_ok = "Remove ok";
+$TLS_title_remove_test_from_plan = "Remove tc from test plan";
+
+
+// gui/templates/keywordsAssign.tpl
+$TLS_keyword_assignment_empty_tsuite = "There are no Test Cases in this Test Suite => keyword assignment is not possible";
+$TLS_menu_assign_kw_to_tc = "Kenakan ke TestCase";
+$TLS_menu_manage_keywords = "Keyword Management";
+$TLS_title_keywords = "Katakunci";
+
+
+
+// gui/templates/planTestersNavigator.tpl
+$TLS_label_list_of = "Daftar dari";
+$TLS_opt_test_plans = "Test Plan";
+$TLS_opt_users = "User-user";
+
+
+
+// gui/templates/planUpdateTC.tpl
+$TLS_btn_upd_ck_tc = "Update Test Case yang dicentang";
+$TLS_info_all_tc_uptodate = "Semua Test Case adalah saat ini.";
+$TLS_th_category = "Kategori";
+$TLS_th_component = "Komponen";
+$TLS_th_id_tc = "Test Case [ID]";
+$TLS_th_reason = "Alasan untuk meng-update";
+$TLS_th_spec_version = "Spesifikasi versi";
+$TLS_th_status = "Status";
+$TLS_th_suite_version = "Versi Suite";
+$TLS_th_update = "Update";
+$TLS_title_upd_mod_tc = "Update Test Cases Termodifikasi di ";
+
+
+
+// gui/templates/keywordsView.tpl
+$TLS_alt_delete_keyword = "Delete keyword?";
+$TLS_btn_create_keyword = "Create keyword";
+$TLS_btn_edit_keyword = "Edit";
+$TLS_btn_export_keywords = "Export";
+$TLS_btn_import_keywords = "Import";
+$TLS_th_keyword = "Katakunci";
+$TLS_warning_delete_keyword = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_enter_at_least1 = "Harap masukkan paling tidak ";
+$TLS_warning_enter_at_least2 = " karakter.";
+$TLS_warning_enter_less1 = "Harap masukkan kurang dari";
+$TLS_warning_enter_less2 = " karakter.";
+
+
+
+// gui/templates/reqexport.tpl
+$TLS_title_req_export = "Export requirements";
+
+
+
+// gui/templates/resultsAllBuilds.tpl
+$TLS_th_build = "Build";
+$TLS_th_tc_total = "TC Total";
+$TLS_title_met_of_build = "Metrik dari 'build'";
+
+
+
+// gui/templates/resultsBugs.tpl
+$TLS_bugs_open = "Open";
+$TLS_bugs_resolved = "Resolved";
+$TLS_bugs_total = "total";
+$TLS_date = "Tangggal:";
+$TLS_printed_by = "Dicetak Oleh:";
+$TLS_tcs_with_bugs = "Test Cases with bugs";
+$TLS_title_test_case_bugs = "Test case bugs";
+$TLS_title_test_case_timestamp = "Test Case timestamp";
+$TLS_title_test_case_title = "Judul Tes";
+$TLS_title_test_suite_name = $TLS_test_suite;
+
+
+
+// gui/templates/resultsByStatus.tpl
+$TLS_info_test_results = "Hanya ada hasil tes terakhir dalam daftar. Mis: Kasus tidak nampak bila hasil test untuk build belakangan sudah punya  status lain (kecuali tidak jalan).";
+$TLS_th_bugs = "Bug-bug";
+$TLS_th_date = "Tanggal";
+$TLS_th_run_by = "Jalan oleh";
+
+
+
+// gui/templates/resultsGeneral.tpl
+$TLS_title_gen_test_rep = "Test Plan Metrik Umum";
+$TLS_title_report_tc_priorities = "Test results according to test priorities";
+$TLS_title_report_milestones = "Status of Milestones";
+$TLS_th_completed = "Completed";
+$TLS_th_milestone = "Milestone [date]";
+$TLS_th_not_run = "Not run";
+$TLS_th_tc_priority_high = "High priority";
+$TLS_th_tc_priority_medium = "Medium priority";
+$TLS_th_tc_priority_low = "Low priority";
+$TLS_th_progress = "Test progress [%]";
+$TLS_th_goal = "Execution goal [%]";
+$TLS_th_overall_priority = "Overall test priority";
+$TLS_th_expected = "Expected";
+$TLS_th_overall = "Overall";
+
+
+
+// gui/templates/resultsMoreBuilds_query_form.tpl
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_last_status_any = "Sembarang";
+$TLS_last_status_blocked = "Terblokir";
+$TLS_last_status_failed = "Gagal";
+$TLS_last_status_not_run = "Tidak Jalan";
+$TLS_last_status_passed = "Pass";
+$TLS_select_builds_header = "Pilih 'Build'";
+$TLS_select_components_header = "Pilih Komponen";
+$TLS_select_keyword_header = "Pilih Katakunci";
+$TLS_select_last_result_header = "Pilih Hasil Terakhir";
+$TLS_select_owner_header = "SPilih Pemilik";
+$TLS_select_report_format_header = "Pilih Format Laporan";
+$TLS_submit_query = "Kirim Query";
+$TLS_test_plan_header = "Test Plan : ";
+$TLS_query_metrics_report = "Query Metrics Report";
+$TLS_enter_start_time = "Start Time";
+$TLS_enter_end_time = "End Time";
+$TLS_year 		= "year";
+$TLS_month 		= "month";
+$TLS_day 		= "day";
+$TLS_hour 		= "hour";
+$TLS_search_in_notes = "search for string in notes";
+$TLS_executor = "executed by";
+
+// gui/templates/resultsMoreBuilds_report.tpl
+$TLS_caption_show_collapse = "Show / Collapse";
+$TLS_caption_user_selected_query_parameters = "Query Parameters";
+$TLS_not_yet_executed = "Not yet executed";
+$TLS_show_hide_all = "Tampil/Sembunyikan Semua";
+$TLS_th_builds = "Builds";
+$TLS_th_execution_ts = "Time";
+$TLS_th_last_result = "Last result";
+$TLS_th_report_format = "Report type";
+$TLS_th_test_plan = $TLS_testplan;
+$TLS_th_test_suites = "Suites";
+$TLS_th_tester_id = "Tester";
+$TLS_th_total_block = "#" . $TLS_test_status_blocked;
+$TLS_th_total_cases = "#Test Cases";
+$TLS_th_total_fail = "#" . $TLS_test_status_failed;
+$TLS_th_total_not_run = "#" . $TLS_test_status_not_run;
+$TLS_th_total_pass = "#" . $TLS_test_status_passed;
+$TLS_th_start_time = "Start Time";
+$TLS_th_end_time = "End Time";
+$TLS_th_executor = "Executed By";
+$TLS_th_search_notes_string = "notes search string";
+$TLS_true = "true";
+$TLS_false = "false";
+$TLS_display_suite_summaries = "Test Suite Summaries";
+$TLS_display_query_params  = "Query Parameters";
+$TLS_display_totals = "Totals";
+$TLS_display_test_cases = "Test Cases";
+$TLS_report_display_options = "Report display options";
+
+// gui/templates/resultsReqs.tpl
+$TLS_no_srs_defined = "No Requirements Specification available for this Test Project";
+$TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
+
+
+// IMPORTANT for dynamic generation labels
+// $TLS_req_title_<test case status> 
+// If user add a new test case status he/she MUST add a new label
+$TLS_req_title_blocked = "Kebutuhan Terblokir";
+$TLS_req_title_failed = "Kebutuhan yang gagal";
+$TLS_req_title_not_run = "Unexecuted Requirements";
+$TLS_req_title_passed = "Kebutuhan yang Pass";
+
+$TLS_title_result_req_testplan = "Hasil Tes Berdasarkan Spesifikasi Kebutuhan";
+$TLS_title_test_plan = "Test Plan";
+
+
+
+// gui/templates/resultsSend.tpl
+$TLS_btn_send_report = "Kirim Laporan";
+$TLS_check_send_to_me = "Kirim salinan untuk saya sendiri";
+$TLS_mail_body = "Isi:";
+$TLS_mail_report = "Laporan:";
+$TLS_mail_subject = "Judul:";
+$TLS_mail_to = "Ke:";
+$TLS_status_for_build = "Status untuk 'Build'";
+$TLS_tp_status = "Test Plan status umum";
+$TLS_tp_status_for_build = "Status Test Plan untuk 'Build'";
+
+
+
+// gui/templates/resultsTC.tpl
+$TLS_generated_by_TestLink_on = "Generated by TestLink on ";
+
+// gui/templates/resultsImport.tpl
+$TLS_results_import_format = "XML File Must be in the following format: ";
+$TLS_title_results_import_to = "Import results";
+
+// gui/templates/plan/setUrgency.tpl
+$TLS_title_plan_urgency = "Test urgency for the Test suite";
+$TLS_th_urgency = "Urgency";
+$TLS_label_set_urgency = "Set test urgency: ";
+$TLS_urgency_description = "Urgency value affects priority of test cases " .
+		"for execution and reporting. Medium test urgency is default value.";
+$TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
+$TLS_feedback_urgency_ok = "Test urgency was modified.";
+$TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
+
+// gui/templates/tcPrintNavigator.tpl
+$TLS_caption_print_opt = "Pilihan Cetak";
+$TLS_tr_td_show_as = "Tampilkan sebagai";
+
+
+
+// gui/templates/tcReorder.tpl
+$TLS_no_tc_to_reorder = "Tidak Test Case untuk di urut ulang!";
+$TLS_title_change_tc_order = "Ubah Urutan Kategorinya Test Case ini.";
+$TLS_drag_and_drop_to_reorder = "Drag and drop items to reorder them";
+
+
+// gui/templates/tcTree.tpl
+$TLS_button_refresh = "Refresh";
+$TLS_button_update_tree = "Update tree";
+$TLS_do_auto_update = "Update tree after every operation";
+$TLS_no_tc_spec_av = "Tidak ada Spesifikasi Tes Tersedia!";
+
+
+
+// gui/templates/tc_exec_assignment.tpl
+$TLS_assign_to = "Assign to";
+$TLS_btn_do = "Do";
+$TLS_btn_update_selected_tc = "Save";
+$TLS_can_not_execute = " (No execution right)";
+$TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
+$TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
+$TLS_user = "User";
+$TLS_user_bulk_assignment = "Bulk user assignment";
+
+
+// tc_exec_assignment.php
+$TLS_mail_subject_testcase_assigned='Test Link - Test Case Assignment - Test Plan';
+$TLS_mail_subject_testcase_assignment_removed='Test Link - Test Case Assignment REMOVED - Test Plan';
+$TLS_mail_testcase_assigned= "Following Test Cases has been assigned to you %s by %s <br><br>";
+$TLS_mail_testcase_assignment_removed="%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br><br>";
+$TLS_send_mail_to_tester="Send mail notification to tester";
+
+
+// gui/templates/testSetNavigator.tpl
+
+
+
+// gui/templates/userInfo.tpl
+$TLS_btn_change_passwd = "Ubah password";
+$TLS_btn_upd_user_data = "Update";
+$TLS_btn_apikey_generate = "Generate a new key";
+$TLS_th_new_passwd = "Password Baru";
+$TLS_th_new_passwd_again = "Konfirmasi Password Baru";
+$TLS_th_old_passwd = "Password Lama";
+$TLS_title_account_settings = "Setting Akun";
+$TLS_title_personal_data = "Personal data";
+$TLS_title_personal_passwd = "Personal password";
+$TLS_title_api_interface = "API interface";
+$TLS_warning_different_pwd = "Tolong masukkan ulang password Anda. Yang tadi masih salah.";
+$TLS_warning_empty_pwd = "Password tidak boleh kosong!";
+$TLS_your_password_is_external = "Your password is managed by an external system.<br />".
+                                 "You can not change it using TestLink.";
+$TLS_user_api_key = "Personal API access key";
+$TLS_audit_login_history = "Login history";
+$TLS_audit_last_succesful_logins = "Last successful logins";
+$TLS_audit_last_failed_logins = "Last failed logins";
+$TLS_result_password_changed = "Your password was changed succesfully";
+$TLS_result_apikey_create_ok = "New API key was generated";
+$TLS_result_user_changed = "Personal data changed";
+$TLS_empty_old_passwd = "Empty Old Password. Please enter your Old Password";
+$TLS_never_logged = "Never logged";
+
+
+
+// gui/templates/usersassign.tpl
+$TLS_TestProject = "Test Project";
+$TLS_User = "User";
+$TLS_btn_change = "Change";
+$TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
+$TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
+$TLS_menu_assign_testproject_roles = "Assign Test Project roles";
+$TLS_th_roles = "Role";
+$TLS_th_roles_testplan = "Test Plan Role";
+$TLS_th_roles_testproject = "Test Project Role";
+$TLS_title_assign_roles = "Assign roles";
+
+
+
+// gui/templates/usersedit.tpl
+$TLS_button_reset_password = "Reset password";
+$TLS_caption_user_details = "User details";
+$TLS_th_password = "Password";
+$TLS_warning_empty_first_name = "Please enter a name";
+$TLS_warning_empty_last_name = "Please enter a surname";
+$TLS_warning_empty_login = "Please enter a login";
+
+
+// gui/templates/attachmentupload.tpl
+$TLS_attachment_upload_ok = "File uploaded";
+$TLS_enter_attachment_title = "Enter title for the attachment";
+$TLS_import_was_ok = "The import was ok";
+$TLS_max_size_cvs_file = "Ukuran Maksimal file adalah";
+$TLS_title_upload_attachment = "Upload attachment";
+$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "The size of the " .
+		"file is larger than the configured maximum value in your php.ini!";
+$TLS_error_file_size_larger_than_maximum_size = "The size of the file is larger " .
+		"than the configured maximum value of TestLink!";
+$TLS_error_file_upload = "The file couldn't be uploaded!";
+
+// gui/templates/rolesview.tpl
+$TLS_N_A = $TLS_not_aplicable;
+$TLS_alt_delete_role = "Delete role";
+$TLS_alt_edit_role = "Edit role";
+$TLS_btn_confirm_delete = "Delete";
+$TLS_delete_role = "Delete role";
+$TLS_no_roles = "No roles";
+$TLS_th_role_description = $TLS_description;
+$TLS_title_roles = "Available roles";
+$TLS_warning_delete_role = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_users_will_be_reset = "Affected users will get role:";
+
+
+
+// gui/templates/tcexport.tpl
+$TLS_export_filename = "Export filename";
+$TLS_export_with_keywords = "Export with keywords";
+$TLS_warning_empty_filename = "Please give a file name";
+
+
+// gui/templates/buildView.tpl
+$TLS_alt_active_build = "Active build";
+$TLS_alt_edit_build = "Click here to edit this build";
+$TLS_alt_open_build = "Open build";
+$TLS_btn_build_create = "Create";
+$TLS_no_builds = "Tidak ada 'build' untuk Test Plan ini!";
+$TLS_th_description = "Description";
+$TLS_th_open = "Open";
+$TLS_title_build_list = "List of existing builds";
+$TLS_warning_delete_build = "Benar mau menghapus 'build' ini ? Data yang bergantung ini akan terhapus juga!";
+$TLS_builds_description = "A build is identified by its title. Each build is " .
+		"related to the active Test Plan.<br />Description should include:&nbsp;" .
+		"list of delivered packages, fixes or features, approvals, status, etc.<br />" .
+		"A build has two attributes:<br />" .
+		"Active / Inactive &ndash; defines whether the build can be used. " .
+		"Inactive builds are not listed on the execution and reports pages.<br />" .
+		"Open / Closed &ndash; Only for open builds, test results can be modified.";
+$TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+		"&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
+		"and if name does not exist, build will be created.";
+
+
+// gui/templates/planView.tpl
+$TLS_testplan_alt_delete_tp = "Delete the test plan?";
+$TLS_testplan_alt_edit_tp = "Edit the test plan";
+$TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete ".
+		"Test Plan? You can use a deactivation via Test Plan management page.";
+$TLS_testplan_th_delete = "Delete";
+$TLS_testplan_title_list = "List of existing Test Plans";
+$TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
+$TLS_alt_active_testplan = "Active testplan";
+$TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you sure?</p>";
+
+
+// ----- gui/templates/mainPage_left.tpl -----
+$TLS_href_assign_user_roles = "Assign user roles";
+$TLS_href_browse_tc = "Melihat Test Case";
+$TLS_href_cfields_management = "Define custom fields";
+$TLS_href_cfields_tproject_assign = "Assign custom fields";
+$TLS_href_edit_tc = "Edit Test Case";
+$TLS_href_keywords_assign = "Kenakan Katakunci";
+$TLS_href_keywords_manage = "Keyword Management";
+$TLS_href_keywords_view = "Lihat Katakunci";
+$TLS_href_print_tc = "Cetak Test Case";
+$TLS_href_req_assign = "Kenakan Kebutuhan";
+$TLS_href_req_spec = "Spesifikasi Kebutuhan";
+$TLS_href_roles_management = "Role Management";
+$TLS_href_search_tc = "Cari Test Case";
+$TLS_href_tproject_management = "Test Project Management";
+$TLS_href_user_management = "User Management";
+$TLS_href_admin_modules = "System Configuration";
+$TLS_title_requirements = "Kebutuhan";
+$TLS_title_test_spec = "Spesifikasi Tes";
+$TLS_title_product_mgmt = "Manajemen Produk";
+$TLS_href_plan_define_priority = "Test Plan priority";
+$TLS_href_my_testcase_assignments="Test Cases assigned to me";
+
+
+// ----- gui/templates/mainPage_right.tpl -----
+$TLS_filter_tp_by_product = "Filter Test Plan menurut Produk";
+$TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
+$TLS_href_build_new = "Manajemen 'Build'";
+$TLS_href_execute_test = "Jalankan Test";
+$TLS_href_metrics_dashboard = "Metrics dashboard";
+$TLS_href_newest_tcversions = "Show Test Cases newest versions";
+$TLS_href_plan_assign_urgency = "Set urgent tests";
+$TLS_href_plan_management = "Test Plan Management";
+$TLS_href_plan_mstones = "Edit / Hapus Milestone";
+$TLS_href_rep_and_metrics = "Laporan Tes dan Metrik";
+$TLS_href_tc_exec_assignment = "Assign Test Case execution";
+$TLS_href_update_tplan = "Update Linked Test Case Versions";
+
+$TLS_href_upd_mod_tc = "Update Test Case Termodifikasi";
+$TLS_msg_no_rights_for_tp = "- tidak ada (Anda tidak punya izin untuk Test Plan apapun)";
+$TLS_testplan_role = "Test Plan role ";
+$TLS_title_test_case_suite = "Test Case Suite";
+$TLS_title_test_execution = "Pelaksanaan Test";
+$TLS_title_test_plan_mgmt = "Manajemen Test Plan";
+
+
+
+// lib/execute/bug_add.php
+$TLS_bug_added = "Bug added";
+$TLS_error_bug_does_not_exist_on_bts = "Bug ID does not exist on BTS!";
+$TLS_error_wrong_BugID_format = "Wrong Bug ID format!";
+
+
+
+// lib/execute/bug_delete.php
+$TLS_bugdeleting_was_ok = "The bug was successfully deleted!";
+
+
+
+// lib/functions/doAuthorize.php
+$TLS_error_ldap_auth_failed = "LDAP authentication failed";
+$TLS_error_ldap_bind_failed = "LDAP binding failed";
+$TLS_error_ldap_server_connect_failed = "Connecting to the LDAP server failed";
+$TLS_error_ldap_update_failed = "Updating LDAP failed";
+$TLS_error_ldap_user_not_found = "LDAP user notfound";
+
+
+
+// lib/functions/product.inc.php
+$TLS_info_product_delete_fails = "Muncul error saat menghapus produk";
+
+
+// lib/results/resultsImport.php
+$TLS_imp_result_ko='- result not imported';
+$TLS_invalid_execution_timestamp="Test Case %s - invalid execution timestamp %s " . $TLS_imp_result_ko;
+$TLS_invalid_tester="Test Case %s - tester with login %s can not be found " . $TLS_imp_result_ko;
+$TLS_import_results_tc_not_found = "Test Case %s not found in test plan" . $TLS_imp_result_ko;
+$TLS_import_results_invalid_result = "Test Case %s has an invalid result %s " . $TLS_imp_result_ko;
+$TLS_import_results_ok = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Imported!";
+$TLS_import_results_tc_exists = "Test Case %s - version = %s - is in the test plan.";
+$TLS_tcase_external_id_do_not_exists="Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;
+$TLS_tcase_internal_id_do_not_exists="Test Case with internal id=%s, can not be found "  . $TLS_imp_result_ko;
+$TLS_tcase_id_is_not_number="Test Case internal id=%s is not a number " . $TLS_imp_result_ko;
+
+
+
+// lib/functions/results.inc.php
+$TLS_trep_failing = "Sedang Gagal";
+$TLS_trep_passing = "Sedang Pass";
+$TLS_trep_status_for_build = "Status untuk build";
+$TLS_trep_status_for_ts = "Status untuk test suite";
+$TLS_unassigned = "unassigned";
+
+
+// lib/functions/resultsMoreBuilds.inc.php
+$TLS_bugs = "Bug yang Berhubungan";
+$TLS_builds_selected = "Build";
+$TLS_case_not_run_warning = "Test Case Tidak Jalan";
+$TLS_category_header = "Kategori =";
+$TLS_daterun = "Tanggal Jalan";
+$TLS_last_status = "Status Akhir";
+$TLS_number_blocked = "# terblokir";
+$TLS_number_cases = "# Kasus";
+$TLS_number_executions = "# Test Case Jalan";
+$TLS_number_failed = "# Gagal";
+$TLS_number_not_run = "# Tidak Jalan";
+$TLS_number_passed = "# Pass";
+$TLS_owner = "Pemilik";
+$TLS_owner_header = "Pemilik =";
+$TLS_runby = "Jalan oleh";
+$TLS_test_plan_name = "Test Plan";
+
+
+
+// lib/functions/roles.inc.php
+$TLS_desc_cfield_management = "Custom field management";
+$TLS_desc_cfield_view = "Custom field view (read only access)";
+$TLS_desc_mgt_modify_key = "Keyword management";
+$TLS_desc_mgt_modify_product = "Test Project management";
+$TLS_desc_mgt_modify_req = "Requirement management";
+$TLS_desc_mgt_modify_tc = "Test Case create/edit";
+$TLS_desc_mgt_modify_users = "User management";
+$TLS_desc_mgt_view_key = "Keyword view (read only access)";
+$TLS_desc_mgt_view_req = "Requirement view (read only access)";
+$TLS_desc_mgt_view_tc = "Test Case view (read only access)";
+$TLS_desc_mgt_view_events = "Event viewer (read only access)";
+$TLS_desc_events_mgt = "Event management";
+$TLS_desc_role_management = "Role management";
+$TLS_desc_testplan_create_build = "Build create/edit";
+$TLS_desc_testplan_execute = "Test Plan execute";
+$TLS_desc_testplan_metrics = "Test Plan metrics";
+$TLS_desc_testplan_planning = "Test Plan planning";
+$TLS_desc_user_role_assignment = "Role assignment";
+$TLS_error_duplicate_rolename = "There's already a role with that name!";
+$TLS_error_role_no_rights = "You cannot save roles without any rights!";
+$TLS_error_role_no_rolename = "You must enter a name for the role!";
+$TLS_inherited_role = "<inherited>";
+$TLS_mgt_testplan_create = "Test Plan create/edit";
+
+
+
+// lib/functions/testproject.class.php
+$TLS_error_creating_req_spec = "Error while creating Requirement Specification document";
+$TLS_info_product_name_empty = "Nama kosong tidak boleh.";
+$TLS_keyword_already_exists = "Katakunci sudah ada";
+$TLS_string_contains_bad_chars = "LOCALIZE: TLS_string_contains_bad_chars";
+$TLS_warning_duplicate_req_title = "There's already a requirement with this title! (%s)";
+
+
+
+// lib/functions/requirements.inc.php
+$TLS_conflict = "Konflik";
+$TLS_error_deleting_req = "Error while deleting requirements";
+$TLS_error_inserting_req = "Error while inserting requirements";
+$TLS_error_updating_req = "Error while updating requirements";
+$TLS_error_updating_reqspec = "Error while updating Requirement Specification document";
+$TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
+$TLS_ok = "OK";
+$TLS_req_import_format_description1 = " - Tipe CSV membutuhkan dua kolom masing-masing baris: 'judul','deskripsi'";
+$TLS_req_import_format_description2 = " - CSV diekspor dari DOORS membutuhkan baris header.";
+$TLS_req_import_format_docbook = " - DocBook XML format";
+$TLS_req_import_result_overwritten = "Hasil-hasil sudah tertumpuki!";
+$TLS_req_import_result_skipped = "Hasil-hasil dilewati";
+$TLS_req_status_not_testable = "Not testable";
+$TLS_req_status_valid = "Valid";
+$TLS_req_status_draft = 'Draft';
+$TLS_req_status_approved = 'Approved';
+$TLS_req_status_obsolete = 'Obsolete';
+$TLS_req_status_todo = 'To do';
+$TLS_req_status_changed = 'Modified';
+$TLS_the_format_req_xml_import = htmlspecialchars("<requirements><requirement><docid>DOCID</docid><title>TITLE</title><description>DESCRIPTION</description></requirement> ... </requirements>");
+$TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
+
+
+// ----- lib/functions/testcase.class.php -----
+$TLS_create_new_version="Created new version %s"; 
+$TLS_testcase_name_already_exists = "There's already a Test Case with this title (%s)";
+$TLS_created_with_title = "Created with title (%s)";
+$TLS_the_format_tc_xml_import = "";
+
+
+// ----- lib/functions/testsuite.class.php -----
+$TLS_component_name_already_exists = "LOCALIZE: TLS_component_name_already_exists";
+$TLS_testsuite = $TLS_test_suite;
+
+
+// ----- lib/functions/exec.inc.php -----
+$TLS_test_results_submitted = "Hasil Tes terkirim.";
+
+
+// ----- lib/functions/info.inc.php -----
+$TLS_email_sent_message = "Email sudah terkirim";
+
+
+// ----- lib/functions/print.inc.php -----
+$TLS_printed_by_TestLink_on = "Dicetak oleh TestLink pada";
+$TLS_title_toc = "Daftar Isi";
+$TLS_passfail = "Test result";
+$TLS_testnotes = "Test Notes";
+$TLS_last_exec_result = "Last Result";
+$TLS_test_project_notes = "Test Project description";
+
+
+// ----- lib/functions/users.inc.php -----
+$TLS_Unknown = "Tak-diketahui";
+$TLS_duplicate_login = "User dengan login tersebut sudah ada!";
+$TLS_login_must_not_be_empty = "Login tidak boleh kosong!";
+$TLS_wrong_old_password = "Password lama salah!";
+
+
+
+// ----- lib/functions/email_api.php -----
+$TLS_stmp_host_unconfigured = "Host SMTP belum dikonfigurasi";
+
+
+
+// ----- lib/functions/common.php -----
+$TLS_test_automation_exec_ok = " Execution Successful!";
+$TLS_test_automation_server_conn_failure = " Could not connect to HTTP server.";
+$TLS_XMLRPC_error_number = "XML-RPC Fault number:- ";
+
+
+// ----- lib/functions/configCheck.php -----
+$TLS_attachments_dir = "directory for attachments:";
+$TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br />
+                                Please check your configuration.<br />
+                                Be careful this problem will degrade TestLink performance.";
+$TLS_but_directory_is_not_writable = "The directory is not writable!";
+$TLS_check_email_config="Check following parameters of email feature:";
+$TLS_directory_is_writable = "The directory is writable";
+$TLS_does_not_exist = "does not exist";
+$TLS_exists = "exists";
+$TLS_ldap_extension_not_loaded = "Login method is configured as LDAP<br />" .
+                               "but PHP LDAP extension is not loaded => " .
+                               "You will not be able to login.<br />".
+                               "Please contact your TestLink administrator";
+$TLS_sec_note_admin_default_pwd = "Anda harus mengganti password default untuk Akun 'admin' !";
+$TLS_sec_note_remove_install_dir = "Folder Install seharusnya dibuang!";
+$TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
+$TLS_error_gd_missing = "GD PHP extension doesn't seem to be present. Charts will not work!";
+
+// ----- lib/general/frmWorkArea.php -----
+$TLS_create_a_build = "Create a new build";
+$TLS_no_build_warning_part1 = "Tidak ada 'build' terbuat untuk Test Plan ini.";
+$TLS_no_build_warning_part2 = "Please create it first or ask your administrator.";
+
+
+
+// ----- lib/general/myTPInfo.php -----
+$TLS_no_testplans_available = "Maaf, tak ada Test Plan tersedia";
+
+
+
+// ----- lib/general/tlsmarty.inc.php -----
+$TLS_show_hide_api_info = "Show / Hide API Info";
+
+
+// ----- lib/keywords/keywords.inc.php -----
+$TLS_empty_keyword_no = "Anda tidak boleh memasukkan katakunci kosong!";
+$TLS_keywords_char_not_allowed = "Koma dan tanda petik tidak boleh dalam katakunci!";
+$TLS_tc_kw_update_fails1 = "Test Case";
+$TLS_tc_kw_update_fails2 = "Gagal";
+$TLS_the_format_keyword_csv_import = "keyword;notes";
+$TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Notes&lt;/keyword>&lt;/keywords>";
+
+
+
+// ----- lib/keywords/keywordsView.php -----
+$TLS_kw_delete_fails = "Gagal menghapus katakunci!";
+$TLS_kw_update_fails = "Gagal Update";
+
+
+
+// ----- lib/keywords/keywordsAssign.php -----
+$TLS_assigned_kword = "Assigned Keywords";
+$TLS_available_kword = "Available Keywords";
+
+
+
+// ----- lib/plan/buildNew.php -----
+$TLS_cannot_add_build = "'Build' tidak bisa ditambahkan!";
+$TLS_cannot_delete_build = "'Build' tidak bisa dihapus!";
+$TLS_cannot_update_build = "'Build' tidak bisa di-update";
+$TLS_warning_duplicate_build = "Sudah ada 'build' dengan peng-identifikasi ini";
+
+
+
+// ----- lib/plan/plan.inc.php -----
+$TLS_warning_enter_valid_date = "Tanggal yang Anda masukkan salah!";
+$TLS_warning_invalid_percentage_value = "Percentage values must range from 0 to 100%";
+$TLS_warning_milestone_date = "Milestone harus dibuat pada tanggal hari ini atau lebih!";
+$TLS_warning_percentage_value_higher_than_100 = "All percentage values summed up cannot be higher than 100";
+
+
+
+// ----- lib/plan/planMilestone*.php -----
+$TLS_milestone_delete_fails = "The milestone couldn't be deleted!";
+$TLS_warning_milestone_add_failed = "Milestone tidak bisa ditambah!";
+$TLS_warning_milestone_update_failed = "The milestone couldn't be updated!";
+$TLS_milestone_name_already_exists = "There's already a Milestone with this name (%s)";
+
+
+
+// ----- lib/plan/planTestersEdit.php -----
+$TLS_title_assign_tp = "Kenakan Test Plan ke user: ";
+$TLS_title_assign_users = "Kenakan User ke Test Plan: ";
+
+
+// ----- lib/plan/planTestersNavigator.php -----
+$TLS_nav_test_plan = "Navigator - Test Plans";
+$TLS_nav_users = "Navigator - User";
+
+
+//  -----lib/plan/planUpdateTC.php -----
+$TLS_deleted = "terhapus";
+$TLS_different_versions = "Versi berbeda";
+$TLS_plan_update_no_tc_updated = "Tak ada Test Case ter-update";
+$TLS_updated = "Ter-update";
+$TLS_all_versions_where_latest = "Nothing to do - All Test Cases version are " .
+		"the newest available";
+$TLS_num_of_updated = "%d Test Cases has been updated";
+
+
+// ----- lib/plan/testSetNavigator.php -----
+$TLS_title_test_plan_navigator = "Judul Navigator Test Plan";
+
+
+// ----- lib/plan/testSetRemove.php -----
+$TLS_tcase_removed_from_tplan = "Test Case removed from Test Plan";
+$TLS_multiple_tcase_removed_from_tplan = "Test Cases removed from Test Plan";
+
+
+// ----- lib/plan/planEdit.php -----
+$TLS_testplan_created_ok = "Test Plan was created";
+$TLS_update_tp_failed1 = "Update Test Plan '";
+$TLS_update_tp_failed2 = "' GAGAL";
+$TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name. " .
+		"Please choose another name!";
+
+
+
+// ----- lib/print/selectData.php -----
+$TLS_opt_show_doc_header = "Tampilkan Header Dokumen";
+$TLS_opt_show_tc_body = "Tampilkan Isi Test Case";
+$TLS_opt_show_tc_summary = "Tampilkan Ringkasan Test Case";
+$TLS_opt_show_toc = "Tampilkan Daftar Isi";
+$TLS_opt_show_tc_author = "Test Case Author";
+$TLS_opt_show_passfail = "Test results";
+$TLS_opt_show_tc_reqs = "TC related Requirements";
+$TLS_opt_show_tc_keys = "TC related Keywords";
+$TLS_title_tc_print_navigator = "Navigator - Cetak Spesifikasi Tes";
+$TLS_title_tp_print_navigator = "Navigator - Cetak Test Plan ";
+
+
+// ----- lib/project/projectedit.php -----
+$TLS_error_product_name_duplicate = "There's already Test Project named %s.";
+$TLS_error_tcase_prefix_exists = "Test Case ID prefix %s already exists";
+$TLS_info_no_more_prods = "Tak ada produk lagi.";
+$TLS_info_product_activated = "Produk sudah diaktifkan.";
+$TLS_info_product_inactivated = "Produk sudah di non-aktifkan.";
+$TLS_info_product_not_deleted_check_log = "Produk tidak terhapus. Harap lihat Log TestLink.";
+$TLS_info_product_was_deleted = "Produk berhasil dihapus.";
+$TLS_refer_to_log = " Harap mengacu pada Log TestLink untuk informasi selengkapnya.";
+$TLS_test_project_activated = "Test Project %s was successfully activated";
+$TLS_test_project_created = "Test Project %s was successfully created";
+$TLS_test_project_deleted = "Test Project %s was successfully deleted";
+$TLS_test_project_inactivated = "Test Project %s was successfully inactivated";
+$TLS_test_project_updated = "Test Project %s was successfully updated";
+$TLS_test_project_update_failed = "Update of Test Project %s failed!";
+
+
+// ----- lib/results/charts.php -----v
+$TLS_maani_copyright = "flash technology provided by http://www.maani.us";
+$TLS_graphical_reports = "Graphical Reports";
+$TLS_overall_metrics = "Overall Metrics";
+$TLS_results_by_keyword = "Results by Keyword";
+$TLS_results_by_tester = "Results by Tester";
+$TLS_results_top_level_suites = "Results for Top Level Suites";
+$TLS_chart_report = "Report";
+$TLS_chart_assigned_testers = "Owners";
+$TLS_chart_keywords = "Keywords";
+$TLS_chart_testsuites = "Test Suites";
+
+
+// ----- lib/req/reqImport.php -----
+$TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
+$TLS_file_is_not_text = "File is not a text file. Cannot be used";
+$TLS_please_choose_req_file = "Please choose the file to upload";
+$TLS_req_import_finished = "impor selesai!";
+
+
+
+// ----- lib/req/reqSpecView.php -----
+$TLS_cant_create_tc_from_req_nothing_sel = "Please select a requirement!";
+$TLS_req_created = "Requirement %s was successfully created";
+
+
+
+// ----- lib/req/reqTcAssign.php -----
+$TLS_req_msg_noselect = "Tak ada yang dipilih";
+$TLS_req_msg_notupdated_coverage = "Cakupan tidak diupdate untuk kebutuhan-kebutuhan: ";
+$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
+                         '<br>belonging to test suites present on selected branch.';
+$TLS_bulk_assigment_done = '%s assignments has been done';
+$TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
+$TLS_req_title_available = 'Available Requirements';
+$TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
+
+
+// ----- lib/results/resultsBugs.php -----
+$TLS_title_test_report_all_builds = "Laporan Tes : Hasil dari Test Case untuk semua 'Build'";
+
+
+
+// ----- lib/results/resultsAllBuilds.php -----
+$TLS_title_metrics_x_build = " -  Metrik Hasil Test per Build";
+
+
+
+// ----- lib/results/resultsByStatus.php -----
+$TLS_list_of_blocked = "Daftar Test Case Terblokir";
+$TLS_list_of_failed = "Daftar Test Case Gagal";
+$TLS_list_of_not_run = "Not Run Test Cases";
+
+
+
+// ----- lib/results/resultsTC.php -----
+
+
+
+// ----- lib/results/resultsNavigator.php -----
+$TLS_link_charts = "Charts";
+$TLS_link_report_blocked_tcs = "Test Case Terblokir";
+$TLS_link_report_failed = "Test Case Gagal";
+$TLS_link_report_general_tp_metrics = "Metrik Test Plan Umum";
+$TLS_link_report_metrics_active_build = "Metrik dari Build yang aktif";
+$TLS_link_report_metrics_more_builds = "Metrik Query";
+$TLS_link_report_not_run = "Not run Test Cases";
+$TLS_link_report_overall_build = "Status 'Build' Keseluruhan";
+$TLS_link_report_reqs_coverage = "Laporan berdasarkan kebutuhan";
+$TLS_link_report_test = "Laporan Tes";
+$TLS_link_report_total_bugs = "Total Bug untuk Masing-masing Test Case";
+$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
+$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
+
+// ----- lib/results/resultsSend.php -----
+$TLS_send_to_empty_email_warning = "Maaf, Email tak bisa dikirim dengan alamat kosong. Masukkan alamat yang benar.";
+$TLS_warning_create_build_first = "Anda harus membuat 'build' atau impor data dahulu.";
+
+// ----- lib/results/displayMgr.php -----
+$TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, please edit email credentials in 'Personal' tab";
+
+
+
+// ----- lib/testcases/archive.inc.php -----
+
+
+
+// ----- lib/testcases/listTestCases.php -----
+
+
+
+// ----- lib/testcases/tcImport.php -----
+$TLS_action_on_duplicated_name = "Action for duplicated names";
+$TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
+$TLS_please_choose_file_to_import = "Please choose file to import";
+$TLS_title_tc_import_to = "Import Test Cases";
+$TLS_title_tsuite_import_to = "Import Test Suite";
+$TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
+$TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
+$TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' ".
+		"can not be imported because there is no Custom Field with this name " .
+        "and Available for %s on this Test Project"; 
+$TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
+		"because is not direct child of Req. Spec: %s";
+$TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not be " .
+		"linked to testcase";
+$TLS_update_last_testcase_version='Update data on Latest version';
+$TLS_create_new_testcase_version='Create a new version';
+$TLS_generate_new_testcase='Create a new test case with different title';
+
+
+
+// ----- lib/testcases/tcexport.php -----
+$TLS_no_testcases_to_export = "There are no Test Cases to export";
+$TLS_no_testsuites_to_export = "There are no Test Suites to export";
+$TLS_title_tc_export = "Export Test Case";
+$TLS_title_tc_export_all = "Export all Test Cases";
+$TLS_title_tsuite_export = "Export Test Suite";
+$TLS_title_tsuite_export_all = "Export all Test Suites";
+
+
+
+// ----- lib/testcases/containerEdit.php -----
+$TLS_delete = "Hapus";
+$TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
+$TLS_warning_empty_com_name = "Beri nama komponen";
+
+
+
+// ----- lib/testcases/tcEdit.php -----
+$TLS_current = "sekarang";
+$TLS_delete_linked = "Links to test plans will be removed";
+$TLS_delete_linked_and_exec = "Links to test plans, and execution related information will be removed";
+$TLS_error_tc_add = "Muncul error saat menambah Test Case";
+$TLS_title_del_tc = "Delete Test Case ";
+
+
+
+// ----- lib/usermanagement/rolesview.php -----
+$TLS_error_role_deletion = "The role couldn't be deleted!";
+
+
+// ----- lib/usermanagement/usersassign.php -----
+$TLS_no_test_projects = "There are no Test Projects defined";
+$TLS_no_test_plans = "Tidak ada Test Plan terdefinisi!";
+$TLS_test_project_user_roles_updated = "User Roles updated";
+$TLS_test_plan_user_roles_updated = "User Roles updated";
+
+
+// ----- lib/usermanagement/usersedit.php -----
+$TLS_user_created = "User %s was successfully created";
+$TLS_user_deleted = "User %s was successfully deleted";
+$TLS_user_not_added = "User tidak tertambah!";
+$TLS_error_user_not_updated = "The user couldn't be updated!";
+$TLS_error_user_not_deleted = "The user couldn't be deleted!";
+$TLS_error_user_login_length_error = "The login was either too short or too long!";
+
+
+
+// ----- lib/usermanagement/rolesedit.php -----
+$TLS_error_role_creation = "The role couldn't be created!";
+$TLS_error_role_update = "The role couldn't be updated!";
+
+
+
+// ----- lib/cfields/cfields_edit.php -----
+$TLS_cf_name_exists = "Custom field name already exists. Please choose a new one";
+$TLS_error_creating_cf = "The custom field couldn't be created!";
+$TLS_do_update = "updated";
+$TLS_do_delete = "deleted";
+$TLS_do_add = "added";
+$TLS_warning_delete_cf = "You are going to delete: %s <br /><br /> Are you sure?";
+
+
+
+// ----- lib/project/fix_tplans.php -----
+$TLS_list_inactive_tplans1 = "Listing ";
+$TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
+$TLS_assoc_test_project = "Associated Test Project";
+$TLS_btn_fix_tplans = "Update";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+
+
+// ----- lib/project/project_req_spec_mgmt.tpl -----
+$TLS_btn_new_req_spec = "New Requirement Specification";
+$TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
+
+
+// ----- reqSpecEdit.php -----
+$TLS_delete_req_spec = "Delete Requirement Specification";
+$TLS_req_spec_created = "Requirement Specification: %s was successfully created";
+$TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
+$TLS_title_req_spec = "Requirement Specifications";
+$TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
+$TLS_create_req_spec = "Create Requirements Specification";
+$TLS_create_child_req_spec = "Create Child Req Specification";
+$TLS_edit_req_spec = "Edit Requirements Specification";
+
+
+// ----- reqEdit.php -----
+$TLS_create_req = "Create Requirement";
+$TLS_delete_req = "Delete Requirement";
+$TLS_edit_req = "Edit Requirement";
+$TLS_req_created = "Requirement: %s was successfully created";
+$TLS_req_deleted = "Requirement: %s was successfully deleted";
+
+
+// ----- reqSpecReorder.tpl -----
+$TLS_title_change_req_spec_order = "Change Requirement Specifications order";
+
+
+// ----- requirement_mgr -----
+$TLS_created_on_testsuite = "Test Cases has been created on Test Suite %s";
+$TLS_testsuite_name_created = "Test Suite %s has been created";
+
+
+// ----- keywordsEdit.php -----
+$TLS_keyword_management = "Keyword management";
+$TLS_create_keyword = "Create keyword";
+$TLS_edit_keyword = "Edit keyword";
+$TLS_warning_empty_keyword = "Keyword must not be empty!";
+
+// ----- api/TestlinkXMLRPCServerErrors.php -----
+$TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
+$TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
+$TLS_API_NO_TCASEID = "No Test Case ID provided. A valid Test Case ID must be provided!";
+$TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided. A valid Test Case External ID must be provided!";
+$TLS_API_NO_TPLANID = "No test plan id provided. A valid test plan id must be provided!";
+$TLS_API_NO_TEST_MODE = "A test Mode must be provided!";
+$TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
+$TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
+$TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
+$TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
+$TLS_API_NO_TPID = "No testplan ID (tpid) provided. A valid tpid must be provided!";
+$TLS_API_NO_TCID = "No testcase ID (tcid) provided. A valid tcid must be provided!";
+$TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
+$TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
+$TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
+$TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
+
+$TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
+$TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
+$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
+$TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
+$TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
+$TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
+$TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
+$TLS_API_GENERAL_SUCCESS = "Success!";
+$TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided does not exist!";
+$TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does not exist!";
+$TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
+$TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
+                                     "No Custom Field exists with the name provided!";
+
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
+
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO="Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
+$TLS_API_BAD_BUILD_FOR_TPLAN = "Build (id:%s), do not exist for Test Plan (name:%s/id:%s).";
+
+
+// ----- audit log entries -----
+$TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
+$TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
+$TLS_audit_role_saved = "Role '{%1}' was saved";
+$TLS_audit_role_created = "Role '{%1}' was created";
+$TLS_audit_role_deleted = "Role '{%1}' was deleted";
+
+
+$TLS_audit_cfield_created = "Custom field '{%1}' was created";
+$TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
+$TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
+$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned to Test Project '{%2}'";
+$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Project '{%2}'";
+$TLS_audit_cfield_display_order_changed = "Display order of custom fields from Test Project '{%1}' was saved";
+$TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
+$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
+
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
+$TLS_audit_user_saved = "User '{%1}' was saved";
+$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
+$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
+$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
+$TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
+$TLS_audit_user_created = "User '{%1}' was created";
+$TLS_audit_user_deleted = "User '{%1}' was deleted";
+$TLS_audit_user_logout = "Logout of '{%1}'";
+$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+$TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
+
+$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
+
+$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
+$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";
+$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' was deleted";
+
+$TLS_audit_keyword_created = "Keyword '{%1}' was created";
+$TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
+$TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
+
+$TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+
+$TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
+$TLS_audit_attachment_created = "Attachment '{%1}' - file '{%2}' was created";
+
+$TLS_audit_req_spec_created = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was created";
+$TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was saved";
+$TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was deleted";
+$TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' renamed to '{%3}'";
+
+$TLS_audit_requirement_created = "Requirement '{%1}' was created";
+$TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
+$TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+$TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
+
+$TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
+$TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";
+$TLS_audit_build_deleted = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was deleted";
+
+$TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was deleted";
+$TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was saved";
+$TLS_audit_testplan_created = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was created";
+$TLS_audit_milestone_deleted = "Test Plan '{%1}' - Milestone '{%2}' was deleted";
+$TLS_audit_milestone_created = "Test Plan '{%1}' - Milestone '{%2}' was created";
+$TLS_audit_milestone_saved = "Test Plan '{%1}' - Milestone '{%2}' was saved";
+
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' version {%2} was added to Test Plan {%3}";
+$TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed from Test Plan {%3}";
+
+$TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
+
+$TLS_audit_events_deleted = "User '{%1}' deleted all events";
+
+
+// ----- eventviewer.php -----
+$TLS_th_loglevel = "Log level";
+$TLS_th_timestamp = "Timestamp";
+$TLS_th_activity = "Activity";
+$TLS_label_startdate = "Start date";
+$TLS_label_enddate = "End date";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "Event viewer";
+$TLS_th_session_info = "Session information";
+$TLS_th_sessionID = "Session ID";
+$TLS_th_source = "Source";
+$TLS_click_on_event_info = "Click on any event to see it's details.";
+$TLS_th_activity_code = "Activity";
+$TLS_th_object_id = "Object ID";
+$TLS_th_object_type = "Object Type";
+$TLS_message_please_wait = "Please wait ...";
+$TLS_title_eventinfo = "Event information";
+$TLS_title_eventdetails = "Event details";
+$TLS_th_user = "User";
+$TLS_show_event_history = "Show the event history";
+$TLS_btn_clear_events = "Clear All Events";
+$TLS_th_event_description = "Description";
+
+
+// ----- int_mantis.php -----
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new = "New issue";
+$TLS_issue_status_feedback = "Feedback";
+$TLS_issue_status_acknowledged = "Acknowledged issue ";
+$TLS_issue_status_confirmed = "Confirmed issue";
+$TLS_issue_status_assigned = "Assigned issue";
+$TLS_issue_status_resolved = "Resolved issue";
+$TLS_issue_status_closed = "Closed issue";
+$TLS_access_to_bts="Access issue tracking system";
+
+
+// ----- uncoveredTestCases.php -----
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'No uncovered Test Cases';
+$TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
+$TLS_testproject_has_no_requirements = 'There are no Requirements defined';
+
+
+// ----- testCasesWithoutTester -----
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+
+
+// ----- END ------------------------------------------------------------------
+?>

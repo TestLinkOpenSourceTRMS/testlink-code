@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2009/02/05 22:14:17 $ by $Author: havlat $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2009/02/12 16:30:40 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -206,6 +206,7 @@ $g_locales = array(
 	'es_AR' => 'Spanish (Argentine)',
 	'es_ES' => 'Spanish',
 	'fr_FR' => 'Fran&ccedil;ais',
+	'id_ID' => 'Indonesian',
 	'it_IT' => 'Italian',
 	'ja_JP' => 'Japanese',
 	'pl_PL' => 'Polski',
@@ -232,6 +233,7 @@ $g_locales_date_format = array(
 	'es_AR' => "%d/%m/%Y",
 	'es_ES' => "%d/%m/%Y",
 	'fr_FR' => "%d/%m/%Y",
+	'id_ID' => "%d/%m/%Y",
 	'it_IT' => "%d/%m/%Y",
 	'ja_JP' => "%Y/%m/%d",
 	'pl_PL' => "%d.%m.%Y",
@@ -249,6 +251,7 @@ $g_locales_timestamp_format = array(
 	'es_AR' => "%d/%m/%Y %H:%M:%S",
 	'es_ES' => "%d/%m/%Y %H:%M:%S",
 	'fr_FR' => "%d/%m/%Y %H:%M:%S",
+	'id_ID' => "%d/%m/%Y %H:%M:%S",
 	'it_IT' => "%d/%m/%Y %H:%M:%S",
 	'ja_JP' => "%Y/%m/%d %H:%M:%S",
 	'pl_PL' => "%d.%m.%Y %H:%M:%S",
@@ -266,6 +269,7 @@ $g_locales_html_select_date_field_order = array(
 	'es_AR' => "dmY",
 	'es_ES' => "dmY",
 	'fr_FR' => "dmY",
+	'id_ID' => "dmY",
 	'it_IT' => "dmY",
 	'ja_JP' => "Ymd",
 	'pl_PL' => "dmY",

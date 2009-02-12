@@ -362,6 +362,33 @@ Testlink 1.8 Release Candidate 1 (include Beta releases)
 - 0000925: [Database Postgres] can not import test suites and test cases (schlundus) - resolved.
 
 
+Testlink 1.7.5
+=========================================
+
+- 0001458: [User Interface General] Align text in testcase (field: Expected Results) (mhavlat) - resolved.
+- 0002082: [Requirement Management] HELP TEXT Changes - Text Editing Needed In (Assign Requirements to Test Case) (mhavlat) - resolved.
+- 0001560: [Internal issue] Missing file - "testlink/gui/css/tl_treemenu.css" (mhavlat) - resolved.
+- 0001364: [User Interface General] clean up English version of text displayed on Test Case Edit and Archive page - en_US (mhavlat) - resolved.
+- 0001837: [Requirement Management] Contribution: remember SRS for REQxTC assignment (mhavlat) - resolved.
+- 0001811: [Keywords] error while uploading keywords in CSV format (fman) - resolved.
+- 0001801: [Reports, Metrics, Export and Print] In a Test Project the Charts functionality of the Test Reports and Metrics doesn´t work correctly (fman) - resolved.
+- 0001681: [Test Execute] Blocked status as default state for result (mhavlat) - resolved.
+- 0001687: [Test Execute] Execution CT (mhavlat) - resolved.
+- 0001469: [Integration with Other Systems] Trac bug Integration links (toshi) - resolved.
+- 0001468: [Integration with Other Systems] Access to Bug Tracking System link (toshi) - resolved.
+- 0001604: [Localization] Brushing Up Japanese Translation (toshi) - resolved.
+- 0000997: [Test Execute] REPORTS - Pass / Fail and Test Notes fields are empty . (mhavlat) - resolved.
+- 0001561: [Internal issue] Missing folder - "testlink/javascript" (mhavlat) - resolved.
+- 0001562: [Localization] Chinese simplified localization (zh_CN) for TestLink 1.7.4 (mhavlat) - resolved.
+- 0001488: [Reports, Metrics, Export and Print] Would like a <BR> between test case blocks on the test plan print output. (mhavlat) - resolved.
+- 0001445: [Localization] New version of fr_FR strings (mhavlat) - resolved.
+- 0001419: [TL API] TL 1.7.4 - Unescaped Html chars in the field Testplans.Notes causing data deserialization issues when using TL API. (fman) - resolved.
+- 0001417: [Test Plan (builds, milestones, test assign)] Can not edit a Test Plan if there is a trailing space in the test plan name (fman) - resolved.
+- 0001257: [General] Test Link demo (azl) - resolved.
+- 0001516: [User Interface General] BTS "redMine" Interface (toshi) - closed.
+- 0001113: [General] Update testlink.org public demo pages (azl) - closed.
+
+
 Testlink 1.7.4
 =========================================
 

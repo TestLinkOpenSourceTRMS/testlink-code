@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/01/03 17:30:30 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/02/13 16:10:01 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -30,7 +30,11 @@ $templateCfg = templateConfiguration();
 $args=init_args();
 $gui=initializeGui($db,$args,$_SESSION['basehref']);
 
-$arrFormat = array('html' => 'HTML', 'msword' => 'MS Word');
+$arrFormat = array(
+	'format_html' => lang_get('format_html'), 
+	'format_odt' => lang_get('format_odt'), 
+	'format_msword' => lang_get('format_msword')
+);
 
 // Important Notice:
 // If you made add/remove elements from this array, you must update
@@ -133,6 +137,7 @@ $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);
 $smarty->assign('selFormat', $args->format);
+$smarty->assign('docType', $gui->report_type);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $getArguments);

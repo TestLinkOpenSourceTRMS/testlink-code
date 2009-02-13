@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.48 2009/01/14 20:06:24 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.49 2009/02/13 16:10:01 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -91,7 +91,7 @@ foreach($tplans as $key => $value)
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('arrReportTypes', $tlCfg->reports_formats);
+$smarty->assign('arrReportTypes', localize_array($tlCfg->reports_formats));
 $smarty->assign('selectedReportType', $selectedReportType);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>

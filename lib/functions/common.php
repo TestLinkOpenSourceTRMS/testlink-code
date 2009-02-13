@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.138 $ $Author: franciscom $
- * @modified $Date: 2009/01/26 21:52:49 $
+ * @version $Revision: 1.139 $ $Author: havlat $
+ * @modified $Date: 2009/02/13 16:10:22 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -167,6 +167,7 @@ function setSessionTestProject($tproject_info)
 		$_SESSION['testprojectID'] = $tproject_info['id'];
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
+		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
 		$_SESSION['testprojectOptReqs'] = isset($tproject_info['option_reqs']) ? $tproject_info['option_reqs'] : null;
 		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
 		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
@@ -182,6 +183,7 @@ function setSessionTestProject($tproject_info)
 		unset($_SESSION['testprojectOptReqs']);
 		unset($_SESSION['testprojectOptPriority']);
 		unset($_SESSION['testprojectOptAutomation']);
+		unset($_SESSION['testprojectPrefix']);
 	}
 }
 

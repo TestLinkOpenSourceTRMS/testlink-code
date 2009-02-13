@@ -5,21 +5,23 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/01/20 07:35:27 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/02/13 16:10:01 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
- *      20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
- *      20070509 - franciscom - added Contribution BUGID
+ * 	20090213 - havlatm - support for OpenOffice
+ *	20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
+ *	20070509 - franciscom - added Contribution BUGID
  *
  */
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("print.inc.php");
+require_once("displayMgr.php");
 testlinkInitPage($db);
 
 $statistics=null;
@@ -178,14 +180,26 @@ if($tree)
 	}
 }
 
-// add MS Word header to HTTP 
-if ($args->format == 'msword')
+
+// add application header to HTTP 
+if (($args->format == 'format_odt') || ($args->format == 'format_msword'))
 {
-	header("Content-Disposition: inline; filename=testplan.doc");
+	flushHttpHeader($args->format, DOC_TEST_REPORT);
+}
+/*
+	header("Content-Disposition: inline; filename=".trim($_SESSION['testprojectName'])."_test_report.odt");
 	header("Content-Description: PHP Generated Data");
-	header("Content-type: application/vnd.ms-word; name='My_Word'");
+	header("Content-type: application/vnd.oasis.opendocument.text; name='TL_OpenOffice'");
 	flush();
 }
+elseif ($args->format == 'format_msword')
+{
+	header("Content-Disposition: inline; filename=".trim($_SESSION['testprojectName'])."_test_report.doc");
+	header("Content-Description: PHP Generated Data");
+	header("Content-type: application/vnd.ms-word; name='TL_MrsWord'");
+	flush();
+}*/
+
 echo $generatedText;
 
 

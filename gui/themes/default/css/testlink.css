@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.16 2009/01/29 12:54:28 havlat Exp $
+$Id: testlink.css,v 1.17 2009/02/13 09:12:18 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -78,6 +78,12 @@ h3, h3.testlink {
 	margin-bottom:	2px;
 	padding: 		2px;
 }
+
+form
+{
+	margin: 		0px;
+	padding: 		0px;
+} 
 
 /* ***** Links ***** */
 /* A Visited link is still blue */

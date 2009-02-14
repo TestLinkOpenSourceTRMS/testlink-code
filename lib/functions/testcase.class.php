@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.148 $
- * @modified $Date: 2009/02/08 17:35:52 $ $Author: franciscom $
+ * @version $Revision: 1.149 $
+ * @modified $Date: 2009/02/14 15:17:43 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090214 - franciscom - when getting execution info, executions.execution_type will be returned
+ *                         with alias execution_run_type
+ * 
  * 20090208 - franciscom - fixed bug on get_last_execution() regarding double execution_type field
  * 20090205 - franciscom - exportTestCaseDataToXML() - added requirements info
  * 20090204 - franciscom - exportTestCaseDataToXML() - added node_order
@@ -2131,6 +2134,7 @@ function deleteKeywords($tcID,$kwID = null,$audit=self::AUDIT_ON)
                   summary: testcase spec. summary
                   steps: testcase spec. steps
                   expected_results: testcase spec. expected results
+                  execution_type: see const.inc.php TESTCASE_EXECUTION_TYPE_ constants
                   importance
                   author_id: tcversion author
                   creation_ts: timestamp of creation
@@ -2146,7 +2150,7 @@ function deleteKeywords($tcID,$kwID = null,$audit=self::AUDIT_ON)
                   status: execution status
                   execution_notes
                   execution_ts
-                  execution_type: see const.inc.php TESTCASE_EXECUTION_TYPE_ constants
+                  execution_run_type: see const.inc.php TESTCASE_EXECUTION_TYPE_ constants
                   build_id
                   build_name
                   build_is_active
@@ -2209,6 +2213,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 			}
 	}
   // --------------------------------------------------------------------
+  // 20090214 - franciscom - e.execution_type -> e.execution_run_type
   // 20080103 - franciscom - added execution_type
   // 20071113 - franciscom - added JOIN builds b ON e.build_id=b.id
   //
@@ -2218,7 +2223,8 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 		    users.last AS tester_last_name,
 			  users.id AS tester_id,
 		    e.id AS execution_id, e.status,e.tcversion_number,
-		    e.notes AS execution_notes, e.execution_ts, e.execution_type,e.build_id AS build_id,
+		    e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type,
+		    e.build_id AS build_id,
 		    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
 	      FROM nodes_hierarchy NHA
         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id
@@ -2257,6 +2263,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
                   summary: testcase spec. summary
                   steps: testcase spec. steps
                   expected_results: testcase spec. expected results
+                  execution_type: type of execution desired
             			importance
                   author_id: tcversion author
                   creation_ts: timestamp of creation
@@ -2270,6 +2277,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
             			tester_id
             			execution_notes
             			execution_ts
+            			execution_run_type:  how the execution was really done
             			build_id
             			build_name
             			build_is_active
@@ -2351,6 +2359,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
      $executions_join .= " AND e.status IS NOT NULL ";
   }
 
+  // 20090214 - franciscom - we need tcversions.execution_type and executions.execution_type
   // 20090208 - franciscom
   //            found bug due to use of tcversions.*, because field execution_type
   //            exist on both execution and tcversion table.
@@ -2360,12 +2369,13 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   // 20060921 - franciscom -
   // added NHB.parent_id  to get same order as in the navigator tree
   //
-  $sql="SELECT e.id AS execution_id, e.status,e.execution_type,
+  $sql="SELECT e.id AS execution_id, e.status,e.execution_type AS execution_run_type,
         NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
         tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary,
         tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id,
         tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active,
-        tcversions.is_open,users.login AS tester_login,users.first AS tester_first_name,
+        tcversions.is_open,tcversions.execution_type,
+        users.login AS tester_login,users.first AS tester_first_name,
 		    users.last AS tester_last_name, users.id AS tester_id,
 		    e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
 		    builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open

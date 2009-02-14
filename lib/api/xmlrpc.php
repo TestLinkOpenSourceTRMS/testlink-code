@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/02/10 14:09:07 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/02/14 16:54:49 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
  *      20090209 - franciscom - getTestCasesForTestPlan()
  *                              added summary,steps,expected_results,tsuite_name in returned info
  *                              reportTCResult() - contribution by hnishiyama - optional bug id 
@@ -174,7 +175,8 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $requirementsParamName = "requirements";
   public static $detailsParamName = "details";
 	public static $bugIDParamName		= "bugid";		
-	
+	// public static $executionRunTypeParamName		= "executionruntype";
+		
 	
 	/**#@-*/
 	
@@ -1949,6 +1951,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param boolean $args["executed"] - optional
 	 * @param int $args["$assignedto"] - optional
 	 * @param string $args["executestatus"] - optional
+	 * @param array $args["executiontype"] - optional
+	 *
 	 * @return mixed $resultInfo
 	 */
 	 public function getTestCasesForTestPlan($args)
@@ -1960,7 +1964,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                self::$keywordIDParamName => null,
                self::$executedParamName => null,
                self::$assignedToParamName => null,
-               self::$executeStatusParamName => null,);
+               self::$executeStatusParamName => null,
+               self::$executionTypeParamName => 3);
 	 	
    	$this->_setArgs($args);
 		
@@ -1980,19 +1985,29 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		$testplan = new testplan($this->dbObj);
 		
-		// public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
-    //                                       $assigned_to=null,$exec_status=null,$build_id=0,
-    //                                       $cf_hash = null, $include_unassigned=false,
-    //                                       $urgencyImportance = null, $tsuites_id=null,$details='simple')
-    // 
-		$recordset=$testplan->get_linked_tcversions($tplanid,
+    // public function get_linked_tcversions($id,
+    // $tcase_id=null ,
+    // $keyword_id=0 ,
+    // $executed=null ,
+    // $assigned_to=null ,
+    // $exec_status=null ,
+    // $build_id=0 ,
+    // $cf_hash = null ,
+    // $include_unassigned=false ,
+    // $urgencyImportance = null ,
+    // $tsuites_id=null ,
+    // $exec_type=null ,
+    // $details='simple')
+    //  
+		$recordset=$testplan->get_linked_tcversions($tplanid,                                      
 		                                            $opt[self::$testCaseIDParamName],
                                                 $opt[self::$keywordIDParamName],
 		                                            $opt[self::$executedParamName],
                                                 $opt[self::$assignedToParamName],
                                                 $opt[self::$executeStatusParamName],
 	 	                                            $opt[self::$buildIDParamName],
-	 	                                            null,false,null,null,'full');
+	 	                                            null,false,null,null,
+	 	                                            $opt[self::$executionTypeParamName],'full');
 		return $recordset;
 	 }
 

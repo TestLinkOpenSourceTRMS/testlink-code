@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.98 $
- * @modified $Date: 2009/02/10 14:09:26 $ by $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2009/02/14 16:55:52 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,27 +24,17 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20090214 - franciscom - BUGID 2099 - get_linked_tcversions() - added new columns in output recordset
  *  20090208 - franciscom - testplan class - new method get_build_by_id()
  *  20090201 - franciscom - copy_milestones() - wrong SQL sentece 
  *                          A,B,C fields renamed to lower case a,b,c to avoid problems
  *                          between differnt database (case and no case sensitive)
  *  20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *                          get_same_status_for_build_set(), get_prev_builds()
- *                          
- *  20081220 - franciscom - get_linked_tcversions() - changes in queries to support advanced
- *                                                    filters.
  *
  *  20081214 - franciscom - Thanks to postgres found missing CAST() on SUM() 
- *  20081207 - franciscom - added get_execution_time()
  *  20081206 - franciscom - BUGID 1910 - get_estimated_execution_time() - added new filter
  *                                       get_linked_tcversions() - added test suites filter 
- *  20081122 - franciscom - get_linked_cfields_at_design() - 
- *                          refactored to:
- *                                        - removed useless code 
- *                                        - removed function calls that can be avoided
- *
- *  20080822 - franciscom - fixed bug in get_keywords_tcases()
- *  20080822 - franciscom - get_linked_and_newest_tcversions() improved query documentation
  *  20080820 - franciscom - added get_estimated_execution_time() as result of contributed idea.
  *
  *  20080811 - franciscom - BUGID 1650 (REQ)
@@ -52,20 +42,10 @@
  *                          {$this->builds_table} instead of 'builds'
  *
  * 	20080717 - havlatm - added get_node_name
- *  20080705 - franciscom - changes due to test case urgency has been made.
- *  20080629 - franciscom - improments in audit info - link_tcversions(), unlink_tcversions()
  *  20080614 - franciscom - get_linked_and_newest_tcversions() - fixed bug  (thanks to PostGres)
- *  20080602 - franciscom - get_linked_tcversions() added tcversion_number in output
- *  20080510 - franciscom - get_linked_tcversions() added logic to manage multiple testcases 
- *                          get_keywords_tcases() - accepts multiple keywords
  *  20080428 - franciscom - supporting multiple keywords in get_linked_tcversions()
  *                          (based on contribution by Eugenia Drosdezki)
- *  20080403 - franciscom - setExecutionOrder()
  *  20080310 - sbouffard - contribution added NHB.name to recordset (useful for API methods).  
- *  20080224 - franciscom - get_linked_tcversions() interface changes
- *  20080217 - franciscom - interface changes - check_build_name_existence()
- *  20080119 - franciscom - get_linked_and_newest_tcversions() (support for external id)
- *  20080119 - franciscom - improved logic in copy_as to avoid bug due to  missing methods.
  *  20071010 - franciscom - BUGID     MSSQL reserved word problem - open
  *  20070927 - franciscom - BUGID 1069
  *                          added _natsort_builds() (see natsort info on PHP manual).
@@ -485,6 +465,7 @@ function setExecutionOrder($id,&$executionOrder)
 		     [tsuites_id]: default null.
 		                   If present only tcversions that are children of this testsuites
 		                   will be included
+		     [exec_type] default null -> all types              
          [details]: default 'simple'
                     'full': add summary, steps and expected_results
 		     
@@ -498,6 +479,8 @@ function setExecutionOrder($id,&$executionOrder)
                            tcversion_id if has executions
 
 	rev :
+	    20090214 - franciscom - added tcversions.execution_type and 
+	                            executions.execution_type AS execution_run_type in result
 		  20081220 - franciscom - exec_status can be an array to allow OR filtering 
 		  20080714 - havlatm - added urgency
     	20080602 - franciscom - tcversion_number in output
@@ -510,11 +493,13 @@ function setExecutionOrder($id,&$executionOrder)
 public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
                                           $assigned_to=null,$exec_status=null,$build_id=0,
                                           $cf_hash = null, $include_unassigned=false,
-                                          $urgencyImportance = null, $tsuites_id=null,$details='simple')
+                                          $urgencyImportance = null, $tsuites_id=null, 
+                                          $exec_type=null,$details='simple')
 {
   $resultsCfg = config_get('results');
 	$status_not_run=$resultsCfg['status_code']['not_run'];
 
+  $tcversion_exec_type_filter=" ";
 	$keywords_join = " ";
 	$keywords_filter = " ";
 	$tc_id_filter = " ";
@@ -522,6 +507,11 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	$executions_filter=" ";
 	$sql_subquery='';
 	$build_filter = " ";
+
+  if( !is_null($exec_type) )
+  {
+      $tcversion_exec_type_filter = "AND TCV.execution_type IN (" .implode(",",(array)$exec_type) . " ) ";     
+  }
 
 	// Based on work by Eugenia Drosdezki
 	if( is_array($keyword_id) )
@@ -656,15 +646,17 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	       " NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
 	       " T.tcversion_id AS tcversion_id, T.id AS feature_id, " .
 	       " T.node_order AS execution_order, TCV.version AS version, TCV.active," .
-	       " TCV.tc_external_id AS external_id, E.id AS exec_id, E.tcversion_number," .
+	       " TCV.tc_external_id AS external_id, TCV.execution_type," .
+	       " E.id AS exec_id, E.tcversion_number," .
 	       " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
+	       " E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
 	       " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
 	       " COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
 	       " FROM {$this->nodes_hierarchy_table} NHA " .
 	       " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
 	       $join_for_parent .
 	       " JOIN {$this->testplan_tcversions_table} T ON NHA.id = T.tcversion_id " .
-	       " JOIN  {$this->tcversions_table} TCV ON NHA.id = TCV.id " .
+	       " JOIN  {$this->tcversions_table} TCV ON NHA.id = TCV.id {$tcversion_exec_type_filter} " .
 	       " {$executions_join} " .
 	       " {$keywords_join} " .
 	       " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
@@ -728,7 +720,6 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
     if (!is_null($cf_hash)) {
         $recordset = $this->filter_cf_selection($recordset, $cf_hash);
     }
-    
 	  return $recordset;
 }
 

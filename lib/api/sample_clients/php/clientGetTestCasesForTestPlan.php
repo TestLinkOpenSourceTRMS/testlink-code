@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestCasesForTestPlan.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/11 10:48:05 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/02/14 16:54:48 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -47,7 +47,8 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=222;
+$args["testplanid"]=181;
+$args["executiontype"]=2;
 $additionalInfo='';
 
 $debug=true;

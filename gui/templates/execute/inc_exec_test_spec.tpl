@@ -1,16 +1,42 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.8 2008/12/31 15:06:00 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.9 2009/02/14 15:15:45 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
 *}	
-
+    {assign var="getReqAction" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
 	  {assign var="testcase_id" value=$args_tc_exec.testcase_id}
     {assign var="tcversion_id" value=$args_tc_exec.id}
     
-    <div class="exec_test_spec">
+    {if isset($args_req_details) }
+	  <div class="exec_test_spec">
+		  <table class="test_exec"  >
+		  <tr>
+		  	<th colspan="2" class="title">{$args_labels.reqs}</th>
+		  </tr>
+		  	
+		  {foreach from=$args_req_details key=id item=req_elem}
+		  <tr>
+		  	<td>
+		  	<span class="bold">
+		  	 {$tlCfg->gui_separator_open}{$req_elem.req_spec_title}{$tlCfg->gui_separator_close}&nbsp;
+		  	 <a href="javascript: void(0)"  title="{$args_labels.click_to_open}"
+		  	       onclick="window.open(fRoot+'{$getReqAction}{$req_elem.id}','{$args_labels.requirement}', 
+		  	                            'width=700, height=500'); return false;">
+	  	    {$req_elem.req_doc_id}{$tlCfg->gui_title_separator_1}{$req_elem.title}
+	  	   </a>
+	  	  </span>
+	  	 </td>
+		  </tr>
+		  {/foreach}
+		  </table>
+  	  </div>
+	    <br />
+		 {/if}
+     
+     <div class="exec_test_spec">
 		<table class="test_exec">
 		<tr>
 			<th colspan="2" class="title">{$args_labels.test_exec_summary}</th>
@@ -35,7 +61,7 @@ Rev:
 		
     {* ------------------------------------------------------------------------------------- *}
     {if $args_enable_custom_field and $args_tc_exec.active eq 1}
-  	  {if $args_execution_time_cf[$testcase_id]}
+  	  {if isset($args_execution_time_cf[$testcase_id]) && $args_execution_time_cf[$testcase_id] != ''}
   	 		<tr>
   				<td colspan="2">
   					<div id="cfields_exec_time_tcversionid_{$tcversion_id}" class="custom_field_container" 

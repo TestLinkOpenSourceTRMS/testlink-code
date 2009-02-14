@@ -1,3 +1,11 @@
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: inc_exec_show_tc_exec.tpl,v 1.3 2009/02/14 15:15:45 franciscom Exp $
+Purpose: 
+Author: franciscom
+
+Rev:  20090212 - amitkhullar - BUGID 2068
+*}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
     {assign var="tc_id" value=$tc_exec.testcase_id}
@@ -198,7 +206,7 @@
           {/if}
 
        		<td class="icon_cell" align="center">
-       		  {if $tc_old_exec.execution_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
+       		  {if $tc_old_exec.execution_run_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}
       		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/user.png" title="{$labels.execution_type_manual}"
       		            style="border:none" />
        		  {else}
@@ -304,8 +312,8 @@
              args_execution_time_cf=$gui->execution_time_cfields
              args_design_time_cf=$gui->design_time_cfields
              args_execution_types=$gui->execution_types
-             args_tcAttachments=$gui->tcAttachments }
-
+             args_tcAttachments=$gui->tcAttachments
+	           args_req_details=$gui->req_details}
 
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"

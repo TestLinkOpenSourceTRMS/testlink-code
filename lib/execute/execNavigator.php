@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2009/02/11 18:05:29 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2009/02/14 15:16:21 $ by $Author: franciscom $
  *
  * rev: 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -481,7 +481,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     $additionalInfo->useCounters = $cfgObj->exec->enable_tree_testcase_counters;
     
-    // $additionalInfo->useColours = $cfgObj->exec->enable_tree_colouring;
+    $additionalInfo->useColours=new stdClass();
     $additionalInfo->useColours->testcases = $cfgObj->exec->enable_tree_testcases_colouring;
     $additionalInfo->useColours->counters = $cfgObj->exec->enable_tree_counters_colouring;
 

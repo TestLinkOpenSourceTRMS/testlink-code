@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.61 2009/01/07 22:19:46 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.62 2009/02/14 15:16:21 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -168,28 +168,6 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 * builds bug information for execution id
 * written by Andreas, being implemented again by KL
 */
-
-// function buildBugString(&$db,$execID)
-// {
-//     if (!$execID)
-// 	  return null;
-// 
-// 	$bugString = null;
-// 	$bugsOn = config_get('bugInterfaceOn');
-// 	if ($bugsOn == null)
-// 		return $bugString;
-// 
-// 	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
-// 	if ($bugs)
-// 	{
-// 		foreach($bugs as $bugID => $bugInfo)
-// 		{
-// 			$bugString .= $bugInfo['link_to_bts']."<br />";
-// 		}
-// 	}
-// 	return $bugString;
-// }
-
 
 /**
 * Function returns number of Test Cases in the Test Plan

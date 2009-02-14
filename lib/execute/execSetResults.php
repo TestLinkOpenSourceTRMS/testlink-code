@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.112 $
- * @modified $Date: 2009/02/09 20:37:38 $ $Author: schlundus $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2009/02/14 15:16:21 $ $Author: franciscom $
  *
  * rev:
+ *     20090210 - amitkhullar - BUGID 2068
  *     20081230 - franciscom - display full path on test suite name
  *     20081217 - franciscom - initializeExecMode() - algorithm changed.
  *     20081122 - franciscom - added some comments
@@ -35,7 +36,6 @@ require_once('exec.inc.php');
 require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
-
 $cfg=getCfg();
 require_once(require_web_editor($cfg->editorCfg['type']));
 
@@ -44,7 +44,6 @@ $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
-
 $args = init_args();
 
 $smarty = new TLSmarty();
@@ -53,6 +52,7 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $attachmentRepository = tlAttachmentRepository::create($db);
+$req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $_SESSION['history_on'] = $gui->history_on;
@@ -175,7 +175,8 @@ if(!is_null($linked_tcversions))
 		    $testerid = $tc_current['tester_id'];
 		    $userid_array[$testerid] = $testerid;
     }
-    
+
+    $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
     $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
 
     // Get attachment,bugs, etc
@@ -195,8 +196,7 @@ if(!is_null($linked_tcversions))
  			$gui->attachments=$other_info['attachment'];
       $gui->bugs=$other_info['bugs'];
       $gui->other_exec_cfields=$other_info['cfexec_values'];
-
-
+     
       // this piece of code is useful to avoid error on smarty template due to undefined value   
       if( is_array($tcversion_id) && 
           (count($gui->other_execs) != count($gui->map_last_exec)) )
@@ -226,7 +226,6 @@ if ($userid_array)
 	}
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
-
 $gui->can_use_bulk_op=(!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
 if( $gui->can_use_bulk_op )
 {
@@ -247,16 +246,15 @@ else
 {
     $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 }
-
 // To silence smarty errors
 //  future must be initialized in a right way
+
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
 
 /*
   function: 
@@ -425,9 +423,9 @@ function get_ts_name_details(&$db,$tcase_id)
 	{
 		$rs = $db->fetchRowsIntoMap($sql,'tc_id');
 	}
-	
 	return $rs;
 }
+
 /*
   function: 
 
@@ -514,7 +512,7 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
   		
   		if($bugInterfaceOn)
   		{
-			$the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
+			$the_bugs = get_bugs_for_report($db,$bugInterface,$exec_id);
 			if(count($the_bugs) > 0)
 				$bugs[$exec_id] = $the_bugs;
   		}
@@ -571,7 +569,8 @@ function do_remote_execution(&$db,$tc_versions)
 				$my_result = $my_result{0};
 				if( $my_result != $tc_status['passed'] && 
 				    $my_result != $tc_status['failed'] && 
-				    $my_result != $tc_status['blocked']){
+				    $my_result != $tc_status['blocked'])
+				{
 					  $my_result = $tc_status['blocked'];
 				}
 				// 
@@ -841,13 +840,12 @@ function initializeRights(&$dbHandler,$user_id,$tproject_id,$tplan_id)
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 {
     $buildMgr = new build_mgr($dbHandler);
-
     $gui = new stdClass();
     $gui->execStatusValues=null;
     $gui->can_use_bulk_op=0;
     $gui->exec_notes_editors=null;
     $gui->bulk_exec_notes_editor=null;
-    
+    $gui->req_details=null;
 
     $gui->editorType=$cfgObj->editorCfg['type'];
     $gui->ownerDisplayName = null;

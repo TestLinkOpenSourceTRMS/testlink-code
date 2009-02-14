@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.32 2009/01/13 19:34:01 schlundus Exp $
+$Id: execSetResults.tpl,v 1.33 2009/02/14 15:15:45 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
+  20090212 - amitkhullar - BUGID 2068
   20081231 - franciscom - new implementation of Bulk TC Status 
                           BUGID 1635
   20081210 - franciscom - BUGID 1905 
@@ -52,7 +53,8 @@ Rev:
 	           execution_type_manual,execution_type_auto,run_mode,or_unassigned_test_cases,
 	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
-	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to'}
+	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
+             click_to_open,reqs,requirement'}
 
 
 

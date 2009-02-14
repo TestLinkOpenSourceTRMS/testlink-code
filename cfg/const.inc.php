@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2009/02/12 16:30:40 $ by $Author: havlat $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2009/02/14 16:56:16 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -79,7 +79,7 @@ define('FILTER_BY_TC_STATUS_OFF', null);
 define('FILTER_BY_KEYWORD_OFF', null);
 define('FILTER_BY_ASSIGNED_TO_OFF', 0);
 define('SEARCH_BY_CUSTOM_FIELDS_OFF', null);
-define('COLOR_BY_TC_STATUS_OFF', 0);
+define('COLOR_BY_TC_STATUS_OFF', null);
 define('CREATE_TC_STATUS_COUNTERS_OFF', 0);
 
 // moved from testSetRemove.php

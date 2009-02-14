@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/02/10 20:01:20 $  $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/02/14 10:14:28 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -186,7 +186,6 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
        $tsuite_mgr = new testsuite($dbHandler);
        $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
        $guiObj->tcase_number=count($tcase_set);    
-       
        $guiObj->bulkassign_warning_msg=sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);
     }
 
@@ -203,14 +202,15 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
 */
 function doBulkAssignment(&$dbHandler,&$argsObj)
 {
+  
+    
     $req_mgr = new requirement_mgr($dbHandler);
     $assignmentCounter=0;
 	  $requirements = array_keys($argsObj->reqIdSet);
     if( !is_null($requirements) && count($requirements) > 0 )
     {
-        $simple_format=1;
         $tsuite_mgr = new testsuite($dbHandler);
-        $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,$simple_format);
+        $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
         $assignmentCounter=$req_mgr->bulk_assignment($requirements,$tcase_set);
     } 
     return $assignmentCounter;

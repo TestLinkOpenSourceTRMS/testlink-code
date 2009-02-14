@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/02/02 22:30:52 $ $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/02/14 09:42:00 $ $Author: schlundus $
  * @author Pavel Kalian
  *
  * Czech (cs_CZ) strings
@@ -20,7 +20,7 @@
  * 20080114 - initial translation
  * Scripted update according en_GB string file (version: 1.395) 
  * ---------------------------------------------------------------------------------- */
-
+$TLS_STRINGFILE_CHARSET = "UTF-8";
 
 
 // ----- General terms (used wide) ----------------------------

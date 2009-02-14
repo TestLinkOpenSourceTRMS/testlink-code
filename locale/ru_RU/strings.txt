@@ -4,15 +4,15 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/02/02 22:30:53 $ $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/02/14 09:42:01 $ $Author: schlundus $
  *
  * @author Vadim Ivanchenko
  *
  *
  * Scripted update according en_GB string file (version: 1.395) 
  * ---------------------------------------------------------------------------------- */
-
+$TLS_STRINGFILE_CHARSET = "UTF-8";
 
 
 // ----- General terms (used wide) ----------------------------

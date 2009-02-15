@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.401 $
- * @modified $Date: 2009/02/14 15:21:49 $ by $Author: franciscom $
+ * @version $Revision: 1.402 $
+ * @modified $Date: 2009/02/15 15:07:43 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -160,7 +160,7 @@ $TLS_name_already_exists = "Name:%s already exists";
 $TLS_created_with_new_name = "Create with name:%s, because name:%s already exists";
 
 $TLS_click_to_open='Click to open';
-
+$TLS_testplan_usage="Test Plan usage";
 
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values

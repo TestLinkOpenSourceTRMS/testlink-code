@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.38 2009/02/10 20:02:29 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.39 2009/02/15 15:03:14 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -27,9 +27,8 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
+$templateCfg = templateConfiguration();
 $tproject_mgr = New testproject($db);
-
-$template_dir='testcases/';
 $spec_cfg = config_get('spec_cfg');
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
                         'keywordsAssign' => "lib/keywords/keywordsAssign.php",
@@ -131,7 +130,7 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('menuUrl',$workPath);
-$smarty->display($template_dir . 'tcTree.tpl');
+$smarty->display($templateCfg->template_dir . 'tcTree.tpl');
 
 /*
   function: tsuite_filter_mgmt

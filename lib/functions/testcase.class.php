@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.149 $
- * @modified $Date: 2009/02/14 15:17:43 $ $Author: franciscom $
+ * @version $Revision: 1.150 $
+ * @modified $Date: 2009/02/15 15:03:14 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090214 - franciscom - when getting execution info, executions.execution_type will be returned
@@ -482,6 +482,8 @@ function get_all()
   returns:
 
   rev :
+       20090215 - franciscom - added info about links to test plans
+       
        20081114 - franciscom -
        added arguments and options that are useful when this method is
        used to display test case search results.
@@ -503,7 +505,11 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
   $gui->parentTestSuiteName='';
   $gui->path_info=$path_info;
 	$gui->tprojectName='';
-    
+  $gui->linked_versions=null;
+	$gui_cfg = config_get('gui');
+	$the_tpl = config_get('tpl');
+	$tcase_cfg = config_get('testcase_cfg');
+
   $status_ok = 1;
   $viewer_defaults=array('title' => lang_get('title_test_case'),
                          'action' => '', 'msg_result' => '','user_feedback' => '',
@@ -531,9 +537,6 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
   }
 
 	$req_mgr = new requirement_mgr($this->db);
-	$gui_cfg = config_get('gui');
-	$the_tpl = config_get('tpl');
-	$tcase_cfg = config_get('testcase_cfg');
 	$requirements_feature=null;
 	$gui->tc_current_version = array();
 	$tc_other_versions = array();
@@ -587,21 +590,18 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 		{
 			$tc_array = $this->get_by_id($tc_id,$version_id);
 			if (!$tc_array)
+			{
 				continue;
+			}
 			
 			$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
-			//get the status quo of execution and links of tc versions
+			// get the status quo of execution and links of tc versions
 			$status_quo_map[] = $this->get_versions_status_quo($tc_id);
 			
+			$gui->linked_versions[] = $this->get_linked_versions($tc_id);
+			
+			
 			$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
-			
-			// $keywords_map[] = $tcKeywordMap; 
-			// $tc_current = array($tc_array[0]);
-			// $gui->tc_current_version[] = $tc_current;
-			// 
-			// //Get UserID and Updater ID for current Version
-			// $tc_current = $tc_current[0];
-			
 			$tc_current = $tc_array[0];
 			$gui->tc_current_version[] = array($tc_current);
 			
@@ -610,10 +610,14 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 			$userid_array[$tc_current['updater_id']] = null;
 
 			if(count($tc_array) > 1)
+			{
 				$tc_other_versions[] = array_slice($tc_array,1);
+			}
 			else
+			{
 				$tc_other_versions[] = null;
-				
+			}	
+			
 			//Get author and updater id for each version
 			if ($tc_other_versions[0])
 			{
@@ -629,7 +633,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 		} // foreach($a_id as $key => $tc_id)
   } // if (sizeof($a_id))
   
-  //Removing duplicate and NULL id's
+  // Removing duplicate and NULL id's
 	unset($userid_array['']);
 	$passeduserarray = array_keys($userid_array);
 	

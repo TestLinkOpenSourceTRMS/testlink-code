@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.17 2009/02/03 20:10:06 schlundus Exp $
+$Id: tcView.tpl,v 1.18 2009/02/15 15:02:07 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
-rev: 20081115 - franciscom - refactoring to improve display when using on search feature 
+rev: 20090215 - franciscom - BUGID - show info about links to test plans
+     
 
 *}
 
@@ -78,7 +79,10 @@ rev: 20081115 - franciscom - refactoring to improve display when using on search
 
 		         args_tproject_name=$gui->tprojectName
 		         args_tsuite_name=$gui->parentTestSuiteName
+		         
+		         args_linked_versions=$gui->linked_versions[idx]
 		         }
+		
 		
 		{assign var="bDownloadOnly" value=false}
 		{if $can_edit != 'yes'}
@@ -91,6 +95,7 @@ rev: 20081115 - franciscom - refactoring to improve display when using on search
 		         attach_downloadOnly=$bDownloadOnly
 		         attach_loadOnCancelURL=$loadOnCancelURL
 		         }
+		         
 	{* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
         {assign var="vid" value=$gui->tc_current_version[idx][0].id}
@@ -139,6 +144,8 @@ rev: 20081115 - franciscom - refactoring to improve display when using on search
                        args_show_title="no"
                        args_users=$users
                        args_cf=$cf[idx]
+                       
+           		         args_linked_versions=null
                        }
   	         </div>
   	         <br />

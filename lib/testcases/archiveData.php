@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.40 2009/01/25 18:56:33 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.41 2009/02/15 15:03:14 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -20,7 +20,7 @@ require_once('common.php');
 require_once('testsuite.class.php');
 testlinkInitPage($db);
 
-$template_dir = 'testcases/';
+$templateCfg = templateConfiguration();
 $viewerArgs = null;
 $args = init_args($viewerArgs);
 
@@ -35,7 +35,7 @@ switch($args->feature)
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
-		$item_mgr->show($smarty,$template_dir,$args->id);
+		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id);
 		break;
 
 	case 'testcase':
@@ -56,7 +56,7 @@ switch($args->feature)
 		$attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);;
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
-		$item_mgr->show($smarty,$template_dir,$args->id,testcase::ALL_VERSIONS,$viewerArgs);
+		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,testcase::ALL_VERSIONS,$viewerArgs);
 		break;
 
 	default:

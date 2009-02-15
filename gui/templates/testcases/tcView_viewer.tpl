@@ -1,25 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.23 2009/01/22 20:57:47 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.24 2009/02/15 15:02:07 franciscom Exp $
 viewer for test case in test specification
 
-20080425 - franciscom - removed php notice
-20080113 - franciscom - changed format for test case id + name
-20071204 - franciscom - display execution_type
-20070628 - franciscom - active_status_op_enabled always true
-20061230 - franciscom - an experiment to make simple management
-                        of frequent used href
+rev: 20090215 - franciscom - BUGID - show info about links to test plans
 *}
 
 {lang_get var="labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_del,btn_mv_cp,btn_del_this_version,btn_new_version,
-             btn_export,btn_execute_automatic_testcase,version,
+             btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,
              title_last_mod,title_created,by,expected_results,keywords,
              execution_type,test_importance,none"}
-
-
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -50,16 +43,12 @@ viewer for test case in test specification
 {if $args_can_edit == "yes" }
 
   {assign var="edit_enabled" value=0}
-  {* 20070628 - franciscom
-     Seems logical you can disable some you have executed before*}
+  {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
   {assign var="active_status_op_enabled" value=1}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
-  {if $args_status_quo eq null or
-      $args_status_quo[$args_testcase.id].executed eq null}
-
+  {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
       {assign var="edit_enabled" value=1}
-      {* {assign var="active_status_op_enabled" value=1}  *}
       {assign var="warning_edit_msg" value=""}
 
   {else}
@@ -104,17 +93,17 @@ viewer for test case in test specification
 		{* --------------------------------------------------------------------------------------- *}
 		{if $active_status_op_enabled eq 1}
 	        {if $args_testcase.active eq 0}
-				{assign var="act_deact_btn" value="activate_this_tcversion"}
-				{assign var="act_deact_value" value="activate_this_tcversion"}
-				{assign var="version_title_class" value="inactivate_version"}
+				      {assign var="act_deact_btn" value="activate_this_tcversion"}
+				      {assign var="act_deact_value" value="activate_this_tcversion"}
+				      {assign var="version_title_class" value="inactivate_version"}
 	      	{else}
-				{assign var="act_deact_btn" value="deactivate_this_tcversion"}
-				{assign var="act_deact_value" value="deactivate_this_tcversion"}
-				{assign var="version_title_class" value="activate_version"}
+				      {assign var="act_deact_btn" value="deactivate_this_tcversion"}
+				      {assign var="act_deact_value" value="deactivate_this_tcversion"}
+				      {assign var="version_title_class" value="activate_version"}
 	      	{/if}
 	      	<input type="submit" name="{$act_deact_btn}"
 	                           value="{lang_get s=$act_deact_value}" />
-	    {/if}
+	  {/if}
 	</form></span>
 
 	<span>
@@ -150,13 +139,6 @@ viewer for test case in test specification
     {/if}
 
   {if $args_show_version == "yes"}
-
-{*     {if $warning_edit_msg neq ""}
-	    <tr>
-	      <td class="messages" align="center" colspan="2">{$warning_edit_msg}</td>
-	    </tr>
-    {/if}
-*}    
 	  <tr>
 	  	<td class="bold" colspan="2">{$labels.version}
 	  	{$args_testcase.version|escape}
@@ -169,7 +151,7 @@ viewer for test case in test specification
       		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
       		{$labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
   		</td>
-  		{if $args_testcase.updater_last_name ne "" || $args_testcase.updater_first_name ne ""}
+  		{if $args_testcase.updater_last_name != "" || $args_testcase.updater_first_name != ""}
     	<td width="50%">
     		{$labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
 		  	&nbsp;{$labels.by}&nbsp;{$updater_userinfo->getDisplayName()|escape}
@@ -251,3 +233,21 @@ viewer for test case in test specification
 	  </table>
 	</div>
 	{/if}
+	
+	{if $args_linked_versions != null }
+  <br />
+	<div>
+	  {$labels.testplan_usage}
+		<table class="simple">
+    <tr><th>Version </th> <th> Test Plan</th> </tr>
+  	{foreach item=linked_item from=$args_linked_versions}
+  	    {foreach item=tplan_item from=$linked_item}
+        <tr>
+            <td style="text-align:center;width:15%;">{$tplan_item.version|escape}</td>
+            <td>{$tplan_item.tplan_name|escape}</td>
+        </tr>
+		    {/foreach}
+		{/foreach}
+	  </table>
+	</div>
+  {/if}	

@@ -1,16 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.14 2009/02/02 11:12:31 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.15 2009/02/16 07:14:56 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
-     20081005 - franciscom - added new logic to improve check/uncheck in order
-                             to act on contained test suites.
-                             
+     20090215 - franciscom - BUGID 2114
      20070930 - franciscom - BUGID 
      tcase name href to open window with test case spec.
-     
-     20070407 - franciscom - gui refactoring
      20070120 - franciscom - BUGID 530
 *}
 
@@ -143,7 +139,7 @@ function check_action_precondition(container_id,action)
                   	<td align="center">
         		  		<select name="tester_for_tcid[{$tcase.id}]" 
         		  		        id="tester_for_tcid_{$tcase.id}"
-        		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
+        		  		        onchange='javascript: set_checkbox({$add_cb}_{$ts_id}_{$tcase.id},1)' >
         			   	{html_options options=$gui->testers selected=$tcase.user_id}
         				  </select>
                 	</td>

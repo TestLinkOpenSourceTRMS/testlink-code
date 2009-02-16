@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/02/14 16:54:49 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/02/16 07:15:23 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1965,7 +1965,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                self::$executedParamName => null,
                self::$assignedToParamName => null,
                self::$executeStatusParamName => null,
-               self::$executionTypeParamName => 3);
+               self::$executionTypeParamName => null);
 	 	
    	$this->_setArgs($args);
 		
@@ -2669,6 +2669,27 @@ class TestlinkXMLRPCServer extends IXR_Server
 		return $status_ok;
 	}
 
+
+/**
+ * 
+ *
+ */
+private function _getBugsForExecutionId($execution_id)
+{
+    $rs=null;
+    if( !is_null($execution_id) && $execution_id <> '' )
+    {
+        $sql = "SELECT execution_id,bug_id,builds.name AS build_name " .
+               "FROM execution_bugs,executions,builds ".
+               "WHERE execution_id={$execution_id} " .
+               "AND   execution_id=executions.id " .
+               "AND   executions.build_id=builds.id " .
+               "ORDER BY builds.name,bug_id";
+               
+        $rs=$this->dbObj->fetchRowsIntoMap($sql,'bug_id');
+    }
+    return $rs;   
+}
 
 
 

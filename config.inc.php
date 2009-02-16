@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.234 $
- * @modified $Date: 2009/02/11 18:05:24 $ by $Author: franciscom $
+ * @version $Revision: 1.235 $
+ * @modified $Date: 2009/02/16 10:15:16 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -509,9 +509,6 @@ $tlCfg->exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 // ENABLED -> User can delete an execution result
 // DISABLED -> User can not.  [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->can_delete_execution = DISABLED;
-
-// ENABLED -> test cases and test case counters will be coloured according to test case status
-// $tlCfg->exec_cfg->enable_tree_colouring = ENABLED;
 
 // ENABLED -> test cases will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;

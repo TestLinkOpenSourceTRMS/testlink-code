@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/02/16 07:15:23 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/02/19 07:10:10 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,8 @@
  * 
  *
  * rev :
+ *      20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
+ *                               
  *      20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
  *      20090209 - franciscom - getTestCasesForTestPlan()
  *                              added summary,steps,expected_results,tsuite_name in returned info
@@ -234,6 +236,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
       'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
       'tl.assignRequirements' => 'this:assignRequirements',     
+      'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 			'tl.about' => 'this:about',
 			'tl.setTestMode' => 'this:setTestMode',
 			// ping is an alias for sayHello
@@ -2691,6 +2694,52 @@ private function _getBugsForExecutionId($execution_id)
     return $rs;   
 }
 
+
+
+/**
+ * Gets attachments for specified test case.
+ * The attachment file content is Base64 encoded. To save the file to disk in client,
+ * Base64 decode the content and write file in binary mode. 
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["testcaseid"] ID of the specified test case.
+ * @return mixed $resultInfo
+ */
+public function getTestCaseAttachments($args)
+{
+	$this->_setArgs($args);
+	$attachments=null;
+	$checkFunctions = array('authenticate','checkTestCaseID');       
+  $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+	
+	if($status_ok)
+	{		
+	  $tcase_id = $this->args[self::$testCaseIDParamName];
+		$attachmentRepository = tlAttachmentRepository::create($this->dbObj);
+		$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($tcase_id,"nodes_hierarchy");
+		
+		if ($attachmentInfos)
+		{
+			foreach ($attachmentInfos as $attachmentInfo)
+			{
+				$aID = $attachmentInfo["id"];
+				$content = $attachmentRepository->getAttachmentContent($aID, $attachmentInfo);
+				
+				if ($content != null)
+				{
+					$attachments[$aID]["id"] = $aID;
+					$attachments[$aID]["name"] = $attachmentInfo["file_name"];
+					$attachments[$aID]["file_type"] = $attachmentInfo["file_type"];
+					$attachments[$aID]["title"] = $attachmentInfo["title"];
+					$attachments[$aID]["date_added"] = $attachmentInfo["date_added"];
+					$attachments[$aID]["content"] = base64_encode($content);
+				}
+			}
+		}
+	}
+  return $status_ok ? $attachments : $this->errors;
+}
 
 
 } // class end

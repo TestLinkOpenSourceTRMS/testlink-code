@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.403 $
- * @modified $Date: 2009/02/15 20:46:16 $ by $Author: havlat $
+ * @version $Revision: 1.404 $
+ * @modified $Date: 2009/02/19 07:07:39 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -180,6 +180,13 @@ $TLS_created_with_new_name = "Create with name:%s, because name:%s already exist
 
 $TLS_click_to_open='Click to open';
 $TLS_testplan_usage="Test Plan usage";
+
+$TLS_days="days";
+$TLS_weeks="weeks";
+$TLS_months="months";
+
+$TLS_total="total";
+$TLS_executed="executed";
 
 
 // ----- JAVASCRIPT -----
@@ -2362,5 +2369,13 @@ $TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
 // ----- printDocOptions -----
 $TLS_doc_opt_guide = 'Modify options for required structure of document and then select top line in tree menu for all or suite to be generated.';
 
+
+// ----- timeCharts ----- 
+$TLS_interval_end_date = "Last Interval Date";
+$TLS_interval_header = "Interval Type";
+$TLS_interval_number = "Number of Intervals";
+$TLS_link_time_charts="Time Charts";
+$TLS_time_charts_metrics = "Time Charts Metrics";
+$TLS_time_charts_title = "Time Charts";
 // ----- END ------------------------------------------------------------------
 ?>

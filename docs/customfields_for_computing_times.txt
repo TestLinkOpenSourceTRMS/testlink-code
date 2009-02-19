@@ -1,0 +1,49 @@
+ /**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: customfields_for_computing_times.txt,v $
+ *
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2009/02/19 07:08:40 $ by $Author: franciscom $
+ * @author Martin Havlat
+ *
+ */
+
+Quick Help - Computing Times using Custom Fields
+ 
+Two custom fields with special name are managed by TestLink to compute times:
+ 
+ 
+CF_ESTIMATED_EXEC_TIME
+used by TEST PLAN designers, during Test Case Assignment to test plan, to give testers
+an indication about time (IN MINUTES) needed to execute test case.
+
+CF_EXEC_TIME
+used by testers while executing test cases, to indicate time (IN MINUTES) used to run test case.
+              
+Test Link will do sum() on values present on these custom fields while creating reports
+
+
+
+Using following SQL you can configure these Custom Fields
+
+/*Data for the table `custom_fields` */
+insert into custom_fields 
+(name,label,type,possible_values,default_value,valid_regexp,length_min,length_max,
+ show_on_design,enable_on_design,show_on_execution,enable_on_execution,
+ show_on_testplan_design,enable_on_testplan_design) 
+values ('CF_ESTIMATED_EXEC_TIME','Estimated Exec time (minutes)',2,'','','',0,0,1,1,1,0,0,0);
+
+insert into custom_fields 
+(name,label,type,possible_values,default_value,valid_regexp,length_min,length_max,
+ show_on_design,enable_on_design,show_on_execution,enable_on_execution,
+ show_on_testplan_design,enable_on_testplan_design) 
+ values ('CF_EXEC_TIME','Time used to execute test (min)',2,'','','',0,0,0,0,1,1,0,0);
+
+/*Data for the table `cfield_node_types` */
+insert into cfield_node_types (field_id,node_type_id) 
+values ( (SELECT id FROM custom_fields WHERE name='CF_ESTIMATED_EXEC_TIME') ,3);
+
+insert into cfield_node_types (field_id,node_type_id) 
+values ( (SELECT id FROM custom_fields WHERE name='CF_EXEC_TIME') ,3);

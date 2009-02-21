@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.404 $
- * @modified $Date: 2009/02/19 07:07:39 $ by $Author: franciscom $
+ * @version $Revision: 1.405 $
+ * @modified $Date: 2009/02/21 16:15:36 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -2050,8 +2050,8 @@ $TLS_title_tsuite_import_to = "Import Test Suite";
 $TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
 $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
 $TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' ".
-		"can not be imported because there is no Custom Field with this name " .
-        "and Available for %s on this Test Project"; 
+    "can not be imported because there is no Custom Field with this name " .
+    "and Available for %s on this Test Project"; 
 $TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
 		"because is not direct child of Req. Spec: %s";
 $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not be " .
@@ -2059,7 +2059,10 @@ $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not
 $TLS_update_last_testcase_version='Update data on Latest version';
 $TLS_create_new_testcase_version='Create a new version';
 $TLS_generate_new_testcase='Create a new test case with different title';
-
+$TLS_no_cf_defined_can_not_import="Custom Field values are present on import file ".
+    "but can not be imported because there are no Custom Fields with Test Spec. Design Scope on this Test Project"; 
+$TLS_no_reqspec_defined_can_not_import="Requirements are present on import file ".
+    "but can not be imported because there are no Requirement Specification defined for this Test Project"; 
 
 
 // ----- lib/testcases/tcexport.php -----

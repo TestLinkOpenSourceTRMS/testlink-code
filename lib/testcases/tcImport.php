@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/02/07 18:37:19 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/02/21 16:13:16 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *  20090221 - BUGID - Improvement on messages to user when XML file contains
+ *                     Custom Field Information.
  *  20090206 - BUGID - Import TC-REQ relationship - franciscom
  *  20090117 - BUGID 1991 - franciscom
  *             BUGID 1992 - contribution for XLS import - franciscom
@@ -316,6 +318,13 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		return;
 	}
 
+  $tprojectHas=array('customFields' => false, 'reqSpec' => false);
+  $hasCustomFieldsInfo=false;
+  $hasRequirements=false;
+  $cf_warning_msg=lang_get('no_cf_defined_can_not_import');
+  $reqspec_warning_msg=lang_get('no_reqspec_defined_can_not_import');
+  
+  
 	$resultMap = array();
 	$fieldSizeCfg=config_get('field_size');
   $feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
@@ -339,11 +348,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$req_mgr = new requirement_mgr($db);
 	
 	  // Get CF with scope design time and allowed for test cases linked to this test project
-	  $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
-
+	  // $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
+	  // function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
+    //                                       $node_type=null,$node_id=null,$access_key='id')
+    // 
+    $linkedCustomFields=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
+    $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
+                       
     // BUGID - 20090205 - franciscom
 		$reqSpecSet=$tproject_mgr->getReqSpec($tproject_id,null,array('id','title'),'title');
-		$hasReqSpec=(!is_null($reqSpecSet) && count($reqSpecSet) > 0);
+		$tprojectHas['reqSpec']=(!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 	}
 	
 	for($idx = 0; $idx <$tc_qty ; $idx++)
@@ -425,14 +439,23 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		// If Check fails => give message to user.
 		// Else Import CF data
 		// 	
-		if( !is_null($customFields) )
-		{                         
-		    $msg=processCustomFields($tcase_mgr,$name,$ret['id'],$tc['customfields'],$customFields,$feedbackMsg);
-		    if( !is_null($msg) )
-		    {
-		        $resultMap = array_merge($resultMap,$msg);
+		$hasCustomFieldsInfo=(isset($tc['customfields']) && !is_null($tc['customfields']));
+		if($hasCustomFieldsInfo)
+		{
+		    if($tprojectHas['customFields'])
+		    {                         
+		        $msg=processCustomFields($tcase_mgr,$name,$ret['id'],$tc['customfields'],$linkedCustomFields,$feedbackMsg);
+		        if( !is_null($msg) )
+		        {
+		            $resultMap = array_merge($resultMap,$msg);
+		        }
 		    }
-	    
+		    else
+		    {
+            // Can not import Custom Fields Values, give feedback
+            $msg[]=array($name,$cf_warning_msg);
+            $resultMap = array_merge($resultMap,$msg);		      
+		    }
 		}
 		
 		// BUGID - 20090205 - franciscom
@@ -441,14 +464,24 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		// If Check fails => give message to user.
 		// Else Import 
 		// 	
-  	if( $hasReqSpec )
+		$hasRequirements=(isset($tc['requirements']) && !is_null($tc['requirements']));
+		if($hasRequirements)
 		{
-		    $msg=processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
-		    if( !is_null($msg) )
+  	    if( $tprojectHas['reqSpec'] )
 		    {
-		        $resultMap = array_merge($resultMap,$msg);
+		        $msg=processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
+		        if( !is_null($msg) )
+		        {
+		            $resultMap = array_merge($resultMap,$msg);
+		        }
+		    }
+		    else
+		    {
+            $msg[]=array($name,$reqspec_warning_msg);
+            $resultMap = array_merge($resultMap,$msg);		      
 		    }
 		}
+		
 	}
 	return $resultMap;
 }
@@ -863,7 +896,7 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$cfValues,$cfDefinit
     static $missingCfMsg;
     $cf2insert=null;
     $resultMsg=null;
-    
+      
     foreach($cfValues as $value)
     {
        if( isset($cfDefinition[$value['name']]) )

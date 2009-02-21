@@ -5,11 +5,13 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/01/03 17:30:29 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/02/21 17:36:51 $ $Author: franciscom $
  *
- * rev: 20090101 - franciscom - writeToDB() problems with Postgres
- *                              due to wrong table name in insert_id() call.
+ * rev:
+ *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
+ *     20090101 - franciscom - writeToDB() problems with Postgres
+ *                             due to wrong table name in insert_id() call.
  *     
  */
 class tlRole extends tlDBObject
@@ -239,11 +241,11 @@ class tlRole extends tlDBObject
 	/*
 		check if a role has requested right
 		
-		@param string $rights the name of the right to check
+		@param string $rightName the name of the right to check
 		
 		@return bool returns true if present, false else
 	*/
-	public function hasRight($right)
+	public function hasRight($rightName)
 	{
 		$roleRights = (array)$this->rights;
 		$rights = array();
@@ -251,7 +253,8 @@ class tlRole extends tlDBObject
 		{
 			$rights[] = $right->name;
 		}
-		return in_array($right,$rights);
+	  $status=in_array($rightName,$rights);
+		return $status;
 	}
 	
 	protected function deleteRightsFromDB(&$db)

@@ -5,16 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/02/07 18:37:19 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/02/22 18:49:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20081129 - franciscom - BUGID 1852 - bulk_assignment() 
- :       20080512 - franciscom - get_all_for_tcase() new fields in recordset
- *       20080416 - franciscom - update() - fixed bug on return type 
+ * rev : 20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
+ *       20081129 - franciscom - BUGID 1852 - bulk_assignment() 
  *       20080318 - franciscom - thanks to Postgres have found code that must be removed
  *                               after requirements get it's id from nodes hierarchy
 */
@@ -67,10 +66,14 @@ class requirement_mgr extends tlObjectWithAttachments
   */
   function get_by_id($id)
   {
-  	$sql = " SELECT REQ.*, REQ_SPEC.testproject_id, REQ_SPEC.title AS req_spec_title " .
-  	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC" .
+  	$sql = " SELECT REQ.*, REQ_SPEC.testproject_id, REQ_SPEC.title AS req_spec_title, " .
+  	       " NH.node_order " .
+  	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC," .
+  	       " {$this->nodes_hierarchy_table} NH " .
   	       " WHERE REQ.srs_id = REQ_SPEC.id " .
+  	       " AND REQ.id = NH.id " .
   	       " AND REQ.id = {$id}";
+  	       
   	$recordset = $this->db->get_recordset($sql);
   	
     $rs=null;
@@ -786,6 +789,42 @@ class requirement_mgr extends tlObjectWithAttachments
   	// }
 
   }
+
+
+/**
+ * exportReqToXML
+ *
+ * @param  int $id requirement id
+ * @param  int $tproject_id: optional default null.
+ *         useful to get custom fields (when this feature will be developed).
+ *
+ * @return  string with XML code
+ *
+ */
+function exportReqToXML($id,$tproject_id=null)
+{            
+ 	$rootElem = "{{XMLCODE}}";
+	$elemTpl = "\t" .   "<requirement>" .
+	           "\n\t\t" . "<docid><![CDATA[||DOCID||]]></docid>" .
+	           "\n\t\t" . "<title><![CDATA[||TITLE||]]></title>" .
+	           "\n\t\t" . "<node_order><![CDATA[||NODE_ORDER||]]></node_order>".
+					   "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
+					   "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
+					   "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
+					   "\n\t" . "</requirement>" . "\n";
+					   
+	$info = array (	"||DOCID||" => "req_doc_id",
+							    "||TITLE||" => "title",
+							    "||DESCRIPTION||" => "scope",
+							    "||STATUS||" => "status",
+							    "||TYPE||" => "type",
+							    "||NODE_ORDER||" => "node_order",
+							    );
+	
+	$reqData[] = $this->get_by_id($id);
+	$xmlStr=exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
+	return $xmlStr;
+}
 
 
 

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.11 2008/09/21 19:02:48 schlundus Exp $ 
+$Id: usersAssign.tpl,v 1.12 2009/02/22 18:48:28 franciscom Exp $ 
 
 rev:
     20070818 - franciscom
@@ -11,12 +11,15 @@ rev:
       -  bug 1000  - Testplan User Role Assignments
     
 *}
+{lang_get var="labels" 
+          s='TestProject,TestPlan,btn_change,title_user_mgmt,User,btn_upd_user_data,title_assign_roles'}
+
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
 </head>
 <body>
 
-<h1 class="title">{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>
+<h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
 {assign var="umgmt" value="lib/usermanagement"}
 
 {***** TABS *****}
@@ -40,11 +43,11 @@ rev:
     <div>
     	<table border='0'>
     	{if $feature == 'testproject'}
-    		<tr><td class="labelHolder">{lang_get s='TestProject'}</td><td>&nbsp;<td>
+    		<tr><td class="labelHolder">{$labels.TestProject}</td><td>&nbsp;<td>
     	{else}
-    		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name|escape}</td></tr>
+    		<tr><td class="labelHolder">{$labels.TestProject}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name|escape}</td></tr>
     		<tr>
-				<td class="labelHolder">{lang_get s='TestPlan'}</td>
+				<td class="labelHolder">{$labels.TestPlan}</td>
     	{/if}
 		    	<td>
 		        <select id="featureSel" onchange="changeFeature('{$feature}')">
@@ -58,14 +61,14 @@ rev:
 		    	   </select>
 		    	</td>
 				<td>
-					<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
+					<input type="button" value="{$labels.btn_change}" onclick="changeFeature('{$feature}');"/>
 		    	</td>
 			</tr>
 		</table>
     </div>
 	    <table class="common sortable" width="75%">
     	<tr>
-    		<th>{$sortHintIcon}{lang_get s='User'}</th>
+    		<th>{$sortHintIcon}{$labels.User}</th>
     		<th>{$sortHintIcon}{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$userData item=user}
@@ -103,14 +106,11 @@ rev:
     	{/foreach}
     	</table>
     	<div class="groupBtn">	
-    		<input type="submit" name="do_update" value="{lang_get s='btn_upd_user_data'}" />
+    		<input type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
     	</div>
   </form>
   <hr />
 {/if} {* if $features *}
-
-
 </div>
-
 </body>
 </html>

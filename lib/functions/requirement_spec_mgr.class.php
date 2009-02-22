@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/01/11 17:13:52 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/02/22 18:49:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  *
- * rev: 20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
+ * rev: 20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
+ *                              exportReqSpecToXML() (will be available on TL 1.9)
+ *
+ *      20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
  *                                           get_linked_cfields()
  *
  *      20080830 - franciscom - changes in create() for future use
@@ -183,8 +186,12 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   */
   function get_by_id($id)
   {
-  	$sql = " SELECT *, '' AS author, '' AS modifier " .
-  	       " FROM {$this->object_table} WHERE id = {$id}";
+  	$sql = " SELECT REQ_SPEC.*, '' AS author, '' AS modifier, NH.node_order " .
+  	       " FROM {$this->object_table} REQ_SPEC,  {$this->nodes_hierarchy_table} NH" .
+  	       " WHERE REQ_SPEC.id = NH.id " . 
+  	       " AND REQ_SPEC.id = {$id}";
+  	       
+  	       
   	$recordset = $this->db->get_recordset($sql);
   	
     $rs=null;
@@ -617,16 +624,6 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   function set_order($map_id_order)
   {
     $this->tree_mgr->change_order_bulk($map_id_order);
-    
-   	// foreach($map_id_order as $order => $node_id)
-  	// {
-  	// 	$order = abs(intval($order));
-  	// 	$node_id = intval($node_id);
-  	//   $sql = " UPDATE {$this->nodes_hierarchy_table} " .
-  	//          " SET node_order = {$order} WHERE id = {$node_id}";
-  	//   $result = $this->db->exec_query($sql);
-  	// }
-
   } // set_order($map_id_order)
 
 
@@ -665,6 +662,129 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 	    }
 	    return $this->db->fetchOneValue($sql);
   }
+
+
+/**
+ * getReqTree
+ *
+ * Example of returned value ( is a recursive one ) 
+ * (
+ *    [childNodes] => Array
+ *        ([0] => Array
+ *                (   [id] => 216
+ *                    [parent_id] => 179
+ *                    [node_type_id] => 6
+ *                    [node_order] => 0
+ *                    [node_table] => req_specs
+ *                    [name] => SUB-R
+ *                    [childNodes] => Array
+ *                        ([0] => Array
+ *                                (   [id] => 181
+ *                                    [parent_id] => 216
+ *                                    [node_type_id] => 7
+ *                                    [node_order] => 0
+ *                                    [node_table] => requirements
+ *                                    [name] => Gamma Ray Emissions
+ *                                    [childNodes] => 
+ *                                )
+ *                         [1] => Array
+ *                                (   [id] => 182
+ *                                    [parent_id] => 216
+ *                                    [node_type_id] => 7
+ *                                    [node_order] => 0
+ *                                    [node_table] => requirements
+ *                                    [name] => Coriolis Effet
+ *                                    [childNodes] => 
+ *                                )
+ *                        )
+ *                )
+ *            [1] => Array
+ *                (   [id] => 217
+ *                    [parent_id] => 179
+ *                    [node_type_id] => 6
+ *                    [node_order] => 0
+ *                    [node_table] => req_specs
+ *                    [name] => SUB-R2
+ *                    [childNodes] => Array
+ *                    ...
+ *
+ *
+ */
+function getReqTree($id)
+{
+    // function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
+    //                           $exclude_branches=null,$and_not_in_clause='',
+    //                           $bRecursive = false,
+    //                           $order_cfg=array("type" =>'spec_order'),$key_type='std')
+    $map = $this->tree_mgr->get_subtree($id,null,null,null,'',true);
+    return $map;  
+}
+
+
+/**
+ * exportRequirementsToXML
+ *
+ */
+function exportReqSpecToXML($id,$tproject_id,$optExport=array())
+{
+  static $req_mgr;
+   
+  // manage missing keys
+  $optionsForExport=array('RECURSIVE' => true);
+  foreach($optionsForExport as $key => $value)
+  {
+      $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
+  }
+
+  $kwXML=null;
+  $cfXML=null;
+	$xmlData = null;
+	if($optionsForExport['RECURSIVE'])
+	{
+		$containerData = $this->get_by_id($id);
+    $xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']). '" >' .
+               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
+	             "<scope><![CDATA[{$containerData['scope']}]]> \n{$kwXML}{$cfXML}</scope>";
+	}
+	else
+	{
+		$xmlData = "<requirement>";
+  }
+  
+	$req_spec = $this->getReqTree($id);
+	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
+	if( !is_null($childNodes) )
+	{
+	    $loop_qty=sizeof($childNodes); 
+	    for($idx = 0;$idx < $loop_qty;$idx++)
+	    {
+	    	$cNode = $childNodes[$idx];
+	    	$nTable = $cNode['node_table'];
+	    	if($optionsForExport['RECURSIVE'] && $cNode['node_table'] == 'req_specs')
+	    	{
+	    		$xmlData .= $this->exportReqSpecToXML($cNode['id'],$tproject_id,$optionsForExport);
+	    	}
+	    	else if ($cNode['node_table'] == 'requirements')
+	    	{
+	    	  if( is_null($req_mgr) )
+	    	  {
+	    	      $req_mgr = new requirement_mgr($this->db);
+	    		}
+	    		$xmlData .= $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
+	    	}
+	    }
+	}    
+	if ($optionsForExport['RECURSIVE'])
+	{
+		$xmlData .= "</req_spec>";
+	}
+	else
+	{
+		$xmlData .= "</requirement>";
+	}
+	return $xmlData;
+}
+
 
 
 

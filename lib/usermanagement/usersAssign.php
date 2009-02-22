@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.17 $
-* @modified $Date: 2009/01/07 19:55:35 $ $Author: schlundus $
+* @version $Revision: 1.18 $
+* @modified $Date: 2009/02/22 18:49:25 $ $Author: franciscom $
 *
 * Allows assigning users roles to testplans or testprojects
 */
@@ -14,8 +14,7 @@ require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
-$template_dir = 'usermanagement/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 $feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
 $featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
@@ -134,7 +133,8 @@ $smarty->assign('userFeatureRoles',$userFeatureRoles);
 $smarty->assign('featureID',$featureID);
 $smarty->assign('feature',$feature);
 $smarty->assign('features',$features);
-$smarty->display($template_dir . $default_template);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
 
 function checkRights(&$db,&$user)
 {

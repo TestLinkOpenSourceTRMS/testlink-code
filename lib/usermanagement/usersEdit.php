@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.31 $
-* @modified $Date: 2008/12/12 20:35:41 $ $Author: schlundus $
+* @version $Revision: 1.32 $
+* @modified $Date: 2009/02/22 18:49:25 $ $Author: franciscom $
 *
 * rev:
 *     fixed missing checks on doCreate()
@@ -21,11 +21,7 @@ require_once('users.inc.php');
 require_once('email_api.php');
 testlinkInitPage($db,false,false,"checkRights");
 
-$templateCfg = new stdClass();
-$templateCfg->template_dir = 'usermanagement/';
-$templateCfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
-$templateCfg->template = null;
-
+$templateCfg = templateConfiguration();
 $args = init_args();
 
 $op = new stdClass();

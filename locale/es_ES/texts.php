@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/02 22:30:52 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/02/23 11:46:47 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -26,26 +26,21 @@
  * ------------------------------------------------------------------------------------ */
 
 
-$TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
-$TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>Users can set relations between requirements and test cases. A designer could
-define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
-test cases and vice versa. Such traceability matrix helps to investigate test coverage
-of requirements and find out which ones successfully failed during a testing. This
-analyse serves as input for the next planning.</p>
+$TLS_htmltext_title['assignReqs']	= "Asignar Requerimientos a un Test Case";
+$TLS_htmltext['assignReqs'] 		= "<h2>Prop&oacute;sito:</h2>
+<p>Esta funcionalidad permite establecer relaciones entre los Requerimientos 
+y los Test Cases. Un dise&ntilde;ador podr&iacute;a definir relaciones 0..n a 0..n. Por ejemplo, un Test Case
+podr&iacute;a estar asignado a ninguno, a uno o a muchos Requerimientos y viceversa.</p>
 
-<h2>Get Started:</h2>
+<h2>Comenzando:</h2>
 <ol>
-	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
-	Specifications is shown at the top of workarea.</li>
-	<li>Choose a Requirements Specification Document if more once defined. 
-	TestLink automatically reload the page.</li>
-	<li>A middle block of workarea lists all requirements (from choosen Specification), which
-	are connected with the test case. Bottom block 'Available Requirements' lists all
-	requirements which have not relation
-	to the current test case. A designer could mark requirements which are covered by this
-	test case and then click the button 'Assign'. These new assigned test case are shown in
-	the middle block 'Assigned Requirements'.</li>
+	<li>Selecciona un Test Case en el &Aacute;rbol de Navegaci&oacute;n de la izquierda. El desplegable con la lista de las Especificaciones de 
+	Requerimientos se muestra en la parte superior del &aacute;rea de trabajo.</li>
+	<li>Selecciona una Especificaci&oacute;n de Requerimientos. TestLink recarga la p&aacute;gina autom&aacute;ticamente.</li>
+    <li>Aparecen dos bloques: 'Requerimientos Asignados' que es la lista de todos los Requerimientos de la Especificaci&oacute;n seleccionada que
+	est&aacute;n asignados al Test Case y 'Requerimientos Disponibles' que es la lista de todos los 
+    Requerimientos que no est&aacute;n asignados al Test Case actual. Un dise&ntilde;ador podr&iacute;a marcar Requerimientos que est&aacute;n cubiertos por este Test Case y hacer click en el bot&oacute;n 'Asignar'. Estos nuevos Requerimientos asignados al Test Case se mostrar&iacute;an en el bloque de 'Requerimientos Asignados'.</li>
+    <li>Se puede actuar del mismo modo para quitar Requerimientos que estaban asignados al Test Case.</li>
 </ol>";
 
 

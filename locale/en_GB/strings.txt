@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.405 $
- * @modified $Date: 2009/02/21 16:15:36 $ by $Author: franciscom $
+ * @version $Revision: 1.406 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -89,6 +89,7 @@ $TLS_test_suite 		= "Test Suite";
 $TLS_testsuite_created 	= "Test Suite created";
 $TLS_title 				= "Title";
 $TLS_unassigned 		= "unassigned";
+$TLS_Unknown 			= "Unknown";
 $TLS_urgency 			= "Urgency";
 
 
@@ -1408,10 +1409,11 @@ $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for detai
 $TLS_feedback_urgency_ok = "Test urgency was modified.";
 $TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
-// gui/templates/tcPrintNavigator.tpl
-$TLS_caption_print_opt = "Print Options";
-$TLS_tr_td_show_as = "Show as";
 
+// ----- gui/templates/printDocOptions.tpl -----
+$TLS_doc_opt_title = 'Document options';
+$TLS_doc_opt_guide = 'Modify options for required structure of document. Select the top line in tree menu for all or a required suite to generate a document content.';
+$TLS_tr_td_show_as = "Show as";
 
 
 // ----- gui/templates/tcReorder.tpl -----
@@ -1769,13 +1771,12 @@ $TLS_email_sent_message = "Your mail has been sent";
 $TLS_printed_by_TestLink_on = "Printed by TestLink on";
 $TLS_title_toc = "Table Of Contents";
 $TLS_passfail = "Test result";
-$TLS_testnotes = "Test Notes";
+$TLS_testnotes = "Testing notes";
 $TLS_last_exec_result = "Last Result";
 $TLS_test_project_notes = "Test Project description";
 
 
 // ----- lib/functions/users.inc.php -----
-$TLS_Unknown = "Unknown";
 $TLS_duplicate_login = "A user with that login already exists!";
 $TLS_login_must_not_be_empty = "Login must not be empty!";
 $TLS_wrong_old_password = "Wrong old password!";
@@ -1909,15 +1910,17 @@ $TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name
 
 
 
-// ----- lib/print/selectData.php -----
-$TLS_opt_show_doc_header = "Test Suite texts";
-$TLS_opt_show_tc_body = "Test Case Scenario";
-$TLS_opt_show_tc_summary = "Test Case Summary";
-$TLS_opt_show_toc = "Table of Contents";
-$TLS_opt_show_tc_author = "Test Case Author";
-$TLS_opt_show_passfail = "Test results";
-$TLS_opt_show_tc_reqs = "TC related Requirements";
-$TLS_opt_show_tc_keys = "TC related Keywords";
+// ----- lib/results/printDocOptions.php -----
+$TLS_opt_show_toc 			= "Table of Contents";
+$TLS_opt_show_suite_txt 	= "Test Suite description";
+$TLS_opt_show_tplan_txt 	= "Test Plan description";
+$TLS_opt_show_tc_body 		= "Test Case Scenario";
+$TLS_opt_show_tc_summary 	= "Test Case Summary";
+$TLS_opt_show_tc_author 	= "Test Case Author";
+$TLS_opt_show_tc_reqs 		= "Test Case related Requirements";
+$TLS_opt_show_tc_keys 		= "Test Case keywords";
+$TLS_opt_show_passfail 		= "Test results";
+$TLS_opt_show_metrics 		= "Metrics";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 
@@ -2008,8 +2011,8 @@ $TLS_link_report_not_run = "Not run Test Cases";
 $TLS_link_report_overall_build = "Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
-$TLS_link_report_test = "Test Report";
-$TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
+$TLS_link_report_test = "Test result matrix";
+$TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
 
 $TLS_format_html 		= 'HTML';
@@ -2369,16 +2372,14 @@ $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
 $TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
 
 
-// ----- printDocOptions -----
-$TLS_doc_opt_guide = 'Modify options for required structure of document and then select top line in tree menu for all or suite to be generated.';
-
-
 // ----- timeCharts ----- 
-$TLS_interval_end_date = "Last Interval Date";
-$TLS_interval_header = "Interval Type";
-$TLS_interval_number = "Number of Intervals";
-$TLS_link_time_charts="Time Charts";
-$TLS_time_charts_metrics = "Time Charts Metrics";
-$TLS_time_charts_title = "Time Charts";
+$TLS_interval_end_date 		= "Last Interval Date";
+$TLS_interval_header 		= "Interval Type";
+$TLS_interval_number 		= "Number of Intervals";
+$TLS_link_time_charts		= "Time Charts";
+$TLS_time_charts_metrics 	= "Time Charts Metrics";
+$TLS_time_charts_title 		= "Time Charts";
+
+
 // ----- END ------------------------------------------------------------------
 ?>

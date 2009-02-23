@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/02/13 16:10:01 $ by $Author: havlat $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -18,10 +18,26 @@
 require_once('info.inc.php'); // has the sendMail() method
 require_once('../../cfg/reports.cfg.php');
 
+function generateHtmlEmail($template_file, &$smarty, $buildName = null)
+{
+			$html_report = $smarty->fetch($template_file);
+			$emailIsHtml = true;
+		 	$send_cc_to_myself = false;
+			$subjectOfMail =  $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
+		  
+			$emailFrom = $_SESSION['currentUser']->emailAddress;
+			$emailTo = $emailFrom;
+			if (!strlen($emailTo))
+		  		$message = lang_get("error_sendreport_no_email_credentials");
+		  	else
+		  		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
+
+	return	$message;
+}
+
 
 function displayReport($template_file, &$smarty, $report_type, $buildName = null)
 {
-	$reports_cfg = config_get('reportsCfg');
 	$reports_formats = config_get('reports_formats');
 
 	switch($reports_formats[$report_type])
@@ -35,22 +51,11 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
     		break;  
 
 	    case 'format_mail_html':
-			$html_report = $smarty->fetch($template_file);
-			$emailIsHtml = true;
-		 	$send_cc_to_myself = false;
-		 	$tpName = $smarty->get_template_vars("tplan_name");
-			$subjectOfMail =  $tpName . ": " . $template_file . " " . $buildName;
-		  
-			$emailFrom = $_SESSION['currentUser']->emailAddress;
-			$emailTo = $emailFrom;
-			if (!strlen($emailTo))
-		  		$message = lang_get("error_sendreport_no_email_credentials");
-		  	else
-		  		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
+		  	$message = generateHtmlEmail($template_file, &$smarty, $buildName);
 		  		
 			$smarty = new TLSmarty();
 			$smarty->assign('message', $message);
-			$smarty->assign('tpName', $tpName);
+			$smarty->assign('title', $_SESSION['testPlanName']);
 		  	$template_file = "emailSent.tpl";
       		break;
 	} 
@@ -95,29 +100,4 @@ function flushHttpHeader($format, $doc_kind=0)
 	flush();
 }
 
-/*
-function sendXlsHeader()
-{
-	$timeStamp = date('Y-m-d'); // . "-" . time();
-	$filename = "testReport-" . $timeStamp . ".xls"; 
-	header("Content-Disposition: attachment; filename=$filename");
-    header("Content-Description: PHP Generated Data");
-    header("Content-type: application/vnd.ms-excel; name='My_Excel'");
-	flush();
-}
-
-function sendPdfHeader()
-{
-	header('Content-type: application/pdf');
-	header('Content-Disposition: attachment; filename="testReport.pdf"');
-}
-
-function sendMsWordHeader()
-{
-	header("Content-Disposition: inline; filename=testReport.pdf");
-	header("Content-Description: PHP Generated Data");
-	header("Content-type: application/vnd.ms-word; name='My_Word'");
-	flush();
-}
-*/
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/02/13 16:10:01 $ by $Author: havlat $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,7 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ * 	20090222 - havlatm - added new options 
  *      20081116 - franciscom - fixed bug (missed $gui->ajaxTree->loadFromChildren=true)
  *      20080819 - franciscom - fixed bug due to changes in return values of generate*tree()
  *                              TEMPLATE DO NOT WORK YET with EXTJS tree 
@@ -27,8 +28,8 @@ require_once("treeMenu.inc.php");
 
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
-$args=init_args();
-$gui=initializeGui($db,$args,$_SESSION['basehref']);
+$args = init_args();
+$gui = initializeGui($db,$args,$_SESSION['basehref']);
 
 $arrFormat = array(
 	'format_html' => lang_get('format_html'), 
@@ -40,31 +41,43 @@ $arrFormat = array(
 // If you made add/remove elements from this array, you must update
 // $printingOptions in printData.php
 $arrCheckboxes = array(
-	array( 'value' => 'toc', 'description' => lang_get('opt_show_toc'), 'checked' => 'n'),
-	array( 'value' => 'header', 'description' => lang_get('opt_show_doc_header'), 'checked' => 'n'),
-	array( 'value' => 'summary', 'description' => lang_get('opt_show_tc_summary'), 'checked' => 'y'),
-	array( 'value' => 'body', 'description' => lang_get('opt_show_tc_body'), 'checked' => 'n'),
- 	array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'), 'checked' => 'n'),
-	array( 'value' => 'requirement', 'description' => lang_get('opt_show_tc_reqs'), 'checked' => 'n'),
-	array( 'value' => 'keyword', 'description' => lang_get('opt_show_tc_keys'), 'checked' => 'n')
+	array( 'value' => 'toc', 	'description' => 'opt_show_toc', 		'checked' => 'n'),
+	array( 'value' => 'header', 'description' => 'opt_show_suite_txt', 	'checked' => 'n'),
+	array( 'value' => 'summary', 'description' => 'opt_show_tc_summary', 'checked' => 'y'),
+	array( 'value' => 'body', 	'description' => 'opt_show_tc_body',	'checked' => 'n'),
+ 	array( 'value' => 'author',	'description' => 'opt_show_tc_author', 	'checked' => 'n'),
+	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 	'checked' => 'n')
 );
+
+if($_SESSION['testprojectOptReqs'])
+{
+	$arrCheckboxes[] = array( 'value' => 'requirement', 'description' => 'opt_show_tc_reqs', 'checked' => 'n');
+}
 
 if( $gui->report_type == 'testplan')
 {
-  $arrCheckboxes[]=	array( 'value' => 'passfail', 'description' => lang_get('opt_show_passfail'), 'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'testplan', 'description' => 'opt_show_tplan_txt', 'checked' => 'n');
 }
 
-//process setting for print
-if(isset($_REQUEST['setPrefs']))
+if( $gui->report_type == 'testreport')
 {
-  foreach($arrCheckboxes as $key => $elem)
-  {
-   $field_name=$elem['value'];
-   if(isset($_REQUEST[$field_name]) )
-   {
-    $arrCheckboxes[$key]['checked'] = 'y';   
-   }  
-  }
+	$arrCheckboxes[] = array( 'value' => 'passfail', 'description' => 'opt_show_passfail', 'checked' => 'y');
+	$arrCheckboxes[] = array( 'value' => 'metrics', 'description' => 'opt_show_metrics', 'checked' => 'n');
+}
+
+// process setting for doc builder
+$isSetPrefs = isset($_REQUEST['setPrefs']);
+foreach($arrCheckboxes as $key => $elem)
+{
+	$arrCheckboxes[$key]['description'] = lang_get($elem['description']);
+	if($isSetPrefs)
+	{
+		$field_name = $elem['value'];
+		if(isset($_REQUEST[$field_name]) )
+		{
+			$arrCheckboxes[$key]['checked'] = 'y';   
+		}  
+	}
 }
 
 // generate tree for product test specification
@@ -72,9 +85,9 @@ $workPath = 'lib/results/printDocument.php';
 $getArguments = "&type=" . $gui->report_type;
 
 // generate tree for Test Specification
-$treeString=null;
-$tree=null;
-$treemenu_type=config_get('treemenu_type');
+$treeString = null;
+$tree = null;
+$treemenu_type = config_get('treemenu_type');
 switch($gui->report_type)
 {
     case 'testspec':
@@ -86,14 +99,15 @@ switch($gui->report_type)
     break;
 
     case 'testplan':
-    	  $tplan_mgr = new testplan($db);
-	      $latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
+    case 'testreport':
+		$tplan_mgr = new testplan($db);
+		$latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
 	      
-	      $filters = new stdClass();
+		$filters = new stdClass();
   	  	$additionalInfo = new stdClass();
         
         // Set of filters Off
-	      $filters->keyword_id = null;
+		$filters->keyword_id = null;
   	  	$filters->keywordsFilterType=null;
   	  	$filters->tc_id = null;
   	  	$filters->assignedTo = null;
@@ -109,7 +123,7 @@ switch($gui->report_type)
   	  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
-	      $treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
+		$treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
 	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
         
       	$treeString = $treeContents->menustring;
@@ -124,8 +138,8 @@ switch($gui->report_type)
     	break;
 
     default:
-	      tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
-	      exit();
+		tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
+		exit();
     	break;
 }
 
@@ -145,9 +159,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 
+
 /**
  * get user input and create an object with properties representing this inputs.
- * 
  * @return stdClass object 
  */
 function init_args()
@@ -165,6 +179,7 @@ function init_args()
     
     return $args;
 }
+
 
 /**
  * Initialize gui (stdClass) object that will be used as argument

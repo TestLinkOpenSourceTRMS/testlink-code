@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/02/13 16:10:01 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -70,6 +70,12 @@ $tlCfg->reports_file_extension = array(
 $tlCfg->reports_list['test_plan'] = array( 
 	'title' => 'test_plan',
 	'url' => 'lib/results/printDocOptions.php?type=testplan',
+	'enabled' => 'all',
+	'format' => 'format_html,format_odt,format_msword'
+);
+$tlCfg->reports_list['test_report'] = array( 
+	'title' => 'test_report',
+	'url' => 'lib/results/printDocOptions.php?type=testreport',
 	'enabled' => 'all',
 	'format' => 'format_html,format_odt,format_msword'
 );

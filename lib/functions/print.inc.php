@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2009/01/29 14:25:38 $ by $Author: havlat $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -54,6 +54,9 @@ require_once("exec.inc.php");
 /**
  * build HTML header
  * Standard: HTML 4.01 trans (because is more flexible to bugs in user data)
+ * @param string $title
+ * @param string $base_href Base URL
+ * @return string html data
  */
 function buildHTMLHeader($title,$base_href)
 {
@@ -70,6 +73,7 @@ function buildHTMLHeader($title,$base_href)
 
 	return $output;
 }
+
 
 /**
   print HTML - initial page of document
@@ -92,6 +96,7 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	{
 		$author = htmlspecialchars($user->getDisplayName());
   	}
+  	
   	$output = "<body>\n<div>";
 	if ($docCfg->company_name != '' )
 	{
@@ -122,46 +127,6 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	if($title != '')
 	{
 		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
-
-    // Based on contribution (BUGID 1670)
-		if(!is_null($tplan_info))
-		{
-			if( !is_null($statistics) &&  isset($statistics['estimated_execution']) ) 
-		  {
-		    	$estimated_minutes = $statistics['estimated_execution']['minutes'];
-		      $tcase_qty = $statistics['estimated_execution']['tcase_qty'];
-		         
-	       	if($estimated_minutes > 60)
-	        {
-		    		  $estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
-			    } 
-			    else
-			    {
-			    	$estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
-	        }
-				  $estimated_string = sprintf($estimated_string,$tcase_qty);
-			}
-			$output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $estimated_string . "</p>\n";
-		  
-		  if(!is_null($statistics) &&  isset($statistics['real_execution'])) 
-		  {
-		      $real_minutes = $statistics['real_execution']['minutes'];
-		      $tcase_qty = $statistics['real_execution']['tcase_qty'];
-		      if($real_minutes > 0)
-		      {
-	          if($real_minutes > 60)
-	          {
-		          $real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
-			      } 
-			      else
-			      {
-			      	$real_string = lang_get('real_time_min') . $real_minutes;
-			      }
-					  $real_string = sprintf($real_string,$tcase_qty);    
-				}
-			}
-			$output .= '<p style="font-size:14; text-align: center; font-weight: bold;">' . $real_string . "</p>\n";
-	  }
 	}
 	$output .= "</div>\n";
 
@@ -186,25 +151,25 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 		           htmlspecialchars($docCfg->confidential_msg)."</div>\n";
 	}
 	
-	$add_hr=false;
+	$add_hr = false;
 	if (strlen($tproject_notes) > 0)
 	{
-	  $add_hr=true;
+		$add_hr = true;
 		$output .= '<h1>'.lang_get('introduction').'</h1>';
-		$output .= '<h2>'.lang_get('test_project_notes').'</h2>';
-		$output .= '<p id="prodnotes">' .$tproject_notes . "</p>\n";
+		$output .= '<h2>'.lang_get('scope').'</h2>';
+		$output .= '<div id="product_notes">' .$tproject_notes . "</div>\n";
 	}
   
-	if (strlen($tplan_info['notes']) > 0)
+	if (($printingOptions['testplan']) && (strlen($tplan_info['notes']) > 0))
 	{
-		$add_hr=true;
-		$output .= '<h2>'.lang_get('test_plan_notes').'</h2>';
-		$output .= '<p id="prodnotes">'. $tplan_info['notes'] . "</p>\n";
+		$add_hr = true;
+		$output .= '<h1>'.lang_get('scope').'</h1>';
+		$output .= '<div id="testplan_notes">'. $tplan_info['notes'] . "</div>\n";
 	}	
 
   if($add_hr)
   {
-      $output .= "<hr>";  
+      $output .= "<hr />";  
   }
 	return $output;
 }
@@ -212,22 +177,18 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 
 /*
   function: renderTestSpecTreeForPrinting
-
   args :
-
         [$tplan_id]
-
   returns:
 
   rev :
        20070509 - franciscom - added $tplan_id in order to refactor and
                                add contribution BUGID
-
 */
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
                                        $tocPrefix,$tcCnt,$level,$user_id,
                                        $tplan_id = 0,$tcPrefix = null,
-                                       $tProjectID = 0,$estimated_minutes=0)
+                                       $tProjectID = 0)
 {
 	static $tree_mgr;
 	static $map_id_descr;
@@ -245,7 +206,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 		case 'testproject':
 			$code .= renderProjectNodeForPrinting($db,$node,$printingOptions,$item_type,
 			                                      $printingOptions['title'],
-			                                      $user_id,$tplan_id,$estimated_minutes);
+			                                      $user_id,$tplan_id);
 		break;
 
 		case 'testsuite':
@@ -278,6 +239,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id,$tcPrefix,$tProjectID);
 		}
 	}
+	
 	if ($verbose_node_type == 'testproject')
 	{
 		if ($printingOptions['toc'])
@@ -290,11 +252,11 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 	return $code;
 }
+
+
 /*
   function: renderTestCaseForPrinting
-
   args :
-
   returns:
 
   rev :
@@ -541,16 +503,14 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  return $code;
 }
 
+
 /*
   function: renderProjectNodeForPrinting
-
   args :
-
   returns:
   
   rev: 20081207 - franciscom
        minor refactoring to remove global coupling
-
 */
 function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
                                       $title,$user_id,$tplan_id=0,$estimated_minutes=0)
@@ -582,13 +542,10 @@ function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
 
 /*
   function: renderTestSuiteNodeForPrinting
-
   args :
-
   returns:
   
   rev: 20081207 - franciscom - refactoring using static to decrease exec time.
-
 */
 function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix,$level)
 {
@@ -626,22 +583,68 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 
 /*
   function: renderTestPlanForPrinting
-
   args:
-
   returns:
-
 */
 function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
                                    $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,
-                                   $tProjectID,$statistics)
+                                   $tProjectID)
 
 {
 	$tProjectMgr = new testproject($db);
 	$tcPrefix = $tProjectMgr->getTestCasePrefix($tProjectID);
 	$code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
                                          $tocPrefix,$tcCnt,$level,$user_id,
-                                         $tplan_id,$tcPrefix,$tProjectID,$statistics);
+                                         $tplan_id,$tcPrefix,$tProjectID);
 	return $code;
 }
+
+
+// estimated_execution based on contribution (BUGID 1670)
+function renderTestPlanMetrics($statistics)
+{
+    $output = '';
+    
+	if( !is_null($statistics))
+	{ 
+	    $output = "<h1>".lang_get('title_nav_results')."</h1>\n";
+	    $output .= "<div>\n";
+	    
+		if(isset($statistics['estimated_execution']) ) 
+		{
+			$estimated_minutes = $statistics['estimated_execution']['minutes'];
+	    	$tcase_qty = $statistics['estimated_execution']['tcase_qty'];
+		         
+    	   	if($estimated_minutes > 60)
+				$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
+			else
+				$estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
+
+			$estimated_string = sprintf($estimated_string,$tcase_qty);
+
+			$output .= '<p>' . $estimated_string . "</p>\n";
+		}
+		  
+		if(isset($statistics['real_execution'])) 
+		{
+			$real_minutes = $statistics['real_execution']['minutes'];
+			$tcase_qty = $statistics['real_execution']['tcase_qty'];
+			if($real_minutes > 0)
+		    {
+	        	if($real_minutes > 60)
+		        	$real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
+			    else
+			      	$real_string = lang_get('real_time_min') . $real_minutes;
+
+				$real_string = sprintf($real_string,$tcase_qty);    
+			}
+			$output .= '<p>' . $real_string . "</p>\n";
+		}
+    $output .= "</div>\n";
+	}
+
+	return $output;	
+}
+
+
 ?>

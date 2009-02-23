@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/02/13 16:10:01 $ by $Author: havlat $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -24,12 +24,13 @@ require_once("print.inc.php");
 require_once("displayMgr.php");
 testlinkInitPage($db);
 
-$statistics=null;
+$statistics = null;
 $args = init_args();
 
-// Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
-$printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0,
-						               'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0);
+// Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
+$printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0, 
+		'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 
+		'testplan' => 0, 'metrics' => 0);
 
 foreach($printingOptions as $opt => $val)
 {
@@ -55,14 +56,9 @@ $decoding_hash = array('node_id_descr' => $hash_id_descr,
 
 
 $test_spec = $tree_manager->get_subtree($args->itemID,
-										array(
-											'testplan'=>'exclude me',
-											'requirement_spec'=>'exclude me',
-											'requirement'=>'exclude me'),
-											array('testcase'=>'exclude my children',
-											'requirement_spec'=> 'exclude my children'),
-											null,null,RECURSIVE_MODE
-										);
+		array('testplan'=>'exclude me', 'requirement_spec'=>'exclude me', 'requirement'=>'exclude me'),
+		array('testcase'=>'exclude my children', 'requirement_spec'=> 'exclude my children'),
+		null,null,RECURSIVE_MODE);
 
 $tree = null;
 $generatedText = null;					
@@ -70,7 +66,7 @@ $item_type = $args->level;
 
 switch ($args->print_scope)
 {
-    case 'testproject':
+    case 'testproject': // test specification
     	  switch($item_type)
     	  {
     	      case 'testproject':
@@ -89,75 +85,81 @@ switch ($args->print_scope)
     	  break;
     
     case 'testplan':
-    	   $tplan_mgr = new testplan($db);
-         $tcase_filter = null;
-         $execid_filter = null;
-         $executed_qty = 0;
+	case 'testreport':
+		$tplan_mgr = new testplan($db);
+        $tcase_filter = null;
+        $execid_filter = null;
+        $executed_qty = 0;
          
-         switch($item_type)
-         {
-             case 'testproject':
-    	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-    	   	       $tree = &$test_spec;
-    	   	       if (!$tp_tcs)
-    	   	       {
-    	   	           $tree['childNodes'] = null;
-    	   	       }
-    	   	       //@TODO:REFACTOR	
-    	   	       prepareNode($db,$tree,$decoding_hash,$dummy,
+        switch($item_type)
+        {
+			case 'testproject': // all
+    	   	    $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
+    	   	    $tree = &$test_spec;
+    	   	    if (!$tp_tcs)
+    	   	    {
+    	   	    	$tree['childNodes'] = null;
+    	   	    }
+    	   	    //@TODO:REFACTOR	
+    	   	    prepareNode($db,$tree,$decoding_hash,$dummy,
     	   	                   $dummy,$tp_tcs,SHOW_TESTCASES,null,null,0,1,0);
-    	   	       $printingOptions['title'] = $args->tproject_name;
-             break;
+				$printingOptions['title'] = $args->tproject_name;
+            break;
     	       
-    	       case 'testsuite':
-                 $tsuite = new testsuite($db);
-    	   	       $tInfo = $tsuite->get_by_id($args->itemID);
+			case 'testsuite':
+				$tsuite = new testsuite($db);
+				$tInfo = $tsuite->get_by_id($args->itemID);
                  
-    	           $children_tsuites=$tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
-    	           if( !is_null($children_tsuites) and strlen(trim($children_tsuites)) > 0)
-    	           {
-                     $branch_tsuites = explode(',',$children_tsuites);
-                 }
-                 $branch_tsuites[]=$args->itemID;
+    	        $children_tsuites = $tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
+    	        if( !is_null($children_tsuites) and strlen(trim($children_tsuites)) > 0)
+    	        {
+                	$branch_tsuites = explode(',',$children_tsuites);
+                }
+                $branch_tsuites[]=$args->itemID;
     	   	       
     	   	       
-    	   	       $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,null,null,0,null,false,null, 
+    	   	    $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,null,null,0,null,false,null, 
     	   	                                                   $branch_tsuites);
-    	   	       $tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
+    	   	    $tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
     	         
-    	   	       $tInfo['node_type_id'] = $hash_descr_id['testsuite'];
-    	   	       $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	   	    $tInfo['node_type_id'] = $hash_descr_id['testsuite'];
+    	   	    $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
     	   	       
-    	   	       //@TODO: schlundus, can we speed up with NO_EXTERNAL?
-    	   	       prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
-    	   	       $printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
+    	   	    //@TODO: schlundus, can we speed up with NO_EXTERNAL?
+    	   	    prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
+    	   	    $printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
                   
-    	   	       $tree['childNodes'] = array($tInfo);
-             break;
-         }  // switch($item_type)
+    	   	    $tree['childNodes'] = array($tInfo);
+            break;
+        }  // switch($item_type)
          
-         // Create list of execution id, that will be used to compute execution time if
-    	   // CF_EXEC_TIME custom field exists and is linked to current testproject                                            
-         $executed_qty=0;
-    	 if ($tp_tcs)
-    	 {
-    	 	foreach($tp_tcs as $tcase_id => $info)
-	    	{
-	             if( $info['exec_status'] != $status_descr_code['not_run'] )
-	             {  
-	                 $execid_filter[]=$info['exec_id'];
-	                 $executed_qty++;
-	             }    
-	         }    
-    	 }
-         $statistics['estimated_execution']['minutes']=$tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
-         $statistics['estimated_execution']['tcase_qty']=count($tp_tcs);
+        // Create list of execution id, that will be used to compute execution time if
+    	// CF_EXEC_TIME custom field exists and is linked to current testproject                                            
+ 		if ($printingOptions['metrics'])
+ 		{
+         	$executed_qty=0;
+    	 	if ($tp_tcs)
+    	 	{
+    	 		foreach($tp_tcs as $tcase_id => $info)
+			    {
+	    	         if( $info['exec_status'] != $status_descr_code['not_run'] )
+	        	     {  
+	            	     $execid_filter[] = $info['exec_id'];
+	                	 $executed_qty++;
+		             }    
+		         }    
+    		}
+	        $statistics['estimated_execution']['minutes'] = 
+	        		$tplan_mgr->get_estimated_execution_time($args->tplan_id,
+	        		$tcase_filter);
+    	    $statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
          
-         if( $executed_qty > 0)
-         { 
-             $statistics['real_execution']['minutes']=$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
-             $statistics['real_execution']['tcase_qty']=$executed_qty;
-         }
+			if( $executed_qty > 0)
+        	{ 
+				$statistics['real_execution']['minutes'] = $tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
+             	$statistics['real_execution']['tcase_qty'] = $executed_qty;
+         	}
+ 		}
     break;
 }
 
@@ -173,9 +175,10 @@ if($tree)
 			break;
 	
 		case 'testplan':
+		case 'testreport':
 			$generatedText = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
-		                                             $args->user_id,$args->tplan_id,$args->tproject_id,
-		                                             $statistics);
+		                                             $args->user_id,$args->tplan_id,$args->tproject_id);
+			$generatedText .= renderTestPlanMetrics($statistics);
 		    break;
 	}
 }
@@ -186,21 +189,11 @@ if (($args->format == 'format_odt') || ($args->format == 'format_msword'))
 {
 	flushHttpHeader($args->format, DOC_TEST_REPORT);
 }
-/*
-	header("Content-Disposition: inline; filename=".trim($_SESSION['testprojectName'])."_test_report.odt");
-	header("Content-Description: PHP Generated Data");
-	header("Content-type: application/vnd.oasis.opendocument.text; name='TL_OpenOffice'");
-	flush();
-}
-elseif ($args->format == 'format_msword')
-{
-	header("Content-Disposition: inline; filename=".trim($_SESSION['testprojectName'])."_test_report.doc");
-	header("Content-Description: PHP Generated Data");
-	header("Content-type: application/vnd.ms-word; name='TL_MrsWord'");
-	flush();
-}*/
 
+// send out the data
 echo $generatedText;
+
+
 
 
 /** Process input data */

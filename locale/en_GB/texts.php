@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/02/09 21:53:17 $ by $Author: havlat $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -112,15 +112,17 @@ or all the test cases in a test project or plan.</p>
 <h2>Get Started:</h2>
 <ol>
 <li>
-<p>Select the parts of the test cases you want to display, and then click on a test case, test suite, or the test project.
-A printable page will be displayed.</p>
+<p>Select the parts of the test cases you want to display, and then click on a test case, 
+test suite, or the test project. A printable page will be displayed.</p>
 </li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want the information displayed as HTML or in a
-Microsoft Word document. See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
+the information displayed as HTML, OpenOffice Writer or in a Microsoft Word document. 
+See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
 <li><p>Use your browser's print functionality to actually print the information.<br />
- <i>Note: Make sure to only print the right-hand frame.</i></p></li>
+<i>Note: Make sure to only print the right-hand frame.</i></p>
+</li>
 </ol>";
 
 
@@ -213,13 +215,22 @@ $TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
 current Test Plan for execution. You can also select Report format:</p>
 <ul>
 <li><b>Normal</b> - report is displayed in web page</li>
-<li><b>MS Excel</b> - report exported to Microsoft Excel</li>
+<li><b>OpenOffice Writer</b> - report imported to OpenOffice Writer</li>
+<li><b>OpenOffice Calc</b> - report imported to OpenOffice Calc</li>
+<li><b>MS Excel</b> - report imported to Microsoft Excel</li>
 <li><b>HTML Email</b> - report is emailed to user's email address</li>
 <li><b>Charts</b> - report include graphs (flash technology)</li>
 </ul>
 
 <p>The print button activate print of a report only (without navigation).</p>
 <p>There are several seperate reports to choose from, their purpose and function are explained below.</p>
+
+<h3>Test Plan</h3>
+<p>The document 'Test Plan' has options to define a content and a document structure.</p>
+
+<h3>Test Report</h3>
+<p>The document 'Test Report' has options to define a content and document structure.
+It includes Test cases together with test results.</p>
 
 <h3>General Test Plan Metrics</h3>
 <p>This page shows you only the most current status of a Test plan by test suite, owner, and keyword.
@@ -321,8 +332,6 @@ the user visualize the metrics from the current test plan. The four charts provi
 </ul>
 <p>The bars in the bar charts are colored such that the user can identify the approximate number of
 pass, fail, blocked, and not run cases.</p>
-<p><i>This report page requires your browser have a flash plugin (by http://www.maani.us) to display
-results in a graphical format.</i></p>
 
 <h3>Total Bugs For Each Test Case</h3>
 <p>This report shows each test case with all of the bugs filed against it for the entire project.

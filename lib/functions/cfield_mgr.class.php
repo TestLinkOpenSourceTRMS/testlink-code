@@ -2,9 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/02/04 14:24:21 $  $Author: havlat $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/02/24 07:40:54 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20090223 - franciscom - get_linked_cfields_at_execution() - added logic
+ *                         to use this method on report created by:
+ *                         Amit Khullar - amkhullar@gmail.com
  *
  * 20080817 - franciscom - added logic give default logic to manage 
  *                         new custom field types that have no specific code.
@@ -74,7 +78,9 @@ class cfield_mgr
   // Why we are doing this ?
   // To be ready in future to add a prefix on table names
   //
-  var $cfield_node_types_table="cfield_node_types";
+  var $users_table="users";
+  var $builds_table="builds";
+
 
   var $object_table="custom_fields";
   var $custom_fields_table="custom_fields";
@@ -82,6 +88,11 @@ class cfield_mgr
   var $cfield_execution_values_table="cfield_execution_values";
   var $cfield_testplan_design_values_table="cfield_testplan_design_values";
   var $cfield_testprojects_table='cfield_testprojects';
+  var $cfield_node_types_table="cfield_node_types";
+
+  var $execution_bugs_table="execution_bugs";
+  var $executions_table='executions';
+  var $tcversions_table='tcversions';
 
   var $nodes_hierarchy_table="nodes_hierarchy";
   var $node_types_table="node_types";
@@ -1344,11 +1355,13 @@ class cfield_mgr
   */
   function get_linked_cfields_at_execution($tproject_id,$enabled,
                                            $node_type=null,$node_id=null,
-                                           $execution_id=null,$testplan_id=null)
+                                           $execution_id=null,$testplan_id=null,$access_key='id')
   {
     $additional_join="";
     $additional_values="";
     $additional_filter="";
+    $order_clause=" ORDER BY display_order,CF.id ";
+
 
     if( !is_null($node_type) )
     {
@@ -1358,6 +1371,7 @@ class cfield_mgr
       $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
                            " AND CFNT.node_type_id={$node_type_id} ";
     }
+    
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
     {
       $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
@@ -1366,6 +1380,37 @@ class cfield_mgr
                           " AND CFEV.execution_id={$execution_id} " .
                           " AND CFEV.testplan_id={$testplan_id} ";
     }
+    else
+    {
+        // This piece is useful for report implementation done by: Amit Khullar - amkhullar@gmail.com
+        if( !is_null($testplan_id) )
+        {
+            $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id," .
+                                  "EXEC.id, EXEC.tcversion_id,EXEC.tcversion_number," .
+	                                "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
+	                                "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " . 
+                                  "B.id AS builds_id,B.name AS build_name, U.login AS tester " ;
+            
+            $additional_join .= " JOIN {$this->cfield_execution_values_table} CFEV ON CFEV.field_id=CF.id " .
+                                " JOIN {$this->executions_table} EXEC ON CFEV.tcversion_id = EXEC.tcversion_id " .
+                                " AND CFEV.execution_id = EXEC.id " .
+                                " AND CFEV.testplan_id = EXEC.testplan_id ";
+            
+            $additional_join .= " JOIN {$this->builds_table} B ON B.id = EXEC.build_id " .
+                                " AND B.testplan_id = EXEC.testplan_id " ;
+
+            $additional_join .= " JOIN {$this->tcversions_table} TCV ON TCV.version = EXEC.tcversion_number " .
+			                          " AND TCV.version = EXEC.tcversion_number " ;
+            
+            $additional_join .= " JOIN {$this->users_table} U ON  U.id = EXEC.tester_id " .
+                                " JOIN {$this->nodes_hierarchy_table} NHA ON NHA.id = EXEC.tcversion_id " .
+                                " JOIN {$this->nodes_hierarchy_table} NHB ON NHB.id = NHA.parent_id  " ;
+
+			      $order_clause="ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
+        }
+    }
+
+    // 
 
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
@@ -1375,10 +1420,12 @@ class cfield_mgr
          " WHERE CFTP.testproject_id={$tproject_id} " .
          " AND   CFTP.active=1     " .
          " AND   CF.enable_on_execution={$enabled} " .
-         " AND   CF.show_on_execution=1 " .
-         " ORDER BY display_order,CF.id ";
+         " AND   CF.show_on_execution=1 {$order_clause} ";
  
-    $map = $this->db->fetchRowsIntoMap($sql,'id');
+
+    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+        
+    $map = $this->db->fetchRowsIntoMap($sql,$access_key);
     return($map);
   }
 

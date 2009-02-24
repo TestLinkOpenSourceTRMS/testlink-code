@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.406 $
- * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
+ * @version $Revision: 1.407 $
+ * @modified $Date: 2009/02/24 15:51:40 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -36,21 +36,21 @@
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  * ---------------------------------------------------------------------------------- */
 
-// Define character set of strings (UTF-8 is common value)
+// Define character set of this file (UTF-8 is common value)
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active 			= "Active";
-$TLS_asc 				= "ascending";
+$TLS_asc 				= "Ascending";
 $TLS_any 				= "Any";
-$TLS_assigned 			= "assigned";
 $TLS_author 			= "Author";
 $TLS_automated 			= "Automated";
 $TLS_automatic 			= "Automatic";
-$TLS_build = "Build";
+$TLS_build 				= "Build";
 $TLS_check_uncheck_all 	= "Toggle all";
-$TLS_desc 				= "descending";
+$TLS_days				= "days";
+$TLS_desc 				= "Descending";
 $TLS_description		= "Description";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_file_type			= 'File type';
@@ -58,9 +58,10 @@ $TLS_help 				= "Help";
 $TLS_hour 				= "Hour";
 $TLS_importance			= "Importance";
 $TLS_imported 			= "Imported";
-$TLS_Keyword 			= "Keyword";
+$TLS_keyword 			= "Keyword";
 $TLS_manual 			= "Manual";
 $TLS_Milestone 			= "Milestone";
+$TLS_months				= "months";
 $TLS_name	 			= "Name";
 $TLS_not_aplicable 		= "N/A";
 $TLS_nobody 			= "Nobody";
@@ -88,18 +89,22 @@ $TLS_test_report 		= "Test Report";
 $TLS_test_suite 		= "Test Suite";
 $TLS_testsuite_created 	= "Test Suite created";
 $TLS_title 				= "Title";
-$TLS_unassigned 		= "unassigned";
+$TLS_total				= "Total";
 $TLS_Unknown 			= "Unknown";
 $TLS_urgency 			= "Urgency";
+$TLS_weeks				= "weeks";
 
 
 // Actions (used wide) 
 $TLS_add 				= "add";
+$TLS_assigned 			= "assigned";
 $TLS_create 			= "create";
 $TLS_copy 				= "copy";
 $TLS_delete 			= "delete";
+$TLS_executed			= "executed";
 $TLS_move	 			= "Move";
 $TLS_remove 			= "remove";
+$TLS_unassigned 		= "unassigned";
 
 
 // Buttons (used wide)
@@ -182,12 +187,7 @@ $TLS_created_with_new_name = "Create with name:%s, because name:%s already exist
 $TLS_click_to_open='Click to open';
 $TLS_testplan_usage="Test Plan usage";
 
-$TLS_days="days";
-$TLS_weeks="weeks";
-$TLS_months="months";
 
-$TLS_total="total";
-$TLS_executed="executed";
 
 
 // ----- JAVASCRIPT -----
@@ -308,9 +308,9 @@ $TLS_assign_requirements = "Assign Requirements";
 $TLS_check_test_automation_server = "Please Check Server Settings";
 $TLS_result_after_exec = "Results after execution: ";
 $TLS_service_not_supported = "This service is not supported";
-$TLS_tcexec_notes = "Notes:";
-$TLS_tcexec_result = "Result:";
-$TLS_tcexec_results_for = "Result for:";
+$TLS_tcexec_notes = "Testing details";
+$TLS_tcexec_result = "Result";
+$TLS_tcexec_results_for = "Result for ";
 
 
 // ----- gui/templates/attachment404.tpl -----
@@ -329,7 +329,7 @@ $TLS_title_delete_attachment = "Delete attachment";
 $TLS_btn_yes_del_comp = "Yes, delete Test Suite";
 $TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed = "Linked to one or more Test Plan, but not executed";
-$TLS_question_del = "Really delete";
+$TLS_question_del = "Really delete?";
 $TLS_th_link_exec_status = "Link and execution status";
 
 

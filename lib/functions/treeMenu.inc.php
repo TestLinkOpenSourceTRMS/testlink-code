@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2009/02/11 18:04:50 $ by $Author: franciscom $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2009/02/24 13:45:00 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -1100,7 +1100,7 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkt
 
    	$status_code = $tcase_node[$node['id']]['exec_status'];
  	  $status_descr=$status_code_descr[$status_code];
-    $css_class= $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
+    $css_class= $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 
 		if($showTestCaseID)
@@ -1200,7 +1200,7 @@ function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$ge
 	  	$status_code = $tcase_node[$node['id']]['exec_status'];
   	  $status_descr=$status_code_descr[$status_code];
   		
-      $css_class= $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
+      $css_class= $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
 		  $label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 		  
 		  if($showTestCaseID)
@@ -1318,7 +1318,7 @@ function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_
 	  $status_code = $tcase_node[$node['id']]['exec_status'];
 	  $status_descr = $status_code_descr[$status_code];
 
-    $css_class= $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
+    $css_class= $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
 		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
 		
 		if($showTestCaseID)
@@ -1474,29 +1474,30 @@ function create_counters_info(&$node,$useColors)
     $resultsCfg=config_get('results');
     
     // I will add not_run if not exists
-		$keys2display=array('not_run' => 'not_run');
+	$keys2display=array('not_run' => 'not_run');
 		
-		foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
-		{
-		    if( $key != 'not_run')
-		    {
-		        $keys2display[$key]=$key;  
-		    }  
-		}
-	  $status_verbose=$resultsCfg['status_label'];
+	foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
+	{
+	    if( $key != 'not_run')
+	    {
+	        $keys2display[$key]=$key;  
+	    }  
+	}
+	$status_verbose=$resultsCfg['status_label'];
 
-		$add_html='';
-		foreach($keys2display as $key => $value)
-		{
-      if( isset($node[$key]) )
-      {
-        $css_class= $useColors ? (" class=\"{$key}\" ") : '';   
-        $add_html .= "<span {$css_class} " . ' title="' . lang_get($status_verbose[$key]) . '">' . 
-                     $node[$key] . "</span>,";
-		  }
+	$add_html='';
+	foreach($keys2display as $key => $value)
+	{
+    	if( isset($node[$key]) )
+      	{
+        	$css_class= $useColors ? (" class=\"light_{$key}\" ") : '';   
+        	$add_html .= "<span {$css_class} " . ' title="' . lang_get($status_verbose[$key]) . '">' . 
+                     $node[$key] . ",</span>";
 		}
-	  $add_html = "(" . rtrim($add_html,",") . ")"; 
-    return $add_html;
+	}
+	$add_html = "(" . rtrim($add_html,",</span>") . "</span>)"; 
+	
+	return $add_html;
 }
 
 
@@ -1524,9 +1525,9 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
 	$create_counters=0;
 	$versionID = 0;
-  $node['leaf']=false;
+	$node['leaf']=false;
 
-  $testcaseColouring=1;
+	$testcaseColouring=1;
 	$countersColouring=1;
 	if( !is_null($useColors) )
 	{
@@ -1538,7 +1539,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
   switch($node_type)
   {
 	  case 'testproject':
- 		$create_counters=1;
+		$create_counters=1;
 		$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
 		$label =  $name . " (" . $testcase_count . ")";
 	  break;
@@ -1557,41 +1558,42 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	  break;
 
 	  case 'testcase':
-    	$node['leaf'] = true;
-		$buildLinkTo = $tc_action_enabled;
-		if (!$buildLinkTo)
-		{
-			$pfn = null;
-    }
+    		$node['leaf'] = true;
+			$buildLinkTo = $tc_action_enabled;
+			if (!$buildLinkTo)
+			{
+				$pfn = null;
+			}
 	  
-	  $status_code = $tcase_node[$node['id']]['exec_status'];
-	  $status_descr = $status_code_descr[$status_code];
- 	  $css_class = $testcaseColouring ? (" class=\"{$status_descr}\" ") : '';   
-		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">'.
-		         "&nbsp</span>";
+			$status_code = $tcase_node[$node['id']]['exec_status'];
+			$status_descr = $status_code_descr[$status_code];
+			$status_text = lang_get($status_verbose[$status_descr]);
+			$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
+			$label = "<span {$css_class} " . '  title="' . $status_text .
+					'" alt="' . $status_text . '">';
 		
 		
-		if($showTestCaseID)
-		{
-			$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
-		} 
-		// $label .= $name . "</span>";
-    $label .= "{$name}";
+			if($showTestCaseID)
+			{
+				$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
+			} 
+			// $label .= $name . "</span>";
+    		$label .= "{$name}</span>";
 		
-		$versionID = $node['tcversion_id'];
-    break;
+			$versionID = $node['tcversion_id'];
+    	break;
 	}
 
-  // -------------------------------------------------------------------------------
-  if($create_counters)
-  {
+	// -------------------------------------------------------------------------------
+	if($create_counters)
+	{
 		$label = $name ." (" . $testcase_count . ")";
-    if($useCounters)
-    {
-        	$add_html=create_counters_info($node,$countersColouring);        
+		if($useCounters)
+		{
+        	$add_html = create_counters_info($node,$countersColouring);        
 	      	$label .= $add_html; 
-	  }
-  }
+		}
+	}
   // -------------------------------------------------------------------------------
   $node['text']=$label;
   $node['position']=isset($node['node_order']) ? $node['node_order'] : 0;

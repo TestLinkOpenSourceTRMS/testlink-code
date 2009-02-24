@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.17 2009/02/13 09:12:18 havlat Exp $
+$Id: testlink.css,v 1.18 2009/02/24 13:45:01 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -476,29 +476,39 @@ div.blocked {
 div.not_run {
 	background:		black;
 }
+
+
 /* ***** execution tree coloring ************************* */
-.tree_passed {
-	color:			#006400; /* darkgreen */
+span.light_passed, span.light_failed, span.light_blocked,
+span.light_not_run, span.light_not_available, span.light_unknown
+{
+	color:				black;
+	padding:			3px;
 }
 
-.tree_failed {
-	color: 			#B22222; /* firebrick (red) */
+
+span.light_passed {
+	background:			#D5EED5; /* green */
 }
 
-.tree_blocked {
-	color: 			#00008B; /* darkblue */
+span.light_failed {
+	background: 		#EED5D5; /* red */
 }
 
-.tree_not_run {
-	color: 			black;
+span.light_blocked {
+	background: 		#D5D5EE; /* blue */
 }
 
-.tree_not_available {
-	color: 			#DAA520; /* goldenyellow */
+span.light_not_run {
+	background: 		#E8E8E8; /* grey */
 }
 
-.tree_unknown {
-	color: 			#00FFFF; /* cyan; */
+span.light_not_available {
+	background: 		#F8EEDD; /* yellow */
+}
+
+span.light_unknown {
+	background: 		#DDFFFF; /* cyan; */
 }
 
 /* ***** render test result status ************************* */
@@ -656,7 +666,7 @@ div.exec_test_spec {
   vertical-align: 	middle;
 }
 
-/* TODO havlatm: title must be header markup */
+/* havlatm: @TODO title must be header markup */
 .exec_tc_title {
 	background:		#059;
 	color:			white;

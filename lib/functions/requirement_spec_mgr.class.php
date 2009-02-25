@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/02/22 18:49:25 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/02/25 19:12:36 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -184,34 +184,34 @@ class requirement_spec_mgr extends tlObjectWithAttachments
              map with requirement spec info
 
   */
-  function get_by_id($id)
-  {
-  	$sql = " SELECT REQ_SPEC.*, '' AS author, '' AS modifier, NH.node_order " .
-  	       " FROM {$this->object_table} REQ_SPEC,  {$this->nodes_hierarchy_table} NH" .
-  	       " WHERE REQ_SPEC.id = NH.id " . 
-  	       " AND REQ_SPEC.id = {$id}";
+	function get_by_id($id)
+	{
+  		$sql = " SELECT REQ_SPEC.*, '' AS author, '' AS modifier, NH.node_order " .
+  	    	   " FROM {$this->object_table} REQ_SPEC,  {$this->nodes_hierarchy_table} NH" .
+				" WHERE REQ_SPEC.id = NH.id " . 
+				" AND REQ_SPEC.id = {$id}";
   	       
-  	       
-  	$recordset = $this->db->get_recordset($sql);
+		$recordset = $this->db->get_recordset($sql);
   	
-    $rs=null;
-    if( !is_null($recordset) )
-    {
-        // Decode users
-        $rs=$recordset[0];
-        if( strlen(trim($rs['author_id'])) > 0 )
-        {
-            $user = tlUser::getByID($this->db,$rs['author_id']);
-            $rs['author'] = $user->getDisplayName();
-        }
-      
-        if( strlen(trim($rs['modifier_id'])) > 0 )
-        {
-            $user = tlUser::getByID($this->db,$rs['modifier_id']);
-            $rs['modifier'] = $user->getDisplayName();
-        }
-    }  	
-  	return ($rs);
+	    $rs = null;
+	    if(!is_null($recordset))
+	    {
+	        // Decode users
+	        $rs = $recordset[0];
+	        if(strlen(trim($rs['author_id'])) > 0)
+	        {
+	            $user = tlUser::getByID($this->db,$rs['author_id']);
+	            $rs['author'] = $user->getDisplayName();
+	        }
+	      
+	        if(strlen(trim($rs['modifier_id'])) > 0)
+	        {
+	            $user = tlUser::getByID($this->db,$rs['modifier_id']);
+	            $rs['modifier'] = $user->getDisplayName();
+	        }
+	    }  	
+	
+	    return $rs;
   }
 
 
@@ -424,40 +424,42 @@ function get_metrics($id)
              ok if everything is ok
 
   */
-  function delete($id)
-  {
-    $req_mgr = new requirement_mgr($this->db);
-
-    // Delete Custom fields
-    $this->cfield_mgr->remove_all_design_values_from_node($id);
-
-  	// delete requirements with all related data
-  	// coverage, attachments, custom fields, etc
-  	$requirements_info = $this->get_requirements($id);
-    if( !is_null($requirements_info) )
-    {
-  	  $the_reqs=array_keys($requirements_info);
-  	  $req_mgr->delete($the_reqs);
-
-  	  //$this->cfield_mgr->remove_all_design_values_from_node($the_reqs);
-    }
-
-  	// Delete tree structure (from node_hierarchy)
-    $this->tree_mgr->delete_subtree($id);
-
-  	// delete specification itself
-  	$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
-  	$result = $this->db->exec_query($sql);
-  	if($result)
-  	{
-  		$result = 'ok';
-  	}
-  	else
-  	{
-  		$result = 'The DELETE SRS request fails.';
-  	}
-  	return $result;
-  } // function end
+	function delete($id)
+	{
+		$req_mgr = new requirement_mgr($this->db);
+	
+	    // Delete Custom fields
+	    $this->cfield_mgr->remove_all_design_values_from_node($id);
+	
+		// delete requirements with all related data
+		// coverage, attachments, custom fields, etc
+		$requirements_info = $this->get_requirements($id);
+		if(!is_null($requirements_info))
+	    {
+		    $reqIDs = null;
+		    foreach($requirements_info as $req)
+			{
+	    		$reqIDs[] = $req["id"];
+			}
+			$req_mgr->delete($reqIDs);
+	    }
+	
+	    // Delete tree structure (from node_hierarchy)
+	    $this->tree_mgr->delete_subtree($id);
+	
+		// delete specification itself
+		$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
+		$result = $this->db->exec_query($sql);
+		if($result)
+	  	{
+	  		$result = 'ok';
+	  	}
+	  	else
+	  	{
+	  		$result = 'The DELETE SRS request fails.';
+	  	}
+		return $result;
+	} // function end
 
 
 
@@ -479,36 +481,35 @@ function get_metrics($id)
 function get_requirements($id, $range = 'all', $testcase_id = null,
                           $order_by=" ORDER BY NH.node_order,title,req_doc_id")
 {
-  $sql='';
+	$sql = '';
 	switch($range)
 	{
-	  case 'all';
-	  $sql = " SELECT requirements.*, NH.node_order" .
-	         " FROM {$this->requirements_table} requirements, {$this->nodes_hierarchy_table} NH" .
-	         " WHERE requirements.id=NH.id " .
-	         " AND srs_id={$id}";
-	  break;
+		case 'all';
+			$sql = " SELECT requirements.*, NH.node_order" .
+			         " FROM {$this->requirements_table} requirements, {$this->nodes_hierarchy_table} NH" .
+			         " WHERE requirements.id=NH.id " .
+			         " AND srs_id={$id}";
+			break;
 
-
-	  case 'assigned':
-		$sql = "SELECT requirements.*, NH.node_order" .
-		       " FROM {$this->requirements_table} requirements, {$this->nodes_hierarchy_table} NH, " .
-		       " {$this->req_coverage_table} req_coverage " .
-	         " WHERE requirements.id=NH.id " .
-		       " AND req_coverage.req_id=requirements.id " .
-		       " AND srs_id={$id} ";
+		case 'assigned':
+			$sql = "SELECT requirements.*, NH.node_order" .
+			       " FROM {$this->requirements_table} requirements, {$this->nodes_hierarchy_table} NH, " .
+			       " {$this->req_coverage_table} req_coverage " .
+		         " WHERE requirements.id=NH.id " .
+			       " AND req_coverage.req_id=requirements.id " .
+			       " AND srs_id={$id} ";
 		       
-		if( !is_null($testcase_id) )
-		{       
-		    $sql .= " AND req_coverage.testcase_id={$testcase_id}";
-	  }
-	  break;
+			if(!is_null($testcase_id))
+			{       
+		    	$sql .= " AND req_coverage.testcase_id={$testcase_id}";
+	  		}
+	  		break;
 	}
-	if( !is_null($order_by) )
+	if(!is_null($order_by))
 	{
-	  $sql .= $order_by;
-  }
-	return $this->db->get_recordset($sql);
+		$sql .= $order_by;
+  	}
+  	return $this->db->get_recordset($sql);
 }
 
 

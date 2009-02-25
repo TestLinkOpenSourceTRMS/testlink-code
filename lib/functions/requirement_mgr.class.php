@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/02/22 18:49:25 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/02/25 19:12:34 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -246,67 +246,66 @@ class requirement_mgr extends tlObjectWithAttachments
     returns:
 
   */
-  function delete($id)
-  {
-  	$where_clause_coverage='';
-  	$where_clause_this='';
-
-  	if( is_array($id) )
-  	{
-  	  $id_list = implode(',',$id);
-     	$where_clause_coverage=" WHERE req_id IN ({$id_list})";
-  	  $where_clause_this=" WHERE id IN ({$id_list})";
-  	}
-    else
-    {
-      $where_clause_coverage=" WHERE req_id = {$id}";
-  	  $where_clause_this=" WHERE id={$id}";
-    }
-
-    // Delete Custom fields
-    $this->cfield_mgr->remove_all_design_values_from_node($id);
-
-  	// delete dependencies with test specification
-  	$sql = "DELETE FROM {$this->req_coverage_table} " . $where_clause_coverage;
-  	$result = $this->db->exec_query($sql);
-
-
-  	if ($result)
-  	{
-  	  if( is_array($id) )
-  	  {
-  	    $the_ids=$id;
-  		}
-      else
-      {
-        $the_ids=array($id);
-      }
-
-		foreach($the_ids as $key => $value)
-		{
-			$result = $this->attachmentRepository->deleteAttachmentsFor($value,"requirements");
-		}
-    }
-
-  	if ($result)
-  	{
-  		$sql = "DELETE FROM {$this->nodes_hierarchy_table} " . $where_clause_this;
-  		$result = $this->db->exec_query($sql);
-  	}
-
-  	if ($result)
-  	{
-  		$sql = "DELETE FROM {$this->object_table} " . $where_clause_this;
-  		$result = $this->db->exec_query($sql);
-  	}
-
-  	if (!$result)
-  		$result = lang_get('error_deleting_req');
-  	else
-  		$result = 'ok';
-
-  	return $result;
-  }
+	function delete($id)
+ 	{
+		$where_clause_coverage = '';
+	  	$where_clause_this = '';
+	
+	  	if(is_array($id))
+	  	{
+			$id_list = implode(',',$id);
+	     	$where_clause_coverage = " WHERE req_id IN ({$id_list})";
+			$where_clause_this = " WHERE id IN ({$id_list})";
+	  	}
+	    else
+	    {
+	    	$where_clause_coverage = " WHERE req_id = {$id}";
+			$where_clause_this = " WHERE id = {$id}";
+	    }
+	
+	    // Delete Custom fields
+	    $this->cfield_mgr->remove_all_design_values_from_node($id);
+	
+	  	// delete dependencies with test specification
+	  	$sql = "DELETE FROM {$this->req_coverage_table} " . $where_clause_coverage;
+	  	$result = $this->db->exec_query($sql);
+	
+		if ($result)
+	  	{
+	  		if(is_array($id))
+	  	  	{
+	  	    	$the_ids = $id;
+	  		}
+	      	else
+	      	{
+	        	$the_ids = array($id);
+	      	}
+	
+			foreach($the_ids as $key => $value)
+			{
+				$result = $this->attachmentRepository->deleteAttachmentsFor($value,"requirements");
+			}
+	    }
+	
+	  	if ($result)
+	  	{
+	  		$sql = "DELETE FROM {$this->nodes_hierarchy_table} " . $where_clause_this;
+	  		$result = $this->db->exec_query($sql);
+	  	}
+	
+	  	if ($result)
+	  	{
+	  		$sql = "DELETE FROM {$this->object_table} " . $where_clause_this;
+	  		$result = $this->db->exec_query($sql);
+	  	}
+	
+	  	if (!$result)
+	  		$result = lang_get('error_deleting_req');
+	  	else
+	  		$result = 'ok';
+	
+	  	return $result;
+	}
 
 
 

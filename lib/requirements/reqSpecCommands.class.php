@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/09/02 16:39:49 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/02/25 19:12:36 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -198,23 +198,23 @@ class reqSpecCommands
   */
 	function doDelete(&$argsObj)
 	{
-      $guiObj=new stdClass();
+		$guiObj = new stdClass();
 
-		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		  $this->reqSpecMgr->delete($argsObj->req_spec_id);
-		  logAuditEvent(TLS("audit_req_spec_deleted",$this->auditContext->tproject,$req_spec['title']),
+		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$this->reqSpecMgr->delete($argsObj->req_spec_id);
+		logAuditEvent(TLS("audit_req_spec_deleted",$this->auditContext->tproject,$req_spec['title']),
 		               "DELETE",$argsObj->req_spec_id,"req_specs");
 		  
-		  $guiObj->template = 'show_message.tpl';
-		  $guiObj->template_dir='';
-      $guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
-		  $guiObj->title=lang_get('delete_req_spec');
+		$guiObj->template = 'show_message.tpl';
+		$guiObj->template_dir = '';
+      	$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . $argsObj->tproject_name;
+		$guiObj->title=lang_get('delete_req_spec');
 
-		  $guiObj->user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
-		  $guiObj->refresh_tree='yes';
-		  $guiObj->result='ok';  // needed to enable refresh_tree logic
-      return $guiObj;	
-      
+		$guiObj->user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
+		$guiObj->refresh_tree = 'yes'; // needed to enable refresh_tree logic
+		$guiObj->result = 'ok';  
+      	
+		return $guiObj;	
   }
   
   

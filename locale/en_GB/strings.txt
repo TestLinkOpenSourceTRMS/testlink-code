@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.407 $
- * @modified $Date: 2009/02/24 15:51:40 $ by $Author: havlat $
+ * @version $Revision: 1.408 $
+ * @modified $Date: 2009/02/25 14:26:46 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -687,7 +687,7 @@ $TLS_trep_total = "Total";
 
 // ----- gui/templates/inc_res_by_keyw.tpl -----
 $TLS_title_res_by_kw = "Results by Keyword";
-$TLS_trep_kw = $TLS_Keyword;
+$TLS_trep_kw = $TLS_keyword;
 
 
 
@@ -767,7 +767,7 @@ $TLS_menu_edit_role = "Edit Role";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field";
-$TLS_th_kw_rights = $TLS_Keyword;
+$TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Test Case management";
 $TLS_th_product_rights = "Test Project";
 $TLS_th_req_rights = "Requirement";

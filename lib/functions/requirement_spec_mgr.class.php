@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/02/25 19:12:36 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/02/25 20:30:30 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -443,8 +443,8 @@ function get_metrics($id)
 			}
 			$req_mgr->delete($reqIDs);
 	    }
-	
-	    // Delete tree structure (from node_hierarchy)
+		$result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
+		 // Delete tree structure (from node_hierarchy)
 	    $this->tree_mgr->delete_subtree($id);
 	
 		// delete specification itself

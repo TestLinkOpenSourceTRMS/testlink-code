@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/02/24 07:40:54 $  $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/02/25 20:30:29 $  $Author: schlundus $
  * @author franciscom
  *
  * 20090223 - franciscom - get_linked_cfields_at_execution() - added logic
@@ -1412,7 +1412,7 @@ class cfield_mgr
 
     // 
 
-    $sql="SELECT CF.*,CFTP.display_order" .
+    $sql = "SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM custom_fields CF " .
          " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
@@ -1423,10 +1423,8 @@ class cfield_mgr
          " AND   CF.show_on_execution=1 {$order_clause} ";
  
 
-    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-        
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
-    return($map);
+    return $map;
   }
 
 

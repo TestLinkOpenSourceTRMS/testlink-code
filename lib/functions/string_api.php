@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: string_api.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/08/22 14:28:59 $  $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/02/25 19:23:44 $  $Author: schlundus $
  * @author franciscom
  * 
  *	### String Processing functions ###
@@ -398,7 +398,7 @@ function string_restore_valid_html_tags( $p_string, $p_multiline = true )
 	# Calls htmlentities on the specified string, passing along
 	# the current charset.
 	function string_html_entities( $p_string ) {
-		return htmlentities( $p_string, ENT_COMPAT, lang_get( 'charset' ) );
+		return htmlentities( $p_string, ENT_COMPAT, config_get('charset') );
 	}
 
 	# --------------------
@@ -408,7 +408,7 @@ function string_restore_valid_html_tags( $p_string, $p_multiline = true )
 		# achumakov: @ added to avoid warning output in unsupported codepages
 		# e.g. 8859-2, windows-1257, Korean, which are treated as 8859-1.
 		# This is VERY important for Eastern European, Baltic and Korean languages
-		return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", @htmlspecialchars( $p_string, ENT_COMPAT, lang_get( 'charset' ) ) );
+		return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", @htmlspecialchars( $p_string, ENT_COMPAT, config_get('charset') ) );
 	}
 	
 	# --------------------

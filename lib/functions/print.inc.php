@@ -1,21 +1,24 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2009/02/25 15:04:02 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
- * Functions for support printing of documents.
+ * Library for documents generation
+ * Used by printDocument.php
  *
- * rev:
+ * Revisions:
+ *  20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
  * 	20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
- *     20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
+ *  20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
  *                             added code to display CF with scope='execution'
  * 
- *     20080820 - franciscom - added contribution (BUGID 1670)
+ *  20080820 - franciscom - added contribution (BUGID 1670)
  *                             Test Plan report:
  *                             Total Estimated execution time will be printed
  *                             on table of contents. 
@@ -37,17 +40,16 @@
  *                             to avoid problems.
  *                             Another choice: TL must round individual times before doing sum.
  *
- *     20080819 - franciscom - renderTestCaseForPrinting() - removed mysql only code
- *
- *     20080602 - franciscom - display testcase external id
- *     20080525 - havlatm - fixed missing test result
- *     20080505 - franciscom - renderTestCaseForPrinting() - added custom fields
- *     20080418 - franciscom - document_generation configuration .
+ *	20080819 - franciscom - renderTestCaseForPrinting() - removed mysql only code
+ *	20080602 - franciscom - display testcase external id
+ *	20080525 - havlatm - fixed missing test result
+ *	20080505 - franciscom - renderTestCaseForPrinting() - added custom fields
+ *	20080418 - franciscom - document_generation configuration .
  *                             removed tlCfg global coupling
+ *	20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
+ *	20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  *
- *     20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
- *     20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
- */
+ * ----------------------------------------------------------------------------------- */
 
 require_once("exec.inc.php");
 
@@ -58,7 +60,7 @@ require_once("exec.inc.php");
  * @param string $base_href Base URL
  * @return string html data
  */
-function buildHTMLHeader($title,$base_href)
+function renderHTMLHeader($title,$base_href)
 {
 	$docCfg = config_get('document_generator');
   	$docCfg->css_template;
@@ -76,33 +78,24 @@ function buildHTMLHeader($title,$base_href)
 
 
 /**
-  print HTML - initial page of document
-*/
-function printFirstPage(&$db, $item_type, $title, $tproject_info, 
-                        $userID, $printingOptions = null, $tplan_info = null,
-                        $statistics=null)
+ * Generate initial page of document
+ * @param singleton $doc_info data with the next string values: title, type_name, author, project_name, testplan_name  
+ * @return string html
+ * @author havlatm
+ */
+function renderFirstPage($doc_info)
 {
-	$estimated_string = '';
-	$real_string = '';
   	$docCfg = config_get('document_generator');
-  
 	$date_format_cfg = config_get('date_format');
-	$tproject_name = htmlspecialchars($tproject_info['name']);
-	$tproject_notes = $tproject_info['notes'];
   
-	$author = null;
-	$user = tlUser::getById($db,$userID);
-	if ($user)
-	{
-		$author = htmlspecialchars($user->getDisplayName());
-  	}
-  	
-  	$output = "<body>\n<div>";
+  	$output = "<body>\n<div>\n";
+
+	// Print header
 	if ($docCfg->company_name != '' )
 	{
 		$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) ."</div>\n";
 	}
-	$output .= '<div>'. $tproject_name . "</div><hr />\n";
+	$output .= '<div>'. $doc_info->project_name . "</div><hr />\n";
 
 	if ($docCfg->company_logo != '' )
 	{
@@ -111,66 +104,53 @@ function printFirstPage(&$db, $item_type, $title, $tproject_info,
 	}
 	$output .= "</div>\n";
 
-	/* Title */
+	// print title 
 	$output .= '<div class="doc_title">';
-
-	if(is_null($tplan_info))
-	{
-		$output .= lang_get('title_test_spec');
-	}
-	else
-	{
-		$output .= $printingOptions['passfail'] ? lang_get('test_report') : lang_get('test_plan');
- 		$output .=  ' ' . htmlspecialchars($tplan_info['name']);
-	}
-
-	if($title != '')
-	{
-		$output .= '<p>' . lang_get($item_type) . ' - ' . htmlspecialchars($title) . "</p>\n";
-	}
+	$output .= '<p>'.$doc_info->title.'</p>';
+	$output .= '<p>'.$doc_info->type_name.'</p>';
 	$output .= "</div>\n";
-
 
 	// Print summary on the first page
 	$output .= '<div class="summary">' .
-		         '<p id="prodname">'. lang_get('project') .": " . $tproject_name . "</p>\n";
+		         '<p id="prodname">'. lang_get('project') .": " . $doc_info->project_name . "</p>\n";
 
-	$output .= '<p id="author">' . lang_get('author').": " . $author . "</p>\n" .
+	$output .= '<p id="author">' . lang_get('author').": " . $doc_info->author . "</p>\n" .
 		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
 		         strftime($date_format_cfg, time()) . "</p></div>\n";
 
+	// Print legal notes
 	if ($docCfg->company_copyright != '')
 	{
-		$output .= '<div class="pagefooter" id="copyright">' . 
-		           htmlspecialchars($docCfg->company_copyright)."</div>\n";
+		$output .= '<div class="pagefooter" id="copyright">' .
+				$docCfg->company_copyright."</div>\n";
 	}
 		           
 	if ($docCfg->confidential_msg != '')
 	{
 		$output .= '<div class="pagefooter" id="confidential">' . 
-		           htmlspecialchars($docCfg->confidential_msg)."</div>\n";
+				$docCfg->confidential_msg . "</div>\n";
 	}
 	
-	$add_hr = false;
-	if (strlen($tproject_notes) > 0)
-	{
-		$add_hr = true;
-		$output .= '<h1>'.lang_get('introduction').'</h1>';
-		$output .= '<h2>'.lang_get('scope').'</h2>';
-		$output .= '<div id="product_notes">' .$tproject_notes . "</div>\n";
-	}
-  
-	if (($printingOptions['testplan']) && (strlen($tplan_info['notes']) > 0))
-	{
-		$add_hr = true;
-		$output .= '<h1>'.lang_get('scope').'</h1>';
-		$output .= '<div id="testplan_notes">'. $tplan_info['notes'] . "</div>\n";
-	}	
+	return $output;
+}
 
-  if($add_hr)
-  {
-      $output .= "<hr />";  
-  }
+
+/**
+ * Generate a chapter to a document
+ * @param string $title
+ * @param string $content
+ * @return string html
+ * @author havlatm
+ */
+function renderSimpleChapter($title, $content)
+{
+	$output = '';
+	if (strlen($content) > 0)
+	{
+		$output .= '<h1 class="doclevel">'.$title."</h1>\n";
+		$output .= '<div class="txtlevel">' .$content . "</div>\n";
+	}
+
 	return $output;
 }
 
@@ -204,9 +184,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
   switch($verbose_node_type)
 	{
 		case 'testproject':
-			$code .= renderProjectNodeForPrinting($db,$node,$printingOptions,$item_type,
-			                                      $printingOptions['title'],
-			                                      $user_id,$tplan_id);
+			$code .= renderToc($printingOptions);
 		break;
 
 		case 'testsuite':
@@ -247,7 +225,6 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			$printingOptions['tocCode'] .= '</div><hr />';
 			$code = str_replace("{{INSERT_TOC}}",$printingOptions['tocCode'],$code);
 		}
-		$code .= "</body></html>";
 	}
 
 	return $code;
@@ -505,34 +482,16 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 
 
 /*
-  function: renderProjectNodeForPrinting
-  args :
-  returns:
-  
-  rev: 20081207 - franciscom
-       minor refactoring to remove global coupling
+  havlatm: Remaining part of renderProjectNodeForPrinting
+  @todo refactore
 */
-function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
-                                      $title,$user_id,$tplan_id=0,$estimated_minutes=0)
+function renderToc(&$printingOptions)
 {
-	$tproject = new testproject($db);
-	$tproject_info = $tproject->get_by_id($node['id']);
-	$tplan_info = null;
-
-	if($tplan_id != 0)
-	{
-		$tplan_mgr = new testplan($db);
-		$tplan_info = $tplan_mgr->get_by_id($tplan_id);
-	}
-
-	$code = buildHTMLHeader($title,$_SESSION['basehref']);
-	$code .= printFirstPage($db, $item_type, $title, $tproject_info, 
-	                        $user_id, $printingOptions, $tplan_info,$estimated_minutes);
-	                        
+	$code = '';
 	$printingOptions['toc_numbers'][1] = 0;
 	if ($printingOptions['toc'])
 	{
-		$printingOptions['tocCode'] = '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';
+		$printingOptions['tocCode'] = '<h1 class="doclevel">'.lang_get('title_toc').'</h1><div class="toc">';
 		$code .= "{{INSERT_TOC}}";
 	}
 
@@ -564,7 +523,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 	 	                               $name . '</a></p>';
 		$code .= "<a name='cat{$node['id']}'></a>";
 	}
- 	$code .= "<h1>{$tocPrefix} {$labels['test_suite']} {$name}</h1>";
+ 	$code .= "<h1 class='doclevel'>{$tocPrefix} {$labels['test_suite']} {$name}</h1>";
 
 	if ($printingOptions['header'])
   {
@@ -573,7 +532,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 		    $tsuite_mgr = new testsuite($db);
 		}
 		$tInfo = $tsuite_mgr->get_by_id($node['id']);
-   	$code .= "<h2>{$tocPrefix}.0 {$labels['details']} </h2><div>{$tInfo['details']}</div><br />";
+   	$code .= "<h2 class='doclevel'>{$tocPrefix}.0 {$labels['details']} </h2><div>{$tInfo['details']}</div><br />";
  	}
 
 	return $code;
@@ -601,14 +560,15 @@ function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 
 // estimated_execution based on contribution (BUGID 1670)
-function renderTestPlanMetrics($statistics)
+function renderTestDuration($statistics)
 {
     $output = '';
+	$estimated_string = '';
+	$real_string = '';
     
 	if( !is_null($statistics))
 	{ 
-	    $output = "<h1>".lang_get('title_nav_results')."</h1>\n";
-	    $output .= "<div>\n";
+	    $output = "<div>\n";
 	    
 		if(isset($statistics['estimated_execution']) ) 
 		{
@@ -643,6 +603,26 @@ function renderTestPlanMetrics($statistics)
     $output .= "</div>\n";
 	}
 
+	return $output;	
+}
+
+
+/** @return string final markup for HTML */
+function renderEof()
+{
+	return "\n</body>\n</html>";
+}
+
+
+/**
+ * compose html text for metrics (meantime estimated time only)
+ * @return string html
+ */
+function buildTestPlanMetrics($statistics)
+{
+    $output = '<h1 class="doclevel">'.lang_get('title_nav_results')."</h1>\n";
+    $output .= renderTestDuration($statistics);
+    
 	return $output;	
 }
 

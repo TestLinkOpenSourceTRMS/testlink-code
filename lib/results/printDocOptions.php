@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/02/25 15:04:07 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -82,7 +82,9 @@ foreach($arrCheckboxes as $key => $elem)
 
 // generate tree for product test specification
 $workPath = 'lib/results/printDocument.php';
-$getArguments = "&type=" . $gui->report_type;
+$getArguments = "&type=" . $gui->report_type; 
+if (($gui->report_type == 'testplan') || ($gui->report_type == 'testreport'))
+	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
 
 // generate tree for Test Specification
 $treeString = null;
@@ -101,6 +103,8 @@ switch($gui->report_type)
     case 'testplan':
     case 'testreport':
 		$tplan_mgr = new testplan($db);
+		$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+		$testplan_name = htmlspecialchars($tplan_info['name']);
 		$latestBuild = $tplan_mgr->get_max_build_id($args->tplan_id);
 	      
 		$filters = new stdClass();
@@ -124,7 +128,7 @@ switch($gui->report_type)
   	  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
         
 		$treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-	                                       $args->tplan_id,$args->tplan_name,$getArguments,$filters,$additionalInfo);
+				$args->tplan_id,$testplan_name,$getArguments,$filters,$additionalInfo);
         
       	$treeString = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
@@ -152,6 +156,7 @@ $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);
 $smarty->assign('selFormat', $args->format);
 $smarty->assign('docType', $gui->report_type);
+$smarty->assign('docTestPlanId', $args->tplan_id);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $getArguments);
@@ -171,7 +176,6 @@ function init_args()
 
     $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
-    $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
 
     $args->tplan_id   = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
     $args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'html';

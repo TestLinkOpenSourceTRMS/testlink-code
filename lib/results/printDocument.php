@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/02/25 15:04:07 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -22,10 +22,19 @@ require_once('../../config.inc.php');
 require_once("common.php");
 require_once("print.inc.php");
 require_once("displayMgr.php");
+
+$dummy = null;
+$tree = null;
+$generatedText = null;					
+$doc_info = new stdClass(); // gather title, author, product, test plan, etc.
+$doc_data = new stdClass(); // gather content and tests related data
+
+// ----- INITIALIZATION -----------------------------------------------------------------
 testlinkInitPage($db);
 
-$statistics = null;
+// ----- GET CONFIG + INPUT -------------------------------------------------------------
 $args = init_args();
+$item_type = $args->level;
 
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0, 
@@ -37,56 +46,92 @@ foreach($printingOptions as $opt => $val)
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
 }					
 
-$dummy = null;
+$resultsCfg = config_get('results');
+$status_descr_code = $resultsCfg['status_code'];
+$status_code_descr = array_flip($status_descr_code);
 
-$tproject_mgr = new testproject($db);
-$tree_manager = &$tproject_mgr->tree_manager;
+
+// ----- GET DATA -----------------------------------------------------------------------
+
+$tproject = new testproject($db);
+$tree_manager = &$tproject->tree_manager;
 
 $hash_descr_id = $tree_manager->get_available_node_types();
 $hash_id_descr = array_flip($hash_descr_id);
 
-$resultsCfg = config_get('results');
-$status_descr_code = $resultsCfg['status_code'];
-
-$status_code_descr = array_flip($status_descr_code);
-
 $decoding_hash = array('node_id_descr' => $hash_id_descr,
                      'status_descr_code' =>  $status_descr_code,
                      'status_code_descr' =>  $status_code_descr);
-
 
 $test_spec = $tree_manager->get_subtree($args->itemID,
 		array('testplan'=>'exclude me', 'requirement_spec'=>'exclude me', 'requirement'=>'exclude me'),
 		array('testcase'=>'exclude my children', 'requirement_spec'=> 'exclude my children'),
 		null,null,RECURSIVE_MODE);
 
-$tree = null;
-$generatedText = null;					
-$item_type = $args->level;
+$tproject_info = $tproject->get_by_id($args->tproject_id);
+$doc_info->project_name = htmlspecialchars($tproject_info['name']);
+$doc_info->project_scope = $tproject_info['notes'];
+
+
+$user = tlUser::getById($db,$_SESSION['userID']);
+if ($user)
+{
+	$doc_info->author = htmlspecialchars($user->getDisplayName());
+}
 
 switch ($args->print_scope)
 {
-    case 'testproject': // test specification
-    	  switch($item_type)
-    	  {
-    	      case 'testproject':
-    	          $tree = &$test_spec;
-    	  	      $printingOptions['title'] = '';
-    	      break;
+	case 'testproject': 
+		$doc_info->type = DOC_TEST_SPEC; 
+		$doc_info->type_name = lang_get('title_test_spec');
+		break;
+	case 'testplan': 
+		$doc_info->type = DOC_TEST_PLAN; 
+		$doc_info->type_name = lang_get('test_plan');
+		break;
+	case 'testreport': 
+		$doc_info->type = DOC_TEST_REPORT; 
+		$doc_info->type_name = lang_get('test_report');
+		break;
+	case 'reqspec': 
+		$doc_info->type = DOC_REQ_SPEC; 
+		$doc_info->type_name = lang_get('req_spec');
+		break;
+	default:
+		die ('Invalid document type $_REQUEST["print_scope"]');
+}
+
+
+
+switch ($doc_info->type)
+{
+    case DOC_TEST_SPEC: // test specification
+		switch($item_type)
+		{
+			case 'testproject':
+				$tree = &$test_spec;
+				$doc_info->title = $doc_info->project_name;
+			break;
     	      
-    	      case 'testsuite':
-    	      	  $tsuite = new testsuite($db);
-    	  	      $tInfo = $tsuite->get_by_id($args->itemID);
-    	  	      $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-    	  	      $tree['childNodes'] = array($tInfo);
-    	  	      $printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
+			case 'testsuite':
+    	      	$tsuite = new testsuite($db);
+    	  	    $tInfo = $tsuite->get_by_id($args->itemID);
+    	  	    $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	  	    $tree['childNodes'] = array($tInfo);
+				$doc_info->title = isset($tInfo['name']) ? $args->tproject_name .
+    	  	      	$tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name;
     	  	  break;    
     	  }
     	  break;
     
-    case 'testplan':
-	case 'testreport':
+    case DOC_TEST_PLAN:
+	case DOC_TEST_REPORT:
 		$tplan_mgr = new testplan($db);
+		$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+		$doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
+		$doc_info->testplan_scope = $tplan_info['notes'];
+		$doc_info->title = $doc_info->testplan_name;
+		
         $tcase_filter = null;
         $execid_filter = null;
         $executed_qty = 0;
@@ -103,7 +148,6 @@ switch ($args->print_scope)
     	   	    //@TODO:REFACTOR	
     	   	    prepareNode($db,$tree,$decoding_hash,$dummy,
     	   	                   $dummy,$tp_tcs,SHOW_TESTCASES,null,null,0,1,0);
-				$printingOptions['title'] = $args->tproject_name;
             break;
     	       
 			case 'testsuite':
@@ -127,7 +171,7 @@ switch ($args->print_scope)
     	   	       
     	   	    //@TODO: schlundus, can we speed up with NO_EXTERNAL?
     	   	    prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
-    	   	    $printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $args->tproject_name;
+    	   	    $doc_info->title = isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name;
                   
     	   	    $tree['childNodes'] = array($tInfo);
             break;
@@ -149,38 +193,49 @@ switch ($args->print_scope)
 		             }    
 		         }    
     		}
-	        $statistics['estimated_execution']['minutes'] = 
+	        $doc_data->$statistics['estimated_execution']['minutes'] = 
 	        		$tplan_mgr->get_estimated_execution_time($args->tplan_id,
 	        		$tcase_filter);
-    	    $statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
+    	    $doc_data->$statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
          
 			if( $executed_qty > 0)
         	{ 
-				$statistics['real_execution']['minutes'] = $tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
-             	$statistics['real_execution']['tcase_qty'] = $executed_qty;
+				$doc_data->$statistics['real_execution']['minutes'] = $tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
+             	$doc_data->$statistics['real_execution']['tcase_qty'] = $executed_qty;
          	}
  		}
     break;
 }
+
+
+// ----- rendering logic -----
+$generatedText = renderHTMLHeader($doc_info->type.' '.$doc_info->title,$_SESSION['basehref']);
+$generatedText .= renderFirstPage($doc_info);
+//$generatedText .= renderToc($doc_data);
 
 if($tree)
 {
 	$tree['name'] = $args->tproject_name;
 	$tree['id'] = $args->tproject_id;
 	$tree['node_type_id'] = $hash_descr_id['testproject'];
-	switch ($args->print_scope)
+	switch ($doc_info->type)
 	{
-		case 'testproject':
-			$generatedText = renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$args->user_id);
-			break;
+		case DOC_TEST_SPEC:
+			$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->project_scope);
+			$generatedText .= renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$args->user_id);
+		break;
 	
-		case 'testplan':
-		case 'testreport':
-			$generatedText = renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
+		case DOC_TEST_PLAN:
+			$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
+		case DOC_TEST_REPORT:
+			$generatedText .= renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
 		                                             $args->user_id,$args->tplan_id,$args->tproject_id);
-			$generatedText .= renderTestPlanMetrics($statistics);
-		    break;
+			if ($doc_info->type == DOC_TEST_REPORT)
+				$generatedText .= buildTestPlanMetrics($doc_data->$statistics);
+		break;
 	}
+
+	$generatedText .= renderEof();
 }
 
 
@@ -204,10 +259,11 @@ function init_args()
 	$args->level = isset($_REQUEST['level']) ?  $_REQUEST['level'] : null;
 	$args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : null;
 	$args->itemID = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+	$args->tplan_id = isset($_REQUEST['docTestPlanId']) ? $_REQUEST['docTestPlanId'] : 0;
+	
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
-	$args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	$args->user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
 	return $args;

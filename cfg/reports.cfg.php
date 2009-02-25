@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/02/23 21:42:40 $ by $Author: havlat $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/02/25 15:04:07 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -19,10 +19,10 @@
  * *********************************************************************************** */
 
 /** type of documents */
-define('DOC_TEST_SPEC', 1);
-define('DOC_TEST_PLAN', 2);
-define('DOC_TEST_REPORT', 3);
-define('DOC_REQ_SPEC', 10);
+define('DOC_TEST_SPEC', 'testspec');
+define('DOC_TEST_PLAN', 'testplan');
+define('DOC_TEST_REPORT', 'testreport');
+define('DOC_REQ_SPEC', 'reqspec');
 
 
 /** supported document formats */

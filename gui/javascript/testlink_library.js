@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.68 2009/02/03 20:10:06 schlundus Exp $
+// $Id: testlink_library.js,v 1.69 2009/02/26 17:12:12 havlat Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -232,39 +232,25 @@ function ET(id,v)
 	parent.workframe.location = my_location;
 }
 
-/*
-  function: TPROJECT_PTS
-            Test PROJECT Print Test Suite
 
-  args :
-
-  returns:
-
-*/
+/* Generate doc: a selected Test Suite from Test Specification */
 function TPROJECT_PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
 }
 
-/*
-  function: TPROJECT_PTP
-            Test PLAN Print Test Plan
-*/
+/* Generate doc: all Test Specification */
 function TPROJECT_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testproject&id="+id+args+"&"+pParams;
 }
 
-
-/*
-  function: TPROJECT_PTC
-            Test PLAN Print Test Case
-*/
+/* Generate doc: a selected Test Tase from Test Specification */
 function TPROJECT_PTC(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=tc&id="+id+args;
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=tc&id="+id+args;
 }
 
 /*
@@ -279,7 +265,7 @@ function TPROJECT_PTC(id)
 function TPLAN_PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=testplan&level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
 }
 
 /*
@@ -289,7 +275,7 @@ function TPLAN_PTS(id)
 function TPLAN_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	var my_location = fRoot+menuUrl+"?print_scope=testplan&level=testproject&id="+id+args+"&"+pParams;
+	var my_location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
 	parent.workframe.location =my_location;
 }
 
@@ -300,7 +286,7 @@ function TPLAN_PTP(id)
 */
 function TPLAN_PTC(id)
 {
-	var my_location = fRoot+menuUrl+"?print_scope=testplan&level=tc&id="+id+args;
+	var my_location = fRoot+menuUrl+"?level=tc&id="+id+args;
 	parent.workframe.location = my_location;
 }
 
@@ -478,7 +464,7 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 function tree_getPrintPreferences()
 {
 	var params = [];
-	var fields = ['header','summary','toc','body','passfail',
+	var fields = ['header','summary','toc','body','passfail', 'testplan', 'metrics', 
 	              'tcspec_refresh_on_action','author','requirement','keyword'];
 
   for (var i= 0;i < fields.length;i++)

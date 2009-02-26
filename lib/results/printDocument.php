@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/02/25 15:04:07 $ by $Author: havlat $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/02/26 17:12:09 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -79,9 +79,9 @@ if ($user)
 	$doc_info->author = htmlspecialchars($user->getDisplayName());
 }
 
-switch ($args->print_scope)
+switch ($args->doc_type)
 {
-	case 'testproject': 
+	case 'testspec': 
 		$doc_info->type = DOC_TEST_SPEC; 
 		$doc_info->type_name = lang_get('title_test_spec');
 		break;
@@ -98,7 +98,7 @@ switch ($args->print_scope)
 		$doc_info->type_name = lang_get('req_spec');
 		break;
 	default:
-		die ('Invalid document type $_REQUEST["print_scope"]');
+		die ('printDocument.php> Invalid document type $_REQUEST["type"]');
 }
 
 
@@ -178,7 +178,8 @@ switch ($doc_info->type)
         }  // switch($item_type)
          
         // Create list of execution id, that will be used to compute execution time if
-    	// CF_EXEC_TIME custom field exists and is linked to current testproject                                            
+    	// CF_EXEC_TIME custom field exists and is linked to current testproject
+    	$doc_data->statistics = null;                                            
  		if ($printingOptions['metrics'])
  		{
          	$executed_qty=0;
@@ -193,15 +194,15 @@ switch ($doc_info->type)
 		             }    
 		         }    
     		}
-	        $doc_data->$statistics['estimated_execution']['minutes'] = 
-	        		$tplan_mgr->get_estimated_execution_time($args->tplan_id,
-	        		$tcase_filter);
-    	    $doc_data->$statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
+	        $doc_data->statistics['estimated_execution']['minutes'] = 
+	        		$tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
+    	    $doc_data->statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
          
 			if( $executed_qty > 0)
         	{ 
-				$doc_data->$statistics['real_execution']['minutes'] = $tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
-             	$doc_data->$statistics['real_execution']['tcase_qty'] = $executed_qty;
+				$doc_data->statistics['real_execution']['minutes'] = 
+						$tplan_mgr->get_execution_time($args->tplan_id,$execid_filter);
+             	$doc_data->statistics['real_execution']['tcase_qty'] = $executed_qty;
          	}
  		}
     break;
@@ -226,18 +227,21 @@ if($tree)
 		break;
 	
 		case DOC_TEST_PLAN:
-			$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
+			if ($printingOptions['testplan'])
+				$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
 		case DOC_TEST_REPORT:
 			$generatedText .= renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
 		                                             $args->user_id,$args->tplan_id,$args->tproject_id);
-			if ($doc_info->type == DOC_TEST_REPORT)
-				$generatedText .= buildTestPlanMetrics($doc_data->$statistics);
+			if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
+				$generatedText .= buildTestPlanMetrics($doc_data->statistics);
 		break;
 	}
 
 	$generatedText .= renderEof();
 }
-
+echo '>>>'.$printingOptions['metrics'];
+print_r($printingOptions);
+print_r($_REQUEST);
 
 // add application header to HTTP 
 if (($args->format == 'format_odt') || ($args->format == 'format_msword'))
@@ -246,16 +250,15 @@ if (($args->format == 'format_odt') || ($args->format == 'format_msword'))
 }
 
 // send out the data
+print_r($doc_data->statistics);
 echo $generatedText;
-
-
 
 
 /** Process input data */
 function init_args()
 {
 	$args = new stdClass();
-	$args->print_scope = $_REQUEST['print_scope'];
+	$args->doc_type = $_REQUEST['type'];
 	$args->level = isset($_REQUEST['level']) ?  $_REQUEST['level'] : null;
 	$args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : null;
 	$args->itemID = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;

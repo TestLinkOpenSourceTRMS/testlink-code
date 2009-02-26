@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/02/25 15:04:07 $ by $Author: havlat $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/02/26 17:12:10 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -39,7 +39,7 @@ $arrFormat = array(
 
 // Important Notice:
 // If you made add/remove elements from this array, you must update
-// $printingOptions in printData.php
+// $printingOptions in printData.php and tree_getPrintPreferences() in testlink_library.js
 $arrCheckboxes = array(
 	array( 'value' => 'toc', 	'description' => 'opt_show_toc', 		'checked' => 'n'),
 	array( 'value' => 'header', 'description' => 'opt_show_suite_txt', 	'checked' => 'n'),
@@ -54,12 +54,12 @@ if($_SESSION['testprojectOptReqs'])
 	$arrCheckboxes[] = array( 'value' => 'requirement', 'description' => 'opt_show_tc_reqs', 'checked' => 'n');
 }
 
-if( $gui->report_type == 'testplan')
+if( $args->doc_type == 'testplan')
 {
 	$arrCheckboxes[] = array( 'value' => 'testplan', 'description' => 'opt_show_tplan_txt', 'checked' => 'n');
 }
 
-if( $gui->report_type == 'testreport')
+if( $args->doc_type == 'testreport')
 {
 	$arrCheckboxes[] = array( 'value' => 'passfail', 'description' => 'opt_show_passfail', 'checked' => 'y');
 	$arrCheckboxes[] = array( 'value' => 'metrics', 'description' => 'opt_show_metrics', 'checked' => 'n');
@@ -82,15 +82,15 @@ foreach($arrCheckboxes as $key => $elem)
 
 // generate tree for product test specification
 $workPath = 'lib/results/printDocument.php';
-$getArguments = "&type=" . $gui->report_type; 
-if (($gui->report_type == 'testplan') || ($gui->report_type == 'testreport'))
+$getArguments = "&type=" . $args->doc_type; //$gui->doc_type; 
+if (($args->doc_type == 'testplan') || ($args->doc_type == 'testreport'))
 	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
 
 // generate tree for Test Specification
 $treeString = null;
 $tree = null;
 $treemenu_type = config_get('treemenu_type');
-switch($gui->report_type)
+switch($args->doc_type) 
 {
     case 'testspec':
         if($treemenu_type != 'EXTJS')
@@ -155,7 +155,7 @@ $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);
 $smarty->assign('selFormat', $args->format);
-$smarty->assign('docType', $gui->report_type);
+$smarty->assign('docType', $args->doc_type);
 $smarty->assign('docTestPlanId', $args->tplan_id);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
@@ -179,7 +179,7 @@ function init_args()
 
     $args->tplan_id   = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
     $args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'html';
-    $args->report_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
+    $args->doc_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
     
     return $args;
 }
@@ -217,9 +217,9 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
     $gui->ajaxTree->children='';
      
     // Prefix for cookie used to save tree state
-    $gui->ajaxTree->cookiePrefix='print' . str_replace(' ', '_', $argsObj->report_type) . '_';
+    $gui->ajaxTree->cookiePrefix='print' . str_replace(' ', '_', $argsObj->doc_type) . '_';
     
-    switch($argsObj->report_type)
+    switch($argsObj->doc_type)
     {
         case 'testspec':
 	          $gui->tree_title=lang_get('title_tc_print_navigator');
@@ -246,7 +246,7 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
 	      break;
     }
 
-    $gui->report_type=$argsObj->report_type;    
+    $gui->doc_type = $argsObj->report_type;    
     return $gui;  
 }
 ?>

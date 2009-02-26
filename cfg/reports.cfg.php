@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/02/25 15:04:07 $ by $Author: havlat $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/02/26 17:12:10 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -69,13 +69,13 @@ $tlCfg->reports_file_extension = array(
  */
 $tlCfg->reports_list['test_plan'] = array( 
 	'title' => 'test_plan',
-	'url' => 'lib/results/printDocOptions.php?type=testplan',
+	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_PLAN,
 	'enabled' => 'all',
 	'format' => 'format_html,format_odt,format_msword'
 );
 $tlCfg->reports_list['test_report'] = array( 
 	'title' => 'test_report',
-	'url' => 'lib/results/printDocOptions.php?type=testreport',
+	'url' => 'lib/results/printDocOptions.php?type='.DOC_TEST_REPORT,
 	'enabled' => 'all',
 	'format' => 'format_html,format_odt,format_msword'
 );
@@ -88,6 +88,12 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 $tlCfg->reports_list['results_custom_query'] = array( 
 	'title' => 'link_report_metrics_more_builds',
 	'url' => 'lib/results/resultsMoreBuilds.php',
+	'enabled' => 'all',
+	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+);
+$tlCfg->reports_list['results_matrix'] = array( 
+	'title' => 'link_report_test',
+	'url' => 'lib/results/resultsTC.php',
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
@@ -109,11 +115,11 @@ $tlCfg->reports_list['list_tc_norun'] = array(
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );
-$tlCfg->reports_list['results_matrix'] = array( 
-	'title' => 'link_report_test',
-	'url' => 'lib/results/resultsTC.php',
+$tlCfg->reports_list['tcases_without_tester'] = array( 
+	'title' => 'link_report_tcases_without_tester',
+	'url' => 'lib/results/testCasesWithoutTester.php',
 	'enabled' => 'all',
-	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+	'format' => 'format_html'
 );
 $tlCfg->reports_list['charts_basic'] = array( 
 	'title' => 'link_charts',
@@ -127,22 +133,16 @@ $tlCfg->reports_list['results_requirements'] = array(
 	'enabled' => 'req',
 	'format' => 'format_html'
 );
-$tlCfg->reports_list['list_problems'] = array( 
-	'title' => 'link_report_total_bugs',
-	'url' => 'lib/results/resultsBugs.php',
-	'enabled' => 'bts',
-	'format' => 'format_html'
-);
 $tlCfg->reports_list['uncovered_testcases'] = array( 
 	'title' => 'link_report_uncovered_testcases',
 	'url' => 'lib/results/uncoveredTestCases.php',
 	'enabled' => 'req',
 	'format' => 'format_html'
 );
-$tlCfg->reports_list['tcases_without_tester'] = array( 
-	'title' => 'link_report_tcases_without_tester',
-	'url' => 'lib/results/testCasesWithoutTester.php',
-	'enabled' => 'all',
+$tlCfg->reports_list['list_problems'] = array( 
+	'title' => 'link_report_total_bugs',
+	'url' => 'lib/results/resultsBugs.php',
+	'enabled' => 'bts',
 	'format' => 'format_html'
 );
 // -------------------------------------------------------------------

@@ -3,6 +3,42 @@
    Changelog for TestLink
 ***************************************************************
 
+
+TestLink 1.8 RC 5
+==============================
+- 0002159: [Reports, Metrics, Export and Print] Code comments reference files that don't exist (schlundus) - resolved.
+- 0002157: [Documentation (Install, User Manual, help)] Documentation update (mhavlat) - resolved.
+- 0002141: [Reports, Metrics, Export and Print] DocGenerator - more bugs (mhavlat) - resolved.
+- 0002149: [Reports, Metrics, Export and Print] Attachment assigned to ReqSpec is not deleted after ReqSpec is deleted (schlundus) - resolved.
+- 0002110: [Event viewer] E_WARNING htmlspecialchars() [<a href='function.htmlspecialchars'>function.htmlspecialchars</a>]: charset `LOCALIZE: charset' no (schlundus) - resolved.
+- 0002111: [Event viewer] E_STRICT Creating default object from empty value - in C:\tl\testlink\lib\execute\execNavigator.php - Line 485 (schlundus) - resolved.
+- 0002119: [Requirement Management] Document of Requirement Specification is not deleted within a table of "requirements". (schlundus) - resolved.
+ - 0002126: [Requirement Management] All of Recods are deleted within a table of "nodes_hierarchy", if system is a Project. (fman) - resolved.
+- 0002129: [TL API] getTestCaseIDByName returns large number of instances (fman) - resolved.
+- 0001440: [Test Execute] Unable to view the test results of the entire test plan in Test Execute (fman) - resolved.
+- 0002140: [General] Cannot do anything after installation(daily testing). (mhavlat) - resolved.
+- 0002104: [Localization] The letter of the multi-bytecode is not displayed in a natural language. (mhavlat) - resolved.
+- 0001123: [Database MS-SQL] Garbled characters with MS-SQL 2000 (mhavlat) - resolved.
+- 0002058: [Localization] Change to french display "ï»¿ " on connection (mhavlat) - resolved.
+- 0002127: [TL API] Contribution: Get test case's attachments (fman) - resolved.
+- 0002079: [TL API] Newest test case version doesn't appear in getTestCasesForTestPlan results (fman) - resolved.
+- 0002098: [TL API] With api calls like getTestCasesForTestPlan, need ability to specify property automated=automated (fman) - resolved.
+- 0002099: [TL API] automated property not returned when getTestCasesForTestPlan called (fman) - resolved.
+- 0002068: [Test Execute] would be fine to see requirements when TC is executed (amitkhullar) - resolved.
+- 0002114: [Test Plan (builds, milestones, test assign)] TC assignment to tester not work (single TC assignment) (fman) - resolved.
+- 0002053: [General] Import/export to OpenOffice (mhavlat) - resolved.
+- 0002107: [User Interface General] Buttons not aligned in IE (multiple pages) (mhavlat) - resolved.
+- 0000415: [Localization] Indonesian Localization Support (mhavlat) - resolved.
+- 0002094: [Test Execute] Add new config parameter to enable/disabling colouring of counters of test cases status (fman) - resolved.
+- 0002090: [User Interface General] EXTJS tree doesn't show counter colors during execution (azl) - resolved.
+- 0002041: [General] Lost relationship between testcase and requirement after import (fman) - resolved.
+- 0002073: [TL API] Summary, steps and expected results missing from test cases in getTestCasesForTestPlan results (fman) - resolved.
+- 0002080: [Test Plan (builds, milestones, test assign)] Expected % of Mielstones not displayed on the resultsGeneral.tpl (fman) - resolved.
+- 0002062: [Test Specification] 1.8RC3: No tree visible when configured with JTREE. (fman) - resolved.
+- 0002088: [Internal issue] javascript errors in Keyword Search (schlundus) - resolved.
+- 0002086: [Localization] Localization - France (mhavlat) - resolved.
+- 0002081: [Localization] Localization missing for the Urgency of Milestones (mhavlat) - resolved.
+
 Testlink 1.8 RC 4
 ==============================
 - 0002072: [Event viewer] Delete Test case version (schlundus) - resolved.

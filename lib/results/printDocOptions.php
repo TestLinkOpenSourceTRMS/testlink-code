@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/02/26 17:12:10 $ by $Author: havlat $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/02/27 20:25:34 $ by $Author: schlundus $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -39,7 +39,7 @@ $arrFormat = array(
 
 // Important Notice:
 // If you made add/remove elements from this array, you must update
-// $printingOptions in printData.php and tree_getPrintPreferences() in testlink_library.js
+// $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
 $arrCheckboxes = array(
 	array( 'value' => 'toc', 	'description' => 'opt_show_toc', 		'checked' => 'n'),
 	array( 'value' => 'header', 'description' => 'opt_show_suite_txt', 	'checked' => 'n'),

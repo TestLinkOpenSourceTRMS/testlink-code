@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.5 2008/09/20 21:02:53 schlundus Exp $
+$Id: keywordsAssign.tpl,v 1.6 2009/02/27 20:25:34 schlundus Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 *}
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
+{if $can_do} 
 <script type="text/javascript" language="JavaScript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
@@ -16,9 +17,14 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
+{/if}
 </head>
 
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+<body 
+{if $can_do} 
+	onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])"
+{/if}	
+>
 
 {* improved feedback *}
 <div class="workBack">

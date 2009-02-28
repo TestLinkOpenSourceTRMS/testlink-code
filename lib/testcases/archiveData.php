@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.41 2009/02/15 15:03:14 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.42 2009/02/28 17:19:29 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
+ *      20090228 - franciscom - this page is called when search option on Navigation Bar is used.
  *      20080425 - franciscom - refactoring
  *      20080120 - franciscom - show() method for test cases - interface changes
  *      20070930 - franciscom - REQ - BUGID 1078
@@ -24,6 +25,7 @@ $templateCfg = templateConfiguration();
 $viewerArgs = null;
 $args = init_args($viewerArgs);
 
+$path_info=null;
 $smarty = new TLSmarty();
 $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
 
@@ -40,23 +42,30 @@ switch($args->feature)
 
 	case 'testcase':
 		$item_mgr = new testcase($db);
-
-    	// has been called from a test case search
-		if(!is_null($args->targetTestCase))
+    $args->id = is_null($args->id) ? 0 : $args->id;
+    
+    // has been called from a test case search
+		if( !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
 		{
+			$viewerArgs['show_title'] = 'no';
 			$viewerArgs['display_testproject'] = 1;
 			$viewerArgs['display_parent_testsuite'] = 1;
 
 			// need to get internal Id from External ID
 			$cfg = config_get('testcase_cfg');
 			$args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+      
+      if( $args->id > 0)
+      {
+          $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
+      }
 		}
+    $attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;
 
-    // need to be managed in a different way that for testproject and testsuites
-		$attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);;
-		$smarty->assign('id',$args->id);
+    $smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
-		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,testcase::ALL_VERSIONS,$viewerArgs);
+		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,
+		                testcase::ALL_VERSIONS,$viewerArgs,$path_info);
 		break;
 
 	default:
@@ -83,6 +92,7 @@ function init_args(&$viewerCfg)
     $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
     $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
+    $args->tcasePrefix = isset($_REQUEST['tcasePrefix']) ? trim($_REQUEST['tcasePrefix']) : null;
 
     switch($args->feature)
     {

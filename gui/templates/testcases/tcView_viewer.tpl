@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.24 2009/02/15 15:02:07 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.25 2009/02/28 17:18:06 franciscom Exp $
 viewer for test case in test specification
 
 rev: 20090215 - franciscom - BUGID - show info about links to test plans
@@ -29,14 +29,11 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 {if $args_show_title == "yes"}
     {if $args_tproject_name != ''}
      <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
-     <br />
     {/if}
     {if $args_tsuite_name != ''}
      <h2>{$labels.testsuite} {$args_tsuite_name|escape} </h2>
-     <br />
     {/if}
-
-	<h2>{$labels.title_test_case} {$args_testcase.name|escape} </h2>
+	  <h2>{$labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
 {assign var="warning_edit_msg" value=""}
 

@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.38 2008/06/03 08:40:49 havlat Exp $
+	$Id: navBar.tpl,v 1.39 2009/02/28 17:18:06 franciscom Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -95,7 +95,11 @@
 		      action="lib/testcases/archiveData.php" method="get">
 		<span style="font-size: 80%">{$labels.th_tcid}: </span>
 		<input style="font-size: 80%; width: 50px;" type="text"
-		       title="{$labels.search_testcase}" name="targetTestCase" value="" />
+		       title="{$labels.search_testcase}" name="targetTestCase" value="{$gui->tcasePrefix}" />
+
+    {* useful to avoid a call to method to get test case prefix in called page*}
+		<input type="hidden" id="tcasePrefix" name="tcasePrefix" value="{$gui->tcasePrefix}">
+		       
 		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"
 		     title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
 		     onclick="document.getElementById('searchTC').submit()" /> |

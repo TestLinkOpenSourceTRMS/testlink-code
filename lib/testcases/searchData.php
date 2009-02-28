@@ -1,9 +1,12 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.40 2009/02/09 20:37:39 schlundus Exp $
+ * $Id: searchData.php,v 1.41 2009/02/28 17:19:29 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
+ *     20090228 - franciscom - if targetTestCase == test case prefix => 
+ *                             consider as empty => means search all.
+ *
  *     20090125 - franciscom - BUGID - search by requirement doc id
  *     20081115 - franciscom - refactored to improve:
  *     performance and information displayed.
@@ -13,7 +16,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
 
-$template_dir = 'testcases/';
+$templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
@@ -28,9 +31,13 @@ $map = null;
 $args = init_args();
 if ($args->tprojectID)
 {
+    $gui->tcasePrefix=$tproject_mgr->getTestCasePrefix($args->tprojectID);
+    $gui->tcasePrefix .= $tcase_cfg->glue_character;
+
     $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
     $filter = null;
-    if($args->targetTestCase)
+    
+    if($args->targetTestCase && strcmp($args->targetTestCase,$gui->tcasePrefix) !=0 )
     {
         $tcase_mgr = new testcase ($db);
         $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character); 
@@ -125,10 +132,7 @@ if($gui->row_qty)
   {	
 	    $tcase_mgr = new testcase($db);   
       $tcase_set=array_keys($map);
-      $gui->path_info=get_full_path_verbose($tcase_set,$tcase_mgr->tree_manager,$db);  
-
-      $gui->tcasePrefix=$tproject_mgr->getTestCasePrefix($args->tprojectID);
-      $gui->tcasePrefix .= $tcase_cfg->glue_character;
+      $gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($tcase_set);
 	    $gui->resultSet=$map;
 	}
 	else
@@ -142,7 +146,7 @@ else
 	$tpl=$the_tpl['tcView'];
 }
 $smarty->assign('gui',$gui);
-$smarty->display($template_dir . $tpl);
+$smarty->display($templateCfg->template_dir . $tpl);
 
 /*
   function: 
@@ -162,7 +166,7 @@ function init_args()
     foreach($strnull as $keyvar)
     {
         $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
-        $args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? $args->$keyvar : null;
+        $args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? trim($args->$keyvar) : null;
     }
 
     $int0 = array('keyword_id','version','custom_field_id');
@@ -175,40 +179,5 @@ function init_args()
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
     return $args;
-}
-
-
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
-//@TODO schlundus, looks very redundant to treeManager->get_full_path_verbose! 
-function get_full_path_verbose(&$items,&$tree_mgr,&$db_handler)
-{
-   $goto_root=null;
-   $path_to=null;
-   $all_nodes=array();
-   foreach($items as $item_id)
-   {
-       $path_to[$item_id]=$tree_mgr->get_path($item_id,$goto_root,'simple'); 
-       $all_nodes = array_merge($all_nodes,$path_to[$item_id]);
-   }
-   
-   // get only different items, to get descriptions
-   $unique_nodes=implode(',',array_unique($all_nodes));
-   $sql="SELECT id,name FROM nodes_hierarchy WHERE id IN ({$unique_nodes})"; 
-   $decode=$db_handler->fetchRowsIntoMap($sql,'id');
-   foreach($path_to as $key => $elem)
-   {
-        foreach($elem as $idx => $node_id)
-        {
-              $path_to[$key][$idx]=$decode[$node_id]['name'];
-        }
-   }   
-   return $path_to; 
 }
 ?>

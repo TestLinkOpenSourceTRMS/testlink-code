@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.99 $
- * @modified $Date: 2009/02/14 16:55:52 $ by $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2009/02/28 17:19:29 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -76,10 +76,13 @@ class testplan extends tlObjectWithAttachments
 	var $cfield_mgr;
 	var $tcase_mgr;
 
+  var $users_table="users";
   var $builds_table="builds";
+ 	var $custom_fields_table="custom_fields";
  	var $cfield_design_values_table="cfield_design_values";
   var $cfield_execution_values_table="cfield_execution_values";
   var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
+  var $cfield_node_types_table="cfield_node_types";
   var $execution_bugs_table="execution_bugs";
   var $executions_table='executions';
   var $nodes_hierarchy_table='nodes_hierarchy';
@@ -496,10 +499,10 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
                                           $urgencyImportance = null, $tsuites_id=null, 
                                           $exec_type=null,$details='simple')
 {
-  $resultsCfg = config_get('results');
+	$resultsCfg = config_get('results');
 	$status_not_run=$resultsCfg['status_code']['not_run'];
 
-  $tcversion_exec_type_filter=" ";
+	$tcversion_exec_type_filter=" ";
 	$keywords_join = " ";
 	$keywords_filter = " ";
 	$tc_id_filter = " ";
@@ -713,13 +716,15 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	
 	  // BUGID 989 - added NHB.node_order
 	  $sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
+	  //print_r($sql);
 	  $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
-
+	  //print_r($recordset);	
 	  // 20070913 - jbarchibald
 	  // here we add functionality to filter out the custom field selections
     if (!is_null($cf_hash)) {
         $recordset = $this->filter_cf_selection($recordset, $cf_hash);
     }
+	//  print_r($recordset);
 	  return $recordset;
 }
 
@@ -1800,12 +1805,116 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
   $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
 
   // 20081122 - franciscom - humm!! need to look better IMHO this call is done to wrong function
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,
-                                                          $show_on_execution,'testplan',$id);
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,
+                                                             $show_on_execution,'testplan',$id);
   return($cf_map);
 }
 
+// --------------------------------------------------------------------------------------
+/* Get Custom Fields  Detail which are enabled on Execution of a TestCase/TestProject.
+  function: get_linked_cfields_id
 
+  args: $testproject_id 
+
+  returns: hash map of id : label
+
+  rev :
+
+*/
+
+function get_linked_cfields_id($tproject_id)
+{
+	$field_map = new stdClass();
+	
+	$sql = "SELECT field_id,label
+			FROM cfield_testprojects, custom_fields
+			WHERE
+			custom_fields.id = cfield_testprojects.field_id 
+			and cfield_testprojects.active = 1 
+			and custom_fields.enable_on_execution = 1 
+			and custom_fields.show_on_execution = 1 
+			and cfield_testprojects.testproject_id = {$tproject_id}
+			order by field_id";
+	
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+	$field_map = $this->db->fetchColumnsIntoMap($sql,'field_id','label');
+	//print_r($field_map);
+
+	return($field_map);
+}
+
+// --------------------------------------------------------------------------------------
+/* 
+
+/**
+ * Get values of Custom Fields saved while Execution on a TestCase.
+ *
+ * @param integer $tplan_id
+ * @param integer $tproject_id
+ *
+ *
+ */
+function get_linked_cfields_exec($tplan_id, $tproject_id)
+{
+	$map = array();
+	$field_map = array();
+	$cf_id=null;
+	$f_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'label');
+	if (!is_null($f_map))
+	{
+		foreach($f_map as $key => $value)
+		{
+        $cfield_id[]=$value['id'];
+    }	    
+	  $cf_id=implode(',',$cfield_id);
+	}
+
+  /*
+  			executions.tcversion_id  ,
+			executions.tcversion_number,
+			executions.execution_ts as Date, " . //  <<<<<<  NO RESERVED WORD!!!!!!! 
+			users.login as tester," .    // <<<<< NO ALWAYS lower case 
+
+			"and cfield_node_types.node_type_id=3  " .                   // NO !!!! MAGIC NUMBER
+
+	$sql = "SELECT EXEC.id, EXEC.tcversion_id,EXEC.tcversion_number,"
+	       "EXEC.execution_ts,EXEC.status AS exec_status," .
+	       "EXEX.notes AS exec_notes," .
+			   "NHB.id AS tcase_id, NHB.id AS tcase_name, TCV.tc_external_id, " . 
+         "B.id AS builds_id,B.name AS build_name, " .
+			   "U.login AS tester,CF.label AS cf_label,CFEV.value AS cf_value, " .
+			   "FROM {$this->executions_table} EXEC, {$this->custom_fields_table} CF, " .
+			   "{$this->cfield_execution_values_table} CFEV,{$this->builds_table} B," .
+			   "{$this->users_table} U, {$this->tcversions_table} TCV," .
+			   "{$this->cfield_node_types_table} CFNT, {$this->nodes_hierarchy_table} NHA " .
+			   "WHERE EXEC.testplan_id = {$tplan_id} " .
+			   "AND CF.id in ({$cf_id})  " .
+			   "AND TCV.id = EXEC.tcversion_id AND TCV.version = EXEC.tcversion_number " .
+			   "AND B.id = EXEC.build_id AND B.testplan_id = EXEC.testplan_id " . 
+			   "AND CFNT.field_id=CF.id AND CFNT.node_type_id=3  " .
+			   "AND NHA.id = EXEC.tcversion_id  AND NHB.id = NHA.parent_id " .
+			   "AND CFEV.field_id = CF.id " .
+			   "AND CFEV.execution_id = EXEC.id " . 
+			   "AND CFEV.testplan_id = EXEC.testplan_id   " .
+			   "AND CFEV.tcversion_id = EXEC.tcversion_id   " .
+			   "AND U.id = EXEC.tester_id " .
+			   "ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
+
+$map = $this->db->fetchArrayRowsIntoMap($sql,'id');
+new dBug($map);
+  */
+
+$floppy = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,$tplan_id);
+new dBug($floppy);
+
+//print_r('<br>' . $sql);
+
+
+//$map[0]=$field_map;
+
+return($map);
+}
 // --------------------------------------------------------------------------------------
 /*
   function: html_table_of_custom_field_inputs

@@ -1,20 +1,27 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchForm.php,v 1.20 2009/02/09 20:37:39 schlundus Exp $
+ * $Id: searchForm.php,v 1.21 2009/02/28 17:19:29 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
- * rev: 20090125 - franciscom - BUGID - search by requirement doc id
+ * rev: 20090228 - franciscom - improvement on management of test case prefix
+ *
+ *      20090125 - franciscom - BUGID - search by requirement doc id
+ *                                      available only if Req Specs exist.
+ *
 **/
 require_once("../../config.inc.php");
 require_once("../functions/keyword.class.php");
 require_once("../functions/common.php");
 testlinkInitPage($db);
 
-$template_dir = 'testcases/';
+
+$templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $args = init_args();
 $gui = new stdClass();
+$gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config_get('testcase_cfg')->glue_character;
+ 
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 
 $enabled = 1;
@@ -31,7 +38,7 @@ $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->display($template_dir . 'tcSearchForm.tpl');
+$smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
 
 /*
   function: 

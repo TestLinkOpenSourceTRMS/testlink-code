@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.18 2009/02/15 15:02:07 franciscom Exp $
+$Id: tcView.tpl,v 1.19 2009/02/28 17:18:06 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev: 20090215 - franciscom - BUGID - show info about links to test plans
@@ -52,11 +52,12 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 	      {foreach from=$gui->path_info[$tcID] item=path_part}
 	          {$path_part|escape} /
 	      {/foreach}
-	      <br>
+	      {* <br /> *}
 	  {/if}
-	  {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
+    {if $gui->show_title == 'no' }
+	      {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
+    {/if}
 
-	
     {* added args_cf *}
 		{include file="$this_template_dir/tcView_viewer.tpl" 
 		         args_testcase=$gui->tc_current_version[idx][0]
@@ -69,7 +70,7 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 		         args_can_delete_testcase=$can_delete_testcase
 		         args_can_delete_version=$my_delete_version
 		         args_show_version="yes" 
-		         args_show_title="no"
+		         args_show_title=$gui->show_title
 		         
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'

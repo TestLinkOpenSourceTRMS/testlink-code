@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/01/12 21:11:18 $ $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/02/28 17:20:41 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
@@ -21,9 +21,17 @@ require_once("common.php");
 testlinkInitPage($db,true);
 
 $tproject_mgr = new testproject($db);
+// $args = init_args();
 $gui = new stdClass();
 
 $gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$gui->tcasePrefix='';
+if( $gui->tprojectID > 0)
+{
+    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . 
+                        config_get('testcase_cfg')->glue_character;
+}
+
 $user = $_SESSION['currentUser'];
 $userID = $user->dbID;
 

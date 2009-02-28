@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.151 $
- * @modified $Date: 2009/02/21 16:13:16 $ $Author: franciscom $
+ * @version $Revision: 1.152 $
+ * @modified $Date: 2009/02/28 17:19:29 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090220 - franciscom - BUGID 2129
@@ -514,6 +514,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 
   $status_ok = 1;
   $viewer_defaults=array('title' => lang_get('title_test_case'),
+                         'show_title' => 'no',
                          'action' => '', 'msg_result' => '','user_feedback' => '',
                          'refresh_tree' => 'yes', 'disable_edit' => 0,
                          'display_testproject' => 0,'display_parent_testsuite' => 0,
@@ -529,6 +530,8 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
           }
       }
   }
+  
+  $gui->show_title=$viewer_defaults['show_title'];
   $gui->display_testcase_path=!is_null($path_info);
   $gui->hilite_testcase_name=$viewer_defaults['hilite_testcase_name'];
   $gui->pageTitle=$viewer_defaults['title'];

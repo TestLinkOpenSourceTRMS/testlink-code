@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.8 2009/01/25 18:53:33 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.9 2009/02/28 17:18:06 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
+     20090228 - franciscom - pre-fill test case id with testcase prefix
      20090125 - franciscom - BUGID - search by requirement doc id
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -27,7 +28,8 @@ rev :
 		<caption>{$labels.caption_search_form}</caption>
 		<tr>
 			<td>{$labels.th_tcid}</td>
-			<td><input type="text" name="targetTestCase" id="TCID"  size="{#TCID_SIZE#}" maxlength="{#TCID_MAXLEN#}" /></td>
+			<td><input type="text" name="targetTestCase" id="TCID"  
+			           size="{#TCID_SIZE#}" maxlength="{#TCID_MAXLEN#}" value="{$gui->tcasePrefix}"/></td>
 		</tr>
 		<tr>
 			<td>{$labels.th_tcversion}</td>

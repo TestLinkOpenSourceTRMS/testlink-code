@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.10 2009/02/07 19:44:03 schlundus Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.11 2009/02/28 17:21:24 franciscom Exp $ 
  * 
  *
  * rev :
@@ -13,9 +13,9 @@ require_once("common.php");
 
 testlinkInitPage($db,false,false,"checkRights");
 
-$template_dir = 'plan/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
+$testcase_cfg = config_get('testcase_cfg');
 $tree_mgr = new tree($db); 
 $tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
@@ -23,50 +23,77 @@ $tcase_mgr = new testcase($db);
 
 
 $args = init_args();
-$user_feedback = '';
+$gui = new stdClass();
+$gui->can_manage_testplans=has_rights($db,"mgt_testplan_create");
+$gui->tplans = array();
+$gui->show_details = 0;
+$gui->user_feedback = '';
+$gui->tcasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id) .
+                    $testcase_cfg->glue_character;
 
-$tcasePrefix = $tcase_mgr->tproject_mgr->getTestCasePrefix($args->tproject_id);
 $tplan_info = $tcase_mgr->get_by_id($args->tplan_id);
-$tplan_name = $tplan_info['name'];
+$gui->tplan_name = $tplan_info['name'];
+$gui->tplan_id=$args->tplan_id;
+$gui->tproject_name = $args->tproject_name;
 
 $linked_tcases = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-$tcases = $tplan_mgr->get_linked_and_newest_tcversions($args->tplan_id);
-
 $qty_linked = count($linked_tcases);
-$qty_newest = count($tcases);
+$gui->testcases = $tplan_mgr->get_linked_and_newest_tcversions($args->tplan_id);
 
-$show_details = 0;
 if($qty_linked)
 {
-	if($qty_newest)
-		$show_details = 1;
-  	else
-    	$user_feedback = lang_get('no_newest_version_of_linked_tcversions');  
+    $qty_newest = count($gui->testcases);
+    if($qty_newest)
+    {
+        $gui->show_details = 1;
+    
+        // get path
+        $tcaseSet=array_keys($gui->testcases);
+        $path_info=$tree_mgr->get_full_path_verbose($tcaseSet);
+        foreach($gui->testcases as $tcase_id => $value)
+        {
+            $path=$path_info[$tcase_id];
+            unset($path[0]);
+            $path[]='';
+            $gui->testcases[$tcase_id]['path']=implode(' / ',$path);
+        }
+    }
+    else
+    {
+        $gui->user_feedback = lang_get('no_newest_version_of_linked_tcversions');  
+    }
 } 
 else
-	$user_feedback = lang_get('no_linked_tcversions');  
-
-$tplans = getAccessibleTestPlans($db,$args->tproject_id,$args->user_id);
-$map_tplans = array();
-foreach($tplans as $key => $value)
 {
-	$map_tplans[$value['id']] = $value['name'];
+    $gui->user_feedback = lang_get('no_linked_tcversions');  
 }
 
-$testcase_cfg = config_get('testcase_cfg');
+$tplans = getAccessibleTestPlans($db,$args->tproject_id,$args->user_id);
+foreach($tplans as $key => $value)
+{
+	$gui->tplans[$value['id']] = $value['name'];
+}
 
 $smarty = new TLSmarty();
-$smarty->assign('tcasePrefix',$tcasePrefix . $testcase_cfg->glue_character);
-$smarty->assign('tplans', $map_tplans);
-$smarty->assign('tplan_id', $args->tplan_id);
-$smarty->assign('can_manage_testplans', has_rights($db,"mgt_testplan_create"));
-$smarty->assign('show_details', $show_details );
-$smarty->assign('user_feedback', $user_feedback);
-$smarty->assign('testPlanName', $tplan_name);
-$smarty->assign('tproject_name', $args->tproject_name);
-$smarty->assign('testcases', $tcases);
-$smarty->display($template_dir . $default_template);
+$smarty->assign('gui', $gui);
 
+// $smarty->assign('tcasePrefix',$tcasePrefix . $testcase_cfg->glue_character);
+// $smarty->assign('tplans', $map_tplans);
+// $smarty->assign('tplan_id', $args->tplan_id);
+// $smarty->assign('can_manage_testplans', has_rights($db,"mgt_testplan_create"));
+// $smarty->assign('show_details', $show_details );
+// $smarty->assign('user_feedback', $user_feedback);
+// $smarty->assign('testPlanName', $tplan_name);
+// $smarty->assign('tproject_name', $args->tproject_name);
+// $smarty->assign('testcases', $tcases);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+
+/**
+ * init_args
+ *
+ */
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.9 2008/09/24 20:17:54 schlundus Exp $
+$Id: newest_tcversions.tpl,v 1.10 2009/02/28 17:21:08 franciscom Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
@@ -10,12 +10,12 @@ rev:
 {include file="inc_jsCheckboxes.tpl"}
 
 {lang_get var='labels' 
-          s='testproject,test_plan,th_id,th_test_case,linked_version,newest_version' }
+          s='testproject,test_plan,th_id,th_test_case,title_newest_tcversions,linked_version,newest_version' }
 
 </head>
 <body>
 
-<h1 class="title"> {lang_get s='title_newest_tcversions'} 
+<h1 class="title"> {$labels.title_newest_tcversions} 
 	{include file="inc_help.tpl" helptopic="hlp_planTcModified"}
 </h1>
 
@@ -23,36 +23,36 @@ rev:
   <table>
   <tr>
    <td>{$labels.testproject}{$smarty.const.TITLE_SEP}</td>
-   <td>{$tproject_name|escape}</td>
+   <td>{$gui->tproject_name|escape}</td>
   </tr>
   
   <tr>
     <td>{$labels.test_plan}</td>
     <td>
       <select name="tplan_id" id="tplan_id" onchange="this.form.submit()">  
-         {html_options options=$tplans selected=$tplan_id}
+         {html_options options=$gui->tplans selected=$gui->tplan_id}
       </select>
     </td>
   </tr>
   </table>
 </form>
 
-{if $show_details }
+{if $gui->show_details }
   <div class="workBack" style="height: 380px; overflow-y: auto;">
 
     <table cellspacing="0" style="font-size:small;" width="100%">
       <tr style="background-color:blue;font-weight:bold;color:white">
-		    <td>{$labels.th_id}</td> 
+		    {* <td>{$labels.th_id}</td>  *}
 		    <td>{$labels.th_test_case}</td>
 		    <td>{$labels.linked_version}</td>
 		    <td>{$labels.newest_version}</td>
 		    <td>&nbsp;</td>
       </tr>   
     
-      {foreach from=$testcases item=tc}
+      {foreach from=$gui->testcases item=tc}
       <tr>
-		<td style="align:right;"> {$tcasePrefix|escape}{$tc.tc_external_id|escape} </td>  
-		<td> {$tc.name|escape} </td>  
+		{* <td style="align:right;"> {$gui->tcasePrefix|escape}{$tc.tc_external_id|escape} </td>  *} 
+		<td> {$tc.path}{$gui->tcasePrefix|escape}{$tc.tc_external_id|escape}:{$tc.name|escape} </td>  
 		<td> {$tc.version|escape} </td>
 		<td> {$tc.newest_version|escape} </td>
       </tr>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/02/25 13:03:36 $ by $Author: havlat $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/03/02 19:48:54 $ by $Author: schlundus $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -47,11 +47,11 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 		case 'format_xls':
 		case 'format_msword':
 		case 'format_pdf':
-	  		flushHttpHeader($reports_formats[$report_type], $doc_kind=0);
+	  		flushHttpHeader($reports_formats[$report_type], $doc_kind = 0);
     		break;  
 
 	    case 'format_mail_html':
-		  	$message = generateHtmlEmail($template_file, &$smarty, $buildName);
+		  	$message = generateHtmlEmail($template_file, $smarty, $buildName);
 		  		
 			$smarty = new TLSmarty();
 			$smarty->assign('message', $message);
@@ -73,7 +73,7 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
  * 		(for example: DOC_TEST_PLAN)
  * @author havlatm
  */
-function flushHttpHeader($format, $doc_kind=0)
+function flushHttpHeader($format, $doc_kind = 0)
 {
 	$file_extensions = config_get('reports_file_extension');
 	$reports_applications = config_get('reports_applications');

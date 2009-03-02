@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/01/29 20:58:22 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/03/02 19:48:54 $ by $Author: schlundus $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -231,7 +231,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($attachmentInfo)
 		{
 			//for DB-repository the filename is null
-			if (is_null($attachmentInfo['file_path']))
+			if (($attachmentInfo['file_path']) == "")
 				$content = $this->getAttachmentContentFromDB($id);
 			else
 				$content = $this->getAttachmentContentFromFS($id);

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.113 $
- * @modified $Date: 2009/02/14 15:16:21 $ $Author: franciscom $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2009/03/02 19:28:27 $ $Author: schlundus $
  *
  * rev:
  *     20090210 - amitkhullar - BUGID 2068
@@ -512,7 +512,7 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
   		
   		if($bugInterfaceOn)
   		{
-			$the_bugs = get_bugs_for_report($db,$bugInterface,$exec_id);
+			$the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
 			if(count($the_bugs) > 0)
 				$bugs[$exec_id] = $the_bugs;
   		}

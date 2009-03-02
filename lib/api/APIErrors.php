@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.14 2009/02/08 17:35:52 franciscom Exp $
+ * $Id: APIErrors.php,v 1.15 2009/03/02 07:53:18 franciscom Exp $
  */
 
 /** 
@@ -189,6 +189,9 @@ define('INVALID_TESTSUITEID_STR', lang_get('API_INVALID_TESTSUITEID',null,1));
  */
 define('NO_CUSTOMFIELD_BY_THIS_NAME', 9000);
 define('NO_CUSTOMFIELD_BY_THIS_NAME_STR', lang_get('API_NO_CUSTOMFIELD_BY_THIS_NAME',null,1));
+
+define('CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE',9001);
+define('CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE_STR', lang_get('API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE',null,1));
 
 
 /**

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/02/25 20:30:29 $  $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/03/02 07:57:52 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090223 - franciscom - get_linked_cfields_at_execution() - added logic
@@ -999,10 +999,12 @@ class cfield_mgr
 	{
 	  $my_name=$this->db->prepare_string(trim($name));
 
-	  $sql="SELECT CF.*, CFNT.node_type_id" .
-	       " FROM custom_fields CF, cfield_node_types CFNT" .
+	  $sql="SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
+	       " FROM {$this->custom_fields_table} CF, {$this->cfield_node_types_table} CFNT," .
+	       " {$this->node_types_table} NT" .
 	       " WHERE CF.id=CFNT.field_id " .
-	       " AND   name='{$my_name}' ";
+	       " AND CFNT.node_type_id=NT.id " .
+	       " AND name='{$my_name}' ";
     return($this->db->fetchRowsIntoMap($sql,'id'));
   }
 

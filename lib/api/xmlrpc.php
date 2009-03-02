@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/02/19 07:10:10 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/03/02 07:53:15 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2071,6 +2071,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["devKey"]: used to check if operation can be done.
 	 *                                if devKey is not valid => abort.
 	 *
+	 * @param string $args["testcaseexternalid"]:  
+	 * @param string $args["testprojectid"]: 
+	 * @param string $args["customfieldname"]: custom field name
    * @return mixed $resultInfo
 	 * 				
 	 * @access public
@@ -2118,7 +2121,21 @@ class TestlinkXMLRPCServer extends IXR_Server
           {
 	           $this->errors[] = new IXR_Error(NO_CUSTOMFIELD_BY_THIS_NAME,NO_CUSTOMFIELD_BY_THIS_NAME_STR);
           }
+          // $this->errors[] = current($cfinfo);
+          // $status_ok=false;
       }
+      
+      if( $status_ok )
+      {
+          $cfield=current($cfinfo);
+          $status_ok = (strcasecmp($cfield['node_type'],'testcase') == 0 );
+          if( !$status_ok )
+          {
+	           $msg = sprintf(CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE_STR,$cf_name,'testcase',$cfield['node_type']);
+	           $this->errors[] = new IXR_Error(CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE,$msg);
+          }
+      }
+      
       return $status_ok;
   }
 
@@ -2242,12 +2259,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 /**
 	  * Add a test case version to a test plan 
 	  *
-	  * @param args[self::$testProjectIDParamName]
-	  * @param args[self::$testPlanIDParamName]
-	  * @param args[self::$testCaseExternalIDParamName]
-	  * @param args[self::$versionNumberParamName]
-	  * @param args[self::$executionOrderParamName] - OPTIONAL
-	  * @param args[self::$urgencyParamName] - OPTIONAL
+	  * @param args['testprojectid']
+	  * @param args['testplanid']
+	  * @param args['testcaseexternalid']
+	  * @param args['version']
+	  * @param args['executionorder'] - OPTIONAL
+	  * @param args['urgency'] - OPTIONAL
 	  *
 	  */
 	 public function addTestCaseToTestPlan($args)

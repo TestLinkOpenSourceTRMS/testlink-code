@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.76 $
- * @modified $Date: 2009/01/16 20:26:13 $ by $Author: schlundus $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2009/03/03 07:48:12 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -26,9 +26,6 @@ require_once("print.inc.php");
 require_once("requirement_spec_mgr.class.php");
 require_once("requirement_mgr.class.php");
 
-// 20080414 - franciscom
-// $arrReqStatus = init_labels(config_get('req_status'));
-
 $g_reqFormatStrings = array (
 							"csv" => lang_get('req_import_format_description1'),
 							"csv_doors" => lang_get('req_import_format_description2'),
@@ -37,39 +34,43 @@ $g_reqFormatStrings = array (
 							);
 
 /**
- * print Requirement Specification
+ * render Requirement Specification
  *
  * @param integer $srs_id
- * @param string $prodName
+ * @param string $tproject_name
+ * @param string $tproject_id
  * @param string $user_id
  * @param string $base_href
  *
  * @author Martin Havlat
  *
- * @version 1.2 - 20050905
- * @author Francisco Mancardi
- *
- * @version 1.1 - 20050830
- * @author Francisco Mancardi
- *
  **/
-function printSRS(&$db,&$tproject,$srs_id, $prodName, $testproject_id, $user_id, $base_href)
+function renderSRS(&$db,&$tproject_mgr,$srs_id, $tproject_name, $tproject_id, $user_id, $base_href)
 {
-	$arrSpec = $tproject->getReqSpec($testproject_id,$srs_id);
-
-	$title = $arrSpec[0]['title'];
-	$output =  buildHTMLHeader($title,$base_href);
-	$tprojectInfo = $tproject->get_by_id($testproject_id);
-	$output .= printFirstPage($db,"requirement",$title." - ".$prodName,$tprojectInfo,$user_id);
+  
+  $tprojectInfo = $tproject_mgr->get_by_id($tproject_id);
+  
+  $doc_info = new stdClass(); 
+  $doc_info->tproject_name = htmlspecialchars($tproject_name);
+  $doc_info->tproject_scope = $tprojectInfo['notes'];
+  $doc_info->author='';
+  $doc_info->title='';
+  $doc_info->type_name='';
+  
+  
+	$arrSpec = $tproject_mgr->getReqSpec($tproject_id,$srs_id);
+	$output =  renderHTMLHeader($arrSpec[0]['title'],$base_href);
+	$output .= renderFirstPage($doc_info);
+	
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
-	$output .= printRequirements($db,$srs_id);
+	$output .= renderRequirements($db,$srs_id);
 	$output .= "\n</body>\n</html>";
 
 	return $output;
 }
 
 /**
- * print Requirement for SRS
+ * render Requirement for SRS
  *
  * @param integer $srs_id
  *
@@ -77,7 +78,7 @@ function printSRS(&$db,&$tproject,$srs_id, $prodName, $testproject_id, $user_id,
  * 20051125 - scs - added escaping of req names
  * 20051202 - scs - fixed 241
  **/
-function printRequirements(&$db,$srs_id)
+function renderRequirements(&$db,$srs_id)
 {
 	$req_spec_mgr = new requirement_spec_mgr($db);
 	$arrReq = $req_spec_mgr->get_requirements($srs_id);
@@ -88,27 +89,32 @@ function printRequirements(&$db,$srs_id)
 		foreach ($arrReq as $REQ)
 		{
 			$output .= '<h3>' .htmlspecialchars($REQ["req_doc_id"]). " - " .
-						htmlspecialchars($REQ['title']) . "</h3>\n<div>" .
-						$REQ['scope'] . "</div>\n";
+						     htmlspecialchars($REQ['title']) . "</h3>\n<div>" .
+						     $REQ['scope'] . "</div>\n";
 		}
 	}
 	else
+	{
 		$output .= '<p>' . lang_get('none') . '</p>';
-
+  }
 	$output .= "\n</div>";
 
 	return $output;
 }
 
 
-
+/**
+ * exportReqDataToXML
+ *
+ */
 function exportReqDataToXML($reqData)
 {            
   
 	$rootElem = "<requirements>{{XMLCODE}}</requirements>";
-	$elemTpl = "\t".'<requirement><docid><![CDATA['."\n||DOCID||\n]]>".'</docid><title><![CDATA['."\n||TITLE||\n]]>".'</title>'.
-					'<description><![CDATA['."\n||DESCRIPTION||\n]]>".'</description>'.
-					'</requirement>'."\n";
+	$elemTpl = "\t".'<requirement><docid><![CDATA['."\n||DOCID||\n]]>".
+	           '</docid><title><![CDATA['."\n||TITLE||\n]]>".'</title>'.
+					   '<description><![CDATA['."\n||DESCRIPTION||\n]]>".'</description>'.
+					   '</requirement>'."\n";
 	$info = array (
 							"||DOCID||" => "req_doc_id",
 							"||TITLE||" => "title",
@@ -116,7 +122,6 @@ function exportReqDataToXML($reqData)
 						);
 	return exportDataToXML($reqData,$rootElem,$elemTpl,$info);
 }
-
 
 
 /** Process CVS file contents with requirements into TL

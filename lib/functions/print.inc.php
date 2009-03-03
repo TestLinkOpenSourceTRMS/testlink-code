@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2009/02/25 15:04:02 $ by $Author: havlat $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2009/03/03 07:48:12 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -54,7 +54,7 @@
 require_once("exec.inc.php");
 
 /**
- * build HTML header
+ * render HTML header
  * Standard: HTML 4.01 trans (because is more flexible to bugs in user data)
  * @param string $title
  * @param string $base_href Base URL
@@ -63,7 +63,7 @@ require_once("exec.inc.php");
 function renderHTMLHeader($title,$base_href)
 {
 	$docCfg = config_get('document_generator');
-  	$docCfg->css_template;
+  $docCfg->css_template;
   
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
@@ -79,59 +79,60 @@ function renderHTMLHeader($title,$base_href)
 
 /**
  * Generate initial page of document
- * @param singleton $doc_info data with the next string values: title, type_name, author, project_name, testplan_name  
+ * @param singleton $doc_info data with the next string values: 
+ *                  title
+ *                  type_name: what does this means ???
+ *                  author, tproject_name, testplan_name  
  * @return string html
  * @author havlatm
  */
 function renderFirstPage($doc_info)
 {
-  	$docCfg = config_get('document_generator');
-	$date_format_cfg = config_get('date_format');
+    $docCfg = config_get('document_generator');
+	  $date_format_cfg = config_get('date_format');
   
   	$output = "<body>\n<div>\n";
 
-	// Print header
-	if ($docCfg->company_name != '' )
-	{
-		$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) ."</div>\n";
-	}
-	$output .= '<div>'. $doc_info->project_name . "</div><hr />\n";
-
-	if ($docCfg->company_logo != '' )
-	{
-		$output .= '<p style="text-align: center;"><img alt="TestLink logo" title="configure using $tlCfg->company->logo_image"'.
-        	     ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
-	}
-	$output .= "</div>\n";
-
-	// print title 
-	$output .= '<div class="doc_title">';
-	$output .= '<p>'.$doc_info->title.'</p>';
-	$output .= '<p>'.$doc_info->type_name.'</p>';
-	$output .= "</div>\n";
-
-	// Print summary on the first page
-	$output .= '<div class="summary">' .
-		         '<p id="prodname">'. lang_get('project') .": " . $doc_info->project_name . "</p>\n";
-
-	$output .= '<p id="author">' . lang_get('author').": " . $doc_info->author . "</p>\n" .
-		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
-		         strftime($date_format_cfg, time()) . "</p></div>\n";
-
-	// Print legal notes
-	if ($docCfg->company_copyright != '')
-	{
-		$output .= '<div class="pagefooter" id="copyright">' .
-				$docCfg->company_copyright."</div>\n";
-	}
-		           
-	if ($docCfg->confidential_msg != '')
-	{
-		$output .= '<div class="pagefooter" id="confidential">' . 
-				$docCfg->confidential_msg . "</div>\n";
-	}
-	
-	return $output;
+	  // Print header
+	  if ($docCfg->company_name != '' )
+	  {
+	  	$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) ."</div>\n";
+	  }
+	  $output .= '<div>'. $doc_info->tproject_name . "</div><hr />\n";
+    
+	  if ($docCfg->company_logo != '' )
+	  {
+	  	$output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
+	  	           'title="configure using $tlCfg->company->logo_image"'.
+          	     ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
+	  }
+	  $output .= "</div>\n";
+    
+	  $output .= '<div class="doc_title">';
+	  $output .= '<p>'.$doc_info->title.'</p>';
+	  $output .= '<p>'.$doc_info->type_name.'</p>';
+	  $output .= "</div>\n";
+    
+	  // Print summary on the first page
+	  $output .= '<div class="summary">' .
+	  	         '<p id="prodname">'. lang_get('project') .": " . $doc_info->tproject_name . "</p>\n";
+    
+	  $output .= '<p id="author">' . lang_get('author').": " . $doc_info->author . "</p>\n" .
+	  	         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
+	  	         strftime($date_format_cfg, time()) . "</p></div>\n";
+    
+	  // Print legal notes
+	  if ($docCfg->company_copyright != '')
+	  {
+	  	$output .= '<div class="pagefooter" id="copyright">' . $docCfg->company_copyright."</div>\n";
+	  }
+	  	           
+	  if ($docCfg->confidential_msg != '')
+	  {
+	  	$output .= '<div class="pagefooter" id="confidential">' .	$docCfg->confidential_msg . "</div>\n";
+	  }
+	  
+	  return $output;
 }
 
 

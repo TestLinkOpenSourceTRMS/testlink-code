@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/02/26 17:12:09 $ by $Author: havlat $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/03/03 07:48:12 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -29,10 +29,7 @@ $generatedText = null;
 $doc_info = new stdClass(); // gather title, author, product, test plan, etc.
 $doc_data = new stdClass(); // gather content and tests related data
 
-// ----- INITIALIZATION -----------------------------------------------------------------
 testlinkInitPage($db);
-
-// ----- GET CONFIG + INPUT -------------------------------------------------------------
 $args = init_args();
 $item_type = $args->level;
 
@@ -69,8 +66,8 @@ $test_spec = $tree_manager->get_subtree($args->itemID,
 		null,null,RECURSIVE_MODE);
 
 $tproject_info = $tproject->get_by_id($args->tproject_id);
-$doc_info->project_name = htmlspecialchars($tproject_info['name']);
-$doc_info->project_scope = $tproject_info['notes'];
+$doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
+$doc_info->tproject_scope = $tproject_info['notes'];
 
 
 $user = tlUser::getById($db,$_SESSION['userID']);
@@ -85,18 +82,22 @@ switch ($args->doc_type)
 		$doc_info->type = DOC_TEST_SPEC; 
 		$doc_info->type_name = lang_get('title_test_spec');
 		break;
+	
 	case 'testplan': 
 		$doc_info->type = DOC_TEST_PLAN; 
 		$doc_info->type_name = lang_get('test_plan');
 		break;
+	
 	case 'testreport': 
 		$doc_info->type = DOC_TEST_REPORT; 
 		$doc_info->type_name = lang_get('test_report');
 		break;
+		
 	case 'reqspec': 
 		$doc_info->type = DOC_REQ_SPEC; 
 		$doc_info->type_name = lang_get('req_spec');
 		break;
+		
 	default:
 		die ('printDocument.php> Invalid document type $_REQUEST["type"]');
 }
@@ -222,26 +223,32 @@ if($tree)
 	switch ($doc_info->type)
 	{
 		case DOC_TEST_SPEC:
-			$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->project_scope);
+			$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
 			$generatedText .= renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$args->user_id);
 		break;
 	
 		case DOC_TEST_PLAN:
 			if ($printingOptions['testplan'])
+			{
 				$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
+			}
+				
 		case DOC_TEST_REPORT:
 			$generatedText .= renderTestPlanForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,
 		                                             $args->user_id,$args->tplan_id,$args->tproject_id);
 			if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
+			{
 				$generatedText .= buildTestPlanMetrics($doc_data->statistics);
+			}	
 		break;
 	}
 
 	$generatedText .= renderEof();
 }
-echo '>>>'.$printingOptions['metrics'];
-print_r($printingOptions);
-print_r($_REQUEST);
+
+// echo '>>>'.$printingOptions['metrics'];
+// print_r($printingOptions);
+// print_r($_REQUEST);
 
 // add application header to HTTP 
 if (($args->format == 'format_odt') || ($args->format == 'format_msword'))
@@ -250,7 +257,7 @@ if (($args->format == 'format_odt') || ($args->format == 'format_msword'))
 }
 
 // send out the data
-print_r($doc_data->statistics);
+// print_r($doc_data->statistics);
 echo $generatedText;
 
 

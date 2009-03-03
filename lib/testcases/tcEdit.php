@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2009/02/05 19:42:40 $  by $Author: schlundus $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2009/03/03 07:49:03 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *     20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
  *     20080827 - franciscom - BUGID 1692 
  *     20080706 - franciscom - force refresh tree when operation can put tree on
  *                             situation that lead to errors if user click on deleted element.
@@ -50,10 +51,12 @@ $commandMgr->setTemplateCfg(templateConfiguration());
 $oWebEditor=createWebEditors($_SESSION['basehref'],$cfg->webEditorCfg);
 
 $sqlResult = "";
+$init_inputs=true; // BUGID 2163 - Create test case with same title, after submit, all data lost 
 
 $show_newTC_form = 0;
 $optionTransferName='ot';
 $args = init_args($cfg->spec,$optionTransferName);
+
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui=new stdClass();
 $gui->editorType=$cfg->webEditorCfg['type'];
@@ -91,7 +94,7 @@ if($args->container_id > 0)
 
 $name_ok = 1;
 
-if($args->do_create )
+if($args->do_create)
 {
 	// BUGID 0000086
 	$result = lang_get('warning_empty_tc_title');
@@ -121,7 +124,6 @@ switch($args->doAction)
 //If the user has chosen to edit a testcase then show this code
 if($args->edit_tc)
 {
-   
     $opt_cfg->to->map = $tcase_mgr->get_keywords_map($args->tcase_id," ORDER BY keyword ASC ");
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
 
@@ -166,17 +168,17 @@ else if($args->do_create)
 
 		if($tcase['status_ok'])
 		{
-			$cf_map = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($args->testproject_id,ENABLED,
+		    $cf_map = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($args->testproject_id,ENABLED,
 			                                                             NO_FILTER_SHOW_ON_EXEC,'testcase') ;
-			$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
-
-      		$user_feedback = sprintf(lang_get('tc_created'),$args->name);
-      		$sqlResult = 'ok';
+			  $tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
+        $user_feedback = sprintf(lang_get('tc_created'),$args->name);
+        $sqlResult = 'ok';
 		}
-    	// BUGID 0001267 by cmurray
 		elseif(isset($tcase['msg']))
 		{
+    	  // BUGID 0001267 by cmurray
      		$user_feedback .= '' . $tcase['msg'];
+     		$init_inputs=false;
 		}
 	}
 
@@ -346,9 +348,6 @@ else if($args->do_copy)
 	  $msg = '';
 	  $action_result = 'copied';
 
-	  // $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
-	  //                               config_get('check_names_for_duplicates'),'block');
-
     // 20090120 - franciscom
 	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
 	                                config_get('check_names_for_duplicates'),
@@ -417,42 +416,66 @@ if ($show_newTC_form)
 {
 	$smarty->assign('containerID', $args->container_id);
 
-  // ------------------------------------------------------------------------
-  // 20071106 - BUGID 1165
-	foreach ($oWebEditor->cfg as $key => $value)
-	{
-		switch($cfg->tcase_template->$key->type)
-		{
-			case 'string':
-				$the_value = $cfg->tcase_template->$key->value;
-				break;
+  // BUGID 2163 - Create test case with same title, after submit, all data lost 
+  if( $init_inputs)
+  {
+      // 20071106 - BUGID 1165
+	    foreach ($oWebEditor->cfg as $key => $value)
+	    {
+	    	  switch($cfg->tcase_template->$key->type)
+	    	  {
+	    	  	case 'string':
+	    	  		$the_value = $cfg->tcase_template->$key->value;
+	    	  		break;
+          
+	    	  	case 'string_id':
+	    	  		$the_value = lang_get($cfg->tcase_template->$key->value);
+	    	  		break;
+          
+	    	  	case 'file':
+	    	  		$the_value = read_file($cfg->tcase_template->$key->value);
+	    	  		break;
+          
+	    	  	default:
+	    	  		$the_value = '';
+	    	  		break;
+	    	  }
+	        $of = &$oWebEditor->editor[$key];
+	        $rows = $oWebEditor->cfg[$key]['rows'];
+	        $cols = $oWebEditor->cfg[$key]['cols'];
+      
+	    	  $of->Value = $the_value;
+	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
+	    } // foreach ($a_oWebEditor_cfg as $key)
+      // ------------------------------------------------------------------------
+      
+      $tc_default=array('id' => 0, 'name' => '', 
+                        'importance' => $tlCfg->testcase_importance_default,
+                        'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
+	    
+	    $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
+ 	    $smarty->assign('cf',$cf_smarty);
+ 	    $smarty->assign('tc',$tc_default);
+	}
+  else
+  {
+      // Preserve values edited by user
+      foreach ($oWebEditor->cfg as $key => $value)
+	    {
+	        $of = &$oWebEditor->editor[$key];
+	        $rows = $oWebEditor->cfg[$key]['rows'];
+	        $cols = $oWebEditor->cfg[$key]['cols'];
+      
+	    	  $of->Value = $args->$key;
+	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
+	    } // foreach ($a_oWebEditor_cfg as $key)
+      $tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
+                        'execution_type' => $args->exec_type);
+ 	    $smarty->assign('tc',$tc_default);
 
-			case 'string_id':
-				$the_value = lang_get($cfg->tcase_template->$key->value);
-				break;
-
-			case 'file':
-				$the_value = read_file($cfg->tcase_template->$key->value);
-				break;
-
-			default:
-				$the_value = '';
-				break;
-		}
-	    $of = &$oWebEditor->editor[$key];
-	    $rows = $oWebEditor->cfg[$key]['rows'];
-	    $cols = $oWebEditor->cfg[$key]['cols'];
-
-		$of->Value = $the_value;
-	    $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	} // foreach ($a_oWebEditor_cfg as $key)
-  // ------------------------------------------------------------------------
-
-  $tc_default=array('id' => 0, 'name' => '', 'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
-	$tc_default['importance'] = $tlCfg->testcase_importance_default;
-	$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
- 	$smarty->assign('cf',$cf_smarty);
- 	$smarty->assign('tc',$tc_default);
+	    $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
+ 	    $smarty->assign('cf',$cf_smarty);
+  }
 	$smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
 }
 

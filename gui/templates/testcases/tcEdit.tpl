@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.10 2009/01/13 19:34:01 schlundus Exp $ 
+$Id: tcEdit.tpl,v 1.11 2009/03/03 21:09:02 schlundus Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev:20080908 - franciscom - added logic to validate Custom Field user input
@@ -34,26 +34,27 @@ var alert_box_title = "{$labels.warning}";
 {literal}
 function validateForm(f)
 {
-  var status_ok=true;
-  var cfields_container='';
-  var cfieldsChecks;
-  
-  if (isWhitespace(f.testcase_name.value)) 
-  {
-      alert_message(alert_box_title,warning_empty_testcase_name);
-      selectField(f, 'testcase_name');
-      return false;
-  }
-  
- 	cfields_container = document.getElementById('cfields_design_time').getElementsByTagName('input');
-  cfieldsChecks=validateCustomFields(cfields_container);
-  if( !cfieldsChecks.status_ok )
-  {
-      var warning_msg=cfMessages[cfieldsChecks.msg_id];
-      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-      return false;
-  }
-  return true;
+	var status_ok = true;
+	
+  	if (isWhitespace(f.testcase_name.value)) 
+  	{
+    	alert_message(alert_box_title,warning_empty_testcase_name);
+		selectField(f,'testcase_name');
+		return false;
+	}
+	var cf_designTime = document.getElementById('cfields_design_time');
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+	}
+	return true;
 }
 </script>
 {/literal}
@@ -90,7 +91,6 @@ function validateForm(f)
 
 	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
-
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='doUpdate'"   value="{$labels.btn_save}" />

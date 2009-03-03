@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.10 2008/10/10 20:59:46 schlundus Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.11 2009/03/03 21:09:02 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -79,7 +79,6 @@ Rev:
 	     {$cf}
 	     </div>
 	   {/if}
-	</div>
   <div>
   <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
 	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}

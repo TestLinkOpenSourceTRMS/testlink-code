@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/03/02 07:53:15 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/03/03 17:31:33 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090303 - franciscom - BUGID 2179
  *      20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
  *                               
  *      20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
@@ -1576,14 +1577,18 @@ class TestlinkXMLRPCServer extends IXR_Server
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
       $tsuiteMgr = new testsuite($this->dbObj);
 
+      // BUGID 2179
 			if(!$this->_isDeepPresent() || $this->args[self::$deepParamName] )
 			{
-				  return $this->get_testcases_deep($testSuiteID,$details);
+			    $pfn = 'get_testcases_deep';
 			}	
 			else
 			{
-				  return $tsuiteMgr->get_children_testcases($testSuiteID,$details);
+			    $pfn = 'get_children_testcases';
 			}
+			return $tsuiteMgr->$pfn($testSuiteID,$details);
+			
+			
 		}
 		else
 		{

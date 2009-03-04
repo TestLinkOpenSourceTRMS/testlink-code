@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/03/02 07:57:52 $  $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/03/04 09:07:33 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20090303 - franciscom - get_linked_cfields_at_execution() - fixed bugs on query
+ *                         and added logic to change fetch method.
  *
  * 20090223 - franciscom - get_linked_cfields_at_execution() - added logic
  *                         to use this method on report created by:
@@ -1350,6 +1353,8 @@ class cfield_mgr
 
 
     rev :
+          20090303 - franciscom - added additional logic to get fields needed to reports.
+          
           20070526 - franciscom
           changed order by clause
 
@@ -1357,13 +1362,16 @@ class cfield_mgr
   */
   function get_linked_cfields_at_execution($tproject_id,$enabled,
                                            $node_type=null,$node_id=null,
-                                           $execution_id=null,$testplan_id=null,$access_key='id')
+                                           $execution_id=null,$testplan_id=null,
+                                           $access_key='id')
   {
+    $base_values="CF.*,";
     $additional_join="";
     $additional_values="";
     $additional_filter="";
     $order_clause=" ORDER BY display_order,CF.id ";
 
+    $fetchMethod='fetchRowsIntoMap';
 
     if( !is_null($node_type) )
     {
@@ -1387,45 +1395,47 @@ class cfield_mgr
         // This piece is useful for report implementation done by: Amit Khullar - amkhullar@gmail.com
         if( !is_null($testplan_id) )
         {
-            $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id," .
-                                  "EXEC.id, EXEC.tcversion_id,EXEC.tcversion_number," .
+            $base_values ='';
+            $additional_values .= ",CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
+                                  "EXEC.id AS exec_id, EXEC.tcversion_id,EXEC.tcversion_number," .
 	                                "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
 	                                "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " . 
                                   "B.id AS builds_id,B.name AS build_name, U.login AS tester " ;
             
             $additional_join .= " JOIN {$this->cfield_execution_values_table} CFEV ON CFEV.field_id=CF.id " .
+                                " AND CFEV.testplan_id={$testplan_id} " .
                                 " JOIN {$this->executions_table} EXEC ON CFEV.tcversion_id = EXEC.tcversion_id " .
-                                " AND CFEV.execution_id = EXEC.id " .
-                                " AND CFEV.testplan_id = EXEC.testplan_id ";
+                                " AND CFEV.execution_id = EXEC.id " ;
             
             $additional_join .= " JOIN {$this->builds_table} B ON B.id = EXEC.build_id " .
                                 " AND B.testplan_id = EXEC.testplan_id " ;
 
             $additional_join .= " JOIN {$this->tcversions_table} TCV ON TCV.version = EXEC.tcversion_number " .
-			                          " AND TCV.version = EXEC.tcversion_number " ;
+			                          " AND TCV.id = EXEC.tcversion_id " ;
             
             $additional_join .= " JOIN {$this->users_table} U ON  U.id = EXEC.tester_id " .
                                 " JOIN {$this->nodes_hierarchy_table} NHA ON NHA.id = EXEC.tcversion_id " .
                                 " JOIN {$this->nodes_hierarchy_table} NHB ON NHB.id = NHA.parent_id  " ;
 
-			      $order_clause="ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
+			      // $order_clause="ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
+            $order_clause="ORDER BY EXEC.tcversion_id,exec_status,exec_id";
+            
+            $fetchMethod='fetchArrayRowsIntoMap';
+    
         }
     }
 
-    // 
-
-    $sql = "SELECT CF.*,CFTP.display_order" .
-         $additional_values .
-         " FROM custom_fields CF " .
-         " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
-         $additional_join .
-         " WHERE CFTP.testproject_id={$tproject_id} " .
-         " AND   CFTP.active=1     " .
-         " AND   CF.enable_on_execution={$enabled} " .
-         " AND   CF.show_on_execution=1 {$order_clause} ";
+    $sql = "SELECT {$base_values} CFTP.display_order" .
+           $additional_values .
+           " FROM custom_fields CF " .
+           " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
+           $additional_join .
+           " WHERE CFTP.testproject_id={$tproject_id} " .
+           " AND   CFTP.active=1     " .
+           " AND   CF.enable_on_execution={$enabled} " .
+           " AND   CF.show_on_execution=1 {$order_clause} ";
  
-
-    $map = $this->db->fetchRowsIntoMap($sql,$access_key);
+    $map = $this->db->$fetchMethod($sql,$access_key);
     return $map;
   }
 

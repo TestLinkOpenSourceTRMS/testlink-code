@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.15 2009/02/16 07:14:56 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.16 2009/03/04 19:56:13 schlundus Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -139,7 +139,7 @@ function check_action_precondition(container_id,action)
                   	<td align="center">
         		  		<select name="tester_for_tcid[{$tcase.id}]" 
         		  		        id="tester_for_tcid_{$tcase.id}"
-        		  		        onchange='javascript: set_checkbox({$add_cb}_{$ts_id}_{$tcase.id},1)' >
+        		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}",1)' >
         			   	{html_options options=$gui->testers selected=$tcase.user_id}
         				  </select>
                 	</td>

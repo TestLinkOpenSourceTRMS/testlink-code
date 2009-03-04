@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.11 2009/01/15 17:53:50 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.12 2009/03/04 20:30:53 schlundus Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -74,7 +74,7 @@ rev: 20090114 - franciscom - BUGID 1977
     			  {$gui->coverage.$key[row].title|escape}</a></span></td>
     		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
     			{section name=idx loop=$tcList}
-    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$gui->prefixStr}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
+    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title|escape}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
     			{/section} 
     		</td>
     	</tr>

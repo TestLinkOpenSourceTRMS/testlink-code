@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.4 2008/09/20 21:02:53 schlundus Exp $ *}
+{* $Id: resultsTC.tpl,v 1.5 2009/03/04 20:30:55 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
@@ -36,26 +36,29 @@
 		<th>{$labels.version}</th>
 
 		{foreach key=row item=buildid from=$arrBuilds}
-			<th>{$arrBuilds[$row].name|escape}</th>
+			<th>xx{$arrBuilds[$row].name|escape}xx</th>
 		{/foreach}
 	</tr>
 {section name=Row loop=$arrData}
 	<tr>
 	{section name=Item loop=$arrData[Row]}
-
+		{assign var=result value=$arrData[Row][Item]}
 		{* add different font styles for tc status for improve readability. 2007-05-31 *jacky *}
-		{if $arrData[Row][Item] == 'Passed'} 
-		<td style="color: green; font-weight:bold">{$arrData[Row][Item]}</td>
-		{elseif $arrData[Row][Item] == 'Failed'} 
-		<td style="color: red; font-weight:bold">{$arrData[Row][Item]}</td>
-
-		{elseif $arrData[Row][Item] == 'Not Run'}
-		<td style="color: gray;">{$arrData[Row][Item]}</td> 
-
-		{elseif $arrData[Row][Item] == 'Blocked'}
-		<td style="color:blue;">{$arrData[Row][Item]}</td>
-		{else} 
-		<td>{$arrData[Row][Item]|escape}</td>
+		{if is_array($result)}
+			{if $result[0] == 'p'} 
+				<td style="color: green; font-weight:bold">
+			{elseif $result[0] == 'f'} 
+				<td style="color: red; font-weight:bold">
+			{elseif $result[0] == 'n'}
+				<td style="color: gray;">
+			{elseif $result[0] == 'b'}
+				<td style="color:blue;">
+			{else}
+				<td>
+			{/if}
+			{$result[1]|escape}</td>
+		{else}
+			<td>{$result|escape}</td>
 		{/if}
 	{/section}
 	</tr>

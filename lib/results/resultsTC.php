@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.39 2008/09/28 10:04:43 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.40 2009/03/04 20:30:57 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -100,6 +100,7 @@ if ($lastResultMap != null)
 			for ($i = 0 ; $i < $qta_loops; $i++) {
 				$buildId = $arrBuildIds[$i];
 				$resultsForBuild =$not_run_label;
+				$lastStatus = 'n';
 				
 				// iterate over executions for this suite, look for 
 				// entries that match current test case id and build id 
@@ -108,9 +109,10 @@ if ($lastResultMap != null)
 					$execution_array = $suiteExecutions[$j];
 					if (($execution_array['testcaseID'] == $testCaseId) && ($execution_array['build_id'] == $buildId)) {
 						$resultsForBuild = $map_tc_status_code_langet[$execution_array['status']];	
+						$lastStatus = $execution_array['status'];
 					}
-				}	
-				array_push($rowArray, $resultsForBuild);
+				}
+				array_push($rowArray, array($lastStatus,$resultsForBuild));
 				//next($arrBuilds);
 			} // end for loop
 			

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/02 22:30:53 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/03/05 18:38:49 $ by $Author: schlundus $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
 
 <h2>Getting Started:</h2>
 <ol>
-	<li>Select your Test Project in the navigation tree (the root node). <i>Pleasen note: " .
+	<li>Select your Test Project in the navigation tree (the root node). <i>Please note: " .
 	"You can always change the activate Test Project by selecting a different one from the " .
 	"drop-down list in the top-right corner.</i></li>
 	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/11/25 20:44:07 $ - $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/03/05 18:38:48 $ - $Author: schlundus $
  *
  * Revision :
  *      20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -44,7 +44,6 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 	if ($p_string == '' || is_null($p_string))
 		return $p_string;
 		
-	global $TLS_STRINGFILE_CHARSET;
 	$t_lang = $p_lang;
 
 	if (null === $p_lang)
@@ -62,14 +61,15 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 
 	if (!is_null($loc_str))
 	{
-		if (!isset($TLS_STRINGFILE_CHARSET))
-			$TLS_STRINGFILE_CHARSET = "ISO-8859-1";
-		$the_str = iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$loc_str);
+		$stringFileCharset = "ISO-8859-1";
+		if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
+			$stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
+		$the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
 	}
 	else
 	{
 		if (!$bDontFireEvents)
-		    logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
+		   logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
 
 		$the_str = TL_LOCALIZE_TAG .$p_string;
 	}

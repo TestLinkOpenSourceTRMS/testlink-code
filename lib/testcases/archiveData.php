@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.42 2009/02/28 17:19:29 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.43 2009/03/05 07:32:58 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -41,6 +41,7 @@ switch($args->feature)
 		break;
 
 	case 'testcase':
+		$get_path_info=false;
 		$item_mgr = new testcase($db);
     $args->id = is_null($args->id) ? 0 : $args->id;
     
@@ -57,10 +58,17 @@ switch($args->feature)
       
       if( $args->id > 0)
       {
+          $get_path_info=true;
           $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
       }
 		}
-    $attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;
+		
+		if( $get_path_info || $args->show_path)
+		{
+		    $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
+		}
+			
+		$attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;
 
     $smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
@@ -93,6 +101,7 @@ function init_args(&$viewerCfg)
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
     $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
     $args->tcasePrefix = isset($_REQUEST['tcasePrefix']) ? trim($_REQUEST['tcasePrefix']) : null;
+    $args->show_path = isset($_REQUEST['show_path']) ? $_REQUEST['show_path'] : 0;
 
     switch($args->feature)
     {

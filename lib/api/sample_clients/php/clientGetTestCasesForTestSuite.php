@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestCasesForTestSuite.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/09 15:09:38 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/03/05 07:32:37 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -48,7 +48,7 @@ $unitTestDescription="Test {$test_num} - {$method}";
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=1;
-$args["testsuiteid"]='72';
+$args["testsuiteid"]=173;
 $args["deep"]=true;
 $args["details"]='full';
 
@@ -85,9 +85,9 @@ $unitTestDescription="Test {$test_num} - {$method}";
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=1;
-$args["testsuiteid"]='73';
+$args["testsuiteid"]=173;
 $args["deep"]=false;
-$args["details"]='full';
+$args["details"]='simple';
 
 $additionalInfo=' Parameter deep = ' . $args["deep"];
 

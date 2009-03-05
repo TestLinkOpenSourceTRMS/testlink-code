@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.15 2009/03/02 07:53:18 franciscom Exp $
+ * $Id: APIErrors.php,v 1.16 2009/03/05 07:32:36 franciscom Exp $
  */
 
 /** 
@@ -11,7 +11,9 @@
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 20080518 - franciscom - TestLink Development team - www.teamst.org
+ * rev: 20090304 - BUGID 2191 - franciscom 
+ *
+ *      20080518 - franciscom - TestLink Development team - www.teamst.org
  *      suppress log for missing localization strings.
  */
  
@@ -198,7 +200,7 @@ define('CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE_STR', lang_get('API_CUSTOMFIELD_NOT_AP
  * 10000 level - User
  */
 define('NO_USER_BY_THIS_LOGIN', 10000);
-define('NO_USER_BY_THIS_LOGIN', lang_get('API_NO_USER_BY_THIS_LOGIN',null,1));
+define('NO_USER_BY_THIS_LOGIN_STR', lang_get('API_NO_USER_BY_THIS_LOGIN',null,1));
 
 
 /**

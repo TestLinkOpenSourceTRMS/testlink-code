@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/01/12 07:55:27 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/03/05 07:32:37 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -33,8 +33,7 @@ $gui->metrics =  null;
 
 // in this order will be displayed on report
 // IMPORTANT: values are keys in coverage map
-$gui->coverageKeys = array('passed','failed','blocked','not_run');
-
+$gui->coverageKeys = config_get('req_cfg')->coverageStatusAlgorithm['displayOrder'];
 
 $tproject_mgr=new testproject($db);
 
@@ -99,9 +98,8 @@ if(!is_null($args->req_spec_id))
 	$reqs = $db->fetchRowsIntoMap($sql,'req_id',database::CUMULATIVE);
 	$execMap = getLastExecutions($db,$tcs,$args->tplan_id);
 	$gui->metrics = $req_spec_mgr->get_metrics($args->req_spec_id);
-	
-	// $gui->coverage = getReqCoverage($reqs,$execMap,$coveredReqs);
-  $coverage = getReqCoverage($reqs,$execMap);                                                               
+
+  $coverage = getReqCoverage($db,$reqs,$execMap);                                                               
   $gui->coverage = $coverage['byStatus'];
   $gui->withoutTestCase = $coverage['withoutTestCase'];
                                                                

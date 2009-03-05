@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/02/09 21:52:41 $ $Author: havlat $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/03/05 07:32:37 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -13,18 +13,9 @@
  * TLSmarty class implementation used in all templates
  *
  * Revisions:
+ * 20090304 - franciscom - removed some MAGIC NUMBERS 
  * 20081027 - havlatm - moved to include Smarty library
  * 20080424 - havlatm - added $tlCfg
- * 20080303 - franciscom - changed default value for feedback_type
- * 20080109 - franciscom - added some *_img for URL to common used images.
- *
- * 20070624 - franciscom - g_locales_html_select_date_field_order
- *                         g_locales_date_format
- *                         g_locales_timestamp_format
- * 20070218 - franciscom - g_interface_bugs
- * 20070218 - franciscom - gsmarty_spec_cfg
- * 20070214 - franciscom - gsmarty_tc_status_verbose_labels
- *
  * ----------------------------------------------------------------------------------- */
 
 require_once( TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
@@ -137,8 +128,14 @@ class TLSmarty extends Smarty
         // -----------------------------------------------------------------------------
         // define a select structure for {html_options ...}
         $this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
-        $this->assign('gsmarty_option_priority', array(3 => lang_get('high_priority'), 2 => lang_get('medium_priority'), 1 => lang_get('low_priority')));
-        $this->assign('gsmarty_option_importance', array(3 => lang_get('high_importance'), 2 => lang_get('medium_importance'), 1 => lang_get('low_importance')));
+        $this->assign('gsmarty_option_priority', array(HIGH => lang_get('high_priority'), 
+                                                       MEDIUM => lang_get('medium_priority'), 
+                                                       LOW => lang_get('low_priority')));
+
+        $this->assign('gsmarty_option_importance', array(HIGH => lang_get('high_importance'), 
+                                                         MEDIUM => lang_get('medium_importance'), 
+                                                         LOW => lang_get('low_importance')));
+           
         
         // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
         $this->assign('openHead', 'no');

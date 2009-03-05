@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.235 $
- * @modified $Date: 2009/02/16 10:15:16 $ by $Author: franciscom $
+ * @version $Revision: 1.236 $
+ * @modified $Date: 2009/03/05 07:32:03 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -25,6 +25,7 @@
  *  -----------------------------------------------------------------------------
  *
  * Revisions:
+ *     20090304 - franciscom - BUGID 2171
  *     20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
  *                                   $tlCfg->exec_cfg->enable_tree_counters_colouring
  *
@@ -716,12 +717,27 @@ $tlCfg->req_cfg->child_requirements_mgmt = DISABLED;
 //    Requirement Coverage Status = NOT RUN
 // else if ALL Test Cases linked to Requirement has status PASSED
 //    Requirement Coverage Status = PASSED
+// else 
+//    Requirement Coverage Status = Partially Passed
 //
 // This logic is implemented using following config parameter
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkOrder']=array('atLeastOne','all');
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['atLeastOne']=array('failed','blocked');
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','passed');
+
+// Configure here what status has to get requirement when check of type 'all' fails like
+// in following situation (BUGID 2171)
+// If particular requirement has assigned more than one test cases, and:
+// - at least one of assigned test cases was not yet executed           
+// - the rest of assigned test cases was executed and passed            
+// then on the "Requirements based report" this particular requirement is not shown at all (in any section).
+// 
+// $tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='partially_passed';
+// $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed',
+//                                                                'blocked','not_run','partially_passed');
+$tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='failed';
 $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
+
 
 
 // ----------------------------------------------------------------------------

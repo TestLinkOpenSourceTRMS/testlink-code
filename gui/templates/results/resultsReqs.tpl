@@ -1,14 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.12 2009/03/04 20:30:53 schlundus Exp $
+$Id: resultsReqs.tpl,v 1.13 2009/03/05 07:37:02 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
-rev: 20090114 - franciscom - BUGID 1977
+rev: 20090305 - franciscom - added test case path on displayy
+     20090114 - franciscom - BUGID 1977
      20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
-          s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcases,
+          s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcase,
              req_without_tcase,
              req_title_covered,req_title_uncovered,req,req_title_not_in_tl,req_title_nottestable,none'}
 
@@ -17,7 +18,7 @@ rev: 20090114 - franciscom - BUGID 1977
 
 {assign var="canEditTC" value=$gui->allow_edit_tc} 
 {assign var="accessTestCaseAction" 
-        value="lib/testcases/archiveData.php?edit=testcase&allow_edit=$canEditTC&id="}
+        value="lib/testcases/archiveData.php?show_path=1&edit=testcase&allow_edit=$canEditTC&id="}
 
 {include file="inc_head.tpl"}
 <body>
@@ -66,7 +67,7 @@ rev: 20090114 - franciscom - BUGID 1977
     <table class="simple">
     	<tr>
     		<th>{$labels.req}</th>
-    		  <th>{$labels.testcases}</th>
+    		  <th>{$labels.testcase}</th>
     	</tr>
     {/if}
     	<tr>
@@ -74,7 +75,7 @@ rev: 20090114 - franciscom - BUGID 1977
     			  {$gui->coverage.$key[row].title|escape}</a></span></td>
     		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
     			{section name=idx loop=$tcList}
-    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title|escape}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
+    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$tcList[idx].tcase_path}{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title|escape}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
     			{/section} 
     		</td>
     	</tr>

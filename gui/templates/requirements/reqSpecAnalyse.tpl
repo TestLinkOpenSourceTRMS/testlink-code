@@ -1,11 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.7 2008/09/22 19:14:08 schlundus Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.8 2009/03/05 07:32:29 franciscom Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
           s="req_spec,req_title_analyse,req_spec_change,edit,req_total_count,req_title_in_tl,
              req_title_covered,req_title_uncovered,req_title_not_in_tl,
-             req_title_nottestable,req_title_covered,req_doc_id,req,testcases,none"}
+             req_title_nottestable,req_title_covered,req_doc_id,req,testcase,none"}
 
 {assign var="action_reqspec_view" value="lib/requirements/reqSpecView.php"}
 {assign var="action_req_view" value="lib/requirements/reqView.php?item=requirement&amp;requirement_id="}
@@ -52,10 +52,9 @@
 {if $smarty.section.row.first}
 <table class="simple">
 	<tr>
-
-		<th>{lang_get s="req_doc_id"}</th>
-		<th>{lang_get s="req"}</th>
-		<th>{lang_get s="testcases"}</th>
+		<th>{$labels.req_doc_id}</th>
+		<th>{$labels.req}</th>
+		<th>{$labels.testcase}</th>
 	</tr>
 {/if}
 	<tr>
@@ -82,8 +81,8 @@
 {if $smarty.section.row2.first}
 <table class="simple">
 	<tr>
-		<th>{lang_get s="req_doc_id"}</th>
-		<th>{lang_get s="req"}</th>
+		<th>{$labels.req_doc_id}</th>
+		<th>{$labels.req}</th>
 	</tr>
 {/if}
 	<tr>
@@ -105,7 +104,7 @@
 {if $smarty.section.row3.first}
 <table class="simple">
 	<tr>
-		<th>{lang_get s="req"}</th>
+		<th>{$labels.req}</th>
 	</tr>
 {/if}
 	<tr>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.77 $
- * @modified $Date: 2009/03/03 07:48:12 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2009/03/05 07:32:57 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -13,19 +13,15 @@
  *
  * Revisions:
  *
+ * 20090304 - franciscom - BUGID 2171
  * 20081103 - sisajr     - DocBook XML import
  * 20070710 - franciscom - BUGID 939
  * 20070705 - franciscom - improved management of arrReqStatus
  * 20070617 - franciscom - removed include of deprecated file
  * 20070310 - franciscom - changed return type createRequirement()
  */
-////////////////////////////////////////////////////////////////////////////////
-
 
 require_once("print.inc.php");
-require_once("requirement_spec_mgr.class.php");
-require_once("requirement_mgr.class.php");
-
 $g_reqFormatStrings = array (
 							"csv" => lang_get('req_import_format_description1'),
 							"csv_doors" => lang_get('req_import_format_description2'),
@@ -272,16 +268,17 @@ function loadImportedReq($CSVfile, $importType)
 
 }
 
-
+/**
+ * importReqDataFromCSV
+ *
+ */
 function importReqDataFromCSV($fileName)
 {
   $field_size=config_get('field_size');
   $delimiter=',';
 
   // CSV line format
-	$destKeys = array("req_doc_id",
-					          "title",
-					          "description");
+	$destKeys = array("req_doc_id","title","description");
 
   // lenght will be adjusted to these values
   $field_length = array("req_doc_id" => $field_size->req_docid,
@@ -304,19 +301,18 @@ function importReqDataFromCSV($fileName)
 	return $reqData;
 }
 
-
+/**
+ * importReqDataFromCSVDoors
+ *
+ */
 function importReqDataFromCSVDoors($fileName)
 {
   $delimiter=',';
   $bWithHeader = true;
   $bDontSkipHeader = false;
 
-	$destKeys = array("Object Identifier" => "title",
-					          "Object Text" => "description",
-					          "Created By",
-					          "Created On",
-					          "Last Modified By",
-					          "Last Modified On");
+	$destKeys = array("Object Identifier" => "title","Object Text" => "description",
+					          "Created By","Created On","Last Modified By","Last Modified On");
 
 	$reqData = importCSVData($fileName,$destKeys,$delimiter,0,$bWithHeader,$bDontSkipHeader);
 
@@ -331,13 +327,14 @@ function importReqDataFromXML($fileName)
 {
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
+	$xmlData = null;
   $field_size=config_get('field_size');
 
-
 	if ($dom)
+	{
 		$xmlReqs = $dom->get_elements_by_tagname("requirement");
-
-	$xmlData = null;
+  }
+  
 	$num_elem=sizeof($xmlReqs);
 
 	for($i = 0;$i < $num_elem ;$i++)
@@ -383,8 +380,10 @@ function getDocBookTableAsHtmlString($docTable)
 	foreach ($docTable->child_nodes() as $tgroup)
 	{
 		if ($tgroup->node_name() != DOCBOOK_TABLE_GROUP)
+		{
 			continue;
-
+    }
+    
 		$table = "";
 		foreach ($tgroup->child_nodes() as $tbody)
 		{
@@ -394,16 +393,21 @@ function getDocBookTableAsHtmlString($docTable)
 				foreach ($tbody->child_nodes() as $row)
 				{
 					if ($row->node_name() != DOCBOOK_TABLE_ROW)
+					{
 						continue;
+          }
 
 					$table_row = "<tr>";
 
 					foreach ($row->child_nodes() as $entry)
+					{
 						if ($entry->node_name() == DOCBOOK_TABLE_ENTRY)
+						{
 							$table_row .= "<th>" . $entry->get_content() . "</th>";
-
+						}	
+          }
+          
 					$table_row .= "</tr>";
-
 					$table .= $table_row;
 				}
 			}
@@ -414,16 +418,20 @@ function getDocBookTableAsHtmlString($docTable)
 				foreach ($tbody->child_nodes() as $row)
 				{
 					if ($row->node_name() != DOCBOOK_TABLE_ROW)
+					{
 						continue;
-
+          }
+          
 					$table_row = "<tr>";
 
 					foreach ($row->child_nodes() as $entry)
+					{
 						if ($entry->node_name() == DOCBOOK_TABLE_ENTRY)
+						{
 							$table_row .= "<td>" . $entry->get_content() . "</td>";
-
+						}	
+          }
 					$table_row .= "</tr>";
-
 					$table .= $table_row;
 				}
 			}
@@ -444,15 +452,16 @@ function importReqDataFromDocBook($fileName)
 {
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
+	$xmlData = null;
   $field_size=config_get('field_size');  
 
 	// get all Requirement elements in the document
 	if ($dom)
+	{
 		$xmlReqs = $dom->get_elements_by_tagname(DOCBOOK_REQUIREMENT);
+	}
 	
-	$xmlData = null;
 	$num_elem=sizeof($xmlReqs);
-
 	$counter = array();
 	
 	// for each Requirement we need this: Req_doc_id, Title, Description
@@ -537,7 +546,9 @@ function importReqDataFromDocBook($fileName)
 		{
 			$index = strtolower($matches[0]);
 			if( !isset($counter[$index]) )
+			{
 				$counter[$index] = 0;
+			}
 			$counter[$index]++;
 			$xmlData[$i]['req_doc_id'] = $matches[0] . " " . $counter[$index];
 		}
@@ -589,101 +600,19 @@ function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflic
 */
 function exportReqDataToCSV($reqData)
 {
-	$sKeys = array(
-					"req_doc_id",
-					"title",
-					"scope",
-				   );
+	$sKeys = array("req_doc_id","title","scope");
 	return exportDataToCSV($reqData,$sKeys,$sKeys,0,',');
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-// function getReqCoverage($reqs,$execMap,&$coveredReqs)
-// {
-// 
-//   $resultsCfg = config_get('results');
-//   
-// 	$arrCoverage = array(
-// 						"passed" => array(),
-// 						"failed" => array(),
-// 						"blocked" => array(),
-// 						"not_run" => array(),
-// 					);
-// 	$coveredReqs = null;
-// 	if (sizeof($reqs))
-// 	{
-// 		foreach($reqs as $id => $tc)
-// 		{
-// 			$n = sizeof($tc);
-// 			$nPassed = 0;
-// 			$nBlocked = 0;
-// 			$nFailed = 0;
-// 			$req = array("id" => $id, "title" => "");
-// 			
-// 			if (sizeof($tc))
-// 				$coveredReqs[$id] = 1;
-// 			for($i = 0;$i < sizeof($tc);$i++)
-// 			{
-// 				$tcInfo = $tc[$i];
-// 				if (!$i)
-// 					$req['title'] = $tcInfo['req_title'];
-// 				$execTc = $tcInfo['testcase_id'];
-// 
-// 				// BUGID 1063
-// 				if ($execTc)
-// 					$req['tcList'][] = array(
-// 												"tcID" => $execTc,
-// 												"title" => $tcInfo['testcase_name'],
-// 												"tcaseExternalID" => $tcInfo['tc_external_id'],
-// 												"status" => $resultsCfg['status_code']['not_run'],
-// 												"status_label" => $resultsCfg['status_label']['not_run']
-// 											);
-//         $current_index = count($req['tcList']);
-//         $current_index = $current_index > 0 ? $current_index-1 : 0;
-// 
-// 				$exec = 'n';
-// 				if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
-// 				{
-// 					$execInfo = end($execMap[$execTc]);
-// 					$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
-// 				}
-// 				$req['tcList'][$current_index]['status']=$exec;
-// 				$req['tcList'][$current_index]['status_label']=$resultsCfg['status_label'][$resultsCfg['code_status'][$exec]];
-// 				
-// 				
-// 				if ($exec == 'p')
-// 					$nPassed++;
-// 				else if ($exec == 'b')
-// 					$nBlocked++;
-// 				else if ($exec == 'f')
-// 					$nFailed++;
-// 			}
-// 			if ($nFailed)
-// 				$arrCoverage['failed'][] = $req;
-// 			else if ($nBlocked)
-// 				$arrCoverage['blocked'][] = $req;
-// 			else if (!$nPassed)
-// 				$arrCoverage['not_run'][] = $req;
-// 			else if ($nPassed == $n)
-// 				$arrCoverage['passed'][] = $req;
-// 			else
-// 				$arrCoverage['failed'][] = $req;
-// 		}
-// 	}
-// 	return $arrCoverage;
-// }
-//
-// 20090111 - franciscom
-function getReqCoverage($reqs,&$execMap)
+/**
+ * getReqCoverage
+ *
+ */
+function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 {
+  $tree_mgr = new tree($dbHandler);
+  
   $coverageAlgorithm=config_get('req_cfg')->coverageStatusAlgorithm;
   $resultsCfg=config_get('results');
   $status2check=array_keys($resultsCfg['status_label_for_exec_ui']);
@@ -700,7 +629,7 @@ function getReqCoverage($reqs,&$execMap)
       $coverage['byStatus'][$status_code]=array();
       $status_counters[$resultsCfg['status_code'][$status_code]]=0;
   }
-
+  
 	$reqs_qty=count($reqs);
 	if($reqs_qty > 0)
 	{
@@ -709,8 +638,7 @@ function getReqCoverage($reqs,&$execMap)
         $first_key=key($req_tcase_set);
 			  $item_qty = count($req_tcase_set);
 
-			  $req = array("id" => $requirement_id, 
-			                "title" => $req_tcase_set[$first_key]['req_title']);
+			  $req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title']);
 			  foreach($status_counters as $key => $value)
 			  {
 			      $status_counters[$key]=0;
@@ -737,20 +665,31 @@ function getReqCoverage($reqs,&$execMap)
 			  	   if( $item_info['testcase_id'] > 0 )
 			  	   {
                   $exec_status = $resultsCfg['status_code']['not_run'];
+                  $tcase_path='';
 			  	        if (isset($execMap[$item_info['testcase_id']]) && sizeof($execMap[$item_info['testcase_id']]))
 			  	        {
 			  	            $execInfo = end($execMap[$item_info['testcase_id']]);
+			  	            $tcase_path=$execInfo['tcase_path'];
+
 			  	            if( isset($execInfo['status']) && trim($execInfo['status']) !='')
 			  	            {
 			  	        	       $exec_status = $execInfo['status'];
-			  	        	   }    
+			  	        	  }    
+			  	        }
+			  	        else
+			  	        {
+                      $path_info=$tree_mgr->get_full_path_verbose($item_info['testcase_id']);
+                      unset($path_info[$item_info['testcase_id']][0]); // remove test project name
+                      $path_info[$item_info['testcase_id']][]='';
+		                  $tcase_path=implode(' / ',$path_info[$item_info['testcase_id']]);
 			  	        }
 			  	        $status_counters[$exec_status]++;
 			            $req['tcList'][] = array("tcID" => $item_info['testcase_id'],
 			                                     "title" => $item_info['testcase_name'],
-			             						            "tcaseExternalID" => $item_info['tc_external_id'],
-			  	   		  						            "status" => $exec_status,
-			  	   		  						            "status_label" => $resultsCfg['status_label']
+			             						             "tcaseExternalID" => $item_info['tc_external_id'],
+			             						             "tcase_path" => $tcase_path,
+			  	   		  						             "status" => $exec_status,
+			  	   		  						             "status_label" => $resultsCfg['status_label']
 			  	   		  						                                         [$resultsCfg['code_status'][$exec_status]]);
              }
 			   } // for($idx = 0; $idx < $item_qty; $idx++)
@@ -778,6 +717,22 @@ function getReqCoverage($reqs,&$execMap)
                          $go_away=1;
                          break;
                      }
+                     else if ( isset($coverageAlgorithm['checkFail']) && 
+                               isset($coverageAlgorithm['checkFail'][$checkKey]) &&
+                               isset($req['tcList']) )
+                     {
+                         // BUGID 2171
+                         // 
+                         // If particular requirement has assigned more than one test cases, and:
+                         // - at least one of assigned test cases was not yet executed
+                         // - the rest of assigned test cases was executed and passed
+                         // then on the "Requirements based report" this particular requirement 
+                         // is not shown at all (in any section). 
+                         $coverage['byStatus'][$coverageAlgorithm['checkFail'][$checkKey]][] = $req;
+                         $go_away=1;
+                         break;
+                          
+                     } 
                  }
              }  
              if($go_away)
@@ -799,17 +754,25 @@ function getReqCoverage($reqs,&$execMap)
   returns: 
 
 */
-function getLastExecutions(&$db,$tcs,$tpID)
+function getLastExecutions(&$db,$tcaseSet,$tplanId)
 {
 	$execMap = array();
-	if (sizeof($tcs))
+	if (sizeof($tcaseSet))
 	{
 		$tcase_mgr = new testcase($db);
-		foreach($tcs as $tcID => $tcInfo)
+    $items=array_keys($tcaseSet);
+    $path_info=$tcase_mgr->tree_manager->get_full_path_verbose($items);
+
+		foreach($tcaseSet as $tcaseId => $tcInfo)
 		{
-			  $tcversion_id = $tcInfo['tcversion_id'];
-		    $execMap[$tcID] = $tcase_mgr->get_last_execution($tcID,$tcversion_id,$tpID,ANY_BUILD,GET_NO_EXEC);
+		    $execMap[$tcaseId] = $tcase_mgr->get_last_execution($tcaseId,$tcInfo['tcversion_id'],
+		                                                         $tplanId,ANY_BUILD,GET_NO_EXEC);
+        unset($path_info[$tcaseId][0]); // remove test project name
+        $path_info[$tcaseId][]='';
+		    $execMap[$tcaseId][$tcInfo['tcversion_id']]['tcase_path']=implode(' / ',$path_info[$tcaseId]);
 		}
+
+    unset($tcase_mgr); 
 	}
 	return $execMap;
 }

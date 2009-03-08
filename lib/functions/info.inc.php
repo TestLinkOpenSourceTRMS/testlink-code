@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: info.inc.php,v 1.6 2007/01/10 07:32:14 kevinlevy Exp $
+* $Id: info.inc.php,v 1.7 2009/03/08 22:26:14 havlat Exp $
 * 
 * @author Martin Havlat
 * 
@@ -66,9 +66,7 @@ function sendMail($from,$to, $title, $message, $send_cc_to_myself = false, $isHt
 		$cc = $from;
 	}
 	
-	
-	// $email_op = @email_send($to, $title, $message, $headers);
-	$email_op = @email_send($from, $to, $title, $message, $cc, $isHtmlFormat);
+	$email_op = @email_send($from, $to, $title, $message, $cc, false, $isHtmlFormat);
 	
 	if ($email_op->status_ok)
 	{

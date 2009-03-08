@@ -1,26 +1,22 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: email_api.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/02/09 20:37:38 $  $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/03/08 22:26:13 $ by $Author: havlat $
  * @author franciscom
+ * @author Mantis Team (the code is based on mantis BT project code)
  *
  * rev:
  *
  *
 **/
 
-# --------------------------------------------------------
-# This piece of sowftare is based on work belonging to:
-# --------------------------------------------------------
-#
-# Mantis - a php based bugtracking system
-# Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
-# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
-# This program is distributed under the terms and conditions of the GPL
-# See the README and LICENSE files for details
-#
+// This piece of sowftare is based on work belonging to:
+// Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
+// Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
 
 define( 'PHPMAILER_PATH', dirname(__FILE__). '/../../third_party/phpmailer' . DIRECTORY_SEPARATOR );
 require_once( PHPMAILER_PATH . 'class.phpmailer.php' );
@@ -38,14 +34,16 @@ $g_phpMailer_smtp = null;
 ###########################################################################
 
 
-# --------------------
-# this function sends the actual email
-# if $p_exit_on_error == true (default) - calls exit() on errors, else - returns true on success and false on errors
-# @@@@ (thraxisp) $p_header doesn't work as expected, it adds a list of names to the bcc list, rather than headers
-#         this is ok for now as nothing uses it
-# 20070107 - KL - modified signature to allow caller to specify htmlFormat = true if they so choose
-function email_send( $p_from, $p_recipient, $p_subject, $p_message,
-                     $p_cc='', $p_category='', $p_exit_on_error=false, $htmlFormat = false ) 
+/** 
+ * sends the actual email 
+ * @param boolean $p_exit_on_error == true - calls exit() on errors, else - returns true 
+ * 		on success and false on errors
+ * @param boolean $htmlFormat specify text type true = html, false (default) = plain text
+ */
+// 20070107 - KL - modified signature to allow caller to specify htmlFormat = true if they so choose
+// 20090308 - havlatm - removed unused parameter $p_category
+function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
+                     $p_exit_on_error = false, $htmlFormat = false ) 
 {
 
 	global $g_phpMailer_smtp;
@@ -54,16 +52,14 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 	$op->status_ok = true;
  	$op->msg = 'ok';
 
-  // Check fatal Error
-  if ( is_blank( config_get( 'smtp_host' ) ) )
-  {
-    $op->status_ok=false;
-    $op->msg=lang_get('stmp_host_unconfigured');
+	// Check fatal Error
+	if ( is_blank( config_get( 'smtp_host' ) ) )
+	{
+		$op->status_ok=false;
+		$op->msg=lang_get('stmp_host_unconfigured');
 
-    return ($op);  // >>>----->
+		return ($op);
 	}
-
-
 
 	$t_recipient = trim( $p_recipient );
 	$t_subject   = string_email( trim( $p_subject ) );

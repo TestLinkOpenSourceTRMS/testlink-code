@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.34 2009/02/07 19:44:03 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.35 2009/03/08 22:26:14 havlat Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -325,7 +325,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
                 }  
                 $email['body'] .= '<br />' . date(DATE_RFC1123);
   	            $email_op = email_send($email['from_address'], $email['to_address'], 
-  	                                   $email['subject'], $email['body'],'','',true,true);
+  	            		$email['subject'], $email['body'], '', true, true);
             } // foreach($tester_set as $user_id => $value)
   	    }                       
     }

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.101 $
- * @modified $Date: 2009/03/08 11:46:35 $ by $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2009/03/08 13:55:48 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1937,7 +1937,7 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null)
     foreach($cf_map as $cf_id => $cf_info)
     {
       // if user has assigned a value, then node_id is not null
-      if($cf_info['node_id'])
+      if(isset($cf_info['node_id']) && $cf_info['node_id'])
       {
         $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
         $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .

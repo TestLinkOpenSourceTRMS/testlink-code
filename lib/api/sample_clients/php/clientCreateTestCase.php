@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientCreateTestCase.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/02/10 14:09:07 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/03/08 13:50:03 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -46,8 +46,8 @@ $unitTestDescription="Test - createTestCase";
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=1;
-$args["testsuiteid"]=133;
-$args["testcasename"]='Francisco';
+$args["testsuiteid"]=11;
+$args["testcasename"]='File System Check';
 $args["summary"]='Test Case created via API';
 $args["steps"]="These are the steps";
 $args["expectedresults"]="All OK";
@@ -59,7 +59,6 @@ $args["keywords"]='ALFA,BETA,ZETA';
 
 
 $debug=true;
-//$debug=false;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
@@ -86,7 +85,7 @@ $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=11260;
 $args["testsuiteid"]=11465;
-$args["testcasename"]='Francisco';
+$args["testcasename"]='Network Interface Card (NIC) driver update';
 $args["summary"]='Test Case created via API';
 $args["steps"]="These are the steps";
 $args["expectedresults"]="All OK";
@@ -97,7 +96,6 @@ $args["keywordid"]='1,2,3,4';
 
 
 $debug=true;
-//$debug=false;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
@@ -117,4 +115,73 @@ echo "<br> Result was: ";
 new dBug($response);
 echo "<br>";
 
+// ----------------------------------------------------------------------------------------------------
+$unitTestDescription="Test - createTestCase";
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testprojectid"]=1;
+$args["testsuiteid"]=11;
+$args["testcasename"]='Volume Manager Increase size';
+$args["summary"]='Test Case created via API - Volume Manager Increase size';
+$args["steps"]="These are the steps for Volume Manager Increase size";
+$args["expectedresults"]="All OK";
+$args["authorlogin"]='admin';
+$args["authorlogin"]='admin';
+$args["checkduplicatedname"]=1;
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+new dBug($args);
+if(!$client->query('tl.createTestCase', $args))
+{
+		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
+		$response=null;
+}
+else
+{
+		$response=$client->getResponse();
+}
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+// ----------------------------------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------------------------------
+$unitTestDescription="Test - createTestCase";
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testprojectid"]=1;
+$args["testsuiteid"]=11;
+$args["testcasename"]='Volume Manager Increase size';
+$args["summary"]='Want to test Action On Duplicate with value create_new_version FOR Volume Manager Increase size';
+$args["expectedresults"]="All OK";
+$args["authorlogin"]='admin';
+$args["authorlogin"]='admin';
+$args["checkduplicatedname"]=1;
+$args["actiononduplicatedname"]="create_new_version";
+
+$debug=true;
+echo $unitTestDescription;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+new dBug($args);
+if(!$client->query('tl.createTestCase', $args))
+{
+		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
+		$response=null;
+}
+else
+{
+		$response=$client->getResponse();
+}
+
+echo "<br> Result was: ";
+new dBug($response);
+echo "<br>";
+// ----------------------------------------------------------------------------------------------------
 ?>

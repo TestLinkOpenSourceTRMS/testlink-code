@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.153 $
- * @modified $Date: 2009/03/08 11:46:35 $ $Author: franciscom $
+ * @version $Revision: 1.154 $
+ * @modified $Date: 2009/03/08 13:50:54 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
  * 20090220 - franciscom - BUGID 2129
  * 20090214 - franciscom - when getting execution info, executions.execution_type will be returned
  *                         with alias execution_run_type
@@ -179,22 +180,25 @@ class testcase extends tlObjectWithAttachments
   }
 
 
-
-
-// 20061008 - franciscom - added
-//                         [$check_duplicate_name]
-//                         [$action_on_duplicate_name]
-//
-// 20060726 - franciscom - default value changed for optional argument $tc_order
-//                         create(), update()
-//
-// 20060722 - franciscom - interface changes added [$id]
-//            TC_AUTOMATIC_ID -> the id will be assigned by dbms
-//            x -> this will be the id
-//                 Warning: no check is done before insert => can got error.
-//
-// 20060425 - franciscom - - interface changes added $keywords_id
-//
+/**
+ * create
+ * create a test case
+ *
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * @args
+ * 
+ */
 function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
                 $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
@@ -227,6 +231,9 @@ function create($parent_id,$name,$summary,$steps,
        $last_version_info =  $this->get_last_version_info($ret['id']);
        $version_number=$last_version_info['version']+1;
        $ret['msg']=sprintf($ret['msg'],$version_number);       
+       
+       // BUGID 2204
+       $ret['version_number']=$version_number;
        
 		}
 		$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,$steps,
@@ -2983,7 +2990,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 			
 			// extract input html id
 			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-     		$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
 			$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . 
 			              ":</td><td>{$cf_html_string}</td></tr>\n";
 		}

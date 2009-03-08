@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.6 2008/07/22 09:25:14 havlat Exp $
+$Id: tcNew.tpl,v 1.7 2009/03/08 11:46:24 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -69,7 +69,7 @@ function validateForm(f)
 			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
 	</div>	
 
-	{assign var=this_template_dir value=$smarty.template|dirname}
+  {assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
 
 	<div class="groupBtn">
@@ -78,7 +78,7 @@ function validateForm(f)
 			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" />
 			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
 	</div>	
-
+  
 </form>
 </div>
 

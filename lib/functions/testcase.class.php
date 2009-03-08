@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.152 $
- * @modified $Date: 2009/02/28 17:19:29 $ $Author: franciscom $
+ * @version $Revision: 1.153 $
+ * @modified $Date: 2009/03/08 11:46:35 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090220 - franciscom - BUGID 2129
@@ -75,6 +75,7 @@ class testcase extends tlObjectWithAttachments
 	private $nodes_hierarchy_table = "nodes_hierarchy";
 	private $keywords_table = "keywords";
   private $testcase_keywords_table="testcase_keywords";
+  private $testplan_tcversions_table="testplan_tcversions";
 
   const AUTOMATIC_ID=0;
   const DEFAULT_ORDER=0;
@@ -550,6 +551,11 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	$arrReqs = array();
 
 	$can_edit = $viewer_defaults['disable_edit'] == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
+  $gui->can_do = new stdClass();
+  
+  // Attention: when user do not have right instead of returning 'no', return null.
+  //            IMHO is wrong, function must be return 'yes'/'no'.
+  $gui->can_do->testplan_planning = has_rights($this->db,"testplan_planning");
 
 	if(is_array($id))
 	{
@@ -1460,7 +1466,9 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$o
 /*
   function: get_versions_status_quo
             Get linked and executed status quo.
-            No info specific to testplan items where testacase can be linked to
+            
+            IMPORTANT:
+            NO INFO SPECIFIC TO TESTPLAN ITEMS where testacase can be linked to
             is returned.
 
 
@@ -1534,27 +1542,24 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
           " WHERE  NHA.parent_id = {$id}";
 		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
 
-		$sql="SELECT DISTINCT NH.id AS tcversion_id,
-		                      T.tcversion_id AS linked,
-		                      E.tcversion_id AS executed,
-		                      E.tcversion_number,TCV.version
+		$sql="SELECT DISTINCT NH.id AS tcversion_id,T.tcversion_id AS linked,
+		                      E.tcversion_id AS executed,E.tcversion_number,TCV.version
 		      FROM   {$this->nodes_hierarchy_table} NH
           JOIN tcversions TCV ON (TCV.id = NH.id )
-		      LEFT OUTER JOIN testplan_tcversions T ON T.tcversion_id = NH.id
+		      LEFT OUTER JOIN {$this->testplan_tcversions_table} T ON T.tcversion_id = NH.id
 		      {$execution_join}
 		      WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
 
 		$rs = $this->db->get_recordset($sql);
 
 	  $recordset=array();
-	  $template=array('tcversion_id' => '','linked' => '', 'executed' => '');
+	  $template=array('tcversion_id' => '','linked' => '','executed' => '');
 	  foreach($rs as $elem)
 	  {
 	    $recordset[$elem['tcversion_id']]=$template;  
 	    $recordset[$elem['tcversion_id']]['tcversion_id']=$elem['tcversion_id'];  
 	    $recordset[$elem['tcversion_id']]['linked']=$elem['linked'];  
 	    $recordset[$elem['tcversion_id']]['version']=$elem['version'];  
-	    
 	  }
 	
 	  foreach($rs as $elem)

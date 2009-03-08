@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.100 $
- * @modified $Date: 2009/02/28 17:19:29 $ by $Author: franciscom $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2009/03/08 11:46:35 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1847,74 +1847,6 @@ function get_linked_cfields_id($tproject_id)
 // --------------------------------------------------------------------------------------
 /* 
 
-/**
- * Get values of Custom Fields saved while Execution on a TestCase.
- *
- * @param integer $tplan_id
- * @param integer $tproject_id
- *
- *
- */
-function get_linked_cfields_exec($tplan_id, $tproject_id)
-{
-	$map = array();
-	$field_map = array();
-	$cf_id=null;
-	$f_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'label');
-	if (!is_null($f_map))
-	{
-		foreach($f_map as $key => $value)
-		{
-        $cfield_id[]=$value['id'];
-    }	    
-	  $cf_id=implode(',',$cfield_id);
-	}
-
-  /*
-  			executions.tcversion_id  ,
-			executions.tcversion_number,
-			executions.execution_ts as Date, " . //  <<<<<<  NO RESERVED WORD!!!!!!! 
-			users.login as tester," .    // <<<<< NO ALWAYS lower case 
-
-			"and cfield_node_types.node_type_id=3  " .                   // NO !!!! MAGIC NUMBER
-
-	$sql = "SELECT EXEC.id, EXEC.tcversion_id,EXEC.tcversion_number,"
-	       "EXEC.execution_ts,EXEC.status AS exec_status," .
-	       "EXEX.notes AS exec_notes," .
-			   "NHB.id AS tcase_id, NHB.id AS tcase_name, TCV.tc_external_id, " . 
-         "B.id AS builds_id,B.name AS build_name, " .
-			   "U.login AS tester,CF.label AS cf_label,CFEV.value AS cf_value, " .
-			   "FROM {$this->executions_table} EXEC, {$this->custom_fields_table} CF, " .
-			   "{$this->cfield_execution_values_table} CFEV,{$this->builds_table} B," .
-			   "{$this->users_table} U, {$this->tcversions_table} TCV," .
-			   "{$this->cfield_node_types_table} CFNT, {$this->nodes_hierarchy_table} NHA " .
-			   "WHERE EXEC.testplan_id = {$tplan_id} " .
-			   "AND CF.id in ({$cf_id})  " .
-			   "AND TCV.id = EXEC.tcversion_id AND TCV.version = EXEC.tcversion_number " .
-			   "AND B.id = EXEC.build_id AND B.testplan_id = EXEC.testplan_id " . 
-			   "AND CFNT.field_id=CF.id AND CFNT.node_type_id=3  " .
-			   "AND NHA.id = EXEC.tcversion_id  AND NHB.id = NHA.parent_id " .
-			   "AND CFEV.field_id = CF.id " .
-			   "AND CFEV.execution_id = EXEC.id " . 
-			   "AND CFEV.testplan_id = EXEC.testplan_id   " .
-			   "AND CFEV.tcversion_id = EXEC.tcversion_id   " .
-			   "AND U.id = EXEC.tester_id " .
-			   "ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
-
-$map = $this->db->fetchArrayRowsIntoMap($sql,'id');
-new dBug($map);
-  */
-
-$floppy = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,$tplan_id);
-new dBug($floppy);
-
-//print_r('<br>' . $sql);
-
-
-//$map[0]=$field_map;
-
-return($map);
-}
 // --------------------------------------------------------------------------------------
 /*
   function: html_table_of_custom_field_inputs

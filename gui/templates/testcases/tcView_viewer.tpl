@@ -1,16 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.25 2009/02/28 17:18:06 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.26 2009/03/08 11:46:24 franciscom Exp $
 viewer for test case in test specification
 
-rev: 20090215 - franciscom - BUGID - show info about links to test plans
+rev:20090308 - franciscom - added logic to display button that allow assign test case version 
+                            to test plans. 
+    20090215 - franciscom - BUGID - show info about links to test plans
 *}
 
 {lang_get var="labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_del,btn_mv_cp,btn_del_this_version,btn_new_version,
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
-             testproject,testsuite,title_test_case,summary,steps,
+             testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
              execution_type,test_importance,none"}
 
@@ -20,6 +22,14 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
 {assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
+
+{* 20090306 - franciscom *}
+{assign var="module" value='lib/testcases/'}
+{assign var="tcase_id" value=$args_testcase.testcase_id}
+{assign var="tcversion_id" value=$args_testcase.id}
+{assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}
+
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
 {assign var="updater_userinfo" value=""}
 {if $args_testcase.updater_id != ''}
@@ -59,7 +69,8 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 
   <div class="groupBtn">
 
-	<span style="float: left"><form method="post" action="lib/testcases/tcEdit.php">
+	<span style="float: left">
+	  <form method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -83,9 +94,11 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 	
 	 	{if $args_can_delete_version == "yes" }
 			 <input type="submit" name="delete_tc_version" value="{$labels.btn_del_this_version}" />
-	    {/if}
+	  {/if}
 
    		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
+
+
 	
 		{* --------------------------------------------------------------------------------------- *}
 		{if $active_status_op_enabled eq 1}
@@ -101,7 +114,15 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 	      	<input type="submit" name="{$act_deact_btn}"
 	                           value="{lang_get s=$act_deact_value}" />
 	  {/if}
-	</form></span>
+
+  {* 20090306 - franciscom*}
+  {if $args_can_do->testplan_planning == "yes" }
+  <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
+         value="{$labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+
+  {/if}
+	</form>
+	</span>
 
 	<span>
 	<form method="post" action="lib/testcases/tcExport.php" name="tcexport">
@@ -113,7 +134,10 @@ rev: 20090215 - franciscom - BUGID - show info about links to test plans
 		<input type="button" name="tstButton" value="{$labels.btn_execute_automatic_testcase}"
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
-	</form></span>
+	
+	</form>
+	</span>
+
   </div> {* class="groupBtn" *}
 
 {/if} {* user can edit *}

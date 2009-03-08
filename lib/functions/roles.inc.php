@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/01/03 17:30:29 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/03/08 11:46:35 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -193,8 +193,9 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 		}	
 	}
 	else
+	{
 		$ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
-	
+	}
 	return $ret;
 }
 

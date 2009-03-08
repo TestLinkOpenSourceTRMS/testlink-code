@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/08/14 15:08:26 $  by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/03/08 11:46:35 $  by $Author: franciscom $
  * testcases commands
  *
  *
@@ -117,6 +117,62 @@ class testcaseCommands
  
       return $guiObj;
   }  
+
+
+  /**
+   * doAdd2testplan
+   *
+   */
+	function doAdd2testplan(&$argsObj,$request)
+	{
+      $smartyObj = new TLSmarty();
+      $smartyObj->assign('attachments',null);
+      $guiObj=new stdClass();
+      $viewer_args=array();
+      $tplan_mgr = new testplan($this->db);
+      
+   	  $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
+      $item2link[$argsObj->tcase_id]=$argsObj->tcversion_id;
+      
+      if( isset($request['add2tplanid']) )
+      {
+          foreach($request['add2tplanid'] as $tplan_id => $value)
+          {
+              $tplan_mgr->link_tcversions($tplan_id,$item2link);  
+          }
+          
+	        $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
+	                              $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
+          
+      }
+      return $guiObj;
+  }
+
+  /**
+   * add2testplan - is really needed???? 20090308 - franciscom - TO DO
+   *
+   */
+	function add2testplan(&$argsObj,$request)
+	{
+      // $smartyObj = new TLSmarty();
+      // $guiObj=new stdClass();
+      // $viewer_args=array();
+      // $tplan_mgr = new testplan($this->db);
+      // 
+   	  // $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
+      // 
+      // $item2link[$argsObj->tcase_id]=$argsObj->tcversion_id;
+      // foreach($request['add2tplanid'] as $tplan_id => $value)
+      // {
+      //     $tplan_mgr->link_tcversions($tplan_id,$item2link);  
+      // }
+	    // $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
+	    //                       $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
+      // 
+      // return $guiObj;
+  }
+
+
 
 } // end class  
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.409 $
- * @modified $Date: 2009/03/02 07:54:39 $ by $Author: franciscom $
+ * @version $Revision: 1.410 $
+ * @modified $Date: 2009/03/08 11:47:07 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -41,97 +41,97 @@ $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 
 // ----- General terms (used wide) ----------------------------
-$TLS_active 			= "Active";
-$TLS_asc 				= "Ascending";
-$TLS_any 				= "Any";
-$TLS_author 			= "Author";
-$TLS_automated 			= "Automated";
-$TLS_automatic 			= "Automatic";
-$TLS_build 				= "Build";
-$TLS_check_uncheck_all 	= "Toggle all";
-$TLS_days				= "days";
-$TLS_desc 				= "Descending";
-$TLS_description		= "Description";
+$TLS_active = "Active";
+$TLS_asc = "Ascending";
+$TLS_any = "Any";
+$TLS_author	= "Author";
+$TLS_automated = "Automated";
+$TLS_automatic = "Automatic";
+$TLS_build = "Build";
+$TLS_check_uncheck_all = "Toggle all";
+$TLS_days	= "days";
+$TLS_desc = "Descending";
+$TLS_description = "Description";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
-$TLS_file_type			= 'File type';
-$TLS_help 				= "Help";
-$TLS_hour 				= "Hour";
-$TLS_importance			= "Importance";
-$TLS_imported 			= "Imported";
-$TLS_keyword 			= "Keyword";
-$TLS_manual 			= "Manual";
-$TLS_Milestone 			= "Milestone";
-$TLS_months				= "months";
-$TLS_name	 			= "Name";
-$TLS_not_aplicable 		= "N/A";
-$TLS_nobody 			= "Nobody";
-$TLS_not_imported 		= "Not imported";
-$TLS_none 				= "None";
-$TLS_ok 				= "OK";
-$TLS_priority			= "Priority";
-$TLS_project			= "Project";
-$TLS_requirement 		= "Requirement";
-$TLS_reqs 				= "Requirements";
-$TLS_req_spec 			= "Requirements Specification Document";
-$TLS_req_spec_short 	= "Req. Spec.";
-$TLS_srs 				= "SRS";
-$TLS_Role 				= "Role";
+$TLS_file_type = 'File type';
+$TLS_help = "Help";
+$TLS_hour = "Hour";
+$TLS_importance	= "Importance";
+$TLS_imported = "Imported";
+$TLS_keyword = "Keyword";
+$TLS_manual = "Manual";
+$TLS_Milestone = "Milestone";
+$TLS_months	= "months";
+$TLS_name	= "Name";
+$TLS_not_aplicable = "N/A";
+$TLS_nobody = "Nobody";
+$TLS_not_imported = "Not imported";
+$TLS_none = "None";
+$TLS_ok = "OK";
+$TLS_priority	= "Priority";
+$TLS_project = "Project";
+$TLS_requirement = "Requirement";
+$TLS_reqs = "Requirements";
+$TLS_req_spec = "Requirements Specification Document";
+$TLS_req_spec_short = "Req. Spec.";
+$TLS_srs = "SRS";
+$TLS_Role = "Role";
 $TLS_sort_table_by_column = "Click to change sort order";
-$TLS_scope 				= "Scope";
-$TLS_status 			= "Status";
-$TLS_test_case 			= "Test Case";
-$TLS_testcase 			= $TLS_test_case; // obsolete
+$TLS_scope = "Scope";
+$TLS_status = "Status";
+$TLS_test_case = "Test Case";
+$TLS_testcase = $TLS_test_case; // obsolete
 $TLS_testcaseversion 	= 'Test Case Version';
-$TLS_test_plan 			= "Test Plan";
-$TLS_testplan 			= $TLS_test_plan; // obsolete
-$TLS_testproject 		= "Test Project";
-$TLS_test_report 		= "Test Report";
-$TLS_test_suite 		= "Test Suite";
-$TLS_testsuite_created 	= "Test Suite created";
-$TLS_title 				= "Title";
-$TLS_total				= "Total";
-$TLS_Unknown 			= "Unknown";
-$TLS_urgency 			= "Urgency";
-$TLS_weeks				= "weeks";
+$TLS_test_plan = "Test Plan";
+$TLS_testplan = $TLS_test_plan; // obsolete
+$TLS_testproject = "Test Project";
+$TLS_test_report = "Test Report";
+$TLS_test_suite = "Test Suite";
+$TLS_testsuite_created = "Test Suite created";
+$TLS_title = "Title";
+$TLS_total = "Total";
+$TLS_Unknown = "Unknown";
+$TLS_urgency = "Urgency";
+$TLS_weeks = "weeks";
 
 
 // Actions (used wide) 
-$TLS_add 				= "add";
-$TLS_assigned 			= "assigned";
-$TLS_create 			= "create";
-$TLS_copy 				= "copy";
-$TLS_delete 			= "delete";
-$TLS_executed			= "executed";
-$TLS_move	 			= "Move";
-$TLS_remove 			= "remove";
-$TLS_unassigned 		= "unassigned";
-
+$TLS_add = "add";
+$TLS_assigned = "assigned";
+$TLS_create = "create";
+$TLS_copy = "copy";
+$TLS_delete = "delete";
+$TLS_executed	= "executed";
+$TLS_move	= "Move";
+$TLS_remove = "remove";
+$TLS_unassigned = "unassigned";
 
 // Buttons (used wide)
-$TLS_btn_apply 			= "Apply";
-$TLS_btn_add 			= "Add";
-$TLS_btn_assign 		= "Assign";
-$TLS_btn_cancel 		= "Cancel";
-$TLS_btn_check 			= "Check";
-$TLS_btn_close 			= "Close";
-$TLS_btn_cp 			= "Copy";
-$TLS_btn_create 		= "Create";
-$TLS_btn_delete 		= "Delete";
-$TLS_btn_edit 			= "Edit";
-$TLS_btn_export 		= "Export";
-$TLS_btn_find 			= "Find";
-$TLS_btn_goback 		= "Go back";
-$TLS_btn_import 		= "Import";
-$TLS_btn_move 			= "Move";
-$TLS_btn_no 			= "No";
-$TLS_btn_ok 			= "Ok";
-$TLS_btn_print 			= "Print";
-$TLS_btn_save 			= "Save";
-$TLS_btn_unassign 		= "Unassign";
-$TLS_btn_uncheck 		= "Uncheck";
-$TLS_btn_update 		= "Update";
-$TLS_btn_upd 			= $TLS_btn_update; //obsolete
-$TLS_btn_upload 		= "Upload";
+$TLS_btn_apply 	= "Apply";
+$TLS_btn_add 	= "Add";
+$TLS_btn_add_to_testplans = "Add to Test Plans";
+$TLS_btn_assign	= "Assign";
+$TLS_btn_cancel	= "Cancel";
+$TLS_btn_check 	= "Check";
+$TLS_btn_close 	= "Close";
+$TLS_btn_cp = "Copy";
+$TLS_btn_create = "Create";
+$TLS_btn_delete = "Delete";
+$TLS_btn_edit = "Edit";
+$TLS_btn_export = "Export";
+$TLS_btn_find = "Find";
+$TLS_btn_goback = "Go back";
+$TLS_btn_import = "Import";
+$TLS_btn_move = "Move";
+$TLS_btn_no = "No";
+$TLS_btn_ok = "Ok";
+$TLS_btn_print = "Print";
+$TLS_btn_save = "Save";
+$TLS_btn_unassign = "Unassign";
+$TLS_btn_uncheck = "Uncheck";
+$TLS_btn_update = "Update";
+$TLS_btn_upd = $TLS_btn_update; //obsolete
+$TLS_btn_upload = "Upload";
 $TLS_btn_advanced_filters = "Advanced Filters";
 $TLS_btn_simple_filters = "Simple Filters"; 
 
@@ -187,6 +187,8 @@ $TLS_created_with_new_name = "Create with name:%s, because name:%s already exist
 $TLS_click_to_open='Click to open';
 $TLS_testplan_usage="Test Plan usage";
 
+$TLS_add_tcversion_to_plans = "Add Test Case Version to Test Plans";
+$TLS_please_select_one_testplan = "Please select at least one Test Plan.";
 
 
 

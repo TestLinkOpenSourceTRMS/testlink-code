@@ -2,13 +2,14 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.39 2009/02/15 15:03:14 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.40 2009/03/08 18:49:11 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
 *   rev: 
+*        20090308 - franciscom - added option Any in keywords filter
 *        20090210 - BUGID 2062 - franciscom -
 *        20080817 - franciscom - initializeGui(): added code to get total number of 
 *                                                 testcases in a test project, to display
@@ -28,7 +29,7 @@ require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
-$tproject_mgr = New testproject($db);
+$tproject_mgr = new testproject($db);
 $spec_cfg = config_get('spec_cfg');
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
                         'keywordsAssign' => "lib/keywords/keywordsAssign.php",
@@ -58,7 +59,6 @@ else
 }
 
 $gui=initializeGui($args,$_SESSION['basehref'],$tproject_mgr,$treeDragDropEnabled[$args->feature]);
-
 $do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
                                     'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
                                     $spec_cfg->automatic_tree_refresh);
@@ -80,18 +80,10 @@ if($spec_cfg->show_tsuite_filter)
 	$tsuites_combo = $mappy['html_options'];
 	$draw_filter = $mappy['draw_filter'];
 }
-
 $treemenu_type = config_get('treemenu_type');
 
-$applyFilter=($args->keyword_id > 0);
-$keywordsFilter=null;
-if( $applyFilter )
-{
-    $keywordsFilter = new stdClass();
-    $keywordsFilter->items = $args->keyword_id;
-    $keywordsFilter->type = $gui->keywordsFilterType->selected;
-}
-
+$keywordsFilter = buildKeywordsFilter($args->keyword_id,$gui);
+$applyFilter = !is_null($keywordsFilter);
 $buildCompleteTree = $treemenu_type != 'EXTJS' || ($treemenu_type == 'EXTJS' && $applyFilter);
 
 if($buildCompleteTree)
@@ -250,9 +242,13 @@ function init_args()
 function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
 {
     $tcaseCfg=config_get('testcase_cfg');
+    $gui_open = config_get('gui_separator_open');
+    $gui_close = config_get('gui_separator_close');
         
     $gui = new stdClass();
     $gui->tree=null;
+    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+
     $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
     
     $gui->ajaxTree=new stdClass();
@@ -307,6 +303,7 @@ function initializeGui($argsObj,$basehref,&$tprojectMgr,$treeDragDropEnabled)
     if(!is_null($gui->keywords_map))
     {
         $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
+        $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
     }
 
     return $gui;  

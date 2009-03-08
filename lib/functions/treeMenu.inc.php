@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2009/02/24 13:45:00 $ by $Author: havlat $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2009/03/08 18:49:11 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -14,7 +14,8 @@
  *                                              LAYERSMENU, DTREE,	and JTREE. 
  *  Used type is defined in config.inc.php.
  * 
- * Rev: 20090211 - franciscom - BUGID 2094 
+ * Rev: 20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
+ *      20090211 - franciscom - BUGID 2094 
  *      20090202 - franciscom - minor changes to avoid BUGID 2009
  *      20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
  *                              added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
@@ -138,6 +139,9 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
+ * 20090308 - franciscom - changed arguments in str_ireplace() call
+ *                         Due to bug in Test Spec tree when using Keywords filter
+ * 
  * 20080501 - franciscom - keyword_id can be an array
  *
  * 20071014 - franciscom - $bForPrinting
@@ -188,10 +192,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
                        'status_code_descr' =>  $status_code_descr);
 	
 	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,
-	                                        testproject::RECURSIVE_MODE,
-	                                        testproject::INCLUDE_TESTCASES,
-												                  $exclude_branches);
+	$test_spec = $tproject_mgr->get_subtree($tproject_id,testproject::RECURSIVE_MODE,
+	                                        testproject::INCLUDE_TESTCASES,$exclude_branches);
 												                  
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
@@ -224,17 +226,16 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 
 		foreach($testcase_counters as $key => $value)
 		{
-		  $test_spec[$key]=$testcase_counters[$key];
+		    $test_spec[$key]=$testcase_counters[$key];
 		}
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
 		                             $tc_action_enabled,$linkto,$tcase_prefix,
 		                             $bForPrinting,$showTestCaseID);
 	}
-	// 20090118 - franciscom
+	
 	if($treemenu_type == 'EXTJS')
 	{
-		$menustring ='';
-
+		  $menustring ='';
 	    $treeMenu->rootnode = new stdClass();
 	    $treeMenu->rootnode->name = $test_spec['text'];
 	    $treeMenu->rootnode->id = $test_spec['id'];
@@ -242,19 +243,26 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	    $treeMenu->rootnode->text = $test_spec['text'];
 	    $treeMenu->rootnode->position = $test_spec['position'];	    
 	    $treeMenu->rootnode->href = $test_spec['href'];
-      
+
 	    // Change key ('childNodes')  to the one required by Ext JS tree.
-      	if(isset($test_spec['childNodes']))
-      	{
+      if(isset($test_spec['childNodes']))
+      {
 	     	$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
 	    }
+
+      // 20090308 - franciscom
+      // Changed because found problem on:
+      // Test Specification tree when appying Keyword filter using a keyword NOT PRESENT
+      // in test cases => Tree root shows loading icon and spin never stops.
+      //
+      // Attention: do not know if in other situation this will generate a different bug
+      // 
 	    if(!is_null($menustring))
 	    {
-			// Remove null elements (Ext JS tree do not like it ).
-			$menustring = str_ireplace(
-	       				array(':null',',null','null,'),
-		       			array(':[]','',''), $menustring); 
-	    } 
+			    // Remove null elements (Ext JS tree do not like it ).
+			    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+			    $menustring = str_ireplace(array('null,' , ',null' , 'null'),array('','',''), $menustring); 
+      }
 	}
 
 	$treeMenu->menustring = $menustring;  
@@ -1747,5 +1755,27 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
           unset($node[$key]); 
       }  
   }
+}
+
+
+/**
+ * buildKeywordsFilter
+ *
+ */
+function buildKeywordsFilter($keywordsId,&$guiObj)
+{
+    $keywordsFilter=null;
+    if( !is_null($keywordsId) )
+    {
+        $items=array_flip((array)$keywordsId);
+        if( !isset($items[0]) )
+        {
+            
+            $keywordsFilter = new stdClass();
+            $keywordsFilter->items = $keywordsId;
+            $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
+        }
+    }
+    return $keywordsFilter;
 }
 ?>

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.41 2009/01/18 18:50:55 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.42 2009/03/08 18:49:11 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -120,12 +120,12 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
     $gui->args = '&tplan_id=' . $gui->tplan_id;
     if(is_array($argsObj->keyword_id))
     {
-		$kl = implode(',',$argsObj->keyword_id);
-		$gui->args .= '&keyword_id=' . $kl;
+		    $kl = implode(',',$argsObj->keyword_id);
+		    $gui->args .= '&keyword_id=' . $kl;
     }
     else if($argsObj->keyword_id > 0)
     {
-		$gui->args .= '&keyword_id='.$argsObj->keyword_id;
+		    $gui->args .= '&keyword_id='.$argsObj->keyword_id;
     }
     $gui->args .= '&keywordsFilterType=' . $argsObj->keywordsFilterType;
 
@@ -194,7 +194,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $keywordsFilter = null;
     $my_workframe = $_SESSION['basehref']. $guiObj->menuUrl .                      
                     "?edit=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
-
     if($argsObj->doUpdateTree)
     {
 	     $guiObj->src_workframe = $my_workframe; 
@@ -202,12 +201,16 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     else if($argsObj->called_by_me)
     {
        // -------------------------------------------------------------------------------
+       // 20090308 - franciscom - think this is result of cut/paste from other
+       //                         piece of TL (look at edit=testsuite that has no use on 
+       //                         test case testplan assignment.
+       //
        // Explain what is objective of this chunck of code 
        // Warning:
        // Algorithm based on field order on URL call
        // 
        $dummy = explode('?',$argsObj->called_url);
-
+       
        $qs = explode('&',$dummy[1]);
        if($qs[0] == 'edit=testsuite')
        {
@@ -219,14 +222,17 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
  			 }   
  			 // -------------------------------------------------------------------------------
     }
-    
-    $applyFilter=($argsObj->keyword_id > 0);
-    if( $applyFilter )
-    {
-        $keywordsFilter = new stdClass();
-        $keywordsFilter->items = $argsObj->keyword_id;
-        $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
-    }
+  
+    // $applyFilter=($argsObj->keyword_id > 0);
+    // if( $applyFilter )
+    // {
+    //     $keywordsFilter = new stdClass();
+    //     $keywordsFilter->items = $argsObj->keyword_id;
+    //     $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
+    // }
+    // 20090308 - franciscom
+    $keywordsFilter = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
+    $applyFilter = !is_null($keywordsFilter);
 
     $treemenu_type=config_get('treemenu_type');
     $treeMenu=null;

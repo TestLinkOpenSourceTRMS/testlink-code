@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.410 $
- * @modified $Date: 2009/03/08 11:47:07 $ by $Author: franciscom $
+ * @version $Revision: 1.411 $
+ * @modified $Date: 2009/03/09 11:49:56 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -146,12 +146,20 @@ $TLS_test_status_passed 	= "Passed";
 $TLS_test_status_not_available = "Not Available";
 $TLS_test_status_unknown 	= "Unknown";
 
-$TLS_data_status_valid 		= "Valid";
-$TLS_data_status_draft 		= 'Draft';
-$TLS_data_status_reviewed 	= 'Reviewed';
-$TLS_data_status_obsolete 	= 'Obsolete';
-$TLS_data_status_todo 		= 'To do';
+$TLS_review_status_valid 	= "Valid";
+$TLS_review_status_draft 	= 'Draft';
+$TLS_review_status_future	= 'Future';
+$TLS_review_status_obsolete = 'Obsolete';
+$TLS_review_status_todo 	= 'To do';
 
+$TLS_req_type_info 			= "Informational";
+$TLS_req_type_feature 		= 'Feature';
+$TLS_req_type_use_case	 	= 'Use Case';
+$TLS_req_type_interface 	= 'Interface';
+$TLS_req_type_non_functional = 'Non functional';
+$TLS_req_type_constrain 	= 'Constrain';
+
+$TLS_req_status_not_testable = "Not testable"; // defined for historical reason (should be replaced by $TLS_req_type_info)
 
 
 // ----- unsorted (TODO move) -------------------------------------
@@ -1738,14 +1746,6 @@ $TLS_req_import_format_description2 = " - CSV exported from DOORS requires heade
 $TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
-$TLS_req_status_not_testable = "Not testable";
-$TLS_req_status_info = "Info";
-$TLS_req_status_valid = $TLS_data_status_valid;
-$TLS_req_status_draft = $TLS_data_status_draft;
-// $TLS_req_status_approved = 'Approved'; use valid instead of
-$TLS_req_status_obsolete = $TLS_data_status_obsolete;
-$TLS_req_status_todo = $TLS_data_status_todo;
-$TLS_req_status_changed = 'Modified';
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
 
 

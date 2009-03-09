@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2009/03/03 07:49:50 $ by $Author: franciscom $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2009/03/09 11:49:56 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -21,7 +21,7 @@
 /** [GLOBAL SETTINGS] */
 
 /** TestLink Release (MUST BE changed before the release day) */
-define('TL_VERSION', 'Last Version Before 1.8.0'); 
+define('TL_VERSION', '1.8.0'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -524,34 +524,57 @@ $g_bugInterface = null;
 
 // --------------------------------------------------------------------------------------
 /** [Requirements] */
-// martin: @TODO statuses should be the same for both REQ and TC
-// franciscom: why ?
-// martin: both living text object have similar states with respect to review
-//			we should only remove "_REQ" from const name
-//
+
+/** 
+ * data status constants are applicable for data like requirement, test case 
+ * TL_REVIEW_STATUS_VALID is default value if review process is disabled
+ * Note: review process is not implemented yet (1.8)
+ **/ 
+define('TL_REVIEW_STATUS_VALID', 	'V'); // data was reviewed; only these ones could be used for next work
+define('TL_REVIEW_STATUS_DRAFT', 	'D'); // data wait for review
+define('TL_REVIEW_STATUS_OBSOLETE', 'O'); // data should not be available in analyse, reports and assignment
+define('TL_REVIEW_STATUS_TODO', 	'T'); // data need update (not ready for review)
+define('TL_REVIEW_STATUS_FUTURE', 	'F'); // data are not aplicable for the current work (planned to used in future)
+
+$tlCfg->review_status_labels = array(
+		TL_REVIEW_STATUS_VALID => 'review_status_valid', 
+		TL_REVIEW_STATUS_DRAFT => 'review_status_draft',
+		TL_REVIEW_STATUS_OBSOLETE => 'review_status_obsolete', 
+		TL_REVIEW_STATUS_FUTURE => 'review_status_future', 
+		TL_REVIEW_STATUS_TODO => 'review_status_todo');
+
+// martin: @TODO remove (use consts above)
 define('TL_REQ_STATUS_VALID', 		'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');
 define('TL_REQ_STATUS_DRAFT', 		'D');
-define('TL_REQ_STATUS_APPROVED', 	'A');
 define('TL_REQ_STATUS_OBSOLETE', 	'O');
 define('TL_REQ_STATUS_TODO', 		'T');
-define('TL_REQ_STATUS_CHANGED', 	'M');
 
-// key: status
-// value: text label
-$g_req_status = array(TL_REQ_STATUS_VALID => 'req_status_valid', 
+// key: status; value: text label
+$g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
 					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
-					TL_REQ_STATUS_DRAFT => 'req_status_draft',
-					TL_REQ_STATUS_APPROVED => 'req_status_approved',
-					TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete', 
-					TL_REQ_STATUS_TODO => 'req_status_todo',
-					TL_REQ_STATUS_CHANGED => 'req_status_changed');
+					TL_REQ_STATUS_DRAFT => 'review_status_draft',
+					TL_REQ_STATUS_OBSOLETE => 'review_status_obsolete', 
+					TL_REQ_STATUS_TODO => 'review_status_todo');
 
-// 20071117 - franciscom
-// need ask Martin what are possible types
-// MHT: the later solution could include status: draft, valid (=final,reviewed and approved), obsolete, future
-//	so REQ review process could be apllied. The current solution is simple, but enough from testing point of view
-// havlatm 200804: need to simplify the next three definitions into one
+/** Types of requirements (only info is not testable) */
+define('TL_REQ_TYPE_INFO','N'); // not testable requirements (informational character, project and user documentation)
+define('TL_REQ_TYPE_FEATURE','V'); // valid and testable functional definition
+define('TL_REQ_TYPE_USE_CASE','U'); 
+define('TL_REQ_TYPE_INTERFACE','I'); // user interface, communication protocols
+define('TL_REQ_TYPE_NON_FUNCTIONAL','N'); // performance, infrastructure, robustness, security, safety, etc.
+define('TL_REQ_TYPE_CONSTRAIN','N'); // Constraints and Limitations
+
+$tlCfg->req_cfg->type_labels = array(
+		TL_REQ_TYPE_INFO => 'req_type_info', 
+		TL_REQ_TYPE_FEATURE => 'req_type_feature',
+		TL_REQ_TYPE_USE_CASE => 'req_type_use_case', 
+		TL_REQ_TYPE_INTERFACE => 'req_type_interface', 
+		TL_REQ_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
+		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain');
+
+
+// havlatm: @todo replace by $tlCfg->req_cfg->type_labels
 define('TL_REQ_TYPE_1', 'V');
 define('TL_REQ_TYPE_2', 'N');
 

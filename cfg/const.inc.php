@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2009/03/09 11:49:56 $ by $Author: havlat $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2009/03/09 18:01:03 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -552,10 +552,10 @@ define('TL_REQ_STATUS_TODO', 		'T');
 
 // key: status; value: text label
 $g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
-					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable'/*,
 					TL_REQ_STATUS_DRAFT => 'review_status_draft',
 					TL_REQ_STATUS_OBSOLETE => 'review_status_obsolete', 
-					TL_REQ_STATUS_TODO => 'review_status_todo');
+					TL_REQ_STATUS_TODO => 'review_status_todo'*/);
 
 /** Types of requirements (only info is not testable) */
 define('TL_REQ_TYPE_INFO','N'); // not testable requirements (informational character, project and user documentation)

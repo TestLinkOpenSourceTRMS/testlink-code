@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.19 2008/10/31 20:16:43 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.20 2009/03/10 22:28:43 havlat Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -152,7 +152,7 @@ rev :
 		<span style="float: left; margin-right: 5px;">
 		<form method="post" action="lib/testcases/tcEdit.php">
 		  <input type="hidden" name="containerID" value="{$container_data.id}" />
-			<input type="submit" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
+			<input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
 			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
 			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.6 2008/09/23 20:27:55 schlundus Exp $
+$Id: tcDelete.tpl,v 1.7 2009/03/10 09:12:04 havlat Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
@@ -19,22 +19,16 @@ rev :
 
 *}
 {lang_get var="labels"
-          s='btn_yes_iw2del,btn_no,test_case,th_version,th_linked_to_tplan,th_executed'}
+          s='btn_yes_iw2del,btn_no,th_version,th_linked_to_tplan,th_executed'}
 
 
 
 {include file="inc_head.tpl"}
 
 <body>
-<h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$testcase_name|escape}</h1>
-
+<h1 class="title">{$title}{$smarty.const.TITLE_SEP}{$testcase_name|escape}</h1>
 <div class="workBack">
-<h1 class="title">{$title}</h1>
 
-{* 
-{include file="inc_update.tpl" result=$sqlResult action=$action item="test case"
-         refresh=$smarty.session.tcspec_refresh_on_action}
-*}
 {include file="inc_update.tpl" result=$sqlResult action=$action item="test case"
          refresh=$gui->refresh_tree}
 
@@ -65,16 +59,9 @@ rev :
 	      action="lib/testcases/tcEdit.php?testcase_id={$testcase_id}&tcversion_id={$tcversion_id}">
 		<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
 
-		{* 20070213 - franciscom - BUGID 0000629 *}
-		
-		{* 
-		20080706 - we have problem due to re-post of last operation 
-		need to find a good solution
 		<input type="button" name="cancel_delete"
-		                     onclick='javascript:history.go(-1);'
+		                     onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?version_id=undefined&edit=testcase&id={$testcase_id}";'
 		                     value="{$labels.btn_no}" />
-		*}                     
-
 	</form>
 {/if}
 

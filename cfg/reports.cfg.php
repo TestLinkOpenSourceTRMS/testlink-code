@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/02/26 17:12:10 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/03/10 16:34:20 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -24,16 +24,23 @@ define('DOC_TEST_PLAN', 'testplan');
 define('DOC_TEST_REPORT', 'testreport');
 define('DOC_REQ_SPEC', 'reqspec');
 
+define('FORMAT_HTML', 0);
+define('FORMAT_ODT', 1);
+define('FORMAT_ODS', 2);
+define('FORMAT_XLS', 3);
+define('FORMAT_MSWORD', 4);
+define('FORMAT_PDF', 5);
+define('FORMAT_MAIL_HTML', 6);
 
 /** supported document formats */
 $tlCfg->reports_formats = array(
-	'format_html',
-	'format_odt', 
-	'format_ods', 
-	'format_xls', 
-	'format_msword',
-//	'format_pdf', not implemented yet
-	'format_mail_html'
+	FORMAT_HTML => 'format_html',
+	FORMAT_ODT => 'format_odt', 
+	FORMAT_ODS => 'format_ods', 
+	FORMAT_XLS => 'format_xls', 
+	FORMAT_MSWORD => 'format_msword',
+//	FORMAT_PDF => 'format_pdf', not implemented yet
+	FORMAT_MAIL_HTML => 'format_mail_html'
 );
 
 /** Mime Content Type */

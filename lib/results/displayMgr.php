@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/03/02 19:48:54 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/03/10 12:14:33 $ by $Author: havlat $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -90,12 +90,13 @@ function flushHttpHeader($format, $doc_kind = 0)
 	if(($format == 'format_mail_html') || ($format == ''))
 		tLog('flushHttpHeader> Invalid format: '.$format, 'ERROR');
 
-	$filename = $_SESSION['testprojectPrefix'] . $kind_acronym . '-' . date('Y-m-d') . '.' . 'html'; // $file_extensions[$format];
+	$filename = $_SESSION['testprojectPrefix'] . $kind_acronym . '-' . date('Y-m-d') . '.' . $file_extensions[$format];
 	tLog('Flush HTTP header for '.$format); 
 
 
     header("Content-Description: TestLink - Generated Document");
-	header("Content-Disposition: attachment; filename=$filename");
+    if ($format != 'format_html')
+		header("Content-Disposition: attachment; filename=$filename");
    	header("Content-type: {$reports_applications[$format]}; name='Testlink_$format'");
 	flush();
 }

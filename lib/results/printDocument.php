@@ -5,15 +5,15 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/03/09 20:13:03 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/03/11 17:32:21 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
- *  20090309 - franciscom - BUGID - use test case execution while printing test plan
+ *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
  * 	20090213 - havlatm - support for OpenOffice
  *	20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
  *	20070509 - franciscom - added Contribution BUGID
@@ -57,7 +57,8 @@ $decoding_hash = array('node_id_descr' => $hash_id_descr,
                      'status_descr_code' =>  $status_descr_code,
                      'status_code_descr' =>  $status_code_descr);
 
-$order_cfg = null;  // 20090309 - BUGID
+//can not be null
+$order_cfg = array("type" =>'spec_order'); // 20090309 - BUGID 2205
 switch ($args->doc_type)
 {
 	case 'testspec': 
@@ -85,18 +86,15 @@ switch ($args->doc_type)
 		die ('printDocument.php> Invalid document type $_REQUEST["type"]');
 }
 
-
 $test_spec = $tree_manager->get_subtree($args->itemID,
 		                                    array('testplan'=>'exclude me', 'requirement_spec'=>'exclude me', 
 		                                          'requirement'=>'exclude me'),
 		                                    array('testcase'=>'exclude my children', 
 		                                          'requirement_spec'=> 'exclude my children'),
 		                                    null,null,RECURSIVE_MODE,$order_cfg);
-
 $tproject_info = $tproject->get_by_id($args->tproject_id);
 $doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
 $doc_info->tproject_scope = $tproject_info['notes'];
-
 
 $user = tlUser::getById($db,$_SESSION['userID']);
 if ($user)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.102 $
- * @modified $Date: 2009/03/09 18:01:03 $ by $Author: havlat $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2009/03/12 23:03:29 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -201,7 +201,7 @@ define('TL_LOCALIZE_TAG',"LOCALIZE: ");
 $g_locales = array(	
 	'cs_CZ' => 'Czech',
 	'de_DE' => 'German',
-	'en_GB' => 'English (UK)',
+	'en_GB' => 'English (wide/UK)',
 	'en_US' => 'English (US)',
 	'es_AR' => 'Spanish (Argentine)',
 	'es_ES' => 'Spanish',
@@ -209,6 +209,7 @@ $g_locales = array(
 	'id_ID' => 'Indonesian',
 	'it_IT' => 'Italian',
 	'ja_JP' => 'Japanese',
+	'nl_NL' => 'Dutch',
 	'pl_PL' => 'Polski',
 	'pt_BR' => 'Portuguese (Brazil)',
 	'ru_RU' => 'Russian',
@@ -236,6 +237,7 @@ $g_locales_date_format = array(
 	'id_ID' => "%d/%m/%Y",
 	'it_IT' => "%d/%m/%Y",
 	'ja_JP' => "%Y/%m/%d",
+	'nl_NL' => "%d-%m-%Y",
 	'pl_PL' => "%d.%m.%Y",
 	'pt_BR' => "%d/%m/%Y",
 	'ru_RU' => "%d/%m/%Y",
@@ -254,6 +256,7 @@ $g_locales_timestamp_format = array(
 	'id_ID' => "%d/%m/%Y %H:%M:%S",
 	'it_IT' => "%d/%m/%Y %H:%M:%S",
 	'ja_JP' => "%Y/%m/%d %H:%M:%S",
+	'nl_NL' => "%d-%m-%Y %H.%M:%S",
 	'pl_PL' => "%d.%m.%Y %H:%M:%S",
 	'pt_BR' => "%d/%m/%Y %H:%M:%S",
 	'ru_RU' => "%d/%m/%Y %H:%M:%S",
@@ -272,6 +275,7 @@ $g_locales_html_select_date_field_order = array(
 	'id_ID' => "dmY",
 	'it_IT' => "dmY",
 	'ja_JP' => "Ymd",
+	'nl_NL' => "dmY",
 	'pl_PL' => "dmY",
 	'pt_BR' => "dmY",
 	'ru_RU' => "dmY",

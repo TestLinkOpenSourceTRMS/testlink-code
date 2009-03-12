@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/02/27 20:25:34 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -23,6 +23,7 @@
  */
  
 require('../../config.inc.php');
+require('../../cfg/reports.cfg.php');
 require("common.php");
 require_once("treeMenu.inc.php");
 
@@ -32,9 +33,9 @@ $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION['basehref']);
 
 $arrFormat = array(
-	'format_html' => lang_get('format_html'), 
-	'format_odt' => lang_get('format_odt'), 
-	'format_msword' => lang_get('format_msword')
+	FORMAT_HTML => lang_get('format_html'), 
+	FORMAT_ODT => lang_get('format_odt'), 
+	FORMAT_MSWORD => lang_get('format_msword')
 );
 
 // Important Notice:
@@ -178,7 +179,7 @@ function init_args()
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
     $args->tplan_id   = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-    $args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'html';
+    $args->format = isset($_REQUEST['format']) ? $_REQUEST['format'] : FORMAT_HTML;
     $args->doc_type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
     
     return $args;
@@ -246,7 +247,7 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
 	      break;
     }
 
-    $gui->doc_type = $argsObj->report_type;    
+    $gui->doc_type = $argsObj->doc_type;    
     return $gui;  
 }
 ?>

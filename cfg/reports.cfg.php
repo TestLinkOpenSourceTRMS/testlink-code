@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/03/10 16:34:20 $ by $Author: havlat $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -32,7 +32,7 @@ define('FORMAT_MSWORD', 4);
 define('FORMAT_PDF', 5);
 define('FORMAT_MAIL_HTML', 6);
 
-/** supported document formats */
+/** supported document formats (value = localization ID) */
 $tlCfg->reports_formats = array(
 	FORMAT_HTML => 'format_html',
 	FORMAT_ODT => 'format_odt', 
@@ -45,22 +45,22 @@ $tlCfg->reports_formats = array(
 
 /** Mime Content Type */
 $tlCfg->reports_applications = array(
-	'format_html' => 'text/html',
-	'format_odt' => 'application/vnd.oasis.opendocument.text', 
-	'format_ods' => 'application/vnd.oasis.opendocument.spreadsheet', 
-	'format_xls' => 'application/vnd.ms-excel', 
-	'format_msword' => 'application/vnd.ms-word',
-	'format_pdf' => 'application/pdf'
+	FORMAT_HTML => 'text/html',
+	FORMAT_ODT => 'application/vnd.oasis.opendocument.text', 
+	FORMAT_ODS => 'application/vnd.oasis.opendocument.spreadsheet', 
+	FORMAT_XLS => 'application/vnd.ms-excel', 
+	FORMAT_MSWORD => 'application/vnd.ms-word',
+	FORMAT_PDF => 'application/pdf'
 );
 
 /** Report file extenssion */
 $tlCfg->reports_file_extension = array(
-	'format_html' => 'html', 
-	'format_odt' => 'odt', 
-	'format_ods' => 'ods', 
-	'format_xls' => 'xls', 
-	'format_msword' => 'doc',
-	'format_pdf' => 'pdf',
+	FORMAT_HTML => 'html', 
+	FORMAT_ODT => 'odt', 
+	FORMAT_ODS => 'ods', 
+	FORMAT_XLS => 'xls', 
+	FORMAT_MSWORD => 'doc',
+	FORMAT_PDF => 'pdf',
 );
 
 

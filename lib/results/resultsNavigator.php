@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.49 2009/02/13 16:10:01 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.50 2009/03/12 22:15:13 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -19,8 +19,6 @@
  
 require('../../config.inc.php');
 require_once('common.php');
-//@TODO, schlundus, delete if not needed
-//require_once('builds.inc.php');
 require_once('reports.class.php');
 testlinkInitPage($db);
 tLog('resultsNavigator.php called');

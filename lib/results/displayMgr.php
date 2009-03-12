@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/03/10 12:14:33 $ by $Author: havlat $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -36,21 +36,21 @@ function generateHtmlEmail($template_file, &$smarty, $buildName = null)
 }
 
 
-function displayReport($template_file, &$smarty, $report_type, $buildName = null)
+function displayReport($template_file, &$smarty, $doc_format, $buildName = null)
 {
-	$reports_formats = config_get('reports_formats');
 
-	switch($reports_formats[$report_type])
+	switch($doc_format)
 	{
-		case 'format_odt':
-		case 'format_ods':
-		case 'format_xls':
-		case 'format_msword':
-		case 'format_pdf':
-	  		flushHttpHeader($reports_formats[$report_type], $doc_kind = 0);
+		case FORMAT_HTML:
+		case FORMAT_ODT:
+		case FORMAT_ODS:
+		case FORMAT_XLS:
+		case FORMAT_MSWORD:
+		case FORMAT_PDF:
+	  		flushHttpHeader($doc_format, $doc_kind = 0);
     		break;  
 
-	    case 'format_mail_html':
+	    case FORMAT_MAIL_HTML:
 		  	$message = generateHtmlEmail($template_file, $smarty, $buildName);
 		  		
 			$smarty = new TLSmarty();
@@ -95,7 +95,7 @@ function flushHttpHeader($format, $doc_kind = 0)
 
 
     header("Content-Description: TestLink - Generated Document");
-    if ($format != 'format_html')
+    if ($format != FORMAT_HTML)
 		header("Content-Disposition: attachment; filename=$filename");
    	header("Content-type: {$reports_applications[$format]}; name='Testlink_$format'");
 	flush();

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.12 2009/02/25 15:04:07 havlat Exp $ 
+$Id: printDocOptions.tpl,v 1.13 2009/03/12 22:15:13 havlat Exp $ 
 Purpose: show tree on print feature
 
 rev: 20080820 - franciscom - added code to manage EXTJS tree component
@@ -64,7 +64,7 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
 
 <div style="margin: 10px;">
 <p>{lang_get s='doc_opt_guide'}<br /></p>
-<form method="post" action="lib/results/printDocument.php?type={$gui->report_type}">
+<form method="GET" action="lib/results/printDocument.php?type={$gui->doc_type}">
 
 	<input type="hidden" name="docTestPlanId" value="{$docTestPlanId}" />
 	<table class="smallGrey" >
@@ -76,16 +76,16 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
 			/></td>
 		</tr>
 		{/section}
-		{if $docType == 'testspec'}
 		<tr>
+		{if $docType == 'testspec'}
 			<td>{lang_get s='tr_td_show_as'}</td>
 			<td><select id="format" name="format">
 			{html_options options=$arrFormat selected=$selFormat}
 			</select></td>
-		</tr>
 		{else}
-		    <input type="hidden" name="format" value="{$selFormat}" />
+		    <td><input type="hidden" id="format" name="format" value="{$selFormat}" /></td>
 		{/if}
+		</tr>
 	</table>
 </form>
 </div>

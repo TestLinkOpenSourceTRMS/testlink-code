@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.21 2009/01/17 13:17:43 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.22 2009/03/13 12:45:11 havlat Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
@@ -46,22 +46,21 @@ rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 65
 {include file="inc_jsCheckboxes.tpl"}
 </head>
 <body>
-<h1 class="title">{$gui->pageTitle|escape}</h1>
+<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$actionTitle}
+	{include file="inc_help.tpl" helptopic="hlp_planAddTC"}
+</h1>
+{include file="inc_update.tpl" result=$sqlResult}
 
 {if $gui->has_tc }
 <form name="addTcForm" id="addTcForm" method="post">
-	<h1 class="title">{$actionTitle}
-	{include file="inc_help.tpl" helptopic="hlp_planAddTC"}
-	</h1>
-    {include file="inc_update.tpl" result=$sqlResult}
 
+<div class="workBack">
+  <div id="scroller" style="height: 550px; overflow-y: auto;">
 	{if $gui->keywords_filter != ''}
 		<div style="margin-left: 20px; font-size: smaller;">
 			<br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
 		</div>
 	{/if}
-  
-	<div class="workBack" style="height: 380px; overflow-y: auto;">
      
 	{* prefix for checkbox named , ADD and ReMove *}   
 	{assign var="add_cb" value="achecked_tc"} 
@@ -70,38 +69,33 @@ rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 65
 	{assign var="item_number" value=0}
 	<input type="hidden" name="add_all_value" id="add_all_value"  value="0" />
 	<input type="hidden" name="rm_all_value" id="rm_all_value" value="0" />
-  
+
 	{foreach from=$gui->items item=ts}
 		{assign var="item_number" value=$item_number+1}
 		{assign var="ts_id" value=$ts.testsuite.id}
 		{assign var="div_id" value=div_$ts_id}
 	  
 		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
-	    	<h3 class="testlink">{$ts.testsuite.name|escape}</h3> 
+	    	<h2 class="testlink">{$ts.testsuite.name|escape}</h2> 
 	        {if $item_number == 1}
-	          	<br />
-            	<table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 
-                   width="100%">
-            	<tr>
-					<td align="center">
-	            		{if $gui->full_control}
+	        	<span style="margin: 0 30px;" id="box_add_all"
+	        			onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
+					{if $gui->full_control}
 		          		<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
 		               		alt="{$labels.check_uncheck_all_checkboxes_for_add}" 
-	                 		title="{$labels.check_uncheck_all_checkboxes_for_add}" 
-	                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');" />
-	            {lang_get s='add'}
-	            {else} &nbsp;
-	            {/if}
-	            </td>
-	            <td  {if $gui->full_control } align="center" {else} align="left" {/if}>
-		          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-		               alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
-	                 title="{$labels.check_uncheck_all_checkboxes_for_rm}" 
-	                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');" />
-	            {lang_get s='remove'}
-	            </td>
-            </tr>
-            </table>
+	                 		title="{$labels.check_uncheck_all_checkboxes_for_add}" />
+		            	{lang_get s='select_all_to_add'}
+		            {/if}
+	        	</span>
+	        	<span style="margin: 0 30px;" id="box_remove_all"
+	        			onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
+					<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+						alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
+						title="{$labels.check_uncheck_all_checkboxes_for_rm}" />
+	            	{lang_get s='select_all_to_remove'}
+	        	</span>
+	          	<hr />
+
 	        {/if}
    
      {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -266,30 +260,29 @@ rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 65
     </div>
 
 	{/foreach}
-</div>
+  </div>
+  <hr />
 
-  <div class="workBack">   
-      <input type="hidden" name="doAction" id="doAction" value="default" />
-      
-      <br /><input type="submit" name="doAddRemove" style="padding-right: 20px;"
+	<div class="groupBtn">   
+	    <input type="hidden" name="doAction" id="doAction" value="default" />
+		<input type="submit" name="doAddRemove" style="padding-right: 20px;"
                    onclick="doAction.value=this.name" value="{$buttonValue}" />
-          
-          {if $gui->full_control eq 1}
-           	<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
+		{if $gui->full_control eq 1}
+			<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
                    onclick="doAction.value=this.name" />
-
-            {if $show_write_custom_fields eq 1}
+			{if $show_write_custom_fields eq 1}
              	<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}" 
                      onclick="doAction.value=this.name" />
             {/if}
+		{/if}
+	</div>
 
-          {/if}
-   </div>
+</div>
 
 </form>
 
 {else}
-	<h2>{$labels.no_testcase_available}</h2>
+	<div class="info">{$labels.no_testcase_available}</div>
 {/if}
 
 {* 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/03/14 09:39:53 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -152,5 +152,14 @@ $tlCfg->reports_list['list_problems'] = array(
 	'enabled' => 'bts',
 	'format' => 'format_html'
 );
+
+$tlCfg->reports_list['tcases_with_rca'] = array( 
+'title' => 'link_report_tcases_with_cf',
+'url' => 'lib/results/testCasesWithCF.php',
+'enabled' => 'all',
+'format' => 'format_html'
+);
+
+
 // -------------------------------------------------------------------
 ?>

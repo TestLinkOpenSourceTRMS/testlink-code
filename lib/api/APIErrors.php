@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.16 2009/03/05 07:32:36 franciscom Exp $
+ * $Id: APIErrors.php,v 1.17 2009/03/14 09:35:40 franciscom Exp $
  */
 
 /** 
@@ -83,6 +83,10 @@ define('MISSING_REQUIRED_PARAMETER_STR', lang_get('API_MISSING_REQUIRED_PARAMETE
 
 define('PARAMETER_NOT_INT',210);
 define('PARAMETER_NOT_INT_STR', lang_get('API_PARAMETER_NOT_INT',null,1));
+
+define('NO_TESTSUITENAME', 220);
+define('NO_TESTSUITENAME_STR', lang_get('API_NO_TESTSUITENAME',null,1));
+
 
 
 /**
@@ -185,6 +189,15 @@ define('REQSPEC_TPROJECT_KO_STR',lang_get('API_REQSPEC_TPROJECT_KO',null,1));
  */
 define('INVALID_TESTSUITEID', 8000);
 define('INVALID_TESTSUITEID_STR', lang_get('API_INVALID_TESTSUITEID',null,1));
+
+define('TESTSUITE_DONOTBELONGTO_TESTPROJECT', 8001);
+define('TESTSUITE_DONOTBELONGTO_TESTPROJECT_STR', 
+        lang_get('API_TESTSUITE_DONOTBELONGTO_TESTPROJECT',null,1));
+
+define('TESTSUITENAME_NOT_STRING', 8002);
+define('TESTSUITENAME_NOT_STRING_STR', lang_get('API_TESTSUITENAME_NOT_STRING',null,1));
+
+
 
 /**
  * 9000 level - Custom Fields

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2008/11/04 18:01:15 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/03/14 09:38:55 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -18,10 +18,27 @@
  *-----------------------------------------------------------------------------
 */
 
+// *******************************************************************************
+// *******************************************************************************
 // Hint: After doing configuration changes, clean you Browser's cookies and cache 
 //
 // use contents of this file as an example of custom configuration
-
+//
+// *******************************************************************************
+// *******************************************************************************
+//
+// If you create your OWN reports and add something like this:
+//
+// ------------------------------------------------------------
+// $tlCfg->reports_list['tcases_with_rca'] = array( 
+//	'title' => 'link_report_tcases_with_cf',
+//	'url' => 'lib/results/testCasesWithCF.php',
+//	'enabled' => 'all',
+//	'format' => 'format_html'
+// );
+// -----------------------------------------------------------
+// Your reports WILL BE ON TOP OF standard TL Reports on left frame
+//
 //
 // $tlCfg->gui->text_editor['all'] = array( 'type' => 'fckeditor', 
 //                                          'toolbar' => 'tl_default', 
@@ -51,8 +68,8 @@
 // $tlCfg->gui->text_editor['role'] = array( 'type' => 'tinymce');
 // $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
 // $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
-
-
+//
+//
 // SMTP server Configuration ("localhost" is enough in the most cases)
 //$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
 

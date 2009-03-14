@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/02/09 15:09:46 $ - $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/03/14 09:38:55 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20090209 - franciscom - new method - get_children_testcases()
@@ -56,6 +56,9 @@ require_once( dirname(__FILE__) . '/attachments.inc.php');
 class testsuite extends tlObjectWithAttachments
 {
   const NODE_TYPE_FILTER_OFF=null;
+  const CHECK_DUPLICATE_NAME=1;
+  const DONT_CHECK_DUPLICATE_NAME=0;
+  const DEFAULT_ORDER=0;
   
  	var $db;
 	var $tree_manager;
@@ -163,9 +166,9 @@ function create($parent_id,$name,$details,$order=null,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='allow_repeat')
 {
-  $ret['status_ok']=0;
-  $ret['msg']='ok';
-  $ret['id']=-1;
+  // $ret['status_ok']=0;
+  // $ret['msg']='ok';
+  // $ret['id']=-1;
 
 	$prefix_name_for_copy = config_get('prefix_name_for_copy');
 	if( is_null($order) )
@@ -179,6 +182,7 @@ function create($parent_id,$name,$details,$order=null,
 	
 	$name = trim($name);
 	$ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
+
 	if ($check_duplicate_name)
 	{
 		
@@ -190,6 +194,7 @@ function create($parent_id,$name,$details,$order=null,
 		
 		$result = $this->db->exec_query($sql);
 		$myrow = $this->db->fetch_array($result);
+	
 		if( $myrow['qty'] )
 		{
 			if ($action_on_duplicate_name == 'block')
@@ -1071,13 +1076,17 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 		return $cf_map;
 	}
 	
-	//@TODO: schlundus, same function as in Testcase.class / TestPlan.class / Testsuite => refactor as it's always the same principle
-	// get the project Node from one of different node types
+  /**
+   * getTestProjectFromTestSuite()
+   *
+   */
 	function getTestProjectFromTestSuite($id,$parent_id)
 	{
-		$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
-		$path_len = count($the_path);
-		$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+		// $the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
+		// $path_len = count($the_path);
+		// $tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
+		
+		$tproject_id = $this->tree_manager->getTreeRoot( (!is_null($id) && $id > 0) ? $id : $parent_id);
 		return $tproject_id;
 	}
 /*

@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/02/09 15:09:46 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/03/14 09:38:55 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20090313 - franciscom - added getTreeRoot()
  * 20090207 - franciscom - new method check_name_is_unique()
  * 20081227 - franciscom - new method - get_full_path_verbose()
  * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
@@ -706,7 +707,11 @@ function getBottomOrder($parentID)
           
   returns: array or map
   
-  rev: 20080614 - franciscom
+  rev: 
+       20090311 - franciscom
+       changed management of order_cfg.
+       
+       20080614 - franciscom
        added key_type arguments, useful only fo recursive mode
 
 */
@@ -1016,6 +1021,18 @@ function check_name_is_unique($id,$name,$node_type_id)
 
 } // function end
 
+
+/**
+ * getTreeRoot()
+ *
+ */
+ function getTreeRoot($node_id)
+ {
+		$path = $this->get_path($node_id);
+		$path_len = count($path);
+		$root_node_id = ($path_len > 0)? $path[0]['parent_id'] : $node_id;
+		return $root_node_id;
+ }
 
  
 }// end class

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/03/03 17:31:33 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/03/14 09:35:34 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090314 - franciscom - createTestSuite()
  *      20090303 - franciscom - BUGID 2179
  *      20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
  *                               
@@ -177,7 +178,9 @@ class TestlinkXMLRPCServer extends IXR_Server
   public static $urgencyParamName = "urgency";
   public static $requirementsParamName = "requirements";
   public static $detailsParamName = "details";
-	public static $bugIDParamName		= "bugid";		
+	public static $bugIDParamName = "bugid";		
+	public static $parentIDParamName = "parentid";		
+
 	// public static $executionRunTypeParamName		= "executionruntype";
 		
 	
@@ -221,9 +224,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 		$this->methods = array(
 			'tl.reportTCResult' => 'this:reportTCResult',
+			'tl.createBuild' => 'this:createBuild',
+			'tl.createTestCase' => 'this:createTestCase',
+			'tl.createTestProject' => 'this:createTestProject',
+			'tl.createTestSuite' => 'this:createTestSuite',
+      'tl.assignRequirements' => 'this:assignRequirements',     
+      'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
 			'tl.getProjects' => 'this:getProjects',
 			'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
-			'tl.createBuild' => 'this:createBuild',
 			'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
 			'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
       'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
@@ -231,12 +239,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
 			'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
 			'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
-			'tl.createTestCase' => 'this:createTestCase',
-			'tl.createTestProject' => 'this:createTestProject',
       'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
-      'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
       'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
-      'tl.assignRequirements' => 'this:assignRequirements',     
       'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 			'tl.about' => 'this:about',
 			'tl.setTestMode' => 'this:setTestMode',
@@ -330,12 +334,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */
-    protected function authenticate()
+    protected function authenticate($messagePrefix='')
     {        	
 		    // check that the key was given as part of the args
 		    if(!$this->_isDevKeyPresent())
 		    {
-		    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, NO_DEV_KEY_STR);
+		    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, $messagePrefix . NO_DEV_KEY_STR);
 		    	return false;
 		    }
 		    else
@@ -345,7 +349,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    // make sure the key we have is valid
 		    if(!$this->_isDevKeyValid($this->devKey))
 		    {
-		    	$this->errors[] = new IXR_Error(INVALID_AUTH, INVALID_AUTH_STR);
+		    	$this->errors[] = new IXR_Error(INVALID_AUTH, $messagePrefix . INVALID_AUTH_STR);
 		    	return false;			
 		    }
 		    else
@@ -505,11 +509,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */    
-    protected function checkTestProjectID()
+    protected function checkTestProjectID($messagePrefix='')
     {
     	if(!($status=$this->_isTestProjectIDPresent()))
     	{
-    		  $this->errors[] = new IXR_Error(NO_TESTPROJECTID, NO_TESTPROJECTID_STR);
+    		  $this->errors[] = new IXR_Error(NO_TESTPROJECTID, $messagePrefix . NO_TESTPROJECTID_STR);
     	}
     	else
     	{    		
@@ -519,7 +523,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
-        		$this->errors[] = new IXR_Error(INVALID_TESTPROJECTID, INVALID_TESTPROJECTID_STR);
+        		$this->errors[] = new IXR_Error(INVALID_TESTPROJECTID, $messagePrefix . INVALID_TESTPROJECTID_STR);
         		$status=false;        		
         	}
     	}
@@ -543,13 +547,13 @@ class TestlinkXMLRPCServer extends IXR_Server
     	else
     	{    		
     		  // See if this Test Suite ID exists in the db
-			    $testsuiteid = $this->dbObj->prepare_int($this->args[self::$testSuiteIDParamName]);
-        	$query = "SELECT id FROM {$this->testsuites_table} WHERE id={$testsuiteid}";
-        	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
-        	if(null == $result)
-        	{
-        		$this->errors[] = new IXR_Error(INVALID_TESTSUITEID, INVALID_TESTSUITEID_STR);
-        		$status=false;
+          $tsuiteMgr = new testsuite($this->dbObj);
+	        $node_info = $tsuiteMgr->get_by_id($this->args[self::$testSuiteIDParamName]);
+	        if( !($status=!is_null($node_info)) )
+  		    {
+ 	            $this->errors[] = new IXR_Error(INVALID_TESTSUITEID,
+        		                                  sprintf(INVALID_TESTSUITEID_STR,
+        		                                          $this->args[self::$testSuiteIDParamName]) );
         	}
     	}
       return $status;
@@ -1047,11 +1051,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */
-	private function _runChecks($checkFunctions)
+	private function _runChecks($checkFunctions,$messagePrefix='')
 	{
       foreach($checkFunctions as $pfn)
       {
-          if( !($status_ok = $this->$pfn()) )
+          if( !($status_ok = $this->$pfn($messagePrefix)) )
           {
               break; 
           }
@@ -2762,6 +2766,138 @@ public function getTestCaseAttachments($args)
 	}
   return $status_ok ? $attachments : $this->errors;
 }
+
+
+	/**
+	 * create a test suite
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testprojectid"]
+	 * @param string $args["testsuitename"]
+	 * @param string $args["details"]
+	 * @param int $args["parentid"] optional, if do not provided means test suite must be top level.
+	 * @param int $args["order"] optional. Order inside parent container
+	 * @param int $args["checkduplicatedname"] optional, default true.
+	 *                                          will check if there are siblings with same name.
+   *
+   * @param int $args["actiononduplicatedname"] optional
+   *                                            applicable only if $args["checkduplicatedname"]=true
+	 *                                            what to do if already a sibling exists with same name.
+	 *	 
+	 * @return mixed $resultInfo
+	 */
+	public function createTestSuite($args)
+	{
+	    $result=array();
+	    $this->_setArgs($args);
+      $msg_prefix="(" . __FUNCTION__ . ") - ";
+      $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
+      $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+      
+      if( $status_ok )
+      {
+          // Optional parameters
+          $opt=array(self::$orderParamName => testsuite::DEFAULT_ORDER,
+                     self::$checkDuplicatedNameParamName => testsuite::CHECK_DUPLICATE_NAME,
+                     self::$actionOnDuplicatedNameParamName => 'block');
+
+		      foreach($opt as $key => $value)
+		      {
+		          if($this->_isParamPresent($key))
+		          {
+		              $opt[$key]=$this->args[$key];      
+		          }   
+		      }
+		      // print_r($opt);
+      }
+
+
+      // DEBUG $this->errors[] = new IXR_Error($status_ok ? 1:0,'pp');
+      if($status_ok)
+      {
+	        $parent_id = $args[self::$testProjectIDParamName];  
+          $tprojectInfo=$this->tprojectMgr->get_by_id($args[self::$testProjectIDParamName]);
+          $tsuiteMgr = new testsuite($this->dbObj);
+  		    if( $this->_isParamPresent(self::$parentIDParamName) )
+  		    {
+  		        $parent_id = $args[self::$parentIDParamName];
+
+              // if parentid exists it must:
+              // be a test suite id 
+  		        $node_info = $tsuiteMgr->get_by_id($args[self::$parentIDParamName]);
+  		        if( !($status_ok=!is_null($node_info)) )
+  		        {
+                   $msg=sprintf(INVALID_TESTSUITEID_STR,$args[self::$parentIDParamName]);
+                   $this->errors[] = new IXR_Error(INVALID_TESTSUITEID,$msg_prefix . $msg);
+              }
+              
+              if($status_ok)
+              {
+                 // Must belong to target test project
+                 $root_node_id=$tsuiteMgr->getTestProjectFromTestSuite($args[self::$parentIDParamName],null);
+                
+                 if( !($status_ok = ($root_node_id == $args[self::$testProjectIDParamName])) )
+                 {
+                   $msg=sprintf(TESTSUITE_DONOTBELONGTO_TESTPROJECT_STR,$args[self::$parentIDParamName],
+                                $tprojectInfo['name'],$args[self::$testProjectIDParamName]);
+                   $this->errors[] = new IXR_Error(TESTSUITE_DONOTBELONGTO_TESTPROJECT,$msg_prefix . $msg);
+                 }
+              }
+  		    } 
+      }
+      
+      if($status_ok)
+      {
+          $op=$tsuiteMgr->create($parent_id,$args[self::$testSuiteNameParamName],
+                                 $args[self::$detailsParamName],$opt[self::$orderParamName],
+                                 $opt[self::$checkDuplicatedNameParamName],
+                                 $opt[self::$actionOnDuplicatedNameParamName]);
+          
+          // $status_ok = $op['status_ok'];
+          if( ($status_ok = $op['status_ok']) )
+          {
+              $result[]=$op;  
+          }
+          else
+          {
+              $op['msg']=sprintf($op['msg'],$args[self::$testSuiteNameParamName]);
+              $this->errors=$op;   
+          }
+      }
+      
+			return $status_ok ? $result : $this->errors;
+	}
+
+
+	/**
+	 * test suite name provided is valid 
+	 * 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */        
+    protected function checkTestSuiteName($messagePrefix='')
+    {
+        $status_ok=isset($this->args[self::$testSuiteNameParamName]) ? true : false;
+   
+        if($status_ok)
+        {
+    	      $name = $this->args[self::$testSuiteNameParamName];
+    	      if(!is_string($name))
+    	      {
+    	      	$this->errors[] = new IXR_Error(TESTSUITENAME_NOT_STRING, 
+    	      	                                $messagePrefix . TESTSUITENAME_NOT_STRING_STR);
+    	      	$status_ok=false;
+    	      }
+        }
+        else
+        {
+       	  	$this->errors[] = new IXR_Error(NO_TESTSUITENAME, $messagePrefix . NO_TESTSUITENAME_STR);
+        }
+    	  return $status_ok;
+    }
+
 
 
 } // class end

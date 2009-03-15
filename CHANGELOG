@@ -3,6 +3,36 @@
    Changelog for TestLink
 ***************************************************************
 
+TestLink - 1.8.0
+================
+- 0002220: [Test Execute] Fatal Error with BugInterface On (schlundus) - resolved.
+- 0002204: [TL API] createTestCase when creating new versions, reports version_number as -1 (fman) - resolved.
+- 0001642: [Localization] Dutch translation (mhavlat) - resolved.
+- 0002217: [Reports, Metrics, Export and Print] No option to save a 'Word' format report (mhavlat) - resolved.
+- 0002216: [Reports, Metrics, Export and Print] An excel format report gets saved as a html. (mhavlat) - resolved.
+- 0002205: [Reports, Metrics, Export and Print] Execution order (from execution table) ignored in Testplan printing (fman) - resolved.
+- 0002179: [TL API] getTestCasesForTestSuite fails (fman) - resolved.
+- 0002221: [Test Execute] error when viewing status of executed tests (schlundus) - resolved.
+- 0002223: [Documentation (Install, User Manual, help)] Error in User Manual regarding test plan population (mhavlat) - resolved.
+- 0002116: [Test Specification] Test Case/Suite - Delete confirmation without Cancel or No option (mhavlat) - resolved.
+- 0002212: [Test Specification] Assign test case to test plan from test specification (fman) - resolved.
+- 0002180: [Localization] String 'req_status_approved' is not localized for 'en_GB' (mhavlat) - resolved.
+- 0002202: [Event viewer] Multiple Warnings in Event Viewer (schlundus) - resolved.
+- 0002210: [Reports, Metrics, Export and Print] Warning on Reports (schlundus) - resolved.
+- 0002199: [Documentation (Install, User Manual, help)] typo (schlundus) - resolved.
+- 0002187: [Localization] No characters after spanish "ñ" and vowels with accent (schlundus) - resolved.
+- 0002191: [TL API] The constant "NO_USER_BY_THIS_LOGIN" is defined more than once (fman) - resolved.
+- 0002194: [Test Plan (builds, milestones, test assign)] Error when assigning test case execution (schlundus) - resolved.
+- 0002186: [Reports, Metrics, Export and Print] Header output on test report and test plan (HTML) (schlundus) - resolved.
+- 0002183: [Test Specification] Error when editing and saving TestCase (schlundus) - resolved.
+- 0002181: [Test Execute] lib/execute/execSetResults.php is calling an unknown function "get_bugs_for_report" (schlundus) - resolved.
+- 0002137: [General] Attachment not found error when read back attachment from DB (schlundus) - resolved.
+- 0002162: [Integration with Other Systems] Unknown function get_bugs_for_report in execSetResults.php (schlundus) - resolved.
+- 0001428: [Test Specification] "Path" to the testcase (fman) - resolved.
+- 0001245: [Test Specification] display Test Suite location when Test Case is viewed during search (fman) - resolved.
+- 0002165: [Test Specification] Search Test Case - Make user life easier preloading test case prefix on search input (fman) - resolved.
+- 0002184: [Reports, Metrics, Export and Print] Test case statuses is not colored when using localization (schlundus) - closed.
+- 0002166: [Requirement Management] Fatal error when printing requirements (fman) - closed.
 
 TestLink 1.8 RC 5
 ==============================

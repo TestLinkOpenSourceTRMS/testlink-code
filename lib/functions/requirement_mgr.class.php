@@ -5,18 +5,23 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/02/25 19:12:34 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/03/16 08:56:50 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
+ * rev : 20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
+ *                               delete() - fixed delete order due to FK.
+ *       20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
  *       20081129 - franciscom - BUGID 1852 - bulk_assignment() 
  *       20080318 - franciscom - thanks to Postgres have found code that must be removed
  *                               after requirements get it's id from nodes hierarchy
 */
+
+// Needed to use extends tlObjectWithAttachments, If not present autoload fails.
+require_once( dirname(__FILE__) . '/attachments.inc.php');
 class requirement_mgr extends tlObjectWithAttachments
 {
 	var $db;
@@ -248,19 +253,19 @@ class requirement_mgr extends tlObjectWithAttachments
   */
 	function delete($id)
  	{
-		$where_clause_coverage = '';
+		  $where_clause_coverage = '';
 	  	$where_clause_this = '';
 	
 	  	if(is_array($id))
 	  	{
-			$id_list = implode(',',$id);
+			  $id_list = implode(',',$id);
 	     	$where_clause_coverage = " WHERE req_id IN ({$id_list})";
-			$where_clause_this = " WHERE id IN ({$id_list})";
+			  $where_clause_this = " WHERE id IN ({$id_list})";
 	  	}
 	    else
 	    {
 	    	$where_clause_coverage = " WHERE req_id = {$id}";
-			$where_clause_this = " WHERE id = {$id}";
+			  $where_clause_this = " WHERE id = {$id}";
 	    }
 	
 	    // Delete Custom fields
@@ -270,40 +275,36 @@ class requirement_mgr extends tlObjectWithAttachments
 	  	$sql = "DELETE FROM {$this->req_coverage_table} " . $where_clause_coverage;
 	  	$result = $this->db->exec_query($sql);
 	
-		if ($result)
+		  if ($result)
 	  	{
-	  		if(is_array($id))
+	  	    if(is_array($id))
 	  	  	{
 	  	    	$the_ids = $id;
-	  		}
+	  		  }
 	      	else
 	      	{
 	        	$the_ids = array($id);
 	      	}
 	
-			foreach($the_ids as $key => $value)
-			{
-				$result = $this->attachmentRepository->deleteAttachmentsFor($value,"requirements");
-			}
+			    foreach($the_ids as $key => $value)
+			    {
+			    	$result = $this->attachmentRepository->deleteAttachmentsFor($value,"requirements");
+			    }
 	    }
-	
+
+	  	if ($result)
+	  	{
+	  		$sql = "DELETE FROM {$this->object_table} " . $where_clause_this;
+	  		$result = $this->db->exec_query($sql);
+	  	}
+
 	  	if ($result)
 	  	{
 	  		$sql = "DELETE FROM {$this->nodes_hierarchy_table} " . $where_clause_this;
 	  		$result = $this->db->exec_query($sql);
 	  	}
 	
-	  	if ($result)
-	  	{
-	  		$sql = "DELETE FROM {$this->object_table} " . $where_clause_this;
-	  		$result = $this->db->exec_query($sql);
-	  	}
-	
-	  	if (!$result)
-	  		$result = lang_get('error_deleting_req');
-	  	else
-	  		$result = 'ok';
-	
+	    $result = (!$result) ? lang_get('error_deleting_req') : 'ok';
 	  	return $result;
 	}
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.154 $
- * @modified $Date: 2009/03/08 13:50:54 $ $Author: franciscom $
+ * @version $Revision: 1.155 $
+ * @modified $Date: 2009/03/16 08:56:50 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
@@ -1023,8 +1023,6 @@ function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
       $sql[]="DELETE FROM tcversions " .
 	           " WHERE id IN ({$children_list})";
 
-
-      // 20070602 - franciscom
       $this->deleteAttachments($id);
       $this->cfield_mgr->remove_all_design_values_from_node($id);
 

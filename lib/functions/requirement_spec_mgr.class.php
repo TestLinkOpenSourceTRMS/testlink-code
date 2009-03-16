@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/02/25 20:30:30 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/03/16 08:56:50 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
+ * rev: 20090315 - franciscom - added delete_deep();
  *
- * rev: 20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
+ *      20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
  *                              exportReqSpecToXML() (will be available on TL 1.9)
  *
  *      20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
@@ -418,6 +419,11 @@ function get_metrics($id)
               Requirements ( Requirements spec children )
               Requirements custom fields values
 
+    IMPORTANT/CRITIC: 
+    This function can used to delete a Req Specification that contains ONLY Requirements.
+    This function is needed by tree class method: delete_subtree_objects()
+    To delete a Req Specification that contains other Req Specification delete_deep() must be used.
+
     args: id: requirement spec id
 
     returns: message string
@@ -426,31 +432,33 @@ function get_metrics($id)
   */
 	function delete($id)
 	{
-		$req_mgr = new requirement_mgr($this->db);
+		  $req_mgr = new requirement_mgr($this->db);
 	
 	    // Delete Custom fields
 	    $this->cfield_mgr->remove_all_design_values_from_node($id);
-	
-		// delete requirements with all related data
-		// coverage, attachments, custom fields, etc
-		$requirements_info = $this->get_requirements($id);
-		if(!is_null($requirements_info))
+		  $result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
+
+		  // delete requirements (one type req spec children) with all related data
+		  // coverage, attachments, custom fields, etc
+		  $requirements_info = $this->get_requirements($id);
+		  if(!is_null($requirements_info))
 	    {
-		    $reqIDs = null;
+		    $items = null;
 		    foreach($requirements_info as $req)
-			{
-	    		$reqIDs[] = $req["id"];
-			}
-			$req_mgr->delete($reqIDs);
+		    {
+	    		$items[] = $req["id"];
+		    }
+		    $req_mgr->delete($items);
 	    }
-		$result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
-		 // Delete tree structure (from node_hierarchy)
-	    $this->tree_mgr->delete_subtree($id);
-	
-		// delete specification itself
-		$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
-		$result = $this->db->exec_query($sql);
-		if($result)
+		  
+		  // delete specification itself
+		  $sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
+		  $result = $this->db->exec_query($sql);
+
+		  $sql = "DELETE FROM {$this->nodes_hierarchy_table} WHERE id = {$id}";
+		  $result = $this->db->exec_query($sql);
+
+		  if($result)
 	  	{
 	  		$result = 'ok';
 	  	}
@@ -458,8 +466,21 @@ function get_metrics($id)
 	  	{
 	  		$result = 'The DELETE SRS request fails.';
 	  	}
-		return $result;
+
+		  return $result;
 	} // function end
+
+
+  /**
+   * delete_deep()
+   * 
+   * Delete Req Specification, removing all children (other Req. Spec and Requirements)
+   */
+	function delete_deep($id)
+	{
+    $this->tree_mgr->delete_subtree_objects($id);
+    $this->delete($id);
+  }
 
 
 

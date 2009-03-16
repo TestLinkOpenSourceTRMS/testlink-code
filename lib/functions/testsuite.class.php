@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/03/14 09:38:55 $ - $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/03/16 08:56:50 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20090209 - franciscom - new method - get_children_testcases()
@@ -52,7 +52,6 @@
  *
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php');
-
 class testsuite extends tlObjectWithAttachments
 {
   const NODE_TYPE_FILTER_OFF=null;
@@ -68,6 +67,7 @@ class testsuite extends tlObjectWithAttachments
   var $cfield_mgr;
 
 	private $nodes_hierarchy_table = "nodes_hierarchy";
+	private $obj_table = "testsuites";
 
   var $import_file_types = array("XML" => "XML");
   var $export_file_types = array("XML" => "XML");
@@ -186,7 +186,7 @@ function create($parent_id,$name,$details,$order=null,
 	if ($check_duplicate_name)
 	{
 		
-    $sql = " SELECT count(TS.id) AS qty FROM testsuites TS,nodes_hierarchy NH
+    $sql = " SELECT count(TS.id) AS qty FROM {$this->obj_table} TS, {$this->nodes_hierarchy_table} NH
 		         WHERE NH.name = '" . $this->db->prepare_string($name) . "'" . 
 		       " AND TS.id=NH.id
 		         AND node_type_id = {$this->my_node_type} 
@@ -263,6 +263,54 @@ function update($id, $name, $details)
 	}
 	return $ret;
 }
+
+
+/**
+ * Delete a Test suite, deleting:
+ * - Children Test Cases
+ * - Test Suite Attachments
+ * - Test Suite Custom fields 
+ * - Test Suite Keywords
+ *
+ * IMPORTANT/CRITIC: 
+ * this can used to delete a Test Suite that contains ONLY Test Cases.
+ *
+ * This function is needed by tree class method: delete_subtree_objects()
+ *
+ * To delete a Test Suite that contains other Test Suites delete_deep() 
+ * must be used.
+ *
+ * ATTENTION: may be in future this can be refactored, and written better. 
+ *
+ */
+function delete($id)
+{
+  $tcase_mgr = New testcase($this->db);
+	$tsuite_info = $this->get_by_id($id);
+
+  $testcases=$this->get_children_testcases($id);
+  if (!is_null($testcases))
+	{
+	  foreach($testcases as $the_key => $elem)
+	  {
+      $tcase_mgr->delete($elem['id']);
+	  }
+	}  
+  
+  // What about keywords ???
+  $this->cfield_mgr->remove_all_design_values_from_node($id);
+  $this->deleteAttachments($id);  //inherited
+  $this->deleteKeywords($id);
+
+  
+  $sql = "DELETE FROM {$this->obj_table} WHERE id={$id}";
+  $result = $this->db->exec_query($sql);
+  
+  $sql = "DELETE FROM {$this->nodes_hierarchy_table} WHERE id={$id}";
+  $result = $this->db->exec_query($sql);
+
+}
+
 
                     
 /*
@@ -719,6 +767,12 @@ function get_children_testcases($id, $details = 'simple')
 */
 function delete_deep($id)
 {
+  $this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
+  $this->delete($id);
+
+/*  
+  die();
+
   $tcase_mgr = New testcase($this->db);
 	$tsuite_info = $this->get_by_id($id);
   $subtree = $this->tree_manager->get_subtree($id);
@@ -726,6 +780,10 @@ function delete_deep($id)
 	// add me, to delete me 
 	$subtree[]=array('id' => $id);
 	$testcases = $this->get_testcases_deep($id);
+
+  new dBug($subtree);
+  new dBug($testcases);
+  die('DD');
 
   if (!is_null($subtree))
 	{
@@ -746,8 +804,6 @@ function delete_deep($id)
 	  foreach($subtree as $the_key => $elem)
 	  {
       $node_list[]= $elem['id'];
-      
-      // 20070602 - franciscom
       $tcase_mgr->deleteAttachments($elem['id']);
       $this->cfield_mgr->remove_all_design_values_from_node($elem['id']);
 
@@ -765,6 +821,8 @@ function delete_deep($id)
     // Delete tree structure (from node_hierarchy)
     $this->tree_manager->delete_subtree($id);
 	}
+*/
+	
 } // end function
 
 

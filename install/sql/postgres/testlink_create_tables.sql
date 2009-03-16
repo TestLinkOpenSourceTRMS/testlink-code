@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.30 2009/02/04 22:04:22 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.31 2009/03/16 08:45:30 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -8,6 +8,9 @@
 -- 
 -- 
 -- Rev :
+--      20090315 - franciscom - req_spec, requirements id can not be big serial
+--                              because are nodes on nodes_hierarchy.
+--
 --      20090204 - franciscom - object_keywords - bad type for ID column
 --      20090103 - franciscom - milestones table - added new unique index
 --                              custom_fields - added missing unique constraint
@@ -430,7 +433,7 @@ CREATE TABLE "object_keywords" (
 -- Table structure for table "req_specs"
 --
 CREATE TABLE "req_specs" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES testprojects (id),
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
@@ -449,7 +452,7 @@ CREATE INDEX "req_specs_testproject_id" ON "req_specs" ("testproject_id");
 -- Table structure for table "requirements"
 --
 CREATE TABLE "requirements" (  
-  "id" BIGSERIAL NOT NULL ,
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES req_specs (id),
   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
   "title" VARCHAR(100) NOT NULL DEFAULT '',

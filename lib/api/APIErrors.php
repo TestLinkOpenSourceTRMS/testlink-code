@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.17 2009/03/14 09:35:40 franciscom Exp $
+ * $Id: APIErrors.php,v 1.18 2009/03/16 08:45:53 franciscom Exp $
  */
 
 /** 
@@ -95,7 +95,7 @@ define('NO_TESTSUITENAME_STR', lang_get('API_NO_TESTSUITENAME',null,1));
 define('INVALID_AUTH', 2000);
 define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH',null,1));
 define('INSUFFICIENT_RIGHTS', 2010);
-define('INSUFFICIENT_RIGHTS_STR', lang_get('INSUFFICIENT_RIGHTS',null,1));
+define('INSUFFICIENT_RIGHTS_STR', lang_get('API_INSUFFICIENT_RIGHTS',null,1));
 
 
 /**

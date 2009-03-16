@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.139 $ $Author: havlat $
- * @modified $Date: 2009/02/13 16:10:22 $
+ * @version $Revision: 1.140 $ $Author: franciscom $
+ * @modified $Date: 2009/03/16 08:48:02 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -105,8 +105,9 @@ $db = 0;
 
 // --------------------------------------------------------------------------------------
 /* See PHP Manual for details */
-function __autoload($class_name) {
-   require_once $class_name . '.class.php';
+function __autoload($class_name) 
+{
+    require_once $class_name . '.class.php';
 }
 
 

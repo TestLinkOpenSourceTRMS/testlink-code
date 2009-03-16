@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/03/14 09:35:34 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/03/16 08:45:53 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1015,13 +1015,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private function _checkGetProjectTestPlansRequest()
 	{
       $checkFunctions = array('authenticate','checkTestProjectID');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
+      $status_ok=$this->_runChecks($checkFunctions);       
 	    return $status_ok;
 	}
 	
@@ -1035,13 +1029,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private function _checkGetTestCasesForTestSuiteRequest()
 	{
       $checkFunctions = array('authenticate','checkTestSuiteID');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
+      $status_ok=$this->_runChecks($checkFunctions);
 	    return $status_ok;
 	}
 
@@ -1083,13 +1071,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			 $resultInfo=array();
 
        $checkFunctions = array('authenticate','checkTestPlanID');       
-       foreach($checkFunctions as $pfn)
-       {
-           if( !($status_ok = $this->$pfn()) )
-           {
-               break; 
-           }
-       } 
+       $status_ok=$this->_runChecks($checkFunctions);       
 
        if( $status_ok )
        {
@@ -1160,16 +1142,9 @@ class TestlinkXMLRPCServer extends IXR_Server
         // Checks are done in order
         $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity',
                                 '_checkTCIDAndTPIDValid',);       
+        $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");       
 
-        foreach($checkFunctions as $pfn)
-        {
-            if( !($status_ok = $this->$pfn()) )
-            {
-                break; 
-            }
-        } 
-
-        if( $status_ok && $this->userHasRight("mgt_view_tc") )
+        if( $status_ok )
         {
             $sql = " SELECT * FROM {$this->executions_table} " .
                    " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
@@ -1493,7 +1468,10 @@ class TestlinkXMLRPCServer extends IXR_Server
       
 	}
 	
-  // 20080518 - franciscom
+  /**
+   * _checkCreateTestProjectRequest
+   *
+   */
   private function _checkCreateTestProjectRequest($msg_prefix)
 	{
       $status_ok=$this->authenticate();
@@ -1622,15 +1600,7 @@ class TestlinkXMLRPCServer extends IXR_Server
       $this->_setArgs($args);
       
       $checkFunctions = array('authenticate','checkTestCaseName');       
-      foreach($checkFunctions as $pfn)
-      {
-          if( !($status_ok = $this->$pfn()) )
-          {
-              break; 
-          }
-      } 
-      
-      $status_ok = $status_ok && $this->userHasRight("mgt_view_tc");
+      $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");       
       
       if( $status_ok )
       {			
@@ -1660,21 +1630,15 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 	 
 	 /**
-	  * Create a new test case 
-	  */
+    * createTestCase
+    *
+    */
 	 public function createTestCase($args)
 	 {
 	     $keywordSet='';
 	     $this->_setArgs($args);
        $checkFunctions = array('authenticate','checkTestProjectID','checkTestSuiteID','checkTestCaseName');
-       
-       foreach($checkFunctions as $pfn)
-       {
-         if( !($status_ok = $this->$pfn()) )
-         {
-             break; 
-         }
-       } 
+       $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
 
        if( $status_ok )
        {
@@ -2284,15 +2248,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	     $additional_fields='';
        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
                                'checkTestCaseIdentity','checkTestPlanID');
+       $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("testplan_planning");       
        
-       foreach($checkFunctions as $pfn)
-       {
-         if( !($status_ok = $this->$pfn()) )
-         {
-             break; 
-         }
-       } 
-        
        // Test Plan belongs to test project ?
        if( $status_ok )
        {
@@ -2319,19 +2276,6 @@ class TestlinkXMLRPCServer extends IXR_Server
        // Test Case belongs to test project ?
        if( $status_ok )
        {
-           // $tcase_id=$this->args[self::$testCaseIDParamName];
-           // $tcase_external_id=$this->args[self::$testCaseExternalIDParamName];
-           // $tcase_tproject_id=$this->tcaseMgr->get_testproject($tcase_id);
-           // 
-           // if($tcase_tproject_id != $tproject_id)
-           // {
-           //     $status_ok=false;
-           //     $tcase_info=$this->tcaseMgr->get_by_id($tcase_id);
-           //     $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
-           //     $msg = sprintf(TCASE_TPROJECT_KO_STR,$tcase_external_id,$tcase_info[0]['name'],
-           //                                          $tproject_info['name'],$tproject_id);  
-           //     $this->errors[] = new IXR_Error(TCASE_TPROJECT_KO,$msg_prefix . $msg); 
-           // }
            $ret = $this->checkTestCaseAncestry();
            if( !$ret['status_ok'] )
            {
@@ -2793,7 +2737,7 @@ public function getTestCaseAttachments($args)
 	    $this->_setArgs($args);
       $msg_prefix="(" . __FUNCTION__ . ") - ";
       $checkFunctions = array('authenticate','checkTestSuiteName','checkTestProjectID');
-      $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+      $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_modify_tc");
       
       if( $status_ok )
       {
@@ -2809,11 +2753,8 @@ public function getTestCaseAttachments($args)
 		              $opt[$key]=$this->args[$key];      
 		          }   
 		      }
-		      // print_r($opt);
       }
 
-
-      // DEBUG $this->errors[] = new IXR_Error($status_ok ? 1:0,'pp');
       if($status_ok)
       {
 	        $parent_id = $args[self::$testProjectIDParamName];  
@@ -2854,7 +2795,6 @@ public function getTestCaseAttachments($args)
                                  $opt[self::$checkDuplicatedNameParamName],
                                  $opt[self::$actionOnDuplicatedNameParamName]);
           
-          // $status_ok = $op['status_ok'];
           if( ($status_ok = $op['status_ok']) )
           {
               $result[]=$op;  
@@ -2897,8 +2837,6 @@ public function getTestCaseAttachments($args)
         }
     	  return $status_ok;
     }
-
-
 
 } // class end
 

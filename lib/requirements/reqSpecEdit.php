@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/12/16 20:11:53 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/03/16 08:47:29 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -41,7 +41,9 @@ $commandMgr->setAuditContext($auditContext);
 $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
+{
 	$op = $commandMgr->$pFn($args,$_REQUEST);
+}
 
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 

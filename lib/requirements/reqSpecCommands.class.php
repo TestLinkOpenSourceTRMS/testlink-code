@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/02/25 19:12:36 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/03/16 08:47:29 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -123,8 +123,8 @@ class reqSpecCommands
 		  }
       else
       {
-		      $guiObj->req_spec_title=$guiObj->req_spec['title'];
-		      $guiObj->total_req_counter=$guiObj->req_spec['total_req'];
+		      $guiObj->req_spec_title=$argsObj->req_spec['title'];
+		      $guiObj->total_req_counter=$argsObj->req_spec['total_req'];
       }
 		  
 		  $argsObj->scope = "";
@@ -201,7 +201,8 @@ class reqSpecCommands
 		$guiObj = new stdClass();
 
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		$this->reqSpecMgr->delete($argsObj->req_spec_id);
+		// $this->reqSpecMgr->delete($argsObj->req_spec_id);
+		$this->reqSpecMgr->delete_deep($argsObj->req_spec_id);
 		logAuditEvent(TLS("audit_req_spec_deleted",$this->auditContext->tproject,$req_spec['title']),
 		               "DELETE",$argsObj->req_spec_id,"req_specs");
 		  

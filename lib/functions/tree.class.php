@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/03/14 09:38:55 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/03/16 08:46:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20090313 - franciscom - added getTreeRoot()
@@ -39,6 +39,11 @@ class tree
 	var $node_types = array( 1 => 'testproject','testsuite',
 	                              'testcase','tcversion','testplan',
 	                              'requirement_spec','requirement');
+
+  // key: node type id, value: class name
+	var $class_name = array( 1 => 'testproject','testsuite',
+	                              'testcase',null,'testplan',
+	                              'requirement_spec_mgr','requirement_mgr');
 	                              
 	var $node_descr_id = array();
 	
@@ -50,6 +55,7 @@ class tree
                            'requirement_spec' =>'req_specs',
                            'requirement' =>'requirements'  );
  
+
   
   
 	var $ROOT_NODE_TYPE_ID = 1;
@@ -239,7 +245,9 @@ class tree
 		$result = $this->db->exec_query($sql);
 		
 		if (!$result || !$this->db->num_rows($result))
+		{
 			return;
+		}
 		
 		while($row = $this->db->fetch_array($result))
 		{
@@ -847,9 +855,11 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                           $order_cfg = array("type" =>'spec_order'),
                           $key_type = 'std')
 {
-	static $s_testCaseNodeTypeID;
-	if (!$s_testCaseNodeTypeID)
-		$s_testCaseNodeTypeID = $this->node_descr_id['testcase'];
+	  static $s_testCaseNodeTypeID;
+	  if (!$s_testCaseNodeTypeID)
+	  {
+	  	$s_testCaseNodeTypeID = $this->node_descr_id['testcase'];
+	  }
 		
     switch($order_cfg['type'])
     {
@@ -890,42 +900,42 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
 		
   		if(!isset($exclude_branches[$rowID]))
   		{  
-			switch($key_type)
-			{
-  		    	case 'std':
-  			        $node_table = $this->node_tables[$nodeType];
-  			        
-  			        $node =  array('id' => $rowID,
-                               'parent_id' => $row['parent_id'],
-                               'node_type_id' => $nodeTypeID,
-                               'node_order' => $row['node_order'],
-                               'node_table' => $node_table,
-                               'name' => $row['name'],
-  			           			       $children_key => null);
-  			    	break;
-  			    
-				case 'extjs':
-  			        $node =  array('text' => $row['name'],
-  			                       'id' => $rowID,
-                               'parent_id' => $row['parent_id'],
-                               'node_type_id' => $nodeTypeID,
-                               'position' => $row['node_order'],
-  			           			$children_key => null,
-                               'leaf' => false);
-
-	                switch($nodeType)
-	                {
-	                    case 'testproject':
-	                    case 'testsuite':
-	                        $node[$children_key] = null;
-	                    	break;  
-	
-	                    case 'testcase':
-	                        $node['leaf'] = true;
-	                    	break;
-	                } 
-	  			    break;
-  			}	
+			    switch($key_type)
+			    {
+  		        	case 'std':
+  		    	        $node_table = $this->node_tables[$nodeType];
+  		    	        
+  		    	        $node =  array('id' => $rowID,
+                                   'parent_id' => $row['parent_id'],
+                                   'node_type_id' => $nodeTypeID,
+                                   'node_order' => $row['node_order'],
+                                   'node_table' => $node_table,
+                                   'name' => $row['name'],
+  		    	           			       $children_key => null);
+  		    	    	break;
+  		    	    
+			    	   case 'extjs':
+  		    	        $node =  array('text' => $row['name'],
+  		    	                       'id' => $rowID,
+                                   'parent_id' => $row['parent_id'],
+                                   'node_type_id' => $nodeTypeID,
+                                   'position' => $row['node_order'],
+  		    	           			       $children_key => null,
+                                   'leaf' => false);
+          
+	                    switch($nodeType)
+	                    {
+	                        case 'testproject':
+	                        case 'testsuite':
+	                            $node[$children_key] = null;
+	                        	break;  
+	        
+	                        case 'testcase':
+	                            $node['leaf'] = true;
+	                        	break;
+	                    } 
+	  	    		    break;
+  	      }	
             
 	        // Basically we use this because:
 	        // 1. Sometimes we don't want the children if the parent is a testcase,
@@ -1033,6 +1043,92 @@ function check_name_is_unique($id,$name,$node_type_id)
 		$root_node_id = ($path_len > 0)? $path[0]['parent_id'] : $node_id;
 		return $root_node_id;
  }
+
+
+/**
+ * delete_subtree_objects()
+ * 
+ * ATTENTION: subtree root node ($node_id) IS NOT DELETED.
+ *
+ */
+function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_children_of = null,
+                                $exclude_branches = null)
+{
+    static $root_id;
+    if( is_null($root_id) )
+    {
+        $root_id=$node_id;  
+    }
+    
+	  $sql = " SELECT NH.* FROM {$this->obj_table} NH " .
+       	   " WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
+    
+    $rs = $this->db->get_recordset($sql);
+    
+    new dBug($rs);
+    if( !is_null($rs) )
+    {
+        foreach($rs as $row)
+        {  
+  	    	$rowID = $row['id'];
+  	    	$nodeTypeID = $row['node_type_id'];
+  	    	$nodeType = $this->node_types[$nodeTypeID];
+  	    	$nodeClassName = $this->class_name[$nodeTypeID];
+		      
+  	    	if(!isset($exclude_branches[$rowID]))
+  	    	{  
+	            // Basically we use this because:
+	            // 1. Sometimes we don't want the children if the parent is a testcase,
+	            //    due to the version management
+	            //
+	            // 2. Sometime we want to exclude all descendants (branch) of a node.
+	            if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
+	      			{
+	      			    $this->delete_subtree_objects($rowID,$and_not_in_clause,
+	                                              $exclude_children_of,$exclude_branches);
+	            }
+	            else
+	            {
+                  // For us in this method context this node is a leaf => just delete
+	                if( !is_null($nodeClassName) )
+	                { 
+	                    $item_mgr = new $nodeClassName($this->db);
+	                    $item_mgr->delete($rowID);        
+	                }
+	            }
+  	    	} // if(!isset($exclude_branches[$rowID]))
+  	    } //while
+    }
+     	
+  	// Must delete myself if I'm empty, only is I'm not subtree root.
+  	// Done this way to avoid infinte recursion for some type of nodes
+  	// that use this method as it's delete method. (example testproject).
+  	if( $node_id != $root_id )
+  	{
+        $children = $this->db->get_recordset($sql);
+        new dBug($children);
+        if( is_null($children) || count($children) == 0 )
+        {
+  	        $sql2 = " SELECT NH.* FROM {$this->obj_table} NH " .
+       	            " WHERE NH.id = {$node_id}";
+            $node_info = $this->db->get_recordset($sql2);
+            
+            echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql2 . "</b><br>";
+            new dBug($node_info);
+
+            $className = $this->class_name[$node_info[0]['node_type_id']];
+            echo "\$className:$className";
+	          if( !is_null($className) )
+	          { 
+	              $item_mgr = new $className($this->db);
+	              $item_mgr->delete($node_id);        
+	          }
+        }   	   
+  	}
+}
+
+
+
 
  
 }// end class

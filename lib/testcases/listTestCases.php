@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.40 2009/03/08 18:49:11 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.41 2009/03/16 21:35:39 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -84,9 +84,8 @@ $treemenu_type = config_get('treemenu_type');
 
 $keywordsFilter = buildKeywordsFilter($args->keyword_id,$gui);
 $applyFilter = !is_null($keywordsFilter);
-$buildCompleteTree = $treemenu_type != 'EXTJS' || ($treemenu_type == 'EXTJS' && $applyFilter);
 
-if($buildCompleteTree)
+if($applyFilter)
 {
     $treeMenu = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
                                      $workPath,NOT_FOR_PRINTING,
@@ -94,23 +93,13 @@ if($buildCompleteTree)
                                      NO_ADDITIONAL_ARGS, $keywordsFilter,
                                      DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
     
-    if($treemenu_type == 'EXTJS' )
-    {
-        $gui->ajaxTree->loader = '';
-        $gui->ajaxTree->root_node = $treeMenu->rootnode;
-        $gui->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
-        $gui->ajaxTree->cookiePrefix = $args->feature;
-    }
-    else
-    {
-        $gui->ajaxTree = null;
-        $gui->tree = invokeMenu($treeMenu->menustring,null,null);
-    }
-
-    if( $applyFilter )
-    {
-        $gui->ajaxTree->loader='';  
-    }
+	$gui->ajaxTree->loader = '';
+	$gui->ajaxTree->root_node = $treeMenu->rootnode;
+	$gui->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
+	$gui->ajaxTree->cookiePrefix = $args->feature;
+	
+	if($applyFilter)
+		$gui->ajaxTree->loader='';  
 }
 
 $gui->treeHeader=$title;

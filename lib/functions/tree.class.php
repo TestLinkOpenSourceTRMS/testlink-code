@@ -5,32 +5,13 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/03/16 08:46:41 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20090313 - franciscom - added getTreeRoot()
  * 20090207 - franciscom - new method check_name_is_unique()
  * 20081227 - franciscom - new method - get_full_path_verbose()
- * 20080614 - franciscom - changes in get_subtree(),_get_subtree_rec()
- *                         to create map with keys useful for ext js tree
- *
- * 20080331 - franciscom - changes in get_subtree(),_get_subtree_rec(),_get_subtree()
- *                         to support a different order for test cases
- *                         on test plan that order assigned on specification.
- *
- * 20080330 - franciscom - change_parent() modified to allow bulk operation.
- * 20080105 - franciscom - new method change_child_order()
- * 20071110 - franciscom - solved (auto)bug when refactoring get_path
- * 20071024 - franciscom - DTREE bug
- * 20070620 - franciscom - BUGID 903
- * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
- * 20061119 - franciscom - change_order_bulk() added abs() to order.
- * 20061008 - franciscom - ORDER BY node_order -> ORDER BY node_order,id
- * 20060729 - franciscom - fixed bug on new_node() after refactoring in version 1.20
- * 20060722 - franciscom - added possibility to create a new node with an specific ID
- * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
- * 20060316 - franciscom - bug on get_path
 */
 
 class tree 

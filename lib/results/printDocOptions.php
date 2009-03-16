@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -94,12 +94,7 @@ $treemenu_type = config_get('treemenu_type');
 switch($args->doc_type) 
 {
     case 'testspec':
-        if($treemenu_type != 'EXTJS')
-        {
-	          $treeString = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,$workPath,
-	                                             FOR_PRINTING,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,$getArguments);
-        }
-    break;
+	    break;
 
     case 'testplan':
     case 'testreport':
@@ -120,27 +115,24 @@ switch($args->doc_type)
   	  	$filters->cf_hash = null;
 
   	  	$filters->build_id = $latestBuild;
-  	  	$filters->hide_testcases=HIDE_TESTCASES;
-  	  	$filters->include_unassigned=1;
-  	  	$filters->show_testsuite_contents=1;
-  	  	$filters->statusAllPrevBuilds=null;
+  	  	$filters->hide_testcases = HIDE_TESTCASES;
+  	  	$filters->include_unassigned = 1;
+  	  	$filters->show_testsuite_contents = 1;
+  	  	$filters->statusAllPrevBuilds = null;
         
-  	  	$additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
-  	  	$additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
+  	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
+  	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
         
 		$treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
 				$args->tplan_id,$testplan_name,$getArguments,$filters,$additionalInfo);
         
       	$treeString = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
-      	if($treemenu_type == 'EXTJS')
-      	{
-          	$gui->ajaxTree->root_node = $treeContents->rootnode;
-          	$gui->ajaxTree->children = $treeContents->menustring;
-          	$gui->ajaxTree->loadFromChildren=true;
-          	$gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
-      	}
-    	break;
+      	$gui->ajaxTree->root_node = $treeContents->rootnode;
+        $gui->ajaxTree->children = $treeContents->menustring;
+        $gui->ajaxTree->loadFromChildren = true;
+        $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+      	break;
 
     default:
 		tLog("Argument _REQUEST['type'] has invalid value", 'ERROR');
@@ -148,7 +140,7 @@ switch($args->doc_type)
     	break;
 }
 
-$tree = ($treemenu_type == 'EXTJS') ? $treeString :invokeMenu($treeString);
+$tree = $treeString;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);

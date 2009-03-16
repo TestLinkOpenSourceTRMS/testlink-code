@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.26 2009/01/19 10:25:30 havlat Exp $
+$Id: inc_head.tpl,v 1.27 2009/03/16 21:35:39 schlundus Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -40,10 +40,7 @@ rev :
     {include file="inc_jsCfieldsValidation.tpl"}
 	{/if}
    
-	{if $jsTree == "yes"} {* 'no' is default defined in config *}
-   	{include file="inc_jsTree.tpl"}
-	{/if}
-
+	
 	{if $editorType == 'tinymce'}
     <script type="text/javascript" language="javascript"
     	src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>

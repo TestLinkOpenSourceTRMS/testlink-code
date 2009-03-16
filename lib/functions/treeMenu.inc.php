@@ -5,117 +5,21 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2009/03/08 18:49:11 $ by $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
- * 	Three kinds of menu component are supported: 
- *                                              LAYERSMENU, DTREE,	and JTREE. 
- *  Used type is defined in config.inc.php.
  * 
  * Rev: 20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
  *      20090211 - franciscom - BUGID 2094 
  *      20090202 - franciscom - minor changes to avoid BUGID 2009
  *      20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
  *                              added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
- *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
- *      20081223 - franciscom - extjs_renderExecTreeNodeOnOpen() - changes to show colors
- *      20081220 - franciscom - prepareNode() - status can be an array, to allow
- *                              filtring in OR mode several exec status.
- *
- *      20081214 - franciscom - generateExecTree() fixed bug on config_get() call
- *      20080705 - franciscom - found another null to replace in order to 
- *                              make menustring good for extjs.
- *                              Fixed json string whe array is empty [null] KO -> [] OK for extjs.
- *
- *      20080629 - franciscom - fixed bug in extjs_renderExecTreeNodeOnOpen()
- *      20080621 - franciscom - changes in exec functions to support ext js tree.
- *      20080510 - franciscom - interface changes get_testplan_nodes_testcount() 
- *      20080508 - franciscom - interface changes get_testproject_nodes_testcount()
- *      20080304 - franciscom - added management of exec_cfg->show_testsuite_contents
- *      20080223 - franciscom - fixed call to get_subtree() on generateTestSpecTree()
- *      20080114 - franciscom - changes to *_renderExecTreeNode*
- *      20071002 - jbarchibald - BUGID 1051
- *      20070306 - franciscom - BUGID 705 
  *
  **/
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
-
-
-if (TL_TREE_KIND == 'LAYERSMENU') 
-{
-	define('TL_MENU_PATH', TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR .'phplayersmenu' . DIRECTORY_SEPARATOR);
-	define('TL_MENU_LIB_PATH', TL_MENU_PATH . 'lib' . DIRECTORY_SEPARATOR);
-	define('TL_MENU_WWW', 'third_party/phplayersmenu/');
-
-	require_once TL_MENU_LIB_PATH . 'PHPLIB.php';
-	require_once TL_MENU_LIB_PATH . 'layersmenu-common.inc.php';
-	require_once TL_MENU_LIB_PATH . 'treemenu.inc.php';
-}
-
-
-/** 
- * generate html of tree menu
- *
- * @param string $menustring own menu data
- * @param string $highLight optional
- * @return string generated html/javascript code
- *
- * 20060304 - franciscom - setting config params for icons
- *
- **/
-function invokeMenu($menustring, $highLight = "",$target = "workframe")
-{
-	tLog('invokeMenu started');
-
-  $data='';	
-	if (TL_TREE_KIND == 'LAYERSMENU') 
-	{
-		$mid = new TreeMenu();
-
-		$mid->setLibjsdir(TL_MENU_PATH . 'libjs' . DIRECTORY_SEPARATOR);
-		$mid->setImgwww(TL_MENU_WWW . 'menuimages/');
-		
-		// needed to be able to set the icon file for a menu item (works only for LEAF nodes)
-		$mid->setIcondir(TL_MENU_PATH . 'menuicons/');
-		$mid->setIconwww(TL_MENU_WWW . 'menuicons/');
-		
-		$mid->setIconsize(16, 16);
-
-		$mid->setMenuStructureString($menustring);
-		$mid->parseStructureForMenu('treemenu1');
-		
-		//The method I'm using will color an item in the tree if you pass it a value
-		if($highLight != "")
-			$mid->setSelectedItemByUrl('treemenu1', $highLight);
-    
-		//print the client side menu
-		$data = $mid->newTreeMenu('treemenu1');
-	} 
-	else if (TL_TREE_KIND == 'DTREE')
-	{
-		$data = "<script type='text/javascript'>\n<!--\n";
-		$data .= "tlTree = new dTree('tlTree');\n";
-		$data .= "tlTree.config.inOrder = true;\n";
-		
-		$data .= $menustring;
-		$data .= "document.write(tlTree);\n";
-		$data .= "//-->\n</script>\n";
-	}
-	else if (TL_TREE_KIND == 'JTREE')
-	{
-		$data = "<script type='text/javascript'>\n<!--\n var TREE_ITEMS = [\n"; 
-		$data .= $menustring;
-		$data .=  "\n];\n"; //end the product block and whole array
-		$data .=  "new tree (TREE_ITEMS, TREE_TPL);";
-		$data .= "//-->\n</script>\n";
-	}
-
-	return $data;
-}
-
 
 /**
 *	strip potential newlines and other unwanted chars from strings
@@ -128,9 +32,7 @@ function invokeMenu($menustring, $highLight = "",$target = "workframe")
 function filterString($str)
 {
 	$str = str_replace(array("\n","\r"), array("",""), $str);
-	if (TL_TREE_KIND != 'LAYERSMENU')
-		$str = addslashes($str);
-
+	$str = addslashes($str);
 	$str = htmlspecialchars($str, ENT_QUOTES);	
 	
 	return $str;
@@ -233,38 +135,35 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 		                             $bForPrinting,$showTestCaseID);
 	}
 	
-	if($treemenu_type == 'EXTJS')
-	{
-		  $menustring ='';
-	    $treeMenu->rootnode = new stdClass();
-	    $treeMenu->rootnode->name = $test_spec['text'];
-	    $treeMenu->rootnode->id = $test_spec['id'];
-	    $treeMenu->rootnode->leaf = isset($test_spec['leaf']) ? $test_spec['leaf'] : false;
-	    $treeMenu->rootnode->text = $test_spec['text'];
-	    $treeMenu->rootnode->position = $test_spec['position'];	    
-	    $treeMenu->rootnode->href = $test_spec['href'];
+	$menustring ='';
+	$treeMenu->rootnode = new stdClass();
+	$treeMenu->rootnode->name = $test_spec['text'];
+	$treeMenu->rootnode->id = $test_spec['id'];
+	$treeMenu->rootnode->leaf = isset($test_spec['leaf']) ? $test_spec['leaf'] : false;
+	$treeMenu->rootnode->text = $test_spec['text'];
+	$treeMenu->rootnode->position = $test_spec['position'];	    
+	$treeMenu->rootnode->href = $test_spec['href'];
 
-	    // Change key ('childNodes')  to the one required by Ext JS tree.
-      if(isset($test_spec['childNodes']))
-      {
-	     	$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-	    }
-
-      // 20090308 - franciscom
-      // Changed because found problem on:
-      // Test Specification tree when appying Keyword filter using a keyword NOT PRESENT
-      // in test cases => Tree root shows loading icon and spin never stops.
-      //
-      // Attention: do not know if in other situation this will generate a different bug
-      // 
-	    if(!is_null($menustring))
-	    {
-			    // Remove null elements (Ext JS tree do not like it ).
-			    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-			    $menustring = str_ireplace(array('null,' , ',null' , 'null'),array('','',''), $menustring); 
-      }
+	// Change key ('childNodes')  to the one required by Ext JS tree.
+    if(isset($test_spec['childNodes']))
+    {
+		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
 	}
 
+    // 20090308 - franciscom
+    // Changed because found problem on:
+    // Test Specification tree when appying Keyword filter using a keyword NOT PRESENT
+    // in test cases => Tree root shows loading icon and spin never stops.
+    //
+    // Attention: do not know if in other situation this will generate a different bug
+    // 
+	if(!is_null($menustring))
+	{
+		// Remove null elements (Ext JS tree do not like it ).
+		// $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+		$menustring = str_ireplace(array('null,' , ',null' , 'null'),array('','',''), $menustring); 
+    }
+	
 	$treeMenu->menustring = $menustring;  
 	return $treeMenu;
 }
@@ -539,32 +438,10 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 	
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
-	if (TL_TREE_KIND == 'JTREE')
-	{
-		$menustring = jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
-		                                                 $bForPrinting,$showTestCaseID,
-		                                                 $testCasePrefix);
-	}
-	else if (TL_TREE_KIND == 'DTREE')
-	{
-		$menustring = dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
-		                                                 $getArguments,$tc_action_enabled,
-		                                                 $bForPrinting,$showTestCaseID,
-		                                                 $testCasePrefix);
-	}
-	else if (TL_TREE_KIND == 'LAYERSMENU')
-	{ 
-		$menustring = layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArguments,
-		                                                      $level,$tc_action_enabled,
-		                                                      $bForPrinting,$showTestCaseID,
-		                                                      $testCasePrefix);
-	}
-	else if (TL_TREE_KIND == 'EXTJS')
-	{
-		extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
+	
+	extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
 		                                   $bForPrinting,$showTestCaseID,
 		                                   $testCasePrefix);
-  }
 	
 		
 	if (isset($node['childNodes']) && $node['childNodes'])
@@ -586,197 +463,10 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 		}
 	}
 	
-	
-	if (TL_TREE_KIND == 'JTREE')
-	{
-		$menustring .= jtree_renderTestSpecTreeNodeOnClose($node,$node_type);
-	}
-	
 	return $menustring;
 }
 
 
-
-//
-// Create the string representation suitable to create a graphic visualization
-// of a node, for layersmenu
-//
-//
-//
-// rev :
-//      20071014 - franciscom - added $bForPrinting
-//
-function layersmenu_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,
-                                                 $getArguments,$level,$tc_action_enabled,
-                                                 $bForPrinting,$showTestCaseID,$testCasePrefix)
-{
-	$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
-	$name = filterString($node['name']);
-	$icon = "";
-	$buildLinkTo = 1;
-	$dots  = str_repeat('.',$level);
-	
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
-	
-  switch($node_type)
-  {
-	  case 'testproject':
-		$label = $name . " ({$testcase_count})";
-		$dots = ".";
-		$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
-    break;
-  
-    case 'testcase':
-		$icon = "gnome-starthere-mini.png";
-		$buildLinkTo = $tc_action_enabled;
-		$pfn = 'ET';
-
-    $label='';  
-		if($showTestCaseID)
-		{
-  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-		} 
-		$label .= $name;
-    break;
-
-    case 'testsuite':
-		$label = $name . " ({$testcase_count})";
-    break;
-
-	}	
-	
-	if ($buildLinkTo)
-		$myLinkTo = "javascript:{$pfn}({$node['id']})";
-	else	
-		$myLinkTo = ' ';
-		
-	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$node_type}". 
-		           "|{$icon}||\n";
-		
-	return $menustring;				
-}
-
-
-//
-// Create the string representation suitable to create a graphic visualization
-// of a node, for dtree
-//
-//
-//
-function dtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$linkto,$getArguments,
-                                            $tc_action_enabled,$bForPrinting,
-                                            $showTestCaseID,$testCasePrefix)
-{
-	$dtreeCounter = $node['id'];
-
-	$parentID = isset($node['parent_id']) ? $node['parent_id'] : -1;
-	$name = filterString($node['name']);
-	$buildLinkTo = 1;
-	
-	$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
-	
-	$edit = 'testcase';
-	$label = $name;
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
-
-  switch($node_type)
-  {
-	  case 'testproject':
-		$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
-		$label = $name ." (" . $testcase_count . ")";
-    break;
-	
-	  case 'testcase':
-		$label = "";
-		if($showTestCaseID)
-		{
-  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-		} 
-		$label .= $name;
-		
-		$pfn = 'ET';
-		$buildLinkTo = $tc_action_enabled;
-    break;
-
-    default:
-		$label = $name ." (" . $testcase_count . ")";
-    break;
-
-	}
-
-	if ($buildLinkTo)
-		$myLinkTo = "javascript:{$pfn}({$node['id']})";// . $getArguments;
-	else
-		$myLinkTo = "";
-		
-		
-	$menustring = "tlTree.add(" . $dtreeCounter . ",{$parentID},'" ;
-	$menustring .= $label. "','{$myLinkTo}');\n";
-				   
-	return $menustring;				   
-}
-
-//
-// Create the string representation suitable to create a graphic visualization
-// of a node, for jtree
-//
-//
-//
-function jtree_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
-                                            $bForPrinting,$showTestCaseID,$testCasePrefix)
-{
-	$menustring = "['";
-	$name = filterString($node['name']);
-	$buildLinkTo = 1;
-	$pfn = "ET";
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
-
-  switch($node_type)
-  {
-	  case 'testproject':
-		$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'EP';
-		$label =  $name . " (" . $testcase_count . ")";
-	  break;
-
-	  case 'testsuite':
-		$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
-		$label =  $name . " (" . $testcase_count . ")";	
-	  break;
-    
-	  case 'testcase':
-		$buildLinkTo = $tc_action_enabled;
-		if (!$buildLinkTo)
-			$pfn = "void";
-
-		$label = "";
-		if($showTestCaseID)
-		{
-  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-		} 
-		$label .= $name;
-	  break;
-
-  } // switch	
-	$menustring = "['{$label}','{$pfn}({$node['id']})',\n";
-			
-	return $menustring;
-}
-
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function jtree_renderTestSpecTreeNodeOnClose($node,$node_type)
-{
-	$menustring =  "],";
-	
-	return $menustring;
-}
 
 /** 
 * Creates data for tree menu used on :
@@ -976,43 +666,12 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 	$node_type = $hash_id_descr[$node['node_type_id']];
 	$menustring = '';
   
-	switch(TL_TREE_KIND)
-  	{
-    	case 'JTREE':
-		      $menustring = jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
-		                                                   $tc_action_enabled,$bHideTCs,
-		                                                   $useCounters,$useColors,$showTestCaseID,
-		                                                   $testCasePrefix,$showTestSuiteContents);
-      		break;
-      
-      case 'DTREE':
-	        $menustring = dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
-	                                                     $linkto,$getArguments,
-	                                                     $tc_action_enabled,$bHideTCs,
-	                                                     $useCounters,$useColors,$showTestCaseID,
-	                                                     $testCasePrefix,$showTestSuiteContents);
-      break;
-           
-      case 'LAYERSMENU':
-          $menustring = layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
-	       	                                                  $linkto,$getArguments,$level,
-	       	                                                  $tc_action_enabled,$bHideTCs,
-	       	                                                  $useCounters,$useColors,$showTestCaseID,
-	       	                                                  $testCasePrefix,$showTestSuiteContents);
-	       	                                                  
-      break;
-      
-      case 'EXTJS':
-         extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
-	                                      $tc_action_enabled,$bHideTCs,
-	                                      $useCounters,$useColors,$showTestCaseID,
-	                                      $testCasePrefix,$showTestSuiteContents);
-      break;
-      
-            
-    
-  }
-  unset($tcase_node[$node['id']]);
+	extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
+				$tc_action_enabled,$bHideTCs,
+	    		$useCounters,$useColors,$showTestCaseID,
+	    		$testCasePrefix,$showTestSuiteContents);
+	
+	unset($tcase_node[$node['id']]);
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 	  // 20080615 - franciscom - need to work always original object
@@ -1033,325 +692,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 			                                  $testCasePrefix,$showTestSuiteContents);
 		}
 	}
-  else if (TL_TREE_KIND == 'EXTJS')
-  {
-    unset($node['childNodes']);
-    $node['leaf']=true;;
-  }
-  
-	if (TL_TREE_KIND == 'JTREE')
-	{
-		$menustring .= jtree_renderTestSpecTreeNodeOnClose($node,$node_type);
-	}
-	return $menustring;
-}
-
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-  
-  rev: 20071112 - interface changes - added $tcase_node
-      
-
-*/
-function layersmenu_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,$level,
-                                             $tc_action_enabled,$bForPrinting,
-                                             $useCounters=1,$useColors=null,$showTestCaseID=1,
-                                             $testCasePrefix,$showTestSuiteContents=1)
-{
-	$resultsCfg=config_get('results');
-	
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
-	$status_verbose=$resultsCfg['status_label'];
-
-
-	$pfn = "ST";
-	$name = filterString($node['name']);
-	$label = $name;
-	$icon = "";
-	$buildLinkTo = 1;
-	$dots  = str_repeat('.',$level);
-	
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
-	$create_counters=0;
-	$versionID = 0;
-
-  $testcaseColouring=1;
-	$countersColouring=1;
-	if( !is_null($useColors) )
-	{
-      $testcaseColouring=$useColors->testcases;
-	    $countersColouring=$useColors->counters;
-	}
-	
-  switch($node_type)
-  {
-	  case 'testproject':
-		$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-    $create_counters=1;
-		$dots = ".";
-	  break;
-	  
-	  case "testcase":
-		$status_code = $tcase_node[$node['id']]['exec_status'];
-  	$status_descr=$status_code_descr[$status_code];
-
-		if (!$tc_action_enabled)
-			$pfn = "void";
-
-		$icon = "gnome-starthere-mini.png";
-
-   	$status_code = $tcase_node[$node['id']]['exec_status'];
- 	  $status_descr=$status_code_descr[$status_code];
-    $css_class= $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
-		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
-
-		if($showTestCaseID)
-		{
-  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-		} 
-		$label .= $name . "</span>";
-		$versionID = $node['tcversion_id'];
-	  break;
-
-	  case "testsuite":
-	  if( $bForPrinting )
-	  {
-	      $pfn = 'TPLAN_PTS';
-	  }
-	  else
-	  {
-	     $pfn = $showTestSuiteContents ? 'STS' : null; 
-	  }
-		$create_counters=1;
-	  break;
-
-	}	
-	
-  if($create_counters)
-  {
-		$label = $name ." (" . $testcase_count . ")";
-    if($useCounters)
-    {
-        $add_html=create_counters_info($node,$countersColouring);
-		    $label .= $add_html; 
-    }
-  }
-
-	$myLinkTo = $linkto."?level={$node_type}&id={$node['id']}".$versionID.$getArguments;
-	if ($buildLinkTo && !is_null($pfn))
-		$myLinkTo = "javascript:{$pfn}({$node['id']},{$versionID})";
-	else	
-		$myLinkTo = ' ';
-
-	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$node_type}|{$icon}||\n";
-	return $menustring;				
-}
-
-/*
-  function: dtree_renderExecTreeNodeOnOpen
-
-  args :
-  
-  returns: 
-
-  rev : 20071229 - franciscom
-        added useCounters and useColors
-  
-*/
-function dtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$linkto,$getArguments,
-                                        $tc_action_enabled,$bForPrinting,
-                                        $useCounters=1,$useColors=null,$showTestCaseID=1,
-                                        $testCasePrefix,$showTestSuiteContents=1)
-{
-	$resultsCfg=config_get('results');
-	
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
-	$status_verbose=$resultsCfg['status_label'];
-	
-	$dtreeCounter = $node['id'];
-
-	$parentID = isset($node['parent_id']) ? $node['parent_id'] : -1;
-	$name = filterString($node['name']);
-	$buildLinkTo = 1;
-	
-	$pfn = 'ST';
-	$edit = 'testcase';
-	$label = $name;
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
-	$versionID = 0;
-	
-  $testcaseColouring=1;
-	$countersColouring=1;
-	if( !is_null($useColors) )
-	{
-      $testcaseColouring=$useColors->testcases;
-	    $countersColouring=$useColors->counters;
-	}
-
-	
-	$create_counters=0;
-	switch($node_type)
-	{
-	    case 'testproject':
-	    $create_counters = 1;
-		  $pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-		  break;
-  
-	    case 'testcase':
-	  	$status_code = $tcase_node[$node['id']]['exec_status'];
-  	  $status_descr=$status_code_descr[$status_code];
-  		
-      $css_class= $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
-		  $label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
-		  
-		  if($showTestCaseID)
-		  {
-  	     $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-		  } 
-		  $label .= $name . "</span>";
-		         
-		  $versionID = $node['tcversion_id'];
-		  $buildLinkTo = $tc_action_enabled;
-		  if (!$buildLinkTo)
-			  $pfn = "void";
-			break;
-	
-	    default:		  
-	    if( $bForPrinting )
-	    {
-	        $pfn = 'TPLAN_PTS';
-	    }
-	    else
-	    {
-	       $pfn = $showTestSuiteContents ? 'STS' : "void"; 
-	    }
-		  $create_counters=1;
-		  break;
-	
-	} // switch
-
-  if($create_counters)
-  {
-		$label = $name ." (" . $testcase_count . ")";
-    if($useCounters)
-    {
-        $add_html=create_counters_info($node,$countersColouring);
-	      $label .= $add_html; 
-	  }
-  }
-
-
-	if ($buildLinkTo)
-		$myLinkTo = "javascript:{$pfn}({$node['id']},{$versionID})";
-	else
-		$myLinkTo = "";
-		
-		
-	$menustring = "tlTree.add(" . $dtreeCounter . ",{$parentID},'" ;
-	$menustring .= $label. "','{$myLinkTo}');\n";
-				   
-	return $menustring;				   
-}
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-  rev:
-      20080110 - franciscom - added $showTestCaseID
-*/
-function jtree_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,
-                                        $bForPrinting,$useCounters=1,$useColors=null,
-                                        $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
-{
-	$resultsCfg=config_get('results');
-	
-  $status_descr_code=$resultsCfg['status_code'];
-  $status_code_descr=$resultsCfg['code_status'];
-	$status_verbose=$resultsCfg['status_label'];
-	
-	$menustring = "['";
-	$name = filterString($node['name']);
-	$buildLinkTo = 1;
-	$pfn = "ST";
-	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;	
-	$create_counters=0;
-	$versionID = 0;
-	
-  $testcaseColouring=1;
-	$countersColouring=1;
-	if( !is_null($useColors) )
-	{
-      $testcaseColouring=$useColors->testcases;
-	    $countersColouring=$useColors->counters;
-	}
-
-	
-  switch($node_type)
-  {
-	  case 'testproject':
- 		$create_counters=1;
-		$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-		$label =  $name . " (" . $testcase_count . ")";
-	  break;
-
-	  case 'testsuite':
-		$create_counters=1;
-		$label =  $name . " (" . $testcase_count . ")";	
-	  if( $bForPrinting )
-	  {
-	      $pfn = 'TPLAN_PTS';
-	  }
-	  else
-	  {
-	     $pfn = $showTestSuiteContents ? 'STS' : "void"; 
-	  }
-	  break;
-
-	  case 'testcase':
-		$buildLinkTo = $tc_action_enabled;
-		if (!$buildLinkTo)
-			$pfn = "void";
-
-	  $status_code = $tcase_node[$node['id']]['exec_status'];
-	  $status_descr = $status_code_descr[$status_code];
-
-    $css_class= $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
-		$label = "<span {$css_class} " . '  title="' . lang_get($status_verbose[$status_descr]) . '">';
-		
-		if($showTestCaseID)
-		{
-  	   $label .= "<b>{$testCasePrefix}{$node['external_id']}</b>:";
-		} 
-		$label .= $name . "</span>";
-		$versionID = $node['tcversion_id'];
-    break;
-	}
-
-  // -------------------------------------------------------------------------------
-  // 20080305 - franciscom
-  if($create_counters)
-  {
-		$label = $name ." (" . $testcase_count . ")";
-    if($useCounters)
-    {
-        $add_html=create_counters_info($node,$countersColouring);
-	      $label .= $add_html; 
-	  }
-  }
-  // -------------------------------------------------------------------------------
-	$menustring = "['{$label}','{$pfn}({$node['id']},{$versionID})',\n";
-			
 	return $menustring;
 }
 
@@ -1757,20 +1097,18 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
   }
 }
 
-
 /**
  * buildKeywordsFilter
  *
  */
 function buildKeywordsFilter($keywordsId,&$guiObj)
 {
-    $keywordsFilter=null;
-    if( !is_null($keywordsId) )
+    $keywordsFilter = null;
+    if(!is_null($keywordsId))
     {
-        $items=array_flip((array)$keywordsId);
-        if( !isset($items[0]) )
+        $items = array_flip((array)$keywordsId);
+        if(!isset($items[0]))
         {
-            
             $keywordsFilter = new stdClass();
             $keywordsFilter->items = $keywordsId;
             $keywordsFilter->type = $guiObj->keywordsFilterType->selected;

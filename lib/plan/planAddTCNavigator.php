@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.42 2009/03/08 18:49:11 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.43 2009/03/16 21:35:39 schlundus Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -223,46 +223,27 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
  			 // -------------------------------------------------------------------------------
     }
   
-    // $applyFilter=($argsObj->keyword_id > 0);
-    // if( $applyFilter )
-    // {
-    //     $keywordsFilter = new stdClass();
-    //     $keywordsFilter->items = $argsObj->keyword_id;
-    //     $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
-    // }
-    // 20090308 - franciscom
     $keywordsFilter = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $applyFilter = !is_null($keywordsFilter);
 
-    $treemenu_type=config_get('treemenu_type');
-    $treeMenu=null;
-    $buildCompleteTree = $treemenu_type != 'EXTJS' || ($treemenu_type == 'EXTJS' && $applyFilter);
-
-    if($buildCompleteTree)
+    $treemenu_type = config_get('treemenu_type');
+    $treeMenu = null;
+    
+    if($applyFilter)
     {
         $treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
                                          $guiObj->menuUrl,NOT_FOR_PRINTING,
                                          HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
                                          $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
         
-        if($treemenu_type == 'EXTJS' )
-        {
-            $guiObj->ajaxTree = new stdClass();
-            $guiObj->ajaxTree->loader = '';
-            $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
-            $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
-        }
-        else
-        {
-            $guiObj->ajaxTree = null;
-            $treeMenu = invokeMenu($treeMenu->menustring,null,null);
-        }
+		$guiObj->ajaxTree = new stdClass();
+        $guiObj->ajaxTree->loader = '';
+        $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
+        $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
     }
     
-    if( $applyFilter )
-    {
-        $guiObj->ajaxTree->loader='';  
-    }
+    if($applyFilter)
+        $guiObj->ajaxTree->loader = '';  
 
     return $treeMenu;
 }

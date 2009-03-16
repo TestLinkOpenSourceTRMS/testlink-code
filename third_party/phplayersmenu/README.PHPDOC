@@ -1,9 +1,0 @@
-
-To prepare the documentation of PHP classes using PHPDocumentor,
-use the command
-
-phpdoc -pp on -ti "PHPLayersMenu" -dn "PHPLayersMenu" \
--po PHPLayersMenu -t [target_directory] -o HTML:frames:default \
--d [directory_where_you_have_installed_phplayersmenu] \
--i PHPLIB.php,layersmenu-browser_detection.php,index.php*,demo*,example*
-

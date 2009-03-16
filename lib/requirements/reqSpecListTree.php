@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.7 2009/01/12 21:53:43 schlundus Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.8 2009/03/16 21:35:39 schlundus Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -17,18 +17,11 @@ require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$treemenu_type=config_get('treemenu_type');
-$args=init_args();
-$gui=initializeGui($args,$_SESSION['basehref']);
-$tree=null;
+$treemenu_type = config_get('treemenu_type');
+$args = init_args();
+$gui = initializeGui($args,$_SESSION['basehref']);
+$tree = null;
 
-if($treemenu_type != 'EXTJS')
-{
-    $treeString = gen_req_tree_menu($db,$args->tproject_id, $args->tproject_name);
-    if (strlen($treeString))
-    	$tree = invokeMenu($treeString);
-}
-		
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('treeKind', $treemenu_type);
@@ -46,7 +39,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-    $args=new stdClass();
+    $args = new stdClass();
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
     return $args;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.236 $
- * @modified $Date: 2009/03/05 07:32:03 $ by $Author: franciscom $
+ * @version $Revision: 1.237 $
+ * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -428,7 +428,7 @@ $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 
 
 /** 
  * TREE MENU - Configure using of external tree menu component: 
- * [EXTJS, LAYERSMENU, DTREE, JTREE]
+ * [EXTJS]
  */
 $tlCfg->treemenu_type = 'EXTJS';
 

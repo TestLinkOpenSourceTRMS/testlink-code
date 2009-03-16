@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/03/14 09:38:55 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -103,8 +103,6 @@
 // TRUE  ->  History for all builds will be shown
 // FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]
 //$tlCfg->exec_cfg->show_history_all_builds = TRUE;
-
-//$tlCfg->treemenu_type='JTREE';
 
 // $tlCfg->gui->custom_fields->types = array(100 => 'radio head');
 // $tlCfg->gui->custom_fields->possible_values_cfg = array('radio head' => 1);

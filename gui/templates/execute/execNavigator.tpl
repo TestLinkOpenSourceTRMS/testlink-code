@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.22 2008/12/30 13:34:40 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.23 2009/03/16 21:35:39 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -30,25 +30,23 @@ rev :
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {/if}
           
-{if $tlCfg->treemenu_type == 'EXTJS'}
-    {literal}
-    <script type="text/javascript">
-    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-               loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-    </script>
-    {/literal}
-    
-    <script type="text/javascript">
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
-    treeCfg.root_id={$gui->ajaxTree->root_node->id};
-    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-    treeCfg.children={$gui->ajaxTree->children};
-    </script>
-    
-    <script type="text/javascript" src='gui/javascript/execTree.js'></script>
-{else}
-   	{include file="inc_jsTree.tpl"}
-{/if}
+
+{literal}
+<script type="text/javascript">
+	treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+	           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+</script>
+{/literal}
+
+<script type="text/javascript">
+	treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
+	treeCfg.root_id={$gui->ajaxTree->root_node->id};
+	treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+	treeCfg.children={$gui->ajaxTree->children};
+</script>
+
+<script type="text/javascript" src='gui/javascript/execTree.js'></script>
+
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 </head>

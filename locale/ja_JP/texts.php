@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/03/05 18:38:49 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/03/17 05:59:13 $ by $Author: tosikawa $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -23,375 +23,371 @@
  *
  * Revisions history is not stored for the file
  *
+ *-------------------------------------------------------------------
+ * Japanese translation
+ *-------------------------------------------------------------------
+ * Testing Engineer's Forum (TEF) in Japan
+ * Working Group of TestLink Japanese Translation Project
+ *
+ * http://blues.se.uec.ac.jp/swtest/
+ * http://testlinkjp.org/
+ * http://sourceforge.jp/projects/testlinkjp/
+ *
+ * Adviser:
+ * Yasuharu NISHI
+ *
+ * Core member:
+ * Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
+ * Kaname Mochizuki,     Kaoru Nakamura,       Kunio Murakami,
+ * Lumina Nishihara,     Marino Suda,          Masahide Katsumata,
+ * Masami Ichikawa,      Masataka Yoneta,      Sadahiko Hantani,
+ * Shinichi Sugiyama,    Shinsuke Matsuki,     Shizuka Ban,
+ * Takahiro Wada,        Toshinori Sawaguchi,  Toshiyuki Kawanishi,
+ * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
+ * Yukiko Kajino
+ *
  * ------------------------------------------------------------------------------------ */
 
 
-$TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
-$TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>Users can set relations between requirements and test cases. A designer could
-define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
-test cases and vice versa. Such traceability matrix helps to investigate test coverage
-of requirements and find out which ones successfully failed during a testing. This
-analyse serves as input for the next planning.</p>
+$TLS_htmltext_title['assignReqs']	= "テストケースに要件をアサインする";
+$TLS_htmltext['assignReqs'] 		= "<h2>目的:</h2>
+<p>この機能により、要件とテストケースを関連付けることができます。
+テスト設計者は0..n対0..nの関連付けを定義することができます。
+すなわち、要件に関連付けられないテストケースがあったり、複数の
+要件にテストケースを関連付けることができますし、逆も可能です。
+このトレーサビリティマトリクスにより、
+要件カバレッジの調査や要件ごとのテストの結果の追跡することができます。
+この解析結果は、次の計画に役立つでしょう。</p>
 
-<h2>Get Started:</h2>
+<h2>やってみましょう！:</h2>
 <ol>
-	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
-	Specifications is shown at the top of workarea.</li>
-	<li>Choose a Requirements Specification Document if more once defined. 
-	TestLink automatically reload the page.</li>
-	<li>A middle block of workarea lists all requirements (from choosen Specification), which
-	are connected with the test case. Bottom block 'Available Requirements' lists all
-	requirements which have not relation
-	to the current test case. A designer could mark requirements which are covered by this
-	test case and then click the button 'Assign'. These new assigned test case are shown in
-	the middle block 'Assigned Requirements'.</li>
+	<li>左ブロックのツリー構造からテストケースを選択してください。
+    要件仕様書リストのコンボボックスがワークエリアの上部に表示されます。 </li>
+	<li>要件仕様を選択してください。
+    TestLink は自動でページの再読み込みを行います。</li>
+	<li>ワークエリアの中央のブロックに選択した仕様書より、
+    テストケースと関係付けられたすべての要件がリストされます。
+    下のブロックには現在のテストケースと関連付けられていないすべての要件の中から
+    「使用可能な要件」がリストされます。
+    このテストケースを選択し、「アサイン」ボタンをクリックすることにより、
+    テスト設計者は要件に印をつけることができます。
+    新規にアサインされたテストケースは中央のブロックの「アサインされた要件」に表示されます。</li>
 </ol>";
 
 
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['editTc']	= "Test Specification";
-$TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<h2>Purpose:</h2>
-<p>The <i>Test Specification</i> allows users to view and edit all of the existing " .
-		"<i>Test Suites</i> and <i>Test Cases</i>. Test Cases are versioned and all " .
-		"of the previous versions are available and can be viewed and managed here.</p>
+$TLS_htmltext_title['editTc']	= "テスト仕様";
+$TLS_htmltext['editTc'] 		= "<h2>目的:</h2>
+<p><i>テスト仕様</i> は、存在する<i>テストスイート</i>そして<i>テストケース</i> の".
+        "情報を閲覧したり変更したりする場所です。" .
+        "異なるバージョンのテストケースを見ることもできます。</p>
 
-<h2>Getting Started:</h2>
+<h2>やってみましょう！:</h2>
 <ol>
-	<li>Select your Test Project in the navigation tree (the root node). <i>Please note: " .
-	"You can always change the activate Test Project by selecting a different one from the " .
-	"drop-down list in the top-right corner.</i></li>
-	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .
-	"bring structure to your test documents according to your conventions (functional/non-functional " .
-	"tests, product components or features, change requests, etc.). The description of " .
-	"a Test Suite could hold the scope of the included test cases, default configuration, " .
-	"links to relevant documents, limitations and other useful information. In general, " .
-	"all annotations that are common to the Child Test Cases. Test Suites follow " .
-	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
-	"the Test project. Also, they can be imported or exported (including the contained Test cases).</li>
-	<li>Test suites are scalable folders. User can move or copy Test Suites within " .
-	"the Test project. Test suites could be imported or exported (include Test cases).
-	<li>Select your newly created Test Suite in the navigation tree and create " .
-	"a new Test Case by clicking on <b>Create Test Case</b>. A Test Case specifies " .
-	"a particular testing scenario, expected results and custom fields defined " .
-	"in the Test Project (refer to the user manual for more information). It is also possible " .
-	"to assign <b>keywords</b> for improved traceability.</li>
-	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
-	<li>Assign your created Test Specification to <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
+	<li>テストプロジェクトをナビゲーションのツリーから選択します。<i>メモ: " .
+	"テストプロジェクトの変更は右上の" .
+    "プルダウンリストを選択することでおこなうことができます。</i></li>
+	<li><b>子テストスイート作成</b>ボタンをクリックし、テストスイートを作成します。" .
+	"このテストスイートに従ってテストドキュメントが構成されます" .
+	"(例えば、機能/非機能などの種別、コンポーネントやフィーチャーによる分別など)。" .
+	"テストスイートには、テストケース、環境設定、関連ドキュメントへの参照、" .
+	"制限事項や、それ以外に必要な情報を記載します。" .
+	"一般に、配下のテストケースに関する様々な共通する説明を記述することになります。" .
+	"<li>テストスイートは「フォルダー」のような概念ともいえます。 従って、テストプロジェクト内で" .
+	"テストスイートのコピーや移動ができます。また、インポートとエクスポートも可能です (テストケースを含めることもできます)。</li>
+	<li>作成したテストスイートをナビゲーションから選択し、" .
+	"<b>テストケースを作成</b>ボタンをクリックすることでテストケースを作成します。" .
+	"テストケースには、テストシナリオ、期待結果やテストプロジェクトで定義されたカスタムフィールド" .
+	"などを記載します (詳しくは、ユーザマニュアルを参照してください。" .
+	"また、トレーサビリティのために<b>キーワード</b>をアサインすることもできます。</li>
+	<li>左横にあるツリーでデータ編集を指示します。</li>
+	<li>作成したテスト仕様書をテストケースが準備完了したときに <i>テスト計画</i>に割り当てます。</li>
 </ol>
 
-<p>With TestLink you organize test cases into test suites." .
-"Test suites can be nested within other test suites, enabling you to create hierarchies of test suites.
- You can then print this information together with the test cases.</p>";
+<p>TestLinkではテストスイートによってテストケースを整理することができるでしょう。" .
+"テストスイートは入れ子状にすることができるので、テストスイートの階層を作ることができます。
+この情報はテストケースとともに印刷されます。</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "Test Case Search Page";
-$TLS_htmltext['searchTc'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchTc']	= "テストケース検索ページ";
+$TLS_htmltext['searchTc'] 		= "<h2>目的：</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result include just test cases from actual Test Project.</p>
+<p>ナビゲーションないの検索文字列に従って検索をおこないます。
+検索は大文字と小文字を区別しません。 
+検索結果は現在ののテストプロジェクトからのテストケースのみを含みます。</p>
 
-<h2>To search:</h2>
+
+<h2>検索してみましょう！：</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Left blank unused fields in form.</li>
-	<li>Choose required keyword or left value 'Not applied'.</li>
-	<li>Click the Search button.</li>
-	<li>All fulfilled test cases are shown. You can modify test cases via 'Title' link.</li>
+    <li>適当な欄に検索したい文字列を入力してください。左にあるフォームの空欄部分です。</li>
+    <li>必要なキーワードを選ぶか、左側にある値の '適用しない' を選んで下さい。</li>
+    <li>検索ボタンをクリックして下さい。</li>
+    <li>全ての条件に一致したテストケースが表示されます。'タイトル'をクリックすることでテストケースを編集できます。</li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "Print Test Specification"; //printTC.html
-$TLS_htmltext['printTestSpec'] 			= "<h2>Purpose:</h2>
-<p>From here you can print a single test case, all the test cases within a test suite,
-or all the test cases in a test project or plan.</p>
-<h2>Get Started:</h2>
+$TLS_htmltext_title['printTestSpec']	= "テスト仕様の印刷"; //printTC.html
+$TLS_htmltext['printTestSpec'] 			= "<h2>目的:</h2>
+<p>この機能は各々のテストケース、またはテストプロジェクト/テスト計画全体のテストケースを印刷できます。</p>
+<h2>やってみましょう！:</h2>
 <ol>
 <li>
-<p>Select the parts of the test cases you want to display, and then click on a test case, test suite, or the test project.
-A printable page will be displayed.</p>
-</li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want the information displayed as HTML or in a
-Microsoft Word document. See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
-'{$locale}');\">help</span> for more information.</p>
-</li>
-<li><p>Use your browser's print functionality to actually print the information.<br />
- <i>Note: Make sure to only print the right-hand frame.</i></p></li>
-</ol>";
-
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specification Design"; //printTC.html
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>You can manage Requirement Specification documents.</p>
-
-<h2>Requirements Specification</h2>
-
-<p>Requirements are grouped by <b>Requirements Specification document</b>, which is related to
-Test Project.<br /> TestLink doesn't support (yet) versions for both Requirements Specification
-and Requirements itself. So, version of document should be added after
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p>
-
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for
-evaluation Req. coverage in case that not all requirements are added to TestLink.
-The value <b>0</b> means that current count of requirements is used
-for metrics.</p>
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test
-coverage is 25% (if all these added requirements will be tested).</i></p>
-
-<h2><a name='req'>Requirements</a></h2>
-
-<p>Click on title of a created Requirements Specification, if none exists click on the project node to create one. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be 'Normal' or 'Not testable'. Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and
-wrong designed requirements.</p>
-
-<p>You can create new test cases for requirements by using multi action with checked
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
-'Test suite created by Requirement - Auto';)</i>. Title and Scope are copied to these Test cases.</p>";
-
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['keywordsAssign']	= "Keyword Assignment";
-$TLS_htmltext['keywordsAssign'] 			= "<h2>Purpose:</h2>
-<p>The Keyword Assignment page is the place where users can batch
-assign keywords to the existing Test Suite or Test Case</p>
-
-<h2>To Assign Keywords:</h2>
-<ol>
-	<li>Select a Test Suite, or Test Case on the tree view
-		on the left.</li>
-	<li>The top most box that shows up on the right hand side will
-		allow you to assign available keywords to every single test
-		case.</li>
-	<li>The selections below allow you to assign cases at a more
-		granular level.</li>
-</ol>
-
-<h2>Important Information Regarding Keyword Assignments in Test Plans:</h2>
-<p>Keyword assignments you make to the specification will only effect test cases
-in your Test plans if and only if the test plan contains the latest version of the Test case.
-Otherwise if a test plan contains older versions of a test case, assignments you make
-now WILL NOT appear in the test plan.
+<p>参照するテストケース、テストスイート、またはテストプロジェクトをクリックします。<br />
 </p>
-<p>TestLink uses this approach so that older versions of test cases in test plans are not effected
-by keyword assignments you make to the most recent version of the test case. If you want your
-test cases in your test plan to be updated, first verify they are up to date using the 'Update
-Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
-
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "Test Case Execution";
-$TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
-
-<p>Allows user to execute Test cases. User can assign Test result
-to Test Case for Build. See help for more information about filter and settings " .
-		"(click on the question mark icon).</p>
-
-<h2>Get started:</h2>
-
-<ol>
-	<li>User must have defined a Build for the Test Plan.</li>
-	<li>Select a Build from the drop down box and the \"Apply\" button in the navigation pane.</li>
-	<li>Click on a test case in the tree menu.</li>
-	<li>Fill out the test case result and any applicable notes or bugs.</li>
-	<li>Save results.</li>
-</ol>
-<p><i>Note: TestLink must be configurated to collaborate with your Bug tracker 
-if you would like to create/trace a problem report directly from the GUI.</i></p>";
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['showMetrics']	= "Description of Test Reports and Metrics";
-$TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
-		"(defined in top of navigator). This Test Plan could differs from the
-current Test Plan for execution. You can also select Report format:</p>
-<ul>
-<li><b>Normal</b> - report is displayed in web page</li>
-<li><b>MS Excel</b> - report exported to Microsoft Excel</li>
-<li><b>HTML Email</b> - report is emailed to user's email address</li>
-<li><b>Charts</b> - report include graphs (flash technology)</li>
-</ul>
-
-<p>The print button activate print of a report only (without navigation).</p>
-<p>There are several seperate reports to choose from, their purpose and function are explained below.</p>
-
-<h3>General Test Plan Metrics</h3>
-<p>This page shows you only the most current status of a Test plan by test suite, owner, and keyword.
-The most 'current status' is determined by the most recent build test cases were executed on.  For
-instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p>
-
-<p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
-<ul>
-<li>The order in which builds are added to a Test Plan determines which build is most recent. The results
-from the most recent build will take precendence over older builds. For example, if you mark a test as
-'fail' in build 1, and mark it as 'pass' in build 2, it's latest result will be 'pass'.</li>
-<li>If a test case is executed mulitple times on the same build, the most recent execution will take
-precedence.  For example, if build 3 is released to your team and tester 1 marks it as 'pass' at 2PM,
-and tester 2 marks it as 'fail' at 3PM - it will appear as 'fail'.</li>
-<li>Test cases listed as 'not run' against a build are not taken into account. For example, if you mark
-a case as 'pass' in build 1, and don't execute it in build 2, it's last result will be considered as
-'pass'.</li>
-</ul>
-<p>The following tables are displayed:</p>
-<ul>
-	<li><b>Results by top level Test Suites</b>
-	Lists the results of each top level suite. Total cases, passed, failed, blocked, not run, and percent
-	completed are listed. A 'completed' test case is one that has been marked pass, fail, or block.
-	Results for top level suites include all children suites.</li>
-	<li><b>Results By Keyword</b>
-	Lists all keywords that are assigned to cases in the current test plan, and the results associated
-	with them.</li>
-	<li><b>Results by owner</b>
-	Lists each owner that has test cases assigned to them in the current test plan. Test cases which
-	are not assigned are tallied under the 'unassigned' heading.</li>
-</ul>
-
-<h3>The Overall Build Status</h3>
-<p>Lists the execution results for every build. For each build, the total test cases, total pass,
-% pass, total fail, % fail, blocked, % blocked, not run, %not run.  If a test case has been executed
-twice on the same build, the most recent execution will be taken into account.</p>
-
-<h3>Query Metrics</h3>
-<p>This report consists of a query form page, and a query results page which contains the queried data.
-Query Form Page presents with a query page with 4 controls. Each control is set to a default which
-maximizes the number of test cases and builds the query should be performed against. Altering the controls
-allows the user to filter the results and generate specific reports for specific owner, keyword, suite,
-and build combinations.</p>
-
-<ul>
-<li><b>keyword</b> 0->1 keywords can be selected. By default - no keyword is selected. If a keyword is not
-selected, then all test cases will be considered regardless of keyword assignments. Keywords are assigned
-in the test specification or Keyword Management pages.  Keywords assigned to test cases span all test plans,
-and span across all versions of a test case.  If you are interested in the results for a specific keyword
-you would alter this control.</li>
-<li><b>owner</b> 0->1 owners can be selected. By default - no owner is selected. If an owner is not selected,
-then all test cases will be considered regardless of owner assignment.  Currently there is no functionality
-to search for 'unassigned' test cases.  Ownership is assigned through the 'Assign Test Case execution' page,
-and is done on a per test plan basis.  If you are interested in the work done by a specific tester you would
-alter this control.</li>
-<li><b>top level suite</b> 0->n top level suites can be selected. By default - all suites are selected.
-Only suites that are selected will be queried for result metrics.  If you are only intested in the results
-for a specific suite you would alter this control.</li>
-<li><b>Builds</b> 1->n builds can be selected.  By default - all builds are selected.  Only executions
-performed on builds you select will be taken into account when producing metrics.  For example - if you
-wanted to see how many test cases were executed on the last 3 builds - you would alter this control.
-Keyword, owner, and top level suite selections will dictate the number of test cases from your test plan
-are used to computate per suite and per test plan metrics.  For example, if you select owner = 'Greg',
-Keyword='Priority 1', and all available test suites - only Priority 1 test cases assigned to Greg will be
-considered. The '# of Test Cases' totals you will see on the report will be influenced by these 3 controls.
-Build selections will influence if a case is considered 'pass', 'fail', 'blocked', or 'not run'.  Please
-refer to 'Last Test Result' rules as they appear above.</li>
-</ul>
-<p>Press the 'submit' button to proceed with the query and display the output page.</p>
-
-<p>Query Report Page will display: </p>
-<ol>
-<li>the query parameters used to create report</li>
-<li>totals for the entire test plan</li>
-<li>a per suite breakdown of totals (sum / pass / fail / blocked / not run) and all executions performed
-on that suite.  If a test case has been executed more than once on multiple builds - all executions will be
-displayed that were recorded against the selected builds. However, the summary for that suite will only
-include the 'Last Test Result' for the selected builds.</li>
-</ol>
-
-<h3>Blocked, Failed, and  Not Run Test Case Reports</h3>
-<p>These reports show all of the currently blocked, failing, or not run test cases.  'Last test Result'
-logic (which is described above under General Test Plan Metrics) is again employed to determine if
-a test case should be considered blocked, failed, or not run.  Blocked and failed test case reports will
-display the associated bugs if the user is using an integrated bug tracking system.</p>
-
-<h3>Test Report</h3>
-<p>View status of every test case on every build. The most recent execution result will be used
-if a test case was executed multiple times on the same build. It is recommended to export this report
-to Excel format for easier browsing if a large data set is being used.</p>
-
-<h3>Charts - General Test Plan Metrics</h3>
-<p>'Last test Result' logic is used for all four charts that you will see. The graphs are animated to help
-the user visualize the metrics from the current test plan. The four charts provide are :</p>
-<ul><li>Pie chart of overall pass / fail / blocked / and not run test cases</li>
-<li>Bar chart of Results by Keyword</li>
-<li>Bar chart of Results By Owner</li>
-<li>Bar chart of Results By Top Level Suite</li>
-</ul>
-<p>The bars in the bar charts are colored such that the user can identify the approximate number of
-pass, fail, blocked, and not run cases.</p>
-<p><i>This report page requires your browser have a flash plugin (by http://www.maani.us) to display
-results in a graphical format.</i></p>
-
-<h3>Total Bugs For Each Test Case</h3>
-<p>This report shows each test case with all of the bugs filed against it for the entire project.
-This report is only available if a Bug Tracking System is connected.</p>";
-
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Add / Remove Test cases to Test Plan"; // testSetAdd
-$TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
-<p>Allows user (with lead level permissions) to add or remove test cases into a Test plan.</p>
-
-<h2>To add or remove Test cases:</h2>
-<ol>
-	<li>Click on a test suite to see all of its test suites and all of its test cases.</li>
-	<li>When you are done click the 'Add / Remove Test Cases' button to add or remove the test cases.
-		Note: Is not possible to add the same test case multiple times.</li>
-</ol>";
-
-// ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "Assign Testers to test execution";
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
-<p>This page allows test leaders to assign users to particular tests within the Test Plan.</p>
-
-<h2>Get Started</h2>
-<ol>
-	<li>Choose a Test case or Test Suite to test.</li>
-	<li>Select a planned tester.</li>
-	<li>Press button to submit assignement.</li>
-	<li>Open execution page to verify assignment. You can set-up a filter for users.</li>
+</li>
+<li><p>ナビゲーションシートの「印刷オプション」テーブルにて印刷データの範囲とフォーマットを
+設定します。HTMLもしくはMS Word形式を選択することができます。詳しくは<span class=\"help\" 
+onclick=\"javascript:open_help_windows('printFilter','{$locale}');\">ヘルプ</span>を参照してください。</p>
+</li>
+<li><p>ブラウザの印刷機能にてテストケースを印刷します。<br />
+ <i>注意: 印刷できるのはブラウザの右側のみです。</i></p></li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
-$TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
-<p>This page allows update Test case to a newer (different) version in  the case that Test
-Specification is changed. It often happens that some functionality is clarified during testing." .
-		" User modifies Test Specification, but changes needs to propagate to Test Plan too. Otherwise Test" .
-		" plan holds original version to be sure, that results refer to the correct text of a Test case.</p>
+$TLS_htmltext_title['reqSpecMgmt']	= "要件仕様の設計";
+$TLS_htmltext['reqSpecMgmt'] 			= "<p>要件仕様ドキュメントを管理することができます。</p>
 
-<h2>Get Started</h2>
+<h2>要件仕様</h2>
+
+<p>各要件は、テストプロジェクトごとに作成する<b>要件仕様ドキュメント</b>によって
+まとめられています。<br />ただし、TestLink 自体には、要件仕様、および要件の
+バージョン管理機能はサポートされていません。もし、バージョンを考慮する必要がある場合は、
+バージョン番号を含めた題号を<b>タイトル</b>欄に記載してください。
+また、仕様の簡単な説明や備考を <b>スコープ</b> 欄に記載することができます。</p>
+
+<p><b><a name='total_count'>ドキュメント内の全要件数</a></b> は、
+TestLinkに全要件を登録しなかった場合に、要件カバレッジを計算するために使用します。
+値<b>0</b>を設定した場合は、TestLinkに登録されている要件数をメトリクス計算で使用します。</p>
+<p><i>例えば、SRSが 200 の要件を含んでいるが、50のみをTestLinkに登録したとします。
+するとテストの要件カバレッジは25%となります (追加した要件を全てテストした場合)。</i></p>
+
+<h2><a name='req'>要件</a></h2>
+
+<p>要件を作成する要件仕様のタイトルをクリックしてください。要件仕様が内場合は、テストプロジェクト名をクリックすることで作成することができます。
+要件をドキュメントに作成、編集、削除、または要件をインポートすることができます。
+ステータスは「通常」または「テスト不能」から選択する必要があります。
+テスト不能要件はメトリクス計算で使用されません。
+このパラメータは実装されていない機能、間違った設計の要件のために使用されます。</p> 
+
+<p>要件仕様のページから、数回ボタンをクリックすることで、
+要件をチェックするための新規テストケースを作成することができます。
+これらのテストケースは、TestLinkの設定で定義された名前のテストスイートに格納されます
+<i>(デフォルトでは \$tlCfg->req_cfg->default_testsuite_name =
+'Test suite created by Requirement - Auto';)</i>。
+タイトルとスコープは作成されたテストケースにコピーされます。</p>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['keywordsAssign']	= "キーワードのアサイン";
+$TLS_htmltext['keywordsAssign'] 			= "<h2>目的:</h2>
+<p>キーワードのアサインでは、ユーザが一括してテストスイートまたはテストケースに
+一括してキーワードを割り当てることができます。</p>
+
+<h2>キーワードを割り当てましょう！:</h2>
 <ol>
-	<li>Choose a Test case or Test Suite to test.</li>
-	<li>Choose a new version from bombo boxmenu for particular Test case.</li>
-	<li>Press button 'Update Test plan' to submit changes.</li>
-	<li>To verify: Open execution page to view text of the test case(s).</li>
+	<li>左側のツリービューのテストスイート、
+        テストケースを選択しましょう。</li>
+	<li>右側のボックスはキーワードをアサインした
+        各テストケースを参照できます。</li>
+	<li>これらの選択は後でもっと大まかなレベルに
+        ケースをアサインすることもできます。 </li>
+</ol>
+
+<h2>テスト計画の重要な情報に関してのキーワードのアサイン:</h2>
+<p>キーワードのアサインの詳細はテスト計画のテストケース、
+テスト計画に最新バージョンのテストケースが含まれていればそれが有効になり作成されます。
+もし、そうでなく古いバージョンのテストケースがテスト計画に含まれている場合には、
+アサインされたキーワードは、現時点では表示されません。
+</p>
+<p>
+TestLinkはテスト計画の古いバージョンのテストケースは、最新バージョンのテストケースに対しておこなったキーワードのアサインによって影響を受けません。
+もしテスト計画が更新されたテストケースを必要とするならば、はじめに「修正されたテストケースの更新」
+機能をキーワードのアサインを行う前に使用し、対象のテストケースが最新であることを確かめてください。
+</p>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['executeTest']	= "テストケース実行";
+$TLS_htmltext['executeTest'] 		= "<h2>目的:</h2>
+
+<p>各テスト担当者がテストケース実行をおこなうことができます。
+ユーザはテスト結果をビルドごとのテストケースに登録することができます。" .
+         "フィルタ、設定(セッティング)についてのいろいろな情報についてはヘルプを参照してください。（「?」のアイコンをクリックしてください。）</p>
+
+<h2>やってみましょう！</h2>
+
+<ol>
+    <li>テスト計画を実行するビルドを決定しなければなりません。</li>
+    <li>プルダウンからビルドと、ナビゲーションシートの「更新」ボタンを選択してください。</li>
+    <li>ツリーにあるテストケース名をクリックします。</li>
+	<li>テスト結果および、備考、バグなどを登録します。</li>
+	<li>結果を保存します。</li>
+</ol>
+<p><i>備考: GUI上から障害レポートを作成するためには、
+バグ管理システムと連携するようにTestLinkを設定する必要があります。</i></p>";
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['showMetrics']	= "テストレポートとメトリクスの概要";
+$TLS_htmltext['showMetrics'] 		= "<p>レポートはテスト計画に関連しています。 " .
+		"(上段のナビゲータにより選択します)。現在実行中のテスト計画以外のテスト計画を選択して
+レポートを表示することもできます。以下のレポートフォーマットを選択することができます:</p>
+<ul>
+<li><b>Normal</b> - Webページにレポートを表示</li>
+<li><b>MS Excel</b> - Microsoft Excel用にレポートをエクスポート</li>
+<li><b>HTML email</b> - ユーザのアドレスにEメールでレポートを送信</li>
+<li><b>グラフ</b> - グラフによるレポートを表示 (Flash技術を使用)</li>
+</ul>
+
+<p>「印刷」ボタンは1種類のレポートのみを印刷します。</p>
+<p>数種類のレポートを選択することができます。いかに各レポートの機能を説明します。</p>
+
+<h3>一般的なテスト計画のメトリクス</h3>
+<p>このページでは、テストスイート、オーナー、キーワードごとのテスト計画の最新の
+ステータスを表示します。「最新のテスト結果」とは、最後に実行したビルドに関するテストケースの結果を示しています。
+例えば、複数のビルドにわたってあるテストケースを実行した場合は、最新の結果のみが反映されます。</p> 
+	
+<p>「最新のテスト結果」は多くのレポートで使用される概念で、以下のように決められます: </p>
+<ul>
+<li>テスト計画に追加された順番によって、ビルドの新旧が決まります。
+ビルドの最新のビルドの結果は古いビルドの結果よりも優先されます。
+例えば、ビルド1で「失敗」したテストケースでも、ビルド2で「成功」していれば、最新の結果は「成功」となります。</li>
+<li>あるテストケースが同じビルド内で複数回実行された場合は、
+最新の実行結果が優先されます。例えば、ビルド3のリリース後、テスター1よって午後2時に「成功」したテストケースでも、
+テスター2によって午後3時に「失敗」と記録されれれば、最新の結果は「失敗」となります。</li>
+<li>未実行のビルドがある場合は、そのテストケースの結果にはそのビルドは影響しません。
+例えば、ビルド1で「成功」したテストケースが、テスト2で「未実行」だった場合は、
+最新の結果は「成功」となります。</li>
+</ul>
+<p>以下の表が表示されます:</p>
+<ul>
+    <li><b>最上位のテストスイートごとの結果</b>
+    各最上位スイートの結果が一覧表示されます。成功、失敗、ブロック、未実行のテストケースの合計、そして完了率を表示します。
+    「完了した」テストケースとは、成功、失敗、ブロックの結果となったテストケースのことです。
+    トップレベルスイートの結果には全ての子スイートの結果を含みます。</li>
+    <li><b>キーワードごとの結果</b>
+    現在のテスト計画のテストケースに割り当てられているキーワードを全て表示します。
+    またそのキーワードに関連するテストケースを表示します。</li>
+    <li><b>オーナーごとの結果</b>
+    現在のテスト計画の中で、各オーナーに割り当てたれたテストの結果を一覧表示します。
+    未アサインのテストケースは、「未アサイン」という見出しのもとに集計されます。</li> 
+</ul>
+
+<h3>総合的なビルドのステータス</h3>
+<p>全ビルドの実行結果を一覧表示します。各ビルドのテストケースの合計数、成功数、成功率、失敗数、失敗率、ブロック数、ブロック率、未実行数、未実行率を表示します。
+もし、同一ビルドでテストケースが複数回実行されている場合は、最新のテスト結果が考慮されます。</p>
+
+<h3>クエリーのメトリクス</h3>
+<p>このレポートはクエリー入力ページと、クエリーデータを含むクエリー出力ページから構成されます。
+4種類のコントロールでクエリーを形成することができます。
+デフォルトでは、最も多くのテストケースとビルドを選択するように各コントロールが設定されています。
+コントロールを変更することにより、指定したオーナー、キーワード、テストスイート、
+ビルドの組み合わせによって、レポートに表示される結果をフィルタリングすることができます。</p>
+
+<ul>
+<li><b>キーワード:</b> 0個または1個のキーワードを選択することができます。デフォルトでは、キーワードは選択されていません。キーワードが選択されていない場合は、キーワード割り当てに関係なく、全てのテストケースに関する結果を表示します。キーワードはテスト仕様のページもしくは、キーワード管理のページで割り当てることができます。キーワードは、全テスト計画の全バージョンのテストケースにわたって割り当てることができます。特定のキーワードが割り当てられているテストケースの結果に興味がある場合は、このコントロールにキーワードを設定してください。</li>
+<li><b>オーナー:</b> 0人または1人のオーナーを選択することができます。デフォルトではオーナーは選択されていません。 オーナーが選択されていない場合は、オーナーの割り当てに関係なく、全てのテストケースに関する結果を表示します。「未割り当て」のテストケースは検索できません。オーナーシップは、「テスト実行の割り当て」のページで割り当てることができ、テスト計画ごとに割り当てられます。特定のテスターが実行したテストケースの結果に興味がある場合は、このコントロールにオーナーを設定してください。</li>
+<li><b>トップレベルテストスイート:</b> 0個からn個のトップレベルテストスイートを選択することができます。デフォルトでは全てのテストスイートが選択されています。選択したテストスイートの結果のみが、クエリーのメトリクスに反映されます。特定のテストスイートの結果に興味がある場合は、このコントロールを操作してください。</li>
+<li><b>ビルド:</b> 1個からn個のビルドを選択することができます。デフォルトでは全てのビルドが選択されています。選択したビルドでの実行結果のみを使用してメトリクスが計算されます。例えば、最後の3回のビルドで、いくつのテストケースを実行したかを調べたい場合は、このコントロールを操作してください。
+キーワード、オーナー、トップレベルテストスイートを選択することで、テスト計画ごと、テストスイートごとのメトリクスの計算に使用するテストケースの数を変化させることができます。例えば、オーナー=「Greg」、キーワード=「優先度1」と全テストスイートを選択した場合は、Gregに割り当てられた優先度1のテストケースのみが計算に使用されます。レポートの「テストケース数」の合計は、これら3種類のコントロールによって決められます。
+ビルドの選択は、「成功」、「失敗」、「ブロック」、「未実行」の数に影響します。先に説明した、「最新のテスト結果」のルールを参照してください。</li>
+</ul>
+<p>「クエリーを送信」ボタンをクリックすると、クエリー出力ページが表示されます。</p>
+
+<p>クエリ出力ページ:</p>
+<ol>
+<li>レポートを作成するために使用したクエリーパラメータ</li>
+<li>テスト計画内の合計</li>
+<li>スイートごとの全実行結果の合計 (総テストケース数 / 成功 / 失敗 / ブロック / 未実行)。もし、あるテストケースを複数のビルドで複数回実行した場合、選択したビルドに関連する全ての実行結果を表示します。しかし、テストスイートの実行結果の概要には、選択したビルドに対する「最新のテスト結果」のみが反映されます。</li>
+</ol>
+
+<h3>ブロック、失敗、未実行のテストケースのレポート</h3>
+<p>これらのレポートは、ブロック、失敗、未実行の全テストケースを表示します。「最新のテスト結果」のルール（一般的なテスト計画のメトリクスの項で説明しました）によって、テストケースがブロック、失敗、未実行に該当するかどうかを判定します。TestLinkとバグトラッキングシステムを統合して使用している場合は、ブロックと失敗のレポートに関連するバグが表示されます。</p>
+
+<h3>テストレポート</h3>
+<p>全ビルドの全テストケースのステータスを表示します。同一ビルド内でテストケースが複数回実行された場合は、最新の結果が表示されます。このレポートでは、「?」 マークを未実行のテストケースを表わすために使用します。大量のデータを使用している場合は、ブラウジングが簡単なExcel形式で出力することをお勧めします。</p>
+
+<h3>グラフ</h3>
+<p>4種類のチャートに表示される結果は、「最新のテスト結果」のルールに従って計算されます。グラフのアニメーションは、ユーザが現在のテスト計画のメトリクスを把握するための手助けとなるでしょう。
+以下の4種類のチャートが表示されます:</p>
+<ul>
+<li>成功 / 失敗 / ブロック / 未実行のテストケースを表わす円グラフ</li>
+<li>キーワードごとの結果を表わす棒グラフ</li>
+<li>オーナーごとの結果を表わす棒グラフ</li>
+<li>トップレベルスイートごとの結果を表わす棒グラフ</li>
+</ul>
+<p>棒グラフは、成功、失敗、ブロック、未実行のテストケース数を近似的に示しています。</p>
+<p>このレポートページを表示するためにはFlashプラグインが必要です。グラフィカルに結果を表示するために http://www.maani.us が提供している Flash 技術を使用しています。</p>
+
+<h3>各テストケースのバグの合計</h3>
+<p>このレポートは、テストプロジェクト内のバグが発見されたテストケースを表示します。このレポートはバグトラキングシステムが接続されている場合のみ表示されます。</p>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['planAddTC']	= "テスト計画へテストケースを追加/削除"; // testSetAdd
+$TLS_htmltext['planAddTC'] 			= "<h2>目的:</h2>
+<p>リーダー権限を持つユーザは、テストケースをテスト計画へ追加できます。</p>
+
+<h2>テストケースの追加/削除:</h2>
+<ol>
+	<li>テストスイートをクリックし、全て、または1つのテストケースを表示します。</li>
+	<li>あなたが追加を完了したい時、「テストケース追加/削除」ボタンをクリックし、テストケースをインポートして下さい。 
+        注意：同じテストケースを複数回追加することは出来ません。</li>
+</ol>";
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['tc_exec_assignment']	= "テストケース実行ユーザのアサイン";
+$TLS_htmltext['tc_exec_assignment'] 		= "<h2>目的:</h2>
+<p>この機能により、各テストケースについて実行する責任を持つユーザを設定することができます。</p>
+
+<h2>やってみましょう！</h2>
+<ol>
+	<li>テストケースもしくはテストスイートを選択します。</li>
+	<li>対象のテスト担当者を選択します。</li>
+	<li>アサインを確定するためにボタンをクリックします。</li>
+	<li>実行ページでアサインの完了を確認します。フィルターをアサインした担当者にせっていしてみてください。</li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
-$TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
-<p>TestLink allows set urgency of Test Suite to affect a testing Priority of test cases. 
-		Test priority depends on both Importance of Test cases and Urgency defined in 
-		the Test Plan. Test leader should specify a set of test cases that could be tested
-		at first. It helps to assure that testing will cover the most important tests
-		also under time pressure.</p>
+$TLS_htmltext_title['planUpdateTC']	= "テスト計画にアサインされたテストケースを更新する";
+$TLS_htmltext['planUpdateTC'] 		= "<h2>目的</h2>
+<p>このページでは、テスト仕様上で変更されたテストケースを最新バージョンに更新することができます。
+テストの実行期間中に、テストケースのバージョンを明確にしたい場合は多くあるでしょう。" .
+"例えば、あるテスト設計者がテスト仕様を変更したけれどもテスト計画には一通りのテスト完了後に反映させたい場合、" .
+"もしくは、テスト実行はオリジナルバージョンで行ったけれども、結果は修正されたテストケースと共に参照したい場合などが考えられます。</p>
 
-<h2>Get Started</h2>
+<h2>やってみましょう！</h2>
 <ol>
-	<li>Choose a Test Suite to set urgency of a product/component feature in navigator
-	on the left side of window.</li>
-	<li>Choose a urgency level (high, medium or low). Medium is default. You can
-	decrease priority for untouched parts of product and increase for components with
-	significant changes.</li>
-	<li>Press the button 'Save' to submit changes.</li>
+	<li>テストケースもしくはテストスイートを選択します。</li>
+	<li>対象のテストケースに対してプルダウンメニューから新たなバージョンを選択します。</li>
+	<li>変更を確定するために「テスト計画を更新」ボタンをクリックします。</li>
+	<li>実行ページのテストケースの文章を確認します。</li>
+</ol>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['test_urgency']	= "テストに緊急度を設定する";
+$TLS_htmltext['test_urgency'] 		= "<h2>目的</h2>
+<p>TestLinkでは、テストケースの優先度に影響を与える「緊急度」をテストスイートに設定することができます。
+		テストの優先度は各テストケースの作成時に設定する重要度とテスト計画で定義する重要度
+		の両方から計算されます。テストリーダーは始めに実行すべきテストを指定すべきでしょう。
+		これにより、時間に限りがある場合でも最重要なテストを網羅することができます。</p>
+
+<h2>やってみましょう！</h2>
+<ol>
+	<li>ウィンドウ左のナビゲータから緊急性のあるプロダクト/コンポーネントに関する
+	テストスイートを選択します。</li>
+	<li>緊急度のレベルを選択します (高、中、低)。中がデフォルトです。
+	例えば、あまり使用しない部分の優先度を下げたり、大きな変更が行われたコンポーネント
+	の優先度を上げたりといったことが可能です。</li>
+	<li>変更を確定するために「保存」ボタンをクリックしてください。</li>
 </ol>
-<p><i>For example, a Test case with a High importance in a Test suite with Low urgency " .
-		"will be Medium priority.</i>";
+<p><i>一例として、テストケースに重要度「高」、テストスイートに緊急度「低」を設定すると " .
+		"優先度は「中」になります。</i>";
 
 
 // ------------------------------------------------------------------------------------------

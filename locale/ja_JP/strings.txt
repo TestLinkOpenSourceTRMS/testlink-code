@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/03/16 04:55:25 $ by $Author: tosikawa $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/03/17 05:59:13 $ by $Author: tosikawa $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -41,7 +41,7 @@
  * Testing Engineer's Forum (TEF) in Japan
  * Working Group of TestLink Japanese Translation Project
  *
- * http://blues.se.uec.ac.jp/swtest/forum.html
+ * http://blues.se.uec.ac.jp/swtest/
  * http://testlinkjp.org/
  * http://sourceforge.jp/projects/testlinkjp/
  *
@@ -50,14 +50,15 @@
  *
  * Core member:
  * Atsushi Nagata,       AZMA Daisuke,         Hiromi Nishiyama,
- * Kaname Mochizuki,     Kunio Murakami,       Lumina Nishihara,
- * Marino Suda,          Masahide Katsumata,   Masami Ichikawa,
- * Masataka Yoneta,      Sadahiko Hantani,     Shinichi Sugiyama,
- * Shinsuke Matsuki,     Shizuka Ban,          Takahiro Wada,
- * Toshinori Sawaguchi,  Toshiyuki Kawanishi,  Yasuhiko Okada,
- * Yoichi Kunihiro,      Yoshihiro Yoshimura,  Yukiko Kajino
+ * Kaname Mochizuki,     Kaoru Nakamura,       Kunio Murakami,
+ * Lumina Nishihara,     Marino Suda,          Masahide Katsumata,
+ * Masami Ichikawa,      Masataka Yoneta,      Sadahiko Hantani,
+ * Shinichi Sugiyama,    Shinsuke Matsuki,     Shizuka Ban,
+ * Takahiro Wada,        Toshinori Sawaguchi,  Toshiyuki Kawanishi,
+ * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
+ * Yukiko Kajino
  *
- * @modified $Date: 2009/03/16 04:55:25 $ $Author: tosikawa $
+ * @modified $Date: 2009/03/17 05:59:13 $ $Author: tosikawa $
  *-------------------------------------------------------------------
 **/
 
@@ -219,7 +220,7 @@ $TLS_created_with_new_name = "名前:%s で作成しました。名前:%s は既
 
 
 $TLS_click_to_open = 'クリックして開く';
-$TLS_testplan_usage = "テスト計画使用法";
+$TLS_testplan_usage = "テスト計画での使用状況";
 
 $TLS_add_tcversion_to_plans = "このバージョンのテストケースをテスト計画に追加";
 $TLS_please_select_one_testplan = "ひとつ以上のテスト計画を選択してください。";
@@ -483,7 +484,7 @@ $TLS_was_success = " 成功しました";
 $TLS_TestPlan = $TLS_testplan;
 $TLS_btn_apply_filter = $TLS_btn_apply;
 $TLS_btn_update_menu = "メニューの更新";
-$TLS_caption_nav_filter_settings = "ナビゲーションのフィルター & 設定";
+$TLS_caption_nav_filter_settings = "ナビゲーション: フィルター & 設定";
 $TLS_current_build = "現在のビルド";
 $TLS_filter_owner = "アサイン";
 $TLS_filter_result = "結果";
@@ -662,7 +663,7 @@ $TLS_popup_sure_delete = "この要件ドキュメントを削除してもよろ
 $TLS_req_select_create_tc = "テストケース作成";
 $TLS_req_select_delete = "要件削除";
 $TLS_req_title_list = "要件リスト";
-$TLS_req_total = "上書きした全要件数";
+$TLS_req_total = "ドキュメント内の全要件数";
 $TLS_req_reorder = "要件並べ替え";
 $TLS_select_at_least_one_req = "要件を選択してください!";
 $TLS_warning_delete_requirements = "選択した要件を削除してもよろしいですか?";

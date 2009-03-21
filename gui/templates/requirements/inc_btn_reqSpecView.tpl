@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.7 2008/09/25 20:18:55 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.8 2009/03/21 12:05:13 franciscom Exp $
 
-rev:20080925 - franciscom - child requirements/folder management 
-    20080924 - franciscom - if req spec has no requirements then disable certain features
+rev: 20090321 - franciscom 
+     20080925 - franciscom - child requirements/folder management 
+     20080924 - franciscom - if req spec has no requirements then disable certain features
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_print,btn_new_req_spec'}
@@ -50,8 +51,7 @@ rev:20080925 - franciscom - child requirements/folder management
 	  <input type="button" name="importReq" value="{lang_get s='btn_import'}"
 		       onclick="location='{$req_import_url}'" />
 
-        {if $gui->requirements_count > 0}
-  	        <input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"
+            <input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"
 		               onclick="location='{$req_export_url}'" />
             
   	        <input type="button" name="reorderReq" value="{lang_get s='req_reorder'}"
@@ -59,7 +59,8 @@ rev:20080925 - franciscom - child requirements/folder management
             
   	        <input type="button" name="create_tcases" value="{lang_get s='req_select_create_tc'}"
 		               onclick="location='{$req_create_tc_url}'" />
-        {/if}
+        {if $gui->requirements_count > 0}
+  	    {/if}
   	{/if}
   </form>
 </div>

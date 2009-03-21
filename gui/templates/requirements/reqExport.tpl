@@ -1,11 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.4 2008/05/06 06:26:09 franciscom Exp $ *}
+{* $Id: reqExport.tpl,v 1.5 2009/03/21 12:05:13 franciscom Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
 {lang_get var="labels"
-          s="warning_empty_filename,warning,btn_export,btn_cancel,
-             view_file_format_doc,export_filename,file_type"}
+          s="warning_empty_filename,title_req_export,warning,btn_export,btn_cancel,
+             view_file_format_doc,req_spec,export_filename,file_type"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -41,15 +41,13 @@ function validateForm(f)
 </head>
 
 <body>
-<h1 class="title">{lang_get s='req_spec'} {$smarty.const.TITLE_SEP} {$req_spec.title|escape}</h1>
+<h1 class="title">{$labels.req_spec} {$smarty.const.TITLE_SEP} {$gui->req_spec.title|escape}</h1>
 
 <div class="workBack">
-<h1 class="title">{lang_get s='title_req_export'}</h1>
+<h1 class="title">{$labels.title_req_export}</h1>
 
 <form method="post" enctype="multipart/form-data" action="{$req_export_url}"
       onSubmit="javascript:return validateForm(this);">
-
-
     <table>
     <tr>
     <td>
@@ -57,14 +55,14 @@ function validateForm(f)
     </td>
     <td>
   	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
-			           value="{$export_filename|escape}" size="{#FILENAME_SIZE#}"/>
+			           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="export_filename"}
   	</td>
   	<tr>
   	<td>{$labels.file_type}</td>
   	<td>
   	<select name="exportType">
-  		{html_options options=$exportTypes}
+  		{html_options options=$gui->exportTypes}
   	</select>
 	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
   	</td>
@@ -72,8 +70,10 @@ function validateForm(f)
   	</table>
       
 	 <div class="groupBtn">
-		<input type="hidden" name="req_spec_id" value="{$req_spec_id}" />
-		<input type="submit" name="export" value="{$labels.btn_export}" />
+		<input type="hidden" id="doAction" name="doAction" value="export" />
+		<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+		<input type="submit" id="export" name="export" value="{$labels.btn_export}" 
+		       onclick="doAction.value='doExport'" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			onclick="javascript: location.href='{$req_spec_view_url}';" />
 	 </div>

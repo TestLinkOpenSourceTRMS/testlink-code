@@ -5,13 +5,15 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/03/16 08:56:50 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/03/21 12:06:15 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * rev: 20090315 - franciscom - added delete_deep();
+ * rev: 20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
+ *
+ *      20090315 - franciscom - added delete_deep();
  *
  *      20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
  *                              exportReqSpecToXML() (will be available on TL 1.9)
@@ -746,6 +748,7 @@ function getReqTree($id)
 /**
  * exportRequirementsToXML
  *
+ * Developed using exportTestSuiteDataToXML() as model
  */
 function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 {
@@ -758,15 +761,27 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
       $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
   }
 
-  $kwXML=null;
   $cfXML=null;
 	$xmlData = null;
 	if($optionsForExport['RECURSIVE'])
 	{
+
+    // $cfMap=$this->get_linked_cfields($id,$tproject_id);
+    // new dBug($cfMap);
+    // 
+		// if( !is_null($cfMap) && count($cfMap) > 0 )
+	  // {
+    //     $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+	  //     $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+	  //     	                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+	  //     $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+	  //     $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+	  // } 
+    $cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
 		$containerData = $this->get_by_id($id);
     $xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']). '" >' .
                "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
-	             "<scope><![CDATA[{$containerData['scope']}]]> \n{$kwXML}{$cfXML}</scope>";
+	             "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
 	}
 	else
 	{
@@ -1001,6 +1016,26 @@ function html_table_of_custom_field_values($id,$tproject_id)
   {
     $this->cfield_mgr->design_values_to_db($hash,$node_id,$cf_map,$hash_type);
   }
+
+
+ /**
+  * customFieldValuesAsXML
+  *
+  * @param $id: requirement spec id
+  * @param $tproject_id: test project id
+  *
+  *
+  */
+ function customFieldValuesAsXML($id,$tproject_id)
+ {
+    $xml = null;
+    $cfMap=$this->get_linked_cfields($id,$tproject_id);
+		if( !is_null($cfMap) && count($cfMap) > 0 )
+	  {
+        $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
+    }
+    return $xml;
+ }
 
 } // class end
 

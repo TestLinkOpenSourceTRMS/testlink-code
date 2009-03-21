@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/03/04 09:07:33 $  $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/03/21 12:06:15 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090321 - franciscom - exportValueAsXML()
  * 20090303 - franciscom - get_linked_cfields_at_execution() - fixed bugs on query
  *                         and added logic to change fetch method.
  *
@@ -2133,6 +2134,29 @@ function getXMLServerParams($node_id)
 			$str_out .= ' value="' . $p_custom_field_value .'"></input>';
       return $str_out;
   }               
+
+
+
+/**
+ * exportValueAsXML
+ * generate XML with custom field name, and custom field value
+ * useful on export to XML method for items that can have custom fields,
+ * example: test cases, test suites, req specification, etc.
+ *
+ * @param map $cfMap: key: custom file ID, value: map with at least keys 'name', 'value'
+ *
+ */
+ function exportValueAsXML($cfMap)
+ {
+  $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+  $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+		                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+	$cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+	$cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+  return $cfXML; 
+ }
+
+
 
 } // end class
 ?>

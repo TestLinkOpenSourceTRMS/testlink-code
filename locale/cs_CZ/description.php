@@ -1,11 +1,13 @@
 <?php
-/** -------------------------------------------------------------------------------------
+/** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/02 22:30:52 $ $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/03/22 09:54:49 $ by $Author: havlat $
  * @author Martin Havlat
+ * @author Pavel Kalian
  *
  * LOCALIZATION:
  * === English (en_GB) strings === - default development localization (World-wide English)
@@ -20,167 +22,149 @@
  * for your language.
  *
  * No revision is stored for the the file - see CVS history
- * The initial data are based on help files stored in gui/help/<lang>/ directory. 
- * This directory is obsolete now. It serves as source for localization contributors only. 
  *
  * ----------------------------------------------------------------------------------- */
 
+//If this file is coded in UTF-8 then enable the following line
+$TLS_STRINGFILE_CHARSET = "UTF-8";
+
 // printFilter.html
-$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
+$TLS_hlp_generateDocOptions = "<h2>Možnosti vytvoření dokumentu</h2>
 
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
-presented, check or uncheck, click on Filter, and select the desired data
-level from the tree.</p>
+<p>Tato tabulka umožnuje uživatelům zvolit testovací případy, které mají být zobrazeny. Pouze
+zvolené testovací sady budou zobrazeny dle požadovaného obsahu. Pokud budete chtít změnit obsah nebo zvolit jinou
+testovací sadu, proveďte změnu obsahu části navigace, popřípadě zvolte ze stromové struktury jinou 
+testovací sadu.</p>
 
-<p><b>Document Header:</b> Users can filter out Document Header information. 
-Document Header information includes: Introduction, Scope, References, 
-Test Methodology, and Test Limitations.</p>
+<p><b>Hlavička dokumentu:</b> Uživatelé mohou zvolit, které informace budou zobrazeny v hlavičce dokumentu. 
+Informace v hlavičce dokumentu mohou obsahovat: Úvod, Obsah, Odkazy, 
+Metodologii testování a omezení testů.</p>
 
-<p><b>Test Case Body:</b> Users can filter out Test Case Body information. Test Case Body information
-includes: Summary, Steps, Expected Results, and Keywords.</p>
+<p><b>Detaily testovacího případu:</b> Uživatelé mohou zvolit, které informace budou zobrazeny v popisu testovacích případů. Informace v popisu testovacích případů mohou obsahovat: přehled o testovacím případu, kroky testovacího skriptu, očekávané výsledky a klíčová slova.</p>
 
-<p><b>Test Case Summary:</b> Users can filter out Test Case Summary information from the Test Case Title,
-however, they cannot filter out Test Case Summary information from the Test
-Case Body. Test Case Summary has only been partially separated from Test Case
-Body in order to support viewing Titles with a brief Summary and the absence of
-Steps, Expected Results, and Keywords. If a user decides to view Test Case
-Body, Test Case Summary will always be included.</p>
+<p><b>Stručný obsah testovacího případu:</b> Uživatelé nemohou vypnout zobrazení shrnutí testovacího případu, pokud se rozhodli zobrazit jeho detail,
+jelikož je standartně jeho součástí. Pokud nebude vybrán k zobrazení detail testovacího případu, bude umožněno zobrazení pouze jeho shrnutí v případné 
+kombinaci s dalšími možnostmi.</p>
 
-<p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
+<p><b>Možnosti rejstříku obsahu:</b> Pokud je zvoleno uživatelem, TestLink vloží do rejstřiku obsahu seznam všech názvů testovacích připadů s interním hypertextovým odkazem.</p>
 
-<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>";
+<p><b>Výstupní formát:</b> Můžete zvolit ze dvou možností: HTML nebo MS Word. V druhém případě Váš prohlížeč spustí komponentu MS wordu.</p>";
 
 // testPlan.html
-$TLS_hlp_testPlan = "<h2>Test Plan</h2>
+$TLS_hlp_testPlan = "<h2>Testovací Plán</h2>
 
-<h3>General</h3>
-<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
-particular builds of product in time and trace results.</p>
+<h3>Obecný popis</h3>
+<p>Tvorba testovacího plánu je systematickým přístupem k testovaní systémů (například software). Dovoluje Vám organizování testovacích aktivit
+do příslušných sestavení produktu v daném čase a sledování jeho výsledků.</p>
 
-<h3>Test Execution</h3>
-<p>This section is where users can execute test cases (write test results) and 
-print Test case suite of the Test Plan. This section is where users can track 
-the results of their test case execution.</p> 
+<h3>Provádění testů</h3>
+<p>Tato sekce umožňuje uživatelům provádět testovací případy (zapsat jejich výsledek) a 
+případně vytisknout si testovací sadu z aktuálního testovacího plánu. V této sekci mohou uživatelé také sledovat výsledky
+prováděných testovacích případů.</p> 
 
-<h2>Test Plan Management</h2>
-<p>This section, which is only lead accessible, allows users to administrate test plans. 
-Administering test plans involves creating/editing/deleting plans, 
-adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
-see which plan.<br />
-Users with lead permissions may also set the priority/risk and ownership of 
-Test case suites (categories) and create testing milestones.</p> 
+<h2>Správa testovacích plánů</h2>
+<p>Tato sekce, dostupná pouze uživatelům v roli 'Vedoucí', umožňuje spravovat testovací plány. 
+Správa testovacích plánů zahrnuje jejich vytváření, mazání, nebo úpravu. Dále přidávání, mazání, nebo úpravu testovacích připadů v rámci testovacího plánu, vytváření sestavení, nebo nastavení oprávnění přístupu k plánu.<br />
+Uživatelé v roli 'Vedoucí' mohou také nastavovat prioritu/rizika a vlastnictví pro sady testovacích případů nebo vytvářet testovací milníky.</p> 
 
-<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
-In this situation all links (except lead enabled ones) will be unlinked. If you 
-are in this situation you must contact a lead or admin to grant you the proper 
-project rights or create a Test Plan for you.</p>"; 
+<p>Upozornění: Je možné, že uživatelé nemusí mít dostupný seznam testovacích plánů. 
+V tomto případě budou odkazy v úvodním okně nefunkční (neplatí pro uživatele s oprávněním 'Vedoucí' nebo vyšší). Pokud se  
+dostanete do takovéto situace, kontaktujte uživatele s rolí 'Vedoucí' popřípadě 'Administrátor', který vám nastaví oprávnění, nebo pro Vás vytvoří testovací plán.</p>"; 
 
 // custom_fields.html
-$TLS_hlp_customFields = "<h2>Custom Fields</h2>
-<p>Following are some facts about the implementation of custom fields:</p>
+$TLS_hlp_customFields = "<h2>Uživatelská pole</h2>
+<p>Fakta o možnostech využití uživatelských polí:</p>
 <ul>
-<li>Custom fields are defined system wide.</li>
-<li>Custom fields are linked to a type of element (Test Suite, Test Case)</li>
-<li>Custom fields can be linked to multiple Test Projects.</li>
-<li>The sequence of displaying custom fields can be different per Test Project.</li>
-<li>Custom fields can be turned inactive for an specific Test Project.</li>
-<li>Number of custom fields is not restricted.</li>
+<li>Uživatelská pole jsou definována přes celý systém.</li>
+<li>Uživatelská pole jsou navázána na komponenty Testlinku (testovací sada, testovací případ, ...)</li>
+<li>Uživatelská pole mohou být navázána na vícero testovacích projektů současně.</li>
+<li>Pořadí zobrazení uživatelských polí může být odlišné v každém testovacím projektu.</li>
+<li>Uživatelská pole mohou být vypnuta pro jakýkoliv testovací projekt.</li>
+<li>Počet uživatelských polí není omezen.</li>
 </ul>
 
-<p>The definition of a custom field includes the following logical
-attributes:</p>
+<p>Definice uživatelského pole obsahuje následující atributy:</p>
 <ul>
-<li>Custom field name</li>
-<li>Caption variable name (eg: This is the value that is
-supplied to lang_get() API , or displayed as-is if not found in language file).</li>
-<li>Custom field type (string, numeric, float, enum, email)</li>
-<li>Enumeration possible values (eg: RED|YELLOW|BLUE), applicable to list, multiselection list 
-and combo types.<br />
-<i>Use the pipe ('|') character to
-separate possible values for an enumeration. One of the possible values
-can be an empty string.</i>
+<li>Jméno uživatelského pole</li>
+<li>Název popisku proměnné (například: Tato hodnota je předána funkci lang_get() API , nebo zobrazena v případě, že pro ni neexistuje překlad).</li>
+<li>Typ uživatelského pole (řetězec, celé číslo, desetiné číslo, výčet, email)</li>
+<li>Výčet možných hodnot (například: ČERVENÁ|ŽLUTÁ|MODRÁ), vztahuje se k seznamu s možností vícenásobného výběru, 
+nebo rozbalovacímu seznamu.<br />
+<i>Použijte oddělovací znak ('|') pro oddělení položek ve výčtu možností. Prázdný řetězec může být použit jako jedna z položek ve výčtu.</i>
 </li>
-<li>Default value: NOT IMPLEMENTED YET</li>
-<li>Minimum/maximum length for the custom field value (use 0 to disable). (NOT IMPLEMENTED YET)</li>
-<li>Regular expression to use for validating user input
-(use <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
-syntax). <b>(NOT IMPLEMENTED YET)</b></li>
-<li>All custom fields are currently saved to a field of type VARCHAR(255) in the database.</li>
-<li>Display on test specification.</li>
-<li>Enable on test specification. User can change the value during Test Case Specification Design</li>
-<li>Display on test execution.</li>
-<li>Enable on test execution. User can change the value during Test Case execution</li>
-<li>Display on test plan design.</li>
-<li>Enable on test plan design. User can change the value during Test Plan design (add test cases to test plan)</li>
-<li>Available for. User choose to what kind of item the field belows.</li>
+<li>Přednastavená hodnota: NENÍ IMPLEMENTOVÁNO</li>
+<li>Minimální/maximální délka hodnoty uživatelského pole (použijte 0 pro vypnutí). (NENÍ IMPLEMENTOVÁNO)</li>
+<li>Regulární výrazy pro validaci uživatelského vstupu
+(použijte  <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
+syntaxi). <b>(NENÍ IMPLEMENTOVÁNO)</b></li>
+<li>Všechny hodnoty uživatelských polí jsou aktuálně ukládany v databázi jako řetezec VARCHAR(255).</li>
+<li>Zobrazit při specifikaci testovacích případů.</li>
+<li>Povolí uživatelské pole pro zobrazení a editaci v rámci specifikace testovacích případů. Uživatel může měnit hodnotu uživatelského pole při návrhu specifikace testovacího případu</li>
+<li>Zobrazit při provádění testovacích případů.</li>
+<li>Povolí uživatelské pole pro zobrazení a editaci v rámci provádění testovacích případů. Uživatel může měnit hodnotu uživatelského pole při provádění testovacích případů</li>
+<li>Zobrazit při návrhu testovacího plánu.</li>
+<li>Povolí uživatelské pole pro zobrazení a editaci v rámci návrhu testovaciho plánu.. Uživatel může měnit hodnotu uživatelského pole při návrhu testovacího plánu. (přiřazení testovacích případů do testovacího plánu)</li>
+<li>Dostupné pro: Uživatel zvolí k jaké komponentě Testlinku se pole vztahuje.</li>
 </ul>
 ";
 
 // execMain.html
-$TLS_hlp_executeMain = "<h2>Executing Test Cases</h2>
-<p>Allows users to 'execute' test cases. Execution itself is merely
-assigning a test case a result (pass,fail,blocked) against a selected build.</p>
-<p>Access to a bug tracking system could be configured. User can directly add a new bugs
-and browse exesting ones then.</p>";
+$TLS_hlp_executeMain = "<h2>Provádění testovacích případů</h2>
+<p>Umožňuje uživatelům 'provádět' testovací případy. Samotné provedení testovacího připadu v ramci aplikace Testlink spočívá v nastavení jeho stavu (úspěšný, neúspěšný, ...).</p>
+<p>Aplikace Testlink umožňuje přístup do nástrojů pro správu chyb (závisí na konfiguraci). Uživatelé pak mohou k testovacím případům přiřadit chyby a sledovat jejich stav.</p>";
 
 //bug_add.html
-$TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
-<p><i>(only if it is configured)</i>
-TestLink has a very simple integration with Bug Tracking Systems (BTS),
-not being able either send a bug creationg request to BTS, neither get back the bug id.
-The integration is done using links to pages on BTS, that calls the following features:
+$TLS_hlp_btsIntegration = "<h2>Přiřazení chyby k testovacímu případu</h2>
+<p><i>(pouze v případě, že je nastaveno propojení s nástrojem pro správu chyb)</i>
+TestLink poskytuje jednoduchou integraci s nástroji pro správu chyb (BTS). Neumožňuje však vložit chybu v rámci aplikace Testlink do BTS ani automatické předávaní ID chyby mezi BTS a Testlink.
+Integrace s BTS je provedena na úrovni odkazu, který umožní provést následující činnosti:
 <ul>
-	<li>Insert new bug.</li>
-	<li>Display existent bug info. </li>
+	<li>Vložit novou chybu.</li>
+	<li>Zobrazit informace o již existující chybě. </li>
 </ul>
 </p>  
 
-<h3>Process to add a bug</h3>
+<h3>Postup pro vložení chyby</h3>
 <p>
    <ul>
-   <li>Step 1: use the link to open BTS to insert a new bug. </li>
-   <li>Step 2: write down the BUGID assigned by BTS.</li>
-   <li>Step 3: write BUGID on the input field.</li>
-   <li>Step 4: use add bug button.</li>
+   <li>Krok 1: použijte odkaz pro otevření BTS a vložte novou chybu. </li>
+   <li>Krok 2: poznamenejte si ID chyby v rámci BTS.</li>
+   <li>Krok 3: napište ID chyby do vstupního pole v Testlinku.</li>
+   <li>Krok 4: použijte tlačítko Přidat chybu.</li>
    </ul>  
 
-After closing the add bug page, you will see relevant bug data on the execute page.
+Po uzavření stránky 'Přidat chybu' uvidíte informace o chybě navázané na testovací případ, pro který byla chyba přidána.
 </p>";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
+$TLS_hlp_executeFilter = "<h2>Nastavení sestavení a filtrů pro zobrazení výsledků provedení testů</h2>
 
-<p>The left pane consists from navigator through test cases assigned to the current " .
-"Test plan and table with settings and filter. These filters allows the user " .
-"to refine offered set of test cases before they are executed." .
-"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
-"from tree menu.</p>
+<p>Levý ovládací panel se skládá ze seznamu testovacích případů navázaných na aktuální " .
+"testovací plán a tabulku s možnostmi nastavení a filtrování. Tyto filtry umožňují uživateli " .
+"omezit nabízenou sadu testovacích případů před tím, než budou provedeny." .
+"Nastavte filtr, stiskněte tlačítko \"Použít\" a zvolte příslušný testovací případ " .
+"z menu.</p>
 
-<h3>Build</h3>
-<p>Users must choose a build that will be connected with a test result. " .
-"Builds are the basic component for the current Test Plan. Each test case " .
-"may be run more times per build. However the last results is count only. 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<h3>Sestavení</h3>
+<p>Uživatelé musí zvolit, pro které sestavení se jim budou výsledky zobrazovat. " .
+"Sestavení jsou základní komponentou pro aktuální testovací plán. Každý testovací případ " .
+"může být v rámci jednoho sestavení proveden vícekrát. Pro filtrování ale bude použit pouze poslední výsledek. 
+<br />Sestavení mohou být vytvořena uživateli s rolí 'Vedoucí' nebo vyšší na stránce Správa sestavení.</p>
 
-<h3>Test Case ID filter</h3>
-<p>Users can filter test cases by unique identifier. This ID is created automatically 
-during create time. Empty box means that the filter doesn't apply.</p> 
+<h3>Filtrování dle ID testovacího případu</h3>
+<p>Uživatelé mohou filtrovat testovací případy podle jejich unikátního označení (ID). Toto ID je automaticky generováno při vytváření testovacího případu. Pokud bude vstupní pole u filtru ID prázdné, nebude tento filtr aplikován.</p> 
 
-<h3>Priority filter</h3>
-<p>Users can filter test cases by test priority. Each test case importance is combined" .
-"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
-"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+<h3>Filtrování dle priority</h3>
+<p>Uživatelé mohou filtrovat testovací případy dle jejich priority. Důležitost každého testovacího případu ve zvoleném testovacím plánu je kombinována s jeho urgentností. Například testovací případ s prioritou 'Vysoká' " .
+"je zobrazen v případě, že důležitost je nastavena na úroveň VYSOKÁ a urgentnost je nastavena na úroveň STŘEDNÍ, popřípadě obráceně.</p> 
 
-<h2>Result filter</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
-"This filter is disabled by default.</p>
+<h2>Filtrování dle výsledků</h2>
+<p>Uživatelé mohou filtrovat testovací případy dle jejich výsledků. Výsledkem se myslí stav testovacího případu ve zvoleném sestavení. Testovací případ může být například ve stavu: úspěšný, neúspěšný, blokován, nebo neproveden." .
+"Tento filtr je standartně vypnut.</p>
 
-<h3>User filter</h3>
-<p>Users can filter test cases by their assignee. The check-box allows to include also " .
-"\"unassigned\" tests into the resulted set in addtion.</p>";
+<h3>Uživatelské filtry</h3>
+<p>Uživatelé mohou filtrovat testovací případy dle jim přiřazeného uživatele. Do výsledků je také možné zahrnout " .
+"\"nepřiřazené\" testovací případy zaškrtnutím příslušného pole.</p>";
 /*
 <h2>Most Current Result</h2>
 <p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
@@ -199,52 +183,39 @@ build 2, it will be colored green.</p>
 
 
 // newest_tcversions.html
-$TLS_hlp_planTcModified = "<h2>Newest versions of linked Test Cases</h2>
-<p>The whole set of Test Cases linked to Test Plan is analyzed, and a list of Test Cases
-which have a newest version is displayed (against the current set of the Test Plan).
-</p>";
+$TLS_hlp_planTcModified = "<h2>Nejnovější verze testovacích případů v aktuálním testovacím plánu</h2>
+<p>Všechny testovací případy navázané do testovacího plánu budou analyzovány a zobrazí se seznam testovacích případů, které jsou dostupné v novější verzi.</p>";
 
 
 // requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
+$TLS_hlp_requirementsCoverage = "<h3>Pokrytí požadavků</h3>
 <br />
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
+<p>Tato funkčnost umožnuje mapovat pokrytí testovacích případů uživateli nebo specifikacemi požadavků. K této funkčnosti se dostanete odkazem \"Specifikace požadavků\" na úvodní obrazovce.</p>
 
-<h3>Requirements Specification</h3>
-<p>Requirements are grouped by 'Requirements Specification' document which is related to 
-Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+<h3>Specifikace požadavků</h3>
+<p>Požadavky jsou uspořádány v rámci dokumentu specifikace požadavků, který je definována v rámci 
+testovacího projektu.<br /> TestLink nepodporuje verzování dokumentu specifikace požadavků ani samotných požadavků. Verze dokumentu nebo požadavků by tak měla být zaznamenána v jejich <b>názvu</b>.
+Uživatel může také připadně přidat popis nebo poznámku v rámci jejich b>obsahu</b>.</p> 
 
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) in. 
-The value <b>0</b> means that current count of requirements is used for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
-coverage is 25% (if all these added requirements will be tested).</i></p>
+<p><b><a name='total_count'>Počet importovaných požadavků</a></b> slouží pro vyhodnocení pokrytí požadavků v případě, že některé z požadavků nebyly přidány (importovány). 
+Hodnota <b>0</b> vyjadřuje aktuální počet požadavků zahrnutých do metrik.</p> 
+<p><i>Například SRS obsahuje 200 požadavků, ale pouze 50 je jich přidano do testlinku. Pokrytí testy je pak z 25% (za předpokladu, že budou všechny přidané požadavky zahrnuty do testování).</i></p>
 
-<h3><a name=\"req\">Requirements</a></h3>
-<p>Click on title of a created Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
+<h3><a name=\"req\">Požadavky</a></h3>
+<p>Klikněte na jméno vytvořeného dokumentu specifikace požadavků. Pro dokument pak můžete vytvářet, upravovat, mazat, nebo importovat požadavky. Každý požadavek má jméno, specifikaci a stav.
+Stav může být \"Normální\" or \"Netestovatelné\". Netestovatelné požadavky nejsou zahrnuty do výpočtu metrik. Tento parametr může být použit pro neimplementované prvky i pro špatně definované požadavky.</p> 
 
-<p>You can create new test cases for requirements by using multi action with checked 
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
-\"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
+<p>Můžete vytvořit nové testovací případy přímo na stránce specifikace požadavků pro vybrané požadavky použitím automatické funkce. Tyto testovací případy budou vytvořeny v testovací sadě, jejíž jméno je definováno konfigurací Testlinku <i>(standartní nastavení je: &#36;tlCfg->req_cfg->default_testsuite_name = 
+'Test suite created by Requirement - Auto';)</i>. Titulek a obsah jsou zkopírovány do těchto testovacích případů.</p>
 ";
 
 
 // planAddTC_m1.tpl
-$TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
-If you have defined and assigned to Test Project,<br /> 
-Custom Fields with:<br />
- 'Display on test plan design=true' and <br />
- 'Enable on test plan design=true'<br />
-you will see these in this page ONLY for Test Cases linked to Test Plan.
+$TLS_hlp_planAddTC = "<h2>Možnost 'Uložit uživatelská pole'</h2>
+Pokud nadefinujete a přiřadite uživatelská pole do testovacího projektu s nastavením:<br />
+ 'Zobrazit v testovacím plánu=ano' a <br />
+ 'Povolit v testovacím plánu=ano'<br />
+budou tyto pole dostupné POUZE pro testovací případy navázané do testovacího plánu.
 ";
 
 // xxx.html

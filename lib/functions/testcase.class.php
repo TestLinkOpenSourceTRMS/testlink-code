@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.155 $
- * @modified $Date: 2009/03/16 08:56:50 $ $Author: franciscom $
+ * @version $Revision: 1.156 $
+ * @modified $Date: 2009/03/23 20:52:27 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
@@ -694,8 +694,10 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 	
 	tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 
-  // Check if new name will be create a duplicate testcase under same parent
-  $ret = $this->check_name_is_unique($id,$name);
+	// Check if new name will be create a duplicate testcase under same parent
+  	$bCheckDuplicates = config_get('check_names_for_duplicates');
+  	if ($bCheckDuplicates)
+		$ret = $this->check_name_is_unique($id,$name);
 
   if($ret['status_ok'])
   {    

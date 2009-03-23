@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.111 $
- * @modified $Date: 2009/03/05 18:38:49 $ by $Author: schlundus $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2009/03/23 20:52:27 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1520,7 +1520,7 @@ $TLS_title_requirements = "Anforderungen";
 $TLS_title_test_spec = "Testfall Definition";
 $TLS_title_product_mgmt = "Testprojekt Verwaltung";
 $TLS_href_plan_define_priority = "Test Plan priority";
-$TLS_href_my_testcase_assignments="Test Cases assigned to me";
+$TLS_href_my_testcase_assignments = "Mir zugewiesene Testfälle";
 
 
 // ----- gui/templates/mainPage_right.tpl -----

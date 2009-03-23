@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/03/05 18:38:48 $ - $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/03/23 20:09:10 $ - $Author: schlundus $
  *
  * Revision :
  *      20070501 - franciscom - lang_get_smarty() now accept a list of
@@ -59,12 +59,14 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 	else if(isset($g_lang_strings['en_GB'][$p_string]))
 		$loc_str = $g_lang_strings['en_GB'][$p_string];
 
+	$the_str = $loc_str;
 	if (!is_null($loc_str))
 	{
 		$stringFileCharset = "ISO-8859-1";
 		if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
 			$stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
-		$the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
+		if ($stringFileCharset != TL_TPL_CHARSET)
+			$the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
 	}
 	else
 	{

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/03/17 05:59:13 $ by $Author: tosikawa $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/03/23 04:51:09 $ by $Author: tosikawa $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -58,7 +58,7 @@
  * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
  * Yukiko Kajino
  *
- * @modified $Date: 2009/03/17 05:59:13 $ $Author: tosikawa $
+ * @modified $Date: 2009/03/23 04:51:09 $ $Author: tosikawa $
  *-------------------------------------------------------------------
 **/
 
@@ -337,7 +337,7 @@ $TLS_tc_new_version = "テストケースのバージョン %d の作成に成�
 $TLS_tc_updated = "テストケース %s の更新に成功しました。";
 $TLS_tc_update_failed = "テストケース %s の更新に失敗しました!";
 $TLS_tc_version_deleted = "テストケース %s のバージョン %d の削除に成功しました。";
-$TLS_assign_requirements = "要件の割り当て";
+$TLS_assign_requirements = "要件のアサイン";
 
 
 // ----- tcexecute.php -----
@@ -1198,7 +1198,7 @@ $TLS_please_select_a_req = "要件を選択してください";
 $TLS_req_msg_norequirement66 = "要件はありません";
 $TLS_req_title_assign = "テストケースへ要件を割り付け";
 $TLS_req_title_assigned = "割りつけられた要件";
-$TLS_req_title_unassigned = "使用可能な要件";
+$TLS_req_title_unassigned = "利用可能な要件";
 $TLS_warning_req_tc_assignment_impossible = "以下のいずれかの理由でアサインが" .
                                             "<b>できません</b>:" .
                                             "<br><ul><li>要件仕様が未定義</li>" .
@@ -1590,9 +1590,9 @@ $TLS_builds_description = "各ビルドはタイトルによって識別され�
                     "<br />以下のような説明を記述するとよいでしょう:&nbsp;" .
                     "配布されたパッケージのリスト、修正項目、実装機能、承認、状態、など。<br />" .
                     "ビルドには2種類の属性があります:<br />" .
-                          "アクティブ / インアクティブ ― この属性はTestLinkの機能がどのビルドに対して有効であるかどうかを決定します。 " .
+                          "アクティブ / インアクティブ - この属性はTestLinkの機能がどのビルドに対して有効であるかどうかを決定します。 " .
                           "インアクティブビルドはテスト実行とレポートのページには表示されません。<br />" .
-                          "オープン / クローズ ― この属性は対象ビルドの結果が変更可能かどうかを決定します。";
+                          "オープン / クローズ - この属性は対象ビルドの結果が変更可能かどうかを決定します。";
 $TLS_build_copy_help = "以下のオプションを選択した場合: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
                      "&nbsp;、ビルド名はこのテストプロジェクト内の全てのテスト計画から参照することができます。" .
                      "また、名前を入力しなくてもビルドを作成することができます。";
@@ -1874,7 +1874,7 @@ $TLS_kw_update_fails = "キーワードの更新ができませんでした";
 
 // ----- lib/keywords/keywordsAssign.php -----
 $TLS_assigned_kword = "アサインしたキーワード";
-$TLS_available_kword = "使用可能なキーワード";
+$TLS_available_kword = "利用可能なキーワード";
 
 
 
@@ -1918,7 +1918,7 @@ $TLS_different_versions = "バージョン間の差";
 $TLS_plan_update_no_tc_updated = "テストケースは更新されませんでした";
 $TLS_updated = "更新";
 $TLS_all_versions_where_latest = "変更なし" .
-		"- 全てのテストケースの最新バージョンが使用可能です";
+		"- 全てのテストケースの最新バージョンが利用可能です";
 $TLS_num_of_updated = "%d 個のテストケースが更新されました";
 
 
@@ -2089,9 +2089,9 @@ $TLS_req_not_in_req_spec_on_tcimport = "要件DOCID=%s はテストケースに�
 		"これは要件仕様 %s の直接の子要素ではありません。";
 $TLS_req_spec_ko_on_tcimport = "要件仕様=%s は存在しません。" .
 		"要件をテストケースに紐付けることができません。";
-$TLS_update_last_testcase_version = '最新バージョンのデータを更新しました';
-$TLS_create_new_testcase_version = '新たなバージョンを作成しました';
-$TLS_generate_new_testcase = '新たなテストケースを異なる名前で作成しました';
+$TLS_update_last_testcase_version = '最新バージョンのデータを更新します';
+$TLS_create_new_testcase_version = '新たなバージョンを作成します';
+$TLS_generate_new_testcase = '新たなテストケースを異なる名前で作成します';
 $TLS_no_cf_defined_can_not_import = "インポートファイルにカスタムフィールドの値がありますが".
     "インポートすることができません。カスタムフィールドはテストプロジェクトにインポートしてください。";
 $TLS_no_reqspec_defined_can_not_import = "インポートファイルに要件がありますが".
@@ -2281,8 +2281,8 @@ $TLS_audit_role_deleted = "役割 '{%1}' は削除されました";
 $TLS_audit_cfield_created = "カスタムフィールド '{%1}' は作成されました";
 $TLS_audit_cfield_saved = "カスタムフィールド '{%1}' はセーブされました";
 $TLS_audit_cfield_deleted = "カスタムフィールド '{%1}' は削除されました";
-$TLS_audit_cfield_assigned = "カスタムフィールド '{%1}' はテストプロジェクト '{%2}' に割り当てられました";
-$TLS_audit_cfield_unassigned = "カスタムフィールド '{%1}' はテストプロジェクト '{%2}' に割り当てられました";
+$TLS_audit_cfield_assigned = "カスタムフィールド '{%1}' はテストプロジェクト '{%2}' にアサインされました";
+$TLS_audit_cfield_unassigned = "カスタムフィールド '{%1}' はテストプロジェクト '{%2}' にアサインされました";
 $TLS_audit_cfield_display_order_changed = "テストプロジェクト '{%1}' の表示順は保存されました";
 $TLS_audit_cfield_activated = "カスタムフィールド '{%1}' は テストプロジェクト '{%2}' で有効にされました";
 $TLS_audit_cfield_deactivated = "カスタムフィールド '{%1}' は テストプロジェクト '{%2}' で無効にされました";
@@ -2290,10 +2290,10 @@ $TLS_audit_cfield_deactivated = "カスタムフィールド '{%1}' は テス�
 $TLS_audit_user_apikey_set = "API-Key '{%1}' は生成されました";
 $TLS_audit_user_saved = "ユーザ '{%1}' はセーブされました";
 $TLS_audit_user_pwd_saved = "ユーザ '{%1}' のパスワードはセーブされました";
-$TLS_audit_users_roles_added_testproject = "ユーザ '{%1}'はテストプロジェクト '{%2}' で役割 '{%3}' が割り当てられました";
-$TLS_audit_users_roles_added_testplan = "ユーザ '{%1}' はテスト計画 '{%2}' で役割 '{%3}' が割り当てられました";
-$TLS_audit_all_user_roles_removed_testplan = "テスト計画 '{%1}' の全ユーザの役割は割り当て解除されました";
-$TLS_audit_all_user_roles_removed_testproject = "テストプロジェクト ID '{%1}' の全てのユーザの役割は割り当て解除されました";
+$TLS_audit_users_roles_added_testproject = "ユーザ '{%1}'はテストプロジェクト '{%2}' で役割 '{%3}' がアサインされました";
+$TLS_audit_users_roles_added_testplan = "ユーザ '{%1}' はテスト計画 '{%2}' で役割 '{%3}' がアサインされました";
+$TLS_audit_all_user_roles_removed_testplan = "テスト計画 '{%1}' の全ユーザの役割のアサインを解除しました";
+$TLS_audit_all_user_roles_removed_testproject = "テストプロジェクト ID '{%1}' の全てのユーザの役割のアサインを解除しました";
 $TLS_audit_user_created = "ユーザ '{%1}' は作成されました";
 $TLS_audit_user_deleted = "ユーザ '{%1}' は削除されました";
 $TLS_audit_user_logout = "'{%1}' はログアウトしました";
@@ -2311,9 +2311,9 @@ $TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' は削除されま�
 $TLS_audit_keyword_created = "キーワード '{%1}' は作成されました";
 $TLS_audit_keyword_saved = "キーワード '{%1}' はセーブされました";
 $TLS_audit_keyword_deleted = "キーワード '{%1}' は削除されました";
-$TLS_audit_keyword_assigned_tc = "キーワード '{%1}' はテストケース '{%2}' に割り当てられました";
-$TLS_audit_keyword_assignment_removed_tc = "キーワード '{%1}' はテストケース '{%2}'から割り当て解除されました";
-$TLS_audit_all_keyword_assignments_removed_tc = "全てのキーワードはテストケース '{%1}' から割り当て解除されました";
+$TLS_audit_keyword_assigned_tc = "キーワード '{%1}' はテストケース '{%2}' にアサインされました";
+$TLS_audit_keyword_assignment_removed_tc = "キーワード '{%1}' はテストケース '{%2}'からアサインを解除されました";
+$TLS_audit_all_keyword_assignments_removed_tc = "全てのキーワードはテストケース '{%1}' からアサインを解除されました";
 
 $TLS_audit_executionbug_added = "バグ '{%1}' は実行中に追加されました";
 $TLS_audit_executionbug_deleted = "バグ '{%1}' は実行中に削除されました";
@@ -2329,8 +2329,8 @@ $TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - 要件仕様 '{%2}' 
 $TLS_audit_requirement_created = "要件 '{%1}' は作成されました";
 $TLS_audit_requirement_saved = "要件 '{%1}' はセーブされました";
 $TLS_audit_requirement_deleted = "要件 '{%1}' は削除されました";
-$TLS_audit_req_assigned_tc = "タイトル '{%1}' の要件はテストケース '{%2}' に割り当てられました";
-$TLS_audit_req_assignment_removed_tc = "タイトル '{%1}' の要件はテストケース '{%2}' から割り当て解除されました";
+$TLS_audit_req_assigned_tc = "タイトル '{%1}' の要件はテストケース '{%2}' にアサインされました";
+$TLS_audit_req_assignment_removed_tc = "タイトル '{%1}' の要件はテストケース '{%2}' からアサインを解除されました";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - ビルド '{%3}' は作成されました";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - ビルド '{%3}' はセーブされました";

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/03/21 12:06:15 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/03/23 08:10:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * rev: 20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
+ * rev: 20090322 - franciscom - xmlToMapReqSpec()
+ *      20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
  *
  *      20090315 - franciscom - added delete_deep();
  *
@@ -133,8 +134,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         20080318 - franciscom - removed code to get last inserted id
 
   */
-	function create($tproject_id,$parent_id,$title, $scope, $countReq,$user_id,$type = 'n')
+	function create($tproject_id,$parent_id,$title, $scope, $countReq,$user_id,$type = 'n',$node_order=null)
 	{
+	  echo "\$tproject_id,\$parent_id,\$title:$tproject_id,$parent_id,$title<br>";
 		$result=array();
 
     $result['status_ok'] = 0;
@@ -143,11 +145,13 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
     $title=trim($title);
 
-    $chk=$this->check_title($title,$tproject_id);
-		if ($chk['status_ok'])
+    $chk=$this->check_title($title,$tproject_id);  // NEED TO BE REFACTORED
+		if ($chk['status_ok'] || true)
 		{
 		  $name=$title;
-		  $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		  // 20090322 - francisco.mancardi@gruppotesi.com
+		  // 	function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
+		  $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name,$node_order);
 
 			$sql = "INSERT INTO {$this->object_table} " .
 			       " (id, testproject_id, title, scope, type, total_req, author_id, creation_ts) " .
@@ -746,7 +750,11 @@ function getReqTree($id)
 
 
 /**
- * exportRequirementsToXML
+ * exportReqSpecToXML
+ * create XML string with following req spec data
+ *  - basic data (title, scope)
+ *  - custom fields values
+ *  - children: can be other req spec  or requirements (tree leaves)
  *
  * Developed using exportTestSuiteDataToXML() as model
  */
@@ -765,18 +773,6 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	$xmlData = null;
 	if($optionsForExport['RECURSIVE'])
 	{
-
-    // $cfMap=$this->get_linked_cfields($id,$tproject_id);
-    // new dBug($cfMap);
-    // 
-		// if( !is_null($cfMap) && count($cfMap) > 0 )
-	  // {
-    //     $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-	  //     $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-	  //     	                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
-	  //     $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
-	  //     $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
-	  // } 
     $cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
 		$containerData = $this->get_by_id($id);
     $xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']). '" >' .
@@ -823,8 +819,108 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 }
 
 
+/**
+ * xmlToReqSpec
+ *
+ * @param object $source:  
+ *               $source->type: possible values 'string', 'file'
+ *               $source->value: depends of $source->type 
+ *                               'string' => xml string
+ *                               'file' => path name of XML file
+ *                     
+ */
+function xmlToReqSpec($source)
+{
+    $status_ok=true;
+    $xml_string=null;
+    $req_spec=null;
+    switch( $source->type )
+    {
+        case 'string':
+            $xml_string = $source->value;
+        break; 
+          
+        case 'file':
+            $xml_file = $source->value;
+	          $status_ok=!(($xml_object=@simplexml_load_file($xml_file)) === FALSE);
+        break; 
+    }
 
+    if( $status_ok )
+    {
+      
+    }
 
+    return $req_spec;
+}
+
+/**
+ * xmlToMapReqSpec
+ *
+ */
+function xmlToMapReqSpec($xml_item,$level=0)
+{
+    static $iterations=0;
+    static $mapped;
+		static $req_mgr;
+    
+    // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
+    //            before using data from $xml,
+    if( is_null($xml_item) )
+    {
+        return null;      
+    }
+    
+	  $dummy=array();
+	  $dummy['node_order'] = (int)$xml_item->node_order;
+	  $dummy['scope'] = (string)$xml_item->scope;
+	  $dummy['level'] = $level;
+	  $depth=$level+1;
+
+	  foreach($xml_item->attributes() as $key => $value)
+	  {
+	     $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
+	  }    
+
+    if( property_exists($xml_item,'custom_fields') )	              
+    {
+	      $dummy['custom_fields']=array();
+	      foreach($xml_item->custom_fields->children() as $key)
+	      {
+	         $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
+	      }    
+	  }
+	  $mapped[]=array('req_spec' => $dummy, 'requirements' => null);
+    
+    // Process children
+    if( property_exists($xml_item,'requirement') )	              
+    {
+		    if( is_null($req_mgr) )
+		    {
+		        $req_mgr = new requirement_mgr($this->db);
+        }
+        $loop2do=count($xml_item->requirement);
+        for($idx=0; $idx <= $loop2do; $idx++)
+        {
+            $xml_req=$req_mgr->xmlToMapRequirement($xml_item->requirement[$idx]);
+            if(!is_null($xml_req))
+            { 
+                $fdx=count($mapped)-1;
+                $mapped[$fdx]['requirements'][]=$xml_req;
+            }    
+        }    
+    }        
+ 
+    if( property_exists($xml_item,'req_spec') )	              
+    {
+        $loop2do=count($xml_item->req_spec);
+        for($idx=0; $idx <= $loop2do; $idx++)
+        {
+            $this->xmlToMapReqSpec($xml_item->req_spec[$idx],$depth);
+        }
+    }        
+    return $mapped;
+}
 
 
 // ---------------------------------------------------------------------------------------
@@ -1036,6 +1132,48 @@ function html_table_of_custom_field_values($id,$tproject_id)
     }
     return $xml;
  }
+
+
+ /**
+  * 
+  *
+  *
+  *
+  */
+  function createFromXML($xml,$tproject_id,$parent_id,$author_id)
+  {
+      $items=$this->xmlToMapReqSpec($xml);
+      $req_mgr = new requirement_mgr($this->db);
+      
+      new dBug($items);
+      
+      $loop2do=count($items);
+      $container_id[0]=is_null($parent_id) || $parent_id==0 ? $tproject_id : $parent_id;
+	    for($idx = 0;$idx < $loop2do; $idx++)
+	    {
+         $elem=$items[$idx]['req_spec'];
+         $depth=$elem['level'];
+         $result=$this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
+         if($result['status_ok'])
+         {
+             $container_id[$depth+1]=$result['id']; 
+         
+             // work on requirements
+             $requirementSet=$items[$idx]['requirements'];
+             $items2insert=count($requirementSet);
+	           for($jdx = 0;$jdx < $items2insert; $jdx++)
+	           {
+                  //function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
+                  //                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
+                 $req=$requirementSet[$jdx];
+                 $req_mgr->create($result['id'],$req['docid'],$req['title'],
+                                  $req['description'],$author_id,$req['status'],$req['type']);
+             }       
+         } 
+      }    
+  }
+
+
 
 } // class end
 

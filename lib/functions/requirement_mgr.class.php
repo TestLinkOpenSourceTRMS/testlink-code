@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/03/16 08:56:50 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/03/23 08:10:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
+ * rev : 20090322 - franciscom - 
+ *       20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
  *                               delete() - fixed delete order due to FK.
  *       20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
  *       20081129 - franciscom - BUGID 1852 - bulk_assignment() 
@@ -825,6 +826,45 @@ function exportReqToXML($id,$tproject_id=null)
 	$xmlStr=exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
 	return $xmlStr;
 }
+
+
+/**
+ * xmlToMapRequirement
+ *
+ */
+function xmlToMapRequirement($xml_item)
+{
+    // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
+    //            before using data from $xml,
+    if( is_null($xml_item) )
+    {
+        return null;      
+    }
+        
+	  $dummy=array();
+	  foreach($xml_item->attributes() as $key => $value)
+	  {
+	     $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
+	  }    
+	  
+	  $dummy['node_order'] = (int)$xml_item->node_order;
+	  $dummy['title'] = (string)$xml_item->title;
+    $dummy['docid'] = (string)$xml_item->docid;
+    $dummy['description'] = (string)$xml_item->description;
+    $dummy['status'] = (string)$xml_item->status;
+    $dummy['type'] = (string)$xml_item->type;
+
+    if( property_exists($xml_item,'custom_fields') )	              
+    {
+	      $dummy['custom_fields']=array();
+	      foreach($xml_item->custom_fields->children() as $key)
+	      {
+	         $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
+	      }    
+	  }
+	  return $dummy;
+}
+
 
 
 

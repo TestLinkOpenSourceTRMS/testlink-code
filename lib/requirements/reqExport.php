@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/03/21 12:06:15 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/03/23 08:10:18 $ by $Author: franciscom $
  *
  * This page this allows users to export requirements.
  *
@@ -61,6 +61,8 @@ function init_args()
    $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
    $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
    $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
+ 	 $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
    return $args;  
 }
 
@@ -106,7 +108,9 @@ function doExport(&$argsObj,&$req_spec_mgr)
 			$pfn = "exportReqSpecToXML";
 			$fileName = 'reqs.xml';
   		$content = TL_XMLEXPORT_HEADER;
+  		$content .= "<requirement-specification>\n";
 		  $content .= $req_spec_mgr->$pfn($argsObj->req_spec_id,$argsObj->tproject_id);
+			$content .= "</requirement-specification>\n";
 			break;
 	}
 

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.5 2009/03/21 12:05:13 franciscom Exp $ *}
+{* $Id: reqExport.tpl,v 1.6 2009/03/23 08:10:07 franciscom Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
@@ -15,7 +15,7 @@
 {assign var="req_export_url" value="$req_module$url_args"}
 
 {assign var="url_args" value="reqSpecView.php?req_spec_id="}
-{assign var="req_spec_view_url" value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="req_spec_view_url" value="$basehref$req_module$url_args"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -75,7 +75,7 @@ function validateForm(f)
 		<input type="submit" id="export" name="export" value="{$labels.btn_export}" 
 		       onclick="doAction.value='doExport'" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-			onclick="javascript: location.href='{$req_spec_view_url}';" />
+			onclick="javascript: location.href='{$req_spec_view_url}{$gui->req_spec_id}';" />
 	 </div>
 </form>
 

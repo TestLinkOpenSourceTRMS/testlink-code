@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/03/16 08:47:29 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/03/24 21:52:19 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -21,7 +21,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
-require_once('requirement_spec_mgr.class.php');
+// require_once('requirement_spec_mgr.class.php');
 require_once("web_editor.php");
 $editorCfg=getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));

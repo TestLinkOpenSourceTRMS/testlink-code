@@ -5,13 +5,17 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/03/23 08:10:18 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/03/24 21:52:19 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * rev: 20090322 - franciscom - xmlToMapReqSpec()
+ * rev: 20090322 - franciscom - create() - added node_order.
+ *                              check_title() - improvements now manages test project id and parent id.
+ *                              get_by_title() - improvements now manages test project id and parent id.
+ *
+ *      20090322 - franciscom - xmlToMapReqSpec()
  *      20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
  *
  *      20090315 - franciscom - added delete_deep();
@@ -136,7 +140,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   */
 	function create($tproject_id,$parent_id,$title, $scope, $countReq,$user_id,$type = 'n',$node_order=null)
 	{
-	  echo "\$tproject_id,\$parent_id,\$title:$tproject_id,$parent_id,$title<br>";
+	  // echo "\$tproject_id,\$parent_id,\$title:$tproject_id,$parent_id,$title<br>";
 		$result=array();
 
     $result['status_ok'] = 0;
@@ -145,14 +149,10 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
     $title=trim($title);
 
-    $chk=$this->check_title($title,$tproject_id);  // NEED TO BE REFACTORED
-		if ($chk['status_ok'] || true)
+    $chk=$this->check_title($title,$tproject_id,$parent_id);  // NEED TO BE REFACTORED
+		if ($chk['status_ok'])
 		{
-		  $name=$title;
-		  // 20090322 - francisco.mancardi@gruppotesi.com
-		  // 	function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
-		  $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name,$node_order);
-
+		  $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$title,$node_order);
 			$sql = "INSERT INTO {$this->object_table} " .
 			       " (id, testproject_id, title, scope, type, total_req, author_id, creation_ts) " .
 					   " VALUES (" . $req_spec_id . "," .
@@ -195,8 +195,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	{
   		$sql = " SELECT REQ_SPEC.*, '' AS author, '' AS modifier, NH.node_order " .
   	    	   " FROM {$this->object_table} REQ_SPEC,  {$this->nodes_hierarchy_table} NH" .
-				" WHERE REQ_SPEC.id = NH.id " . 
-				" AND REQ_SPEC.id = {$id}";
+				     " WHERE REQ_SPEC.id = NH.id " . 
+				     " AND REQ_SPEC.id = {$id}";
   	       
 		$recordset = $this->db->get_recordset($sql);
   	
@@ -373,8 +373,12 @@ function get_metrics($id)
 
     $title=trim_and_limit($title);
      
-    $nhinfo = $this->tree_mgr->get_node_hierachy_info($id); 
-    $chk=$this->check_title($title,$nhinfo['parent_id'],$id);
+    $path=$this->tree_mgr->get_path($id); 
+    // $tproject_id = $this->tree_mgr->getTreeRoot($id);    
+    // $nhinfo = $this->tree_mgr->get_node_hierachy_info($id); 
+    $last_idx=count($path)-1;
+    $parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
+    $chk=$this->check_title($title,$path[0]['parent_id'],$parent_id,$id);
     
 		if ($chk['status_ok'])
 		{
@@ -546,7 +550,8 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
               get req spec information using title as access key.
 
     args : title: req spec title
-           [tproject_id]
+           [tproject_id] 
+           [parent_id] 
            [case_analysis]: control case sensitive search.
                             default 0 -> case sensivite search
 
@@ -564,14 +569,14 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
                     modifier_id
                     modification_ts
   */
-  function get_by_title($title,$tproject_id=null,$case_analysis=self::CASE_SENSITIVE)
+  function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
   {
   	$output=null;
   	$title=trim($title);
 
     $the_title=$this->db->prepare_string($title);
 
-  	$sql = "SELECT * FROM {$this->object_table} ";
+  	$sql = "SELECT * FROM {$this->object_table} RS, {$this->nodes_hierarchy_table} NH";
 
     switch ($case_analysis)
     {
@@ -586,8 +591,15 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 
   	if( !is_null($tproject_id) )
   	{
-  	  $sql .= " AND testproject_id={$tproject_id}";
+  	  $sql .= " AND RS.testproject_id={$tproject_id}";
 		}
+
+  	if( !is_null($parent_id) )
+  	{
+  	  $sql .= " AND NH.parent_id={$parent_id}";
+		}
+
+		$sql .= " AND RS.id=NH.id ";
 		$output = $this->db->fetchRowsIntoMap($sql,'id');
 
   	return $output;
@@ -602,18 +614,17 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
               2. does already exist a req spec with this title?
 
     args : title: req spec title
-           [tproject_id]: default null -> do check for tile uniqueness
-                                          system wide.
-                          valid id: only inside testproject with this id.
-
-           [id] 
+           [parent_id]: default null -> do check for tile uniqueness system wide.
+                        valid id: only inside parent_id with this id.
+           
+           [id]: req spec id. 
            [case_analysis]: control case sensitive search.
                             default 0 -> case sensivite search
 
     returns:
 
   */
-  function check_title($title,$tproject_id=null,$id=null,$case_analysis=self::CASE_SENSITIVE)
+  function check_title($title,$tproject_id=null,$parent_id=null,$id=null,$case_analysis=self::CASE_SENSITIVE)
   {
     $ret['status_ok']=1;
     $ret['msg']='';
@@ -629,8 +640,8 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   	if($ret['status_ok'])
   	{
   	  $ret['msg']='ok';
-      $rs=$this->get_by_title($title,$tproject_id,$case_analysis);
-
+      // $rs=$this->get_by_title($title,$tproject_id,$case_analysis);
+      $rs=$this->get_by_title($title,$tproject_id,$parent_id,$case_analysis);
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
       {
   		  $ret['msg']=sprintf(lang_get("warning_duplicate_req_title"),$title);
@@ -1144,8 +1155,6 @@ function html_table_of_custom_field_values($id,$tproject_id)
   {
       $items=$this->xmlToMapReqSpec($xml);
       $req_mgr = new requirement_mgr($this->db);
-      
-      new dBug($items);
       
       $loop2do=count($items);
       $container_id[0]=is_null($parent_id) || $parent_id==0 ? $tproject_id : $parent_id;

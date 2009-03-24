@@ -4,11 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/03/16 08:47:29 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/03/24 21:52:19 $ by $Author: franciscom $
  * @author Francisco Mancardi
- * 
  * web command experiment
+ *
+ * 
+ * rev: 20090324 - franciscom - added logic to avoid losing user work if title already exists.
+ *                            - fixed minor errors due to missing variables
  */
 
 class reqSpecCommands
@@ -115,6 +118,7 @@ class reqSpecCommands
 		  $guiObj->user_feedback = $ret['msg'];
 		  if($ret['status_ok'])
 		  {
+		    $argsObj->scope = "";
 		  	$guiObj->user_feedback = sprintf(lang_get('req_spec_created'),$argsObj->title);
 		  	$cf_map = $this->reqSpecMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
 		  	$this->reqSpecMgr->values_to_db($request,$ret['id'],$cf_map);
@@ -123,11 +127,10 @@ class reqSpecCommands
 		  }
       else
       {
-		      $guiObj->req_spec_title=$argsObj->req_spec['title'];
-		      $guiObj->total_req_counter=$argsObj->req_spec['total_req'];
+		      $guiObj->req_spec_title=$argsObj->title;
+		      $guiObj->total_req_counter=$argsObj->countReq;
       }
 		  
-		  $argsObj->scope = "";
       return $guiObj;	
   }
 

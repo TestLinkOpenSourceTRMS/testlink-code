@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.114 $
- * @modified $Date: 2009/03/02 19:28:27 $ $Author: schlundus $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2009/03/25 19:04:50 $ $Author: amkhullar $
  *
  * rev:
- *     20090210 - amitkhullar - BUGID 2068
+ *     20090325 - amkhullar - BUGID 2267
+ *     20090210 - amkhullar - BUGID 2068
  *     20081230 - franciscom - display full path on test suite name
  *     20081217 - franciscom - initializeExecMode() - algorithm changed.
  *     20081122 - franciscom - added some comments
@@ -346,7 +347,8 @@ function init_args()
   $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
 	$args->tproject_id = $_SESSION['testprojectID'];
-	$args->tplan_id = $_SESSION['testPlanId'];
+	//BUGID 2267
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 	$args->user = $_SESSION['currentUser'];
 
 	return $args;  

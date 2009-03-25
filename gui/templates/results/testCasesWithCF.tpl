@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithCF.tpl,v 1.1 2009/03/14 09:40:57 franciscom Exp $
+$Id: testCasesWithCF.tpl,v 1.2 2009/03/25 19:02:44 amkhullar Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
@@ -48,7 +48,7 @@ rev:
 	               {localize_timestamp ts=$arrData.execution_ts}
                   </a>
 	            </td>
-	            <td> {$gui->status_code_labels[$arrData.exec_status]}</td>
+	            <td class="{$gui->code_status[$arrData.exec_status]}" style="text-align:center;">{$gui->status_code_labels[$arrData.exec_status]|escape}</td>
 	          	{foreach from=$arrData.cfields item=cfield_value}
 	          		<td> {$cfield_value}</td>
 	          	{/foreach}	

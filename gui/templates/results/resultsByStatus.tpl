@@ -1,10 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.4 2009/01/03 17:30:13 franciscom Exp $
+$Id: resultsByStatus.tpl,v 1.5 2009/03/25 19:01:19 amkhullar Exp $
 Purpose: show Test Results and Metrics
 *}
 
-{lang_get var='labels' s='th_test_suite,test_case,version,th_build,th_run_by,
+{lang_get var='labels' s='th_test_suite,test_case,version,th_build,th_run_by,th_bugs_not_linked,
                           th_date,th_notes,th_bugs,info_test_results'}
 
 {include file="inc_head.tpl"}
@@ -37,6 +37,7 @@ Purpose: show Test Results and Metrics
 </tr>
 {/section}
 </table>
+<h2 class="simple">{$labels.th_bugs_not_linked}{$count}</h2>
 
 <p class="italic">{$labels.info_test_results}</p>
 

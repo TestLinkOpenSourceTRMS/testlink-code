@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.33 2009/02/14 15:15:45 franciscom Exp $
+$Id: execSetResults.tpl,v 1.34 2009/03/25 20:53:11 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -8,24 +8,6 @@ Rev:
   20081231 - franciscom - new implementation of Bulk TC Status 
                           BUGID 1635
   20081210 - franciscom - BUGID 1905 
-  20081125 - franciscom - BUGID 1902 - fixed check to display button to launch remote executions
-  
-  20080528 - franciscom - BUGID 1504 - version number management
-	20080515 - havlatm - updated help link
-  20080322 - franciscom - feature: allow edit of execution notes
-                          minor refactoring.
-  20071231 - franciscom - new show/hide section to show exec notes
-  20071103 - franciscom - BUGID 700
-  20071101 - franciscom - added test automation code
-  20070826 - franciscom - added some niftycube effects
-  20070519 - franciscom -
-  BUGID 856: Guest user can execute test case
-
-  20070211 - franciscom - added delete logic
-  20070205 - franciscom - display test plan custom fields.
-  20070125 - franciscom - management of closed build
-  20070104 - franciscom - custom field management for test cases
-  20070101 - franciscom - custom field management for test suite div
 *}
 
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
@@ -79,7 +61,7 @@ var import_xml_results="{$labels.import_xml_results}";
 
 {*  
 
-{if $smarty.const.USE_EXT_JS_LIBRARY || $tlCfg->treemenu_type == 'EXTJS'}
+{if $smarty.const.USE_EXT_JS_LIBRARY}
   {include file="inc_ext_js.tpl"}
 {/if}
 

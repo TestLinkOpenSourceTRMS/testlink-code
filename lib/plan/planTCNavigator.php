@@ -3,20 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.29 2009/03/16 21:35:39 schlundus Exp $
+ * @version $Id: planTCNavigator.php,v 1.30 2009/03/25 20:53:18 schlundus Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
  *
  * rev :
  *  20081223 - franciscom - advanced/simple filter feature
- *  20081221 - franciscom - refactoring
- *  20080702 - havlatm - added urgency support
- *  20080629 - franciscom - fixed missing variables bugs
- *  20080621 - franciscom - added code to use ext js tree
- *	20080429 - multiple keyword filter
- *  20080311 - franciscom - BUGID 1427 - first developments
- *  20070925 - franciscom - added management of workframe
  * 
  * ----------------------------------------------------------------------------------- */
 
@@ -40,7 +33,6 @@ $smarty->assign('gui',$gui);
 //  
 // Warning: the following variable names CAN NOT BE Changed,
 // because there is global coupling on template logic
-$smarty->assign('treeKind',$gui->treeKind);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
 $smarty->assign('treeHeader', $gui->title);
@@ -152,7 +144,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
     $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
 
-    $gui->treeKind=TL_TREE_KIND;
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
     $gui->keywordsFilterItemQty=0;
     $gui->keyword_id=$argsObj->keyword_id; 
@@ -248,8 +239,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     // - is better because you do not need to care about name
     //   of config object or variable.
     // 
-    $treemenu_type=config_get('treemenu_type');
-
     $filters = new stdClass();
     $additionalInfo = new stdClass();
 

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.23 2009/03/16 21:35:39 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.24 2009/03/25 20:53:11 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -26,7 +26,7 @@ rev :
 
 {* ===================================================================== *}
 {include file="inc_head.tpl" openHead="yes"}
-{if $smarty.const.USE_EXT_JS_LIBRARY || $tlCfg->treemenu_type == 'EXTJS'}
+{if $smarty.const.USE_EXT_JS_LIBRARY}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {/if}
           
@@ -175,13 +175,7 @@ rev :
 
 
 {* ===================================================================== *}
-{if $tlCfg->treemenu_type == 'EXTJS'}    
-    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
-{else}
-    <div class="tree" id="tree">
-    {$gui->tree}
-    </div>
-{/if}
+<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 
 {if $gui->src_workframe != ''}
 <script type="text/javascript">

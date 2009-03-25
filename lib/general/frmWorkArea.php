@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/01/12 21:11:18 $ by $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/03/25 20:53:18 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -19,7 +19,6 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db);
-
 // --------------------------------------------------------------------------------------
 // Important Notes for Developers
 // --------------------------------------------------------------------------------------
@@ -89,16 +88,16 @@ if (in_array($showFeature,array('executeTest','showMetrics')))
 /// </enhancement>
 $smarty = new TLSmarty();
 
-if( isset($full_screen[$showFeature]) )
+if(isset($full_screen[$showFeature]))
 {
-  redirect($aa_tfp[$showFeature]);
+	redirect($aa_tfp[$showFeature]);
 }
 else
 {
-  $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-  $smarty->assign('treeframe', $aa_tfp[$showFeature]);
-  $smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
-  $smarty->display('frmInner.tpl');
+	$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
+	$smarty->assign('treeframe', $aa_tfp[$showFeature]);
+	$smarty->assign('workframe', 'lib/general/staticPage.php?key='.$showFeature);
+	$smarty->display('frmInner.tpl');
 }
 
 
@@ -114,29 +113,26 @@ else
  **/
 function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 {
-	require_once("exec.inc.php");
-	
-	$can_create_build=has_rights($db,"testplan_create_build");
-	
-	$message='<p>'  . lang_get('no_build_warning_part1') . 
-	          "<b> " . htmlspecialchars($tpName) . "</b>";
-
-	if (!buildsNumber($db,$tpID))
+	$tp = new testPlan($db);
+	if (!$tp->getNumberOfBuilds($tpID))
 	{	           
-	  $link_to_op='';
-	  $hint_text='';
-	  if($can_create_build=='yes')
-	  {
-	     // final url will be composed adding to $basehref 
-	     // (one TL variable available on smarty templates) to $link_to_op
-	     $link_to_op="lib/plan/buildEdit.php?do_action=create";
-	     $hint_text=lang_get('create_a_build');
-	  }  
-	  else
-	  {
-	     $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
-	  }
-	  
+		$message = '<p>'  . lang_get('no_build_warning_part1') . 
+	          "<b> " . htmlspecialchars($tpName) . "</b>";
+		
+		$link_to_op = '';
+		$hint_text = '';
+		if(has_rights($db,"testplan_create_build") == 'yes')
+		{	
+			// final url will be composed adding to $basehref 
+			// (one TL variable available on smarty templates) to $link_to_op
+			$link_to_op = "lib/plan/buildEdit.php?do_action=create";
+			$hint_text = lang_get('create_a_build');
+		}  
+  		else
+  		{
+     		$message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
+  		}
+  		
 		// show info and exit
 		$smarty = new TLSmarty;
 		$smarty->assign('content', $message);
@@ -146,5 +142,4 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 		exit();
 	}
 }
-
 ?>

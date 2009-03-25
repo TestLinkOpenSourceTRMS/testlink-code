@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.140 $ $Author: franciscom $
- * @modified $Date: 2009/03/16 08:48:02 $
+ * @version $Revision: 1.141 $ $Author: schlundus $
+ * @modified $Date: 2009/03/25 20:53:13 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -922,6 +922,7 @@ function array_diff_byId ($arrAll, $arrPart)
  *
  * @author Francisco Mancardi - 20050905 - refactoring
  */
+//@TODO: schlundus, not UTf-8 safe!
 function trim_and_limit($s, $len=100)
 {
   $s=trim($s);

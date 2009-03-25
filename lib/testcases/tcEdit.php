@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2009/03/03 07:49:03 $  by $Author: franciscom $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2009/03/25 20:53:18 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -485,19 +485,12 @@ if ($show_newTC_form)
   returns: if file exist and can be read -> file contents
            else error message
 */
+//@TODO: schlundus, a really duplicate of testsuite->read_file, should be remove
 function read_file($file_name)
 {
-	$fContents = null;
-	@$fd = fopen($file_name,"rb");
-	if ($fd)
-	{
-		$fContents = fread($fd,filesize($file_name));
-		fclose($fd);
-	}
-	else
+	$fContents = getFileContents($fName);
+	if (is_null($fContents))
 		$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";
-
-	return $fContents;
 }
 
 /*

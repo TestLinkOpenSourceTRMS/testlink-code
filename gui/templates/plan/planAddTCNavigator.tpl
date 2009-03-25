@@ -1,7 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.15 2009/01/18 17:20:30 franciscom Exp $
-
+$Id: planAddTCNavigator.tpl,v 1.16 2009/03/25 20:53:12 schlundus Exp $
+f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
@@ -20,7 +20,6 @@ Revisions:
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
 
-{if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
@@ -49,26 +48,16 @@ Revisions:
         {/literal}
         
         <script type="text/javascript">
-        treeCfg.loader='{$gui->ajaxTree->loader}';
-        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
-        treeCfg.root_id={$gui->ajaxTree->root_node->id};
-        treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-        treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+	        treeCfg.loader = "{$gui->ajaxTree->loader}";
+	        treeCfg.root_name = "{$gui->ajaxTree->root_node->name|escape}";
+	        treeCfg.root_id = {$gui->ajaxTree->root_node->id};
+	        treeCfg.root_href = "{$gui->ajaxTree->root_node->href}";
+	        treeCfg.cookiePrefix = "{$gui->ajaxTree->cookiePrefix}";
+	    </script>
         
-        // Not allowed in this feature
-        // treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
-        // treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
-        // treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
-        // treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
-        </script>
-        
-        <script type="text/javascript" src='gui/javascript/treebyloader.js'>
+        <script type="text/javascript" src="gui/javascript/treebyloader.js">
         </script>
    {/if}
-
-{else}
-    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
-{/if}
 
 <script type="text/javascript">
 {literal}
@@ -123,15 +112,7 @@ function pre_submit()
 </form>
 </div>
 
-{* 20080622 - franciscom *}
-{if $tlCfg->treemenu_type == 'EXTJS'}
-    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
-{else}
-   <div class="tree" id="tree">
-   	{$gui->tree}
-   </div>
-{/if}
-
+<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 
 {* 20061030 - update the right pane *}
 <script type="text/javascript">

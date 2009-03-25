@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.237 $
- * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.238 $
+ * @modified $Date: 2009/03/25 20:53:02 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -46,7 +46,6 @@
  *                             
  *     20080805 - franciscom - api configuration refactoring
  *     20080805 - franciscom - BUGID 1660 - extjs tree is default
- *     20080525 - franciscom - added spectreemenu_type (temporary solution)
  *     20080504 - franciscom - removed gui->enable_custom_fields
  * 		 20080419 - havlatm - documentation update; minor refactorization
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
@@ -119,10 +118,6 @@ $tlCfg->default_language = 'en_GB';
  * users. However we have not resources to support such patches.
  **/
 $tlCfg->charset = 'UTF-8';
-
-// BUGID 1133 - needed by email_api
-$TLS_charset = 'utf-8';
-
 
 /** characters used to surround a description in the user interface (for example role)*/
 $tlCfg->gui_separator_open =  '[';
@@ -219,8 +214,6 @@ $g_removeEventsOlderThan = 30;
  * ]
  */
 $g_interface_bugs = 'NO';
-
-
 
 // ----------------------------------------------------------------------------
 /** [SMTP] */
@@ -328,10 +321,10 @@ $tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring
 $tlCfg->gui->background_color = '#9BD';
 
 // Enable/disable rounded corners via javascript
-$tlCfg->gui->round_corners=new stdClass();
-$tlCfg->gui->round_corners->exec_history=ENABLED;
-$tlCfg->gui->round_corners->tc_title=ENABLED;
-$tlCfg->gui->round_corners->tc_spec=ENABLED;
+$tlCfg->gui->round_corners = new stdClass();
+$tlCfg->gui->round_corners->exec_history = ENABLED;
+$tlCfg->gui->round_corners->tc_title = ENABLED;
+$tlCfg->gui->round_corners->tc_spec = ENABLED;
 
 /** Display name definition (used to build a human readable display name for users) */
 // '%first% %last%'          -> John Cook
@@ -343,12 +336,12 @@ $tlCfg->username_format = '%login%';
 $tlCfg->frame_workarea_default_width = "30%";
 
 /** true => icon edit will be added into <a href> as indication an edit features */
-$tlCfg->gui->show_icon_edit=false;
+$tlCfg->gui->show_icon_edit = false;
 
 /** Order to use when building a testproject combobox (value must be SQL compliant)*/
 // 'ORDER BY name'
 // 'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
-$tlCfg->gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
+$tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
 
 // used to round percentages on metricsDashboard.php
 $tlCfg->dashboard_precision = 2;
@@ -425,12 +418,6 @@ $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */
-
-/** 
- * TREE MENU - Configure using of external tree menu component: 
- * [EXTJS]
- */
-$tlCfg->treemenu_type = 'EXTJS';
 
 /** Default ordering value for new Test Suites and Test Cases to separate them */
 $tlCfg->treemenu_default_testsuite_order = 1;
@@ -875,7 +862,7 @@ define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . TL_CSS_TREEMENU);
 // A right choice seems to be using $g_default_roleid.
 // You can change this adding a config line in custom_config.inc.php
 // @TODO martin: remove - use directly $tlCfg->default_roleid;
-$g_role_replace_for_deleted_roles=$tlCfg->default_roleid;
+$g_role_replace_for_deleted_roles = $tlCfg->default_roleid;
 
 
 /** 
@@ -916,7 +903,6 @@ $g_allow_duplicate_keywords = FALSE;
 define('TL_IMPORT_LIMIT', $tlCfg->import_max_size); 
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row); 
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
-define('TL_TREE_KIND', $tlCfg->treemenu_type);
 define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);

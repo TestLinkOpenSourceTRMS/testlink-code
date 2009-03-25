@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.43 2009/03/16 21:35:39 schlundus Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.44 2009/03/25 20:53:18 schlundus Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -14,15 +14,6 @@
  *      20090118 - franciscom - added logic to switch for EXTJS tree type
  *                              how to build tree when there are filters
  *
- *      20080629 - franciscom - fixed undefined variables bug
- *      20080622 - franciscom - added support for ext js tree.
- *      20080507 - franciscom - added type for keyword filter (or/and)
- *      20080501 - franciscom - keyword filter now is multiselect
- *      20080126 - franciscom - refactoring
- *      20070920 - franciscom - REQ - BUGID test plan combo box
- * 
- *      20061112 - franciscom - changes in call to generateTestSpecTree()
- *                              to manage the display ONLY of ACTIVE test case versions.
  * 
  * ----------------------------------------------------------------------------------- */
 require('../../config.inc.php');
@@ -42,7 +33,6 @@ $smarty->assign('gui', $gui);
 // IMPORTANT: A javascript variable 'args' will be initialized with this value
 // using inc_head.tpl template.
 $smarty->assign('args', $gui->args);
-$smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('menuUrl', $gui->menuUrl);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -226,7 +216,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $keywordsFilter = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $applyFilter = !is_null($keywordsFilter);
 
-    $treemenu_type = config_get('treemenu_type');
     $treeMenu = null;
     
     if($applyFilter)

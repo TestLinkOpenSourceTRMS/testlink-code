@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.102 $
- * @modified $Date: 2009/03/08 13:55:48 $ by $Author: franciscom $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2009/03/25 20:53:15 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1596,8 +1596,18 @@ function get_build_by_id($id,$build_id)
 }
 
 
-
-
+/**
+ * Get the number of builds of a given TestPlan
+ *
+ * @param int tpID test plan id
+ *
+ * @return int the number of builds
+ */
+function getNumberOfBuilds($tpID)
+{
+	$query = "SELECT count(id) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
+	return $this->db->fetchOneValue($query);
+}
 
 // --------------------------------------------------------------------------------------
 /*
@@ -1641,6 +1651,7 @@ function _natsort_builds($builds_map)
   rev: 20080217 - franciscom - added build_id argument
 
 */
+//@TODO: schlundus, this is only a special case of get_build_id_by_name, so it should be refactored
 function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_sensitive=0)
 {
  	$sql = " SELECT id, name, notes " .
@@ -1685,6 +1696,7 @@ Ignores case
 
   rev :
 */
+//@TODO: schlundus, this is only a special case of get_build_by_name, so it should be refactored
 function get_build_id_by_name($tplan_id,$build_name)
 {
      $sql = " SELECT builds.id, builds.name, builds.notes " .

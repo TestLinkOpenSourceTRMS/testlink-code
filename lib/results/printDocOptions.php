@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/03/25 19:09:37 $ by $Author: amkhullar $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/03/25 20:53:18 $ by $Author: schlundus $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -92,7 +92,6 @@ if (($args->doc_type == 'testplan') || ($args->doc_type == 'testreport'))
 // generate tree for Test Specification
 $treeString = null;
 $tree = null;
-$treemenu_type = config_get('treemenu_type');
 switch($args->doc_type) 
 {
     case 'testspec':
@@ -146,7 +145,6 @@ $tree = $treeString;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);
 $smarty->assign('selFormat', $args->format);
@@ -197,7 +195,7 @@ function init_args()
 //  in a test project, to display it on root tree node.
 function initializeGui(&$dbHandler,$argsObj,$basehref)
 {
-    $tcaseCfg=config_get('testcase_cfg');
+    $tcaseCfg = config_get('testcase_cfg');
         
     $gui = new stdClass();
     $tprojectMgr = new testproject($dbHandler);

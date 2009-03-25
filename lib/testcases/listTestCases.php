@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.41 2009/03/16 21:35:39 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.42 2009/03/25 20:53:18 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -80,7 +80,6 @@ if($spec_cfg->show_tsuite_filter)
 	$tsuites_combo = $mappy['html_options'];
 	$draw_filter = $mappy['draw_filter'];
 }
-$treemenu_type = config_get('treemenu_type');
 
 $keywordsFilter = buildKeywordsFilter($args->keyword_id,$gui);
 $applyFilter = !is_null($keywordsFilter);
@@ -109,7 +108,6 @@ $gui->tcspec_refresh_on_action=$do_refresh_on_action;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-$smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('menuUrl',$workPath);
 $smarty->display($templateCfg->template_dir . 'tcTree.tpl');
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2009/03/25 20:53:12 $ by $Author: schlundus $
  *
  * rev: 
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -61,7 +61,6 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 // Warning: the following variable names CAN NOT BE Changed,
 // because there is global coupling on template logic
-$smarty->assign('treeKind',$gui->treeKind);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
 
@@ -275,7 +274,6 @@ function getCfg()
     $cfg->gui = config_get('gui');
     $cfg->exec = config_get('exec_cfg');
     $cfg->results = config_get('results');
-    $cfg->treemenu_type = config_get('treemenu_type');
     return $cfg;
 }
 
@@ -554,7 +552,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
 
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
-    $gui->treeKind=TL_TREE_KIND;
     
     $gui->optResult=createResultsMenu();
     $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;

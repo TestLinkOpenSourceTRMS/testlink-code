@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.8 2009/03/16 21:35:39 schlundus Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.9 2009/03/25 20:53:18 schlundus Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -17,15 +17,12 @@ require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$treemenu_type = config_get('treemenu_type');
 $args = init_args();
 $gui = initializeGui($args,$_SESSION['basehref']);
-$tree = null;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->assign('treeKind', $treemenu_type);
-$smarty->assign('tree', $tree);
+$smarty->assign('tree', null);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

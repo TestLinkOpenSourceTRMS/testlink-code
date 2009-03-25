@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.15 2009/02/10 20:02:16 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.16 2009/03/25 20:53:12 schlundus Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -18,7 +18,6 @@ rev:
              button_update_tree,no_tc_spec_av,keyword"}
 
 
-{if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
@@ -48,25 +47,20 @@ rev:
         {/literal}
         
         <script type="text/javascript">
-        treeCfg.loader='{$gui->ajaxTree->loader}';
-        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
-        treeCfg.root_id={$gui->ajaxTree->root_node->id};
-        treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-        treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
-        treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
-        treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
-        treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
-        treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
-        </script>
+	        treeCfg.loader='{$gui->ajaxTree->loader}';
+	        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
+	        treeCfg.root_id={$gui->ajaxTree->root_node->id};
+	        treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+	        treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+	        treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+	        treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+	        treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
+	        treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
+	        </script>
         <script type="text/javascript" src='gui/javascript/treebyloader.js'>
         </script>
     {/if}
-    {*  --------------------------------------------------------------------------- *}
-
-{else}
-    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
-{/if}
-</head>
+ </head>
 
 <body>
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -137,19 +131,7 @@ rev:
   </form>	
 </div>
 
-{if $tlCfg->treemenu_type == 'EXTJS'}
-    {* 20080805 - franciscom - BUGID 1656 *}
-    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
-{else}
-    <div class="tree" id="tree">
-        {if $gui->tree eq ''}
-          {$labels.no_tc_spec_av}
-        {/if}
-        {$gui->tree}
-        <br />
-    </div>
-{/if}
- 
+<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 
 </body>
 </html>

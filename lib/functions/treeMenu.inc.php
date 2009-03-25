@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2009/03/25 20:53:16 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -76,7 +76,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$resultsCfg=config_get('results');
 	$showTestCaseID=config_get('treemenu_show_testcase_id');
 	$glueChar=config_get('testcase_cfg')->glue_character;
-  $treemenu_type = config_get('treemenu_type');
 	$menustring = null;
 
 	$tproject_mgr = new testproject($db);
@@ -495,7 +494,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $treeMenu = new stdClass(); 
     $treeMenu->rootnode = null;
     $treeMenu->menustring = '';
-    $treemenu_type = config_get('treemenu_type');
     $resultsCfg = config_get('results');
     $showTestCaseID = config_get('treemenu_show_testcase_id');
     $glueChar=config_get('testcase_cfg')->glue_character;
@@ -616,24 +614,21 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	  	                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
 	  }
 	  
-	  if($treemenu_type=='EXTJS')
-	  {
-	       $treeMenu->rootnode=new stdClass();
-	       $treeMenu->rootnode->name=$test_spec['text'];
-	       $treeMenu->rootnode->id=$test_spec['id'];
-	       $treeMenu->rootnode->leaf=$test_spec['leaf'];
-	       $treeMenu->rootnode->text=$test_spec['text'];
-		     $treeMenu->rootnode->position=$test_spec['position'];	    
-	       $treeMenu->rootnode->href=$test_spec['href'];
+       $treeMenu->rootnode=new stdClass();
+       $treeMenu->rootnode->name=$test_spec['text'];
+       $treeMenu->rootnode->id=$test_spec['id'];
+       $treeMenu->rootnode->leaf=$test_spec['leaf'];
+       $treeMenu->rootnode->text=$test_spec['text'];
+	     $treeMenu->rootnode->position=$test_spec['position'];	    
+       $treeMenu->rootnode->href=$test_spec['href'];
          
-	        // Change key ('childNodes')  to the one required by Ext JS tree.
-	       $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-	       
-	       // Remove null elements (Ext JS tree do not like it ).
-	       $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
-	       $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
-	       $menustring = str_ireplace('null', '', $dummy_string); 
-	  }
+        // Change key ('childNodes')  to the one required by Ext JS tree.
+       $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+       
+       // Remove null elements (Ext JS tree do not like it ).
+       $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
+       $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
+       $menustring = str_ireplace('null', '', $dummy_string); 
     
     $treeMenu->menustring = $menustring;  
     return $treeMenu;

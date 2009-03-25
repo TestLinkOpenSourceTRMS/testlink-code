@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.20 2009/03/10 22:28:43 havlat Exp $ *}
+{* $Id: containerView.tpl,v 1.21 2009/03/25 20:53:12 schlundus Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -50,10 +50,7 @@ rev :
 
 {assign var="bDownloadOnly" value=true}
 {assign var="drawReorderButton" value=true}
-{if $tlCfg->treemenu_type == 'EXTJS'}
-    {* EXTJS Tree support this feature using drag & drop *}
-    {assign var="drawReorderButton" value=false}
-{/if}
+{assign var="drawReorderButton" value=false}
 
 {if $level == 'testproject'}
 

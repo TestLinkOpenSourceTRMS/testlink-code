@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2008/12/31 15:07:19 $ $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/03/25 20:53:15 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -32,31 +32,6 @@
  *
 **/
 require_once('common.php');
-
-
-/**
- * Function just grabs number of builds
- *
- * @param numeric test plan ID
- * @return integer Count of Builds
- * 20060311 - kl - adjusted SQL for 1.7 schema
- */  
-function buildsNumber(&$db,$tpID=0)
-{
-	$sql = "SELECT count(id) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
-	$buildCount=0;
-	if ($tpID)
-	{
-		$result = $db->exec_query($sql);
-		if ($result)
-		{
-			$myrow = $db->fetch_array($result);
-			$buildCount = $myrow['num_builds'];
-		}
-	}
-	return $buildCount;
-}
-
 
 /** Building the dropdown box of results filter */
 // 20070222 - franciscom - BUGID 645 

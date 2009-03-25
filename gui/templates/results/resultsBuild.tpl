@@ -1,6 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBuild.tpl,v 1.2 2008/05/06 06:26:11 franciscom Exp $ *}
-{* Purpose: smarty template - show Test Results of one build *}
+{* $Id: resultsBuild.tpl,v 1.3 2009/03/25 20:53:12 schlundus Exp $ *}
+{* Purpose: smarty template - show Test Results of one build 
+//@TODO: schlundus, this file doesn't seems to be in use 
+*}
 {include file="inc_head.tpl"}
 <body>
 

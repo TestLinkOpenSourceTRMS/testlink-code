@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.16 2009/01/03 17:25:50 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.17 2009/03/25 20:53:12 schlundus Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -18,7 +18,6 @@ Revisions :
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {/if}
 
-{if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
           
@@ -30,18 +29,14 @@ Revisions :
     {/literal}
     
     <script type="text/javascript">
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name}';
-    treeCfg.root_id={$gui->ajaxTree->root_node->id};
-    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-    treeCfg.children={$gui->ajaxTree->children};
+	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
+	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
+	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
+	    treeCfg.children = {$gui->ajaxTree->children};
     </script>
     
     <script type="text/javascript" src='gui/javascript/execTree.js'>
     </script>
-
-{else}
-    {include file="inc_head.tpl" openHead="yes" jsTree="yes"}
-{/if}
 
 <script type="text/javascript">
 {literal}
@@ -141,16 +136,8 @@ function update2latest(id)
     	       onclick="update2latest({$gui->tplan_id})" />
 {/if}
 
-{if $tlCfg->treemenu_type == 'EXTJS'}    
-   <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
-{else}
-    <div class="tree" id="tree">
-  	{$gui->tree}
-    </div>
-{/if}
+<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 
-
-{* 20070925 *}
 <script type="text/javascript">
 {if $gui->src_workframe != ''}
 	parent.workframe.location='{$gui->src_workframe}';

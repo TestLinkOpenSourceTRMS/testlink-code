@@ -1,14 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.6 2008/12/10 19:37:46 schlundus Exp $ 
+$Id: reqSpecListTree.tpl,v 1.7 2009/03/25 20:53:12 schlundus Exp $ 
 show requirement specifications tree menu
 
 rev: 20080831 - franciscom - treeCfg
                              manage testlink_node_type, useBeforeMoveNode
                              
-     20080824 - franciscom - added code to use EXTJS tree
 *}
-{if $tlCfg->treemenu_type == 'EXTJS'}
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
@@ -20,28 +18,23 @@ rev: 20080831 - franciscom - treeCfg
     </script>
     {/literal}
     
-    <script type="text/javascript">
-    treeCfg.loader='{$gui->ajaxTree->loader}';
-    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
-    treeCfg.root_id={$gui->ajaxTree->root_node->id};
-    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
-    treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
-    treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
-    treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
-    treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
-    treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
+    <script type="text/javascript" language="javascript">
+	    treeCfg.loader='{$gui->ajaxTree->loader}';
+	    treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
+	    treeCfg.root_id={$gui->ajaxTree->root_node->id};
+	    treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
+	    treeCfg.root_testlink_node_type='{$gui->ajaxTree->root_node->testlink_node_type}';
+	    treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+	    treeCfg.dragDropBackEndUrl='{$gui->ajaxTree->dragDrop->BackEndUrl}';
+	    treeCfg.cookiePrefix='{$gui->ajaxTree->cookiePrefix}';
+	    treeCfg.useBeforeMoveNode='{$gui->ajaxTree->dragDrop->useBeforeMoveNode}';
     </script>
     
-    <script type="text/javascript" src='gui/javascript/treebyloader.js'>
-    </script>
-
-{else}
-    {include file="inc_head.tpl" jsTree="yes" openHead="yes"}
-{/if}
+    <script type="text/javascript" src='gui/javascript/treebyloader.js'></script>
 
 	<script type="text/javascript" language="javascript">
-	var req_spec_manager_url = '{$gui->req_spec_manager_url}';
-	var req_manager_url = '{$gui->req_manager_url}';
+		var req_spec_manager_url = '{$gui->req_spec_manager_url}';
+		var req_manager_url = '{$gui->req_manager_url}';
 	</script>
 </head>
 
@@ -61,16 +54,6 @@ rev: 20080831 - franciscom - treeCfg
   </form>
 </div>
 
-{if $tlCfg->treemenu_type == 'EXTJS'}
-    <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
-{else}
-    <div class="tree" id="tree">
-        {if $tree eq ''}
-          {lang_get s='no_req_spec_available'}
-        {/if}
-        {$tree}
-        <br />
-    </div>
-{/if}
+<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 </body>
 </html>

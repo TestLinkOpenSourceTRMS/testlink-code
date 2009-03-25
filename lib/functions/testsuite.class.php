@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/03/16 08:56:50 $ - $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/03/25 20:53:16 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20090209 - franciscom - new method - get_children_testcases()
@@ -52,6 +52,8 @@
  *
  */
 require_once( dirname(__FILE__) . '/attachments.inc.php');
+require_once( dirname(__FILE__) . '/files.inc.php');
+
 class testsuite extends tlObjectWithAttachments
 {
   const NODE_TYPE_FILTER_OFF=null;
@@ -874,17 +876,10 @@ private function _initializeWebEditors($WebEditors,$templateCfg)
 */
 private function read_file($file_name)
 {
-	$fContents = null;
-	@$fd = fopen($file_name,"rb");
-	if ($fd)
-	{
-		$fContents = fread($fd,filesize($file_name));
-		fclose($fd);
-	}
-	else
-	{
-	  $fContents= lang_get('problems_trying_to_access_template') . " {$file_name} ";  
-	}
+	$fContents = getFileContents($fName);
+	if (is_null($fContents))
+		$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";
+		
 	return $fContents;
 }
 

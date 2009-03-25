@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: email_api.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/03/08 22:26:13 $ by $Author: havlat $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/03/25 20:53:15 $ by $Author: schlundus $
  * @author franciscom
  * @author Mantis Team (the code is based on mantis BT project code)
  *
@@ -122,7 +122,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 	$mail->WordWrap = 80;
 	$mail->Priority = config_get( 'mail_priority' );   # Urgent = 1, Not Urgent = 5, Disable = 0
 
-	$mail->CharSet = lang_get( 'charset');
+	$mail->CharSet = config_get( 'charset');
 	$mail->Host     = config_get( 'smtp_host' );
 
 

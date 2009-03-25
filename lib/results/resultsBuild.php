@@ -1,12 +1,13 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.37 2009/02/09 20:37:39 schlundus Exp $ 
+* $Id: resultsBuild.php,v 1.38 2009/03/25 20:53:18 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
 * Metrics of one Build.
-*
+* @TODO: schlundus, this file doesn't seems to be in use
+* 
 * @author Kevin Levy - KL - update to 1.7
 * 
 *
@@ -17,7 +18,6 @@ require_once('builds.inc.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 require_once('displayMgr.php');
-
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 

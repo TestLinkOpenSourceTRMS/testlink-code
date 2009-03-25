@@ -1,14 +1,16 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.62 2009/02/14 15:16:21 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.63 2009/03/25 19:11:09 amkhullar Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
 * @author KL
 *
 *
-* rev :
+* rev : 
+* 		20090325 - amkhullar  - BUGID 2249
+* 		20090325 - amkhullar  - BUGID 2267
 *       20081213 - franciscom - refactoring to remove old $g_ config variables
 *       20080602 - franciscom - changes due to BUGID 1504
 *       20070908 - franciscom - change column qty on arrData is status not_run
@@ -43,6 +45,7 @@ $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
 
+$count_tc = 0; //Count for the Failed Issues whose bugs have to be raised/not linked. 
 
 $testCaseCfg=config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
@@ -124,8 +127,13 @@ if (is_array($mapOfLastResult))
 	  	    	// ------------------------------------------------------------------------------------
           
 	  	    	$bugString = $results->buildBugString($db, $executions_id);
+	  	    	//20090325 - amkhullar  - BUGID 2249
+	  	    	if (is_null($bugString))
+	  	    	{
+	  	    		$count_tc += 1;
+	  	    	} 
 	  	    	$testTitle = getTCLink($canExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted,
-	  	    	                       $testCasePrefix . $tcaseContent['external_id']);
+	  	    	                       $testCasePrefix . $tcaseContent['external_id'],$tplan_id);
             $testerName = '';
 	  	    	if (array_key_exists($tester_id, $arrOwners))
 	  	    	   $testerName = $arrOwners[$tester_id];
@@ -162,6 +170,7 @@ $smarty->assign('title', $title);
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrData', $arrData);
 $smarty->assign('type', $type);
+$smarty->assign('count', $count_tc);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $report_type);
 
 /**
@@ -173,13 +182,13 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 * Function returns number of Test Cases in the Test Plan
 * @return string Link of Test ID + Title
 */
-function getTCLink($rights, $tcID,$tcversionID, $title, $buildID,$testCaseExternalId)
+function getTCLink($rights, $tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $tplanId)
 {
 	$title = htmlspecialchars($title);
 	$suffix = htmlspecialchars($testCaseExternalId) . ":&nbsp;<b>" . $title. "</b></a>";
-
+	//Added tplan_id as a parameter - amitkhullar -BUGID 2267
 	$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
-				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';
+				 . $buildID . '&id=' . $tcID . '&version_id='. $tcversionID . '&tplan_id=' . $tplanId .'">';
 	$testTitle .= $suffix;
 
 	return $testTitle;

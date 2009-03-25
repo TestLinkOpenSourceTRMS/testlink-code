@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.413 $
- * @modified $Date: 2009/03/14 09:38:55 $ by $Author: franciscom $
+ * @version $Revision: 1.414 $
+ * @modified $Date: 2009/03/25 19:16:53 $ by $Author: amkhullar $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1296,6 +1296,7 @@ $TLS_info_test_results = "There are only last test results listed. " .
 $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
+$TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
 
 
 
@@ -1923,6 +1924,7 @@ $TLS_opt_show_tc_summary 	= "Test Case Summary";
 $TLS_opt_show_tc_author 	= "Test Case Author";
 $TLS_opt_show_tc_reqs 		= "Test Case related Requirements";
 $TLS_opt_show_tc_keys 		= "Test Case keywords";
+$TLS_opt_show_cfields		= "Test Case Custom Fields";
 $TLS_opt_show_passfail 		= "Test results";
 $TLS_opt_show_metrics 		= "Metrics";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";

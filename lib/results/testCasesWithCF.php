@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/03/14 09:41:08 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/03/25 19:15:03 $ by $Author: amkhullar $
  * @author Amit Khullar - amkhullar@gmail.com
  * 
  * For a test plan, list test cases with Execution Custom Field Data 
@@ -35,7 +35,7 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
 {
 	
 		$resultsCfg = config_get('results');
-    $tcase_cfg = config_get('testcase_cfg');
+    	$tcase_cfg = config_get('testcase_cfg');
 
 		// -----------------------------------------------------------------------------------
 		// Get the mapping for the Verbose Status Description of Test Case Status
@@ -52,7 +52,7 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
 		}
 		// $not_run_label=lang_get('test_status_not_run');
 		// -----------------------------------------------------------------------------------
-
+	$gui->code_status=$resultsCfg['code_status'];
     $tproject_mgr = new testproject($db);   
     $gui->tcasePrefix=$tproject_mgr->getTestCasePrefix($args->tproject_id);
     $gui->tcasePrefix .= $tcase_cfg->glue_character;
@@ -84,10 +84,10 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
            // Get common exec info and remove useless keys
 		       $result[$exec_id]=$exec_info[0];
 		       unset($result[$exec_id]['name']);
-           unset($result[$exec_id]['label']);
-           unset($result[$exec_id]['display_order']);
-           unset($result[$exec_id]['id']);
-           unset($result[$exec_id]['value']);
+	           unset($result[$exec_id]['label']);
+	           unset($result[$exec_id]['display_order']);
+	           unset($result[$exec_id]['id']);
+	           unset($result[$exec_id]['value']);
 
            // Collect custom fields values
            $result[$exec_id] += $cf_place_holder;

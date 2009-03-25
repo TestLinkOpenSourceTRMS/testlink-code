@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/03/25 19:09:37 $ by $Author: amkhullar $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,7 +14,8 @@
  *		Test specification/ Test plan.
  *
  * rev :
- * 	20090222 - havlatm - added new options 
+ *		20090322 - amkhullar - added new option custom fields while printing Test plan/report
+ * 		20090222 - havlatm - added new options 
  *      20081116 - franciscom - fixed bug (missed $gui->ajaxTree->loadFromChildren=true)
  *      20080819 - franciscom - fixed bug due to changes in return values of generate*tree()
  *                              TEMPLATE DO NOT WORK YET with EXTJS tree 
@@ -47,7 +48,8 @@ $arrCheckboxes = array(
 	array( 'value' => 'summary', 'description' => 'opt_show_tc_summary', 'checked' => 'y'),
 	array( 'value' => 'body', 	'description' => 'opt_show_tc_body',	'checked' => 'n'),
  	array( 'value' => 'author',	'description' => 'opt_show_tc_author', 	'checked' => 'n'),
-	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 	'checked' => 'n')
+	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 	'checked' => 'n'),
+	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'y')
 );
 
 if($_SESSION['testprojectOptReqs'])

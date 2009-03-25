@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/03/25 19:09:19 $ by $Author: amkhullar $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
  *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
  * 	20090213 - havlatm - support for OpenOffice
  *	20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
@@ -37,9 +38,8 @@ $doc_info->content_range = $args->level;
 
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0, 
-		'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 
-		'testplan' => 0, 'metrics' => 0);
-
+		'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 'cfields' => 0, 
+		'testplan' => 0, 'metrics' => 0  );
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2009/03/03 07:48:12 $ by $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2009/03/25 19:05:59 $ by $Author: amkhullar $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -13,12 +13,13 @@
  * Used by printDocument.php
  *
  * Revisions:
- *  20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
- * 	20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
- *  20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
+ *		20090322 - amkhullar - added check box for Test Case Custom Field display on Test Plan/Report
+ *  	20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
+ * 		20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
+ *  	20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
  *                             added code to display CF with scope='execution'
  * 
- *  20080820 - franciscom - added contribution (BUGID 1670)
+ *  	20080820 - franciscom - added contribution (BUGID 1670)
  *                             Test Plan report:
  *                             Total Estimated execution time will be printed
  *                             on table of contents. 
@@ -308,7 +309,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     }
 	  $external_id = $tcase_prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
 	  $name = htmlspecialchars($node['name']);
-  	
+
   	$cfields = array('specScope' => '', 'execScope' => '');
 
 	  // get custom fields that has specification scope
@@ -330,12 +331,16 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	          " AND E.testplan_id = {$tplan_id} " .
 	  		    " ORDER BY execution_id DESC";
 	  $exec_info = $db->get_recordset($sql,null,1);
-    
+
     if(!is_null($exec_info ))
     { 
         $execution_id=$exec_info[0]['execution_id'];
-        $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,$execution_id,
-	                                                                         $tplan_id,$tProjectID);
+        //Added condition for the display on/off of the custom fields on test cases.
+        if ($printingOptions['cfields'])
+        {
+        	$cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,$execution_id, $tplan_id,$tProjectID);
+        }
+	                                                                        
   	    if(strlen(trim($cfields['execScope'])) > 0 )
   	    {
 		        $cfields['execScope'] = str_replace('<td class="labelHolder">','<td>',$cfields['execScope']);  
@@ -343,7 +348,6 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		        $cfields['execScope'] = str_replace('</table>','',$cfields['execScope']);
   	    }
     }
-    
 	  if ($printingOptions['toc'])
 	  {
 	      $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' .

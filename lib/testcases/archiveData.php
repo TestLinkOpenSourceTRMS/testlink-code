@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.43 2009/03/05 07:32:58 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.44 2009/03/26 08:00:49 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
+ *      20090326 - franciscom - solved bug related to forced READ ONLY when called as result of search on Navigator bar.
  *      20090228 - franciscom - this page is called when search option on Navigation Bar is used.
  *      20080425 - franciscom - refactoring
  *      20080120 - franciscom - show() method for test cases - interface changes
@@ -28,6 +29,7 @@ $args = init_args($viewerArgs);
 $path_info=null;
 $smarty = new TLSmarty();
 $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
+
 
 switch($args->feature)
 {
@@ -99,7 +101,7 @@ function init_args(&$viewerCfg)
     $args->feature = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
     $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
-    $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
+    // $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
     $args->tcasePrefix = isset($_REQUEST['tcasePrefix']) ? trim($_REQUEST['tcasePrefix']) : null;
     $args->show_path = isset($_REQUEST['show_path']) ? $_REQUEST['show_path'] : 0;
 
@@ -113,7 +115,8 @@ function init_args(&$viewerCfg)
 		        $spec_cfg = config_get('spec_cfg');
 		        $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
 		        $viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
-		        $viewerCfg['disable_edit'] = !$args->allow_edit;
+		        // $viewerCfg['disable_edit'] = !$args->allow_edit;
+            $viewerCfg['disable_edit'] = 0;
 
   	        if(isset($_SESSION['tcspec_refresh_on_action']))
   	        {

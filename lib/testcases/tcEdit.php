@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2009/03/25 20:53:18 $  by $Author: schlundus $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2009/03/26 08:00:49 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *     20090325 - franciscom - BUGID - problems with add to testplan
  *     20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
  *     20080827 - franciscom - BUGID 1692 
  *     20080706 - franciscom - force refresh tree when operation can put tree on
@@ -119,6 +120,9 @@ switch($args->doAction)
 	      $op=$commandMgr->doUpdate($args,$_REQUEST);
 	  break;
 	  
+	  case "doAdd2testplan":
+	      $op=$commandMgr->doAdd2testplan($args,$_REQUEST);
+	  break;
 }
 
 //If the user has chosen to edit a testcase then show this code

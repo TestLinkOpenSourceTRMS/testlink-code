@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.27 $ $Author: franciscom $
- * @modified $Date: 2008/12/22 10:03:46 $
+ * @version $Revision: 1.28 $ $Author: franciscom $
+ * @modified $Date: 2009/03/26 08:00:47 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20090325 - franciscom - BUGID - better implementation of BUGID 1497
  *     20081116 - franciscom - BUGID
  *     20081109 - franciscom - fixed filter on getTestSpecFromNode()
  *                             fixed minor bug on $tsuite_tcqty processing
@@ -213,6 +214,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
     $tsuite_tcqty=array($id => 0);
     $parent_idx=-1;
 
+    new dBug($test_spec);
   	if(count($test_spec))
   	{
   		$pivot_tsuite = $test_spec[0];
@@ -385,7 +387,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
               //
               // N.B.:
               // As suggested by Martin Havlat order will be set to external_id * 10
-  	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $the_tc['tc_external_id']*10;
+              //
+              // BUGID 
+  	          // $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $the_tc['tc_external_id']*10;
+  	          $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $the_tc['node_order']*10;
           } 
     			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;

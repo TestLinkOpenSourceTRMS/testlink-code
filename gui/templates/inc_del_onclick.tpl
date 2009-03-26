@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.6 2008/09/21 19:02:47 schlundus Exp $
+$Id: inc_del_onclick.tpl,v 1.7 2009/03/26 20:18:10 schlundus Exp $
 Purpose: include files for:
 
 
@@ -34,17 +34,19 @@ rev :
     returns: 
 
   */
-  function delete_confirmation(o_id,o_name,title,msg)
+  function delete_confirmation(o_id,o_name,title,msg,pFunction)
   {
   	var safe_name=o_name.escapeHTML();
     // var safe_title=o_label + ' ' + safe_name;
     var safe_title=title;
     var my_msg=msg.replace('%s',safe_name);
+    if (!pFunction)
+  		pFunction = do_action;
     
     Ext.Msg.confirm( safe_title, my_msg,
   			            function(btn, text)
   			            { 
-  					         do_action(btn,text,o_id);
+  					         pFunction(btn,text,o_id);
   			            });
   }
   

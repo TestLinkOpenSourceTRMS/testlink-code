@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.414 $
- * @modified $Date: 2009/03/25 19:16:53 $ by $Author: amkhullar $
+ * @version $Revision: 1.415 $
+ * @modified $Date: 2009/03/26 20:18:12 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -524,7 +524,7 @@ $TLS_attached_files = "Attached files";
 $TLS_attachment_feature_disabled = "attachment disabled";
 $TLS_button_upload = $TLS_btn_upload;
 $TLS_upload_file_new_file = "Upload new file";
-$TLS_warning_delete_attachment = "Really delete this attachment?";
+$TLS_warning_delete_attachment = "Really delete the attachment '%s' ?";
 
 
 

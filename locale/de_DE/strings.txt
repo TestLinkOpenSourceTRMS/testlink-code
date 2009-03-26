@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.112 $
- * @modified $Date: 2009/03/23 20:52:27 $ by $Author: schlundus $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2009/03/26 20:18:10 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -464,7 +464,7 @@ $TLS_attached_files = "Angehängte Dateien";
 $TLS_attachment_feature_disabled = "Anhang deaktiviert";
 $TLS_button_upload = "Hochladen";
 $TLS_upload_file_new_file = "Anhang hochladen";
-$TLS_warning_delete_attachment = "Wollen Sie diesen Anhang wirklich löschen?";
+$TLS_warning_delete_attachment = "Wollen Sie den Anhang '%s' wirklich löschen?";
 
 
 

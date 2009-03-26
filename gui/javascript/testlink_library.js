@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.70 2009/03/25 18:57:38 amkhullar Exp $
+// $Id: testlink_library.js,v 1.71 2009/03/26 20:18:08 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -357,9 +357,9 @@ function openFileUploadWindow(id,tableName)
   returns:
 
 */
-function deleteAttachment_onClick(id)
+function deleteAttachment_onClick(btn,txt,id)
 {
-	if (confirm(warning_delete_attachment))
+	if (btn == 'yes')
 		window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+id,"Delete","width=510,height=150,resizable=yes,dependent=yes");
 }
 

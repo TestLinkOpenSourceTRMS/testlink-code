@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.70 $
- * @modified $Date: 2009/03/25 19:05:59 $ by $Author: amkhullar $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2009/03/26 06:08:25 $ by $Author: amkhullar $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -13,6 +13,7 @@
  * Used by printDocument.php
  *
  * Revisions:
+ * 		20090326 - amkhullar - BUGID 2207 - Code to Display linked bugs to a TC in Test Report
  *		20090322 - amkhullar - added check box for Test Case Custom Field display on Test Plan/Report
  *  	20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
  * 		20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
@@ -283,7 +284,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
         $labels=array("last_exec_result" => '', "testnotes" => '', "none" => '', "reqs" => '',
                       "author" => '', "summary" => '',"steps" => '', "expected_results" =>'',
                       "build" => '', "test_case" => '', "keywords" => '',"version" => '', 
-                      "test_status_not_run" => '', "not_aplicable" => '');
+                      "test_status_not_run" => '', "not_aplicable" => '', 'bugs' => '');
                                 
         foreach($labels as $id => $value)
         {
@@ -410,16 +411,30 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
         }
     }
     $code .= $cfields['specScope'] . $cfields['execScope'];
-
+	
 	  // generate test results
 	  if ($printingOptions['passfail'])
 	  {
 	      $build_name='';
+	      $bugString = '';
 	      if ($exec_info) 
 	      {
 	  		    $tcstatus2 = $status_labels[$exec_info[0]['status']];
 	  		    $tcnotes2 = $exec_info[0]['notes'];
             $build_name = " - ({$labels['build']}:{$exec_info[0]['build_name']})";
+            	//- amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
+	      		$bug_interface = config_get("bugInterface");
+				$bugs = get_bugs_for_exec($db,$bug_interface,$execution_id);
+				if (($bugs) && ($tcstatus2 == 'Failed')) 
+				{
+					$bugString = $labels['bugs'] . ": <br />";
+					foreach($bugs as $bugID => $bugInfo) 
+					{
+					  $bugString .= $bugInfo['link_to_bts']."<br />";
+					}
+					$bugString = '<tr><td colspan=2 width="30%" valign="top"><span class="label">'. $bugString .'</span></td></tr>'; 
+					
+				}
 	      }
 	      else
 	      {
@@ -430,7 +445,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  	$code .= '<tr><td width="30%" valign="top"><span class="label">' . 
 	  	         $labels['last_exec_result'] . $build_name . 
 	  			     ':</span><br /><span style="text-align:center; padding:10px;">'.$tcstatus2.'</span></td>'.
-	  			     '<td><u>'.$labels['testnotes'] . ':</u><br />' . $tcnotes2 . "</td></tr>\n";
+	  			     '<td><u>'.$labels['testnotes'] . ':</u><br />' . $tcnotes2 . '</td></tr>' . $bugString ;
+	  	
 	  }
 
 

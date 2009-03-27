@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: results.class.php,v $
+ * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.8
- * @modified $Date: 2009/03/27 11:11:03 $ by $Author: amkhullar $
- *
+ * @version $Revision: 1.134 $
+ * @modified $Date: 2009/03/27 11:18:26 $ by $Author: amkhullar $
+ * @copyright Copyright (c) 2008, TestLink community
+ * @author franciscom
  *-------------------------------------------------------------------------
  * Revisions:
  *

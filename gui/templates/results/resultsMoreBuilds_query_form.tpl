@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.12 2009/01/07 22:20:58 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.13 2009/03/27 11:10:05 amkhullar Exp $
 @author Francisco Mancardi
 
 rev :
+     20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report. 
      20080524 - franciscom - layout changes
                              BUGID 1430
      20080517 - franciscom - refactoring
@@ -15,7 +16,7 @@ rev :
 			s='enter_start_time,enter_end_time,date,hour,Yes,submit_query,
 			   select_builds_header,select_components_header,report_display_options,
 			   display_suite_summaries,display_test_cases,display_query_params,
-			   display_totals,
+			   display_totals,display_results_tc,results_latest,results_all,
 			   search_in_notes,executor,No,query_metrics_report'}
 			   
 
@@ -203,6 +204,12 @@ franciscom - may be in the future - 20090107
          <td><select name="display_test_cases">
 		    				<option value="1" selected="selected">{$labels.Yes}</option>
 		    				<option value="0">{$labels.No}</option>
+		    			</select>
+		     </td>
+		     		     <td>{$labels.display_results_tc}</td>
+		     <td><select name="display_latest_results">
+		    				<option value="0">{$labels.results_latest}</option>
+		    				<option value="1" selected="selected">{$labels.results_all}</option>
 		    			</select>
 		     </td>
 		    </tr>

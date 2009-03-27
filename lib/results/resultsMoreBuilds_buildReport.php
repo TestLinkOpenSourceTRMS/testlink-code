@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.64 2009/01/23 08:08:14 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.65 2009/03/27 11:11:39 amkhullar Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev :
+*      20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
 *      20090122 - franciscom - BUGID 2012 
 *      20080524 - franciscom - BUGID 1430
 *      20070901 - franciscom - refactoring
@@ -134,12 +135,15 @@ function initializeGui(&$dbHandler,&$argsObj)
     // statusForClass is used for results.class.php
     // lastStatus is used to be displayed 
     $statusForClass = 'a';
+    // amitkhullar - added this parameter to get the latest results. 
+	$latest_resultset = $argsObj->display->latest_results;
     
     $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
     $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
     // $keyword_filter = $argsObj->keywordSelected ?
     $re = new results($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
                       $testsuiteIds, $buildsToQuery, $statusForClass, 
+                      $latest_resultset,
                       $argsObj->keywordSelected,$assignee, 
                       $date_range->start->time, $date_range->end->time, 
                       $tester, $argsObj->search_notes_string, $argsObj->execution_link_build);
@@ -219,7 +223,7 @@ function init_args()
     $args->display->totals = isset($_REQUEST['display_totals']) ? $_REQUEST['display_totals'] : false;
     $args->display->query_params = isset($_REQUEST['display_query_params']) ? $_REQUEST['display_query_params'] : false;
     $args->display->test_cases = isset($_REQUEST['display_test_cases']) ? $_REQUEST['display_test_cases'] : true;
-
+    $args->display->latest_results = isset($_REQUEST['display_latest_results']) ? $_REQUEST['display_latest_results'] : 1;
 
     $args->lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : array();
 

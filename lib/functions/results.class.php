@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8
- * @modified $Date: 2009/01/19 19:09:05 $ by $Author: franciscom $
+ * @modified $Date: 2009/03/27 11:11:03 $ by $Author: amkhullar $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
  * 20080928 - franciscom - some minor refactoring regarding keywords
  * 20080928 - franciscom - refactoring on buildExecutionsMap()
  * 20080602 - franciscom - added logic to manage version using tcversion_number
@@ -192,6 +193,7 @@ class results
 	* @author kevinlevy
 	*
 	* rev :
+	* 	   20090327 - amitkhullar - added parameter $latest_results to get the latest results only.	
 	*      20071013 - franciscom - changes to fix MSSQL problems
 	*                 $startTime = "0000-00-00 00:00:00" -> null
   *                 $endTime = "9999-01-01 00:00:00" -> null
@@ -200,7 +202,7 @@ class results
 	*/
 	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
-	                        $builds_to_query = -1, $lastResult = 'a',
+	                        $builds_to_query = -1, $lastResult = 'a',$latest_results = 1,
 	                        $keywordId = 0, $owner = null,
 							            $startTime = null, $endTime = null,
 							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
@@ -280,7 +282,7 @@ class results
 
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId,
 			                                                 $owner, $startTime, $endTime, $executor,
-			                                                 $search_notes_string, $linkExecutionBuild);
+			                                                 $search_notes_string, $linkExecutionBuild,$latest_results);
       
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $keywords_in_tplan);
@@ -495,8 +497,11 @@ class results
 	    $item_name='build_name';
 		  $results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
       $element=$this->tallyResults($results,$totalCases,$item_name);
-		  $element[$item_name]=$buildInfo['name'];
-			$rValue[$buildId] = $element;
+  			if (!is_null ($element))
+  			{
+  				$element[$item_name]=$buildInfo['name'];
+  				$rValue[$buildId] = $element;
+  			}
 		} // end  foreach
       
     unset($element);       
@@ -996,6 +1001,8 @@ class results
 	* all test cases are included, even cases that have not been executed yet
 	*
 	* rev :
+	* 	20090302 - amitkhullar - added a parameter $all_results to get latest results (0) only otherwise 
+	* 								all results are displayed in reports (1). 
 	*      20080928 - franciscom - seems that adding a control to avoid call to buildBugString()
 	*                              reduces dramatically memory usage();
 	*                              IMPORTANT:
@@ -1010,7 +1017,8 @@ class results
 	*/
 	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0,
 	                                    $owner = null, $startTime, $endTime, $executor,
-	                                    $search_notes_string, $executeLinkBuild){
+	                                    $search_notes_string, $executeLinkBuild, $all_results = 1)
+	{
 		
     // $mem=array();		
     // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
@@ -1114,8 +1122,15 @@ class results
 				// mht: fix 966
 				// mike_h - 20070806 - when ordering executions by the timestamp, 
 				// the results are represented correctly in the report "Test Report".
+				// amitkhullar - BUGID 2156 - added option to get latest/all results in Query metrics report.				
+				if ($all_results == 1)
+				{
 				$sql .= " ORDER BY execution_ts ASC";
-
+				}
+				else 
+				{
+					$sql .= " ORDER BY execution_ts DESC limit 1";
+				}
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
 				{
@@ -1130,6 +1145,7 @@ class results
 					    	$infoToSave['status'] = $exec_row['status'];
 					    	$infoToSave['notes'] = $exec_row['notes'];
 					    	$infoToSave['executions_id'] = $executions_id;
+					    	//@todo: Refactor for this code - BUGID 2242 
 					    	$infoToSave['bugString'] = $searchBugs ? $this->buildBugString($this->db, $executions_id) : '';
 
 					    	$dummy = null;

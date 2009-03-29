@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.42 2009/03/25 20:53:18 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.43 2009/03/29 14:10:01 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -91,14 +91,15 @@ if($applyFilter)
                                      SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
                                      NO_ADDITIONAL_ARGS, $keywordsFilter,
                                      DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
-    
-	$gui->ajaxTree->loader = '';
+  $gui->ajaxTree->loader = '';
 	$gui->ajaxTree->root_node = $treeMenu->rootnode;
 	$gui->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
 	$gui->ajaxTree->cookiePrefix = $args->feature;
 	
 	if($applyFilter)
+	{
 		$gui->ajaxTree->loader='';  
+	}	
 }
 
 $gui->treeHeader=$title;

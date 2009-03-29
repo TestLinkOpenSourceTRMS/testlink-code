@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2009/03/25 20:53:12 $ by $Author: schlundus $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2009/03/29 14:10:01 $ by $Author: franciscom $
  *
  * rev: 
+ *      20090828 - franciscom - BUGID 2296
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081220 - franciscom - advanced/simple filters
  *      20081217 - franciscom - only users that have effective role with right 
@@ -103,7 +104,13 @@ function init_args(&$dbHandler,$cfgObj)
 	  	}
 	  }
 
+    // Attention: Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+
+    // not fully implemented yet
+    $args->keywordsFilterType =isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+    
+    
     $args->doUpdateTree=isset($_REQUEST['submitOptions']) ? 1 : 0;
     
     // 20081220 - franciscom
@@ -372,19 +379,19 @@ function initBuildInfo(&$dbHandler,&$guiObj,&$argsObj,&$tplanMgr)
   returns: 
 
 */
-function initKeywordInfo($tplanID,&$tplanMgr)
-{
-    $kmap = $tplanMgr->get_keywords_map($tplanID,' order by keyword ');
-    if(!is_null($kmap))
-    {
-       
-    	// add the blank option
-    	// 0 -> id for no keyword
-    	//$blank_map[0] = '';
-    	//$kmap = $blank_map + $kmap;
-    }
-    return $kmap;
-}
+// function initKeywordInfo($tplanID,&$tplanMgr)
+// {
+//     $kmap = $tplanMgr->get_keywords_map($tplanID,' order by keyword ');
+//     if(!is_null($kmap))
+//     {
+//        
+//     	// add the blank option
+//     	// 0 -> id for no keyword
+//     	//$blank_map[0] = '';
+//     	//$kmap = $blank_map + $kmap;
+//     }
+//     return $kmap;
+// }
 
 
 
@@ -401,10 +408,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 {
     $filters = new stdClass();
     $additionalInfo = new stdClass();
-
-    $filters->keyword_id = $guiObj->keyword_id;
-    $filters->keywordsFilterType='OR';
     
+    $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $filters->include_unassigned = $guiObj->include_unassigned;
     
     $filters->tc_id = $argsObj->tcase_id;
@@ -523,7 +528,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->treeColored=$argsObj->treeColored;
     $gui->tplan_name=$argsObj->tplan_name;
     $gui->tplan_id=$argsObj->tplan_id;
-    $gui->keyword_id=$argsObj->keyword_id;
+    // $gui->keyword_id=$argsObj->keyword_id;
     $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->include_unassigned=$argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
@@ -534,13 +539,22 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->optBuild = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
     $gui->optBuildSelected=initBuildInfo($dbHandler,$guiObj,$argsObj,$tplanMgr); 
        
-    $gui->keywordsFilterItemQty=0;
-    $gui->keywords_map=initKeywordInfo($argsObj->tplan_id,$tplanMgr);
-    
-    if( !is_null($gui->keywords_map) )
+       
+    // -------------------------------------------------------
+    // 20090118 - franciscom    
+    $gui->keywordsFilterType = new stdClass();
+    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+    $gui->keywordsFilterItemQty = 0;
+
+    $gui->keyword_id = $argsObj->keyword_id; 
+    $gui->keywords_map=$tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
+    if(!is_null($gui->keywords_map))
     {
-        $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
+        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
+        $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
     }
+    
                  
     // 20081217 - franciscom             
     // $gui->users = getUsersForHtmlOptions($dbHandler,null,true);

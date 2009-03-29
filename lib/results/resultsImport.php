@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/09/09 10:22:55 $  by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/03/29 14:10:01 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -25,9 +25,10 @@ require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
 
-$template_dir='results/';
+$templateCfg = templateConfiguration();
 
 $args=init_args();
+$gui = new stdClass();
 
 $ref=$_SERVER['HTTP_REFERER'];
 $url_array=split('[?=&]',$ref);
@@ -37,12 +38,20 @@ if( in_array('build_id',$url_array) )
 	$args->buildID=$url_array[$buildIdIndex];
 }
 
+$gui->import_title=lang_get('title_results_import_to');
+$gui->buildID=$args->buildID;
+$gui->file_check=array('status_ok' => 1, 'msg' => 'ok');
+$gui->importTypes=array("XML" => "XML");
+$gui->importLimit=(TL_IMPORT_LIMIT / 1024);
+$gui->doImport=strlen($args->importType) > 0;
+$gui->testprojectName=$args->testprojectName;
+
+
+
 $resultMap=null;
 $dest=TL_TEMP_PATH . session_id()."-results.import";
-$file_check=array('status_ok' => 1, 'msg' => 'ok');
 
-$import_title=lang_get('title_results_import_to');
-$container_description=lang_get('import_results');
+$container_description=lang_get('import_xml_results');
 
 if ($args->doUpload)
 {
@@ -51,8 +60,8 @@ if ($args->doUpload)
 		
 	if (($source != 'none') && ($source != ''))
 	{ 
-		$file_check['status_ok']=1;
-		if($file_check['status_ok'])
+		$gui->file_check['status_ok']=1;
+		if($gui->file_check['status_ok'])
 		{
 			if (move_uploaded_file($source, $dest))
 			{
@@ -65,8 +74,8 @@ if ($args->doUpload)
 				}
 				if ($pcheck_fn)
 				{
-					$file_check=$pcheck_fn($dest);
-					if($file_check['status_ok'])
+					$gui->file_check=$pcheck_fn($dest);
+					if($gui->file_check['status_ok'])
 					{
 						if ($pimport_fn)
 						{
@@ -79,24 +88,15 @@ if ($args->doUpload)
 	}
 	else
 	{
-		$file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
+		$gui->file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
 		$args->importType=null;
 	}
 }
 
-$import_file_types=array("XML" => "XML");
-
-
+$gui->resultMap=$resultMap;
 $smarty=new TLSmarty();
-$smarty->assign('import_title',$import_title);  
-$smarty->assign('buildID', $args->buildID);
-$smarty->assign('file_check',$file_check);  
-$smarty->assign('resultMap',$resultMap); 
-$smarty->assign('importTypes',$import_file_types);
-$smarty->assign('testprojectName', $args->testprojectName);
-$smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
-$smarty->assign('bImport',strlen($args->importType));
-$smarty->display($template_dir .'resultsImport.tpl');
+$smarty->assign('gui',$gui);  
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 ?>
 
 <?php
@@ -374,7 +374,7 @@ function check_xml_execution_results($fileName)
 		$file_check=array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root=$dom->document_element();
 		if($root->tagname != 'results') {
-			$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong format for results file'));
+			$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_results_import_format'));
 		}
 	}
 	return $file_check;

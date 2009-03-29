@@ -1,9 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.34 2009/03/25 20:53:11 schlundus Exp $
+$Id: execSetResults.tpl,v 1.35 2009/03/29 14:10:00 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
+  20090329 - franciscom - when using bulk mode, user can access test case spec
+                          opening a new window.
+                          
   20090212 - amitkhullar - BUGID 2068
   20081231 - franciscom - new implementation of Bulk TC Status 
                           BUGID 1635
@@ -36,7 +39,7 @@ Rev:
 	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
-             click_to_open,reqs,requirement'}
+             click_to_open,reqs,requirement,show_tcase_spec'}
 
 
 
@@ -342,7 +345,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {* ------------------------------------------------------------------------------------ *}
         <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
         <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
-        <td>{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}</td>
+        <td>
+        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id})" title="{$labels.show_tcase_spec}">
+        {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
+        </a>
+        </td>
    			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
 				    {html_options options=$gui->execStatusValues}
 				</select>

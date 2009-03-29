@@ -5,13 +5,20 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2009/03/25 20:53:16 $ by $Author: schlundus $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2009/03/29 14:10:01 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
  * 
- * Rev: 20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
+ * Rev: 20090328 - franciscom - BUGID 2299 - introduced on 20090308.
+ *                              Added logic to remove Empty Top level test suites 
+ *                              (have neither test cases nor test suites inside) when applying 
+ *                              test case keyword filtering.
+ * 
+ *                              BUGID 2296
+ *
+ *      20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
  *      20090211 - franciscom - BUGID 2094 
  *      20090202 - franciscom - minor changes to avoid BUGID 2009
  *      20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
@@ -41,6 +48,9 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
+ * 20090328 - franciscom - BUGID 2299, that was generated during 20090308 
+ *                         trying to fix another not reported bug.
+ *
  * 20090308 - franciscom - changed arguments in str_ireplace() call
  *                         Due to bug in Test Spec tree when using Keywords filter
  * 
@@ -62,11 +72,8 @@ function filterString($str)
  * exclude_branches: map key=node_id
  *
 */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
-                              $linkto,$bForPrinting=0,$bHideTCs = 0,
-                              $tc_action_enabled = 1,
-                              $getArguments = '',
-                              $keywordsFilter=null,
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPrinting=0,$bHideTCs = 0,
+                              $tc_action_enabled = 1,$getArguments = '',$keywordsFilter=null,
                               $ignore_inactive_testcases=0,$exclude_branches=null)
 {
   $treeMenu = new stdClass(); 
@@ -106,9 +113,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	
 	DEFINE('DONT_FILTER_BY_TESTER',0);
 	DEFINE('DONT_FILTER_BY_EXEC_STATUS',null);
-	
-	
-	if($test_spec)
+
+  if($test_spec)
 	{
 		$tck_map = null;  // means no filter
 		if(!is_null($keywordsFilter))
@@ -120,11 +126,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 			}
 		}
     	
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tplan_tcs,$bHideTCs,
-		                                 DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
+    // Important: prepareNode() will make changes to $test_spec like filtering by test case 
+    // keywords using $tck_map;
+		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
+		                                 $tplan_tcs,$bHideTCs,DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
 		                                 $ignore_inactive_testcases);
-
+    
 		foreach($testcase_counters as $key => $value)
 		{
 		    $test_spec[$key]=$testcase_counters[$key];
@@ -143,28 +150,52 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$treeMenu->rootnode->position = $test_spec['position'];	    
 	$treeMenu->rootnode->href = $test_spec['href'];
 
-	// Change key ('childNodes')  to the one required by Ext JS tree.
-    if(isset($test_spec['childNodes']))
-    {
-		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-	}
 
+	// Change key ('childNodes')  to the one required by Ext JS tree.
+  if(isset($test_spec['childNodes']))
+  {
+ 	    $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
+	}
+	  // 20090328 - franciscom - BUGID 2299
+	  // More details about problem found on 20090308 and fixed IN WRONG WAY
+	  // TPROJECT
+	  //    |______ TSA
+	  //            |__ TC1
+	  //            |__ TC2
+	  //    | 
+	  //    |______ TSB
+	  //            |______ TSC
+	  // 
+	  // Define Keyword K1,K2
+	  //
+	  // NO TEST CASE HAS KEYWORD ASSIGNED
+	  // Filter by K1
+	  // Tree will show root that spins Forever
+	  // menustring before str_ireplace : [null,null]
+	  // menustring AFTER [null] 
+	  //
+	  // Now fixed.
+	  //
+	  // Some minor fix to do
+	  // Il would be important exclude Top Level Test suites.
+	  // 
+	  // 
     // 20090308 - franciscom
     // Changed because found problem on:
-    // Test Specification tree when appying Keyword filter using a keyword NOT PRESENT
+    // Test Specification tree when applying Keyword filter using a keyword NOT PRESENT
     // in test cases => Tree root shows loading icon and spin never stops.
     //
     // Attention: do not know if in other situation this will generate a different bug
     // 
-	if(!is_null($menustring))
-	{
-		// Remove null elements (Ext JS tree do not like it ).
-		// $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
-		$menustring = str_ireplace(array('null,' , ',null' , 'null'),array('','',''), $menustring); 
+	  if(!is_null($menustring))
+	  {
+		    // Remove null elements (Ext JS tree do not like it ).
+		    // :null happens on -> "children":null,"text" that must become "children":[],"text"
+		    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+		    $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
     }
-	
-	$treeMenu->menustring = $menustring;  
-	return $treeMenu;
+	  $treeMenu->menustring = $menustring;  
+	  return $treeMenu;
 }
 
 //
@@ -223,9 +254,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 //         'not run'
 //
 // 
-function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
-                     $tck_map = null,$tplan_tcases = null,$bHideTCs = 0,
-                     $assignedTo = null,$status = null, 
+function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
+                     $tplan_tcases = null,$bHideTCs = 0,$assignedTo = null,$status = null, 
                      $ignore_inactive_testcases=0,$show_tc_id=1,$bGetExternalTcID = 1)
 {
   
@@ -234,11 +264,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
     static $status_code_descr;
     
 	  if (!$hash_id_descr)
+	  {
 	  	$hash_id_descr = $decoding_info['node_id_descr'];
+	  }
 	  if (!$status_descr_code)
+	  {
 	  	$status_descr_code = $decoding_info['status_descr_code'];
+ 	  }
  	  if (!$status_code_descr)
-    		$status_code_descr = $decoding_info['status_code_descr'];
+ 	  {
+ 	  		$status_code_descr = $decoding_info['status_code_descr'];
+    }
   
 	  $tcase_counters = array('testcase_count' => 0);
 	  foreach($status_descr_code as $status_descr => $status_code)
@@ -256,10 +292,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	    {
 	    	if (!isset($tck_map[$node['id']]))
 	    	{
-	    		$node = null;
+       	    $node = null;
 	    	}	
 	    }
-		
 	    if ($node && $viewType == 'executionTree')
 		  {
 		  	  $tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
@@ -359,12 +394,15 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		    $tcase_counters[$key]=0;
 		  }
 		
-		  $tc_status_descr = "not_run";
-		  $tc_status_code = 'n';
 		  if(isset($tpNode['exec_status']) )
 		  {
 		     $tc_status_code = $tpNode['exec_status'];
 		     $tc_status_descr = $status_code_descr[$tc_status_code];   
+		  }
+		  else
+		  {
+		      $tc_status_descr = "not_run";
+		      $tc_status_code = $status_descr_code[$tc_status_descr];
 		  }
   
     	$init_value = $node ? 1 : 0;
@@ -374,7 +412,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 		  {
 			    $node = null;
 			} 
-	}
+	  }  // if($node_type == 'testcase')
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -415,11 +453,14 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,
 	}
  	else if ($node_type == 'testsuite')
 	{
-		$map_node_tccount[$node['id']] = array(	'testcount' => 0,
-								                            'name' => $node['name']	  );
+		// does this means is an empty test suite ??? - franciscom 20080328
+		$map_node_tccount[$node['id']] = array(	'testcount' => 0,'name' => $node['name']);
 		
-		if (!is_null($tplan_tcases))
+		// 20090328 - franciscom added tck_map
+		if (!is_null($tplan_tcases) || !is_null($tck_map))
+		{
 			$node = null;
+		}	
 	}
 	
 	return $tcase_counters;
@@ -434,13 +475,9 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
                         $bForPrinting=0,$showTestCaseID)
 {
 	$menustring='';
-	
 	$node_type = $hash_id_descr[$node['node_type_id']];
-
-	
-	extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,
-		                                   $bForPrinting,$showTestCaseID,
-		                                   $testCasePrefix);
+	extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,$bForPrinting,
+	                                   $showTestCaseID,$testCasePrefix);
 	
 		
 	if (isset($node['childNodes']) && $node['childNodes'])
@@ -449,7 +486,7 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 	  //                         in order to change it's values using reference .
 	  // Can not assign anymore to intermediate variables.
 	  //
-   		$nChildren = sizeof($node['childNodes']);
+   	$nChildren = sizeof($node['childNodes']);
 		for($idx = 0;$idx < $nChildren;$idx++)
 		{
 			if(is_null($node['childNodes'][$idx]))
@@ -503,8 +540,16 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     $tplan_tcases = null;
     $tck_map = null;
 
-    $keyword_id = $filters->keyword_id;
-    $keywordsFilterType = $filters->keywordsFilterType;
+    // 20090328
+    // $keyword_id = $filters->keyword_id;
+    // $keywordsFilterType = $filters->keywordsFilterType;
+    $keyword_id = 0;
+    $keywordsFilterType ='OR';
+    if( !is_null($filters->keyword) )
+    {
+        $keyword_id = $filters->keyword->items;
+        $keywordsFilterType = $filters->keyword->type;
+    }
     
     $tc_id = $filters->tc_id; 
     $build_id = $filters->build_id; 
@@ -543,6 +588,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
    	$order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
 	  $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
 	                                          null,'',RECURSIVE_MODE,$order_cfg);
+	                                          
 	  $test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
 	  $test_spec['id'] = $tproject_id;
 	  $test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -612,23 +658,29 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	      $menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,$hash_id_descr,1,
 	  	                                     $menuUrl,$bHideTCs,$useCounters,$useColors,
 	  	                                     $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-	  }
+	  	                                     
+	  	                                     
+	  }  // if($test_spec)
 	  
-       $treeMenu->rootnode=new stdClass();
-       $treeMenu->rootnode->name=$test_spec['text'];
-       $treeMenu->rootnode->id=$test_spec['id'];
-       $treeMenu->rootnode->leaf=$test_spec['leaf'];
-       $treeMenu->rootnode->text=$test_spec['text'];
-	     $treeMenu->rootnode->position=$test_spec['position'];	    
-       $treeMenu->rootnode->href=$test_spec['href'];
-         
+    $treeMenu->rootnode=new stdClass();
+    $treeMenu->rootnode->name=$test_spec['text'];
+    $treeMenu->rootnode->id=$test_spec['id'];
+    $treeMenu->rootnode->leaf=$test_spec['leaf'];
+    $treeMenu->rootnode->text=$test_spec['text'];
+	  $treeMenu->rootnode->position=$test_spec['position'];	    
+    $treeMenu->rootnode->href=$test_spec['href'];
+      
+    // BUGID 2296     
+    if( !is_null($menustring) )
+    {  
         // Change key ('childNodes')  to the one required by Ext JS tree.
-       $dummy_stringA = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes'])); 
-       
-       // Remove null elements (Ext JS tree do not like it ).
-       $dummy_stringB = str_ireplace('null,', '', $dummy_stringA); 
-       $dummy_string = str_ireplace(',null', '', $dummy_stringB); 
-       $menustring = str_ireplace('null', '', $dummy_string); 
+        $menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));   
+ 		    
+ 		    // Remove null elements (Ext JS tree do not like it ).
+		    // :null happens on -> "children":null,"text" that must become "children":[],"text"
+		    // $menustring = str_ireplace(array(':null',',null','null,'),array(':[]','',''), $menustring); 
+		    $menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
+    }  
     
     $treeMenu->menustring = $menustring;  
     return $treeMenu;
@@ -660,20 +712,18 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 {
 	$node_type = $hash_id_descr[$node['node_type_id']];
 	$menustring = '';
-  
-	extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,
-				$tc_action_enabled,$bHideTCs,
-	    		$useCounters,$useColors,$showTestCaseID,
-	    		$testCasePrefix,$showTestSuiteContents);
+    extjs_renderExecTreeNodeOnOpen($node,$node_type,$tcase_node,$tc_action_enabled,$bHideTCs,
+                                   $useCounters,$useColors,$showTestCaseID,$testCasePrefix,
+                                   $showTestSuiteContents);
 	
 	unset($tcase_node[$node['id']]);
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
-	  // 20080615 - franciscom - need to work always original object
-	  //                         in order to change it's values using reference .
-	  // Can not assign anymore to intermediate variables.
-	  //
-   	$nodes_qty = sizeof($node['childNodes']);
+	    // 20080615 - franciscom - need to work always original object
+	    //                         in order to change it's values using reference .
+	    // Can not assign anymore to intermediate variables.
+	    //
+        $nodes_qty = sizeof($node['childNodes']);
 		for($idx = 0;$idx <$nodes_qty ;$idx++)
 		{
 			if(is_null($node['childNodes'][$idx]))
@@ -912,16 +962,13 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			$status_descr = $status_code_descr[$status_code];
 			$status_text = lang_get($status_verbose[$status_descr]);
 			$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
-			$label = "<span {$css_class} " . '  title="' . $status_text .
-					'" alt="' . $status_text . '">';
-		
-		
+			$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
+				
 			if($showTestCaseID)
 			{
 				$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
 			} 
-			// $label .= $name . "</span>";
-    		$label .= "{$name}</span>";
+   		    $label .= "{$name}</span>";
 		
 			$versionID = $node['tcversion_id'];
     	break;
@@ -1106,7 +1153,7 @@ function buildKeywordsFilter($keywordsId,&$guiObj)
         {
             $keywordsFilter = new stdClass();
             $keywordsFilter->items = $keywordsId;
-            $keywordsFilter->type = $guiObj->keywordsFilterType->selected;
+            $keywordsFilter->type = isset($guiObj->keywordsFilterType) ? $guiObj->keywordsFilterType->selected: 'OR';
         }
     }
     return $keywordsFilter;

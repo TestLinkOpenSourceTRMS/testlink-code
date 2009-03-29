@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.6 2007/08/27 06:37:30 franciscom Exp $
+$Id: inc_show_bug_table.tpl,v 1.7 2009/03/29 14:10:00 franciscom Exp $
 
 rev :
       20070304 - franciscom - added single quotes on bug_id on deleteBug_onClick() call
@@ -9,8 +9,13 @@ rev :
 *}
 {* -------------------------------------------------------------------------------------- *}
 {* Manage missing arguments                                                               *}
-{assign var="tableClassName"  value=$tableClassName|default:"simple"}
-{assign var="tableStyles"  value=$tableStyles|default:"font-size:12px"}
+{if !isset($tableClassName) }
+    {assign var="tableClassName"  value="simple"}
+{/if}
+{if !isset($tableStyles) }
+    {assign var="tableStyles"  value="font-size:12px"}
+{/if}
+    
 {* -------------------------------------------------------------------------------------- *}
 <table class="simple" width="100%">
   <tr>

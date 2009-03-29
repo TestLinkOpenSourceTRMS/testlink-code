@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/03/25 20:53:16 $ - $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/03/29 17:31:29 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090329 - franciscom - html_table_of_custom_field_values()
  * 20090209 - franciscom - new method - get_children_testcases()
  * 20090208 - franciscom - get_testcases_deep() - interface changes
  * 20090207 - franciscom - update() - added duplicated name check
@@ -1232,42 +1233,55 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   returns: html string
   
 */
-function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,$tproject_id = null) 
+function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,
+                                           $tproject_id = null,$formatOptions=null) 
 {
-  $cf_smarty='';
-  $parent_id=null;
-  
-  if( $scope=='design' )
-  {
-    $cf_map = $this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution,$tproject_id);
-  }
-  else 
-  {
-  	//@TODO: schlundus, can this be speed up with tprojectID?
-    $cf_map=$this->get_linked_cfields_at_execution($id);
-  }
-    
-  if( !is_null($cf_map) )
-  {
-    foreach($cf_map as $cf_id => $cf_info)
+    $td_style='class="labelHolder"' ;
+    $add_table=true;
+    $table_style='';
+    if( !is_null($formatOptions) )
     {
-      // if user has assigned a value, then node_id is not null
-      if($cf_info['node_id'])
+        $td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
+        $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
+        $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
+    } 
+
+    $cf_smarty='';
+    $parent_id=null;
+    
+    if( $scope=='design' )
+    {
+      $cf_map = $this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution,$tproject_id);
+    }
+    else 
+    {
+      // Important: remember that for Test Suite, custom field value CAN NOT BE changed at execution time
+      // just displayed.
+      // @TODO: schlundus, can this be speed up with tprojectID?
+      $cf_map=$this->get_linked_cfields_at_execution($id);
+    }
+      
+    if( !is_null($cf_map) )
+    {
+      foreach($cf_map as $cf_id => $cf_info)
       {
-        // 20070501 - franciscom
-        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
-        $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                      $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
-                      "</td></tr>\n";
+        // if user has assigned a value, then node_id is not null
+        if($cf_info['node_id'])
+        {
+          // do not create input of audit log
+          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+          $cf_smarty .= "<tr><td {$td_style} >" . htmlspecialchars($label) . "</td><td>" .
+                        $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
+                        "</td></tr>\n";
+        }
       }
     }
-  }
-  // 20070826 - to avoid returning empty table
-  if( strlen(trim($cf_smarty)) > 0 )
-  {
-    $cf_smarty = "<table>" . $cf_smarty . "</table>";
-  }
-  return($cf_smarty);
+    // 20090329
+	if(strlen(trim($cf_smarty)) > 0 && $add_table)
+	{
+		 $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
+	}
+    return($cf_smarty);
 } // function end
 
 

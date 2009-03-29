@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2009/03/29 14:10:01 $ by $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -545,7 +545,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     // $keywordsFilterType = $filters->keywordsFilterType;
     $keyword_id = 0;
     $keywordsFilterType ='OR';
-    if( !is_null($filters->keyword) )
+    if( property_exists($filters,'keyword') && !is_null($filters->keyword) )
     {
         $keyword_id = $filters->keyword->items;
         $keywordsFilterType = $filters->keyword->type;

@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.157 $
- * @modified $Date: 2009/03/26 08:00:48 $ $Author: franciscom $
+ * @version $Revision: 1.158 $
+ * @modified $Date: 2009/03/29 17:31:29 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20090329 - franciscom - html_table_of_custom_field_values() new option useful when
+ *                         used on printing docs.
  *
  * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
  * 20090220 - franciscom - BUGID 2129
@@ -75,20 +78,20 @@ class testcase extends tlObjectWithAttachments
 	private $testprojects_table = "testprojects";
 	private $nodes_hierarchy_table = "nodes_hierarchy";
 	private $keywords_table = "keywords";
-  private $testcase_keywords_table="testcase_keywords";
-  private $testplan_tcversions_table="testplan_tcversions";
+    private $testcase_keywords_table="testcase_keywords";
+    private $testplan_tcversions_table="testplan_tcversions";
 
-  const AUTOMATIC_ID=0;
-  const DEFAULT_ORDER=0;
-  const ALL_VERSIONS=0;
-  const LATEST_VERSION=-1;
-  const AUDIT_OFF=0;
-  const AUDIT_ON=1;
-  const CHECK_DUPLICATE_NAME=1;
-  const DONT_CHECK_DUPLICATE_NAME=0;
-  const ENABLED=1;
-  const ALL_TESTPLANS=null;    
-  
+    const AUTOMATIC_ID=0;
+    const DEFAULT_ORDER=0;
+    const ALL_VERSIONS=0;
+    const LATEST_VERSION=-1;
+    const AUDIT_OFF=0;
+    const AUDIT_ON=1;
+    const CHECK_DUPLICATE_NAME=1;
+    const DONT_CHECK_DUPLICATE_NAME=0;
+    const ENABLED=1;
+    const ALL_TESTPLANS=null;    
+    
 	var $db;
 	var $tree_manager;
 	var $tproject_mgr;
@@ -323,8 +326,8 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
   {
     // Get tproject id
     $path2root=$this->tree_manager->get_path($parent_id);
-    $tprojectID=$path2root[0]['parent_id'];
-    $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tprojectID);
+    $tproject_id=$path2root[0]['parent_id'];
+    $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tproject_id);
     $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name,$order,$id);
     $ret['id'] = $tcase_id;
     $ret['external_id'] = $tcaseNumber;
@@ -577,8 +580,8 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
   if( $status_ok )
   {
       $path2root=$this->tree_manager->get_path($a_id[0]);
-      $tprojectID=$path2root[0]['parent_id'];
-      $info=$this->tproject_mgr->get_by_id($tprojectID);
+      $tproject_id=$path2root[0]['parent_id'];
+      $info=$this->tproject_mgr->get_by_id($tproject_id);
       $requirements_feature=$info['option_reqs'];
 
       if( $viewer_defaults['display_testproject'] )
@@ -592,7 +595,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
           $gui->parentTestSuiteName=$path2root[$parent_idx]['name'];
       }
 
-      $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+      $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
       if( strlen(trim($tcasePrefix)) > 0 )
       {
            $tcasePrefix .= $tcase_cfg->glue_character;
@@ -647,7 +650,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 			}
 			$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 			$arrReqs[] = $tcReqs; 
-			$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tprojectID);
+			$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tproject_id);
 		} // foreach($a_id as $key => $tc_id)
   } // if (sizeof($a_id))
   
@@ -1108,8 +1111,8 @@ function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 function formatTestCaseIdentity($id,$external_id)
 {
     $path2root=$this->tree_manager->get_path($tc_id);
-    $tprojectID=$path2root[0]['parent_id'];
-    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+    $tproject_id=$path2root[0]['parent_id'];
+    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
 }
 
 
@@ -1124,8 +1127,8 @@ function formatTestCaseIdentity($id,$external_id)
 function getPrefix($id)
 {
     $path2root=$this->tree_manager->get_path($id);
-    $tprojectID=$path2root[0]['parent_id'];
-    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tprojectID);
+    $tproject_id=$path2root[0]['parent_id'];
+    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
     return $tcasePrefix;
 }
 
@@ -1846,13 +1849,13 @@ function getInternalID($stringID,$glueCharacter)
                " FROM {$this->testprojects_table} " .
                " WHERE prefix='" . $this->db->prepare_string($testCasePrefix) . "'";
 			$recordset = $this->db->get_recordset($sql);
-			$tprojectID = $recordset[0]['id'];
+			$tproject_id = $recordset[0]['id'];
 
 			$tprojectSet = array();
 			foreach($testCases as $tcaseID => $value )
 			{
         $path2root=$this->tree_manager->get_path($tcaseID);
-				if($tprojectID == $path2root[0]['parent_id'])
+				if($tproject_id == $path2root[0]['parent_id'])
 				{
           $internalID = $tcaseID;
 					break;
@@ -3047,21 +3050,34 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
         [$testplan_id]: null -> get values for any tesplan to with testcase is linked
                         !is_null -> get values only for this testplan.
 
+        [$tproject]
+        [$formatOptions}
+
   returns: html string
 
 */
-function html_table_of_custom_field_values($id,$scope='design',$filters=null,
-                                           $execution_id=null,$testplan_id=null,$tprojectID = null)
+function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
+                                           $testplan_id=null,$tproject_id = null,$formatOptions=null)
 {
+    $td_style='class="labelHolder"' ;
+    $add_table=true;
+    $table_style='';
+    if( !is_null($formatOptions) )
+    {
+        $td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
+        $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
+        $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
+    } 
+	
 	$cf_smarty = '';
 	if($scope == 'design')
 	{
-		$cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tprojectID);
+		$cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
 	}
 	else
 	{
 		$cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
-		                                                 $execution_id,$testplan_id,$tprojectID);
+		                                                 $execution_id,$testplan_id,$tproject_id);
 	}
   
 	if(!is_null($cf_map))
@@ -3073,16 +3089,16 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,
 			{
 	      		$label = $cf_info['label'];
 
-				$cf_smarty .= '<tr><td class="labelHolder">' .
+				$cf_smarty .= "<tr><td {$td_style}> " .
 								htmlspecialchars($label) . ":</td><td>" .
 								$this->cfield_mgr->string_custom_field_value($cf_info,$id) .
 								"</td></tr>\n";
 			}
 		}
 
-		if(strlen(trim($cf_smarty)) > 0)
+		if(strlen(trim($cf_smarty)) > 0 && $add_table)
 		{
-		  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+		  $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
 		}
 	}
 	return $cf_smarty;

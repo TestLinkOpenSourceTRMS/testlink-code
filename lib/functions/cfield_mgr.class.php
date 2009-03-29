@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/03/21 12:06:15 $  $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/03/29 17:31:29 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090321 - franciscom - fixed bug due to missing code on get_linked_cfields_at_design()
  * 20090321 - franciscom - exportValueAsXML()
  * 20090303 - franciscom - get_linked_cfields_at_execution() - fixed bugs on query
  *                         and added logic to change fetch method.
@@ -435,6 +436,8 @@ class cfield_mgr
                 the value assigned to custom field "Operating System".
                 I will do two calls to this method.
 
+    [$access_key]: default id, field name to use as access key in returned hash
+    
     returns: hash
              key: custom field id
 
@@ -455,7 +458,7 @@ class cfield_mgr
 
   */
   function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
-                                        $node_type=null,$node_id=null)
+                                        $node_type=null,$node_id=null,$access_key='id')
   {
     $additional_join="";
     $additional_values="";
@@ -503,7 +506,7 @@ class cfield_mgr
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
-    $map = $this->db->fetchRowsIntoMap($sql,'id');
+    $map = $this->db->fetchRowsIntoMap($sql,$access_key);
     return($map);
   }
 
@@ -1354,8 +1357,6 @@ class cfield_mgr
 
 
     rev :
-          20090303 - franciscom - added additional logic to get fields needed to reports.
-          
           20070526 - franciscom
           changed order by clause
 

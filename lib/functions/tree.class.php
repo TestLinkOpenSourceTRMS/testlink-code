@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20090313 - franciscom - added getTreeRoot()
@@ -1046,7 +1046,6 @@ function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_childr
     
     $rs = $this->db->get_recordset($sql);
     
-    new dBug($rs);
     if( !is_null($rs) )
     {
         foreach($rs as $row)
@@ -1087,18 +1086,12 @@ function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_childr
   	if( $node_id != $root_id )
   	{
         $children = $this->db->get_recordset($sql);
-        new dBug($children);
         if( is_null($children) || count($children) == 0 )
         {
   	        $sql2 = " SELECT NH.* FROM {$this->obj_table} NH " .
        	            " WHERE NH.id = {$node_id}";
             $node_info = $this->db->get_recordset($sql2);
-            
-            echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql2 . "</b><br>";
-            new dBug($node_info);
-
             $className = $this->class_name[$node_info[0]['node_type_id']];
-            echo "\$className:$className";
 	          if( !is_null($className) )
 	          { 
 	              $item_mgr = new $className($this->db);

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.35 2009/03/29 14:10:00 franciscom Exp $
+$Id: execSetResults.tpl,v 1.36 2009/03/29 17:31:29 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -346,7 +346,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
         <td>{$tsuite_info[$tc_id].tsuite_name}</td>{* <td>&nbsp;</td> *}
         <td>
-        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id})" title="{$labels.show_tcase_spec}">
+        <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id})" title="{$labels.show_tcase_spec}">
         {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
         </a>
         </td>

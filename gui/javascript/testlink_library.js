@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.71 2009/03/26 20:18:08 schlundus Exp $
+// $Id: testlink_library.js,v 1.72 2009/03/29 17:31:29 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -22,6 +22,7 @@
 //
 // ----------------------------------------------------------------------------
 //
+// 20090329 - franciscom - openTCaseWindow(), added second argument
 // 20081220 - franciscom - toggleInput()
 // 20080724 - havlatm - bug 1638, 1639
 // 20080322 - franciscom - openExecNotesWindow()
@@ -613,10 +614,10 @@ function open_help_window(help_page,locale)
        20070930 - franciscom - REQ - BUGID 1078
 
 */
-function openTCaseWindow(tcase_id)
+function openTCaseWindow(tcase_id,tcversion_id)
 {
   var feature_url="lib/testcases/archiveData.php";
-  feature_url +="?allow_edit=0&edit=testcase&id="+tcase_id;
+  feature_url +="?allow_edit=0&edit=testcase&id="+tcase_id+"&tcversion_id="+tcversion_id;
 	window.open(fRoot+feature_url,"Test Case Spec",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }

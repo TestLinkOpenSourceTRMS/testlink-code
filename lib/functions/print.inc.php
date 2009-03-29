@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.71 $
- * @modified $Date: 2009/03/26 06:08:25 $ by $Author: amkhullar $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -13,6 +13,9 @@
  * Used by printDocument.php
  *
  * Revisions:
+ *
+ *      20090329 - franciscom - renderTestCaseForPrinting() refactoring of code regarding custom fields
+ *                              renderTestSuiteNodeForPrinting() - print ALWAYS custom fields
  * 		20090326 - amkhullar - BUGID 2207 - Code to Display linked bugs to a TC in Test Report
  *		20090322 - amkhullar - added check box for Test Case Custom Field display on Test Plan/Report
  *  	20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
@@ -171,7 +174,7 @@ function renderSimpleChapter($title, $content)
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
                                        $tocPrefix,$tcCnt,$level,$user_id,
                                        $tplan_id = 0,$tcPrefix = null,
-                                       $tProjectID = 0)
+                                       $tprojectID = 0)
 {
 	static $tree_mgr;
 	static $map_id_descr;
@@ -192,11 +195,11 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 		case 'testsuite':
 				$tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $tcCnt;
-			  $code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level);
+			  $code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level,$tplan_id,$tprojectID);
 		break;
 
 		case 'testcase':
-			  $code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id,$tcPrefix,$tProjectID);
+			  $code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id,$tcPrefix,$tprojectID);
 	  break;
 	}
 	
@@ -217,7 +220,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			    $tsCnt++;
 			}
 			$code .= renderTestSpecTreeForPrinting($db,$current,$item_type,$printingOptions,
-			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id,$tcPrefix,$tProjectID);
+			                                       $tocPrefix,$tsCnt,$level+1,$user_id,$tplan_id,$tcPrefix,$tprojectID);
 		}
 	}
 	
@@ -240,29 +243,27 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
   returns:
 
   rev :
-       20080819 - franciscom - removed mysql only code
-       20071014 - franciscom - display test case version
-       20070509 - franciscom - added Contribution
 
 */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
-                                   $tplan_id=0,$prefix = null,$tProjectID = 0)
+                                   $tplan_id=0,$prefix = null,$tprojectID = 0)
 {
-	  static $req_mgr;
-	  static $tc_mgr;
-	  static $results_cfg;
-	  static $status_labels;
-	  static $labels;
-	  static $doc_cfg;
-	  static $gui_cfg;
-	  static $testcaseCfg;
-	  static $tcase_prefix;
+    static $req_mgr;
+	static $tc_mgr;
+	static $results_cfg;
+	static $status_labels;
+	static $labels;
+	static $doc_cfg;
+	static $gui_cfg;
+	static $testcaseCfg;
+	static $tcase_prefix;
     static $userMap = array();
     
-	  $code = null;
-	  $tcInfo = null;
+	$code = null;
+	$tcInfo = null;
     $tcResultInfo = null;
     $tcase_pieces=null;
+    $cfieldFormatting=array('td_css_style' => '','add_table' => false);
     
 	  if( !$results_cfg )
 	  {
@@ -314,14 +315,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
   	$cfields = array('specScope' => '', 'execScope' => '');
 
 	  // get custom fields that has specification scope
-	  $cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id,'design',null,null,$tplan_id,$tProjectID);
-  	if(strlen(trim($cfields['specScope'])) > 0 )
-  	{
-		    $cfields['specScope'] = str_replace('<td class="labelHolder">','<td>',$cfields['specScope']);  
-		    $cfields['specScope'] = str_replace('<table>','',$cfields['specScope']);
-		    $cfields['specScope'] = str_replace('</table>','',$cfields['specScope']);
-  	}
+	  $cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id,'design',null,null,
+	                                                                     $tplan_id,$tprojectID,$cfieldFormatting);
 
+    // THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
+    // using existent methods - franciscom - 20090329 
     // Need to get CF with execution scope
 	  $sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, " .
 	          " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
@@ -336,18 +334,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     if(!is_null($exec_info ))
     { 
         $execution_id=$exec_info[0]['execution_id'];
-        //Added condition for the display on/off of the custom fields on test cases.
+        // Added condition for the display on/off of the custom fields on test cases.
         if ($printingOptions['cfields'])
         {
-        	$cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,$execution_id, $tplan_id,$tProjectID);
+        	$cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
+        	                                                                   $execution_id, $tplan_id,
+        	                                                                   $tprojectID,$cfieldFormatting);
         }
-	                                                                        
-  	    if(strlen(trim($cfields['execScope'])) > 0 )
-  	    {
-		        $cfields['execScope'] = str_replace('<td class="labelHolder">','<td>',$cfields['execScope']);  
-		        $cfields['execScope'] = str_replace('<table>','',$cfields['execScope']);
-		        $cfields['execScope'] = str_replace('</table>','',$cfields['execScope']);
-  	    }
     }
 	  if ($printingOptions['toc'])
 	  {
@@ -421,11 +414,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	      {
 	  		    $tcstatus2 = $status_labels[$exec_info[0]['status']];
 	  		    $tcnotes2 = $exec_info[0]['notes'];
-            $build_name = " - ({$labels['build']}:{$exec_info[0]['build_name']})";
+                $build_name = " - ({$labels['build']}:{$exec_info[0]['build_name']})";
+            	
             	//- amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
 	      		$bug_interface = config_get("bugInterface");
 				$bugs = get_bugs_for_exec($db,$bug_interface,$execution_id);
-				if (($bugs) && ($tcstatus2 == 'Failed')) 
+				if (($bugs) && ($tcstatus2 == 'failed')) 
 				{
 					$bugString = $labels['bugs'] . ": <br />";
 					foreach($bugs as $bugID => $bugInfo) 
@@ -525,19 +519,23 @@ function renderToc(&$printingOptions)
   args :
   returns:
   
-  rev: 20081207 - franciscom - refactoring using static to decrease exec time.
+  rev: 20090329 - franciscom - added ALWAYS Custom Fields
+       20081207 - franciscom - refactoring using static to decrease exec time.
 */
-function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix,$level)
+function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix,$level,$tplan_id,$tproject_id)
 {
-  static $tsuite_mgr;
-  static $labels;
-  if( !$labels)
-  { 
+    static $tsuite_mgr;
+    static $labels;
+    if( !$labels)
+    { 
 	    $labels=array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
 	}
   
 	$code = null;
 	$name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
+  	$cfields = array('design' => '', 'execution' => '');
+    $cfieldFormatting=array('table_css_style' => 'class="cf"');
+
 	if ($printingOptions['toc'])
 	{
 	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;"><a href="#cat' . $node['id'] . '">' .
@@ -547,13 +545,36 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
  	$code .= "<h1 class='doclevel'>{$tocPrefix} {$labels['test_suite']} {$name}</h1>";
 
 	if ($printingOptions['header'])
-  {
-    if( !$tsuite_mgr)
-    { 
+    {
+        if( !$tsuite_mgr)
+        { 
 		    $tsuite_mgr = new testsuite($db);
 		}
 		$tInfo = $tsuite_mgr->get_by_id($node['id']);
-   	$code .= "<h2 class='doclevel'>{$tocPrefix}.0 {$labels['details']} </h2><div>{$tInfo['details']}</div><br />";
+   	    $code .= "<h2 class='doclevel'>{$tocPrefix}.0 {$labels['details']} </h2><div>{$tInfo['details']}</div><br />";
+   	
+   	    // get Custom fields    
+	    // $cfields['specScope'] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],'design',null,
+	    //                                                                        $tproject_id,$cfieldFormatting);
+        // 
+	    // $cfields['execScope'] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],'execution',null,
+   	    
+        $add_br=false;
+        foreach($cfields as $key => $value)
+        {
+            $cfields[$key]= $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
+	                                                                       $tproject_id,$cfieldFormatting);
+   	        if( strlen($cfields[$key]) > 0 )
+   	        {
+   	            $add_br=true;
+   	            $code .= "<br />" . $cfields[$key];    
+   	        }
+   	    }
+   	    if( $add_br ) 
+   	    {
+   	        $code .= '<br />';    
+   	    }
+     
  	}
 
 	return $code;
@@ -568,14 +589,14 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 */
 function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
                                    $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,
-                                   $tProjectID)
+                                   $tprojectID)
 
 {
 	$tProjectMgr = new testproject($db);
-	$tcPrefix = $tProjectMgr->getTestCasePrefix($tProjectID);
+	$tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
 	$code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
                                          $tocPrefix,$tcCnt,$level,$user_id,
-                                         $tplan_id,$tcPrefix,$tProjectID);
+                                         $tplan_id,$tcPrefix,$tprojectID);
 	return $code;
 }
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/02/21 16:13:16 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -214,6 +214,7 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$dupl
 	{
 		$xmlTCs = $node->get_elements_by_tagname("testcase");
 		$tcData = importTCsFromXML($xmlTCs);
+		
 		if ($tcData)
 		{
 			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
@@ -347,15 +348,15 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$req_spec_mgr = new requirement_spec_mgr($db);
 		$req_mgr = new requirement_mgr($db);
 	
-	  // Get CF with scope design time and allowed for test cases linked to this test project
-	  // $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
-	  // function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
-    //                                       $node_type=null,$node_id=null,$access_key='id')
-    // 
-    $linkedCustomFields=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
-    $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
+	    // Get CF with scope design time and allowed for test cases linked to this test project
+	    // $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
+	    // function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
+        //                                       $node_type=null,$node_id=null,$access_key='id')
+        // 
+        $linkedCustomFields=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
+        $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
                        
-    // BUGID - 20090205 - franciscom
+        // BUGID - 20090205 - franciscom
 		$reqSpecSet=$tproject_mgr->getReqSpec($tproject_id,null,array('id','title'),'title');
 		$tprojectHas['reqSpec']=(!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 	}
@@ -372,16 +373,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$externalid = $tc['externalid'];
 				
     
-    $name_len=strlen($name);  
-    if( $name_len > $fieldSizeCfg->testcase_name)
-    {
-        // Will put original name inside summary
-        $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
-        $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
-        $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
-        $summary = nl2br($xx) . $summary;
-        $name=substr($name, 0, $safeSizeCfg->testcase_name);      
-    }
+        $name_len=strlen($name);  
+        if( $name_len > $fieldSizeCfg->testcase_name)
+        {
+            // Will put original name inside summary
+            $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
+            $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
+            $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
+            $summary = nl2br($xx) . $summary;
+            $name=substr($name, 0, $safeSizeCfg->testcase_name);      
+        }
     		
 		
 		$kwIDs = null;
@@ -393,7 +394,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$doCreate=true;
 		if( $actionOnDuplicatedName == 'update_last_version' )
 		{
-       $info=$tcase_mgr->getDuplicatesByName($name,$container_id);
+         $info=$tcase_mgr->getDuplicatesByName($name,$container_id);
    		 if( !is_null($info) )
    		 {
    		     $tcase_qty = count($info);

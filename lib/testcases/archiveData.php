@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.44 2009/03/26 08:00:49 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.45 2009/03/29 17:31:29 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
- *      20090326 - franciscom - solved bug related to forced READ ONLY when called as result of search on Navigator bar.
+ *      20090329 - franciscom - added management of new call parameter tcversion_id
+ *      20090326 - franciscom - solved bug related to forced READ ONLY when called as 
+ *                 result of search on Navigator bar.
  *      20090228 - franciscom - this page is called when search option on Navigation Bar is used.
  *      20080425 - franciscom - refactoring
  *      20080120 - franciscom - show() method for test cases - interface changes
@@ -58,11 +60,11 @@ switch($args->feature)
 			$cfg = config_get('testcase_cfg');
 			$args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
       
-      if( $args->id > 0)
-      {
-          $get_path_info=true;
-          $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
-      }
+            if( $args->id > 0)
+            {
+                $get_path_info=true;
+                $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
+            }
 		}
 		
 		if( $get_path_info || $args->show_path)
@@ -72,10 +74,12 @@ switch($args->feature)
 			
 		$attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;
 
-    $smarty->assign('id',$args->id);
+        $smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
-		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,
-		                testcase::ALL_VERSIONS,$viewerArgs,$path_info);
+		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
+		                $viewerArgs,$path_info);
+
+//		                testcase::ALL_VERSIONS,$viewerArgs,$path_info);
 		break;
 
 	default:
@@ -104,6 +108,7 @@ function init_args(&$viewerCfg)
     // $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
     $args->tcasePrefix = isset($_REQUEST['tcasePrefix']) ? trim($_REQUEST['tcasePrefix']) : null;
     $args->show_path = isset($_REQUEST['show_path']) ? $_REQUEST['show_path'] : 0;
+    $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : testcase::ALL_VERSIONS;
 
     switch($args->feature)
     {

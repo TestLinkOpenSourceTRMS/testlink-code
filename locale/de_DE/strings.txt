@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.113 $
- * @modified $Date: 2009/03/26 20:18:10 $ by $Author: schlundus $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2009/03/30 19:08:34 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -88,6 +88,7 @@ $TLS_th_delete = "Löschen?";
 // Buttons (used wide)
 $TLS_btn_apply = "Anwenden";
 $TLS_btn_add = "Hinzufügen";
+$TLS_btn_add_to_testplans = "Zu Testplänen hinzufügen";
 $TLS_btn_assign = "Hinzufügen";
 $TLS_btn_cancel = "Abbrechen";
 $TLS_btn_close = "Schließen";
@@ -965,6 +966,8 @@ $TLS_check_uncheck_all_checkboxes_for_add = "alle an-/abwählen (zum Hinuzufügen)
 $TLS_check_uncheck_all_checkboxes_for_rm = "alle an-/abwählen (zum Entfernen)";
 $TLS_executed_can_not_be_removed = "Bereits ausgeführte Testfälle können nicht entfernt werden";
 $TLS_execution_order = "Ausführungsreihenfolge";
+$TLS_select_all_to_add = "Alle TestFälle zum Hinzufügen aus- oder abwählen";
+$TLS_select_all_to_remove = "Alle TestFälle zum Entfernen aus- oder abwählen";
 
 $TLS_has_been_executed = "wurde ausgeführt";
 $TLS_inactive_testcase = "inaktiv";

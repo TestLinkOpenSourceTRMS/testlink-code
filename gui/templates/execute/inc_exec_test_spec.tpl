@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.9 2009/02/14 15:15:45 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.10 2009/03/30 19:08:34 schlundus Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -25,7 +25,7 @@ Rev:
 		  	 <a href="javascript: void(0)"  title="{$args_labels.click_to_open}"
 		  	       onclick="window.open(fRoot+'{$getReqAction}{$req_elem.id}','{$args_labels.requirement}', 
 		  	                            'width=700, height=500'); return false;">
-	  	    {$req_elem.req_doc_id}{$tlCfg->gui_title_separator_1}{$req_elem.title}
+	  	    {$req_elem.req_doc_id|escape}{$tlCfg->gui_title_separator_1}{$req_elem.title|escape}
 	  	   </a>
 	  	  </span>
 	  	 </td>

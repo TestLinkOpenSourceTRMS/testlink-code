@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.141 $ $Author: schlundus $
- * @modified $Date: 2009/03/25 20:53:13 $
+ * @version $Revision: 1.142 $ $Author: schlundus $
+ * @modified $Date: 2009/03/30 18:49:01 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -63,6 +63,7 @@ if ($g_interface_bugs != 'NO')
 }
 require_once("role.class.php");
 require_once("attachment.class.php");
+require_once("testproject.class.php"); 
 
 /** @TODO use the next include only if it is used -> must be removed */
 require_once("user.class.php");

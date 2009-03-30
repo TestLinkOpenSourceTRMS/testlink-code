@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.142 $ $Author: schlundus $
- * @modified $Date: 2009/03/30 18:49:01 $
+ * @version $Revision: 1.143 $ $Author: schlundus $
+ * @modified $Date: 2009/03/30 21:17:35 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -1063,5 +1063,14 @@ function checkUserRightsFor(&$db,$pfn)
 	}
 	if ($bExit)
 		exit();
+}
+
+function tlStringLen($str)
+{
+	$charset = config_get('charset');	
+	$nLen = iconv_strlen($str,$charset);
+	if ($nLen === false)
+		throw new Exception("Invalid UTF-8 Data detected!");
+	return $nLen; 
 }
 ?>

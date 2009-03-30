@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/01/07 19:55:34 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/03/30 21:17:35 $ $Author: schlundus $
  *
  * rev: 20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
  *      20081213 - franciscom - removed global coupling to access config parameters
@@ -280,7 +280,7 @@ class tlUser extends tlDBObject
 		if (self::isPasswordMgtExternal())
 			return self::S_PWDMGTEXTERNAL;
 			
-		if (!strlen($pwd))
+		if (!tlStringLen($pwd))
 			return self::E_PWDEMPTY;
 		$this->password = $this->encryptPassword($pwd);
 		return tl::OK;
@@ -329,7 +329,7 @@ class tlUser extends tlDBObject
 		$login = trim($login);
 		//simple check for empty login, or login consisting only of whitespaces
 		//The DB field is only 30 characters
-		if (!strlen($login) || (strlen($login) > $this->maxLoginLength))
+		if (!tlStringLen($login) || (tlStringLen($login) > $this->maxLoginLength))
 			$result = self::E_LOGINLENGTH;
 		else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
 			$result = self::E_NOTALLOWED;

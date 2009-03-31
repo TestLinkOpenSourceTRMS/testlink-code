@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/03/29 17:31:29 $ - $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2009/03/31 16:18:34 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
  * 20090329 - franciscom - html_table_of_custom_field_values()
  * 20090209 - franciscom - new method - get_children_testcases()
  * 20090208 - franciscom - get_testcases_deep() - interface changes
@@ -1027,12 +1028,12 @@ function deleteKeywords($id,$kw_id = null)
 */
 function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
 {
-  $USE_RECURSIVE_MODE=true;
+    $USE_RECURSIVE_MODE=true;
 	$xmlTC = null;
 	$bRecursive = @$optExport['RECURSIVE'];
 	if ($bRecursive)
 	{
-	  $cfXML = null;
+	    $cfXML = null;
 		$kwXML = null;
 		$tsuiteData = $this->get_by_id($container_id);
 		if (@$optExport['KEYWORDS'])
@@ -1045,24 +1046,24 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 		}
 		
 		// 20090106 - franciscom - custom fields
-    $cfMap=$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+        $cfMap=$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
 		if( !is_null($cfMap) && count($cfMap) > 0 )
-	  {
-        $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-	      $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-	      	                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
-	      $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
-	      $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
-	  } 
+	    {
+            $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+	        $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+	      	                         '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+	        $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+	        $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+	    } 
 
-    $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
-             "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
-	           "<details><![CDATA[{$tsuiteData['details']}]]> \n{$kwXML}{$cfXML}</details>";
+        $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+                 "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
+	             "<details><![CDATA[{$tsuiteData['details']}]]> \n{$kwXML}{$cfXML}</details>";
 	}
 	else
 	{
 		$xmlTC = "<testcases>";
-  }
+    }
   
 	$test_spec = $this->get_subtree($container_id,$USE_RECURSIVE_MODE);
 
@@ -1082,14 +1083,15 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 	    	}
 	    	else if ($nTable == 'testcases')
 	    	{
-	    	  if( is_null($tcase_mgr) )
-	    	  {
+	    	    if( is_null($tcase_mgr) )
+	    	    {
 	    		    $tcase_mgr = new testcase($this->db);
 	    		}
 	    		$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,$tproject_id,true,$optExport);
 	    	}
 	    }
-	}    
+	}   
+	 
 	if ($bRecursive)
 		$xmlTC .= "</testsuite>";
 	else
@@ -1124,9 +1126,10 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 		{
 			$tproject_id = $this->getTestProjectFromTestSuite($id,$parent_id);
 		}
+        $filters=array('show_on_execution' => $show_on_execution);    
 		$enabled = 1;
-		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-	                                                            $show_on_execution,'testsuite',$id);
+		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,
+		                                                          'testsuite',$id);
 		return $cf_map;
 	}
 	
@@ -1136,13 +1139,10 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
    */
 	function getTestProjectFromTestSuite($id,$parent_id)
 	{
-		// $the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
-		// $path_len = count($the_path);
-		// $tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
-		
 		$tproject_id = $this->tree_manager->getTreeRoot( (!is_null($id) && $id > 0) ? $id : $parent_id);
 		return $tproject_id;
 	}
+
 /*
   function: get_linked_cfields_at_execution
             
@@ -1161,13 +1161,14 @@ function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array(
 */
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
 {
+  $filters=array('show_on_execution' => $show_on_execution);    
   $enabled=1;
   $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-                                                          $show_on_execution,'testsuite',$id);
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,
+                                                          'testsuite',$id);
   return($cf_map);
 }
 
@@ -1189,7 +1190,6 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
 function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design') 
 {
   $cf_smarty='';
-  
   if( $scope=='design' )
   {
     $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
@@ -1203,8 +1203,8 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   {
     foreach($cf_map as $cf_id => $cf_info)
     {
-      // 20070501 - franciscom 
-      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+      // true => do not create input in audit log
+      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null.true));
       $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                     $this->cfield_mgr->string_custom_field_input($cf_info) .
                     "</td></tr>\n";
@@ -1236,6 +1236,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
 function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,
                                            $tproject_id = null,$formatOptions=null) 
 {
+    $filters=array('show_on_execution' => $show_on_execution);    
     $td_style='class="labelHolder"' ;
     $add_table=true;
     $table_style='';
@@ -1251,7 +1252,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
     
     if( $scope=='design' )
     {
-      $cf_map = $this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution,$tproject_id);
+      $cf_map = $this->get_linked_cfields_at_design($id,$parent_id,$filters,$tproject_id);
     }
     else 
     {
@@ -1268,7 +1269,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
         // if user has assigned a value, then node_id is not null
         if($cf_info['node_id'])
         {
-          // do not create input of audit log
+          // true => do not create input in audit log
           $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
           $cf_smarty .= "<tr><td {$td_style} >" . htmlspecialchars($label) . "</td><td>" .
                         $this->cfield_mgr->string_custom_field_value($cf_info,$id) .

@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.115 $
- * @modified $Date: 2009/03/25 19:04:50 $ $Author: amkhullar $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2009/03/31 16:18:34 $ $Author: franciscom $
  *
  * rev:
+ *     20090330 - franciscom - fixed bug on test plan custom field get.
  *     20090325 - amkhullar - BUGID 2267
  *     20090210 - amkhullar - BUGID 2068
  *     20081230 - franciscom - display full path on test suite name
@@ -516,7 +517,9 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
   		{
 			$the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
 			if(count($the_bugs) > 0)
+			{
 				$bugs[$exec_id] = $the_bugs;
+			}	
   		}
 
       // Custom fields
@@ -866,8 +869,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     // doing this here, we avoid to do on processTestSuite() and processTestCase(),
     // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
     // over these two functions. 	
-	  $tprojectMgr = new testproject($dbHandler);
-	  $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+	$tprojectMgr = new testproject($dbHandler);
+	$gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
     $build_info = $buildMgr->get_by_id($argsObj->build_id);
     $gui->build_notes=$build_info['notes'];
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);
@@ -898,12 +901,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 
     $rs = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testplan_notes = $rs['notes'];
-    //@TODO: schlundus, can this be speed up with tprojectID?
-    //       retrieving testproject ID using test plan id is a single query that do not can consume
-    //       a significative time.
-    $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'execution',
-                                                                          array('show_on_execution' => 1));
 
+    // Important note: 
+    // custom fields for test plan can be edited ONLY on design, that's reason why we are using 
+    // scope = 'design' instead of 'execution'
+    $gui->testplan_cfields = $tplanMgr->html_table_of_custom_field_values($argsObj->tplan_id,'design',
+                                                                          array('show_on_execution' => 1));
+    
     $gui->history_on = manage_history_on($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
                                          'btn_history_on','btn_history_off','history_on');
     $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';

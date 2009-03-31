@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.72 $
- * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2009/03/31 16:18:34 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -14,6 +14,7 @@
  *
  * Revisions:
  *
+ *      20090330 - franciscom - renderTestSpecTreeForPrinting() - added logic to print ALWAYS test plan custom fields
  *      20090329 - franciscom - renderTestCaseForPrinting() refactoring of code regarding custom fields
  *                              renderTestSuiteNodeForPrinting() - print ALWAYS custom fields
  * 		20090326 - amkhullar - BUGID 2207 - Code to Display linked bugs to a TC in Test Report
@@ -68,7 +69,7 @@ require_once("exec.inc.php");
 function renderHTMLHeader($title,$base_href)
 {
 	$docCfg = config_get('document_generator');
-  $docCfg->css_template;
+    $docCfg->css_template;
   
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
@@ -94,50 +95,47 @@ function renderHTMLHeader($title,$base_href)
 function renderFirstPage($doc_info)
 {
     $docCfg = config_get('document_generator');
-	  $date_format_cfg = config_get('date_format');
-  
+    $date_format_cfg = config_get('date_format');
   	$output = "<body>\n<div>\n";
 
-	  // Print header
-	  if ($docCfg->company_name != '' )
-	  {
-	  	$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) ."</div>\n";
-	  }
-	  $output .= '<div>'. $doc_info->tproject_name . "</div><hr />\n";
+	// Print header
+	if ($docCfg->company_name != '' )
+	{
+		$output .= '<div style="float:right;">' . htmlspecialchars($docCfg->company_name) ."</div>\n";
+	}
+	$output .= '<div>'. $doc_info->tproject_name . "</div><hr />\n";
     
-	  if ($docCfg->company_logo != '' )
-	  {
-	  	$output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
-	  	           'title="configure using $tlCfg->company->logo_image"'.
-          	     ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
-	  }
-	  $output .= "</div>\n";
+	if ($docCfg->company_logo != '' )
+	{
+		$output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
+		           'title="configure using $tlCfg->company->logo_image"'.
+        	     ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" /></p>';
+	}
+	$output .= "</div>\n";
+	$output .= '<div class="doc_title"><p>' . $doc_info->title . '</p>';
+	$output .= '<p>'.$doc_info->type_name.'</p>';
+	$output .= "</div>\n";
     
-	  $output .= '<div class="doc_title">';
-	  $output .= '<p>'.$doc_info->title.'</p>';
-	  $output .= '<p>'.$doc_info->type_name.'</p>';
-	  $output .= "</div>\n";
+	// Print summary on the first page
+	$output .= '<div class="summary">' .
+		         '<p id="prodname">'. lang_get('project') .": " . $doc_info->tproject_name . "</p>\n";
     
-	  // Print summary on the first page
-	  $output .= '<div class="summary">' .
-	  	         '<p id="prodname">'. lang_get('project') .": " . $doc_info->tproject_name . "</p>\n";
+	$output .= '<p id="author">' . lang_get('author').": " . $doc_info->author . "</p>\n" .
+		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
+		         strftime($date_format_cfg, time()) . "</p></div>\n";
     
-	  $output .= '<p id="author">' . lang_get('author').": " . $doc_info->author . "</p>\n" .
-	  	         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ".
-	  	         strftime($date_format_cfg, time()) . "</p></div>\n";
-    
-	  // Print legal notes
-	  if ($docCfg->company_copyright != '')
-	  {
-	  	$output .= '<div class="pagefooter" id="copyright">' . $docCfg->company_copyright."</div>\n";
-	  }
-	  	           
-	  if ($docCfg->confidential_msg != '')
-	  {
-	  	$output .= '<div class="pagefooter" id="confidential">' .	$docCfg->confidential_msg . "</div>\n";
-	  }
-	  
-	  return $output;
+	// Print legal notes
+	if ($docCfg->company_copyright != '')
+	{
+		$output .= '<div class="pagefooter" id="copyright">' . $docCfg->company_copyright."</div>\n";
+	}
+		           
+	if ($docCfg->confidential_msg != '')
+	{
+		$output .= '<div class="pagefooter" id="confidential">' .	$docCfg->confidential_msg . "</div>\n";
+	}
+	
+	return $output;
 }
 
 
@@ -182,25 +180,34 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 	if( !$tree_mgr )
 	{ 
+ 	    $tplan_mgr = new testplan($db);
 	    $tree_mgr = new tree($db);
  	    $map_id_descr = $tree_mgr->node_types;
  	}
  	$verbose_node_type = $map_id_descr[intval($node['node_type_id'])];
 	
-  switch($verbose_node_type)
+    switch($verbose_node_type)
 	{
 		case 'testproject':
+		    if($tplan_id != 0 )
+		    {
+		        // 20090330 - franciscom
+		        // we are printing a test plan, get it's custom fields
+                $cfieldFormatting=array('table_css_style' => 'class="cf"');
+	            $cfields = $tplan_mgr->html_table_of_custom_field_values($tplan_id,'design',null,$cfieldFormatting);
+	            $code .= "<br /><hr><br /> $cfields <br /><hr><br />";
+		    }
 			$code .= renderToc($printingOptions);
 		break;
 
 		case 'testsuite':
-				$tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $tcCnt;
-			  $code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level,$tplan_id,$tprojectID);
+            $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $tcCnt;
+            $code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level,$tplan_id,$tprojectID);
 		break;
 
 		case 'testcase':
 			  $code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id,$tcPrefix,$tprojectID);
-	  break;
+	    break;
 	}
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
@@ -208,13 +215,15 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 	  
 		$childNodes = $node['childNodes'];
 		$tsCnt = 0;
-   	$children_qty = sizeof($childNodes);
+   	    $children_qty = sizeof($childNodes);
 		for($i = 0;$i < $children_qty ;$i++)
 		{
 			$current = $childNodes[$i];
 			if(is_null($current))
+			{
 				continue;
-
+            }
+            
 			if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'testsuite')
 			{
 			    $tsCnt++;
@@ -533,7 +542,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
   
 	$code = null;
 	$name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
-  	$cfields = array('design' => '', 'execution' => '');
+  	$cfields = array('design' => '');
     $cfieldFormatting=array('table_css_style' => 'class="cf"');
 
 	if ($printingOptions['toc'])
@@ -554,11 +563,8 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
    	    $code .= "<h2 class='doclevel'>{$tocPrefix}.0 {$labels['details']} </h2><div>{$tInfo['details']}</div><br />";
    	
    	    // get Custom fields    
-	    // $cfields['specScope'] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],'design',null,
-	    //                                                                        $tproject_id,$cfieldFormatting);
-        // 
-	    // $cfields['execScope'] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],'execution',null,
-   	    
+   	    // Attention: for test suites custom fields can not be edited during execution,
+   	    //            then we need to get just custom fields with scope  'design'
         $add_br=false;
         foreach($cfields as $key => $value)
         {
@@ -588,15 +594,14 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
   returns:
 */
 function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
-                                   $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,
-                                   $tprojectID)
+                                   $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,$tprojectID)
 
 {
 	$tProjectMgr = new testproject($db);
 	$tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
 	$code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
-                                         $tocPrefix,$tcCnt,$level,$user_id,
-                                         $tplan_id,$tcPrefix,$tprojectID);
+                                           $tocPrefix,$tcCnt,$level,$user_id,
+                                           $tplan_id,$tcPrefix,$tprojectID);
 	return $code;
 }
 
@@ -618,10 +623,13 @@ function renderTestDuration($statistics)
 	    	$tcase_qty = $statistics['estimated_execution']['tcase_qty'];
 		         
     	   	if($estimated_minutes > 60)
+    	   	{
 				$estimated_string = lang_get('estimated_time_hours') . round($estimated_minutes/60,2) ;
+			}
 			else
+			{
 				$estimated_string = lang_get('estimated_time_min') . $estimated_minutes;
-
+            }
 			$estimated_string = sprintf($estimated_string,$tcase_qty);
 
 			$output .= '<p>' . $estimated_string . "</p>\n";
@@ -634,10 +642,13 @@ function renderTestDuration($statistics)
 			if($real_minutes > 0)
 		    {
 	        	if($real_minutes > 60)
+	        	{
 		        	$real_string = lang_get('real_time_hours') . round($real_minutes/60,2) ;
+			    }
 			    else
+			    {
 			      	$real_string = lang_get('real_time_min') . $real_minutes;
-
+                } 
 				$real_string = sprintf($real_string,$tcase_qty);    
 			}
 			$output .= '<p>' . $real_string . "</p>\n";

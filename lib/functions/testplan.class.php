@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.103 $
- * @modified $Date: 2009/03/25 20:53:15 $ by $Author: schlundus $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2009/03/31 16:18:34 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1888,10 +1888,9 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   {
     foreach($cf_map as $cf_id => $cf_info)
     {
-       $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
-      $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                    $this->cfield_mgr->string_custom_field_input($cf_info) .
-                    "</td></tr>\n";
+        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+        $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
+                      $this->cfield_mgr->string_custom_field_input($cf_info) . "</td></tr>\n";
     } //foreach($cf_map
   }
 
@@ -1928,42 +1927,52 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
        20080811 - franciscom - BUGID 1650 (REQ)
        20070701 - franciscom - fixed return string when there are no custom fields.
 */
-function html_table_of_custom_field_values($id,$scope='design',$filters=null)
+function html_table_of_custom_field_values($id,$scope='design',$filters=null,$formatOptions=null)
 {
-  $cf_smarty='';
-  $parent_id=null;
-
-  if( $scope=='design' )
-  {
-  	//@TODO: schlundus, can this be speed up with tprojectID?
-    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
-  }
-  else
-  {
-  	//@TODO: schlundus, can this be speed up with tprojectID?
-    $cf_map=$this->get_linked_cfields_at_execution($id);
-  }
-
-  if( !is_null($cf_map) )
-  {
-    foreach($cf_map as $cf_id => $cf_info)
+    $cf_smarty='';
+    $parent_id=null;
+    $td_style='class="labelHolder"' ;
+    $add_table=true;
+    $table_style='';
+    if( !is_null($formatOptions) )
     {
-      // if user has assigned a value, then node_id is not null
-      if(isset($cf_info['node_id']) && $cf_info['node_id'])
+        $td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
+        $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
+        $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
+    } 
+
+
+    if( $scope=='design' )
+    {
+    	//@TODO: schlundus, can this be speed up with tprojectID?
+      $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
+    }
+    else
+    {
+    	//@TODO: schlundus, can this be speed up with tprojectID?
+      $cf_map=$this->get_linked_cfields_at_execution($id);
+    }
+    
+    if( !is_null($cf_map) )
+    {
+      foreach($cf_map as $cf_id => $cf_info)
       {
-        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
-        $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                      $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
-                      "</td></tr>\n";
+        // if user has assigned a value, then node_id is not null
+        if(isset($cf_info['node_id']) && $cf_info['node_id'])
+        {
+          // true => do not create input in audit log
+          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+          $cf_smarty .= "<tr><td {$td_style}>" . htmlspecialchars($label) . "</td><td>" .
+                        $this->cfield_mgr->string_custom_field_value($cf_info,$id) . "</td></tr>\n";
+        }
       }
     }
-  }
-
-  if($cf_smarty != '')
-  {
-    $cf_smarty = "<table>" . $cf_smarty . "</table>";
-  }
-  return($cf_smarty);
+    
+    if($cf_smarty != '' && $add_table)
+    {
+      $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
+    }
+    return($cf_smarty);
 } // function end
 
 

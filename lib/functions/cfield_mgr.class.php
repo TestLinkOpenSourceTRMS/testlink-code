@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/03/29 17:31:29 $  $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/03/31 16:18:34 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090321 - franciscom - fixed bug due to missing code on get_linked_cfields_at_design()
@@ -68,14 +68,17 @@ if( count($cf_files) > 0 )
 
 class cfield_mgr
 {
-  const DEFAULT_INPUT_SIZE=50;
-  const MULTISELECTIONLIST_WINDOW_SIZE=5;
+    const DEFAULT_INPUT_SIZE=50;
+    const MULTISELECTIONLIST_WINDOW_SIZE=5;
 
-  // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
-  const TEXTAREA_DEFAULT_COLS = 40;
-  const TEXTAREA_DEFAULT_ROWS = 6;
+    // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
+    const TEXTAREA_DEFAULT_COLS = 40;
+    const TEXTAREA_DEFAULT_ROWS = 6;
 
-  const CF_ENABLED = 1;
+    const CF_ENABLED = 1;
+    const ENABLED = 1;
+    const DISABLED = 0;
+    
 
 	var $db;
 	var $tree_manager;
@@ -466,11 +469,11 @@ class cfield_mgr
 
     if( !is_null($node_type) )
     {
-   		$hash_descr_id = $this->tree_manager->get_available_node_types();
-      $node_type_id=$hash_descr_id[$node_type];
+        $hash_descr_id = $this->tree_manager->get_available_node_types();
+        $node_type_id=$hash_descr_id[$node_type];
 
-      $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
-                           " AND CFNT.node_type_id={$node_type_id} ";
+        $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
+                             " AND CFNT.node_type_id={$node_type_id} ";
     }
     if( !is_null($node_id) )
     {

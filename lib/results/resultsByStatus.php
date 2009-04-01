@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.63 2009/03/25 19:11:09 amkhullar Exp $
+* $Id: resultsByStatus.php,v 1.64 2009/04/01 21:27:29 havlat Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -30,7 +30,7 @@ $resultsCfg = config_get('results');
 $statusCode = $resultsCfg['status_code'];
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
-$report_type = isset($_GET['format']) ? intval($_GET['format']) : null;
+$report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);

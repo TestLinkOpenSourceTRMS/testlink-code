@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/03/12 22:15:13 $ by $Author: havlat $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/04/01 21:27:32 $ by $Author: havlat $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -87,7 +87,7 @@ function flushHttpHeader($format, $doc_kind = 0)
 		default: $kind_acronym = '';
 	}
 	
-	if(($format == 'format_mail_html') || ($format == ''))
+	if ($format == FORMAT_MAIL_HTML)
 		tLog('flushHttpHeader> Invalid format: '.$format, 'ERROR');
 
 	$filename = $_SESSION['testprojectPrefix'] . $kind_acronym . '-' . date('Y-m-d') . '.' . $file_extensions[$format];

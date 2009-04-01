@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/03/25 20:53:18 $ by $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/04/01 20:41:03 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -113,7 +113,7 @@ else
  **/
 function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 {
-	$tp = new testPlan($db);
+	$tp = new testplan($db);
 	if (!$tp->getNumberOfBuilds($tpID))
 	{	           
 		$message = '<p>'  . lang_get('no_build_warning_part1') . 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.417 $
- * @modified $Date: 2009/03/29 14:10:01 $ by $Author: franciscom $
+ * @version $Revision: 1.418 $
+ * @modified $Date: 2009/04/02 06:42:11 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -303,6 +303,8 @@ $TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
                                 "then no execution data can exist => no report can be created";
 
 // ----- tcEdit.php -----
+$TLS_copy_keyword_assignments = "Copy Keyword Assignments";
+$TLS_copy_requirement_assignments = "Copy Requirement Assignments";
 $TLS_tc_copied = "Test Case %s was successfully copied to <br /> Test Suite %s";
 $TLS_tc_created = "Test Case %s was successfully created";
 $TLS_tc_deleted = "Test Case %s was successfully deleted";

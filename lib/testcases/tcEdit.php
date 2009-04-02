@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2009/03/26 08:00:49 $  by $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2009/04/02 06:42:11 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *     20090401 - franciscom - BUGID 2316
  *     20090325 - franciscom - BUGID - problems with add to testplan
  *     20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
  *     20080827 - franciscom - BUGID 1692 
@@ -351,9 +352,7 @@ else if($args->do_copy)
 	  $user_feedback='';
 	  $msg = '';
 	  $action_result = 'copied';
-
-    // 20090120 - franciscom
-	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,TC_COPY_KEYWORDS,
+	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$args->copy,
 	                                config_get('check_names_for_duplicates'),
 	                                config_get('action_on_duplicate_name'));
 	  
@@ -549,7 +548,13 @@ function init_args($spec_cfg,$otName)
     $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
     $args->target_position = isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
     
-    
+    // BUGID 2316
+    $key2loop=array("keyword_assignments","requirement_assignments");
+    foreach($key2loop as $key)
+    {
+       $args->copy[$key]=isset($_REQUEST[$key])?true:false;    
+    }    
+        
     // from session
     $args->testproject_id = $_SESSION['testprojectID'];
     $args->user_id = $_SESSION['userID'];

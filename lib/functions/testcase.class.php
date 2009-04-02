@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.158 $
- * @modified $Date: 2009/03/29 17:31:29 $ $Author: franciscom $
+ * @version $Revision: 1.159 $
+ * @modified $Date: 2009/04/02 06:42:11 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
  * 20090329 - franciscom - html_table_of_custom_field_values() new option useful when
  *                         used on printing docs.
  *
@@ -1157,15 +1158,19 @@ function get_testproject($id)
                         changed return type
 
 */
-function copy_to($id,$parent_id,$user_id,
-                 $copy_keywords=0,
+function copy_to($id,$parent_id,$user_id,$copy_also=null,
                  $check_duplicate_name=0,
                  $action_on_duplicate_name='generate_new')
 {
-  $new_tc['id']=-1;
-  $new_tc['status_ok']=0;
-  $new_tc['msg']='ok';
+    $new_tc['id']=-1;
+    $new_tc['status_ok']=0;
+    $new_tc['msg']='ok';
 
+    if( is_null($copy_also) )
+    {
+        $copy_also=array('keyword_assignments' => true,'requirement_assignments' => true);   
+    }
+    
 	$tcase_info = $this->get_by_id($id);
 	if ($tcase_info)
 	{
@@ -1174,20 +1179,28 @@ function copy_to($id,$parent_id,$user_id,
                                        $check_duplicate_name,$action_on_duplicate_name);
 		if ($new_tc['status_ok'])
 		{
-	    $ret['status_ok']=1;
+	        $ret['status_ok']=1;
  			foreach($tcase_info as $tcversion)
 			{
 				$this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
 				                        $tcversion['summary'],$tcversion['steps'],
 				                        $tcversion['expected_results'],$tcversion['author_id']);
 			}
-			if ($copy_keywords)
+			
+			// Conditional copies
+			if (isset($copy_also['keyword_assignments']) && $copy_also['keyword_assignments'])
 			{
 				$this->copyKeywordsTo($id,$new_tc['id']);
 			}
+			
+			if (isset($copy_also['requirement_assignments']) && $copy_also['requirement_assignments'])
+			{
+				$this->copyReqAssignmentTo($id,$new_tc['id']);
+			}
+			
+			
 			$this->copy_cfields_design_values($id,$new_tc['id']);
-
-      $this->copy_attachments($id,$new_tc['id']);
+            $this->copy_attachments($id,$new_tc['id']);
 		}
 	}
 	return($new_tc);
@@ -2801,6 +2814,33 @@ function copy_attachments($source_id,$target_id)
 		}
 	}
 }
+
+/**
+ * copyReqAssignmentTo
+ * copy requirement assignments for $from test case id to $to test case id 
+ *
+ *
+ */
+function copyReqAssignmentTo($from,$to)
+{
+    static $req_mgr;
+    if( is_null($req_mgr) )
+    {
+        $req_mgr=new requirement_mgr($this->db);
+    }
+    
+    $requirements=$req_mgr->get_all_for_tcase($from);
+    if( !is_null($requirements) )
+    {
+        $loop2do=count($requirements);
+        for($idx=0; $idx < $loop2do; $idx++)
+        {
+            $items[$idx]=$requirements[$idx]['id'];
+        }
+        $req_mgr->assign_to_tcase($items,$to); 
+    } 
+}
+
 
 // ---------------------------------------------------------------------------------------
 // Custom field related functions

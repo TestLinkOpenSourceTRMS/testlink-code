@@ -1,18 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcMove.tpl,v 1.6 2008/05/07 21:01:22 schlundus Exp $
+$Id: tcMove.tpl,v 1.7 2009/04/02 06:42:06 franciscom Exp $
 Purpose: smarty template - move/copy test case
 
-rev:20080104 - franciscom - added radio to choose position
-                            on destination (top/bottom) container.
-
-    20060316 - franciscom - html input names updated
-    20060305 - franciscom
+rev: 20090401 - franciscom - BUGID 2316 - copy options
+     20080104 - franciscom - added radio to choose position
+                             on destination (top/bottom) container.
 *}
 {include file="inc_head.tpl"}
 
 {lang_get var="labels"
           s="test_case,title_mv_cp_tc,inst_move,inst_copy,inst_copy_move_warning,
+             copy_requirement_assignments,copy_keyword_assignments,
              choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp"}
 <body>
 <h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$name|escape}</h1>
@@ -33,7 +32,17 @@ rev:20080104 - franciscom - added radio to choose position
 		<select name="new_container">
 			{html_options options=$array_container selected=$old_container}
 		</select>
+  </p>
+  
+  <p>
+   <input type="checkbox" name="keyword_assignments" id='keyword_assignments'>
+     {$labels.copy_keyword_assignments}
+  <br />
+  <input type="checkbox" name="requirement_assignments" id='requirement_assignments'>
+     {$labels.copy_requirement_assignments}
+  </p>
 
+	 
 	<p><input type="radio" name="target_position"
 	          value="top" {$top_checked} />{$labels.as_first_testcase}
 	<br /><input type="radio" name="target_position"

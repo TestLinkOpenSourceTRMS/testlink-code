@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/03/23 08:10:18 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/04/02 06:42:09 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090322 - franciscom - 
+ * rev : 20090401 - franciscom - BUGID 2316
  *       20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
  *                               delete() - fixed delete order due to FK.
  *       20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
@@ -32,7 +32,7 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $requirement_spec_table='req_specs';
 	var $req_coverage_table="req_coverage";
 	var $nodes_hierarchy_table="nodes_hierarchy";
-  private $tcversions_table="tcversions";
+    private $tcversions_table="tcversions";
 
 	var $my_node_type;
 	var $tree_mgr;
@@ -260,7 +260,7 @@ class requirement_mgr extends tlObjectWithAttachments
 	  	if(is_array($id))
 	  	{
 			  $id_list = implode(',',$id);
-	     	$where_clause_coverage = " WHERE req_id IN ({$id_list})";
+	     	  $where_clause_coverage = " WHERE req_id IN ({$id_list})";
 			  $where_clause_this = " WHERE id IN ({$id_list})";
 	  	}
 	    else
@@ -534,7 +534,8 @@ class requirement_mgr extends tlObjectWithAttachments
       $output[]=sprintf(lang_get('tc_created'), $tcase_name);
 
   		// create coverage dependency
-  		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) {
+  		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) 
+  		{
   			$output[] = 'Test case: ' . $reqData['title'] . "was not created";
   		}
   	}
@@ -545,54 +546,58 @@ class requirement_mgr extends tlObjectWithAttachments
 
   /*
     function: assign_to_tcase
-              assign requirement to test case
+              assign requirement(s) to test case
 
-    args: req_id
+    args: req_id: can be an array of requirement id
           testcase_id
 
     returns: 1/0
+    
+    rev:  20090401 - franciscom - BUGID 2316 - refactored
 
   */
   function assign_to_tcase($req_id,$testcase_id)
   {
   	$output = 0;
-
-  	if ($testcase_id && $req_id)
-  	{
-  		$sql = " SELECT COUNT(*) AS num_cov FROM {$this->req_coverage_table} " .
-  		       " WHERE req_id={$req_id}  AND testcase_id = {$testcase_id}";
-  		$result = $this->db->exec_query($sql);
-  		
-  		
-		  if ($result)
-		  {
-	        $row = $this->db->fetch_array($result);
-	    		if ($row['num_cov'] == 0)
-	    		{
-	    			// create coverage dependency
-	    			$sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
-	    			       "VALUES ({$req_id},{$testcase_id})";
-      
-	    			$result = $this->db->exec_query($sql);
-	    			if ($this->db->affected_rows() == 1)
-	    			{
-		  			  $output = 1;
-	    				$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
-		  			  $reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
-		  			  if($tcInfo && $reqInfo)
-		  				    logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
-		  				                  "ASSIGN",$this->object_table);
-	    			}
-	    		}
-		  	  else
-		  	  {
-  	  			$output = 1;
-  	  		}	
-  	  }
+    if($testcase_id && $req_id)
+    {
+        $items = (array)$req_id;
+  	    $in_clause = implode(",",$items);
+    	$sql = " SELECT req_id,testcase_id FROM {$this->req_coverage_table} " .
+  		       " WHERE req_id IN ({$in_clause}) AND testcase_id = {$testcase_id}";
+ 	    $coverage = $this->db->fetchRowsIntoMap($sql,'req_id');
+   	    
+  	    $loop2do=count($items);
+   	    for($idx=0; $idx < $loop2do; $idx++)
+   	    {
+   	        if( is_null($coverage) || !isset($coverage[$items[$idx]]) )
+   	        {
+   	            $sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
+         	           "VALUES ({$items[$idx]},{$testcase_id})";
+           	    $result = $this->db->exec_query($sql);
+         	    if ($this->db->affected_rows() == 1)
+         	    {
+        	        $output = 1;
+         	        $tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
+        	        $reqInfo = $this->tree_mgr->get_node_hierachy_info($items[$idx]);
+        	        if($tcInfo && $reqInfo)
+        	        {
+        	    	    logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
+        	    	                  "ASSIGN",$this->object_table);
+        	    	}                  
+         	    }
+   	        }    
+            else
+            {
+                $output = 1;
+            }    
+   	    }
   	}
-
   	return $output;
   }
+
+
+
 
   /*
     function: unassign_from_tcase
@@ -730,8 +735,8 @@ class requirement_mgr extends tlObjectWithAttachments
   	{
   		$sql .= " AND REQ.srs_id=" . $srs_id;
   	}
-	  if (is_array($testcase_id))
-	  {
+	if (is_array($testcase_id))
+	{
   		return $this->db->fetchRowsIntoMap($sql,'testcase_id',true);
   	}
   	else

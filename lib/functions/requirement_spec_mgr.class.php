@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/03/24 21:52:19 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/04/02 06:42:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1165,19 +1165,19 @@ function html_table_of_custom_field_values($id,$tproject_id)
          $result=$this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
          if($result['status_ok'])
          {
-             $container_id[$depth+1]=$result['id']; 
+            $container_id[$depth+1]=$result['id']; 
          
-             // work on requirements
-             $requirementSet=$items[$idx]['requirements'];
-             $items2insert=count($requirementSet);
-	           for($jdx = 0;$jdx < $items2insert; $jdx++)
-	           {
+            // work on requirements
+            $requirementSet=$items[$idx]['requirements'];
+            $items2insert=count($requirementSet);
+	        for($jdx = 0;$jdx < $items2insert; $jdx++)
+	        {
                   //function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
                   //                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
                  $req=$requirementSet[$jdx];
                  $req_mgr->create($result['id'],$req['docid'],$req['title'],
                                   $req['description'],$author_id,$req['status'],$req['type']);
-             }       
+           }       
          } 
       }    
   }

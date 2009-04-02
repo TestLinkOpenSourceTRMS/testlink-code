@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/03/02 19:48:54 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -217,7 +217,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($attachmentInfo)
 		{
 			$bResult = tl::OK;
-			if (strlen($attachmentInfo['file_path']))
+			if (trim($attachmentInfo['file_path']) != "")
 				$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
 			$bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
 		}

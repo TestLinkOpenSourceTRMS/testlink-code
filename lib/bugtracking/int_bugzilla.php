@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2008/09/29 19:48:06 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/04/02 20:16:15 $ $Author: schlundus $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, 
  *                                         corrected getBugStatusString($id)
@@ -116,13 +116,11 @@ class bugzillaInterface extends bugtrackingInterface
 			$summary = $this->dbConnection->fetch_array($result);
 			if ($summary)
 			{
-                // BUGID 1444
-				// $summary = $summary[0];
 				$summary = array_pop ($summary);
 			
-				if(strlen($summary) > 45)
+				if(tlStringLen($summary) > 45)
 				{
-					$summary = substr($summary, 0, 42) . "...";
+					$summary = tlSubStr($summary, 0, 42) . "...";
 				}
 			}
 			else

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/04/02 20:16:17 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -149,7 +149,7 @@ $smarty->assign('containerID', $args->container_id);
 $smarty->assign('container_name', $container_name);
 $smarty->assign('container_description', $container_description);
 $smarty->assign('bIntoProject',$args->bIntoProject);
-$smarty->assign('bImport',strlen($args->importType));
+$smarty->assign('bImport',tlStringLen($args->importType));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -214,7 +214,6 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$dupl
 	{
 		$xmlTCs = $node->get_elements_by_tagname("testcase");
 		$tcData = importTCsFromXML($xmlTCs);
-		
 		if ($tcData)
 		{
 			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
@@ -373,16 +372,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$externalid = $tc['externalid'];
 				
     
-        $name_len=strlen($name);  
-        if( $name_len > $fieldSizeCfg->testcase_name)
-        {
-            // Will put original name inside summary
-            $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
-            $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
-            $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
-            $summary = nl2br($xx) . $summary;
-            $name=substr($name, 0, $safeSizeCfg->testcase_name);      
-        }
+		$name_len = tlStringLen($name);  
+		if( $name_len > $fieldSizeCfg->testcase_name)
+		{
+		    // Will put original name inside summary
+		    $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
+		    $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
+		    $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
+		    $summary = nl2br($xx) . $summary;
+		    $name= tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
+		}
     		
 		
 		$kwIDs = null;
@@ -394,7 +393,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$doCreate=true;
 		if( $actionOnDuplicatedName == 'update_last_version' )
 		{
-         $info=$tcase_mgr->getDuplicatesByName($name,$container_id);
+			$info=$tcase_mgr->getDuplicatesByName($name,$container_id);
    		 if( !is_null($info) )
    		 {
    		     $tcase_qty = count($info);
@@ -692,7 +691,7 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
   
 	$xls_handle = new Spreadsheet_Excel_Reader(); 
   
-	$xls_handle->setOutputEncoding('CP1252'); 
+	$xls_handle->setOutputEncoding(config_get('charset')); 
 	$xls_handle->read($xls_filename);
 	$xls_rows = $xls_handle->sheets[0]['cells'];
 	$xls_row_qty = sizeof($xls_rows);
@@ -705,31 +704,51 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	$xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
 	fwrite($xmlFileHandle,"<testcases>\n");
 
-	for($idx = FIRST_DATA_ROW;$idx <= $xls_row_qty; $idx++ )
+	for($idx = FIRST_DATA_ROW; $idx <= $xls_row_qty; $idx++ )
 	{                       
-		  $name = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_NAME]));
-		  fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
+		$name = htmlspecialchars($xls_rows[$idx][IDX_COL_NAME]);
+		fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
 	    
-		  // $summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
-	    // 20090117 - contribution - BUGID 1992
-	    $summary = str_replace('…',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
-		  $summary = nl2p(htmlspecialchars(iconv("CP1252","UTF-8", $summary)));
+		// $summary = htmlspecialchars(iconv("CP1252","UTF-8",$xls_rows[$idx][IDX_COL_SUMMARY]));
+	    // 20090117 - contribution - BUGID 1992  // 20090402 - BUGID 1519
+	    // $summary = str_replace('…',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
+	    $summary = convert_special_char($xls_rows[$idx][IDX_COL_SUMMARY]);  
+		$summary = nl2p(htmlspecialchars($summary));
 	    fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
 	    
-	    // 20090117 - BUGID 1991,1992
-	    $steps = str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
-	    $steps = nl2p(htmlspecialchars(iconv("CP1252","UTF-8",$steps)));
+	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
+	    // $steps = str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
+	    $steps = convert_special_char($xls_rows[$idx][IDX_COL_STEPS]);
+	    $steps = nl2p(htmlspecialchars($steps));
 	    fwrite($xmlFileHandle,"<steps><![CDATA[".$steps."]]></steps>\n");
 	    
-	    // 20090117 - BUGID 1991,1992
-	    $expresults = str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
-	    $expresults = nl2p(htmlspecialchars(iconv("CP1252","UTF-8",$expresults)));
+	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
+	    // $expresults = str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
+		$expresults = convert_special_char($xls_rows[$idx][IDX_COL_EXPRESULTS]);
+		$expresults = nl2p(htmlspecialchars($expresults));
 	    fwrite($xmlFileHandle,"<expectedresults><![CDATA[".$expresults."]]></expectedresults>\n");
 	    
 	    fwrite($xmlFileHandle,"</testcase>\n");
 	}
 	fwrite($xmlFileHandle,"</testcases>\n");
 	fclose($xmlFileHandle);
+}
+
+// 20090402 - BUGID 1519: Extract this function from create_xml_tcspec_from_xls()
+function convert_special_char($target_string)
+{
+	global $tlCfg;
+	$from_char = iconv("CP1252", $tlCfg->charset, '\205');
+	$to_char = "...";
+
+	if ($from_char)
+	{
+		return str_replace($from_char, $to_char, $target_string);
+	}
+	else
+	{
+		return $string;
+	}
 }
 
 // --------------------------------------------------------------------------------------

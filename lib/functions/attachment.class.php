@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/01/29 20:58:22 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -95,7 +95,7 @@ class tlAttachment extends tlDBObject
 		
 		$title = trim($title);
 		$config = $this->attachmentCfg;
-		if(!strlen($title))
+		if($title == "")
 		{
 			switch($config->action_on_save_empty_title)
 			{
@@ -107,7 +107,7 @@ class tlAttachment extends tlDBObject
 			}
 
 		}
-		if(!$config->allow_empty_title && !strlen($title))
+		if(!$config->allow_empty_title && $title == "")
 			return self::E_TITLELENGTH; 
 		
 		$this->fkID = $fkid;

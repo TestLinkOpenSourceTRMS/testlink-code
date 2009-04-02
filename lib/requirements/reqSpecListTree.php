@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.9 2009/03/25 20:53:18 schlundus Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.10 2009/04/02 20:16:17 schlundus Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -12,7 +12,6 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
-require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 

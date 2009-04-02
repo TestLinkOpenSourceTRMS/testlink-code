@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/02/10 20:01:20 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/04/02 20:16:17 $ $Author: schlundus $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -108,8 +108,7 @@ function getKeywordsArray($right_list)
 {
 	$a_keywords = null;
 	$list = trim($right_list);
-	$bListNotEmpty = strlen($list);
-	if ($bListNotEmpty)
+	if ($list != "")
 		$a_keywords = explode(",",$list);
 		
 	return $a_keywords;

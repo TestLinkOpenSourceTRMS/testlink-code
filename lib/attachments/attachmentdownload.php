@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/02/05 19:42:40 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  */
@@ -28,7 +28,7 @@ if ($id)
 	if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 	{
 		$content = $attachmentRepository->getAttachmentContent($id,$attachmentInfo);
-		if (strlen($content))
+		if ($content != "")
 		{
 			@ob_end_clean();
 			header('Pragma: public');

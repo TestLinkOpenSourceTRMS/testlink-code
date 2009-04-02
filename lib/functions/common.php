@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.143 $ $Author: schlundus $
- * @modified $Date: 2009/03/30 21:17:35 $
+ * @version $Revision: 1.144 $ $Author: schlundus $
+ * @modified $Date: 2009/04/02 20:16:15 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -923,14 +923,14 @@ function array_diff_byId ($arrAll, $arrPart)
  *
  * @author Francisco Mancardi - 20050905 - refactoring
  */
-//@TODO: schlundus, not UTf-8 safe!
-function trim_and_limit($s, $len=100)
+function trim_and_limit($s, $len = 100)
 {
-  $s=trim($s);
-	if (strlen($s) > $len ) {
-		$s = substr($s, 0, $len);
+	$s = trim($s);
+	if (tlStringLen($s) > $len) {
+		$s = tlSubStr($s, 0, $len);
 	}
-	return($s);
+
+	return $s;
 }
 
 // --------------------------------------------------------------------------------------
@@ -1072,5 +1072,14 @@ function tlStringLen($str)
 	if ($nLen === false)
 		throw new Exception("Invalid UTF-8 Data detected!");
 	return $nLen; 
+}
+
+function tlSubStr($str,$start,$length = null)
+{
+	$charset = config_get('charset');
+	if ($length === null)
+		$length = iconv_strlen($str,$charset);
+		
+	return iconv_substr($str,$start,$length,$charset);
 }
 ?>

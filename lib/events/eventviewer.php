@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/02/09 20:37:38 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
  *
  * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
@@ -40,13 +40,13 @@ switch($args->doAction)
     
     case 'filter':
 	default:
-	    if (strlen($args->startDate))
+	    if ($args->startDate != "")
 	    {
 	    	$startTime = strToTime($args->startDate);
 	    	if (!$startTime)
 	    		$startTime = null;
 	    }
-	    if (strlen($args->endDate))
+	    if ($args->endDate != "")
 	    {
 	    	$endTime = strToTime($args->endDate) + (24*60*60-1);
 	    	if (!$endTime)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/01/13 20:21:23 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -41,7 +41,7 @@ if ($bPostBack > 2)
 	{
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
 		$fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
-		if ($fSize && strlen($fTmpName))
+		if ($fSize && $fTmpName != "")
 		{
 			$attachmentRepository = tlAttachmentRepository::create($db);
 			$bUploaded = $attachmentRepository->insertAttachment($id,$tableName,$title,$fInfo);

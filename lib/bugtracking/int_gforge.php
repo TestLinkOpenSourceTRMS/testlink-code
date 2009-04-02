@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_gforge.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/11/03 07:32:10 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/04/02 20:16:15 $ $Author: schlundus $
  *
  * @author John Wanke - 20080825 - initial revision.
  *
@@ -145,9 +145,9 @@ class gforgeInterface extends bugtrackingInterface
 			if ($summary)
 			{
 				$summary = $summary['summary'];
-				if(strlen($summary) > 45)
+				if(tlStringLen($summary) > 45)
 				{
-					$summary = substr($summary, 0, 42) . "...";
+					$summary = tlSubStr($summary, 0, 42) . "...";
 				}
 			}
 			else

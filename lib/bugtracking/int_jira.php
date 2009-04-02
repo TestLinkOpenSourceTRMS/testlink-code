@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/04/02 20:16:15 $ $Author: schlundus $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -157,21 +157,21 @@ class jiraInterface extends bugtrackingInterface
 	 **/
 	function checkBugID($id)
 	{
-	  $status_ok=1;	
-    if(strlen(trim($id)) == 0 )
-    {
-      $status_ok=0;	
-    }
-	  
-	  if( $status_ok )
-	  {
-	    $ereg_forbidden_chars='[!|£%&/()=?]';
+		$status_ok = 1;	
+		if(trim($id) == "")
+		{
+      		$status_ok = 0;	
+    	}
+				  
+	  	if($status_ok)
+	  	{
+	    	$ereg_forbidden_chars = '[!|£%&/()=?]';
 
- 		  if (eregi($ereg_forbidden_chars, $id))
-		  {
-			  $status_ok=0;	
-		  } 	
-	  }
+ 		  	if (eregi($ereg_forbidden_chars, $id))
+		  	{
+				$status_ok = 0;	
+		  	} 	
+	  	}
 		return $status_ok;
 	}	
 }

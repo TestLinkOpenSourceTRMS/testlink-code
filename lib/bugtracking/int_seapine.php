@@ -4,7 +4,7 @@
  *
  * Filename $RCSfile: int_seapine.php,v $
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * @author needles - 20080207 - created
  * 20080207 - needles - created
@@ -101,9 +101,9 @@ class seapineInterface extends bugtrackingInterface
 			if ($summary)
 			{
 				$summary = $summary[0];
-				if(strlen($summary) > 45)
+				if(tlStringLen($summary) > 45)
 				{
-					$summary = substr($summary, 0, 42) . "...";
+					$summary = tlSubStr($summary, 0, 42) . "...";
 				}
 			}
 			else

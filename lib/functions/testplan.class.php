@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.104 $
- * @modified $Date: 2009/03/31 16:18:34 $ by $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2009/04/03 07:40:22 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -1599,14 +1599,14 @@ function get_build_by_id($id,$build_id)
 /**
  * Get the number of builds of a given TestPlan
  *
- * @param int tpID test plan id
+ * @param int tplanID test plan id
  *
- * @return int the number of builds
+ * @return int number of builds
  */
-function getNumberOfBuilds($tpID)
+function getNumberOfBuilds($tplanID)
 {
-	$query = "SELECT count(id) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
-	return $this->db->fetchOneValue($query);
+	$sql = "SELECT count(id) AS num_builds FROM builds WHERE builds.testplan_id = " . $tplanID;
+	return $this->db->fetchOneValue($sql);
 }
 
 // --------------------------------------------------------------------------------------
@@ -1848,11 +1848,7 @@ function get_linked_cfields_id($tproject_id)
 			and cfield_testprojects.testproject_id = {$tproject_id}
 			order by field_id";
 	
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 	$field_map = $this->db->fetchColumnsIntoMap($sql,'field_id','label');
-	//print_r($field_map);
-
 	return($field_map);
 }
 

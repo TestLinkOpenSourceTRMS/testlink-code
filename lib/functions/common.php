@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.144 $ $Author: schlundus $
- * @modified $Date: 2009/04/02 20:16:15 $
+ * @version $Revision: 1.145 $ $Author: franciscom $
+ * @modified $Date: 2009/04/03 07:45:12 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -1070,7 +1070,9 @@ function tlStringLen($str)
 	$charset = config_get('charset');	
 	$nLen = iconv_strlen($str,$charset);
 	if ($nLen === false)
+	{
 		throw new Exception("Invalid UTF-8 Data detected!");
+	}
 	return $nLen; 
 }
 
@@ -1078,8 +1080,9 @@ function tlSubStr($str,$start,$length = null)
 {
 	$charset = config_get('charset');
 	if ($length === null)
+	{
 		$length = iconv_strlen($str,$charset);
-		
+	}	
 	return iconv_substr($str,$start,$length,$charset);
 }
 ?>

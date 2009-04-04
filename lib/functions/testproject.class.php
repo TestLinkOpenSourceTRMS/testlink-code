@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.99 $
- * @modified $Date: 2009/03/16 08:56:50 $  $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2009/04/04 22:48:40 $  $Author: havlat $
  * @author franciscom
  *
  * 20090205 - franciscom - getReqSpec() - interface additions
@@ -350,7 +350,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
  	          JOIN {$this->object_table} ON nodes_hierarchy.id=testprojects.id
 	          LEFT OUTER JOIN {$this->user_testproject_roles_table}
 		        ON testprojects.id = user_testproject_roles.testproject_id AND
-		 	      user_testproject_roles.user_ID = {$user_id} WHERE ";
+		 	      user_testproject_roles.user_id = {$user_id} WHERE ";
 
 	if ($role_id != TL_ROLES_NO_RIGHTS)
 		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";

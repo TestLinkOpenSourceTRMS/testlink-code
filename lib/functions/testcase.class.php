@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.159 $
- * @modified $Date: 2009/04/02 06:42:11 $ $Author: franciscom $
+ * @version $Revision: 1.160 $
+ * @modified $Date: 2009/04/04 22:48:40 $ $Author: havlat $
  * @author franciscom
  *
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
@@ -606,7 +606,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
   $cf_smarty = array();
   if (sizeof($a_id))
   {
-		$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY KEYWORD ASC ');
+		$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
 		$allReqs = $req_mgr->get_all_for_tcase($a_id);
 		foreach($a_id as $key => $tc_id)
 		{

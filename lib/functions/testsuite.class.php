@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2009/03/31 16:18:34 $ - $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2009/04/04 22:48:40 $ - $Author: havlat $
  * @author franciscom
  *
  * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
@@ -421,7 +421,7 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
   
 	$cf_smarty = $this->html_table_of_custom_field_values($id);
   
-	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
+	$keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
 	$attachmentInfos = getAttachmentInfosFrom($this,$id);
 	
 	$smarty->assign('refreshTree',false);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/03/05 18:38:49 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/04/04 22:35:13 $ by $Author: havlat $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -28,18 +28,18 @@
 
 $TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
 $TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>Users can set relations between requirements and test cases. A designer could
-define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
-test cases and vice versa. Such traceability matrix helps to investigate test coverage
+<p>Users can set relations between requirements and test cases. A test designer could
+define relations 0..n to 0..n. For example, a test case could be assigned to one or more
+requirements, or none at all, and vice versa. Such traceability matrix helps to investigate test coverage
 of requirements and find out which ones successfully failed during a testing. This
-analyse serves as input for the next planning.</p>
+analysis serves as confirmation that all defined expectations are met.</p>
 
 <h2>Get Started:</h2>
 <ol>
 	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
-	Specifications is shown at the top of workarea.</li>
+	Specifications is shown at the top of the workarea.</li>
 	<li>Choose a Requirements Specification Document if more once defined. 
-	TestLink automatically reload the page.</li>
+	TestLink automatically reloads the page.</li>
 	<li>A middle block of workarea lists all requirements (from choosen Specification), which
 	are connected with the test case. Bottom block 'Available Requirements' lists all
 	requirements which have not relation
@@ -82,7 +82,7 @@ $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
 	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
 </ol>
 
-<p>With TestLink you organize test cases into test suites." .
+<p>With TestLink you can organize test cases into test suites." .
 "Test suites can be nested within other test suites, enabling you to create hierarchies of test suites.
  You can then print this information together with the test cases.</p>";
 
@@ -112,15 +112,17 @@ or all the test cases in a test project or plan.</p>
 <h2>Get Started:</h2>
 <ol>
 <li>
-<p>Select the parts of the test cases you want to display, and then click on a test case, test suite, or the test project.
-A printable page will be displayed.</p>
+<p>Select the parts of the test cases you want to display, and then click on a test case, 
+test suite, or the test project. A printable page will be displayed.</p>
 </li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want the information displayed as HTML or in a
-Microsoft Word document. See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
+the information displayed as HTML, OpenOffice Writer or in a Microsoft Word document. 
+See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>
 <li><p>Use your browser's print functionality to actually print the information.<br />
- <i>Note: Make sure to only print the right-hand frame.</i></p></li>
+<i>Note: Make sure to only print the right-hand frame.</i></p>
+</li>
 </ol>";
 
 
@@ -132,22 +134,22 @@ $TLS_htmltext['reqSpecMgmt'] 			= "<p>You can manage Requirement Specification d
 
 <p>Requirements are grouped by <b>Requirements Specification document</b>, which is related to
 Test Project.<br /> TestLink doesn't support (yet) versions for both Requirements Specification
-and Requirements itself. So, version of document should be added after
+and Requirements itself. So, a document version should be added after
 a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p>
+A user can add a simple description or notes to the <b>Scope</b> field.</p>
 
 <p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for
-evaluation Req. coverage in case that not all requirements are added to TestLink.
+evaluating Req. coverage in case that not all requirements are added to TestLink.
 The value <b>0</b> means that current count of requirements is used
 for metrics.</p>
 <p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test
-coverage is 25% (if all these added requirements will be tested).</i></p>
+coverage is 25% (assuming the 50 added requirements will actually be tested).</i></p>
 
 <h2><a name='req'>Requirements</a></h2>
 
-<p>Click on title of a created Requirements Specification, if none exists click on the project node to create one. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be 'Normal' or 'Not testable'. Not testable requirements are not counted
+<p>Click the title of an existing Requirements Specification. If none exist, click on the project node to create one. You can create, edit, delete
+or import requirements for the document. Each requirement has a title, scope and status.
+A status should either be 'Normal' or 'Not testable'. Not testable requirements are not counted
 to metrics. This parameter should be used for both unimplemented features and
 wrong designed requirements.</p>
 
@@ -180,7 +182,7 @@ in your Test plans if and only if the test plan contains the latest version of t
 Otherwise if a test plan contains older versions of a test case, assignments you make
 now WILL NOT appear in the test plan.
 </p>
-<p>TestLink uses this approach so that older versions of test cases in test plans are not effected
+<p>TestLink uses this approach so that older versions of test cases in test plans are not affected
 by keyword assignments you make to the most recent version of the test case. If you want your
 test cases in your test plan to be updated, first verify they are up to date using the 'Update
 Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
@@ -209,21 +211,30 @@ if you would like to create/trace a problem report directly from the GUI.</i></p
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['showMetrics']	= "Description of Test Reports and Metrics";
 $TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
-		"(defined in top of navigator). This Test Plan could differs from the
-current Test Plan for execution. You can also select Report format:</p>
+		"(defined in top of navigator). This Test Plan could differ from the
+current Test Plan for execution. You can also select a Report format:</p>
 <ul>
 <li><b>Normal</b> - report is displayed in web page</li>
-<li><b>MS Excel</b> - report exported to Microsoft Excel</li>
+<li><b>OpenOffice Writer</b> - report imported to OpenOffice Writer</li>
+<li><b>OpenOffice Calc</b> - report imported to OpenOffice Calc</li>
+<li><b>MS Excel</b> - report imported to Microsoft Excel</li>
 <li><b>HTML Email</b> - report is emailed to user's email address</li>
 <li><b>Charts</b> - report include graphs (flash technology)</li>
 </ul>
 
-<p>The print button activate print of a report only (without navigation).</p>
-<p>There are several seperate reports to choose from, their purpose and function are explained below.</p>
+<p>The print button activates printing of a report only (without navigation).</p>
+<p>There are several separate reports to choose from, their purpose and function are explained below.</p>
+
+<h3>Test Plan</h3>
+<p>The document 'Test Plan' has options to define a content and a document structure.</p>
+
+<h3>Test Report</h3>
+<p>The document 'Test Report' has options to define a content and document structure.
+It includes Test cases together with test results.</p>
 
 <h3>General Test Plan Metrics</h3>
 <p>This page shows you only the most current status of a Test plan by test suite, owner, and keyword.
-The most 'current status' is determined by the most recent build test cases were executed on.  For
+The most 'current status' is determined by the most recent build for executed test cases. For
 instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p>
 
 <p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
@@ -259,7 +270,7 @@ twice on the same build, the most recent execution will be taken into account.</
 
 <h3>Query Metrics</h3>
 <p>This report consists of a query form page, and a query results page which contains the queried data.
-Query Form Page presents with a query page with 4 controls. Each control is set to a default which
+The Query Form Page presents a query page with 4 controls. Each control is set to a default which
 maximizes the number of test cases and builds the query should be performed against. Altering the controls
 allows the user to filter the results and generate specific reports for specific owner, keyword, suite,
 and build combinations.</p>
@@ -288,13 +299,13 @@ considered. The '# of Test Cases' totals you will see on the report will be infl
 Build selections will influence if a case is considered 'pass', 'fail', 'blocked', or 'not run'.  Please
 refer to 'Last Test Result' rules as they appear above.</li>
 </ul>
-<p>Press the 'submit' button to proceed with the query and display the output page.</p>
+<p>Click the 'submit' button to proceed with the query and display the output page.</p>
 
 <p>Query Report Page will display: </p>
 <ol>
 <li>the query parameters used to create report</li>
 <li>totals for the entire test plan</li>
-<li>a per suite breakdown of totals (sum / pass / fail / blocked / not run) and all executions performed
+<li>a per suite breakdown of the totals (sum / pass / fail / blocked / not run) and all executions performed
 on that suite.  If a test case has been executed more than once on multiple builds - all executions will be
 displayed that were recorded against the selected builds. However, the summary for that suite will only
 include the 'Last Test Result' for the selected builds.</li>
@@ -307,7 +318,7 @@ a test case should be considered blocked, failed, or not run.  Blocked and faile
 display the associated bugs if the user is using an integrated bug tracking system.</p>
 
 <h3>Test Report</h3>
-<p>View status of every test case on every build. The most recent execution result will be used
+<p>View the status of every test case on every build. The most recent execution result will be used
 if a test case was executed multiple times on the same build. It is recommended to export this report
 to Excel format for easier browsing if a large data set is being used.</p>
 
@@ -321,8 +332,6 @@ the user visualize the metrics from the current test plan. The four charts provi
 </ul>
 <p>The bars in the bar charts are colored such that the user can identify the approximate number of
 pass, fail, blocked, and not run cases.</p>
-<p><i>This report page requires your browser have a flash plugin (by http://www.maani.us) to display
-results in a graphical format.</i></p>
 
 <h3>Total Bugs For Each Test Case</h3>
 <p>This report shows each test case with all of the bugs filed against it for the entire project.
@@ -350,7 +359,7 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 <ol>
 	<li>Choose a Test case or Test Suite to test.</li>
 	<li>Select a planned tester.</li>
-	<li>Press button to submit assignement.</li>
+	<li>Click the 'Save' button to submit assignment.</li>
 	<li>Open execution page to verify assignment. You can set-up a filter for users.</li>
 </ol>";
 
@@ -358,7 +367,7 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
 $TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
-<p>This page allows update Test case to a newer (different) version in  the case that Test
+<p>This page allows updating a Test case to a newer (different) version if a Test
 Specification is changed. It often happens that some functionality is clarified during testing." .
 		" User modifies Test Specification, but changes needs to propagate to Test Plan too. Otherwise Test" .
 		" plan holds original version to be sure, that results refer to the correct text of a Test case.</p>
@@ -366,8 +375,8 @@ Specification is changed. It often happens that some functionality is clarified 
 <h2>Get Started</h2>
 <ol>
 	<li>Choose a Test case or Test Suite to test.</li>
-	<li>Choose a new version from bombo boxmenu for particular Test case.</li>
-	<li>Press button 'Update Test plan' to submit changes.</li>
+	<li>Choose a new version from the combobox menu for a particular Test case.</li>
+	<li>Click the 'Update Test plan' button to submit changes.</li>
 	<li>To verify: Open execution page to view text of the test case(s).</li>
 </ol>";
 
@@ -375,20 +384,20 @@ Specification is changed. It often happens that some functionality is clarified 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
 $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
-<p>TestLink allows set urgency of Test Suite to affect a testing Priority of test cases. 
+<p>TestLink allows setting the urgency of a Test Suite to affect the testing Priority of test cases. 
 		Test priority depends on both Importance of Test cases and Urgency defined in 
 		the Test Plan. Test leader should specify a set of test cases that could be tested
-		at first. It helps to assure that testing will cover the most important tests
+		at first. It helps to ensure that testing will cover the most important tests
 		also under time pressure.</p>
 
 <h2>Get Started</h2>
 <ol>
 	<li>Choose a Test Suite to set urgency of a product/component feature in navigator
 	on the left side of window.</li>
-	<li>Choose a urgency level (high, medium or low). Medium is default. You can
+	<li>Choose an urgency level (high, medium or low). Medium is default. You can
 	decrease priority for untouched parts of product and increase for components with
 	significant changes.</li>
-	<li>Press the button 'Save' to submit changes.</li>
+	<li>Click the 'Save' button to submit changes.</li>
 </ol>
 <p><i>For example, a Test case with a High importance in a Test suite with Low urgency " .
 		"will be Medium priority.</i>";

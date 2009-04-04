@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.13 2009/03/05 07:37:02 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.14 2009/04/04 18:05:16 schlundus Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -67,7 +67,7 @@ rev: 20090305 - franciscom - added test case path on displayy
     <table class="simple">
     	<tr>
     		<th>{$labels.req}</th>
-    		  <th>{$labels.testcase}</th>
+    		<th>{$labels.testcase}</th>
     	</tr>
     {/if}
     	<tr>
@@ -75,7 +75,7 @@ rev: 20090305 - franciscom - added test case path on displayy
     			  {$gui->coverage.$key[row].title|escape}</a></span></td>
     		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
     			{section name=idx loop=$tcList}
-    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$tcList[idx].tcase_path}{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title|escape}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
+    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$tcList[idx].tcase_path|escape}{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID|escape}{$gui->pieceSep}{$tcList[idx].title|escape}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
     			{/section} 
     		</td>
     	</tr>

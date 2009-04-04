@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.21 2009/03/26 20:18:09 schlundus Exp $
+$Id: inc_attachments.tpl,v 1.22 2009/04/04 18:05:16 schlundus Exp $
 Generic attachment management
 
 Input:
@@ -72,7 +72,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 			{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
 				{if !$attach_downloadOnly}
 				<a href="javascript:delete_confirmation({$info.id},'{$info.title|escape:'javascript'|escape}',
-					                                '{$del_msgbox_title|escape:'javascript'|escape}}','{$warning_msg|escape:'javascript'|escape}}',deleteAttachment_onClick);"
+					                                '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);"
 					<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
 				                         title="{lang_get s='alt_delete_attachment'}"
 				                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" /></a>

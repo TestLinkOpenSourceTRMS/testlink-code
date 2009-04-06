@@ -4,15 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.78 $
- * @modified $Date: 2009/03/05 07:32:57 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2009/04/06 05:17:29 $ by $Author: amkhullar $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support requirement based testing
  *
  * Revisions:
- *
+ * 20090331 - amitkhullar - BUGFIX 2292
  * 20090304 - franciscom - BUGID 2171
  * 20081103 - sisajr     - DocBook XML import
  * 20070710 - franciscom - BUGID 939
@@ -717,22 +717,31 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
                          $go_away=1;
                          break;
                      }
-                     else if ( isset($coverageAlgorithm['checkFail']) && 
-                               isset($coverageAlgorithm['checkFail'][$checkKey]) &&
-                               isset($req['tcList']) )
-                     {
-                         // BUGID 2171
-                         // 
-                         // If particular requirement has assigned more than one test cases, and:
-                         // - at least one of assigned test cases was not yet executed
-                         // - the rest of assigned test cases was executed and passed
-                         // then on the "Requirements based report" this particular requirement 
-                         // is not shown at all (in any section). 
-                         $coverage['byStatus'][$coverageAlgorithm['checkFail'][$checkKey]][] = $req;
-                         $go_away=1;
-                         break;
-                          
-                     } 
+	                     //-amitkhullar - 20090331 - BUGFIX 2292
+	                     elseif ($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0 )
+	                     {   
+	                        $coverage['byStatus'][$tcase_status][] = $req;
+	                        $go_away=1;
+	                        break;
+	                     }
+	                     //@todo: Francisco , I have commented the code you put in for BUGID 2171, 
+	                     // please verify the same once.
+	                     /*elseif ( isset($coverageAlgorithm['checkFail']) && 
+	                               isset($coverageAlgorithm['checkFail'][$checkKey]) &&
+	                               isset($req['tcList']) )
+	                     { 	 
+	                     	 
+	                         // BUGID 2171
+	                         // ($coverageAlgorithm['checkFail'][$checkKey]==$tcase_status)
+	                         // If particular requirement has assigned more than one test cases, and:
+	                         // - at least one of assigned test cases was not yet executed
+	                         // - the rest of assigned test cases was executed and passed
+	                         // then on the "Requirements based report" this particular requirement 
+	                         // is not shown at all (in any section). 
+	                         $coverage['byStatus'][$coverageAlgorithm['checkFail'][$checkKey]][] = $req;
+	                         $go_away=1;
+							 break;
+	                     } */
                  }
              }  
              if($go_away)

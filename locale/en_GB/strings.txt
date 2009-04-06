@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.419 $
- * @modified $Date: 2009/04/04 22:35:13 $ by $Author: havlat $
+ * @version $Revision: 1.420 $
+ * @modified $Date: 2009/04/06 10:24:06 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -183,7 +183,7 @@ $TLS_th_delete 		= $TLS_delete; // obsolete
 $TLS_th_requirement_feature = "Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
-$TLS_max_file_size_is = "Max. file size ";
+$TLS_max_file_size_is = "Max. file size %s";
 $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
                                  " Please contact your administrator.";

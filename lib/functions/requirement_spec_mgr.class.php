@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/04/02 06:42:10 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/04/06 10:24:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -873,7 +873,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
 {
     static $iterations=0;
     static $mapped;
-		static $req_mgr;
+    static $req_mgr;
     
     // Attention: following PHP Manual SimpleXML documentation, Please remember to cast
     //            before using data from $xml,
@@ -882,33 +882,33 @@ function xmlToMapReqSpec($xml_item,$level=0)
         return null;      
     }
     
-	  $dummy=array();
-	  $dummy['node_order'] = (int)$xml_item->node_order;
-	  $dummy['scope'] = (string)$xml_item->scope;
-	  $dummy['level'] = $level;
-	  $depth=$level+1;
-
-	  foreach($xml_item->attributes() as $key => $value)
-	  {
-	     $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
-	  }    
-
+    $dummy=array();
+    $dummy['node_order'] = (int)$xml_item->node_order;
+    $dummy['scope'] = (string)$xml_item->scope;
+    $dummy['level'] = $level;
+    $depth=$level+1;
+    
+    foreach($xml_item->attributes() as $key => $value)
+    {
+       $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
+    }    
+    
     if( property_exists($xml_item,'custom_fields') )	              
     {
-	      $dummy['custom_fields']=array();
-	      foreach($xml_item->custom_fields->children() as $key)
-	      {
-	         $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
-	      }    
-	  }
-	  $mapped[]=array('req_spec' => $dummy, 'requirements' => null);
+          $dummy['custom_fields']=array();
+          foreach($xml_item->custom_fields->children() as $key)
+          {
+             $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
+          }    
+    }
+    $mapped[]=array('req_spec' => $dummy, 'requirements' => null);
     
     // Process children
     if( property_exists($xml_item,'requirement') )	              
     {
-		    if( is_null($req_mgr) )
-		    {
-		        $req_mgr = new requirement_mgr($this->db);
+        if( is_null($req_mgr) )
+        {
+            $req_mgr = new requirement_mgr($this->db);
         }
         $loop2do=count($xml_item->requirement);
         for($idx=0; $idx <= $loop2do; $idx++)
@@ -921,7 +921,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
             }    
         }    
     }        
- 
+    
     if( property_exists($xml_item,'req_spec') )	              
     {
         $loop2do=count($xml_item->req_spec);
@@ -1149,38 +1149,64 @@ function html_table_of_custom_field_values($id,$tproject_id)
   * 
   *
   *
-  *
+  *  
   */
-  function createFromXML($xml,$tproject_id,$parent_id,$author_id)
-  {
-      $items=$this->xmlToMapReqSpec($xml);
-      $req_mgr = new requirement_mgr($this->db);
-      
-      $loop2do=count($items);
-      $container_id[0]=is_null($parent_id) || $parent_id==0 ? $tproject_id : $parent_id;
-	    for($idx = 0;$idx < $loop2do; $idx++)
-	    {
-         $elem=$items[$idx]['req_spec'];
-         $depth=$elem['level'];
-         $result=$this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
-         if($result['status_ok'])
-         {
+function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters=null)
+{
+    $items=$this->xmlToMapReqSpec($xml);
+    $req_mgr = new requirement_mgr($this->db);
+    $copy_reqspec=null;
+    $copy_req=null;
+    new dBug($filters);
+    $has_filters=!is_null($filters);
+    
+    if($has_filters)
+    {
+        if( !is_null($filters['requirements']) )
+        {
+            foreach($filters['requirements'] as $reqspec_pos => $requirements_pos)
+            {
+                $copy_req[$reqspec_pos]=!is_null($requirements_pos) ? array_keys($requirements_pos) : null;
+            }
+        }
+    }
+    
+    echo "has_filters::" . $has_filters . "<br>";
+    new dBug($copy_reqspec);
+    new dBug($copy_req);
+    
+    $loop2do=count($items);
+    $container_id[0]=is_null($parent_id) || $parent_id==0 ? $tproject_id : $parent_id;
+    echo 'loop2do::' . $loop2do .'<br>';
+    new dBug($items);
+    
+    for($idx = 0;$idx < $loop2do; $idx++)
+    {
+        $elem=$items[$idx]['req_spec'];
+        $depth=$elem['level'];
+        
+        echo "Going to create reqspec:" . $copy_reqspec[$idx] . ":" . $elem['title'] . "<br>";
+        $result=$this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
+        new dBug($result);
+        if($result['status_ok'])
+        {
             $container_id[$depth+1]=$result['id']; 
-         
-            // work on requirements
             $requirementSet=$items[$idx]['requirements'];
-            $items2insert=count($requirementSet);
-	        for($jdx = 0;$jdx < $items2insert; $jdx++)
-	        {
-                  //function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
-                  //                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
-                 $req=$requirementSet[$jdx];
-                 $req_mgr->create($result['id'],$req['docid'],$req['title'],
-                                  $req['description'],$author_id,$req['status'],$req['type']);
-           }       
-         } 
-      }    
-  }
+            $create_requirements=(!$has_filters || isset($copy_req[$idx])) && !is_null($requirementSet);
+            if($create_requirements)
+            {
+                $items_qty=isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($requirementSet);
+                $keys2insert=isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($requirementSet);
+                for($jdx = 0;$jdx < $items_qty; $jdx++)
+                {
+                     $req=$requirementSet[$keys2insert[$jdx]];
+                     $req_mgr->create($result['id'],$req['docid'],$req['title'],
+                                      $req['description'],$author_id,$req['status'],$req['type']);
+                } 
+            }  // if($create_requirements)   
+        } // if($result['status_ok'])
+    }    
+}
 
 
 

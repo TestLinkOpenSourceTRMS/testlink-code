@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/02/28 17:20:41 $ $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/04/06 10:22:48 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
  * rev :
+ *       20090404 - franciscom - adjust size of test case input using len of tcase prefix
  *       20080504 - franciscom - add code based on contribution by Eugenia Drosdezki
  *                               get files present on docs directory, and pass to template.
  *
@@ -26,10 +27,13 @@ $gui = new stdClass();
 
 $gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $gui->tcasePrefix='';
+$gui->searchSize=8; // magic default
 if( $gui->tprojectID > 0)
 {
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . 
                         config_get('testcase_cfg')->glue_character;
+                        
+    $gui->searchSize=tlStringLen($gui->tcasePrefix) + 7; // magic again
 }
 
 $user = $_SESSION['currentUser'];

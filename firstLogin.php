@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2008/11/18 20:54:42 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/04/07 18:55:29 $ $Author: schlundus $
  *
  */
 require_once('config.inc.php');
@@ -23,33 +23,25 @@ if (!config_get('user_self_signup'))
 	$smarty->display('workAreaSimple.tpl');
 	exit();
 }
-
-$_POST = strings_stripSlashes($_POST);
-$bEditUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;
-$login = isset($_POST['loginName']) ? $_POST['loginName'] : null;
-$password = isset($_POST['password']) ? $_POST['password'] : null;
-$password2 = isset($_POST['password2']) ? $_POST['password2'] : null;
-$first = isset($_POST['first']) ? $_POST['first'] : null;
-$last = isset($_POST['last']) ? $_POST['last'] : null;
-$email = isset($_POST['email']) ? $_POST['email'] : null;
+$args = init_args();
 
 doDBConnect($db);
 
 $message = lang_get('your_info_please');
-if($bEditUser)
+if($args->bEditUser)
 {
-	if(strcmp($password,$password2))
+	if(strcmp($args->password,$args->password2))
 		$message = lang_get('passwd_dont_match');
 	else
 	{
 		$user = new tlUser();	
-		$result = $user->setPassword($password);
+		$result = $user->setPassword($args->password);
 		if ($result >= tl::OK)
 		{
-			$user->login = $login;
-			$user->emailAddress = $email;
-			$user->firstName = $first;
-			$user->lastName = $last;
+			$user->login = $args->login;
+			$user->emailAddress = $args->email;
+			$user->firstName = $args->first;
+			$user->lastName = $args->last;
 			$result = $user->writeToDB($db);
 		}
 		if ($result >= tl::OK)
@@ -65,10 +57,35 @@ if($bEditUser)
 
 $smarty = new TLSmarty();
 $smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
-$smarty->assign('login', $login);
-$smarty->assign('firstName', $first);
-$smarty->assign('lastName', $last);
-$smarty->assign('email', $email);
+$smarty->assign('login', $args->login);
+$smarty->assign('firstName', $args->first);
+$smarty->assign('lastName', $args->last);
+$smarty->assign('email', $args->email);
 $smarty->assign('message',$message);
 $smarty->display('loginFirst.tpl');
+
+function init_args()
+{
+	$iParams = array(
+		"editUser" => array(tlInputParameter::STRING_N,0,1),
+		"loginName" => array(tlInputParameter::STRING_N,0,30),
+		"password" => array(tlInputParameter::STRING_N,0,32),
+		"password2" => array(tlInputParameter::STRING_N,0,32),
+		"first" => array(tlInputParameter::STRING_N,0,30),
+		"last" => array(tlInputParameter::STRING_N,0,30),
+		"email" => array(tlInputParameter::STRING_N,0,100),
+	);
+	$pParams = P_PARAMS($iParams);
+	
+	$args = new stdClass();
+	$args->bEditUser = $pParams["editUser"];
+	$args->login = $pParams["loginName"];
+	$args->password = $pParams["password"];
+	$args->password2 = $pParams["password2"];
+	$args->first = $pParams["first"];
+	$args->last = $pParams["last"];
+	$args->email = $pParams["email"];
+
+	return $args;
+}
 ?>

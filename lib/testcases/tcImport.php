@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/04/02 20:16:17 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -699,7 +699,7 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	if($xls_row_qty < FIRST_DATA_ROW)
 	{
     	return;  // >>>----> bye!
-  }
+  	}
   
 	$xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
 	fwrite($xmlFileHandle,"<testcases>\n");
@@ -714,7 +714,7 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	    // $summary = str_replace('…',"...",$xls_rows[$idx][IDX_COL_SUMMARY]);  
 	    $summary = convert_special_char($xls_rows[$idx][IDX_COL_SUMMARY]);  
 		$summary = nl2p(htmlspecialchars($summary));
-	    fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
+		fwrite($xmlFileHandle,"<summary><![CDATA[" . $summary . "]]></summary>\n");
 	    
 	    // 20090117 - BUGID 1991,1992  // 20090402 - BUGID 1519
 	    // $steps = str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
@@ -732,13 +732,13 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
 	}
 	fwrite($xmlFileHandle,"</testcases>\n");
 	fclose($xmlFileHandle);
+	
 }
 
 // 20090402 - BUGID 1519: Extract this function from create_xml_tcspec_from_xls()
 function convert_special_char($target_string)
 {
-	global $tlCfg;
-	$from_char = iconv("CP1252", $tlCfg->charset, '\205');
+	$from_char = iconv("CP1252", config_get('charset'), '\205');
 	$to_char = "...";
 
 	if ($from_char)

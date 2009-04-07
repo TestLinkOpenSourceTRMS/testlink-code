@@ -5,21 +5,18 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/01/13 19:34:01 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/04/07 18:55:29 $ $Author: schlundus $
  *
- * rev: 20080212 - franciscom - fixed minor bug on call to logAuditEvent
 **/
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 
-$_POST = strings_stripSlashes($_POST);
-$login = isset($_POST['login']) ? $_POST['login']: null;
+$args = init_args();
 
 $op = doDBConnect($db);
-//@TODO: schlundus, this kind of code should be contained within doDBConnect!
 if ($op['status'] == 0)
 {
 	$smarty = new TLSmarty();
@@ -31,9 +28,9 @@ if ($op['status'] == 0)
 
 $bPasswordMgtExternal = tlUser::isPasswordMgtExternal();
 $note = lang_get('your_info_for_passwd');
-if (strlen($login) && !$bPasswordMgtExternal)
+if ($args->login != "" && !$bPasswordMgtExternal)
 {
-	$userID = tlUser::doesUserExist($db,$login);
+	$userID = tlUser::doesUserExist($db,$args->login);
 	if (!$userID)
 		$note = lang_get('bad_user');
 	else
@@ -49,7 +46,7 @@ if (strlen($login) && !$bPasswordMgtExternal)
 		}
 		else if ($result == tlUser::E_EMAILLENGTH)
 			$note = lang_get('mail_empty_address');
-		else if (!strlen($note))
+		else if ($note != "")
 			$note = getUserErrorMessage($result);
 	}
 }
@@ -59,4 +56,17 @@ $smarty->assign('note',$note);
 $smarty->assign('external_password_mgmt',$bPasswordMgtExternal);
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));
 $smarty->display('loginLost.tpl');
+
+function init_args()
+{
+	$iParams = array(
+		"login" => array(tlInputParameter::STRING_N,0,30),
+	);
+	$pParams = P_PARAMS($iParams);
+	
+	$args = new stdClass();
+	$args->login = $pParams["login"];
+	
+	return $args;
+}
 ?>

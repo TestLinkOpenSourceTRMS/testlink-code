@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.145 $ $Author: franciscom $
- * @modified $Date: 2009/04/03 07:45:12 $
+ * @version $Revision: 1.146 $ $Author: schlundus $
+ * @modified $Date: 2009/04/07 18:55:29 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -72,6 +72,7 @@ require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
 require_once("plan.core.inc.php");
 
+require_once("inputparameter.inc.php");
 
 /** load the php4 to php5 domxml wrapper if the php5 is used and 
  * the domxml extension is not loaded 

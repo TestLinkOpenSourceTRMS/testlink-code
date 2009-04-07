@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.7 2008/05/09 20:15:14 schlundus Exp $
+$Id: keywordsEdit.tpl,v 1.8 2009/04/07 18:55:29 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
 {assign var="url_args" value="lib/keywords/keywordsEdit.php"}
@@ -46,7 +46,6 @@ function validateForm(f)
   	<form name="addKey" method="post" action="{$keyword_edit_url}"
  		      onSubmit="javascript:return validateForm(this);">
 
-  	<input type="hidden" name="id" value="{$keywordID}" />
   	<table class="common" style="width:50%">
   		<tr>
   			<th>{lang_get s='th_keyword'}</th>

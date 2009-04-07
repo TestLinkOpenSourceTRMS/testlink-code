@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsExport.tpl,v 1.4 2008/05/06 06:26:06 franciscom Exp $
+$Id: keywordsExport.tpl,v 1.5 2009/04/07 18:55:29 schlundus Exp $
 Purpose: smarty template - keyword export 
 rev:
 *}
@@ -41,24 +41,25 @@ function validateForm(f)
   
     <table>
     <tr>
-    <td>
-    {lang_get s='export_filename'}
-    </td>
-    <td>
-  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
-			           value="{$export_filename|escape}" size="{#FILENAME_SIZE#}"/>
-			  				{include file="error_icon.tpl" field="export_filename"}
-  	</td>
+	    <td>
+		    {lang_get s='export_filename'}
+	    </td>
+	    <td>
+		  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
+				           value="{$export_filename|escape}" size="{#FILENAME_SIZE#}"/>
+				  				{include file="error_icon.tpl" field="export_filename"}
+	  	</td>
   	<tr>
-  	<td>{lang_get s='file_type'}</td>
-  	<td>
-  	<select name="exportType">
-  		{html_options options=$exportTypes}
-  	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
-  	</td>
-  	</tr>
-
+	  	<td>
+	  		{lang_get s='file_type'}
+	  	</td>
+	  	<td>
+		  	<select name="exportType">
+		  		{html_options options=$exportTypes}
+		  	</select>
+		 	<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+	  	</td>
+	</tr>
   	</table>
   	
   	<div class="groupBtn">

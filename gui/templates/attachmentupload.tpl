@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.10 2009/01/29 20:58:22 schlundus Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.11 2009/04/07 18:55:29 schlundus Exp $ *}
 {* Purpose: smarty template - template for attachment upload dialog 
 
    rev :
@@ -27,10 +27,8 @@ var warning_empty_title = "{lang_get s='enter_attachment_title'}";
 	<h2>{lang_get s='title_choose_local_file'}</h2>
 	
 	<form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data" id="aForm">
-		<input type="hidden" name="MAX_FILE_SIZE" value="{$import_limit}" /> {* restrict file size *}
 		<p>{lang_get s='local_file'}
-			<input type='hidden' value='{$id}' name='id' />
-			<input type='hidden' value='{$tableName}' name='tableName' />
+			<input type="hidden" name="MAX_FILE_SIZE" value="{$import_limit}" /> {* restrict file size *}
 			<input type="file" name="uploadedFile" size="{#UPLOAD_FILENAME_SIZE#}" />
 		</p>
 		<p>

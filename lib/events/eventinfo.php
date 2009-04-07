@@ -5,19 +5,22 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/12/15 20:22:41 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
+$args = init_args();
+
 $user = null;
-$eventID = isset($_POST['id']) ? intval($_POST['id']) : null;
-if ($eventID)
+$event = null;
+
+if ($args->eventID)
 {
-	$event = new tlEvent($eventID);
+	$event = new tlEvent($args->eventID);
 	if ($event->readFromDB($db,tlEvent::TLOBJ_O_GET_DETAIL_TRANSACTION) >= tl::OK)
 	{
 		$user = new tlUser($event->userID);
@@ -38,5 +41,20 @@ function checkRights(&$db,&$user,&$action)
 	if (!$user->hasRight($db,"mgt_view_events"))
 		return false;
 	return true;
+}
+
+function init_args()
+{
+	$args = new stdClass();
+	
+	$iParams = array(
+			"id" => array(tlInputParameter::STRING_N,0,50),
+		);
+		
+	$pParams = P_PARAMS($iParams);
+
+	$args->eventID = $pParams["id"];
+	
+	return $args;
 }
 ?>

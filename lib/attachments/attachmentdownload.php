@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  */
@@ -18,16 +18,16 @@ testlinkInitPage($db);
 
 if (!config_get("attachments")->enabled)
 	exit();
+	
+$args = init_args();
 
-//the id (attachments.id) of the attachment to be downloaded
-$id = isset($_GET['id'])? intval($_GET['id']) : 0;
-if ($id)
+if ($args->id)
 {
 	$attachmentRepository = tlAttachmentRepository::create($db);
-	$attachmentInfo = $attachmentRepository->getAttachmentInfo($id);
-	if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
+	$attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
+	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
 	{
-		$content = $attachmentRepository->getAttachmentContent($id,$attachmentInfo);
+		$content = $attachmentRepository->getAttachmentContent($args->id,$attachmentInfo);
 		if ($content != "")
 		{
 			@ob_end_clean();
@@ -46,4 +46,18 @@ if ($id)
 }
 $smarty = new TLSmarty();
 $smarty->display('attachment404.tpl');
+
+function init_args()
+{
+	//the id (attachments.id) of the attachment to be downloaded
+	$iParams = array(
+		"id" => array(tlInputParameter::INT_N),
+	);
+	$pParams = G_PARAMS($iParams);
+	
+	$args = new stdClass();
+	$args->id = $pParams["id"];
+	
+	return $args;
+}
 ?>

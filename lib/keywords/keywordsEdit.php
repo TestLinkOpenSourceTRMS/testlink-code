@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/01/26 19:16:42 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -77,13 +77,30 @@ $smarty->display($template_dir . $default_template);
 */
 function init_args()
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
+	
+	$bPostBack = sizeof($_POST);
+	$source = $bPostBack ? "POST" : "GET";
+	$iParams = array(
+			"doAction" => array($source,tlInputParameter::STRING_N,0,50),
+			"id" => array($source, tlInputParameter::INT_N),
+			"keyword" => array($source, tlInputParameter::STRING_N,0,100),
+			"notes" => array($source, tlInputParameter::STRING_N),
+		);
+		
+	$pParams = I_PARAMS($iParams);
 
 	$args = new stdClass();
-	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
-	$args->keyword_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-	$args->keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
-	$args->notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
+	$args->doAction = $pParams["doAction"];
+	$args->keyword_id = $pParams["id"];
+	$args->keyword = $pParams["keyword"];
+	$args->notes = $pParams["notes"];
+
+	if ($args->doAction == "edit")
+		$_SESSION['s_keyword_id'] = $args->keyword_id;
+	else if($args->doAction == "do_update")
+		$args->keyword_id = $_SESSION['s_keyword_id'];
+	
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
 

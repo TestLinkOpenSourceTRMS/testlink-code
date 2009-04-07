@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.420 $
- * @modified $Date: 2009/04/06 10:24:06 $ by $Author: franciscom $
+ * @version $Revision: 1.421 $
+ * @modified $Date: 2009/04/07 03:52:07 $ by $Author: amkhullar $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1697,7 +1697,7 @@ $TLS_number_blocked = "# " . $TLS_test_status_blocked;
 $TLS_number_cases = "# Cases";
 $TLS_number_executions = "# Test Cases Run";
 $TLS_number_failed = "# " . $TLS_test_status_failed;
-$TLS_number_not_run = "# " . $TLS_test_status_blocked;
+$TLS_number_not_run = "# " . $TLS_test_status_not_run;
 $TLS_number_passed = "# " . $TLS_test_status_passed;
 $TLS_owner = "Tester";
 $TLS_owner_header = $TLS_owner. " =";

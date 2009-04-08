@@ -1,10 +1,23 @@
 <?php
+/*
+- Please add CVS header
+- comment on function on php documentator style
+- remove m_ prefix that is not used in any other class
+- add some blank line between fuctions to let code breath
+
+*/
 class tlInputParameter extends tlObject
 {
+
+    // why dis kind of coding to do things like
+    // INT_N || STRING to create the 6 constant ?
+    // Please explain
+    //
 	const INT = 1;
-	const INT_N = 2;
+	const INT_N = 2;   // Please add comments wht _N means? documentation must be here
 	const STRING = 4;
 	const STRING_N = 8;
+
 	//@TODO: schlundus, add support for arrays
 		
 	protected $m_taintValue = null;
@@ -187,16 +200,25 @@ class tlStringInputParameter extends tlInputParameter
 	{
 		$validationInfo = $this->m_validationInfo;
 		$trim = $validationInfo->m_trim;
+		
+		// what about a switch ???
 		if ($trim == tlStringValidationInfo::TRIM_LEFT)
+		{
 			$value = ltrim($value);
+		}
 		elseif ($trim == tlStringValidationInfo::TRIM_RIGHT)
+		{
 			$value = rtrim($value);
+		}
 		elseif ($trim == tlStringValidationInfo::TRIM_BOTH)
+		{
 			$value = trim($value);
-
+        }
+        
 		if ($validationInfo->m_maxLen)	
+		{
 			$value = iconv_substr($value,0,$validationInfo->m_maxLen,$this->m_charset);
-			
+		} 	
 		return $value;
 	}
 	
@@ -225,11 +247,15 @@ class tlIntegerInputParameter extends tlInputParameter
 	protected function validate()
 	{
 		if (!$this->isFetched())
+		{
 			return;
-
+        }
+        
 		$value = $this->m_normalizedValue;	
 		if (!is_numeric($value))
+		{
 			throw new Exception("Input parameter validation failed [numeric]");
+		}
 		
 		$value = intval($value);
 		$minVal = $this->m_validationInfo->m_minVal;
@@ -242,11 +268,11 @@ class tlIntegerInputParameter extends tlInputParameter
 		
 		$pfnValidation = $this->m_validationInfo->m_pfnValidation;
 		if ($pfnValidation && !$pfnValidation($value))
+		{
 			throw new Exception("Input parameter validation failed [external function]");
+		}
 			
 		$this->m_bValid = true;
 	}
 }
-
-
 ?>

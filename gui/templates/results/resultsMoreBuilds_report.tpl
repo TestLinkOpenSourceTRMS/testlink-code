@@ -1,16 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.9 2009/01/07 22:20:58 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.10 2009/04/09 10:55:44 amkhullar Exp $
 
 rev :
+     20090409 - amitkhullar - BUGID 2156 - added new option on 
+     			Query Metrics for latest results
      20080524 - franciscom - BUGID 1430
      20070902 - franciscom - refactoring
 *}
 {lang_get var="labels"
           s="query_metrics_report,th_test_plan,th_builds,th_test_suites,th_keyword,
-             assigned_to,th_last_result,th_start_time,th_end_time,th_executor,
+             assigned_to,th_last_result,th_start_time,th_end_time,th_executor,results_all,
              th_total_cases,th_total_pass,th_total_fail,th_total_block,th_total_not_run,
-             generated_by_TestLink_on,test_status_not_run,
+             generated_by_TestLink_on,test_status_not_run,display_results_tc,results_latest,
              th_test_case_id,th_build,th_tester_id,th_execution_ts,th_status,th_notes,th_bugs,
              th_search_notes_string,any,caption_user_selected_query_parameters"}
 
@@ -44,6 +46,8 @@ rev :
 			<th>{$labels.th_end_time}</th>
 			<th>{$labels.th_executor}</th>
 			<th>{$labels.th_search_notes_string}</th>
+			<th>{$labels.display_results_tc}</th>
+
 		</tr>
 		<tr>
 			<td>
@@ -80,6 +84,11 @@ rev :
 				&nbsp;
 			</td>
 			<td>{$gui->search_notes_string}</td>
+			{if ($gui->display->latest_results == 0) }
+			<td>{$labels.results_latest}</td>
+			{else}
+			<td>{$labels.results_all}</td>
+			{/if}
 		</tr>
 	</table>
 {/if}
@@ -208,28 +217,27 @@ rev :
 			    		{foreach key=executionInstance item=array from=$gui->suiteList[$suiteId]}
 			    			{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
 			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
-			          {if $gui->displayResults[$inst.status] }
-			       	    {if $inst.status == $gui->resultsCfg.status_code.not_run}
-			    			      <td>{$inst.testcasePrefix|escape}{$inst.external_id}:&nbsp;{$inst.name|escape}</td>
-			      		  		<td>&nbsp;</td>
-			    			  	  <td>&nbsp;</td>
-			    			  	  <td>&nbsp;</td>
-                  {else}
-			              		<td>{$inst.execute_link}</td>
-                  	  	<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
-			    			  	    <td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
-			    			  	    <td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
-                  {/if}
-			    				
-			    				<td class="{$gui->resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$gui->statusLabels[$inst.status]|escape}</td>
-                  {if $inst.status == $gui->resultsCfg.status_code.not_run}
-			    				    <td>&nbsp;</td>
-			    				    <td>&nbsp;</td>
-			    				{else}
-			    				    <td>{$inst.notes}&nbsp;</td>
-			    				    <td style="text-align:center;">{$inst.bugString}&nbsp;</td>
-                  {/if}
-			          {/if}
+			    			{if $gui->displayResults[$inst.status] }
+								{if $inst.status == $gui->resultsCfg.status_code.not_run}
+									<td>{$inst.testcasePrefix|escape}{$inst.external_id}:&nbsp;{$inst.name|escape}</td>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+								{else}
+									<td>{$inst.execute_link}</td>
+									<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
+									<td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
+									<td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>
+								{/if}
+									<td class="{$gui->resultsCfg.code_status[$inst.status]}" style="text-align:center;">{$gui->statusLabels[$inst.status]|escape}</td>
+								{if $inst.status == $gui->resultsCfg.status_code.not_run}
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+								{else}
+									<td>{$inst.notes}&nbsp;</td>
+									<td style="text-align:center;">{$inst.bugString}&nbsp;</td>
+								{/if}
+			    			{/if}
 			    			</tr>
 			    		{/foreach}
 			    		{if $gui->display->suite_summaries}

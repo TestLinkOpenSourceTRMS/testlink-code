@@ -21,7 +21,7 @@
 * @package    Spreadsheet_Excel_Reader
 * @author     Vadim Tkachenko <vt@apachephp.com>
 * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
-* @version    CVS: $Id: reader.php,v 1.1 2007/11/01 22:03:51 franciscom Exp $
+* @version    CVS: $Id: reader.php,v 1.2 2009/04/09 20:47:07 schlundus Exp $
 * @link       http://pear.php.net/package/Spreadsheet_Excel_Reader
 * @see        OLE, Spreadsheet_Excel_Writer
 */
@@ -560,7 +560,7 @@ class Spreadsheet_Excel_Reader
 
                                                          }
                                                 }
-                                                $retstr = ($asciiEncoding) ? $retstr : $this->_encodeUTF16($retstr);
+                                                $retstr = $this->_encodeUTF16($retstr,$asciiEncoding ? "ISO-8859-1" : 'UTF-16LE');
 //                                              echo "Str $i = $retstr\n";
                                         if ($richString){
                                                   $spos += 4 * $formattingRuns;
@@ -1049,13 +1049,14 @@ class Spreadsheet_Excel_Reader
         return $value;
     }
 
-    function _encodeUTF16($string)
+    function _encodeUTF16($string,$incharst = 'UTF-16LE')
     {
-        $result = $string;
+    	$result = $string;
         if ($this->_defaultEncoding){
             switch ($this->_encoderFunction){
-                case 'iconv' :     $result = iconv('UTF-16LE', $this->_defaultEncoding, $string);
-                                break;
+                case 'iconv' : 
+                	$result = iconv($incharst, $this->_defaultEncoding, $string);
+                	 break;
                 case 'mb_convert_encoding' :     $result = mb_convert_encoding($string, $this->_defaultEncoding, 'UTF-16LE' );
                                 break;
             }

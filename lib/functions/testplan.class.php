@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.105 $
- * @modified $Date: 2009/04/03 07:40:22 $ by $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2009/04/09 10:59:03 $ by $Author: amkhullar $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -76,19 +76,19 @@ class testplan extends tlObjectWithAttachments
 	var $cfield_mgr;
 	var $tcase_mgr;
 
-  var $users_table="users";
-  var $builds_table="builds";
+  	var $users_table="users";
+  	var $builds_table="builds";
  	var $custom_fields_table="custom_fields";
  	var $cfield_design_values_table="cfield_design_values";
-  var $cfield_execution_values_table="cfield_execution_values";
-  var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
-  var $cfield_node_types_table="cfield_node_types";
-  var $execution_bugs_table="execution_bugs";
-  var $executions_table='executions';
-  var $nodes_hierarchy_table='nodes_hierarchy';
+  	var $cfield_execution_values_table="cfield_execution_values";
+  	var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
+  	var $cfield_node_types_table="cfield_node_types";
+  	var $execution_bugs_table="execution_bugs";
+  	var $executions_table='executions';
+    var $nodes_hierarchy_table='nodes_hierarchy';
 	var $milestones_table='milestones';
-  var $tcversions_table='tcversions';
-  var $testplans_table="testplans";
+  	var $tcversions_table='tcversions';
+  	var $testplans_table="testplans";
 	var $testplan_tcversions_table="testplan_tcversions";
 
 
@@ -716,15 +716,13 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	
 	  // BUGID 989 - added NHB.node_order
 	  $sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
-	  //print_r($sql);
 	  $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
-	  //print_r($recordset);	
+
 	  // 20070913 - jbarchibald
 	  // here we add functionality to filter out the custom field selections
     if (!is_null($cf_hash)) {
         $recordset = $this->filter_cf_selection($recordset, $cf_hash);
     }
-	//  print_r($recordset);
 	  return $recordset;
 }
 

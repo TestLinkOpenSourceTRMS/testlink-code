@@ -4,14 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.79 $
- * @modified $Date: 2009/04/06 05:17:29 $ by $Author: amkhullar $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2009/04/09 10:56:44 $ by $Author: amkhullar $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
  * Functions for support requirement based testing
  *
  * Revisions:
+ * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
  * 20090331 - amitkhullar - BUGFIX 2292
  * 20090304 - franciscom - BUGID 2171
  * 20081103 - sisajr     - DocBook XML import
@@ -635,16 +636,14 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 	{
 		foreach($reqs as $requirement_id => $req_tcase_set)
 		{
-        $first_key=key($req_tcase_set);
+			  $first_key=key($req_tcase_set);
 			  $item_qty = count($req_tcase_set);
-
 			  $req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title']);
 			  foreach($status_counters as $key => $value)
 			  {
 			      $status_counters[$key]=0;
 			  }
-        
-			  if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
+		  if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
 			  {
 			  	$coverage['withTestCase'][$requirement_id] = 1;
 			  }
@@ -686,10 +685,11 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 			  	        $status_counters[$exec_status]++;
 			            $req['tcList'][] = array("tcID" => $item_info['testcase_id'],
 			                                     "title" => $item_info['testcase_name'],
-			             						             "tcaseExternalID" => $item_info['tc_external_id'],
-			             						             "tcase_path" => $tcase_path,
-			  	   		  						             "status" => $exec_status,
-			  	   		  						             "status_label" => $resultsCfg['status_label']
+			             			     "tcaseExternalID" => $item_info['tc_external_id'],
+							     "version" => $item_info['version'],
+			             			     "tcase_path" => $tcase_path,
+			  	   		  	     "status" => $exec_status,
+			  	   		  	     "status_label" => $resultsCfg['status_label']
 			  	   		  						                                         [$resultsCfg['code_status'][$exec_status]]);
              }
 			   } // for($idx = 0; $idx < $item_qty; $idx++)

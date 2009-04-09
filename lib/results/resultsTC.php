@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.40 2009/03/04 20:30:57 schlundus Exp $ 
+* $Id: resultsTC.php,v 1.41 2009/04/09 11:00:59 amkhullar Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -50,8 +50,9 @@ $arrBuilds = $tplan_mgr->get_builds($tplan_id, 1); //MHT: active builds only
 
 $arrBuildIds = null;
 if ($arrBuilds)
+{
 	$arrBuildIds = array_keys($arrBuilds);
-
+}
 $executionsMap = $re->getSuiteList();
 
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
@@ -96,7 +97,7 @@ if ($lastResultMap != null)
 			$suiteExecutions = $executionsMap[$suiteId];		
 			
 			// iterate over all builds and lookup results for current test case			
-		  $qta_loops=sizeOf($arrBuildIds);
+		 	$qta_loops=sizeOf($arrBuildIds);
 			for ($i = 0 ; $i < $qta_loops; $i++) {
 				$buildId = $arrBuildIds[$i];
 				$resultsForBuild =$not_run_label;

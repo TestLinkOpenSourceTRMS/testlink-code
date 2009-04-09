@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.100 $
- * @modified $Date: 2009/04/04 22:48:40 $  $Author: havlat $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2009/04/09 10:59:41 $  $Author: amkhullar $
  * @author franciscom
  *
  * 20090205 - franciscom - getReqSpec() - interface additions
@@ -284,14 +284,20 @@ function get_by_prefix($prefix)
 args:[order_by]: default " ORDER BY nodes_hierarchy.name " -> testproject name
 
 rev:
+    20090409 - amitkhullar- added active parameter
     20071104 - franciscom - added order_by
 
 */
-function get_all($order_by=" ORDER BY nodes_hierarchy.name ")
+function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ";
+	
+	if (!is_null($active) )
+	{
+		$sql .= " AND active=" . intval($active) . " ";
+	}
 	if( !is_null($order_by) )
 	{
 	  $sql .= $order_by;

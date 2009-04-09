@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.116 $
- * @modified $Date: 2009/03/31 16:18:34 $ $Author: franciscom $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2009/04/09 10:56:19 $ $Author: amkhullar $
  *
  * rev:
+ *     20090409 - amkhullar - updated code not written properly.
  *     20090330 - franciscom - fixed bug on test plan custom field get.
  *     20090325 - amkhullar - BUGID 2267
  *     20090210 - amkhullar - BUGID 2068
@@ -167,6 +168,7 @@ if(!is_null($linked_tcversions))
     // --------------------------------------------------------------------------------------------
     
     $gui->map_last_exec_any_build = null;
+    $testerid = null;
     if( $cfg->exec_cfg->show_last_exec_any_build )
     {
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
@@ -174,8 +176,12 @@ if(!is_null($linked_tcversions))
                                                                            
         //Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
-		    $testerid = $tc_current['tester_id'];
-		    $userid_array[$testerid] = $testerid;
+
+        	foreach ($tc_current as $key => $value)
+        	{
+		    	$testerid = $value['tester_id'];
+			    $userid_array[$testerid] = $testerid;
+        	}	    
     }
 
     $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068

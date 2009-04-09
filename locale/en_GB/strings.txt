@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.423 $
- * @modified $Date: 2009/04/09 08:15:25 $ by $Author: franciscom $
+ * @version $Revision: 1.424 $
+ * @modified $Date: 2009/04/09 11:01:35 $ by $Author: amkhullar $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -2031,8 +2031,8 @@ $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
 $TLS_link_report_test = "Test result matrix";
 $TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
-$TLS_link_report_tcases_with_cf="Test Cases with Custom Fields info";
-$TLS_caption_testCasesWithCF=$TLS_link_report_tcases_with_cf;
+$TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
 
 $TLS_no_linked_tc_cf='There are no Test Cases with Custom Field information';
 

@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/03/05 07:32:37 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/04/09 11:00:30 $ by $Author: amkhullar $
  * @author Martin Havlat
  * 
  * Report requirement based results
- *
+ * 
+ * rev:
+ * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
  * 20090111 - franciscom - BUGID 1967 + improvements
  * 20060104 - fm - BUGID 0000311: Requirements based Report shows errors 
  *
@@ -87,7 +89,7 @@ if(!is_null($args->req_spec_id))
   
 	$sql = " SELECT DISTINCT REQ.id AS req_id, COALESCE(RC.testcase_id,0) AS testcase_id, " .
 	       " title AS req_title,status AS req_status, NH.name AS testcase_name, " .
-	       " TCV.tc_external_id " .
+	       " TCV.tc_external_id,TCV.version " .
 	       " FROM requirements REQ" .
 	       " LEFT OUTER JOIN req_coverage RC ON REQ.id = RC.req_id " .
 	       " LEFT OUTER JOIN nodes_hierarchy NH ON RC.testcase_id=NH.id " .
@@ -99,9 +101,9 @@ if(!is_null($args->req_spec_id))
 	$execMap = getLastExecutions($db,$tcs,$args->tplan_id);
 	$gui->metrics = $req_spec_mgr->get_metrics($args->req_spec_id);
 
-  $coverage = getReqCoverage($db,$reqs,$execMap);                                                               
-  $gui->coverage = $coverage['byStatus'];
-  $gui->withoutTestCase = $coverage['withoutTestCase'];
+	$coverage = getReqCoverage($db,$reqs,$execMap);                                                               
+	$gui->coverage = $coverage['byStatus'];
+	$gui->withoutTestCase = $coverage['withoutTestCase'];
                                                                
 	$gui->metrics['coveredByTestPlan'] = sizeof($coverage['withTestCase']);
 	$gui->metrics['uncoveredByTestPlan'] = $gui->metrics['expectedTotal'] - $gui->metrics['coveredByTestPlan'] - 

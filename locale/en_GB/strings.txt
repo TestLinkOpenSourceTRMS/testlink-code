@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.422 $
- * @modified $Date: 2009/04/09 06:07:26 $ by $Author: amkhullar $
+ * @version $Revision: 1.423 $
+ * @modified $Date: 2009/04/09 08:15:25 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -426,6 +426,7 @@ $TLS_th_product_name = "Test Project Name";
 
 
 // ----- gui/templates/cfields/cfieldsEdit.tpl -----
+$TLS_assigned_to_testprojects = "Assigned to Test Projects";
 $TLS_available_on = "Available for";
 $TLS_custom_field = "Custom field";
 $TLS_enable_on_design = "Enable on <br />test specification";
@@ -446,6 +447,10 @@ $TLS_warning_empty_cfield_name = "Please enter the name of this custom field.";
 $TLS_warning_is_in_use = "You can neither delete, either change type <br /> " .
                          "because a value has been assigned to this custom field <br />" .
                          "by user on an test specification or execution ";
+
+$TLS_warning_no_type_change = "You can NOT change custom field type <br /> " .
+                              "because a value has been assigned to this custom field <br />" .
+                              "by user on an test specification or execution ";
 
 
 // ----- gui/templates/inc_update.tpl -----

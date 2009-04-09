@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/03/31 16:18:34 $  $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/04/09 08:15:52 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20090408 - franciscom - BUGID 2352 - added new method remove_all_scopes_values();
+ *                                      changes in delete()
  *
  * 20090321 - franciscom - fixed bug due to missing code on get_linked_cfields_at_design()
  * 20090321 - franciscom - exportValueAsXML()
@@ -57,6 +60,8 @@
 require_once(dirname(__FILE__) . '/date_api.php');
 require_once(dirname(__FILE__) . '/string_api.php');
 
+// Copied from mantis, allow load of user custom implementations
+// some sort of poor's man plugin
 $cf_files=glob( TL_ABS_PATH . "custom/cf_*.php");
 if( count($cf_files) > 0 )
 {
@@ -918,8 +923,10 @@ class cfield_mgr
 			{
 				$cf = $this->get_by_id($field_id);
 				if ($cf)
+				{
 					logAuditEvent(TLS("audit_cfield_assigned",$cf[$field_id]['name'],$tproject_info['name']),
 								            "ASSIGN",$tproject_id,"testprojects");
+			    }					            
 			}
 		}
 	} //function end
@@ -960,37 +967,41 @@ class cfield_mgr
 		}
 	} //function end
 
-
-
-  /*
-    function: unlink_from_testproject
-
-    args: $tproject_id
-          $cfield_ids: array()
-
-    returns: -
-  */
+ 
+  /**
+   * unlink_from_testproject
+   * remove custom field links from target test project
+   * N.B.: following Mantis Bugtracking System model,
+   *       this operation will NOR remove all values assigned to 
+   *       these custom fields .
+   *  
+   * @param int $tproject_id
+   * @param array $cfield_ids 
+   *
+   */
 	function unlink_from_testproject($tproject_id,$cfield_ids)
   	{
 	  	if(is_null($cfield_ids))
+	  	{
 			return;
-
-		// 20080216 - seems we do not need this
-		//$this->set_active_for_testproject($tproject_id,$cfield_ids,1);
-
-		// $cfields_ids = (array) $cfield_ids;
+        }
+        // $cfield_ids=(array)$cfield_ids;
+        
+        // just for audit porpouses
 		$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
 			// BUGID 0000677
 			$sql = "DELETE FROM cfield_testprojects WHERE field_id = {$field_id}" .
-					" AND testproject_id = {$tproject_id} ";
+				   " AND testproject_id = {$tproject_id} ";
 			if ($this->db->exec_query($sql))
 			{
 				$cf = $this->get_by_id($field_id);
 				if ($cf)
+				{
 					logAuditEvent(TLS("audit_cfield_unassigned",$cf[$field_id]['name'],$tproject_info['name']),
 		         					 "ASSIGN",$tproject_id,"testprojects");
+		        } 					 
 			}
 		}
   	} //function end
@@ -1166,18 +1177,31 @@ class cfield_mgr
   } //function end
 
 
-  /*
-    function: delete a custom field
-
-    args: $id
-
-    returns: -
-  */
+  /**
+   * delete()
+   * Will delete custom field definition and also ALL assigned values
+   * If custom field is linked to test projects, these links must be removed
+   *
+   */
 	function delete($id)
 	{
+        // Before deleting definition I need to remove values
+        if( $this->is_used($id) )
+        {
+            $this->remove_all_scopes_values($id);
+		}
+		$linked_tprojects = $this->get_linked_testprojects($id);
+		if( !is_null($linked_tprojects) && count($linked_tprojects) > 0 )
+		{
+		    $target=array_keys($linked_tprojects);
+		    foreach($target as $tproject_id)
+		    {
+                $this->unlink_from_testproject($tproject_id,(array)$id);
+		    }
+		}
+		
 		$sql="DELETE FROM cfield_node_types WHERE field_id={$id}";
 		$result=$this->db->exec_query($sql);
-
 		if($result)
 		{
 			$sql="DELETE FROM custom_fields WHERE id={$id}";
@@ -1231,25 +1255,24 @@ class cfield_mgr
 
 
 
-	 /*
+/*
     function: name_is_unique
 
     args: $id
           $name
 
     returns: 1 => name is unique
-  */
-	function name_is_unique($id,$name)
-	{
+*/
+function name_is_unique($id,$name)
+{
     $cf=$this->get_by_name($name);
     $status=0;
-
     if( is_null($cf) || isset($cf[$id]) )
     {
        $status=1;
     }
     return($status);
-  } //function end
+} //function end
 
 
 
@@ -2152,15 +2175,56 @@ function getXMLServerParams($node_id)
  */
  function exportValueAsXML($cfMap)
  {
-  $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-  $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-		                       '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
-	$cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+    $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+    $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+	                         '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 	$cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
   return $cfXML; 
  }
 
 
+/**
+ * remove_all_scopes_values
+ * For a given custom field id remove all assigned values in any scope 
+ *
+ * @param int $id: custom field id
+ * 
+ * 
+ *
+ *
+ */
+function remove_all_scopes_values($id)
+{
+    // some sort of blind delete
+    $sql=array();
+    $sql[]="DELETE FROM {$this->cfield_design_values_table} WHERE field_id={$id} ";
+    $sql[]="DELETE FROM {$this->cfield_execution_values_table} WHERE field_id={$id} ";
+    $sql[]="DELETE FROM {$this->cfield_testplan_design_values_table} WHERE field_id={$id} ";
+  
+    foreach($sql as $s)
+    {
+        $this->db->exec_query($s);        
+    }
+}
+
+/**
+ * get_linked_testprojects
+ * For a given custom field id return all test projects where is linked.
+ *
+ * @param int $id: custom field id
+ *
+ */
+function get_linked_testprojects($id)
+{
+    $sql=" SELECT NH.id, NH.name " .
+         " FROM {$this->cfield_testprojects_table} CFTP, {$this->nodes_hierarchy_table} NH " .
+         " WHERE CFTP.testproject_id=NH.id " .
+         " AND CFTP.field_id = {$id} ORDER BY NH.name ";
+
+    $rs=$this->db->fetchRowsIntoMap($sql,'id');
+    return $rs;
+}
 
 } // end class
 ?>

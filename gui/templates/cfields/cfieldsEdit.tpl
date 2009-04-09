@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.15 2008/09/21 19:02:47 schlundus Exp $
+$Id: cfieldsEdit.tpl,v 1.16 2009/04/09 08:15:51 franciscom Exp $
 
 
 Important Development note:
@@ -23,15 +23,9 @@ This is done to simplify logic.
 
 
 rev :
+     20090408 - franciscom - BUGID 2352 - removed delete block.
+                             BUGID 2359 - display test projects where custom field is assigned
      20080810 - franciscom - BUGID 1650 (REQ)
-
-     20071209 - franciscom - added user feedback to explain
-                             why certain changes can not be done.
-
-     20070526 - franciscom - added javascript logic to improve
-                             cf enable attr management
-
-     20070128 - franciscom - variable name changes
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -45,9 +39,9 @@ rev :
 
 {lang_get var="labels"
           s="btn_ok,title_cfields_mgmt,warning_is_in_use,warning,name,label,type,possible_values,
-             warning_empty_cfield_name,warning_empty_cfield_label,
+             warning_empty_cfield_name,warning_empty_cfield_label,testproject,assigned_to_testprojects,
              enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,
-             available_on,btn_upd,btn_delete,
+             available_on,btn_upd,btn_delete,warning_no_type_change,
              btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -283,7 +277,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 {include file="inc_update.tpl" user_feedback=$user_feedback}
 
 {if $gui->cfield_is_used}
-  <div class="user_feedback">{$labels.warning_is_in_use}</div>
+  <div class="user_feedback">{$labels.warning_no_type_change}</div>
 {/if}
 
 <div class="workBack">
@@ -490,17 +484,29 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		</tr>
 	</table>
 
+  {* BUGID *}
+  {if $gui->cfield_is_linked}
+  <table class="common">
+    <tr> <th>{$labels.assigned_to_testprojects} </th>
+    {foreach item=tproject from=$gui->linked_tprojects}
+      <tr> <td>{$tproject.name|escape}</td> </tr>
+    {/foreach}
+  </table>
+
+  {/if}
+
 	<div class="groupBtn">
 	<input type="hidden" name="do_action" value="" />
 	{if $user_action eq 'edit'  or $user_action eq 'do_update'}
 		<input type="submit" name="do_update" value="{$labels.btn_upd}"
 		       onclick="do_action.value='do_update'"/>
 
-		{if $gui->cfield_is_used eq 0}
+		{*  {if $gui->cfield_is_used eq 0} *}
+		{* Allow delete , just give warning *}
   		<input type="button" name="do_delete" value="{$labels.btn_delete}"
   		       onclick="delete_confirmation({$gui->cfield.id},'{$gui->cfield.name|escape:'javascript'|escape}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
-    {/if}
+    {* {/if} *}
 
 	{else}
 		<input type="submit" name="do_update" value="{$labels.btn_add}"

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/04/09 08:15:52 $ by $Author: franciscom $
  *
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -39,7 +39,9 @@ switch($args->doAction)
     case 'doActiveMgmt':
 		$my_cf = array_keys($args->hidden_active_cfield);
 		if(!isset($args->active_cfield))
+		{
 			$cfield_mgr->set_active_for_testproject($args->testproject_id,$my_cf,0);
+		}
 		else
 		{
 			$active = null;
@@ -47,15 +49,23 @@ switch($args->doAction)
 			foreach($my_cf as $cf_id)
 			{
 				if(isset($args->active_cfield[$cf_id]))
+				{
 					$active[] = $cf_id;
+				}
 				else
+				{
 					$inactive[] = $cf_id;
+				}	
 			}
 
 			if(!is_null($active))
+			{
 				$cfield_mgr->set_active_for_testproject($args->testproject_id,$active,1);
+			}
 			if(!is_null($inactive))
+			{
 				$cfield_mgr->set_active_for_testproject($args->testproject_id,$inactive,0);
+			}	
 		}
 		break;
 }

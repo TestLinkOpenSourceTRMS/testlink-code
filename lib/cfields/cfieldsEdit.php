@@ -5,10 +5,10 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/04/09 08:15:52 $ by $Author: franciscom $
  *
- * rev: 20080921 - franciscom - minor refactoring
+ * rev: 20090408 - franciscom - BUGID 2352, BUGID 2359
  *      20080810 - franciscom - BUGID 1650 
  *
  */
@@ -17,13 +17,14 @@ require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $cfield_mgr = new cfield_mgr($db);
-            
 $templateCfg = templateConfiguration();
 $args=init_args();
 
 $gui = new stdClass();
 $gui->cfield=null;
 $gui->cfield_is_used=0;
+$gui->cfield_is_linked=0;
+$gui->linked_tprojects=null;
 $gui->cfield_types=$cfield_mgr->get_available_types();
 
 $result_msg = null;
@@ -31,38 +32,40 @@ $do_control_combo_display = 1;
 
 $cfieldCfg=cfieldCfgInit($cfield_mgr);
 $emptyCF = array('id' => $args->cfield_id,
-		             'name' => ' ',
-					       'label' => ' ',
-					       'type' => 0,
-		             'possible_values' => '',
-		             'show_on_design' => 1,
-		             'enable_on_design' => 1,
-		             'show_on_execution' => 1,
-		             'enable_on_execution' => 1,
-		             'show_on_testplan_design' => 1,
-		             'enable_on_testplan_design' => 1,
-		             'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
+		         'name' => ' ',
+                 'label' => ' ',
+				 'type' => 0,
+		         'possible_values' => '',
+		         'show_on_design' => 1,
+		         'enable_on_design' => 1,
+		         'show_on_execution' => 1,
+		         'enable_on_execution' => 1,
+		         'show_on_testplan_design' => 1,
+		         'enable_on_testplan_design' => 1,
+		         'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
 
 $gui->cfield = $emptyCF;
 switch ($args->do_action)
 {
 	case 'create':
     	$templateCfg->template=$templateCfg->default_template;
-		  $user_feedback ='';
+		$user_feedback ='';
     	$operation_descr = '';
 		break;
 
 	case 'edit':
 	  	$op = edit($args,$cfield_mgr);
-		  $gui->cfield = $op->cf;
-		  $gui->cfield_is_used = $op->cf_is_used;
+		$gui->cfield = $op->cf;
+		$gui->cfield_is_used = $op->cf_is_used;
+		$gui->cfield_is_linked = $op->cf_is_linked;
+		$gui->linked_tprojects = $op->linked_tprojects;
     	$user_feedback = $op->user_feedback;
     	$operation_descr=$op->operation_descr;
 		break;
 
 	case 'do_add':
 	  	$op = doCreate($_REQUEST,$cfield_mgr);
-		  $gui->cfield = $op->cf;
+		$gui->cfield = $op->cf;
     	$user_feedback = $op->user_feedback;
     	$templateCfg->template = $op->template;
     	$operation_descr = '';
@@ -70,7 +73,7 @@ switch ($args->do_action)
 
 	case 'do_update':
 	  	$op = doUpdate($_REQUEST,$args,$cfield_mgr);
-		  $gui->cfield = $op->cf;
+		$gui->cfield = $op->cf;
     	$user_feedback = $op->user_feedback;
     	$operation_descr=$op->operation_descr;
     	$templateCfg->template = $op->template;
@@ -88,21 +91,25 @@ switch ($args->do_action)
 // To control combo display
 if( $do_control_combo_display )
 {
-  $keys2loop = $cfield_mgr->get_application_areas();
+    $keys2loop = $cfield_mgr->get_application_areas();
 	foreach( $keys2loop as $ui_mode)
 	{
 		if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
+		{
 			$cfieldCfg->disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
-
+        }
 		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
+		{
 			$cfieldCfg->disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
+		}	
 	}
 }
 
 $gui->show_possible_values = 0;
 if(isset($gui->cfield['type']))
+{
 	$gui->show_possible_values = $cfieldCfg->possible_values_cfg[$gui->cfield['type']];
-
+}
 $gui->cfieldCfg=$cfieldCfg;
 
 $smarty = new TLSmarty();
@@ -202,17 +209,23 @@ function edit(&$argsObj,&$cfieldMgr)
     $op = new stdClass();
     $op->cf = null;
     $op->cf_is_used = 0;
+    $op->cf_is_linked = 0;
+    
     $op->user_feedback = '';
     $op->template = null;
     $op->operation_descr = '';
+    $op->linked_tprojects = null;
 
-		$cfinfo = $cfieldMgr->get_by_id($argsObj->cfield_id);
-		if ($cfinfo)
-		{
-			  $op->cf = $cfinfo[$argsObj->cfield_id];
-			  $op->cf_is_used = $cfieldMgr->is_used($argsObj->cfield_id);
-  			$op->operation_descr = lang_get('title_cfield_edit') . TITLE_SEP_TYPE3 . $op->cf['name'];
-		}
+	$cfinfo = $cfieldMgr->get_by_id($argsObj->cfield_id);
+	if ($cfinfo)
+	{
+		$op->cf = $cfinfo[$argsObj->cfield_id];
+		$op->cf_is_used = $cfieldMgr->is_used($argsObj->cfield_id);
+		
+  		$op->operation_descr = lang_get('title_cfield_edit') . TITLE_SEP_TYPE3 . $op->cf['name'];
+  		$op->linked_tprojects = $cfieldMgr->get_linked_testprojects($argsObj->cfield_id); 
+  		$op->cf_is_linked = !is_null($op->linked_tprojects) && count($op->linked_tprojects) > 0;
+	}
     return $op;
 }
 
@@ -323,7 +336,9 @@ function doDelete(&$argsObj,&$cfieldMgr)
 	  {
 	  	$cf = $cf[$argsObj->cfield_id];
 	  	if ($cfieldMgr->delete($argsObj->cfield_id))
+	  	{
 	  		logAuditEvent(TLS("audit_cfield_deleted",$cf['name']),"DELETE",$argsObj->cfield_id,"custom_fields");
+	  	}	
 	  }
 	  return $op;
 }

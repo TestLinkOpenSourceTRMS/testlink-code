@@ -5,13 +5,14 @@
  *
  * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.134 $
- * @modified $Date: 2009/03/27 11:18:26 $ by $Author: amkhullar $
+ * @version $Revision: 1.135 $
+ * @modified $Date: 2009/04/09 10:58:20 $ by $Author: amkhullar $
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *-------------------------------------------------------------------------
  * Revisions:
- *
+ * 20090409 - amitkhullar - Created an results_overloaded function for extending the base class
+                            results for passing extra parameters.
  * 20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
  * 20080928 - franciscom - some minor refactoring regarding keywords
  * 20080928 - franciscom - refactoring on buildExecutionsMap()
@@ -181,12 +182,30 @@ class results
 	* map of buildsIds
 	*/
 	private $aggregateBuildResults = null;
+	protected $latest_results;
 
+  	var $import_file_types = array("XML" => "XML");
+  	var $export_file_types = array("XML" => "XML");
+  
+	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
+	                        $suitesSelected = 'all',
+	                        $builds_to_query = -1, $lastResult = 'a', 
+	                        $keywordId = 0, $owner = null,
+							$startTime = null, $endTime = null,
+							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
+							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
+	{
+		$this->latest_results = 1;
 
-  var $import_file_types = array("XML" => "XML");
-  var $export_file_types = array("XML" => "XML");
-
-
+		return $this->results_overload($db, $tplan_mgr,$tproject_info, $tplan_info,
+	                        $suitesSelected ,
+	                        $builds_to_query , $lastResult,
+	                        $keywordId , $owner ,
+							$startTime , $endTime ,
+							$executor , $search_notes_string, $linkExecutionBuild , 
+							$suiteStructure, $flatArray, $linked_tcversions);
+	}
+	
 	/**
 	* $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
 	* most logic in constructor from executing/ executions table from being queried
@@ -197,25 +216,25 @@ class results
 	* 	   20090327 - amitkhullar - added parameter $latest_results to get the latest results only.	
 	*      20071013 - franciscom - changes to fix MSSQL problems
 	*                 $startTime = "0000-00-00 00:00:00" -> null
-  *                 $endTime = "9999-01-01 00:00:00" -> null
-  *
+  	*                 $endTime = "9999-01-01 00:00:00" -> null
+  	*
 	*      20070916 - franciscom - interface changes
 	*/
-	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
+	public function results_overload(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
-	                        $builds_to_query = -1, $lastResult = 'a',$latest_results = 1,
+	                        $builds_to_query = -1, $lastResult = 'a',
 	                        $keywordId = 0, $owner = null,
-							            $startTime = null, $endTime = null,
-							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
-							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
+							$startTime = null, $endTime = null,
+							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
+							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
-		  $this->priorityLevelsCfg = config_get('priority_levels');
-    	$this->resultsCfg = config_get('results');
-    	$this->testCaseCfg = config_get('testcase_cfg');
+		$this->priorityLevelsCfg = config_get('priority_levels');
+		$this->resultsCfg = config_get('results');
+		$this->testCaseCfg = config_get('testcase_cfg');
 
-		  $this->db = $db;
-		  $this->tplanMgr = $tplan_mgr;
-    	$this->map_tc_status = $this->resultsCfg['status_code'];
+  		$this->db = $db;
+  		$this->tplanMgr = $tplan_mgr;
+  		$this->map_tc_status = $this->resultsCfg['status_code'];
     
 
     	// TestLink standard configuration is (at least for me)
@@ -280,10 +299,11 @@ class results
 			// and then programmatically figure out the last result
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
-
+			$all_results = $this->latest_results;
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId,
 			                                                 $owner, $startTime, $endTime, $executor,
-			                                                 $search_notes_string, $linkExecutionBuild,$latest_results);
+			                                                 $search_notes_string, $linkExecutionBuild,
+			                                                 $all_results);
       
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $keywords_in_tplan);
@@ -705,7 +725,7 @@ class results
     //echo "<pre>debug 20080602 - \ - " . __FUNCTION__ . " --- "; print_r($exec); echo "</pre>";
 		$testcase_id=$exec['testcaseID'];
 		$external_id=$exec['external_id'];
-	  $buildNumber=$exec['build_id'];
+	  	$buildNumber=$exec['build_id'];
 		$result=$exec['status'];
 		$tcversion_id=$exec['tcversion_id'];
 		
@@ -721,12 +741,12 @@ class results
 		}
 		
 		$execution_ts=$exec['execution_ts'];
-    $notes=$exec['notes'];
-    $executions_id=$exec['executions_id'];
-	  $name=$exec['name'];
-	  $tester_id=$exec['tester_id'];
-	  $feature_id=$exec['feature_id'];
-	  $assigner_id=$exec['assigner_id'];
+    	$notes=$exec['notes'];
+    	$executions_id=$exec['executions_id'];
+	  	$name=$exec['name'];
+		$tester_id=$exec['tester_id'];
+		$feature_id=$exec['feature_id'];
+		$assigner_id=$exec['assigner_id'];
 
 
 		if ($buildNumber)
@@ -1124,13 +1144,15 @@ class results
 				// mike_h - 20070806 - when ordering executions by the timestamp, 
 				// the results are represented correctly in the report "Test Report".
 				// amitkhullar - BUGID 2156 - added option to get latest/all results in Query metrics report.				
-				if ($all_results == 1)
-				{
-				$sql .= " ORDER BY execution_ts ASC";
-				}
-				else 
+
+		        if ($all_results == 0)
 				{
 					$sql .= " ORDER BY execution_ts DESC limit 1";
+				}
+				else 				
+				{
+					$sql .= " ORDER BY execution_ts ASC ";
+
 				}
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
@@ -1548,4 +1570,25 @@ class results
 	}
 
 } // ---- end class result -----
+class newResults extends results
+{
+	public function newResults(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
+	                        $suitesSelected = 'all',
+	                        $builds_to_query = -1, $lastResult = 'a', $latest_results_arg = 1,
+	                        $keywordId = 0, $owner = null,
+							$startTime = null, $endTime = null,
+							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
+							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
+	{
+
+		$this->latest_results = $latest_results_arg;
+		return $this->results_overload($db, $tplan_mgr,$tproject_info, $tplan_info,
+	                        $suitesSelected ,
+	                        $builds_to_query , $lastResult,
+	                        $keywordId , $owner ,
+							$startTime , $endTime ,
+							$executor , $search_notes_string, $linkExecutionBuild , 
+							$suiteStructure, $flatArray, $linked_tcversions);
+	}
+}
 ?>

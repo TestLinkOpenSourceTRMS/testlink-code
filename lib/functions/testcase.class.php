@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.160 $
- * @modified $Date: 2009/04/04 22:48:40 $ $Author: havlat $
+ * @version $Revision: 1.161 $
+ * @modified $Date: 2009/04/09 20:58:02 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
@@ -1846,34 +1846,32 @@ function getInternalID($stringID,$glueCharacter)
 	$pieces = explode($glueCharacter,$stringID);
 	if(count($pieces) == 2)
 	{
-    $testCasePrefix=$pieces[0];
-		$externalID=$pieces[1];
+    	$testCasePrefix = $this->db->prepare_string($pieces[0]);
+		$externalID = $this->db->prepare_string($pieces[1]);
 
 		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
            " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
            " WHERE TCV.id = NH.id " .
-           " AND  TCV.tc_external_id={$externalID}";
+           " AND  TCV.tc_external_id = '{$externalID}'";
 
 		$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
-
 		if(!is_null($testCases))
 		{
-      $sql = "SELECT id" .
-               " FROM {$this->testprojects_table} " .
-               " WHERE prefix='" . $this->db->prepare_string($testCasePrefix) . "'";
+      		$sql = 	"SELECT id  FROM {$this->testprojects_table} " .
+               		"WHERE prefix = '" . $testCasePrefix . "'";
 			$recordset = $this->db->get_recordset($sql);
 			$tproject_id = $recordset[0]['id'];
 
 			$tprojectSet = array();
 			foreach($testCases as $tcaseID => $value )
 			{
-        $path2root=$this->tree_manager->get_path($tcaseID);
+        		$path2root = $this->tree_manager->get_path($tcaseID);
 				if($tproject_id == $path2root[0]['parent_id'])
 				{
-          $internalID = $tcaseID;
+          			$internalID = $tcaseID;
 					break;
-        }
-      }
+        		}
+      		}	
 		}
 	}
 	return $internalID;

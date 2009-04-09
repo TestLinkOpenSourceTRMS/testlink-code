@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.65 2009/03/27 11:11:39 amkhullar Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.66 2009/04/09 11:00:08 amkhullar Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev :
+*      20090409 - amitkhullar- code refactor for results object
 *      20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
 *      20090122 - franciscom - BUGID 2012 
 *      20080524 - franciscom - BUGID 1430
@@ -137,13 +138,12 @@ function initializeGui(&$dbHandler,&$argsObj)
     $statusForClass = 'a';
     // amitkhullar - added this parameter to get the latest results. 
 	$latest_resultset = $argsObj->display->latest_results;
-    
+	
     $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
     $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
     // $keyword_filter = $argsObj->keywordSelected ?
-    $re = new results($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
-                      $testsuiteIds, $buildsToQuery, $statusForClass, 
-                      $latest_resultset,
+    $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
+                      $testsuiteIds, $buildsToQuery, $statusForClass, $latest_resultset,
                       $argsObj->keywordSelected,$assignee, 
                       $date_range->start->time, $date_range->end->time, 
                       $tester, $argsObj->search_notes_string, $argsObj->execution_link_build);

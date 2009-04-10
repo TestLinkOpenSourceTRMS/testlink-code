@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.27 $
-* @modified $Date: 2009/04/02 20:16:18 $
+* @version $Revision: 1.28 $
+* @modified $Date: 2009/04/10 17:23:33 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -168,7 +168,7 @@ function generateApiKey(&$argsObj,&$user)
     if ($user)
     {
 	    $APIKey = new APIKey();
-	    if ($APIKey->addKeyForUser($argsObj->userID < tl::OK)
+	    if ($APIKey->addKeyForUser($argsObj->userID) < tl::OK)
 		{
 			logAuditEvent(TLS("audit_user_apikey_set",$user->login),"CREATE",$user->login,"users");
 			$op->user_feedback = lang_get('result_apikey_create_ok');

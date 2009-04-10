@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.80 $
- * @modified $Date: 2009/04/09 10:56:44 $ by $Author: amkhullar $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2009/04/10 10:39:59 $ by $Author: amkhullar $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -643,7 +643,7 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 			  {
 			      $status_counters[$key]=0;
 			  }
-		  if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
+			  if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
 			  {
 			  	$coverage['withTestCase'][$requirement_id] = 1;
 			  }

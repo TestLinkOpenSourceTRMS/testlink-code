@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.117 $
- * @modified $Date: 2009/04/09 10:56:19 $ $Author: amkhullar $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2009/04/10 10:37:50 $ $Author: amkhullar $
  *
  * rev:
  *     20090409 - amkhullar - updated code not written properly.
@@ -201,7 +201,7 @@ if(!is_null($linked_tcversions))
 		  }
 
       $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id,$args->tproject_id);
- 			$gui->attachments=$other_info['attachment'];
+      $gui->attachments=$other_info['attachment'];
       $gui->bugs=$other_info['bugs'];
       $gui->other_exec_cfields=$other_info['cfexec_values'];
      

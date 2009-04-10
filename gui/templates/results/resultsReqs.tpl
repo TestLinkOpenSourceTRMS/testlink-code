@@ -1,15 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.14 2009/04/04 18:05:16 schlundus Exp $
+$Id: resultsReqs.tpl,v 1.15 2009/04/10 10:37:33 amkhullar Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
+rev: 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
 rev: 20090305 - franciscom - added test case path on displayy
      20090114 - franciscom - BUGID 1977
      20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
-          s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcase,
+          s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcase,th_version,
              req_without_tcase,
              req_title_covered,req_title_uncovered,req,req_title_not_in_tl,req_title_nottestable,none'}
 
@@ -75,7 +76,7 @@ rev: 20090305 - franciscom - added test case path on displayy
     			  {$gui->coverage.$key[row].title|escape}</a></span></td>
     		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
     			{section name=idx loop=$tcList}
-    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$tcList[idx].tcase_path|escape}{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID|escape}{$gui->pieceSep}{$tcList[idx].title|escape}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
+    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$tcList[idx].tcase_path|escape}{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title|escape}{$tlCfg->gui_separator_open}{$labels.th_version}{$gui->pieceSep}{$tcList[idx].version|escape}{$tlCfg->gui_separator_close}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
     			{/section} 
     		</td>
     	</tr>

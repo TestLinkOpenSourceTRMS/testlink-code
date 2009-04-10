@@ -4,27 +4,24 @@ require_once("inputparameter.class.php");
 
 function P_PARAMS($paramInfo)
 {
-	foreach($paramInfo as $pName => &$info)
-	{
-		array_unshift($info,"POST");
-	}
-	return I_PARAMS($paramInfo);
+	return GPR_PARAMS("POST",$paramInfo);
 }
 
 function G_PARAMS($paramInfo)
 {
-	foreach($paramInfo as $pName => &$info)
-	{
-		array_unshift($info,"GET");
-	}
-	return I_PARAMS($paramInfo);
+	return GPR_PARAMS("GET",$paramInfo);
 }
 
 function R_PARAMS($paramInfo)
 {
+	return GPR_PARAMS("REQUEST",$paramInfo);
+}
+
+function GPR_PARAMS($source,$paramInfo)
+{
 	foreach($paramInfo as $pName => &$info)
 	{
-		array_unshift($info,"REQUEST");
+		array_unshift($info,$source);
 	}
 	return I_PARAMS($paramInfo);
 }
@@ -57,6 +54,14 @@ function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
 }
+function G_PARAM_ARRAY_INT($name,$pfnValidation = null)
+{
+	return GPR_PARAM_INT("GET",$name,$pfnValidation);
+}
+function P_PARAM_ARRAY_INT($name,$pfnValidation = null)
+{
+	return GPR_PARAM_INT("POST",$name,$pfnValidation);
+}
 
 function I_PARAMS($paramInfo)
 {
@@ -73,6 +78,10 @@ function I_PARAMS($paramInfo)
 		}
 		switch($type)
 		{
+			case tlInputParameter::ARRAY_INT:
+				$pfnValidation = $p1;
+				$value = GPR_PARAM_ARRAY_INT($source,$pName,$pfnValidation);
+				break;
 			case tlInputParameter::INT_N:
 				$maxVal = $p1;
 				$pfnValidation = $p2;
@@ -85,7 +94,7 @@ function I_PARAMS($paramInfo)
 				$value = GPR_PARAM_INT($source,$pName,$minVal,$maxVal,$pfnValidation);
 				break;
 			case tlInputParameter::STRING_N:
-				$minLen= $p1;
+				$minLen = $p1;
 				$maxLen = $p2;
 				$regExp = $p3;
 				$pfnValidation = $p4;
@@ -108,15 +117,18 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
 		$vInfo->m_maxLen = $maxLen;
 	$vInfo->m_trim = tlStringValidationInfo::TRIM_BOTH;
 	$vInfo->m_bStripSlashes = true;
-	$vInfo->m_regExp = $regExp;
-	$vInfo->m_pfnValidation = $pfnValidation;
-	$vInfo->m_pfnNormalization = $pfnNormalization;
+	if (!is_null($regExp))
+		$vInfo->m_regExp = $regExp;
+	if (!is_null($pfnValidation))
+		$vInfo->m_pfnValidation = $pfnValidation;
+	if (!is_null($pfnNormalization))
+		$vInfo->m_pfnNormalization = $pfnNormalization;
 	
 	$pInfo = new tlParameterInfo();
 	$pInfo->m_source = $gpr;
 	$pInfo->m_name = $name;
 	
-	$iParam = new tlStringInputParameter($pInfo,$vInfo);
+	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
 
@@ -127,18 +139,34 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 		$vInfo->m_minVal = $minVal;
 	if (!is_null($maxVal))
 		$vInfo->m_maxVal = $maxVal;
-	$vInfo->m_pfnValidation = $pfnValidation;
+	if (!is_null($pfnValidation))
+		$vInfo->m_pfnValidation = $pfnValidation;
 		
 	$pInfo = new tlParameterInfo();
 	$pInfo->m_source = $gpr;
 	$pInfo->m_name = $name;
 	
-	$iParam = new tlIntegerInputParameter($pInfo,$vInfo);
+	$iParam = new tlInputParameter($pInfo,$vInfo);
+	return $iParam->value();
+}
+
+function GPR_PARAM_ARRAY_INT($gpr,$name,$pfnValidation = null)
+{
+	$vInfo = new tlArrayValidationInfo();
+	if (!is_null($pfnValidation))
+		$vInfo->m_pfnValidation = $pfnValidation;
+
+	$vInfo->m_validationInfo = new tlIntegerValidationInfo();
+		
+	$pInfo = new tlParameterInfo();
+	$pInfo->m_source = $gpr;
+	$pInfo->m_name = $name;
+	
+	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
 
 /*
-
 function check($value)
 {
 	if (strlen($value) != 4)
@@ -149,15 +177,15 @@ function norm($value)
 {
 	return str_replace("b","",$value);
 }
-$_POST["HelloInt"] = "5";
-$_POST["Hello"] = utf8_encode("abbababa");
+$_POST["HelloInt"] = "a5";
+$_POST["Hello"] = utf8_encode("xabbababa");
 //$iParam = P_PARAM_INT("HelloInt",null,null,"check");
 //$iParam = P_PARAM_INT_N("HelloInt",null,"check");
 $_POST["Hello"] = utf8_encode("abbababa");
 $iParam = P_PARAM_STRING_N("Hello",1,15,null,"check","norm");
 $_POST["Hello"] = utf8_encode("aaaa");
 $iParam = P_PARAM_STRING_N("Hello",1,15,'/^aaaa$/');
-//$iParam = P_PARAM_INT("HelloInt");
+$iParam = P_PARAM_INT("HelloInt");
 
 $params = array(
 	"Hello" => array("POST",tlInputParameter::STRING_N,1,15,null,"check","norm"),

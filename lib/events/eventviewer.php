@@ -5,12 +5,11 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/04/10 21:07:27 $ by $Author: schlundus $
  *
  * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
- *      20080207 - franciscom - refactored
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -77,14 +76,26 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
+	$iParams = array(
+			"startDate" => array("POST",tlInputParameter::STRING_N,0,10),
+			"endDate" => array("POST",tlInputParameter::STRING_N,0,10),
+			"doAction" => array("POST",tlInputParameter::STRING_N,0,100),
+			"object_id" => array("REQUEST",tlInputParameter::INT_N),
+			"object_type" => array("REQUEST",tlInputParameter::STRING_N),
+			"logLevel" => array("POST",tlInputParameter::ARRAY_INT),
+		);
+
+	$pParams = I_PARAMS($iParams);
+
 	$args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $nullable_keys = array('logLevel','startDate','endDate','object_id',"object_type",'doAction');
-	foreach($nullable_keys as $value)
-	{
-	  	$args->$value = isset($_REQUEST[$value]) ? $_REQUEST[$value] : null;
-	}
-    return $args;
+	$args->startDate = $pParams["startDate"];
+	$args->endDate = $pParams["endDate"];
+	$args->object_id = $pParams["object_id"];
+	$args->object_type = $pParams["object_type"];
+	$args->doAction = $pParams["doAction"];
+	$args->logLevel = $pParams["logLevel"];
+	
+	return $args;
 }
 
 function checkRights(&$db,&$user)

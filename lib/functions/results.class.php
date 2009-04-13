@@ -5,12 +5,13 @@
  *
  * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.135 $
- * @modified $Date: 2009/04/09 10:58:20 $ by $Author: amkhullar $
+ * @version $Revision: 1.136 $
+ * @modified $Date: 2009/04/13 10:35:03 $ by $Author: amkhullar $
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *-------------------------------------------------------------------------
  * Revisions:
+ * 20090413 - amitkhullar - BUGID 2267 -
  * 20090409 - amitkhullar - Created an results_overloaded function for extending the base class
                             results for passing extra parameters.
  * 20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
@@ -741,8 +742,8 @@ class results
 		}
 		
 		$execution_ts=$exec['execution_ts'];
-    	$notes=$exec['notes'];
-    	$executions_id=$exec['executions_id'];
+    		$notes=$exec['notes'];
+    		$executions_id=$exec['executions_id'];
 	  	$name=$exec['name'];
 		$tester_id=$exec['tester_id'];
 		$feature_id=$exec['feature_id'];
@@ -1145,7 +1146,7 @@ class results
 				// the results are represented correctly in the report "Test Report".
 				// amitkhullar - BUGID 2156 - added option to get latest/all results in Query metrics report.				
 
-		        if ($all_results == 0)
+		        	if ($all_results == 0)
 				{
 					$sql .= " ORDER BY execution_ts DESC limit 1";
 				}
@@ -1389,14 +1390,14 @@ class results
 	* Function 
 	* @return string Link of Test ID + Title
 	*/
-	function getTCLink($rights, $tcID, $tcExternalID,$tcversionID, $title, $buildID)
+	function getTCLink($rights, $tcID, $tcExternalID,$tcversionID, $title, $buildID,$tplanID)
 	{
 		$title = htmlspecialchars($title);
 		$suffix = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character . $tcExternalID) .
 		          ":&nbsp;<b>" . $title. "</b></a>";
-
+		//BUGID 2267
 		$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
-				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';
+				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'&tplan_id=' . $tplanID.'">';
 		$testTitle .= $suffix;
 
 	  return $testTitle;

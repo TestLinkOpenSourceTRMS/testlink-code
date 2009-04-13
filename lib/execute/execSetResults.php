@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.118 $
- * @modified $Date: 2009/04/10 10:37:50 $ $Author: amkhullar $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2009/04/13 10:39:52 $ $Author: amkhullar $
  *
  * rev:
  *     20090409 - amkhullar - updated code not written properly.
@@ -875,8 +875,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     // doing this here, we avoid to do on processTestSuite() and processTestCase(),
     // but absolutely this will not improve in ANY WAY perfomance, because we do not loop
     // over these two functions. 	
-	$tprojectMgr = new testproject($dbHandler);
-	$gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
+    $tprojectMgr = new testproject($dbHandler);
+    $gui->tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
     $build_info = $buildMgr->get_by_id($argsObj->build_id);
     $gui->build_notes=$build_info['notes'];
     $gui->build_is_open=($build_info['is_open'] == 1 ? 1 : 0);

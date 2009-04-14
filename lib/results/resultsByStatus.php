@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.64 2009/04/01 21:27:29 havlat Exp $
+* $Id: resultsByStatus.php,v 1.65 2009/04/14 08:28:54 amkhullar Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,8 +9,9 @@
 *
 *
 * rev : 
-* 		20090325 - amkhullar  - BUGID 2249
-* 		20090325 - amkhullar  - BUGID 2267
+* 	20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
+* 	20090325 - amkhullar  - BUGID 2249
+* 	20090325 - amkhullar  - BUGID 2267
 *       20081213 - franciscom - refactoring to remove old $g_ config variables
 *       20080602 - franciscom - changes due to BUGID 1504
 *       20070908 - franciscom - change column qty on arrData is status not_run
@@ -97,7 +98,8 @@ if (is_array($mapOfLastResult))
 	  	    if ($tcaseContent['result'] == $type)
 	  	    {
 	  	    	$currentBuildInfo = null;
-	  	    	if ($lastBuildIdExecuted) {
+	  	    	if ($lastBuildIdExecuted) 
+	  	    	{
 	  	    		$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
 	  	    	}
 	  	    	else if ($type == $statusCode['not_run'])
@@ -121,13 +123,14 @@ if (is_array($mapOfLastResult))
 	  	    	// 20070623 - BUGID 911 - no need to localize, is already localized
 	  	    	$execution_ts = $tcaseContent['execution_ts'];
 	  	    	$localizedTS = '';
-	  	    	if ($execution_ts != null) {
+	  	    	if ($execution_ts != null) 
+	  	    	{
 	  	    	   $localizedTS = $execution_ts;
 	  	    	}
 	  	    	// ------------------------------------------------------------------------------------
           
 	  	    	$bugString = $results->buildBugString($db, $executions_id);
-	  	    	//20090325 - amkhullar  - BUGID 2249
+	  	    	//20090325 - amkhullar  - BUGID 2249 - find missing bug links with TC
 	  	    	if (is_null($bugString))
 	  	    	{
 	  	    		$count_tc += 1;
@@ -136,9 +139,13 @@ if (is_array($mapOfLastResult))
 	  	    	                       $testCasePrefix . $tcaseContent['external_id'],$tplan_id);
             $testerName = '';
 	  	    	if (array_key_exists($tester_id, $arrOwners))
+	  	    	{
 	  	    	   $testerName = $arrOwners[$tester_id];
-          
-          
+	  	    	}
+			if ($testerName == "")
+			{
+				$testerName = "Not Assigned Yet";
+			}
 	            // 20080602 - francisco.mancardi@gruppotesi.com
 	            // To get executed Version, we can not do anymore this 
 	      		// $tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
@@ -147,7 +154,8 @@ if (is_array($mapOfLastResult))
 	  	    	$suiteName = htmlspecialchars($suiteName);
 	  	    	if($type == $statusCode['not_run'])
 	  	    	{
-	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion);
+	  	    		//amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
+	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion, $testerName);
 	  	    	}
 	  	    	else
 				{

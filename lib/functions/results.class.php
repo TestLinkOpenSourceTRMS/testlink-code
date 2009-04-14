@@ -5,12 +5,13 @@
  *
  * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.136 $
- * @modified $Date: 2009/04/13 10:35:03 $ by $Author: amkhullar $
+ * @version $Revision: 1.137 $
+ * @modified $Date: 2009/04/14 08:29:09 $ by $Author: amkhullar $
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *-------------------------------------------------------------------------
  * Revisions:
+ * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
  * 20090413 - amitkhullar - BUGID 2267 -
  * 20090409 - amitkhullar - Created an results_overloaded function for extending the base class
                             results for passing extra parameters.
@@ -697,8 +698,22 @@ class results
 		return $element;
 	} // end function
 
-
-
+	/**
+	* function getUserForFeature()
+	* @author amitkhullar
+	*
+	* Gets the user for a specific feature_id
+	* 
+	* @return void
+	* 
+	*/
+	function getUserForFeature($feature_id)
+	{
+		$sql = "SELECT user_id FROM user_assignments WHERE feature_id = "  . $feature_id ;
+		$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
+		$owner_id = $owner_row['user_id'];
+		return $owner_id;
+	}	// end function
 	/**
 	* function addLastResultToMap()
 	* @author kevinlevy
@@ -751,14 +766,16 @@ class results
 
 
 		if ($buildNumber)
+		{
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
-
-		$sql = "SELECT user_id FROM user_assignments WHERE feature_id = "  . $feature_id ;
-		$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
-		$owner_id = $owner_row['user_id'];
+		}
+		
+		$owner_id = $this->getUserForFeature($feature_id);
+		
 		if ($owner_id == '')
+		{	
 			$owner_id = -1;
-
+		}
 		$associatedKeywords = null;
 		if ($this->keywordData != null && array_key_exists($testcase_id, $this->keywordData))
 		{
@@ -1103,13 +1120,19 @@ class results
 			    $version = $info['tcversion_number'];
 			}
 			
+			$owner_id = $this->getUserForFeature($info['feature_id']);
+			if ($owner_id == '')
+			{	
+				$owner_id = -1;
+			}
+			// BUGID - 2374: Show Assigned User in the Not Run Test Cases Report 
       		$infoToSave = array('testcaseID' => $testcaseID,
       		                    'testcasePrefix' => $this->testCasePrefix . $this->testCaseCfg->glue_character,
 			                        'external_id' => $info['external_id'],
 			                        'tcversion_id' => $info['tcversion_id'],
 			                        'version' => $version,
 			                        'build_id' => '',
-			                        'tester_id' => '',
+			                        'tester_id' => $owner_id,
 			                        'execution_ts' => '',
 			                        'status' => $this->map_tc_status['not_run'],
 			                        'executions_id' => '',

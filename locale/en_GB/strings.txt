@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.424 $
- * @modified $Date: 2009/04/09 11:01:35 $ by $Author: amkhullar $
+ * @version $Revision: 1.425 $
+ * @modified $Date: 2009/04/14 08:28:35 $ by $Author: amkhullar $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1304,7 +1304,7 @@ $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
 $TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
-
+$TLS_th_assigned_to = "Assigned To";
 
 
 // ----- gui/templates/resultsGeneral.tpl -----

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.147 $ $Author: amkhullar $
- * @modified $Date: 2009/04/09 11:30:27 $
+ * @version $Revision: 1.148 $ $Author: amkhullar $
+ * @modified $Date: 2009/04/14 08:29:30 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -18,6 +18,7 @@
  *
  * -----------------------------------------------------------------------------------
  * Revisions:
+ * 20090414 - amitkhullar - BUGID 2295: Incorrect URL for LOGIN on Session expires	
  * 20090409 - amitkhullar- BUGID 2354
  * 20090111 - franciscom - commented some required_once and some global coupling
  * 20081027 - havlatm - refactorization, description
@@ -270,7 +271,9 @@ function checkSessionValid(&$db)
 			    break;   
 			}
 		}
-		redirect($fName."?note=expired","top.location");
+		//BUGID - 2295 - Incorrect URL for LOGIN on Session expires
+		//redirect($fName."?note=expired","top.location");
+		redirect($_SESSION['basehref'] . "login.php?note=expired","top.location");
 		exit();
 	}
 }

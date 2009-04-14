@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.20 2009/03/08 11:46:24 franciscom Exp $
+$Id: tcView.tpl,v 1.21 2009/04/14 17:41:18 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
-rev:20090308 - franciscom - added args_can_do
+rev:20090414 - franciscom - BUGID 2378
+    20090308 - franciscom - added args_can_do
     20090215 - franciscom - BUGID - show info about links to test plans
 *}
 
@@ -82,6 +83,8 @@ rev:20090308 - franciscom - added args_can_do
 		         args_tsuite_name=$gui->parentTestSuiteName
 		         
 		         args_linked_versions=$gui->linked_versions[idx]
+		         args_has_testplans=$gui->has_testplans
+		         
 		         }
 		
 		
@@ -149,6 +152,8 @@ rev:20090308 - franciscom - added args_can_do
                        args_cf=$cf[idx]
                        
            		         args_linked_versions=null
+	         		         args_has_testplans=$gui->has_testplans
+
                        }
   	         </div>
   	         <br />

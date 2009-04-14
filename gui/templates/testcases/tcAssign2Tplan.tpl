@@ -1,14 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.1 2009/03/08 11:46:24 franciscom Exp $
+$Id: tcAssign2Tplan.tpl,v 1.2 2009/04/14 17:41:18 franciscom Exp $
 Purpose: manage assignment of test case version to N test plans.
  
-rev:
+rev: BUGID 2378
     
 *}
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,please_select_one_testplan,
-             cancel,warning,version,btn_add,testplan_usage' }
+             cancel,warning,version,btn_add,testplan_usage,no_test_plans' }
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -42,6 +42,7 @@ function check_action_precondition(container_id,action)
 <div class="workBack">
 <h1 class="title">{$gui->mainDescription}</h1>
 
+{if $gui->tplans}
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->tcase_id}&tcversion_id={$gui->tcversion_id}">
 {$gui->tcaseIdentity|escape} {$gui->item_sep} {$labels.testplan_usage} 
 <div id='checkboxes'>
@@ -66,4 +67,7 @@ function check_action_precondition(container_id,action)
        onclick="return check_action_precondition('checkboxes','default');" />
 {/if}
 </form>
+{else}
+  {$labels.no_test_plans}
+{/if}
 </div>

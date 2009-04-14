@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.162 $
- * @modified $Date: 2009/04/14 16:56:41 $ $Author: franciscom $
+ * @version $Revision: 1.163 $
+ * @modified $Date: 2009/04/14 17:41:18 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090414 - franciscom - BUGID 2378
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
  * 20090329 - franciscom - html_table_of_custom_field_values() new option useful when
  *                         used on printing docs.
@@ -515,43 +516,43 @@ function get_all()
 function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
               $viewer_args = null,$path_info=null)
 {
-  $gui = new stdClass();
-  $gui->parentTestSuiteName='';
-  $gui->path_info=$path_info;
+    $gui = new stdClass();
+    $gui->parentTestSuiteName='';
+    $gui->path_info=$path_info;
 	$gui->tprojectName='';
-  $gui->linked_versions=null;
+    $gui->linked_versions=null;
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
 
-  $status_ok = 1;
-  $viewer_defaults=array('title' => lang_get('title_test_case'),
-                         'show_title' => 'no',
-                         'action' => '', 'msg_result' => '','user_feedback' => '',
-                         'refresh_tree' => 'yes', 'disable_edit' => 0,
-                         'display_testproject' => 0,'display_parent_testsuite' => 0,
-                         'hilite_testcase_name' => 0,'show_match_count' => 0);
+    $status_ok = 1;
+    $viewer_defaults=array('title' => lang_get('title_test_case'),
+                           'show_title' => 'no',
+                           'action' => '', 'msg_result' => '','user_feedback' => '',
+                           'refresh_tree' => 'yes', 'disable_edit' => 0,
+                           'display_testproject' => 0,'display_parent_testsuite' => 0,
+                           'hilite_testcase_name' => 0,'show_match_count' => 0);
 
-  if( !is_null($viewer_args) && is_array($viewer_args) )
-  {
-      foreach($viewer_defaults as $key => $value)
-      {
-          if(isset($viewer_args[$key]) )
-          {
-                $viewer_defaults[$key]=$viewer_args[$key];
-          }
-      }
-  }
+    if( !is_null($viewer_args) && is_array($viewer_args) )
+    {
+        foreach($viewer_defaults as $key => $value)
+        {
+            if(isset($viewer_args[$key]) )
+            {
+                  $viewer_defaults[$key]=$viewer_args[$key];
+            }
+        }
+    }
   
-  $gui->show_title=$viewer_defaults['show_title'];
-  $gui->display_testcase_path=!is_null($path_info);
-  $gui->hilite_testcase_name=$viewer_defaults['hilite_testcase_name'];
-  $gui->pageTitle=$viewer_defaults['title'];
-  $gui->show_match_count=$viewer_defaults['show_match_count'];
-  if($gui->show_match_count && $gui->display_testcase_path )
-  {
-      $gui->match_count=count($path_info);  
-  }
+    $gui->show_title=$viewer_defaults['show_title'];
+    $gui->display_testcase_path=!is_null($path_info);
+    $gui->hilite_testcase_name=$viewer_defaults['hilite_testcase_name'];
+    $gui->pageTitle=$viewer_defaults['title'];
+    $gui->show_match_count=$viewer_defaults['show_match_count'];
+    if($gui->show_match_count && $gui->display_testcase_path )
+    {
+        $gui->match_count=count($path_info);  
+    }
 
 	$req_mgr = new requirement_mgr($this->db);
 	$requirements_feature=null;
@@ -562,11 +563,11 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	$arrReqs = array();
 
 	$can_edit = $viewer_defaults['disable_edit'] == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
-  $gui->can_do = new stdClass();
+    $gui->can_do = new stdClass();
   
-  // Attention: when user do not have right instead of returning 'no', return null.
-  //            IMHO is wrong, function must be return 'yes'/'no'.
-  $gui->can_do->testplan_planning = has_rights($this->db,"testplan_planning");
+    // Attention: when user do not have right instead of returning 'no', return null.
+    //            IMHO is wrong, function must be return 'yes'/'no'.
+    $gui->can_do->testplan_planning = has_rights($this->db,"testplan_planning");
 
 	if(is_array($id))
 	{
@@ -578,32 +579,35 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 		$a_id = array($id);
 	}
 
-  if( $status_ok )
-  {
-      $path2root=$this->tree_manager->get_path($a_id[0]);
-      $tproject_id=$path2root[0]['parent_id'];
-      $info=$this->tproject_mgr->get_by_id($tproject_id);
-      $requirements_feature=$info['option_reqs'];
-
-      if( $viewer_defaults['display_testproject'] )
-      {
-          $gui->tprojectName=$info['name'];
-      }
-
-      if( $viewer_defaults['display_parent_testsuite'] )
-      {
-          $parent_idx=count($path2root)-2;
-          $gui->parentTestSuiteName=$path2root[$parent_idx]['name'];
-      }
-
-      $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
-      if( strlen(trim($tcasePrefix)) > 0 )
-      {
-           $tcasePrefix .= $tcase_cfg->glue_character;
-      }
-  }
-  $userid_array = array();
-  $cf_smarty = array();
+    if( $status_ok )
+    {
+        $path2root=$this->tree_manager->get_path($a_id[0]);
+        $tproject_id=$path2root[0]['parent_id'];
+        $info=$this->tproject_mgr->get_by_id($tproject_id);
+        
+        // BUGID 2378
+        $testplans=$this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
+        $gui->has_testplans=!is_null($testplans) && count($testplans) > 0 ? 1 : 0;
+        $requirements_feature=$info['option_reqs'];
+        if( $viewer_defaults['display_testproject'] )
+        {
+            $gui->tprojectName=$info['name'];
+        }
+    
+        if( $viewer_defaults['display_parent_testsuite'] )
+        {
+            $parent_idx=count($path2root)-2;
+            $gui->parentTestSuiteName=$path2root[$parent_idx]['name'];
+        }
+    
+        $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
+        if( strlen(trim($tcasePrefix)) > 0 )
+        {
+             $tcasePrefix .= $tcase_cfg->glue_character;
+        }
+    }
+    $userid_array = array();
+    $cf_smarty = array();
   if (sizeof($a_id))
   {
 		$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');

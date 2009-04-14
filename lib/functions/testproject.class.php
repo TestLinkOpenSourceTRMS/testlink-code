@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.102 $
- * @modified $Date: 2009/04/14 16:53:49 $  $Author: franciscom $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2009/04/14 17:41:18 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
@@ -1624,51 +1624,45 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
   returns:
 
 */
-// $get_tp_without_tproject_id=0,$plan_status=null)
 function get_all_testplans($testproject_id,$filters=null)
 {
 	$sql = " SELECT NH.id,NH.name,notes,active,testproject_id " .
 	       " FROM {$this->nodes_hierarchy_table} NH,{$this->testplans_table} TPLAN";
 	       
 	$where = " WHERE NH.id=TPLAN.id ";
-  $where .= ' AND (testproject_id = ' . $testproject_id . " ";
-   
- 
-  if( !is_null($filters) )
-  {
-      $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,
-                       'tplan2exclude' => null);
-      
-      foreach($key2check as $varname => $defValue)
-      {
-          $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
-      }                
-      
-      // if($get_tp_without_tproject_id)
-	    // {
-	    // 		$where .= " OR testproject_id = 0 ";
-	    // }
-	    $where .= " ) ";
-
-	    if(!is_null($plan_status))
-	    {
-	    	$my_active = to_boolean($plan_status);
-	    	$where .= " AND active = " . $my_active;
-	    }
-
-	    if(!is_null($tplan2exclude))
-	    {
-	    	$where .= " AND TPLAN.id != {$tplan2exclude} ";
-	    }
-  }
-  else
-  {
-      $where .=")";  
-  }	
+    $where .= ' AND (testproject_id = ' . $testproject_id . " ";
+    if( !is_null($filters) )
+    {
+        $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,
+                         'tplan2exclude' => null);
+        
+        foreach($key2check as $varname => $defValue)
+        {
+            $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
+        }                
+        
+        // if($get_tp_without_tproject_id)
+	      // {
+	      // 		$where .= " OR testproject_id = 0 ";
+	      // }
+	      $where .= " ) ";
+    
+	      if(!is_null($plan_status))
+	      {
+	      	$my_active = to_boolean($plan_status);
+	      	$where .= " AND active = " . $my_active;
+	      }
+    
+	      if(!is_null($tplan2exclude))
+	      {
+	      	$where .= " AND TPLAN.id != {$tplan2exclude} ";
+	      }
+    }
+    else
+    {
+        $where .=")";  
+    }	
 	$sql .= $where . " ORDER BY name";
-
-  // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 	$map = $this->db->fetchRowsIntoMap($sql,'id');
 	return($map);
 

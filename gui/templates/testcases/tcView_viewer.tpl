@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.26 2009/03/08 11:46:24 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.27 2009/04/14 17:41:18 franciscom Exp $
 viewer for test case in test specification
 
-rev:20090308 - franciscom - added logic to display button that allow assign test case version 
+rev:
+    20090414 - franciscom - BUGID 2378 - check for active test plan existence to display btn_add_to_testplan
+    20090308 - franciscom - added logic to display button that allow assign test case version 
                             to test plans. 
     20090215 - franciscom - BUGID - show info about links to test plans
 *}
@@ -23,7 +25,6 @@ rev:20090308 - franciscom - added logic to display button that allow assign test
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
 {assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
 
-{* 20090306 - franciscom *}
 {assign var="module" value='lib/testcases/'}
 {assign var="tcase_id" value=$args_testcase.testcase_id}
 {assign var="tcversion_id" value=$args_testcase.id}
@@ -116,7 +117,7 @@ rev:20090308 - franciscom - added logic to display button that allow assign test
 	  {/if}
 
   {* 20090306 - franciscom*}
-  {if $args_can_do->testplan_planning == "yes" }
+  {if $args_can_do->testplan_planning == "yes" && $args_has_testplans}
   <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
          value="{$labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
 

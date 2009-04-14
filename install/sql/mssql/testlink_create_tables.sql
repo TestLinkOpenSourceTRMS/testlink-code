@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.32 2009/02/01 11:57:56 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.33 2009/04/14 16:53:07 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,6 +11,7 @@
 -- 
 -- Rev :
 --
+--      20090411 - franciscom - BUGID 2369 - testplan_tcversions
 --      20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
 --      20090103 - franciscom - milestones table - added new unique index
 --      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
@@ -130,6 +131,8 @@ CREATE TABLE [testplan_tcversions](
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_testplan_id]  DEFAULT ((0)),
 	[node_order] [int] NOT NULL CONSTRAINT [DF_testplan_tcversions_node_order]  DEFAULT ((1)),
 	[urgency] [tinyint] NOT NULL CONSTRAINT [DF_testplan_tcversions_urgency]  DEFAULT ((2)),
+	[author_id] [int] NULL,
+	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_testplan_tcversions_creation_ts]  DEFAULT (getdate()),
  CONSTRAINT [PK_testplan_tcversions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

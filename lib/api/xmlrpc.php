@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/03/16 08:45:53 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/04/14 16:55:12 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090411 - franciscom - BUGID 2369 - changes in addTestCaseToTestPlan()
  *      20090314 - franciscom - createTestSuite()
  *      20090303 - franciscom - BUGID 2179
  *      20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
@@ -82,25 +83,25 @@ require_once(dirname(__FILE__) . "/../functions/user.class.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-	public static $version = "1.0 Beta 5";
-
-  const   OFF=false;
-  const   ON=true;
-  const   BUILD_GUESS_DEFAULT_MODE=OFF;
-	
-	private $custom_fields_table="custom_fields";
-  private $nodes_hierarchy_table="nodes_hierarchy";
-  private $node_types_table="node_types";
-  private $testplans_table="testplans";
-  private $testprojects_table="testprojects";
-  private $testsuites_table="testsuites";
-  private $builds_table="builds";
-  private $executions_table="executions";  
-  private $testplan_tcversions_table="testplan_tcversions";
-  private $keywords_table="keywords";  
-  private $tcversions_table="tcversions";
-  private $execution_bugs_table="execution_bugs";		  
-	
+    public static $version = "1.0 Beta 5";
+    
+    const   OFF=false;
+    const   ON=true;
+    const   BUILD_GUESS_DEFAULT_MODE=OFF;
+    	
+    private $custom_fields_table="custom_fields";
+    private $nodes_hierarchy_table="nodes_hierarchy";
+    private $node_types_table="node_types";
+    private $testplans_table="testplans";
+    private $testprojects_table="testprojects";
+    private $testsuites_table="testsuites";
+    private $builds_table="builds";
+    private $executions_table="executions";  
+    private $testplan_tcversions_table="testplan_tcversions";
+    private $keywords_table="keywords";  
+    private $tcversions_table="tcversions";
+    private $execution_bugs_table="execution_bugs";		  
+    	
 	/**
 	 * The DB object used throughout the class
 	 * 
@@ -131,7 +132,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	//   
 	private $tcVersionID = null;
 	
-	private $tcaseMgr=null;
+    private $tcaseMgr=null;
 	
 	/**#@+
 	 * string for parameter names are all defined statically
@@ -164,20 +165,20 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $customFieldNameParamName = "customfieldname";
 	public static $summaryParamName = "summary";
 	public static $stepsParamName = "steps";
-  public static $expectedResultsParamName = "expectedresults";
-  public static $authorLoginParamName = "authorlogin";
-  public static $executionTypeParamName = "executiontype";
-  public static $importanceParamName = "importance";
-  public static $orderParamName = "order";
-  public static $internalIDParamName = "internalid";
-  public static $checkDuplicatedNameParamName = "checkduplicatedname";
-  public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
-  public static $keywordNameParamName = "keywords";
-  public static $versionNumberParamName = "version";
-  public static $executionOrderParamName = "executionorder";
-  public static $urgencyParamName = "urgency";
-  public static $requirementsParamName = "requirements";
-  public static $detailsParamName = "details";
+    public static $expectedResultsParamName = "expectedresults";
+    public static $authorLoginParamName = "authorlogin";
+    public static $executionTypeParamName = "executiontype";
+    public static $importanceParamName = "importance";
+    public static $orderParamName = "order";
+    public static $internalIDParamName = "internalid";
+    public static $checkDuplicatedNameParamName = "checkduplicatedname";
+    public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
+    public static $keywordNameParamName = "keywords";
+    public static $versionNumberParamName = "version";
+    public static $executionOrderParamName = "executionorder";
+    public static $urgencyParamName = "urgency";
+    public static $requirementsParamName = "requirements";
+    public static $detailsParamName = "details";
 	public static $bugIDParamName = "bugid";		
 	public static $parentIDParamName = "parentid";		
 
@@ -216,29 +217,29 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 		
 
-		$this->tcaseMgr=new testcase($this->dbObj);
-		$this->tprojectMgr=new testproject($this->dbObj);
-		$this->tplanMgr=new testplan($this->dbObj);
-		$this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
+	$this->tcaseMgr=new testcase($this->dbObj);
+	$this->tprojectMgr=new testproject($this->dbObj);
+	$this->tplanMgr=new testplan($this->dbObj);
+	$this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
     $this->reqMgr=new requirement_mgr($this->dbObj);
 
-		$this->methods = array(
-			'tl.reportTCResult' => 'this:reportTCResult',
-			'tl.createBuild' => 'this:createBuild',
-			'tl.createTestCase' => 'this:createTestCase',
-			'tl.createTestProject' => 'this:createTestProject',
-			'tl.createTestSuite' => 'this:createTestSuite',
-      'tl.assignRequirements' => 'this:assignRequirements',     
-      'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
-			'tl.getProjects' => 'this:getProjects',
-			'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
-			'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
-			'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
-      'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
-			'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
-			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
-			'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
-			'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
+	$this->methods = array(
+	'tl.reportTCResult' => 'this:reportTCResult',
+	'tl.createBuild' => 'this:createBuild',
+	'tl.createTestCase' => 'this:createTestCase',
+	'tl.createTestProject' => 'this:createTestProject',
+	'tl.createTestSuite' => 'this:createTestSuite',
+    'tl.assignRequirements' => 'this:assignRequirements',     
+    'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
+	'tl.getProjects' => 'this:getProjects',
+	'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
+	'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
+	'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
+    'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
+	'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
+	'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
+	'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
+	'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
       'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
       'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
       'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
@@ -2246,9 +2247,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	     $this->_setArgs($args);
 	     $op_result=null;
 	     $additional_fields='';
-       $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
+         $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
                                'checkTestCaseIdentity','checkTestPlanID');
-       $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("testplan_planning");       
+        $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("testplan_planning");       
        
        // Test Plan belongs to test project ?
        if( $status_ok )
@@ -2332,7 +2333,13 @@ class TestlinkXMLRPCServer extends IXR_Server
        
        if( $status_ok )
        {
-          // Other versions must be unlinked
+          // Other versions must be unlinked, because we can only link ONE VERSION at a time
+          // 20090411 - franciscom
+          // As implemented today I'm going to unlink ALL linked versions, then if version
+          // I'm asking to link is already linked, will be unlinked and then relinked.
+          // May be is not wise, IMHO this must be refactored, and give user indication that
+          // requested version already is part of Test Plan.
+          // 
           $sql = " SELECT TCV.version,TCV.id " . 
                  " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
                  " WHERE NH.parent_id = {$tcase_id} " .
@@ -2348,14 +2355,15 @@ class TestlinkXMLRPCServer extends IXR_Server
            		$this->dbObj->exec_query($sql);
           }
           
-          $fields="testplan_id,tcversion_id";
+          // 20090411 - franciscom
+          $fields="testplan_id,tcversion_id,author_id,creation_ts";
           if( !is_null($additional_fields) )
           {
              $dummy = implode(",",$additional_fields);
              $fields .= ',' . $dummy; 
           }
           
-          $sql_values="{$tplan_id},{$target_tcversion[$version_number]['id']}";
+          $sql_values="{$tplan_id},{$target_tcversion[$version_number]['id']},{$this->userID},{$this->dbObj->db_now()}";
           if( !is_null($additional_values) )
           {
              $dummy = implode(",",$additional_values);

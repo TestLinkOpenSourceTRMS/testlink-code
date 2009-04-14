@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.47 2009/02/01 11:57:56 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.48 2009/04/14 16:53:07 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090411 - franciscom - BUGID 2369 - testplan_tcversions
 # 20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
 # 20090103 - franciscom - milestones table - added new unique index
 # 20081018 - franciscom - renamed indexes on events table according to dev standards
@@ -313,6 +314,8 @@ CREATE TABLE `testplan_tcversions` (
   `tcversion_id` int(10) unsigned NOT NULL default '0',
   `node_order` int(10) unsigned NOT NULL default '1',
   `urgency` smallint(5) NOT NULL default '2',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_tcversion` (`testplan_id`,`tcversion_id`)
 ) DEFAULT CHARSET=utf8;

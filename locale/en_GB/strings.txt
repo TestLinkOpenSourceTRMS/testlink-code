@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.425 $
- * @modified $Date: 2009/04/14 08:28:35 $ by $Author: amkhullar $
+ * @version $Revision: 1.426 $
+ * @modified $Date: 2009/04/14 16:52:05 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -2033,6 +2033,8 @@ $TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
 $TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
 $TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+$TLS_link_report_free_testcases_on_testproject = "Test Cases not assigned to Any Test Plan";
+
 
 $TLS_no_linked_tc_cf='There are no Test Cases with Custom Field information';
 
@@ -2397,6 +2399,10 @@ $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
 $TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
 
+// ----- freeTestCases -----
+$TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;
+$TLS_all_testcases_has_testplan="All Test Cases has been assigned to a Test Plan";
+$TLS_all_testcases_are_free="No Test Case has been assigned to a Test Plan";
 
 // ----- timeCharts ----- 
 $TLS_interval_end_date 		= "Last Interval Date";

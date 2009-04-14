@@ -4,11 +4,11 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/03/08 11:46:35 $  by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/04/14 16:56:41 $  by $Author: franciscom $
  * testcases commands
  *
- *
+ * rev: BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
  *
 **/
 class testcaseCommands
@@ -138,11 +138,11 @@ class testcaseCommands
       {
           foreach($request['add2tplanid'] as $tplan_id => $value)
           {
-              $tplan_mgr->link_tcversions($tplan_id,$item2link);  
+              // 20090411 - franciscom
+              $tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
           }
-          
-	        $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
-	                              $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
+          $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
+	                            $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
           
       }
       return $guiObj;

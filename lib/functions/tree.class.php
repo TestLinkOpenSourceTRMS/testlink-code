@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/03/29 17:31:29 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/04/14 16:56:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
  * 20090313 - franciscom - added getTreeRoot()
  * 20090207 - franciscom - new method check_name_is_unique()
  * 20081227 - franciscom - new method - get_full_path_verbose()
@@ -334,13 +335,15 @@ class tree
                     
                     
                     format='simple'
-                    every element is a number containing parent id
+                    every element is a number=PARENT ID, array index = value
                     For the above example result will be:
                     (
-                     [0] => 1
-                     [1] => 2
-                     [2] => 3
+                     [1] => 1
+                     [2] => 2
+                     [3] => 3
                     )
+                    
+                    
 
     returns: array
 
@@ -398,19 +401,41 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
       
    		// the last part of the path to $node, is the name
    		// of the parent of $node
-   		if( $format == "full" )
-   		{
-      		$node_list[] = array('id'        => $row['id'],
-          		                 'parent_id' => $row['parent_id'],
-              		             'node_type_id' => $row['node_type_id'],
-                  		         'node_order' => $row['node_order'],
-                      		     'node_table' => $node_table,
-                          		 'name' => $row['name'] );
-      }
-      else
-      {
-      		$node_list[$row['parent_id']] = $row['parent_id'];
-      }
+   	    switch($format)
+   	    {
+   	        case 'full':
+      		    $node_list[] = array('id' => $row['id'],
+          	    	                 'parent_id' => $row['parent_id'],
+                  		             'node_type_id' => $row['node_type_id'],
+                      		         'node_order' => $row['node_order'],
+                          		     'node_table' => $node_table,
+                              		 'name' => $row['name'] );
+   	        break;    
+
+   	        case 'simple':
+   	            // Warning: starting node is NOT INCLUDED in node_list
+   	            $node_list[$row['parent_id']] = $row['parent_id'];
+   	        break;    
+
+   	        case 'points':
+   	            $node_list[] = $row['id'];
+   	        break;    
+
+   	    }
+   	    
+   	    // if( $format == "full" )
+   		// {
+      	// 	$node_list[] = array('id' => $row['id'],
+        //   		                 'parent_id' => $row['parent_id'],
+        //       		             'node_type_id' => $row['node_type_id'],
+        //           		         'node_order' => $row['node_order'],
+        //               		     'node_table' => $node_table,
+        //                   		 'name' => $row['name'] );
+        // }
+        // else
+        // {
+      	// 	$node_list[$row['parent_id']] = $row['parent_id'];
+        // }
 			
       // we should add the path to the parent of this node to the path
       $this->_get_path($row['parent_id'],$node_list,$to_node_id,$format);
@@ -952,29 +977,34 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
   returns: 
 
 */
-function get_full_path_verbose(&$items)
+function get_full_path_verbose(&$items,$options=null)
 {
-   $goto_root=null;
-   $path_to=null;
-   $all_nodes=array();
-   foreach((array)$items as $item_id)
-   {
-       $path_to[$item_id]=$this->get_path($item_id,$goto_root,'simple'); 
-       $all_nodes = array_merge($all_nodes,$path_to[$item_id]);
-   }
-   
-   // get only different items, to get descriptions
-   $unique_nodes=implode(',',array_unique($all_nodes));
-   $sql="SELECT id,name FROM nodes_hierarchy WHERE id IN ({$unique_nodes})"; 
-   $decode=$this->db->fetchRowsIntoMap($sql,'id');
-   foreach($path_to as $key => $elem)
-   {
-        foreach($elem as $idx => $node_id)
-        {
-              $path_to[$key][$idx]=$decode[$node_id]['name'];
-        }
-   }   
-   return $path_to; 
+    $goto_root=null;
+    $path_to=null;
+    $all_nodes=array();
+    $path_format = 'simple';
+    if( !is_null($options) )
+    {
+        $path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
+    }
+    foreach((array)$items as $item_id)
+    {
+        $path_to[$item_id]=$this->get_path($item_id,$goto_root,$path_format);
+        $all_nodes = array_merge($all_nodes,$path_to[$item_id]);
+    }
+    
+    // get only different items, to get descriptions
+    $unique_nodes=implode(',',array_unique($all_nodes));
+    $sql="SELECT id,name FROM nodes_hierarchy WHERE id IN ({$unique_nodes})"; 
+    $decode=$this->db->fetchRowsIntoMap($sql,'id');
+    foreach($path_to as $key => $elem)
+    {
+         foreach($elem as $idx => $node_id)
+         {
+               $path_to[$key][$idx]=$decode[$node_id]['name'];
+         }
+    }   
+    return $path_to; 
 }
 
 

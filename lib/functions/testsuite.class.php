@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2009/04/04 22:48:40 $ - $Author: havlat $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2009/04/14 16:56:41 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
@@ -773,60 +773,6 @@ function delete_deep($id)
 {
   $this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
   $this->delete($id);
-
-/*  
-  die();
-
-  $tcase_mgr = New testcase($this->db);
-	$tsuite_info = $this->get_by_id($id);
-  $subtree = $this->tree_manager->get_subtree($id);
-	
-	// add me, to delete me 
-	$subtree[]=array('id' => $id);
-	$testcases = $this->get_testcases_deep($id);
-
-  new dBug($subtree);
-  new dBug($testcases);
-  die('DD');
-
-  if (!is_null($subtree))
-	{
-    // -------------------------------------------------------------------
-    // First delete dependent objects
-    if (!is_null($testcases))
-	  {
-	    foreach($testcases as $the_key => $elem)
-	    {
-        $tcase_mgr->delete($elem['id']);
-	    }
-	  }  
-    // -------------------------------------------------------------------
-
-    // -------------------------------------------------------------------
-		$node_list = array();
-		$node_list[]=$id;
-	  foreach($subtree as $the_key => $elem)
-	  {
-      $node_list[]= $elem['id'];
-      $tcase_mgr->deleteAttachments($elem['id']);
-      $this->cfield_mgr->remove_all_design_values_from_node($elem['id']);
-
-      $this->deleteKeywords($elem['id']);
-	  }
-    $tsuites_id_list=implode(",",$node_list);    
-	
-	  $sql = "DELETE FROM testsuites WHERE id IN ({$tsuites_id_list})";
-		$result = $this->db->exec_query($sql);
-    // -------------------------------------------------------------------
-
-    // 20070102 - franciscom
-    $this->cfield_mgr->remove_all_design_values_from_node($node_list);
-    
-    // Delete tree structure (from node_hierarchy)
-    $this->tree_manager->delete_subtree($id);
-	}
-*/
-	
 } // end function
 
 

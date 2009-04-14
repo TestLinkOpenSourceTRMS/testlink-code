@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.161 $
- * @modified $Date: 2009/04/09 20:58:02 $ $Author: schlundus $
+ * @version $Revision: 1.162 $
+ * @modified $Date: 2009/04/14 16:56:41 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
@@ -1310,6 +1310,10 @@ function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$
 /*
   function: get_by_id_bulk
 
+            IMPORTANT CONSIDERATION: 
+            how may elements can be used in an SQL IN CLAUSE?
+            Think there is a limit ( on MSSQL 1000 ?)
+                                      
   args :
 
   returns:
@@ -1480,10 +1484,18 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$o
 
     
 	if ($version_id != self::LATEST_VERSION)
+	{
 		$recordset = $this->db->get_recordset($sql);
+	}
 	else
+	{
+	    // 20090413 - franciscom - 
+	    // But, how performance wise can be do this, instead of using MAX(version)
+	    // and a group by? 
+	    //                              
 		$recordset = array($this->db->fetchFirstRow($sql));
-
+    }
+    
 	return ($recordset ? $recordset : null);
 }
 
@@ -1553,61 +1565,61 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 
     }
 
-		$testplan_filter='';
-		if(!is_null($testplan_id))
+    $testplan_filter='';
+	if(!is_null($testplan_id))
     {
       $testplan_filter=" AND E.testplan_id = {$testplan_id} ";
     }
     $execution_join=" LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id {$testplan_filter})";
 
- 		$sqlx=" SELECT TCV.id,TCV.version " .
-          " FROM {$this->nodes_hierarchy_table} NHA " .
-          " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
-          " JOIN tcversions TCV ON NHA.id = TCV.id " .
-          " WHERE  NHA.parent_id = {$id}";
-		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
+ 	$sqlx=  " SELECT TCV.id,TCV.version " .
+            " FROM {$this->nodes_hierarchy_table} NHA " .
+            " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
+            " JOIN tcversions TCV ON NHA.id = TCV.id " .
+            " WHERE  NHA.parent_id = {$id}";
+	$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
 
-		$sql="SELECT DISTINCT NH.id AS tcversion_id,T.tcversion_id AS linked,
-		                      E.tcversion_id AS executed,E.tcversion_number,TCV.version
-		      FROM   {$this->nodes_hierarchy_table} NH
+	$sql="SELECT DISTINCT NH.id AS tcversion_id,T.tcversion_id AS linked,
+	                      E.tcversion_id AS executed,E.tcversion_number,TCV.version
+	      FROM   {$this->nodes_hierarchy_table} NH
           JOIN tcversions TCV ON (TCV.id = NH.id )
-		      LEFT OUTER JOIN {$this->testplan_tcversions_table} T ON T.tcversion_id = NH.id
-		      {$execution_join}
-		      WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
+	      LEFT OUTER JOIN {$this->testplan_tcversions_table} T ON T.tcversion_id = NH.id
+	      {$execution_join}
+	      WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
 
-		$rs = $this->db->get_recordset($sql);
+	$rs = $this->db->get_recordset($sql);
 
-	  $recordset=array();
-	  $template=array('tcversion_id' => '','linked' => '','executed' => '');
-	  foreach($rs as $elem)
-	  {
-	    $recordset[$elem['tcversion_id']]=$template;  
-	    $recordset[$elem['tcversion_id']]['tcversion_id']=$elem['tcversion_id'];  
-	    $recordset[$elem['tcversion_id']]['linked']=$elem['linked'];  
-	    $recordset[$elem['tcversion_id']]['version']=$elem['version'];  
-	  }
-	
-	  foreach($rs as $elem)
-	  {
-	    $tcvid=null;
-	    if( $elem['tcversion_number'] != $elem['version'])
-	    {
-        if( !is_null($elem['tcversion_number']) )
-        {
-	          $tcvid=$version_id[$elem['tcversion_number']]['id'];
-	      }    
-	    }
-	    else
-	    {
-	      $tcvid=$elem['tcversion_id'];
-	    }
-	    if( !is_null($tcvid) )
-	    {
-	        $recordset[$tcvid]['executed']=$tcvid;
-	        $recordset[$tcvid]['version']=$elem['tcversion_number'];
-	    }    
-	  }
-  	return($recordset);
+    $recordset=array();
+    $template=array('tcversion_id' => '','linked' => '','executed' => '');
+    foreach($rs as $elem)
+    {
+      $recordset[$elem['tcversion_id']]=$template;  
+      $recordset[$elem['tcversion_id']]['tcversion_id']=$elem['tcversion_id'];  
+      $recordset[$elem['tcversion_id']]['linked']=$elem['linked'];  
+      $recordset[$elem['tcversion_id']]['version']=$elem['version'];  
+    }
+    
+    foreach($rs as $elem)
+    {
+      $tcvid=null;
+      if( $elem['tcversion_number'] != $elem['version'])
+      {
+      if( !is_null($elem['tcversion_number']) )
+      {
+            $tcvid=$version_id[$elem['tcversion_number']]['id'];
+        }    
+      }
+      else
+      {
+        $tcvid=$elem['tcversion_id'];
+      }
+      if( !is_null($tcvid) )
+      {
+          $recordset[$tcvid]['executed']=$tcvid;
+          $recordset[$tcvid]['version']=$elem['tcversion_number'];
+      }    
+    }
+    return($recordset);
 }
 
 

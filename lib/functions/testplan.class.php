@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.106 $
- * @modified $Date: 2009/04/09 10:59:03 $ by $Author: amkhullar $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2009/04/14 16:56:41 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,7 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20090411 - franciscom - BUGID 2369 - link_tcversions() - interface changes
  *  20090214 - franciscom - BUGID 2099 - get_linked_tcversions() - added new columns in output recordset
  *  20090208 - franciscom - testplan class - new method get_build_by_id()
  *  20090201 - franciscom - copy_milestones() - wrong SQL sentece 
@@ -365,31 +366,27 @@ function tcversionInfoForAudit($tplan_id,&$items)
 
   rev: 20080629 - franciscom - audit message improvements
 */
-function link_tcversions($id,&$items_to_link)
+/**
+ * link_tcversions
+ * associates version of different test cases to a test plan.
+ * this is the way to populate a test plan
+ *
+ *
+ *
+ */
+function link_tcversions($id,&$items_to_link,$userId)
 {
-
-  // Get human readeable info for audit
-  $title_separator = config_get('gui_title_separator_1');
-  $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link);
-  $info=$auditInfo['info'];
-  $tcasePrefix=$auditInfo['tcasePrefix'];
-  $tplanInfo=$auditInfo['tplanInfo'];
-  
-  // $tcase_cfg = config_get('testcase_cfg');
-  
-  // 
-	// $dummy=reset($items_to_link);
-  // $tcasePrefix=$this->tcase_mgr->getPrefix($dummy) . $tcase_cfg->glue_character;
-  // 
-  // $sql=" SELECT TCV.id, tc_external_id, version, NHB.name " .
-  //      " FROM {$this->tcversions_table} TCV,{$this->nodes_hierarchy_table} NHA, {$this->nodes_hierarchy_table} NHB " .
-  //      " WHERE NHA.id=TCV.id " .
-  //      " AND NHB.id=NHA.parent_id  " .
-  //      " AND TCV.id IN (" . implode(',',$items_to_link) . ")";
-  // 
-  // $info=$this->db->fetchRowsIntoMap($sql,'id');  
+    // Get human readeable info for audit
+    $title_separator = config_get('gui_title_separator_1');
+    $auditInfo=$this->tcversionInfoForAudit($id,$items_to_link);
+    $info=$auditInfo['info'];
+    $tcasePrefix=$auditInfo['tcasePrefix'];
+    $tplanInfo=$auditInfo['tplanInfo'];
    
-	$sql = "INSERT INTO {$this->testplan_tcversions_table} (testplan_id,tcversion_id) VALUES ({$id},";
+    // Important: MySQL do not support default values on datetime columns that are functions
+    // that's why we are using db_now().
+	$sql = "INSERT INTO {$this->testplan_tcversions_table} " .
+	       "(testplan_id,author_id,creation_ts,tcversion_id) VALUES ({$id},{$userId},{$this->db->db_now()},";
 	foreach($items_to_link as $tc => $tcversion)
 	{
 		$result = $this->db->exec_query($sql . "{$tcversion})");

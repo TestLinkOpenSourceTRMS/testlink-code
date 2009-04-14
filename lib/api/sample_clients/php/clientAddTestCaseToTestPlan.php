@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientAddTestCaseToTestPlan.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/02/10 14:09:07 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/04/14 16:57:31 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -46,12 +46,12 @@ $unitTestDescription="Test - {$rpc_method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=11603; //45;
+$args["testprojectid"]=1; //45;
 //$args["testcaseexternalid"]='ESP-22';
 //$args["testcaseexternalid"]='NTL-62';
-$args["testcaseexternalid"]='IT-1';
-$args["version"]=4;
-$args["testplanid"]=11685; //222;
+$args["testcaseexternalid"]='AA-9';
+$args["version"]=1;
+$args["testplanid"]=2; //222;
 // $args["testplanid"]=11255;
 
 $debug=true;

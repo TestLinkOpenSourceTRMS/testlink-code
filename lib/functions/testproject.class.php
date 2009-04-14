@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.101 $
- * @modified $Date: 2009/04/09 10:59:41 $  $Author: amkhullar $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2009/04/14 16:53:49 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
+ *                                      getFreeTestCases()
+ *         
  * 20090205 - franciscom - getReqSpec() - interface additions
  * 20090125 - franciscom - added utility method _createHierarchyMap()
  * 20090106 - franciscom - get_by_prefix()
@@ -62,6 +65,10 @@ class testproject extends tlObjectWithAttachments
 	private $cfield_testprojects_table="cfield_testprojects";
 	private $cfield_node_types_table="cfield_node_types";
 	private $user_testproject_roles_table="user_testproject_roles";
+	private $node_types_table="node_types";
+	private $testplan_tcversions_table="testplan_tcversions";
+	private $tcversions_table="tcversions";
+
 
 	var $db;
 	var $tree_manager;
@@ -1510,7 +1517,9 @@ function delete($id)
 			while($row = $this->db->fetch_array($result))
 			{
 				if ($row['node_type_id'] == $tcNodeTypeID)
+				{
 					$tcIDs[] = $row['id'];
+				}
 				$suiteIDs[] = $row['id'];
 			}
 			if (sizeof($suiteIDs))
@@ -1743,6 +1752,76 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
   }
 	return($fl);
 }
+
+
+
+/**
+ * getTCasesLinkedToAnyTPlan
+ *
+ * for target test project id ($id) get test case id of
+ * every test case that has been assigned at least to one of all test plans
+ * belonging to test project. 
+ *
+ * @param int $id test project id
+ *
+ */
+function getTCasesLinkedToAnyTPlan($id)
+{
+    $sql=" SELECT DISTINCT parent_id AS testcase_id " .
+         " FROM {$this->nodes_hierarchy_table} WHERE id IN " .
+         " ( SELECT tcversion_id FROM {$this->testplan_tcversions_table} " .
+         "   WHERE testplan_id IN " .
+         "   ( SELECT NH.id AS tplan_id " .
+         "     FROM {$this->nodes_hierarchy_table} NH, {$this->node_types_table} NT" .
+         "     WHERE NH.node_type_id=NT.id AND NT.description='testplan' AND NH.parent_id={$id}))";
+
+    $rs=$this->db->fetchRowsIntoMap($sql,'testcase_id');
+    return $rs;
+}
+
+
+/**
+ * getFreeTestCases
+ *
+ *
+ * @param int $id test project id
+ * 
+ */
+function getFreeTestCases($id,$options=null)
+{
+    $retval['items']=null;
+    $retval['allfree']=false;
+    
+    $this->get_all_testcases_id($id,$all);
+    $linked=array();
+    $free=null;
+    if(!is_null($all))
+    {
+        $all=array_flip($all);
+        $linked=$this->getTCasesLinkedToAnyTPlan($id);
+        $retval['allfree']=is_null($linked); 
+        $free=$retval['allfree'] ? $all : array_diff_key($all,$linked);
+    }
+    
+    if( !is_null($free) && count($free) > 0)
+    {
+        $in_clause=implode(',',array_keys($free));
+   	    $sql = " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
+   	           " NHA.parent_id AS id, NHB.name " .
+   	           " FROM {$this->tcversions_table} TCV,{$this->nodes_hierarchy_table} NHA, " .
+	           "      {$this->nodes_hierarchy_table} NHB " .
+	           " WHERE NHA.parent_id IN ({$in_clause}) " .
+   	           " AND TCV.id = NHA.id " .
+   	           " AND NHB.id = NHA.parent_id " .
+	           " GROUP BY NHB.name,NHA.parent_id,TCV.tc_external_id " .
+	           " ORDER BY NHA.parent_id";
+	    $retval['items']=$this->db->fetchRowsIntoMap($sql,'id');       
+    }
+
+    
+    return $retval;
+}
+
 
 // -------------------------------------------------------------------------------
 // Custom field related methods

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/03/14 09:39:53 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/04/14 16:55:40 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * Revision:
+ *  20090414 - franciscom - BUGID 2363 - free test cases i.e. not assigned to a test plan.
  *  20081227 - franciscom - added tcases_without_tester
  *  20081213 - franciscom - replace of old $g_ variables
  *  20081109 - franciscom - added uncovered_testcases
@@ -160,6 +161,11 @@ $tlCfg->reports_list['tcases_with_rca'] = array(
 'format' => 'format_html'
 );
 
-
+$tlCfg->reports_list['free_tcases'] = array( 
+'title' => 'link_report_free_testcases_on_testproject',
+'url' => 'lib/results/freeTestCases.php',
+'enabled' => 'all',
+'format' => 'format_html'
+);
 // -------------------------------------------------------------------
 ?>

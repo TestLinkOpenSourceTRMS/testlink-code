@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.44 2009/03/25 20:53:18 schlundus Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.45 2009/04/15 20:21:09 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -11,6 +11,7 @@
  *	Test specification. Keywords should be used for filter.
  * 
  * rev :
+ *      20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
  *      20090118 - franciscom - added logic to switch for EXTJS tree type
  *                              how to build tree when there are filters
  *
@@ -187,7 +188,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     if($argsObj->doUpdateTree)
     {
 	     $guiObj->src_workframe = $my_workframe; 
-	  }
+	}
     else if($argsObj->called_by_me)
     {
        // -------------------------------------------------------------------------------
@@ -217,7 +218,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     $applyFilter = !is_null($keywordsFilter);
 
     $treeMenu = null;
-    
     if($applyFilter)
     {
         $treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
@@ -225,15 +225,16 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
                                          HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
                                          $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
         
+        // When using filters I need to switch to static generated tree, that's reason why
+        // I'm creating from scratch ajaxTree.
 		$guiObj->ajaxTree = new stdClass();
         $guiObj->ajaxTree->loader = '';
         $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
-        $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
+         
+        // BUGID 2384 - if we return '' or null => EXT JS does not like it, we need to
+        // return json string that represents an EMPTY Tree => [] 
+        $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "[]";
     }
-    
-    if($applyFilter)
-        $guiObj->ajaxTree->loader = '';  
-
     return $treeMenu;
 }
 ?>

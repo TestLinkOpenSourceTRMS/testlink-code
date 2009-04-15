@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/04/10 21:07:27 $ by $Author: schlundus $
- *
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/04/15 15:56:16 $ by $Author: franciscom $
+ * 
 **/
 
 /**
@@ -21,38 +21,38 @@ class tlInputParameter extends tlObject
 	const INT = 1;
 	//non-negative int
 	const INT_N = 2;
-	//normal string
+	//normal string  -> PLEASE EXPLAIN What is a normal  string ?
 	const STRING_N = 3;
-	//noral array
-	const ARRAY_INT = 4;
+	//normal array
+	const ARRAY_INT = 4; -> PLEASE EXPLAIN What is a normal  array ?
 	//@TODO: schlundus, add support for stringarrays	
 
 	/**
-	 * @var tlParameterInfo Information about the parameter
+	 * @var tlParameterInfo Information about the parameter - what kind of information ????
 	 */
-	private $m_parameterInfo = null;
+	private $parameterInfo = null;
 	/**
 	 * @var bool was the parameter fetched?
 	 */
-	private $m_bFetched = false;
+	private $bFetched = false;
 	
 	/**
 	 * @var unknown_type tainted value, fetched but not validated
 	 */
-	protected $m_taintValue = null;
+	protected $taintValue = null;
 	/**
 	 * @var unknown_type normalized and maybe validated value
 	 */
-	protected $m_normalizedValue = null;
+	protected $normalizedValue = null;
 	
 	/**
 	 * @var tl<TYPE>ValidationInfo Info how the value of the parameter should be validated
 	 */
-	protected $m_validationInfo = null;
+	protected $validationInfo = null;
 	/**
 	 * @var bool is the parameter valid?
 	 */
-	protected $m_bValid = false;
+	protected $bValid = false;
 	
 	/**
 	 * constructor
@@ -64,8 +64,8 @@ class tlInputParameter extends tlObject
 	{
 		parent::__construct();
 	
-		$this->m_validationInfo = $validationInfo;
-		$this->m_parameterInfo = $parameterInfo;
+		$this->validationInfo = $validationInfo;
+		$this->parameterInfo = $parameterInfo;
 		
 		$this->fetchParameter();
 		$this->normalize();
@@ -78,7 +78,7 @@ class tlInputParameter extends tlObject
 	 */
 	protected function isFetched()
 	{
-		return $this->m_bFetched;
+		return $this->bFetched;
 	}
 	
 	/**
@@ -87,21 +87,21 @@ class tlInputParameter extends tlObject
 	 */
 	protected function isValid()
 	{
-		return $this->m_bValid;
+		return $this->bValid;
 	}
 	
 	/* Cleans up the object
 	 */
 	protected function _clean()
 	{
-		$this->m_taintValue = null;
-		$this->m_normalizedValue = null;
+		$this->taintValue = null;
+		$this->normalizedValue = null;
 	
-		$this->m_parameterInfo = null;
-		$this->m_bFetched = false;
+		$this->parameterInfo = null;
+		$this->bFetched = false;
 		
-		$this->m_validationInfo = null;
-		$this->m_bValid = false;
+		$this->validationInfo = null;
+		$this->bValid = false;
 	}
 	
 	/**
@@ -110,8 +110,8 @@ class tlInputParameter extends tlObject
 	private function fetchParameter()
 	{
 		//@TODO schlundus, move fetch inside the parameterInfo class
-		$parameterSource = $this->m_parameterInfo->m_source;
-		$parameterName = $this->m_parameterInfo->m_name;
+		$parameterSource = $this->parameterInfo->source;
+		$parameterName = $this->parameterInfo->name;
 		
 		$src = null;
 		switch($parameterSource)
@@ -136,8 +136,8 @@ class tlInputParameter extends tlObject
 				$bFetched = true;
 			}
 		}
-		$this->m_bFetched = $bFetched;
-		$this->m_taintValue = $value;
+		$this->bFetched = $bFetched;
+		$this->taintValue = $value;
 	}
 
 	/**
@@ -147,10 +147,14 @@ class tlInputParameter extends tlObject
 	{
 		if ($this->isFetched())
 		{
-			if ($this->m_validationInfo)
-				$this->m_normalizedValue = $this->m_validationInfo->normalize($this->m_taintValue);
+			if ($this->validationInfo)
+			{
+				$this->normalizedValue = $this->validationInfo->normalize($this->taintValue);
+			}
 			else
-				$this->m_normalizedValue = $this->m_taintValue;
+			{
+				$this->normalizedValue = $this->taintValue;
+			}	
 		}
 	}
 		
@@ -160,11 +164,15 @@ class tlInputParameter extends tlObject
 	protected function validate()
 	{
 		if (!$this->isFetched())
+		{
 			return;
-
-		if ($this->m_validationInfo)
-			$this->m_validationInfo->validate($this->m_normalizedValue);
-		$this->m_bValid = true;
+        }
+        
+		if ($this->validationInfo)
+		{
+			$this->validationInfo->validate($this->normalizedValue);
+		}
+		$this->bValid = true;
 	}	
 	
 	/**
@@ -174,8 +182,9 @@ class tlInputParameter extends tlObject
 	public function value()
 	{
 		if ($this->isFetched() && $this->isValid())
-			return $this->m_normalizedValue;
-			
+		{
+			return $this->normalizedValue;
+		}	
 		return null;
 	}
 }
@@ -189,11 +198,12 @@ class tlParameterInfo
 	/**
 	 * @var string the source of the parameter (eG POST,GET,...)
 	 */
-	public $m_source = null;
+	public $source = null;
+	
 	/**
 	 * @var string the name of the parameter
 	 */
-	public $m_name = null;
+	public $name = null;
 }
 
 /**
@@ -211,31 +221,37 @@ class tlStringValidationInfo
 	/**
 	 * @var int maxLen of the string
 	 */
-	public $m_maxLen;
+	public $maxLen;
+	
 	/**
 	 * @var int minLen of the string
 	 */
-	public $m_minLen;
+	public $minLen;
+	
 	/**
 	 * @var int should we trim?
 	 */
-	public $m_trim = self::TRIM_NONE;
+	public $trim = self::TRIM_NONE;
+	
 	/**
 	 * @var bool should we strip slashes?
 	 */
-	public $m_bStripSlashes = false;
+	public $bStripSlashes = false;
+	
 	/**
 	 * @var string regular expression which can be used for validation
 	 */
-	public $m_regExp = null;
+	public $regExp = null;
+	
 	/**
 	 * @var function callback function which can be used for validation
 	 */
-	public $m_pfnValidation = null;
+	public $pfnValidation = null;
+	
 	/**
 	 * @var function callback function which can be used for normalization
 	 */
-	public $m_pfnNormalization = null;
+	public $pfnNormalization = null;
 		
 	/**
 	 * @param unknown_type $value the value to be normalized
@@ -243,16 +259,19 @@ class tlStringValidationInfo
 	 */
 	public function normalize($value)
 	{
-		$pfnNormalization = $this->m_pfnNormalization;
+		$pfnNormalization = $this->pfnNormalization;
 		if ($pfnNormalization)
+		{
 			$value = $pfnNormalization($value);
+		}
 		else
 		{
 			$value = $this->trim($value);
-			if ($this->m_bStripSlashes)	
+			if ($this->bStripSlashes)	
+			{
 				$value = $this->stripslashes($value);
+			}	
 		}
-		
 		return $value;
 	}
 	
@@ -271,21 +290,24 @@ class tlStringValidationInfo
 	 */
 	public function trim($value)
 	{
-		switch($this->m_trim)
+		switch($this->trim)
 		{
 			case tlStringValidationInfo::TRIM_LEFT:
 				$value = ltrim($value);
 				break;
+
 			case tlStringValidationInfo::TRIM_RIGHT:
 				$value = rtrim($value);
 				break;
+
 			case tlStringValidationInfo::TRIM_BOTH:
 				$value = trim($value);
 				break;
 		}
-		if ($this->m_maxLen)	
-			$value = tlSubStr($value,0,$this->m_maxLen);
-			
+		if ($this->maxLen)	
+		{
+			$value = tlSubStr($value,0,$this->maxLen);
+		}	
 		return $value;
 	}
 	
@@ -295,22 +317,30 @@ class tlStringValidationInfo
 	 */
 	public function validate($value)
 	{
-		$minLen = $this->m_minLen;
+		$minLen = $this->minLen;
 		if ($minLen && tlStringLen($value) < $minLen)
+		{
 			throw new Exception("Input parameter validation failed [minLen: " . tlStringLen($value)." {$minLen}]");
+		}
 		
-		$regExp = $this->m_regExp; 
+		$regExp = $this->regExp; 
 		if ($regExp)
 		{
 			$dummy = null;
 			if (!preg_match($regExp,$value,$dummy))
-				throw new Exception("Input parameter validation failed [regExp: " . htmlspecialchars($value)." ".htmlspecialchars($regExp)."]");
+			{
+				throw new Exception("Input parameter validation failed [regExp: " . 
+				                    htmlspecialchars($value)." ".htmlspecialchars($regExp)."]");
+			}	                    
 		}	
-		$pfnValidation = $this->m_pfnValidation;
+		
+		$pfnValidation = $this->pfnValidation;
 		if ($pfnValidation)
 		{
 			if (!$pfnValidation($value))
+			{
 				throw new Exception("Input parameter validation failed [external function]");
+			}	
 		}	
 			
 		return true;
@@ -327,15 +357,16 @@ class tlIntegerValidationInfo
 	/**
 	 * @var int the maxVal of the parameter
 	 */
-	public $m_maxVal = PHP_INT_MAX;
+	public $maxVal = PHP_INT_MAX;
+	
 	/**
 	 * @var int the minVal of the parameter
 	 */
-	public $m_minVal = -2147483648;
+	public $minVal = -2147483648;
 	/**
 	 * @var function callback function which can be used for validation
 	 */
-	public $m_pfnValidation = null;
+	public $pfnValidation = null;
 	
 	/**
 	 * @param unknown_type $value the value which should normalized
@@ -356,15 +387,15 @@ class tlIntegerValidationInfo
 			throw new Exception("Input parameter validation failed [numeric: " . htmlspecialchars($value)."]");
 		
 		$value = intval($value);
-		$minVal = $this->m_minVal;
+		$minVal = $this->minVal;
 		if ($value < $minVal)
 			throw new Exception("Input parameter validation failed [minVal: " . htmlspecialchars($value) . " = {$minVal}]");
 				
-		$maxVal = $this->m_maxVal;
+		$maxVal = $this->maxVal;
 		if ($value > $maxVal)
 			throw new Exception("Input parameter validation failed [maxVal: " . htmlspecialchars($value) . " = {$maxVal}]");
 		
-		$pfnValidation = $this->m_pfnValidation;
+		$pfnValidation = $this->pfnValidation;
 		if ($pfnValidation && !$pfnValidation($value))
 			throw new Exception("Input parameter validation failed [external function]");
 		
@@ -382,12 +413,12 @@ class tlArrayValidationInfo
 	 * @var tl<TYPE>ValidationInfo the validationb info which should be use to validated
 	 * 							    the member of the array
 	 */
-	public $m_validationInfo = null;
+	public $validationInfo = null;
 	//@TODO schlundus, future purposes
 	/**
 	 * @var function callback function which can be used for validation
 	 */
-	public $m_pfnValidation = null;
+	public $pfnValidation = null;
 	
 	/**
 	 * @param array $valueArray the array which should be normalized
@@ -398,7 +429,7 @@ class tlArrayValidationInfo
 		$valueArray = (array) $valueArray;
 		foreach($valueArray as $key => $value)
 		{
-			$valueArray[$key] = $this->m_validationInfo->normalize($value);
+			$valueArray[$key] = $this->validationInfo->normalize($value);
 		}
 		
 		return $valueArray;
@@ -413,7 +444,7 @@ class tlArrayValidationInfo
 		$valueArray = (array) $valueArray;
 		foreach($valueArray as $key => $value)
 		{
-			$this->m_validationInfo->validate($value);
+			$this->validationInfo->validate($value);
 		}
 		
 		return true;

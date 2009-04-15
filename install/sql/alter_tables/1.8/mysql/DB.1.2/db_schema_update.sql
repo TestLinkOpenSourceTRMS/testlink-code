@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.22 $
-$Date: 2009/01/28 09:43:22 $
-$Author: franciscom $
+$Revision: 1.23 $
+$Date: 2009/04/15 12:51:01 $
+$Author: havlat $
 $RCSfile: db_schema_update.sql,v $
 
 DB: mysql
@@ -109,11 +109,11 @@ ALTER TABLE tcversions ADD COLUMN tc_external_id int(10) unsigned NOT NULL;
 -- Present in 1.7.4
 -- MHT: but invalid type (need to reenter)
 UPDATE tcversions
-SET importance='3'
+SET importance='2'
 WHERE importance IN('M','m');
 
 UPDATE tcversions
-SET importance='6'
+SET importance='3'
 WHERE importance IN('H','h');
 
 UPDATE tcversions

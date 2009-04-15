@@ -1,6 +1,6 @@
--- $Revision: 1.9 $
--- $Date: 2009/01/28 09:43:22 $
--- $Author: franciscom $
+-- $Revision: 1.10 $
+-- $Date: 2009/04/15 12:51:01 $
+-- $Author: havlat $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -103,11 +103,11 @@ CREATE INDEX "idx_cfield_tplan_design_val" ON "cfield_testplan_design_values" ("
 -- Step 3 - table changes
 -- tcversions
 UPDATE tcversions
-SET importance='3'
+SET importance='2'
 WHERE importance IN('M','m');
 
 UPDATE tcversions
-SET importance='6'
+SET importance='3'
 WHERE importance IN('H','h');
 
 UPDATE tcversions

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/04/15 15:56:16 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/04/15 18:33:41 $ by $Author: franciscom $
  * 
 **/
 
@@ -23,8 +23,9 @@ class tlInputParameter extends tlObject
 	const INT_N = 2;
 	//normal string  -> PLEASE EXPLAIN What is a normal  string ?
 	const STRING_N = 3;
-	//normal array
-	const ARRAY_INT = 4; -> PLEASE EXPLAIN What is a normal  array ?
+	//normal array -> PLEASE EXPLAIN What is a normal  array ?
+	const ARRAY_INT = 4; 
+	
 	//@TODO: schlundus, add support for stringarrays	
 
 	/**

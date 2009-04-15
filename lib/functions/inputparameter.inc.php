@@ -1,4 +1,7 @@
 <?php
+// Please add CVS HEADER
+// Please add PHP DOCUMENTOR HEADER TO EACH FUNCTION
+//
 require_once("object.class.php");
 require_once("inputparameter.class.php");
 
@@ -26,38 +29,47 @@ function GPR_PARAMS($source,$paramInfo)
 	return I_PARAMS($paramInfo);
 }
 
-function P_PARAM_STRING_N($name,$minLen = null,$maxLen = null,$regExp = null,$pfnValidation = null,$pfnNormalization = null)
+function P_PARAM_STRING_N($name,$minLen = null,$maxLen = null,$regExp = null,
+                          $pfnValidation = null,$pfnNormalization = null)
 {
 	return GPR_PARAM_STRING_N("POST",$name,$minLen,$maxLen,$regExp,$pfnValidation,$pfnNormalization);
 }
+
 function P_PARAM_INT($name,$minVal = null,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT("POST",$name,$minVal,$maxVal,$pfnValidation);
 }
+
 function P_PARAM_INT_N($name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT_N("POST",$name,$maxVal,$pfnValidation);
 }
+
 function G_PARAM_STRING_N($name,$minLen = null,$maxLen = null,$regExp = null,$pfnValidation = null,$pfnNormalization = null)
 {
 	return GPR_PARAM_STRING_N("GET",$name,$minLen,$maxLen,$regExp,$pfnValidation,$pfnNormalization);
 }
+
 function G_PARAM_INT($name,$minVal = null,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT("GET",$name,$minVal,$maxVal,$pfnValidation);
 }
+
 function G_PARAM_INT_N($name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT_N("GET",$name,0,$maxVal,$pfnValidation);
 }
+
 function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
 }
+
 function G_PARAM_ARRAY_INT($name,$pfnValidation = null)
 {
 	return GPR_PARAM_INT("GET",$name,$pfnValidation);
 }
+
 function P_PARAM_ARRAY_INT($name,$pfnValidation = null)
 {
 	return GPR_PARAM_INT("POST",$name,$pfnValidation);
@@ -70,29 +82,33 @@ function I_PARAMS($paramInfo)
 	{
 		$source = $info[0];
 		$type = $info[1];
-		for($i = 1;$i <= 5;$i++)
+		for($i = 1;$i <= 5;$i++)  // REMOVE THIS MAGIC NUMBER 
 		{
 			$varName = "p{$i}";
 			$value = isset($info[$i+1]) ? $info[$i+1] : null;
 			$$varName = $value;
 		}
+		
 		switch($type)
 		{
 			case tlInputParameter::ARRAY_INT:
 				$pfnValidation = $p1;
 				$value = GPR_PARAM_ARRAY_INT($source,$pName,$pfnValidation);
 				break;
+				
 			case tlInputParameter::INT_N:
 				$maxVal = $p1;
 				$pfnValidation = $p2;
 				$value = GPR_PARAM_INT_N($source,$pName,$maxVal,$pfnValidation);
 				break;
+				
 			case tlInputParameter::INT:
 				$minVal = $p1;
 				$maxVal = $p2;
 				$pfnValidation = $p3;
 				$value = GPR_PARAM_INT($source,$pName,$minVal,$maxVal,$pfnValidation);
 				break;
+				
 			case tlInputParameter::STRING_N:
 				$minLen = $p1;
 				$maxLen = $p2;
@@ -108,25 +124,26 @@ function I_PARAMS($paramInfo)
 }
 
 
-function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = null,$pfnValidation = null,$pfnNormalization = null)
+function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = null,
+                            $pfnValidation = null,$pfnNormalization = null)
 {
 	$vInfo = new tlStringValidationInfo();
 	if (!is_null($minLen))
-		$vInfo->m_minLen = $minLen;
+		$vInfo->minLen = $minLen;
 	if (!is_null($maxLen))
-		$vInfo->m_maxLen = $maxLen;
-	$vInfo->m_trim = tlStringValidationInfo::TRIM_BOTH;
-	$vInfo->m_bStripSlashes = true;
+		$vInfo->maxLen = $maxLen;
+	$vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
+	$vInfo->bStripSlashes = true;
 	if (!is_null($regExp))
-		$vInfo->m_regExp = $regExp;
+		$vInfo->regExp = $regExp;
 	if (!is_null($pfnValidation))
-		$vInfo->m_pfnValidation = $pfnValidation;
+		$vInfo->pfnValidation = $pfnValidation;
 	if (!is_null($pfnNormalization))
-		$vInfo->m_pfnNormalization = $pfnNormalization;
+		$vInfo->pfnNormalization = $pfnNormalization;
 	
 	$pInfo = new tlParameterInfo();
-	$pInfo->m_source = $gpr;
-	$pInfo->m_name = $name;
+	$pInfo->source = $gpr;
+	$pInfo->name = $name;
 	
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
@@ -136,15 +153,15 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 {
 	$vInfo = new tlIntegerValidationInfo();
 	if (!is_null($minVal))
-		$vInfo->m_minVal = $minVal;
+		$vInfo->minVal = $minVal;
 	if (!is_null($maxVal))
-		$vInfo->m_maxVal = $maxVal;
+		$vInfo->maxVal = $maxVal;
 	if (!is_null($pfnValidation))
-		$vInfo->m_pfnValidation = $pfnValidation;
+		$vInfo->pfnValidation = $pfnValidation;
 		
 	$pInfo = new tlParameterInfo();
-	$pInfo->m_source = $gpr;
-	$pInfo->m_name = $name;
+	$pInfo->source = $gpr;
+	$pInfo->name = $name;
 	
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
@@ -154,13 +171,14 @@ function GPR_PARAM_ARRAY_INT($gpr,$name,$pfnValidation = null)
 {
 	$vInfo = new tlArrayValidationInfo();
 	if (!is_null($pfnValidation))
-		$vInfo->m_pfnValidation = $pfnValidation;
-
-	$vInfo->m_validationInfo = new tlIntegerValidationInfo();
+	{
+		$vInfo->pfnValidation = $pfnValidation;
+    }
+	$vInfo->validationInfo = new tlIntegerValidationInfo();
 		
 	$pInfo = new tlParameterInfo();
-	$pInfo->m_source = $gpr;
-	$pInfo->m_name = $name;
+	$pInfo->source = $gpr;
+	$pInfo->name = $name;
 	
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();

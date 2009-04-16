@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/03/22 09:54:49 $ $Author: havlat $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/04/16 22:27:34 $ $Author: havlat $
  * @author Pavel Kalian
  * @author Martin Havlat
  *
@@ -239,7 +239,7 @@ $TLS_assigned_on = 'Datum přiřazení';
 // ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Hlavní strana";
 $TLS_config_check_warnings = "Prosím zvažte bezpečnostní slabiny. Detaily naleznete v souboru %s." .
-                 "Nastavením \$tlCfg->config_check_warning_mode = SILENT; potlačíte toto upozornění.";
+                 "Nastavením \$tlCfg->config_check_warning_mode = 'SILENT'; potlačíte toto upozornění.";
 
 
 // ----- keywordsimport.php -----

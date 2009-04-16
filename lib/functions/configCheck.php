@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/01/28 09:43:29 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/04/16 11:11:59 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
@@ -14,6 +14,7 @@
  *
  * Revisions:
  * 	
+ *  20090416 - havlatm - checking: database, GD lib and browser support
  *  20090126 - franciscom - check_php_extensions() refactoring
  *  20090109 - havlatm - import checking functions from Installer 
  * 	20081122 - franciscom - checkForExtensions() - added check of needed extensions to use pChart
@@ -103,8 +104,10 @@ function checkConfiguration()
 
 
 /** 
- * check if TL is installed
- * @return boolean true = installed 
+ * checks if installation is done
+ * @return bool returns true if the installation was already executed, false else
+ * @version 1.0
+ * @author Martin Havlat
  **/
 function checkInstallStatus()
 {
@@ -115,17 +118,42 @@ function checkInstallStatus()
 }
 
 
+/**
+ * Checks if charts are supported (GD and PNG library) 
+ *
+ * @return string resulted message ('OK' means pass)
+ * @author Martin Havlat 
+ * @version 1.0
+ **/
+function checkLibGd()
+{
+	if( extension_loaded('gd') )
+	{
+		$arrLibConf = gd_info();
+		if ($arrLibConf["PNG Support"])
+			$msg = 'OK';
+		else
+			$msg = lang_get("error_gd_png_support_disabled");
+	}
+	else
+	{
+		$msg = lang_get("error_gd_missing");
+	}
+	return $msg;
+}
+
 
 /**
- * checks if needed functions and extensions are defined 
+ * Checks if needed functions and extensions are defined 
  *
  * @param array [ref] msgs will be appended
  * @return bool returns true if all extension or functions ar present or defined
  *
  * @author Andreas Morsing 
- *
- * rev: 20081122 - franciscom - added gd2 check
+ * @todo Martin: it's used in getSecurityNotes() ... but it's not consistent with 
+ * 		checkPhpExtensions() - refactore
  **/
+// * rev: 20081122 - franciscom - added gd2 check
 function checkForExtensions(&$msg)
 {
 	if (!function_exists('domxml_open_file'))
@@ -159,6 +187,7 @@ function checkForInstallDir()
 	
 	return $bPresent;	
 }
+
 
 /**
  * checks if the default password for the admin accout is still set
@@ -520,14 +549,16 @@ function check_php_settings(&$errCounter)
 
 
 /** 
- * check php extensions
+ * Check availability of PHP extensions
+ * 
  * @param integer &$errCounter pointer to error counter
  * @return string html table rows
- * 
+ * @author Martin Havlat
+ * @version 1.0
  * @todo martin: Do we require "Checking DOM XML support"? It seems that we use internal library.
  *			if (function_exists('domxml_open_file'))
  */
-function check_php_extensions(&$errCounter)
+function checkPhpExtensions(&$errCounter)
 {
  
   $cannot_use='cannot be used';
@@ -636,10 +667,38 @@ function check_timeout(&$errCounter)
 
 
 /**
- * Display OS
+ * check Database type
+ * @param integer &$errCounter pointer to error counter
+ * @param string $type valid PHP database type label
+ * @return string html row with result 
+ */
+function checkDbType(&$errCounter, $type)
+{
+    $out = '<tr><td>Database type</td>';
+
+	switch ($type)
+	{
+    	case 'mysql':
+    	case 'mssql':
+    	case 'postgres':
+    		$out .= '<td><span class="tab-success">'.$type.'</span></td></tr>';
+    		break;
+    		
+    	default:
+    		$out .= '<td><span class="tab-warning">Unsupported type: '.$type.
+					'. MySQL,Postgres and MsSql 2000 are supported DB types. Of course' .
+					' you can use also other ones without migration support.</span></td></tr>';
+	}
+	
+	return $out;
+}
+
+
+/**
+ * Display Operating System
  * @return string html table row
  */
-function check_os()
+function checkServerOs()
 {
 	$final_msg = '<tr><td>Server Operating System (no constrains)</td>';
 	$final_msg .= '<td>'.PHP_OS.'</td></tr>';
@@ -665,15 +724,16 @@ if( strcmp('WIN',$os_id) == 0 )
  * check minimal required PHP version
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
-
-  rev :
+ * @version 2.0
+ */
+ /* Revision
   		- havlatm: converted to table format, error passed via argument, 
   			disabled unused "not tested version"
         - added argument to point to info
         - added warning regarding possible problems between MySQL and PHP 
           on windows systems due to MySQL password algorithm.
  */
-function check_php_version(&$errCounter)
+function checkPhpVersion(&$errCounter)
 {
 	// 5.2 is required because json is used in ext-js component
 	$min_version = '5.2.0'; 
@@ -694,7 +754,7 @@ function check_php_version(&$errCounter)
 	} 
 	else 
 	{
-		$final_msg .= "<td><span class='tab-success'>OK ( {$min_version} [minimun version] ";
+		$final_msg .= "<td><span class='tab-success'>OK ( {$min_version} [minimum version] ";
 		$final_msg .= ($php_ver_comp == 0 ? " = " : " <= ");
 		$final_msg .=	$my_version . " [your version] " ;
 		$final_msg .= " ) </span></td></tr>";
@@ -711,6 +771,8 @@ function check_php_version(&$errCounter)
  * 		b) installed - readable
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
+ * @author Martin Havlat
+ * @version 1.0
  */
 function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bCritical=FALSE)
 {
@@ -787,6 +849,8 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bC
  * based on check_with_feedback($dirs_to_check);
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
+ * @author Martin Havlat
+ * @version 1.0
  */
 function check_dir_permissions(&$errCounter)
 {
@@ -826,29 +890,88 @@ function check_dir_permissions(&$errCounter)
 	return($final_msg);
 }
 
+
 /** 
- * print table with system checking results 
+ * Print table with checking www browser support
+ *  
  * @param integer &$errCounter pointer to error counter
+ * @author Martin Havlat
+ * @version 1.0
  **/
-function reportCheckingSystem(&$errCounter)
+function reportCheckingBrowser(&$errCounter)
 {
-	echo '<h2>System requirements</h2><table class="common" style="width: 100%;">';
-	echo check_os();
-	echo check_php_version($errCounter);
-	echo '</table>';
+	$browser = strtolower($_SERVER['HTTP_USER_AGENT']);
+
+	echo "\n".'<h2>Browser compliance</h2><table class="common" style="width: 100%;">'."\n";
+
+	echo '<p>'.$browser.'</p>';
+	echo '<tr><td>Browser supported</td>';
+	if (strpos($browser, 'firefox') === false || strpos($browser, 'msie')  === false)
+		echo "<td><span class='tab-success'>OK</span></td></tr>";
+	else
+		echo "<td><span class='tab-error'>Unsupported: {$_SERVER['HTTP_USER_AGENT']}</span></td></tr>";
+
+	echo '<tr><td>Javascript availability</td><td>' .
+			'<script type="text/javascript">document.write(\''.
+			'<span class="tab-success">Enabled</span>\');</script>'.
+			'<noscript><span class="tab-error">Javascript is disabled!</span></noscript>' .
+			'</td></tr>';
+		 
+	echo '</table>'; 
 }
 
 
 /** 
  * print table with system checking results 
  * @param integer &$errCounter pointer to error counter
+ * @author Martin Havlat
+ * @version 1.0
+ **/
+function reportCheckingSystem(&$errCounter)
+{
+	echo '<h2>System requirements</h2><table class="common" style="width: 100%;">';
+	echo checkServerOs();
+	echo checkPhpVersion($errCounter);
+	echo '</table>';
+}
+
+
+/** 
+ * print table with database checking
+ *  
+ * @param integer &$errCounter pointer to error counter
+ * @author Martin Havlat
+ * @version 1.0
+ **/
+function reportCheckingDatabase(&$errCounter, $type = null)
+{
+	if (checkInstallStatus())
+		$type = DB_TYPE;
+		 
+	if (!is_null($type))
+	{
+		echo '<h2>Database checking</h2><table class="common" style="width: 100%;">';
+		echo checkDbType($errCounter, $type);
+//		echo checkDbConnection($errCounter);
+		echo "</table>\n";
+		
+	}
+
+}
+
+
+/** 
+ * print table with system checking results 
+ * @param integer &$errCounter pointer to error counter
+ * @author Martin Havlat
+ * @version 1.0
  **/
 function reportCheckingWeb(&$errCounter)
 {
 	echo '<h2>Web and PHP configuration</h2><table class="common" style="width: 100%;">';
 	echo check_timeout($errCounter);
 	echo check_php_settings($errCounter);
-	echo check_php_extensions($errCounter);
+	echo checkPhpExtensions($errCounter);
 	echo '</table>';
 
 }
@@ -858,6 +981,8 @@ function reportCheckingWeb(&$errCounter)
  * print table with system checking results 
  * @param integer &$errCounter pointer to error counter
  * @param string inst_type: useful when this function is used on installer
+ * @author Martin Havlat
+ * @version 1.0
  **/
 function reportCheckingPermissions(&$errCounter,$inst_type='none')
 {

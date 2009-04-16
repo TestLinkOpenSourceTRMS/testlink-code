@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: sysinfo.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/01/28 09:43:22 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/04/16 11:11:59 $ by $Author: havlat $
  *
  * @author	Martin Havlat 
  * 
@@ -125,6 +125,8 @@ if (@include_once ROOT_PATH."/lib/confs/Conf.php-distribution") {
 	$conf = new Conf();
 	$ohrmVersion = $conf->version;
 }
+
+
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -143,7 +145,15 @@ function reload() {
 <body>
 <div style="width: 800px; margin-left: auto; margin-right: auto;">
 <h1>TestLink - System & services checking</h1>
-
+<p>Installation status:
+<?php
+$bInstallDone = checkInstallStatus();
+if ($bInstallDone)
+	echo "Installed.";
+else
+	echo "Not installed.";
+?> 
+</p>
 <div>
 	<input type="button" name="Re-check" value="Re-check" onClick="reload();" tabindex="1">
 </div>
@@ -236,10 +246,13 @@ $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);
 reportCheckingPermissions($errors);
+reportCheckingDatabase($errors);
+reportCheckingBrowser($errors);
+
 
 echo '<p>Error counter = '.$errors.'</p>';
 ?>
-</div>
+<hr /></div>
 
 
 <div id="footer">

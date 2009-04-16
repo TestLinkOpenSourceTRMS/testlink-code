@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/04/06 10:24:41 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/04/16 11:10:49 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -62,8 +62,8 @@ switch($args->doAction)
 function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 {
     $retval=new stdClass();
-    $retval->items=null;
-    $retval->msg=''
+    $retval->items = null;
+    $retval->msg = '';
     
 
 	if( strcasecmp($argsObj->importType,'XML') == 0 )

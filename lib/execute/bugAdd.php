@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/03/29 14:10:01 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -14,32 +14,54 @@ require_once('exec.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$exec_id = isset($_REQUEST['exec_id'])? intval($_REQUEST['exec_id']) : 0;
-$bug_id = isset($_REQUEST['bug_id'])? trim($_REQUEST['bug_id']) : null;
+$args = init_args();
 $msg = "";
 
-if(!is_null($bug_id) && strlen($bug_id))
+if($args->bug_id != "")
 {
 	$msg = lang_get("error_wrong_BugID_format");
-	if ($g_bugInterface->checkBugID($bug_id))
+	if ($g_bugInterface->checkBugID($args->bug_id))
 	{
 		$msg = lang_get("error_bug_does_not_exist_on_bts");
-		if ($g_bugInterface->checkBugID_existence($bug_id))
+		if ($g_bugInterface->checkBugID_existence($args->bug_id))
 		{ 	  
-			if (write_execution_bug($db,$exec_id, $bug_id))
+			if (write_execution_bug($db,$args->exec_id, $args->bug_id))
 			{
 				$msg = lang_get("bug_added");
-				logAuditEvent(TLS("audit_executionbug_added",$bug_id),"CREATE",$exec_id,"executions");
+				logAuditEvent(TLS("audit_executionbug_added",$args->bug_id),"CREATE",$args->exec_id,"executions");
 			}
 		}
 	}
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('bts_url',$g_bugInterface->getEnterBugURL());
-$smarty->assign('exec_id',$exec_id);
+$smarty->assign('bugIDMaxLength',$g_bugInterface->getBugIDMaxLength());
+$smarty->assign('bts_url', $g_bugInterface->getEnterBugURL());
 $smarty->assign('msg',$msg);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+function init_args()
+{
+	global $g_bugInterface;
+	
+	$iParams = array(
+		"exec_id" => array("GET",tlInputParameter::INT_N),
+		"bug_id" => array("POST",tlInputParameter::STRING_N,0,$g_bugInterface->getBugIDMaxLength()),
+	);
+	$pParams = I_PARAMS($iParams);
+	
+	$args = new stdClass();
+	$args->bug_id = $pParams["bug_id"];
+	$args->exec_id = $pParams["exec_id"];
+	if ($args->exec_id)
+		$_SESSION['bugAdd_execID'] = $args->exec_id;
+	else
+		$args->exec_id = $_SESSION['bugAdd_execID'];
+		
+	
+	return $args;
+}
 
 function checkRights(&$db,&$user)
 {

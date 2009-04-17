@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.15 2008/09/09 10:22:53 franciscom Exp $
+$Id: userInfo.tpl,v 1.16 2009/04/17 19:57:32 schlundus Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -120,7 +120,7 @@ function checkPasswords(oldp,newp,newp_check)
 
 <h2>{lang_get s="title_personal_data"}</h2>
 <form method="post" action="{$action_mgmt}" onsubmit="return validatePersonalData(this)">
-	<input type="hidden" name="id" value="{$user->dbID}" />
+	<input type="hidden" name="doAction" value="editUser" />
 	<table class="common">
 		<tr>
 			<th>{$labels.th_login}</th>
@@ -157,7 +157,7 @@ function checkPasswords(oldp,newp,newp_check)
 		</tr>
 	</table>
 	<div class="groupBtn">
-		<input type="submit" name="editUser" value="{$labels.btn_save}" />
+		<input type="submit" value="{$labels.btn_save}" />
 	</div>
 </form>
 
@@ -166,7 +166,7 @@ function checkPasswords(oldp,newp,newp_check)
 {if $external_password_mgmt eq 0 }
 	<form name="changePass" method="post" action="{$action_mgmt}"
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
-		<input type="hidden" name="id" value="{$user->dbID}" />
+		<input type="hidden" name="doAction" value="changePassword" />
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>
 				<td><input type="password" name="oldpassword"  id="oldpassword"
@@ -179,7 +179,7 @@ function checkPasswords(oldp,newp,newp_check)
 				           size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		</table>
 		<div class="groupBtn">
-			<input type="submit" name="changePassword" value="{$labels.btn_change_passwd}" />
+			<input type="submit" value="{$labels.btn_change_passwd}" />
 		</div>
 	</form>
 {else}
@@ -191,11 +191,11 @@ function checkPasswords(oldp,newp,newp_check)
 <h2>{lang_get s="title_api_interface"}</h2>
 <div>
 	<form name="genApi" method="post" action="{$action_mgmt}">
-	<input type="hidden" name="id" value="{$user->dbID}" />
-	<p>{$labels.user_api_key} = {$user->userApiKey|escape}</p>
-	<div class="groupBtn">
-		<input type="submit" name="genApiKey" value="{$labels.btn_apikey_generate}" />
-	</div>
+		<input type="hidden" name="doAction" value="genAPIKey" />
+		<p>{$labels.user_api_key} = {$user->userApiKey|escape}</p>
+		<div class="groupBtn">
+			<input type="submit" value="{$labels.btn_apikey_generate}" />
+		</div>
 	</form>
 </div>
 {/if}

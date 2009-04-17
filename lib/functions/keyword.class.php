@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.14 2008/04/27 17:35:45 franciscom Exp $
-* @modified $Date: 2008/04/27 17:35:45 $ by $Author: franciscom $
+* @version $Id: keyword.class.php,v 1.15 2009/04/17 19:57:32 schlundus Exp $
+* @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -178,7 +178,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	static public function checkKeywordName($name)
 	{
 		$result = tl::OK;
-		if (strlen($name))
+		if ($name != "")
 		{
 			//we shouldnt allow " and , in keywords any longer
 			$dummy = null;

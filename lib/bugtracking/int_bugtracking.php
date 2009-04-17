@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/01/14 20:06:24 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/04/17 19:57:32 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -264,6 +264,15 @@ class bugtrackingInterface
 	{
 		return (intval($id) > 0);
 	}	
+	
+	/**
+	 * return the maximum length of a bug id
+	 * @return int the maximum length of a bugID
+	 */
+	function getBugIDMaxLength()
+	{
+		return 16;
+	}
 	
 	/**
 	 * default implementation for generating a link to the bugtracking page for viewing 

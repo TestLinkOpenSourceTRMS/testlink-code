@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/01/05 21:38:57 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -70,14 +70,23 @@ renderGui($smarty,$args,$templateCfg);
 */
 function init_args()
 {
-	$args = new stdClass();
-	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"rolename" => array("POST",tlInputParameter::STRING_N,0,100),
+			"roleid" => array("REQUEST",tlInputParameter::INT_N),
+			"doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+			"notes" => array("POST",tlInputParameter::STRING_N),
+			"grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
+		);
+
+	$pParams = I_PARAMS($iParams);
 	
-	$key2loop = array('doAction' => null,'rolename' => null , 'roleid' => 0, 'notes' => '', 'grant' => null);
-	foreach($key2loop as $key => $value)
-	{
-		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-	}
+	$args = new stdClass();
+	$args->doAction = $pParams["doAction"];
+	$args->roleid = $pParams["roleid"];
+	$args->rolename = $pParams["rolename"];
+	$args->notes = $pParams["notes"];
+	$args->grant = $pParams["grant"];
+	
 	return $args;
 }
 
@@ -245,10 +254,10 @@ function initialize_op()
 */
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
-    $actionCfg['operation']=array('create' => 'doCreate', 'edit' => 'doUpdate',
+    $actionCfg['operation'] = array('create' => 'doCreate', 'edit' => 'doUpdate',
                                   'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
-    $actionCfg['highlight']=array('create' => 'create_role', 'edit' => 'edit_role',
+    $actionCfg['highlight'] = array('create' => 'create_role', 'edit' => 'edit_role',
                                   'doCreate' => 'create_role', 'doUpdate' => 'edit_role');
 
 
@@ -262,7 +271,7 @@ function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
     // Create status for all checkboxes and set to unchecked
     foreach($guiObj->rightsCfg as $grantDetails)
     {
-        foreach( $grantDetails as $grantCode => $grantDescription )
+        foreach($grantDetails as $grantCode => $grantDescription)
         {
 			$guiObj->checkboxStatus[$grantCode] = "";
         }

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.28 $
-* @modified $Date: 2009/04/10 17:23:33 $
+* @version $Revision: 1.29 $
+* @modified $Date: 2009/04/17 19:57:32 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -27,11 +27,11 @@ $op->auditMsg = null;
 $op->user_feedback = null;
 $op->status = tl::OK;
 
-$doUpdate = 0;
+$doUpdate = false;
 switch($args->doAction)
 {
     case 'editUser':
-		$doUpdate = 1;
+		$doUpdate = true;
 		foreach($args->user as $key => $value)
 		{
 			$user->$key = $value;
@@ -43,7 +43,7 @@ switch($args->doAction)
 
     case 'changePassword':
 	    $op = changePassword($args,$user);
-	    $doUpdate = ($op->status >= tl::OK) ? 1 : 0;
+	    $doUpdate = ($op->status >= tl::OK);
 	    break;
 
     case 'genApiKey':
@@ -95,33 +95,30 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"firstName" => array("POST",tlInputParameter::STRING_N,0,30),
+			"lastName" => array("REQUEST",tlInputParameter::STRING_N,0,30),
+			"emailAddress" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+			"locale" => array("POST",tlInputParameter::STRING_N,0,10),
+			"oldpassword" => array("POST",tlInputParameter::STRING_N,0,32),
+			"newpassword" => array("POST",tlInputParameter::STRING_N,0,32),
+			"doAction" => array("POST",tlInputParameter::STRING_N,0,100),
+	);
 
-    $args = new stdClass();
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-
+	$pParams = I_PARAMS($iParams);
+	
+	$args = new stdClass();
     $args->user = new stdClass();
-    $key2loop = array('firstName','lastName','emailAddress','locale');
-	foreach($key2loop as $key)
-    {
-       $args->user->$key = isset($_REQUEST[$key]) ? trim($_REQUEST[$key]) : null;
-    }
+ 	$args->user->firstName = $pParams["firstName"];
+	$args->user->lastName = $pParams["lastName"];
+	$args->user->emailAddress = $pParams["emailAddress"];
+	$args->user->locale = $pParams["locale"];
+	$args->oldpassword = $pParams["oldpassword"];
+	$args->newpassword = $pParams["newpassword"];
+	$args->doAction = $pParams["doAction"];
 
-    $args->oldpassword = isset($_REQUEST['oldpassword']) ? $_REQUEST['oldpassword'] : null;
-    $args->newpassword = isset($_REQUEST['newpassword']) ? $_REQUEST['newpassword'] : null;
-    $args->doAction = null;
-
-    $key2loop = array('editUser','genApiKey','changePassword');
-    foreach($key2loop as $key)
-    {
-       if(isset($_REQUEST[$key]))
-       {
-           $args->doAction = $key;
-           break;
-       }
-    }
-    $args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
-
+	$args->userID = isset($_SESSION['currentUser']) ? $_SESSION['currentUser']->dbID : 0;
+        
     return $args;
 }
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/04/15 18:33:41 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
  * 
 **/
 
@@ -17,19 +17,19 @@
 class tlInputParameter extends tlObject
 {
 	//the supported types of Input parameters
-	//normal int
+	//int
 	const INT = 1;
-	//non-negative int
+	//non-negative integer
 	const INT_N = 2;
-	//normal string  -> PLEASE EXPLAIN What is a normal  string ?
+	//normalized (trimmed) string
 	const STRING_N = 3;
-	//normal array -> PLEASE EXPLAIN What is a normal  array ?
-	const ARRAY_INT = 4; 
+	//array of integers
+	const ARRAY_INT = 4;
+	//array of normalized strings
+	const ARRAY_STRING_N = 5;
 	
-	//@TODO: schlundus, add support for stringarrays	
-
 	/**
-	 * @var tlParameterInfo Information about the parameter - what kind of information ????
+	 * @var tlParameterInfo Information about the parameter
 	 */
 	private $parameterInfo = null;
 	/**

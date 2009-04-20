@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: custom_config.inc.php,v $
+ * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/03/16 21:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/04/20 08:41:47 $ by $Author: havlat $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.

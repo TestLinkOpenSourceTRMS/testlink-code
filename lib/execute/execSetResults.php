@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.119 $
- * @modified $Date: 2009/04/13 10:39:52 $ $Author: amkhullar $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2009/04/20 19:39:33 $ $Author: schlundus $
  *
  * rev:
  *     20090409 - amkhullar - updated code not written properly.
@@ -70,7 +70,7 @@ if ($do_show_instructions)
 $attachmentInfos = null;
 
 $get_mode = GET_ONLY_EXECUTED;
-if(is_null($args->filter_status) || $args->filter_status == $cfg->tc_status['not_run'])
+if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
 	$get_mode = GET_ALSO_NOT_EXECUTED;
 
 // ---------------------------------------------------------

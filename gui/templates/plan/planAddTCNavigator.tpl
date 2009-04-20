@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.16 2009/03/25 20:53:12 schlundus Exp $
+$Id: planAddTCNavigator.tpl,v 1.17 2009/04/20 19:39:33 schlundus Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -58,15 +58,15 @@ Revisions:
         <script type="text/javascript" src="gui/javascript/treebyloader.js">
         </script>
    {/if}
-
-<script type="text/javascript">
 {literal}
+<script type="text/javascript">
 function pre_submit()
 {
 	document.getElementById('called_url').value=parent.workframe.location;
 	return true;
 }
 </script>
+{/literal}
 </head>
 
 <body>

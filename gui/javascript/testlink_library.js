@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.72 2009/03/29 17:31:29 franciscom Exp $
+// $Id: testlink_library.js,v 1.73 2009/04/20 19:39:33 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -616,9 +616,9 @@ function open_help_window(help_page,locale)
 */
 function openTCaseWindow(tcase_id,tcversion_id)
 {
-  var feature_url="lib/testcases/archiveData.php";
-  feature_url +="?allow_edit=0&edit=testcase&id="+tcase_id+"&tcversion_id="+tcversion_id;
-	window.open(fRoot+feature_url,"Test Case Spec",
+	var feature_url = "lib/testcases/archiveData.php";
+	feature_url += "?allow_edit=0&edit=testcase&id="+tcase_id+"&tcversion_id="+tcversion_id;
+	window.open(fRoot+feature_url,"TestCaseSpec",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
 
@@ -811,7 +811,7 @@ function openReqWindow(tcase_id)
 {                        
   var feature_url="lib/requirements/reqTcAssign.php";
   feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
-	window.open(fRoot+feature_url,"Test Case - Requirement link",
+	window.open(fRoot+feature_url,"TestCase_Requirement_link",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
 

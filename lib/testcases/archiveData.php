@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.45 2009/03/29 17:31:29 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.46 2009/04/20 19:39:33 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -28,7 +28,7 @@ $templateCfg = templateConfiguration();
 $viewerArgs = null;
 $args = init_args($viewerArgs);
 
-$path_info=null;
+$path_info = null;
 $smarty = new TLSmarty();
 $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
 
@@ -47,9 +47,9 @@ switch($args->feature)
 	case 'testcase':
 		$get_path_info=false;
 		$item_mgr = new testcase($db);
-    $args->id = is_null($args->id) ? 0 : $args->id;
+    	$args->id = is_null($args->id) ? 0 : $args->id;
     
-    // has been called from a test case search
+   		// has been called from a test case search
 		if( !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
 		{
 			$viewerArgs['show_title'] = 'no';
@@ -62,14 +62,14 @@ switch($args->feature)
       
             if( $args->id > 0)
             {
-                $get_path_info=true;
-                $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
+                $get_path_info = true;
+                $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
             }
 		}
 		
 		if( $get_path_info || $args->show_path)
 		{
-		    $path_info=$item_mgr->tree_manager->get_full_path_verbose($args->id);
+		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
 		}
 			
 		$attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;

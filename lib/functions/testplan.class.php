@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.107 $
- * @modified $Date: 2009/04/14 16:56:41 $ by $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2009/04/20 19:39:33 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -572,13 +572,14 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	    $notrun_filter=null;
 	    $otherexec_filter=null;
 	    
-	    if( isset($exec_status[$status_not_run]) )
+	    $notRunPresent = array_search($status_not_run,$exec_status); 
+	    if($notRunPresent !== false)
 	    {
-	        $notrun_filter=" E.status IS NULL ";
-	        unset($exec_status[$status_not_run]);  
+	        $notrun_filter = " E.status IS NULL ";
+	        unset($exec_status[$notRunPresent]);  
 	    }
 	    
-	    if( count($exec_status) > 0 )
+	    if(count($exec_status) > 0)
 	    {
           $otherexec_filter=" E.status IN ('" . implode("','",$exec_status) . "') ";
 	        $sql_subquery=" AND E.id IN ( SELECT MAX(id) " .

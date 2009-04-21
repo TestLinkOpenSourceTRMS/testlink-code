@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.429 $
- * @modified $Date: 2009/04/21 06:00:36 $ by $Author: amkhullar $
+ * @version $Revision: 1.430 $
+ * @modified $Date: 2009/04/21 10:44:34 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -2239,8 +2239,7 @@ $TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided d
 $TLS_API_INVALID_TESTSUITEID = "ID %s do not belongs to a Test Suite present on system!";
 $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
 $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
-$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
-                                     "No Custom Field exists with the name provided!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot Find Custom Field with name (%s) ";
 
 $TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
 $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
@@ -2271,6 +2270,10 @@ $TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE="Custom Field (name:%s), can not be u
 $TLS_API_NO_TESTSUITENAME="No testsuitename provided. A test suite name must be provided!";
 $TLS_API_TESTSUITENAME_NOT_STRING = "testsuitename must be a string!";
 $TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) with id:%s do not belongs to Test Project(name=%s / id=%s)";
+
+$TLS_API_CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE="Custom Field (name:%s), is not configured for Design Scope";
+$TLS_API_CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT="Custom Field (name:%s), is not assigned to Test Project(name=%s / id=%s)";
+
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: freeTestCases.tpl,v 1.1 2009/04/14 16:52:28 franciscom Exp $
+$Id: freeTestCases.tpl,v 1.2 2009/04/21 10:06:21 amkhullar Exp $
 
 For a test project, list FREE test cases, i.e. not assigned to a test plan.
 
@@ -13,8 +13,8 @@ rev: 20090414 - franciscom - BUGID 2363
 </head>
 <body>
 <h1 class="title">{$gui->pageTitle|escape}</h1>
-<div class="workBack" style="overflow-y: auto;">
-
+<div class="workBack">
+{*<div class="workBack" style="overflow-y: auto;">*}
  {include file="inc_result_tproject_tplan.tpl" 
           arg_tproject_name=$gui->tproject_name arg_tplan_name=''}	
 

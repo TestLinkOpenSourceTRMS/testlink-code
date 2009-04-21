@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/04/14 16:55:12 $ by $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/04/21 10:06:50 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev :
+ *      20090420 - franciscom - BUGID 2158 - full implementation of getTestCaseCustomFieldDesignValue()
  *      20090411 - franciscom - BUGID 2369 - changes in addTestCaseToTestPlan()
  *      20090314 - franciscom - createTestSuite()
  *      20090303 - franciscom - BUGID 2179
@@ -88,6 +89,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     const   OFF=false;
     const   ON=true;
     const   BUILD_GUESS_DEFAULT_MODE=OFF;
+    const   SET_ERROR=true;
+
     	
     private $custom_fields_table="custom_fields";
     private $nodes_hierarchy_table="nodes_hierarchy";
@@ -181,7 +184,6 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $detailsParamName = "details";
 	public static $bugIDParamName = "bugid";		
 	public static $parentIDParamName = "parentid";		
-
 	// public static $executionRunTypeParamName		= "executionruntype";
 		
 	
@@ -205,51 +207,50 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->_connectToDB();
 		
 		$resultsCfg = config_get('results');
-    foreach($resultsCfg['status_label_for_exec_ui'] as $key => $label )
-    {
-        $this->statusCode[$key]=$resultsCfg['status_code'][$key];  
-    }
-    if( isset($this->statusCode['not_run']) )
-    {
-        unset($this->statusCode['not_run']);  
-    }   
-    $this->codeStatus=array_flip($this->statusCode);
-
-		
-
-	$this->tcaseMgr=new testcase($this->dbObj);
-	$this->tprojectMgr=new testproject($this->dbObj);
-	$this->tplanMgr=new testplan($this->dbObj);
-	$this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
-    $this->reqMgr=new requirement_mgr($this->dbObj);
-
-	$this->methods = array(
-	'tl.reportTCResult' => 'this:reportTCResult',
-	'tl.createBuild' => 'this:createBuild',
-	'tl.createTestCase' => 'this:createTestCase',
-	'tl.createTestProject' => 'this:createTestProject',
-	'tl.createTestSuite' => 'this:createTestSuite',
-    'tl.assignRequirements' => 'this:assignRequirements',     
-    'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
-	'tl.getProjects' => 'this:getProjects',
-	'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
-	'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
-	'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
-    'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
-	'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
-	'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
-	'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
-	'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
-      'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
-      'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
-      'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
-			'tl.about' => 'this:about',
-			'tl.setTestMode' => 'this:setTestMode',
-			// ping is an alias for sayHello
-			'tl.ping' => 'this:sayHello', 
-			'tl.sayHello' => 'this:sayHello',
-			'tl.repeat' => 'this:repeat'
-		);				
+        foreach($resultsCfg['status_label_for_exec_ui'] as $key => $label )
+        {
+            $this->statusCode[$key]=$resultsCfg['status_code'][$key];  
+        }
+        if( isset($this->statusCode['not_run']) )
+        {
+            unset($this->statusCode['not_run']);  
+        }   
+        $this->codeStatus=array_flip($this->statusCode);
+        
+	    	
+        
+	    $this->tcaseMgr=new testcase($this->dbObj);
+	    $this->tprojectMgr=new testproject($this->dbObj);
+	    $this->tplanMgr=new testplan($this->dbObj);
+	    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
+        $this->reqMgr=new requirement_mgr($this->dbObj);
+        
+	    $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
+	                            'tl.createBuild' => 'this:createBuild',
+	                            'tl.createTestCase' => 'this:createTestCase',
+	                            'tl.createTestProject' => 'this:createTestProject',
+	                            'tl.createTestSuite' => 'this:createTestSuite',
+                                'tl.assignRequirements' => 'this:assignRequirements',     
+                                'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
+	                            'tl.getProjects' => 'this:getProjects',
+	                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
+	                            'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
+	                            'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
+                                'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
+	                            'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
+	                            'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
+	                            'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
+	                            'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
+                                'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
+                                'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
+                                'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
+			                    'tl.about' => 'this:about',
+			                    'tl.setTestMode' => 'this:setTestMode',
+                    			// ping is an alias for sayHello
+                    			'tl.ping' => 'this:sayHello', 
+                    			'tl.sayHello' => 'this:sayHello',
+                    			'tl.repeat' => 'this:repeat'
+		                      );				
 		
 		$this->IXR_Server($this->methods);		
 	}	
@@ -336,29 +337,30 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @access private
 	 */
     protected function authenticate($messagePrefix='')
-    {        	
-		    // check that the key was given as part of the args
-		    if(!$this->_isDevKeyPresent())
-		    {
-		    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, $messagePrefix . NO_DEV_KEY_STR);
-		    	return false;
-		    }
-		    else
-		    {
-		    	$this->devKey = $this->args[self::$devKeyParamName];
-		    }
-		    // make sure the key we have is valid
-		    if(!$this->_isDevKeyValid($this->devKey))
-		    {
-		    	$this->errors[] = new IXR_Error(INVALID_AUTH, $messagePrefix . INVALID_AUTH_STR);
-		    	return false;			
-		    }
-		    else
-		    {
-		    	//Load User
-		    	$this->user = tlUser::getByID($this->dbObj,$this->userID);		    	
-		    	return true;
-		    }				
+    {   
+             	
+	    // check that the key was given as part of the args
+	    if(!$this->_isDevKeyPresent())
+	    {
+	    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, $messagePrefix . NO_DEV_KEY_STR);
+	    	return false;
+	    }
+	    else
+	    {
+	    	$this->devKey = $this->args[self::$devKeyParamName];
+	    }
+	    // make sure the key we have is valid
+	    if(!$this->_isDevKeyValid($this->devKey))
+	    {
+	    	$this->errors[] = new IXR_Error(INVALID_AUTH, $messagePrefix . INVALID_AUTH_STR);
+	    	return false;			
+	    }
+	    else
+	    {
+	    	//Load User
+	    	$this->user = tlUser::getByID($this->dbObj,$this->userID);		    	
+	    	return true;
+	    }				
     }
     
     
@@ -391,21 +393,21 @@ class TestlinkXMLRPCServer extends IXR_Server
     protected function checkTestCaseName()
     {
         $status=true;
-    	  if(!$this->_isTestCaseNamePresent())
-    	  {
+    	if(!$this->_isTestCaseNamePresent())
+    	{
     	  	$this->errors[] = new IXR_Error(NO_TESTCASENAME, NO_TESTCASENAME_STR);
     	  	$status=false;
-    	  }
-    	  else
-    	  {
-    	      $testCaseName = $this->args[self::$testCaseNameParamName];
-    	      if(!is_string($testCaseName))
-    	      {
-    	      	$this->errors[] = new IXR_Error(TESTCASENAME_NOT_STRING, TESTCASENAME_NOT_STRING_STR);
-    	      	$status=false;
-    	      }
-    	  }
-    	  return $status;
+    	}
+    	else
+    	{
+    	    $testCaseName = $this->args[self::$testCaseNameParamName];
+    	    if(!is_string($testCaseName))
+    	    {
+    	    	$this->errors[] = new IXR_Error(TESTCASENAME_NOT_STRING, TESTCASENAME_NOT_STRING_STR);
+    	    	$status=false;
+    	    }
+    	}
+    	return $status;
     }
     
 	/**
@@ -518,8 +520,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     	}
     	else
     	{    		
-    		  // See if this Test Project ID exists in the db
-			    $testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
+            // See if this Test Project ID exists in the db
+		    $testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
         	$query = "SELECT id FROM {$this->testprojects_table} WHERE id={$testprojectid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
@@ -644,14 +646,26 @@ class TestlinkXMLRPCServer extends IXR_Server
 
     /**
 	 * Helper method to see if a param is present
-	 * 	
+	 * 
+	 * @param string $pname parameter name 
+	 * @param boolean $setError default false
+	 *                if true add predefined error code to $this->error[]
+	 *
 	 * @return boolean
 	 * @access private
+	 *
+	 * 
 	 */  	     
-	 private function _isParamPresent($pname)
-	 {
-		    return (isset($this->args[$pname]) ? true : false);
-	 }
+	private function _isParamPresent($pname,$setError=false)
+	{
+	    $status_ok=(isset($this->args[$pname]) ? true : false);
+	    if(!$status_ok && $setError)
+	    {
+	        $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,$pname);
+	        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+        }
+        return $status_ok;
+	}
 
     /**
 	 * Helper method to see if the status provided is valid 
@@ -976,8 +990,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	private function _checkCreateBuildRequest()
 	{		
-      $checkFunctions = array('authenticate','checkTestPlanID','_isBuildNamePresent');       
-      $status_ok=$this->_runChecks($checkFunctions);       
+        $checkFunctions = array('authenticate','checkTestPlanID','_isBuildNamePresent');       
+        $status_ok=$this->_runChecks($checkFunctions);       
 	    return $status_ok;
 	}	
 	
@@ -1440,27 +1454,27 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public function createTestProject($args)
 	{
 	    $this->_setArgs($args);
-      $msg_prefix="(" . __FUNCTION__ . ") - ";
+        $msg_prefix="(" . __FUNCTION__ . ") - ";
 	    $checkRequestMethod='_check' . ucfirst(__FUNCTION__) . 'Request';
 	
 	    if( $this->$checkRequestMethod($msg_prefix) && $this->userHasRight("mgt_modify_product"))
 	    {
-	       // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
-	       $options = new stdClass();
-	       $options->requirement_mgmt=1;
-	       $options->priority_mgmt=1;
-	       $options->automated_execution=1;
+	        // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
+	        $options = new stdClass();
+	        $options->requirement_mgmt=1;
+	        $options->priority_mgmt=1;
+	        $options->automated_execution=1;
 		     
-	       $name=htmlspecialchars($this->args[self::$testProjectNameParamName]);
-         $prefix=htmlspecialchars($this->args[self::$testCasePrefixParamName]);
-         $notes=htmlspecialchars($this->args[self::$noteParamName]);
+	        $name=htmlspecialchars($this->args[self::$testProjectNameParamName]);
+            $prefix=htmlspecialchars($this->args[self::$testCasePrefixParamName]);
+            $notes=htmlspecialchars($this->args[self::$noteParamName]);
       
-	       $info=$this->tprojectMgr->create($name,'',$options,$notes,1,$prefix);
-			   $resultInfo = array();
-			   $resultInfo[]= array("operation" => __FUNCTION__,
-			                        "additionalInfo" => null,
-			                        "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
-	       return $resultInfo;
+	        $info=$this->tprojectMgr->create($name,'',$options,$notes,1,$prefix);
+		    $resultInfo = array();
+		    $resultInfo[]= array("operation" => __FUNCTION__,
+			                    "additionalInfo" => null,
+			                    "status" => true, "id" => $info, "message" => GENERAL_SUCCESS_STR);
+	        return $resultInfo;
 	    }
 	    else
 	    {
@@ -1558,9 +1572,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 		if($status_ok && $this->userHasRight("mgt_view_tc"))
 		{		
 			$testSuiteID = $this->args[self::$testSuiteIDParamName];
-      $tsuiteMgr = new testsuite($this->dbObj);
+            $tsuiteMgr = new testsuite($this->dbObj);
 
-      // BUGID 2179
+            // BUGID 2179
 			if(!$this->_isDeepPresent() || $this->args[self::$deepParamName] )
 			{
 			    $pfn = 'get_testcases_deep';
@@ -1847,72 +1861,72 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */    
-    protected function checkTestCaseIdentity()
+    protected function checkTestCaseIdentity($messagePrefix='')
     {
-		    // Three Cases - Internal ID, External ID, No Id        
+        // Three Cases - Internal ID, External ID, No Id        
         $status=true;
         $tcaseID=0;
         $my_errors=array();
+		$fromExternal=false;
+		$fromInternal=false;
 
-		    $fromExternal=false;
-		    $fromInternal=false;
-
-	      if($this->_isTestCaseIDPresent())
-	      {
-		        $fromInternal=true;
-		        $tcaseID = $this->args[self::$testCaseIDParamName];
-		        $status = true;
-	      }
-		    elseif ($this->_isTestCaseExternalIDPresent())
-		    {
-		    	  $fromExternal = true;
-		    	  $tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
-		        $tcaseCfg=config_get('testcase_cfg');
-		        $glueCharacter=$tcaseCfg->glue_character;
-		        $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
+	    if($this->_isTestCaseIDPresent())
+	    {
+		      $fromInternal=true;
+		      $tcaseID = $this->args[self::$testCaseIDParamName];
+		      $status = true;
+	    }
+		elseif ($this->_isTestCaseExternalIDPresent())
+		{
+            $fromExternal = true;
+			$tcaseExternalID = $this->args[self::$testCaseExternalIDParamName]; 
+		    $tcaseCfg=config_get('testcase_cfg');
+		    $glueCharacter=$tcaseCfg->glue_character;
+		    $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
             $status = $tcaseID > 0 ? true : false;
-            
             //Invalid TestCase ID
             if( !$status )
             {
               	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
-                                             sprintf(INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
+                                             sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
             }
-		    }
+		}
         else
-		    {  
-		  	    $my_errors[] = new IXR_Error(NO_TCASEID, NO_TCASEID_STR);
-		   	    $status=false;
-		    }
-	      if( $status )
-	      {
-	          $my_errors=null;
-	          if($this->_isTestCaseIDValid($tcaseID))
-	          {
-	              $this->_setTestCaseID($tcaseID);  
-	          }  
-	          else
-	          {  
-	          	  if ($fromInternal)
-	          	  {
-	          	  	$my_errors[] = new IXR_Error(INVALID_TCASEID, INVALID_TCASEID_STR);
-	          	  } elseif ($fromExternal) {
-	          	  	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
-                                               sprintf(INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));
-	          	  }
-	          	  $status=false;
-	          }    	
-	      }
+		{  
+		    $my_errors[] = new IXR_Error(NO_TCASEID, $messagePrefix . NO_TCASEID_STR);
+		   	$status=false;
+		}
+	    if( $status )
+	    {
+	        $my_errors=null;
+	        if($this->_isTestCaseIDValid($tcaseID))
+	        {
+	            $this->_setTestCaseID($tcaseID);  
+	        }  
+	        else
+	        {  
+	        	  if ($fromInternal)
+	        	  {
+	        	  	$my_errors[] = new IXR_Error(INVALID_TCASEID, $messagePrefix . INVALID_TCASEID_STR);
+	        	  } 
+	        	  elseif ($fromExternal)
+	        	  {
+	        	  	$my_errors[] = new IXR_Error(INVALID_TESTCASE_EXTERNAL_ID, 
+                                                 sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));
+	        	  }
+	        	  $status=false;
+	        }    	
+	    }
 	    
 	    
-	      if (!$status)
-	      {
+	    if (!$status)
+	    {
             foreach($my_errors as $error_msg)
-		        {
-		            $this->errors[] = $error_msg; 
-		        } 
-	      }
-	      return $status;
+		    {
+		          $this->errors[] = $error_msg; 
+		    } 
+	    }
+	    return $status;
     }   
 
 	 /**
@@ -2048,17 +2062,82 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param string $args["testcaseexternalid"]:  
 	 * @param string $args["testprojectid"]: 
 	 * @param string $args["customfieldname"]: custom field name
-   * @return mixed $resultInfo
+	 * @param string $args["details"] optional, changes output information
+	 *                                null or 'value' => just value
+	 *                                'full' => a map with all custom field definition
+	 *                                             plus value and internal test case id
+	 *                                'simple' => value plus custom field name, label, and type (as code).
+     *
+     * @return mixed $resultInfo
 	 * 				
 	 * @access public
 	 */		
-  public function getTestCaseCustomFieldDesignValue($args)
+    public function getTestCaseCustomFieldDesignValue($args)
 	{
-
+        $msg_prefix="(" .__FUNCTION__ . ") - ";
 		$this->_setArgs($args);		
-		if($this->_checkGetTestCaseCustomFieldDesignValueRequest() && $this->userHasRight("mgt_view_tc"))
+        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity');
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+
+        if( $status_ok )
+        {
+		    $status_ok=$this->_isParamPresent(self::$customFieldNameParamName,self::SET_ERROR);
+        }
+        
+        
+        if($status_ok)
 		{
-			return $this->errors;
+            $ret = $this->checkTestCaseAncestry();
+            $status_ok=$ret['status_ok'];
+            if($status_ok )
+            {
+                $status_ok=$this->_checkGetTestCaseCustomFieldDesignValueRequest($msg_prefix);
+            }
+            else 
+            {
+                $this->errors[] = new IXR_Error($ret['error_code'], $msg_prefix . $ret['error_msg']); 
+            }           
+		}
+        
+		if($status_ok && $this->userHasRight("mgt_view_tc"))
+		{
+		    $details='value';
+		    if( $this->_isParamPresent(self::$detailsParamName) )
+		    {
+		        $details=$this->args[self::$detailsParamName];  
+		    }
+	    
+		    
+            $cf_name=$this->args[self::$customFieldNameParamName];
+            $tproject_id=$this->args[self::$testProjectIDParamName];
+            $tcase_id=$this->args[self::$testCaseIDParamName];
+            
+		    $cfield_mgr=$this->tprojectMgr->cfield_mgr;
+            $cfinfo=$cfield_mgr->get_by_name($cf_name);
+            $cfield=current($cfinfo);
+            $filters=array('cfield_id' => $cfield['id']);
+            $cfieldSpec=$this->tcaseMgr->get_linked_cfields_at_design($tcase_id,null,$filters,$tproject_id);
+            // $cf_map=$cfield_mgr->string_custom_field_value($cfieldSpec[$cfield['id']],$tcase_id);
+            
+            switch($details)
+            {
+                case 'full':
+                    $retval = $cfieldSpec[$cfield['id']]; 
+                break;
+                
+                case 'simple':
+                    $retval = array('name' => $cf_name, 'label' => $cfieldSpec[$cfield['id']]['label'], 
+                                    'type' => $cfieldSpec[$cfield['id']]['type'], 
+                                    'value' => $cfieldSpec[$cfield['id']]['value']);
+                break;
+                
+                case 'value':
+                default:
+                    $retval=$cfieldSpec[$cfield['id']]['value'];
+                break;
+                
+            }
+            return $retval;
 		}
 		else
 		{
@@ -2069,48 +2148,79 @@ class TestlinkXMLRPCServer extends IXR_Server
   /**
 	 * Run all the necessary checks to see if ...
 	 *  
+     * - Custom Field exists ?
+     * - Can be used on a test case ?
+     * - Custom Field scope includes 'design' ?
+     * - is linked to testproject that owns test case ?
+     * 
 	 * @return boolean
 	 * @access private
 	 */
-	private function _checkGetTestCaseCustomFieldDesignValueRequest()
+    private function _checkGetTestCaseCustomFieldDesignValueRequest($messagePrefix='')
 	{		
-	    $status_ok=$this->authenticate();
-	    
-      $cf_name=$this->args[self::$customFieldNameParamName];
-  	  //  $testCaseIDParamName = "testcaseid";
+	    // $status_ok=$this->authenticate($messagePrefix);
+        $cf_name=$this->args[self::$customFieldNameParamName];
+
+  	    //  $testCaseIDParamName = "testcaseid";
 	    //  public static $testCaseExternalIDParamName = "testcaseexternalid";
   
-      // Custom Field checks:
-      // - Custom Field exists ?
-      // - Can be used on a test case ?
-      // - Custom Field scope includes 'design' ?
-      // - is linked to testproject that owns test case ?
-      //
-      if( $status_ok )
-      {
-          $cfield_mgr=new cfield_mgr($this->dbObj);
-          $cfinfo=$cfield_mgr->get_by_name($cf_name);
-          
-          if( !($status_ok=!is_null($cfinfo)) )
-          {
-	           $this->errors[] = new IXR_Error(NO_CUSTOMFIELD_BY_THIS_NAME,NO_CUSTOMFIELD_BY_THIS_NAME_STR);
-          }
-          // $this->errors[] = current($cfinfo);
-          // $status_ok=false;
-      }
+        // Custom Field checks:
+        // - Custom Field exists ?
+        // - Can be used on a test case ?
+        // - Custom Field scope includes 'design' ?
+        // - is linked to testproject that owns test case ?
+        //
+ 
+        // - Custom Field exists ?
+        $cfield_mgr=$this->tprojectMgr->cfield_mgr; // ($this->dbObj);
+        $cfinfo=$cfield_mgr->get_by_name($cf_name);
+        if( !($status_ok=!is_null($cfinfo)) )
+        {
+	         $msg = sprintf(NO_CUSTOMFIELD_BY_THIS_NAME_STR,$cf_name);
+	         $this->errors[] = new IXR_Error(NO_CUSTOMFIELD_BY_THIS_NAME, $messagePrefix . $msg);
+        }
+        // $this->errors[] = current($cfinfo);
+        // $status_ok=false;
       
-      if( $status_ok )
-      {
-          $cfield=current($cfinfo);
-          $status_ok = (strcasecmp($cfield['node_type'],'testcase') == 0 );
-          if( !$status_ok )
-          {
-	           $msg = sprintf(CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE_STR,$cf_name,'testcase',$cfield['node_type']);
-	           $this->errors[] = new IXR_Error(CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE,$msg);
-          }
-      }
+        // - Can be used on a test case ?
+        if( $status_ok )
+        {
+            $cfield=current($cfinfo);
+            $status_ok = (strcasecmp($cfield['node_type'],'testcase') == 0 );
+            if( !$status_ok )
+            {
+	             $msg = sprintf(CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE_STR,$cf_name,'testcase',$cfield['node_type']);
+	             $this->errors[] = new IXR_Error(CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE, $messagePrefix . $msg);
+            }
+        }
+ 
+        // - Custom Field scope includes 'design' ?
+        if( $status_ok )
+        {
+            $status_ok = ($cfield['show_on_design'] || $cfield['enable_on_design']);
+            if( !$status_ok )
+            {
+	             $msg = sprintf(CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE_STR,$cf_name);
+	             $this->errors[] = new IXR_Error(CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE, $messagePrefix . $msg);
+            }
+        }
+
+        // - is linked to testproject that owns test case ?
+        if( $status_ok )
+        {
+            $allCF = $cfield_mgr->get_linked_to_testproject($this->args[self::$testProjectIDParamName]);
+            $status_ok=!is_null($allCF) && isset($allCF[$cfield['id']]) ;
+            if( !$status_ok )
+            {
+                $tproject_info = $this->tprojectMgr->get_by_id($this->args[self::$testProjectIDParamName]);
+	            $msg = sprintf(CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT_STR,
+	                           $cf_name,$tproject_info['name'],$this->args[self::$testProjectIDParamName]);
+	            $this->errors[] = new IXR_Error(CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT, $messagePrefix . $msg);
+            }
+             
+        }
       
-      return $status_ok;
+        return $status_ok;
   }
 
 
@@ -2248,7 +2358,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	     $op_result=null;
 	     $additional_fields='';
          $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
-                               'checkTestCaseIdentity','checkTestPlanID');
+                                 'checkTestCaseIdentity','checkTestPlanID');
         $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("testplan_planning");       
        
        // Test Plan belongs to test project ?
@@ -2502,7 +2612,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     returns: 
 
   */
-  function checkTestCaseAncestry()
+  protected function checkTestCaseAncestry($messagePrefix='')
   {
       $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
       $tproject_id=$this->args[self::$testProjectIDParamName];
@@ -2534,7 +2644,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     returns: 
 
   */
-  function checkReqSpecQuality()
+  protected function checkReqSpecQuality()
   {
       $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
       $tproject_id=$this->args[self::$testProjectIDParamName];
@@ -2689,11 +2799,11 @@ public function getTestCaseAttachments($args)
 	$this->_setArgs($args);
 	$attachments=null;
 	$checkFunctions = array('authenticate','checkTestCaseID');       
-  $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+    $status_ok=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
 	
 	if($status_ok)
 	{		
-	  $tcase_id = $this->args[self::$testCaseIDParamName];
+	    $tcase_id = $this->args[self::$testCaseIDParamName];
 		$attachmentRepository = tlAttachmentRepository::create($this->dbObj);
 		$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($tcase_id,"nodes_hierarchy");
 		

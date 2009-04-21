@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestCaseCustomFieldDesignValue.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/03/02 07:57:58 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/04/21 10:06:50 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -47,7 +47,10 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["customfieldname"]='CAGLIARI';
+$args["testcaseexternalid"]='FMAN-4';
+$args["testprojectid"]=1420;
+$args["customfieldname"]='M LIST';
+$args["details"]='simple';
 $additionalInfo='';
 
 $debug=true;

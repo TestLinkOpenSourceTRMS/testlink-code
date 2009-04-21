@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.18 2009/03/16 08:45:53 franciscom Exp $
+ * $Id: APIErrors.php,v 1.19 2009/04/21 10:06:50 franciscom Exp $
  */
 
 /** 
@@ -11,8 +11,8 @@
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 20090304 - BUGID 2191 - franciscom 
- *
+ * rev: 20090420 - franciscom - BUGID 2158
+ *      20090304 - franciscom - BUGID 2191
  *      20080518 - franciscom - TestLink Development team - www.teamst.org
  *      suppress log for missing localization strings.
  */
@@ -32,7 +32,6 @@ require_once dirname(__FILE__) . '/../functions/lang_api.php';
  * a catch all generic error
  */
 define('GENERAL_ERROR_CODE', -1);
-
 define('GENERAL_SUCCESS_CODE', 1);
 
 // IMPORTANT:
@@ -44,6 +43,7 @@ define('GENERAL_SUCCESS_STR', lang_get('API_GENERAL_SUCCESS',null,1));
 
 define('NOT_YET_IMPLEMENTED', 50);
 define('NOT_YET_IMPLEMENTED_STR', lang_get('API_NOT_YET_IMPLEMENTED',null,1));
+
 /**
  * Error codes below 1000 are system level
  */
@@ -207,6 +207,12 @@ define('NO_CUSTOMFIELD_BY_THIS_NAME_STR', lang_get('API_NO_CUSTOMFIELD_BY_THIS_N
 
 define('CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE',9001);
 define('CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE_STR', lang_get('API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE',null,1));
+
+define('CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE',9002);
+define('CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE_STR', lang_get('API_CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE',null,1));
+
+define('CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT',9003);
+define('CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT_STR', lang_get('API_CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT',null,1));
 
 
 /**

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.5 2009/01/22 20:52:17 franciscom Exp $
+$Id: tcImport.tpl,v 1.6 2009/04/21 10:08:34 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20080329 - franciscom - lang_get() refactoring
@@ -64,7 +64,7 @@ rev: 20080329 - franciscom - lang_get() refactoring
 	{foreach item=result from=$resultMap}
 		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
-	{include file="inc_refreshTree.tpl"}
+  {include file="inc_refreshTree.tpl"}
 {/if}
 
 {if $bImport > 0}

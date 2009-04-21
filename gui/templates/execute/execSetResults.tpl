@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.36 2009/03/29 17:31:29 franciscom Exp $
+$Id: execSetResults.tpl,v 1.37 2009/04/21 10:08:50 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
+                          due to access to test spec to edit it.
 
   20090329 - franciscom - when using bulk mode, user can access test case spec
                           opening a new window.
@@ -360,6 +362,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       </div>
   {else}
     {include file="execute/inc_exec_show_tc_exec.tpl"}
+
+    {* 20090419 - BUGID 2364 - franciscom*}
+    {if isset($gui->refreshTree) && $gui->refreshTree}
+	    {include file="inc_refreshTree.tpl"}
+    {/if}
   {/if}
   
 </form>

@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.3 2009/02/14 15:15:45 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.4 2009/04/21 10:08:50 franciscom Exp $
 Purpose: 
 Author: franciscom
 
-Rev:  20090212 - amitkhullar - BUGID 2068
+Rev:  
+    20090418 - franciscom - BUGID 2364 - access to test spec to edit it.
+    20090212 - amitkhullar - BUGID 2068
 *}	
  	{foreach item=tc_exec from=$gui->map_last_exec}
 
@@ -62,8 +64,15 @@ Rev:  20090212 - amitkhullar - BUGID 2068
 
 
 		<div class="exec_tc_title">
-		{* 20080126 - franciscom - external id - $tc_exec.testcase_id *}
-		{$labels.title_test_case} {$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}<br />
+		{* BUGID *}
+		{if $gui->grants->edit_testcase}
+		<a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id},'editOnExec')">
+		<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png"  title="{$labels.show_tcase_spec}">
+		</a>
+		{/if}
+		
+    {$labels.title_test_case}&nbsp;{$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}
+		<br />
 		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
 		      {$labels.has_no_assignment}

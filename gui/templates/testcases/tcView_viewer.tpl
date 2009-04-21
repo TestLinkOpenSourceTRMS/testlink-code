@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.27 2009/04/14 17:41:18 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.28 2009/04/21 10:08:34 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20090418 - franciscom - BUGID 2364 - added fine grain control of button enable/disable
     20090414 - franciscom - BUGID 2378 - check for active test plan existence to display btn_add_to_testplan
     20090308 - franciscom - added logic to display button that allow assign test case version 
                             to test plans. 
@@ -48,7 +49,7 @@ rev:
 {/if}
 {assign var="warning_edit_msg" value=""}
 
-{if $args_can_edit == "yes" }
+{if $args_can_do->edit == "yes" }
 
   {assign var="edit_enabled" value=0}
   {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
@@ -58,13 +59,12 @@ rev:
   {if $args_status_quo == null || $args_status_quo[$args_testcase.id].executed == null}
       {assign var="edit_enabled" value=1}
       {assign var="warning_edit_msg" value=""}
-
-  {else}
-     {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed eq 1}
-       {assign var="edit_enabled" value=1}
-       {assign var="has_been_executed" value=1}
-       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
-     {/if}
+  {else} 
+    {if isset($args_tcase_cfg) && $args_tcase_cfg->can_edit_executed eq 1}
+      {assign var="edit_enabled" value=1} 
+      {assign var="has_been_executed"  value=1} 
+      {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
+    {/if} 
   {/if}
 
 
@@ -76,33 +76,42 @@ rev:
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
 	  <input type="hidden" name="doAction" value="" />
+	  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 
-	    {assign var="go_newline" value=""}
-	    {if $edit_enabled}
+	  {assign var="go_newline" value=""}
+	  {if $edit_enabled}
 	 	    <input type="submit" name="edit_tc" 
-	 	           onclick="doAction.value='edit'" value="{$labels.btn_edit}" />
-	    {/if}
+	 	           onclick="doAction.value='edit';{$gui->submitCode}" value="{$labels.btn_edit}" />
+	  {/if}
 	
-		{if $args_can_delete_testcase == "yes" }
+	  {* Double condition because for test case versions WE DO NOT DISPLAY this
+	     button, using $args_can_delete_testcase='no'
+	  *}
+		{if $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
 			<input type="submit" name="delete_tc" value="{$labels.btn_del}" />
-	    {/if}
+	  {/if}
 	
-	    {if $args_can_move_copy == "yes" }
+	  {* Double condition because for test case versions WE DO NOT DISPLAY this
+	     button, using $args_can_move_copy='no'
+	  *}
+	  {if $args_can_do->copy == "yes" && $args_can_move_copy == "yes" }
 	   		<input type="submit" name="move_copy_tc"   value="{$labels.btn_mv_cp}" />
 	     	{assign var="go_newline" value="<br />"}
-	    {/if}
+	  {/if}
 	
-	 	{if $args_can_delete_version == "yes" }
+	 	{if $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
 			 <input type="submit" name="delete_tc_version" value="{$labels.btn_del_this_version}" />
 	  {/if}
 
-   		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
+	 	{if $args_can_do->create_new_version == "yes" }
+  		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
+	  {/if}
 
 
 	
 		{* --------------------------------------------------------------------------------------- *}
-		{if $active_status_op_enabled eq 1}
+		{if $active_status_op_enabled eq 1 && $args_can_do->deactivate=='yes'}
 	        {if $args_testcase.active eq 0}
 				      {assign var="act_deact_btn" value="activate_this_tcversion"}
 				      {assign var="act_deact_value" value="activate_this_tcversion"}
@@ -117,7 +126,7 @@ rev:
 	  {/if}
 
   {* 20090306 - franciscom*}
-  {if $args_can_do->testplan_planning == "yes" && $args_has_testplans}
+  {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
   <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
          value="{$labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
 

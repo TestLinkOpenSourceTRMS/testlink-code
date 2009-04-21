@@ -1,10 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.11 2009/03/03 21:09:02 schlundus Exp $ 
+$Id: tcEdit.tpl,v 1.12 2009/04/21 10:08:34 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
-rev:20080908 - franciscom - added logic to validate Custom Field user input
-    20080420 - franciscom - improved user feedback
+rev: 20090419 - franciscom - BUGID - edit while executing
 *}
 
 {lang_get var="labels"
@@ -80,6 +79,7 @@ function validateForm(f)
 	<input type="hidden" name="tcversion_id" value="{$tc.id}" />
 	<input type="hidden" name="version" value="{$tc.version}" />
 	<input type="hidden" name="doAction" value="" />
+  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 

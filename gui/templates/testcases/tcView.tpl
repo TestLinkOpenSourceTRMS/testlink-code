@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.21 2009/04/14 17:41:18 franciscom Exp $
+$Id: tcView.tpl,v 1.22 2009/04/21 10:08:34 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
-rev:20090414 - franciscom - BUGID 2378
+rev:
+    20090418 - franciscom - BUGID 2364 
+    20090414 - franciscom - BUGID 2378
     20090308 - franciscom - added args_can_do
     20090215 - franciscom - BUGID - show info about links to test plans
 *}
@@ -14,10 +16,15 @@ rev:20090414 - franciscom - BUGID 2378
 {if $smarty.const.USE_EXT_JS_LIBRARY}
   {include file="inc_ext_js.tpl" css_only=1}
 {/if}
+
+{* need by refresh on upload logic used when this template is called while executing *}
+{if $gui->bodyOnLoad != '' }
+<script language="JavaScript">
+  var {$gui->dialogName} = new std_dialog('&refreshTree');
+</script>  
+{/if}
 </head>
-{if !isset($loadOnCancelURL)}
- 	{assign var="loadOnCancelURL" value=""}
-{/if} 
+
 {assign var="my_style" value=""}
 {if $gui->hilite_testcase_name}
     {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
@@ -27,7 +34,8 @@ rev:20090414 - franciscom - BUGID 2378
 {lang_get var='labels' 
           s='no_records_found,other_versions,version,title_test_case,match_count'}
 
-<body onLoad="viewElement(document.getElementById('other_versions'),false)">
+{* 20090418 - franciscom *}
+<body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
 {include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
@@ -63,35 +71,33 @@ rev:20090414 - franciscom - BUGID 2378
 		         args_keywords_map=$keywords_map[idx] 
 		         args_reqs=$arrReqs[idx] 
 		         args_status_quo=$status_quo[idx]
-
-		         args_can_edit=$can_edit 
-		         args_can_move_copy="yes" 
-		         args_can_delete_testcase=$can_delete_testcase
-		         args_can_delete_version=$my_delete_version
 		         args_can_do=$gui->can_do
-		         
+		         args_can_move_copy="yes"
+		         args_can_delete_testcase="yes" 
+		         args_can_delete_version=$my_delete_version
+
 		         args_show_version="yes" 
 		         args_show_title=$gui->show_title
-		         
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'
 		         args_cf=$cf[idx] 
 		         args_tcase_cfg=$tcase_cfg
 		         args_users=$users
-
 		         args_tproject_name=$gui->tprojectName
 		         args_tsuite_name=$gui->parentTestSuiteName
-		         
 		         args_linked_versions=$gui->linked_versions[idx]
 		         args_has_testplans=$gui->has_testplans
-		         
 		         }
 		
 		
 		{assign var="bDownloadOnly" value=false}
-		{if $can_edit != 'yes'}
+		{if $gui->can_do->edit != 'yes'}
 			{assign var="bDownloadOnly" value=true}
 		{/if}
+		
+		{if !isset($loadOnCancelURL)}
+ 	      {assign var="loadOnCancelURL" value=""}
+    {/if} 
 		{include file="inc_attachments.tpl" 
 		         attach_id=$tcID  
 		         attach_tableName="nodes_hierarchy"
@@ -132,28 +138,32 @@ rev:20090414 - franciscom - BUGID 2378
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
- 
   	          <div id="{$div_id}" class="workBack">
+  	          
+  	                   {*
+                         args_can_edit=$can_edit 
+                         args_can_delete_version=$can_delete_version
+           		           args_can_move_copy="no" 
+                         args_can_delete_testcase='no'
+                       
+           		         *}
+           		
 				      {include file="$this_template_dir/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
                        args_keywords_map=$keywords_map[idx] 
                        args_reqs=$arrReqs[idx]
                        args_status_quo=$status_quo[idx]
-                       			
-                       args_can_edit=$can_edit 
-                       args_can_move_copy="no" 
+                       args_can_do=$gui->can_do
+         		           args_can_move_copy="no" 
                        args_can_delete_testcase='no'
-                       args_can_delete_version=$can_delete_version
-           		         args_can_do=$gui->can_do
-
+                       args_can_delete_version="yes"
+                       
                        args_show_version="no" 
                        args_show_title="no"
                        args_users=$users
                        args_cf=$cf[idx]
-                       
            		         args_linked_versions=null
 	         		         args_has_testplans=$gui->has_testplans
-
                        }
   	         </div>
   	         <br />

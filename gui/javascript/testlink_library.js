@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.73 2009/04/20 19:39:33 schlundus Exp $
+// $Id: testlink_library.js,v 1.74 2009/04/21 10:13:43 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -21,6 +21,9 @@
 // like inc_head.tpl
 //
 // ----------------------------------------------------------------------------
+//
+// 20090419 - franciscom - BUGID 2364 - added std_dialog()
+//                         added some comments to explain how a bug has been solved
 //
 // 20090329 - franciscom - openTCaseWindow(), added second argument
 // 20081220 - franciscom - toggleInput()
@@ -506,8 +509,19 @@ function bug_dialog()
 	this.NoRefresh = false;
 }
 
+function std_dialog(additional)
+{
+  // alert('std_dialog() - called');
+	this.refWindow = null;
+	this.refLocation = null;
+	this.refAdditional=additional;
+	this.NoRefresh = false;
+}
+
+
 function dialog_onSubmit(odialog)
 {
+  // In this way we do not do refresh.
 	odialog.NoRefresh = true;
 	return true;
 }
@@ -520,6 +534,10 @@ function dialog_onLoad(odialog)
 	{
 		odialog.refWindow = top.opener;
 		odialog.refLocation = top.opener.location;
+		if(odialog.refAdditional != undefined)
+		{
+		   odialog.refLocation += odialog.refAdditional;
+		} 
 	}
 	catch(e)
 	{}
@@ -535,7 +553,9 @@ function dialog_onUnload(odialog)
 	try
 	{
 		if (odialog.refWindow == top.opener)
+		{
 			top.opener.location = odialog.refLocation;
+		}	
 	}
 	catch(e)
 	{}
@@ -614,10 +634,12 @@ function open_help_window(help_page,locale)
        20070930 - franciscom - REQ - BUGID 1078
 
 */
-function openTCaseWindow(tcase_id,tcversion_id)
+function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 {
 	var feature_url = "lib/testcases/archiveData.php";
-	feature_url += "?allow_edit=0&edit=testcase&id="+tcase_id+"&tcversion_id="+tcversion_id;
+    feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+tcase_id+"&tcversion_id="+tcversion_id;
+
+    // seems second parameter with spaced caused bug on IE
 	window.open(fRoot+feature_url,"TestCaseSpec",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
@@ -811,6 +833,8 @@ function openReqWindow(tcase_id)
 {                        
   var feature_url="lib/requirements/reqTcAssign.php";
   feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
+
+    // seems second parameter with spaces generate bug on IE
 	window.open(fRoot+feature_url,"TestCase_Requirement_link",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }

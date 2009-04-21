@@ -5,16 +5,21 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/04/07 18:55:29 $ $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/04/21 08:57:24 $ $Author: franciscom $
  *
 **/
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+$templateCfg = templateConfiguration();
 
 $args = init_args();
+$gui=new stdClass();
+$gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
+$gui->page_title=lang_get('page_title_lost_passwd');
+$gui->note = lang_get('your_info_for_passwd');
 
 $op = doDBConnect($db);
 if ($op['status'] == 0)
@@ -26,47 +31,48 @@ if ($op['status'] == 0)
 	exit();
 }
 
-$bPasswordMgtExternal = tlUser::isPasswordMgtExternal();
-$note = lang_get('your_info_for_passwd');
-if ($args->login != "" && !$bPasswordMgtExternal)
+if ($args->login != "" && !$gui->external_password_mgmt)
 {
 	$userID = tlUser::doesUserExist($db,$args->login);
 	if (!$userID)
-		$note = lang_get('bad_user');
+	{
+		$gui->note = lang_get('bad_user');
+	}
 	else
 	{
-		$result = resetPassword($db,$userID,$note);
+		$result = resetPassword($db,$userID,$gui->note);
 		if ($result >= tl::OK)
 		{
 		  	$user = new tlUser($userID);
 		  	if ($user->readFromDB($db) >= tl::OK)
+		  	{
 		  		logAuditEvent(TLS("audit_pwd_reset_requested",$user->login),"PWD_RESET",$userID,"users");
+			}
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
 		}
 		else if ($result == tlUser::E_EMAILLENGTH)
-			$note = lang_get('mail_empty_address');
+		{
+			$gui->note = lang_get('mail_empty_address');
+		}	
 		else if ($note != "")
-			$note = getUserErrorMessage($result);
+		{
+			$gui->note = getUserErrorMessage($result);
+		}	
 	}
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('note',$note);
-$smarty->assign('external_password_mgmt',$bPasswordMgtExternal);
-$smarty->assign('page_title',lang_get('page_title_lost_passwd'));
-$smarty->display('loginLost.tpl');
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->default_template);
+
 
 function init_args()
 {
-	$iParams = array(
-		"login" => array(tlInputParameter::STRING_N,0,30),
-	);
-	$pParams = P_PARAMS($iParams);
-	
 	$args = new stdClass();
+	$iParams = array("login" => array(tlInputParameter::STRING_N,0,30));
+	$pParams = P_PARAMS($iParams);
 	$args->login = $pParams["login"];
-	
 	return $args;
 }
 ?>

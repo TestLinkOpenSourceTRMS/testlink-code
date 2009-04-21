@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2009/03/29 14:10:01 $ by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2009/04/21 10:07:35 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296
@@ -36,7 +36,6 @@ testlinkInitPage($db);
 $tplan_mgr = new testplan($db);
 
 $templateCfg = templateConfiguration();
-
 
 $cfg = getCfg();
 $args = init_args($db,$cfg);

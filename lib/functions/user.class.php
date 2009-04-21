@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/04/02 20:16:17 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/04/21 09:35:33 $ $Author: franciscom $
  *
- * rev: 20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
+ * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
+ *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
  *      20081213 - franciscom - removed global coupling to access config parameters
  */
 class tlUser extends tlDBObject
@@ -361,6 +362,12 @@ class tlUser extends tlDBObject
 		return $effective_role;
 	}
 	
+	/**
+     * 
+     * check right on effective role for user, using test project and test plan,
+     * means that check right on effective role.
+     *
+     */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
 		global $g_propRights_global;
@@ -374,33 +381,43 @@ class tlUser extends tlDBObject
 		}
 		
 		if (!is_null($tplanID))
+		{
 			$testPlanID = $tplanID;
+		}
 		else
+		{
 			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+		}
+		
 		$userTestPlanRoles = $this->tplanRoles;
 		
 		if (!is_null($tprojectID))
-			$productID = $tprojectID;
+		{
+			$testprojectID = $tprojectID;
+		}
 		else
-			$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+		{
+			$testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+		}
 		
 		$allRights = $globalRights;
 			
 		$userTestProjectRoles = $this->tprojectRoles;
-		/* if $productID == -1 we dont check rights at product level! */
-		if (isset($userTestProjectRoles[$productID]))
+		/* if $testprojectID == -1 we dont check rights at test project level! */
+		if (isset($userTestProjectRoles[$testprojectID]))
 		{
-			$userProductRights = (array)$userTestProjectRoles[$productID]->rights;
-			$productRights = array();
-			foreach($userProductRights as $right)
+			$userTestProjectRights = (array)$userTestProjectRoles[$testprojectID]->rights;
+			$testProjectRights = array();
+			foreach($userTestProjectRights as $right)
 			{
-				$productRights[] = $right->name;
+				$testProjectRights[] = $right->name;
 			}
 			//subtract global rights		
-			$productRights = array_diff($productRights,array_keys($g_propRights_global));
-			propagateRights($globalRights,$g_propRights_global,$productRights);
-			$allRights = $productRights;
+			$testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
+			propagateRights($globalRights,$g_propRights_global,$testProjectRights);
+			$allRights = $testProjectRights;
 		}
+		
 		/* if $tplanID == -1 we dont check rights at tp level! */
 		if (isset($userTestPlanRoles[$testPlanID]))
 		{
@@ -410,7 +427,7 @@ class tlUser extends tlDBObject
 			{
 				$testPlanRights[] = $right->name;
 			}
-			//subtract product rights		
+			//subtract test projects rights		
 			$testPlanRights = array_diff($testPlanRights,array_keys($g_propRights_product));
 			
 			propagateRights($allRights,$g_propRights_product,$testPlanRights);

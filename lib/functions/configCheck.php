@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/04/16 11:11:59 $ by $Author: havlat $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/04/21 09:35:22 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -81,7 +81,9 @@ function checkServerLanguageSettings($defaultLanguage)
 	if(false !== $serverLanguage)
 	{
 		if (array_key_exists($serverLanguage,$g_locales))
+		{
 			$language = $serverLanguage;
+		}	
 	}
 
 	return ($language);
@@ -111,10 +113,8 @@ function checkConfiguration()
  **/
 function checkInstallStatus()
 {
-	if (defined('DB_TYPE'))
-		return true;
-	else
-		return false;
+    $status=defined('DB_TYPE') ? true : false;
+    return $status;
 }
 
 
@@ -130,10 +130,11 @@ function checkLibGd()
 	if( extension_loaded('gd') )
 	{
 		$arrLibConf = gd_info();
+		$msg = lang_get("error_gd_png_support_disabled");
 		if ($arrLibConf["PNG Support"])
+		{
 			$msg = 'OK';
-		else
-			$msg = lang_get("error_gd_png_support_disabled");
+		}
 	}
 	else
 	{

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.19 2008/01/29 20:51:07 franciscom Exp $
-* @modified $Date: 2008/01/29 20:51:07 $ by $Author: franciscom $
+* @version $Id: object.class.php,v 1.20 2009/04/21 09:35:08 franciscom Exp $
+* @modified $Date: 2009/04/21 09:35:08 $ by $Author: franciscom $
 *
 **/
 /* Namespace for TestLink, here we can safely define constants and other stuff, 
@@ -237,12 +237,14 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		@param string $query the ids of the objects to be created are obtained by this query
 		@param string $column the  name of the column which delivers the ids
 		@param string $className the  class name of the objects
-		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, if false they are returned in a normal array
+		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, 
+		            if false they are returned in a normal array
 		@param int $detailLevel the detail level of the object
 		
 		@return the newly created objects on success, or null else
 	*/
-	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL,$limit = -1)
+	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,
+	                                                $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL,$limit = -1)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column,$limit);
 		return self::createObjectsFromDB($db,$ids,$className,$bAssoc,$detailLevel);
@@ -253,7 +255,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		@param object [ref] $db the database connection
 		@param array $ids the ids of the objects to be created
 		@param string $className the class name of the objects
-		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, if false they are returned in a normal array
+		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, 
+		            if false they are returned in a normal array
 		@param int $detailLevel the detail level of the object
 		
 		@return the newly created objects on success, or null else

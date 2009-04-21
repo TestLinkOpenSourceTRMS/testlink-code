@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.428 $
- * @modified $Date: 2009/04/16 22:27:34 $ by $Author: havlat $
+ * @version $Revision: 1.429 $
+ * @modified $Date: 2009/04/21 06:00:36 $ by $Author: amkhullar $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -2014,6 +2014,9 @@ $TLS_list_of_failed = "Failed Test Cases";
 $TLS_list_of_not_run = "Not Run Test Cases";
 
 
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
 // ----- lib/results/resultsTC.php -----
 

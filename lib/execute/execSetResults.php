@@ -4,10 +4,12 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.120 $
- * @modified $Date: 2009/04/20 19:39:33 $ $Author: schlundus $
+ * @version $Revision: 1.121 $
+ * @modified $Date: 2009/04/21 10:43:53 $ $Author: franciscom $
  *
  * rev:
+ *     20090419 - franciscom - BUGID 2364 - added management of refreshTree
+ *                             initializeRights() refactored
  *     20090409 - amkhullar - updated code not written properly.
  *     20090330 - franciscom - fixed bug on test plan custom field get.
  *     20090325 - amkhullar - BUGID 2267
@@ -276,7 +278,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-  $args = new stdClass();
+    $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
@@ -292,71 +294,75 @@ function init_args()
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
 	}
 
-  // See details on: "When nullify filter_status - 20080504" in this file
-  if( strlen(trim($args->filter_status)) == 0 or $args->level == 'testcase')
-  {
-      $args->filter_status = null;  
-  }
-  else
-  {
-      $args->filter_status = unserialize($args->filter_status);
-  }
-
-  // 20081221 - franciscom
-  if( strlen(trim($args->filter_assigned_to)) == 0 )
-  {
-      $args->filter_assigned_to = null;  
-  }
-  else
-  {
-      $args->filter_assigned_to = unserialize($args->filter_assigned_to);
-  }
+    // See details on: "When nullify filter_status - 20080504" in this file
+    if( strlen(trim($args->filter_status)) == 0 or $args->level == 'testcase')
+    {
+        $args->filter_status = null;  
+    }
+    else
+    {
+        $args->filter_status = unserialize($args->filter_status);
+    }
+    
+    // 20081221 - franciscom
+    if( strlen(trim($args->filter_assigned_to)) == 0 )
+    {
+        $args->filter_assigned_to = null;  
+    }
+    else
+    {
+        $args->filter_assigned_to = unserialize($args->filter_assigned_to);
+    }
   
-  switch($args->level)
-  {
-      case 'testcase':
-      $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-      $args->tsuite_id = null;
-      break;
-        
-      case 'testsuite':
-      $args->tsuite_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-      $args->tc_id = null;
-      break;
-  }
-
+    switch($args->level)
+    {
+        case 'testcase':
+        $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+        $args->tsuite_id = null;
+        break;
+          
+        case 'testsuite':
+        $args->tsuite_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+        $args->tc_id = null;
+        break;
+    }
 
 
 	$key2loop = array('id' => 0,'build_id' =>0, 'exec_to_delete' => 0, 
-				            'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1);
+	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1);
 				            
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
 	}
 
-  // 20080428 - franciscom
-  if( isset($_REQUEST['keyword_id']) )
-  {
-     // can be a list
-     $args->keyword_id=explode(',',$_REQUEST['keyword_id']);
-     if( count($args->keyword_id) == 1)
-     {
-         $args->keyword_id=$args->keyword_id[0]; 
-     }
-  }
-  else
-  {
-      $args->keyword_id=0;  
-  }
+    if( isset($_REQUEST['keyword_id']) )
+    {
+       // can be a list
+       $args->keyword_id=explode(',',$_REQUEST['keyword_id']);
+       if( count($args->keyword_id) == 1)
+       {
+           $args->keyword_id=$args->keyword_id[0]; 
+       }
+    }
+    else
+    {
+        $args->keyword_id=0;  
+    }
 
-  // Checkbox
-  $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+    // Checkbox
+    $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+    
+    // 20090419 - franciscom - BUGID
+    $args->refreshTree=isset($_REQUEST['refreshTree']) ? 1 : 0;
 
 	$args->tproject_id = $_SESSION['testprojectID'];
+	
 	//BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 	$args->user = $_SESSION['currentUser'];
+
+
 
 	return $args;  
 }
@@ -552,15 +558,13 @@ function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_exec
 */
 function do_remote_execution(&$db,$tc_versions)
 {
-  $resultsCfg = config_get('results');
-  $tc_status = $resultsCfg['status_code'];
- 
-  
-  $tree_mgr = new tree($db);
-  $cfield_mgr = new cfield_mgr($db);
+    $resultsCfg = config_get('results');
+    $tc_status = $resultsCfg['status_code'];
+    $tree_mgr = new tree($db);
+    $cfield_mgr = new cfield_mgr($db);
   
 	$ret=array();
-  $ret["status"]=array();
+    $ret["status"]=array();
 	$ret["notes"]=array();
 
 	$executionResults = array();
@@ -614,26 +618,27 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
     $simple_tester_roles=array_flip($exec_cfg->simple_tester_roles);
     $effective_role = $userObj->getEffectiveRole($db,$tproject_id,$tplan_id);
     
-	  // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
-	  // 20080104 - franciscom - Please explain why do you think will not work ok ?
-	  //                         do you prefer to check for exec right ?
-	  //
-	  // SCHLUNDUS: jep, exactly. If a user defines it own roles than a check for the tester
-	  // role will not do the desired effect of putting the logged in user in tester-view-mode
-	  // instead we must check for presence (and or absence) the right(s) which mades a user a tester 
-	  //
-	  // 20080310 - franciscom - 
-	  // Role is considered tester if:
-	  // role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
-	  //
-	  //
-	  $can_execute = $effective_role->hasRight('testplan_execute');
-	  $can_manage = $effective_role->hasRight('testplan_planning');
-
-	  // 20081217 - franciscom
-	  // $use_exec_cfg = $effective_role->dbID == TL_ROLES_TESTER || ($can_execute && !$can_manage);
+	// SCHLUNDUS: hmm, for user defined roles, this wont work correctly
+	// 20080104 - franciscom - Please explain why do you think will not work ok ?
+	//                         do you prefer to check for exec right ?
+	//
+	// SCHLUNDUS: jep, exactly. If a user defines it own roles than a check for the tester
+	// role will not do the desired effect of putting the logged in user in tester-view-mode
+	// instead we must check for presence (and or absence) the right(s) which mades a user a tester 
+	//
+	// 20080310 - franciscom - 
+	// Role is considered tester if:
+	// role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
+	//
+	//
+	$can_execute = $effective_role->hasRight('testplan_execute');
+	$can_manage = $effective_role->hasRight('testplan_planning');
+    
+	// 20081217 - franciscom
+	// $use_exec_cfg = $effective_role->dbID == TL_ROLES_TESTER || ($can_execute && !$can_manage);
     $use_exec_cfg = isset($simple_tester_roles[$effective_role->dbID]) || ($can_execute && !$can_manage);
-	  return  $use_exec_cfg ? $exec_cfg->exec_mode->tester : 'all';
+    
+    return  $use_exec_cfg ? $exec_cfg->exec_mode->tester : 'all';
 } // function end
 
 
@@ -809,7 +814,7 @@ function getCfg()
   
   args:
        dbHandler: reference to db object
-       user_id:
+       $userObj: reference to current user object
        tproject_id:
        tplan_id
   
@@ -820,11 +825,13 @@ function getCfg()
   returns: 
 
 */
-function initializeRights(&$dbHandler,$user_id,$tproject_id,$tplan_id)
+function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 {
     $exec_cfg=config_get('exec_cfg');
     $grants = new stdClass();
-    $grants->execute = (has_rights($dbHandler,"testplan_execute")=="yes" ? 1 : 0);
+    
+    $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id);
+    // $grants->execute = (has_rights($dbHandler,"testplan_execute")=="yes" ? 1 : 0);
     
     // may be in the future this can be converted to a role right
     $grants->delete_execution=$exec_cfg->can_delete_execution;
@@ -835,6 +842,10 @@ function initializeRights(&$dbHandler,$user_id,$tproject_id,$tplan_id)
     // Execution right must be present to consider this configuration option.
     $grants->edit_exec_notes=$grants->execute && $exec_cfg->edit_notes;
     
+    // 20090419 - franciscom - BUGID 
+    // $grants->edit_testcase = (has_rights($dbHandler,"mgt_modify_tc")=="yes" ? 1 : 0);
+    $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);
+
     return $grants;
 }
 
@@ -857,18 +868,20 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->exec_notes_editors=null;
     $gui->bulk_exec_notes_editor=null;
     $gui->req_details=null;
-
-    $gui->editorType=$cfgObj->editorCfg['type'];
+    $gui->attachmentInfos=null;
+    $gui->bugs=null;
+    $gui->other_exec_cfields=null;
     $gui->ownerDisplayName = null;
+    
+    $gui->editorType=$cfgObj->editorCfg['type'];
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
     $gui->tester_id=$argsObj->user->dbID;
     $gui->include_unassigned=$argsObj->include_unassigned;
- 		$gui->attachmentInfos=null;
-    $gui->bugs=null;
-    $gui->other_exec_cfields=null;
     $gui->tpn_view_status=$argsObj->tpn_view_status;
     $gui->bn_view_status=$argsObj->bn_view_status;
     $gui->bc_view_status=$argsObj->bc_view_status;
+    $gui->refreshTree=$argsObj->refreshTree;
+
     	
     // 20081122 - franciscom
     // Just for the record:	
@@ -899,7 +912,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->build_name = isset($the_builds[$argsObj->build_id]) ? $the_builds[$argsObj->build_id] : '';
 
 
-    $gui->grants = initializeRights($dbHandler,$argsObj->user->dbID,$argsObj->tproject_id,$argsObj->tplan_id);
+    // 20090419 - franciscom
+    $gui->grants = initializeRights($dbHandler,$argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
     $gui->exec_mode = initializeExecMode($dbHandler,$cfgObj->exec_cfg,
                                          $argsObj->user,$argsObj->tproject_id,$argsObj->tplan_id);
 

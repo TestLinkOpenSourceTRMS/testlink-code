@@ -2,12 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/04/21 05:59:14 $  $Author: amkhullar $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/04/21 09:41:38 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090420 - amitkhullar- BUGID-2410 - get_linked_cfields_at_testplan_design() - added logic to get data
  * 					for custom field values stores at test plan level.
+ * 20090420 - franciscom - BUGID 2158 - get_linked_cfields_at_design() added filter on custom field id 
+ *
  * 20090408 - franciscom - BUGID 2352 - added new method remove_all_scopes_values();
  *                                      changes in delete()
  *
@@ -336,20 +338,20 @@ class cfield_mgr
 
 
   */
-	function get_enable_on_cfg($ui_mode)
-	{
-	  $mgmt_cfg=array();
+function get_enable_on_cfg($ui_mode)
+{
+    $mgmt_cfg=array();
     $mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->enable_on_cfg[$ui_mode]);
     return($mgmt_cfg);
-  }
+}
 
 
-	function get_show_on_cfg($ui_mode)
-	{
-	  $mgmt_cfg=array();
+function get_show_on_cfg($ui_mode)
+{
+    $mgmt_cfg=array();
   	$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->show_on_cfg[$ui_mode]);
     return($mgmt_cfg);
-  }
+}
 
 
 
@@ -364,21 +366,20 @@ class cfield_mgr
 
 
   */
-	function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
-	{
+function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
+{
     $enabled_mgmt=array();
     $tl_node_types=$this->tree_manager->get_available_node_types();
-
     foreach($this->node_types as $verbose_type)
     {
-      $type_id=$tl_node_types[$verbose_type];
-      if( isset($map_node_id_cfg[$verbose_type]) )
-      {
-        $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
-      }
+        $type_id=$tl_node_types[$verbose_type];
+        if( isset($map_node_id_cfg[$verbose_type]) )
+        {
+          $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
+        }
     }
     return($enabled_mgmt);
-  }
+}
 
 
 
@@ -430,6 +431,10 @@ class cfield_mgr
                [$show_on_testplan_design]: 1 -> filter on field show_on_execution=1
                                            0 or null or not exists -> don't filter
 
+			   ['cfield_id']: if exists use it's value to filter on custom field id
+                              null or not exists -> don't filter
+
+
     [$node_type]: default: null
                   verbose id ('testcase', 'testsuite', etc) of a node type.
                   custom fields are linked also to different node types.
@@ -453,9 +458,12 @@ class cfield_mgr
 
 
     rev :
+
+		  20090420 - franciscom
+          added new key cfield_id on filters
+
           20080811 - franciscom
           interface changes $show_on_execution -> $filters
-          
          
           
           20070526 - franciscom
@@ -501,6 +509,12 @@ class cfield_mgr
         {
             $additional_filter .= " AND CF.show_on_testplan_design=1 ";
         }   
+        
+        // 20090420 - franciscom
+        if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
+        {
+            $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
+        }
     }
 
     // 20070526 - added CF.id to order by
@@ -1285,7 +1299,6 @@ function name_is_unique($id,$name)
 	# $p_node_id	bug id to display the custom field value for
 	#
 	# [$p_value_field]: field id, to point to the field value in $p_field_def
-	#
 	function string_custom_field_value( $p_field_def, $p_node_id,$p_value_field='value')
 	{
 
@@ -1317,23 +1330,23 @@ function name_is_unique($id,$name)
 			case 'datetime':
 				if ($t_custom_field_value != null)
 				{
-				  // must remove %
-				  // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
-          // $datetime_format=$t_date_format;
-          $t_date_format=str_replace("%","",config_get( 'date_format'));
-          $cfg=config_get('gui');
-          $datetime_format=$t_date_format . " " .$cfg->custom_fields->time_format;
-          $xdate=date( $datetime_format, $t_custom_field_value);
+				    // must remove %
+				    // $t_date_format=str_replace("%","",config_get( 'timestamp_format'));
+                    // $datetime_format=$t_date_format;
+                    $t_date_format=str_replace("%","",config_get( 'date_format'));
+                    $cfg=config_get('gui');
+                    $datetime_format=$t_date_format . " " .$cfg->custom_fields->time_format;
+                    $xdate=date( $datetime_format, $t_custom_field_value);
 					return  $xdate;
 				}
 				break ;
 
 
 		  case 'text area':
-        if ($t_custom_field_value != null)
-				{
+                if ($t_custom_field_value != null)
+			    {
 					return nl2br($t_custom_field_value);
-				}
+                }
         break;
 
 			default:

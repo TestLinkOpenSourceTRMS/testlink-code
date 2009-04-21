@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithCF.tpl,v 1.2 2009/03/25 19:02:44 amkhullar Exp $
+$Id: testCasesWithCF.tpl,v 1.3 2009/04/21 05:58:22 amkhullar Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
@@ -44,7 +44,7 @@ rev:
 	            <td>{$arrData.build_name|escape}</td>
 	            <td>{$arrData.tester|escape}</td>
 	            
-	            <td><a href="lib/execute/execSetResults.php?level=testcase&build_id={$arrData.builds_id}&id={$arrData.tcase_id}&version_id={$arrData.tcversion_id}">
+	            <td><a href="lib/execute/execSetResults.php?level=testcase&build_id={$arrData.builds_id}&id={$arrData.tcase_id}&version_id={$arrData.tcversion_id}&tplan_id={$gui->tplan_id}">
 	               {localize_timestamp ts=$arrData.execution_ts}
                   </a>
 	            </td>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/03/25 19:15:03 $ by $Author: amkhullar $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/04/21 06:00:05 $ by $Author: amkhullar $
  * @author Amit Khullar - amkhullar@gmail.com
  * 
  * For a test plan, list test cases with Execution Custom Field Data 
@@ -29,6 +29,7 @@ $gui->path_info=null;
 $gui->resultSet=null;
 $gui->tproject_name=$args->tproject_name;
 $gui->tplan_name=$args->tplan_name;
+$gui->tplan_id=$args->tplan_id;
 $testCaseSet = array();
 $msg_key='no_linked_tc_cf';
 if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )

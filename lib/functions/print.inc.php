@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.75 $
- * @modified $Date: 2009/04/20 08:29:04 $ by $Author: havlat $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2009/04/21 04:54:11 $ by $Author: amkhullar $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -444,7 +444,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
             //- amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
 	      	$bug_interface = config_get("bugInterface");
 			$bugs = get_bugs_for_exec($db,$bug_interface,$execution_id);
-			if (($bugs) && ($tcstatus2 == 'failed')) 
+			if (($bugs) && ($tcstatus2 == 'Failed')) 
 			{
 				$bugString = $labels['bugs'] . ": <br />";
 				foreach($bugs as $bugID => $bugInfo) 

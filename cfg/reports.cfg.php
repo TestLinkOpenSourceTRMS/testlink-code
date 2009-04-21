@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/04/14 16:55:40 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/04/21 05:58:02 $ by $Author: amkhullar $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * Revision:
+ *  20090421 - amitkhullar- BUGID 2410 - Custom Field report for Test Plan
  *  20090414 - franciscom - BUGID 2363 - free test cases i.e. not assigned to a test plan.
  *  20081227 - franciscom - added tcases_without_tester
  *  20081213 - franciscom - replace of old $g_ variables
@@ -153,12 +154,17 @@ $tlCfg->reports_list['list_problems'] = array(
 	'enabled' => 'bts',
 	'format' => 'format_html'
 );
-
-$tlCfg->reports_list['tcases_with_rca'] = array( 
-'title' => 'link_report_tcases_with_cf',
-'url' => 'lib/results/testCasesWithCF.php',
-'enabled' => 'all',
-'format' => 'format_html'
+$tlCfg->reports_list['tcases_with_cf'] = array( 
+	'title' => 'link_report_tcases_with_cf',
+	'url' => 'lib/results/testCasesWithCF.php',
+	'enabled' => 'all',
+	'format' => 'format_html'
+);
+$tlCfg->reports_list['tplan_with_cf'] = array( 
+	'title' => 'link_report_tplans_with_cf',
+	'url' => 'lib/results/testPlanWithCF.php',
+	'enabled' => 'all',
+	'format' => 'format_html'
 );
 
 $tlCfg->reports_list['free_tcases'] = array( 

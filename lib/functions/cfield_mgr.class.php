@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/04/09 08:15:52 $  $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/04/21 05:59:14 $  $Author: amkhullar $
  * @author franciscom
  *
+ * 20090420 - amitkhullar- BUGID-2410 - get_linked_cfields_at_testplan_design() - added logic to get data
+ * 					for custom field values stores at test plan level.
  * 20090408 - franciscom - BUGID 2352 - added new method remove_all_scopes_values();
  *                                      changes in delete()
  *
@@ -1998,18 +2000,21 @@ function getXMLServerParams($node_id)
   */
   function get_linked_cfields_at_testplan_design($tproject_id,$enabled,
                                                  $node_type=null,$node_id=null,
-                                                 $link_id=null,$testplan_id=null)
+                                                 $link_id=null,$testplan_id=null,$access_key = 'id')
   {
     $additional_join="";
     $additional_values="";
     $additional_filter="";
+    
+    $order_by_clause = " ORDER BY display_order,CF.id ";
+    $fetchMethod = 'fetchRowsIntoMap';
 
     if( !is_null($node_type) )
     {
    		$hash_descr_id = $this->tree_manager->get_available_node_types();
-      $node_type_id=$hash_descr_id[$node_type];
+        $node_type_id=$hash_descr_id[$node_type];
 
-      $additional_join  .= " JOIN {$this->cfield_node_types_table} CFNT ON CFNT.field_id=CF.id " .
+        $additional_join  .= " JOIN {$this->cfield_node_types_table} CFNT ON CFNT.field_id=CF.id " .
                            " AND CFNT.node_type_id={$node_type_id} ";
     }
     
@@ -2030,11 +2035,39 @@ function getXMLServerParams($node_id)
     //   $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values} CFTDV ON CFTDV.field_id=CF.id " .
     //                       " AND CFTDV.link_id={$link_id} " .
     // }
-
-    if( !is_null($link_id) )
+    
+    //-amitkhullar - Created this logic to get the linked tcversions for a testplan 
+    //                 that have custom field values at test plan level - BUGID 2410
+    if( is_null($link_id) && !is_null($testplan_id))
     {
-      $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id";
-      $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
+        $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id, " . 
+                              "NHB.id AS tcase_id, NHB.name AS tcase_name, " .
+                              "TCV.tc_external_id ";
+                               //"TCV.tc_external_id, exec.status ";
+                               
+        $additional_join .= "JOIN testplan_tcversions TPTC" .
+                          " ON TPTC.testplan_id = {$testplan_id}" .
+        				  " JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
+                          " ON CFTDV.field_id=CF.id " .
+                          " AND CFTDV.link_id = TPTC.id ";
+        
+        $additional_join .= " JOIN {$this->tcversions_table} TCV ON TCV.id = TPTC.tcversion_id " .
+		                    " AND TCV.id = TPTC.tcversion_id " .
+         					" JOIN {$this->nodes_hierarchy_table} NHA ON NHA.id = TPTC.tcversion_id " .
+                            " JOIN {$this->nodes_hierarchy_table} NHB ON NHB.id = NHA.parent_id  " ;
+        
+        //$additional_join .= " JOIN executions EXEC on TPTC.tcversion_id = EXEC.tcversion_id  ";
+        
+        $order_by_clause = " ORDER BY node_id,display_order,CF.id "; 
+        $fetchMethod = 'fetchArrayRowsIntoMap';
+        $access_key = 'node_id';
+        
+    }
+
+    elseif( !is_null($link_id) )
+    {
+        $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id";
+        $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
                           " ON CFTDV.field_id=CF.id " .
                           " AND CFTDV.link_id={$link_id} ";
     }
@@ -2050,9 +2083,8 @@ function getXMLServerParams($node_id)
          " AND   CFTP.active=1     " .
          " AND   CF.enable_on_testplan_design={$enabled} " .
          " AND   CF.show_on_testplan_design=1 " .
-         " ORDER BY display_order,CF.id ";
-
-    $map = $this->db->fetchRowsIntoMap($sql,'id');
+         $order_by_clause;
+    $map = $this->db->$fetchMethod($sql,$access_key);
     return($map);
   }
 

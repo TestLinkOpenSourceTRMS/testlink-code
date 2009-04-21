@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.163 $
- * @modified $Date: 2009/04/14 17:41:18 $ $Author: franciscom $
+ * @version $Revision: 1.164 $
+ * @modified $Date: 2009/04/21 09:34:53 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
  * 20090414 - franciscom - BUGID 2378
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
  * 20090329 - franciscom - html_table_of_custom_field_values() new option useful when
@@ -163,10 +164,10 @@ class testcase extends tlObjectWithAttachments
              value: import file type verbose description
 
   */
-	function get_import_file_types()
+    function get_import_file_types()
 	{
-     return $this->import_file_types;
-  }
+        return $this->import_file_types;
+    }
 
  /*
     function: get_execution_types
@@ -514,20 +515,48 @@ function get_all()
 
 */
 function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-              $viewer_args = null,$path_info=null)
+              $viewer_args = null,$path_info=null,$mode=null)
 {
+    $status_ok = 1;
+
     $gui = new stdClass();
     $gui->parentTestSuiteName='';
     $gui->path_info=$path_info;
 	$gui->tprojectName='';
     $gui->linked_versions=null;
+	$gui->tc_current_version = array();
+
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
 
-    $status_ok = 1;
-    $viewer_defaults=array('title' => lang_get('title_test_case'),
-                           'show_title' => 'no',
+	$req_mgr = new requirement_mgr($this->db);
+	$requirements_feature=null;
+	$tc_other_versions = array();
+	$status_quo_map = array();
+	$keywords_map = array();
+	$arrReqs = array();
+    $userid_array = array();
+    $cf_smarty = array();
+
+    // 20090418 - franciscom
+    $gui->bodyOnLoad="";
+    $gui->bodyOnUnload="";
+    $gui->submitCode="";
+    $gui->dialogName='';
+   
+    if( !is_null($mode) && $mode=='editOnExec' )
+    {
+        // refers to two javascript functions present in testlink_library.js
+        // and logic used to refresh both frames when user call this
+        // method to edit a test case while executing it.
+        $gui->dialogName='tcview_dialog';
+        $gui->bodyOnLoad="dialog_onLoad($gui->dialogName)";
+        $gui->bodyOnUnload="dialog_onUnload($gui->dialogName)";
+        $gui->submitCode="return dialog_onSubmit($gui->dialogName)";
+    }
+
+    $viewer_defaults=array('title' => lang_get('title_test_case'),'show_title' => 'no',
                            'action' => '', 'msg_result' => '','user_feedback' => '',
                            'refresh_tree' => 'yes', 'disable_edit' => 0,
                            'display_testproject' => 0,'display_parent_testsuite' => 0,
@@ -543,7 +572,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
             }
         }
     }
-  
+ 
     $gui->show_title=$viewer_defaults['show_title'];
     $gui->display_testcase_path=!is_null($path_info);
     $gui->hilite_testcase_name=$viewer_defaults['hilite_testcase_name'];
@@ -554,20 +583,14 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
         $gui->match_count=count($path_info);  
     }
 
-	$req_mgr = new requirement_mgr($this->db);
-	$requirements_feature=null;
-	$gui->tc_current_version = array();
-	$tc_other_versions = array();
-	$status_quo_map = array();
-	$keywords_map = array();
-	$arrReqs = array();
-
-	$can_edit = $viewer_defaults['disable_edit'] == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
-    $gui->can_do = new stdClass();
-  
-    // Attention: when user do not have right instead of returning 'no', return null.
-    //            IMHO is wrong, function must be return 'yes'/'no'.
-    $gui->can_do->testplan_planning = has_rights($this->db,"testplan_planning");
+    // fine grain control of operations
+    if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == 'no' )
+    {
+        $mode = 'editDisabled';
+    }
+    $gui->show_mode=$mode;
+    $gui->can_do = $this->getShowViewerActions($mode);
+    $gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
 
 	if(is_array($id))
 	{
@@ -575,7 +598,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	}
 	else
 	{
-	  $status_ok = $id > 0 ? 1 : 0;
+	    $status_ok = $id > 0 ? 1 : 0;
 		$a_id = array($id);
 	}
 
@@ -606,60 +629,56 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
              $tcasePrefix .= $tcase_cfg->glue_character;
         }
     }
-    $userid_array = array();
-    $cf_smarty = array();
-  if (sizeof($a_id))
-  {
-		$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
-		$allReqs = $req_mgr->get_all_for_tcase($a_id);
-		foreach($a_id as $key => $tc_id)
-		{
-			$tc_array = $this->get_by_id($tc_id,$version_id);
-			if (!$tc_array)
-			{
-				continue;
-			}
-			
-			$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
-			// get the status quo of execution and links of tc versions
-			$status_quo_map[] = $this->get_versions_status_quo($tc_id);
-			
-			$gui->linked_versions[] = $this->get_linked_versions($tc_id);
-			
-			
-			$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
-			$tc_current = $tc_array[0];
-			$gui->tc_current_version[] = array($tc_current);
-			
-			//Get UserID and Updater ID for current Version
-			$userid_array[$tc_current['author_id']] = null;
-			$userid_array[$tc_current['updater_id']] = null;
-
-			if(count($tc_array) > 1)
-			{
-				$tc_other_versions[] = array_slice($tc_array,1);
-			}
-			else
-			{
-				$tc_other_versions[] = null;
-			}	
-			
-			//Get author and updater id for each version
-			if ($tc_other_versions[0])
-			{
-				foreach($tc_other_versions[0] as $key => $version)
-				{				
-		  			$userid_array[$version['author_id']] = null;
-		  			$userid_array[$version['updater_id']] = null;				
-				}
-			}
-			$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
-			$arrReqs[] = $tcReqs; 
-			$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tproject_id);
-		} // foreach($a_id as $key => $tc_id)
-  } // if (sizeof($a_id))
+    
+    if (sizeof($a_id))
+    {
+	  	$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
+	  	$allReqs = $req_mgr->get_all_for_tcase($a_id);
+	  	foreach($a_id as $key => $tc_id)
+	  	{
+	  		$tc_array = $this->get_by_id($tc_id,$version_id);
+	  		if (!$tc_array)
+	  		{
+	  			continue;
+	  		}
+	  		
+	  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
+	  		// get the status quo of execution and links of tc versions
+	  		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
+	  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
+	  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
+	  		$tc_current = $tc_array[0];
+	  		$gui->tc_current_version[] = array($tc_current);
+	  		
+	  		//Get UserID and Updater ID for current Version
+	  		$userid_array[$tc_current['author_id']] = null;
+	  		$userid_array[$tc_current['updater_id']] = null;
+    
+	  		if(count($tc_array) > 1)
+	  		{
+	  			$tc_other_versions[] = array_slice($tc_array,1);
+	  		}
+	  		else
+	  		{
+	  			$tc_other_versions[] = null;
+	  		}	
+	  		
+	  		//Get author and updater id for each version
+	  		if ($tc_other_versions[0])
+	  		{
+	  			foreach($tc_other_versions[0] as $key => $version)
+	  			{				
+	  	  			$userid_array[$version['author_id']] = null;
+	  	  			$userid_array[$version['updater_id']] = null;				
+	  			}
+	  		}
+	  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
+	  		$arrReqs[] = $tcReqs; 
+	  		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tproject_id);
+	  	} // foreach($a_id as $key => $tc_id)
+    } // if (sizeof($a_id))
   
-  // Removing duplicate and NULL id's
+    // Removing duplicate and NULL id's
 	unset($userid_array['']);
 	$passeduserarray = array_keys($userid_array);
 	
@@ -672,9 +691,6 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('users',tlUser::getByIDs($this->db,$passeduserarray,'id'));
-	$smarty->assign('can_edit',$can_edit);
-	$smarty->assign('can_delete_testcase',$can_edit);
-	$smarty->assign('can_delete_version',$can_edit);
 	$smarty->assign('status_quo',$status_quo_map);
 	$smarty->assign('testcase_other_versions',$tc_other_versions);
 	$smarty->assign('arrReqs',$arrReqs);
@@ -2854,6 +2870,45 @@ function copyReqAssignmentTo($from,$to)
         $req_mgr->assign_to_tcase($items,$to); 
     } 
 }
+
+/**
+ * 
+ *
+ */
+private function getShowViewerActions($mode)
+{
+    // fine grain control of operations
+    $viewerActions= new stdClass();
+    $viewerActions->edit='no';
+    $viewerActions->delete_testcase='no';
+    $viewerActions->delete_version='no';
+    $viewerActions->deactivate='no';
+    $viewerActions->create_new_version='no';
+    $viewerActions->export='no';
+    $viewerActions->move='no';
+    $viewerActions->copy='no';
+    $viewerActions->add2tplan='no';
+
+    switch ($mode) 
+    {
+        case 'editOnExec':
+            $viewerActions->edit='yes';
+            $viewerActions->create_new_version='yes';    
+        break;
+
+        case 'editDisabled':
+        break;
+
+        default:
+        foreach($viewerActions as $key => $value)
+        {
+            $viewerActions->$key='yes';        
+        }
+        break;
+    }
+    return $viewerActions;     
+}
+
 
 
 // ---------------------------------------------------------------------------------------

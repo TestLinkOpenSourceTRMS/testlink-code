@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2009/04/02 06:42:11 $  by $Author: franciscom $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2009/04/21 09:33:22 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *     20090401 - franciscom - BUGID 2364 - edit while executing
  *     20090401 - franciscom - BUGID 2316
  *     20090325 - franciscom - BUGID - problems with add to testplan
  *     20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
@@ -63,15 +64,16 @@ $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui=new stdClass();
 $gui->editorType=$cfg->webEditorCfg['type'];
 $gui->grants=getGrants($db);
-$gui->opt_requirements=isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
+$gui->opt_requirements=$args->opt_requirements; 
 $gui->action_on_duplicated_name='generate_new';
+$gui->show_mode=$args->show_mode;
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->assign('has_been_executed',$args->has_been_executed);
 $smarty->assign('execution_types',$tcase_mgr->get_execution_types());
 $smarty->assign('attachments',null);
-
 
 $active_status = 0;
 $action_result = "deactivate_this_version";
@@ -145,7 +147,7 @@ if($args->edit_tc)
   	  	$smarty->assign($key, $of->CreateHTML($rows,$cols));
   	}
 
-		$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
+	$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
     $smarty->assign('cf',$cf_smarty);
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);
@@ -380,7 +382,8 @@ else if($args->do_copy)
 	  $viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
 	  $viewer_args['msg_result'] = $msg;
 	  $viewer_args['user_feedback'] = $user_feedback;
-	  $tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,$args->tcversion_id,$viewer_args);
+	  $tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,
+	                   $args->tcversion_id,$viewer_args,null, $args->show_mode);
 
 }
 else if($args->do_create_new_version)
@@ -400,9 +403,15 @@ else if($args->do_create_new_version)
 	$viewer_args['refresh_tree'] = DONT_REFRESH;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
-	$smarty->assign('loadOnCancelURL',$_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
 	
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS, $viewer_args);
+	// used to implement go back ??
+	$smarty->assign('loadOnCancelURL',
+	                $_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
+	
+	// 20090419 - BUGID - 
+	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
+	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,
+	                 $testcase_version, $viewer_args,null, $args->show_mode);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
@@ -411,7 +420,8 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 	$viewer_args['refresh_tree']=DONT_REFRESH;
 	$smarty->assign('loadOnCancelURL',$_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
 	
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,testcase::ALL_VERSIONS,$viewer_args);
+	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,
+	                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
 }
 
 // --------------------------------------------------------------------------
@@ -554,6 +564,10 @@ function init_args($spec_cfg,$otName)
     {
        $args->copy[$key]=isset($_REQUEST[$key])?true:false;    
     }    
+    
+    
+    // 20090419 - franciscom - BUGID - edit while executing
+    $args->show_mode = isset($_REQUEST['show_mode']) ? $_REQUEST['show_mode'] : null;
         
     // from session
     $args->testproject_id = $_SESSION['testprojectID'];
@@ -563,6 +577,8 @@ function init_args($spec_cfg,$otName)
     {
     	$args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
     }
+    $args->opt_requirements = isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
+
     return $args;
 }
 

@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/04/14 16:56:41 $  by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/04/21 09:33:46 $  by $Author: franciscom $
  * testcases commands
  *
- * rev: BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
+ * rev: BUGID 2364 - changes in show() calls
+ *      BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
  *
 **/
 class testcaseCommands
@@ -87,7 +88,7 @@ class testcaseCommands
 		                               TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
       $smartyObj->assign('attachments',null);
-		  if($ret['status_ok'])
+        if($ret['status_ok'])
 		  {
 		    $refresh_tree='yes';
 		    $msg = '';
@@ -112,8 +113,9 @@ class testcaseCommands
       $smartyObj->assign('has_been_executed',$argsObj->has_been_executed);
       $smartyObj->assign('execution_types',$this->tcaseMgr->get_execution_types());
       
-	    $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
-	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
+      // 20090419 - BUGID
+	  $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
+	                        $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
  
       return $guiObj;
   }  

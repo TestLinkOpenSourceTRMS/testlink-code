@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.12 2009/04/21 10:08:34 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.13 2009/04/22 08:28:17 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
-rev: 20090419 - franciscom - BUGID - edit while executing
+rev: 20090422 - franciscom - BUGID 2414
+     20090419 - franciscom - BUGID  - edit while executing
 *}
 
 {lang_get var="labels"
@@ -33,27 +34,38 @@ var alert_box_title = "{$labels.warning}";
 {literal}
 function validateForm(f)
 {
-	var status_ok = true;
+    var status_ok = true;
 	
   	if (isWhitespace(f.testcase_name.value)) 
   	{
-    	alert_message(alert_box_title,warning_empty_testcase_name);
-		selectField(f,'testcase_name');
-		return false;
-	}
-	var cf_designTime = document.getElementById('cfields_design_time');
-	if (cf_designTime)
- 	{
- 		var cfields_container = cf_designTime.getElementsByTagName('input');
- 		var cfieldsChecks = validateCustomFields(cfields_container);
-		if(!cfieldsChecks.status_ok)
-	  	{
-	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	return false;
-		}
-	}
-	return true;
+    	  alert_message(alert_box_title,warning_empty_testcase_name);
+		    selectField(f,'testcase_name');
+		    return false;
+	  }
+	  var cf_designTime = document.getElementById('cfields_design_time');
+	  if (cf_designTime)
+ 	  {
+ 		    var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		    var cfieldsChecks = validateCustomFields(cfields_container);
+		    if(!cfieldsChecks.status_ok)
+	  	  {
+	    	    var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	  alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	  return false;
+		    }
+
+        // 20090421 - franciscom - BUGID 
+ 		    cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		    cfieldsChecks = validateCustomFields(cfields_container);
+		    if(!cfieldsChecks.status_ok)
+	  	  {
+	    	    var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	  alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	  return false;
+		    }
+
+	  }
+	  return true;
 }
 </script>
 {/literal}

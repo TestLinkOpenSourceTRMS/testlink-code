@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.430 $
- * @modified $Date: 2009/04/21 10:44:34 $ by $Author: franciscom $
+ * @version $Revision: 1.431 $
+ * @modified $Date: 2009/04/22 08:29:05 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -205,6 +205,7 @@ $TLS_please_select_one_testplan = "Please select at least one Test Plan.";
 $TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
 $TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
 $TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
+$TLS_warning_text_area_cf = "Custom Field %s accepts only 255 characters";
 
 
 // Installation/Migration (TODO remove - migration is English only)

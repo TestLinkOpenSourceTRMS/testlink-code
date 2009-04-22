@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfield_validation.js,v 1.2 2009/01/03 17:30:06 franciscom Exp $
+$Id: cfield_validation.js,v 1.3 2009/04/22 08:27:06 franciscom Exp $
 
 functions to validate custom field contents
 
@@ -13,9 +13,8 @@ regular expressions was taken from:
 IMPORTANT
 Global Dependencies:  cfChecks declared and initialized in inc_jsCfieldsValidation.tpl   
     
-rev: 20090101 - franciscom - changes email_check regexp with one taken
-                from EXT-JS Vtypes.js
-
+rev: 20090421 - franciscom - BUGID 2414 - check for text area character qty.
+     20090101 - franciscom - changes email_check regexp with one taken from EXT-JS Vtypes.js
 */
 
 /*
@@ -89,6 +88,14 @@ function validateCustomFields(cfields_inputs)
                 checkStatus.status_ok=cfChecks.email.test(cfield_value);
             }    
 		    break; 
+		    
+		    case 'text area':
+		        // check qty of characters
+            checkStatus.status_ok=(cfield_value.length <= 255 );
+		    break; 
+		    
+		    
+		    
 		} /* end switch */
 		
 		if( !checkStatus.status_ok )

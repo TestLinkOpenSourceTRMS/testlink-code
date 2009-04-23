@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/03/25 19:09:19 $ by $Author: amkhullar $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/04/23 09:06:17 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -34,6 +34,7 @@ $doc_data = new stdClass(); // gather content and tests related data
 
 testlinkInitPage($db);
 $args = init_args();
+$doc_info->type = $args->doc_type;
 $doc_info->content_range = $args->level;
 
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
@@ -60,31 +61,27 @@ $decoding_hash = array('node_id_descr' => $hash_id_descr,
 
 //can not be null
 $order_cfg = array("type" =>'spec_order'); // 20090309 - BUGID 2205
-switch ($args->doc_type)
+switch ($doc_info->type)
 {
-	case 'testspec': 
-		$doc_info->type = DOC_TEST_SPEC; 
+	case DOC_TEST_SPEC: 
 		$doc_info->type_name = lang_get('title_test_spec');
 		break;
 	
-	case 'testplan': 
-		$doc_info->type = DOC_TEST_PLAN; 
+	case DOC_TEST_PLAN: 
 		$doc_info->type_name = lang_get('test_plan');
 		$order_cfg = array("type" =>'exec_order',"tplan_id" => $args->tplan_id);
 		break;
 	
-	case 'testreport': 
-		$doc_info->type = DOC_TEST_REPORT; 
+	case DOC_TEST_REPORT: 
 		$doc_info->type_name = lang_get('test_report');
 		break;
 		
-	case 'reqspec': 
-		$doc_info->type = DOC_REQ_SPEC; 
+	case DOC_REQ_SPEC: 
 		$doc_info->type_name = lang_get('req_spec');
 		break;
 		
 	default:
-		die ('printDocument.php> Invalid document type $_REQUEST["type"]');
+		die ('printDocument.php> Invalid document type $_REQUEST["type"] = '.$doc_info->type);
 }
 
 $test_spec = $tree_manager->get_subtree($args->itemID,
@@ -194,9 +191,13 @@ switch ($doc_info->type)
 		             }    
 		         }    
     			}
-	        	$doc_data->statistics['estimated_execution']['minutes'] = 
-	        		$tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
-    	    	$doc_data->statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
+
+				$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);
+				if ($timeEstimatedDuration != "0")
+				{
+		        	$doc_data->statistics['estimated_execution']['minutes'] = $timeEstimatedDuration; 
+    		    	$doc_data->statistics['estimated_execution']['tcase_qty'] = count($tp_tcs);
+				}
          
 				if( $executed_qty > 0)
         		{ 
@@ -250,7 +251,7 @@ if($tree)
 // add application header to HTTP 
 if (($args->format == FORMAT_ODT) || ($args->format == FORMAT_MSWORD))
 {
-	flushHttpHeader($args->format, DOC_TEST_REPORT);
+	flushHttpHeader($args->format, $doc_info->type);
 }
 
 // send out the data

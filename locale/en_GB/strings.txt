@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.431 $
- * @modified $Date: 2009/04/22 08:29:05 $ by $Author: franciscom $
+ * @version $Revision: 1.432 $
+ * @modified $Date: 2009/04/26 21:57:45 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1828,9 +1828,12 @@ $TLS_ldap_extension_not_loaded = "Login method is configured as LDAP<br />" .
 $TLS_sec_note_admin_default_pwd = "You should change the default password for the 'admin' account!";
 $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 $TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
-$TLS_error_gd_missing = "PHP extension for GD library is not available. Charts will not work. Configure PHP.";
+$TLS_error_gd_missing = "PHP extension for GD library is not available. Charts will not work. " .
+		"Locate your php.ini file. Open the file and remove the ; in front of ;extension=php_gd2.dll. " . 
+		"Restart apache (if you are using apache). If that does not help, you will probably need to " .
+		"install php-GD libraries. ";
 $TLS_error_gd_png_support_disabled = "PHP extension for GD library is available without PNG format support. 
-		Charts will not work. Configure PHP.";
+		Charts will not work. Configure PHP or install required libraries.";
 
 
 // ----- lib/general/frmWorkArea.php -----

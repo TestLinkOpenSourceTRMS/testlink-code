@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetLastExecutionResult.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/02/10 14:09:07 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/04/27 07:16:15 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -47,8 +47,9 @@ $unitTestDescription="Test - {$method}";
 $args=array();
 $args["devKey"]=DEV_KEY;
 // $args["testplanid"]=335;
-$args["testplanid"]=59;
-$args["testcaseexternalid"]='OPSLC-55';
+$args["testplanid"]=1635;
+// $args["testcaseexternalid"]='API-2';
+$args["testcaseid"]='1631';
 
 $debug=true;
 echo $unitTestDescription;

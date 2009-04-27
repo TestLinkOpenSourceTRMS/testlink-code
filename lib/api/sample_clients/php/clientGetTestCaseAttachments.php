@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestCaseAttachments.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/21 16:11:21 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/04/27 07:16:15 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -47,7 +47,9 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testcaseid"]=15;
+//$args["testcaseid"]=1631;
+$args["testcaseexternalid"]='API-2';
+
 $additionalInfo='';
 
 $debug=true;

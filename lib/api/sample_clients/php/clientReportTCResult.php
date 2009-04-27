@@ -51,15 +51,16 @@ $tcaseStatusCode['departed']='d';
 
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
-$testPlanID=181;
+$testPlanID=1635;
 // $testCaseID=185;
-$testCaseID=6;
-$testCaseExternalID=null;
-$buildID=1;
+// $testCaseID=6;
+$testCaseExternalID='API-2';
+$buildID=6;
 // $status=$tcaseStatusCode['departed'];
 $status=$tcaseStatusCode['blocked'];
 // $status=$tcaseStatusCode['wrong'];
-$exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status={$status}";
+// $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status={$status}";
+$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
 $bug_id='999FF';
 
 $debug=false;

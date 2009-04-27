@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.148 $ $Author: amkhullar $
- * @modified $Date: 2009/04/14 08:29:30 $
+ * @version $Revision: 1.149 $ $Author: amkhullar $
+ * @modified $Date: 2009/04/27 03:58:07 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -18,7 +18,7 @@
  *
  * -----------------------------------------------------------------------------------
  * Revisions:
- * 20090414 - amitkhullar - BUGID 2295: Incorrect URL for LOGIN on Session expires	
+ * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
  * 20090409 - amitkhullar- BUGID 2354
  * 20090111 - franciscom - commented some required_once and some global coupling
  * 20081027 - havlatm - refactorization, description
@@ -257,24 +257,18 @@ function checkSessionValid(&$db)
 	}
 	if (!$bSessionValid)
 	{
-		$ip = $_SERVER["REMOTE_ADDR"];
+        $ip = $_SERVER["REMOTE_ADDR"];
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
-	
+		
 		$fName = "login.php";
-		$baseDir = dirname(__FILE__);
-		$idx=0;
-		while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
-		{
-			$fName = "../{$fName}";
-			if ($idx++ == 5) // WHAT IS THIS MAGIC NUMBER ???
-			{
-			    break;   
-			}
-		}
-		//BUGID - 2295 - Incorrect URL for LOGIN on Session expires
-		//redirect($fName."?note=expired","top.location");
-		redirect($_SESSION['basehref'] . "login.php?note=expired","top.location");
-		exit();
+        $baseDir = dirname(__FILE__);
+        
+        while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
+        {
+            $fName = "../" . $fName;
+        }
+        redirect($fName . "?note=expired","top.location");
+        exit();
 	}
 }
 

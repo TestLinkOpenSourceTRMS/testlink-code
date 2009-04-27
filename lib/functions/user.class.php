@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/04/27 07:52:14 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/04/27 18:58:48 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -163,9 +163,11 @@ class tlUser extends tlDBObject
 		return $info ? tl::OK : tl::ERROR;
 	}
 	
-	protected function readTestProjectRoles(&$db)
+	public function readTestProjectRoles(&$db,$rolesForTestProjectID = null)
 	{
 		$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$this->dbID}";
+		if ($rolesForTestProjectID)
+			$query .= " AND testproject_id = {$rolesForTestProjectID}";
 		$allRoles = $db->fetchColumnsIntoMap($query,'testproject_id','role_id');
 		$this->tprojectRoles = null;
 		if (sizeof($allRoles))
@@ -180,9 +182,12 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
-	protected function readTestPlanRoles(&$db)
+	public function readTestPlanRoles(&$db,$rolesForTestPlanID = null)
 	{
 		$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$this->dbID}";
+		if ($rolesForTestPlanID)
+			$query .= " AND testplan_id = {$rolesForTestPlanID}";
+
 		$allRoles = $db->fetchColumnsIntoMap($query,'testplan_id','role_id');
 		$this->tplanRoles = null;
 		if (sizeof($allRoles))
@@ -339,7 +344,7 @@ class tlUser extends tlDBObject
 		if ($result >= tl::OK)
 		{
 			$result = self::checkLastName($this->lastName);
-		}	
+		}
 		return $result;
 	}
 	

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2009/04/27 07:52:30 $ $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2009/04/27 18:58:48 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -286,7 +286,7 @@ function getAllUsersRoles(&$db,$order_by = null)
 	$query = "SELECT users.id FROM users LEFT OUTER JOIN roles ON users.role_id = roles.id ";
 	$query .= is_null($order_by) ? " ORDER BY login " : $order_by;
 
-	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser");
+	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 	return $users;
 }
 

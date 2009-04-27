@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.19 $
-* @modified $Date: 2009/04/27 07:53:59 $ $Author: franciscom $
+* @version $Revision: 1.20 $
+* @modified $Date: 2009/04/27 18:58:48 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -21,29 +21,29 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$assignRolesFor=null;
+$assignRolesFor  =null;
 $featureMgr = null;
 $userFeatureRoles = null;
-$doInitGui=true;
+$doInitGui = true;
 
-$tprojectMgr=new testproject($db);
-$tplanMgr=new testplan($db);
+$tprojectMgr = new testproject($db);
+$tplanMgr = new testplan($db);
 
-$args=init_args();
+$args = init_args();
 
 $gui = new stdClass();
 $gui->highlight = initialize_tabsmenu();
 $gui->user_feedback = '';
 $gui->no_features = '';
 $gui->roles_updated = '';
-$gui->tproject_name=$args->testprojectName;
+$gui->tproject_name = $args->testprojectName;
 $gui->optRights = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-$gui->features=null;
-$gui->featureType=$args->featureType;
-$gui->featureID=null;
+$gui->features = null;
+$gui->featureType = $args->featureType;
+$gui->featureID = null;
 $target = new stdClass();
-$target->testprojectID=null;
-$target->testplanID=null;
+$target->testprojectID = null;
+$target->testplanID = null;
 
 switch($args->featureType)
 {
@@ -51,7 +51,7 @@ switch($args->featureType)
     	$gui->highlight->assign_users_tproject = 1;
     	$gui->roles_updated = lang_get("test_project_user_roles_updated");
     	$gui->no_features = lang_get("no_test_projects");
-    	$assignRolesFor=$args->featureType;
+    	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->featureID > 0 ? $args->featureID : null;
     	$featureMgr = &$tprojectMgr;
     break;
@@ -60,7 +60,7 @@ switch($args->featureType)
       	$gui->highlight->assign_users_tplan = 1;
     	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
     	$gui->no_features = lang_get("no_test_plans");
-    	$assignRolesFor=$args->featureType;
+    	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->testprojectID;
     	$featureMgr = &$tplanMgr;
     break;
@@ -69,7 +69,7 @@ switch($args->featureType)
 
 if ($args->featureID && $args->doUpdate && $featureMgr)
 {
-    if( checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID) )
+    if(checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID))
     {
         doUpdate($db,$args,$featureMgr);
         $gui->user_feedback = $gui->roles_updated;
@@ -78,18 +78,18 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
 
 
 // Important: Must be done here after having done update, to get current information
-$gui->users = tlUser::getAll($db);
+$gui->users = tlUser::getAll($db,null,null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 
 switch($assignRolesFor)
 {
     case 'testproject':
-        $info=getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
-        list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
+        $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
+        list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
         $target->testprojectID=$gui->featureID;
     break;
         
     case 'testplan':
-        $info=getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
+        $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
         list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
     break;
 
@@ -124,7 +124,6 @@ function init_args()
     // This value is used when doing Test Plan role assignment
     $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    // $args->testplanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 
     $args->user = $_SESSION['currentUser'];
     $args->userID = $args->user->dbID;
@@ -142,14 +141,14 @@ function checkRights(&$db,&$user)
 	$result = false;
     $args=init_args();
 	if($user->hasRight($db,"role_management") || ($user->hasRight($db,"testplan_user_role_assignment") || 
-	   $user->hasRight($db,"user_role_assignment",null,-1))	  )
+	   $user->hasRight($db,"user_role_assignment",null,-1)))
 	{
 	    $result = true;
 	}    
 	
-	if( !$result && ($args->featureType=='testproject') )
+	if(!$result && ($args->featureType=='testproject'))
 	{
-        if( $user->hasRight($db,"testproject_user_role_assignment",$args->featureID,-1) ) 	    
+        if($user->hasRight($db,"testproject_user_role_assignment",$args->featureID,-1)) 	    
         {
             $result = true;
         }
@@ -164,24 +163,24 @@ function checkRights(&$db,&$user)
  */
 function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$featureID)
 {
-    $yes_no="no";
+    $yes_no = "no";
     switch($featureType)
     {
         case 'testproject':
-            if( $user->hasRight($dbHandler,"user_role_assignment",$featureID) =="yes" ||
-                $user->hasRight($dbHandler,"testproject_user_role_assignment",$featureID,-1,true) =="yes" )
+            if( $user->hasRight($dbHandler,"user_role_assignment",$featureID) == "yes" ||
+                $user->hasRight($dbHandler,"testproject_user_role_assignment",$featureID,-1,true) == "yes" )
             {         
-                $yes_no="yes";
+                $yes_no = "yes";
             }
         break;
             
         case 'testplan':
-            $yes_no=$user->hasRight($dbHandler,"testplan_user_role_assignment",
+            $yes_no = $user->hasRight($dbHandler,"testplan_user_role_assignment",
                                        $testprojectID,$featureID);
         break;
     }
 
-    $status_ok = ($yes_no =='yes') ? true : false;
+    $status_ok = ($yes_no == 'yes');
     return $status_ok ;
 }
 
@@ -206,11 +205,11 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 	}
 	else
 	{
-	    $loop2do=sizeof($testprojects);
-        $added=0;
+	    $loop2do = sizeof($testprojects);
+        $added = 0;
 		for($idx = 0; $idx < $loop2do; $idx++)
 		{
-		    $answer=$argsObj->user->hasRight($dbHandler,"testproject_user_role_assignment",$testprojects[$idx]['id'],-1);
+		    $answer = $argsObj->user->hasRight($dbHandler,"testproject_user_role_assignment",$testprojects[$idx]['id'],-1);
 			if($answer == "yes")
 			{
 				$features[] = $testprojects[$idx];
@@ -231,8 +230,11 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 			$argsObj->featureID = $features[0]['id'];
 		}	
 	}
-	
-	$effectiveRoles = get_tproject_effective_role($db,$argsObj->featureID,null,$users);
+	foreach($users as &$user)
+	{
+		$user->readTestProjectRoles($dbHandler,$argsObj->featureID);
+	}
+	$effectiveRoles = get_tproject_effective_role($dbHandler,$argsObj->featureID,null,$users);
 	return array($effectiveRoles,$features,$argsObj->featureID);
 }
 
@@ -242,15 +244,15 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
  * getTestPlanEffectiveRoles
  *
  */
-function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,$users)
+function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
 	$features = array();
-	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID , array('plan_status' => 1));
-	if( !is_null($activeTestplans) )
+	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
+	if(!is_null($activeTestplans))
 	{
         // we want to change map key, from testplan id to a sequential index
         // to maintain old logic
-	    $activeTestplans=array_values($activeTestplans);
+	    $activeTestplans = array_values($activeTestplans);
 	}
     
 	if($argsObj->user->hasRight($dbHandler,"mgt_users"))
@@ -259,7 +261,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 	}
 	else
 	{
-	    $loop2do=sizeof($activeTestplans);
+	    $loop2do = sizeof($activeTestplans);
 		for($idx = 0; $idx < $loop2do; $idx++)
 		{
 			if($argsObj->user->hasRight($dbHandler,"testplan_planning",null,$activeTestplans[$idx]['id']))
@@ -291,8 +293,13 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 			}	
 		}
 	}
-	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$argsObj->testprojectID);
-    return array($effectiveRoles,$features,$argsObj->featureID);
+	foreach($users as &$user)
+	{
+		$user->readTestProjectRoles($dbHandler,$argsObj->testprojectID);
+		$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
+	}
+	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$argsObj->testprojectID,null,$users);
+ 	return array($effectiveRoles,$features,$argsObj->featureID);
 }
 
 /**
@@ -310,5 +317,4 @@ function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 		}	
 	}
 }
-
 ?>

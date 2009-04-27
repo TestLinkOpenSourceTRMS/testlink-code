@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.433 $
- * @modified $Date: 2009/04/27 07:49:24 $ by $Author: franciscom $
+ * @version $Revision: 1.434 $
+ * @modified $Date: 2009/04/27 10:23:48 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -121,6 +121,7 @@ $TLS_btn_edit = "Edit";
 $TLS_btn_export = "Export";
 $TLS_btn_find = "Find";
 $TLS_btn_goback = "Go back";
+$TLS_btn_generate_doc = "Generate document";
 $TLS_btn_import = "Import";
 $TLS_btn_move = "Move";
 $TLS_btn_no = "No";

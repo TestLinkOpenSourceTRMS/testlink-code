@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.24 2008/09/02 16:39:13 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.25 2009/04/27 10:20:51 havlat Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -35,9 +35,6 @@
 {assign var="url_args" value="reqSpecEdit.php?doAction=createChild&amp;reqParentID="}
 {assign var="req_spec_new_url" value="$basehref$req_module$url_args$reqSpecID"}
 
-
-
-
 {* used on inc_btn_reqSpecView.tpl *}
 {lang_get s='warning_delete_req_spec' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
@@ -46,8 +43,8 @@
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
+	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+	var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
 </script>
 </head>
 

@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
-// $Id: validate.js,v 1.6 2009/01/29 20:58:21 schlundus Exp $
+// $Id: validate.js,v 1.7 2009/04/27 21:53:07 havlat Exp $
 //
 // Functions for validation of input on client side
 //
@@ -223,6 +223,20 @@ function getForm(form_name)
             return document.forms[i];
         }
     }
+}
+
+// check textarea lenght (CF allows 255 only)
+// Original author:  Ronnie T. Moore 
+// Usage: <textarea name=message wrap=physical cols=28 rows=4 
+// 	onKeyDown="textCounter(this.form.message,this.form.remLen,125);" 
+//	onKeyUp="textCounter(this.form.message,this.form.remLen,125);"></textarea>
+
+function textCounter(field, countfield, maxlimit) {
+if (field.value.length > maxlimit) // if too long...trim it!
+field.value = field.value.substring(0, maxlimit);
+// otherwise, update 'characters left' counter
+else 
+countfield.value = maxlimit - field.value.length;
 }
 
 // ------------------------------------------------------------------------------

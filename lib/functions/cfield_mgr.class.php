@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/04/27 07:51:07 $  $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/04/27 21:53:07 $  $Author: havlat $
  * @author franciscom
  *
  * 20090426 - franciscom - new method getSizeLimit()
@@ -80,11 +80,12 @@ class cfield_mgr
 {
     const DEFAULT_INPUT_SIZE=50;
     const MULTISELECTIONLIST_WINDOW_SIZE=5;
+    const TEXTAREA_MAX_SIZE = 255;
 
     // EDIT HERE IF YOU CUSTOMIZE YOUR DB
     // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
-    const TEXTAREA_DEFAULT_COLS = 40;
-    const TEXTAREA_DEFAULT_ROWS = 6;
+    const TEXTAREA_DEFAULT_COLS = 70;
+    const TEXTAREA_DEFAULT_ROWS = 4;
 
     const CF_ENABLED = 1;
     const ENABLED = 1;
@@ -151,9 +152,9 @@ class cfield_mgr
                                   8=>'date',
                                   9=>'radio',
                                   10=>'datetime',
-							                   20=>'text area',
-							                   500=>'script',
-							                   501=>'server');
+							      20=>'text area',
+							      500=>'script',
+							      501=>'server');
 
   // Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
   // Keys of this map must be the values present in:
@@ -666,7 +667,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'email':
   		case 'float':
   		case 'numeric':
-  		  $str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
+			$str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
   		  
   		  // $size = intval($size) > 0 ? $size : self::DEFAULT_INPUT_SIZE;
   			// $str_out .= '<input type="text" name="' . $input_name . '" size="' . $size .'"';
@@ -679,29 +680,40 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				//    $str_out .= ' maxlength="255"';
 			  // }
 			  // $str_out .= ' value="' . $t_custom_field_value .'"></input>';
-			  break ;
+			break ;
 
-      case 'text area':
-        $cols = intval($this->sizes['text area']['cols']);
-        $rows = intval($this->sizes['text area']['rows']);
-			  if($cols <= 0)
-        {
-           $cols = self::TEXTAREA_DEFAULT_COLS;
-        }
-        if($rows <= 0)
-        {
-          $rows = self::TEXTAREA_DEFAULT_ROWS;
-        }
+		case 'text area':
+			$cols = intval($this->sizes['text area']['cols']);
+			$rows = intval($this->sizes['text area']['rows']);
+			if($cols <= 0)
+			{
+				$cols = self::TEXTAREA_DEFAULT_COLS;
+			}
+			if($rows <= 0)
+			{
+				$rows = self::TEXTAREA_DEFAULT_ROWS;
+			}
+			
+			$input_name_counter = $input_name . '_counter';
+			$cf_current_size = self::TEXTAREA_MAX_SIZE - strlen($t_custom_field_value);
+			// call JS function for check max. size (255) from validate.js
+			$js_function = '"textCounter(this.form.' . $input_name . ',this.form.'.
+					$input_name_counter.','.self::TEXTAREA_MAX_SIZE.');" ';
+			$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+					'onKeyDown=' . $js_function . ' onKeyUp=' . $js_function . 'cols="' .
+					$cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>";
+			// show character counter
+			$str_out .= '<span style="vertical-align: top; padding: 5px;">' .
+					sprintf(lang_get('text_counter_feedback'), self::TEXTAREA_MAX_SIZE) .
+					' <input readonly="readonly" type="text" name="' . $input_name_counter .
+					'" size="3" value="'.$cf_current_size.'" style="border-style:none;' .
+					'background-color: transparent;"></span>';
+		break;
 
-			  $str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
-			              'cols="' . $cols . '" rows="' . $rows . '">' .
-			              "{$t_custom_field_value}</textarea>";
-  	  break;
-
-      case 'date':
-      $str_out .=create_date_selection_set($input_name,config_get('date_format'),
+		case 'date':
+      		$str_out .= create_date_selection_set($input_name,config_get('date_format'),
                                            $t_custom_field_value, false, true) ;
-      break;
+		break;
       
       case 'datetime':
       $cfg=config_get('gui');

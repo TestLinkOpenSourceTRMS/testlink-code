@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.103 $
- * @modified $Date: 2009/04/14 17:41:18 $  $Author: franciscom $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2009/04/27 07:53:11 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
@@ -233,10 +233,11 @@ function get_by_name($name,$addClause = null)
 	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
 	       " WHERE testprojects.id = nodes_hierarchy.id AND".
 	       "  nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
-
+   
 	if (!is_null($addClause) )
+	{
 		$sql .= " AND " . $addClause;
-
+    }
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
 }
@@ -325,7 +326,6 @@ function: get_accessible_for_user
 
 args:
       user_id
-      role_id
       [output_type]: choose the output data structure.
                      possible values: map, map_of_map
                      map: key -> test project id
@@ -350,11 +350,11 @@ rev :
 */
 function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ")
 {
-	$items = array();
+    $items = array();
 
-  // Get default role
-  $sql = " SELECT id,role_id FROM users where id={$user_id}";
-  $user_info = $this->db->get_recordset($sql);
+    // Get default role
+    $sql = " SELECT id,role_id FROM users where id={$user_id}";
+    $user_info = $this->db->get_recordset($sql);
 	$role_id=$user_info[0]['role_id'];
 
 
@@ -366,17 +366,21 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 		 	      user_testproject_roles.user_id = {$user_id} WHERE ";
 
 	if ($role_id != TL_ROLES_NO_RIGHTS)
+	{
 		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+	}
 	else
+	{
 		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
-
+    }
 
 	if (has_rights($this->db,'mgt_modify_product') != 'yes')
+	{
 		$sql .= " AND active=1 ";
-
+    }
 	$sql .= $order_by;
 
-  if($output_type == 'array_of_map')
+    if($output_type == 'array_of_map')
 	{
 	    $items = $this->db->get_recordset($sql);
 	    $do_post_process=0;
@@ -389,26 +393,28 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 
 	if ($do_post_process && sizeof($arrTemp))
 	{
-    switch ($output_type)
-	  {
-	     case 'map':
-		   foreach($arrTemp as $id => $row)
-		   {
-			   $noteActive = '';
-			   if (!$row['active'])
-				   $noteActive = TL_INACTIVE_MARKUP;
-			   $items[$id] = $noteActive . $row['name'];
-		   }
-		   break;
-
-	     case 'map_of_map':
-		   foreach($arrTemp as $id => $row)
-		   {
-			   $items[$id] = array( 'name' => $row['name'],
-			                        'active' => $row['active']);
-		   }
-		   break;
-	  }
+        switch ($output_type)
+	    {
+	         case 'map':
+	    	   foreach($arrTemp as $id => $row)
+	    	   {
+	    		   $noteActive = '';
+	    		   if (!$row['active'])
+	    		   {
+	    			   $noteActive = TL_INACTIVE_MARKUP;
+	    		   }
+	    		   $items[$id] = $noteActive . $row['name'];
+	    	   }
+	    	   break;
+        
+	         case 'map_of_map':
+	    	   foreach($arrTemp as $id => $row)
+	    	   {
+	    		   $items[$id] = array( 'name' => $row['name'],
+	    		                        'active' => $row['active']);
+	    	   }
+	    	   break;
+	    }
 	}
 
 	return $items;
@@ -1620,7 +1626,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
 
                      [$exclude_tplans]: null -> do not apply exclusion
                                         id -> test plan id to exclude
-
+         
   returns:
 
 */

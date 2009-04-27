@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.4 2009/04/21 10:08:50 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.5 2009/04/27 07:54:52 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -324,6 +324,7 @@ Rev:
              args_tcAttachments=$gui->tcAttachments
 	           args_req_details=$gui->req_details}
 
+    XX: {$input_enabled_disabled}
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
                args_save_type='single'

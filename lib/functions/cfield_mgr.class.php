@@ -2,12 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/04/21 09:41:38 $  $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/04/27 07:51:07 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090426 - franciscom - new method getSizeLimit()
  * 20090420 - amitkhullar- BUGID-2410 - get_linked_cfields_at_testplan_design() - added logic to get data
- * 					for custom field values stores at test plan level.
+ * 					                    for custom field values stores at test plan level.
  * 20090420 - franciscom - BUGID 2158 - get_linked_cfields_at_design() added filter on custom field id 
  *
  * 20090408 - franciscom - BUGID 2352 - added new method remove_all_scopes_values();
@@ -80,6 +81,7 @@ class cfield_mgr
     const DEFAULT_INPUT_SIZE=50;
     const MULTISELECTIONLIST_WINDOW_SIZE=5;
 
+    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
     // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
     const TEXTAREA_DEFAULT_COLS = 40;
     const TEXTAREA_DEFAULT_ROWS = 6;
@@ -233,13 +235,14 @@ class cfield_mgr
 
   var $sizes = null;
 
+  // EDIT HERE IF YOU CUSTOMIZE YOUR DB
   // must be equal to the lenght of:
   // value column on cfield_*_values tables
   // default_value column on custom_fields table
   // 0 -> no limit
   var $max_length_value=255;
 
-
+  // EDIT HERE IF YOU CUSTOMIZE YOUR DB
   // must be equal to the lenght of:
   // possible_values column on custom_fields table
   // 0 -> no limit
@@ -270,6 +273,15 @@ class cfield_mgr
 		    $this->possible_values_cfg +=$gui_cfg->custom_fields->possible_values_cfg;
 		}
 	}
+
+    /**
+     * 
+     *
+     */
+    function getSizeLimit()
+    {
+        return $this->max_length_value;    
+    }
 
   /*
     function: get_application_areas

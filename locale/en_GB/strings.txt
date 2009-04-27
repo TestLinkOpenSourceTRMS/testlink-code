@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.432 $
- * @modified $Date: 2009/04/26 21:57:45 $ by $Author: havlat $
+ * @version $Revision: 1.433 $
+ * @modified $Date: 2009/04/27 07:49:24 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1516,6 +1516,7 @@ $TLS_th_roles = "Role";
 $TLS_th_roles_testplan = "Test Plan Role";
 $TLS_th_roles_testproject = "Test Project Role";
 $TLS_title_assign_roles = "Assign roles";
+$TLS_set_roles_to = "Set roles to";
 
 
 
@@ -2277,6 +2278,8 @@ $TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) 
 
 $TLS_API_CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE="Custom Field (name:%s), is not configured for Design Scope";
 $TLS_API_CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT="Custom Field (name:%s), is not assigned to Test Project(name=%s / id=%s)";
+$TLS_API_TESTPROJECTNAME_DOESNOT_EXIST="Test Project (name:%s) does not exist.";
+$TLS_API_TESTPLANNAME_DOESNOT_EXIST="Test Plan (name:%s) does not exist on Test Project (name:%s).";
 
 
 // ----- audit log entries -----

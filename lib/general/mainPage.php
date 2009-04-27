@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.53 $ $Author: franciscom $
- * @modified $Date: 2009/01/31 19:51:27 $
+ * @version $Revision: 1.54 $ $Author: franciscom $
+ * @modified $Date: 2009/04/27 07:50:39 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -15,14 +15,14 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- * Revisions :
- *       20081030 - franciscom - BUGID 1698 - refixed
- *       20080905 - franciscom - BUGID 1698
- *       20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
- *       20080120 - franciscom - added logic to enable/disable test case search link
- *       20070725 - franciscom - refactoring of rights checking 
- *       20070509 - franciscom - improving test plan availabilty checking
- *       20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
+ * Rev: 20090426 - franciscom - BUGID - new right testproject_user_role_assignment
+ *      20081030 - franciscom - BUGID 1698 - refixed
+ *      20080905 - franciscom - BUGID 1698
+ *      20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
+ *      20080120 - franciscom - added logic to enable/disable test case search link
+ *      20070725 - franciscom - refactoring of rights checking 
+ *      20070509 - franciscom - improving test plan availabilty checking
+ *      20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
  *
  **/
 
@@ -125,11 +125,20 @@ foreach($rights2check as $key => $the_right)
 	$smarty->assign($the_right, has_rights($db,$the_right));
 }                         
 
+// 20090426 - franciscom - BUGID
+$tproject_user_role_assignment = "no";
+if( has_rights($db,"testproject_user_role_assignment",$testprojectID,-1) == "yes" ||
+    has_rights($db,"user_role_assignment",null,-1) == "yes" )
+{ 
+    $tproject_user_role_assignment = "yes";
+}
+
+
 $smarty->assign('metrics_dashboard_url','lib/results/metricsDashboard.php');
 $smarty->assign('my_testcase_assignments_url','lib/testcases/tcAssignedToUser.php');
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
+$smarty->assign('tproject_user_role_assignment', $tproject_user_role_assignment);
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 $smarty->assign('securityNotes',getSecurityNotes($db));
 $smarty->assign('arrPlans', $arrPlans);

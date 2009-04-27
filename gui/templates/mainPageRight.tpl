@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.14 2009/01/31 19:50:40 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.15 2009/04/27 07:55:10 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -159,7 +159,7 @@
 	    {if $tp_user_role_assignment == "yes" && $countPlans > 0}
 	    	<br />
 	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-       	    <a href="lib/usermanagement/usersAssign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{$labels.href_assign_user_roles}</a>
+       	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$sessionTestPlanID}">{$labels.href_assign_user_roles}</a>
 	    {/if}
       
 	    {if $testplan_planning == "yes" and $countPlans > 0 }

@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.13 2009/03/16 21:02:08 schlundus Exp $     
+ $Id: mainPageLeft.tpl,v 1.14 2009/04/27 07:55:10 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -145,7 +145,7 @@
 	  {if $tproject_user_role_assignment == "yes"}
         <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="lib/usermanagement/usersAssign.php?feature=testproject&amp;featureID={$sessionProductID}">{$labels.href_assign_user_roles}</a>
+        <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$sessionProductID}">{$labels.href_assign_user_roles}</a>
 	  {/if}
 
       {if $cfield_management == "yes"}

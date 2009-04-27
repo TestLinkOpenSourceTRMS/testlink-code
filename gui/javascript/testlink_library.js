@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.74 2009/04/21 10:13:43 franciscom Exp $
+// $Id: testlink_library.js,v 1.75 2009/04/27 07:54:15 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -19,6 +19,10 @@
 //
 // value to this variables is assigned using different smarty templates,
 // like inc_head.tpl
+//
+// Attention:
+// window.open() - on Firefox is window name contains blank nothing happens (no good)
+//                 on I.E. => generates a bug - BE CAREFUL
 //
 // ----------------------------------------------------------------------------
 //
@@ -332,18 +336,22 @@ function modifyRoles_warning()
 }
 
 /**
- * Function-Documentation
- *
+ * 
  * @param string feature the feature, could be testplan or product
  **/
 function changeFeature(feature)
 {
 	var tmp = document.getElementById('featureSel');
+	var fID = '';
 	if (!tmp)
+	{
 		return;
-	var fID = tmp.value;
+	}
+	fID = tmp.value;
 	if(fID)
-		location = fRoot+"lib/usermanagement/usersAssign.php?feature="+feature+"&featureID="+fID;
+	{
+		location = fRoot+"lib/usermanagement/usersAssign.php?featureType="+feature+"&featureID="+fID;
+	}	
 }
 
 function openFileUploadWindow(id,tableName)
@@ -636,10 +644,11 @@ function open_help_window(help_page,locale)
 */
 function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 {
-	var feature_url = "lib/testcases/archiveData.php";
-    feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+tcase_id+"&tcversion_id="+tcversion_id;
+	  var feature_url = "lib/testcases/archiveData.php";
+    feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
+                  tcase_id+"&tcversion_id="+tcversion_id;
 
-    // seems second parameter with spaced caused bug on IE
+  // second parameter(window name) with spaces caused bug on IE
 	window.open(fRoot+feature_url,"TestCaseSpec",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
@@ -834,7 +843,7 @@ function openReqWindow(tcase_id)
   var feature_url="lib/requirements/reqTcAssign.php";
   feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
 
-    // seems second parameter with spaces generate bug on IE
+  // second parameter(window name) with spaces generate bug on IE
 	window.open(fRoot+feature_url,"TestCase_Requirement_link",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }

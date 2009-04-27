@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2009/01/07 22:19:46 $ $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2009/04/27 07:52:30 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -341,18 +341,24 @@ function initialize_tabsmenu()
 /*
   function: getGrantsForUserMgmt 
             utility function used on all user and role pages
-            to pass grants to smarty templates
+            to pass grants to smarty templates.
+            Logic is:
+            if user has Global user management right => no control
+               on specific test project or test plan is done
+           
 
   args:
   
   returns: 
 
 */
-function getGrantsForUserMgmt(&$dbHandler,&$userObj)
+function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=null)
 {
     $grants = new stdClass();
     $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
     $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
+    $grants->tproject_user_role_assignment = "no";
+    $grants->tplan_user_role_assignment = "no";
     
     if($grants->user_mgmt == 'yes')
     {
@@ -361,9 +367,15 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj)
     }
     else
     {
-        $grants->tplan_user_role_assignment = $userObj->hasRight($dbHandler,"testplan_user_role_assignment");
-        $grants->tproject_user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
-    }
+        
+        $grants->tplan_user_role_assignment = $userObj->hasRight($dbHandler,"testplan_user_role_assignment",
+                                                                 $tprojectID,$tplanID);
+        if( $userObj->hasRight($dbHandler,"user_role_assignment",null,-1) == "yes" ||
+            $userObj->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID)=="yes" )
+        {    
+            $grants->tproject_user_role_assignment = "yes";
+        }
+    }    
     return $grants;
 }
 

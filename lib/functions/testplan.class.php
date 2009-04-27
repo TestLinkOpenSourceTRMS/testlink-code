@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.108 $
- * @modified $Date: 2009/04/20 19:39:33 $ by $Author: schlundus $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2009/04/27 07:53:11 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -230,8 +230,8 @@ function get_by_name($name,$tproject_id = 0)
 	{
 		$sql .= " AND NH.parent_id={$tproject_id}";
 	}
-
-	$recordset = $this->db->get_recordset($sql);
+    
+    $recordset = $this->db->get_recordset($sql);
 	return($recordset);
 }
 

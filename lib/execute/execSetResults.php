@@ -4,10 +4,13 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.121 $
- * @modified $Date: 2009/04/21 10:43:53 $ $Author: franciscom $
+ * @version $Revision: 1.122 $
+ * @modified $Date: 2009/04/27 07:53:29 $ $Author: franciscom $
  *
  * rev:
+ *     20090426 - franciscom - bad initialization of grants due to unclear
+ *                             function return.
+ *
  *     20090419 - franciscom - BUGID 2364 - added management of refreshTree
  *                             initializeRights() refactored
  *     20090409 - amkhullar - updated code not written properly.
@@ -831,7 +834,7 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     $grants = new stdClass();
     
     $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id);
-    // $grants->execute = (has_rights($dbHandler,"testplan_execute")=="yes" ? 1 : 0);
+    $grants->execute = $grants->execute=="yes" ? 1 : 0;
     
     // may be in the future this can be converted to a role right
     $grants->delete_execution=$exec_cfg->can_delete_execution;
@@ -843,9 +846,8 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     $grants->edit_exec_notes=$grants->execute && $exec_cfg->edit_notes;
     
     // 20090419 - franciscom - BUGID 
-    // $grants->edit_testcase = (has_rights($dbHandler,"mgt_modify_tc")=="yes" ? 1 : 0);
     $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);
-
+    $grants->edit_testcase = $grants->edit_testcase=="yes" ? 1 : 0;
     return $grants;
 }
 

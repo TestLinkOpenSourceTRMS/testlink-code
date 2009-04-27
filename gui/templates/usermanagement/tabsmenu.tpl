@@ -5,8 +5,8 @@
 {assign var="action_create_user" value="lib/usermanagement/usersEdit.php?doAction=create"}
 {assign var="action_edit_user" value="lib/usermanagement/usersEdit.php?doAction=edit&amp;user_id="}
 {assign var="action_view_users" value="lib/usermanagement/usersView.php"}
-{assign var="action_assign_users_tproject" value="lib/usermanagement/usersAssign.php?feature=testproject"}
-{assign var="action_assign_users_tplan" value="lib/usermanagement/usersAssign.php?feature=testplan"}
+{assign var="action_assign_users_tproject" value="lib/usermanagement/usersAssign.php?featureType=testproject"}
+{assign var="action_assign_users_tplan" value="lib/usermanagement/usersAssign.php?featureType=testplan"}
 
 
 {lang_get var="labels"

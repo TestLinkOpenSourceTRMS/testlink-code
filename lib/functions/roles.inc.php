@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/03/08 11:46:35 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/04/27 07:51:54 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,9 +34,11 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
- *       20081030 - franciscom - added new rights -> system
- *       20070901 - franciscom - BUGID 1016
- *       20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
+ * rev: 
+ *      20090425 - franciscom - BUGID 2417 - new right for test projects
+ *      20081030 - franciscom - added new rights -> system
+ *      20070901 - franciscom - BUGID 1016
+ *      20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
  */
  
 require_once( dirname(__FILE__). '/lang_api.php' );
@@ -107,9 +109,10 @@ function init_global_rights_maps()
 							);
 	
 							
-	$g_rights_product = array (	
-								"mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-							);						
+	// 20090425 - franciscom - BUGID - 						
+	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
+	                          "testproject_user_role_assignment" => lang_get('desc_user_role_assignment')
+							  );						
 	
 	$g_rights_cf = array (	
 								"cfield_view" => lang_get('desc_cfield_view'),
@@ -128,8 +131,10 @@ function init_global_rights_maps()
 	                          "events_mgt" => lang_get('desc_events_mgt'));
 							
 							
-							
+	// 20090425 - franciscom - BUGID - 						
 	$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
+    unset($g_propRights_global["testproject_user_role_assignment"]);
+    
 	$g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
 
@@ -151,12 +156,14 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 */
 function propagateRights($fromRights,$propRights,&$toRights)
 {
-	//the mgt_users right isn't product-related so this right is inherited from
-	//the global role (if set)
+	// the mgt_users right isn't test project related so this right is inherited from
+	// the global role (if set)
 	foreach($propRights as $right => $desc)
 	{
 		if (in_array($right,$fromRights) && !in_array($right,$toRights))
+		{
 			$toRights[] = $right;
+		}	
 	}
 }
 
@@ -166,7 +173,7 @@ function propagateRights($fromRights,$propRights,&$toRights)
  * @param type $rights documentation
  * @param type $roleQuestion documentation
  * @param type $bAND [default = 1] documentation
- * @return type documentation
+ * @return type 'yes' or null
  *
  * @author Andreas Morsing <schlundus@web.de>
  * @since 20.02.2006, 20:30:07
@@ -183,13 +190,17 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 		{
 			//for AND all rights must be present
 			if (sizeof($r) == sizeof($roleQuestion))
+			{
 				$ret = 'yes';
+			}	
 		}	
 		else 
 		{
 			//for OR one of all must be present
 			if (sizeof($r))
+			{
 				$ret = 'yes';
+			}	
 		}	
 	}
 	else

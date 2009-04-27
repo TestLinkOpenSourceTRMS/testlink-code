@@ -1,9 +1,10 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.25 2009/01/26 22:23:57 havlat Exp $
+# $Id: testlink_create_default_data.sql,v 1.26 2009/04/27 07:50:13 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
 #
+# 20090426 - franciscom - new right testproject_user_role_assignment
 # 20090126 - havlatm - role definition update
 # 20081029 - franciscom - add events_mgt right
 #                         fixed typo error system_configuraton -> system_configuration
@@ -60,6 +61,7 @@ INSERT INTO `rights` (id,description) VALUES (19,'system_configuration');
 INSERT INTO `rights` (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO `rights` (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO `rights` (id,description) VALUES (22,'events_mgt');
+INSERT INTO `rights` (id,description) VALUES (23 ,'testproject_user_role_assignment');
 
 
 # Rights for Administrator role
@@ -85,7 +87,7 @@ INSERT INTO `role_rights` (role_id,right_id) VALUES (8,19);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,20);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,21);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,22);
-
+INSERT INTO `role_rights` (role_id,right_id) VALUES (8,23);
 # Rights for guest role
 INSERT INTO `role_rights` (role_id,right_id) VALUES (5,3 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (5,6 );

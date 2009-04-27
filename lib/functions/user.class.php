@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/04/21 09:35:33 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/04/27 07:52:14 $ $Author: franciscom $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -54,6 +54,11 @@ class tlUser extends tlDBObject
 	
 	//detail leveles
 	const TLOBJ_O_GET_DETAIL_ROLES = 1;
+
+    // 20090425 - franciscom
+	const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
+    const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
+
 	
 	function __construct($dbID = null)
 	{
@@ -107,6 +112,7 @@ class tlUser extends tlDBObject
 	function create()
 	{
 	}
+	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -114,14 +120,19 @@ class tlUser extends tlDBObject
 		$query = "SELECT id,login,password,first,last,email,role_id,locale, " .
 		         " login AS fullname, active,default_testproject_id, script_key " .
 		         " FROM {$this->object_table}";
-		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+		{
 			$clauses[] = "id = {$this->dbID}";		
+		}
 		if ($options & self::USER_O_SEARCH_BYLOGIN)
+		{
 			$clauses[] = "login = '".$db->prepare_string($this->login)."'";		
+		}
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
+		}
 		$info = $db->fetchFirstRow($query);	
 		if ($info)
 		{
@@ -314,14 +325,21 @@ class tlUser extends tlDBObject
 	
 		$result = self::checkEmailAdress($this->emailAddress);
 		if ($result >= tl::OK)
+		{
 			$result = $this->checkLogin($this->login);
+		}
 		if ($result >= tl::OK && !$this->dbID)
+		{
 			$result = self::doesUserExist($db,$this->login) ? self::E_LOGINALREADYEXISTS : tl::OK;
+		}
 		if ($result >= tl::OK)
+		{
 			$result = self::checkFirstName($this->firstName);
+		}
 		if ($result >= tl::OK)
+		{
 			$result = self::checkLastName($this->lastName);
-			
+		}	
 		return $result;
 	}
 	
@@ -367,6 +385,7 @@ class tlUser extends tlDBObject
      * check right on effective role for user, using test project and test plan,
      * means that check right on effective role.
      *
+     * returns: yes or null
      */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
@@ -379,7 +398,6 @@ class tlUser extends tlDBObject
 		{
 			$globalRights[] = $right->name;
 		}
-		
 		if (!is_null($tplanID))
 		{
 			$testPlanID = $tplanID;
@@ -390,7 +408,6 @@ class tlUser extends tlDBObject
 		}
 		
 		$userTestPlanRoles = $this->tplanRoles;
-		
 		if (!is_null($tprojectID))
 		{
 			$testprojectID = $tprojectID;
@@ -412,6 +429,8 @@ class tlUser extends tlDBObject
 			{
 				$testProjectRights[] = $right->name;
 			}
+		    
+
 			//subtract global rights		
 			$testProjectRights = array_diff($testProjectRights,array_keys($g_propRights_global));
 			propagateRights($globalRights,$g_propRights_global,$testProjectRights);
@@ -433,6 +452,7 @@ class tlUser extends tlDBObject
 			propagateRights($allRights,$g_propRights_product,$testPlanRights);
 			$allRights = $testPlanRights;
 		}
+		
 		return checkForRights($allRights,$roleQuestion);
 	}
 	
@@ -467,7 +487,9 @@ class tlUser extends tlDBObject
 		$user = new tlUser();
 		$user->login = $login;
 		if ($user->readFromDB($db,self::USER_O_SEARCH_BYLOGIN) >= tl::OK)
+		{
 			return $user->dbID;
+		}
 		return null;
 	}
 	

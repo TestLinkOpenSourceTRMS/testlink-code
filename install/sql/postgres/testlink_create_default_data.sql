@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.19 2009/01/26 22:23:57 havlat Exp $
+--  $Id: testlink_create_default_data.sql,v 1.20 2009/04/27 07:50:13 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -45,21 +45,21 @@ SELECT setval('roles_id_seq', 9);
 
 
 --  Rights - 
-INSERT INTO rights (id,description) VALUES (1 ,'testplan_execute'      );
-INSERT INTO rights (id,description) VALUES (2 ,'testplan_create_build' );
-INSERT INTO rights (id,description) VALUES (3 ,'testplan_metrics'      );
-INSERT INTO rights (id,description) VALUES (4 ,'testplan_planning'     );
-INSERT INTO rights (id,description) VALUES (5 ,'testplan_user_role_assignment'  );
-INSERT INTO rights (id,description) VALUES (6 ,'mgt_view_tc'           );
-INSERT INTO rights (id,description) VALUES (7 ,'mgt_modify_tc'         );
-INSERT INTO rights (id,description) VALUES (8 ,'mgt_view_key'          );
-INSERT INTO rights (id,description) VALUES (9 ,'mgt_modify_key'        );
-INSERT INTO rights (id,description) VALUES (10,'mgt_view_req'          );
-INSERT INTO rights (id,description) VALUES (11,'mgt_modify_req'        );
-INSERT INTO rights (id,description) VALUES (12,'mgt_modify_product'    );
-INSERT INTO rights (id,description) VALUES (13,'mgt_users'             );
-INSERT INTO rights (id,description) VALUES (14,'role_management'       );
-INSERT INTO rights (id,description) VALUES (15,'user_role_assignment'  );
+INSERT INTO rights (id,description) VALUES (1 ,'testplan_execute');
+INSERT INTO rights (id,description) VALUES (2 ,'testplan_create_build');
+INSERT INTO rights (id,description) VALUES (3 ,'testplan_metrics');
+INSERT INTO rights (id,description) VALUES (4 ,'testplan_planning');
+INSERT INTO rights (id,description) VALUES (5 ,'testplan_user_role_assignment');
+INSERT INTO rights (id,description) VALUES (6 ,'mgt_view_tc');
+INSERT INTO rights (id,description) VALUES (7 ,'mgt_modify_tc');
+INSERT INTO rights (id,description) VALUES (8 ,'mgt_view_key');
+INSERT INTO rights (id,description) VALUES (9 ,'mgt_modify_key');
+INSERT INTO rights (id,description) VALUES (10,'mgt_view_req');
+INSERT INTO rights (id,description) VALUES (11,'mgt_modify_req');
+INSERT INTO rights (id,description) VALUES (12,'mgt_modify_product');
+INSERT INTO rights (id,description) VALUES (13,'mgt_users');
+INSERT INTO rights (id,description) VALUES (14,'role_management');
+INSERT INTO rights (id,description) VALUES (15,'user_role_assignment');
 INSERT INTO rights (id,description) VALUES (16,'mgt_testplan_create');
 INSERT INTO rights (id,description) VALUES (17,'cfield_view');
 INSERT INTO rights (id,description) VALUES (18,'cfield_management');
@@ -67,6 +67,7 @@ INSERT INTO rights (id,description) VALUES (19,'system_configuration');
 INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO rights (id,description) VALUES (22,'events_mgt');
+INSERT INTO rights (id,description) VALUES (23 ,'testproject_user_role_assignment');
 
 
 
@@ -93,6 +94,7 @@ INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,21);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,22);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,23);
 
 --  Rights for guest role
 INSERT INTO role_rights (role_id,right_id) VALUES (5,3 );

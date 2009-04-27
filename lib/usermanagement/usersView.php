@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2008/12/30 13:34:49 $ -  $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/04/27 19:35:12 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -94,15 +94,11 @@ $smarty->assign('grants',$grants);
 $smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
 
 
-
-
-
 function toggle_order_by_dir($which_order_by,$order_by_dir_map)
 {
 	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc';
 	return $obm;
 }
-
 
 /*
   function: get_order_by_clause()
@@ -140,21 +136,22 @@ function get_order_by_clause($order)
 */
 function init_args()
 {
-    $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"operation" => array(tlInputParameter::STRING_N,0,50),
+			"user_order_by" => array(tlInputParameter::STRING_N,0,50),
+			"order_by_role_dir" => array(tlInputParameter::STRING_N,0,4),
+			"order_by_login_dir" => array(tlInputParameter::STRING_N,0,4),
+			"user" => array(tlInputParameter::INT_N),
+		);
 
-    $key2loop = array('operation' => '', 'user_order_by' => 'order_by_login');
-    foreach($key2loop as $key => $value)
-    {
-        $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-    }
+	$pParams = R_PARAMS($iParams);
 
-    $key2loop = array('order_by_role_dir' => 'asc', 'order_by_login_dir' => 'asc');
-    foreach($key2loop as $key => $value)
-    {
-        $args->order_by_dir[$key]=isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
-    }
-    $args->user_id = isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
+	$args = new stdClass();
+	$args->operation = $pParams["operation"];
+    $args->user_order_by = ($pParams["user_order_by"] != '') ? $pParams["user_order_by"] : 'order_by_login';
+    $args->order_by_dir["order_by_role_dir"] = ($pParams["order_by_role_dir"] != '') ? $pParams["order_by_role_dir"] : 'asc';
+    $args->order_by_dir["order_by_login_dir"] = ($pParams["order_by_login_dir"] != '') ? $pParams["order_by_login_dir"] : 'asc';
+    $args->user_id = $pParams['user'];
 
     return $args;
 }

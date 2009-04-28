@@ -5,13 +5,15 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/04/06 10:24:41 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/04/28 08:31:44 $ by $Author: amkhullar $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * rev: 20090322 - franciscom - create() - added node_order.
+ * rev: 
+ *      20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
+ *      20090322 - franciscom - create() - added node_order.
  *                              check_title() - improvements now manages test project id and parent id.
  *                              get_by_title() - improvements now manages test project id and parent id.
  *
@@ -239,11 +241,14 @@ function get_coverage($id)
 					         'nottestable' => array()	);
 
 	// get requirements
+	// amitkhullar- BUGID : 2439
 	$sql_common = "SELECT id,title,req_doc_id " .
 	              " FROM {$this->requirements_table} WHERE srs_id={$id}";
-	$sql = $sql_common . " AND status='" . VALID_REQ . "' {$order_by}";
-	$arrReq = $this->db->get_recordset($sql);
+	$sql = $sql_common . " AND ( upper(status)= upper('" . VALID_REQ . "')";
+	$sql .= " or status='" . VALID_REQ . "')";
+	$sql .= " {$order_by}";
 
+	$arrReq = $this->db->get_recordset($sql);
 	// get not-testable requirements
 	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' {$order_by}";
 	$output['nottestable'] = $this->db->get_recordset($sql);

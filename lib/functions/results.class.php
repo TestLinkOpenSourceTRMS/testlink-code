@@ -5,14 +5,14 @@
  *
  * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.137 $
- * @modified $Date: 2009/04/14 08:29:09 $ by $Author: amkhullar $
+ * @version $Revision: 1.138 $
+ * @modified $Date: 2009/04/28 10:45:11 $ by $Author: amkhullar $
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *-------------------------------------------------------------------------
  * Revisions:
  * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
- * 20090413 - amitkhullar - BUGID 2267 -
+ * 20090413 - amitkhullar - BUGID 2267 - SQL Error in linked Test Cases
  * 20090409 - amitkhullar - Created an results_overloaded function for extending the base class
                             results for passing extra parameters.
  * 20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
@@ -1198,9 +1198,10 @@ class results
 					    	$dummy = null;
 					    	$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
 					    	                                                       $exec_row['execution_ts']);
-
-					 		  $prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
-    						$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . '">' .
+							//-amitkhullar - BugID:2267
+					 		$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
+    						$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . 
+							"&tplan_id=" . $this->testPlanID . '">' .  
 			               	$suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
 								    	                                                       
 					   		array_push($currentSuite, $infoToSave);

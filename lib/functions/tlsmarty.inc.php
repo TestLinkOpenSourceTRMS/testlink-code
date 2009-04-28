@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/03/05 07:32:37 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/04/28 19:22:33 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -47,7 +47,7 @@ class TLSmarty extends Smarty
         if (isset($_SESSION['testprojectColor']))
         {
             $testprojectColor =  $_SESSION['testprojectColor'];
-            if (!strlen($testprojectColor))
+            if ($testprojectColor == "")
             {
                 $testprojectColor = $tlCfg->gui->background_color;
             }    

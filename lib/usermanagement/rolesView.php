@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -63,11 +63,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	$iParams = array(
-			"roleid" => array("REQUEST",tlInputParameter::INT_N),
-			"doAction" => array("REQUEST",tlInputParameter::STRING_N,0,100),
+			"roleid" => array(tlInputParameter::INT_N),
+			"doAction" => array(tlInputParameter::STRING_N,0,100),
 		);
 
-	$pParams = I_PARAMS($iParams);
+	$pParams = R_PARAMS($iParams);
     
 	$args = new stdClass();
 	$args->roleid = $pParams["roleid"]; 

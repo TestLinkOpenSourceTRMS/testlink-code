@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/03/23 08:10:18 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
  *
  * This page this allows users to export requirements.
  *
@@ -21,8 +21,8 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 
-$args=init_args();
-$gui=initializeGui($args,$req_spec_mgr);
+$args = init_args();
+$gui = initializeGui($args,$req_spec_mgr);
 
 switch($args->doAction)
 {
@@ -55,13 +55,13 @@ function checkRights(&$db,&$user)
  */
 function init_args()
 {
-   $_REQUEST = strings_stripSlashes($_REQUEST);
-   $args = new stdClass();
-   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'export';
-   $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-   $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
-   $args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
- 	 $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args = new stdClass();
+	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : 'export';
+	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
+	$args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
    return $args;  
 }
@@ -73,15 +73,15 @@ function init_args()
  */
 function initializeGui(&$argsObj,&$req_spec_mgr)
 {
-   $gui=new stdClass();
+   $gui = new stdClass();
    $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
    $gui->exportTypes = $req_spec_mgr->get_export_file_types();
    $gui->exportType = $argsObj->exportType; 
    $gui->req_spec_id = $argsObj->req_spec_id;
    $gui->export_filename = trim($argsObj->export_filename);
-   if( strlen($gui->export_filename) == 0 )
+   if($gui->export_filename == "")
    {
-       $gui->export_filename=$gui->req_spec['title'] . '-req.xml';
+       $gui->export_filename = $gui->req_spec['title'] . '-req.xml';
    }
    return $gui;  
 }
@@ -98,30 +98,27 @@ function doExport(&$argsObj,&$req_spec_mgr)
 	switch($argsObj->exportType)
 	{
 		case 'csv':
-	    $requirements_map = $req_spec_mgr->get_requirements($argsObj->req_spec_id);
+	    	$requirements_map = $req_spec_mgr->get_requirements($argsObj->req_spec_id);
 			$pfn = "exportReqDataToCSV";
 			$fileName = 'reqs.csv';
- 		  $content = $pfn($requirements_map);
+			$content = $pfn($requirements_map);
 			break;
 
 		case 'XML':
 			$pfn = "exportReqSpecToXML";
 			$fileName = 'reqs.xml';
-  		$content = TL_XMLEXPORT_HEADER;
-  		$content .= "<requirement-specification>\n";
-		  $content .= $req_spec_mgr->$pfn($argsObj->req_spec_id,$argsObj->tproject_id);
+  			$content = TL_XMLEXPORT_HEADER;
+  			$content .= "<requirement-specification>\n";
+			$content .= $req_spec_mgr->$pfn($argsObj->req_spec_id,$argsObj->tproject_id);
 			$content .= "</requirement-specification>\n";
 			break;
 	}
 
 	if ($pfn)
 	{
-	  $fileName = is_null($argsObj->export_filename) ? $fileName : $argsObj->export_filename;
+		$fileName = is_null($argsObj->export_filename) ? $fileName : $argsObj->export_filename;
 		downloadContentsToFile($content,$fileName);
 		exit();
 	}
-  return;
 }
-
-
 ?>

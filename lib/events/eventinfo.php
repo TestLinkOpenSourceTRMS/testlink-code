@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -45,14 +45,13 @@ function checkRights(&$db,&$user,&$action)
 
 function init_args()
 {
-	$args = new stdClass();
-	
 	$iParams = array(
 			"id" => array(tlInputParameter::STRING_N,0,50),
 		);
 		
 	$pParams = P_PARAMS($iParams);
 
+	$args = new stdClass();
 	$args->eventID = $pParams["id"];
 	
 	return $args;

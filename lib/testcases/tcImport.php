@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -241,7 +241,7 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 		$node_order = intval(trim(getNodeContent($node,'node_order')));
 		
 		$ts = null;
-		if (strlen($name))
+		if ($name != "")
 		{
 			$ts = new testsuite($db);
 			$ret = $ts->create($parentID,$name,$details,$node_order);

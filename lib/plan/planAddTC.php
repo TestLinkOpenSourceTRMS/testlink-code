@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.70 2009/01/17 13:18:04 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.71 2009/04/28 19:22:33 schlundus Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -64,7 +64,7 @@ switch($args->doAction)
 	    if(!is_null($args->testcases2add))
 	    {
 		    $items_to_link = my_array_intersect_keys($args->testcases2add,$args->tcversion_for_tcid);
-		    $tplan_mgr->link_tcversions($args->tplan_id,$items_to_link);
+		    $tplan_mgr->link_tcversions($args->tplan_id,$items_to_link,$args->userID);
 	    }
 
 	    if(!is_null($args->testcases2remove))
@@ -165,6 +165,8 @@ function init_args()
 	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
 	$args->linkedWithCF = isset($_REQUEST['linked_with_cf']) ? $_REQUEST['linked_with_cf'] : null;
 	
+	$args->userID = $_SESSION['currentUser']->dbID;
+
 	return $args;
 }
 
@@ -274,7 +276,7 @@ function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
     //       a method on cfield_mgr class.
     //       One issue: find a good method name
     $cf_prefix = $tcaseMgr->cfield_mgr->get_name_prefix();
-	$len_cfp=strlen($cf_prefix);
+	$len_cfp = tlStringLen($cf_prefix);
     $cf_nodeid_pos=4;
     
   	$nodeid_array_cfnames=null;

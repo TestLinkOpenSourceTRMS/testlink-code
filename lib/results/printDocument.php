@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/04/23 09:06:17 $ by $Author: havlat $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -153,7 +153,7 @@ switch ($doc_info->type)
 					$tInfo = $tsuite->get_by_id($args->itemID);
                  
 					$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
-					if( !is_null($children_tsuites) and strlen(trim($children_tsuites)) > 0)
+					if( !is_null($children_tsuites) and trim($children_tsuites) != "")
 					{
 						$branch_tsuites = explode(',',$children_tsuites);
 					}

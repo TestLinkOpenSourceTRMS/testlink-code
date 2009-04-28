@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/04/21 08:57:24 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/04/28 19:22:33 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -16,9 +16,9 @@ require_once('email_api.php');
 $templateCfg = templateConfiguration();
 
 $args = init_args();
-$gui=new stdClass();
+$gui = new stdClass();
 $gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
-$gui->page_title=lang_get('page_title_lost_passwd');
+$gui->page_title = lang_get('page_title_lost_passwd');
 $gui->note = lang_get('your_info_for_passwd');
 
 $op = doDBConnect($db);
@@ -69,9 +69,10 @@ $smarty->display($templateCfg->default_template);
 
 function init_args()
 {
-	$args = new stdClass();
 	$iParams = array("login" => array(tlInputParameter::STRING_N,0,30));
 	$pParams = P_PARAMS($iParams);
+	
+	$args = new stdClass();
 	$args->login = $pParams["login"];
 	return $args;
 }

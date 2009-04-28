@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2009/04/27 18:58:48 $ $Author: schlundus $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2009/04/28 19:22:33 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -180,7 +180,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	
 	if ($result >= tl::OK)
 	{
-		if (strlen($user->emailAddress))
+		if ($user->emailAddress != "")
 		{
 			$newPassword = generatePassword(8,4); 
 			$result = $user->setPassword($newPassword);
@@ -202,7 +202,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 		else
 			$result = tlUser::E_EMAILLENGTH;
 	}
-	if (!strlen($errorMsg))
+	if ($errorMsg != "")
 		$errorMsg = getUserErrorMessage($result);
 
 	return $result;

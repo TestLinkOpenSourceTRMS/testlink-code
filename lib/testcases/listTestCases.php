@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.43 2009/03/29 14:10:01 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.44 2009/04/28 19:22:34 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -39,8 +39,8 @@ $treeDragDropEnabled =  array('edit_tc' => has_rights($db,"mgt_modify_tc")=='yes
                               'keywordsAssign' => false,
                               'assignReqs' => false);
 
-$args=init_args();
-if(!is_null($args->feature) && strlen($args->feature))
+$args = init_args();
+if(!is_null($args->feature) && $args->feature != "")
 {
 	if(isset($feature_action[$args->feature]))
 	{

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2008/10/12 08:11:56 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -20,7 +20,7 @@ doSessionStart();
 
 unset($_SESSION['basehref']);
 setPaths();
-$reqURI = isset($_GET['reqURI']) ? $_GET['reqURI'] : 'lib/general/mainPage.php';
+$args = init_args();
 
 //verify the session during a work
 if (!isset($_SESSION['currentUser']))
@@ -31,6 +31,17 @@ if (!isset($_SESSION['currentUser']))
 $smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
 $smarty->assign('titleframe', 'lib/general/navBar.php');
-$smarty->assign('mainframe', $reqURI);
+$smarty->assign('mainframe', $args->reqURI);
 $smarty->display('main.tpl');
+
+function init_args()
+{
+	$iParams = array("reqURI" => array(tlInputParameter::STRING_N,0,4000));
+	$pParams = G_PARAMS($iParams);
+	
+	$args = new stdClass();
+	$args->reqURI = ($pParams["reqURI"] != '') ? $pParams["reqURI"] : 'lib/general/mainPage.php';
+	
+	return $args;
+}
 ?>

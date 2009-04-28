@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.20 $
-* @modified $Date: 2009/04/27 18:58:48 $ $Author: schlundus $
+* @version $Revision: 1.21 $
+* @modified $Date: 2009/04/28 19:22:34 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -21,7 +21,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$assignRolesFor  =null;
+$assignRolesFor = null;
 $featureMgr = null;
 $userFeatureRoles = null;
 $doInitGui = true;
@@ -112,14 +112,21 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function init_args()
 {
-  	$args = new stdClass();
-	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"featureType" => array(tlInputParameter::STRING_N,0,100),
+			"featureID" => array(tlInputParameter::INT_N),
+			"userRole" => array(tlInputParameter::ARRAY_INT),
+			"do_update" => array(tlInputParameter::STRING_N,0,100),
+	);
 
-    $args->featureType = isset($_REQUEST['featureType']) ? $_REQUEST['featureType'] : null;
-    $args->featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
-    $args->map_userid_roleid = isset($_REQUEST['userRole']) ? $_REQUEST['userRole'] : null;
-    $args->doUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
+	$pParams = R_PARAMS($iParams);
     
+	$args = new stdClass();
+	$args->featureType = $pParams["featureType"];
+    $args->featureID = $pParams["featureID"];
+    $args->map_userid_roleid = $pParams["userRole"];
+    $args->doUpdate = ($pParams["do_update"] != "") ? 1 : 0;
+   
     // Warning: 
     // This value is used when doing Test Plan role assignment
     $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -139,14 +146,14 @@ function init_args()
 function checkRights(&$db,&$user)
 {
 	$result = false;
-    $args=init_args();
+    $args = init_args();
 	if($user->hasRight($db,"role_management") || ($user->hasRight($db,"testplan_user_role_assignment") || 
 	   $user->hasRight($db,"user_role_assignment",null,-1)))
 	{
 	    $result = true;
 	}    
 	
-	if(!$result && ($args->featureType=='testproject'))
+	if(!$result && ($args->featureType == 'testproject'))
 	{
         if($user->hasRight($db,"testproject_user_role_assignment",$args->featureID,-1)) 	    
         {
@@ -180,8 +187,7 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
         break;
     }
 
-    $status_ok = ($yes_no == 'yes');
-    return $status_ok ;
+    return ($yes_no == 'yes') ;
 }
 
 
@@ -206,8 +212,7 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 	else
 	{
 	    $loop2do = sizeof($testprojects);
-        $added = 0;
-		for($idx = 0; $idx < $loop2do; $idx++)
+        for($idx = 0; $idx < $loop2do; $idx++)
 		{
 		    $answer = $argsObj->user->hasRight($dbHandler,"testproject_user_role_assignment",$testprojects[$idx]['id'],-1);
 			if($answer == "yes")

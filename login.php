@@ -5,14 +5,12 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/01/07 19:55:34 $ by $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
  *
- * rev: 20081231 - franciscom - minor refactoring
- *      20081015 - franciscom - access to config parameters following development standard
  **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -21,7 +19,6 @@ require_once('common.php');
 require_once('doAuthorize.php');
 
 $op = doDBConnect($db);
-//@TODO: schlundus, this kind of code should be contained within doDBConnect!
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
@@ -78,16 +75,21 @@ $smarty->display('login.tpl');
 */
 function init_args()
 {
+	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
+		"tl_login" => array(tlInputParameter::STRING_N,0,30),
+		"tl_password" => array(tlInputParameter::STRING_N,0,32),
+		"req" => array(tlInputParameter::STRING_N,0,4000),
+		"reqURI" => array(tlInputParameter::STRING_N,0,4000),
+	);
+	$pParams = R_PARAMS($iParams);
+	
     $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    
-    $args->note = isset($_REQUEST['note']) ? $_REQUEST['note'] : null;
-    $args->login = isset($_REQUEST['tl_login']) ? trim($_REQUEST['tl_login']) : null;
-    $args->pwd = isset($_REQUEST['tl_password']) ? $_REQUEST['tl_password'] : null;
+    $args->note = $pParams['note'];
+    $args->login = $pParams['tl_login'];
+    $args->pwd = $pParams['tl_password'];
+    $args->reqURI = $pParams['req'];
+    $args->preqURI = $pParams['reqURI'];
 
-    $args->reqURI = isset($_REQUEST['req']) ? $_REQUEST['req'] : null;
-    $args->preqURI = (isset($_REQUEST['reqURI']) && strlen($_REQUEST['reqURI'])) ? $_REQUEST['reqURI'] : null;
-  
     return $args;
 }
 

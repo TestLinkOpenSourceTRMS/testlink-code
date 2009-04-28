@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2009/04/21 09:33:22 $  by $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2009/04/28 19:22:34 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -108,7 +108,7 @@ if($args->do_create)
 		$user_feedback = $msg;
 		$name_ok = 0;
 	}
-	if($name_ok && strlen($args->name) == 0)
+	if($name_ok && $args->name == "")
 	{
 		$msg = lang_get('warning_empty_tc_title');
 		$user_feedback = $msg;

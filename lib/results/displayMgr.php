@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/04/01 21:27:32 $ by $Author: havlat $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -20,17 +20,17 @@ require_once('../../cfg/reports.cfg.php');
 
 function generateHtmlEmail($template_file, &$smarty, $buildName = null)
 {
-			$html_report = $smarty->fetch($template_file);
-			$emailIsHtml = true;
-		 	$send_cc_to_myself = false;
-			$subjectOfMail =  $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
-		  
-			$emailFrom = $_SESSION['currentUser']->emailAddress;
-			$emailTo = $emailFrom;
-			if (!strlen($emailTo))
-		  		$message = lang_get("error_sendreport_no_email_credentials");
-		  	else
-		  		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
+	$html_report = $smarty->fetch($template_file);
+	$emailIsHtml = true;
+ 	$send_cc_to_myself = false;
+	$subjectOfMail =  $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
+  
+	$emailFrom = $_SESSION['currentUser']->emailAddress;
+	$emailTo = $emailFrom;
+	if ($emailTo == "")
+  		$message = lang_get("error_sendreport_no_email_credentials");
+  	else
+  		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
 
 	return	$message;
 }
@@ -62,8 +62,6 @@ function displayReport($template_file, &$smarty, $doc_format, $buildName = null)
 
 	$smarty->display($template_file);
 }
-
-
 
 
 /**

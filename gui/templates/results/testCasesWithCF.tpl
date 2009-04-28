@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithCF.tpl,v 1.3 2009/04/21 05:58:22 amkhullar Exp $
+$Id: testCasesWithCF.tpl,v 1.4 2009/04/28 08:32:31 amkhullar Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
@@ -23,7 +23,7 @@ rev:
 
 
 {if $gui->warning_msg == ''}
-    {if $gui->resultSet }
+    {if ($gui->resultSet) }
         <table class="simple">
 	          <tr>
 	          <th> {$labels.test_case}</th>

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/04/27 21:53:07 $  $Author: havlat $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/04/29 21:23:06 $  $Author: havlat $
  * @author franciscom
  *
  * 20090426 - franciscom - new method getSizeLimit()
@@ -694,20 +694,18 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				$rows = self::TEXTAREA_DEFAULT_ROWS;
 			}
 			
-			$input_name_counter = $input_name . '_counter';
+			$counterId = $input_name . '_counter';
 			$cf_current_size = self::TEXTAREA_MAX_SIZE - strlen($t_custom_field_value);
 			// call JS function for check max. size (255) from validate.js
-			$js_function = '"textCounter(this.form.' . $input_name . ',this.form.'.
-					$input_name_counter.','.self::TEXTAREA_MAX_SIZE.');" ';
+			$js_function = '"textCounter(this.form.' . $input_name . ',document.getElementById(\''.
+					$counterId.'\'),'.self::TEXTAREA_MAX_SIZE.');" ';
 			$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
 					'onKeyDown=' . $js_function . ' onKeyUp=' . $js_function . 'cols="' .
-					$cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>";
+					$cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
 			// show character counter
 			$str_out .= '<span style="vertical-align: top; padding: 5px;">' .
 					sprintf(lang_get('text_counter_feedback'), self::TEXTAREA_MAX_SIZE) .
-					' <input readonly="readonly" type="text" name="' . $input_name_counter .
-					'" size="3" value="'.$cf_current_size.'" style="border-style:none;' .
-					'background-color: transparent;"></span>';
+					' <span id="' . $counterId .'">'.$cf_current_size.'</span>.</span>';
 		break;
 
 		case 'date':

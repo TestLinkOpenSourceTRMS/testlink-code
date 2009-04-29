@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.435 $
- * @modified $Date: 2009/04/27 21:53:07 $ by $Author: havlat $
+ * @version $Revision: 1.436 $
+ * @modified $Date: 2009/04/29 06:44:21 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1518,7 +1518,8 @@ $TLS_th_roles_testplan = "Test Plan Role";
 $TLS_th_roles_testproject = "Test Project Role";
 $TLS_title_assign_roles = "Assign roles";
 $TLS_set_roles_to = "Set roles to";
-
+$TLS_testproject_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Projects";
+$TLS_testplan_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Plans";
 
 
 // ----- gui/templates/usersedit.tpl -----

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2009/04/28 19:22:33 $ $Author: schlundus $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2009/04/29 06:38:11 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -95,7 +95,6 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   rev :
        20071228 - franciscom - added active_filter
 */
-// function getUsersForHtmlOptions(&$db,$whereClause = null,$add_blank_option = false, $active_filter=null,$users = null)
 function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter=null,$users = null)
 {
 	$users_map = null;
@@ -279,6 +278,7 @@ function getUserErrorMessage($code)
   args:
 
   returns:
+  
 
 */
 function getAllUsersRoles(&$db,$order_by = null)
@@ -354,6 +354,7 @@ function initialize_tabsmenu()
 */
 function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=null)
 {
+    $answers = new stdClass();
     $grants = new stdClass();
     $grants->user_mgmt = $userObj->hasRight($dbHandler,"mgt_users");
     $grants->role_mgmt = $userObj->hasRight($dbHandler,"role_management");
@@ -370,12 +371,20 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
         
         $grants->tplan_user_role_assignment = $userObj->hasRight($dbHandler,"testplan_user_role_assignment",
                                                                  $tprojectID,$tplanID);
-        if( $userObj->hasRight($dbHandler,"user_role_assignment",null,-1) == "yes" ||
-            $userObj->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID)=="yes" )
+        
+        
+        $answers->user_role_assignment=$userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
+        $answers->testproject_user_role_assignment=$userObj->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID,-1);
+        if( $answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes" )
         {    
             $grants->tproject_user_role_assignment = "yes";
         }
     }    
+    foreach($grants as $key => $value)
+    {
+        $grants->$key = $value == "yes" ? "yes" : "no";       
+    }
+    
     return $grants;
 }
 

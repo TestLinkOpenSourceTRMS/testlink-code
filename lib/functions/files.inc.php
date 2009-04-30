@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: files.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/05/07 21:01:23 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -76,7 +76,7 @@ function gzip_compress_file($srcName, $dstName)
 	$bSuccess = false;
 
 	$data = getFileContents($srcName);
-	if (strlen($data))
+	if ($data != "")
 		$bSuccess = gzip_writeToFile($dstName,$data);
 
 	return $bSuccess;

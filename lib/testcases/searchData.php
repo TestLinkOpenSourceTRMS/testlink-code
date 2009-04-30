@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.41 2009/02/28 17:19:29 franciscom Exp $
+ * $Id: searchData.php,v 1.42 2009/04/30 18:46:36 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -60,25 +60,25 @@ if ($args->tprojectID)
         $filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
     }
     
-    if(strlen($args->name))
+    if($args->name != "")
     {
         $args->name =  $db->prepare_string($args->name);
         $filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
     }
     
-    if(strlen($args->summary))
+    if($args->summary != "")
     {
         $summary = $db->prepare_string($args->summary);
         $filter['by_summary'] = " AND summary like '%{$args->summary}%' ";
     }    
     
-    if(strlen($args->steps))
+    if($args->steps != "")
     {
         $args->steps = $db->prepare_string($args->steps);
         $filter['by_steps'] = " AND steps like '%{$args->steps}%' ";	
     }    
     
-    if(strlen($args->expected_results))
+    if($args->expected_results != "")
     {
         $args->expected_results = $db->prepare_string($args->expected_results);
         $filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	

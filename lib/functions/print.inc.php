@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.76 $
- * @modified $Date: 2009/04/21 04:54:11 $ by $Author: amkhullar $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -150,7 +150,7 @@ function renderFirstPage($doc_info)
 function renderSimpleChapter($title, $content)
 {
 	$output = '';
-	if (strlen($content) > 0)
+	if ($content != "")
 	{
 		$output .= '<h1 class="doclevel">'.$title."</h1>\n";
 		$output .= '<div class="txtlevel">' .$content . "</div>\n";
@@ -585,15 +585,15 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
         $add_br=false;
         foreach($cfields as $key => $value)
         {
-            $cfields[$key]= $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
+            $cfields[$key] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
 	                                                                       $tproject_id,$cfieldFormatting);
-   	        if( strlen($cfields[$key]) > 0 )
+   	        if($cfields[$key] != "")
    	        {
-   	            $add_br=true;
+   	            $add_br = true;
    	            $code .= "<br />" . $cfields[$key];    
    	        }
    	    }
-   	    if( $add_br ) 
+   	    if($add_br) 
    	    {
    	        $code .= '<br />';    
    	    }

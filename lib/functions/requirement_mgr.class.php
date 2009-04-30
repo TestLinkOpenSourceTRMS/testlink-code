@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/04/02 06:42:09 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -82,26 +82,26 @@ class requirement_mgr extends tlObjectWithAttachments
   	       
   	$recordset = $this->db->get_recordset($sql);
   	
-    $rs=null;
-    if( !is_null($recordset) )
+    $rs = null;
+    if(!is_null($recordset))
     {
         // Decode users
-        $rs=$recordset[0];
+        $rs = $recordset[0];
         $rs['author'] = '';
         $rs['modifier'] = '';
-        if( strlen(trim($rs['author_id'])) > 0 )
+        if(trim($rs['author_id']) != "")
         {
             $user = tlUser::getByID($this->db,$rs['author_id']);
             $rs['author'] = $user->getDisplayName();
         }
       
-        if( strlen(trim($rs['modifier_id'])) > 0 )
+        if(trim($rs['modifier_id']) != "")
         {
             $user = tlUser::getByID($this->db,$rs['modifier_id']);
             $rs['modifier'] = $user->getDisplayName();
         }
     }  	
-  	return ($rs);
+  	return $rs;
   }
 
   /*
@@ -361,13 +361,13 @@ class requirement_mgr extends tlObjectWithAttachments
   	$ret['status_ok'] = 1;
   	$ret['msg'] = '';
 
-  	if (!strlen($title))
+  	if ($title == "")
   	{
   		$ret['status_ok'] = 0;
   		$ret['msg'] = lang_get("warning_empty_req_title");
   	}
 
-  	if (!strlen($reqdoc_id))
+  	if ($reqdoc_id == "")
   	{
   		$ret['status_ok'] = 0;
   		$ret['msg'] .=  " " . lang_get("warning_empty_reqdoc_id");
@@ -380,7 +380,7 @@ class requirement_mgr extends tlObjectWithAttachments
   		if($req_cfg->reqdoc_id->is_system_wide)
   		{
   			// req doc id MUST BE unique inside the whole DB
-        $my_srs_id=null;
+        	$my_srs_id = null;
   		}
   		$rs = $this->get_by_docid($reqdoc_id,$my_srs_id);
 
@@ -756,18 +756,18 @@ class requirement_mgr extends tlObjectWithAttachments
     returns:
 
   */
-  function check_title($title)
-  {
-    $ret=array('status_ok' => 1, 'msg' => 'ok');
-
-  	if (strlen($title) == 0)
-  	{
-  	  $ret['status_ok']=0;
-  		$ret['msg'] = lang_get("warning_empty_req_title");
-    }
-
-  	return $ret;
-  }
+	function check_title($title)
+	{
+		$ret = array('status_ok' => 1, 'msg' => 'ok');
+	
+		if ($title == "")
+		{
+			$ret['status_ok'] = 0;
+	  		$ret['msg'] = lang_get("warning_empty_req_title");
+	    }
+	
+	 	return $ret;
+	}
 
   /*
     function:
@@ -1010,8 +1010,7 @@ function html_table_of_custom_field_values($id)
 	$cf_smarty = '';
 	$PID_NO_NEEDED = null;
 
-  $cf_map = $this->get_linked_cfields($id,$PID_NO_NEEDED);
-
+	$cf_map = $this->get_linked_cfields($id,$PID_NO_NEEDED);
 
 	if(!is_null($cf_map))
 	{
@@ -1020,7 +1019,7 @@ function html_table_of_custom_field_values($id)
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+				$label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .
@@ -1029,9 +1028,9 @@ function html_table_of_custom_field_values($id)
 			}
 		}
 
-		if(strlen(trim($cf_smarty)) > 0)
+		if(trim($cf_smarty) != "")
 		{
-		  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+			$cf_smarty = "<table>" . $cf_smarty . "</table>";
 		}
 	}
 	return $cf_smarty;

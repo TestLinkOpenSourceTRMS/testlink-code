@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: opt_transfer.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/02/29 23:19:29 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/04/30 18:46:36 $
  *
  * Manage Option Transfer (double select box)
  *
@@ -23,7 +23,7 @@ function opt_transf_cfg(&$opt_cfg, $right_list, $js_ot_name = 'ot')
 	$a_right = array();
 	$a_left = array();
 
-	if(strlen(trim($right_list)) == 0)
+	if(trim($right_list) == "")
 	{
 		if(!is_null($opt_cfg->to->map))
 		{

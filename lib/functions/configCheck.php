@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/04/21 09:35:22 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -281,14 +281,14 @@ function getSecurityNotes(&$db)
 	// 20070121 - needed when schemas change has been done
 	// This call can be removed when release is stable
 	$msg = checkSchemaVersion($db);
-	if(strlen($msg))
+	if($msg != "")
 	{
 		$securityNotes[] = $msg;
 	}
 	
 	// 20070911 - fixing bug 1021 
 	$msg = checkForTestPlansWithoutTestProjects($db);
-	if(strlen($msg))
+	if($msg != "")
 	{
 		$securityNotes[] = $msg;
 	}
@@ -505,7 +505,7 @@ function checkEmailConfig()
 	foreach($key2get as $cfg_key)
 	{  
 	   $cfg_param = config_get($cfg_key);
-	   if(strlen(trim($cfg_param)) == 0 || strpos($cfg_param,'not_configured') > 0 )
+	   if(trim($cfg_param) == "" || strpos($cfg_param,'not_configured') > 0 )
 	   {
 			$msg[$idx++] = $cfg_key;
 	   }  

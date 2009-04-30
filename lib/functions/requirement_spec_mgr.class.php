@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/04/28 08:31:44 $ by $Author: amkhullar $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -207,13 +207,13 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	    {
 	        // Decode users
 	        $rs = $recordset[0];
-	        if(strlen(trim($rs['author_id'])) > 0)
+	        if(trim($rs['author_id']) != "")
 	        {
 	            $user = tlUser::getByID($this->db,$rs['author_id']);
 	            $rs['author'] = $user->getDisplayName();
 	        }
 	      
-	        if(strlen(trim($rs['modifier_id'])) > 0)
+	        if(trim($rs['modifier_id']) != "")
 	        {
 	            $user = tlUser::getByID($this->db,$rs['modifier_id']);
 	            $rs['modifier'] = $user->getDisplayName();
@@ -631,29 +631,28 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   */
   function check_title($title,$tproject_id=null,$parent_id=null,$id=null,$case_analysis=self::CASE_SENSITIVE)
   {
-    $ret['status_ok']=1;
-    $ret['msg']='';
+    $ret['status_ok'] = 1;
+    $ret['msg'] = '';
 
-    $title=trim($title);
+    $title = trim($title);
 
-  	if (!strlen($title))
+  	if ($title == "")
   	{
-  	  $ret['status_ok']=0;
+		$ret['status_ok'] = 0;
   		$ret['msg'] = lang_get("warning_empty_req_title");
   	}
 
   	if($ret['status_ok'])
   	{
-  	  $ret['msg']='ok';
-      // $rs=$this->get_by_title($title,$tproject_id,$case_analysis);
-      $rs=$this->get_by_title($title,$tproject_id,$parent_id,$case_analysis);
+		$ret['msg']='ok';
+      	$rs = $this->get_by_title($title,$tproject_id,$parent_id,$case_analysis);
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
-      {
-  		  $ret['msg']=sprintf(lang_get("warning_duplicate_req_title"),$title);
-        $ret['status_ok']=0;
-  	  }
-  	}
-  	return($ret);
+      	{
+  			$ret['msg'] = sprintf(lang_get("warning_duplicate_req_title"),$title);
+        	$ret['status_ok'] = 0;
+  		}
+	}
+	return $ret;
   } //function end
 
 
@@ -1072,7 +1071,7 @@ function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null
 function html_table_of_custom_field_values($id,$tproject_id)
 {
 	$cf_smarty = '';
-  $cf_map = $this->get_linked_cfields($id,$tproject_id);
+  	$cf_map = $this->get_linked_cfields($id,$tproject_id);
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
@@ -1080,7 +1079,7 @@ function html_table_of_custom_field_values($id,$tproject_id)
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+        		$label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .
@@ -1089,9 +1088,9 @@ function html_table_of_custom_field_values($id,$tproject_id)
 			}
 		}
 
-		if(strlen(trim($cf_smarty)) > 0)
+		if(trim($cf_smarty) != "")
 		{
-		  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+			$cf_smarty = "<table>" . $cf_smarty . "</table>";
 		}
 	}
 	return $cf_smarty;

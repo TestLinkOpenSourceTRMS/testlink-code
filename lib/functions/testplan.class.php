@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.109 $
- * @modified $Date: 2009/04/27 07:53:11 $ by $Author: franciscom $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -522,7 +522,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
     	   array_shift($keyword_id);
     	}
  
-    	if( (count($keyword_id) > 0) )
+    	if(count($keyword_id))
     	{
           $keywords_filter = " AND TK.keyword_id IN (" . implode(',',$keyword_id) . ")";          	
     	}  
@@ -532,7 +532,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	    $keywords_filter = " AND TK.keyword_id = {$keyword_id} ";
 	}
 	
-	if( strlen(trim($keywords_filter)) > 0 )
+	if(trim($keywords_filter) != "")
 	{
 	    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";
 	}
@@ -595,14 +595,14 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
       }
       if( !is_null($notrun_filter) )
       {
-        if( strlen(($executions_filter)) > 0)
+        if($executions_filter != "")
         {
             $executions_filter .= " OR ";
         }
         $executions_filter .= $notrun_filter;
       }
       
-      if( strlen(($executions_filter)) > 0)
+      if($executions_filter != "")
       {
           $executions_filter = " AND ({$executions_filter} )";     
       }

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.164 $
- * @modified $Date: 2009/04/21 09:34:53 $ $Author: franciscom $
+ * @version $Revision: 1.165 $
+ * @modified $Date: 2009/04/30 18:46:36 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
@@ -221,31 +221,30 @@ function create($parent_id,$name,$summary,$steps,
 	// if($ret['msg'] == 'ok')
 	if($ret["status_ok"])
 	{
-		if(strlen(trim($keywords_id)))
+		if(trim($keywords_id) != "")
 		{
 			$a_keywords = explode(",",$keywords_id);
 			$this->addKeywords($ret['id'],$a_keywords);
 		}
 		
-		$version_number=1;
-		if( isset($ret['version_number']) && $ret['version_number'] < 0 )
+		$version_number = 1;
+		if(isset($ret['version_number']) && $ret['version_number'] < 0)
 		{
 		   // We are in the special situation we are only creating a new version,
 		   // useful when importing test cases. Need to get last version number.
 		   // I do not use create_new_version() because it does a copy ot last version
 		   // and do not allow to set new values in different fields while doing this operation.
-       $last_version_info =  $this->get_last_version_info($ret['id']);
-       $version_number=$last_version_info['version']+1;
-       $ret['msg']=sprintf($ret['msg'],$version_number);       
+			$last_version_info = $this->get_last_version_info($ret['id']);
+			$version_number = $last_version_info['version']+1;
+			$ret['msg'] = sprintf($ret['msg'],$version_number);       
        
-       // BUGID 2204
-       $ret['version_number']=$version_number;
-       
-		}
+			// BUGID 2204
+       		$ret['version_number']=$version_number;
+       	}
 		$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,$steps,
 		                              $expected_results,$author_id,$execution_type,$importance);
 
-		$ret['msg']=$op['status_ok'] ? $ret['msg'] : $op['msg'];
+		$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 	}
 	return $ret;
 }
@@ -417,13 +416,13 @@ function getDuplicatesByName($name, $parent_id)
 
   returns: hash
 */
-function get_by_name($name, $tsuite_name='', $tproject_name='')
+function get_by_name($name, $tsuite_name = '', $tproject_name = '')
 {
-    $recordset=null;
-    $filters_on=array('tsuite_name' => false, 'tproject_name' => false);
+    $recordset = null;
+    $filters_on = array('tsuite_name' => false, 'tproject_name' => false);
 
-    $tsuite_name=trim($tsuite_name);
-    $tproject_name=trim($tproject_name);
+    $tsuite_name = trim($tsuite_name);
+    $tproject_name = trim($tproject_name);
     
     $sql = " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
            " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
@@ -431,33 +430,30 @@ function get_by_name($name, $tsuite_name='', $tproject_name='')
 		       " {$this->nodes_hierarchy_table} NH_TCVERSIONS,tcversions TCV  " .
 		       " WHERE NH_TCASE.node_type_id = {$this->my_node_type} " .
 		       " AND NH_TCASE.name = '{$this->db->prepare_string($name)}' " .
-	         " AND TCV.id=NH_TCVERSIONS.id " .
+			" AND TCV.id=NH_TCVERSIONS.id " .
 		       " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
 		       " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id ";
    
-	  if( strlen($tsuite_name) > 0)
-	  {
-	       $sql .= " AND NH_TCASE_PARENT.name = '{$this->db->prepare_string($tsuite_name)}' " .
-	               " AND NH_TCASE_PARENT.node_type_id = {$this->node_types_descr_id['testsuite']} ";
-	  }
-    $recordset = $this->db->get_recordset($sql);
-    if( count($recordset) > 0 and strlen($tproject_name) > 0 )
+	if($tsuite_name != "")
+	{
+		$sql .= " AND NH_TCASE_PARENT.name = '{$this->db->prepare_string($tsuite_name)}' " .
+	            " AND NH_TCASE_PARENT.node_type_id = {$this->node_types_descr_id['testsuite']} ";
+	}
+	$recordset = $this->db->get_recordset($sql);
+    if(count($recordset) && $tproject_name != "")
     {    
-         list($tproject_info)=$this->tproject_mgr->get_by_name($tproject_name);
-         foreach($recordset as $idx => $tcase_info)
-         { 
-             if( $this->get_testproject($tcase_info['id']) != $tproject_info['id'] )
-             {
-                 unset($recordset[$idx]);  
-             }        
-         }    
+		list($tproject_info)=$this->tproject_mgr->get_by_name($tproject_name);
+        foreach($recordset as $idx => $tcase_info)
+        { 
+        	if( $this->get_testproject($tcase_info['id']) != $tproject_info['id'] )
+            {
+            	unset($recordset[$idx]);  
+			}        
+		}    
     }
-
 
     return $recordset;
 }
-
-
 
 
 /*
@@ -619,14 +615,14 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
     
         if( $viewer_defaults['display_parent_testsuite'] )
         {
-            $parent_idx=count($path2root)-2;
-            $gui->parentTestSuiteName=$path2root[$parent_idx]['name'];
+            $parent_idx = count($path2root)-2;
+            $gui->parentTestSuiteName = $path2root[$parent_idx]['name'];
         }
     
         $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
-        if( strlen(trim($tcasePrefix)) > 0 )
+        if(trim($tcasePrefix) != "")
         {
-             $tcasePrefix .= $tcase_cfg->glue_character;
+        	$tcasePrefix .= $tcase_cfg->glue_character;
         }
     }
     
@@ -770,39 +766,37 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 */
 private function updateKeywordAssignment($id,$keywords_id)
 {
-
-// To avoid false loggings, check is delete is needed
-$items=array();
-$items['stored']=$this->get_keywords_map($id);
-$items['stored']=is_null($items['stored']) ? array() : $items['stored'];
-$items['requested']=array();
-
-$hasRequestOfAssignment=strlen(trim($keywords_id));
-
-if($hasRequestOfAssignment)
-{
-  $a_keywords = explode(",",trim($keywords_id));
-  $sql=" SELECT id,keyword " .
-       " FROM {$this->keywords_table} " .
-       " WHERE id IN (" . implode(',',$a_keywords) . ")";
-       
-  $items['requested'] = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
-}
-
-$items['common']=array_intersect_assoc($items['stored'],$items['requested']);
-$items['new']=array_diff_assoc($items['requested'],$items['common']);
-$items['todelete']=array_diff_assoc($items['stored'],$items['common']);   
-
-if(!is_null($items['todelete']) && count($items['todelete']) > 0)
-{
-   $this->deleteKeywords($id,array_keys($items['todelete']),self::AUDIT_ON);
-}
-
-if(!is_null($items['new']) && count($items['new']) > 0)
-{
-	$this->addKeywords($id,array_keys($items['new']),self::AUDIT_ON);
-}
-
+	
+	// To avoid false loggings, check is delete is needed
+	$items = array();
+	$items['stored'] = $this->get_keywords_map($id);
+	if (is_null($items['stored']))
+		$items['stored'] = array();
+	$items['requested'] = array();
+	
+	if(trim($keywords_id) != "")
+	{
+		$a_keywords = explode(",",trim($keywords_id));
+		$sql = " SELECT id,keyword " .
+	       " FROM {$this->keywords_table} " .
+	       " WHERE id IN (" . implode(',',$a_keywords) . ")";
+	       
+		$items['requested'] = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
+	}
+	
+	$items['common'] = array_intersect_assoc($items['stored'],$items['requested']);
+	$items['new'] = array_diff_assoc($items['requested'],$items['common']);
+	$items['todelete'] = array_diff_assoc($items['stored'],$items['common']);   
+	
+	if(!is_null($items['todelete']) && count($items['todelete']))
+	{
+		$this->deleteKeywords($id,array_keys($items['todelete']),self::AUDIT_ON);
+	}
+	
+	if(!is_null($items['new']) && count($items['new']))
+	{
+		$this->addKeywords($id,array_keys($items['new']),self::AUDIT_ON);
+	}
 }
 
 /*

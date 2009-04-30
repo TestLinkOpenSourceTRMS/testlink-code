@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2009/02/07 18:34:02 $ by $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * rev:
@@ -117,7 +117,7 @@ if($get_c_data)
 		$name_ok = 0;
 	}
 
-	if($name_ok && !strlen($c_data['container_name']))
+	if($name_ok && ($c_data['container_name'] == ""))
 	{
 		$msg = $warning_empty_name;
 		$name_ok = 0;
@@ -453,7 +453,7 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 		      $messages['user_feedback']=$messages['msg'];  
 		  }
 
-      if( strlen(trim($argsObj->assigned_keyword_list)) > 0 )
+      if( trim($argsObj->assigned_keyword_list) != "")
       {
          $tsuiteMgr->addKeywords($ret['id'],explode(",",$argsObj->assigned_keyword_list));
       }
@@ -570,7 +570,7 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 	if($ret['status_ok'])
 	{
       $tsuiteMgr->deleteKeywords($argsObj->testsuiteID);
-      if( strlen(trim($argsObj->assigned_keyword_list)) > 0 )
+      if(trim($argsObj->assigned_keyword_list) != "")
       {
          $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
       }

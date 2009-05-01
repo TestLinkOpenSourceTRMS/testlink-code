@@ -5,48 +5,24 @@
  *
  * Filename $RCSfile: clientCreateTestCase.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/03/08 13:50:03 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
  */
  
- /** 
-  * Need the IXR class for client
-  */
-define("THIRD_PARTY_CODE","/../../../../third_party");
-require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/xml-rpc/class-IXR.php';
-require_once dirname(__FILE__) . THIRD_PARTY_CODE . '/dBug/dBug.php';
+require_once 'util.php';
+require_once 'sample.inc.php';
+show_api_db_sample_msg();
 
-if( isset($_SERVER['HTTP_REFERER']) )
-{
-    $target = $_SERVER['HTTP_REFERER'];
-    $prefix = '';
-}
-else
-{
-    $target = $_SERVER['REQUEST_URI'];
-    $prefix = "http://" . $_SERVER['HTTP_HOST'] . ":" . $_SERVER['SERVER_PORT'];
-} 
-$dummy=explode('sample_clients',$target);
-$server_url=$prefix . $dummy[0] . "xmlrpc.php";
-
-// substitute your Dev Key Here
-define("DEV_KEY", "CLIENTSAMPLEDEVKEY");
-if( DEV_KEY == "CLIENTSAMPLEDEVKEY" )
-{
-    echo '<h1>Attention: DEVKEY is still setted to demo value</h1>';
-    echo 'Please check if this VALUE is defined for a user on yout DB Installation<b>';
-    echo '<hr>';
-}
-
-$unitTestDescription="Test - createTestCase";
+$method='createTestCase';
+$unitTestDescription="Test - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=1;
-$args["testsuiteid"]=11;
+$args["testsuiteid"]=186;
 $args["testcasename"]='File System Check';
 $args["summary"]='Test Case created via API';
 $args["steps"]="These are the steps";
@@ -54,32 +30,19 @@ $args["expectedresults"]="All OK";
 $args["authorlogin"]='admin';
 $args["authorlogin"]='admin';
 $args["checkduplicatedname"]=1;
-$args["keywordid"]='1,2,3';
-$args["keywords"]='ALFA,BETA,ZETA';
+// $args["keywordid"]='1,2,3';
+// $args["keywords"]='ALFA,BETA,ZETA';
 
 
 $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-
-new dBug($args);
-if(!$client->query('tl.createTestCase', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
-}
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
+runTest($client,$method,$args);
 
 // ----------------------------------------------------------------------------------------------------
-$unitTestDescription="Test - createTestCase";
+$method='createTestCase';
+$unitTestDescription="Test - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
@@ -99,24 +62,9 @@ $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-
-new dBug($args);
-if(!$client->query('tl.createTestCase', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
-}
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
+runTest($client,$method,$args);
 
 // ----------------------------------------------------------------------------------------------------
-$unitTestDescription="Test - createTestCase";
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=1;
@@ -133,25 +81,9 @@ $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-
-new dBug($args);
-if(!$client->query('tl.createTestCase', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
-}
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
-// ----------------------------------------------------------------------------------------------------
+runTest($client,$method,$args);
 
 // ----------------------------------------------------------------------------------------------------
-$unitTestDescription="Test - createTestCase";
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testprojectid"]=1;
@@ -168,20 +100,6 @@ $debug=true;
 echo $unitTestDescription;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-
-new dBug($args);
-if(!$client->query('tl.createTestCase', $args))
-{
-		echo "something went wrong - " . $client->getErrorCode() . " - " . $client->getErrorMessage();			
-		$response=null;
-}
-else
-{
-		$response=$client->getResponse();
-}
-
-echo "<br> Result was: ";
-new dBug($response);
-echo "<br>";
+runTest($client,$method,$args);
 // ----------------------------------------------------------------------------------------------------
 ?>

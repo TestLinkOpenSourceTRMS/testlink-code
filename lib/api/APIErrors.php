@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.20 2009/04/27 07:48:50 franciscom Exp $
+ * $Id: APIErrors.php,v 1.21 2009/05/01 20:40:28 franciscom Exp $
  */
 
 /** 
@@ -124,10 +124,16 @@ define('TESTPLANNAME_DOESNOT_EXIST_STR', lang_get('API_TESTPLANNAME_DOESNOT_EXIS
  */
 define('INVALID_BUILDID', 4000);
 define('INVALID_BUILDID_STR', lang_get('API_INVALID_BUILDID',null,1));
+
 define('BUILDID_NOT_INTEGER', 4010);
 define('BUILDID_NOT_INTEGER_STR', lang_get('API_BUILDID_NOT_INTEGER',null,1));
+
 define('BUILDID_NOGUESS', 4020);
 define('BUILDID_NOGUESS_STR', lang_get('API_BUILDID_NOGUESS',null,1));
+
+define('BUILDNAME_ALREADY_EXISTS', 4030);
+define('BUILDNAME_ALREADY_EXISTS_STR', lang_get('API_BUILDNAME_ALREADY_EXISTS',null,1));
+
 
 
 /**
@@ -201,6 +207,9 @@ define('TESTSUITE_DONOTBELONGTO_TESTPROJECT_STR',
 
 define('TESTSUITENAME_NOT_STRING', 8002);
 define('TESTSUITENAME_NOT_STRING_STR', lang_get('API_TESTSUITENAME_NOT_STRING',null,1));
+
+define('INVALID_PARENT_TESTSUITEID', 8003);
+define('INVALID_PARENT_TESTSUITEID_STR', lang_get('API_INVALID_PARENT_TESTSUITEID',null,1));
 
 
 

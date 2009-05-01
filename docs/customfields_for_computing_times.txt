@@ -4,9 +4,9 @@
  *
  * Filename $RCSfile: customfields_for_computing_times.txt,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/19 07:08:40 $ by $Author: franciscom $
- * @author Martin Havlat
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/05/01 20:39:15 $ by $Author: franciscom $
+ * @author Francisco Mancardi
  *
  */
 
@@ -24,6 +24,10 @@ used by testers while executing test cases, to indicate time (IN MINUTES) used t
               
 Test Link will do sum() on values present on these custom fields while creating reports
 
+**********************************************************************************************
+WARNING: CF_EXEC_TIME User MUST assign values before saving execution, there is no automatic 
+         calculation of time user has used to execute test case.
+**********************************************************************************************
 
 
 Using following SQL you can configure these Custom Fields

@@ -1,0 +1,17 @@
+ /**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: samples.txt,v $
+ *
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2009/05/01 20:39:15 $ by $Author: franciscom $
+ * @author Francisco Mancardi
+ *
+ */
+ You will find samples on following directories:
+ 
+ db_sample: here you will find different TL databases to import after installation with minimal sample data
+            some are MySQL, and some Postgres
+ 
+ file_examples: different import samples.

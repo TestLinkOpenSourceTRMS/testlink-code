@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.9 2009/04/27 10:20:51 havlat Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.10 2009/05/02 15:18:21 franciscom Exp $
 
 rev: 20090321 - franciscom 
      20080925 - franciscom - child requirements/folder management 
@@ -46,9 +46,13 @@ rev: 20090321 - franciscom
 		<input type="button" name="importReq" value="{lang_get s='btn_import'}"
 		       onclick="location='{$req_import_url}'" />
 	        {if $gui->requirements_count > 0}
-		  	<input type="button" name="reorderReq" value="{lang_get s='req_reorder'}"
+		  	{* ===========================================================================
+		  	   REMOVED
+		  	   20090502 - franciscom -   This can be done with ajax tree
+		  	   <input type="button" name="reorderReq" value="{lang_get s='req_reorder'}"
 		               onclick="location='{$req_reorder_url}'" />
-            
+		       ===========================================================================        
+        *}    
   			<input type="button" name="create_tcases" value="{lang_get s='req_select_create_tc'}"
 		               onclick="location='{$req_create_tc_url}'" />
     		<input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"

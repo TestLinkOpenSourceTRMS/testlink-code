@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.4 2008/09/21 19:35:47 schlundus Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.5 2009/05/02 15:18:22 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -19,6 +19,7 @@
 *   - Assign requirements to test cases
 *
 *   rev: 
+*       20090502 - franciscom - BUGID 2309 - display requirement doc id
 *        
 */
 require_once('../../config.inc.php');
@@ -71,17 +72,19 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
        $sql .=" AND NHA.id = {$filter_node} ";  
     }
     $sql .= " ORDER BY NHA.node_order ";    
-    
-    
-    // for debug 
-    //file_put_contents('d:\sql_display_node.txt', $sql); 
+
     $nodeSet = $dbHandler->get_recordset($sql);
-    //file_put_contents('d:\nodeSet.txt', serialize($nodeSet)); 
-    
-    // print_r(array_values($nodeSet));
-    // file_put_contents('d:\sql_display_node.txt', serialize(array_values($nodeSet))); 
 	if( !is_null($nodeSet) ) 
 	{
+        // BUGID 2309
+        $sql =  " SELECT DISTINCT req_doc_id AS docid,NHA.id" .
+                " FROM requirements REQ JOIN nodes_hierarchy NHA ON NHA.id = REQ.id  " .
+                " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " . 
+                " JOIN node_types NT ON NT.id = NHA.node_type_id " .
+                " WHERE NHB.id = {$parent} AND NT.description = 'requirement'";
+        $requirements=$dbHandler->fetchRowsIntoMap($sql,'id');
+
+
 	    $tproject_mgr = new testproject($dbHandler);
 	    foreach($nodeSet as $key => $row)
 	    {
@@ -98,8 +101,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
  	        // public property 'attributes' of object of Class Ext.tree.TreeNode 
  	        // 
  	        $path['testlink_node_type']	= $row['node_type'];		                                 
-	                                 
-	        $tcase_qty = null;
             switch($row['node_type'])
             {
                 case 'testproject':
@@ -112,12 +113,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                 
                 case 'requirement':
                 $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+                $path['text'] = htmlspecialchars($requirements[$row['id']]['docid'] . ":") . $path['text'];
                 $path['leaf']	= true;
                 break;
             }
-            if(!is_null($tcase_qty))
-                $path['text'] .= "({$tcase_qty})";   
-            
             $nodes[] = $path;                                                                        
 	    }	// foreach	
     }

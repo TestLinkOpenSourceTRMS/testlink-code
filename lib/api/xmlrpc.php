@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/05/01 20:40:28 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/05/02 09:06:41 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -450,20 +450,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */    
-    protected function checkTestCaseID()
+    protected function checkTestCaseID($messagePrefix='')
     {
-		    if(!$this->_isTestCaseIDPresent())
-		    {
-		    	$this->errors[] = new IXR_Error(NO_TCASEID, NO_TCASEID_STR);
-		    	return false;
-		    }
-		    $tcaseid = $this->args[self::$testCaseIDParamName];
-		    if(!$this->_isTestCaseIDValid($tcaseid))
-		    {
-		    	$this->errors[] = new IXR_Error(INVALID_TCASEID, INVALID_TCASEID_STR);
-		    	return false;
-		    }    	
-		    return true;
+        $msg = $messagePrefix;
+        $status_ok=$this->_isTestCaseIDPresent();
+        if( $status_ok)
+        {
+            $tcaseid = $this->args[self::$testCaseIDParamName];
+            if(!$this->_isTestCaseIDValid($tcaseid))
+            {
+            	$this->errors[] = new IXR_Error(INVALID_TCASEID, $msg . INVALID_TCASEID_STR);
+            	$status_ok=false;
+            }
+        }    	
+        else
+        {
+        	$this->errors[] = new IXR_Error(NO_TCASEID, $msg . NO_TCASEID_STR);
+        }
+        return $status_ok;
     }
     
 	/**
@@ -900,26 +904,26 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */
-    private function _isTestCaseIDValid($tcaseid)
+    private function _isTestCaseIDValid($tcaseid,$messagePrefix='',$setError=false)
     {
-      
-    	if(!is_numeric($tcaseid))
+        $status_ok=is_numeric($tcaseid);
+    	if($status_ok)
+        {
+    	    // must be of type 'testcase' and show up in the nodes_hierarchy    	
+            $tcaseid = $this->dbObj->prepare_int($tcaseid);
+		    $query = "SELECT nodes_hierarchy.id AS id " .
+		             "FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
+				     "WHERE nodes_hierarchy.id={$tcaseid} AND node_type_id=node_types.id " .
+				     "AND node_types.description='testcase'";
+		    $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
+		    $status_ok = is_null($result) ? false : true; 
+        }
+        else if($setError)
     	{
-    		$this->errors[] = new IXR_Error(TCASEID_NOT_INTEGER, TCASEID_NOT_INTEGER_STR);
-    		return false;
-    	}
-    	$tcaseid = $this->dbObj->prepare_int($tcaseid);
-    	
-    	// the tcid must be of type 'testcase' and show up in the nodes_hierarchy    	
-		  $query = "SELECT nodes_hierarchy.id AS id " .
-		           "FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
-				       "WHERE nodes_hierarchy.id={$tcaseid} AND node_type_id=node_types.id " .
-				       "AND node_types.description='testcase'";
-		  
-		  $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
-		  
-		  $status = is_null($result) ? false : true; 
-  		return $status;
+            $this->errors[] = new IXR_Error(TCASEID_NOT_INTEGER, 
+    		                                $messagePrefix . TCASEID_NOT_INTEGER_STR);
+        }
+  		return $status_ok;
     }    
     
     /**
@@ -1918,7 +1922,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    if( $status )
 	    {
 	        $my_errors=null;
-	        if($this->_isTestCaseIDValid($tcaseID))
+	        if($this->_isTestCaseIDValid($tcaseID,$messagePrefix))
 	        {
 	            $this->_setTestCaseID($tcaseID);  
 	        }  

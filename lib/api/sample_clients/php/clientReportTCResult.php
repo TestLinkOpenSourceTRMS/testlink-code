@@ -26,6 +26,7 @@ $tcaseStatusCode['departed']='d';
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
 $testPlanID=3;
 $testCaseExternalID='API-1';
+$testCaseID=null;
 $buildID=1;
 // $status=$tcaseStatusCode['departed'];
 $status=$tcaseStatusCode['blocked'];

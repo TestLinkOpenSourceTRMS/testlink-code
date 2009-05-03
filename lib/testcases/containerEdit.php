@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2009/05/03 14:36:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -97,19 +97,13 @@ if($init_opt_transfer)
 {
     $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
 }
-
 // create  web editor objects
-$amy_keys = $a_keys[$level];
-$oWebEditor = array();
-foreach ($amy_keys as $key)
-{
-	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
-}
+list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateCfg)=initWebEditors($a_keys,$level,$editorCfg);
 
 if($get_c_data)
 {
 	$name_ok = 1;
-	$c_data = getValuesFromPost($amy_keys);
+	$c_data = getValuesFromPost($webEditorHtmlNames);
 
 	if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden))
 	{
@@ -130,8 +124,8 @@ switch($action)
 	case 'new_testsuite':
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
-		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys,
-							   $oWebEditor, $action,$args->containerID, $args->testsuiteID);
+		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
+		                             $args->containerID, $args->testsuiteID,null,null,$webEditorTemplateCfg);
 		break;
 
     case 'delete_testsuite':
@@ -186,18 +180,19 @@ switch($action)
 	      $messages['user_feedback']='';
     }
 
+      // 20090503 - franciscom - removed for right use of templates.
 	  // setup for displaying an empty form
-	  foreach ($amy_keys as $key)
-	  {
-	  	// Warning:
-	  	// the data assignment will work while the keys in $the_data are identical
-	  	// to the keys used on $oWebEditor.
-	  	$of = &$oWebEditor[$key];
-	  	$smarty->assign($key, $of->CreateHTML());
-	  }
+	  // foreach ($webEditorHtmlNames as $key)
+	  // {
+	  // 	// Warning:
+	  // 	// the data assignment will work while the keys in $the_data are identical
+	  // 	// to the keys used on $oWebEditor.
+	  // 	$of = &$oWebEditor[$key];
+	  // 	$smarty->assign($key, $of->CreateHTML());
+	  // }
 
-	  $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys, $oWebEditor, $action,
-	                               $args->containerID, null,$msg,$messages['user_feedback']);
+	  $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
+	                               $args->containerID, null,$msg,$messages['user_feedback'],$webEditorTemplateCfg);
     break;
 
 
@@ -764,4 +759,32 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
         $tsuiteMgr->show($smartyObj,$template_dir,$argsObj->objectID,$user_feedback);
     }
 }
+
+
+/**
+ * initWebEditors
+ *
+ */
+ function initWebEditors($webEditorKeys,$containerType,$editorCfg)
+ {
+    switch($containerType)
+    {
+        case 'testsuite':
+            $cfg=config_get('testsuite_template');
+        break;    
+        
+        default:
+            $cfg=null;
+        break;    
+    }
+    
+    
+    $htmlNames = $webEditorKeys[$containerType];
+    $oWebEditor = array();
+    foreach ($htmlNames as $key)
+    {
+      $oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
+    }
+    return array($oWebEditor,$htmlNames,$cfg);
+ }
 ?>

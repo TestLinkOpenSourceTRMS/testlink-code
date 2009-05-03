@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2009/04/14 16:56:41 $ - $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2009/05/03 14:33:39 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090503 - franciscom - bug in read_file()
  * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
  * 20090329 - franciscom - html_table_of_custom_field_values()
  * 20090209 - franciscom - new method - get_children_testcases()
@@ -445,7 +446,7 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
             
 
   args : smarty [reference]
-         amy_keys
+         webEditorHtmlNames
          oWebEditor: rich editor object (today is FCK editor)
          action
          parent_id: testsuite parent id on tree.
@@ -455,20 +456,22 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
                        
          [user_feedback]: default: null              
                           used to give information to user
+         [$userTemplateCfg]: configurations, Example: testsuite template usage
+                          
   returns: -
 
   rev :
        20080105 - franciscom - added $userTemplateCfg
        20071202 - franciscom - interface changes -> template_dir
 */
-function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action, $parent_id, 
+function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action, $parent_id, 
                          $id=null, $result_msg=null, $user_feedback=null, $userTemplateCfg=null)
 {
-  $cf_smarty=-2;
-
-  $pnode_info=$this->tree_manager->get_node_hierachy_info($parent_id);
-  $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
-  $parent_info['name']=$pnode_info['name'];
+    $cf_smarty=-2;
+    
+    $pnode_info=$this->tree_manager->get_node_hierachy_info($parent_id);
+    $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
+    $parent_info['name']=$pnode_info['name'];
   
 
 	$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
@@ -488,26 +491,28 @@ function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action,
 		$the_data = $this->get_by_id($id);
 		$name=$the_data['name'];
 		$smarty->assign('containerID',$id);	
-  }
-  $webEditorData = $the_data;
+    } 
+    $webEditorData = $the_data;
 	
-  // Custom fields
-  $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
-  $smarty->assign('cf',$cf_smarty);	
+    // Custom fields
+    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
+    $smarty->assign('cf',$cf_smarty);	
 	
 	// webeditor
-	if( $action == 'new_testsuite' && !is_null($userTemplateCfg) )
+	// 20090503 - now templates will be also used after 'add_testsuite', when
+	// presenting a new test suite with all other fields empty.
+	if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateCfg) )
 	{
 	   // need to understand if need to use templates
-	   $webEditorData=$this->_initializeWebEditors($amy_keys,$userTemplateCfg);
+	   $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateCfg);
 	   
 	} 
-	foreach ($amy_keys as $key)
+	foreach ($webEditorHtmlNames as $key)
 	{
 		// Warning:
 		// the data assignment will work while the keys in $the_data are identical
 		// to the keys used on $oWebEditor.
-		$of = &$oWebEditor[$key];
+		$of = &$oWebEditor[$key];         
 		$of->Value = isset($webEditorData[$key]) ? $webEditorData[$key] : null;
 		$smarty->assign($key, $of->CreateHTML());
 	}
@@ -824,10 +829,11 @@ private function _initializeWebEditors($WebEditors,$templateCfg)
 */
 private function read_file($file_name)
 {
-	$fContents = getFileContents($fName);
+	$fContents = getFileContents($file_name);
 	if (is_null($fContents))
+	{
 		$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";
-		
+	}	
 	return $fContents;
 }
 

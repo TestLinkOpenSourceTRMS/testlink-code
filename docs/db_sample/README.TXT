@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: README.TXT,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/05/01 20:39:15 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/05/03 14:37:59 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -17,8 +17,9 @@ restore-postgres.bat:  this bat will help you to restore postgres-testlinkAPI.sq
                        
                        
 postgres-testlinkAPI.sql: Postgres PLAIN backup of a TL DB that can be used to test API Calls.
-                          All php API samples must run without problems againts this DB
+                          All php API samples must run without problems againts this DB.
+                          Password for admin user: admin
               
 testlink_sample.sql: MySQL TL sample DB            
-                          
+                     Password for admin user: admin     
  

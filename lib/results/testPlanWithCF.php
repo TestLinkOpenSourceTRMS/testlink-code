@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/04/21 06:00:19 $ by $Author: amkhullar $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/05/04 05:12:07 $ by $Author: amkhullar $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
- *
+ * rev:
+ * 		20090504 - amitkhullar - BUGID 2465
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -47,9 +48,12 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
     $gui->cfields = $cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',
     null,null,null,'name');
     //print_r($gui->cfields);
-    foreach($gui->cfields as $key => $values)
+    if(!is_null($gui->cfields))
     {
-        $cf_place_holder['cfields'][$key]='';
+        foreach($gui->cfields as $key => $values)
+        {
+            $cf_place_holder['cfields'][$key]='';
+        }
     }
    	// Now get TPlan -> Test Cases with custom field values
     $cf_map = $cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',

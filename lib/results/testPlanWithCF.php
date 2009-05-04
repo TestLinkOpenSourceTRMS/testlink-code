@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/05/04 05:12:07 $ by $Author: amkhullar $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/05/04 14:16:30 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
@@ -46,8 +46,7 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
     // Get the custom fields linked/enabled on execution to a test project
     // This will be used on report to give name to header of columns that hold custom field value
     $gui->cfields = $cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',
-    null,null,null,'name');
-    //print_r($gui->cfields);
+                                                                       null,null,null,'name');
     if(!is_null($gui->cfields))
     {
         foreach($gui->cfields as $key => $values)
@@ -57,8 +56,7 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
     }
    	// Now get TPlan -> Test Cases with custom field values
     $cf_map = $cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase',
-    null,null,$args->tplan_id);
-    // new dbug($cf_map);
+                                                                 null,null,$args->tplan_id);
     // need to transform in structure that allow easy display
     // Every row is an execution with exec data plus a column that contains following map:
     // 'cfields' => CFNAME1 => value
@@ -123,4 +121,3 @@ function init_args(&$tplan_mgr)
     return $args;
 }
 ?>
-

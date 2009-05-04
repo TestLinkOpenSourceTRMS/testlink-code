@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/05/04 05:12:14 $ by $Author: amkhullar $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/05/04 14:15:43 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -35,7 +35,6 @@ $testCaseSet = array();
 $msg_key='no_linked_tc_cf';
 if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
 {
-
     $resultsCfg = config_get('results');
     $tcase_cfg = config_get('testcase_cfg');
 
@@ -49,10 +48,8 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
         {
             $label = $map_tc_status_verbose_label[$verbose];
             $gui->status_code_labels[$code]=lang_get($label);
-            // $map_label_css[$map_tc_status_code_langet[$code]]=$resultsCfg['code_status'][$code];
         }
     }
-    // $not_run_label=lang_get('test_status_not_run');
     // -----------------------------------------------------------------------------------
     $gui->code_status=$resultsCfg['code_status'];
     $tproject_mgr = new testproject($db);
@@ -62,7 +59,7 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
     // Get the custom fields linked/enabled on execution to a test project
     // This will be used on report to give name to header of columns that hold custom field value
     $gui->cfields = $cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,1,'testcase',
-    null,null,null,'name');
+                                                                 null,null,null,'name');
     
     if(!is_null($gui->cfields))
     {
@@ -71,11 +68,9 @@ if( $tplan_mgr->count_testcases($args->tplan_id) > 0 )
            $cf_place_holder['cfields'][$key]='';
         }
     }
-   	//
-
    	// Now get exeutions with custom field values
     $cf_map = $cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,1,'testcase',
-    null,null,$args->tplan_id,'exec_id');
+                                                           null,null,$args->tplan_id,'exec_id');
      
     // need to transform in structure that allow easy display
     // Every row is an execution with exec data plus a column that contains following map:

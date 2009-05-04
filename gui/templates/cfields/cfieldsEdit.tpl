@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.16 2009/04/09 08:15:51 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.17 2009/05/04 14:11:59 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,7 @@ This is done to simplify logic.
 
 
 rev :
+     20090503 - franciscom - BUGID 2425
      20090408 - franciscom - BUGID 2352 - removed delete block.
                              BUGID 2359 - display test projects where custom field is assigned
      20080810 - franciscom - BUGID 1650 (REQ)
@@ -358,6 +359,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 
+    <!---
+    BUGID 2425
 		<tr id="container_cf_show_on_design" style="display:{$display_style};">
 			<th style="background:none;">{$labels.show_on_design}</th>
 			<td>
@@ -368,7 +371,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 				</select>
 			</td>
 		</tr>
-
+    --->
 
 		{if $gui->cfieldCfg->disabled_cf_enable_on.design}
       {assign var="display_style" value="none"}
@@ -431,6 +434,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
       {assign var="display_style" value=""}
     {/if}
 
+    <!---
 		<tr id="container_cf_show_on_testplan_design" style="display:{$display_style};">
 			<th style="background:none;">{$labels.show_on_testplan_design}</th>
 			<td>
@@ -441,6 +445,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 				</select>
 			</td>
 		</tr>
+		--->
 
 
 		{if $gui->cfieldCfg->disabled_cf_enable_on.testplan_design}

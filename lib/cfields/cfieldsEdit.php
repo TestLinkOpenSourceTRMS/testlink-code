@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/04/09 08:15:52 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/05/04 14:12:00 $ by $Author: franciscom $
  *
- * rev: 20090408 - franciscom - BUGID 2352, BUGID 2359
+ * rev: 20090503 - franciscom - BUGID 2425
+ *      20090408 - franciscom - BUGID 2352, BUGID 2359
  *      20080810 - franciscom - BUGID 1650 
  *
  */

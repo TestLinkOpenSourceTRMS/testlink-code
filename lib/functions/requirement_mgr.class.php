@@ -5,14 +5,18 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/05/05 21:38:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090401 - franciscom - BUGID 2316
+ * rev : 20090505 - franciscom - refactoring started.
+ *                               removed use of REQ.node_order and title.
+ *                               this fields must be managed on NH table
+ *   
+ *       20090401 - franciscom - BUGID 2316
  *       20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
  *                               delete() - fixed delete order due to FK.
  *       20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
@@ -72,7 +76,10 @@ class requirement_mgr extends tlObjectWithAttachments
   */
   function get_by_id($id)
   {
-  	$sql = " SELECT REQ.*, REQ_SPEC.testproject_id, REQ_SPEC.title AS req_spec_title, " .
+    $field2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,REQ.type,REQ.author_id," .
+               "REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH.name AS title";
+    
+  	$sql = " SELECT {$field2get}, REQ_SPEC.testproject_id, REQ_SPEC.title AS req_spec_title, " .
   	       " NH.node_order " .
   	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC," .
   	       " {$this->nodes_hierarchy_table} NH " .
@@ -122,47 +129,53 @@ class requirement_mgr extends tlObjectWithAttachments
 
 
   */
-  function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
-                  $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
-  {
+function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
+                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
+{
+    $result['id'] = 0;
+	$result['status_ok'] = 0;
+	$result['msg'] = 'ko';
 
-	  $result['id'] = 0;
-	  $result['status_ok'] = 0;
-	  $result['msg'] = 'ko';
+	$field_size = config_get('field_size');
 
-	  $field_size = config_get('field_size');
+	$reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
+	$title = trim_and_limit($title,$field_size->req_title);
 
-	  $reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
-	  $title = trim_and_limit($title,$field_size->req_title);
+	$result = $this->check_basic_data($srs_id,$title,$reqdoc_id);
+	if($result['status_ok'])
+	{
+        $parent_id=$srs_id;
+		$name=$title;
+		$req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		$db_now = $this->db->db_now();
+		//sql = " INSERT INTO {$this->object_table} " .
+		//      " (id, srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
+        //      " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" .
+		//  	$this->db->prepare_string($title) . "','" . $this->db->prepare_string($scope) . "','" .
+		//  	$this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
+		//  	"{$user_id}, {$db_now})";
 
-	  $result = $this->check_basic_data($srs_id,$title,$reqdoc_id);
-	  if($result['status_ok'])
-	  {
-     	$parent_id=$srs_id;
-		  $name=$title;
-		  $req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		$sql = " INSERT INTO {$this->object_table} " .
+		       " (id, srs_id, req_doc_id, scope, status, type, author_id, creation_ts)" .
+               " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" .
+		  	   $this->db->prepare_string($scope) . "','" .
+		  	   $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
+		  	   "{$user_id}, {$db_now})";
 
-		  $db_now = $this->db->db_now();
-		  $sql = " INSERT INTO {$this->object_table} " .
-		         " (id, srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
-			  	   " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" .
-			  	    $this->db->prepare_string($title) . "','" . $this->db->prepare_string($scope) . "','" .
-			  	    $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
-			  	    "{$user_id}, {$db_now})";
 
-  	  if (!$this->db->exec_query($sql))
-		  {
+        if (!$this->db->exec_query($sql))
+        {
 		 	  $result['msg'] = lang_get('error_inserting_req');
-		  }
-		  else
-		  {
-			  $result['id']=$req_id;
-  	    $result['status_ok'] = 1;
-	      $result['msg'] = 'ok';
-		  }
-	  }
+		}
+		else
+		{
+			$result['id']=$req_id;
+  	        $result['status_ok'] = 1;
+	        $result['msg'] = 'ok';
+		}
+    }
 	  return $result;
-  } // function end
+} // function end
 
 
   /*
@@ -183,27 +196,24 @@ class requirement_mgr extends tlObjectWithAttachments
 
   */
 
-  function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
-  {
- 	  $result['status_ok'] = 1;
-	  $result['msg'] = 'ok';
-
-	  $db_now = $this->db->db_now();
-	  $field_size=config_get('field_size');
-
-	  // get SRSid, needed to do controls
-	  $rs=$this->get_by_id($id);
+function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
+{
+    $result['status_ok'] = 1;
+    $result['msg'] = 'ok';
+    
+    $db_now = $this->db->db_now();
+    $field_size=config_get('field_size');
+    
+    // get SRSid, needed to do controls
+    $rs=$this->get_by_id($id);
     $srs_id=$rs['srs_id'];
-
-	  $reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
-	  $title=trim_and_limit($title,$field_size->req_title);
-
+	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
+	$title=trim_and_limit($title,$field_size->req_title);
     $chk=$this->check_basic_data($srs_id,$title,$reqdoc_id,$id);
 
-	  if($chk['status_ok'] || $skip_controls)
-	  {
-	  	$sql = "UPDATE requirements SET title='" . $this->db->prepare_string($title) . "', " .
-	  	       " scope='" . $this->db->prepare_string($scope) . "', " .
+    if($chk['status_ok'] || $skip_controls)
+	{
+	  	$sql = "UPDATE requirements SET scope='" . $this->db->prepare_string($scope) . "', " .
 	  	       " status='" . $this->db->prepare_string($status) . "', " .
 	  	       " type='" . $this->db->prepare_string($type) . "', " .
 	  	       " modifier_id={$user_id}, req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "', " .
@@ -218,23 +228,22 @@ class requirement_mgr extends tlObjectWithAttachments
 
   		  if (!$this->db->exec_query($sql))
   		  {
-  			  $result['msg']=lang_get('error_updating_req');
-    	    $result['status_ok'] = 0;
+  			    $result['msg']=lang_get('error_updating_req');
+    	        $result['status_ok'] = 0;
     	  }
 	  	}
-      else
+        else
 	  	{
 	  	   $result['status_ok']=0;
 	  	   $result['msg'] = lang_get('error_updating_req');
 	    }  // else
     } // 	  if($chk['status_ok'] || $skip_controls)
-	  else
-	  {
+    else
+	{
 	    $result['status_ok']=$chk['status_ok'];
 	    $result['msg']=$chk['msg'];
-	  }
-
-	  return $result;
+	}
+    return $result;
   } //function end
 
 
@@ -310,31 +319,25 @@ class requirement_mgr extends tlObjectWithAttachments
 	}
 
 
-
-
-
-
-
-  /** collect coverage of Requirement
-   * @param string $req_id ID of req.
-   * @return assoc_array list of test cases [id, title]
-   *
-   * rev: 20080226 - franciscom - get test case external id
-   */
-  function get_coverage($id)
-  {
-  	$sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
+/** collect coverage of Requirement
+ * @param string $req_id ID of req.
+ * @return assoc_array list of test cases [id, title]
+ *
+ * rev: 20080226 - franciscom - get test case external id
+ */
+function get_coverage($id)
+{
+    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
   	       " FROM {$this->nodes_hierarchy_table} NHA, " .
-  	       "      {$this->nodes_hierarchy_table} NHB, " .
-  	       "      {$this->tcversions_table} TCV, " .
-  	       "      {$this->req_coverage_table} RC " .
-  			   " WHERE RC.testcase_id = NHA.id " .
-  			   " AND  NHB.parent_id=NHA.id " .
-  			   " AND  TCV.id=NHB.id " .
-  			   " AND  RC.req_id={$id}";
+  	       " {$this->nodes_hierarchy_table} NHB, " .
+  	       " {$this->tcversions_table} TCV, " .
+  	       " {$this->req_coverage_table} RC " .
+           " WHERE RC.testcase_id = NHA.id " .
+  		   " AND NHB.parent_id=NHA.id " .
+           " AND TCV.id=NHB.id " .
+  		   " AND RC.req_id={$id}";
   	return $this->db->get_recordset($sql);
-  }
-
+}
 
 
   /*
@@ -397,26 +400,26 @@ class requirement_mgr extends tlObjectWithAttachments
 
 
 
-  /*
-    function: get_by_docid
+/**
+ * get_by_docid
+ *
+ */
+function get_by_docid($reqdoc_id,$srs_id=null)
+{
+    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,type," .
+                "NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
+                "REQ.modification_ts,NH.name AS title";
 
-    args:
-
-    returns:
-
-  */
-  function get_by_docid($reqdoc_id,$srs_id=null)
-  {
-  	$sql = "SELECT * FROM {$this->object_table} " .
-  	       " WHERE req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'";
+	$sql = "SELECT {$fields2get} FROM {$this->object_table} REQ, {$this->nodes_hierarchy_table} NH " .
+	       " WHERE req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'"  .
+	       " AND REQ.id = NH.id ";
 
     if( !is_null($srs_id) )
     {
-      $sql .=	 " AND srs_id={$srs_id}";
+        $sql .=	 " AND srs_id={$srs_id}";
     }
-
-  	return($this->db->fetchRowsIntoMap($sql,'id'));
-  }
+	return($this->db->fetchRowsIntoMap($sql,'id'));
+}
 
   /*
     function: get_by_title
@@ -426,13 +429,16 @@ class requirement_mgr extends tlObjectWithAttachments
     returns:
 
   */
-  function get_by_title($title,$ignore_case=0)
-  {
+function get_by_title($title,$ignore_case=0)
+{
+    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,REQ.type,NH.node_order,"  .
+                "REQ.author_id,REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH.name AS title";
+
   	$output = array();
-  	$sql = "SELECT * FROM {$this->object_table} ";
+    $sql = "SELECT SELECT {$fields2get} FROM {$this->object_table} REQ, " .
+  	       "{$this->nodes_hierarchy_table} NH ";
 
     $the_title=$this->db->prepare_string($title);
-
   	if($ignore_case)
   	{
   	  $sql .= " WHERE UPPER(title)='" . strupper($the_title) . "'";
@@ -441,14 +447,17 @@ class requirement_mgr extends tlObjectWithAttachments
   	{
   	   $sql .= " WHERE title='{$the_title}'";
   	}
+  	$sql .= " AND REQ.id = NH.id";
+
 
   	$result = $this->db->exec_query($sql);
-  	if (!empty($result)) {
+  	if (!empty($result)) 
+  	{
   		$output = $this->db->fetch_array($result);
   	}
 
   	return $output;
-  } // function end
+} // function end
 
 
 
@@ -462,10 +471,13 @@ class requirement_mgr extends tlObjectWithAttachments
     returns:
 
   */
-  function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
-  {
+function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
+{
+    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+                "RSPEC.modification_ts,NH.name AS title";
+    
     $tcase_mgr = new testcase($this->db);
-
   	$req_cfg = config_get('req_cfg');
   	$field_size = config_get('field_size');
   	$auto_testsuite_name = $req_cfg->default_testsuite_name;
@@ -482,11 +494,13 @@ class requirement_mgr extends tlObjectWithAttachments
   	}
   	if ( $req_cfg->use_req_spec_as_testsuite_name )
   	{
-  	  // SRS Title
-     	$sql = " SELECT * FROM {$this->requirement_spec_table} WHERE id = {$srs_id}";
+  	    // SRS Title
+        $sql = " SELECT {$fields2get} FROM {$this->requirement_spec_table} RSPEC," .
+  	           " {$this->nodes_hierarchy_table} NH " .
+               " WHERE RSPEC.id = {$srs_id} AND RSPEC.id=NH.id ";
     	$arrSpec = $this->db->get_recordset($sql);
-  	  $testproject_id=$arrSpec[0]['testproject_id'];
-  	  $auto_testsuite_name = substr($arrSpec[0]['title'],0,$field_size->testsuite_name);
+  	    $testproject_id=$arrSpec[0]['testproject_id'];
+  	    $auto_testsuite_name = substr($arrSpec[0]['title'],0,$field_size->testsuite_name);
   	}
 
   	// find container with the following characteristics:
@@ -499,13 +513,14 @@ class requirement_mgr extends tlObjectWithAttachments
 
 
   	$result = $this->db->exec_query($sql);
-    if ($this->db->num_rows($result) == 1) {
+    if ($this->db->num_rows($result) == 1) 
+    {
   		$row = $this->db->fetch_array($result);
   		$tsuite_id = $row['id'];
-      $output[]=sprintf(lang_get('created_on_testsuite'), $auto_testsuite_name);
-
+        $output[]=sprintf(lang_get('created_on_testsuite'), $auto_testsuite_name);
   	}
-  	else {
+  	else 
+  	{
   		// not found -> create
   		tLog('test suite:' . $auto_testsuite_name . ' was not found.');
       $tsuite_mgr=New testsuite($this->db);
@@ -517,21 +532,20 @@ class requirement_mgr extends tlObjectWithAttachments
   	//create TC
   	foreach ($arrIdReq as $execIdReq)
   	{
-  		$reqData = $this->get_by_id($execIdReq);
-
-  	  $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
-  	                            $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
-  	                            $empty_steps,$empty_results,$user_id,null,
-  	                            DEFAULT_TC_ORDER,AUTOMATIC_ID,
+        $reqData = $this->get_by_id($execIdReq);
+  	    $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
+  	                              $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
+  	                              $empty_steps,$empty_results,$user_id,null,
+  	                              DEFAULT_TC_ORDER,AUTOMATIC_ID,
   		                          config_get('check_names_for_duplicates'),
   		                          config_get('action_on_duplicate_name'));
 
-      $tcase_name=$tcase['new_name'];
-      if( $tcase_name == '' )
-      {
-        $tcase_name=$reqData['title'];
-      }
-      $output[]=sprintf(lang_get('tc_created'), $tcase_name);
+        $tcase_name=$tcase['new_name'];
+        if( $tcase_name == '' )
+        {
+            $tcase_name=$reqData['title'];
+        }
+        $output[]=sprintf(lang_get('tc_created'), $tcase_name);
 
   		// create coverage dependency
   		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) 
@@ -660,8 +674,8 @@ class requirement_mgr extends tlObjectWithAttachments
     
     // Get coverage for this set of requirements and testcase, to be used
     // to understand if insert if needed
- 		$sql = " SELECT * FROM {$this->req_coverage_table} " .
-  		       " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
+    $sql = " SELECT req_id,testcase_id FROM {$this->req_coverage_table} " .
+  		   " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
     $coverage = $this->db->fetchMapRowsIntoMap($sql,'req_id','testcase_id');
    
    
@@ -769,32 +783,18 @@ class requirement_mgr extends tlObjectWithAttachments
 	 	return $ret;
 	}
 
-  /*
-    function:
+/*
+  function:
 
-    args :
-            $nodes: array with req_id in order
-    returns:
+  args :
+          $nodes: array with req_id in order
+  returns:
 
-  */
-  function set_order($map_id_order)
-  {
-    $this->tree_mgr->change_order_bulk($map_id_order);
-
-  	// foreach($map_id_order as $order => $node_id)
-  	// {
-  	// 	$order = abs(intval($order));
-  	// 	$node_id = intval($node_id);
-  	//   $sql = " UPDATE {$this->object_table} " .
-  	//          " SET node_order = {$order} WHERE id = {$node_id}";
-  	//   $result = $this->db->exec_query($sql);
-    // 
-  	//   $sql = " UPDATE {$this->nodes_hierarchy_table} " .
-  	//          " SET node_order = {$order} WHERE id = {$node_id}";
-  	//   $result = $this->db->exec_query($sql);
-  	// }
-
-  }
+*/
+function set_order($map_id_order)
+{
+  $this->tree_mgr->change_order_bulk($map_id_order);
+}
 
 
 /**

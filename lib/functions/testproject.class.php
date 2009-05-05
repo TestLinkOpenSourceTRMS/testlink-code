@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.104 $
- * @modified $Date: 2009/04/27 07:53:11 $  $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2009/05/05 21:38:58 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
@@ -1024,11 +1024,12 @@ function count_testcases($id)
   		$additional_table=", requirements REQ ";
   		$additional_join=" AND SRS.id = REQ.srs_id ";
   	}
-    $sql = " SELECT SRS.id,SRS.title " .
-           " FROM req_specs SRS " . $additional_table .
+    $sql = " SELECT SRS.id,NH.name AS title " .
+           " FROM req_specs SRS, {$this->nodes_hierarchy_table} NH " . $additional_table .
            " WHERE testproject_id={$tproject_id} " .
+           " AND SRS.id=NH.id " .
            $additional_join .
-  		     " ORDER BY SRS.title";
+  		   " ORDER BY title";
   	return $this->db->fetchColumnsIntoMap($sql,'id','title');
   } // function end
 

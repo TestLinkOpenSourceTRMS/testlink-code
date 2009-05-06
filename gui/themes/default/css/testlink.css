@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.19 2009/04/01 10:36:56 havlat Exp $
+$Id: testlink.css,v 1.20 2009/05/06 09:33:17 amkhullar Exp $
 
 Purpose: Default TestLink CSS
 
@@ -111,7 +111,7 @@ div.menu_bar {
 	border-width:	thin;
 	padding: 		1px 5px;
 	margin:			0px 3px;
-	min-width: 		800px;
+	
 }
 
 select.menu_combo {

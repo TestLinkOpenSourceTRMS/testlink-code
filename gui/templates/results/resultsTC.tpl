@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.5 2009/03/04 20:30:55 schlundus Exp $ *}
+{* $Id: resultsTC.tpl,v 1.6 2009/05/06 09:31:07 amkhullar Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
@@ -36,7 +36,7 @@
 		<th>{$labels.version}</th>
 
 		{foreach key=row item=buildid from=$arrBuilds}
-			<th>xx{$arrBuilds[$row].name|escape}xx</th>
+			<th>{$arrBuilds[$row].name|escape}</th>
 		{/foreach}
 	</tr>
 {section name=Row loop=$arrData}

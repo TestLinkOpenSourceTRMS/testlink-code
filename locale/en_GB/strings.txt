@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.438 $
- * @modified $Date: 2009/05/02 09:03:18 $ by $Author: franciscom $
+ * @version $Revision: 1.439 $
+ * @modified $Date: 2009/05/06 09:32:39 $ by $Author: amkhullar $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1287,7 +1287,7 @@ $TLS_title_met_of_build = "Metrics of build";
 // ----- gui/templates/resultsBugs.tpl -----
 $TLS_bugs_open = "Open";
 $TLS_bugs_resolved = "Resolved";
-$TLS_bugs_total = "total";
+$TLS_bugs_total = "Total";
 $TLS_date = "Date";
 $TLS_printed_by = "Printed by";
 $TLS_tcs_with_bugs = "Test Cases with bugs";

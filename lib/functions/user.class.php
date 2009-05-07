@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/04/27 18:58:48 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/05/07 18:55:59 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -172,9 +172,18 @@ class tlUser extends tlDBObject
 		$this->tprojectRoles = null;
 		if (sizeof($allRoles))
 		{
+			$roleCache = null;
 			foreach($allRoles as $tprojectID => $roleID)
 			{
-				$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
+				if (!isset($roleCache[$roleID]))
+				{
+					$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
+					$roleCache[$roleID] = $tpRole;
+				}
+				else
+				{
+					$tpRole = clone($roleCache[$roleID]);
+				}
 				if ($tpRole)
 					$this->tprojectRoles[$tprojectID] = $tpRole;
 			}
@@ -192,9 +201,18 @@ class tlUser extends tlDBObject
 		$this->tplanRoles = null;
 		if (sizeof($allRoles))
 		{
+			$roleCache = null;
 			foreach($allRoles as $tplanID => $roleID)
 			{
-				$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
+				if (!isset($roleCache[$roleID]))
+				{
+					$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
+					$roleCache[$roleID] = $tpRole;
+				}
+				else
+				{
+					$tpRole = clone($roleCache[$roleID]);
+				}
 				if ($tpRole)
 					$this->tplanRoles[$tplanID] = $tpRole;
 			}
@@ -352,8 +370,7 @@ class tlUser extends tlDBObject
 	{
 		$result = tl::OK;
 		$login = trim($login);
-		//simple check for empty login, or login consisting only of whitespaces
-		//The DB field is only 30 characters
+		
 		if ($login == "" || (tlStringLen($login) > $this->maxLoginLength))
 			$result = self::E_LOGINLENGTH;
 		else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
@@ -463,8 +480,7 @@ class tlUser extends tlDBObject
 	
 	static public function checkEmailAdress($email)
 	{
-		$email = trim($email);
-	 	$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
+		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
 		if ($result == tl::OK)
 		{
 	    	$matches = array();

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.22 $
-* @modified $Date: 2009/04/29 06:43:56 $ $Author: franciscom $
+* @version $Revision: 1.23 $
+* @modified $Date: 2009/05/07 18:55:59 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -51,7 +51,7 @@ switch($args->featureType)
     	$gui->highlight->assign_users_tproject = 1;
     	$gui->roles_updated = lang_get("test_project_user_roles_updated");
     	$gui->not_for_you = lang_get("testproject_roles_assign_disabled");
-    	$assignRolesFor=$args->featureType;
+    	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->featureID > 0 ? $args->featureID : null;
     	$featureMgr = &$tprojectMgr;
     break;
@@ -60,7 +60,7 @@ switch($args->featureType)
       	$gui->highlight->assign_users_tplan = 1;
     	$gui->roles_updated = lang_get("test_plan_user_roles_updated");
     	$gui->not_for_you = lang_get("testplan_roles_assign_disabled");
-    	$assignRolesFor=$args->featureType;
+    	$assignRolesFor = $args->featureType;
     	$target->testprojectID = $args->testprojectID;
     	$featureMgr = &$tplanMgr;
     break;
@@ -75,12 +75,12 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
         $gui->user_feedback = $gui->roles_updated;
     }
 }
-
 // --------------------------------------------------------------------------
 // Important: 
 // Must be done here after having done update, to get current information
-$gui->users = tlUser::getAll($db);
-$args->user=$gui->users[$args->userID];
+$gui->users = tlUser::getAll($db,null,null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+checkSessionValid($db);
+$args->user = $_SESSION['currentUser'];
 // --------------------------------------------------------------------------
 
 switch($assignRolesFor)
@@ -88,7 +88,7 @@ switch($assignRolesFor)
     case 'testproject':
         $info = getTestProjectEffectiveRoles($db,$tprojectMgr,$args,$gui->users);
         list($gui->userFeatureRoles,$gui->features,$gui->featureID) = $info;
-        $target->testprojectID=$gui->featureID;
+        $target->testprojectID = $gui->featureID;
     break;
         
     case 'testplan':
@@ -101,7 +101,7 @@ switch($assignRolesFor)
 $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
 if(is_null($gui->features) || count($gui->features) == 0)
 {
-    $gui->features=null;
+    $gui->features = null;
 	$gui->user_feedback = $gui->not_for_you;
 }
 $smarty = new TLSmarty();
@@ -150,7 +150,7 @@ function init_args()
 function checkRights(&$db,&$user)
 {
 	$result = false;
-    $args=init_args();
+    $args = init_args();
     $answers = new stdClass();
     $answers->role_management = $user->hasRight($db,"role_management");
     
@@ -158,12 +158,12 @@ function checkRights(&$db,&$user)
     // First on current test without using test plan rights
     // if this fails then check again adding current test plan
     $answers->testplan_user_role_assignment = $user->hasRight($db,"testplan_user_role_assignment",$args->testprojectID,-1);
-    if( $answers->testplan_user_role_assignment != "yes" )
+    if($answers->testplan_user_role_assignment != "yes")
     {
-        $targetTestPlanID=null;
-        if($args->featureType=='testplan')
+        $targetTestPlanID = null;
+        if($args->featureType == 'testplan')
         {
-            $targetTestPlanID=$args->featureID;
+            $targetTestPlanID = $args->featureID;
         }
         $answers->testplan_user_role_assignment = $user->hasRight($db,"testplan_user_role_assignment",null,$targetTestPlanID);
     }
@@ -172,18 +172,18 @@ function checkRights(&$db,&$user)
     
     foreach($answers as $key => $value)
     {
-        $answers->$key = $value=="yes" ? true : false;
+        $answers->$key = $value == "yes" ? true : false;
         $result = $result | $answers->$key; 
     }
 	
-	if( !$result && ($args->featureType=='testproject') )
+	if(!$result && ($args->featureType == 'testproject'))
 	{
 	    $feature2check = $args->featureID;
-	    if($args->featureID==0 || is_null($args->featureID))
+	    if($args->featureID == 0 || is_null($args->featureID))
 	    {
 	        $feature2check = $args->testprojectID; 
 	    } 
-        if( $user->hasRight($db,"testproject_user_role_assignment",$feature2check,-1) == "yes") 	    
+        if($user->hasRight($db,"testproject_user_role_assignment",$feature2check,-1) == "yes") 	    
         {
             $result = true;
         }
@@ -202,8 +202,8 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
     switch($featureType)
     {
         case 'testproject':
-            if( $user->hasRight($dbHandler,"user_role_assignment",$featureID) == "yes" ||
-                $user->hasRight($dbHandler,"testproject_user_role_assignment",$featureID,-1,true) == "yes" )
+            if($user->hasRight($dbHandler,"user_role_assignment",$featureID) == "yes" ||
+                $user->hasRight($dbHandler,"testproject_user_role_assignment",$featureID,-1,true) == "yes")
             {         
                 $yes_no = "yes";
             }
@@ -215,7 +215,7 @@ function checkRightsForUpdate(&$dbHandler,&$user,$testprojectID,$featureType,$fe
         break;
     }
 
-    return ($yes_no == 'yes') ;
+    return ($yes_no == 'yes');
 }
 
 

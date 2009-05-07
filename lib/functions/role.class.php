@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/02/21 17:36:51 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/05/07 18:55:59 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -253,7 +253,8 @@ class tlRole extends tlDBObject
 		{
 			$rights[] = $right->name;
 		}
-	  $status=in_array($rightName,$rights);
+	 	$status = in_array($rightName,$rights);
+	 	
 		return $status;
 	}
 	

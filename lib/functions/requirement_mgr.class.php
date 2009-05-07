@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/05/05 21:38:56 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/05/07 08:26:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090505 - franciscom - refactoring started.
+ * rev : 20090506 - franciscom - refactoring continued
+ *       20090505 - franciscom - refactoring started.
  *                               removed use of REQ.node_order and title.
  *                               this fields must be managed on NH table
  *   
@@ -64,52 +65,53 @@ class requirement_mgr extends tlObjectWithAttachments
 	}
 
 
-  /*
-    function: get_by_id
+/*
+  function: get_by_id
 
 
-    args: id: requirement id
+  args: id: requirement id
 
-    returns: null if query fails
-             map with requirement info
+  returns: null if query fails
+           map with requirement info
 
-  */
-  function get_by_id($id)
-  {
+*/
+function get_by_id($id)
+{
     $field2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,REQ.type,REQ.author_id," .
-               "REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH.name AS title";
+               "REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH_REQ.name AS title";
+  
+	$sql = " SELECT {$field2get}, REQ_SPEC.testproject_id, NH_RSPEC.name AS req_spec_title, " .
+	       " NH_REQ.node_order " .
+	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC," .
+	       " {$this->nodes_hierarchy_table} NH_REQ, {$this->nodes_hierarchy_table} NH_RSPEC " .
+	       " WHERE REQ.srs_id = REQ_SPEC.id " .
+	       " AND REQ.id = NH_REQ.id " .
+	       " AND REQ.srs_id = NH_RSPEC.id " .
+	       " AND REQ.id = {$id}";
+	       
+	$recordset = $this->db->get_recordset($sql);
+	
+  $rs = null;
+  if(!is_null($recordset))
+  {
+      // Decode users
+      $rs = $recordset[0];
+      $rs['author'] = '';
+      $rs['modifier'] = '';
+      if(trim($rs['author_id']) != "")
+      {
+          $user = tlUser::getByID($this->db,$rs['author_id']);
+          $rs['author'] = $user->getDisplayName();
+      }
     
-  	$sql = " SELECT {$field2get}, REQ_SPEC.testproject_id, REQ_SPEC.title AS req_spec_title, " .
-  	       " NH.node_order " .
-  	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC," .
-  	       " {$this->nodes_hierarchy_table} NH " .
-  	       " WHERE REQ.srs_id = REQ_SPEC.id " .
-  	       " AND REQ.id = NH.id " .
-  	       " AND REQ.id = {$id}";
-  	       
-  	$recordset = $this->db->get_recordset($sql);
-  	
-    $rs = null;
-    if(!is_null($recordset))
-    {
-        // Decode users
-        $rs = $recordset[0];
-        $rs['author'] = '';
-        $rs['modifier'] = '';
-        if(trim($rs['author_id']) != "")
-        {
-            $user = tlUser::getByID($this->db,$rs['author_id']);
-            $rs['author'] = $user->getDisplayName();
-        }
-      
-        if(trim($rs['modifier_id']) != "")
-        {
-            $user = tlUser::getByID($this->db,$rs['modifier_id']);
-            $rs['modifier'] = $user->getDisplayName();
-        }
-    }  	
-  	return $rs;
-  }
+      if(trim($rs['modifier_id']) != "")
+      {
+          $user = tlUser::getByID($this->db,$rs['modifier_id']);
+          $rs['modifier'] = $user->getDisplayName();
+      }
+  }  	
+	return $rs;
+}
 
   /*
     function: create
@@ -731,18 +733,21 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     
 
   */
-  function get_all_for_tcase($testcase_id, $srs_id = 'all')
-  {                         
+function get_all_for_tcase($testcase_id, $srs_id = 'all')
+{                         
     
-  	$sql = " SELECT REQ.id,REQ.req_doc_id,REQ.title, " .
-  	       " RSPEC.title AS req_spec_title,req_coverage.testcase_id " .
+  	$sql = " SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " .
+  	       " NHB.name AS req_spec_title,req_coverage.testcase_id " .
   	       " FROM {$this->object_table} REQ, " .
-  	       "      {$this->req_coverage_table} req_coverage," .
+  	       "      {$this->req_coverage_table} REQ_COVERAGE," .
+  	       "      {$this->nodes_hierarchy_table} NHA," .
+  	       "      {$this->nodes_hierarchy_table} NHB," .
   	       "      {$this->requirement_spec_table} RSPEC " ;
   	
   	$idList = implode(",",(array)$testcase_id);
-  	$sql .= " WHERE req_coverage.testcase_id  IN (" . $idList . ")";
-	  $sql .= " AND REQ.srs_id=RSPEC.id  AND req_coverage.req_id=REQ.id";
+  	$sql .= " WHERE REQ_COVERAGE.testcase_id  IN (" . $idList . ")";
+	$sql .= " AND REQ.srs_id=RSPEC.id  AND REQ_COVERAGE.req_id=REQ.id " .
+	        " AND NHA.id=REQ.id AND NHB.id=RSPEC.id " ;
 
   	// if only for one specification is required
   	if ($srs_id != 'all') 
@@ -757,7 +762,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   	{
   		return $this->db->get_recordset($sql);
   	}	
-  }
+}
 
 
 

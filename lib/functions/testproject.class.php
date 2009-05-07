@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.105 $
- * @modified $Date: 2009/05/05 21:38:58 $  $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2009/05/07 08:26:56 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
@@ -1138,41 +1138,51 @@ function count_testcases($id)
 
 
 
-	/**
-	 * collect information about current list of Requirements Specification
-	 *
-	 * @param numeric $testproject_id
-	 * @param string  $id optional id of the requirement specification
-	 *
-	 * @return null if no srs exits, or no srs exists for id
-	 *         array, where each element is a map with SRS data.
-	 *
-	 *         map keys:
-   *         id
-   *         testproject_id
-   *         title
-   *         scope
-   *         total_req
-   *         type
-   *         author_id
-   *         creation_ts
-   *         modifier_id
-   *         modification_ts
-	 *
-	 * @author Martin Havlat
-	 **/
-	function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
-	{
-	  $fields = is_null($fields) ? '*' : implode(',',$fields);
-		$sql = "SELECT {$fields} FROM req_specs WHERE testproject_id={$testproject_id} ";
-		if (!is_null($id))
-		{
-			$sql .= " AND id=" . $id;
+/**
+ * collect information about current list of Requirements Specification
+ *
+ * @param numeric $testproject_id
+ * @param string  $id optional id of the requirement specification
+ *
+ * @return null if no srs exits, or no srs exists for id
+ *         array, where each element is a map with SRS data.
+ *
+ *         map keys:
+ *         id
+ *         testproject_id
+ *         title
+ *         scope
+ *         total_req
+ *         type
+ *         author_id
+ *         creation_ts
+ *         modifier_id
+ *         modification_ts
+ *
+ * @author Martin Havlat
+ * @rev: 20090506 - francisco.mancardi@gruppotesi.com
+ *       Requirements Refactoring
+ **/
+function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
+{
+    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+                "RSPEC.modification_ts,NH.name AS title";
+    
+    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
+    $sql = " SELECT {$fields} FROM {$this->requirement_spec_table} RSPEC, " .
+           " {$this->nodes_hierarchy_table} NH " .
+           " WHERE testproject_id={$testproject_id} " .
+           " AND RSPEC.id=NH.id ";
+           
+    if (!is_null($id))
+    {
+        $sql .= " AND RSPEC.id=" . $id;
     }
-		$sql .= "  ORDER BY title";
+    $sql .= "  ORDER BY title";
     $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);  
-		return $rs;
-	}
+	return $rs;
+}
 
 	/**
 	 * create a new System Requirements Specification

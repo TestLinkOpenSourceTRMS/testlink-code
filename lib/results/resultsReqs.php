@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/04/09 11:00:30 $ by $Author: amkhullar $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/05/07 08:26:57 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20090506 - franciscom - requirements refactoring
  * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
  * 20090111 - franciscom - BUGID 1967 + improvements
  * 20060104 - fm - BUGID 0000311: Requirements based Report shows errors 
@@ -62,35 +63,12 @@ if(!is_null($args->req_spec_id))
 	$tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,1);
 	
 	// BUGID 1063
-	// $sql = " SELECT REQ.id, req_coverage.testcase_id,title,status, NH.name AS testcase_name " .
-	//        " FROM requirements REQ" .
-	//        " LEFT OUTER JOIN req_coverage ON REQ.id = req_coverage.req_id " .
-	//        " LEFT OUTER JOIN nodes_hierarchy NH ON req_coverage.testcase_id=NH.id " .
-	//        " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
-
-  // 
-	// $sql = " SELECT DISTINCT REQ.id, RC.testcase_id,title,status, NH.name AS testcase_name, " .
-	//        " TCV.tc_external_id " .
-	//        " FROM requirements REQ " .
-	//        " JOIN req_coverage RC ON REQ.id = RC.req_id " .
-	//        " JOIN nodes_hierarchy NH ON RC.testcase_id=NH.id " .
-	//        " JOIN nodes_hierarchy NHB ON NHB.parent_id=NH.id " .
-	//        " JOIN tcversions TCV ON TCV.id=NHB.id " .
-	//        " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
-  // 
-  // $covered_reqs = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
-  // 
-  // $exclude_id = 
-	// $sql = " SELECT REQ.id " .
-	//        " FROM requirements REQ " .
-	//        " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
-  // 
-  // $all_reqs = $db->fetchRowsIntoMap($sql,'id',database::CUMULATIVE);
-  
+    // 20090506 - franciscom - Requirements Refactoring
 	$sql = " SELECT DISTINCT REQ.id AS req_id, COALESCE(RC.testcase_id,0) AS testcase_id, " .
-	       " title AS req_title,status AS req_status, NH.name AS testcase_name, " .
+	       " NH_REQ.name AS req_title,status AS req_status, NH.name AS testcase_name, " .
 	       " TCV.tc_external_id,TCV.version " .
 	       " FROM requirements REQ" .
+	       " JOIN nodes_hierarchy NH_REQ ON NH_REQ.id=REQ.id " .
 	       " LEFT OUTER JOIN req_coverage RC ON REQ.id = RC.req_id " .
 	       " LEFT OUTER JOIN nodes_hierarchy NH ON RC.testcase_id=NH.id " .
 	       " LEFT OUTER JOIN nodes_hierarchy NHB ON NHB.parent_id=NH.id " .

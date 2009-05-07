@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/05/05 21:38:58 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/05/07 08:26:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -222,7 +222,7 @@ function get_by_id($id)
 /**
  * get analyse based on requirements and test specification
  *
- * @param integer $srs_id
+ * @param integer $id: Req Spec id
  * @return array Coverage in three internal arrays: covered, uncovered, nottestable REQ
  * @author martin havlat
  */
@@ -236,8 +236,9 @@ function get_coverage($id)
 
 	// get requirements
 	// amitkhullar- BUGID : 2439
-	$sql_common = "SELECT id,title,req_doc_id " .
-	              " FROM {$this->requirements_table} WHERE srs_id={$id}";
+	$sql_common = " SELECT REQ.id,REQ.req_doc_id,NH.name AS title " .
+	              " FROM {$this->requirements_table} REQ, {$this->nodes_hierarchy_table} NH" .
+	              " WHERE REQ.srs_id={$id} AND REQ.id=NH.id";
 	$sql = $sql_common . $statusFilter . " {$order_by}";
 	$arrReq = $this->db->get_recordset($sql);
 	

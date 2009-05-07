@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/05/07 08:26:57 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *  20090506 - Requirements refactoring
  *  20090221 - BUGID - Improvement on messages to user when XML file contains
  *                     Custom Field Information.
  *  20090206 - BUGID - Import TC-REQ relationship - franciscom
@@ -356,7 +357,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
                        
         // BUGID - 20090205 - franciscom
-		$reqSpecSet=$tproject_mgr->getReqSpec($tproject_id,null,array('id','title'),'title');
+		$reqSpecSet=$tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title'),'title');
 		$tprojectHas['reqSpec']=(!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 	}
 	
@@ -467,8 +468,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$hasRequirements=(isset($tc['requirements']) && !is_null($tc['requirements']));
 		if($hasRequirements)
 		{
-  	    if( $tprojectHas['reqSpec'] )
-		    {
+  	        if( $tprojectHas['reqSpec'] )
+            {
 		        $msg=processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
 		        if( !is_null($msg) )
 		        {
@@ -979,9 +980,9 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
           // If not => create message for user feedback.
           if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
           {
-              $sql="SELECT id from requirements " .
-                   "WHERE req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
-                   "AND srs_id={$req_spec_id} ";     
+              $sql="SELECT REQ.id from requirements REQ" .
+                   "WHERE REQ.req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
+                   "AND REQ.srs_id={$req_spec_id} ";     
                    
               $rsx=$dbHandler->get_recordset($sql);
               if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
@@ -1019,6 +1020,4 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
      
     return $resultMsg;
 }
-
-
 ?>

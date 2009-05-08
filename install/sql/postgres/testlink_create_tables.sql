@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.33 2009/04/15 13:05:16 havlat Exp $
+-- $Id: testlink_create_tables.sql,v 1.34 2009/05/08 06:45:30 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -8,6 +8,7 @@
 -- 
 -- 
 -- Rev :
+--      20090507 - franciscom - BUGID  new builds structure
 --      20090411 - franciscom - BUGID 2369 - testplan_tcversions
 --
 --      20090315 - franciscom - req_spec, requirements id can not be big serial
@@ -181,6 +182,9 @@ CREATE TABLE "builds" (
   "notes" TEXT NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
+  "author_id" BIGINT NULL DEFAULT NULL,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "release_date" DATE NOT NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","name")
 ); 
@@ -449,6 +453,16 @@ CREATE TABLE "req_specs" (
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX "req_specs_testproject_id" ON "req_specs" ("testproject_id");
+
+--
+-- Table structure for table "req_suites" - NEW - 
+--
+CREATE TABLE "req_suites" (  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "details" TEXT NULL DEFAULT NULL,
+  PRIMARY KEY ("id")
+); 
+
 
 
 --

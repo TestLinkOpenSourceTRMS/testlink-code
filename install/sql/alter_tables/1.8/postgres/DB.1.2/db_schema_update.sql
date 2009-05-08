@@ -1,6 +1,6 @@
--- $Revision: 1.10 $
--- $Date: 2009/04/15 12:51:01 $
--- $Author: havlat $
+-- $Revision: 1.11 $
+-- $Date: 2009/05/08 06:49:39 $
+-- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -117,50 +117,22 @@ WHERE importance IN('L','l');
 ALTER TABLE tcversions MODIFY COLUMN importance INT2 NOT NULL default '2';
 ALTER TABLE tcversions ADD COLUMN execution_type INT2 NOT NULL default '1';
 
--- testprojects
-ALTER TABLE testprojects ADD COLUMN prefix varchar(30) NULL;
-ALTER TABLE testprojects ADD COLUMN tc_counter INT NULL default '0';
-ALTER TABLE testprojects ADD COLUMN option_automation INT2 NOT NULL default '0';
-COMMENT ON TABLE testprojects IS 'Updated to TL 1.8.0 Development - DB 1.2';
-
-
--- user
-ALTER TABLE users ADD COLUMN script_key varchar(32) NULL;
-COMMENT ON TABLE users IS 'Updated to TL 1.8.0 Development - DB 1.2';
-
--- executions
-ALTER TABLE executions ADD COLUMN tcversion_number INT NOT NULL default '1';
-ALTER TABLE executions ADD COLUMN execution_type INT2 NOT NULL default '1';
-COMMENT ON COLUMN executions.execution_type IS '1 -> manual, 2 -> automated'; 
-COMMENT ON COLUMN executions.tcversion_number IS 'test case version used for this execution';
-COMMENT ON TABLE executions  IS 'Updated to TL 1.8.0 Development - DB 1.2';
-
 -- testplan_tcversions
-ALTER TABLE testplan_tcversions ADD COLUMN urgency INT2 NOT NULL default '2',
-ALTER TABLE testplan_tcversions ADD COLUMN node_order INT NOT NULL default '1';
-COMMENT ON COLUMN testplan_tcversions.node_order IS 'order in execution tree'; 
-COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.8.0 Development - DB 1.2';
+ALTER TABLE testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
+ALTER TABLE testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
+COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
--- custom_fields
-ALTER TABLE custom_fields ADD COLUMN show_on_testplan_design SMALLINT NOT NULL DEFAULT '0',
-ALTER TABLE custom_fields ADD COLUMN enable_on_testplan_design SMALLINT NOT NULL DEFAULT '0';
-COMMENT ON TABLE custom_fields IS 'Updated to TL 1.8 RC3  - DB 1.2';
+-- users
+-- ALTER TABLE users ALTER COLUMN email TYPE VARCHAR(320);
+
+-- builds
+ALTER TABLE builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
+ALTER TABLE builds ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
+ALTER TABLE builds ADD COLUMN relase_date DATE NOT NULL;
+COMMENT ON TABLE builds IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 
 
 -- db_version
 ALTER TABLE db_version ADD COLUMN notes  text;
-COMMENT ON TABLE db_version IS 'Updated to TL 1.8.0 Development - DB 1.2';
-
--- data update
-DELETE FROM rights WHERE id=19;
-INSERT INTO rights (id,description) VALUES (19,'system_configuration');
-INSERT INTO rights (id,description) VALUES (20,'mgt_view_events');
-INSERT INTO rights (id,description) VALUES (21,'mgt_view_usergroups');
-INSERT INTO rights (id,description) VALUES (22,'events_mgt');
-
-DELETE FROM role_rights WHERE right_id=19;
-INSERT INTO role_rights (role_id,right_id) VALUES (8,19);
-INSERT INTO role_rights (role_id,right_id) VALUES (8,20);
-INSERT INTO role_rights (role_id,right_id) VALUES (8,21);
-INSERT INTO role_rights (role_id,right_id) VALUES (8,22);
+COMMENT ON TABLE db_version IS 'Updated to TL 1.9.0 Development - DB 1.3';

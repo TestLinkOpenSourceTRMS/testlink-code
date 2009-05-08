@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/03/25 20:53:15 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/05/08 06:44:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
@@ -44,7 +44,14 @@
 //
 // $ADODB_COUNTRECS=FALSE;
 $ADODB_COUNTRECS=TRUE;
-require_once( dirname(__FILE__). '/../../third_party/adodb/adodb.inc.php' );
+
+// To use a different version of ADODB that provided with TL, use a similar bunch of lines
+// on custom_config.inc.php
+if( !defined('TL_ADODB_RELATIVE_PATH') )
+{
+    define('TL_ADODB_RELATIVE_PATH','/../../third_party/adodb/adodb.inc.php' );
+}
+require_once( dirname(__FILE__). TL_ADODB_RELATIVE_PATH );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
 class database 

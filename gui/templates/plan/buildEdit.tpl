@@ -1,11 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.10 2008/09/09 10:22:49 franciscom Exp $
+$Id: buildEdit.tpl,v 1.11 2009/05/08 06:44:56 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev :
-     20080217 - francisco.mancardi@gruppotesi.com
+     20090507 - franciscom - 
+     
+     20080217 - franciscom
      Problems with history.goback, using call to view builds on goback
      
      20071216 - franciscom
@@ -20,7 +22,7 @@ Rev :
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
-             open,builds_description,cancel"}          
+             open,builds_description,cancel,release_date"}          
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -86,6 +88,16 @@ function validateForm(f)
 		    <th style="background:none;">{$labels.open}</th>
 		    <td><input type="checkbox"  name="is_open" id="is_open"  
 		               {if $is_open eq 1} checked {/if} />
+        </td>
+		</tr>
+
+    <tr>
+		    <th style="background:none;">{$labels.release_date}</th>
+		    <td>
+		    {html_select_date prefix="release_date_"  time=$gui->release_date
+                  month_format='%m' end_year="+1"
+                  day_value_format="%02d"
+                  field_order=$gsmarty_html_select_date_field_order}
         </td>
 		</tr>
 

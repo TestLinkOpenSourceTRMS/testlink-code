@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.439 $
- * @modified $Date: 2009/05/06 09:32:39 $ by $Author: amkhullar $
+ * @version $Revision: 1.440 $
+ * @modified $Date: 2009/05/08 06:44:56 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -609,6 +609,7 @@ $TLS_title_build_update = "Update Build";
 $TLS_title_build_edit = "Edit Build";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 $TLS_copy_to_all_tplans = "Copy to all Test Plans";
+$TLS_release_date = "Release date";
 
 
 

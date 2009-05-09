@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -67,12 +67,10 @@ function init_args()
 			"doAction" => array(tlInputParameter::STRING_N,0,100),
 		);
 
-	$pParams = R_PARAMS($iParams);
-    
 	$args = new stdClass();
-	$args->roleid = $pParams["roleid"]; 
-	$args->doAction = $pParams["doAction"];
-    $args->userID = $_SESSION['currentUser']->dbID;
+	$pParams = R_PARAMS($iParams,$args);
+    
+	$args->userID = $_SESSION['currentUser']->dbID;
 
     return $args;
 }

@@ -5,84 +5,38 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  * 
 **/
 require_once("object.class.php");
 require_once("inputparameter.class.php");
 
-function P_PARAMS($paramInfo)
+function P_PARAMS($paramInfo,&$args = null)
 {
-	return GPR_PARAMS("POST",$paramInfo);
+	return GPR_PARAMS("POST",$paramInfo,$args);
 }
 
-function G_PARAMS($paramInfo)
+function G_PARAMS($paramInfo,&$args = null)
 {
-	return GPR_PARAMS("GET",$paramInfo);
+	return GPR_PARAMS("GET",$paramInfo,$args);
 }
 
-function R_PARAMS($paramInfo)
+function R_PARAMS($paramInfo,&$args = null)
 {
-	return GPR_PARAMS("REQUEST",$paramInfo);
+	return GPR_PARAMS("REQUEST",$paramInfo,$args);
 }
 
-function GPR_PARAMS($source,$paramInfo)
+function GPR_PARAMS($source,$paramInfo,&$args = null)
 {
 	foreach($paramInfo as $pName => &$info)
 	{
 		array_unshift($info,$source);
 	}
-	return I_PARAMS($paramInfo);
+	return I_PARAMS($paramInfo,$args);
 }
 
-function P_PARAM_STRING_N($name,$minLen = null,$maxLen = null,$regExp = null,
-                          $pfnValidation = null,$pfnNormalization = null)
-{
-	return GPR_PARAM_STRING_N("POST",$name,$minLen,$maxLen,$regExp,$pfnValidation,$pfnNormalization);
-}
-
-function P_PARAM_INT($name,$minVal = null,$maxVal = null,$pfnValidation = null)
-{
-	return GPR_PARAM_INT("POST",$name,$minVal,$maxVal,$pfnValidation);
-}
-
-function P_PARAM_INT_N($name,$maxVal = null,$pfnValidation = null)
-{
-	return GPR_PARAM_INT_N("POST",$name,$maxVal,$pfnValidation);
-}
-
-function G_PARAM_STRING_N($name,$minLen = null,$maxLen = null,$regExp = null,$pfnValidation = null,$pfnNormalization = null)
-{
-	return GPR_PARAM_STRING_N("GET",$name,$minLen,$maxLen,$regExp,$pfnValidation,$pfnNormalization);
-}
-
-function G_PARAM_INT($name,$minVal = null,$maxVal = null,$pfnValidation = null)
-{
-	return GPR_PARAM_INT("GET",$name,$minVal,$maxVal,$pfnValidation);
-}
-
-function G_PARAM_INT_N($name,$maxVal = null,$pfnValidation = null)
-{
-	return GPR_PARAM_INT_N("GET",$name,0,$maxVal,$pfnValidation);
-}
-
-function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
-{
-	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
-}
-
-function G_PARAM_ARRAY_INT($name,$pfnValidation = null)
-{
-	return GPR_PARAM_INT("GET",$name,$pfnValidation);
-}
-
-function P_PARAM_ARRAY_INT($name,$pfnValidation = null)
-{
-	return GPR_PARAM_INT("POST",$name,$pfnValidation);
-}
-
-function I_PARAMS($paramInfo)
+function I_PARAMS($paramInfo,&$args = null)
 {
 	$params = null;
 	foreach($paramInfo as $pName => $info)
@@ -125,8 +79,13 @@ function I_PARAMS($paramInfo)
 				$pfnNormalization = $p5;
 				$value = GPR_PARAM_STRING_N($source,$pName,$minLen,$maxLen,$regExp,$pfnValidation,$pfnNormalization);
 				break;
+			case tlInputParameter::CB_BOOL:
+				$value = GPR_PARAM_CB_BOOL($source,$pName);
+				break;
 		}
 		$params[$pName] = $value;
+		if ($args)
+			$args->$pName = $value;
 	}
 	return $params;
 }
@@ -174,6 +133,10 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
+function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
+{
+	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
+}
 
 function GPR_PARAM_ARRAY_INT($gpr,$name,$pfnValidation = null)
 {
@@ -205,6 +168,20 @@ function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 	
 	return $iParam->value();
 }
+
+function GPR_PARAM_CB_BOOL($gpr,$name)
+{
+	$vInfo = new tlCheckBoxValidationInfo();
+		
+	$pInfo = new tlParameterInfo();
+	$pInfo->source = $gpr;
+	$pInfo->name = $name;
+	
+	$iParam = new tlInputParameter($pInfo,$vInfo);
+	return $iParam->value();
+}
+
+
 /*
 function check($value)
 {

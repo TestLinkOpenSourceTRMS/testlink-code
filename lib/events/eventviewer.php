@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/04/10 21:07:27 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  *
  * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
@@ -85,16 +85,9 @@ function init_args()
 			"logLevel" => array("POST",tlInputParameter::ARRAY_INT),
 		);
 
-	$pParams = I_PARAMS($iParams);
-
 	$args = new stdClass();
-	$args->startDate = $pParams["startDate"];
-	$args->endDate = $pParams["endDate"];
-	$args->object_id = $pParams["object_id"];
-	$args->object_type = $pParams["object_type"];
-	$args->doAction = $pParams["doAction"];
-	$args->logLevel = $pParams["logLevel"];
-	
+	$pParams = I_PARAMS($iParams.$args);
+
 	return $args;
 }
 

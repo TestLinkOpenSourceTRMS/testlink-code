@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/04/04 22:35:13 $ by $Author: havlat $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
@@ -52,7 +52,6 @@ analyse serves as confirmation that all defined expectations are met.</p>
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Test Specification";
 $TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<h2>Purpose:</h2>
 <p>The <i>Test Specification</i> allows users to view and edit all of the existing " .
 		"<i>Test Suites</i> and <i>Test Cases</i>. Test Cases are versioned and all " .
 		"of the previous versions are available and can be viewed and managed here.</p>

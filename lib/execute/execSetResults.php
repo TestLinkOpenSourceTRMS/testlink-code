@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.122 $
- * @modified $Date: 2009/04/27 07:53:29 $ $Author: franciscom $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2009/05/09 17:59:19 $ $Author: schlundus $
  *
  * rev:
  *     20090426 - franciscom - bad initialization of grants due to unclear
@@ -28,14 +28,6 @@
  *     
  *     20080104 - franciscom - REQ 1232 - web editor on execution notes
  *                             added createExecNotesWebEditor()
- *     20071224 - franciscom - refactoring
- *     20071113 - franciscom - added contribution History for all builds.
- *     20071006 - franciscom - changes on exec_cfield_mgr() call
- *     20071002 - jbarchibald - BUGID 1051
- *     20070707 - franciscom - BUGID 921
- *     20070519 - franciscom - BUGID 856
- *     20070306 - franciscom - BUGID 705
- *     20070222 - franciscom - BUGID 647
  *
 **/
 require_once('../../config.inc.php');

@@ -5,13 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.32 $
-* @modified $Date: 2009/02/22 18:49:25 $ $Author: franciscom $
-*
-* rev:
-*     fixed missing checks on doCreate()
-*     BUGID 918
-*     20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
+* @version $Revision: 1.33 $
+* @modified $Date: 2009/05/09 17:59:19 $ $Author: schlundus $
 *
 * Allows editing a user
 */
@@ -95,28 +90,27 @@ renderGui($smarty,$args,$templateCfg);
 */
 function init_args()
 {
-  	$args = new stdClass();
-	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"delete" => array(tlInputParameter::INT_N),
+			"user" => array(tlInputParameter::INT_N),
+			"user_id" => array(tlInputParameter::INT_N),
+			"rights_id" => array(tlInputParameter::INT_N),
+	
+			"doAction" => array(tlInputParameter::STRING_N,0,30),
+			"firstName" => array(tlInputParameter::STRING_N,0,30),
+			"lastName" => array(tlInputParameter::STRING_N,0,100),
+			"emailAddress" => array(tlInputParameter::STRING_N,0,100),
+			"locale" => array(tlInputParameter::STRING_N,0,10),
+			"login" => array(tlInputParameter::STRING_N,0,30),
+			"password" => array(tlInputParameter::STRING_N,0,32),
+	
+			"user_is_active" => array(tlInputParameter::CB_BOOL),
+	);
 
-	$intval_keys = array('delete' => 0, 'user' => 0,'user_id' => 0, 'rights_id' => TL_ROLES_GUEST);
-	foreach ($intval_keys as $key => $value)
-	{
-		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
-	}
-
-	$nullable_keys = array('doAction','firstName','lastName','emailAddress','locale','login','password');
-	foreach ($nullable_keys as $value)
-	{
-		$args->$value = isset($_REQUEST[$value]) ? trim($_REQUEST[$value]) : null;
-	}
-
- 	$checkbox_keys = array('user_is_active');
-	foreach ($checkbox_keys as $value)
-	{
-		$args->$value = isset($_REQUEST[$value]) ? 1 : 0;
-	}
-
-	return $args;
+	$args = new stdClass();
+  	$pParams = R_PARAMS($iParams,$args);
+ 	
+  	return $args;
 }
 
 

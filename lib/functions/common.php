@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.149 $ $Author: amkhullar $
- * @modified $Date: 2009/04/27 03:58:07 $
+ * @version $Revision: 1.150 $ $Author: schlundus $
+ * @modified $Date: 2009/05/09 17:59:19 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -301,17 +301,6 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 {
 	$tproject = new testproject($db);
 
-	// ------------------------------------------------------------------
-	$filter_tp_by_product = 1;
-	if( isset($hash_user_sel['filter_tp_by_product']) )
-	{
-	  $filter_tp_by_product = 1;
-	}
-	else if ( isset($hash_user_sel['filter_tp_by_product_hidden']) )
-	{
-	  $filter_tp_by_product = 0;
-	}
-	// ------------------------------------------------------------------
 	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
 	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
 	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2009/04/21 10:07:35 $ by $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296
@@ -20,11 +20,6 @@
  *      20080428 - franciscom - keyword filter can be done on multiple keywords
  *      20080224 - franciscom - refactoring
  *      20080224 - franciscom - BUGID 1056
- *      20071229 - franciscom - refactoring tree colouring and counters config
- *      20071006 - franciscom - changes on exec_cfield_mgr() call
- *      20070912 - jbarchibald - custom field search BUGID - 1051
- *      20070630 - franciscom - set default value for filter_assigned_to
- *      20070607 - franciscom - BUGID 887 - problem with builds
  **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -45,16 +40,16 @@ $gui = initializeGui($db,$args,$cfg,$exec_cfield_mgr,$tplan_mgr);
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
 $treeMenu = buildTree($db,$gui,$args,$cfg,$exec_cfield_mgr);
-$gui->tree=$treeMenu->menustring;
+$gui->tree = $treeMenu->menustring;
 
 if( !is_null($treeMenu->rootnode) )
 {
     $gui->ajaxTree=new stdClass();
-    $gui->ajaxTree->loader='';
-    $gui->ajaxTree->root_node=new stdClass();
-    $gui->ajaxTree->root_node=$treeMenu->rootnode;
-    $gui->ajaxTree->children=$treeMenu->menustring;
-    $gui->ajaxTree->cookiePrefix='exec_tplan_id_' . $args->tplan_id;
+    $gui->ajaxTree->loader = '';
+    $gui->ajaxTree->root_node = new stdClass();
+    $gui->ajaxTree->root_node = $treeMenu->rootnode;
+    $gui->ajaxTree->children = $treeMenu->menustring;
+    $gui->ajaxTree->cookiePrefix = 'exec_tplan_id_' . $args->tplan_id;
 }
 
 $smarty = new TLSmarty();
@@ -72,7 +67,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   args:
   returns:
 
-  schlundus: changed the user_id to the currentUser of the session
 */
 function init_args(&$dbHandler,$cfgObj)
 {
@@ -84,33 +78,33 @@ function init_args(&$dbHandler,$cfgObj)
     $args->user = $_SESSION['currentUser'];
     $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
     $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
+
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
-
-
     $args->advancedFilterMode=isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
- 	  if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
-	  {
+
+    if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
+	{
 	  	// need to get internal Id from External ID
 	  	$item_mgr = new testcase($dbHandler);
 	  	$cfg = config_get('testcase_cfg');
 	  	$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
 	  	
-	  	if( $args->tcase_id == 0 )
+	  	if($args->tcase_id == 0)
 	  	{
-	  	    $args->tcase_id=-1;  
+	  	    $args->tcase_id = -1;  
 	  	}
-	  }
+	}
 
     // Attention: Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
 
     // not fully implemented yet
-    $args->keywordsFilterType =isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     
     
-    $args->doUpdateTree=isset($_REQUEST['submitOptions']) ? 1 : 0;
+    $args->doUpdateTree = isset($_REQUEST['submitOptions']) ? 1 : 0;
     
     // 20081220 - franciscom
     // Now can be multivalued

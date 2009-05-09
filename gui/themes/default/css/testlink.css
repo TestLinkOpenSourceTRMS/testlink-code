@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.20 2009/05/06 09:33:17 amkhullar Exp $
+$Id: testlink.css,v 1.21 2009/05/09 17:59:19 schlundus Exp $
 
 Purpose: Default TestLink CSS
 
@@ -275,13 +275,6 @@ div.messages {
 	margin: 			3px;
 	padding:			3px;
 }
-
-/* TODO havlatm: consider to remove (used only in probably obsolete show_exec_notes.tpl) */
-textarea.tcDesc {
-	background: 	white;
-	border: 		medium solid #808080;
-}
-
 
 /***** tabbed menu ******************************************************************* */
 /* TODO havlatm: remove tabbed menu to be compliant with other design */

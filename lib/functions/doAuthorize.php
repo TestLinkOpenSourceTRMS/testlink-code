@@ -4,18 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/01/10 21:39:04 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial authentication for login and creates all user session variables.
  *
  * @todo Setting up cookies so that the user can automatically login next time
  * 
- * Revision:
- *  20070130 - jbarchibald - $_SESSION['filter_tp_by_product'] should always default to = 1;
- *	20060507 - franciscom - added bare bones LDAP authentication using mantis code
- *
  * *********************************************************************************** */
 require_once("users.inc.php");
 require_once("roles.inc.php");
@@ -44,7 +40,6 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 				}
 				else
 				{ 
-					$_SESSION['filter_tp_by_product'] = 1;
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					$_SESSION['lastActivity'] = time();

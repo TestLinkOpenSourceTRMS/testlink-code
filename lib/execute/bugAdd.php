@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -49,11 +49,10 @@ function init_args()
 		"exec_id" => array("GET",tlInputParameter::INT_N),
 		"bug_id" => array("POST",tlInputParameter::STRING_N,0,$g_bugInterface->getBugIDMaxLength()),
 	);
-	$pParams = I_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->bug_id = $pParams["bug_id"];
-	$args->exec_id = $pParams["exec_id"];
+	
+	$pParams = I_PARAMS($iParams,$args);
+	
 	if ($args->exec_id)
 		$_SESSION['bugAdd_execID'] = $args->exec_id;
 	else

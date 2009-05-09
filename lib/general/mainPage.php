@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.54 $ $Author: franciscom $
- * @modified $Date: 2009/04/27 07:50:39 $
+ * @version $Revision: 1.55 $ $Author: schlundus $
+ * @modified $Date: 2009/05/09 17:59:19 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -20,9 +20,6 @@
  *      20080905 - franciscom - BUGID 1698
  *      20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
  *      20080120 - franciscom - added logic to enable/disable test case search link
- *      20070725 - franciscom - refactoring of rights checking 
- *      20070509 - franciscom - improving test plan availabilty checking
- *      20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
  *
  **/
 
@@ -30,7 +27,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 
 // BUGID 1698
-if( function_exists('memory_get_usage') && function_exists('memory_get_peak_usage') )
+if(function_exists('memory_get_usage') && function_exists('memory_get_peak_usage'))
 {
     tlog("mainPage.php: Memory after common.php> Usage: ".memory_get_usage(), 'DEBUG');
 }
@@ -85,21 +82,6 @@ $smarty->assign('rights_keywords_edit', has_rights($db,"mgt_modify_key"));
 $smarty->assign('rights_project_edit', $can_manage_tprojects);
 $smarty->assign('rights_configuration', has_rights($db,"system_configuraton"));
 $smarty->assign('rights_usergroups', has_rights($db,"mgt_view_usergroups"));
-
-
-// ----- Test Statistics Section --------------------------
-$filter_tp_by_product = 1;
-if(isset($_REQUEST['filter_tp_by_product']))
-	$filter_tp_by_product = 1;
-else if(isset($_REQUEST['filter_tp_by_product_hidden']))
-	$filter_tp_by_product = 0;
-else
-{
-	if (isset($_SESSION['filter_tp_by_product']))
-		$filter_tp_by_product = $_SESSION['filter_tp_by_product'];
-}
-$_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
-$smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
 // ----- Test Plan Section ----------------------------------
 $filters = array('plan_status' => ACTIVE);

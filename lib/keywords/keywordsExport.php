@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -40,19 +40,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	$args = new stdClass();
-	
 	$iParams = array(
 			"doAction" => array("GET",tlInputParameter::STRING_N,0,50),
 			"export_filename" => array("POST", tlInputParameter::STRING_N,0,255),
 			"exportType" => array("POST", tlInputParameter::STRING_N,0,255),
 		);
+	$args = new stdClass();
 		
-	$pParams = I_PARAMS($iParams);
-
-	$args->doAction = $pParams["doAction"];
-	$args->exportType = $pParams["exportType"];
-	$args->export_filename = $pParams["export_filename"];
+	$pParams = I_PARAMS($iParams,$args);
 
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = $_SESSION['testprojectName'];

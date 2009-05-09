@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -78,14 +78,8 @@ function init_args()
 			"grant" => array("POST",tlInputParameter::ARRAY_STRING_N),
 		);
 
-	$pParams = I_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->doAction = $pParams["doAction"];
-	$args->roleid = $pParams["roleid"];
-	$args->rolename = $pParams["rolename"];
-	$args->notes = $pParams["notes"];
-	$args->grant = $pParams["grant"];
+	$pParams = I_PARAMS($iParams,$args);
 	
 	return $args;
 }

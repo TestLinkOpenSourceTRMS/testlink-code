@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  * 
 **/
 
@@ -27,6 +27,8 @@ class tlInputParameter extends tlObject
 	const ARRAY_INT = 4;
 	//array of normalized strings
 	const ARRAY_STRING_N = 5;
+	//array of normalized strings
+	const CB_BOOL = 6;
 	
 	/**
 	 * @var tlParameterInfo Information about the parameter
@@ -449,6 +451,43 @@ class tlArrayValidationInfo
 		}
 		
 		return true;
+	}
+}
+
+
+/**
+ * Helper class for validating Arrays
+ *
+ */
+class tlCheckBoxValidationInfo
+{
+	/**
+	 * @param array $valueArray the array which should be normalized
+	 * @return array returns the normalized array-typed value
+	 */
+	public function normalize($value)
+	{
+		if (!is_null($value))
+		{
+			$value = strtolower(trim($value));
+			if ($value == "on")
+				$value = true;
+		}
+		else
+			$value = false;
+			
+		return $value;
+	}
+	
+	/**
+	 * @param array $valueArray the array of values which should be validated
+	 * @return bool return true if the array was successfully validated, else throws an Exception
+	 */
+	public function validate($value)
+	{
+		if ($value === true || $value === false)
+			return true;
+		return false;
 	}
 }
 ?>

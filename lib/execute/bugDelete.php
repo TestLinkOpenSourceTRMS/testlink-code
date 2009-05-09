@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugDelete.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
@@ -39,11 +39,9 @@ function init_args()
 		"exec_id" => array("GET",tlInputParameter::INT_N),
 		"bug_id" => array("GET",tlInputParameter::STRING_N,0,$g_bugInterface->getBugIDMaxLength()),
 	);
-	$pParams = I_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->bug_id = $pParams["bug_id"];
-	$args->exec_id = $pParams["exec_id"];
+	
+	$pParams = I_PARAMS($iParams,$args);
 	
 	return $args;
 }

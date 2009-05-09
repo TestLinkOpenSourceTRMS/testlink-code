@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -67,12 +67,9 @@ function init_args()
 		//the title of the attachment (attachments.title) 
 		"title" => array("POST",tlInputParameter::STRING_N,0,250),
 	);
-	$pParams = I_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->id = $pParams["id"];
-	$args->tableName = $pParams["tableName"];
-	$args->title = $pParams["title"];
+	$pParams = I_PARAMS($iParams,$args);
+	
 	$args->bPostBack = sizeof($_POST);
 	
 	return $args;

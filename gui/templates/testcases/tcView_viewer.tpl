@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.28 2009/04/21 10:08:34 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.29 2009/05/09 17:59:19 schlundus Exp $
 viewer for test case in test specification
 
 rev:
@@ -229,10 +229,10 @@ rev:
 	<div>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
-			     	<td width="35%" style="vertical-align:text-top;"><a href={$gsmarty_href_keywordsView}>{$labels.keywords}</a>: &nbsp;
-						</td>
-				 	  <td>
-					  	{foreach item=keyword_item from=$args_keywords_map}
+			     	<td width="35%" style="vertical-align:top;"><a href={$gsmarty_href_keywordsView}>{$labels.keywords}</a>: &nbsp;
+					</td>
+				 	<td style="vertical-align:top;">
+				 	  	{foreach item=keyword_item from=$args_keywords_map}
 						    {$keyword_item.keyword|escape}
 						    <br />
 	      				{foreachelse}

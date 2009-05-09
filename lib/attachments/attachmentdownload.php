@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  */
@@ -53,10 +53,8 @@ function init_args()
 	$iParams = array(
 		"id" => array(tlInputParameter::INT_N),
 	);
-	$pParams = G_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->id = $pParams["id"];
+	$pParams = G_PARAMS($iParams,$args);
 	
 	return $args;
 }

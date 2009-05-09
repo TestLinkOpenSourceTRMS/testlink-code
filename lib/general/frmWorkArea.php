@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/04/01 20:41:03 $ by $Author: havlat $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -19,6 +19,8 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db);
+
+$args = init_args();
 // --------------------------------------------------------------------------------------
 // Important Notes for Developers
 // --------------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ $aa_tfp = array(
 $full_screen = array('newest_tcversions' => 1);
 
 /** feature to display */
-$showFeature = isset($_GET['feature']) ? $_GET['feature'] : null;
+$showFeature = $args->feature;
 if (isset($aa_tfp[$showFeature]) === FALSE)
 {
 	// argument is wrong
@@ -141,5 +143,16 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 		$smarty->display('workAreaSimple.tpl');
 		exit();
 	}
+}
+
+function init_args()
+{
+	$iParams = array(
+		"feature" => array(tlInputParameter::STRING_N),
+	);
+	$args = new stdClass();
+	$pParams = G_PARAMS($iParams,$args);
+	
+	return $args;
 }
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -18,9 +18,9 @@ $args = init_args();
 $user = null;
 $event = null;
 
-if ($args->eventID)
+if ($args->id)
 {
-	$event = new tlEvent($args->eventID);
+	$event = new tlEvent($args->id);
 	if ($event->readFromDB($db,tlEvent::TLOBJ_O_GET_DETAIL_TRANSACTION) >= tl::OK)
 	{
 		$user = new tlUser($event->userID);
@@ -49,10 +49,9 @@ function init_args()
 			"id" => array(tlInputParameter::STRING_N,0,50),
 		);
 		
-	$pParams = P_PARAMS($iParams);
-
 	$args = new stdClass();
-	$args->eventID = $pParams["id"];
+	$pParams = P_PARAMS($iParams,$args);
+
 	
 	return $args;
 }

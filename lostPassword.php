@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/04/28 19:22:33 $ $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/05/09 17:59:19 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -70,10 +70,10 @@ $smarty->display($templateCfg->default_template);
 function init_args()
 {
 	$iParams = array("login" => array(tlInputParameter::STRING_N,0,30));
-	$pParams = P_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->login = $pParams["login"];
+	
+	$pParams = P_PARAMS($iParams,$args);
+	
 	return $args;
 }
 ?>

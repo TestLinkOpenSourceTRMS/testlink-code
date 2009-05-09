@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.11 2009/05/08 06:44:56 franciscom Exp $
+$Id: buildEdit.tpl,v 1.12 2009/05/09 15:11:27 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -97,6 +97,7 @@ function validateForm(f)
 		    {html_select_date prefix="release_date_"  time=$gui->release_date
                   month_format='%m' end_year="+1"
                   day_value_format="%02d"
+                  all_empty=' '
                   field_order=$gsmarty_html_select_date_field_order}
         </td>
 		</tr>

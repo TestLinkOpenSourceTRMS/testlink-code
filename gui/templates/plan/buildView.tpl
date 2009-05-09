@@ -1,15 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.15 2008/12/30 13:34:40 franciscom Exp $
+$Id: buildView.tpl,v 1.16 2009/05/09 15:11:27 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
 Rev:
-    20080805 - franciscom - api config refactoring
-    20080116 - franciscom - added option to show/hide id useful for API 
-                            removed testplan id from title
-    20080109 - franciscom - added sort table by JS
-    20071007 - franciscom - delete on click logic refactored 
+    20090509 - franciscom - BUGID - display release_date
     20070921 - franciscom - BUGID  - added strip_tags|strip to notes
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -29,7 +25,7 @@ Rev:
           s='title_build_2,test_plan,th_title,th_description,th_active,
              th_open,th_delete,alt_edit_build,alt_active_build,
              alt_open_build,alt_delete_build,no_builds,btn_build_create,
-             builds_description,sort_table_by_column,th_id'}
+             builds_description,sort_table_by_column,th_id,release_date'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -42,24 +38,25 @@ var del_action=fRoot+'{$deleteAction}';
 
 <body {$body_onload}>
 
-<h1 class="title">{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
+<h1 class="title">{$labels.title_build_2}{$smarty.const.TITLE_SEP_TYPE3}{$labels.test_plan}{$smarty.const.TITLE_SEP}{$gui->tplan_name|escape}</h1>
 
 <div class="workBack">
 {include file="inc_update.tpl" result=$sqlResult item="build"}
 
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
-  {if $the_builds ne ""}
+  {if $gui->buildSet ne ""}
     {* table id MUST BE item_view to use show/hide API info *}
   	<table id="item_view" class="simple  sortable" style="width:80%">
   		<tr>
   			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
+  			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_open}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
   		</tr>
-  		{foreach item=build from=$the_builds}
+  		{foreach item=build from=$gui->buildSet}
         	<tr>
   				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
   				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
@@ -72,6 +69,7 @@ var del_action=fRoot+'{$deleteAction}';
   					  </a>   
   				</td>
   				<td>{$build.notes|strip_tags|strip|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
+  				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
   				<td class="clickable_icon">
   				   {if $build.active eq 1} 
   				     <img style="border:none" 

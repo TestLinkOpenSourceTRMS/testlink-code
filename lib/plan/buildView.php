@@ -5,12 +5,12 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/02/07 19:44:03 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/05/09 15:11:27 $ $Author: franciscom $
  *
- * rev :
- *       20070122 - franciscom - use build_mgr methods
- *       20070121 - franciscom - active and open management
+ * rev:
+ *      20090509 - franciscom - minor refactoring      
+ *       
  *
 */
 require('../../config.inc.php');
@@ -22,16 +22,14 @@ $templateCfg = templateConfiguration();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$tplan_name = $_SESSION['testPlanName'];
-
-$the_builds = $tplan_mgr->get_builds($tplan_id);
+$gui = new StdClass();
+$gui->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$gui->tplan_name = $_SESSION['testPlanName'];
+$gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
+$gui->user_feedback = null;
 
 $smarty = new TLSmarty();
-$smarty->assign('user_feedback',null); // disable notice
-$smarty->assign('tplan_name', $tplan_name);
-$smarty->assign('tplan_id', $tplan_id);
-$smarty->assign('the_builds', $the_builds);
+$smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function checkRights(&$db,&$user)

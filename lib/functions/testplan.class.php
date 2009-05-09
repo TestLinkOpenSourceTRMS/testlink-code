@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.110 $
- * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2009/05/09 15:11:27 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,7 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20090509 - franciscom - BUGID - build class manage release_date
  *  20090411 - franciscom - BUGID 2369 - link_tcversions() - interface changes
  *  20090214 - franciscom - BUGID 2099 - get_linked_tcversions() - added new columns in output recordset
  *  20090208 - franciscom - testplan class - new method get_build_by_id()
@@ -1509,14 +1510,13 @@ private function get_parenttestsuites($id)
                   active: build active status
                   is_open: build open status
                   testplan_id
+                  release_date
 
   rev :
-        20070120 - franciscom
-        added active, open
 */
 function get_builds($id,$active=null,$open=null)
 {
-	$sql = " SELECT id,testplan_id, name, notes, active, is_open " .
+	$sql = " SELECT id,testplan_id, name, notes, active, is_open,release_date " .
 	       " FROM {$this->builds_table} WHERE testplan_id = {$id} " ;
 
  	if( !is_null($active) )
@@ -2300,20 +2300,32 @@ class build_mgr
           $notes
           [$active]: default: 1
           [$open]: default: 1
-
+          [release_date]: YYYY-MM-DD
 
 
     returns:
 
     rev :
   */
-  function create($tplan_id,$name,$notes = '',$active=1,$open=1)
+  function create($tplan_id,$name,$notes = '',$active=1,$open=1,$release_date='')
   {
-  	$sql = " INSERT INTO {$this->builds_table} (testplan_id,name,notes,active,is_open) " .
+    $targetDate=trim($release_date);
+  	$sql = " INSERT INTO {$this->builds_table} " .
+  	       " (testplan_id,name,notes,release_date,active,is_open) " .
   	       " VALUES ('". $tplan_id . "','" .
   	                     $this->db->prepare_string($name) . "','" .
-  	                     $this->db->prepare_string($notes) . "'," .
-  	                     "{$active},{$open})";
+  	                     $this->db->prepare_string($notes) . "',";
+    if($targetDate == '')
+  	{
+  	    $sql .= "NULL,";
+  	}       
+    else
+    {
+  	    $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
+    }
+    $sql .= "{$active},{$open})"; 	                     
+
+    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
   	$new_build_id = 0;
   	$result = $this->db->exec_query($sql);
@@ -2335,6 +2347,7 @@ class build_mgr
           $notes
           [$active]: default: null
           [$open]: default: null
+          [$release_date]=''
 
 
 
@@ -2342,12 +2355,21 @@ class build_mgr
 
     rev :
   */
-  function update($id,$name,$notes,$active=null,$open=null)
+  function update($id,$name,$notes,$active=null,$open=null,$release_date='')
   {
+    $targetDate=trim($release_date);
   	$sql = " UPDATE {$this->builds_table} " .
   	       " SET name='" . $this->db->prepare_string($name) . "'," .
   	       "     notes='" . $this->db->prepare_string($notes) . "'";
-
+  	       
+    if($targetDate == '')
+  	{
+  	    $sql .= ",release_date=NULL";
+  	}       
+    else
+    {
+  	    $sql .= ",release_date='" . $this->db->prepare_string($targetDate) . "'";
+    }
   	if( !is_null($active) )
   	{
   	   $sql .=" , active=" . intval($active);
@@ -2357,10 +2379,7 @@ class build_mgr
   	{
   	   $sql .=" , is_open=" . intval($open);
   	}
-
-
   	$sql .= " WHERE id={$id}";
-
   	$result = $this->db->exec_query($sql);
   	return $result ? 1 : 0;
   }
@@ -2434,16 +2453,16 @@ class build_mgr
 class milestone_mgr
 {
 	var $db;
-  var $builds_table="builds";
+    var $builds_table="builds";
  	var $cfield_design_values_table="cfield_design_values";
-  var $cfield_execution_values_table="cfield_execution_values";
-  var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
-  var $execution_bugs_table="execution_bugs";
-  var $executions_table='executions';
-  var $nodes_hierarchy_table='nodes_hierarchy';
+    var $cfield_execution_values_table="cfield_execution_values";
+    var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
+    var $execution_bugs_table="execution_bugs";
+    var $executions_table='executions';
+    var $nodes_hierarchy_table='nodes_hierarchy';
 	var $milestones_table='milestones';
-  var $tcversions_table='tcversions';
-  var $testplans_table="testplans";
+    var $tcversions_table='tcversions';
+    var $testplans_table="testplans";
 	var $testplan_tcversions_table="testplan_tcversions";
 
   /*

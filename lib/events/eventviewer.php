@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/05/11 20:39:26 $ by $Author: franciscom $
  *
- * rev: 20081029 - franciscom - added 'clear' action to delete all events and transactions
+ * rev: 20090511 - franciscom - fixed typo bug
+ *      20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
 **/
 require_once("../../config.inc.php");
@@ -43,13 +44,17 @@ switch($args->doAction)
 	    {
 	    	$startTime = strToTime($args->startDate);
 	    	if (!$startTime)
+	    	{
 	    		$startTime = null;
+	    	}	
 	    }
 	    if ($args->endDate != "")
 	    {
 	    	$endTime = strToTime($args->endDate) + (24*60*60-1);
 	    	if (!$endTime)
+	    	{
 	    		$endTime = null;
+	    	}	
 	    }
     	break;
 }
@@ -86,8 +91,7 @@ function init_args()
 		);
 
 	$args = new stdClass();
-	$pParams = I_PARAMS($iParams.$args);
-
+	$pParams = I_PARAMS($iParams,$args);
 	return $args;
 }
 
@@ -96,10 +100,13 @@ function checkRights(&$db,&$user)
 	$action = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 	
 	if (!$user->hasRight($db,"mgt_view_events"))
+	{
 		return false;
+	}
 	if ($action == 'clear')
+	{
 		return $user->hasRight($db,'events_mgt');
-	
+	}
 	return true;
 }
 ?>

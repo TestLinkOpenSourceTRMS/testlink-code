@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.17 2009/05/04 14:11:59 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.18 2009/05/11 06:15:33 franciscom Exp $
 
 
 Important Development note:
@@ -490,7 +490,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 	</table>
 
   {* BUGID *}
-  {if $gui->cfield_is_linked}
+  {if isset($gui->cfield_is_linked) && $gui->cfield_is_linked}
   <table class="common">
     <tr> <th>{$labels.assigned_to_testprojects} </th>
     {foreach item=tproject from=$gui->linked_tprojects}

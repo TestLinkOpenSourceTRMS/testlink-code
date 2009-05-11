@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/05/11 20:37:42 $ by $Author: franciscom $
  * 
 **/
 require_once("object.class.php");
@@ -39,6 +39,7 @@ function GPR_PARAMS($source,$paramInfo,&$args = null)
 function I_PARAMS($paramInfo,&$args = null)
 {
 	$params = null;
+	// echo 'uuu'; print_r($paramInfo);
 	foreach($paramInfo as $pName => $info)
 	{
 		$source = $info[0];
@@ -56,36 +57,44 @@ function I_PARAMS($paramInfo,&$args = null)
 				$pfnValidation = $p1;
 				$value = GPR_PARAM_ARRAY_INT($source,$pName,$pfnValidation);
 				break;
+		
 			case tlInputParameter::ARRAY_STRING_N:
 				$pfnValidation = $p1;
 				$value = GPR_PARAM_ARRAY_STRING_N($source,$pName,$pfnValidation);
 				break;
+		
 			case tlInputParameter::INT_N:
 				$maxVal = $p1;
 				$pfnValidation = $p2;
 				$value = GPR_PARAM_INT_N($source,$pName,$maxVal,$pfnValidation);
 				break;
+		
 			case tlInputParameter::INT:
 				$minVal = $p1;
 				$maxVal = $p2;
 				$pfnValidation = $p3;
 				$value = GPR_PARAM_INT($source,$pName,$minVal,$maxVal,$pfnValidation);
 				break;
+		
 			case tlInputParameter::STRING_N:
 				$minLen = $p1;
 				$maxLen = $p2;
 				$regExp = $p3;
 				$pfnValidation = $p4;
 				$pfnNormalization = $p5;
-				$value = GPR_PARAM_STRING_N($source,$pName,$minLen,$maxLen,$regExp,$pfnValidation,$pfnNormalization);
+				$value = GPR_PARAM_STRING_N($source,$pName,$minLen,$maxLen,$regExp,
+				                            $pfnValidation,$pfnNormalization);
 				break;
+		
 			case tlInputParameter::CB_BOOL:
 				$value = GPR_PARAM_CB_BOOL($source,$pName);
 				break;
 		}
 		$params[$pName] = $value;
-		if ($args)
+		if(!is_null($args))
+		{
 			$args->$pName = $value;
+		}	
 	}
 	return $params;
 }
@@ -95,19 +104,18 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
                             $pfnValidation = null,$pfnNormalization = null)
 {
 	$vInfo = new tlStringValidationInfo();
-	if (!is_null($minLen))
-		$vInfo->minLen = $minLen;
-	if (!is_null($maxLen))
-		$vInfo->maxLen = $maxLen;
 	$vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
 	$vInfo->bStripSlashes = true;
-	if (!is_null($regExp))
-		$vInfo->regExp = $regExp;
-	if (!is_null($pfnValidation))
-		$vInfo->pfnValidation = $pfnValidation;
-	if (!is_null($pfnNormalization))
-		$vInfo->pfnNormalization = $pfnNormalization;
-	
+
+    $items2check=array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
+    foreach($items2check as $item)
+    {
+        if (!is_null($$item))
+        {
+            $vInfo->$item=$$item;
+        }
+    }
+   
 	$pInfo = new tlParameterInfo();
 	$pInfo->source = $gpr;
 	$pInfo->name = $name;
@@ -119,12 +127,15 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
 function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation = null)
 {
 	$vInfo = new tlIntegerValidationInfo();
-	if (!is_null($minVal))
-		$vInfo->minVal = $minVal;
-	if (!is_null($maxVal))
-		$vInfo->maxVal = $maxVal;
-	if (!is_null($pfnValidation))
-		$vInfo->pfnValidation = $pfnValidation;
+
+    $items2check=array("minVal","maxVal","pfnValidation");
+    foreach($items2check as $item)
+    {
+        if (!is_null($$item))
+        {
+            $vInfo->$item=$$item;
+        }
+    }
 		
 	$pInfo = new tlParameterInfo();
 	$pInfo->source = $gpr;
@@ -133,6 +144,7 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
+
 function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
@@ -156,10 +168,13 @@ function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 		$vInfo->pfnValidation = $pfnValidation;
     }
     if ($type == tlInputParameter::STRING_N) 
+    {
 		$vInfo->validationInfo = new tlStringValidationInfo();
+	}
 	else
+	{
 		$vInfo->validationInfo = new tlIntegerValidationInfo();
-		
+	}	
 	$pInfo = new tlParameterInfo();
 	$pInfo->source = $gpr;
 	$pInfo->name = $name;

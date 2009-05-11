@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/05/11 20:37:42 $ by $Author: franciscom $
  * 
 **/
 
@@ -27,7 +27,7 @@ class tlInputParameter extends tlObject
 	const ARRAY_INT = 4;
 	//array of normalized strings
 	const ARRAY_STRING_N = 5;
-	//array of normalized strings
+	// PLEASE COMMENT THIS -----------------------------
 	const CB_BOOL = 6;
 	
 	/**
@@ -323,7 +323,8 @@ class tlStringValidationInfo
 		$minLen = $this->minLen;
 		if ($minLen && tlStringLen($value) < $minLen)
 		{
-			throw new Exception("Input parameter validation failed [minLen: " . tlStringLen($value)." {$minLen}]");
+			throw new Exception("Input parameter validation failed [minLen: " . 
+			                    tlStringLen($value)." {$minLen}]");
 		}
 		
 		$regExp = $this->regExp; 
@@ -386,22 +387,27 @@ class tlIntegerValidationInfo
 	 */
 	public function validate($value)
 	{
+	    $msg='Input parameter validation failed';
 		if (!is_numeric($value))
-			throw new Exception("Input parameter validation failed [numeric: " . htmlspecialchars($value)."]");
-		
+		{
+			throw new Exception("{$msg} [numeric: " . htmlspecialchars($value)."]");
+		}
 		$value = intval($value);
 		$minVal = $this->minVal;
 		if ($value < $minVal)
-			throw new Exception("Input parameter validation failed [minVal: " . htmlspecialchars($value) . " = {$minVal}]");
-				
+		{
+			throw new Exception("{$msg} [minVal: " . htmlspecialchars($value) . " = {$minVal}]");
+		}		
 		$maxVal = $this->maxVal;
 		if ($value > $maxVal)
-			throw new Exception("Input parameter validation failed [maxVal: " . htmlspecialchars($value) . " = {$maxVal}]");
-		
+		{
+			throw new Exception("{$msg} [maxVal: " . htmlspecialchars($value) . " = {$maxVal}]");
+		}
 		$pfnValidation = $this->pfnValidation;
 		if ($pfnValidation && !$pfnValidation($value))
-			throw new Exception("Input parameter validation failed [external function]");
-		
+		{
+			throw new Exception("{$msg} [external function]");
+		}
 		return true;
 	}
 }
@@ -456,7 +462,7 @@ class tlArrayValidationInfo
 
 
 /**
- * Helper class for validating Arrays
+ * Helper class for validating Arrays ->  WRONG COMMENT CheckBox or ARRAY
  *
  */
 class tlCheckBoxValidationInfo
@@ -471,23 +477,27 @@ class tlCheckBoxValidationInfo
 		{
 			$value = strtolower(trim($value));
 			if ($value == "on")
+			{
 				$value = true;
+			}	
 		}
 		else
+		{
 			$value = false;
-			
+		}	
 		return $value;
 	}
 	
 	/**
+	 * Humm!!! this seems a beatiful Copy and Paste that has produced an wrong comment.
+	 * TODO -> write right comment
 	 * @param array $valueArray the array of values which should be validated
 	 * @return bool return true if the array was successfully validated, else throws an Exception
 	 */
 	public function validate($value)
 	{
-		if ($value === true || $value === false)
-			return true;
-		return false;
+	    $ret=($value === true || $value === false) ? true : false;
+		return $ret;
 	}
 }
 ?>

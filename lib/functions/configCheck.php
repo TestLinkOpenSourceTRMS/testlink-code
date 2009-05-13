@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/05/13 19:30:17 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -393,7 +393,7 @@ function checkForRepositoryDir($the_dir)
 /** @TODO check this code */
 //				$test_dir= $the_dir . '/'.datetime().'/';
 			// try to make the dir
-			if( @mkdir($test_dir) )
+			if(file_exists($test_dir) || @mkdir($test_dir) )
 	        	$ret['status_ok'] = true;
 	        	// todo delete
 		}

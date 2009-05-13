@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/04/02 20:16:17 $ $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/05/13 19:30:18 $ $Author: schlundus $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -18,7 +18,10 @@ require_once("opt_transfer.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
+
+$opt_cfg = opt_transf_empty_cfg();
+$opt_cfg->js_ot_name = 'ot';
+$args = init_args($opt_cfg);
 
 if ($args->edit == 'testproject')
 {
@@ -36,18 +39,12 @@ $keyword_assignment_subtitle = null;
 $can_do = 0;
 $itemID = null;
 
-$opt_cfg = opt_transf_empty_cfg();
-$opt_cfg->js_ot_name = 'ot';
 $opt_cfg->global_lbl = '';
 $opt_cfg->additional_global_lbl = null;
 $opt_cfg->from->lbl = lang_get('available_kword');
 $opt_cfg->to->lbl = lang_get('assigned_kword');
 $opt_cfg->from->map = $tproject_mgr->get_keywords_map($args->testproject_id);
 $opt_cfg->to->map = $tcase_mgr->get_keywords_map($args->id," ORDER BY keyword ASC ");
-
-$rl_html_name = $opt_cfg->js_ot_name . "_newRight";
-//@TODO: schlundus, should be moved to init_args()
-$right_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 if ($args->edit == 'testsuite')
 {
@@ -63,11 +60,10 @@ if ($args->edit == 'testsuite')
 		if ($args->bAssignTestSuite)
 		{
 			$result = 'ok';
-			$a_keywords = getKeywordsArray($right_list);
 			for($i = 0;$i < sizeof($tcs);$i++)
 			{
 				$tcID = $tcs[$i];
-				$tcase_mgr->setKeywords($tcID,$a_keywords);
+				$tcase_mgr->setKeywords($tcID,$args->keywordArray);
 			}
 		}
 		$itemID = $tcs;
@@ -85,7 +81,7 @@ else if($args->edit == 'testcase')
 	if($args->bAssignTestCase)
 	{
 		$result = 'ok';
-		$tcase_mgr->setKeywords($args->id,getKeywordsArray($right_list));
+		$tcase_mgr->setKeywords($args->id,$args->keywordArray);
 		$itemID = $args->id;
 	}
 }
@@ -94,7 +90,7 @@ if ($itemID)
 	$opt_cfg->to->map = $tcase_mgr->get_keywords_map($itemID," ORDER BY keyword ASC ");
 }
 
-keywords_opt_transf_cfg($opt_cfg, $right_list);
+keywords_opt_transf_cfg($opt_cfg, $args->keywordList);
 $smarty->assign('can_do', $can_do);
 $smarty->assign('sqlResult', $result);
 $smarty->assign('data', $args->id);
@@ -103,30 +99,32 @@ $smarty->assign('opt_cfg', $opt_cfg);
 $smarty->assign('keyword_assignment_subtitle',$keyword_assignment_subtitle);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-//@TODO: schlundus, should be moved to init_args()
-function getKeywordsArray($right_list)
+function init_args(&$opt_cfg)
 {
-	$a_keywords = null;
-	$list = trim($right_list);
-	if ($list != "")
-		$a_keywords = explode(",",$list);
+	$rl_html_name = $opt_cfg->js_ot_name . "_newRight";
+	
+    $iParams = array(
+			"id" => array(tlInputParameter::INT_N),
+			"edit" => array(tlInputParameter::STRING_N,0,100),
+			"assigntestcase" => array(tlInputParameter::STRING_N,0,1),
+    		"assigntestsuite" => array(tlInputParameter::STRING_N,0,1),
+    		$rl_html_name => array(tlInputParameter::STRING_N),
+    );
 		
-	return $a_keywords;
-}
-
-
-function init_args()
-{
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-
-    $args = new stdClass();
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-    $args->keyword = isset($_REQUEST['keywords']) ? $_REQUEST['keywords'] : null;
-    $args->edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
-    $args->bAssignTestCase = isset($_REQUEST['assigntestcase']) ? 1 : 0;
-    $args->bAssignTestSuite = isset($_REQUEST['assigntestsuite']) ? 1 : 0;
-    $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$pParams = R_PARAMS($iParams);
     
+	$args = new stdClass();
+    $args->id = $pParams["id"];
+    $args->keywordArray = null;
+    $args->keywordList = $pParams[$rl_html_name];
+    if ($args->keywordList != "")
+    	$args->keywordArray = explode(",",$args->keywordList);
+    
+    $args->edit = $pParams["edit"];
+    $args->bAssignTestCase = ($pParams["assigntestcase"] != "") ? 1 : 0;
+    $args->bAssignTestSuite = ($pParams["assigntestsuite"] != "") ? 1 : 0;
+    $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+        
     return $args;
 }
 

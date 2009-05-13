@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_jsCfieldsValidation.tpl,v 1.3 2009/04/22 08:27:29 franciscom Exp $ 
+$Id: inc_jsCfieldsValidation.tpl,v 1.4 2009/05/13 19:30:17 schlundus Exp $ 
 Purpose: smarty template - include custom fields validation code 
 
 rev: 20090421 - franciscom - BUGID 2414- check for text area character qty.
@@ -21,7 +21,7 @@ cfMessages.warning_text_area_cf="{$cf_warning_msg.warning_text_area_cf}";
 
 
 var cfChecks = new Object;
-cfChecks.email = {$tlCfg->validation_cfg->user_email_valid_regex};
+cfChecks.email = {$tlCfg->validation_cfg->user_email_valid_regex_js};
 {literal}
 </script>
 {/literal}

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.238 $
- * @modified $Date: 2009/03/25 20:53:02 $ by $Author: schlundus $
+ * @version $Revision: 1.239 $
+ * @modified $Date: 2009/05/13 19:30:16 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -277,8 +277,8 @@ $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \-]+$/';
 // 
 
 /* Taken from Ext-js VTypes.js */
-$tlCfg->validation_cfg->user_email_valid_regex = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
-
+$tlCfg->validation_cfg->user_email_valid_regex_js = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
+$tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/U";
 // --------------------------------------------------------------------------------------
 /** [API] */
 

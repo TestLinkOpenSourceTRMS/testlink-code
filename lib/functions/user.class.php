@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/05/07 18:55:59 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/05/13 19:30:17 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -484,7 +484,7 @@ class tlUser extends tlDBObject
 		if ($result == tl::OK)
 		{
 	    	$matches = array();
-	    	$email_regex = config_get('validation_cfg')->user_email_valid_regex;
+	    	$email_regex = config_get('validation_cfg')->user_email_valid_regex_php;
 			if (!preg_match($email_regex,$email,$matches))
 			{
 				$result = self::E_EMAILFORMAT;

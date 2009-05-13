@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.21 2009/01/03 17:30:13 franciscom Exp $
+$Id: usersEdit.tpl,v 1.22 2009/05/13 19:30:17 schlundus Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -39,7 +39,7 @@ var warning_no_good_email_address = "{$labels.no_good_email_address}";
 function validateForm(f,check_password)
 {
   {/literal}
-   var email_check = {$tlCfg->validation_cfg->user_email_valid_regex};
+   var email_check = {$tlCfg->validation_cfg->user_email_valid_regex_js};
 
   {literal}
   var email_warning;

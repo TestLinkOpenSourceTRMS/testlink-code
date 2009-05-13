@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/05/13 05:54:55 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -108,7 +108,7 @@ switch ($doc_info->type)
 		{
 			case 'testproject':
 				$tree = &$test_spec;
-				$doc_info->title = $doc_info->project_name;
+				$doc_info->title = $doc_info->tproject_name;
 			break;
     	      
 			case 'testsuite':
@@ -117,7 +117,7 @@ switch ($doc_info->type)
     	  	    $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
     	  	    $tree['childNodes'] = array($tInfo);
 				$doc_info->title = isset($tInfo['name']) ? $args->tproject_name .
-    	  	      	$tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name;
+    	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name;
     	  	  break;    
     	} // $doc_info->content_range
     break;

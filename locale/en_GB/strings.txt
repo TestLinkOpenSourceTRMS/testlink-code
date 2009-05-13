@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.441 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.442 $
+ * @modified $Date: 2009/05/13 05:54:55 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -70,6 +70,7 @@ $TLS_none = "None";
 $TLS_ok = "OK";
 $TLS_priority	= "Priority";
 $TLS_project = "Project";
+$TLS_public = "Public";
 $TLS_requirement = "Requirement";
 $TLS_reqs = "Requirements";
 $TLS_req_spec = "Requirements Specification Document";

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.77 $
- * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2009/05/13 05:54:55 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -13,7 +13,7 @@
  * Used by printDocument.php
  *
  * Revisions:
- *
+ *      20090330 - franciscom - fixed internal bug when decoding user names
  *		20090410 - amkhullar - BUGID 2368
  *      20090330 - franciscom - renderTestSpecTreeForPrinting() - added logic to print ALWAYS test plan custom fields
  *      20090329 - franciscom - renderTestCaseForPrinting() refactoring of code regarding custom fields
@@ -378,32 +378,33 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 
   	if ($printingOptions['author'])
   	{
-  		$authorName = null;
-		$arrAuthorID['author_id'] = $tcInfo['author_id'];
-		$arrAuthorID['updater_id'] = $tcInfo['updater_id'];
-	      
 		/** @TODO array $userMap[] should be filled at once for all names at the begin process */
-	    foreach ($arrAuthorID as $key)
+  		$authorName = null;
+		$authorID = array('author_id' => $tcInfo['author_id'], 'updater_id' => $tcInfo['updater_id']);
+	    foreach ($authorID as $key => $user_id)
 	    {
-	    	if(isset($userMap[$key]))
+	    	if( isset($userMap[$user_id]) )
 	    	{
-	    		$authorName[] = $userMap[$key];
+	    		$authorName[$key] = $userMap[$user_id];
 		    }
 		    else
 	    	{
 	        	$user = tlUser::getByID($db,$tcInfo['author_id']);
 		        if ($user)
 		        {
-	    	      	$authorName[] = $user->getDisplayName();
-	        	  	$userMap[$key] = htmlspecialchars($authorName);
+	        	  	$userMap[$user_id] = htmlspecialchars($user->getDisplayName());
+	        	  	$authorName[$key] = $userMap[$user_id];
 		        }
 		    }
 	    }
 	      
-	    $code .= '<tr><td width="20%" valign="top"><span class="label">' . $labels['author'] 
-	    		. ':</span> ' . $authorName[0]; 
-		if ($tcInfo['updater_id'] > 0) // add updater if available
-			$code .= ' <br /><span class="label">' . $labels['last_edit'] . ':</span> '.$authorName[1];
+	    $code .= '<tr><td width="20%" valign="top"><span class="label">' . $labels['author'] . 
+	             ':</span> ' . $authorName['author_id']; 
+		if ($tcInfo['updater_id'] > 0) 
+		{
+		    // add updater if available
+			$code .= ' <br /><span class="label">' . $labels['last_edit'] . ':</span> '.$authorName['updater_id'];
+		}
 		$code .= ' </td></tr>';
   	}
 

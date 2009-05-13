@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/01/05 21:38:57 $ $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/05/13 05:55:49 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -44,7 +44,6 @@ $reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
-
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 $of->Value = null;
 
@@ -97,7 +96,9 @@ $smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 
 if(!$status_ok)
+{
    $args->doAction = "ErrorOnAction";
+}
 
 switch($args->doAction)
 {
@@ -123,6 +124,8 @@ switch($args->doAction)
         }
         $smarty->assign('user_feedback', $user_feedback);
         $smarty->assign('feedback_type', 'ultrasoft');
+
+        $smarty->assign('gui', $args);
         $smarty->assign('id', $args->tprojectID);
         $smarty->assign('name', $args->tprojectName);
         $smarty->assign('active', $args->active);
@@ -154,7 +157,7 @@ switch($args->doAction)
 */
 function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
-  $args = new stdClass();
+    $args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
@@ -169,7 +172,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 
-	$checkbox_keys = array('active' => 0,'optReq' => 0,'optPriority' => 0,'optAutomation' => 0);
+	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,'optPriority' => 0,'optAutomation' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -232,7 +235,7 @@ function doCreate($argsObj,&$tprojectMgr)
 	    $options->automated_execution = $argsObj->optAutomation;
 	    	    
 	  	$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$options,
-	  	                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix);
+	  	                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix,$argsObj->is_public);
 	  								                 
 	  	if (!$new_id)
 	  	{
@@ -290,16 +293,19 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 
 	 if($op->status_ok)
 	 {
-			if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),$argsObj->color,
-									             $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation,
-									             $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix) )
-			{
-				$op->msg = '';
-				$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
-				logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
-	 		}
-			else
-				$op->status_ok=0;
+        if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),$argsObj->color,
+        						 $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation,
+        						 $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix,
+        						 $argsObj->is_public) )
+        {
+        	$op->msg = '';
+        	$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
+        	logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
+        }
+        else
+        {
+        	$op->status_ok=0;
+        }	
 	}
     if($op->status_ok)
 	{
@@ -339,6 +345,8 @@ function edit(&$argsObj,&$tprojectMgr)
 	$argsObj->optAutomation = $tprojectInfo['option_automation'];
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
+	$argsObj->is_public = $tprojectInfo['is_public'];
+
 
 	$ui = new stdClass();
 	$ui->main_descr=lang_get('title_testproject_management');
@@ -408,6 +416,7 @@ function crossChecks($argsObj,&$tprojectMgr)
 function create(&$argsObj)
 {
     $argsObj->active = 1;
+    $argsObj->is_public = 1;
 
 	$gui = new stdClass();
 	$gui->doActionValue = 'doCreate';

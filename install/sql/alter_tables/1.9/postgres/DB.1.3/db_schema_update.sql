@@ -1,5 +1,5 @@
--- $Revision: 1.1 $
--- $Date: 2009/05/09 15:14:57 $
+-- $Revision: 1.2 $
+-- $Date: 2009/05/13 05:55:49 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -26,6 +26,13 @@
 -- Step 2 - new tables
 
 -- Step 3 - table changes
+
+-- testprojects
+ALTER TABLE testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
+
+-- testplans
+ALTER TABLE testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
+
 
 -- testplan_tcversions
 ALTER TABLE testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAULT NULL;

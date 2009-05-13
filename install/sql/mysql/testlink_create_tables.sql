@@ -1,12 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.48 2009/04/14 16:53:07 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.49 2009/05/13 05:55:49 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
 # ATTENTION: do not use a different naming convention, that one already in use.
 #
 # Rev :
+#
+# 20090512 - franciscom - BUGID - builds release_date
+#                         BUGID - is_public attribute for testprojects and testplans
 #
 # 20090411 - franciscom - BUGID 2369 - testplan_tcversions
 # 20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
@@ -103,6 +106,7 @@ CREATE TABLE `builds` (
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
+  `release_date` date NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`testplan_id`,`name`),
   KEY `testplan_id` (`testplan_id`)
@@ -327,6 +331,7 @@ CREATE TABLE `testplans` (
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
+  `is_public` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `testproject_id_active` (`testproject_id`,`active`)
 ) DEFAULT CHARSET=utf8;
@@ -341,6 +346,7 @@ CREATE TABLE `testprojects` (
   `option_automation` tinyint(1) NOT NULL default '0',  
   `prefix` varchar(16) NOT NULL,
   `tc_counter` int(10) unsigned NOT NULL default '0',
+  `is_public` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `id_active` (`id`,`active`),
   UNIQUE KEY `prefix` (`prefix`)

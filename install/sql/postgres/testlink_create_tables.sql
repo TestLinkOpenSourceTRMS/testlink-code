@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.34 2009/05/08 06:45:30 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.35 2009/05/13 05:55:49 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -8,6 +8,7 @@
 -- 
 -- 
 -- Rev :
+--      20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
 --      20090507 - franciscom - BUGID  new builds structure
 --      20090411 - franciscom - BUGID 2369 - testplan_tcversions
 --
@@ -167,6 +168,7 @@ CREATE TABLE "testplans" (
   "notes" TEXT NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
+  "is_public" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX "testplans_testproject_id_active" ON "testplans" ("testproject_id","active");
@@ -262,6 +264,7 @@ CREATE TABLE "testprojects" (
   "option_automation" INT2 NOT NULL DEFAULT '0',
   "prefix" varchar(16) NOT NULL,
   "tc_counter" int NOT NULL default '0',
+  "is_public" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id"),
   UNIQUE ("prefix")
 ); 

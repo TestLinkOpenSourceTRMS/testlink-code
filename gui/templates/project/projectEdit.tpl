@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.18 2008/09/21 19:35:47 schlundus Exp $
+$Id: projectEdit.tpl,v 1.19 2009/05/13 05:55:49 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
+    20090512 - franciscom - is_public attribute
     20080117 - franciscom - removed displayy of ID -> use projectview feature
     20080112 - franciscom - added test case prefix management
     20070725 - franciscom
@@ -29,7 +30,7 @@ rev:
                           invalid_query,
                           caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
                           title_testproject_management,notes,color,enable_priority, enable_automation,
-                          enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'}
+                          public,enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'}
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
@@ -151,6 +152,11 @@ function validateForm(f)
 			<tr><th style="background:none;">{$labels.th_active}</th>
 			    <td>
 			    <input type="checkbox" name="active" {if $active eq 1} checked="checked"	{/if} />
+			    </td>
+      </tr>
+			<tr><th style="background:none;">{$labels.public}</th>
+			    <td>
+			    <input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked"	{/if} />
 			    </td>
       </tr>
 

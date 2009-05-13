@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.14 2008/12/30 13:34:40 franciscom Exp $
+$Id: projectView.tpl,v 1.15 2009/05/13 05:55:49 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
@@ -25,7 +25,7 @@ Rev :
 
 {lang_get var="labels" s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
                           th_name,th_notes,testproject_alt_edit,testproject_alt_active,
-                          th_requirement_feature,testproject_alt_delete,btn_create,
+                          th_requirement_feature,testproject_alt_delete,btn_create,public,
                           testproject_alt_requirement_feature,th_active,th_delete,th_id'}
 
 
@@ -54,6 +54,7 @@ var del_action=fRoot+'{$deleteAction}';
 			<th>{$sortHintIcon}{$labels.tcase_id_prefix}</th>
 			<th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
 			<th class="icon_cell">{$labels.th_active}</th>
+			<th class="icon_cell">{$labels.public}</th>
 			{if $canManage == "yes"}
 			<th class="icon_cell">{$labels.th_delete}</th>
 			{/if}
@@ -96,6 +97,17 @@ var del_action=fRoot+'{$deleteAction}';
   					&nbsp;
   				{/if}
 			</td>
+			<td class="clickable_icon">
+				{if $testproject.is_public eq 1}
+  					<img style="border:none"
+  				            title="{$labels.public}"
+  				            alt="{$labels.public}"
+  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
+  				{else}
+  					&nbsp;
+  				{/if}
+			</td>
+
 			{if $canManage == "yes"}
 			<td class="clickable_icon">
 				  <img style="border:none;cursor: pointer;"

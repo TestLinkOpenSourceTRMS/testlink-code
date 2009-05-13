@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.106 $
- * @modified $Date: 2009/05/07 08:26:56 $  $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2009/05/13 05:55:49 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090512 - franciscom - added setPublicStatus()
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
  *                                      getFreeTestCases()
  *         
@@ -110,7 +111,9 @@ class testproject extends tlObjectWithAttachments
  * @param string $notes
  * [@param boolean $active [1,0] ]
  * [@param string $tcasePrefix [''] ]
-  *
+ * [@param boolean $is_public [1,0] ]
+ *
+ *
  * @return everything OK -> test project id
  *         problems      -> 0 (invalid node id)
  *
@@ -119,7 +122,7 @@ class testproject extends tlObjectWithAttachments
  *                         added new optional argument active
  *
  */
-function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
+function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 {
   
 	// Create Node and get the id
@@ -127,15 +130,15 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
 	$tcprefix=$this->formatTcPrefix($tcasePrefix);
 
 	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority," .
-	       "option_automation,notes,active,prefix) VALUES (" . $root_node_id . ", '" .
+	       " option_automation,notes,active,is_public,prefix) " .
+	       " VALUES (" . $root_node_id . ", '" .
 	                     $this->db->prepare_string($color) . "'," .
 	                     $options->requirement_mgmt . "," .
 	                     $options->priority_mgmt . "," .
 	                     $options->automated_execution . ",'" .
 		                 $this->db->prepare_string($notes) . "'," .
-		                 $active . ",'" .
+		                 $active . "," . $is_public . ",'" .
 		                 $this->db->prepare_string($tcprefix) . "')";
-
 	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
@@ -162,10 +165,10 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
-function update($id, $name, $color, $opt_req, $optPriority, $optAutomation, $notes,$active=null,$tcasePrefix=null)
+function update($id, $name, $color, $opt_req, $optPriority, $optAutomation, 
+                $notes,$active=null,$tcasePrefix=null,$is_public=null)
 {
-  $status_ok=1;
-
+    $status_ok=1;
 	$status_msg = 'ok';
 	$log_msg = 'Test project ' . $name . ' update: Ok.';
 	$log_level = 'INFO';
@@ -174,6 +177,11 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation, $not
 	if( !is_null($active) )
 	{
 	    $add_upd .=',active=' . (intval($active) > 0 ? 1:0);
+	}
+
+	if( !is_null($is_public) )
+	{
+	    $add_upd .=',is_public=' . (intval($is_public) > 0 ? 1:0);
 	}
 
 	if( !is_null($tcasePrefix) )
@@ -754,6 +762,16 @@ function count_testcases($id)
   	return ($ret);
   }
 
+/** 
+ * @param integer $id test project ID
+ */
+function setPublicStatus($id,$status)
+{
+    $isPublic = val($status) > 0 ? 1 : 0; 
+	$sql = "UPDATE testprojects SET is_public={$isPublic} WHERE id={$id}";
+	$result = $this->db->exec_query($sql);
+	return $result ? 1 : 0;
+}
 
 
 
@@ -1581,7 +1599,6 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
     $keyword_filter= '' ;
     $subquery='';
     
-    //echo $keyword_filter_type;
     if( is_array($keyword_id) )
     {
         $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	

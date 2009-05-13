@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/05/11 20:39:26 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -50,6 +50,7 @@ function init_args()
 	$iParams = array("id" => array(tlInputParameter::STRING_N,0,50));
 	$args = new stdClass();
 	$pParams = P_PARAMS($iParams,$args);
+
 	return $args;
 }
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/05/13 12:20:54 $ by $Author: havlat $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -705,7 +705,7 @@ function checkServerOs()
 	$final_msg = '<tr><td>Server Operating System (no constrains)</td>';
 	$final_msg .= '<td>'.PHP_OS.'</td></tr>';
 	
-	return ($final_msg);
+	return $final_msg;
 }  
 
 

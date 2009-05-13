@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: staticPage.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/05/13 05:54:55 $  $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/05/13 16:31:39 $  $Author: schlundus $
  * @author 	Martin Havlat
  *
  * manage launch of static pages (help, instructions).
@@ -32,7 +32,7 @@ if ($pageKey == "")
 	
 // link appropriate definition file and default to en_GB if not present in the current language
 $locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : $tlCfg->default_language;
-$language=(file_exists('../../locale/' . $locale . '/texts.php')) ? $locale : 'en_GB';
+$language = (file_exists('../../locale/' . $locale . '/texts.php')) ? $locale : 'en_GB';
 include('../../locale/'. $language .'/texts.php');
 
 if (isset($TLS_htmltext[$pageKey]))

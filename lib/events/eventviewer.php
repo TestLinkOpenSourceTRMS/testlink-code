@@ -5,12 +5,9 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/05/11 20:39:26 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
  *
- * rev: 20090511 - franciscom - fixed typo bug
- *      20081029 - franciscom - added 'clear' action to delete all events and transactions
- *                              present on database.
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -46,7 +43,7 @@ switch($args->doAction)
 	    	if (!$startTime)
 	    	{
 	    		$startTime = null;
-	    	}	
+	    	}
 	    }
 	    if ($args->endDate != "")
 	    {
@@ -54,7 +51,7 @@ switch($args->doAction)
 	    	if (!$endTime)
 	    	{
 	    		$endTime = null;
-	    	}	
+	    	}
 	    }
     	break;
 }
@@ -107,6 +104,7 @@ function checkRights(&$db,&$user)
 	{
 		return $user->hasRight($db,'events_mgt');
 	}
+
 	return true;
 }
 ?>

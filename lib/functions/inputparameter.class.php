@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/05/11 20:37:42 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
  * 
 **/
 
@@ -28,6 +28,7 @@ class tlInputParameter extends tlObject
 	//array of normalized strings
 	const ARRAY_STRING_N = 5;
 	// PLEASE COMMENT THIS -----------------------------
+	//checkbox boolean
 	const CB_BOOL = 6;
 	
 	/**
@@ -387,7 +388,7 @@ class tlIntegerValidationInfo
 	 */
 	public function validate($value)
 	{
-	    $msg='Input parameter validation failed';
+	    $msg = 'Input parameter validation failed';
 		if (!is_numeric($value))
 		{
 			throw new Exception("{$msg} [numeric: " . htmlspecialchars($value)."]");
@@ -397,7 +398,7 @@ class tlIntegerValidationInfo
 		if ($value < $minVal)
 		{
 			throw new Exception("{$msg} [minVal: " . htmlspecialchars($value) . " = {$minVal}]");
-		}		
+		}
 		$maxVal = $this->maxVal;
 		if ($value > $maxVal)
 		{
@@ -462,14 +463,14 @@ class tlArrayValidationInfo
 
 
 /**
- * Helper class for validating Arrays ->  WRONG COMMENT CheckBox or ARRAY
+ * Helper class for validating Checkbox submitted via POST/GET ->  WRONG COMMENT CheckBox or ARRAY
  *
  */
 class tlCheckBoxValidationInfo
 {
 	/**
-	 * @param array $valueArray the array which should be normalized
-	 * @return array returns the normalized array-typed value
+	 * @param string $value the value which should be normalized
+	 * @return array returns the normalized bool-typed value, true if value == on, false else
 	 */
 	public function normalize($value)
 	{
@@ -479,25 +480,24 @@ class tlCheckBoxValidationInfo
 			if ($value == "on")
 			{
 				$value = true;
-			}	
+			}
 		}
 		else
 		{
 			$value = false;
-		}	
+		}
 		return $value;
 	}
 	
 	/**
 	 * Humm!!! this seems a beatiful Copy and Paste that has produced an wrong comment.
 	 * TODO -> write right comment
-	 * @param array $valueArray the array of values which should be validated
-	 * @return bool return true if the array was successfully validated, else throws an Exception
+	 * @param boolean $value the value which should be validated
+	 * @return bool returns true if the valie was successfully validated, else throws an Exception
 	 */
 	public function validate($value)
 	{
-	    $ret=($value === true || $value === false) ? true : false;
-		return $ret;
+	    return ($value === true || $value === false);
 	}
 }
 ?>

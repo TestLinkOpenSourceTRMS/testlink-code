@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/05/11 20:37:42 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
  * 
 **/
 require_once("object.class.php");
@@ -39,7 +39,6 @@ function GPR_PARAMS($source,$paramInfo,&$args = null)
 function I_PARAMS($paramInfo,&$args = null)
 {
 	$params = null;
-	// echo 'uuu'; print_r($paramInfo);
 	foreach($paramInfo as $pName => $info)
 	{
 		$source = $info[0];
@@ -91,10 +90,10 @@ function I_PARAMS($paramInfo,&$args = null)
 				break;
 		}
 		$params[$pName] = $value;
-		if(!is_null($args))
+		if ($args)
 		{
 			$args->$pName = $value;
-		}	
+		}
 	}
 	return $params;
 }
@@ -107,7 +106,7 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
 	$vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
 	$vInfo->bStripSlashes = true;
 
-    $items2check=array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
+    $items2check = array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
     foreach($items2check as $item)
     {
         if (!is_null($$item))
@@ -128,7 +127,7 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 {
 	$vInfo = new tlIntegerValidationInfo();
 
-    $items2check=array("minVal","maxVal","pfnValidation");
+    $items2check = array("minVal","maxVal","pfnValidation");
     foreach($items2check as $item)
     {
         if (!is_null($$item))
@@ -174,7 +173,7 @@ function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 	else
 	{
 		$vInfo->validationInfo = new tlIntegerValidationInfo();
-	}	
+	}
 	$pInfo = new tlParameterInfo();
 	$pInfo->source = $gpr;
 	$pInfo->name = $name;

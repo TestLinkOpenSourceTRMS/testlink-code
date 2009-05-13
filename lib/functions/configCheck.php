@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/05/13 12:20:54 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
@@ -70,6 +70,7 @@ function get_home_url()
   }
 }
 
+
 /** check language acceptance by web client */
 function checkServerLanguageSettings($defaultLanguage)
 {
@@ -81,17 +82,14 @@ function checkServerLanguageSettings($defaultLanguage)
 	if(false !== $serverLanguage)
 	{
 		if (array_key_exists($serverLanguage,$g_locales))
-		{
 			$language = $serverLanguage;
-		}	
 	}
 
 	return ($language);
 }
 
 
-
-/** check if we need to run the install program */
+/** Check if we need to run the install program. Used on login.php and index.php */
 function checkConfiguration()
 {
 	clearstatcache();
@@ -108,7 +106,7 @@ function checkConfiguration()
 /** 
  * checks if installation is done
  * @return bool returns true if the installation was already executed, false else
- * @version 1.0
+ * @version 1.1
  * @author Martin Havlat
  **/
 function checkInstallStatus()
@@ -123,7 +121,7 @@ function checkInstallStatus()
  *
  * @return string resulted message ('OK' means pass)
  * @author Martin Havlat 
- * @version 1.0
+ * @version 1.1
  **/
 function checkLibGd()
 {
@@ -132,9 +130,7 @@ function checkLibGd()
 		$arrLibConf = gd_info();
 		$msg = lang_get("error_gd_png_support_disabled");
 		if ($arrLibConf["PNG Support"])
-		{
 			$msg = 'OK';
-		}
 	}
 	else
 	{
@@ -195,7 +191,6 @@ function checkForInstallDir()
  *
  * @return bool returns true if the default password for the admin account is set, 
  * 				false else
- *
  * @version 1.0
  * @author Andreas Morsing 
  **/
@@ -353,6 +348,20 @@ function checkForBTSConnection()
 	return $status_ok; 
 }
 
+/** 
+ * Check if server OS is comercional one 
+ * @return boolean TRUE if mikrosoft
+ * @author havlatm
+ * @version 1.0
+ */ 
+function isServerMswind()
+{
+	$os_id = strtoupper(substr(PHP_OS, 0, 3));
+	if( strcmp('WIN',$os_id) == 0 )
+		return TRUE;
+	else
+		return FALSE;
+}
 
 /*
   function: checkForRepositoryDir
@@ -363,73 +372,64 @@ function checkForRepositoryDir($the_dir)
 {
 	clearstatcache();
 
-  $ret['msg']=lang_get('attachments_dir') . " " . $the_dir . " ";
-              
-  $ret['status_ok']=false;
+	$ret['msg']=lang_get('attachments_dir') . " " . $the_dir . " ";
+	$ret['status_ok']=false;
   	
-  if(is_dir($the_dir)) 
-  {
-  	$ret['msg'] .= lang_get('exists');
-    $ret['status_ok']=true;
+	if(is_dir($the_dir)) 
+	{
+		$ret['msg'] .= lang_get('exists');
+		$ret['status_ok'] = false;
 
-    // There is a note on PHP manual that points that on windows
-    // is_writable() has problems => need a workaround
+		// There is a note on PHP manual that points that on windows
+		// is_writable() has problems => need a workaround
+		/** @TODO verify if it's valid for PHP5 */
     
-    /*
-    */
-    //echo substr(sprintf('%o', fileperms($the_dir)), -4);
+	    //echo substr(sprintf('%o', fileperms($the_dir)), -4);
     
-    $os_id = strtoupper(substr(PHP_OS, 0, 3));
-    if( strcmp('WIN',$os_id) == 0 )
-    {
-      $test_dir= $the_dir . '/requirements/';
-      if(!is_dir($test_dir))
-      {
-        // try to make the dir
-        $stat = @mkdir($test_dir);
-        if( $stat )
-        {
-      	    $ret['msg'] .= lang_get('directory_is_writable');
-        }
-        else
-        {
-            $ret['msg'] .= lang_get('but_directory_is_not_writable');
-            $ret['status_ok']=false;
-        }
-      }
-    }
-    else
-    {
-        if(is_writable($the_dir)) 
-        {
-      	    $ret['msg'] .= lang_get('directory_is_writable');
-      	}
-        else
-        {
-      	    $ret['msg'] .= lang_get('but_directory_is_not_writable');
-            $ret['status_ok']=false;
-        }
-    }
-    
-  } 
-  else
-  {
-    $ret['msg'] .= lang_get('does_not_exist');
-  }
-  return($ret);
+		if( isServerMswind() )
+		{
+			$test_dir= $the_dir . '/requirements/';
+			if(is_dir($test_dir))
+/** @TODO check this code */
+//				$test_dir= $the_dir . '/'.datetime().'/';
+			// try to make the dir
+			if( @mkdir($test_dir) )
+	        	$ret['status_ok'] = true;
+	        	// todo delete
+		}
+		else
+		{
+			if(is_writable($the_dir)) 
+	        	$ret['status_ok'] = true;
+    	}
+
+		if($ret['status_ok']) 
+		{
+   	    	$ret['msg'] .= lang_get('directory_is_writable');
+   		}
+       	else
+   	    	$ret['msg'] .= lang_get('but_directory_is_not_writable');
+	} 
+	else
+	{
+		$ret['msg'] .= lang_get('does_not_exist');
+	}
+	
+	return($ret);
 }
 
 
-/*
-  function: checkSchemaVersion
-  args :
-  returns: 
-*/
+/**
+ * Check if DB schema is valid
+ * 
+ * @todo Update list of versions
+ * @param pointer $db Database class
+ * @version 1.1
+ * @return string message
+ */
 function checkSchemaVersion(&$db)
 {
-	$last_version = 'DB 1.2';  // 20080102 - franciscom
-	// $last_version = 'DB 1.1';
-	// 1.7.0 RC 3';
+	$last_version = 'DB 1.3';  // havlatm: updated for 1.9
 	
 	$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
 	$res = $db->exec_query($sql,1);  
@@ -449,6 +449,7 @@ function checkSchemaVersion(&$db)
 		case '1.7.0 RC 2':
 		case '1.7.0 RC 3':
 		case 'DB 1.1':
+		case 'DB 1.2':
 			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
 				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
 				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
@@ -704,19 +705,6 @@ function checkServerOs()
 	$final_msg = '<tr><td>Server Operating System (no constrains)</td>';
 	$final_msg .= '<td>'.PHP_OS.'</td></tr>';
 	
-/*
-$os_id = strtoupper(substr(PHP_OS, 0, 3));
-if( strcmp('WIN',$os_id) == 0 )
-{
-  $final_msg .= "<p><center><span class='notok'>" . 
-  	            "Warning!: You are using a M$ Operating System, " .
-  	            "be careful with authentication problems <br>" .
-  	            "          between PHP 4 and the new MySQL 4.1.x passwords<br>" . 
-  	            'Read this <A href="' . $info_location . 'MySQL-RefManual-A.2.3.pdf">' .
-  	            "MySQL - A.2.3. Client does not support authentication protocol</A>" .
-  	            "</span></center><p>";
-}*/
-
 	return ($final_msg);
 }  
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.108 $
- * @modified $Date: 2009/05/14 18:39:53 $  $Author: schlundus $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2009/05/14 19:01:57 $  $Author: schlundus $
  * @author franciscom
  *
  * 20090512 - franciscom - added setPublicStatus()
@@ -708,12 +708,12 @@ function count_testcases($id)
   function formatTcPrefix($str)
   {
 	    // limit tcasePrefix len.
-	    $fstr=trim($str);
-	    if(strlen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
+	    $fstr = trim($str);
+	    if(tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
 	    {
-	      $tcprefix=substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
+			$tcprefix = substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
 	    }
-      return $fstr;
+		return $fstr;
   }
 
   /*

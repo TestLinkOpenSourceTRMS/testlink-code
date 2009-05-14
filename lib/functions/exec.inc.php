@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/03/25 20:53:15 $ $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/05/14 19:01:57 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -74,7 +74,7 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 	$db_now = $db->db_now();
 	$cfield_mgr=New cfield_mgr($db);
   $cf_prefix=$cfield_mgr->get_name_prefix();
-	$len_cfp=strlen($cf_prefix);
+	$len_cfp=tlStringLen($cf_prefix);
   $cf_nodeid_pos=4;
   $bulk_notes='';
 	

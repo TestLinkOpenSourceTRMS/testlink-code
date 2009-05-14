@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/05/14 18:39:53 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/05/14 19:01:57 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
 require_once('keyword.class.php');
@@ -67,7 +67,7 @@ $smarty->assign('import_type_selected',$args->importType);
 $smarty->assign('msg',$msg);  
 $smarty->assign('keywordFormatStrings',$formatStrings);
 $smarty->assign('importTypes',$importTypes);
-$smarty->assign('tproject_name', $args->tproject_name);
+$smarty->assign('tproject_name', $args->testproject_name);
 $smarty->assign('tproject_id', $args->testproject_id);
 $smarty->assign('importLimit',TL_IMPORT_LIMIT);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

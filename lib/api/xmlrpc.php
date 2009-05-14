@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/05/14 18:39:53 $ by $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/05/14 19:01:57 $ by $Author: schlundus $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2671,12 +2671,12 @@ class TestlinkXMLRPCServer extends IXR_Server
           }
           
           // does this specification have requirements ?
-          $my_requirements=$this->tprojectMgr->tree_manager->get_subtree_list($req_spec_id,$nodes_types['requirement']);
-          
-          if( !($status_ok= strlen(trim($my_requirements)) > 0) )
+          $my_requirements = $this->tprojectMgr->tree_manager->get_subtree_list($req_spec_id,$nodes_types['requirement']);
+          $status_ok = (trim($my_requirements) != "");
+          if(!$status_ok)
           {
               $msg = sprintf(REQSPEC_IS_EMPTY_STR,$reqspec_info['title'],$req_spec_id);
-              $error_code=REQSPEC_IS_EMPTY;
+              $error_code = REQSPEC_IS_EMPTY;
               break;
           }
           

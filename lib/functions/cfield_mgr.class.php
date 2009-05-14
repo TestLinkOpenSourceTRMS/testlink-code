@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/04/29 21:23:06 $  $Author: havlat $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/05/14 19:01:57 $  $Author: schlundus $
  * @author franciscom
  *
  * 20090426 - franciscom - new method getSizeLimit()
@@ -695,7 +695,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 			}
 			
 			$counterId = $input_name . '_counter';
-			$cf_current_size = self::TEXTAREA_MAX_SIZE - strlen($t_custom_field_value);
+			$cf_current_size = self::TEXTAREA_MAX_SIZE - tlStringLen($t_custom_field_value);
 			// call JS function for check max. size (255) from validate.js
 			$js_function = '"textCounter(this.form.' . $input_name . ',document.getElementById(\''.
 					$counterId.'\'),'.self::TEXTAREA_MAX_SIZE.');" ';
@@ -807,7 +807,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
         $result = $this->db->exec_query($sql);
 
-        if( $this->max_length_value > 0 && strlen($value) > $this->max_length_value)
+        if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);
         }
@@ -1548,7 +1548,7 @@ function name_is_unique($id,$name)
       {
         $value = $type_and_value['cf_value'];
 
-        if( $this->max_length_value > 0 && strlen($value) > $this->max_length_value)
+        if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);
         }
@@ -1620,7 +1620,7 @@ function name_is_unique($id,$name)
                                     'second' => true);
 
     $cf_prefix=$this->name_prefix;
-    $len_cfp=strlen($cf_prefix);
+    $len_cfp = tlStringLen($cf_prefix);
     $cftype_pos=2;
     $cfid_pos=3;
     $cfield=null;
@@ -1958,7 +1958,7 @@ function getXMLServerParams($node_id)
 
         $result = $this->db->exec_query($sql);
 
-        if( $this->max_length_value > 0 && strlen($value) > $this->max_length_value)
+        if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);
         }

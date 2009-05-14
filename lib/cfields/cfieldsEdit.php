@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/05/04 14:12:00 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/05/14 19:01:57 $ by $Author: schlundus $
  *
  * rev: 20090503 - franciscom - BUGID 2425
  *      20090408 - franciscom - BUGID 2352, BUGID 2359
@@ -158,7 +158,7 @@ function request2cf($hash)
                         'possible_values' => ' ' );
 
 	$cf_prefix = 'cf_';
-	$len_cfp = strlen($cf_prefix);
+	$len_cfp = tlStringLen($cf_prefix);
 	$start_pos = $len_cfp;
 	$cf = array();
 	foreach($hash as $key => $value)

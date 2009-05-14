@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2009/05/03 14:33:39 $ - $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2009/05/14 19:01:57 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20090503 - franciscom - bug in read_file()
@@ -1163,7 +1163,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
     } //foreach($cf_map
   }
   
-  if( strlen(trim($cf_smarty)) > 0 )
+  if(trim($cf_smarty) != "")
   {
     $cf_smarty = "<table>" . $cf_smarty . "</table>";
   }
@@ -1229,8 +1229,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
         }
       }
     }
-    // 20090329
-	if(strlen(trim($cf_smarty)) > 0 && $add_table)
+    if((trim($cf_smarty) != "") && $add_table)
 	{
 		 $cf_smarty = "<table {$table_style}>" . $cf_smarty . "</table>";
 	}

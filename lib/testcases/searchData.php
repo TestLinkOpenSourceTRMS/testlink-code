@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.42 2009/04/30 18:46:36 schlundus Exp $
+ * $Id: searchData.php,v 1.43 2009/05/14 18:39:53 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -166,7 +166,6 @@ function init_args()
     foreach($strnull as $keyvar)
     {
         $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
-        $args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? trim($args->$keyvar) : null;
     }
 
     $int0 = array('keyword_id','version','custom_field_id');

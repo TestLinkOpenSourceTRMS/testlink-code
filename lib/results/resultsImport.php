@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/03/29 14:10:01 $  by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/05/14 18:39:53 $  by $Author: schlundus $
 
  * @author - Kevin Levy
  *
@@ -43,7 +43,7 @@ $gui->buildID=$args->buildID;
 $gui->file_check=array('status_ok' => 1, 'msg' => 'ok');
 $gui->importTypes=array("XML" => "XML");
 $gui->importLimit=(TL_IMPORT_LIMIT / 1024);
-$gui->doImport=strlen($args->importType) > 0;
+$gui->doImport = ($args->importType != "");
 $gui->testprojectName=$args->testprojectName;
 
 
@@ -188,7 +188,7 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
         $tester_id=$checks['tester_id'];
 		    
         // external_id has precedence over internal id
-        $using_external_id=(strlen($tcase_external_id) > 0);
+        $using_external_id = ($tcase_external_id != "");
 	  } 
 	  else
 	  {
@@ -427,7 +427,7 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues)
 		$tcase_external_id=trim($execValues['tcase_external_id']);
 		
     // external_id has precedence over internal id
-    $using_external_id=(strlen($tcase_external_id) > 0);
+    $using_external_id = ($tcase_external_id != "");
     if($using_external_id)
     {
         // need to get internal id  

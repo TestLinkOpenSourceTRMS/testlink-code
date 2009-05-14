@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/05/14 18:39:53 $ by $Author: schlundus $
  * 
 **/
 require_once("object.class.php");
@@ -194,33 +194,4 @@ function GPR_PARAM_CB_BOOL($gpr,$name)
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
-
-
-/*
-function check($value)
-{
-	if (strlen($value) != 4)
-		return false;
-	return true;
-}
-function norm($value)
-{
-	return str_replace("b","",$value);
-}
-$_POST["HelloInt"] = "a5";
-$_POST["Hello"] = utf8_encode("xabbababa");
-//$iParam = P_PARAM_INT("HelloInt",null,null,"check");
-//$iParam = P_PARAM_INT_N("HelloInt",null,"check");
-$_POST["Hello"] = utf8_encode("abbababa");
-$iParam = P_PARAM_STRING_N("Hello",1,15,null,"check","norm");
-$_POST["Hello"] = utf8_encode("aaaa");
-$iParam = P_PARAM_STRING_N("Hello",1,15,'/^aaaa$/');
-$iParam = P_PARAM_INT("HelloInt");
-
-$params = array(
-	"Hello" => array("POST",tlInputParameter::STRING_N,1,15,null,"check","norm"),
-	"HelloInt" => array("POST",tlInputParameter::INT_N),
-);
-var_dump(I_PARAMS($params));
-*/
 ?>

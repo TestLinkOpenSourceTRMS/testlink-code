@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/05/02 09:06:41 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/05/14 18:39:53 $ by $Author: schlundus $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1210,10 +1210,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 			$notes = $this->dbObj->prepare_string($this->args[self::$noteParamName]);
 		}
 		
-		if( strlen(trim($notes)) > 0 )
+		if(trim($notes) != "")
 		{
-		    $notes_field=",notes";
-		    $notes_value=", '{$notes}'";  
+		    $notes_field = ",notes";
+		    $notes_value = ", '{$notes}'";  
 		}
 		
 		$execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
@@ -2233,24 +2233,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @access private
 	 */
-	 private function getValidKeywordSetByName($keywords,$tproject_id)
-   { 
-      $keywordSet='';
-      $keywords=trim($keywords);
-      if(strlen(trim($keywords)))
-	    {
-	         $a_keywords = explode(",",$keywords);
-	         $items_qty = count($a_keywords);
-	         for($idx=0; $idx < $items_qty; $idx++)
-	         {
-	             $a_keywords[$idx]=trim($a_keywords[$idx]);
-	         }
-	         $itemsSet=implode("','",$a_keywords);
+	private function getValidKeywordSetByName($keywords,$tproject_id)
+	{ 
+    	$keywordSet = '';
+		$keywords = trim($keywords);
+		if($keywords != "")
+	  	{
+	    	$a_keywords = explode(",",$keywords);
+	        $items_qty = count($a_keywords);
+	        for($idx = 0; $idx < $items_qty; $idx++)
+	        {
+	             $a_keywords[$idx] = trim($a_keywords[$idx]);
+	        }
+	        $itemsSet = implode("','",$a_keywords);
 	         $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
 	                " WHERE testproject_id = {$tproject_id} " .
 	                " AND keyword IN ('{$itemsSet}')";
 	         $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
-	         if( !is_null($keywordMap) )
+	         if(!is_null($keywordMap))
 	         {
 	             $a_items = null;
 	             for($idx=0; $idx < $items_qty; $idx++)
@@ -2276,11 +2276,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @access private
 	 */
+  //@TODO schlundus, seems like getValidKeywordSetById and getValidKeywordSetByName are simply a slighty variation
+  // with different SQL only !
   private function  getValidKeywordSetById($keywords,$tproject_id)
   {
-      $keywordSet='';
-      $keywords=trim($keywords);
-      if(strlen(trim($keywords)))
+      $keywordSet = '';
+      $keywords = trim($keywords);
+      if($keywords != "")
 	    {
 	         $a_keywords = explode(",",$keywords);
 	         $items_qty = count($a_keywords);

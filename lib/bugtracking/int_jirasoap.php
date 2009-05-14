@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jirasoap.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/05/13 09:35:39 $ $Author: amkhullar $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/05/14 19:01:57 $ $Author: schlundus $
  *
  * @author amitkhullar <amkhullar@gmail.com>
  *
@@ -352,21 +352,17 @@ class jirasoapInterface extends bugtrackingInterface
     function checkBugID($id)
     {
         $status_ok = 1;
-        if(strlen(trim($id)) == 0 )
+        if(trim($id) == "")
         {
             $status_ok = 0;
         }
-        if( $status_ok )
+        if($status_ok)
         {
-            $ereg_forbidden_chars='[!|£%&/()=?]';
+            $ereg_forbidden_chars = '[!|£%&/()=?]';
 
             if (eregi($ereg_forbidden_chars, $id))
             {
                 $status_ok = 0;
-            }
-            else
-            {
-                $status_ok = 1;
             }
         }
         return $status_ok;
@@ -389,10 +385,6 @@ class jirasoapInterface extends bugtrackingInterface
                 if ((stristr($issue_exists, "does not exist") == TRUE))
                 {
                     $status_ok = 0;
-                }
-                else
-                {
-                    $status_ok = 1;
                 }
             }
         }
@@ -437,7 +429,7 @@ class jirasoapInterface extends bugtrackingInterface
             {
                 $fp = fsockopen($url['host'], $url['port'], $errno, $errstr, 30);
 
-                if ( !$fp )
+                if (!$fp)
                 {
                     return false;
                 }

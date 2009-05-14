@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.107 $
- * @modified $Date: 2009/05/13 05:55:49 $  $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2009/05/14 18:39:53 $  $Author: schlundus $
  * @author franciscom
  *
  * 20090512 - franciscom - added setPublicStatus()
@@ -600,10 +600,10 @@ function count_testcases($id)
 	function checkName($name)
 	{
 		global $g_ereg_forbidden;
-		$ret['status_ok']=1;
-		$ret['msg']='ok';
+		$ret['status_ok'] = 1;
+		$ret['msg'] = 'ok';
 
-		if (!strlen($name))
+		if ($name == "")
 		{
 			$ret['msg'] = lang_get('info_product_name_empty');
 			$ret['status_ok'] = 0;
@@ -626,10 +626,10 @@ function count_testcases($id)
 	function checkNameSintax($name)
 	{
 		global $g_ereg_forbidden;
-		$ret['status_ok']=1;
-		$ret['msg']='ok';
+		$ret['status_ok'] = 1;
+		$ret['msg'] = 'ok';
 
-		if (!strlen($name))
+		if ($name == "")
 		{
 			$ret['msg'] = lang_get('info_product_name_empty');
 			$ret['status_ok'] = 0;
@@ -649,14 +649,14 @@ function count_testcases($id)
 	function checkNameExistence($name,$id=0)
 	{
 	   	$check_op['msg'] = '';
-		 	$check_op['status_ok'] = 1;
+		$check_op['status_ok'] = 1;
 		 	
-      if( $this->get_by_name($name,"testprojects.id <> {$id}") )
-      {
-          $check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
-		      $check_op['status_ok'] = 0;
-      }
-		  return $check_op;
+      	if($this->get_by_name($name,"testprojects.id <> {$id}") )
+      	{
+        	$check_op['msg'] = sprintf(lang_get('error_product_name_duplicate'),$name);
+		    $check_op['status_ok'] = 0;
+      	}
+		return $check_op;
 	}
 
 	/**
@@ -1321,29 +1321,29 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
   */
   function check_srs_title($testproject_id,$title,$ignore_case=0)
   {
-    $ret['status_ok']=1;
-    $ret['msg']='';
+    $ret['status_ok'] = 1;
+    $ret['msg'] = '';
 
-    $title=trim($title);
+    $title = trim($title);
 
-  	if (!strlen($title))
+  	if ($title == "")
   	{
-  	  $ret['status_ok']=0;
+		$ret['status_ok'] = 0;
   		$ret['msg'] = lang_get("warning_empty_req_title");
   	}
 
   	if($ret['status_ok'])
   	{
-  	  $ret['msg']='ok';
-      $rs=$this->get_srs_by_title($testproject_id,$title,$ignore_case);
-
-      if( !is_null($rs) )
-      {
-  		  $ret['msg']=lang_get("warning_duplicate_req_title");
-        $ret['status_ok']=0;
-  	  }
-  	}
-  	return($ret);
+	    $ret['msg'] = 'ok';
+		$rs = $this->get_srs_by_title($testproject_id,$title,$ignore_case);
+	
+	    if(!is_null($rs))
+	    {
+	    	$ret['msg'] = lang_get("warning_duplicate_req_title");
+	        $ret['status_ok'] = 0;
+	    }
+	}
+  	return $ret;
   }
 /* END REQUIREMENT RELATED */
 // ----------------------------------------------------------------------------------------

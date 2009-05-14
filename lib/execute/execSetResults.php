@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.123 $
- * @modified $Date: 2009/05/09 17:59:19 $ $Author: schlundus $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2009/05/14 18:39:53 $ $Author: schlundus $
  *
  * rev:
  *     20090426 - franciscom - bad initialization of grants due to unclear
@@ -57,7 +57,7 @@ $req_mgr = new requirement_mgr($db);
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $_SESSION['history_on'] = $gui->history_on;
 
-$do_show_instructions=(strlen($args->level) == 0 || $args->level=='testproject') ? 1 : 0;
+$do_show_instructions = ($args->level == "" || $args->level == 'testproject') ? 1 : 0;
 if ($do_show_instructions)
 {
     show_instructions('executeTest');
@@ -89,8 +89,8 @@ if($args->doExec == 1)
 		{
 			foreach($status_map as $key => $value)
 			{
-				$_REQUEST['status'][$key]=$value;  
-				$_REQUEST['notes'][$key]=$notes_map[$key];  
+				$_REQUEST['status'][$key] = $value;  
+				$_REQUEST['notes'][$key] = $notes_map[$key];  
 			} 
 		}
 	   
@@ -290,7 +290,7 @@ function init_args()
 	}
 
     // See details on: "When nullify filter_status - 20080504" in this file
-    if( strlen(trim($args->filter_status)) == 0 or $args->level == 'testcase')
+    if(trim($args->filter_status) || $args->level == 'testcase')
     {
         $args->filter_status = null;  
     }
@@ -299,8 +299,7 @@ function init_args()
         $args->filter_status = unserialize($args->filter_status);
     }
     
-    // 20081221 - franciscom
-    if( strlen(trim($args->filter_assigned_to)) == 0 )
+    if(trim($args->filter_assigned_to) == "")
     {
         $args->filter_assigned_to = null;  
     }
@@ -572,7 +571,7 @@ function do_remote_execution(&$db,$tc_versions)
 		if($executionResults){
 			$myResult = $executionResults[$tcase_id]['result'];
 			$myNotes = $executionResults[$tcase_id]['notes'];
-			if ($myResult != -1 and $myNotes != -1) {
+			if ($myResult != -1 && $myNotes != -1) {
 				$db_now = $db->db_now();
 				$my_notes = $db->prepare_string(trim($myNotes));
 				$my_result = strtolower($myResult);

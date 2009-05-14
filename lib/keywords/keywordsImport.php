@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2008/12/13 23:47:01 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/05/14 18:39:53 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
 require_once('keyword.class.php');
@@ -18,26 +18,19 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
-$fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
-$source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;
-$bUpload = isset($_REQUEST['UploadFile']) ? 1 : 0;
+$args = init_args();
 
-$importType = isset($_POST['importType']) ? $_POST['importType'] : null;
-$location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
+$dest = TL_TEMP_PATH . session_id()."-importkeywords.".$args->importType;
 
-$testproject_id = $_SESSION['testprojectID'];
-$tproject_name = $_SESSION['testprojectName'];
-$dest = TL_TEMP_PATH . session_id()."-importkeywords.".$importType;
-
-$msg = getFileUploadErrorMessage($fInfo);
-if(!$msg && $bUpload)
+$msg = getFileUploadErrorMessage($args->fInfo);
+if(!$msg && $args->UploadFile)
 {
-	if(($source != 'none') && ($source != ''))
+	if(($args->source != 'none') && ($args->source != ''))
 	{ 
-		if (move_uploaded_file($source, $dest))
+		if (move_uploaded_file($args->source, $dest))
 		{
 			$pfn = null;
-			switch($importType)
+			switch($args->importType)
 			{
 				case 'iSerializationToCSV':
 					$pfn = "importKeywordsFromCSV";
@@ -49,7 +42,7 @@ if(!$msg && $bUpload)
 			if($pfn)
 			{
 				$tproject = new testproject($db);
-				$result = $tproject->$pfn($testproject_id,$dest);
+				$result = $tproject->$pfn($args->testproject_id,$dest);
 				@unlink($dest);
 				if ($result != tl::OK)
 					$msg = lang_get('wrong_keywords_file'); 
@@ -70,14 +63,36 @@ $importTypes = $tlKeyword->getSupportedSerializationInterfaces();
 $formatStrings = $tlKeyword->getSupportedSerializationFormatDescriptions();
 			
 $smarty = new TLSmarty();
-$smarty->assign('import_type_selected',$importType);
+$smarty->assign('import_type_selected',$args->importType);
 $smarty->assign('msg',$msg);  
 $smarty->assign('keywordFormatStrings',$formatStrings);
 $smarty->assign('importTypes',$importTypes);
-$smarty->assign('tproject_name', $tproject_name);
-$smarty->assign('tproject_id', $testproject_id);
+$smarty->assign('tproject_name', $args->tproject_name);
+$smarty->assign('tproject_id', $args->testproject_id);
 $smarty->assign('importLimit',TL_IMPORT_LIMIT);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+function init_args()
+{
+	$iParams = array(
+			"UploadFile" => array(tlInputParameter::STRING_N,0,1),
+			"importType" => array(tlInputParameter::STRING_N,0,100),
+		);
+	$args = new stdClass();
+		
+	$pParams = P_PARAMS($iParams,$args);
+
+	$args->UploadFile = ($args->UploadFile != "") ? 1 : 0; 
+	
+	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->testproject_name = $_SESSION['testprojectName'];
+
+	$args->fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
+	$args->source = isset($args->fInfo['tmp_name']) ? $args->fInfo['tmp_name'] : null;
+
+	return $args;
+}
 
 function checkRights(&$db,&$user)
 {

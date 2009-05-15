@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/05/15 17:42:50 $ by $Author: franciscom $
  * 
 **/
 
@@ -17,7 +17,7 @@
 class tlInputParameter extends tlObject
 {
 	//the supported types of Input parameters
-	//int
+	// integer
 	const INT = 1;
 	//non-negative integer
 	const INT_N = 2;
@@ -27,7 +27,6 @@ class tlInputParameter extends tlObject
 	const ARRAY_INT = 4;
 	//array of normalized strings
 	const ARRAY_STRING_N = 5;
-	// PLEASE COMMENT THIS -----------------------------
 	//checkbox boolean
 	const CB_BOOL = 6;
 	
@@ -463,7 +462,7 @@ class tlArrayValidationInfo
 
 
 /**
- * Helper class for validating Checkbox submitted via POST/GET ->  WRONG COMMENT CheckBox or ARRAY
+ * Helper class for validating Checkbox submitted via POST/GET 
  *
  */
 class tlCheckBoxValidationInfo
@@ -490,8 +489,6 @@ class tlCheckBoxValidationInfo
 	}
 	
 	/**
-	 * Humm!!! this seems a beatiful Copy and Paste that has produced an wrong comment.
-	 * TODO -> write right comment
 	 * @param boolean $value the value which should be validated
 	 * @return bool returns true if the valie was successfully validated, else throws an Exception
 	 */

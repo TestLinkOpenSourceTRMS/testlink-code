@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.13 2008/09/23 20:27:55 schlundus Exp $
+$Id: planEdit.tpl,v 1.14 2009/05/17 16:19:02 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+20090513 - franciscom - added is_public
 
 20070214 - franciscom -
 BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed
@@ -12,14 +13,14 @@ Bug confirmed on IE
 *}
 
 {lang_get var="labels"
-          s="warning,warning_empty_tp_name,testplan_title_edit,
+          s="warning,warning_empty_tp_name,testplan_title_edit,public,
              testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
              opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
-             testplan_txt_notes"}
+             show_event_history,testplan_txt_notes"}
 
 
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 {literal}
 <script type="text/javascript">
@@ -60,19 +61,19 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1 class="title">{$main_descr|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" user_feedback=$user_feedback
-         result=$sqlResult item="TestPlan" action="add"}
-
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 	{assign var='form_action' value='create'}
-	{if $tplan_id neq 0}
+	{if $gui->tplan_id neq 0}
 		<h2>
-		{$labels.testplan_title_edit} {$tpName|escape}
+		{$labels.testplan_title_edit} {$gui->testplan_name|escape}
 		{assign var='form_action' value='update'}
-		{if $mgt_view_events eq "yes"}
-			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$tplan_id}','testplans')" alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+		{if $gui->grants->mgt_view_events eq "yes"}
+			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
+			     onclick="showEventHistoryFor('{$gui->tplan_id}','testplans')" alt="{$labels.show_event_history}" 
+			     title="{$labels.show_event_history}"/>
 		{/if}
 		</h2>
 	{/if}
@@ -81,28 +82,28 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	      action="lib/plan/planEdit.php?action={$form_action}"
 	      onSubmit="javascript:return validateForm(this);">
 
-	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}" />
+	<input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
 	<table class="common" width="80%">
 
 		<tr><th style="background:none;">{$labels.testplan_th_name}</th>
 			<td><input type="text" name="testplan_name"
 			           size="{#TESTPLAN_NAME_SIZE#}"
 			           maxlength="{#TESTPLAN_NAME_MAXLEN#}"
-			           value="{$tpName|escape}"/>
+			           value="{$gui->testplan_name|escape}"/>
   				{include file="error_icon.tpl" field="testplan_name"}
 			</td>
 		</tr>
 		<tr><th style="background:none;">{$labels.testplan_th_notes}</th>
-			<td >{$notes}</td>
+			<td >{$gui->notes}</td>
 		</tr>
-		{if $tplan_id eq 0}
-			{if $tplans}
+		{if $gui->tplan_id eq 0}
+			{if $gui->tplans}
 				<tr><th style="background:none;">{$labels.testplan_question_create_tp_from}</th>
 				<td>
 				<select name="copy_from_tplan_id"
 				        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
 				<option value="0">{$labels.opt_no}</option>
-				{foreach item=testplan from=$tplans}
+				{foreach item=testplan from=$gui->tplans}
 					<option value="{$testplan.id}">{$testplan.name|escape}</option>
 				{/foreach}
 				</select>
@@ -114,25 +115,25 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 				</td>
 				</tr>
 			{/if}
-		{else}
+		{/if}
 			<tr>
 				<th style="background:none;">{$labels.testplan_th_active}</th>
-				<td>
-					<input type="checkbox" name="active"
-					{if $tpActive eq 1}
-						checked="checked"
-					{/if}
-					/>
-      			</td>
-      		</tr>
-		{/if}
+				  <td>
+					  <input type="checkbox" name="active" {if $gui->is_active eq 1}	checked="checked"	{/if}	/>
+      	  </td>
+      </tr>
+			<tr>
+				<th style="background:none;">{$labels.public}</th>
+				  <td>
+					  <input type="checkbox" name="is_public" {if $gui->is_public eq 1}	checked="checked"	{/if}	/>
+      	  </td>
+      </tr>
 
-	  {* 20070127 - franciscom *}
-	  {if $cf neq ''}
+	  {if $gui->cfields neq ''}
 	  <tr>
 	    <td  colspan="2">
      <div class="custom_field_container">
-     {$cf}
+     {$gui->cfields}
      </div>
 	    </td>
 	  </tr>
@@ -142,7 +143,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	<div class="groupBtn">
 
 		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
-		{if $tplan_id eq 0}
+		{if $gui->tplan_id eq 0}
 		  <input type="hidden" name="do_action" value="do_create" />
 		  <input type="submit" name="do_create" value="{$labels.btn_testplan_create}"
 		         onclick="do_action.value='do_create'"/>

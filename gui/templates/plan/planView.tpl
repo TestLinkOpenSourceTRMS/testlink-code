@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.18 2008/12/30 13:34:40 franciscom Exp $ 
+$Id: planView.tpl,v 1.19 2009/05/17 16:19:02 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -26,7 +26,7 @@ Rev:
 {lang_get var="labels" 
           s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
-          testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,
+          testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
           btn_testplan_create,th_id'}
 
 
@@ -45,16 +45,16 @@ var del_action=fRoot+'{$deleteAction}';
 
 <body {$body_onload}>
 
-<h1 class="title">{$main_descr|escape}</h1>
-{if $user_feedback ne ""}
+<h1 class="title">{$gui->main_descr|escape}</h1>
+{if $gui->user_feedback ne ""}
 	<div>
-		<p class="info">{$user_feedback}</p>
+		<p class="info">{$gui->user_feedback}</p>
 	</div>
 {/if}
 
 <div class="workBack">
 <div id="testplan_management_list">
-{if $tplans eq ''}
+{if $gui->tplans eq ''}
 	{$labels.testplan_txt_empty_list}
 
 {else}
@@ -63,9 +63,10 @@ var del_action=fRoot+'{$deleteAction}';
 			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
+			<th class="{$noSortableColumnClass}">{$labels.public}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
 		</tr>
-		{foreach item=testplan from=$tplans}
+		{foreach item=testplan from=$gui->tplans}
 		<tr>
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testplan.id}</span>
 			    <a href="{$editAction}{$testplan.id}"> 
@@ -91,6 +92,14 @@ var del_action=fRoot+'{$deleteAction}';
   				{/if}
 			</td>
 			<td class="clickable_icon">
+				{if $testplan.is_public eq 1} 
+  					<img style="border:none" title="{$labels.public}"  alt="{$labels.public}" 
+  				       src="{$checked_img}"/>
+  				{else}
+  					&nbsp;        
+  				{/if}
+			</td>
+			<td class="clickable_icon">
 				  <img style="border:none;cursor: pointer;" 
 				       alt="{$labels.testplan_alt_delete_tp}"
 					   title="{$labels.testplan_alt_delete_tp}" 
@@ -106,7 +115,7 @@ var del_action=fRoot+'{$deleteAction}';
 {/if}
 </div>
 
- {if $testplan_create}
+ {if $gui->grants->testplan_create}
  <div class="groupBtn">
     <form method="post" action="{$createAction}">
       <input type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />

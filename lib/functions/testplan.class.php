@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.111 $
- * @modified $Date: 2009/05/09 15:11:27 $ by $Author: franciscom $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2009/05/17 16:19:02 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -24,6 +24,8 @@
  * --------------------------------------------------------------------------------------
  * Revisions:
  *
+ *  20090516 - franciscom - BUGID - is_public
+ *                          create(),update() changed
  *  20090509 - franciscom - BUGID - build class manage release_date
  *  20090411 - franciscom - BUGID 2369 - link_tcversions() - interface changes
  *  20090214 - franciscom - BUGID 2099 - get_linked_tcversions() - added new columns in output recordset
@@ -133,15 +135,17 @@ class testplan extends tlObjectWithAttachments
                if problems -> 0.
 
 */
-function create($name,$notes,$testproject_id)
+function create($name,$notes,$testproject_id,$is_active=1,$is_public=1)
 {
 	$node_types=$this->tree_manager->get_available_node_types();
 	$tplan_id = $this->tree_manager->new_node($testproject_id,$node_types['testplan'],$name);
 
-	$sql = "INSERT INTO {$this->testplans_table} (id,notes,testproject_id)
-	        VALUES ( {$tplan_id} " . ", '" .
-	                 $this->db->prepare_string($notes) . "'," .
-	                 $testproject_id .")";
+    $active_status=intval($is_active) > 0 ? 1 : 0;
+    $public_status=intval($is_public) > 0 ? 1 : 0;
+    
+	$sql = "INSERT INTO {$this->testplans_table} (id,notes,testproject_id,active,is_public) " .
+	       " VALUES ( {$tplan_id} " . ", '" . $this->db->prepare_string($notes) . "'," . 
+	       $testproject_id . "," . $active_status . "," . $public_status . ")";
 	$result = $this->db->exec_query($sql);
 	$id = 0;
 	if ($result)
@@ -164,11 +168,11 @@ function create($name,$notes,$testproject_id)
   returns: 1 -> ok
            0 -> ko
 */
-function update($id,$name,$notes,$is_active)
+function update($id,$name,$notes,$is_active=null,$is_public=null)
 {
 	$do_update = 1;
 	$result = null;
-	$active = to_boolean($is_active);
+	// $active = to_boolean($is_active);
 	$name = trim($name);
 
 	// two tables to update and we have no transaction yet.
@@ -191,10 +195,19 @@ function update($id,$name,$notes,$is_active)
 
 		if($result)
 		{
-			$sql = "UPDATE {$this->testplans_table} " .
-					"SET active={$active}," .
-					"notes='" . $this->db->prepare_string($notes). "' " .
-					"WHERE id=" . $id;
+            $add_upd='';
+	        if( !is_null($is_active) )
+	        {
+	            $add_upd .=',active=' . (intval($is_active) > 0 ? 1 : 0);
+	        }
+	    	if( !is_null($is_public) )
+	        {
+	            $add_upd .=',is_public=' . (intval($is_public) > 0 ? 1:0);
+	        }
+		    
+			$sql = " UPDATE {$this->testplans_table} " .
+				   " SET notes='" . $this->db->prepare_string($notes). "' " .
+				   " {$add_upd} WHERE id=" . $id;
 			$result = $this->db->exec_query($sql);
 		}
 	}
@@ -2253,7 +2266,6 @@ function get_same_status_for_build_set($id,$buildSet,$status)
                " HAVING count(EE.status)= {$num_exec} " ;
     }
    
-    // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
     $recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
     return $recordset;
 }
@@ -2324,8 +2336,6 @@ class build_mgr
   	    $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
     $sql .= "{$active},{$open})"; 	                     
-
-    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
   	$new_build_id = 0;
   	$result = $this->db->exec_query($sql);

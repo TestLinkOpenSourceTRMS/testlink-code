@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/05/07 08:26:56 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/05/17 16:21:53 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090506 - franciscom - refactoring continued
+ * rev : 20090514 - franciscom - BUGID 2491
+ *       20090506 - franciscom - refactoring continued
  *       20090505 - franciscom - refactoring started.
  *                               removed use of REQ.node_order and title.
  *                               this fields must be managed on NH table
@@ -975,25 +976,25 @@ function get_linked_cfields($id,$parent_id=null)
 */
 function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
 {
-	$cf_smarty = '';
-  $cf_map = $this->get_linked_cfields($id,$parent_id);
-
-	if(!is_null($cf_map))
-	{
-		$cf_smarty = "<table>";
-		foreach($cf_map as $cf_id => $cf_info)
-		{
-      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
-
-			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
-				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
-						"</td></tr>\n";
-		}
-		$cf_smarty .= "</table>";
-
-	}
-
-	return $cf_smarty;
+    $NO_WARNING_IF_MISSING=true;
+    $cf_smarty = '';
+    $cf_map = $this->get_linked_cfields($id,$parent_id);
+    
+    if(!is_null($cf_map))
+    {
+    	$cf_smarty = "<table>";
+    	foreach($cf_map as $cf_id => $cf_info)
+    	{
+            $label=str_replace(TL_LOCALIZE_TAG,'',
+                               lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+    
+    		$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
+    			          $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
+    					  "</td></tr>\n";
+    	}
+    	$cf_smarty .= "</table>";
+    }
+    return $cf_smarty;
 }
 
 
@@ -1012,8 +1013,9 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
 */
 function html_table_of_custom_field_values($id)
 {
-	$cf_smarty = '';
+    $NO_WARNING_IF_MISSING=true;
 	$PID_NO_NEEDED = null;
+	$cf_smarty = '';
 
 	$cf_map = $this->get_linked_cfields($id,$PID_NO_NEEDED);
 
@@ -1024,7 +1026,8 @@ function html_table_of_custom_field_values($id)
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-				$label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+				$label = str_replace(TL_LOCALIZE_TAG,'',
+	                                 lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/05/07 08:26:56 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/05/17 16:21:53 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * rev: 
+ *      20090514 - franciscom - BUGID 2491
  *      20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
  *      20090322 - franciscom - create() - added node_order.
  *                              check_title() - improvements now manages test project id and parent id.
@@ -1035,24 +1036,24 @@ function get_linked_cfields($id,$tproject_id=null)
 */
 function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null,$name_suffix='')
 {
-	$cf_smarty = '';
-  $cf_map = $this->get_linked_cfields($id,$tproject_id);
+    $NO_WARNING_IF_MISSING=true;
+    $cf_smarty = '';
+    $cf_map = $this->get_linked_cfields($id,$tproject_id);
 
 	if(!is_null($cf_map))
 	{
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
-      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+            $label=str_replace(TL_LOCALIZE_TAG,'',
+                               lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
 			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
-				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
-						"</td></tr>\n";
+				          $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
+						  "</td></tr>\n";
 		}
 		$cf_smarty .= "</table>";
-
 	}
-
 	return $cf_smarty;
 }
 
@@ -1073,6 +1074,7 @@ function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null
 */
 function html_table_of_custom_field_values($id,$tproject_id)
 {
+    $NO_WARNING_IF_MISSING=true;    
 	$cf_smarty = '';
   	$cf_map = $this->get_linked_cfields($id,$tproject_id);
 	if(!is_null($cf_map))
@@ -1082,7 +1084,8 @@ function html_table_of_custom_field_values($id,$tproject_id)
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-        		$label = str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+        		$label = str_replace(TL_LOCALIZE_TAG,'',
+        		                     lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .

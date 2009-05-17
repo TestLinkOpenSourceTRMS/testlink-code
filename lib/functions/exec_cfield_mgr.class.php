@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2008/08/14 15:08:24 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/05/17 16:20:17 $ $Author: franciscom $
  * @author jbarchibald
  *
  * rev :
+ *      20090514 - franciscom - localize label
  *      20071006 - franciscom - exec_cfield_mgr() interface change
  *                              get_linked_cfields() interface change
  *                              solved bug on get_linked_cfields() when
@@ -31,33 +32,32 @@ class exec_cfield_mgr extends cfield_mgr
 
 	}
 
-     /*
-      function: html_table_of_custom_field_inputs
+/*
+function: html_table_of_custom_field_inputs
 
-      args: -
+args: -
 
-      returns: html string
+returns: html string
 
-      notes: string_custom_field_input is being called from the parent class.
+notes: string_custom_field_input is being called from the parent class.
 
-    */
-    function html_table_of_custom_field_inputs()
+*/
+function html_table_of_custom_field_inputs()
+{
+    $cf_smarty = '';
+    if( !is_null($this->cf_map) )
     {
-      $cf_smarty = '';
-
-      if( !is_null($this->cf_map) )
-      {
         foreach($this->cf_map as $cf_id => $cf_info)
         {
-          $label = $cf_info['label'];
-          $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                        $this->string_custom_field_input($cf_info) .
-                        "</td></tr>\n";
+            // true => do not create input in audit log
+            $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+            $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
+                          $this->string_custom_field_input($cf_info) . "</td></tr>\n";
         }
-      }
-
-      return($cf_smarty);
     }
+    
+    return($cf_smarty);
+}
 
     /*
       function: get_linked_cfields

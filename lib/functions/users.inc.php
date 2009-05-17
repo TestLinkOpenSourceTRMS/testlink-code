@@ -5,12 +5,14 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2009/04/29 06:38:11 $ $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2009/05/17 16:28:26 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * rev: 20081221 - franciscom - buildUserMap() interface changes
+ * rev: 20090517 - franciscom - getTestersForHtmlOptions() interface changes
+ *                              buildUserMap() added prefix to tag inactive users
+ *      20081221 - franciscom - buildUserMap() interface changes
  *      20081213 - franciscom - refactoring removing old config options 
  *      20080822 - franciscom - resetPassword() - added generatePassword()
  *      20080405 - franciscom - getGrantsForUserMgmt()
@@ -139,6 +141,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
 function buildUserMap($users,$add_options = false, $additional_options=null)
 {
 	$usersMap = null;
+	$inactivePrefix=lang_get('tag_for_inactive_users');
 	if ($users)
 	{
 		if($add_options)
@@ -152,6 +155,10 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 		foreach($users as $id => $user)
 		{
 			$usersMap[$id] = $user->getDisplayName();
+			if($user->bActive==0)
+			{
+			    $usersMap[$id] = $inactivePrefix . ' ' . $usersMap[$id];
+			} 
 		}
 	}
 	return $usersMap;
@@ -298,18 +305,53 @@ function getAllUsersRoles(&$db,$order_by = null)
   returns:
 
 */
-function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null, $additional_testers=null)
+/**
+ * getTestersForHtmlOptions
+ * returns users that have role on ($tplanID,$tprojectID) with right
+ * to execute a test case.
+ *
+ * @param $db reference to db handler
+ * @param int $tplanID test plan id
+ * @param int $tprojectID test project id
+ * @param     $users
+ * @param
+ * @param string $activeStatus. values: 'active','inactive','any'  
+ */
+function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null, 
+                                  $additional_testers=null,$activeStatus='active')
 {
+    switch ($activeStatus)
+    {
+        case 'any':
+            $orOperand=true;
+            $activeTarget=1;
+        break;
+        
+        case 'inactive':
+            $orOperand=false;
+            $activeTarget=0;
+        break;
+        
+        case 'active':
+        default:
+            $orOperand=false;
+            $activeTarget=1;
+        break;
+    }
+
+
     $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID,null,$users);
     $userFilter = array();
     foreach($users_roles as $keyUserID => $roleInfo)
     {
-		    if($roleInfo['effective_role']->hasRight('testplan_execute') && $roleInfo['user']->bActive)
-		    {
-			     $userFilter[$keyUserID] = $roleInfo['user'];
-			  }   
+        if($roleInfo['effective_role']->hasRight('testplan_execute') && 
+           ($orOperand || $roleInfo['user']->bActive == $activeTarget) )
+        {
+            
+             $userFilter[$keyUserID] = $roleInfo['user'];
+        }   
     }
-	  return buildUserMap($userFilter,true,$additional_testers);
+	return buildUserMap($userFilter,true,$additional_testers);
 }
 
 

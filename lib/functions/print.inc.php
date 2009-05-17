@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.78 $
- * @modified $Date: 2009/05/13 05:54:55 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2009/05/17 16:39:35 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -71,12 +71,15 @@ function renderHTMLHeader($title,$base_href)
 {
 	$docCfg = config_get('document_generator');
     $docCfg->css_template;
-  
+
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
 	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '" />';
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
 	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
+	// way how to add CSS directly to the exported file (not used - test required)
+//	$docCss = file_get_contents(TL_ABS_PATH . $docCfg->css_template);
+//	$output .= '<style type="text/css" media="all">'."\n<!--\n".$docCss."\n-->\n</style>\n";
 	$output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';
 	$output .= "\n</head>\n";
 
@@ -198,8 +201,8 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
                 if ($printingOptions['cfields'])
         		{
 	            	$cfields = $tplan_mgr->html_table_of_custom_field_values($tplan_id,'design',null,$cfieldFormatting);
-	            	$code .= "<br /><hr><br /> $cfields <br /><hr><br />";
-        		}
+	            	$code .= '<p>' . $cfields . '</p>';
+	       		}
 		    }
 			$code .= renderToc($printingOptions);
 		break;
@@ -250,13 +253,53 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 }
 
 
-/*
-  function: renderTestCaseForPrinting
-  args :
-  returns:
+/**
+ * get names from pool (save used names in array to improve performance)
+ * @param integer $db DB connection identifier 
+ * @param integer $userId
+ * @return string readable user name
+ * @version 1.0
+ * @author havlatm
+ */
+function gendocGetName(&$db, $userId)
+{
+	$authorName = null;
+	      
+	if(isset($_SESSION['namePool'][$userId]))
+	{
+		$authorName	= $_SESSION['namePool'][$userId];
+	}
+	else
+	{
+		$user = tlUser::getByID($db,$userId);
+		if ($user)
+		{
+			$authorName = $user->getDisplayName();
+			$authorName = htmlspecialchars($authorName);
+			$_SESSION['namePool'][$userId] = $authorName;
+		}
+		else
+		{
+			$authorName = 'undefined';
+			tLog('tlUser::getByID($db,$userId) failed', 'ERROR');
+		}
+	}
+	
+	return $authorName;	
+}
 
-  rev :
 
+/**
+ * render Test Case content for generated documents
+ * @param $integer db DB connection identifier 
+ * @return string generated html code
+ * @version 1.5
+
+    rev :
+       20080819 - franciscom - removed mysql only code
+       20071014 - franciscom - display test case version
+       20070509 - franciscom - added Contribution
+       20090517 - havlatm - fixed execution layot; added tester name
 */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
                                    $tplan_id=0,$prefix = null,$tprojectID = 0)
@@ -295,10 +338,11 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
             }    
         }
         
-        $labels=array("last_exec_result" => '', "testnotes" => '', "none" => '', "reqs" => '',
-                      "author" => '', "summary" => '',"steps" => '', "expected_results" =>'',
-                      "build" => '', "test_case" => '', "keywords" => '',"version" => '', 
-                      "test_status_not_run" => '', "not_aplicable" => '', 'bugs' => '');
+        $labels=array('last_exec_result' => '', 'testnotes' => '', 'none' => '', 'reqs' => '',
+                      'author' => '', 'summary' => '','steps' => '', 'expected_results' =>'',
+                      'build' => '', 'test_case' => '', 'keywords' => '','version' => '', 
+                      'test_status_not_run' => '', 'not_aplicable' => '', 'bugs' => '',
+                      'tester' => '');
                                 
         foreach($labels as $id => $value)
         {
@@ -322,21 +366,24 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     {
     	$tcase_prefix = $tc_mgr->getPrefix($id);
     }
-	  $external_id = $tcase_prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
-	  $name = htmlspecialchars($node['name']);
+	$external_id = $tcase_prefix . $testcaseCfg->glue_character . $tcInfo['tc_external_id'];
+	$name = htmlspecialchars($node['name']);
 
   	$cfields = array('specScope' => '', 'execScope' => '');
 
-	  // get custom fields that has specification scope
+	// get custom fields that has specification scope
   	if ($printingOptions['cfields'])
-    	{
-		$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id,'design',null,null,$tplan_id,$tprojectID,$cfieldFormatting);
-    	}
+	{
+		$cfields['specScope'] = $tc_mgr->html_table_of_custom_field_values($id,'design',
+				null,null,$tplan_id,$tprojectID,$cfieldFormatting);
+	}
 
-    // THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
-    // using existent methods - franciscom - 20090329 
-    // Need to get CF with execution scope
-	  $sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, " .
+/** 
+ * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
+ * using existent methods - franciscom - 20090329 
+ * Need to get CF with execution scope
+ */
+	$sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, " .
 	          " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
 	          " B.name AS build_name " .
 	          " FROM executions E, builds B" .
@@ -344,7 +391,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	          " AND E.tcversion_id = {$versionID} " .
 	          " AND E.testplan_id = {$tplan_id} " .
 	  		    " ORDER BY execution_id DESC";
-	  $exec_info = $db->get_recordset($sql,null,1);
+	$exec_info = $db->get_recordset($sql,null,1);
 
     if(!is_null($exec_info ))
     { 
@@ -362,11 +409,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	{
 	      $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' .
 	       	                              $name . '</a></p>';
-	    	$code .= "<a name=\"tc{$id}\"></a>";
+	    	$code .= "<a name=\"tc{$id}\"></a>\n";
 	}
       
  	  $code .= '<div><table class="tc" width="90%">';
- 	  $code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . htmlspecialchars($external_id) . ": " . $name;
+ 	  $code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . 
+ 	  		htmlspecialchars($external_id) . ": " . $name;
     
 	  // add test case version
 	  if($doc_cfg->tc_version_enabled && isset($node['version']) ) 
@@ -374,38 +422,20 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  	$code .= '&nbsp;<span style="font-size: 80%;"' . $gui_cfg->role_separator_open . $labels['version'] . 
 	  	         $gui_cfg->title_separator_1 .  $node['version'] . $gui_cfg->role_separator_close . '</span>';
 	  }
- 	  $code .= '</th></tr>';
+ 	  $code .= "</th></tr>\n";
 
   	if ($printingOptions['author'])
   	{
-		/** @TODO array $userMap[] should be filled at once for all names at the begin process */
-  		$authorName = null;
-		$authorID = array('author_id' => $tcInfo['author_id'], 'updater_id' => $tcInfo['updater_id']);
-	    foreach ($authorID as $key => $user_id)
-	    {
-	    	if( isset($userMap[$user_id]) )
-	    	{
-	    		$authorName[$key] = $userMap[$user_id];
-		    }
-		    else
-	    	{
-	        	$user = tlUser::getByID($db,$tcInfo['author_id']);
-		        if ($user)
-		        {
-	        	  	$userMap[$user_id] = htmlspecialchars($user->getDisplayName());
-	        	  	$authorName[$key] = $userMap[$user_id];
-		        }
-		    }
-	    }
-	      
-	    $code .= '<tr><td width="20%" valign="top"><span class="label">' . $labels['author'] . 
-	             ':</span> ' . $authorName['author_id']; 
-		if ($tcInfo['updater_id'] > 0) 
+		$authorName = gendocGetName($db, $tcInfo['author_id']);
+		$code .= '<tr><td width="20%" valign="top"><span class="label">'.$labels['author'].':</span></td>';
+        $code .= '<td>' . $authorName;
+		if (($tcInfo['updater_id'] > 0) && $tcInfo['updater_id'] != $tcInfo['author_id']) 
 		{
-		    // add updater if available
-			$code .= ' <br /><span class="label">' . $labels['last_edit'] . ':</span> '.$authorName['updater_id'];
+		    // add updater if available and differs from author
+			$updaterName = gendocGetName($db, $tcInfo['updater_id']);
+			$code .= '<br />' . $updaterName . ' (' . $labels['last_edit'] . ')';
 		}
-		$code .= ' </td></tr>';
+		$code .= "</td></tr>\n";
   	}
 
     if (($printingOptions['body'] || $printingOptions['summary']))
@@ -431,44 +461,58 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     }
     $code .= $cfields['specScope'] . $cfields['execScope'];
 	
-	// generate test results
+	// ----- generate test results data for test report -----
 	if ($printingOptions['passfail'])
 	{
-		$build_name='';
-	    $bugString = '';
-	    if ($exec_info) 
+		$build_name = '';
+		if ($exec_info) 
 		{
-	  		$tcstatus2 = $status_labels[$exec_info[0]['status']];
-	  		$tcnotes2 = $exec_info[0]['notes'];
-            $build_name = " - ({$labels['build']}:{$exec_info[0]['build_name']})";
-            	
-            //- amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
-	      	$bug_interface = config_get("bugInterface");
-			$bugs = get_bugs_for_exec($db,$bug_interface,$execution_id);
-			if (($bugs) && ($tcstatus2 == 'Failed')) 
+	  		$testStatus = $status_labels[$exec_info[0]['status']];
+			$testerName = gendocGetName($db, $exec_info[0]['tester_id']);
+	  		$executionNotes = $exec_info[0]['notes'];
+	  		    
+		  	$code .= '<tr><td width="20%" valign="top">' .
+				'<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
+				'<td><b>' . $testStatus . "</b></td></tr>\n" .
+            	'<tr><td width="20%" valign="top">' . $labels['build'] .'</td>' . 
+            	'<td>' . $exec_info[0]['build_name'] . "</b></td></tr>\n" .
+            	'<tr><td width="20%" valign="top">' . $labels['tester'] .'</td>' . 
+            	'<td>' . $testerName . "</b></td></tr>\n";
+
+			// show exection notes is not empty
+            if ($executionNotes != '')
+            {
+				$code .= '<tr><td width="20%" valign="top">'.$labels['testnotes'] . '</td>' .
+					'<td>' . $executionNotes  . "</td></tr>\n"; 
+            }
+
+			$bug_interface = config_get('bugInterface');
+			if ($bug_interface != 'NO') 
 			{
-				$bugString = $labels['bugs'] . ": <br />";
-				foreach($bugs as $bugID => $bugInfo) 
+            	// amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
+				$bugs = get_bugs_for_exec($db,$bug_interface,$execution_id);
+				if ($bugs) 
 				{
-					$bugString .= $bugInfo['link_to_bts']."<br />";
+					$bugString = '';
+					foreach($bugs as $bugID => $bugInfo) 
+					{
+						$bugString .= $bugInfo['link_to_bts']."<br />";
+					}
+					$code .= '<tr><td colspan=2 width="20%" valign="top">' . $labels['bugs'] . '</td>' . 
+							'<td>' . $bugString ."</td></tr>\n"; 
 				}
-				$bugString = '<tr><td colspan=2 style="width:30%" valign="top"><span class="label">' . 
-						$bugString . '</span></td></tr>'; 
-					
 			}
+
 		}
-	    else
-	    {
-			$tcstatus2 = $labels["test_status_not_run"];
-	  		$tcnotes2 = $labels["not_aplicable"];
-	  	}
+		
+		else	// no execution
+		{
+		  	$code .= '<tr><td width="20%" valign="top">' . 
+		  			'<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
+		  			'<td><b>' . $labels["test_status_not_run"] . "</b></td></tr>\n";
+		}
 	  	
-	  	$code .= '<tr><td width="30%" valign="top"><span class="label">' . 
-	  	         $labels['last_exec_result'] . $build_name . 
-	  			     ':</span><br /><span style="text-align:center; padding:10px;">'.$tcstatus2.'</span></td>'.
-	  			     '<td><u>'.$labels['testnotes'] . ':</u><br />' . $tcnotes2 . '</td></tr>' . $bugString ;
-	  	
-	  }
+	}
 
 
 	  // collect REQ for TC
@@ -552,25 +596,23 @@ function renderToc(&$printingOptions)
 function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix,$level,$tplan_id,$tproject_id)
 {
     static $tsuite_mgr;
-    static $labels;
-    if( !$labels)
-    { 
-	    $labels=array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
-	}
+    $labels = array('test_suite' => lang_get('test_suite'),'details' => lang_get('details'));
   
 	$code = null;
 	$name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
+	$title_separator = config_get('gui_title_separator_1');
   	$cfields = array('design' => '');
     $cfieldFormatting=array('table_css_style' => 'class="cf"');
 
 	if ($printingOptions['toc'])
 	{
-	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;"><a href="#cat' . $node['id'] . '">' .
-	 	                               $name . '</a></p>';
-		$code .= "<a name='cat{$node['id']}'></a>";
+	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;">' .
+				'<a href="#cat' . $node['id'] . '">' . $name . "</a></p>\n";
+		$code .= "<a name='cat{$node['id']}'></a>\n";
 	}
- 	$code .= "<h1 class='doclevel'>{$tocPrefix} {$labels['test_suite']} {$name}</h1>";
+ 	$code .= "<h1 class='doclevel'>{$tocPrefix} ". $labels['test_suite'].$title_separator. $name."}</h1>\n";
 
+	// ----- get Test Suite text -----------------
 	if ($printingOptions['header'])
     {
         if( !$tsuite_mgr)
@@ -578,12 +620,14 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 		    $tsuite_mgr = new testsuite($db);
 		}
 		$tInfo = $tsuite_mgr->get_by_id($node['id']);
-   	    $code .= "<h2 class='doclevel'>{$tocPrefix}.0 {$labels['details']} </h2><div>{$tInfo['details']}</div><br />";
+		if ($tInfo['details'] != '')
+		{
+	   	    $code .= '<div>'.$tInfo['details']. '</div>';
+		}
    	
    	    // get Custom fields    
    	    // Attention: for test suites custom fields can not be edited during execution,
    	    //            then we need to get just custom fields with scope  'design'
-        $add_br=false;
         foreach($cfields as $key => $value)
         {
             $cfields[$key] = $tsuite_mgr->html_table_of_custom_field_values($node['id'],$key,null,
@@ -591,14 +635,9 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
    	        if($cfields[$key] != "")
    	        {
    	            $add_br = true;
-   	            $code .= "<br />" . $cfields[$key];    
+   	            $code .= '<p>' . $cfields[$key] . '</p>';    
    	        }
    	    }
-   	    if($add_br) 
-   	    {
-   	        $code .= '<br />';    
-   	    }
-     
  	}
 
 	return $code;

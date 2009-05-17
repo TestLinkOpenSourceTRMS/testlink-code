@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/03/25 20:53:18 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/05/17 16:39:35 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -49,7 +49,7 @@ $arrCheckboxes = array(
 	array( 'value' => 'body', 	'description' => 'opt_show_tc_body',	'checked' => 'n'),
  	array( 'value' => 'author',	'description' => 'opt_show_tc_author', 	'checked' => 'n'),
 	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 	'checked' => 'n'),
-	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'y')
+	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'n')
 );
 
 if($_SESSION['testprojectOptReqs'])

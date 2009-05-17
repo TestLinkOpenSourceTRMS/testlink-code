@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.5 2009/04/27 07:54:52 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.6 2009/05/17 16:31:50 franciscom Exp $
 Purpose: 
 Author: franciscom
 
 Rev:  
+    20090418 - franciscom - deleted user crash
     20090418 - franciscom - BUGID 2364 - access to test spec to edit it.
     20090212 - amitkhullar - BUGID 2068
 *}	
@@ -82,7 +83,7 @@ Rev:
     </div>
 
  		{if $cfg->exec_cfg->show_last_exec_any_build}
-   		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
+   		{assign var="abs_last_exec" value=$gui->map_last_exec_any_build.$tcversion_id}
  		  {assign var="my_build_name" value=$abs_last_exec.build_name|escape}
  		  {assign var="show_current_build" value=1}
     {/if}
@@ -107,11 +108,17 @@ Rev:
 		{if $cfg->exec_cfg->show_last_exec_any_build && $gui->history_on==0}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $tlCfg->results.status_code.not_run}
 			    {assign var="status_code" value=$abs_last_exec.status}
-
      			<div class="{$tlCfg->results.code_status.$status_code}">
      			{$labels.date_time_run} {$title_sep} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$title_sep_type3}
-     			{$labels.test_exec_by} {$title_sep} {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
+     			{$labels.test_exec_by} {$title_sep} 
+  				{if isset($users[$abs_last_exec.tester_id])}
+  				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
+  				{else}
+  				  {assign var="deletedTester" value=$abs_last_exec.tester_id}
+            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester }
+            {$deletedUserString}
+  				{/if}  
      			{$title_sep_type3}
      			{$labels.build}{$title_sep} {$abs_last_exec.build_name|escape}
      			{$title_sep_type3}
@@ -177,7 +184,15 @@ Rev:
   				</td>
   				{/if}
 
-  				<td>{$users[$tc_old_exec.tester_id]->getDisplayName()|escape}</td>
+  				<td>
+  				{if isset($users[$tc_old_exec.tester_id]) }
+  				  {$users[$tc_old_exec.tester_id]->getDisplayName()|escape}
+  				{else}
+  				  {assign var="deletedTester" value=$tc_old_exec.tester_id}
+            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester }
+            {$deletedUserString}
+  				{/if}  
+  				</td>
   				<td class="{$tlCfg->results.code_status.$tc_status_code}" style="text-align:center">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>

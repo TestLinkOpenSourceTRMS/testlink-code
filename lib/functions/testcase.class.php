@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.166 $
- * @modified $Date: 2009/05/14 19:01:57 $ $Author: schlundus $
+ * @version $Revision: 1.167 $
+ * @modified $Date: 2009/05/17 16:30:13 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090517 - franciscom - changes to mananaged deleted users on:
+ *                         get_executions(),get_last_execution()
+ * 20090514 - franciscom - added locatization of custom fields label without audit warning 
  * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
  * 20090414 - franciscom - BUGID 2378
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
@@ -2276,6 +2279,8 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 			}
 	}
   // --------------------------------------------------------------------
+  // 20090517 - to manage deleted users i need to change:
+  //            users.id AS tester_id => e.tester_id AS tester_id
   // 20090214 - franciscom - e.execution_type -> e.execution_run_type
   // 20080103 - franciscom - added execution_type
   // 20071113 - franciscom - added JOIN builds b ON e.build_id=b.id
@@ -2284,12 +2289,12 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 		    users.login AS tester_login,
 		    users.first AS tester_first_name,
 		    users.last AS tester_last_name,
-			  users.id AS tester_id,
+			e.tester_id AS tester_id,
 		    e.id AS execution_id, e.status,e.tcversion_number,
 		    e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type,
 		    e.build_id AS build_id,
 		    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
-	      FROM {$this->nodes_hierarchy_table} NHA
+	    FROM {$this->nodes_hierarchy_table} NHA
         JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id
         JOIN tcversions ON NHA.id = tcversions.id
         JOIN executions e ON NHA.id = e.tcversion_id
@@ -2422,6 +2427,8 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
      $executions_join .= " AND e.status IS NOT NULL ";
   }
 
+  // 20090517 - to manage deleted users i need to change:
+  //            users.id AS tester_id => e.tester_id AS tester_id
   // 20090214 - franciscom - we need tcversions.execution_type and executions.execution_type
   // 20090208 - franciscom
   //            found bug due to use of tcversions.*, because field execution_type
@@ -2439,10 +2446,10 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
         tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active,
         tcversions.is_open,tcversions.execution_type,
         users.login AS tester_login,users.first AS tester_first_name,
-		    users.last AS tester_last_name, users.id AS tester_id,
-		    e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
-		    builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open
-	      FROM {$this->nodes_hierarchy_table} NHA
+		users.last AS tester_last_name, e.tester_id AS tester_id,
+		e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
+		builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open
+	    FROM {$this->nodes_hierarchy_table} NHA
         JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id
         JOIN tcversions ON NHA.id = tcversions.id
         {$executions_join}
@@ -3090,15 +3097,16 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
-			$label = $cf_info['label'];
-			
+            // true => do not create input in audit log
+            $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
+
 			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 			// logic to validate CF content
 			$cf_html_string = $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);
 			
 			// extract input html id
 			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+     	    $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
 			$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . 
 			              ":</td><td>{$cf_html_string}</td></tr>\n";
 		}
@@ -3190,7 +3198,8 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,$ex
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
-	      		$label = $cf_info['label'];
+                // true => do not create input in audit log
+                $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
 
 				$cf_smarty .= "<tr><td {$td_style}> " .
 								htmlspecialchars($label) . ":</td><td>" .

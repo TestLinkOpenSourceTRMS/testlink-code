@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2009/05/14 19:01:57 $ - $Author: schlundus $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2009/05/17 16:26:18 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20090514 - franciscom - typo bug on html_table_of_custom_field_inputs()
  * 20090503 - franciscom - bug in read_file()
  * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
  * 20090329 - franciscom - html_table_of_custom_field_values()
@@ -1156,7 +1157,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
     foreach($cf_map as $cf_id => $cf_info)
     {
       // true => do not create input in audit log
-      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null.true));
+      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
       $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                     $this->cfield_mgr->string_custom_field_input($cf_info) .
                     "</td></tr>\n";

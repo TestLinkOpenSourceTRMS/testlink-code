@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2009/05/17 16:35:26 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296
@@ -308,16 +308,16 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     //    exec->view_mode and exec->exec_mode, and other that is immune.
     //
     // 3- on execSetResults.php has been done 
- 	  //    Role is considered simple tester if:
-	  //    role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
+ 	//    Role is considered simple tester if:
+	//    role == TL_ROLES_TESTER OR Role has Test Plan execute but not Test Plan planning
     //
     // 4- we can support option 1 and 2, or 1 and 3
     //
     //
     //
     $simple_tester_roles=array_flip($cfgObj->exec->simple_tester_roles);
- 	  $can_execute = $effective_role->hasRight('testplan_execute');
-	  $can_manage = $effective_role->hasRight('testplan_planning');
+ 	$can_execute = $effective_role->hasRight('testplan_execute');
+	$can_manage = $effective_role->hasRight('testplan_planning');
     $use_exec_cfg = isset($simple_tester_roles[$effective_role->dbID]) || ($can_execute && !$can_manage);
     $exec_view_mode = $use_exec_cfg ? $cfgObj->exec->view_mode->tester : 'all';
     switch ($exec_view_mode)
@@ -329,7 +329,7 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     	case 'assigned_to_me':
     		$guiObj->disable_filter_assigned_to = true;
     		$argsObj->filter_assigned_to = (array)$argsObj->user->dbID;
-        $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
+            $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
     		$guiObj->assigned_to_user = $argsObj->user->getDisplayName();
     		break;
     }
@@ -521,7 +521,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->treeColored=$argsObj->treeColored;
     $gui->tplan_name=$argsObj->tplan_name;
     $gui->tplan_id=$argsObj->tplan_id;
-    // $gui->keyword_id=$argsObj->keyword_id;
     $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->include_unassigned=$argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
@@ -551,11 +550,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
                  
     // 20081217 - franciscom             
     // $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
+    
+    // 20090517 - francisco.mancardi@gruppotesi.com
+    // Assigned to combo must contain ALSO inactive users
     $users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-	  $gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
-	                                         $users, 
-	                                         array(TL_USER_ANYBODY => $gui->str_option_any,
-	                                               TL_USER_NOBODY => $gui->str_option_none) );
+	$gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
+	                                       $users,array(TL_USER_ANYBODY => $gui->str_option_any,
+	                                       TL_USER_NOBODY => $gui->str_option_none),'any' );
 
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';

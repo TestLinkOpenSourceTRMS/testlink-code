@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.239 $
- * @modified $Date: 2009/05/13 19:30:16 $ by $Author: schlundus $
+ * @version $Revision: 1.240 $
+ * @modified $Date: 2009/05/17 17:16:14 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -732,7 +732,7 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed'
 
 /** Maximum uploadfile size to importing stuff in TL */
 // Also check your PHP settings (default is usually 2MBs)
-$tlCfg->import_max_size = '204800'; // in bytes
+$tlCfg->import_max_size = '409600'; // in bytes
 
 /** Maximum line size of the imported file */
 $tlCfg->import_max_row = '10000'; // in chars

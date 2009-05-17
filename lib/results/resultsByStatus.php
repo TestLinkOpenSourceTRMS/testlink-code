@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.65 2009/04/14 08:28:54 amkhullar Exp $
+* $Id: resultsByStatus.php,v 1.66 2009/05/17 10:57:32 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,14 +9,12 @@
 *
 *
 * rev : 
-* 	20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
+*   20090517 - franciscom - fixed management of deleted testers
+* 	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
 * 	20090325 - amkhullar  - BUGID 2249
 * 	20090325 - amkhullar  - BUGID 2267
-*       20081213 - franciscom - refactoring to remove old $g_ config variables
-*       20080602 - franciscom - changes due to BUGID 1504
-*       20070908 - franciscom - change column qty on arrData is status not_run
-*                               to have nice html table
-*       20070623 - franciscom - BUGID 911
+*   20080602 - franciscom - changes due to BUGID 1504
+*   20070623 - franciscom - BUGID 911
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -30,62 +28,29 @@ $templateCfg = templateConfiguration();
 $resultsCfg = config_get('results');
 $statusCode = $resultsCfg['status_code'];
 
-$type = isset($_GET['type']) ? $_GET['type'] : 'n';
-$report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
+$args = init_args($statusCode);
+$gui = initializeGui($statusCode,$args);
+
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
-$tplan_id = $_REQUEST['tplan_id'];
-$tproject_id = $_SESSION['testprojectID'];
+$gui->tplan_name = $tplan_info['name'];
+$gui->tproject_name = $tproject_info['name'];
 
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($tproject_id);
-
-$tplan_name = $tplan_info['name'];
-$tproject_name = $tproject_info['name'];
-
-$count_tc = 0; //Count for the Failed Issues whose bugs have to be raised/not linked. 
 
 $testCaseCfg=config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
-$title = null;
-foreach( array('failed','blocked','not_run') as $verbose_status )
-{
-    if( $type == $statusCode[$verbose_status] )
-    {
-        $title = lang_get('list_of_' . $verbose_status);
-        break;
-    }  
-}
-if( is_null($title) )
-{
-	tlog('wrong value of GET type');
-	exit();
-}
-
-/*
-if($type == $statusCode['failed'])
-	$title = lang_get('list_of_failed');
-else if($type == $statusCode['blocked'])
-	$title = lang_get('list_of_blocked');
-else if($type == $statusCode['not_run'])
-	$title = lang_get('list_of_not_run');
-else
-{
-}
-*/
-
-$arrBuilds = $tplan_mgr->get_builds($tplan_id);
-$lastBuildID = $tplan_mgr->get_max_build_id($tplan_id,1,1);
+$buildSet = $tplan_mgr->get_builds($args->tplan_id);
+$lastBuildID = $tplan_mgr->get_max_build_id($args->tplan_id,1,1);
 $results = new results($db, $tplan_mgr, $tproject_info, $tplan_info, ALL_TEST_SUITES, ALL_BUILDS);
 
 $mapOfLastResult = $results->getMapOfLastResult();
 $arrOwners = getUsersForHtmlOptions($db);
-$arrDataIndex = 0;
-$arrData = null;
 
 $canExecute = has_rights($db,"tp_execute");
 if (is_array($mapOfLastResult)) 
@@ -95,14 +60,14 @@ if (is_array($mapOfLastResult))
       foreach($suiteContents as $tcId => $tcaseContent)
       {
 	  	    $lastBuildIdExecuted = $tcaseContent['buildIdLastExecuted'];
-	  	    if ($tcaseContent['result'] == $type)
+	  	    if ($tcaseContent['result'] == $args->type)
 	  	    {
 	  	    	$currentBuildInfo = null;
 	  	    	if ($lastBuildIdExecuted) 
 	  	    	{
-	  	    		$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
+	  	    		$currentBuildInfo = $buildSet[$lastBuildIdExecuted];
 	  	    	}
-	  	    	else if ($type == $statusCode['not_run'])
+	  	    	else if ($args->type == $statusCode['not_run'])
 	  	    	{
 	  	    		$lastBuildIdExecuted = $lastBuildID;
 	  	    	}
@@ -133,37 +98,36 @@ if (is_array($mapOfLastResult))
 	  	    	//20090325 - amkhullar  - BUGID 2249 - find missing bug links with TC
 	  	    	if (is_null($bugString))
 	  	    	{
-	  	    		$count_tc += 1;
+	  	    		$gui->without_bugs_counter += 1;
 	  	    	} 
-	  	    	$testTitle = getTCLink($canExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted,
-	  	    	                       $testCasePrefix . $tcaseContent['external_id'],$tplan_id);
-            $testerName = '';
-	  	    	if (array_key_exists($tester_id, $arrOwners))
-	  	    	{
-	  	    	   $testerName = $arrOwners[$tester_id];
+	  	    	$testTitle = buildTCLink($tcId,$tcversion_id,$name,$lastBuildIdExecuted,
+	  	    	                         $testCasePrefix . $tcaseContent['external_id'],$args->tplan_id);
+
+                $testerName = '';
+                if(!is_null($tester_id) && $tester_id > 0 )
+                {
+	  	    	    if (array_key_exists($tester_id, $arrOwners))
+	  	    	    {
+	  	    	       $testerName = $arrOwners[$tester_id];
+	  	    	    }
+	  	    	    else
+	  	    	    {
+	  	    	        // user id has been deleted
+	  	    	        $testerName = sprintf(lang_get('deleted_user'),$tester_id);
+	  	    	    }
 	  	    	}
-			if ($testerName == "")
-			{
-				$testerName = "Not Assigned Yet";
-			}
-	            // 20080602 - francisco.mancardi@gruppotesi.com
-	            // To get executed Version, we can not do anymore this 
-	      		// $tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
-	            // $testVersion = $tcInfo[0]['version'];
-	          
+	  	    	
 	  	    	$suiteName = htmlspecialchars($suiteName);
-	  	    	if($type == $statusCode['not_run'])
+	  	    	if($args->type == $statusCode['not_run'])
 	  	    	{
 	  	    		//amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
-	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion, $testerName);
+	  	    		$gui->dataSet[] = array($suiteName,$testTitle,$testVersion,htmlspecialchars($testerName));
 	  	    	}
 	  	    	else
 				{
-	  	    		$arrData[] = array($suiteName,$testTitle,$testVersion,
-                                 htmlspecialchars($buildName),
-                                 htmlspecialchars($testerName),
-                                 htmlspecialchars($localizedTS),
-        		                     strip_tags($notes),$bugString);
+	  	    		$gui->dataSet[] = array($suiteName,$testTitle,$testVersion,htmlspecialchars($buildName),
+                                            htmlspecialchars($testerName),htmlspecialchars($localizedTS),
+        		                            strip_tags($notes),$bugString);
       			}
 	  	    }
 	  	
@@ -172,25 +136,22 @@ if (is_array($mapOfLastResult))
 } // end if
 
 $smarty = new TLSmarty();
-$smarty->assign('tproject_name', $tproject_name );
-$smarty->assign('tplan_name', $tplan_name );
-$smarty->assign('title', $title);
-$smarty->assign('arrBuilds', $arrBuilds);
-$smarty->assign('arrData', $arrData);
-$smarty->assign('type', $type);
-$smarty->assign('count', $count_tc);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $report_type);
+$smarty->assign('gui', $gui );
 
-/**
-* builds bug information for execution id
-* written by Andreas, being implemented again by KL
-*/
+// $smarty->assign('tproject_name', $tproject_name );
+// $smarty->assign('tplan_name', $tplan_name );
+// $smarty->assign('title', $title);
+// $smarty->assign('arrBuilds', $arrBuilds);
+// $smarty->assign('arrData', $arrData);
+// $smarty->assign('type', $type);
+// $smarty->assign('count', $count_tc);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type);
 
 /**
 * Function returns number of Test Cases in the Test Plan
 * @return string Link of Test ID + Title
 */
-function getTCLink($rights, $tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $tplanId)
+function buildTCLink($tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $tplanId)
 {
 	$title = htmlspecialchars($title);
 	$suffix = htmlspecialchars($testCaseExternalId) . ":&nbsp;<b>" . $title. "</b></a>";
@@ -200,5 +161,60 @@ function getTCLink($rights, $tcID,$tcversionID, $title, $buildID,$testCaseExtern
 	$testTitle .= $suffix;
 
 	return $testTitle;
+}
+
+
+/**
+ * init_args
+ *
+ */
+function  init_args($statusCode)
+{
+    $args = new stdClass();
+    
+    $args->type = isset($_GET['type']) ? $_GET['type'] : $statusCode['not_run'];
+    $args->report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
+
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    
+    if( $args->tproject_id == 0 )
+    {
+        $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+    }
+    return $args;
+}
+
+/**
+ * initializeGui
+ *
+ */
+function  initializeGui($statusCode,&$argsObj)
+{
+    $guiObj=new stdClass();
+    
+    // Count for the Failed Issues whose bugs have to be raised/not linked. 
+    $guiObj->without_bugs_counter = 0; 
+    $guiObj->dataSet = null;
+    $guiObj->title = null;
+    $guiObj->type = $argsObj->type;
+
+    // Humm this may be can be configured ???
+    foreach( array('failed','blocked','not_run') as $verbose_status )
+    {
+        if( $argsObj->type == $statusCode[$verbose_status] )
+        {
+            $guiObj->title = lang_get('list_of_' . $verbose_status);
+            break;
+        }  
+    }
+    if( is_null($guiObj->title) )
+    {
+    	tlog('wrong value of GET type');
+    	exit();
+    }
+
+    
+    return $guiObj;    
 }
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.442 $
- * @modified $Date: 2009/05/13 05:54:55 $ by $Author: franciscom $
+ * @version $Revision: 1.443 $
+ * @modified $Date: 2009/05/17 16:20:59 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -200,6 +200,8 @@ $TLS_testplan_usage="Test Plan usage";
 $TLS_add_tcversion_to_plans = "Add Test Case Version to Test Plans";
 $TLS_please_select_one_testplan = "Please select at least one Test Plan.";
 
+$TLS_deleted_user = "[deleted user - id=%s]";
+$TLS_tag_for_inactive_users = "*";
 
 
 // ----- JAVASCRIPT -----

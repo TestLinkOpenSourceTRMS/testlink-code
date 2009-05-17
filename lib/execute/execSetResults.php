@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.124 $
- * @modified $Date: 2009/05/14 18:39:53 $ $Author: schlundus $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2009/05/17 16:34:37 $ $Author: franciscom $
  *
  * rev:
  *     20090426 - franciscom - bad initialization of grants due to unclear
@@ -169,16 +169,15 @@ if(!is_null($linked_tcversions))
     if( $cfg->exec_cfg->show_last_exec_any_build )
     {
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
-                                                                           ANY_BUILD,GET_NO_EXEC);
-                                                                           
+                                                                       ANY_BUILD,GET_NO_EXEC);
+        
         //Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
-
-        	foreach ($tc_current as $key => $value)
-        	{
-		    	$testerid = $value['tester_id'];
-			    $userid_array[$testerid] = $testerid;
-        	}	    
+        foreach ($tc_current as $key => $value)
+        {
+			$testerid = $value['tester_id'];
+		    $userid_array[$testerid] = $testerid;
+        }	    
     }
 
     $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
@@ -874,6 +873,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->bn_view_status=$argsObj->bn_view_status;
     $gui->bc_view_status=$argsObj->bc_view_status;
     $gui->refreshTree=$argsObj->refreshTree;
+    $gui->map_last_exec_any_build=null;
+    $gui->map_last_exec=null;
 
     	
     // 20081122 - franciscom
@@ -992,13 +993,12 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
 
     if( !is_null($last_exec) )
     {
-      $last_exec=setTesterAssignment($dbHandler,$last_exec,
-                                     $tcaseMgr,$argsObj->tplan_id);
-    
-      // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
-      $can_execute=$guiObj->grants->execute && ($guiObj->build_is_open);
-      $last_exec=setCanExecute($last_exec,$guiObj->exec_mode,
-                               $can_execute,$argsObj->user->dbID);
+        $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,$argsObj->tplan_id);
+        
+        // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
+        $can_execute=$guiObj->grants->execute && ($guiObj->build_is_open);
+        $last_exec=setCanExecute($last_exec,$guiObj->exec_mode,
+                                 $can_execute,$argsObj->user->dbID);
     }
     
     // Reorder executions to mantaing correct visualization order.

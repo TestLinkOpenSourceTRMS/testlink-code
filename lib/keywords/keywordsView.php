@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/01/26 19:16:42 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/05/18 20:22:10 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  */
@@ -28,14 +28,6 @@ $smarty->assign('keywords', $keywords);
 $smarty->assign('canManage',has_rights($db,"mgt_modify_key"));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$args = new stdClass();

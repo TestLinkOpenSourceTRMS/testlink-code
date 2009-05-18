@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: string_api.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/02/25 19:23:44 $  $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/05/18 20:22:10 $  $Author: schlundus $
  * @author franciscom
  * 
  *	### String Processing functions ###
@@ -354,16 +354,16 @@ function string_restore_valid_html_tags( $p_string, $p_multiline = true )
 
 	function string_shorten( $p_string ) {
 		$t_max = config_get( 'max_dropdown_length' );
-		if ( ( strlen( $p_string ) > $t_max ) && ( $t_max > 0 ) ){
+		if ( ( tlStrLen($p_string ) > $t_max ) && ( $t_max > 0 ) ){
 			$t_pattern = '/([\s|.|,|\-|_|\/|\?]+)/';
 			$t_bits = preg_split( $t_pattern, $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			$t_string = '';
 			$t_last = $t_bits[ count( $t_bits ) - 1 ];
-			$t_last_len = strlen( $t_last );
+			$t_last_len = tlStrLen( $t_last );
 
 			foreach ( $t_bits as $t_bit ) {
-				if ( ( strlen( $t_string ) + strlen( $t_bit ) + $t_last_len + 3 <= $t_max )
+				if ( ( tlStrLen( $t_string ) + tlStrLen( $t_bit ) + $t_last_len + 3 <= $t_max )
 					|| ( strpos( $t_bit, '.,-/?' ) > 0 ) ) {
 					$t_string .= $t_bit;
 				} else {

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/05/17 16:30:28 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/05/18 20:22:10 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -533,10 +533,6 @@ class tlUser extends tlDBObject
 		return $users ? $users : null;
 	}
 
-    /**
-     * getAll
-     *
-     */
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{

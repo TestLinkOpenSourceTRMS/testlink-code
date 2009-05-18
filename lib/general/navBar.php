@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/05/09 17:59:19 $ $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/05/18 20:22:10 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -22,13 +22,14 @@ require_once("common.php");
 testlinkInitPage($db,true);
 
 $tproject_mgr = new testproject($db);
+$args = init_args();
 // $args = init_args();
 $gui = new stdClass();
 
 $gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $gui->tcasePrefix = '';
 $gui->searchSize = 8; // magic default
-if( $gui->tprojectID > 0)
+if($gui->tprojectID > 0)
 {
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . 
                         config_get('testcase_cfg')->glue_character;
@@ -70,11 +71,11 @@ $gui->whoami = $user->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open 
 // Use this clue to launch a refresh of other frames present on the screen
 // using the onload HTML body attribute
 $gui->updateMainPage = 0;
-if (isset($_GET['testproject']))
+if ($args->testproject)
 {
 	$gui->updateMainPage = 1;
 	// set test project ID for the next session
-	setcookie('TL_lastTestProjectForUserID_'. $userID, $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
+	setcookie('TL_lastTestProjectForUserID_'. $userID, $args->testproject, TL_COOKIE_KEEPTIME, '/');
 }
 
 $gui->grants = getGrants($db);
@@ -134,5 +135,17 @@ function getUserDocumentation()
         closedir($handle);
     }
     return $documents;
+}
+
+function init_args()
+{
+	$iParams = array(
+			"testproject" => array(tlInputParameter::INT_N),
+		);
+
+	$args = new stdClass();
+	$pParams = G_PARAMS($iParams,$args);
+
+	return $args;
 }
 ?>

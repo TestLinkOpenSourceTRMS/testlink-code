@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.46 2009/04/20 19:39:33 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.47 2009/05/18 20:22:10 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -45,12 +45,11 @@ switch($args->feature)
 		break;
 
 	case 'testcase':
-		$get_path_info=false;
+		$get_path_info = false;
 		$item_mgr = new testcase($db);
-    	$args->id = is_null($args->id) ? 0 : $args->id;
-    
+    	
    		// has been called from a test case search
-		if( !is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
+		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
 		{
 			$viewerArgs['show_title'] = 'no';
 			$viewerArgs['display_testproject'] = 1;
@@ -58,16 +57,16 @@ switch($args->feature)
 
 			// need to get internal Id from External ID
 			$cfg = config_get('testcase_cfg');
-			$args->id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+			$args->id = $item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
       
-            if( $args->id > 0)
+            if($args->id > 0)
             {
                 $get_path_info = true;
                 $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
             }
 		}
 		
-		if( $get_path_info || $args->show_path)
+		if($get_path_info || $args->show_path)
 		{
 		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
 		}
@@ -78,13 +77,11 @@ switch($args->feature)
 		$smarty->assign('attachments',$attachments);
 		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
 		                $viewerArgs,$path_info);
-
-//		                testcase::ALL_VERSIONS,$viewerArgs,$path_info);
 		break;
 
 	default:
-		tLog('$_GET["edit"] has invalid value: ' . $args->feature , 'ERROR');
-		trigger_error($_SESSION['currentUser']->login.'> $_GET["edit"] has invalid value.', E_USER_ERROR);
+		tLog('Argument "edit" has invalid value: ' . $args->feature , 'ERROR');
+		trigger_error($_SESSION['currentUser']->login.'> Argument "edit" has invalid value.', E_USER_ERROR);
 }
 
 
@@ -98,41 +95,45 @@ switch($args->feature)
 */
 function init_args(&$viewerCfg)
 {
-	  $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-
+	$iParams = array(
+			"edit" => array(tlInputParameter::STRING_N,0,50),
+			"id" => array(tlInputParameter::INT_N),
+			"tcversion_id" => array(tlInputParameter::INT_N),
+			"targetTestCase" => array(tlInputParameter::INT_N),
+			"show_path" => array(tlInputParameter::INT_N),
+			"tcasePrefix" => array(tlInputParameter::STRING_N,0,100),
+		);
+		
+	$args = new stdClass();
+    $pParams = R_PARAMS($iParams,$args);
+	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-    $args->feature = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-    $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
-    // $args->allow_edit = isset($_REQUEST['allow_edit']) ? intval($_REQUEST['allow_edit']) : 1;
-    $args->tcasePrefix = isset($_REQUEST['tcasePrefix']) ? trim($_REQUEST['tcasePrefix']) : null;
-    $args->show_path = isset($_REQUEST['show_path']) ? $_REQUEST['show_path'] : 0;
-    $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : testcase::ALL_VERSIONS;
+    //@TODO schlundus, rename Parameter from edit to feature
+    $args->feature = $args->edit;
 
+   	if (!$args->tcversion_id)
+   		 $args->tcversion_id = testcase::ALL_VERSIONS;
     switch($args->feature)
     {
-        case 'testsuite':
-            $_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
-        break;
-
+		case 'testsuite':
+        	$_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
+        	break;
         case 'testcase':
-		        $spec_cfg = config_get('spec_cfg');
-		        $viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-		        $viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
-		        // $viewerCfg['disable_edit'] = !$args->allow_edit;
-            $viewerCfg['disable_edit'] = 0;
+			$args->id = is_null($args->id) ? 0 : $args->id;
+			$spec_cfg = config_get('spec_cfg');
+			$viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
+			$viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
+			$viewerCfg['disable_edit'] = 0;
 
-  	        if(isset($_SESSION['tcspec_refresh_on_action']))
-  	        {
-		            $viewerCfg['refresh_tree']=$_SESSION['tcspec_refresh_on_action'];
-	          }
-        break;
+			if(isset($_SESSION['tcspec_refresh_on_action']))
+			{
+				$viewerCfg['refresh_tree'] = $_SESSION['tcspec_refresh_on_action'];
+			}
+        	break;
     }
 
     return $args;
 }
-
 
 ?>
 

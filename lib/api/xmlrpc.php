@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/05/14 19:01:57 $ by $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/05/18 20:22:10 $ by $Author: schlundus $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2235,7 +2235,19 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	private function getValidKeywordSetByName($keywords,$tproject_id)
 	{ 
-    	$keywordSet = '';
+		return getValidKeywordSet(true,$keywords,$tproject_id);
+	}
+	
+ 	/**
+ 	 * Retruns the 
+ 	 * @param $byName set this to true if $keywords is an array of keywords, false if it's an array of keywordIDs
+ 	 * @param $keywords array of keywords or keywordIDs
+ 	 * @param $tproject_id the testprojectID the keywords belong
+ 	 * @return string that represent a list of keyword id (comma is character separator)
+ 	 */
+	private function getValidKeywordSet($byName,$keywords,$tproject_id)
+	{
+		$keywordSet = '';
 		$keywords = trim($keywords);
 		if($keywords != "")
 	  	{
@@ -2243,32 +2255,36 @@ class TestlinkXMLRPCServer extends IXR_Server
 	        $items_qty = count($a_keywords);
 	        for($idx = 0; $idx < $items_qty; $idx++)
 	        {
-	             $a_keywords[$idx] = trim($a_keywords[$idx]);
+				$a_keywords[$idx] = trim($a_keywords[$idx]);
 	        }
 	        $itemsSet = implode("','",$a_keywords);
-	         $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
-	                " WHERE testproject_id = {$tproject_id} " .
-	                " AND keyword IN ('{$itemsSet}')";
-	         $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
-	         if(!is_null($keywordMap))
-	         {
-	             $a_items = null;
-	             for($idx=0; $idx < $items_qty; $idx++)
-	             {
-	                 if( isset($keywordMap[$a_keywords[$idx]]) )
-	                 {
-	                     $a_items[]=$keywordMap[$a_keywords[$idx]]['id'];  
-	                 }
-	             }
-	             if( !is_null($a_items))
-	             {
-	                 $keywordSet = implode(",",$a_items);
-	             }    
-	         }
-      }  
-      return $keywordSet;
-  }
-
+	        $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
+	               " WHERE testproject_id = {$tproject_id} ";
+	        
+	        if ($byName)
+	        	$sql .= " AND keyword IN ('{$itemsSet}')";
+	        else
+	        	$sql .= " AND id IN ({$itemsSet})";
+	         	
+	        $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
+	        if(!is_null($keywordMap))
+	        {
+	        	$a_items = null;
+	            for($idx = 0; $idx < $items_qty; $idx++)
+	            {
+	            	if(isset($keywordMap[$a_keywords[$idx]]))
+	                {
+	                    $a_items[] = $keywordMap[$a_keywords[$idx]]['id'];  
+	                }
+	            }
+	            if( !is_null($a_items))
+	            {
+	                $keywordSet = implode(",",$a_items);
+	            }    
+	    	}
+		}  
+		return $keywordSet;
+ 	}
   /**
 	 * getValidKeywordSetById()
 	 *  
@@ -2276,42 +2292,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @access private
 	 */
-  //@TODO schlundus, seems like getValidKeywordSetById and getValidKeywordSetByName are simply a slighty variation
-  // with different SQL only !
   private function  getValidKeywordSetById($keywords,$tproject_id)
   {
-      $keywordSet = '';
-      $keywords = trim($keywords);
-      if($keywords != "")
-	    {
-	         $a_keywords = explode(",",$keywords);
-	         $items_qty = count($a_keywords);
-	         for($idx=0; $idx < $items_qty; $idx++)
-	         {
-	             $a_keywords[$idx]=trim($a_keywords[$idx]);
-	         }
-	         $itemsSet=implode(",",$a_keywords);
-	         $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
-	                " WHERE testproject_id = {$tproject_id} " .
-	                " AND id IN ({$itemsSet})";
-	         $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'id');
-	         if( !is_null($keywordMap) )
-	         {
-	             $a_items = null;
-	             for($idx=0; $idx < $items_qty; $idx++)
-	             {
-	                 if( isset($keywordMap[$a_keywords[$idx]]) )
-	                 {
-	                     $a_items[]=$keywordMap[$a_keywords[$idx]]['id'];  
-	                 }
-	             }
-	             if( !is_null($a_items))
-	             {
-	                 $keywordSet = implode(",",$a_items);
-	             }    
-	         }
-      }  
-      return $keywordSet;
+		return getValidKeywordSet(false,$keywords,$tproject_id);
   }
 
 

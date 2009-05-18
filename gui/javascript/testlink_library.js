@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.75 2009/04/27 07:54:15 franciscom Exp $
+// $Id: testlink_library.js,v 1.76 2009/05/18 20:22:09 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -644,11 +644,12 @@ function open_help_window(help_page,locale)
 */
 function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 {
-	  var feature_url = "lib/testcases/archiveData.php";
+	//@TODO schlundus, what is show_mode? not used in archiveData.php
+	var feature_url = "lib/testcases/archiveData.php";
     feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
                   tcase_id+"&tcversion_id="+tcversion_id;
 
-  // second parameter(window name) with spaces caused bug on IE
+    // second parameter(window name) with spaces caused bug on IE
 	window.open(fRoot+feature_url,"TestCaseSpec",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
@@ -669,7 +670,7 @@ function TPROJECT_REQ_SPEC_MGMT(id)
 {
 	var _FUNCTION_NAME_="TPROJECT_REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
-  var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+"&"+pParams;
+	var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+"&"+pParams;
 
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;

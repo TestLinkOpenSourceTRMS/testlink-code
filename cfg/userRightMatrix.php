@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/01/05 21:38:57 $  $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/05/18 20:22:08 $  $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -78,7 +78,6 @@ $tc_admin=array("$tc_admin_url/containeredit.php" => array("mgt_modify_tc","mgt_
        					"$tc_admin_url/tcimport.php" => array("mgt_modify_tc","mgt_view_tc",),														
        					"$tc_admin_url/searchform.php" => null,
        					"$tc_admin_url/searchdata.php" => null,
-       					"$tc_admin_url/archivedata.php" => null,
        					"$tc_admin_url/listtestcases.php" => null);
 
 

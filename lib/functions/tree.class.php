@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/04/14 16:56:41 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2009/05/18 20:22:10 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
@@ -252,7 +252,7 @@ class tree
 	{
 		$children = $this->get_subtree_list($node_id);
 		$id2del = $node_id;
-		if(strlen($children))
+		if($children != "")
 		{
 			$id2del .= ",{$children}";	
 		}

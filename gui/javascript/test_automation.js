@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.1 2007/11/01 21:58:59 franciscom Exp $ 
+// $Id: test_automation.js,v 1.2 2009/05/18 20:22:09 schlundus Exp $ 
 //
 // This library is automatically loaded with inc_header.tpl
 //
@@ -26,7 +26,7 @@ function openImportResult(windows_title) {
 /**
 *  Start execution of a testcase through AJAX call to tcexecute.php page
 *  @param node_id, node_type
-*  @return html text repsponse received from the php page
+*  @return html text response received from the php page
 */
 function startExecution(node_id,node_type){
 	xmlHttp = GetXmlHttpObject();

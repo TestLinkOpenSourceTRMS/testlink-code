@@ -1,6 +1,6 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.3 2009/03/10 09:12:04 havlat Exp $ 
+	$Id: containerDelete.tpl,v 1.4 2009/05/18 20:22:10 schlundus Exp $ 
 	Purpose: smarty template - delete containers in test specification
 
 rev : 
@@ -41,7 +41,7 @@ rev :
 	{* 20070213 - franciscom - BUGID 0000629 *}
 	<input type="button" name="cancel_delete_testsuite" value="{lang_get s='btn_no'}"
 			onclick='javascript: location.href=fRoot+
-			"lib/testcases/archiveData.php?print_scope=test_specification&edit=testsuite&level=testsuite&id={$objectID}";' />
+			"lib/testcases/archiveData.php?&edit=testsuite&id={$objectID}";' />
 	</form>
 {/if}
 

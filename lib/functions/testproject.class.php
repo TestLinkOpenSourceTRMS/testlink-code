@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.109 $
- * @modified $Date: 2009/05/14 19:01:57 $  $Author: schlundus $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2009/05/18 07:47:51 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090512 - franciscom - added setPublicStatus()
@@ -1660,7 +1660,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
 */
 function get_all_testplans($testproject_id,$filters=null)
 {
-	$sql = " SELECT NH.id,NH.name,notes,active,testproject_id " .
+	$sql = " SELECT NH.id,NH.name,notes,active,is_public,testproject_id " .
 	       " FROM {$this->nodes_hierarchy_table} NH,{$this->testplans_table} TPLAN";
 	       
 	$where = " WHERE NH.id=TPLAN.id ";
@@ -1916,7 +1916,7 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
        " WHERE CF.id=CFTP.field_id " .
        " AND   CFTP.testproject_id={$id} " .
        $additional_join .
-       " ORDER BY display_order";
+       " ORDER BY CFTP.display_order";
   $map = $this->db->fetchRowsIntoMap($sql,$access_key);
   return($map);
 }

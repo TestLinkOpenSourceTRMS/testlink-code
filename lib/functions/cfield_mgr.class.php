@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/05/14 19:01:57 $  $Author: schlundus $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/05/18 08:14:29 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090426 - franciscom - new method getSizeLimit()
@@ -530,7 +530,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
     }
 
-    // 20070526 - added CF.id to order by
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM {$this->object_table} CF " .
@@ -794,7 +793,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $cfield=$hash;
     }
-
     if( !is_null($cfield) )
     {
       foreach($cfield as $field_id => $type_and_value)

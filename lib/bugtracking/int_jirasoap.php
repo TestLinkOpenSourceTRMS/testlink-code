@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jirasoap.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/05/14 19:01:57 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/05/19 07:41:41 $ $Author: amkhullar $
  *
  * @author amitkhullar <amkhullar@gmail.com>
  *
@@ -360,7 +360,7 @@ class jirasoapInterface extends bugtrackingInterface
         {
             $ereg_forbidden_chars = '[!|£%&/()=?]';
 
-            if (eregi($ereg_forbidden_chars, $id))
+            if (preg_match($ereg_forbidden_chars, $id))
             {
                 $status_ok = 0;
             }

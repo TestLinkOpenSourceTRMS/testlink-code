@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/04/07 18:55:29 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/05/20 21:38:18 $ $Author: schlundus $
  *
  */
 require_once('config.inc.php');
@@ -46,7 +46,7 @@ if($args->bEditUser)
 		}
 		if ($result >= tl::OK)
 		{
-			logAuditEvent(TLS("audit_users_self_signup",$login),"CREATE",$user->dbID,"users");
+			logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
 			redirect(TL_BASE_HREF . "login.php?note=first");
 			exit();
 		}

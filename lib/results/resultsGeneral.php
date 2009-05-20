@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/02/11 07:32:05 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/05/20 21:35:25 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -19,13 +19,12 @@
  * 	20080626 - mht - added milestomes, priority report, refactorization
  * 
  * ----------------------------------------------------------------------------------- */
-
 require('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
+testlinkInitPage($db,true,false,"checkRights");
 
-testlinkInitPage($db);
 $args = init_args();
 $templateCfg = templateConfiguration();
 
@@ -48,7 +47,6 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 // ----------------------------------------------------------------------------
-
 $topLevelSuites = $re->getTopLevelSuites();
 
 if(is_null($topLevelSuites))
@@ -58,13 +56,10 @@ if(is_null($topLevelSuites))
 	$do_report['msg'] = lang_get('report_tspec_has_no_tsuites');
 	tLog('Overall Metrics page: no test cases defined');
 }
-
-// ----------------------------------------------------------------------------
 else // do report
 {
-	$do_report['status_ok']=1;
-	$do_report['msg']='';
-
+	$do_report['status_ok'] = 1;
+	$do_report['msg'] = '';
 
   	$mapOfAggregate = $re->getAggregateMap();
   	$arrDataSuite = null;
@@ -103,29 +98,29 @@ else // do report
           			lang_get($tlCfg->results['status_label'][$status_verbose]);
       	}
       	$columnsDefinition->testsuites = $dummy['details'];
-  	} // end if 
+  	}
 
 	// ----------------------------------------------------------------------------
   	/* BUILDS REPORT */
 
-	$colDefiniton=null;
-	$results=null;
-	if( $do_report['status_ok'] )
+	$colDefiniton = null;
+	$results = null;
+	if($do_report['status_ok'])
 	{
   		$results = $re->getAggregateBuildResults();
   		if ($results != null) 
   		{
       		// Get labels
-      		$resultsCfg=config_get('results');
-      		$labels=$resultsCfg['status_label'];
+      		$resultsCfg = config_get('results');
+      		$labels = $resultsCfg['status_label'];
       
       		// I will add not_run if not exists
-		  	$keys2display=array('not_run' => 'not_run');
+		  	$keys2display = array('not_run' => 'not_run');
 		  	foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
 		  	{
-		      	if( $key != 'not_run')
+		      	if($key != 'not_run')
 		      	{
-		          $keys2display[$key]=$key;  
+		        	$keys2display[$key] = $key;  
 		      	}  
 		  	}
       
@@ -134,8 +129,8 @@ else // do report
             	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
                           lang_get($status_verbose); 
             
-            	$colDefinition[$status_verbose]['qty']=$l18n_label;
-            	$colDefinition[$status_verbose]['percentage']='[%]';
+            	$colDefinition[$status_verbose]['qty'] = $l18n_label;
+            	$colDefinition[$status_verbose]['percentage'] = '[%]';
       		}
   		}    
 	}  
@@ -162,22 +157,21 @@ else // do report
 	// get test results for milestones
 	if (!empty($milestonesList))
 	{
-	  $arrPrioritizedTCs = $re->getPrioritizedTestCases();
-	  foreach($milestonesList as $item)
-	  {
+		$arrPrioritizedTCs = $re->getPrioritizedTestCases();
+		foreach($milestonesList as $item)
+		{
 		    $item['tc_total'] = $planMetrics['total'];
 		    $item['results'] = $re->getPrioritizedResults($item['target_date']);
         
-        // BUGID 20280
-		    $low_percentage = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
+        	$low_percentage = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
 		    $medium_percentage = get_percentage($arrPrioritizedTCs[MEDIUM], $item['results'][MEDIUM]); 
 		    $high_percentage = get_percentage($arrPrioritizedTCs[HIGH], $item['results'][HIGH]); 
 		    
 		    $item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
 		    $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
         
-        $item['low_incomplete'] = OFF;
-        $item['medium_incomplete'] = OFF;
+       		$item['low_incomplete'] = OFF;
+        	$item['medium_incomplete'] = OFF;
 	    	$item['high_incomplete'] = OFF;
 	    	$item['all_incomplete'] = OFF;
         
@@ -199,19 +193,17 @@ else // do report
 		    if ($item['percentage_completed'] < $item['low_percentage'])
 		    {
 		    	$item['all_incomplete'] = ON;
-        }
+        	}
         
 		    $item['low_percentage'] = number_format($item['low_percentage'], 2);
 		    
-		    // save array
 		    $statistics->milestones[$item['target_date']] = $item;
-	  } // end foreach
+	  	}
 	}
 
- 
-	// ----------------------------------------------------------------------------
+ 	// ----------------------------------------------------------------------------
 	/* Keywords report */
-	$items2loop=array('keywords' => 'getAggregateKeywordResults',
+	$items2loop = array('keywords' => 'getAggregateKeywordResults',
                     'testers' => 'getAggregateOwnerResults');
                     
 	foreach($items2loop as $item => $aggregateMethod)
@@ -226,22 +218,14 @@ else // do report
               	$dummy['details'][$status_verbose]['qty'] = 
               			lang_get($tlCfg->results['status_label'][$status_verbose]);
             	$dummy['details'][$status_verbose]['percentage'] = "[%]";
-              
-            	// This statement generates an error:
-            	// $columnsDefinition->$item[$status_verbose]['percentage']="[%]";   
-            	// Fatal error: Cannot use string offset as an array in
-            	// That I do not understand.
-          	}
-          	$columnsDefinition->$item=$dummy['details'];
-    	} 
-  	} // foreach
-  	
-} //!is_null()
-
+            }
+          	$columnsDefinition->$item = $dummy['details'];
+         } 
+  	} 
+} 
 
 // ----------------------------------------------------------------------------
 $smarty = new TLSmarty;
-//$smarty->assign('aaa', $arrPriority);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('tplan_name', $tplan_info['name']);
 $smarty->assign('columnsDefinition', $columnsDefinition);
@@ -260,15 +244,19 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 */
 function init_args()
 {
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args = new stdClass();
-    $args->tplan_id = $_REQUEST['tplan_id'];
-    $args->tproject_id = $_SESSION['testprojectID'];
-    $args->format = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
+	$iParams = array(
+		"tplan_id" => array(tlInputParameter::INT_N),
+		"format" => array(tlInputParameter::INT_N),
+	);
 
-	if (is_null($args->format))
+	$args = new stdClass();
+	$pParams = G_PARAMS($iParams,$args);
+	
+    $args->tproject_id = $_SESSION['testprojectID'];
+    
+    if (is_null($args->format))
 	{
-		tlog('$_GET["format"] is not defined', 'ERROR');
+		tlog("Parameter 'format' is not defined", 'ERROR');
 		exit();
 	}
 
@@ -293,4 +281,8 @@ function get_percentage($total, $parameter)
 	
 }
 
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
+}
 ?>

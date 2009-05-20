@@ -5,8 +5,8 @@
  *
  * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.138 $
- * @modified $Date: 2009/04/28 10:45:11 $ by $Author: amkhullar $
+ * @version $Revision: 1.139 $
+ * @modified $Date: 2009/05/20 21:35:25 $ by $Author: schlundus $
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *-------------------------------------------------------------------------
@@ -284,10 +284,10 @@ class results
 			// only those that require info on results for keywords
 			// Map of test case ids to array of associated keywords
 			$this->keywordData = null;
-			if( !is_null($keywords_in_tplan) )
+			if(!is_null($keywords_in_tplan))
 			{
 			    $this->keywordData = $this->getKeywordData(array_keys($keywords_in_tplan));
-      } 
+      		} 
 			//$tplan_mgr->get_keywords_tcases($this->testPlanID);
 			// get owner id -> owner name pairs used in this test plan
 			$arrOwners = getUsersForHtmlOptions($db);

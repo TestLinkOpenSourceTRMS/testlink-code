@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/05/20 21:35:25 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/05/21 19:24:05 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -28,7 +28,6 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
-
 $gui->allow_edit_tc = (has_rights($db,"mgt_modify_tc") == 'yes') ? 1 : 0;
 
 $gui->coverage = null;
@@ -103,6 +102,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	$iParams = array(
+		"format" => array(tlInputParameter::INT_N),
 		"req_spec_id" => array(tlInputParameter::INT_N),
 		"tplan_id" => array(tlInputParameter::INT_N),
 	);

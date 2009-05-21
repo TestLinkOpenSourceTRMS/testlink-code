@@ -6,7 +6,7 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2008/11/22 10:44:33 $ by $Author: franciscom $
+ * @modified $Date: 2009/05/21 19:24:05 $ by $Author: schlundus $
  *
  * Scope:
  * This class is encapsulates most functionality necessary to query the database
@@ -39,17 +39,9 @@ class tlReports
 	/** class constructor */    
 	public function tlReports(&$db, &$tplanId = null)
 	{
-//		global $tlCfg;
-
 		$this->db = $db;	
-//	  $this->tp = $tplan_mgr;  
-
-	// @TODO: wrong must correspond with choosen TP    
-//    $this->tprojectID = $tproject_info['id'];
-    $this->testPlanID = $tplanId;
-//		$this->tplanName  = $tplan_info['name'];
-    
-	} // end constructor
+		$this->testPlanID = $tplanId;
+	}
 
 
 	/** 
@@ -58,7 +50,7 @@ class tlReports
 	 **/
 	public function get_list_reports($bug_interface_on,$req_mgmt_enabled, $format)
 	{
-		$reportList=config_get('reports_list');
+		$reportList = config_get('reports_list');
 		$items = array();
 
 		foreach ($reportList as &$reportItem) {

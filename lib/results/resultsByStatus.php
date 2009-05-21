@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.66 2009/05/17 10:57:32 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.67 2009/05/21 19:24:05 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -21,7 +21,7 @@ require_once('common.php');
 require_once("results.class.php");
 require_once('displayMgr.php');
 require_once('users.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
@@ -30,7 +30,6 @@ $statusCode = $resultsCfg['status_code'];
 
 $args = init_args($statusCode);
 $gui = initializeGui($statusCode,$args);
-
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -41,8 +40,7 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
 
-
-$testCaseCfg=config_get('testcase_cfg');
+$testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
 $buildSet = $tplan_mgr->get_builds($args->tplan_id);
@@ -81,7 +79,6 @@ if (is_array($mapOfLastResult))
 	  	    	$executions_id = $tcaseContent['executions_id'];
 	  	    	$tcversion_id = $tcaseContent['tcversion_id'];
             
-	            // 20080602 - franciscom
 	            $testVersion = $tcaseContent['version'];
 	               
 	  	    	// ------------------------------------------------------------------------------------
@@ -138,14 +135,7 @@ if (is_array($mapOfLastResult))
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui );
 
-// $smarty->assign('tproject_name', $tproject_name );
-// $smarty->assign('tplan_name', $tplan_name );
-// $smarty->assign('title', $title);
-// $smarty->assign('arrBuilds', $arrBuilds);
-// $smarty->assign('arrData', $arrData);
-// $smarty->assign('type', $type);
-// $smarty->assign('count', $count_tc);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
 
 /**
 * Function returns number of Test Cases in the Test Plan
@@ -164,34 +154,28 @@ function buildTCLink($tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $
 }
 
 
-/**
- * init_args
- *
- */
-function  init_args($statusCode)
+function init_args($statusCode)
 {
-    $args = new stdClass();
-    
-    $args->type = isset($_GET['type']) ? $_GET['type'] : $statusCode['not_run'];
-    $args->report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
+    $iParams = array(
+		"format" => array(tlInputParameter::INT_N),
+		"tplan_id" => array(tlInputParameter::INT_N),
+    	"type" => array(tlInputParameter::STRING_N,0,1),
+	);
+	$args = new stdClass();
+	$pParams = R_PARAMS($iParams,$args);
+	
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-    
-    if( $args->tproject_id == 0 )
-    {
-        $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-    }
-    return $args;
+	return $args;
 }
 
 /**
  * initializeGui
  *
  */
-function  initializeGui($statusCode,&$argsObj)
+function initializeGui($statusCode,&$argsObj)
 {
-    $guiObj=new stdClass();
+    $guiObj = new stdClass();
     
     // Count for the Failed Issues whose bugs have to be raised/not linked. 
     $guiObj->without_bugs_counter = 0; 
@@ -200,15 +184,15 @@ function  initializeGui($statusCode,&$argsObj)
     $guiObj->type = $argsObj->type;
 
     // Humm this may be can be configured ???
-    foreach( array('failed','blocked','not_run') as $verbose_status )
+    foreach(array('failed','blocked','not_run') as $verbose_status)
     {
-        if( $argsObj->type == $statusCode[$verbose_status] )
+        if( $argsObj->type == $statusCode[$verbose_status])
         {
             $guiObj->title = lang_get('list_of_' . $verbose_status);
             break;
         }  
     }
-    if( is_null($guiObj->title) )
+    if(is_null($guiObj->title))
     {
     	tlog('wrong value of GET type');
     	exit();
@@ -216,5 +200,10 @@ function  initializeGui($statusCode,&$argsObj)
 
     
     return $guiObj;    
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
 }
 ?>

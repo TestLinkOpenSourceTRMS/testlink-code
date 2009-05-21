@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.50 2009/03/12 22:15:13 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.51 2009/05/21 19:24:05 schlundus Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -15,24 +15,18 @@
  *      20070826 - franciscom - disable resultsImport
  * 
  **/
- 
- 
 require('../../config.inc.php');
 require_once('common.php');
 require_once('reports.class.php');
-testlinkInitPage($db);
-tLog('resultsNavigator.php called');
+testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
+$args = init_args($tlCfg);
 $gui = new stdClass();
 $gui->workframe = $_SESSION['basehref'] . "lib/general/staticPage.php?key=showMetrics";
-
 $gui->do_report = array('status_ok' => 1, 'msg' => '');
-$selectedReportType = null;
-
-$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$gui->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+$gui->tplan_id = $args->tplan_id;
 $btsEnabled = config_get('bugInterfaceOn');
 
 $tplan_mgr = new testplan($db);
@@ -67,21 +61,11 @@ $gui->menuItems = array();
 $gui->tplans = array();
 if($gui->do_report['status_ok'])
 {
-  	if (isset($_GET['format']))
-  	{
-		    $selectedReportType = intval($_GET['format']);
-		}    
-  	else
-  	{
-		    $selectedReportType = sizeof($tlCfg->reports_formats) ? key($tlCfg->reports_formats) : null;
-    }
-    
-  	// create a list or reports
-	  $gui->menuItems = $reports_magic->get_list_reports($btsEnabled,$_SESSION['testprojectOptReqs'], 
-		                                                   $tlCfg->reports_formats[$selectedReportType]);
-
+	// create a list or reports
+	$gui->menuItems = $reports_magic->get_list_reports($btsEnabled,$args->optReqs, 
+	                                                  $tlCfg->reports_formats[$args->format]);
 }
-$tplans = getAccessibleTestPlans($db, $tproject_id, $_SESSION['userID']);
+$tplans = getAccessibleTestPlans($db, $args->tproject_id, $args->userID);
 foreach($tplans as $key => $value)
 {
   	$gui->tplans[$value['id']] = $value['name'];
@@ -90,6 +74,32 @@ foreach($tplans as $key => $value)
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('arrReportTypes', localize_array($tlCfg->reports_formats));
-$smarty->assign('selectedReportType', $selectedReportType);
+$smarty->assign('selectedReportType', $args->format);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+function init_args($tlCfg)
+{
+	$iParams = array(
+		"format" => array(tlInputParameter::INT_N),
+		"tplan_id" => array(tlInputParameter::INT_N),
+	);
+	$args = new stdClass();
+	$pParams = R_PARAMS($iParams,$args);
+	
+	if (is_null($args->format))
+		$args->format = sizeof($tlCfg->reports_formats) ? key($tlCfg->reports_formats) : null;
+	if (is_null($args->tplan_id))
+		$args->tplan_id = $_SESSION['testPlanId'];
+	
+	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+   	$args->userID = $_SESSION['userID'];
+    $args->optReqs = $_SESSION['testprojectOptReqs'];
+
+    return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
+}
 ?>

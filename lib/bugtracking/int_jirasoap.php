@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jirasoap.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/05/19 07:41:41 $ $Author: amkhullar $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/05/21 17:39:45 $ $Author: franciscom $
  *
  * @author amitkhullar <amkhullar@gmail.com>
  *
@@ -21,7 +21,7 @@ class jirasoapInterface extends bugtrackingInterface
 {
     var $dbHost = null;
     var $dbConnection = null;
-    var $Connected = false;
+    var $connected = false;
     var $dbCharSet = null;
     var $dbType = null;
 
@@ -59,8 +59,6 @@ class jirasoapInterface extends bugtrackingInterface
         $checkURL = $this->is_valid_url(($this->soapURL));
         if (!$checkURL)
         {
-
-
             // Get all the status in JIRA
             $this->client = new soapclient($soapURL);
             $soap_token = $this->soap_login();
@@ -79,7 +77,7 @@ class jirasoapInterface extends bugtrackingInterface
         }
     }
     /**
-     * this function establishes the soap connection and logins to the
+     * establishes the soap connection and logins to the
      * bugtracking system
      *
      * @return token if the login was succesful
@@ -100,8 +98,7 @@ class jirasoapInterface extends bugtrackingInterface
         }
     }
     /**
-     * this function establishes the soap connection to the
-     * bugtracking system
+     * establishes the soap connection to the bugtracking system
      *
      * @return null if issue not found
      *         value  'issue_status_id' if jira_summary is false
@@ -151,8 +148,7 @@ class jirasoapInterface extends bugtrackingInterface
     }
 
     /**
-     * this function establishes the soap connection to the
-     * bugtracking system
+     * establishes the soap connection to the bugtracking system
      *
      * @return bool returns true if the soap connection was established and the
      * wsdl could be downloaded, false else
@@ -163,32 +159,32 @@ class jirasoapInterface extends bugtrackingInterface
     function connect()
     {
 
-        $this->Connected = true;
-        return $this->Connected;
+        $this->connected = true;
+        return $this->connected;
     }
 
     /**
-     * this function simply returns the state of the soap connection
+     * returns state of the soap connection
      *
-     * @return bool returns true if the soap connection is established, false else
+     * @return bool true if the soap connection is established, false else
      *
      * @version 1.0
      * @author amitkhullar <amkhullar@gmail.com>
      **/
     function isConnected()
     {
-        return $this->Connected;
+        return $this->connected;
     }
 
     /**
-     * this function closes the soap connection (if any)
+     * closes the soap connection (if any)
      *
      * @version 1.0
      * @author amitkhullar <amkhullar@gmail.com>
      **/
     function disconnect()
     {
-        $this->Connected = false;
+        $this->connected = false;
     }
     /**
      * Return the URL to the bugtracking page for viewing

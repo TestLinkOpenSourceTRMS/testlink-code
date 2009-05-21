@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/05/18 20:22:10 $ by $Author: schlundus $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/05/21 20:28:30 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *      20090521 - franciscom - getTestCase() - development started
  *      20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
  *                              getTestCaseAttachments(), test case external id can be used on call
  *                              BUGID 2441 - getTestProjectByName(), getTestPlanByName() - new methods.
@@ -252,6 +253,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getTestCaseCustomFieldDesignValue' => 'this:getTestCaseCustomFieldDesignValue',
                                 'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
+	                            'tl.getTestCase' => 'this:getTestCase',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
                     			// ping is an alias for sayHello
@@ -2303,28 +2305,28 @@ class TestlinkXMLRPCServer extends IXR_Server
   protected function checkTestCaseVersionNumber()
   {
         $status=true;
-    	  if(!($status=$this->_isParamPresent(self::$versionNumberParamName)))
-    	  {
+        if(!($status=$this->_isParamPresent(self::$versionNumberParamName)))
+        {
             $msg = sprintf(MISSING_REQUIRED_PARAMETER_STR,self::$versionNumberParamName);
-		        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
-    	  }
-    	  else
-    	  {
-    	      $version=$this->args[self::$versionNumberParamName];
-    	      if( !($status=is_int($version)) )
-    	      {
-    	      	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, PARAMETER_NOT_INT_STR);
-    	      }
-    	      else 
-    	      {
-    	          if( !($status = ($version > 0)) )
-    	          {
-    	              $this->errors[] = new IXR_Error(VERSION_NOT_VALID, 
-    	                                              sprintf(VERSION_NOT_VALID_STR,$version));  
-    	          }
-    	      }
-    	  }
-    	  return $status;
+            $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+        }
+        else
+        {
+            $version=$this->args[self::$versionNumberParamName];
+            if( !($status=is_int($version)) )
+            {
+            	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, PARAMETER_NOT_INT_STR);
+            }
+            else 
+            {
+                if( !($status = ($version > 0)) )
+                {
+                    $this->errors[] = new IXR_Error(VERSION_NOT_VALID, 
+                                                    sprintf(VERSION_NOT_VALID_STR,$version));  
+                }
+            }
+        }
+        return $status;
   }
 
 	 /**
@@ -3050,6 +3052,64 @@ public function getTestCaseAttachments($args)
 
         return $status_ok ? $info : $this->errors;
     }
+
+
+/**
+* get test case specification using external ir internal id
+* 
+* @param struct $args
+* @param string $args["devKey"]
+* @param int $args["testcaseid"]: optional, if does not is present           
+*                                 testcaseexternalid must be present
+*
+* @param int $args["testcaseexternalid"]: optional, if does not is present           
+*                                         testcaseid must be present
+* @param int $args["version"]: optional, if does not is present max version number will be
+*                                        retuned
+*
+* @return mixed $resultInfo
+*/
+public function getTestCase($args)
+{
+    $msg_prefix="(" .__FUNCTION__ . ") - ";
+    $status_ok=true;
+    $this->_setArgs($args);
+    
+    $checkFunctions = array('authenticate','checkTestCaseIdentity');       
+    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
+    $version_id=testcase::LATEST_VERSION;
+    $version_number=-1;
+
+    if( $status_ok )
+    {			
+        // check optional arguments
+        if( $this->_isParamPresent(self::$versionNumberParamName) )
+        {
+            if( ($status_ok=$this->checkTestCaseVersionNumber()) )
+            {
+                $version_id=null;
+                $version_number=$this->args[self::$versionNumberParamName];
+            }
+        }
+    }
+    
+    if( $status_ok )
+    {			
+        $testCaseMgr = new testcase($this->dbObj);
+        $id=$this->args[self::$testCaseIDParamName];
+        
+        $result = $testCaseMgr->get_by_id($id,$version_id,'ALL','ALL',$version_number);            
+        if(0 == sizeof($result))
+        {
+            $status_ok=false;
+            $this->errors[] = new IXR_ERROR(NO_TESTCASE_FOUND, 
+                                            $msg_prefix . NO_TESTCASE_FOUND_STR);
+            return $this->errors;
+        }
+    }
+
+    return $status_ok ? $result : $this->errors; 
+}
 
 
 

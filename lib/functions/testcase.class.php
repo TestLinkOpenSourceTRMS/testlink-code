@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.167 $
- * @modified $Date: 2009/05/17 16:30:13 $ $Author: franciscom $
+ * @version $Revision: 1.168 $
+ * @modified $Date: 2009/05/22 06:48:37 $ $Author: franciscom $
  * @author franciscom
  *
- * 20090517 - franciscom - changes to mananaged deleted users on:
+ * 20090521 - franciscom - get_by_id() added version_number argument
+ * 20090517 - franciscom - changes to manage deleted users on:
  *                         get_executions(),get_last_execution()
  * 20090514 - franciscom - added locatization of custom fields label without audit warning 
  * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
@@ -140,53 +141,53 @@ class testcase extends tlObjectWithAttachments
 	}
 
 
-  /*
-    function: get_export_file_types
-              getter
+/*
+  function: get_export_file_types
+            getter
 
-    args: -
+  args: -
 
-    returns: map
-             key: export file type code
-             value: export file type verbose description
+  returns: map
+           key: export file type code
+           value: export file type verbose description
 
-  */
-	function get_export_file_types()
-	{
-     return $this->export_file_types;
-  }
+*/
+function get_export_file_types()
+{
+    return $this->export_file_types;
+}
 
-  /*
-    function: get_impor_file_types
-              getter
+/*
+  function: get_impor_file_types
+            getter
 
-    args: -
+  args: -
 
-    returns: map
-             key: import file type code
-             value: import file type verbose description
+  returns: map
+           key: import file type code
+           value: import file type verbose description
 
-  */
-    function get_import_file_types()
-	{
-        return $this->import_file_types;
-    }
+*/
+function get_import_file_types()
+{
+    return $this->import_file_types;
+}
 
- /*
-    function: get_execution_types
-              getter
+/*
+   function: get_execution_types
+             getter
 
-    args: -
+   args: -
 
-    returns: map
-             key: execution type code
-             value: execution type verbose description
+   returns: map
+            key: execution type code
+            value: execution type verbose description
 
-  */
-	function get_execution_types()
-	{
-     return $this->execution_types;
-  }
+*/
+function get_execution_types()
+{
+    return $this->execution_types;
+}
 
 
 /**
@@ -1280,7 +1281,7 @@ function create_new_version($id,$user_id)
 function get_last_version_info($id)
 {
 	$sql = "SELECT MAX(version) AS version FROM tcversions,nodes_hierarchy WHERE ".
-		     " nodes_hierarchy.id = tcversions.id ".
+	       " nodes_hierarchy.id = tcversions.id ".
 	       " AND nodes_hierarchy.parent_id = {$id} ";
 
 	$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
@@ -1437,6 +1438,7 @@ function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_
          [version_id]: default self::ALL_VERSIONS => all versions
                        can be an array.
                        Useful to retrieve only a subset of versions.
+                       null => means use version_number argument
 
          [active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
                           has effect for the following version_id values:
@@ -1444,12 +1446,15 @@ function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_
 
          [open_status]: default 'ALL'
                         currently not used.
+                        
+         [version_number]: default 1, version number displayed at User Interface               
 
   returns: array when every element has following keys:
 
 
 */
-function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$open_status='ALL')
+function get_by_id($id,$version_id = self::ALL_VERSIONS, 
+                   $active_status='ALL',$open_status='ALL',$version_number=1)
 {
 	$tcid_list = '';
 	$where_clause = '';
@@ -1472,11 +1477,19 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS, $active_status='ALL',$o
 	}
 	else
 	{
-		if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
-		{
-			$where_clause .= " AND tcversions.id = {$version_id} ";
-		}
-
+	    // 20090521 - franciscom - search by human version number
+	    if( is_null($version_id) )
+	    {
+	        $where_clause .= " AND tcversions.version = {$version_number} ";
+	    }
+	    else 
+	    {
+		    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
+		    {
+		    	$where_clause .= " AND tcversions.id = {$version_id} ";
+		    }
+        }
+        
 		$active_status = strtoupper($active_status);
 	  	if($active_status != 'ALL')
 	  	{
@@ -1879,9 +1892,9 @@ function getInternalID($stringID,$glueCharacter)
 		$externalID = $this->db->prepare_string($pieces[1]);
 
 		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
-           " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
-           " WHERE TCV.id = NH.id " .
-           " AND  TCV.tc_external_id = '{$externalID}'";
+               " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
+               " WHERE TCV.id = NH.id " .
+               " AND  TCV.tc_external_id = '{$externalID}'";
 
 		$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		if(!is_null($testCases))

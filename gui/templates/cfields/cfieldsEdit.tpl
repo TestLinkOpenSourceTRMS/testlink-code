@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.18 2009/05/11 06:15:33 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.19 2009/05/25 07:27:07 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,8 @@ This is done to simplify logic.
 
 
 rev :
+     20090524 - franciscom - Refactoring to have a better picture on User Interface of
+                             Custom Field application area usage
      20090503 - franciscom - BUGID 2425
      20090408 - franciscom - BUGID 2352 - removed delete block.
                              BUGID 2359 - display test projects where custom field is assigned
@@ -42,7 +44,7 @@ rev :
           s="btn_ok,title_cfields_mgmt,warning_is_in_use,warning,name,label,type,possible_values,
              warning_empty_cfield_name,warning_empty_cfield_label,testproject,assigned_to_testprojects,
              enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,
-             available_on,btn_upd,btn_delete,warning_no_type_change,
+             available_on,btn_upd,btn_delete,warning_no_type_change,enable_on,
              btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -67,8 +69,12 @@ var js_show_on_cfg = new Array();
 
 // DOM Object ID (oid)
 js_enable_on_cfg['oid_prefix'] = new Array();
-js_enable_on_cfg['oid_prefix']['combobox'] = 'cf_enable_on_';
+js_enable_on_cfg['oid_prefix']['boolean_combobox'] = 'cf_enable_on_';
 js_enable_on_cfg['oid_prefix']['container'] = 'container_cf_enable_on_';
+js_enable_on_cfg['oid'] = new Array();
+js_enable_on_cfg['oid']['combobox'] = 'cf_enable_on';
+js_enable_on_cfg['oid']['container'] = 'container_cf_enable_on';
+
 
 // will containg show (1 /0 ) info for every node type
 js_enable_on_cfg['execution'] = new Array();
@@ -78,7 +84,7 @@ js_enable_on_cfg['testplan_design'] = new Array();  // BUGID 1650 (REQ)
 
 // DOM Object ID (oid)
 js_show_on_cfg['oid_prefix'] = new Array();
-js_show_on_cfg['oid_prefix']['combobox'] = 'cf_show_on_';
+js_show_on_cfg['oid_prefix']['boolean_combobox'] = 'cf_show_on_';
 js_show_on_cfg['oid_prefix']['container'] = 'container_cf_show_on_';
 
 // will containg show (1 /0 ) info for every node type
@@ -122,7 +128,7 @@ var js_possible_values_cfg = new Array();
 
 
 {literal}
-function validateForm(f)
+function validateForm(f,id_nodetype)
 {
   if (isWhitespace(f.cf_name.value))
   {
@@ -167,38 +173,38 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   var keys2loop=new Array();
   var idx;
   var key;
+  var option_item;
+  var enabled_option_counter=0;
+  var style_display;
   
   keys2loop[0]='execution';
   keys2loop[1]='design';
   keys2loop[2]='testplan_design'; // BUGID 1650 - 20080809 - franciscom
 
-
-  // ------------------------------------------------------------
-  // Enable on
-  // ------------------------------------------------------------
+  // 20090524 - franciscom - refactoring
+  style_display='';
   for(idx=0;idx < keys2loop.length; idx++)
   {
     key=keys2loop[idx];
-    oid=enable_on_cfg['oid_prefix']['combobox']+key;
-    o_enable[key]=document.getElementById(oid);
-
-    oid=enable_on_cfg['oid_prefix']['container']+key;
-    o_enable_container[key]=document.getElementById(oid);
-
+    oid='option_' + key;
+    option_item=document.getElementById(oid);
     if( enable_on_cfg[key][o_nodetype.value] == 0 )
     {
-      // 20071124 - need to understand if can not set to 0
-      o_enable[key].value=0;
-      o_enable[key].disabled='disabled';
-      o_enable_container[key].style.display='none';
+      option_item.style.display='none';
     }
     else
     {
-      o_enable[key].disabled='';
-      o_enable_container[key].style.display='';
+      option_item.style.display='';
+      enabled_option_counter++;
     }
   }
-  // ------------------------------------------------------------
+  // Set Always to Test Spec Design that is valid for TL elements
+  if( enabled_option_counter == 0 )
+  {
+    style_display='none';
+  }
+  document.getElementById(enable_on_cfg['oid']['container']).style.display=style_display;
+  document.getElementById(enable_on_cfg['oid']['combobox']).value='design';
 
   // ------------------------------------------------------------
   // Display on
@@ -206,29 +212,29 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   for(idx=0;idx < keys2loop.length; idx++)
   {
     key=keys2loop[idx];
-    oid=show_on_cfg['oid_prefix']['combobox']+key;
+    oid=show_on_cfg['oid_prefix']['boolean_combobox']+key;
+    
     o_display[key]=document.getElementById(oid);
-
-    oid=show_on_cfg['oid_prefix']['container']+key;
-    o_display_container[key]=document.getElementById(oid);
-
-    if( show_on_cfg[key][o_nodetype.value] == 0 )
+    if( o_display[key] != null)
     {
-      // 20071124 - need to understand if can not set to 0
-      o_display[key].value=0;
-      o_display[key].disabled='disabled';
-      o_display_container[key].style.display='none';
-    }
-    else
-    {
-      o_display[key].disabled='';
-      o_display_container[key].style.display='';
+      oid=show_on_cfg['oid_prefix']['container']+key;
+      o_display_container[key]=document.getElementById(oid);
+      
+      if( show_on_cfg[key][o_nodetype.value] == 0 )
+      {
+        // 20071124 - need to understand if can not set to 0
+        o_display[key].value=0;
+        o_display[key].disabled='disabled';
+        o_display_container[key].style.display='none';
+      }
+      else
+      {
+        o_display[key].disabled='';
+        o_display_container[key].style.display='';
+      }
     }
   }
   // ------------------------------------------------------------
-
-
-
 } // configure_cf_attr
 
 
@@ -262,7 +268,39 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
     o_container.style.display='';
   }
 }
+
+/*
+  function: initShowOnExec
+            called every time value of 'cf_enable_on' is changed
+            to initialize  show_on_ attribute.
+ 
+  args:
+  
+  returns: 
+
+*/
+function initShowOnExec(id_master,show_on_cfg)
+{
+  var container_oid=show_on_cfg['oid_prefix']['container']+'execution';
+  var combo_oid=show_on_cfg['oid_prefix']['boolean_combobox']+'execution';
+  
+  var o_container=document.getElementById(container_oid);
+  var o_combo=document.getElementById(combo_oid);
+  
+  var o_master=document.getElementById(id_master);
+  if( o_master.value == 'execution')
+  {
+    o_container.style.display='none';
+    o_combo.value=1;
+  }
+  else
+  {
+    o_container.style.display='';
+  }
+}
 </script>
+
+
 {/literal}
 
 </head>
@@ -292,7 +330,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 {else}
 <form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php"
-      onSubmit="javascript:return validateForm(this);">
+      onSubmit="javascript:return validateForm(this,'combo_cf_node_type_id');">
 <input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
 <table class="common">
 
@@ -351,44 +389,22 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			</td>
 		</tr>
 
-    {* ------------------------------------------------------------------------------- *}
-    {*   Design   *}
-    {if $gui->cfieldCfg->disabled_cf_show_on.design}
-      {assign var="display_style" value="none"}
-    {else}
-      {assign var="display_style" value=""}
-    {/if}
-
-    <!---
-    BUGID 2425
-		<tr id="container_cf_show_on_design" style="display:{$display_style};">
-			<th style="background:none;">{$labels.show_on_design}</th>
+   {* ------------------------------------------------------------------------------- *}
+    {* NEW *}
+		<tr	id="container_cf_enable_on">
+			<th style="background:none;">{$labels.enable_on}</th>
 			<td>
-				<select id="cf_show_on_design"
-				        name="cf_show_on_design"
-			        	{$gui->cfieldCfg->disabled_cf_show_on.design} >
-				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_design}
+				<select name="cf_enable_on" id="cf_enable_on"
+				        onchange="initShowOnExec('cf_enable_on',js_show_on_cfg);">
+        {foreach item=area_cfg key=area_name from=$gui->cfieldCfg->cf_enable_on}
+          {assign var="access_key" value="enable_on_$area_name"}
+				  <option value={$area_name} id="option_{$area_name}" 
+				          {if $area_cfg.value == 0} style="display:none;" {/if} 
+				  {if $gui->cfield.$access_key} selected="selected"	{/if}>{$area_cfg.label}</option>
+				{/foreach}
 				</select>
 			</td>
 		</tr>
-    --->
-
-		{if $gui->cfieldCfg->disabled_cf_enable_on.design}
-      {assign var="display_style" value="none"}
-    {else}
-      {assign var="display_style" value=""}
-    {/if}
-		<tr	id="container_cf_enable_on_design" style="display:{$display_style};">
-			<th style="background:none;">{$labels.enable_on_design}</th>
-			<td>
-				<select name="cf_enable_on_design"
-				        id="cf_enable_on_design"
-				        {$gui->cfieldCfg->disabled_cf_enable_on.design}>
-				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.enable_on_design}
-				</select>
-			</td>
-		</tr>
-    {* ------------------------------------------------------------------------------- *}
 
 
     {* ------------------------------------------------------------------------------- *}
@@ -409,62 +425,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			</td>
 		</tr>
 
-		{if $gui->cfieldCfg->disabled_cf_enable_on.execution}
-      {assign var="display_style" value="none"}
-    {else}
-      {assign var="display_style" value=""}
-    {/if}
-		<tr id="container_cf_enable_on_execution" style="display:{$display_style};">
-			<th style="background:none;">{$labels.enable_on_exec}</th>
-			<td>
-				<select id="cf_enable_on_execution"
-				        name="cf_enable_on_execution"
-				        {$gui->cfieldCfg->disabled_cf_enable_on.execution}>
-				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.enable_on_execution}
-				</select>
-			</td>
-		</tr>
-    {* ------------------------------------------------------------------------------- *}
-
-    {* ------------------------------------------------------------------------------- *}
-    {* Test Plan Design   *}
-    {if $gui->cfieldCfg->disabled_cf_show_on.testplan_design}
-      {assign var="display_style" value="none"}
-    {else}
-      {assign var="display_style" value=""}
-    {/if}
-
-    <!---
-		<tr id="container_cf_show_on_testplan_design" style="display:{$display_style};">
-			<th style="background:none;">{$labels.show_on_testplan_design}</th>
-			<td>
-				<select id="cf_show_on_testplan_design"
-				        name="cf_show_on_testplan_design"
-			        	{$gui->cfieldCfg->disabled_cf_show_on.testplan_design} >
-				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_testplan_design}
-				</select>
-			</td>
-		</tr>
-		--->
-
-
-		{if $gui->cfieldCfg->disabled_cf_enable_on.testplan_design}
-      {assign var="display_style" value="none"}
-    {else}
-      {assign var="display_style" value=""}
-    {/if}
-		<tr	id="container_cf_enable_on_testplan_design" style="display:{$display_style};">
-			<th style="background:none;">{$labels.enable_on_testplan_design}</th>
-			<td>
-				<select name="cf_enable_on_testplan_design"
-				        id="cf_enable_on_testplan_design"
-				        {$gui->cfieldCfg->disabled_cf_enable_on.testplan_design}>
-				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.enable_on_testplan_design}
-				</select>
-			</td>
-		</tr>
-    {* ------------------------------------------------------------------------------- *}
-
+ 
+ 
 
 
 
@@ -474,7 +436,8 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$gui->cfield.node_type_id}
 			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
-			    <input type="hidden" id="hidden_cf_node_type_id"
+			    {hidden_cf_node_type_id}
+			    <input type="hidden" id="combo_cf_node_type_id"
 			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
 			  {else}
   				<select onchange="configure_cf_attr('combo_cf_node_type_id',

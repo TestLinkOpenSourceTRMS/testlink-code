@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/05/18 08:14:29 $  $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/05/25 07:27:08 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090523 - franciscom - changes on show_on, enable_on logics
  * 20090426 - franciscom - new method getSizeLimit()
  * 20090420 - amitkhullar- BUGID-2410 - get_linked_cfields_at_testplan_design() - added logic to get data
  * 					                    for custom field values stores at test plan level.
@@ -131,6 +132,7 @@ class cfield_mgr
   // IMPORTANT: this values are used as access keys in several properties of this object.
   //            then if you add one here, remember to update other properties.
   //
+  // var $application_areas=array('execution','design','testplan_design');
   var $application_areas=array('execution','design','testplan_design');
 
 	// I'm using the same codes used by Mantis (franciscom)
@@ -174,19 +176,17 @@ class cfield_mgr
 								                   'script'=> 0,
 								                   'server' => 0);
 
-  // only the types listed here can have custom fields
-	//var $node_types = array('testproject',
-	//                        'testsuite',
-	//                        'testcase',
-	//                        'testplan');
+// only the types listed here can have custom fields
+//var $node_types = array('testproject',
+//                        'testsuite',
+//                        'testcase',
+//                        'testplan');
+//
+var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
+
+
+  // 20090523 - changes in configuration
   //
-	var $node_types = array('testsuite',
-	                        'testplan',
-	                        'testcase',
-	                        'requirement_spec',
-	                        'requirement');
-
-
   // Needed to manage user interface, when creating Custom Fields.
   // When user choose a item type (test case, etc), a javascript logic
   // uses this information to hide/show enable_on, and show_on combos.
@@ -194,20 +194,20 @@ class cfield_mgr
   // 0 => combo will not displayed
   //
   var $enable_on_cfg=array('execution' => array('testsuite' => 0,
-	                                              'testplan'  => 0,
-	                                              'testcase'  => 1,
-	                                              'requirement_spec' => 0,
-	                                              'requirement' => 0),
+	                                            'testplan'  => 0,
+	                                            'testcase'  => 1,
+	                                            'requirement_spec' => 0,
+	                                            'requirement' => 0),
                            'design' => array('testsuite' => 1,
-	                                           'testplan'  => 1,
-	                                           'testcase'  => 1,
-	                                           'requirement_spec' => 0,
-	                                           'requirement' => 0),
-                           'testplan_design' => array('testsuite' => 1,
-	                                                    'testplan'  => 0,
-	                                                    'testcase'  => 1,
-	                                                    'requirement_spec' => 0,
-	                                                    'requirement' => 0));
+	                                         'testplan'  => 1,
+	                                         'testcase'  => 1,
+	                                         'requirement_spec' => 0,
+	                                         'requirement' => 0),
+                           'testplan_design' => array('testsuite' => 0,
+	                                                  'testplan'  => 0,
+	                                                  'testcase'  => 1,
+	                                                  'requirement_spec' => 0,
+	                                                  'requirement' => 0));
 
   // 0 => combo will not displayed
   // 20080809 - franciscom 
@@ -518,11 +518,20 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
             $additional_filter .= " AND CF.show_on_execution=1 ";
         }   
         
+        // 20090523 - franciscom
+        // Probably this piece need to be changed to act on enable_on_ attribute
+        // due to CF display logic refactoring
+        // if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
+        // {
+        //     $additional_filter .= " AND CF.show_on_testplan_design=1 ";
+        // }   
         if( isset($filters['show_on_testplan_design']) && !is_null($filters['show_on_testplan_design']) )
         {
-            $additional_filter .= " AND CF.show_on_testplan_design=1 ";
+            $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
         }   
-        
+           
+           
+           
         // 20090420 - franciscom
         if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
         {
@@ -2115,7 +2124,10 @@ function getXMLServerParams($node_id)
          " WHERE CFTP.testproject_id={$tproject_id} " .
          " AND   CFTP.active=1     " .
          " AND   CF.enable_on_testplan_design={$enabled} " .
-         " AND   CF.show_on_testplan_design=1 " .
+         
+         // 20090523 - franciscom 
+         // missing refactoring when changing custom field management
+         // " AND   CF.show_on_testplan_design=1 " .
          $order_by_clause;
     $map = $this->db->$fetchMethod($sql,$access_key);
     return($map);

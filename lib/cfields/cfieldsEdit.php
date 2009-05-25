@@ -5,10 +5,14 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/05/14 19:01:57 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/05/25 07:27:08 $ by $Author: franciscom $
  *
- * rev: 20090503 - franciscom - BUGID 2425
+ * rev: 20090524 - franciscom - logic changes to give user a better understanding
+ *                              of TL application areas where CF will be managed
+ *                              request2cf() changed
+ *  
+ *      20090503 - franciscom - BUGID 2425
  *      20090408 - franciscom - BUGID 2352, BUGID 2359
  *      20080810 - franciscom - BUGID 1650 
  *
@@ -90,19 +94,30 @@ switch ($args->do_action)
 }
 
 // To control combo display
+// 20090524 - franciscom - this must be refactored to removed useless code
+// after more tests
 if( $do_control_combo_display )
 {
     $keys2loop = $cfield_mgr->get_application_areas();
+
 	foreach( $keys2loop as $ui_mode)
 	{
+        // 20090524 - this must be removed useless in future
 		if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 		{
 			$cfieldCfg->disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
         }
+
+        // 20090524 - franciscom - refactoring
+        if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
+		{
+		    $cfieldCfg->cf_enable_on[$ui_mode]['value']=1;
+        }
+        
 		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 		{
 			$cfieldCfg->disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
-		}	
+		}
 	}
 }
 
@@ -135,27 +150,29 @@ renderGui($smarty,$args,$gui,$cfield_mgr,$templateCfg);
            (keys,values) are the original with 'cf_' prefix, but
            in this new hash prefix on key is removed.
            
-  rev: 20080811 - franciscom - added new values on missing_keys         
+  rev: 
+      20090524 - franciscom - changes due to User Interface changes
+      20080811 - franciscom - added new values on missing_keys         
 
 */
 function request2cf($hash)
 {
-  // design and execution has sense for node types regarding testing
-  // testplan,testsuite,testcase, but no sense for requirements.
-  //
-  // Missing keys are combos that will be disabled and not show at UI.
-  // For req spec and req, no combo is showed.
-  // To avoid problems (need to be checked), my choice is set to 1
-  // *_on_design keys, that right now will not present only for
-  // req spec and requirements.
-  //
-	$missing_keys = array('show_on_design' => 1,
-                        'enable_on_design' => 1,
-                        'show_on_execution' => 0,
-                        'enable_on_execution' => 0,
-                        'show_on_testplan_design' => 0,
-                        'enable_on_testplan_design' => 0,
-                        'possible_values' => ' ' );
+    // design and execution has sense for node types regarding testing
+    // testplan,testsuite,testcase, but no sense for requirements.
+    //
+    // Missing keys are combos that will be disabled and not show at UI.
+    // For req spec and req, no combo is showed.
+    // To avoid problems (need to be checked), my choice is set to 1
+    // *_on_design keys, that right now will not present only for
+    // req spec and requirements.
+    //
+	$missing_keys = array('show_on_design' => 0,
+                          'enable_on_design' => 0,
+                          'show_on_execution' => 0,
+                          'enable_on_execution' => 0,
+                          'show_on_testplan_design' => 0,
+                          'enable_on_testplan_design' => 0,
+                          'possible_values' => ' ' );
 
 	$cf_prefix = 'cf_';
 	$len_cfp = tlStringLen($cf_prefix);
@@ -173,9 +190,41 @@ function request2cf($hash)
 	foreach($missing_keys as $key => $value)
 	{
 		if(!isset($cf[$key]))
+		{
 			$cf[$key] = $value;
+		}	
 	}
 
+    // After logic refactoring
+    // if ENABLE_ON_[area] == 1
+    //    DISPLAY_ON_[area] = 1
+    //
+    // 
+    // IMPORTANT/CRITIC: 
+    // this KEY MUST BE ALIGNED WITH name on User Inteface
+    // then if is changed on UI must be changed HERE
+    $setter=array('design' => 0, 'execution' => 0, 'testplan_design' => 0);    
+    switch($cf['enable_on'])
+    {
+        case 'design':
+        case 'execution':
+        case 'testplan_design':
+        $setter[$cf['enable_on']]=1;
+        break;
+
+        default:
+        $setter['design']=1;
+        break;    
+    }
+    
+    foreach($setter as $key => $value)
+    {
+        $cf['enable_on_' . $key] = $value;
+        if( $cf['enable_on_' . $key] )
+        {
+            $cf['show_on_' . $key] = 1;    
+        }          
+    }
 	return $cf;
 }
 
@@ -245,28 +294,31 @@ function doCreate(&$hash_request,&$cfieldMgr)
    	$op->template = "cfieldsEdit.tpl";
     $op->user_feedback='';
 	$op->cf = request2cf($hash_request);
+
 	$keys2trim=array('name','label','possible_values');
 	foreach($keys2trim as $key)
 	{
 	    $op->cf[$key]=trim($op->cf[$key]);
 	}
-		// Check if name exists
-		$dupcf = $cfieldMgr->get_by_name($op->cf['name']);
-		if(is_null($dupcf))
-		{
-			$ret = $cfieldMgr->create($op->cf);
-			if(!$ret['status_ok'])
-				$op->user_feedback = lang_get("error_creating_cf");
-			else
-			{
-			  	$op->template = null;
-				logAuditEvent(TLS("audit_cfield_created",$op->cf['name']),"CREATE",$ret['id'],"custom_fields");
-      		}
-		}
-		else
-			$op->user_feedback = lang_get("cf_name_exists");
-
-		return $op;
+    // Check if name exists
+    $dupcf = $cfieldMgr->get_by_name($op->cf['name']);
+    if(is_null($dupcf))
+    {
+    	$ret = $cfieldMgr->create($op->cf);
+    	if(!$ret['status_ok'])
+    	{
+    		$op->user_feedback = lang_get("error_creating_cf");
+    	}
+    	else
+    	{
+    	  	$op->template = null;
+    		logAuditEvent(TLS("audit_cfield_created",$op->cf['name']),"CREATE",$ret['id'],"custom_fields");
+    	}
+    }
+    else
+    	$op->user_feedback = lang_get("cf_name_exists");
+    
+    return $op;
 }
 
 
@@ -284,8 +336,8 @@ function doUpdate(&$hash_request,&$argsObj,&$cfieldMgr)
     $op = new stdClass();
     $op->template = "cfieldsEdit.tpl";
     $op->user_feedback='';
-	  $op->cf = request2cf($hash_request);
-	  $op->cf['id'] = $argsObj->cfield_id;
+	$op->cf = request2cf($hash_request);
+	$op->cf['id'] = $argsObj->cfield_id;
 
     $oldObjData=$cfieldMgr->get_by_id($argsObj->cfield_id);
     $oldname=$oldObjData[$argsObj->cfield_id]['name'];
@@ -367,8 +419,17 @@ function cfieldCfgInit($cfieldMgr)
     {
         $cfg->disabled_cf_enable_on[$area]='';
         $cfg->disabled_cf_show_on[$area]='';
-    	  $cfg->enable_on_cfg[$area] = $cfieldMgr->get_enable_on_cfg($area);
-    	  $cfg->show_on_cfg[$area] = $cfieldMgr->get_show_on_cfg($area);
+        $cfg->cf_enable_on[$area]='';
+        $cfg->cf_enable_on[$area]['label']=lang_get($area);
+        $cfg->cf_enable_on[$area]['value']=0;
+        
+        
+    	$cfg->enable_on_cfg[$area] = $cfieldMgr->get_enable_on_cfg($area);
+    	$cfg->show_on_cfg[$area] = $cfieldMgr->get_show_on_cfg($area);
+    	
+    	// $cfg->enable_on['app_areas'][$area] = $cfieldMgr->get_enable_on_cfg($area);
+    	// $cfg->enable_on['style_display'][$area] = $cfg->enable_on['app_areas'][$area];
+    	
     }// 20080810 - BUGID 1650 - End
 
     $cfg->possible_values_cfg = $cfieldMgr->get_possible_values_cfg();

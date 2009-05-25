@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/01/05 20:05:30 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/05/25 07:27:08 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * rev: 
@@ -110,7 +110,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
         case "edit":
         case "create":
         case "doDelete":
-		    case "doCreate":
+		case "doCreate":
       	case "doUpdate":
             $renderType = 'template';
             $key2loop = get_object_vars($opObj);

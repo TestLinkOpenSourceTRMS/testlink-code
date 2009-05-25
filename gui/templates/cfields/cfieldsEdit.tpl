@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.19 2009/05/25 07:27:07 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.20 2009/05/25 20:40:18 franciscom Exp $
 
 
 Important Development note:
@@ -128,7 +128,7 @@ var js_possible_values_cfg = new Array();
 
 
 {literal}
-function validateForm(f,id_nodetype)
+function validateForm(f)
 {
   if (isWhitespace(f.cf_name.value))
   {
@@ -330,7 +330,7 @@ function initShowOnExec(id_master,show_on_cfg)
 
 {else}
 <form method="post" name="cfields_edit" action="lib/cfields/cfieldsEdit.php"
-      onSubmit="javascript:return validateForm(this,'combo_cf_node_type_id');">
+      onSubmit="javascript:return validateForm(this);">
 <input type="hidden" id="hidden_id" name="cfield_id" value="{$gui->cfield.id}" />
 <table class="common">
 
@@ -409,17 +409,17 @@ function initShowOnExec(id_master,show_on_cfg)
 
     {* ------------------------------------------------------------------------------- *}
     {*   Execution  *}
-    {if $gui->cfieldCfg->disabled_cf_show_on.execution}
+    {* 
+    {if $gui->cfieldCfg->disabled_cf_show_on.execution != ''}
       {assign var="display_style" value="none"}
     {else}
       {assign var="display_style" value=""}
     {/if}
-
-		<tr id="container_cf_show_on_execution" style="display:{$display_style};">
+    *}
+    		<tr id="container_cf_show_on_execution" {$gui->cfieldCfg->cf_show_on.execution.style}>
 			<th style="background:none;">{$labels.show_on_exec}</th>
 			<td>
-				<select id="cf_show_on_execution"  name="cf_show_on_execution"
-				        {$gui->cfieldCfg->disabled_cf_show_on.execution}>
+				<select id="cf_show_on_execution"  name="cf_show_on_execution">
 				{html_options options=$gsmarty_option_yes_no selected=$gui->cfield.show_on_execution}
 				</select>
 			</td>

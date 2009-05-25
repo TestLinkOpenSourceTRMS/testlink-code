@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/05/25 07:27:08 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/05/25 20:40:18 $ by $Author: franciscom $
  *
  * rev: 20090524 - franciscom - logic changes to give user a better understanding
  *                              of TL application areas where CF will be managed
@@ -103,10 +103,10 @@ if( $do_control_combo_display )
 	foreach( $keys2loop as $ui_mode)
 	{
         // 20090524 - this must be removed useless in future
-		if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
-		{
-			$cfieldCfg->disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
-        }
+		//if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
+		//{
+		//	$cfieldCfg->disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
+        //}
 
         // 20090524 - franciscom - refactoring
         if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
@@ -116,7 +116,8 @@ if( $do_control_combo_display )
         
 		if(!$cfieldCfg->show_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 		{
-			$cfieldCfg->disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
+			$cfieldCfg->cf_show_on[$ui_mode]['disabled']=' disabled="disabled" ';
+			$cfieldCfg->cf_show_on[$ui_mode]['style']=' style="display:none;" ';
 		}
 	}
 }
@@ -126,6 +127,13 @@ if(isset($gui->cfield['type']))
 {
 	$gui->show_possible_values = $cfieldCfg->possible_values_cfg[$gui->cfield['type']];
 }
+
+// enable on 'execution' implies show on 'execution' then has nosense to display show_on combo
+if($args->do_action == 'edit' && $gui->cfield['enable_on_execution'] )
+{
+    $cfieldCfg->cf_show_on['execution']['style']=' style="display:none;" ';
+} 
+
 $gui->cfieldCfg=$cfieldCfg;
 
 $smarty = new TLSmarty();
@@ -316,7 +324,9 @@ function doCreate(&$hash_request,&$cfieldMgr)
     	}
     }
     else
+	{
     	$op->user_feedback = lang_get("cf_name_exists");
+    }
     
     return $op;
 }
@@ -418,7 +428,9 @@ function cfieldCfgInit($cfieldMgr)
     foreach($cfAppAreas as $area)
     {
         $cfg->disabled_cf_enable_on[$area]='';
-        $cfg->disabled_cf_show_on[$area]='';
+        $cfg->cf_show_on[$area]['disabled']='';
+        $cfg->cf_show_on[$area]['style']='';
+        
         $cfg->cf_enable_on[$area]='';
         $cfg->cf_enable_on[$area]['label']=lang_get($area);
         $cfg->cf_enable_on[$area]['value']=0;

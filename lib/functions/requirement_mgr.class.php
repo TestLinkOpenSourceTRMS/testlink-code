@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/05/17 16:21:53 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/05/25 20:42:47 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev : 20090514 - franciscom - BUGID 2491
+ * rev:  
+ *       20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
+ *       20090514 - franciscom - BUGID 2491
  *       20090506 - franciscom - refactoring continued
  *       20090505 - franciscom - refactoring started.
  *                               removed use of REQ.node_order and title.
@@ -102,13 +104,29 @@ function get_by_id($id)
       if(trim($rs['author_id']) != "")
       {
           $user = tlUser::getByID($this->db,$rs['author_id']);
-          $rs['author'] = $user->getDisplayName();
+          // need to manage deleted users
+          if($user) 
+          {
+              $rs['author'] = $user->getDisplayName();
+          }
+          else
+          {
+              $rs['author'] = lang_get('undefined');
+          }    
       }
     
       if(trim($rs['modifier_id']) != "")
       {
           $user = tlUser::getByID($this->db,$rs['modifier_id']);
-          $rs['modifier'] = $user->getDisplayName();
+          // need to manage deleted users
+          if($user) 
+          {
+              $rs['modifier'] = $user->getDisplayName();
+          }
+          else
+          {
+              $rs['modifier'] = lang_get('undefined');
+          }    
       }
   }  	
 	return $rs;

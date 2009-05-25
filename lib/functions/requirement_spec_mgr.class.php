@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/05/17 16:21:53 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/05/25 20:42:47 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * rev: 
+ * rev:  
+ *      20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
  *      20090514 - franciscom - BUGID 2491
  *      20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
  *      20090322 - franciscom - create() - added node_order.
@@ -205,13 +206,29 @@ function get_by_id($id)
         if(trim($rs['author_id']) != "")
         {
             $user = tlUser::getByID($this->db,$rs['author_id']);
-            $rs['author'] = $user->getDisplayName();
+            // need to manage deleted users
+            if($user) 
+            {
+                $rs['author'] = $user->getDisplayName();
+            }
+            else
+            {
+                $rs['author'] = lang_get('undefined');
+            }    
         }
       
         if(trim($rs['modifier_id']) != "")
         {
             $user = tlUser::getByID($this->db,$rs['modifier_id']);
-            $rs['modifier'] = $user->getDisplayName();
+            // need to manage deleted users
+            if($user) 
+            {
+                $rs['modifier'] = $user->getDisplayName();
+            }
+            else
+            {
+                $rs['modifier'] = lang_get('undefined');
+            }    
         }
     }  	
 

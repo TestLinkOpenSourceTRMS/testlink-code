@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.79 $
- * @modified $Date: 2009/05/17 16:39:35 $ by $Author: havlat $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2009/05/25 20:42:47 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -254,20 +254,20 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 
 /**
- * get names from pool (save used names in array to improve performance)
+ * get user name from pool (save used names in session to improve performance)
  * @param integer $db DB connection identifier 
  * @param integer $userId
  * @return string readable user name
  * @version 1.0
  * @author havlatm
  */
-function gendocGetName(&$db, $userId)
+function gendocGetUserName(&$db, $userId)
 {
 	$authorName = null;
 	      
-	if(isset($_SESSION['namePool'][$userId]))
+	if(isset($_SESSION['userNamePool'][$userId]))
 	{
-		$authorName	= $_SESSION['namePool'][$userId];
+		$authorName	= $_SESSION['userNamePool'][$userId];
 	}
 	else
 	{
@@ -276,11 +276,11 @@ function gendocGetName(&$db, $userId)
 		{
 			$authorName = $user->getDisplayName();
 			$authorName = htmlspecialchars($authorName);
-			$_SESSION['namePool'][$userId] = $authorName;
+			$_SESSION['userNamePool'][$userId] = $authorName;
 		}
 		else
 		{
-			$authorName = 'undefined';
+			$authorName = lang_get('undefined');
 			tLog('tlUser::getByID($db,$userId) failed', 'ERROR');
 		}
 	}
@@ -426,13 +426,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 
   	if ($printingOptions['author'])
   	{
-		$authorName = gendocGetName($db, $tcInfo['author_id']);
+		$authorName = gendocGetUserName($db, $tcInfo['author_id']);
 		$code .= '<tr><td width="20%" valign="top"><span class="label">'.$labels['author'].':</span></td>';
         $code .= '<td>' . $authorName;
 		if (($tcInfo['updater_id'] > 0) && $tcInfo['updater_id'] != $tcInfo['author_id']) 
 		{
 		    // add updater if available and differs from author
-			$updaterName = gendocGetName($db, $tcInfo['updater_id']);
+			$updaterName = gendocGetUserName($db, $tcInfo['updater_id']);
 			$code .= '<br />' . $updaterName . ' (' . $labels['last_edit'] . ')';
 		}
 		$code .= "</td></tr>\n";
@@ -468,7 +468,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		if ($exec_info) 
 		{
 	  		$testStatus = $status_labels[$exec_info[0]['status']];
-			$testerName = gendocGetName($db, $exec_info[0]['tester_id']);
+			$testerName = gendocGetUserName($db, $exec_info[0]['tester_id']);
 	  		$executionNotes = $exec_info[0]['notes'];
 	  		    
 		  	$code .= '<tr><td width="20%" valign="top">' .

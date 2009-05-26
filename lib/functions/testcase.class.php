@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.168 $
- * @modified $Date: 2009/05/22 06:48:37 $ $Author: franciscom $
+ * @version $Revision: 1.169 $
+ * @modified $Date: 2009/05/26 20:21:50 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090526 - franciscom - html_table_of_custom_field_values() - added scope 'testplan_design'
  * 20090521 - franciscom - get_by_id() added version_number argument
  * 20090517 - franciscom - changes to manage deleted users on:
  *                         get_executions(),get_last_execution()
@@ -3097,7 +3098,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 
       case 'design':
       		$cf_map = $this->$method_name($id,$parent_id,null,$tproject_id);    
-      	break;
+      break;
       	
       case 'execution':
           $cf_map = $this->$method_name($id,$parent_id,null,null,null,$tproject_id);    
@@ -3142,10 +3143,11 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
   args: $id: Very Important!!!
              scope='design'    -> this is a testcase id
              scope='execution' -> this is a testcase VERSION id
+             scope='testplan_design' -> this is a testcase VERSION id 
               
         [$scope]: 'design' -> use custom fields that can be used at design time (specification)
                   'execution' -> use custom fields that can be used at execution time.
-
+                  'testplan_design' 
 
         [$filters]:default: null
                     
@@ -3174,14 +3176,21 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
         [$testplan_id]: null -> get values for any tesplan to with testcase is linked
                         !is_null -> get values only for this testplan.
 
-        [$tproject]
-        [$formatOptions}
+        [$tproject_id]
+        [$formatOptions]
+        [$link_id]: default null
+                   used only when scope='testplan_design'.
+                   link_id=testplan_tcversions.id this value is also part of key
+                   to access CF values on new table that hold values assigned
+                   to CF used on the 'tesplan_design' scope.
+
 
   returns: html string
 
 */
 function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
-                                           $testplan_id=null,$tproject_id = null,$formatOptions=null)
+                                           $testplan_id=null,$tproject_id = null,
+                                           $formatOptions=null,$link_id=null)
 {
     $td_style='class="labelHolder"' ;
     $add_table=true;
@@ -3194,22 +3203,42 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,$ex
     } 
 	
 	$cf_smarty = '';
-	if($scope == 'design')
-	{
-		$cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
-	}
-	else
-	{
-		$cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
-		                                                 $execution_id,$testplan_id,$tproject_id);
-	}
+	// if($scope == 'design')
+	// {
+	// 	$cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
+	// }
+	// else
+	// {
+	// 	$cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
+	// 	                                                 $execution_id,$testplan_id,$tproject_id);
+	// }
+    switch($scope)
+    {
+        case 'design':
+            $cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
+        break;
+    
+        case 'testplan_design':
+            $cf_map = $this->get_linked_cfields_at_testplan_design($id,null,$filters,$link_id,
+                                                                   $testplan_id,$tproject_id);
+        break;
+    
+        case 'execution':
+            $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
+		                                                     $execution_id,$testplan_id,$tproject_id);
+        break;
+    }   
+       
+       
+       
+  
   
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			// if user has assigned a value, then node_id is not null
-			if($cf_info['node_id'])
+			if(isset($cf_info['node_id']) )
 			{
                 // true => do not create input in audit log
                 $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
@@ -3344,9 +3373,7 @@ function copy_cfields_design_values($from_id,$to_id)
 
                    More comments/instructions on cfield_mgr->get_linked_cfields_at_design()
 
-
-        [$execution_id]: null -> get values for all executions availables for testcase
-                         !is_null -> only get values or this execution_id
+        [$link_id]: 
 
         [$testplan_id]: null -> get values for any tesplan to with testcase is linked
                         !is_null -> get values only for this testplan.

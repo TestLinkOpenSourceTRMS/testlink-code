@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.10 2009/03/30 19:08:34 schlundus Exp $
+$Id: inc_exec_test_spec.tpl,v 1.11 2009/05/26 20:21:50 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+    20090526 - franciscom - added testplan_design custom field management
 *}	
     {assign var="getReqAction" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
 	  {assign var="testcase_id" value=$args_tc_exec.testcase_id}
@@ -79,6 +80,17 @@ Rev:
       {if $args_design_time_cf[$testcase_id] neq ''}
 					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
 					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id]}
+					</div>
+		  {/if} 
+			</td>
+		</tr>
+ 
+    {* 20090526 - franciscom *}
+  	<tr>
+		  <td colspan="2">
+      {if $args_testplan_design_time_cf[$testcase_id] neq ''}
+					<div id="cfields_testplan_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
+					style="background-color:#dddddd;">{$args_testplan_design_time_cf[$testcase_id]}
 					</div>
 		  {/if} 
 			</td>

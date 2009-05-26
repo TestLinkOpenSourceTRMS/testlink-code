@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.125 $
- * @modified $Date: 2009/05/17 16:34:37 $ $Author: franciscom $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2009/05/26 20:21:50 $ $Author: franciscom $
  *
  * rev:
+ *     20090526 - franciscom - now custom fields fo testplan_design are managed
  *     20090426 - franciscom - bad initialization of grants due to unclear
  *                             function return.
  *
@@ -134,9 +135,9 @@ $tcase_id = 0;
 $userid_array = null;
 if(!is_null($linked_tcversions))
 {
-	  $items_to_exec = array();
-	  $_SESSION['s_lastAttachmentInfos'] = null;
-	  if($args->level == 'testcase')
+	$items_to_exec = array();
+	$_SESSION['s_lastAttachmentInfos'] = null;
+    if($args->level == 'testcase')
     {
         list($tcase_id,$tcversion_id) = processTestCase($gui,$args,$cfg,$linked_tcversions,
                                                         $tree_mgr,$tcase_mgr,$attachmentRepository);
@@ -252,6 +253,7 @@ else
 }
 // To silence smarty errors
 //  future must be initialized in a right way
+
 
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
@@ -947,18 +949,27 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   rev: 20080811 - franciscom - BUGID 1650 (REQ)
   
 */
-function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$treeMgr,&$tcaseMgr,&$docRepository)
+function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
+                         &$treeMgr,&$tcaseMgr,&$docRepository)
 {     
     $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
     $guiObj->design_time_cfields='';
+  	$guiObj->testplan_design_time_cfields='';
   	
-  	$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id]['tcversion_id'];    
   	$tcase_id = $argsObj->id;
+  	$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id]['tcversion_id'];    
   	$tcversion_id = $linked_tcversions[$argsObj->id]['tcversion_id'];
+  	$link_id = $linked_tcversions[$argsObj->id]['feature_id'];
   	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
     
     $guiObj->design_time_cfields[$argsObj->id] = 
   	         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$cf_filters,null,null,$argsObj->tproject_id);
+
+    // 20090526 - franciscom
+    $guiObj->testplan_design_time_cfields[$argsObj->id] = 
+  	         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
+  	                                                      null,null,$argsObj->tproject_id,null,$link_id);
+
     
     // BUGID 856: Guest user can execute test case
   	if($guiObj->grants->execute)
@@ -969,7 +980,7 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,&$treeMg
   	// 20070405 - BUGID 766
     $tc_info=$treeMgr->get_node_hierachy_info($tcase_id);
 	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
-		                                                                      'nodes_hierarchy',true,1);
+		                                                                   'nodes_hierarchy',true,1);
 		                                                                      
     return array($tcase_id,$tcversion_id);
 }
@@ -1079,13 +1090,6 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
                          $linked_tcversions,null,$argsObj->keyword_id,
                          FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);
        
-    // $filters['keyword_id']=$argsObj->keyword_id;   
-    // $options['writeButtons']=1;
-    // $options['pruneUnliked']=1;
-    // 
-    // $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-    //                      $linked_tcversions,null,$filters,$options);
-                         
     $testSet->tcase_id = array();
     $testSet->tcversion_id = array();
     foreach($out['spec_view'] as $key => $value)
@@ -1116,10 +1120,15 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
             	 $guiObj->tcAttachments[$testcase_id] = getAttachmentInfos($docRepository,$testcase_id,
             	                                                             'nodes_hierarchy',true,1);
             
-                // --------------------------------------------------------------------------------------
-                //@TODO: schlundus, can this be speed up with tprojectID?
             	 $guiObj->design_time_cfields[$testcase_id] = $tcaseMgr->html_table_of_custom_field_values($testcase_id,
             			                                                                       'design',$cf_filters);
+            			                     
+                 // 20090526 - franciscom
+                 $guiObj->testplan_design_time_cfields[$argsObj->id] = 
+  	                     $tcaseMgr->html_table_of_custom_field_values($testcase_id,'testplan_design',$cf_filters,
+  	                                                                  null,null,$argsObj->tproject_id);
+            			                     
+            			                     
             			                                                                        
                 // BUGID 856: Guest user can execute test case
             	 if($guiObj->grants->execute)

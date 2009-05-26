@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.6 2009/05/17 16:31:50 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.7 2009/05/26 20:21:50 franciscom Exp $
 Purpose: 
 Author: franciscom
 
 Rev:  
+    20090526 - franciscom -  inc_exec_test_spec.tpl, added args_testplan_design_time_cf
     20090418 - franciscom - deleted user crash
     20090418 - franciscom - BUGID 2364 - access to test spec to edit it.
     20090212 - amitkhullar - BUGID 2068
@@ -329,17 +330,17 @@ Rev:
   <br />
   {* ----------------------------------------------------------------------------------- *}
   <div>
+    {* 20090526 - franciscom*}
     {include file="execute/inc_exec_test_spec.tpl"
              args_tc_exec=$tc_exec
              args_labels=$labels
              args_enable_custom_field=$enable_custom_fields
              args_execution_time_cf=$gui->execution_time_cfields
              args_design_time_cf=$gui->design_time_cfields
+             args_testplan_design_time_cf=$gui->testplan_design_time_cfields
              args_execution_types=$gui->execution_types
              args_tcAttachments=$gui->tcAttachments
 	           args_req_details=$gui->req_details}
-
-    XX: {$input_enabled_disabled}
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
                args_save_type='single'

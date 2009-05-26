@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/05/25 07:27:08 $  $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/05/26 20:21:50 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090523 - franciscom - changes on show_on, enable_on logics
@@ -2110,8 +2110,8 @@ function getXMLServerParams($node_id)
     {
         $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id";
         $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
-                          " ON CFTDV.field_id=CF.id " .
-                          " AND CFTDV.link_id={$link_id} ";
+                            " ON CFTDV.field_id=CF.id " .
+                            " AND CFTDV.link_id={$link_id} ";
     }
 
     

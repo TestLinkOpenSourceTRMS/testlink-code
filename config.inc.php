@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.240 $
- * @modified $Date: 2009/05/17 17:16:14 $ by $Author: havlat $
+ * @version $Revision: 1.241 $
+ * @modified $Date: 2009/05/26 14:32:13 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -445,12 +445,11 @@ $g_sort_table_engine='kryogenix.org';
 
 /**
  * Texts and settings for printed documents
- * Leave text values empty if you would like to disable it.
+ * Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/
+ * Leave text values empty if you would like to hide parameters.
  */
-$tlCfg->document_generator->company_name = 'Testlink Community [configure using $tlCfg->company->name]';
-
-/** Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/ */
-$tlCfg->document_generator->company_copyright = '2009 (c) Testlink Community';
+$tlCfg->document_generator->company_name = 'Testlink Community [configure $tlCfg->document_generator->company_name]';
+$tlCfg->document_generator->company_copyright = '2009 &copy; Testlink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 /** CSS used in printed html documents */

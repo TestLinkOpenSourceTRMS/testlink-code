@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/05/26 19:06:04 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -58,6 +58,8 @@ $aa_tfp = array(
 );
 
 $full_screen = array('newest_tcversions' => 1);
+//cleanup session var
+$_SESSION['currentSrsId'] = null;
 
 /** feature to display */
 $showFeature = $args->feature;

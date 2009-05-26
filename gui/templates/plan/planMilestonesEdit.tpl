@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.4 2009/02/01 11:57:20 franciscom Exp $
+$Id: planMilestonesEdit.tpl,v 1.5 2009/05/26 19:06:03 schlundus Exp $
 
 Rev:
 *}
@@ -75,7 +75,7 @@ function validateForm(f)
       return false;
   }
 
-  for(idx=0 ; idx <= fields2check.length; idx++)
+  for(idx=0; idx < fields2check.length; idx++)
   {
       obj = document.getElementById(fields2check[idx]);
       if (isWhitespace(obj.value))
@@ -85,15 +85,15 @@ function validateForm(f)
           return false;
       }
 
-      dummy=obj.value.trim();   // IMPORTANT: trim is function provided by EXT-JS library
-      if( numeric_check.test(dummy) )
+      dummy = obj.value.trim();   // IMPORTANT: trim is function provided by EXT-JS library
+      if(numeric_check.test(dummy))
       {
           alert_message(alert_box_title,warning_must_be_number);
           selectField(f, fields2check[idx]);
           return false;
       }
    
-      if( dummy < 0 || dummy > 100)
+      if(dummy < 0 || dummy > 100)
       {
           alert_message(alert_box_title,warning_invalid_percentage_value);
           selectField(f, fields2check[idx]);
@@ -164,7 +164,7 @@ function validateForm(f)
 		          <tr>
 		          	<th style="background:none;">{$labels.th_perc_b_prio}:</th>
 		          	<td>
-		          		<input type="text" name="medium_priority_tcases" id="medium_priority_tcases" 
+		          		<input type="text" id="medium_priority_tcases" name="medium_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
 		          		       value="{$gui->milestone.medium_percentage|escape}"/>
 	                {include file="error_icon.tpl" field="medium_priority_tcases"}
@@ -173,7 +173,7 @@ function validateForm(f)
 		          <tr>
 		          	<th style="background:none;">{$labels.th_perc_c_prio}:</th>
 		          	<td>
-		          		<input type="text" name="high_priority_tcases" id="high_priority_tcases" 
+		          		<input type="text" id="high_priority_tcases" name="high_priority_tcases" 
 		          		       size="{#PRIORITY_SIZE#}" maxlength="{#PRIORITY_MAXLEN#}" 
 		          		       value="{$gui->milestone.low_percentage|escape}"/>
 	                {include file="error_icon.tpl" field="high_priority_tcases"}
@@ -188,7 +188,7 @@ function validateForm(f)
 			          	<input type="hidden" name="high_priority_tcases" id="high_priority_tcases" value="0"/>
 			          	<input type="text" name="medium_priority_tcases" id="medium_priority_tcases" 
 			          	       size="{#PRIORITY_SIZE#}"  maxlength="{#PRIORITY_MAXLEN#}" 
-			          	       value="{$gui->milestone.b|escape}"/>
+			          	       value="{$gui->milestone.medium_percentage|escape}"/>
 			          </td>
 		         </tr>
           {/if}
@@ -202,9 +202,9 @@ function validateForm(f)
 		<input type="button" id="go_back" name="go_back" value="{$labels.btn_cancel}" 
 			     onclick="javascript: history.back();"/>
 	</div>
+	</form>
 </div>
-</form>
-  
+ 
 
 </body>
 </html>

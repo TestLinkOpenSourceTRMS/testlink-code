@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.41 2009/04/09 11:00:59 amkhullar Exp $ 
+* $Id: resultsTC.php,v 1.42 2009/05/26 19:06:04 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,31 +10,23 @@
 *
 * @author 20050919 - fm - refactoring
 * 
-* rev :
-*       20070919 - franciscom - BUGID - contribution
-*       20070127 - franciscom
-*       code to change display of test case status from code to label
-*
 */
-// There may be an issue with test case results which have 
-// multiple executions associated with the same build<BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
-testlinkInitPage($db);
+testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
+$args = init_args();
+
 $arrData = array();
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
-$tplan_id = $_REQUEST['tplan_id'];
-$tproject_id = $_SESSION['testprojectID'];
-
-$tplan_info = $tplan_mgr->get_by_id($tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
 $tplan_name = $tplan_info['name'];
 $tproject_name = $tproject_info['name'];
@@ -42,11 +34,10 @@ $tproject_name = $tproject_info['name'];
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
-
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 
-$arrBuilds = $tplan_mgr->get_builds($tplan_id, 1); //MHT: active builds only
+$arrBuilds = $tplan_mgr->get_builds($args->tplan_id, 1); //MHT: active builds only
 
 $arrBuildIds = null;
 if ($arrBuilds)
@@ -60,17 +51,17 @@ $lastResultMap = $re->getMapOfLastResult();
 $indexOfArrData = 0;
 
 // -----------------------------------------------------------------------------------
-$resultsCfg=config_get('results');
+$resultsCfg = config_get('results');
 $map_tc_status_verbose_code = $resultsCfg['code_status'];
 $map_tc_status_verbose_label = $resultsCfg['status_label'];
 
-foreach($map_tc_status_verbose_code as $code => $verbose )
+foreach($map_tc_status_verbose_code as $code => $verbose)
 {
-  if( isset($map_tc_status_verbose_label[$verbose]) )
+  if( isset($map_tc_status_verbose_label[$verbose]))
   {
     $label = $map_tc_status_verbose_label[$verbose];
-    $map_tc_status_code_langet[$code]=lang_get($label);
-    $map_label_css[$map_tc_status_code_langet[$code]]=$resultsCfg['code_status'][$code];
+    $map_tc_status_code_langet[$code] = lang_get($label);
+    $map_label_css[$map_tc_status_code_langet[$code]] = $resultsCfg['code_status'][$code];
   }
 }
 
@@ -118,7 +109,7 @@ if ($lastResultMap != null)
 			} // end for loop
 			
 			$arrData[$indexOfArrData] = $rowArray;
-  		$indexOfArrData++;
+  			$indexOfArrData++;
 
 			
 			next($currentSuiteInfo);		
@@ -132,17 +123,29 @@ $smarty->assign('map_css',$map_label_css);
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
-
-// $smarty->assign('printDate', strftime($g_date_format, time()) );
 $smarty->assign('printDate','');
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tplan_name', $tplan_name);
 
-$format = isset($_GET['format']) ? intval($_GET['format']) : null;
-if (!isset($_GET['format']))
-{
-	tlog('$_GET["format"] is not defined');
-	exit();
-}
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $format);
+
+function init_args()
+{
+	$iParams = array(
+		"format" => array(tlInputParameter::INT_N),
+		"tplan_id" => array(tlInputParameter::INT_N),
+	);
+
+	$args = new stdClass();
+	$pParams = R_PARAMS($iParams,$args);
+
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+    return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
+}
 ?>

@@ -4,11 +4,9 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesView.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/05/26 19:06:04 $ by $Author: schlundus $
  * @author Francisco Mancardi
- *
- * rev: 
  *
 **/
 require_once("../../config.inc.php");
@@ -34,11 +32,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
-
-	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction']:null;
-	$args->basehref=$_SESSION['basehref'];
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
@@ -48,7 +42,6 @@ function init_args()
 
 	return $args;
 }
-
 
 /*
   function: initialize_gui
@@ -68,11 +61,13 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui->action_descr = null;
     $gui->tplan_name = $argsObj->tplan_name;
     $gui->tplan_id = $argsObj->tplan_id;
-	  $gui->items = $manager->get_all_by_testplan($argsObj->tplan_id);
-    $gui->grants = new stdClass();
+	$gui->items = $manager->get_all_by_testplan($argsObj->tplan_id);
+	
+	$gui->grants = new stdClass();
     $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
-	  $gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
-	  return $gui;
+	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+	
+	return $gui;
 }
 
 

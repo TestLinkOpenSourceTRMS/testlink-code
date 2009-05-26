@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.5 2009/02/01 11:57:20 franciscom Exp $
+$Id: planMilestonesView.tpl,v 1.6 2009/05/26 19:06:04 schlundus Exp $
 
 Rev:
 *}
@@ -65,7 +65,7 @@ var del_action=fRoot+'{$deleteAction}';
 				<td style="text-align: right">{$milestone.medium_percentage|escape}</td>
 				<td style="text-align: right">{$milestone.low_percentage|escape}</td>
 			{else}
-				<td style="text-align: right">???</td>
+				<td style="text-align: right">{$milestone.medium_percentage|escape}</td>
 			{/if}
 			<td class="clickable_icon">
 				       <img style="border:none;cursor: pointer;" 

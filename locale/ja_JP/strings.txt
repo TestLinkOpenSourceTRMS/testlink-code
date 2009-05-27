@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/03/23 04:51:09 $ by $Author: tosikawa $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/05/27 06:14:26 $ by $Author: tosikawa $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -58,7 +58,7 @@
  * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
  * Yukiko Kajino
  *
- * @modified $Date: 2009/03/23 04:51:09 $ $Author: tosikawa $
+ * @modified $Date: 2009/05/27 06:14:26 $ $Author: tosikawa $
  *-------------------------------------------------------------------
 **/
 
@@ -120,6 +120,7 @@ $TLS_total = "合計";
 $TLS_Unknown = "不明";
 $TLS_urgency = "緊急度";
 $TLS_weeks = "週";
+$TLS_undefined = "未定義";
 
 
 // Actions (used wide)
@@ -224,6 +225,16 @@ $TLS_testplan_usage = "テスト計画での使用状況";
 
 $TLS_add_tcversion_to_plans = "このバージョンのテストケースをテスト計画に追加";
 $TLS_please_select_one_testplan = "ひとつ以上のテスト計画を選択してください。";
+
+$TLS_deleted_user = "[削除済みユーザ - id=%s]";
+$TLS_user_not_on_system = "[id=%s のユーザは存在しません]";
+
+$TLS_tag_for_inactive_users = "*";
+
+$TLS_design = "テスト仕様の設計";
+$TLS_execution = "テスト実行";
+$TLS_testplan_design = "テスト計画の設計";
+$TLS_enable_on = "有効:";
 
 
 // ----- JAVASCRIPT -----
@@ -1196,7 +1207,7 @@ $TLS_title_testproject_management = "テストプロジェクト管理";
 // ----- gui/templates/reqAssign.tpl -----
 $TLS_please_select_a_req = "要件を選択してください";
 $TLS_req_msg_norequirement66 = "要件はありません";
-$TLS_req_title_assign = "テストケースへ要件を割り付け";
+$TLS_req_title_assign = "テストケースへ要件をアサイン";
 $TLS_req_title_assigned = "割りつけられた要件";
 $TLS_req_title_unassigned = "利用可能な要件";
 $TLS_warning_req_tc_assignment_impossible = "以下のいずれかの理由でアサインが" .
@@ -1245,8 +1256,8 @@ $TLS_title_remove_test_from_plan = "テスト計画からテストケースを�
 
 
 // ----- gui/templates/keywordsAssign.tpl -----
-$TLS_keyword_assignment_empty_tsuite = "テストスイートにテストケースがありません => キーワードを割り付けることができません";
-$TLS_menu_assign_kw_to_tc = "テストケースへ割付";
+$TLS_keyword_assignment_empty_tsuite = "テストスイートにテストケースがありません => キーワードをアサインすることができません";
+$TLS_menu_assign_kw_to_tc = "テストケースへアサイン";
 $TLS_menu_manage_keywords = "キーワード管理";
 $TLS_title_keywords = "キーワード";
 
@@ -1322,6 +1333,7 @@ $TLS_info_test_results = "最新のテスト結果のみが表示されていま
 $TLS_th_bugs = "バグ";
 $TLS_th_date = "日付";
 $TLS_th_run_by = "実行 by";
+$TLS_th_bugs_not_linked = "失敗/バグがあるテストケース";
 
 
 
@@ -1347,6 +1359,9 @@ $TLS_th_overall = "全体";
 $TLS_excel_format = "MS Excel";
 $TLS_html_format = "HTML";
 $TLS_last_status_any = "全て";
+$TLS_results_all = "全結果";
+$TLS_display_results_tc = "結果設定";
+$TLS_last_status_any = "すべて";
 $TLS_last_status_blocked = $TLS_test_status_blocked;
 $TLS_last_status_failed = $TLS_test_status_failed;
 $TLS_last_status_not_run = $TLS_test_status_not_run;
@@ -1484,7 +1499,7 @@ $TLS_mail_subject_testcase_assigned = 'Test Link - テストケースアサイ�
 $TLS_mail_subject_testcase_assignment_removed = 'Test Link - テストケース削除 - テスト計画';
 $TLS_mail_testcase_assigned = "%s - %s によりテストケースがあなたにアサインされました<br><br>";
 $TLS_mail_testcase_assignment_removed = "%s - %s によりあなたのテストケースへのアサインが解除されました<br><br>";
-$TLS_send_mail_to_tester = "テスト担当者に通知のメールを送信しました";
+$TLS_send_mail_to_tester = "テスト担当者に通知のメールを送信します";
 
 
 // ----- gui/templates/testSetNavigator.tpl -----
@@ -1504,7 +1519,7 @@ $TLS_title_personal_passwd = "個人パスワード";
 $TLS_title_api_interface = "API インタフェース";
 $TLS_warning_different_pwd = "パスワードが異なります。再度パスワードを入力してください。";
 $TLS_warning_empty_pwd = "パスワードが空欄です!";
-$TLS_your_password_is_external = "あなたのパスワードは外部システムで管理されています。br>".
+$TLS_your_password_is_external = "あなたのパスワードは外部システムで管理されています。<br>".
                                  "TestLinkで変更することはできません。";
 $TLS_user_api_key = "個人 API アクセスキー";
 $TLS_audit_login_history = "ログイン歴";
@@ -1841,7 +1856,12 @@ $TLS_ldap_extension_not_loaded = "ログイン方法がLDAPに指定されてい
 $TLS_sec_note_admin_default_pwd = "'admin' アカウントのパスワードをデフォルトのものから変更してください!";
 $TLS_sec_note_remove_install_dir = "インストールディレクトリを削除してください!";
 $TLS_error_domxml_missing = "Domxml が使用できません。XMLによるインポートが動作しません!";
-$TLS_error_gd_missing = "GD PHP 拡張 が使用できません。グラフが機能しません!";
+$TLS_error_gd_missing = "GD PHP拡張が使用できません。グラフが機能しません。" .
+		"php.iniファイル上から ;extension=php_gd2.dll という記述の先頭にある ; を削除してください。 " . 
+		"その後 apache (もしくは他のWebサーバ)を再起動してください。" .
+		"この設定を行ってもこの問題が解決されない場合は、php-GDライブラリをインストールする必要があるでしょう。";
+$TLS_error_gd_png_support_disabled = "GDライブラリのPHP拡張がPNGフォーマットを使用できるように構成されていません。" .
+		"このままではチャート機能は動作しません。PHPの設定を変更するか、必要なライブラリをインストールしてください。";
 
 
 // ----- lib/general/frmWorkArea.php -----
@@ -1941,16 +1961,17 @@ $TLS_warning_duplicate_tplan_name = "このテスト計画名は既に使用さ�
 
 
 // ----- lib/results/printDocOptions.php -----
-$TLS_opt_show_toc = "目次を表示";
-$TLS_opt_show_suite_txt = "テストスイートの説明を表示";
-$TLS_opt_show_tplan_txt = "テスト計画の説明を表示";
-$TLS_opt_show_tc_body = "本文を表示";
-$TLS_opt_show_tc_summary = "テストケースの要約を表示";
-$TLS_opt_show_tc_author = "テストケース作者を表示";
-$TLS_opt_show_tc_reqs = "要件に関連するテストケース";
-$TLS_opt_show_tc_keys = "キーワードに関連するテストケース";
-$TLS_opt_show_passfail = "成功/失敗と備考を表示";
-$TLS_opt_show_metrics = "メトリクス";
+$TLS_opt_show_toc           = "目次を表示";
+$TLS_opt_show_suite_txt     = "テストスイートの説明を表示";
+$TLS_opt_show_tplan_txt     = "テスト計画の説明を表示";
+$TLS_opt_show_tc_body       = "本文を表示";
+$TLS_opt_show_tc_summary    = "テストケースの要約を表示";
+$TLS_opt_show_tc_author     = "テストケース作者を表示";
+$TLS_opt_show_tc_reqs       = "テストケースに関連する要件を表示";
+$TLS_opt_show_tc_keys       = "テストケースに関連するキーワードを表示";
+$TLS_opt_show_cfields		= "テストケースに関連するカスタムフィールドを表示";
+$TLS_opt_show_passfail      = "成功/失敗と備考を表示";
+$TLS_opt_show_metrics       = "メトリクス";
 $TLS_title_tc_print_navigator = "ナビゲーター - テスト仕様印刷";
 $TLS_title_tp_print_navigator = "ナビゲーター - テスト計画印刷";
 
@@ -2044,6 +2065,11 @@ $TLS_link_report_tcases_without_tester = "担当者がアサインされてい�
 $TLS_link_report_test = "テストレポート";
 $TLS_link_report_total_bugs = "各テストケースの全バグ";
 $TLS_link_report_uncovered_testcases = "要件がアサインされていないテストケース";
+$TLS_link_report_tcases_with_cf = 'カスタムフィールド情報とテストケース';
+$TLS_caption_testCasesWithCF=$TLS_link_report_tcases_with_cf;
+$TLS_link_report_free_testcases_on_testproject = "どのテスト計画にもテストケースがアサインされていません。";
+
+$TLS_no_linked_tc_cf = 'カスタムフィールド情報のあるテストケースはありません';
 
 $TLS_format_html = 'HTML';
 $TLS_format_odt = 'OpenOffice Writer';
@@ -2270,6 +2296,17 @@ $TLS_API_BAD_BUILD_FOR_TPLAN = "ビルド (id:%s)はテスト計画 (name:%s/id:
 
 $TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE = "カスタムフィールド(name:%s) は %s では使用できません。%s で使用してください。";
 
+$TLS_API_NO_TESTSUITENAME = "テストスイート名が設定されていません。テストスイート名を設定する必要があります!";
+$TLS_API_TESTSUITENAME_NOT_STRING = "テストスイート名は文字列である必要があります!";
+$TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT = "(親として選択された)id:%s のテストスイートはテストプロジェクト(name=%s / id=%s)配下にありません。";
+
+$TLS_API_CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE="カスタムフィールド (名前:%s) は設計時に使用できるように設定されていません。";
+$TLS_API_CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT="カスタムフィールド (名前:%s) はテストプロジェクト (名前=%s / id=%s) にアサインされていません。";
+$TLS_API_TESTPROJECTNAME_DOESNOT_EXIST="テストプロジェクト (名前:%s) は存在しません。";
+$TLS_API_TESTPLANNAME_DOESNOT_EXIST="テスト計画 (名前:%s) はテストプロジェクト (名前:%s) に存在しません。";
+$TLS_API_INVALID_PARENT_TESTSUITEID = "テストスイートID (%s)は、テストスイート (名前:%s) の PARENT (親テストスイート) パラメータとして指定されましたが、このテストスイートはシステム内に存在しません!";
+
+
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "'{%2}' からの '{%1}' でのログインは成功しました。";
 $TLS_audit_login_failed = "'{%2}' からの '{%1}' でのログインは失敗しました。";
@@ -2401,6 +2438,11 @@ $TLS_testproject_has_no_requirements = '要件が定義されていません';
 // ----- testCasesWithoutTester -----
 $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
 $TLS_all_testcases_have_tester = '全てのテストケースは担当者がアサインされています';
+
+// ----- freeTestCases -----
+$TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;
+$TLS_all_testcases_has_testplan="すでに全テストケースがテスト計画にアサインされています。";
+$TLS_all_testcases_are_free="ひとつのテストケースもテスト計画にアサインされていません。";
 
 
 // ----- timeCharts ----- 

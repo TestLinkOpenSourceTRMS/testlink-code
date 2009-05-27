@@ -6,6 +6,7 @@
  * and it uses the Spreadsheet_Excel_Writer PEAR module.
  * To install the needed PEAR module run: "pear install --alldeps Spreadsheet_Excel_Writer"
  * 
+ * @TODO schlundus, seems to be not in use
  * @author Asiel Brumfield <asielb@users.sourceforge.net>
  */
 require_once('Spreadsheet/Excel/Writer.php');

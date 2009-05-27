@@ -2,11 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: timeCharts.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/07/28 23:21:33 $  $Author: kevinlevy $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/05/27 18:42:07 $  $Author: schlundus $
  * @author kevin
  *
- *
+ * @TODO: schlundus, this file doesn't seems to be in use
  *
 **/
 require_once('../../config.inc.php');

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2009/05/17 16:35:26 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2009/05/27 18:42:07 $ by $Author: schlundus $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296
@@ -553,7 +553,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     
     // 20090517 - francisco.mancardi@gruppotesi.com
     // Assigned to combo must contain ALSO inactive users
-    $users = tlUser::getAll($dbHandler,null,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+    $users = tlUser::getAll($dbHandler,null,"id",null);
 	$gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
 	                                       $users,array(TL_USER_ANYBODY => $gui->str_option_any,
 	                                       TL_USER_NOBODY => $gui->str_option_none),'any' );

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: uncoveredTestCases.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/05/26 19:06:04 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/05/27 18:42:07 $ by $Author: schlundus $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
@@ -107,5 +107,3 @@ function checkRights(&$db,&$user)
 	return $user->hasRight($db,'testplan_metrics');
 }
 ?>
-
-

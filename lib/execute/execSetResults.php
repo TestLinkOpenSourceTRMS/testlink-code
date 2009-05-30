@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.126 $
- * @modified $Date: 2009/05/26 20:21:50 $ $Author: franciscom $
+ * @version $Revision: 1.127 $
+ * @modified $Date: 2009/05/30 15:04:45 $ $Author: franciscom $
  *
  * rev:
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
@@ -350,8 +350,7 @@ function init_args()
     
     // 20090419 - franciscom - BUGID
     $args->refreshTree=isset($_REQUEST['refreshTree']) ? 1 : 0;
-
-	$args->tproject_id = $_SESSION['testprojectID'];
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	
 	//BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
@@ -857,6 +856,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 {
     $buildMgr = new build_mgr($dbHandler);
     $gui = new stdClass();
+    $gui->tplan_id=$argsObj->tplan_id;
+    $gui->tproject_id=$argsObj->tproject_id;
+    
     $gui->execStatusValues=null;
     $gui->can_use_bulk_op=0;
     $gui->exec_notes_editors=null;
@@ -975,7 +977,8 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	if($guiObj->grants->execute)
   	{
   	   $guiObj->execution_time_cfields[$argsObj->id] = 
-  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,null,'execution',"_{$argsObj->id}",null,$argsObj->tproject_id);
+  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,null,'execution',"_{$argsObj->id}",null,
+  	                                                         null,$argsObj->tproject_id);
   	}
   	// 20070405 - BUGID 766
     $tc_info=$treeMgr->get_node_hierachy_info($tcase_id);
@@ -1131,13 +1134,14 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
             			                     
             			                                                                        
                 // BUGID 856: Guest user can execute test case
-            	 if($guiObj->grants->execute)
-               {
+                if($guiObj->grants->execute)
+                {
             			$guiObj->execution_time_cfields[$testcase_id] = 
-            			         $tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution',
-            			                                                      "_".$testcase_id,null,$argsObj->tproject_id);
+            			$tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution',   
+            			                                             "_".$testcase_id,null,null,
+            			                                             $argsObj->tproject_id);
                 }
-            	} // if( $path_elem['parent_id'] == $argsObj->id )
+            } // if( $path_elem['parent_id'] == $argsObj->id )
             	
               // We do this because do not know if some test case not yet analised will be direct
               // child of this test suite, then we get this info in advance.

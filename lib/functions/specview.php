@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.29 $ $Author: franciscom $
- * @modified $Date: 2009/03/29 14:10:01 $
+ * @version $Revision: 1.30 $ $Author: franciscom $
+ * @modified $Date: 2009/05/30 15:05:08 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
@@ -499,13 +499,13 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 
 	// --------------------------------------------------------------------------------------------
 	// BUGID 1650 (REQ)
-  // We want to manage custom fields when user is doing test case execution assigment
+    // We want to manage custom fields when user is doing test case execution assigment
 	if( count($result['spec_view']) > 0 && $add_custom_fields)
-	{    
-    addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
-  }
-  // --------------------------------------------------------------------------------------------
-  unset($tcase_mgr);
+    {    
+        addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
+    }
+    // --------------------------------------------------------------------------------------------
+    unset($tcase_mgr);
   
   // 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
   $result['spec_view']= array_values($result['spec_view']);
@@ -786,9 +786,11 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
              if( $linked_version_id != 0  )
              {
                $cf_name_suffix = "_" . $svalue['feature_id'];
+               
+               // 20090530 - franciscom - interface change
                $cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
                                                                       $cf_name_suffix,$svalue['feature_id'],
-                                                                      $tprojectId);
+                                                                      null,$tprojectId);
                $testSuiteSet[$key]['testcases'][$skey]['custom_fields'] = $cf_map;
              }
            }

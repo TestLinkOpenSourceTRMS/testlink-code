@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/04/21 09:33:46 $  by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/05/30 15:03:49 $  by $Author: franciscom $
  * testcases commands
  *
  * rev: BUGID 2364 - changes in show() calls
@@ -71,53 +71,53 @@ class testcaseCommands
     returns: 
 
   */
-	function doUpdate(&$argsObj,$request)
+    function doUpdate(&$argsObj,$request)
 	{
-      $smartyObj = new TLSmarty();
-      $guiObj=new stdClass();
-      $viewer_args=array();
+        $smartyObj = new TLSmarty();
+        $guiObj=new stdClass();
+        $viewer_args=array();
       
-   	  $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
+   	    $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
 
 		  // to get the name before the user operation
-		  $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+        $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
-      $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
+        $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
 		                               $argsObj->summary, $argsObj->steps, $argsObj->expected_results,
 		                               $argsObj->user_id, $argsObj->assigned_keywords_list,
 		                               TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
-      $smartyObj->assign('attachments',null);
+        $smartyObj->assign('attachments',null);
         if($ret['status_ok'])
-		  {
+		{
 		    $refresh_tree='yes';
 		    $msg = '';
   			$ENABLED = 1;
 	  		$NO_FILTERS = null;
 		  	$cf_map=$this->tcaseMgr->cfield_mgr->get_linked_cfields_at_design($argsObj->testproject_id,
-			                                                                     $ENABLED,$NO_FILTERS,'testcase') ;
-			  $this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcase_id);
+		                                                                      $ENABLED,$NO_FILTERS,'testcase') ;
+			$this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcase_id);
          
-        $attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
-        $smartyObj->assign('attachments',$attachments);
-		  }
-		  else
-		  {
-		      $refresh_tree='no';
-		     	$msg = $ret['msg'];
-		  }
+            $attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
+            $smartyObj->assign('attachments',$attachments);
+		}
+		else
+		{
+		    $refresh_tree='no';
+		    $msg = $ret['msg'];
+		}
 	
 	    $viewer_args['refresh_tree'] = $refresh_tree;
  	    $viewer_args['user_feedback'] = $msg;
 
-      $smartyObj->assign('has_been_executed',$argsObj->has_been_executed);
-      $smartyObj->assign('execution_types',$this->tcaseMgr->get_execution_types());
+        $smartyObj->assign('has_been_executed',$argsObj->has_been_executed);
+        $smartyObj->assign('execution_types',$this->tcaseMgr->get_execution_types());
       
-      // 20090419 - BUGID
-	  $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
-	                        $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
+        // 20090419 - BUGID
+	    $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
+	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
  
-      return $guiObj;
+        return $guiObj;
   }  
 
 

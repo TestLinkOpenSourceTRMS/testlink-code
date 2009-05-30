@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.169 $
- * @modified $Date: 2009/05/26 20:21:50 $ $Author: franciscom $
+ * @version $Revision: 1.170 $
+ * @modified $Date: 2009/05/30 15:05:56 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
  * 20090526 - franciscom - html_table_of_custom_field_values() - added scope 'testplan_design'
  * 20090521 - franciscom - get_by_id() added version_number argument
  * 20090517 - franciscom - changes to manage deleted users on:
@@ -3067,11 +3068,19 @@ private function getShowViewerActions($mode)
                         In this kind of situation we can use the item id as name suffix.
 
         [link_id]: default null
-                   used only when scope='testplan_design'.
+                   scope='testplan_design'.
                    link_id=testplan_tcversions.id this value is also part of key
                    to access CF values on new table that hold values assigned
                    to CF used on the 'tesplan_design' scope.
                    
+                   scope='execution'
+                   link_id=execution id
+                   
+
+        [tplan_id]: default null
+                    used when scope='execution' and YOU NEED to get input with value
+                    related to link_id
+
         [tproject_id]: default null
                        used to speedup feature when this value is available.
 
@@ -3082,7 +3091,7 @@ private function getShowViewerActions($mode)
 
 */
 function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
-                                           $link_id=null,$tproject_id = null)
+                                           $link_id=null,$tplan_id=null,$tproject_id = null)
 {
 	$cf_smarty = '';
 
@@ -3101,7 +3110,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
       break;
       	
       case 'execution':
-          $cf_map = $this->$method_name($id,$parent_id,null,null,null,$tproject_id);    
+          $cf_map = $this->$method_name($id,$parent_id,null,$link_id,$tplan_id,$tproject_id);    
       break;
         
   }
@@ -3203,15 +3212,6 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,$ex
     } 
 	
 	$cf_smarty = '';
-	// if($scope == 'design')
-	// {
-	// 	$cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
-	// }
-	// else
-	// {
-	// 	$cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
-	// 	                                                 $execution_id,$testplan_id,$tproject_id);
-	// }
     switch($scope)
     {
         case 'design':
@@ -3274,6 +3274,8 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,$ex
 
         [$testplan_id]: null -> get values for any tesplan to with testcase is linked
                         !is_null -> get values only for this testplan.
+
+        [$tproject_id]:
 
   returns: hash
            key: custom field id

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/05/26 20:21:50 $  $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/05/30 15:03:02 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
  * 20090523 - franciscom - changes on show_on, enable_on logics
  * 20090426 - franciscom - new method getSizeLimit()
  * 20090420 - amitkhullar- BUGID-2410 - get_linked_cfields_at_testplan_design() - added logic to get data
@@ -1448,19 +1449,19 @@ function name_is_unique($id,$name)
     if( !is_null($node_type) )
     {
    		$hash_descr_id = $this->tree_manager->get_available_node_types();
-      $node_type_id=$hash_descr_id[$node_type];
+        $node_type_id=$hash_descr_id[$node_type];
 
-      $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
-                           " AND CFNT.node_type_id={$node_type_id} ";
+        $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
+                               " AND CFNT.node_type_id={$node_type_id} ";
     }
     
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
     {
-      $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
-      $additional_join .= " LEFT OUTER JOIN cfield_execution_values CFEV ON CFEV.field_id=CF.id " .
-                          " AND CFEV.tcversion_id={$node_id} " .
-                          " AND CFEV.execution_id={$execution_id} " .
-                          " AND CFEV.testplan_id={$testplan_id} ";
+        $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
+        $additional_join .= " LEFT OUTER JOIN cfield_execution_values CFEV ON CFEV.field_id=CF.id " .
+                            " AND CFEV.tcversion_id={$node_id} " .
+                            " AND CFEV.execution_id={$execution_id} " .
+                            " AND CFEV.testplan_id={$testplan_id} ";
     }
     else
     {
@@ -1517,6 +1518,7 @@ function name_is_unique($id,$name)
   /*
     function: execution_values_to_db
               write values of custom fields that are used at execution time.
+              if record exists => UPDATE
 
     args: $hash: contains info about CF gathered at user interface.
                  (normally $_REQUEST variable)
@@ -1555,20 +1557,40 @@ function name_is_unique($id,$name)
       {
         $value = $type_and_value['cf_value'];
 
+        $where_clause = " WHERE field_id={$field_id} AND tcversion_id={$node_id} " .
+ 			            " AND execution_id={$execution_id} AND testplan_id={$testplan_id}" ;
+
+
+
+        // do I need to update or insert this value?
+        $sql = " SELECT value FROM {$this->cfield_execution_values_table} " . $where_clause;
+        $result = $this->db->exec_query($sql); 			   
+
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);
         }
         $safe_value=$this->db->prepare_string($value);
 
-        # Remark got from Mantis code:
+        if($this->db->num_rows( $result ) > 0 )
+        {
+
+          $sql = "UPDATE {$this->cfield_execution_values_table} " .
+                 " SET value='{$safe_value}' " .
+    	         $where_clause;
+        }
+        else
+        {
+
+          # Remark got from Mantis code:
   		  # Always store the value, even if it's the default value
   		  # This is important, as the definitions might change but the
   		  #  values stored with a bug must not change
-  		  $sql = "INSERT INTO cfield_execution_values " .
-  				     " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
-  			       " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
-
+  		  $sql = "INSERT INTO {$this->cfield_execution_values_table} " .
+  				 " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
+  			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
+        }
+        
         $this->db->exec_query($sql);
       } //foreach($cfield
     } //if( !is_null($cfield) )

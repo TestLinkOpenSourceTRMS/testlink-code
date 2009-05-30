@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.38 2009/05/17 16:27:51 franciscom Exp $
+$Id: execSetResults.tpl,v 1.39 2009/05/30 15:01:23 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
@@ -41,7 +41,7 @@ Rev:
 	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
-             deleted_user,click_to_open,reqs,requirement,show_tcase_spec'}
+             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution'}
 
 
 
@@ -221,6 +221,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
   </div>
   <br />
   {/if}
+
 
 <form method="post" id="execSetResults" name="execSetResults" 
       onSubmit="javascript:return validateForm(this);">

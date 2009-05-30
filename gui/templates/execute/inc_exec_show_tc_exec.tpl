@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.7 2009/05/26 20:21:50 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.8 2009/05/30 15:01:23 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -143,7 +143,11 @@ Rev:
 
 		  <table cellspacing="0" class="exec_history">
 			 <tr>
+				{if $gui->grants->edit_exec_notes }				
+        <th style="text-align:left">&nbsp;</th>
+        {/if}
 				<th style="text-align:left">{$labels.date_time_run}</th>
+        
 				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}
@@ -176,6 +180,15 @@ Rev:
   	     {assign var="tc_status_code" value=$tc_old_exec.status}
 
    			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
+
+  			  {if $gui->grants->edit_exec_notes }
+  			  <td>
+  		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_execution}"
+  		           onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
+  		                                                   {$gui->tplan_id},{$gui->tproject_id});">
+  			  </td>
+ 			    {/if}
+
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
 
 				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
@@ -265,19 +278,22 @@ Rev:
   			<tr>
   			 <td colspan="{$my_colspan}" id="exec_notes_container_{$tc_old_exec.execution_id}"
   			     style="padding:5px 5px 5px 5px;">
-  			</td>
+  			 </td>
    			</tr>
  			  {/if}
 
   			{* 20080322 - franciscom - edit execution notes *}
+  			{* 
   			{if $gui->grants->edit_exec_notes }
   			<tr>
   			<td colspan="{$my_colspan}">
   		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
-  		         onclick="javascript: openExecNotesWindow({$tc_old_exec.execution_id});">
+  		         onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
+  		                                                 {$gui->tplan_id},{$gui->tproject_id});">
   			</td>
   			</tr>
  			  {/if}
+ 			  *}
 
   			{* 20070105 - Custom field values  *}
   			<tr>

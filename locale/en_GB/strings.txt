@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.446 $
- * @modified $Date: 2009/05/25 07:27:46 $ by $Author: franciscom $
+ * @version $Revision: 1.447 $
+ * @modified $Date: 2009/05/30 15:02:10 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -997,6 +997,7 @@ $TLS_title_test_case = $TLS_test_case;
 $TLS_version = "Version";
 $TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
 $TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
+$TLS_edit_execution = "edit execution";
 
 
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----

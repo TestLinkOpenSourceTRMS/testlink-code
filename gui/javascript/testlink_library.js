@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.76 2009/05/18 20:22:09 schlundus Exp $
+// $Id: testlink_library.js,v 1.77 2009/05/30 15:00:03 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -26,6 +26,7 @@
 //
 // ----------------------------------------------------------------------------
 //
+// 20090530 - franciscom - openExecEditWindow()
 // 20090419 - franciscom - BUGID 2364 - added std_dialog()
 //                         added some comments to explain how a bug has been solved
 //
@@ -867,4 +868,21 @@ function toggleInput(oid)
     {
         document.getElementById(oid).value=1;
     }
+}
+
+
+/*
+  function: openExecEditWindow
+
+  args :
+
+  returns:
+
+*/
+function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
+{
+  var target_url="lib/execute/editExecution.php";
+  
+	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
+	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes");
 }

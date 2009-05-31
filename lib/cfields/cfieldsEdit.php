@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/05/25 20:40:18 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/05/31 17:11:51 $ by $Author: franciscom $
  *
- * rev: 20090524 - franciscom - logic changes to give user a better understanding
+ * rev: 20090531 - franciscom - minor bug additional first char ' ' on name and label
+ *                              while creating new custom field
+ *      20090524 - franciscom - logic changes to give user a better understanding
  *                              of TL application areas where CF will be managed
  *                              request2cf() changed
  *  
@@ -37,16 +39,11 @@ $do_control_combo_display = 1;
 
 $cfieldCfg=cfieldCfgInit($cfield_mgr);
 $emptyCF = array('id' => $args->cfield_id,
-		         'name' => ' ',
-                 'label' => ' ',
-				 'type' => 0,
-		         'possible_values' => '',
-		         'show_on_design' => 1,
-		         'enable_on_design' => 1,
-		         'show_on_execution' => 1,
-		         'enable_on_execution' => 1,
-		         'show_on_testplan_design' => 1,
-		         'enable_on_testplan_design' => 1,
+		         'name' => '','label' => '',
+				 'type' => 0,'possible_values' => '',
+		         'show_on_design' => 1,'enable_on_design' => 1,
+		         'show_on_execution' => 1,'enable_on_execution' => 1,
+		         'show_on_testplan_design' => 1,'enable_on_testplan_design' => 1,
 		         'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
 
 $gui->cfield = $emptyCF;

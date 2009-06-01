@@ -1,0 +1,2410 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Filename $RCSfile: strings.txt,v $
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2009/06/01 21:41:06 $ by $Author: havlat $
+ *
+ * @copyright Copyright (c) 2003-9, TestLink community
+ * @author Jiun PARK (DQA Team, OPENTECH INC. R&D Center) E-mail : rustyheart@gmail.com
+ *
+ * --------------------------------------------------------------------------------------
+ * 
+ * Korean translation - strings 
+ *
+ * This list of labels is defined as GLOBAL string variables. The first sections are general 
+ * for strings used over all GUI. These definition should not be redefined. Next sections are 
+ * related to particular pages. Comment with page filename indicate a begin of section. There 
+ * must be defined all other strings. 
+ *
+ * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
+ * This must be a reserved prefix. The second part of variable name (after 
+ * prefix) should indicate usage (warning, title), the third one indicate the page relation
+ * and text at the end.
+ *
+ * Warning: be careful about format - the file is parsed by script
+ * Warning: if JS string you must use \\n to get \n for end of line
+ * Note: API interface is not localized (except error messages)
+ * 
+ * --------------------------------------------------------------------------------------
+ * Revisions:
+ * 2009/05/27 - Initial translation (TL 1.8.2)
+ *
+ */
+// Define character set of this file (UTF-8 is common value)
+$TLS_STRINGFILE_CHARSET = "UTF-8";
+
+
+// ----- General terms (used wide) ----------------------------
+$TLS_active = "사용함";
+$TLS_asc = "오름차순";
+$TLS_any = "모두";
+$TLS_author	= "작성자";
+$TLS_automated = "Automated";
+$TLS_automatic = "자동";
+$TLS_build = "빌드";
+$TLS_check_uncheck_all = "모두 토글";
+$TLS_days	= "일";
+$TLS_desc = "내림차순";
+$TLS_description = "설명";
+$TLS_delete_confirm_question = "정말 삭제 할까요?";
+$TLS_file_type = '파일 종류';
+$TLS_help = "도움말";
+$TLS_hour = "시간";
+$TLS_importance	= "중요도";
+$TLS_imported = "가져왔습니다";
+$TLS_keyword = "키워드";
+$TLS_manual = "수동";
+$TLS_Milestone = "마일스톤";
+$TLS_months	= "월";
+$TLS_name	= "이름";
+$TLS_not_aplicable = "N/A";
+$TLS_nobody = "지정안됨";
+$TLS_not_imported = "가져오지 않았습니다";
+$TLS_none = "없음";
+$TLS_ok = "OK";
+$TLS_priority	= "우선순위";
+$TLS_project = "프로젝트";
+$TLS_requirement = "요구사항";
+$TLS_reqs = "요구사항";
+$TLS_req_spec = "요구사항 명세서";
+$TLS_req_spec_short = "Req. Spec.";
+$TLS_srs = "SRS";
+$TLS_Role = "역할";
+$TLS_sort_table_by_column = "클릭하면 정렬 순서가 바뀝니다";
+$TLS_scope = "범위";
+$TLS_status = "상태";
+$TLS_test_case = "테스트 케이스";
+$TLS_testcase = $TLS_test_case; // obsolete
+$TLS_testcaseversion 	= '테스트 케이스 버전';
+$TLS_test_plan = "테스트 계획";
+$TLS_testplan = $TLS_test_plan; // obsolete
+$TLS_testproject = "테스트 프로젝트";
+$TLS_test_report = "테스트 보고서";
+$TLS_test_suite = "테스트 스위트";
+$TLS_testsuite_created = "테스트 스위트가 생성 되었습니다";
+$TLS_title = "제목";
+$TLS_total = "합계";
+$TLS_Unknown = "알수없음";
+$TLS_urgency = "긴급";
+$TLS_weeks = "주";
+
+
+// Actions (used wide) 
+$TLS_add = "추가";
+$TLS_assigned = "지정됨";
+$TLS_create = "생성";
+$TLS_copy = "복사";
+$TLS_delete = "삭제";
+$TLS_executed	= "실행됨";
+$TLS_move	= "이동";
+$TLS_remove = "제거";
+$TLS_unassigned = "지정안됨";
+
+// Buttons (used wide)
+$TLS_btn_apply 	= "적용";
+$TLS_btn_add 	= "추가";
+$TLS_btn_add_to_testplans = "테스트 계획에 추가";
+$TLS_btn_assign	= "지정";
+$TLS_btn_cancel	= "취소";
+$TLS_btn_check 	= "선택";
+$TLS_btn_close 	= "닫기";
+$TLS_btn_cp = "복사";
+$TLS_btn_create = "생성";
+$TLS_btn_delete = "삭제";
+$TLS_btn_edit = "편집";
+$TLS_btn_export = "내보내기";
+$TLS_btn_find = "찾기";
+$TLS_btn_goback = "돌아가기";
+$TLS_btn_import = "가져오기";
+$TLS_btn_move = "이동";
+$TLS_btn_no = "아니오";
+$TLS_btn_ok = "Ok";
+$TLS_btn_print = "인쇄";
+$TLS_btn_save = "저장";
+$TLS_btn_unassign = "지정해제";
+$TLS_btn_uncheck = "선택해제";
+$TLS_btn_update = "업데이트";
+$TLS_btn_upd = $TLS_btn_update; //obsolete
+$TLS_btn_upload = "업로드";
+$TLS_btn_advanced_filters = "상세한 필터";
+$TLS_btn_simple_filters = "간단한 필터"; 
+
+
+// Status (used wide)
+$TLS_test_status_all 		= "모두";
+$TLS_test_status_any 		= "아무나";
+$TLS_test_status_not_run 	= "실행안함";
+$TLS_test_status_blocked 	= "중단";
+$TLS_test_status_failed 	= "실패";
+$TLS_test_status_passed 	= "통과";
+$TLS_test_status_not_available = "사용할 수 없음";
+$TLS_test_status_unknown 	= "알 수 없음";
+
+$TLS_review_status_valid 	= "Valid";
+$TLS_review_status_draft 	= 'Draft';
+$TLS_review_status_future	= 'Future';
+$TLS_review_status_obsolete = 'Obsolete';
+$TLS_review_status_todo 	= 'To do';
+
+$TLS_req_type_info 			= "Informational";
+$TLS_req_type_feature 		= 'Feature';
+$TLS_req_type_use_case	 	= 'Use Case';
+$TLS_req_type_interface 	= 'Interface';
+$TLS_req_type_non_functional = 'Non functional';
+$TLS_req_type_constrain 	= 'Constrain';
+
+$TLS_req_status_not_testable = "테스트 할 수 없음"; // defined for historical reason (should be replaced by $TLS_req_type_info)
+
+
+// ----- unsorted (TODO move) -------------------------------------
+$TLS_problems_loading_xml_content = "XML자료를 읽어 올 수 없습니다. 파일을 확인해 보세요."; 
+$TLS_search_type_like = "Search on this value will be done on LIKE mode";
+$TLS_exec_assign_no_testcase = "하나 이상의 테스트 케이스를 선택하세요.";
+$TLS_select_at_least_one_testcase = "하나 이상의 테스트 케이스와 목적지를 선택하세요!";
+$TLS_no_testcases_available = "테스트 케이스가 없거나, 사용 가능한 테스트 스위트가 없습니다!";
+$TLS_warning_must_be_number = "반드시 숫자를 입력해야 합니다.";
+
+$TLS_estimated_time_hours = "%s 테스트 케이스들을 실행하는데 예상 되는 시간(시):";
+$TLS_estimated_time_min = "%s 테스트 케이스들을 실행하는데 예상 되는 시간(분):";
+$TLS_real_time_hours = "%s 테스트 케이스들을 실행하는데 소요 된 시간(시):";
+$TLS_real_time_min = "%s 테스트 케이스들을 실행하는데 소요 된 시간(분):";
+
+$TLS_th_active 		= $TLS_active; //obsolete
+$TLS_th_name 		= $TLS_name; //obsolete
+$TLS_th_notes 		= $TLS_description; //obsolete
+$TLS_th_testcase 	= $TLS_test_case; // obsolete
+$TLS_th_delete 		= $TLS_delete; // obsolete
+$TLS_th_requirement_feature = "요구사항 기능";
+
+$TLS_import_file_type = "가져올 파일 종류";
+$TLS_max_file_size_is = "최대 파일 크기 ";
+$TLS_supported_file_formats = "지원하는 파일 종류";
+$TLS_no_permissions_for_action = "실행 권한이 없습니다!" .
+                                 " 관리자에게 연락하세요.";
+
+$TLS_name_already_exists = "%s 가 이미 존재합니다.";
+$TLS_created_with_new_name = "%s라는 이름으로 생성합니다, 왜냐하면 %s 가 이미 존재하기 때문입니다";
+
+
+$TLS_click_to_open='클릭하여 열기';
+$TLS_testplan_usage="이 TC가 적용된 테스트 계획";
+
+$TLS_add_tcversion_to_plans = "테스트 계획에 테스트 케이스 추가하기";
+$TLS_please_select_one_testplan = "적어도 하나 이상의 테스트 계획을 선택하세요.";
+
+
+
+// ----- JAVASCRIPT -----
+// Used on javascript logic to validate Custom Field values
+$TLS_warning_numeric_cf = "사용자 필드 [%s]에는 숫자만 입력할 수 있습니다.";
+$TLS_warning_float_cf = "사용자 필드 [%s]에는 숫자나 소수만 입력할 수 있습니다.";
+$TLS_warning_email_cf = "사용자 필드 [%s]에는 이메일 주소만 입력할 수 있습니다.";
+
+
+// Installation/Migration (TODO remove - migration is English only)
+$TLS_start_warning = '---- Warning ----';
+$TLS_testlink_warning = 'TestLink Warning';
+$TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
+$TLS_original_name = 'Original name';
+$TLS_end_warning = '---- *** ----';
+
+
+// --------------------------------------------------------------------------------------
+// ----- firstLogin.php -----
+$TLS_cant_create_user = "로그인 ID를 생성할 수 없습니다. 관리자에게 문의 하시기 바랍니다!";
+$TLS_empty_email_address = " 이메일 주소를 꼭 입력해야 합니다!";
+$TLS_empty_first_name = " 이름을 꼭 입력해야 합니다!";
+$TLS_empty_last_name = " 성을 꼭 입력해야 합니다!";
+$TLS_fatal_page_title = "TestLink ::: 치명적인 오류";
+$TLS_invalid_user_name = "로그인 ID/사용자 이름이 바르지 올바르지 않습니다. 다른 것을 선택하세요.";
+$TLS_no_good_email_address = "이 메일 주소가 올바르지 않습니다.";
+$TLS_passwd_dont_match = "두 개의 비밀번호가 일치하지 않습니다. 비밀번호는 대소문자를 구별하는 것에 주의 하시기 바랍니다. " .
+                         "다시 시도 하세요.";
+$TLS_user_cant_be_created_because = "다음과 같은 이유로 계정을 생성할 수 없습니다:";
+$TLS_user_name_exists = "로그인 ID/사용자 이름이 이미 사용 되고 있습니다. 다른 것을 선택하세요.";
+$TLS_valid_user_name_format = "로그인 ID/사용자 이름에는 문자, 숫자, 공백, 하이픈(-), 인더스코어(_)만 사용할 수 있습니다.";
+$TLS_warning_empty_pwd = "비밀번호는 꼭 입력해야 합니다!";
+$TLS_your_info_please = "사용자 정보를 입력하세요";
+
+
+// ----- archiveData.php -----
+$TLS_container_title_testcase = $TLS_test_case;
+$TLS_high_priority 		= "높음";
+$TLS_medium_priority 	= "보통";
+$TLS_low_priority 		= "낮음";
+$TLS_high_importance 	= "높음";
+$TLS_medium_importance 	= "보통";
+$TLS_low_importance 	= "낮음";
+$TLS_urgency_high 		= "높음";
+$TLS_urgency_medium 	= "보통";
+$TLS_urgency_low 		= "낮음";
+$TLS_test_importance 	= "테스트 중요도";
+$TLS_testcases_assigned_to_user = '테스트 프로젝트 : %s - 사용자에게 지정된 테스트 케이스 : %s';
+$TLS_assigned_on = '지정된 날짜';
+
+
+// ----- index.php -----
+$TLS_main_page_title = "TestLink ::: 메인 페이지";
+$TLS_config_check_warnings = "보안경고 사항이 있습니다. " .
+                             "자세한 사항은 다음 파일을 참고하세요: %s. " .
+                             "이런 체크에 대한 참조를 중단 하려면 ,  \$tlCfg->config_check_warning_mode = 'SILENT'; 로 설정하세요";
+
+
+// ----- keywordsimport.php -----
+$TLS_please_choose_keywords_file = "업로드할 파일을 선택하세요.";
+$TLS_keywords_file = "키워드 파일";
+$TLS_wrong_keywords_file = "잘 못 된 키워드 파일입니다 (잘못된 형식)";
+
+
+// ----- lostPassword.php -----
+$TLS_bad_user = "사용자를 찾을 수 없습니다, 다시 시도 하세요.";
+$TLS_contact_admin = "<br />문제가 계속 되면 관리자에게 연락 하세요.";
+$TLS_mail_empty_address = "당신의 사용자 정보에 이메일 주소가 없습니다! " .
+                          " 비밀번호를 재설정 하려면 관리자에게 연락 하세요!";
+$TLS_mail_passwd_subject = "당신의 새 TestLink 비밀번호.";
+$TLS_mail_problems = "메일 설정에 문제가 있습니다. 관리자에게 연락 하세요.";
+$TLS_page_title_lost_passwd = "TestLink - 비밀번호 찾기";
+$TLS_your_info_for_passwd = "사용자 정보를 입력하면, 새 비밀번호가 메일로 전달 됩니다.";
+$TLS_your_password_is = "당신의 새 TestLink 비밀번호 입니다 : <br />";
+
+
+
+// ----- login.php -----
+$TLS_bad_user_passwd = "로그인 ID나 비밀번호가 틀렸습니다. 다시 시도 하세요!";
+$TLS_login_msg_session_exists1 = "브라우저에 정상적인 로그인 정보가 있습니다. <br /> 세션을 새로 시작 하라면  >>> ";
+$TLS_login_msg_session_exists2 = " <<< 이 링크를 사용하세요.";
+$TLS_logout_link = "로그아웃";
+$TLS_passwd_lost = "사용자 계정을 생성하면서 비밀번호가 당신의 메일로 전달 되었습니다. " .
+                   "메일함을 확인해 보시기 바랍니다. " .
+                   "다른 문제가 있으면 관리자에게 문의 바랍니다.";
+$TLS_password_reseted = "새 비밀번호가 메일로 전달 되었습니다.";
+$TLS_please_login = "로그인 하세요 ...";
+$TLS_session_expired = "세션이 만료 되었습니다! 다시 로그인 하세요.";
+$TLS_your_first_login = "TestLink에 어서 오세요! 당신은 현재 게스트 권한을 상태 입니다. 로그인하세요...";
+
+
+// ----- newest_tcversions.php -----
+$TLS_no_linked_tcversions = "연결된 테스트 케이스 버전이 없습니다";
+// resultsGeneral.php
+$TLS_report_tspec_has_no_tsuites = "테스트 프로젝트에 정의된 테스트 스위트가 없어서, <br />".
+                                 "실행된 자료가 없습니다. => 보고서를 생성할 수 없습니다";
+
+// ----- resultsNavigator.php -----
+$TLS_title_nav_results = "보고서와 매트릭";
+$TLS_report_tplan_has_no_build = "테스트 계획에 정의된 빌드가 없기 때문에, <br />".
+                               "실행된 자료가 없습니다. => 보고서를 생성할 수 없습니다";
+$TLS_report_tplan_has_no_tcases = "테스트 계획에 연결된 테스트 케이스가 없기 때문에, <br />".
+                                "실행된 자료가 없습니다. => 보고서를 생성할 수 없습니다";
+
+// ----- tcEdit.php -----
+$TLS_tc_copied = "테스트 케이스 [%s] 가 <br />테스트 스위트 [%s]에 복사 되었습니다.";
+$TLS_tc_created = "테스트 케이스 [%s] 가 생성 되었습니다.";
+$TLS_tc_deleted = "테스트 케이스 [%s] 가 삭제 되었습니다.";
+$TLS_tc_updated = "테스트 케이스 [%s] 가 업데이트 되었습니다.";
+$TLS_tc_new_version = "테스트 케이스 버전 %d 가 생성 되었습니다.";
+$TLS_tc_updated = "테스트 케이스[%s] 이(가) 업데이트 되었습니다.";
+$TLS_tc_update_failed = "테스트 케이스 [%s] 를 업데이트 할 수 없습니다!";
+$TLS_tc_version_deleted = "테스트 케이스 [%s] 버전 %d 가 삭제 되었습니다.";
+$TLS_assign_requirements = "요구사항 지정";
+
+
+// ----- tcexecute.php -----
+$TLS_check_test_automation_server = "서버 설정을 확인 하세요.";
+$TLS_result_after_exec = "실행 후 결과: ";
+$TLS_service_not_supported = "이 서비스는 지원하지 않습니다.";
+$TLS_tcexec_notes = "테스팅 세부사항";
+$TLS_tcexec_result = "결과";
+$TLS_tcexec_results_for = "결과 ";
+
+
+// ----- gui/templates/attachment404.tpl -----
+$TLS_error_attachment_not_found = "에러: 첨부파일을 찾을 수 없습니다!";
+$TLS_title_downloading_attachment = "첨부파일 다운로드";
+
+
+// ----- gui/templates/attachmentdelete.tpl -----
+$TLS_deleting_was_ok = "첨부파일이 삭제 되었습니다!";
+$TLS_error_attachment_delete = "첨부파일을 삭제하는 중 에러가 발생했습니다!";
+$TLS_title_delete_attachment = "첨부파일 삭제";
+
+
+
+// ----- gui/templates/containerDelete.tpl -----
+$TLS_btn_yes_del_comp = "예, 삭제합니다";
+$TLS_container_title_testsuite = $TLS_test_suite;
+$TLS_linked_but_not_executed = "하나 이상의 테스트 계획에 포함되어 있지만, 실행되지는 않았습니다.";
+$TLS_question_del = "정말 삭제합니까?";
+$TLS_th_link_exec_status = "연결 및 실행 상태";
+
+
+
+// ----- gui/templates/containerNew.tpl -----
+$TLS_btn_create_testsuite = "테스트 스위트 생성";
+$TLS_tc_keywords = "키워드";
+$TLS_title_create = "생성";
+$TLS_warning_empty_testsuite_name = "테스트 스위트의 이름을 입력하세요.";
+
+
+
+// ----- gui/templates/bug_add.tpl -----
+$TLS_btn_add_bug 		= "버그 추가";
+$TLS_bug_id 			= "버그 ID";
+$TLS_button_enter_bug 	= "새 버그 생성";
+$TLS_link_bts_create_bug = "버그 추적 시스템에 접속 ";
+$TLS_title_bug_add 		= "버그 보고서 추가";
+
+
+// ----- gui/templates/bug_delete.tpl -----
+$TLS_title_delete_bug = "버그 보고서 삭제";
+
+
+
+// ----- gui/templates/containerMove.tpl -----
+$TLS_as_first_testsuite = "선택한 곳의 가장 위에";
+$TLS_as_last_testsuite = "선택한 곳의 가장 아래에";
+$TLS_choose_target = "목적지 선택 ";
+$TLS_cont_copy_first = $TLS_copy;
+$TLS_cont_copy_second = "to Any";
+$TLS_cont_move_first = $TLS_move;
+$TLS_cont_move_second = "to a different";
+$TLS_copy_keywords = "키워드 복사";
+$TLS_defined_exclam = "정의됨 !";
+$TLS_include_nested = "연결된 자료 포함 (복사만).";
+$TLS_sorry_further = "I'm sorry there are no further ";
+$TLS_title_move_cp = "이동/복사";
+$TLS_title_move_cp_testcases = "테스트 케이스 이동/복사";
+
+
+// ----- gui/templates/reqCreate.tpl -----
+$TLS_req_create = "요구사항 생성";
+$TLS_req_doc_id = "문서 ID";
+$TLS_warning_empty_req_title = "요구사항 제목을 꼭 입력해야 합니다!";
+$TLS_warning_empty_reqdoc_id = "요구사항 문서 ID를 꼭 입력해야 합니다!";
+$TLS_create_testcase_from_req = "요구사항을 이용하여 테스트 케이스 생성하기";
+
+
+// gui/templates/containerOrder.tpl
+$TLS_no_nodes_to_reorder = "재정렬할 항목이 없습니다!";
+$TLS_node = $TLS_name;
+$TLS_th_id = "ID";
+$TLS_th_node_type = "테스트 케이스 / 테스트 스위트";
+$TLS_th_order = "순서";
+$TLS_title_change_node_order = "순서 변경";
+$TLS_node_type_dbtable_testsuites = $TLS_test_suite;
+$TLS_node_type_dbtable_testcases = $TLS_testcase;
+
+
+// ----- gui/templates/containerView.tpl -----
+$TLS_alt_del_testsuite = "이 테스트 스위트와 하위의 모든 자료(테스트 스위트, 테스트 케이스)들을 모두 삭제합니다";
+$TLS_alt_edit_testsuite = "이 테스트 스위트를 변경 합니다";
+$TLS_alt_move_cp_testsuite = "이 테스트 스위트를 다른 프로젝트로 이동하거나 복사합니다";
+$TLS_alt_move_cp_testcases = "테스트 케이스 이동/복사";
+$TLS_btn_del_testsuite = "테스트 스위트 삭제";
+$TLS_btn_edit_testsuite = $TLS_btn_edit;
+$TLS_btn_execute_automatic_testcases = "모든 자동화 테스트 케이스들을 실행합니다";
+$TLS_btn_export_all_testsuites = "모든 테스트 스위트 내보내기";
+$TLS_btn_export_tc = "테스트 케이스 내보내기";
+$TLS_btn_export_testsuite = "테스트 스위트 내보내기";
+$TLS_btn_import_tc = "테스트 케이스 가져오기";
+$TLS_btn_import_testsuite = "테스트 스위트 가져오기";
+$TLS_btn_move_cp_testsuite = "이동/복사";
+$TLS_btn_move_cp_testcases = "테스트 케이스 이동 / 복사";
+$TLS_btn_new_testsuite = "새 테스트 스위트";
+$TLS_btn_new_tc = "테스트 케이스 생성";
+$TLS_btn_reorder = "순서 변경";
+$TLS_container_title_testproject = $TLS_testproject;
+$TLS_edit_testproject_basic_data = "테스트 프로젝트 기본 정보 편집";
+$TLS_th_product_name = "테스트 프로젝트 이름";
+
+
+// ----- gui/templates/cfields/cfieldsEdit.tpl -----
+$TLS_available_on = "사용할 곳 ";
+$TLS_custom_field = "사용자 필드";
+$TLS_enable_on_design = "테스트 명세<br />화면에서 사용";
+$TLS_enable_on_exec = "테스트 실행<br />화면에서 사용";
+$TLS_enable_on_testplan_design = "테스트 계획 설계<br />화면에서 사용";
+$TLS_label = "레이블";
+$TLS_popup_delete_custom_field = "사용자 필드를 정말 삭제 할까요?";
+$TLS_possible_values = "사용 가능한 값들";
+$TLS_show_on_design = "테스트 명세<br />화면에 표시";
+$TLS_show_on_exec = "테스트 실행 <br />화면에 표시";
+$TLS_show_on_testplan_design = "테스트 계획 설계 <br />화면에 표시";
+$TLS_testcase = $TLS_test_case;
+$TLS_title_cfields_mgmt = "사용자 필드";
+$TLS_title_cfield_edit = "편집 ";
+$TLS_type = "종류";
+$TLS_warning_empty_cfield_label = "사용자 필드의 레이블을 반드시 입력해야 합니다.";
+$TLS_warning_empty_cfield_name = "사용자 필드의 이름을 반드시 입력해야 합니다.";
+$TLS_warning_is_in_use = "사용자가 테스트 명세나 실행에서 이 사용자 필드에  <br /> " .
+                         "값을 입력 하였기 때문에, 이 사용자 필드를  <br />" .
+                         "삭제하거나 종류를 바꿀 수 없습니다.  ";
+
+
+// ----- gui/templates/inc_update.tpl -----
+$TLS_info_failed_db_upd = "DB 업데이트를 실패하였습니다!";
+$TLS_info_failed_db_upd_details = "DB 업데이트를 실패하였습니다! - 세부정보:";
+$TLS_invalid_query = "에러";
+$TLS_warning = "경고!!";
+$TLS_was_success = " 가 성공적으로 ";
+
+
+// ----- gui/templates/execNavigator.tpl -----
+$TLS_TestPlan = $TLS_testplan;
+$TLS_btn_apply_filter = $TLS_btn_apply;
+$TLS_btn_update_menu = "메뉴 업데이트";
+$TLS_caption_nav_filter_settings = "필터 & 설정 ...";
+$TLS_current_build = "현재 빌드";
+$TLS_filter_owner = "현재 테스터";
+$TLS_filter_result = "결과";
+$TLS_filter_tcID = "TC ID";
+$TLS_include_unassigned_testcases = " - 지정안된 테스트 케이스들 포함";
+$TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_filter_result_all_prev_builds = "모든 이전 빌드들의 결과";
+
+
+// ----- gui/templates/mainPage.tpl -----
+$TLS_th_my_perc_completed = "내 실행률 [%]";
+$TLS_th_perc_completed = "실행률 [%]";
+$TLS_title_your_tp_metrics = "당신의 테스트 계획 매트릭";
+
+
+// ----- gui/templates/metrics_dashbord.tpl -----
+$TLS_th_total_tc = "테스트 케이스 개수";
+$TLS_th_active_tc = "사용하는 테스트 케이스";
+$TLS_th_executed_tc = "실행된 테스트 케이스";
+$TLS_th_executed_vs_active = "실행됨/사용 [%]";
+$TLS_th_executed_vs_total = "실행됨/합계 [%]";
+
+
+// ----- gui/templates/newest_tcversions.tpl -----
+$TLS_linked_version = "연결된 버전";
+$TLS_newest_version = "사용 가능한 새 버전";
+$TLS_title_newest_tcversions = "연결된 테스트 케이스의 새 버전";
+$TLS_no_newest_version_of_linked_tcversions = "새 버전이 없습니다";
+
+
+// ----- gui/templates/emailSent.tpl -----
+$TLS_send_test_report = "- 테스트 보고서 보내기";
+
+
+// ----- gui/templates/reqImport.tpl -----
+$TLS_Result = "결과";
+$TLS_btn_back2srs = "요구사항 명세로 돌아가기";
+$TLS_btn_upload_file = "파일 업로드";
+$TLS_check_req_file_structure = "어떤 요구사항도 가져올 수 없습니다. 파일 형식을 확인 하세요.";
+$TLS_local_file = "파일";
+$TLS_max_size_cvs_file1 = "최대 파일 크기는 ";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_req_import_check_note = "충돌 가능 여부를 확인하시고, 적절하게 해결하신 다음 가져오기를 시작하세요.";
+$TLS_req_import_dont_empty = "범위가 비어 있는 항목은 가져오지 않습니다";
+$TLS_req_import_option_double = "같은 제목을 가진 새로운 항목으로 추가합니다";
+$TLS_req_import_option_header = "충돌 해결 설정";
+$TLS_req_import_option_overwrite = "기존의 것을 업데이트";
+$TLS_req_import_option_skip = "중복된 요구사항은 가져오기지 않기";
+$TLS_req_import_type = "종류";
+$TLS_req_msg_norequirement = "요구사항 없음";
+$TLS_required_cvs_format = "요구사항 파일 종류";
+$TLS_title_choose_file_type = "파일 종류 선택";
+$TLS_title_choose_local_file = "업로드 할 파일을 선택하세요";
+$TLS_title_req_import = "요구사항 가져오기";
+$TLS_title_req_import_check_input = "가져올 자료를 확인하세요";
+
+
+
+// gui/templates/inc_attachments.tpl
+$TLS_alt_delete_build = "이 빌드를 삭제 하려면 클릭 하세요";
+$TLS_alt_delete_attachment = "이 첨부파일을 삭제 하려면 클릭 하세요";
+$TLS_attached_files = "첨부파일";
+$TLS_attachment_feature_disabled = "첨부파일 사용안함";
+$TLS_button_upload = $TLS_btn_upload;
+$TLS_upload_file_new_file = "새 파일 업로드";
+$TLS_warning_delete_attachment = "정말 이 첨부파일을 삭제 할까요?";
+
+
+
+// gui/templates/resultsNavigator.tpl
+$TLS_note_email_sent_t = "노트: 사용자에게 이메일로 보내기";
+$TLS_send_results = "결과 보내기";
+$TLS_send_to = "받는 사람:";
+$TLS_subject = "제목:";
+$TLS_title_active_build = "사용하는 빌드";
+$TLS_title_report_type = "보고서 종류";
+$TLS_via_email = "메일로";
+$TLS_link_results_import = "결과 가져오기";
+
+
+// gui/templates/inc_attachments_upload.tpl
+
+
+
+// gui/templates/cfields/cfieldsView.tpl
+$TLS_btn_cfields_create = $TLS_btn_create;
+$TLS_manage_cfield = "사용자 필드 관리";
+
+
+// cfieldsExport.php
+$TLS_export_cfields = "사용자 필드 내보내기";
+
+// cfieldsImport.php
+$TLS_import_cfields = "사용자 필드 가져오기";
+$TLS_custom_field_already_exists="사용자 필드 [%s]가 이미 있습니다.";
+$TLS_custom_field_imported="사용자 필드 [%s]를 가져왔습니다.";
+
+// gui/templates/inc_cat_viewer_ro_m0.tpl
+$TLS_cat_scope = "범위와 목표";
+$TLS_category = "테스트 스위트"; // obsolete
+$TLS_configuration = "설정";
+$TLS_data = "자료";
+$TLS_not_defined = "정의 되지 않음.";
+$TLS_tools = "도구";
+
+
+
+// gui/templates/inc_cat_viewer_rw.tpl
+$TLS_cat_alt_name = "테스트 스위트의 이름은 반드시 입력해야 합니다.";
+$TLS_cat_config = "설정";
+$TLS_cat_data = "자료";
+$TLS_cat_name = "테스트 스위트 이름";
+$TLS_cat_tools = $TLS_tools; //obsolete
+
+
+
+// gui/templates/reqEdit.tpl
+$TLS_by = "작성자 :";
+$TLS_coverage = "커버리지";
+$TLS_popup_delete_req = "요구사항을 정말 삭제 할까요?";
+$TLS_req_edit = "요구사항 편집";
+$TLS_req_msg_notestcase = "테스트 케이스에 연결 안됨";
+$TLS_requirement_spec = "요구사항 명세서";
+$TLS_test_case_id = "ID";
+$TLS_title_created = "작성일 : ";
+$TLS_title_last_mod = "마지막 수정일 : ";
+
+
+
+// gui/templates/buildEdit.tpl
+$TLS_enter_build = "이름";
+$TLS_enter_build_notes = "설명";
+//$TLS_msg_build = "노트: 각 빌드는 지정된 테스트 계획과 관련 됩니다. " .
+//                 "설명에는 다음과 같은 것들이 포함 됩니다 : 결과물 목록, 승인서, 상태 ,등.";
+$TLS_open = "진행";
+$TLS_title_build_2 = "빌드 관리";
+$TLS_title_build_create = "새 빌드 생성";
+$TLS_title_build_update = "빌드 업데이트";
+$TLS_title_build_edit = "빌드 편집";
+$TLS_warning_empty_build_name = "이름을 꼭 입력해야 합니다!";
+$TLS_copy_to_all_tplans = "모든 테스트 계획 복사";
+
+
+
+// gui/templates/inc_comp_viewer_ro.tpl
+$TLS_component = $TLS_test_suite; //obsolete
+$TLS_introduction = "소개";
+$TLS_limitations = "제한";
+$TLS_methodology = "방법론";
+$TLS_references = "참고자료";
+
+
+
+// gui/templates/inc_comp_viewer_rw.tpl
+$TLS_comp_alt_name = "테스트 스위트 이름은 반드시 입력해야 합니다.";
+$TLS_comp_intro = "소개";
+$TLS_comp_lim = "제한";
+$TLS_comp_method = "방법론";
+$TLS_comp_name = "테스트 스위트 이름";
+$TLS_comp_ref = "참고자료";
+$TLS_comp_scope = "범위";
+
+
+
+// gui/templates/reqSpecView.tpl
+$TLS_btn_analyse = "분석";
+$TLS_btn_check_all = "전부 선택";
+$TLS_btn_delete_spec = "문서 삭제";
+$TLS_btn_edit_spec = "문서 편집";
+$TLS_btn_export_reqs = "요구사항 내보내기";
+$TLS_btn_req_create = "요구사항 생성";
+$TLS_btn_spec_list = "모든 문서 목록";
+$TLS_btn_uncheck_all = "전부 해제";
+$TLS_cant_delete_req_nothing_sel = "요구사항을 선택 하세요!";
+$TLS_popup_sure_delete = "요구사항 명세서를 삭제할까요?";
+$TLS_req_select_create_tc = "테스트 케이스 생성";
+$TLS_req_select_delete = "요구사항 삭제";
+$TLS_req_title_list = "요구사항 목록";
+$TLS_req_total = "모든 요구사항의 개수";
+$TLS_req_reorder = "요구사항 재정렬";
+$TLS_select_at_least_one_req = "요구사항을 선택하세요!";
+$TLS_warning_delete_requirements = "선택한 요구사항을 삭제 할까요?";
+$TLS_warning_delete_req_spec = " %s 을(를) 삭제 하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+$TLS_title_change_req_order = "요구사항 순서 변경";
+
+
+// ----- gui/templates/inc_copyrightnotice.tpl -----
+$TLS_gnu_gpl = "GNU GPL";
+$TLS_lic_home = "Home";
+$TLS_lic_product = "TestLink project";
+$TLS_licensed_under = "TestLink is licensed under the";
+
+
+
+// ----- gui/templates/containerEdit.tpl -----
+$TLS_btn_update_testsuite = "테스트 스위트 업데이트";
+$TLS_title_edit_level = "편집 ";
+
+
+
+// ----- gui/templates/reqSpecAnalyse.tpl -----
+$TLS_edit = $TLS_btn_edit;
+$TLS_req = $TLS_requirement;
+$TLS_req_spec_change = "요구사항 명세서 변경 ";
+$TLS_req_title_analyse = "요구사항 명세서 분석 ";
+$TLS_req_title_covered = "테스트 케이스가 있는 요구사항들";
+$TLS_req_title_in_tl = "TestLink에 등록된 요구사항들";
+$TLS_req_title_nottestable = "테스트 할 수 없는 요구사항들";
+$TLS_req_title_uncovered = "테스트 케이스가 없는 요구사항들";
+$TLS_req_title_not_in_tl = "보장되지 않거나 테스트 할 수 없는 요구사항";
+$TLS_req_total_count = "요구사항 합계";
+
+
+
+// ----- gui/templates/reqSpecCreate.tpl -----
+$TLS_action_create_srs = "요구사항 명세서 생성";
+
+
+
+// ----- gui/templates/inc_reqView.tpl -----
+$TLS_last_edit = "마지막 편집 : ";
+$TLS_warning_delete_requirement = " %s 을(를) 삭제 하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+
+
+// gui/templates/inc_res_by_comp.tpl
+$TLS_title_res_by_top_level_suites = "최상위 테스트 스위트별 결과";
+$TLS_trep_blocked = $TLS_test_status_blocked;
+$TLS_trep_comp = $TLS_test_suite;
+$TLS_trep_comp_perc = "실행률 [%]";
+$TLS_trep_failed = $TLS_test_status_failed;
+$TLS_trep_not_run = $TLS_test_status_not_run;
+$TLS_trep_passed = $TLS_test_status_passed;
+$TLS_trep_total = "합계";
+
+
+
+// ----- gui/templates/inc_res_by_keyw.tpl -----
+$TLS_title_res_by_kw = "키워드별 결과";
+$TLS_trep_kw = $TLS_keyword;
+
+
+
+// gui/templates/inc_res_by_owner.tpl
+$TLS_title_res_by_owner = "테스터별 결과";
+$TLS_trep_owner = "테스터";
+$TLS_title_res_by_tester = "테스트별 결과";
+$TLS_trep_tester = "테스터";
+
+
+
+// gui/templates/inc_res_by_prio.tpl
+$TLS_tit_end_date = "종료일";
+$TLS_tit_milestone = $TLS_Milestone;
+$TLS_title_res_by_prio = "우선순위별 결과";
+$TLS_trep_milestone_goal = "마일스톤 목표 [%]";
+$TLS_trep_prio = $TLS_priority;
+$TLS_trep_status = $TLS_status;
+
+
+
+// gui/templates/inc_res_by_ts.tpl
+$TLS_title_res_by_ts = "테스트 스위트별 결과";
+$TLS_trep_imp = $TLS_importance;
+$TLS_trep_risk = "위험도";
+$TLS_trep_ts = $TLS_test_suite;
+
+
+
+// gui/templates/reqSpecEdit.tpl
+$TLS_req_total_description = "Use this parameter to overwrite real count " .
+		"of requirements within the document. '0' 은 사용안함 을 나타냅니다.";
+
+
+
+// gui/templates/inc_show_bug_table.tpl
+$TLS_caption_bugtable = "관련 버그";
+$TLS_delete_bug ="버그 삭제";
+$TLS_del_bug_warning_msg = "이 버그를 삭제할까요?";
+
+
+
+// gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc = "테스트 케이스 지정";
+$TLS_no_docs = "사용할 수 있는 문서가 없습니다.";
+$TLS_req_list_docs = "요구사항 명세서";
+
+
+
+// ----- gui/templates/tcEdit_New_viewer.tpl -----
+$TLS_alt_add_tc_name = "테스트 케이스 이름은 반드시 입력해야 합니다.";
+$TLS_expected_results = "예상결과";
+$TLS_steps = "실행순서";
+$TLS_summary = "요약";
+$TLS_tc_title = "테스트 케이스 제목";
+
+
+
+// ----- gui/templates/show_exec_notes.tpl -----
+$TLS_title_execution_notes = "실행 노트";
+
+
+
+// ----- gui/templates/rolesedit.tpl -----
+$TLS_btn_create_role = $TLS_btn_create;
+$TLS_btn_edit_role = $TLS_btn_save;
+$TLS_caption_define_role = "역할 정의";
+$TLS_caption_possible_affected_users = "역할을 삭제하면 영향을 받는 사용자들";
+$TLS_enter_role_notes = "역할에 대한 설명";
+$TLS_menu_assign_product_roles = "테스트 프로젝트의 역할 지정";
+$TLS_menu_assign_testplan_roles = "테스트 계획의 역할 지정";
+$TLS_menu_define_roles = "새 역할";
+$TLS_menu_mod_user = "사용자 변경";
+$TLS_menu_new_user = "새 사용자";
+$TLS_menu_edit_user = "사용자 편집";
+$TLS_menu_edit_role = "역할 편집";
+$TLS_menu_view_users = "사용자 보기";
+$TLS_menu_view_roles = "역할 보기";
+$TLS_th_cf_rights = "사용자 필드";
+$TLS_th_kw_rights = $TLS_keyword;
+$TLS_th_mgttc_rights = "테스트 케이스 관리";
+$TLS_th_product_rights = "테스트 프로젝트";
+$TLS_th_req_rights = "요구사항";
+$TLS_th_rights = "권한";
+$TLS_th_rolename = "역할의 이름";
+$TLS_th_system_rights = "시스템 권한";
+$TLS_th_tp_rights = "테스트 계획";
+$TLS_th_user_rights = "사용자";
+$TLS_title_user_mgmt = "사용자 관리";
+$TLS_warning_empty_role_name = "역할의 이름을 입력하세요";
+$TLS_warning_modify_role = "역할을 정말 편집 할까요?";
+
+
+
+// ----- gui/templates/tcSearchForm.tpl -----
+$TLS_caption_search_form = "테스트 케이스 찾기";
+$TLS_custom_field_value ="사용자 필드 값";
+$TLS_not_applied = "적용되지 않음";
+$TLS_th_tcid = "TC ID";
+$TLS_th_tcversion = "버전";
+$TLS_th_title = "이름";
+$TLS_title_search_tcs = "찾기";
+$TLS_requirement_document_id = "Req. Doc. ID";
+
+
+// ----- gui/templates/testcases/searchData.tpl -----
+$TLS_too_wide_search_criteria = "일치하는 결과가 너무 많습니다.검색 조건을 좀 더 자세하게 " .
+		"입력해 주세요.";
+
+
+// ----- gui/templates/infoWindow.tpl -----
+
+
+
+// ----- gui/templates/tcDelete.tpl -----
+$TLS_btn_yes_iw2del = "예, 삭제합니다!";
+$TLS_question_del_tc = "이 테스트 케이스를 정말 삭제합니까?";
+$TLS_th_executed = "실행됨";
+$TLS_th_linked_to_tplan = "연결된 테스트 계획";
+$TLS_th_version = "버전";
+
+
+
+// ----- gui/templates/tcNew.tpl -----
+$TLS_title_new_tc = "테스트 케이스 생성";
+$TLS_warning_empty_tc_title = "테스트 케이스의 이름을 입력하세요.";
+
+
+
+// ----- gui/templates/tcImport.tpl -----
+$TLS_title_imp_tc_data = "테스트 케이스 가져오기";
+$TLS_view_file_format_doc = "(지원하는 파일 종류 문서 보기)";
+
+
+
+// ----- gui/templates/keywordsimport.tpl -----
+$TLS_title_keyword_import_to = "키워드 가져오기";
+$TLS_title_keyword_import = "키워드 가져오기";
+
+
+
+// ----- gui/templates/keywordsExport.tpl -----
+$TLS_export_keywords="키워드 내보내기";
+$TLS_title_req_import_to = "요구사항 가져오기";
+
+
+
+// ----- gui/templates/cfields_tproject_assign.tpl -----
+$TLS_btn_cfields_active_mgmt = "사용 상태 업데이트";
+$TLS_btn_cfields_display_order = "표시 순서 저장";
+$TLS_cfields_active = "사용함";
+$TLS_cfields_tproject_assign = "사용자 필드 지정";
+$TLS_display_order = "순서 표시";
+$TLS_title_assigned_cfields = "지정된 사용자 필드";
+$TLS_title_available_cfields = "사용 가능한 사용자 필드";
+
+
+
+// ----- gui/templates/usersview.tpl -----
+$TLS_No = "아니오";
+$TLS_Yes = "예";
+$TLS_alt_delete_user = "선택한 사용자를 정말 삭제할까요?";
+$TLS_alt_edit_user = "사용자 편집";
+$TLS_order_by_login = "로그인ID 순-";
+$TLS_order_by_role_descr = "역할 순-";
+$TLS_th_email = "이메일주소";
+$TLS_th_first_name = "이름";
+$TLS_th_last_name = "성";
+$TLS_th_locale = "언어";
+$TLS_th_login = "로그인ID";
+$TLS_th_role = "역할";
+$TLS_th_api = "API 키";
+//$TLS_api_gen_key_action = "generate";
+$TLS_warning_delete_user = " %s 을(를) 삭제 하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+$TLS_order_by_login_dir = "로그인 ID 순";
+$TLS_order_by_role_dir = "역할 순";
+$TLS_alt_active_user = "사용하는 사용자";
+
+
+// ----- gui/templates/login.tpl -----
+$TLS_btn_login = "로그인";
+$TLS_login_name = "로그인 ID";
+$TLS_lost_password_q = "비밀번호를 잊으셨나요?";
+$TLS_new_user_q = "새로운 사용자?";
+$TLS_password = "비밀번호";
+
+
+
+// ----- gui/templates/loginFirst.tpl -----
+$TLS_btn_add_user_data = "사용자 추가";
+$TLS_e_mail = "이메일 주소 (새 비밀번호를 보낼 때 필요합니다)";
+$TLS_first_name = "이름";
+$TLS_last_name = "성";
+$TLS_link_back_to_login = "로그인으로 돌아가기";
+$TLS_password_again = "비밀번호 다시 입력";
+$TLS_password_mgmt_is_external = "비밀번호는 외부에서 관리 합니다.";
+$TLS_user_login_valid_regex = "로그인 ID에 사용할 수 없는 문자가 있습니다!";
+
+
+// ----- gui/templates/tcMove.tpl -----
+$TLS_as_first_testcase = "선택한 곳의 가장 위로";
+$TLS_as_last_testcase = "선택한 곳의 가장 아래로";
+$TLS_btn_mv = "이동";
+$TLS_choose_container = "테스트 스위트 선택";
+$TLS_inst_copy = "테스트 케이스를 다른 테스트 스위트로 복사합니다.";
+$TLS_inst_move = "테스트 케이스를 다른 테스트 스위트로 이동합니다.";
+$TLS_inst_copy_move_warning = "중요: 이 테스트 프로젝트에 포함된 테스트 스위트만 선택할 수 있습니다.";
+$TLS_title_mv_cp_tc = "테스트 케이스 이동 / 복사";
+
+
+
+// ----- gui/templates/loginLost.tpl -----
+$TLS_btn_send = "전송";
+$TLS_password_reset = "비밀번호 재설정";
+
+
+
+// ----- gui/templates/tcView.tpl -----
+$TLS_no_records_found = "해당하는 결과가 없습니다!";
+$TLS_other_versions = '다른 버전들';
+$TLS_match_count = "일치 하는 개수 ";
+
+// ----- gui/templates/execSetResults.tpl -----
+$TLS_alt_attachment_mgmt = "첨부파일";
+$TLS_alt_notes = "노트";
+$TLS_assigned_to = "테스터";
+$TLS_attachment_mgmt = "첨부파일";
+$TLS_btn_history_off = "마지막 실행만 보기";
+$TLS_btn_history_off_any_build = "마지막 실행만 보기 (모든 빌드)";
+$TLS_btn_history_on = "모든 실행결과들 보기";
+$TLS_btn_save_all_tests_results = "모든 실행 결과 저장";
+$TLS_btn_save_tc_exec_results = "실행 결과 저장";
+$TLS_bug_mgmt = "버그 관리";
+$TLS_build_is_closed = "빌드가 완료 되었습니다";
+$TLS_builds_notes = "빌드 설명";
+$TLS_bulk_tc_status_management = "한꺼번에 TC 상태 관리";
+$TLS_closed_build = "빌드 완료. 동작이 되지 않습니다";
+$TLS_date_time_run = "날짜";
+$TLS_details = "상세정보";
+$TLS_edit_notes = "노트 편집";
+$TLS_execute_and_save_results ="실행과 결과 저장";
+$TLS_exec_any_build = "(모든 빌드)";
+$TLS_exec_current_build = "(현재 빌드)";
+$TLS_exec_notes = "노트";
+$TLS_exec_status = $TLS_status;
+$TLS_execution_history = "과거 실행한 결과들";
+$TLS_execution_type_manual = "수동";
+$TLS_execution_type_auto = "자동";
+$TLS_has_no_assignment = "테스터가 지정 되지 않았습니다";
+$TLS_img_title_bug_mgmt = "버그 관리";
+$TLS_img_title_delete_execution = "실행결과 삭제";
+$TLS_import_xml_results = "XML 결과 가져오기";
+$TLS_just_last_execution_for_this_build = "빌드의 마지막 실행결과";
+$TLS_last_execution = "마지막 실행";
+$TLS_no_data_available = "사용할 수 있는 자료 없음";
+$TLS_only_test_cases_assigned_to = "이 테스트에게 지정된 것만 ";
+$TLS_or_unassigned_test_cases = " 또는 테스터가 지정 되지 않은";
+$TLS_run_mode = "실행 방식";
+$TLS_set_all_tc_to = "전체 상태 설정 ";
+$TLS_show_hide = "보기 / 숨기기";
+$TLS_tc_not_tested_yet = "아직 테스트 안함";
+$TLS_test_cases_cannot_be_executed = "테스트 케이스를 실행할 수 없습니다.";
+$TLS_testcase_version_is_inactive_on_exec = "이 버전은 사용안함 상태입니다 => 실행할 수 없음";
+$TLS_test_exec_by = "담당자";
+$TLS_test_exec_expected_r = "예상결과";
+$TLS_test_exec_last_run_date = "가장 최근 실행";
+$TLS_test_exec_notes = "노트 / 설명";
+$TLS_test_exec_on_build = "빌드";
+$TLS_test_exec_result = "결과";
+$TLS_test_exec_steps = "실행순서";
+$TLS_test_exec_summary = "요약";
+$TLS_test_plan_notes = "테스트 계획의 노트";
+$TLS_th_test_case_id = "ID ";
+$TLS_th_testsuite = $TLS_test_suite;
+$TLS_title_t_r_on_build = "테스트 결과 : 빌드";
+$TLS_title_t_r_owner = " 지정 : ";
+$TLS_title_test_case = $TLS_test_case;
+$TLS_version = "버전";
+$TLS_warning_delete_execution = "실행결과를 삭제하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+$TLS_warning_nothing_will_be_saved = "선택한 실행결과가 DB에 저장되지 않습니다";
+
+
+// ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
+$TLS_keywords = "키워드";
+
+
+
+// ----- gui/templates/navBar.tpl -----
+$TLS_access_doc = "참고자료";
+$TLS_home = "홈";
+$TLS_link_logout = "로그아웃";
+$TLS_navbar_user_management = "사용자";
+$TLS_product = "테스트 프로젝트";
+$TLS_product_role = "테스트 프로젝트 역할 ";
+$TLS_search_testcase = "찾기";
+$TLS_title_edit_personal_data = "사용자정보";
+$TLS_title_events = "이벤트";
+$TLS_title_execute = "실행";
+$TLS_title_results = "결과";
+$TLS_title_specification = "명세";
+$TLS_session_inactivity_timeout_at = "세션 대기시간이 만료 되었습니다 :";
+
+
+
+// ----- gui/templates/inc_testsuite_viewer_rw.tpl -----
+
+
+
+// ----- gui/templates/planAddTC_m1.tpl -----
+$TLS_add_tc = "추가";
+$TLS_add_remove_selected_tc_hint = "모든 테스트 스위트들에 적용 됩니다";
+$TLS_btn_add_remove_selected_tc = "선택한 것들 추가 / 삭제";
+$TLS_btn_add_selected_tc = "선택한 것들 추가";
+$TLS_btn_save_exec_order = "순서 저장";
+$TLS_btn_save_custom_fields ="사용자 필드 저장";
+$TLS_check_uncheck_tc = "테스트 스위트의 모든 테스트 케이스들.";
+$TLS_check_uncheck_all_checkboxes = "모두 선택/선택안함";
+$TLS_check_uncheck_all_checkboxes_for_add = "모두 선택/선택안함 (추가하기 위해)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "모두 선택/선택안함 (삭제하기 위해)";
+$TLS_executed_can_not_be_removed = "실행된 테스트 케이스들은 삭제할 수 없습니다.";
+$TLS_execution_order = "실행 순서";
+$TLS_select_all_to_add = "추가할 테스트 케이스들을 한번에 선택";
+$TLS_select_all_to_remove = "삭제할 테스트 케이스들을 한번에 선택";
+
+$TLS_has_been_executed = "이미 실행됨";
+$TLS_inactive_testcase = "사용안함";
+$TLS_no_testcase_available = "사용 가능한 테스트 케이스가 없습니다";
+$TLS_note_keyword_filter = "키워드로 검색된 테스트 케이스들";
+$TLS_remove_tc = "제거";
+$TLS_show_tcase_spec = "테스트 케이스 명세 보기";
+$TLS_th_test_case = "테스트 케이스";
+$TLS_title_add_remove_test_to_plan = "테스트 계획에 테스트 케이스 추가/삭제";
+$TLS_title_add_test_to_plan = "테스트 계획에 테스트 케이스 추가";
+$TLS_warning_add_remove_selected_tc = "경고! 선택한 테스트 케이스를 테스트 계획에서 삭제할까요?";
+
+
+// ----- gui/templates/planAddTCNavigator.tpl -----
+$TLS_title_navigator = "네비게이터";
+$TLS_keywords_filter_help = "필터에서 OR/AND 를 사용할 수 있습니다.";
+
+
+// ----- gui/templates/planTCNavigator.tpl -----
+$TLS_btn_update_all_testcases_to_latest_version = "모든 TC들을 최신 버전으로 업데이트";
+
+
+// ----- gui/templates/planPriority.tpl -----
+$TLS_btn_upd_prio = "업데이트";
+$TLS_title_priority = "테스트 계획의 우선순위 규칙 정의";
+$TLS_tr_th_importance = "중요도";
+$TLS_tr_th_prio_cba = "우선순위 (C/B/A)";
+$TLS_tr_th_risk = "위험도/중요도";
+
+// ----- gui/templates/planUpdateTC.tpl -----
+$TLS_btn_update_testplan_tcversions = "테스트 계획 업데이트";
+$TLS_update_to_version = "업데이트 할 버전";
+$TLS_update_all_testcase_versions = "연결된 모든 테스트 케이스를 버전 업데이트";
+$TLS_update_testcase_versions = "연결된 테스트 케이스 버전 업데이트";
+$TLS_no_testcase_checked = "테스트 케이스를 선택하지 않아서 진행할 수 없습니다.";
+$TLS_tplan_updated = "테스트 계획이 업데이트 되었습니다";
+$TLS_update2latest = "<p>테스트 계획에 연결된 모든 테스트 케이스들을 마지막 버전으로 업데이트 합니다.</p>";
+
+
+
+// ----- gui/templates/planEdit.tpl -----
+$TLS_btn_testplan_create = "생성";
+$TLS_cancel = "취소";
+$TLS_opt_no = "아니오";
+$TLS_testplan_question_create_tp_from = "다른 테스트 계획을 복사하여 생성할까요?";
+$TLS_testplan_th_active = "사용함";
+$TLS_testplan_th_name = "이름";
+$TLS_testplan_th_notes = "설명";
+$TLS_testplan_title_create = "테스트 계획 생성";
+$TLS_testplan_title_edit = $TLS_test_plan . "편집 " . " - ";
+$TLS_testplan_title_for_project = "for Test Project ";
+$TLS_testplan_title_tp_management = "테스트 계획 관리";
+$TLS_testplan_txt_notes = "테스트 계획은 일정과 내용으로 구성된 작업의 모음이어야 합니다. " .
+                          "간단한 변경 요구사항이나 제품의 새로운 버전과 같은 것들로 인해 테스트 계획 수립이 필요해 집니다. " .
+                          "설명 필드에는 프로젝트 계획의 문서 링크와 관련 문서, 테스트 해야 할 기능 목록, 위험도 등을 " .
+                          "기재하시기 바랍니다. " .
+                          "기존에 사용하던 테스트 계획에서 새 테스트 계획을 만들 수도 있습니다. " .
+                          "이때 다음의 항목들이 복사 됩니다: 빌드들, 테스트 케이스들, 우선순위, 마일스톤, 사용자 역할. " .
+                          "테스트 계획은 사용안함 속성이 될 수도 있습니다 (즉, 편집하거나 결과를 바꿀 수 없습니다). " .
+                          "사용안함 속성이 된 테스트 계획은 '결과' 화면과 이 화면 에서만 볼 수 있습니다.";
+$TLS_warning_empty_tp_name = "이름이 없으면 테스트 계획을 열 수 없습니다!";
+
+$TLS_testplan_copy_tcases = "테스트 케이스 복사";
+$TLS_testplan_copy_tcases_latest = "가장 최근 버전 사용";
+$TLS_testplan_copy_tcases_current = "현재 연결된 버전 그대로 사용";
+$TLS_testplan_copy_builds = "빌드 복사";
+$TLS_testplan_copy_priorities = "우선순위 복사";
+$TLS_testplan_copy_milestones = "마일스톤 복사";
+$TLS_testplan_copy_user_roles = "사용자 역할 복사";
+
+
+// ----- gui/templates/planNew.tpl -----
+$TLS_testplan_btn_edit = "업데이트";
+$TLS_testplan_btn_new = "생성";
+$TLS_testplan_menu_create = "생성";
+$TLS_testplan_menu_edit = "편집";
+$TLS_testplan_menu_list = "목록";
+
+
+
+// ----- gui/templates/planMilestones*.tpl -----
+$TLS_alt_delete_milestone = "마일스톤 삭제?";
+$TLS_btn_edit_milestone = "편집";
+$TLS_btn_new_milestone = "생성";
+$TLS_info_milestones_date = "마일스톤은 반드시 오늘 또는 오늘 이후의 날짜여야 합니다";
+$TLS_no_milestones = "이 테스트 계획에는 아직 마일스톤이 없습니다!";
+$TLS_popup_delete_milestones = "%NAME% 마일스톤을 삭제할까요 ?";
+$TLS_warning_delete_milestone = " %s 를 삭제하려고 합니다.<br /> <br /> 정말 삭제 할까요?";
+$TLS_warning_empty_milestone_name="마일스톤의 이름을 꼭 입력 해야 합니다!";
+
+
+$TLS_th_date_format = "목표일";
+$TLS_th_perc_a_prio = "우선순위가 높은 테스트의 완료률 [0-100%]";
+$TLS_th_perc_b_prio = "우선순위가 보통인 테스트의 완료률 [0-100%]";
+$TLS_th_perc_c_prio = "우선순위가 낮은 테스트의 완료률 [0-100%]";
+$TLS_th_perc_testcases = "테스트 완료률 [0-100%]";
+$TLS_title_existing_milestones = "이미 있는 마일스톤";
+$TLS_title_milestones = "마일스톤 : 테스트 계획 ";
+$TLS_title_new_milestone = "새 마일스톤 정의";
+$TLS_title_edit_milestone = "마일스톤 편집";
+$TLS_delete_milestone = "마일스톤 삭제";
+$TLS_milestone_deleted = "[%s] 마일스톤이 삭제 되었습니다";
+$TLS_create_milestone = "마일스톤 생성";
+$TLS_edit_milestone = "[%s] 마일스톤 편집";
+$TLS_warning_empty_low_priority_tcases = "값을 꼭 입력해야 합니다";
+$TLS_warning_empty_medium_priority_tcases = "값을 꼭 입력해야 합니다";
+$TLS_warning_empty_high_priority_tcases = "값을 꼭 입력해야 합니다";
+$TLS_milestone_created = "마일스톤이 생성되었습니다";
+
+
+
+// ----- gui/templates/projectEdit.tpl -----
+$TLS_btn_activate = "사용함";
+$TLS_btn_del = "삭제";
+$TLS_btn_edit_del = "편집 / 삭제";
+$TLS_btn_inactivate = "사용안함";
+$TLS_caption_edit_tproject = "%s 편집하기";
+$TLS_caption_new_tproject = "새 테스트 프로젝트 생성";
+$TLS_color = "색상";
+$TLS_enable_requirements = "요구사항 관리 사용";
+$TLS_enable_priority = "우선순위 관리 사용";
+$TLS_enable_automation = "테스트 자동화";
+$TLS_info_failed_loc_prod = "테스트 프로젝트를 로컬라이즈 하는데 실패 했습니다.";
+$TLS_notes = "관련 정보";
+$TLS_testproject_alt_delete = "테스트 프로젝트 삭제";
+$TLS_testproject_alt_active = "사용함";
+$TLS_testproject_alt_requirement_feature = "요구사항 기능 사용함";
+$TLS_testproject_alt_edit = "테스트 프로젝트 편집";
+$TLS_testproject_txt_empty_list = "정의된 테스트 프로젝트가 없습니다!";
+
+// Warning!!! - if JS string you must use \\n to get \n
+$TLS_popup_product_delete = "경고! 테스트 프로젝트와 관련된 모든 자료가 함께 삭제 됩니다 " .
+                            "(테스트 결과, 계획 등 포함.). " .
+                            "삭제하지 않고 사용안함으로 설정 할 수도 있습니다.\\n" .
+                            "권장사항: 먼저 DB를 백업해 두세요.\\n" .
+                            "이 테스트 프로젝트를 삭제할까요?";
+
+$TLS_tcase_id_prefix = "TC ID 머릿말";
+$TLS_warning_empty_tcase_prefix = "TC ID 머릿말을 꼭 입력해야 합니다!";
+$TLS_warning_empty_tproject_name = "테스트 프로젝트 이름을 꼭 입력해야 합니다!";
+
+
+// ----- gui/templates/projectView.tpl -----
+$TLS_title_testproject_management = "테스트 프로젝트 관리";
+
+
+// ----- gui/templates/reqAssign.tpl -----
+$TLS_please_select_a_req = "요구사항을 선택 하세요";
+$TLS_req_msg_norequirement66 = "요구사항 없음";
+$TLS_req_title_assign = "테스트 케이스에 요구사항 지정하기";
+$TLS_req_title_assigned = "지정된 요구사항들";
+$TLS_req_title_unassigned = "사용 가능한 요구사항들";
+$TLS_warning_req_tc_assignment_impossible = "다음과 같은 이유들로 인해 " .
+		"<b>지정할 수 없습니다</b> :" .
+		"<br /><ul><li>정의 된 요구사항 명세서가 없습니다</li>" .
+		"<li>요구사항 명세서가 비어 있습니다.</li></ul>";
+
+
+
+// ----- gui/templates/tcEdit.tpl -----
+$TLS_title_edit_tc = "테스트 케이스 편집";
+$TLS_warning_editing_executed_tc = "경고!: 이 버전의 테스트 케이스는 이미 실행 되었습니다";
+
+
+
+// ----- gui/templates/planOwner.tpl -----
+$TLS_assign_ownership = "소유권 지정";
+$TLS_def_prio_rules = "우선순위 규칙 정의";
+$TLS_opt_label_none = "없음";
+$TLS_th_imp = "중요도";
+$TLS_th_owner = "테스터";
+$TLS_th_risk = "위험도";
+$TLS_th_test_suite = "테스트 스위트";
+$TLS_title_plan_ownership = "테스트 계획 소유권";
+
+
+
+// ----- gui/templates/tcView_viewer.tpl -----
+$TLS_activate_this_tcversion = "이 버전 사용";
+$TLS_Requirements = "요구사항";
+$TLS_btn_del_this_version = "이 버전 삭제";
+$TLS_btn_execute_automatic_testcase = "자동화 테스트 케이스 실행";
+$TLS_btn_mv_cp = "이동 / 복사";
+$TLS_btn_new_version = "새 버전 생성";
+$TLS_can_not_edit_tc = "이 버전은 이미 실행 되었기 때문에 편집할 수 없습니다";
+$TLS_deactivate_this_tcversion = "이 버전 사용안함";
+$TLS_execution_type = '실행 형태';
+$TLS_tcversion_is_inactive_msg = "이 버전이 사용안함으로 되었습니다 => 테스트 계획에서 사용할 수 없게 됩니다";
+
+
+
+// ----- gui/templates/planRemoveTC_m1.tpl -----
+$TLS_btn_remove_selected_tc = "선택한 TC들 삭제";
+$TLS_remove_ok = "삭제 완료";
+$TLS_title_remove_test_from_plan = "테스트 계획에서 TC 삭제";
+
+
+// ----- gui/templates/keywordsAssign.tpl -----
+$TLS_keyword_assignment_empty_tsuite = "이 테스트 스위트에는 테스트 케이스가 없습니다 => 키워드를 지정할 수 없습니다";
+$TLS_menu_assign_kw_to_tc = "테스트 케이스에 지정";
+$TLS_menu_manage_keywords = "키워드 관리";
+$TLS_title_keywords = "키워드";
+
+
+
+// ----- gui/templates/planTestersNavigator.tpl -----
+$TLS_label_list_of = "목록 ";
+$TLS_opt_test_plans = "테스트 계획";
+$TLS_opt_users = "사용자";
+
+
+
+// ----- gui/templates/planUpdateTC.tpl -----
+$TLS_btn_upd_ck_tc = "선택한 테스트 케이스들 업데이트";
+$TLS_info_all_tc_uptodate = "모든 테스트 케이스가 최신 입니다.";
+$TLS_th_category = $TLS_test_suite;
+$TLS_th_component = $TLS_test_suite;
+$TLS_th_id_tc = "[ID] 테스트 케이스";
+$TLS_th_reason = "업데이트 이유";
+$TLS_th_spec_version = "명세 버전";
+$TLS_th_status = "상태";
+$TLS_th_suite_version = "스위트 버전";
+$TLS_th_update = "업데이트";
+$TLS_title_upd_mod_tc = "변경된 테스트 케이스 업데이트 ";
+
+
+
+// ----- gui/templates/keywordsView.tpl -----
+$TLS_alt_delete_keyword = "키워드 삭제?";
+$TLS_btn_create_keyword = "키워드 생성";
+$TLS_btn_edit_keyword = "편집";
+$TLS_btn_export_keywords = "내보내기";
+$TLS_btn_import_keywords = "가져오기";
+$TLS_th_keyword = "키워드";
+$TLS_warning_delete_keyword = " %s 을(를) 삭제 하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+$TLS_warning_enter_at_least1 = "최소한 ";
+$TLS_warning_enter_at_least2 = " 자 이상 입력하세요.";
+$TLS_warning_enter_less1 = "";
+$TLS_warning_enter_less2 = " 자 이하로 입력하세요.";
+
+
+
+// ----- gui/templates/reqexport.tpl -----
+$TLS_title_req_export = "요구사항 내보내기";
+
+
+
+// ----- gui/templates/resultsAllBuilds.tpl -----
+$TLS_th_build = "빌드";
+$TLS_th_tc_total = "TC 합계";
+$TLS_title_met_of_build = "빌드의 매트릭";
+
+
+
+// ----- gui/templates/resultsBugs.tpl -----
+$TLS_bugs_open = "생성";
+$TLS_bugs_resolved = "해결됨";
+$TLS_bugs_total = "합계";
+$TLS_date = "날짜";
+$TLS_printed_by = "인쇄 : ";
+$TLS_tcs_with_bugs = "버그가 있는 테스트 케이스";
+$TLS_title_test_case_bugs = "테스트 케이스 버그";
+$TLS_title_test_case_timestamp = "테스트 케이스 타임스템프";
+$TLS_title_test_case_title = $TLS_test_case;
+$TLS_title_test_suite_name = $TLS_test_suite;
+
+
+
+// ----- gui/templates/resultsByStatus.tpl -----
+$TLS_info_test_results = "마지막 테스트 결과만 표시 됩니다. " .
+		"즉, 마지막 빌드의 테스트 결과가 지금과 다른 상태라면 " .
+		"해당 테스트 케이스는 표시 되지 않습니다 (실행안함은 제외).";
+$TLS_th_bugs = "버그";
+$TLS_th_date = "날짜";
+$TLS_th_run_by = "실행한 사람";
+$TLS_th_bugs_not_linked = "버그가 연결된 테스트 케이스들의 합계 : ";
+$TLS_th_assigned_to = "지정된 사람";
+
+
+// ----- gui/templates/resultsGeneral.tpl -----
+$TLS_title_gen_test_rep = "테스트 계획의 매트릭";
+$TLS_title_report_tc_priorities = "테스트 우선순위에 따른 테스트 결과들";
+$TLS_title_report_milestones = "마일스톤 현황";
+$TLS_th_completed = "완료됨";
+$TLS_th_milestone = "마일스톤 [날짜]";
+$TLS_th_not_run = "실행 안함";
+$TLS_th_tc_priority_high = "우선순위 높음";
+$TLS_th_tc_priority_medium = "우선순위 보통";
+$TLS_th_tc_priority_low = "우선순위 낮음";
+$TLS_th_progress = "테스트 진행 [%]";
+$TLS_th_goal = "실행 목표 [%]";
+$TLS_th_overall_priority = "모든 테스트 우선순위";
+$TLS_th_expected = "예상";
+$TLS_th_overall = "전체";
+
+
+
+// ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_results_latest = "최근 결과만";
+$TLS_results_all = "모든 결과들";
+$TLS_display_results_tc = "결과 표시";
+$TLS_last_status_any = "Any";
+$TLS_last_status_blocked = $TLS_test_status_blocked;
+$TLS_last_status_failed = $TLS_test_status_failed;
+$TLS_last_status_not_run = $TLS_test_status_not_run;
+$TLS_last_status_passed = $TLS_test_status_passed;
+$TLS_select_builds_header = "빌드 선택";
+$TLS_select_components_header = "최상위 테스트 스위트들";
+$TLS_select_keyword_header = "키워드 선택";
+$TLS_select_last_result_header = "표시할 실행결과";
+$TLS_select_owner_header = "지정된 사람";
+$TLS_select_report_format_header = "보고서 종류 선택";
+$TLS_submit_query = "질의 실행";
+$TLS_test_plan_header = $TLS_testplan;
+$TLS_query_metrics_report = "매트릭 보고서 질의";
+$TLS_enter_start_time = "시작 시간";
+$TLS_enter_end_time = "끝 시간";
+$TLS_year 		= "년";
+$TLS_month 		= "월";
+$TLS_day 		= "일";
+$TLS_hour 		= "시간";
+$TLS_search_in_notes = "노트에서 검색할 문자열";
+$TLS_executor = "실행한 사람";
+
+
+// ----- gui/templates/resultsMoreBuilds_report.tpl -----
+$TLS_caption_show_collapse = "보기 / 접기";
+$TLS_caption_user_selected_query_parameters = "검색조건";
+$TLS_not_yet_executed = "실행되지 않았습니다";
+$TLS_show_hide_all = "보기 / 모두 숨기기";
+$TLS_th_builds = "빌드";
+$TLS_th_execution_ts = "시간";
+$TLS_th_last_result = "마지막 결과";
+$TLS_th_report_format = "보고서 종류";
+$TLS_th_test_plan = $TLS_testplan;
+$TLS_th_test_suites = "스위트";
+$TLS_th_tester_id = "테스터";
+$TLS_th_total_block = "#" . $TLS_test_status_blocked;
+$TLS_th_total_cases = "#테스트 케이스";
+$TLS_th_total_fail = "#" . $TLS_test_status_failed;
+$TLS_th_total_not_run = "#" . $TLS_test_status_not_run;
+$TLS_th_total_pass = "#" . $TLS_test_status_passed;
+$TLS_th_start_time = "시작시간";
+$TLS_th_end_time = "끝 시간";
+$TLS_th_executor = "실행한 사람";
+$TLS_th_search_notes_string = "노트에서 검색할 문자열";
+$TLS_true = "예";
+$TLS_false = "아니오";
+$TLS_display_suite_summaries = "테스트 스위트 요약";
+$TLS_display_query_params  = "검색 조건";
+$TLS_display_totals = "합계";
+$TLS_display_test_cases = "테스트 케이스";
+$TLS_report_display_options = "보고서 표시 옵션";
+
+// ----- gui/templates/resultsReqs.tpl -----
+$TLS_no_srs_defined = "이 테스트 프로젝트에 사용할 수 있는 요구사항 명세가 없습니다.";
+$TLS_req_without_tcase = "테스트 케이스가 없는 요구사항들";
+
+
+// IMPORTANT for dynamic generation labels
+// $TLS_req_title_<test case status> 
+// If user add a new test case status he/she MUST add a new label
+$TLS_req_title_blocked = "중단 된 요구사항들";
+$TLS_req_title_failed = "실패 한 요구사항들";
+$TLS_req_title_not_run = "실행 되지 않은 요구사항들";
+$TLS_req_title_passed = "통과 된 요구사항들";
+
+$TLS_title_result_req_testplan = "요구사항 명세에 따른 테스트 결과들 : ";
+$TLS_title_test_plan = $TLS_testplan;
+
+
+
+// ----- gui/templates/resultsSend.tpl -----
+$TLS_btn_send_report = "보고서 보내기";
+$TLS_check_send_to_me = "나에게 복사본 보내기";
+$TLS_mail_body = "본문:";
+$TLS_mail_report = "보고서:";
+$TLS_mail_subject = "제목:";
+$TLS_mail_to = "받는사람:";
+$TLS_status_for_build = "빌드의 상태";
+$TLS_tp_status = "일반적인 테스트 계획의 상태";
+$TLS_tp_status_for_build = "빌드를 위한 테스트 계획의 상태";
+
+
+
+// ----- gui/templates/resultsTC.tpl -----
+$TLS_generated_by_TestLink_on = "TestLink에서 생성 : ";
+
+// ----- gui/templates/resultsImport.tpl -----
+$TLS_results_import_format = "XML 은 다음과 같은 형식이어야 합니다: ";
+$TLS_title_results_import_to = "결과 가져오기";
+
+// ----- gui/templates/plan/setUrgency.tpl -----
+$TLS_title_plan_urgency = "테스트 스위트의 테스트 긴급도";
+$TLS_th_urgency = "긴급도";
+$TLS_label_set_urgency = "테스트 긴급도 설정 : ";
+$TLS_urgency_description = "긴급도 값은 실행과 보고에서 테스트 케이스들의 " .
+		"우선순위에 영향을 미칩니다. 긴급도 보통이 기본 값입니다.";
+$TLS_feedback_urgency_fail = "테스트 긴급도를 업데이트할 수 없습니다! 자세한 사항은 이벤트 로그를 참고하세요.";
+$TLS_feedback_urgency_ok = "테스트 긴급도가 변경 되었습니다.";
+$TLS_testsuite_is_empty = '테스트 스위트에 테스트 케이스가 없어서 아무 동작도 하지 않습니다.';
+
+
+// ----- gui/templates/printDocOptions.tpl -----
+$TLS_doc_opt_title = '문서 옵션';
+$TLS_doc_opt_guide = '문서에 포함할 항목을 선택하세요. 아래 트리에서 원하는 항목을 선택하면 해당 항목과 그 하위의 모든 항목이 문서로 생성 됩니다.';
+$TLS_tr_td_show_as = "문서 형식";
+
+
+// ----- gui/templates/tcReorder.tpl -----
+$TLS_no_tc_to_reorder = "순서를 바꿀 테스트 케이스가 없습니다!";
+$TLS_title_change_tc_order = "이 테스트 스위트의 테스트 케이스 순서를 바꿉니다.";
+$TLS_drag_and_drop_to_reorder = "순서를 바꾸려면 항목을 끌어서 놓으세요.";
+
+
+// ----- gui/templates/tcTree.tpl -----
+$TLS_button_refresh = "새로고침";
+$TLS_button_update_tree = "트리 업데이트";
+$TLS_do_auto_update = "트리 자동 업데이트";
+$TLS_no_tc_spec_av = "사용 가능한 테스트 명세가 없습니다!";
+
+
+
+// ----- gui/templates/tc_exec_assignment.tpl -----
+$TLS_assign_to = "새 테스터";
+$TLS_btn_do = "실행";
+$TLS_btn_update_selected_tc = "저장";
+$TLS_can_not_execute = " (실행 권한 없음)";
+$TLS_check_uncheck_children_checkboxes = "선택한 모든 테스트 케이스 토글 (하위 테스트 스위트 포함)";
+$TLS_title_tc_exec_assignment = "테스트 케이스를 실행할 사람 지정하기 : 테스트 계획 ";
+$TLS_user = "사용자";
+$TLS_user_bulk_assignment = "한꺼번에 지정하기 ";
+
+
+// ----- tc_exec_assignment.php -----
+$TLS_mail_subject_testcase_assigned = 'Test Link - 테스트 케이스 지정 - 테스트 계획 :';
+$TLS_mail_subject_testcase_assignment_removed = 'Test Link - 테스트 케이스 지정 해제 - 테스트 계획 : ';
+$TLS_mail_testcase_assigned = "다음과 같은 테스트 케이스들이 다음 테스터에게 지정 되었습니다. : %s  지정한 사람 %s <br /><br />";
+$TLS_mail_testcase_assignment_removed = "%s - 다음 사용자에게 지정된 테스트 케이스들이 해제 되었습니다.  해제한 사람 %s <br /><br />";
+$TLS_send_mail_to_tester = "테스터에게 메일로 알려 주기";
+
+
+// ----- gui/templates/testSetNavigator.tpl -----
+
+
+
+// ----- gui/templates/userInfo.tpl -----
+$TLS_btn_change_passwd = "비밀번호 변경";
+$TLS_btn_upd_user_data = "업데이트";
+$TLS_btn_apikey_generate = "새 키 생성";
+$TLS_th_new_passwd = "새 비밀번호";
+$TLS_th_new_passwd_again = "새 비밀번호 확인";
+$TLS_th_old_passwd = "이전 비밀번호";
+$TLS_title_account_settings = "계정 설정";
+$TLS_title_personal_data = "개인 정보";
+$TLS_title_personal_passwd = "개인 비밀번호";
+$TLS_title_api_interface = "API 인터페이스";
+$TLS_warning_different_pwd = "입력한 값이 다릅니다. 새 비밀번호를 다시 입력하세요.";
+$TLS_warning_empty_pwd = "비밀번호를 꼭 입력해야 합니다!";
+$TLS_your_password_is_external = "당신의 비밀번호는 외부의 시스템에 의해 관리 됩니다.<br />".
+                                 "TestLink에서는 비밀번호를 바꿀 수 없습니다.";
+$TLS_user_api_key = "개인 API 접근 키";
+$TLS_audit_login_history = "로그인 기록";
+$TLS_audit_last_succesful_logins = "성공한 로그인 기록";
+$TLS_audit_last_failed_logins = "실패한 로그인 기록";
+$TLS_result_password_changed = "비밀번호가 변경 되었습니다";
+$TLS_result_apikey_create_ok = "새 API 키가 생성 되었습니다.";
+$TLS_result_user_changed = "개인 정보가 변경 되었습니다.";
+$TLS_empty_old_passwd = "이전 비밀번호를 꼭 입력해야 합니다";
+$TLS_never_logged = "로그인 한 적 없음";
+
+
+
+// ----- gui/templates/usersassign.tpl -----
+$TLS_TestProject = "테스트 프로젝트";
+$TLS_User = "사용자";
+$TLS_btn_change = "변경";
+$TLS_caption_assign_testplan_user_roles = "사용자에게 테스트 계획 역할 지정";
+$TLS_caption_assign_testproject_user_roles = "테스트 프로젝트 사용자 역할 지정";
+$TLS_menu_assign_testproject_roles = "테스트 프로젝트의 역할 지정";
+$TLS_th_roles = "역할";
+$TLS_th_roles_testplan = "테스트 계획 역할";
+$TLS_th_roles_testproject = "테스트 프로젝트 역할";
+$TLS_title_assign_roles = "역할 지정하기";
+
+
+
+// ----- gui/templates/usersedit.tpl -----
+$TLS_button_reset_password = "비밀번호 변경";
+$TLS_caption_user_details = "상세정보";
+$TLS_th_password = "비밀번호";
+$TLS_warning_empty_first_name = "이름을 입력하세요";
+$TLS_warning_empty_last_name = "성을 입력하세요";
+$TLS_warning_empty_login = "로그인ID를 입력하세요";
+
+
+// ----- gui/templates/attachmentupload.tpl -----
+$TLS_attachment_upload_ok = "파일이 업로드 되었습니다";
+$TLS_enter_attachment_title = "첨부파일의 제목 ";
+$TLS_import_was_ok = "가져오기를 성공 했습니다.";
+$TLS_max_size_cvs_file = "최대 파일 크기 ";
+$TLS_title_upload_attachment = "첨부파일 업로드";
+$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "파일의 크기가 " .
+		"php.ini에 정의된 최대 파일 크기보다 큽니다!";
+$TLS_error_file_size_larger_than_maximum_size = "파일의 크기가 " .
+		"TestLink에 정의된 최대 파일 크기보다 큽니다.!";
+$TLS_error_file_upload = "파일을 업로드할 수 없습니다!";
+
+
+// ----- gui/templates/rolesview.tpl -----
+$TLS_N_A = $TLS_not_aplicable;
+$TLS_alt_delete_role = "역할 삭제";
+$TLS_alt_edit_role = "역할 편집";
+$TLS_btn_confirm_delete = "삭제";
+$TLS_delete_role = "역할 삭제";
+$TLS_no_roles = "역할 없음";
+$TLS_th_role_description = $TLS_description;
+$TLS_title_roles = "사용할 수 있는 역할들";
+$TLS_warning_delete_role = " %s 을(를) 삭제 하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+$TLS_warning_users_will_be_reset = "영향을 받는 사용자들:";
+
+
+
+// ----- gui/templates/tcexport.tpl -----
+$TLS_export_filename = "내보낼 파일명";
+$TLS_export_with_keywords = "키워드와 함께 내보내기";
+$TLS_warning_empty_filename = "파일명을 입력 하세요";
+
+
+// ----- gui/templates/buildView.tpl -----
+$TLS_alt_active_build = "사용함 상태인 빌드";
+$TLS_alt_edit_build = "이 빌드를 편집 하려면 클릭 하세요";
+$TLS_alt_open_build = "진행 상태인 빌드";
+$TLS_btn_build_create = "생성";
+$TLS_no_builds = "이 테스트 계획에는 아직 빌드가 없습니다.!";
+$TLS_th_description = "설명";
+$TLS_th_open = "진행";
+$TLS_title_build_list = "이미 있는 빌드 목록";
+$TLS_warning_delete_build = "<p> %s 을(를) 삭제 하려고 합니다.</p>" .
+		"<p>관련된 모든 자료(예: 테스트 결과)들도 같이 삭제 됩니다!</p>" .
+		"<p>정말 삭제 할까요?</p>";
+$TLS_builds_description = "빌드는 이름으로 구별합니다. 각각의 빌드는 " .
+		"선택된 테스트 계획에 연결 되어 있습니다.<br />설명란에는 다음과 같은 것을 기재합니다 :&nbsp;" .
+		"결과물 목록, 수정사항 또는 기능들, 승인서, 상태, 등.<br />" .
+		"빌드는 두 가지 속성을 가지고 있습니다 :<br />" .
+		"사용함 / 사용안함 &ndash; 빌드를 사용할 수 있는지 여부를 나타냅니다. " .
+		"사용안함 으로 설정한 빌드는 실행과 보고서에서 나타나지 않습니다.<br />" .
+		"진행 / 완료 &ndash; 진행 상태인 빌드에서만 테스트 결과를 변경할 수 있습니다.";
+$TLS_build_copy_help = "다음 옵션이 선택 되어 있을 경우: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+		"&nbsp;,이 테스트 프로젝트의 모든 테스트 계획에서 빌드의 이름을 검색하고, " .
+		"같은 이름이 없을 경우 빌드가 생성 됩니다.";
+
+
+// ----- gui/templates/planView.tpl -----
+$TLS_testplan_alt_delete_tp = "테스트 계획을 삭제 할까요?";
+$TLS_testplan_alt_edit_tp = "테스트 계획을 편집 합니다";
+$TLS_testplan_msg_delete_confirm = "테스트 계획을 완전히 삭제 할까요? ".
+		"삭제 대신에 테스트 계획 관리 화면에서 사용안함으로 설정하셔도 됩니다.";
+$TLS_testplan_th_delete = "삭제";
+$TLS_testplan_title_list = "테스트 계획 목록";
+$TLS_testplan_txt_empty_list = "정의된 테스트 계획이 없습니다! 테스트 실행을 하려면 테스트 계획을 생성하세요";
+$TLS_alt_active_testplan = "테스트 계획 사용하기";
+$TLS_warning_delete_testplan = "<p> %s 을(를) 삭제 하려고 합니다.</p><p>정말 삭제 할까요?</p>";
+
+
+// ----- gui/templates/mainPage_left.tpl -----
+$TLS_href_assign_user_roles = "사용자의 역할 지정";
+$TLS_href_browse_tc = "테스트 케이스 검색";
+$TLS_href_cfields_management = "사용자 필드 정의";
+$TLS_href_cfields_tproject_assign = "사용자 필드 지정";
+$TLS_href_edit_tc = "테스트 케이스 편집";
+$TLS_href_keywords_assign = "키워드 지정";
+$TLS_href_keywords_manage = "키워드 관리";
+$TLS_href_keywords_view = "키워드 보기";
+$TLS_href_print_tc = "테스트 명세서 발행";
+$TLS_href_req_assign = "요구사항 지정";
+$TLS_href_req_spec = "요구사항 명세서";
+$TLS_href_roles_management = "역할 관리";
+$TLS_href_search_tc = "테스트 케이스 찾기";
+$TLS_href_tproject_management = "테스트 프로젝트 관리";
+$TLS_href_user_management = "사용자 관리";
+$TLS_href_admin_modules = "시스템 설정";
+$TLS_title_requirements = "요구사항";
+$TLS_title_test_spec = "테스트 명세";
+$TLS_title_product_mgmt = "테스트 프로젝트";
+$TLS_href_plan_define_priority = "테스트 계획 우선순위";
+$TLS_href_my_testcase_assignments="내가 실행해야 할 테스트 케이스";
+
+
+// ----- gui/templates/mainPage_right.tpl -----
+$TLS_filter_tp_by_product = "테스트 프로젝트별 테스트 계획";
+$TLS_href_add_remove_test_cases = "테스트 케이스 추가 / 삭제";
+$TLS_href_build_new = "빌드 / 릴리즈";
+$TLS_href_execute_test = "테스트 실행하기";
+$TLS_href_metrics_dashboard = "매트릭 현황";
+$TLS_href_newest_tcversions = "테스트 케이스의 새 버전 보기";
+$TLS_href_plan_assign_urgency = "긴급 테스트 설정";
+$TLS_href_plan_management = "테스트 계획 관리";
+$TLS_href_plan_mstones = "마일스톤 개요";
+$TLS_href_rep_and_metrics = "테스트 보고서와 매트릭";
+$TLS_href_tc_exec_assignment = "실행할 테스터 지정";
+$TLS_href_update_tplan = "테스트 케이스 버전 업그레이드";
+
+$TLS_href_upd_mod_tc = "변경된 테스트 케이스들 업데이트";
+$TLS_msg_no_rights_for_tp = "<br /> 테스트 계획을 사용할 권한이 없습니다";
+$TLS_testplan_role = "테스트 계획 역할 ";
+$TLS_title_test_case_suite = "테스트 계획 항목";
+$TLS_title_test_execution = "테스트 실행";
+$TLS_title_test_plan_mgmt = "테스트 계획";
+
+
+
+// ----- lib/execute/bug_add.php -----
+$TLS_bug_added = "Bug added";
+$TLS_error_bug_does_not_exist_on_bts = "BTS에 버그 ID가 존재하지 않습니다!";
+$TLS_error_wrong_BugID_format = "버그 ID 형식이 잘못 되었습니다!";
+
+
+
+// ----- lib/execute/bug_delete.php -----
+$TLS_bugdeleting_was_ok = "버그를 성공적으로 삭제하였습니다!";
+
+
+
+// ----- lib/functions/doAuthorize.php -----
+$TLS_error_ldap_auth_failed = "LDAP 인증을 실패하였습니다.";
+$TLS_error_ldap_bind_failed = "LDAP 바인딩을 실패하였습니다 (잘 못 된 증명서)";
+$TLS_error_ldap_server_connect_failed = "LDAP 서버로 연결할 수 없습니다 ".
+		"(호스트 이름, 포트, LDAP 버전을 확인하세요).";
+$TLS_error_ldap_update_failed = "LDAP 업데이트를 실패하였습니다.";
+$TLS_error_ldap_user_not_found = "LDAP 사용자를 찾을 수 없습니다.";
+
+
+
+// ----- lib/functions/product.inc.php -----
+$TLS_info_product_delete_fails = "테스트 프로젝트를 삭제하는 중 에러가 발생 했습니다.";
+
+
+// ----- lib/results/resultsImport.php -----
+$TLS_imp_result_ko = '- 결과를 가져올 수 없습니다!';
+$TLS_invalid_execution_timestamp = "테스트 케이스 %s - 잘못된 실행 타임스탬프 %s " . $TLS_imp_result_ko;
+$TLS_invalid_tester = "테스트 케이스 %s - 로그인 %s 인 테스트를 찾을 수 없습니다 " . $TLS_imp_result_ko;
+$TLS_import_results_tc_not_found = "테스트 계획에서 테스트 케이스 %s 를 찾을 수 없습니다" . $TLS_imp_result_ko;
+$TLS_import_results_invalid_result = "테스트 케이스 %s 가 잘못된 결과 %s 를 가지고 있습니다 " . $TLS_imp_result_ko;
+$TLS_import_results_ok = "테스트 케이스 %s - 버전 %s - 테스터: %s - 결과: %s - 실행 타임스탬프: %s - 가져왔습니다!";
+$TLS_import_results_tc_exists = "테스트 케이스 %s - 버전 = %s -가 테스트 계획에 있습니다.";
+$TLS_tcase_external_id_do_not_exists = "외부 ID=%s 인 테스트 케이스를 찾을 수 없습니다 " . $TLS_imp_result_ko;
+$TLS_tcase_internal_id_do_not_exists = "내부 ID=%s 인 테스트 케이스를 찾을 수 없습니다 "  . $TLS_imp_result_ko;
+$TLS_tcase_id_is_not_number = "테스트 케이스 내부 ID=%s 가 숫자가 아닙니다 " . $TLS_imp_result_ko;
+
+
+
+// ----- lib/functions/results.inc.php -----
+$TLS_trep_failing = "Failing";
+$TLS_trep_passing = "Passing";
+$TLS_trep_status_for_build = "빌드의 상태";
+$TLS_trep_status_for_ts = "테스트 케이스의 상태";
+$TLS_unassigned = "지정안됨";
+
+
+// ----- lib/functions/resultsMoreBuilds.inc.php -----
+$TLS_bugs = "관련 버그들";
+$TLS_builds_selected = "빌드들";
+$TLS_case_not_run_warning = "실행하지 않은 테스트 케이스";
+$TLS_category_header = "테스트 스위트 =";
+$TLS_daterun = "실행일";
+$TLS_last_status = "마지막 상태";
+$TLS_number_blocked = "# " . $TLS_test_status_blocked;
+$TLS_number_cases = "# Cases";
+$TLS_number_executions = "# Test Cases Run";
+$TLS_number_failed = "# " . $TLS_test_status_failed;
+$TLS_number_not_run = "# " . $TLS_test_status_not_run;
+$TLS_number_passed = "# " . $TLS_test_status_passed;
+$TLS_owner = "테스터";
+$TLS_owner_header = $TLS_owner. " =";
+$TLS_runby = "실행한 사람";
+$TLS_test_plan_name = $TLS_testplan;
+
+
+
+// ----- lib/functions/roles.inc.php -----
+$TLS_desc_cfield_management = "사용자 필드 관리";
+$TLS_desc_cfield_view = "사용자 필드 보기 (읽기만 가능)";
+$TLS_desc_mgt_modify_key = "키워드 관리";
+$TLS_desc_mgt_modify_product = "테스트 프로젝트 관리";
+$TLS_desc_mgt_modify_req = "요구사항 관리";
+$TLS_desc_mgt_modify_tc = "테스트 케이스 생성/편집";
+$TLS_desc_mgt_modify_users = "사용자 관리";
+$TLS_desc_mgt_view_key = "키워드 보기 (읽기만 가능)";
+$TLS_desc_mgt_view_req = "요구사항 보기 (읽기만 가능)";
+$TLS_desc_mgt_view_tc = "테스트 케이스 보기 (읽기만 가능)";
+$TLS_desc_mgt_view_events = "이벤트 뷰어 (읽기만 가능)";
+$TLS_desc_events_mgt = "이벤트 관리";
+$TLS_desc_role_management = "역할 관리";
+$TLS_desc_testplan_create_build = "빌드 생성/편집";
+$TLS_desc_testplan_execute = "테스트 계획 실행";
+$TLS_desc_testplan_metrics = "테스트 계획의 매트릭";
+$TLS_desc_testplan_planning = "테스트 계획 만들기";
+$TLS_desc_user_role_assignment = "역할 지정";
+$TLS_error_duplicate_rolename = "같은 이름의 역할이 이미 있습니다!";
+$TLS_error_role_no_rights = "권한이 없으면 역할을 저장할 수 없습니다!";
+$TLS_error_role_no_rolename = "역할의 이름을 꼭 입력해야 합니다!";
+$TLS_inherited_role = "<상속됨>";
+$TLS_mgt_testplan_create = "테스트 계획 생성/편집";
+
+
+
+// ----- lib/functions/testproject.class.php -----
+$TLS_error_creating_req_spec = "요구사항 명세서를 생성하는 중 에러가 발생 했습니다.";
+$TLS_info_product_name_empty = "이름을 반드시 입력해야 합니다.";
+$TLS_keyword_already_exists = "이 키워드는 이미 존재합니다";
+$TLS_string_contains_bad_chars = "이름에 사용할 수 없는 문자가 포함되어 있습니다.";
+$TLS_warning_duplicate_req_title = "%s 이름의 요구사항이 이미 있습니다.";
+
+
+
+// ----- lib/functions/requirements.inc.php -----
+$TLS_conflict = "충돌";
+$TLS_error_deleting_req = "요구사항을 삭제하는 중 에러가 발생 했습니다.";
+$TLS_error_inserting_req = "요구사항을 추가하는 중 에러가 발생 했습니다.";
+$TLS_error_updating_req = "요구사항을 업데이트 하는 중 에러가 발생 했습니다.";
+$TLS_error_updating_reqspec = "요구사항 명세서를 업데이트 하는 중 에러가 발생 했습니다.";
+$TLS_file_is_not_xml = "파일의 XML 형식이 이상해서 사용할 수 없습니다.";
+$TLS_req_import_format_description1 = " - CSV 는 다음과 같은 세가지 필드가 필요합니다:" .
+		" 'req_doc_id','title','description'";
+$TLS_req_import_format_description2 = " - DOORS 에서 내보내어진 CSV 는 헤더 줄이 필요합니다.";
+$TLS_req_import_format_docbook = " - DocBook XML 형태";
+$TLS_req_import_result_overwritten = "덮어쓰기!";
+$TLS_req_import_result_skipped = "건너뛰기";
+$TLS_warning_duplicate_reqdoc_id = "문서 ID 중복";
+
+
+// ----- lib/functions/testcase.class.php -----
+$TLS_create_new_version="새 버전 %s를 생성합니다."; 
+$TLS_testcase_name_already_exists = "%s 인 테스트 케이스가 이미 있습니다.";
+$TLS_created_with_title = "%s 로 생성하였습니다.";
+$TLS_the_format_tc_xml_import = "";
+
+
+// ----- lib/functions/testsuite.class.php -----
+$TLS_component_name_already_exists = "%s 라는 테스트 스위트가 이미 있습니다.";
+$TLS_testsuite = $TLS_test_suite;
+
+
+// ----- lib/functions/exec.inc.php -----
+$TLS_test_results_submitted = "테스트 결과가 승인 되었습니다.";
+
+
+// ----- lib/functions/info.inc.php -----
+$TLS_email_sent_message = "메일이 발송 되었습니다.";
+
+
+// ----- lib/functions/print.inc.php -----
+$TLS_printed_by_TestLink_on = "TestLink에서 인쇄 : ";
+$TLS_title_toc = "목차";
+$TLS_passfail = "테스트 결과";
+$TLS_testnotes = "테스팅 노트";
+$TLS_last_exec_result = "마지막 결과";
+$TLS_test_project_notes = "테스트 프로젝트 설명";
+
+
+// ----- lib/functions/users.inc.php -----
+$TLS_duplicate_login = "같은 로그인 ID를 사용하는 사용자가 이미 있습니다!";
+$TLS_login_must_not_be_empty = "로그인 ID를 반드시 입력해야 합니다!";
+$TLS_wrong_old_password = "이전 비밀번호가 잘 못 되었습니다!";
+
+
+
+// ----- lib/functions/email_api.php -----
+$TLS_stmp_host_unconfigured = "SMTP 호스트가 정상적으로 설정 되지 않았습니다!";
+
+
+
+// ----- lib/functions/common.php -----
+$TLS_test_automation_exec_ok = " 실행 성공!";
+$TLS_test_automation_server_conn_failure = " HTTP 서버에 연결할 수 없습니다.";
+$TLS_XMLRPC_error_number = "XML-RPC Fault number:- ";
+
+
+// ----- lib/functions/configCheck.php -----
+$TLS_attachments_dir = "첨부파일 폴더:";
+$TLS_bts_connection_problems = "버그 추적 시스템에 연결할 수 없습니다 :<br />
+                                환경을 점검해 보세요.<br />
+                                이 문제는 TestLink의 성능을 저하시킬 수 있으니 조심하세요.";
+$TLS_but_directory_is_not_writable = "폴더가 쓰기금지 되어 있지 않습니다!";
+$TLS_check_email_config="이메일 기능의 다음 파라미터들을 점검하세요:";
+$TLS_directory_is_writable = "폴더에 쓰기가 허용 되어 있습니다.";
+$TLS_does_not_exist = "존재하지 않습니다";
+$TLS_exists = "존재합니다";
+$TLS_ldap_extension_not_loaded = "로그인 방법이 LDAP로 설정 되어 있습니다.<br />" .
+                               "하지만 PHP LDAP 확장기능이 로드 되지 않았습니다 => " .
+                               "로그인을 할 수 없습니다.<br />".
+                               "TestLink 관리자에게 연락하세요";
+$TLS_sec_note_admin_default_pwd = " 'admin' 계정의 비밀번호를 변경하셔야 합니다!";
+$TLS_sec_note_remove_install_dir = "Install 폴더를 제거하셔야 합니다!";
+$TLS_error_domxml_missing = "Domxml 이 존재하지 않습니다. XML 가져오기 기능을 사용할 수 없습니다!";
+$TLS_error_gd_missing = "GD 라이브러리를 위한 PHP 확장기능을 사용할 수 없습니다. 차트를 사용할 수 없습니다. PHP를 설정하세요.";
+$TLS_error_gd_png_support_disabled = "PNG 포멧을 지원하지 않는 GD 라이브러리를 위한 PHP 확장기능. 
+		차트를 사용할 수 없습니다. PHP를 설정하세요.";
+
+
+// ----- lib/functions/cfield_mgr.class.php -----
+$TLS_text_counter_feedback = "%d 자까지 입력할 수 있습니다. Left ";
+
+
+// ----- lib/general/frmWorkArea.php -----
+$TLS_create_a_build = "새 빌드 생성";
+$TLS_no_build_warning_part1 = "이 테스트 계획을 위해 생성된 빌드가 없습니다. ";
+$TLS_no_build_warning_part2 = "빌드를 먼저 생성하거나 관리자에게 문의하세요.";
+
+
+// ----- lib/general/myTPInfo.php -----
+$TLS_no_testplans_available = "사용 가능한 테스트 계획이 없습니다.";
+
+
+// ----- lib/general/tlsmarty.inc.php -----
+$TLS_show_hide_api_info = "API 정보 보이기 / 숨기기";
+
+
+// ----- lib/keywords/keywords.inc.php -----
+$TLS_empty_keyword_no = "키워드를 반드시 입력해야 합니다!";
+$TLS_keywords_char_not_allowed = "키워드에는 쉼표와 따옴표를 사용할 수 없습니다!";
+$TLS_tc_kw_update_fails1 = "테스트 케이스";
+$TLS_tc_kw_update_fails2 = "실패";
+$TLS_the_format_keyword_csv_import = "키워드;노트";
+
+
+// ----- lib/keywords/keywordsView.php -----
+$TLS_kw_delete_fails = "키워드 삭제를 실패하였습니다!";
+$TLS_kw_update_fails = "업데이트 실패";
+
+
+
+// ----- lib/keywords/keywordsAssign.php -----
+$TLS_assigned_kword = "지정된 키워드";
+$TLS_available_kword = "사용가능한 키워드";
+
+
+
+// ----- lib/plan/buildNew.php -----
+$TLS_cannot_add_build = "빌드를 추가할 수 없습니다!";
+$TLS_cannot_delete_build = "빌드를 삭제할 수 없습니다!";
+$TLS_cannot_update_build = "빌드를 업데이트 하는 중 에러가 발생했습니다!";
+$TLS_warning_duplicate_build = "이 ID를 사용하는 빌드가 이미 있습니다.";
+
+
+
+// ----- lib/plan/plan.inc.php -----
+$TLS_warning_enter_valid_date = "올바른 날짜를 입력해 주세요!";
+$TLS_warning_invalid_percentage_value = "퍼센트값은 0에서 100%까지 입니다.";
+$TLS_warning_milestone_date = "마일스톤은 반드시 오늘 또는 오늘 이후의 날짜로 생성 되어야 합니다!";
+$TLS_warning_percentage_value_higher_than_100 = "모든 퍼센트값의 합이 100을 넘을 수 없습니다";
+
+
+
+// ----- lib/plan/planMilestone*.php -----
+$TLS_milestone_delete_fails = "마일스톤을 삭제할 수 없습니다!";
+$TLS_warning_milestone_add_failed = "마일스톤을 추가할 수 없습니다!";
+$TLS_warning_milestone_update_failed = "마일스톤을 업데이트 할 수 없습니다!";
+$TLS_milestone_name_already_exists = "마일스톤 (%s)가 이미 있습니다.";
+
+
+
+// ----- lib/plan/planTestersEdit.php -----
+$TLS_title_assign_tp = "사용자에게 테스트 계획 지정 ";
+$TLS_title_assign_users = "테스트 계획에 사용자 지정 ";
+
+
+// ----- lib/plan/planTestersNavigator.php -----
+$TLS_nav_test_plan = "네비게이터 - 테스트 계획";
+$TLS_nav_users = "네비게이터 - 사용자";
+
+
+//  -----lib/plan/planUpdateTC.php -----
+$TLS_deleted = "삭제됨";
+$TLS_different_versions = "Diff. versions";
+$TLS_plan_update_no_tc_updated = "업데이트된 테스트 케이스가 없습니다";
+$TLS_updated = "업데이트됨";
+$TLS_all_versions_where_latest = "모든 테스트 케이스들의 버전이 최신버전이어서 " .
+		"아무 동작도 하지 않습니다.";
+$TLS_num_of_updated = "[%d] 테스트 케이스가 업데이트 되었습니다";
+
+
+// ----- lib/plan/testSetNavigator.php -----
+$TLS_title_test_plan_navigator = "테스트 계획 네비게이터";
+
+
+// ----- lib/plan/testSetRemove.php -----
+$TLS_tcase_removed_from_tplan = "테스트 케이스가 테스트 계획에서 제거 되었습니다.";
+$TLS_multiple_tcase_removed_from_tplan = "테스트 케이스가 테스트 계획에서 제거 되었습니다.";
+
+
+// ----- lib/plan/planEdit.php -----
+$TLS_testplan_created_ok = "테스트 계획이 생성 되었습니다.";
+$TLS_update_tp_failed1 = "테스트 계획 '";
+$TLS_update_tp_failed2 = "' 의 업데이트를 실패 하였습니다.";
+$TLS_warning_duplicate_tplan_name = "이 이름으로 이미 테스트 계획이 있습니다. " .
+		"다른 이름을 선택하세요!";
+
+
+
+// ----- lib/results/printDocOptions.php -----
+$TLS_opt_show_toc 			= "목차";
+$TLS_opt_show_suite_txt 	= "테스트 스위트 설명";
+$TLS_opt_show_tplan_txt 	= "테스트 계획 설명";
+$TLS_opt_show_tc_body 		= "테스트 케이스 시나리오";
+$TLS_opt_show_tc_summary 	= "테스트 케이스 요약";
+$TLS_opt_show_tc_author 	= "테스트 케이스 작성자";
+$TLS_opt_show_tc_reqs 		= "테스트 케이스와 관련된 요구사항";
+$TLS_opt_show_tc_keys 		= "테스트 케이스 키워드들";
+$TLS_opt_show_cfields		= "테스트 케이스 사용자 필드들";
+$TLS_opt_show_passfail 		= "테스트 결과";
+$TLS_opt_show_metrics 		= "매트릭";
+$TLS_title_tc_print_navigator = "네비게이터 - 테스트 명세 인쇄";
+$TLS_title_tp_print_navigator = "네비게이터 - 테스트 계획 인쇄 ";
+
+
+// ----- lib/project/projectedit.php -----
+$TLS_error_product_name_duplicate = "%s 테스트 프로젝트가 이미 있습니다.";
+$TLS_error_tcase_prefix_exists = "테스트 케이스 ID 머릿말 %s 이 이미 있습니다.";
+$TLS_info_no_more_prods = "테스트 프로젝트가 더 이상 없습니다.";
+$TLS_info_product_activated = "테스트 프로젝트가 사용함으로 설정 되었습니다.";
+$TLS_info_product_inactivated = "테스트 프로젝트가 사용안함으로 설정 되었습니다.";
+$TLS_info_product_not_deleted_check_log = "테스트 프로젝트를 삭제할 수 없습니다. TestLink 로그를 확인하세요.";
+$TLS_info_product_was_deleted = "테스트 프로젝트가 잘 삭제 되었습니다.";
+$TLS_refer_to_log = " 자세한 사항은 TestLink 로그를 확인하세요.";
+$TLS_test_project_activated = "테스트 프로젝트 %s 가 성공적으로 사용함으로 설정 되었습니다.";
+$TLS_test_project_created = "테스트 프로젝트 %s 가 성공적으로 생성 되었습니다.";
+$TLS_test_project_deleted = "테스트 프로젝트 %s 가 성공적으로 삭제 되었습니다.";
+$TLS_test_project_inactivated = "테스트 프로젝트 %s 가 성공적으로 사용안함으로 설정 되었습니다.";
+$TLS_test_project_updated = "테스트 프로젝트 %s 가 성공적으로 업데이트 되었습니다.";
+$TLS_test_project_update_failed = "테스트 프로젝트 %s 의 업데이트를 실패하였습니다!";
+
+
+// ----- lib/results/charts.php -----
+$TLS_graphical_reports = "차트 보고서";
+$TLS_overall_metrics = "전체 매트릭";
+$TLS_results_by_keyword = "키워드별 결과";
+$TLS_results_by_tester = "테스터별 결과";
+$TLS_results_top_level_suites = "최상위 스위트별 결과";
+$TLS_chart_report = "보고서";
+$TLS_chart_assigned_testers = "Owners";
+$TLS_chart_keywords = "키워드";
+$TLS_chart_testsuites = "테스트 스위트";
+
+
+// ----- lib/req/reqImport.php -----
+$TLS_file_is_not_ok_for_import_type = "파일이 선택한 가져오기 형식과 다릅니다.";
+$TLS_file_is_not_text = "텍스트 파일이 아니어서 사용할 수 없습니다.";
+$TLS_please_choose_req_file = "업로드 할 파일을 선택하세요";
+$TLS_req_import_finished = "가져오기가 끝났습니다!";
+
+
+
+// ----- lib/req/reqSpecView.php -----
+$TLS_cant_create_tc_from_req_nothing_sel = "요구사항을 선택하세요!";
+$TLS_req_created = "요구사항 [%s]가 생성 되었습니다.";
+
+
+
+// ----- lib/req/reqTcAssign.php -----
+$TLS_req_msg_noselect = "아무것도 선택하지 않음";
+$TLS_req_msg_notupdated_coverage = "요구사항의 커버리지가 업데이트 되지 않았습니다. ";
+$TLS_bulk_req_assign_msg = '트리에서 선택한 테스트 스위트에 있는 %s 개의 테스트 케이스에 ' .
+                         '<br />선택한 요구사항들을 한꺼번에 지정합니다.';
+$TLS_bulk_assigment_done = '%s 번의 지정이 완료 되었습니다.';
+$TLS_req_title_bulk_assign = '요구사항들을 한꺼번에 지정하기';
+$TLS_req_title_available = '사용 가능한 요구사항들';
+$TLS_no_req_spec_available = "이 테스트 프로젝트에는 사용 가능한 요구사항 명세가 없습니다.";
+
+
+// ----- lib/results/resultsBugs.php -----
+$TLS_title_test_report_all_builds = "테스트 보고서 : 테스트 케이스들의 모든 빌드의 결과";
+
+
+
+// ----- lib/results/resultsAllBuilds.php -----
+$TLS_title_metrics_x_build = "모든 빌드 현황";
+
+
+
+// ----- lib/results/resultsByStatus.php -----
+$TLS_list_of_blocked = "중단 된 테스트 케이스들";
+$TLS_list_of_failed = "실패 한 테스트 케이스들";
+$TLS_list_of_not_run = "실행 안 한 테스트 케이스들";
+
+
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "사용자 필드가 있는 테스트 계획";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
+
+// ----- lib/results/resultsTC.php -----
+
+
+
+// ----- lib/results/resultsNavigator.php -----
+$TLS_link_charts = "차트";
+$TLS_link_report_blocked_tcs = "중단 된 테스트 케이스들";
+$TLS_link_report_failed = "실패 한 테스트 케이스들";
+$TLS_link_report_general_tp_metrics = "일반적인 테스트 계획의 매트릭";
+$TLS_link_report_metrics_active_build = "사용하는 빌드의 매트릭";
+$TLS_link_report_metrics_more_builds = "매트릭 질의";
+$TLS_link_report_not_run = "실행하지 않은 테스트 케이스들";
+$TLS_link_report_overall_build = "모든 빌드의 현황";
+$TLS_link_report_reqs_coverage = "요구사항에 따른 보고서";
+$TLS_link_report_tcases_without_tester = "테스터가 지정되지 않은 테스트 케이스들";
+$TLS_link_report_test = "테스트 결과 매트릭스";
+$TLS_link_report_total_bugs = "Bugs per Test Case";
+$TLS_link_report_uncovered_testcases = "요구사항이 지정 되지 않은 테스트 케이스들";
+$TLS_link_report_tcases_with_cf = "사용자 필드가 있는 테스트 케이스들";
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+
+
+$TLS_no_linked_tc_cf='사용자 필드가 있는 테스트 케이스가 없습니다.';
+
+$TLS_format_html 		= 'HTML';
+$TLS_format_odt 		= 'OpenOffice Writer';
+$TLS_format_ods 		= 'OpenOffice Calc';
+$TLS_format_xls 		= 'MS Excel';
+$TLS_format_msword 		= 'MS Word';
+$TLS_format_pdf 		= 'PDF';
+$TLS_format_mail_html 	= 'Email (HTML)';
+
+
+// ----- lib/results/resultsSend.php -----
+$TLS_send_to_empty_email_warning = "이메일 필드가 공란이어서 이메일을 보낼 수 없습니다. " .
+		"정확한 이메일 주소가 필요합니다.";
+$TLS_warning_create_build_first = "빌드를 만들거나 데이터 가져오기를 먼저 해야 합니다.";
+
+
+// ----- lib/results/displayMgr.php -----
+$TLS_error_sendreport_no_email_credentials = "이 사용자의 이메일 정보가 없습니다. ".
+		" '사용자정보' 에서 이메일 주소를 입력하세요.";
+
+
+
+// ----- lib/testcases/archive.inc.php -----
+
+
+
+// ----- lib/testcases/listTestCases.php -----
+
+
+
+// ----- lib/testcases/tcImport.php -----
+$TLS_action_on_duplicated_name = "이름이 중복 될 경우에는";
+$TLS_already_exists_updated = "이미 있는 내용들입니다. 마지막 버전의 값이 업데이트 됩니다.";
+$TLS_please_choose_file_to_import = "가져올 파일을 선택하세요";
+$TLS_title_tc_import_to = "테스트 케이스 가져오기";
+$TLS_title_tsuite_import_to = "테스트 스위트 가져오기";
+$TLS_wrong_xml_tcase_file = "잘못된 XML 테스트 케이스 파일";
+$TLS_wrong_xml_tsuite_file = "잘못된 XML 테스트 스위트 파일";
+$TLS_cf_value_not_imported_missing_cf_on_testproject = "테스트 프로젝트 %s에서 사용할 수 있는 ".
+    "같은 이름의 사용자 필드가 없기 때문에, " .
+    "사용자 필드 '%s'의 값을 가져올 수 없습니다."; 
+$TLS_req_not_in_req_spec_on_tcimport = "요구사항 문서ID=%s 이 요구사항 명세 %s의 직접적인 항목이 아니기 때문에 " .
+		"테스트 케이스에 연결할 수 없습니다.";
+$TLS_req_spec_ko_on_tcimport = "요구사항 명세 %s가 없어서, 요구사항을 " .
+		"테스트 케이스에 연결할 수 없습니다.";
+$TLS_update_last_testcase_version='가장 최근 버전에 내용 업데이트';
+$TLS_create_new_testcase_version='새 버전 생성하기';
+$TLS_generate_new_testcase='이름만 바꿔서 새 테스트 케이스 생성하기';
+$TLS_no_cf_defined_can_not_import="가져 올 파일에 사용자 필드가 있지만, 이 프로젝트의 ".
+    "테스트 명세 설계 범위에 사용자 필드가 없으므로, 사용자 필드를 가져 올 수 없습니다."; 
+$TLS_no_reqspec_defined_can_not_import="가져 올 파일에 요구사항이 있지만, 이 프로젝트에 ".
+    "요구사항명세가 설정 되어 있지 않아서 가져 올 수 없습니다."; 
+
+
+// ----- lib/testcases/tcexport.php -----
+$TLS_no_testcases_to_export = "내보낼 테스트 케이스가 없습니다";
+$TLS_no_testsuites_to_export = "내보낼 테스트 스위트가 없습니다";
+$TLS_title_tc_export = "테스트 케이스 내보내기";
+$TLS_title_tc_export_all = "모든 테스트 케이스 내보내기";
+$TLS_title_tsuite_export = "테스트 스위트 내보내기";
+$TLS_title_tsuite_export_all = "모든 테스트 스위트 내보내기";
+
+
+
+// ----- lib/testcases/containerEdit.php -----
+$TLS_delete = "삭제";
+$TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
+$TLS_warning_empty_com_name = "Please give a name to Test Suite";
+
+
+
+// ----- lib/testcases/tcEdit.php -----
+$TLS_current = "현재";
+$TLS_delete_linked = "테스트 계획과의 연결이 제거 됩니다";
+$TLS_delete_linked_and_exec = "Links to test plans, and execution related information will be removed";
+$TLS_error_tc_add = "There was an error while adding the Test Case";
+$TLS_title_del_tc = "테스트 케이스 삭제 ";
+
+
+
+// ----- lib/usermanagement/rolesview.php -----
+$TLS_error_role_deletion = "The role couldn't be deleted!";
+
+
+// ----- lib/usermanagement/usersassign.php -----
+$TLS_no_test_projects = "There are no Test Projects defined";
+$TLS_no_test_plans = "There are no Test Plans defined for this Test Project";
+$TLS_test_project_user_roles_updated = "User Roles updated";
+$TLS_test_plan_user_roles_updated = "User Roles updated";
+
+
+// ----- lib/usermanagement/usersedit.php -----
+$TLS_user_created = "User %s was successfully created";
+$TLS_user_deleted = "User %s was successfully deleted";
+$TLS_user_not_added = "The user wasn't added!";
+$TLS_error_user_not_updated = "The user couldn't be updated!";
+$TLS_error_user_not_deleted = "The user couldn't be deleted!";
+$TLS_error_user_login_length_error = "The login was either too short or too long!";
+
+
+
+// ----- lib/usermanagement/rolesedit.php -----
+$TLS_error_role_creation = "The role couldn't be created!";
+$TLS_error_role_update = "The role couldn't be updated!";
+
+
+
+// ----- lib/cfields/cfields_edit.php -----
+$TLS_cf_name_exists = "같은 이름이 있습니다. 다른 것을 사용하세요.";
+$TLS_error_creating_cf = "사용자 필드를 생성 할 수 없습니다!";
+$TLS_do_update = "업데이트 되었습니다.";
+$TLS_do_delete = "삭제 되었습니다";
+$TLS_do_add = "추가 되었습니다";
+$TLS_warning_delete_cf = " %s 을(를) 삭제하려고 합니다.<br /><br /> 정말 삭제 할까요?";
+
+
+
+// ----- lib/project/fix_tplans.php -----
+$TLS_list_inactive_tplans1 = "Listing ";
+$TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
+$TLS_assoc_test_project = "Associated Test Project";
+$TLS_btn_fix_tplans = "업데이트";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+
+
+// ----- lib/project/project_req_spec_mgmt.tpl -----
+$TLS_btn_new_req_spec = "새 요구사항 명세";
+$TLS_btn_reorder_req_spec = "요구사항 명세 재정렬";
+
+
+// ----- reqSpecEdit.php -----
+$TLS_delete_req_spec = "요구사항 명세 삭제";
+$TLS_req_spec_created = "요구사항 명세 : %s 이(가) 생성 되었습니다.";
+$TLS_req_spec_deleted = "요구사항 명세 : %s 이(가) 삭제 되었습니다";
+$TLS_title_req_spec = "요구사항 명세";
+$TLS_warning_empty_req_spec_title = "요구사항 명세의 제목을 꼭 입력해야 합니다!";
+$TLS_create_req_spec = "요구사항 명세 생성";
+$TLS_create_child_req_spec = "Create Child Req Specification";
+$TLS_edit_req_spec = "요구사항 명세 편집";
+
+
+// ----- reqEdit.php -----
+$TLS_create_req = "요구사항 생성";
+$TLS_delete_req = "요구사항 삭제";
+$TLS_edit_req = "요구사항 편집";
+$TLS_req_created = "요구사항 : %s 이(가) 생성 되었습니다.";
+$TLS_req_deleted = "요구사항 : %s 이(가) 삭제 되었습니다.";
+
+
+// ----- reqSpecReorder.tpl -----
+$TLS_title_change_req_spec_order = "요구사항 명세 순서 변경";
+
+
+// ----- requirement_mgr -----
+$TLS_created_on_testsuite = "Test Cases has been created on Test Suite %s";
+$TLS_testsuite_name_created = "Test Suite %s has been created";
+
+
+// ----- keywordsEdit.php -----
+$TLS_keyword_management = "키워드 관리";
+$TLS_create_keyword = "키워드 생성";
+$TLS_edit_keyword = "키워드 편집";
+$TLS_warning_empty_keyword = "키워드를 반드시 입력해야 합니다!";
+
+// ----- api/TestlinkXMLRPCServerErrors.php -----
+$TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
+$TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
+$TLS_API_NO_TCASEID = "No Test Case ID provided. A valid Test Case ID must be provided!";
+$TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided. A valid Test Case External ID must be provided!";
+$TLS_API_NO_TPLANID = "No test plan id provided. A valid test plan id must be provided!";
+$TLS_API_NO_TEST_MODE = "A test Mode must be provided!";
+$TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
+$TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
+$TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
+$TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
+$TLS_API_NO_TPID = "No testplan ID (tpid) provided. A valid tpid must be provided!";
+$TLS_API_NO_TCID = "No testcase ID (tcid) provided. A valid tcid must be provided!";
+$TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
+$TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
+$TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
+$TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
+
+$TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
+$TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
+$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
+$TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
+$TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
+$TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
+$TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
+$TLS_API_GENERAL_SUCCESS = "Success!";
+$TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided does not exist!";
+$TLS_API_INVALID_TESTSUITEID = "ID %s do not belongs to a Test Suite present on system!";
+$TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
+$TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
+                                     "No Custom Field exists with the name provided!";
+
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
+ 
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO="Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
+$TLS_API_BAD_BUILD_FOR_TPLAN = "Build (id:%s), do not exist for Test Plan (name:%s/id:%s).";
+
+$TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE="Custom Field (name:%s), can not be used on %s, but on %s";
+
+$TLS_API_NO_TESTSUITENAME="No testsuitename provided. A test suite name must be provided!";
+$TLS_API_TESTSUITENAME_NOT_STRING = "testsuitename must be a string!";
+$TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) with id:%s do not belongs to Test Project(name=%s / id=%s)";
+
+// ----- audit log entries -----
+$TLS_audit_login_succeeded = "'{%1}' 가  '{%2}' 에서 성공적으로 로그인하였습니다.";
+$TLS_audit_login_failed = "'{%1}' 가 '{%2}' 에서 로그인을 실패하였습니다.";
+$TLS_audit_role_saved = "역할 '{%1}' 가 저장 되었습니다.";
+$TLS_audit_role_created = "역할 '{%1}' 가 생성 되었습니다.";
+$TLS_audit_role_deleted = "역할 '{%1}' 가 삭제 되었습니다.";
+
+
+$TLS_audit_cfield_created = "사용자 필드 '{%1}' 가 생성 되었습니다.";
+$TLS_audit_cfield_saved = "사용자 필드 '{%1}' 가 저장 되었습니다.";
+$TLS_audit_cfield_deleted = "사용자 필드 '{%1}' 가 삭제 되었습니다.";
+$TLS_audit_cfield_assigned = "사용자 필드 '{%1}' 가 테스트 프로젝트 '{%2}' 에 지정 되었습니다.";
+$TLS_audit_cfield_unassigned = "사용자 필드 '{%1}' 가 테스트 프로젝트에서 '{%2}' 에서 해제 되었습니다.";
+$TLS_audit_cfield_display_order_changed = "테스트 프로젝트 '{%1}' 에서 사용자 필드의 표시순서가 저장 되었습니다.";
+$TLS_audit_cfield_activated = "사용자 필드 '{%1}' 가 테스트 프로젝트 '{%2}' 에서 사용함으로 설정 되었습니다.";
+$TLS_audit_cfield_deactivated = "사용자 필드 '{%1}' 가 테스트 프로젝트 '{%2}' 에서 사용안함으로 설정 되었습니다.";
+
+$TLS_audit_user_apikey_set = "'{%1}' 를 위한 API-Key가 생성 되었습니다.";
+$TLS_audit_user_saved = "사용자 '{%1}' 가 저장 되었습니다.";
+$TLS_audit_user_pwd_saved = "사용자 '{%1}' 의 비밀번호가 저장 되었습니다.";
+$TLS_audit_users_roles_added_testproject = "사용자 '{%1}' 가 테스트 프로젝트  '{%2}' 에 역할  '{%3}' 로 지정 되었습니다.";
+$TLS_audit_users_roles_added_testplan = "사용자 '{%1}' 가 테스트 계획  '{%2}' 에 역할 '{%3}' 로 지정 되었습니다.";
+$TLS_audit_all_user_roles_removed_testplan = "테스트 계획 '{%1}'에서 모든 사용자 역할들이 해제 되었습니다.";
+$TLS_audit_all_user_roles_removed_testproject = "테스트 프로젝트 ID '{%1}' 에서 모든 사용자 역할들이 해제 되었습니다.";
+$TLS_audit_user_created = "사용자 '{%1}' 가 생성 되었습니다.";
+$TLS_audit_user_deleted = "사용자 '{%1}' 가 삭제 되었습니다.";
+$TLS_audit_user_logout = "'{%1}' 로그아웃";
+$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "'{%1}' 가 비밀번호 초기화를 요청 하였습니다.";
+$TLS_audit_user_role_changed = "사용자 '{%1}' 의 역할이 변경 되었습니다. 이전='{%2}' 신규='{%3}'";
+$TLS_audit_user_active_status_changed = "사용자 '{%1}' 의 사용 상태가 변경 되었습니다. 이전='{%2}' 신규='{%3}'";
+
+$TLS_audit_security_user_right_missing = "사용자 '{%1}' 는 '{%2}' 에서 '{%3}' 을 할 권한이 없습니다! 강제로 종료합니다!";
+
+$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' 가 생성 되었습니다.";
+$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' 가 저장 되었습니다.";
+$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' 가 삭제 되었습니다.";
+
+$TLS_audit_keyword_created = "키워드 '{%1}' 가 생성 되었습니다.";
+$TLS_audit_keyword_saved = "키워드 '{%1}' 가 저장 되었습니다.";
+$TLS_audit_keyword_deleted = "키워드 '{%1}' 가 삭제 되었습니다.";
+$TLS_audit_keyword_assigned_tc = "키워드 '{%1}' 가 테스트 케이스 '{%2}' 에 지정 되었습니다.";
+$TLS_audit_keyword_assignment_removed_tc = "키워드 '{%1}' 가 테스트 케이스 '{%2}' 에서 해제 되었습니다.";
+$TLS_audit_all_keyword_assignments_removed_tc = "모든 키워드들이 테스트 케이스 '{%1}' 에서 해제 되었습니다.";
+
+$TLS_audit_executionbug_added = "실행 중에 버그 '{%1}' 가 추가 되었습니다.";
+$TLS_audit_executionbug_deleted = "실행 중에 버그 '{%1}' 가 삭제 되었습니다.";
+
+$TLS_audit_attachment_deleted = "첨부파일 '{%1}' 가 삭제 되었습니다.";
+$TLS_audit_attachment_created = "첨부파일 '{%1}' - 파일 '{%2}' 이 생성 되었습니다.";
+
+$TLS_audit_req_spec_created = $TLS_testproject . " '{%1}' - 요구사항 명세 '{%2}' 가 생성 되었습니다.";
+$TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - 요구사항 명세 '{%2}' 가 저장 되었습니다.";
+$TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - 요구사항 명세 '{%2}' 가 삭제 되었습니다.";
+$TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - 요구사항 명세 '{%2}' 가  '{%3}' 로 이름이 바뀌었습니다.";
+
+$TLS_audit_requirement_created = "요구사항 '{%1}' 가 생성 되었습니다.";
+$TLS_audit_requirement_saved = "요구사항 '{%1}' 가 저장 되었습니다.";
+$TLS_audit_requirement_deleted = "요구사항 '{%1}' 가 삭제 되었습니다.";
+$TLS_audit_req_assigned_tc = "요구사항 '{%1}' 가 테스트 케이스 '{%2}' 에 지정 되었습니다.";
+$TLS_audit_req_assignment_removed_tc = "요구사항 '{%1}' 가 테스트 케이스 '{%2}' 에서 해제 되었습니다.";
+
+$TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - 빌드 '{%3}' 가 생성 되었습니다.";
+$TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - 빌드 '{%3}' 가 저장 되었습니다.";
+$TLS_audit_build_deleted = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - 빌드 '{%3}' 가 삭제 되었습니다.";
+
+$TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - 테스트 계획 '{%2}' 가 삭제 되었습니다.";
+$TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - 테스트 계획 '{%2}' 가 저장 되었습니다.";
+$TLS_audit_testplan_created = $TLS_testproject . " '{%1}' - 테스트 계획 '{%2}' 가 생성 되었습니다.";
+$TLS_audit_milestone_deleted = "테스트 계획 '{%1}' - 마일스톤 '{%2}' 가 삭제 되었습니다.";
+$TLS_audit_milestone_created = "테스트 계획 '{%1}' - 마일스톤 '{%2}' 가 생성 되었습니다.";
+$TLS_audit_milestone_saved = "테스트 계획 '{%1}' - 마일스톤 '{%2}' 가 저장 되었습니다.";
+
+$TLS_audit_tc_added_to_testplan = "테스트 케이스 '{%1}' 버전 {%2} 가 테스트 계획 {%3} 에 추가 되었습니다.";
+$TLS_audit_tc_removed_from_testplan = "테스트 케이스 '{%1}' 버전 {%2} 가 테스트 계획 {%3} 에서 제거 되었습니다.";
+
+$TLS_audit_missing_localization = "문자열 '{%1}' 가  '{%2}' 언어로 번역 되지 않았습니다.";
+
+$TLS_audit_events_deleted = "사용자 '{%1}' 가 모든 이벤트를 삭제했습니다.";
+
+
+// ----- eventviewer.php -----
+$TLS_th_loglevel = "로그 레벨";
+$TLS_th_timestamp = "타임 스탬프";
+$TLS_th_activity = "동작";
+$TLS_label_startdate = "시작일";
+$TLS_label_enddate = "종료일";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "이벤트 뷰어";
+$TLS_th_session_info = "세션 정보";
+$TLS_th_sessionID = "세션 ID";
+$TLS_th_source = "소스";
+$TLS_click_on_event_info = "자세한 사항을 보려면 클릭하세요.";
+$TLS_th_activity_code = "동작";
+$TLS_th_object_id = "오브젝트 ID";
+$TLS_th_object_type = "오브젝트 형식";
+$TLS_message_please_wait = "잠시만 기다리세요 ...";
+$TLS_title_eventinfo = "이벤트 정보";
+$TLS_title_eventdetails = "이벤트 세부사항";
+$TLS_th_user = "사용자";
+$TLS_show_event_history = "이벤트 이력 보기";
+$TLS_btn_clear_events = "모든 이벤트 초기화";
+$TLS_th_event_description = "설명";
+
+
+// ----- int_mantis.php -----
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new = "New issue";
+$TLS_issue_status_feedback = "Feedback";
+$TLS_issue_status_acknowledged = "Acknowledged issue ";
+$TLS_issue_status_confirmed = "Confirmed issue";
+$TLS_issue_status_assigned = "Assigned issue";
+$TLS_issue_status_resolved = "Resolved issue";
+$TLS_issue_status_closed = "Closed issue";
+$TLS_access_to_bts="Access issue tracking system";
+
+
+// ----- uncoveredTestCases.php -----
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = 'No uncovered Test Cases';
+$TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
+$TLS_testproject_has_no_requirements = 'There are no Requirements defined';
+
+
+// ----- testCasesWithoutTester -----
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+
+
+// ----- timeCharts ----- 
+$TLS_interval_end_date 		= "Last Interval Date";
+$TLS_interval_header 		= "Interval Type";
+$TLS_interval_number 		= "Number of Intervals";
+$TLS_link_time_charts		= "Time Charts";
+$TLS_time_charts_metrics 	= "Time Charts Metrics";
+$TLS_time_charts_title 		= "Time Charts";
+
+
+// ----- END ------------------------------------------------------------------
+?>

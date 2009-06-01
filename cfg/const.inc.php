@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2009/03/16 08:58:09 $ by $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2009/06/01 21:41:06 $ by $Author: havlat $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -152,7 +152,7 @@ define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
 // havlatm: @todo remove (must be solved via css)
 // planAddTC_m1-tpl
-define('TL_STYLE_FOR_ADDED_TC', "background-color:yellow;");
+define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
 /** default filenames of CSS files of current GUI theme */
 define('TL_CSS_MAIN', 'testlink.css');
@@ -167,13 +167,13 @@ define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
  * i.e. you want to develop a new one without loosing the original template.
  */
 $g_tpl = array(
-	'tcView' 		=> "tcView.tpl",
-	'tcSearchView' 	=> "tcSearchView.tpl",
-	'tcEdit' 		=> "tcEdit.tpl",
-	'tcNew' 		=> "tcNew.tpl",
-	// 'execSetResults' => "execSetResults.tpl",
-	'tcSearchView' 	=> "tcView.tpl",
-	'usersview' 	=> "usersView.tpl"
+	'tcView' 		=> 'tcView.tpl',
+	'tcSearchView' 	=> 'tcSearchView.tpl',
+	'tcEdit' 		=> 'tcEdit.tpl',
+	'tcNew' 		=> 'tcNew.tpl',
+	// 'execSetResults' => 'execSetResults.tpl',
+	'tcSearchView' 	=> 'tcView.tpl',
+	'usersview' 	=> 'usersView.tpl'
 );
 
 // needed for drap and drop feature
@@ -192,12 +192,13 @@ define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css
  * The resulting string will be:  TL_LOCALIZE_TAG . label
  * Example:   code specifies the key of string: lang_get('hello') -> shows "LOCALIZE: Hello"
  */
-define('TL_LOCALIZE_TAG',"LOCALIZE: ");
+define('TL_LOCALIZE_TAG','LOCALIZE: ');
 
 /** 
- * List of supported localizations (used in user preferences to choose one)
+ * @var array List of supported localizations (used in user preferences to choose one)
+ * DEV: Mantain the alphabetical order when adding new locales.
  **/
-// Please mantain the alphabetical order when adding new locales.
+// 
 $g_locales = array(	
 	'cs_CZ' => 'Czech',
 	'de_DE' => 'German',
@@ -209,6 +210,7 @@ $g_locales = array(
 	'id_ID' => 'Indonesian',
 	'it_IT' => 'Italian',
 	'ja_JP' => 'Japanese',
+	'ko_KR' => 'Korean',
 	'nl_NL' => 'Dutch',
 	'pl_PL' => 'Polski',
 	'pt_BR' => 'Portuguese (Brazil)',
@@ -221,65 +223,69 @@ $g_locales = array(
  * NOTE: setting according local is done in testlinkInitPage() using set_dt_formats()
  */
 
-/** Default format of date */
-$g_date_format ="%d/%m/%Y";
-$g_timestamp_format = "%d/%m/%Y %H:%M:%S";
+/** @var string Default format of date */
+$g_date_format ='%d/%m/%Y';
+/** @var string Default format of datetime */
+$g_timestamp_format = '%d/%m/%Y %H:%M:%S';
 
-/** localized format of date */
+/** @var array Localized format of date */
 $g_locales_date_format = array(
-	'cs_CZ' => "%d.%m.%Y",
-	'de_DE' => "%d.%m.%Y",
-	'en_GB' => "%d/%m/%Y",
-	'en_US' => "%m/%d/%Y",
-	'es_AR' => "%d/%m/%Y",
-	'es_ES' => "%d/%m/%Y",
-	'fr_FR' => "%d/%m/%Y",
-	'id_ID' => "%d/%m/%Y",
-	'it_IT' => "%d/%m/%Y",
-	'ja_JP' => "%Y/%m/%d",
-	'nl_NL' => "%d-%m-%Y",
-	'pl_PL' => "%d.%m.%Y",
-	'pt_BR' => "%d/%m/%Y",
-	'ru_RU' => "%d/%m/%Y",
-	'zh_CN' => "%Y-%m-%d"
+	'cs_CZ' => '%d.%m.%Y',
+	'de_DE' => '%d.%m.%Y',
+	'en_GB' => '%d/%m/%Y',
+	'en_US' => '%m/%d/%Y',
+	'es_AR' => '%d/%m/%Y',
+	'es_ES' => '%d/%m/%Y',
+	'fr_FR' => '%d/%m/%Y',
+	'id_ID' => '%d/%m/%Y',
+	'it_IT' => '%d/%m/%Y',
+	'ja_JP' => '%Y/%m/%d',
+	'ko_KR' => '%Y/%m/%d',
+	'nl_NL' => '%d-%m-%Y',
+	'pl_PL' => '%d.%m.%Y',
+	'pt_BR' => '%d/%m/%Y',
+	'ru_RU' => '%d/%m/%Y',
+	'zh_CN' => '%Y-%m-%d'
 ); 
 
-/** localized format of full timestamp */
+/** @var array Localized format of full timestamp */
 $g_locales_timestamp_format = array(
-	'cs_CZ' => "%d.%m.%Y %H:%M:%S",
-	'de_DE' => "%d.%m.%Y %H:%M:%S",
-	'en_GB' => "%d/%m/%Y %H:%M:%S",
-	'en_US' => "%m/%d/%Y %H:%M:%S",
-	'es_AR' => "%d/%m/%Y %H:%M:%S",
-	'es_ES' => "%d/%m/%Y %H:%M:%S",
-	'fr_FR' => "%d/%m/%Y %H:%M:%S",
-	'id_ID' => "%d/%m/%Y %H:%M:%S",
-	'it_IT' => "%d/%m/%Y %H:%M:%S",
-	'ja_JP' => "%Y/%m/%d %H:%M:%S",
-	'nl_NL' => "%d-%m-%Y %H.%M:%S",
-	'pl_PL' => "%d.%m.%Y %H:%M:%S",
-	'pt_BR' => "%d/%m/%Y %H:%M:%S",
-	'ru_RU' => "%d/%m/%Y %H:%M:%S",
-	'zh_CN' => "%Y-%m-%d %H:%M:%S"
+	'cs_CZ' => '%d.%m.%Y %H:%M:%S',
+	'de_DE' => '%d.%m.%Y %H:%M:%S',
+	'en_GB' => '%d/%m/%Y %H:%M:%S',
+	'en_US' => '%m/%d/%Y %H:%M:%S',
+	'es_AR' => '%d/%m/%Y %H:%M:%S',
+	'es_ES' => '%d/%m/%Y %H:%M:%S',
+	'fr_FR' => '%d/%m/%Y %H:%M:%S',
+	'id_ID' => '%d/%m/%Y %H:%M:%S',
+	'it_IT' => '%d/%m/%Y %H:%M:%S',
+	'ja_JP' => '%Y/%m/%d %H:%M:%S',
+	'ko_KR' => '%Y/%m/%d %H:%M:%S',
+	'nl_NL' => '%d-%m-%Y %H.%M:%S',
+	'pl_PL' => '%d.%m.%Y %H:%M:%S',
+	'pt_BR' => '%d/%m/%Y %H:%M:%S',
+	'ru_RU' => '%d/%m/%Y %H:%M:%S',
+	'zh_CN' => '%Y-%m-%d %H:%M:%S'
 ); 
 
-/** localized date format for smarty templates (html_select_date function) */
+/** @var array localized date format for smarty templates (html_select_date function) */
 $g_locales_html_select_date_field_order = array(
-	'cs_CZ' => "dmY",
-	'de_DE' => "dmY",
-	'en_GB' => "dmY",
-	'en_US' => "mdY",
-	'es_AR' => "dmY",
-	'es_ES' => "dmY",
-	'fr_FR' => "dmY",
-	'id_ID' => "dmY",
-	'it_IT' => "dmY",
-	'ja_JP' => "Ymd",
-	'nl_NL' => "dmY",
-	'pl_PL' => "dmY",
-	'pt_BR' => "dmY",
-	'ru_RU' => "dmY",
-	'zh_CN' => "Ymd"
+	'cs_CZ' => 'dmY',
+	'de_DE' => 'dmY',
+	'en_GB' => 'dmY',
+	'en_US' => 'mdY',
+	'es_AR' => 'dmY',
+	'es_ES' => 'dmY',
+	'fr_FR' => 'dmY',
+	'id_ID' => 'dmY',
+	'it_IT' => 'dmY',
+	'ja_JP' => 'Ymd',
+	'ko_KR' => 'Ymd',
+	'nl_NL' => 'dmY',
+	'pl_PL' => 'dmY',
+	'pt_BR' => 'dmY',
+	'ru_RU' => 'dmY',
+	'zh_CN' => 'Ymd'
 ); 
 
 
@@ -290,11 +296,11 @@ $g_locales_html_select_date_field_order = array(
 /** ATTACHMENTS */
 
 /** Attachment key constants (do not change) */
-define("TL_REPOSITORY_TYPE_DB",1);
-define("TL_REPOSITORY_TYPE_FS",2);
+define('TL_REPOSITORY_TYPE_DB',1);
+define('TL_REPOSITORY_TYPE_FS',2);
 
-define("TL_REPOSITORY_COMPRESSIONTYPE_NONE",1);
-define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
+define('TL_REPOSITORY_COMPRESSIONTYPE_NONE',1);
+define('TL_REPOSITORY_COMPRESSIONTYPE_GZIP',2);
 
 
 // Two models to manage attachment interface in the execution screen
@@ -350,13 +356,13 @@ $att_model_m2->show_upload_column = true;
 //
 //
 $tlCfg->results['status_code'] = array (
-	"failed"        => 'f',
-	"blocked"       => 'b',
-	"passed"        => 'p',
-	"not_run"       => 'n',
-	"not_available" => 'x',
-	"unknown"       => 'u',
-	"all"           => 'a'
+	'failed'        => 'f',
+	'blocked'       => 'b',
+	'passed'        => 'p',
+	'not_run'       => 'n',
+	'not_available' => 'x',
+	'unknown'       => 'u',
+	'all'           => 'a'
 ); 
 
 
@@ -367,13 +373,13 @@ $tlCfg->results['status_code'] = array (
  * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
  */
 $tlCfg->results['status_label'] = array(
-	"not_run"  		=> "test_status_not_run",
-	"passed"   		=> "test_status_passed",
-	"failed"   		=> "test_status_failed",
-	"blocked"  		=> "test_status_blocked"
-// "all"      		=> "test_status_all_status",
-//	"not_available" => "test_status_not_available",
-//	"unknown"       => "test_status_unknown"
+	'not_run'  		=> 'test_status_not_run',
+	'passed'   		=> 'test_status_passed',
+	'failed'   		=> 'test_status_failed',
+	'blocked'  		=> 'test_status_blocked'
+// 'all'      		=> 'test_status_all_status',
+//	'not_available' => 'test_status_not_available',
+//	'unknown'       => 'test_status_unknown'
 );
 
 // Is RIGHT to have this DIFFERENT from $tlCfg->results['status_label'],
@@ -389,23 +395,23 @@ $tlCfg->results['status_label'] = array(
 //          used to localize the strings.
 //
 $tlCfg->results['status_label_for_exec_ui'] = array(
-	"not_run"  		=> "test_status_not_run",
-	"passed"  		=> "test_status_passed",
-	"failed"  		=> "test_status_failed",
-	"blocked" 		=> "test_status_blocked"
+	'not_run'  		=> 'test_status_not_run',
+	'passed'  		=> 'test_status_passed',
+	'failed'  		=> 'test_status_failed',
+	'blocked' 		=> 'test_status_blocked'
 );
 
 /** Selected execution result by default. Values is key from $tlCfg->results['status_label'] */
-$tlCfg->results['default_status'] = "not_run";
+$tlCfg->results['default_status'] = 'not_run';
 
 
 // Status colours for charts - no way to use verbose just RGB
 $tlCfg->results['charts']=array();
 $tlCfg->results['charts']['status_colour']=array(
- 	"not_run"  		=> "000000",
-	"passed"   		=> "00FF00",
-	"failed"   		=> "FF0000",
-	"blocked"  		=> "0000FF"
+ 	'not_run'  		=> '000000',
+	'passed'   		=> '00FF00',
+	'failed'   		=> 'FF0000',
+	'blocked'  		=> '0000FF'
 );
 
 
@@ -420,10 +426,10 @@ $tlCfg->reportsCfg=new stdClass();
 // BUGID 1785
 // With this change configuration is simplified
 // $tlCfg->reportsCfg->exec_status = array(
-//     "passed"  => "test_status_passed",
-//     "failed"  => "test_status_failed",
-//     "blocked" => "test_status_blocked",
-//     "not_run" => "test_status_not_run"
+//     'passed'  => 'test_status_passed',
+//     'failed'  => 'test_status_failed',
+//     'blocked' => 'test_status_blocked',
+//     'not_run' => 'test_status_not_run'
 // );
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
@@ -435,19 +441,19 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 // --------------------------------------------------------------------------------------
 /** [Users & Roles] */
-define("TL_USER_NOBODY", -1);
-define("TL_NO_USER", TL_USER_NOBODY);
-define("TL_USER_ANYBODY", 0);
+define('TL_USER_NOBODY', -1);
+define('TL_NO_USER', TL_USER_NOBODY);
+define('TL_USER_ANYBODY', 0);
 
 
-define("TL_ROLES_TESTER", 7);
-define("TL_ROLES_GUEST", 5);
-define("TL_ROLES_NO_RIGHTS", 3);
-define("TL_ROLES_UNDEFINED", 0);
-define("TL_ROLES_INHERITED", 0);
+define('TL_ROLES_TESTER', 7);
+define('TL_ROLES_GUEST', 5);
+define('TL_ROLES_NO_RIGHTS', 3);
+define('TL_ROLES_UNDEFINED', 0);
+define('TL_ROLES_INHERITED', 0);
 
 // Roles with id > to this role can be deleted from user interface
-define("TL_LAST_SYSTEM_ROLE", 9);
+define('TL_LAST_SYSTEM_ROLE', 9);
 
 
 
@@ -457,8 +463,8 @@ define("TL_LAST_SYSTEM_ROLE", 9);
 // If you don't want use colouring then configure in this way
 // $g_role_colour = array ( );
 $g_role_colour = array ( 
-	"admin"         => 'white',
-	"tester"        => 'wheat',
+	'admin'         => 'white',
+	'tester'        => 'wheat',
 	'leader'        => 'acqua',
 	'senior tester' => '#FFA',
 	'guest'         => 'pink',
@@ -510,7 +516,7 @@ $tlCfg->urgency['code_label'] = array(
 /** [MISC] */
 
 // used to mark up inactive objects (test projects, etc)
-define("TL_INACTIVE_MARKUP", "* ");
+define('TL_INACTIVE_MARKUP', '* ');
 
 // used when created a test suite path, concatenating test suite names
 $g_testsuite_sep='/';
@@ -639,7 +645,7 @@ $tlCfg->gui->custom_fields->possible_values_cfg = null;
 // Format string follows date() spec - see PHP Manual
 // We can not use $g_timestamp_format, because format strings for date() and strftime() 
 // uses same LETTER with different meanings (Bad Luck!)
-$tlCfg->gui->custom_fields->time_format = "H:i:s";                                                       
+$tlCfg->gui->custom_fields->time_format = 'H:i:s';                                                       
                                                        
 
 // ----- END ----------------------------------------------------------------------------

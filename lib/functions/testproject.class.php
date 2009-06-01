@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.110 $
- * @modified $Date: 2009/05/18 07:47:51 $  $Author: franciscom $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2009/06/01 11:20:45 $  $Author: havlat $
  * @author franciscom
  *
  * 20090512 - franciscom - added setPublicStatus()
@@ -40,18 +40,20 @@
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
  * 20070128 - franciscom - added check_tplan_name_existence()
  *
-**/
-require_once( dirname(__FILE__) . '/attachments.inc.php');
-require_once( dirname(__FILE__) . '/keyword.class.php');
+ **/
+ 
+require_once('attachments.inc.php');
+require_once('keyword.class.php');
+
 
 class testproject extends tlObjectWithAttachments
 {
-  const RECURSIVE_MODE=true;
-  const EXCLUDE_TESTCASES=true;
-  const INCLUDE_TESTCASES=false;
-  const TESTCASE_PREFIX_MAXLEN=16; // must be changed if field dimension changes
-  const GET_NOT_EMPTY_REQSPEC=1;
-  const GET_EMPTY_REQSPEC=0;
+	const RECURSIVE_MODE = true;
+	const EXCLUDE_TESTCASES = true;
+	const INCLUDE_TESTCASES = false;
+	const TESTCASE_PREFIX_MAXLEN = 16; // must be changed if field dimension changes
+	const GET_NOT_EMPTY_REQSPEC = 1;
+	const GET_EMPTY_REQSPEC = 0;
 
 
 	private $object_table='testprojects';
@@ -104,22 +106,29 @@ class testproject extends tlObjectWithAttachments
 	}
 
 /**
- * create a new test project
+ * Create a new test project
  * @param string $name
  * @param string $color
  * @param string $optReq [1,0]
  * @param string $notes
- * [@param boolean $active [1,0] ]
- * [@param string $tcasePrefix [''] ]
- * [@param boolean $is_public [1,0] ]
+ * @param boolean $active [1,0] optional
+ * @param string $tcasePrefix [''] 
+ * @param boolean $is_public [1,0] optional
  *
  *
  * @return everything OK -> test project id
  *         problems      -> 0 (invalid node id)
  *
- * 20080112 - franciscom - added $tcasePrefix
+ * Revisions:
  * 20060709 - franciscom - return type changed
  *                         added new optional argument active
+ * 20080112 - franciscom - added $tcasePrefix
+ * 20090601 - havlatm - update session if required
+ * 
+ * @TODO havlatm: rollback node if create fails (DB consistency req.)
+ * @TODO havlatm: $is_public parameter need review (do not agreed in team)
+ * @TODO havlatm: described return parameter differs from reality
+ * @TODO havlatm: parameter $options should be 
  *
  */
 function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
@@ -127,7 +136,7 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
   
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
-	$tcprefix=$this->formatTcPrefix($tcasePrefix);
+	$tcprefix = $this->formatTcPrefix($tcasePrefix);
 
 	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority," .
 	       " option_automation,notes,active,is_public,prefix) " .
@@ -140,20 +149,28 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
 		                 $active . "," . $is_public . ",'" .
 		                 $this->db->prepare_string($tcprefix) . "')";
 	$result = $this->db->exec_query($sql);
+
 	if ($result)
 	{
 		tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
+		
+		// set project to session if not defined (the first project) or update the current
+		if (!isset($_SESSION['testprojectID']))
+		{
+			$this->setSessionProject($root_node_id);
+		}
 	}
 	else
 	{
-	   $root_node_id=0;
+		tLog('The new testproject '.$name.' was not created.', 'INFO');
+		$root_node_id = 0;
 	}
 
 	return($root_node_id);
 }
 
 /**
- * update info on tables and on session
+ * Update Test project data in DB and session
  *
  * @param type $id documentation
  * @param type $name documentation
@@ -196,28 +213,26 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation,
 			" option_automation=" .  $optAutomation . ", " .
 			" notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
 			" WHERE id=" . $id;
-
 	$result = $this->db->exec_query($sql);
+
 	if ($result)
 	{
+		// update related node
 		$sql = "UPDATE {$this->nodes_hierarchy_table} SET name='" .
 				$this->db->prepare_string($name) .
 				"' WHERE id= {$id}";
 		$result = $this->db->exec_query($sql);
 	}
+
 	if ($result)
 	{
 		// update session data
-		$_SESSION['testprojectColor'] = $color;
-		$_SESSION['testprojectName'] = $name;
-		$_SESSION['testprojectOptReqs'] = $opt_req;
-		$_SESSION['testprojectOptPriority'] = $optPriority;
-		$_SESSION['testprojectOptAutomation'] = $optAutomation;
+		$this->setSessionProject($id);
 	}
 	else
 	{
 		$status_msg = 'Update FAILED!';
-	  $status_ok=0;
+		$status_ok = 0;
 		$log_level ='ERROR';
 		$log_msg = $status_msg;
 	}
@@ -226,16 +241,56 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation,
 	return ($status_ok);
 }
 
+/**
+ * Set session data related to a Test project
+ * @param integer $projectId Project ID; zero causes unset data
+ * @version 1.1
+ */
+public function setSessionProject($projectId)
+{
+	$tproject_info = null;
+	if ($projectId)
+	{
+		$tproject_info = $this->get_by_id($projectId);
+	}
 
-/*
-  function: get_by_name
+	if ($tproject_info)
+	{
+		$_SESSION['testprojectID'] = $tproject_info['id'];
+		$_SESSION['testprojectName'] = $tproject_info['name'];
+		$_SESSION['testprojectColor'] = $tproject_info['color'];
+		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
+		$_SESSION['testprojectOptReqs'] = isset($tproject_info['option_reqs']) ? $tproject_info['option_reqs'] : null;
+		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
+		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
 
-  args :
+		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
+		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
+	}
+	else
+	{
+		if (isset($_SESSION['testprojectID']))
+		{
+			tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " . $_SESSION['testprojectName']);
+		}
+		unset($_SESSION['testprojectID']);
+		unset($_SESSION['testprojectName']);
+		unset($_SESSION['testprojectColor']);
+		unset($_SESSION['testprojectOptReqs']);
+		unset($_SESSION['testprojectOptPriority']);
+		unset($_SESSION['testprojectOptAutomation']);
+		unset($_SESSION['testprojectPrefix']);
+	}
 
-  returns:
+}
 
-*/
-function get_by_name($name,$addClause = null)
+/**
+ * Get Test project data according to name
+ * @param integer $name 
+ * @param string $addClause (optional) additional SQL condition(s)
+ * @return array map with test project info; null if query fails
+ */
+function get_by_name($name, $addClause = null)
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
@@ -250,17 +305,13 @@ function get_by_name($name,$addClause = null)
 	return $recordset;
 }
 
-/*
-  function: get_by_id
 
-
-  args : id: test project
-
-  returns: null if query fails
-           map with test project info
-
-*/
-function get_by_id($id)
+/**
+ * Get Test project data according to ID
+ * @param integer $id test project
+ * @return array map with test project info; null if query fails
+ */
+public function get_by_id($id)
 {
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
 	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
@@ -271,17 +322,12 @@ function get_by_id($id)
 }
 
 
-/*
-  function: get_by_prefix
-
-
-  args : prefix
-
-  returns: null if query fails
-           map with test project info
-
-*/
-function get_by_prefix($prefix)
+/**
+ * Get Test project data according to prefix
+ * @param string $prefix 
+ * @return array map with test project info; null if query fails
+ */
+public function get_by_prefix($prefix)
 {
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
 	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".

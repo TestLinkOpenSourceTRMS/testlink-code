@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.150 $ $Author: schlundus $
- * @modified $Date: 2009/05/09 17:59:19 $
+ * @version $Revision: 1.151 $ $Author: havlat $
+ * @modified $Date: 2009/06/01 11:20:46 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * SCOPE:
@@ -161,42 +161,9 @@ function doDBConnect(&$db)
 
 // --------------------------------------------------------------------------------------
 /**
- * Set session data related to the current test project
- * @param array $tproject_info result of DB query
- */
-function setSessionTestProject($tproject_info)
-{
-	if ($tproject_info)
-	{
-		/** @todo check if the session test project is updated when its modified per projectEdit.php  */
-		$_SESSION['testprojectID'] = $tproject_info['id'];
-		$_SESSION['testprojectName'] = $tproject_info['name'];
-		$_SESSION['testprojectColor'] = $tproject_info['color'];
-		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
-		$_SESSION['testprojectOptReqs'] = isset($tproject_info['option_reqs']) ? $tproject_info['option_reqs'] : null;
-		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
-		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
-
-		tLog("Test Project was setted to [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
-		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
-	}
-	else
-	{
-		unset($_SESSION['testprojectID']);
-		unset($_SESSION['testprojectName']);
-		unset($_SESSION['testprojectColor']);
-		unset($_SESSION['testprojectOptReqs']);
-		unset($_SESSION['testprojectOptPriority']);
-		unset($_SESSION['testprojectOptAutomation']);
-		unset($_SESSION['testprojectPrefix']);
-	}
-}
-
-
-// --------------------------------------------------------------------------------------
-/**
  * Set session data related to the current test plan
  * @param array $tplan_info result of DB query
+ * @TODO move to testPlan class
  */
 function setSessionTestPlan($tplan_info)
 {
@@ -312,26 +279,28 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	{
 		$tproject_id = $user_sel["tproject_id"];
 	}
-	$tproject_data = $tproject->get_by_id($tproject_id);
 
-	// We need to do checks before updating the SESSION
-	if (!$tproject_id || !$tproject_data)
+	// We need to do checks before updating the SESSION to cover the case that not defined but exists
+	if (!$tproject_id)
 	{
 		$all_tprojects = $tproject->get_all();
 		if ($all_tprojects)
 		{
 			$tproject_data = $all_tprojects[0];
+			$tproject_id = $tproject_data['id'];
 		}
 	}
-	setSessionTestProject($tproject_data);
+	
+	$tproject->setSessionProject($tproject_id);
+	
+	// set a Test Plan
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
 	$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 	// Now we need to validate the TestPlan
 	if($user_sel["tplan_id"] != 0)
 	{
 		$tplan_id = $user_sel["tplan_id"];
-  }
+	}
   
 	//check if the specific combination of testprojectid and testplanid is valid
 	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],$tplan_id);

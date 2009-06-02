@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.112 $
- * @modified $Date: 2009/05/17 16:19:02 $ by $Author: franciscom $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2009/06/02 09:50:03 $ by $Author: havlat $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -300,6 +300,59 @@ function get_all()
 	         WHERE testplans.id=nodes_hierarchy.id";
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
+}
+
+
+
+
+/**
+ * get list of Test Plans IDs + Names
+ * @param integer $projectId
+ * @param boolean $activeOnly (optional) default TRUE
+ * @return array map with following keys (or null if array is empty):
+ *			id: testplan id
+ *			name: testplan name 
+ * @version 1.0
+ * @author havlatm
+ */
+public function getTestPlanNames($projectId, $activeOnly=TRUE)
+{
+	$sql = 'SELECT nodes_hierarchy.id, nodes_hierarchy.name ' .
+			'FROM nodes_hierarchy ' .
+			'JOIN testplans ON nodes_hierarchy.id=testplans.id ' .
+			'WHERE testplans.testproject_id=' . $projectId;
+	if ($activeOnly)
+	{
+		$sql .= 'AND testplans.active=1 ';
+	}
+	$sql .= ' ORDER BY nodes_hierarchy.name';
+
+	$recordset = $this->db->get_recordset($sql);
+	return($recordset ? $recordset : null);
+}
+
+
+/**
+ * get array 'ID'=>'Name' of Test Plans
+ * @param integer $projectId
+ * @param boolean $activeOnly (optional) default TRUE
+ * @return array structured 'ID'=>'Name' 
+ * @version 1.0
+ * @author havlatm
+ */
+public function getTestPlanNamesById($projectId, $activeOnly=TRUE)
+{
+	$out = null;
+	$arrPlans = $this->getTestPlanNames($projectId, $activeOnly);
+
+	if (!is_null($arrPlans))
+	{
+		foreach($arrPlans as $key => $value)
+		{
+  			$out[$value['id']] = $value['name'];
+		}
+	}
+	return $out;
 }
 
 

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/01/03 17:30:29 $ $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/06/02 09:50:03 $ $Author: havlat $
  *  
  * 
  * @author 	Martin Havlat
@@ -13,6 +13,14 @@
  * rev: 20081218 - franciscom - TL_ROLES_NO_RIGHTS
  *      20070821 - franciscom - BUGID: 951
 **/
+
+
+
+/** @TODO havlatm: (obsolete file) move to class testplan; check/extend for example: $testplan->getTestPlanNames() */
+
+
+
+
 
 /*
   function: 

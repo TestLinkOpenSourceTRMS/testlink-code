@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.51 2009/05/21 19:24:05 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.52 2009/06/02 09:50:03 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -65,17 +65,17 @@ if($gui->do_report['status_ok'])
 	$gui->menuItems = $reports_magic->get_list_reports($btsEnabled,$args->optReqs, 
 	                                                  $tlCfg->reports_formats[$args->format]);
 }
-$tplans = getAccessibleTestPlans($db, $args->tproject_id, $args->userID);
-foreach($tplans as $key => $value)
-{
-  	$gui->tplans[$value['id']] = $value['name'];
-}
+
+// get All test Plans for combobox
+$gui->tplans = $tplan_mgr->getTestPlanNamesById($tproject_id,FALSE);
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('arrReportTypes', localize_array($tlCfg->reports_formats));
 $smarty->assign('selectedReportType', $args->format);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
 
 function init_args($tlCfg)
 {

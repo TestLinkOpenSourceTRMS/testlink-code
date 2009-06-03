@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/06/03 19:51:45 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/06/03 22:02:49 $ $Author: franciscom $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -19,7 +19,9 @@ class tlRole extends tlDBObject
 	public $name;
 	public $description;
 	public $rights;
-	
+
+	private $object_table = "";
+	private $tables = "";
 	protected $replacementRoleID;
 	
 	//options
@@ -36,7 +38,14 @@ class tlRole extends tlDBObject
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
-		
+	    $this->tables = array('roles' => DB_TABLE_PREFIX . 'roles', 
+	                          'users' => DB_TABLE_PREFIX . 'users',
+                              'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
+                              'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
+	                          'role_rights' => DB_TABLE_PREFIX . 'role_rights',
+	                          'rights' => DB_TABLE_PREFIX . 'rights'); 
+	
+		$this->object_table = $this->tables['roles']; 
 		$this->replacementRoleID = config_get('role_replace_for_deleted_roles');
 	}
 
@@ -45,23 +54,34 @@ class tlRole extends tlDBObject
 		$this->description = null;
 		$this->rights = null;
 		if (!($options & self::ROLE_O_SEARCH_BYNAME))
+		{
 			$this->name = null;
+		}
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	}
 	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$bFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
+		$getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
 		
 		$query = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
-		if ($bFullDetails)
+		if ($getFullDetails)
+		{
 			$query .= " ,c.id AS right_id,c.description ";
-		$query .= " FROM roles a ";
-		if ($bFullDetails)
-			$query .= " LEFT OUTER JOIN role_rights b ON a.id = b.role_id LEFT OUTER JOIN rights c ON b.right_id = c.id ";
+		}
+		
+		$query .= " FROM {$this->object_table} a ";
+		
+		if ($getFullDetails)
+		{
+			$query .= " LEFT OUTER JOIN {$this->tables['role_rights']} b ON a.id = b.role_id " . 
+			          " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
+		}
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)
@@ -78,8 +98,10 @@ class tlRole extends tlDBObject
 			$this->name = $rightInfo[0]['role_desc'];
 			$this->description = $rightInfo[0]['notes'];
 
-			if ($bFullDetails)
+			if ($getFullDetails)
+			{
 				$this->rights = $this->buildRightsArray($rightInfo);
+			}	
 		}
 		return $rightInfo ? tl::OK : tl::ERROR;
 	}
@@ -102,7 +124,7 @@ class tlRole extends tlDBObject
 				$result = $this->deleteRightsFromDB($db);
 				if ($result >= tl::OK)
 				{
-					$query = "UPDATE roles SET description = '".$db->prepare_string($this->name)."',".
+					$query = "UPDATE {$this->object_table} SET description = '".$db->prepare_string($this->name)."',".
 							     "notes ='".$db->prepare_string($this->description)."'".
 							     " WHERE id = {$this->dbID}";
 					$result = $db->exec_query($query);	
@@ -110,12 +132,12 @@ class tlRole extends tlDBObject
 			}
 			else
 			{
-				$query = "INSERT INTO roles (description,notes) VALUES ('".$db->prepare_string($this->name)."',".
-						     "'".$db->prepare_string($this->description)."')";
+				$query = "INSERT INTO {$this->object_table} (description,notes) VALUES ('".$db->prepare_string($this->name)."',".
+						 "'".$db->prepare_string($this->description)."')";
 				$result = $db->exec_query($query);	
 				if($result)
 				{
-					$this->dbID = $db->insert_id('roles');
+					$this->dbID = $db->insert_id($this->object_table);
 				}	
 			}
 			$result = $result ? tl::OK : self::E_DBERROR;
@@ -143,6 +165,7 @@ class tlRole extends tlDBObject
 		
 		return $result;
 	}
+	
 	static public function doesRoleExist(&$db,$name,$id)
 	{
 		$role = new tlRole();
@@ -151,6 +174,7 @@ class tlRole extends tlDBObject
 			return $role->dbID;
 		return null;
 	}
+	
 	static public function checkRoleName($name)
 	{
 		return is_blank($name) ? self::E_NAMELENGTH : tl::OK;
@@ -179,13 +203,15 @@ class tlRole extends tlDBObject
 		}
 		return $result;
 	}
+	
 	protected function replaceUserRolesWith(&$db,$newRole)
 	{
 		$result = true;
 		$tables = array('users','user_testproject_roles','user_testplan_roles');
 		foreach($tables as $table)
 		{
-			$query = "UPDATE {$table} SET role_id = {$newRole} WHERE role_id = {$this->dbID}";
+		    $table_name = DB_TABLE_PREFIX . $table;
+			$query = "UPDATE {$table_name} SET role_id = {$newRole} WHERE role_id = {$this->dbID}";
 			$result = $result && ($db->exec_query($query) ? true : false);
 		}
 		return $result ? tl::OK : tl::ERROR;
@@ -195,27 +221,60 @@ class tlRole extends tlDBObject
 	 * Gets all users with a certain global role
 	 *
 	 * @param object $db [ref] the db-object
-	 * @return array returns assoc map with the userids as the keys
+	 * @return array assoc map with the user ids as the keys
 	 **/
 	protected function getUsersWithGlobalRole(&$db)
 	{
-		$ids = $this->getUserIDsWithGlobalRole($db);
-		return self::createObjectsFromDB($db,$ids,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+		$idSet = $this->getUserIDsWithGlobalRole($db);
+		return self::createObjectsFromDB($db,$idSet,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
 	
 	/**
-	 * Gets all users with a certain global role
+	 * Gets all users with a certain global role  @TODO WRITE RIGHT COMMENTS FROM START
+	 *
+	 * @param object $db [ref] the db-object
+	 * @return array of userids
+	 **/
+	protected function getUserIDsWithGlobalRole(&$db)
+	{
+		$query = "SELECT id FROM {$this->tables['users']} WHERE role_id = {$this->dbID}";
+		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		return $idSet; 
+	}
+
+	/**
+	 * Gets all users with a certain testproject role @TODO WRITE RIGHT COMMENTS FROM START
 	 *
 	 * @param object $db [ref] the db-object
 	 * @return array returns array of userids
 	 **/
-	protected function getUserIDsWithGlobalRole(&$db)
+	protected function getUserIDsWithTestProjectRole(&$db)
 	{
-		$query = "SELECT id FROM users WHERE role_id = {$this->dbID}";
-		$ids = $db->fetchColumnsIntoArray($query,"id");
-		
-		return $ids; 
+		$query = "SELECT DISTINCT id FROM {$this->tables['users']} users," .
+		         " {$this->tables['user_testproject_roles']} user_testproject_roles " .
+		         " WHERE users.id = user_testproject_roles.user_id";
+		$query .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
+		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		return $idSet; 
 	}
+
+	/**
+	 * Gets all users with a certain testplan role @TODO WRITE RIGHT COMMENTS FROM START
+	 *
+	 * @param object $db [ref] the db-object
+	 * @return array returns array of userids
+	 **/
+	protected function getUserIDsWithTestPlanRole(&$db)
+	{
+		$query = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
+		         " {$this->tables['user_testplan_roles']} user_testplan_roles " .
+		         " WHERE  users.id = user_testplan_roles.user_id";
+		$query .= " AND user_testplan_roles.role_id = {$this->dbID}";
+		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		return $idSet; 
+	}
+	
+	
 	/**
 	 * Gets all users with a certain testproject role
 	 *
@@ -224,50 +283,25 @@ class tlRole extends tlDBObject
 	 **/
 	protected function getUsersWithTestProjectRole(&$db)
 	{
-		$ids = $this->getUserIDsWithTestProjectRole($db);
-		return self::createObjectsFromDB($db,$ids,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+	    $idSet = $this->getUserIDsWithTestProjectRole($db);
+		return self::createObjectsFromDB($db,$idSet,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
 	
-/**
-	 * Gets all users with a certain testproject role
-	 *
-	 * @param object $db [ref] the db-object
-	 * @return array returns array of userids
-	 **/
-	protected function getUserIDsWithTestProjectRole(&$db)
-	{
-		$query = "SELECT DISTINCT id FROM users,user_testproject_roles WHERE users.id = user_testproject_roles.user_id";
-		$query .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
-		$ids = $db->fetchColumnsIntoArray($query,"id");
-		
-		return $ids; 
-	}
+	
 	/**
 	 * Gets all users with a certain testplan role
 	 *
 	 * @param object $db [ref] the db-object
+	 * @param int $roleID the role id
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	protected function getUsersWithTestPlanRole(&$db)
 	{
-		$ids = $this->getUserIDsWithTestPlanRole($db);
-		return self::createObjectsFromDB($db,$ids,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+		$idSet = $this->getUserIDsWithTestPlanRole($db);
+		return self::createObjectsFromDB($db,$idSet,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
 	
-	/**
-	 * Gets all users with a certain testplan role
-	 *
-	 * @param object $db [ref] the db-object
-	 * @return array returns array of userids
-	 **/
-	protected function getUserIDsWithTestPlanRole(&$db)
-	{
-		$query = "SELECT DISTINCT id FROM users,user_testplan_roles WHERE  users.id = user_testplan_roles.user_id";
-		$query .= " AND user_testplan_roles.role_id = {$this->dbID}";
-		$ids = $db->fetchColumnsIntoArray($query,"id");
-		
-		return $ids; 
-	}
+	
 	/**
 	 * Gets all users which have a certain global,testplan or testproject role
 	 *
@@ -279,11 +313,12 @@ class tlRole extends tlDBObject
 		$global_users = $this->getUserIDsWithGlobalRole($db);
 		$tplan_users = $this->getUserIDsWithTestPlanRole($db);
 		$tproject_users = $this->getUserIDsWithTestProjectRole($db);
+
 		$affectedUsers = (array)$global_users + (array)$tplan_users + (array)$tproject_users;
-		$affectedUsers = array_unique($affectedUsers);
-		
+	    $affectedUsers = array_unique($affectedUsers);
 		return self::createObjectsFromDB($db,$affectedUsers,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
+
 	/*
 		check if a role has requested right
 		
@@ -373,7 +408,7 @@ class tlRole extends tlDBObject
 		$roles = tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
 		
 		$inheritedRole = new tlRole(TL_ROLES_INHERITED);
-		$inheritedRole->name = "<inherited>";
+		$inheritedRole->name = lang_get('inherited_role');
 		$roles[TL_ROLES_INHERITED] = $inheritedRole;
 		
 		return $roles;

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.111 $
- * @modified $Date: 2009/06/01 11:20:45 $  $Author: havlat $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2009/06/03 21:18:07 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090512 - franciscom - added setPublicStatus()
@@ -71,20 +71,20 @@ class testproject extends tlObjectWithAttachments
 	private $node_types_table="node_types";
 	private $testplan_tcversions_table="testplan_tcversions";
 	private $tcversions_table="tcversions";
-
+    private $users_table='users';
 
 	var $db;
 	var $tree_manager;
 	var $cfield_mgr;
 
-  // Node Types (NT)
-  var $nt2exclude=array('testplan' => 'exclude_me',
+    // Node Types (NT)
+    var $nt2exclude=array('testplan' => 'exclude_me',
 	                      'requirement_spec'=> 'exclude_me',
 	                      'requirement'=> 'exclude_me');
 
 
-  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-													       'requirement_spec'=> 'exclude_my_children');
+    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+							       'requirement_spec'=> 'exclude_my_children');
 
 
   /*
@@ -101,6 +101,18 @@ class testproject extends tlObjectWithAttachments
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr=new cfield_mgr($this->db);
+
+        $key2loop = array('object_table','requirements_table','requirement_spec_table',
+                          'req_coverage_table','nodes_hierarchy_table','keywords_table',
+	                      'testcase_keywords_table', 'testplans_table',
+	                      'custom_fields_table','cfield_testprojects_table',
+	                      'cfield_node_types_table', 'user_testproject_roles_table',
+	                      'node_types_table','testplan_tcversions_table','tcversions_table');
+                          
+        foreach($key2loop as $table_name)
+        {
+            $this->$table_name = DB_TABLE_PREFIX . $this->$table_name ;    
+        }
 
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
 	}
@@ -407,15 +419,15 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     $items = array();
 
     // Get default role
-    $sql = " SELECT id,role_id FROM users where id={$user_id}";
+    $sql = " SELECT id,role_id FROM {$this->users_table}  where id={$user_id}";
     $user_info = $this->db->get_recordset($sql);
 	$role_id=$user_info[0]['role_id'];
 
 
 	$sql =  " SELECT nodes_hierarchy.name,testprojects.*
- 	          FROM {$this->nodes_hierarchy_table}
- 	          JOIN {$this->object_table} ON nodes_hierarchy.id=testprojects.id
-	          LEFT OUTER JOIN {$this->user_testproject_roles_table}
+ 	          FROM {$this->nodes_hierarchy_table} nodes_hierarchy
+ 	          JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id
+	          LEFT OUTER JOIN {$this->user_testproject_roles_table} user_testproject_roles
 		        ON testprojects.id = user_testproject_roles.testproject_id AND
 		 	      user_testproject_roles.user_id = {$user_id} WHERE ";
 
@@ -1401,7 +1413,8 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
  **/
 function deleteUserRoles($tproject_id)
 {
-	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$tproject_id}";
+	$query = "DELETE FROM {$this->user_testproject_roles_table} " . 
+	         " WHERE testproject_id = {$tproject_id}";
 	if ($this->db->exec_query($query))
 	{
 		$testProject = $this->get_by_id($tproject_id);
@@ -1423,7 +1436,7 @@ function deleteUserRoles($tproject_id)
  **/
 function getUserRoleIDs($tproject_id)
 {
-	$query = "SELECT user_id,role_id FROM user_testproject_roles " .
+	$query = "SELECT user_id,role_id FROM {$this->user_testproject_roles_table} " .
 	         "WHERE testproject_id = {$tproject_id}";
 	$roles = $this->db->fetchRowsIntoMap($query,'user_id');
 
@@ -1439,7 +1452,7 @@ function getUserRoleIDs($tproject_id)
  **/
 function addUserRole($userID,$tproject_id,$roleID)
 {
-	$query = "INSERT INTO user_testproject_roles " .
+	$query = "INSERT INTO {$this->user_testproject_roles_table} " .
 	         "(user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
 	if($this->db->exec_query($query))
 	{
@@ -1502,7 +1515,7 @@ function delete($id)
   
 
 	$a_sql[] = array(
-			"UPDATE users SET default_testproject_id = NULL WHERE default_testproject_id = {$id}",
+			"UPDATE {$this->users_table}  SET default_testproject_id = NULL WHERE default_testproject_id = {$id}",
 			 'info_resetting_default_project_fails',
 	);
 

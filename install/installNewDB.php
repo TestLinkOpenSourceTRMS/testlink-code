@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.46 2009/06/03 18:34:25 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.47 2009/06/03 21:16:17 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -485,7 +485,7 @@ if( $inst_type=='new' && $conn_result['status'] != 0 )
 // --------------------------------------------------------------------------------------------
 
 
-$sqlParser = new SqlParser($db,$db_type);
+$sqlParser = new SqlParser($db,$db_type,$db_table_prefix);
 foreach($a_sql_schema as $sql_schema)
 {
   foreach ($sql_schema as $sql_file) 

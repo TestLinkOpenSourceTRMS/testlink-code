@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/06/02 09:50:03 $ $Author: havlat $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/06/03 21:18:24 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -158,8 +158,12 @@ function getAllActiveTestPlans(&$db,$testproject_id = ALL_PRODUCTS)
 // 20071029 - azl - modified to only get active test plans bug # 1148
 function getTestPlansWithoutProject(&$db)
 {
-	$sql = "select id,name from nodes_hierarchy WHERE id IN(SELECT id FROM testplans
-				WHERE testproject_id=0 and ACTIVE=1)";
+    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
+    $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
+    
+	$sql = "select id,name from {$tables['nodes_hierarchy']} WHERE id " . 
+	       " IN( SELECT id FROM {$tables['testplans']}  " .
+		   " WHERE testproject_id=0 and active=1)";
 	$testPlans = $db->get_recordset($sql);
 	return $testPlans;
 }

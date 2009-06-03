@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/06/03 17:46:41 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/06/03 21:21:10 $ $Author: franciscom $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -15,6 +15,7 @@
 class tlUser extends tlDBObject
 {
 	private $object_table = "users";
+    private $tables='';
 
 	public $firstName;
 	public $lastName;
@@ -63,6 +64,16 @@ class tlUser extends tlDBObject
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
+	    $this->tables = array('roles' => DB_TABLE_PREFIX . 'roles', 
+	                          'users' => DB_TABLE_PREFIX . 'users',
+                              'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
+                              'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
+	                          'role_rights' => DB_TABLE_PREFIX . 'role_rights',
+	                          'rights' => DB_TABLE_PREFIX . 'rights'); 
+
+		$this->object_table = $this->tables['users']; 
+		
+		
 		
 		$authCfg = config_get('authentication');
 		$this->usernameFormat = config_get('username_format');
@@ -165,7 +176,9 @@ class tlUser extends tlDBObject
 	
 	public function readTestProjectRoles(&$db,$testProjectID = null)
 	{
-		$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$this->dbID}";
+		$query = "SELECT testproject_id,role_id " .
+		         " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
+		         " WHERE user_id = {$this->dbID}";
 		if ($testProjectID)
 		{
 			$query .= " AND testproject_id = {$testProjectID}";
@@ -195,7 +208,9 @@ class tlUser extends tlDBObject
 	
 	public function readTestPlanRoles(&$db,$testPlanID = null)
 	{
-		$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$this->dbID}";
+		$query = "SELECT testplan_id,role_id " . 
+		         " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
+		         " WHERE user_id = {$this->dbID}";
 		if ($testPlanID)
 		{
 			$query .= " AND testplan_id = {$testPlanID}";
@@ -292,7 +307,7 @@ class tlUser extends tlDBObject
 	 **/
 	 protected function deleteTestProjectRoles(&$db)
 	{
-		$query = "DELETE FROM user_testproject_roles WHERE user_id = {$this->dbID}";
+		$query = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = {$this->dbID}";
 		return $db->exec_query($query) ? tl::OK : tl::ERROR;
 	}
 

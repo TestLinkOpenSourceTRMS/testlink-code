@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/05/13 19:30:17 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/06/03 21:17:22 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -430,11 +430,14 @@ function checkForRepositoryDir($the_dir)
 function checkSchemaVersion(&$db)
 {
 	$last_version = 'DB 1.3';  // havlatm: updated for 1.9
+	$db_version_table= DB_TABLE_PREFIX . 'db_version';
 	
-	$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
+	$sql = "SELECT * FROM {$db_version_table} ORDER BY upgrade_ts DESC";
 	$res = $db->exec_query($sql,1);  
 	if (!$res)
+	{
 		return $msg = "Failed to get Schema version from DB";
+	}
 		
 	$myrow = $db->fetch_array($res);
 	$msg = "";

@@ -1,10 +1,11 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.9 2009/01/28 09:43:22 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.10 2009/06/03 21:16:17 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
 // Rev :
+//       20090603 - franciscom - added management of table prefix
 //       20071011 - franciscom - MSSQL support
 //       20060523 - franciscom - changes to add postgres support
 //
@@ -18,13 +19,17 @@
 
 class SqlParser {
 	var $sql_errors;
-	var $db_conn;
 	var $install_failed;
-	var $db_type;
 
-	function SqlParser(&$db_conn,$db_type) {
-		$this->db_conn   = $db_conn;
-		$this->db_type   = $db_type;
+	var $db_conn;
+	var $db_type;
+    var $db_table_prefix;
+
+	function SqlParser(&$db_conn,$db_type,$db_table_prefix='') 
+	{
+		$this->db_conn = $db_conn;
+		$this->db_type = $db_type;
+		$this->db_table_prefix = $db_table_prefix;
 	}
 
 
@@ -35,40 +40,57 @@ class SqlParser {
     
     returns: 
   */
-	function process($filename) {
-		
-		// -----------------------------------------------------------------
-		// part of this logic has been copied from the setup of EVENTUM 
-		$contents = file($filename);
-		
-		// From PHP Manual Notes on using a class function as Filter
-		// This FAILS!!!
-		// $cfil = array_filter($contents,"only_good_sql");
-		//
-		switch($this->db_type)
+function process($filename) 
+{
+    $target=array('create' => "CREATE TABLE ", 'insert' => "INSERT INTO ");
+    $new_value=array('create' => '', 'insert' => '');
+
+    // -----------------------------------------------------------------
+    // part of this logic has been copied from the setup of EVENTUM 
+    $contents = file($filename);
+    
+    $do_replace = trim($this->db_table_prefix) != '';
+    
+    // From PHP Manual Notes on using a class function as Filter
+    // This FAILS!!!
+    // $cfil = array_filter($contents,"only_good_sql");
+    //
+    switch($this->db_type)
     {
-      case 'mysql':
-      $cfil = array_filter($contents,array($this,"only_good_mysql"));
-      break;
+        case 'mysql':
+        $cfil = array_filter($contents,array($this,"only_good_mysql"));
+        break;
+          
+        case 'postgres':
+        $target['create'] = $target['create'] . '"';
+        $target['insert'] = $target['insert'] . '"';
+        $cfil = array_filter($contents,array($this,"only_good_sql"));
+        break;
         
-      case 'postgres':
-      $cfil = array_filter($contents,array($this,"only_good_sql"));
-      break;
-
-      case 'mssql':
-      $cfil = array_filter($contents,array($this,"only_good_sql"));
-      break;
-
+        case 'mssql':
+        # $target['create'] = 'CREATE TABLE [';
+        $target['create'] = $target['create'] . '[';
+        $target['insert'] = $target['insert'] . '[';
+        $cfil = array_filter($contents,array($this,"only_good_sql"));
+        break;
     }
+
     $r2d2 = implode("", $cfil);
+    if( $do_replace)
+    {
+        $new_value['create'] = $target['create'] . $this->db_table_prefix ; 
+        $new_value['insert'] = $target['insert'] . $this->db_table_prefix ; 
+       
+        $r2d2 = str_replace($target['create'],$new_value['create'],$r2d2);
+        $r2d2 = str_replace($target['insert'],$new_value['insert'],$r2d2);
+    }
+
     $sql_array = explode(";", $r2d2);
     // ----------------------------------------------------------------
-
-    // echo "<pre>debug 20071011 - \$this->db_conn - " . __FUNCTION__ . " --- "; print_r($this->db_conn); echo "</pre>";
     
-		$num = 0;
-		foreach($sql_array as $sql_do) {
-
+    $num = 0;
+    foreach($sql_array as $sql_do) 
+    {
       // Due to explode adds \r\n
       $sql_dodo =  trim($sql_do, "\r\n ");			
       if( strlen($sql_dodo) > 0 )
@@ -77,66 +99,57 @@ class SqlParser {
   			$status_ok=$this->db_conn->exec_query($sql_do);
   			if(!$status_ok)
   			{ 
-  			  // if($this->db_conn->error_msg()) {
   				$this->sql_errors[] = array("error" => $this->db_conn->error_msg(), "sql" => $sql_do);
   				$this->install_failed = true;
   			}
-  			// else
-  			// {
-  			//   echo "OK!!!";  
-  			// }
-			}
-		}
-	}
-
-  // 20050612 - fm
-  function only_good_mysql($v)
-  {
-    $comment_char='#';
-    return($this->only_good_sql($v, $comment_char));
-  } // Function ends
-
-
-  // 20060523 - fm
-  function only_good_sql($v, $comment_char='-')
-  {
-  
-  $use_v = true;
-  $findme=$comment_char;
-  
-  // Must trim New Line for the strlen check
-  $v_c = trim($v, "\r\n ");
-  $pos = strpos($v_c, $findme);
-  
-  
-  if ($pos === false) 
-  {
-     $use_v = true;
-  } 
-  else 
-  {
-    if ($pos == 0 )
-    {
-     $use_v = false;	
-    }
-  }
-  
-  // Empty line must not be used
-  if( $use_v == true )
-  {
-    if ( strlen($v_c) == 0)
-    {
-      $use_v = false;
-    }
-  }
-  
-  
-  return ($use_v);
-  
-  } // Function ends
-
-
-
+      }
+	}  // foreach
 }
 
+
+function only_good_mysql($v)
+{
+  $comment_char='#';
+  return($this->only_good_sql($v, $comment_char));
+} // Function ends
+
+
+
+function only_good_sql($v, $comment_char='-')
+{
+
+    $use_v = true;
+    $findme=$comment_char;
+    
+    // Must trim New Line for the strlen check
+    $v_c = trim($v, "\r\n ");
+    $pos = strpos($v_c, $findme);
+    
+    
+    if ($pos === false) 
+    {
+       $use_v = true;
+    } 
+    else 
+    {
+      if ($pos == 0 )
+      {
+       $use_v = false;	
+      }
+    }
+    
+    // Empty line must not be used
+    if( $use_v == true )
+    {
+      if ( strlen($v_c) == 0)
+      {
+        $use_v = false;
+      }
+    }
+    
+    return ($use_v);
+} // Function ends
+
+
+} // class end
 ?>

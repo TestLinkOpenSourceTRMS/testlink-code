@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/01/11 17:13:52 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/06/03 21:20:31 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -15,7 +15,9 @@
  * the log messages through your code and turn them on and off with a single command.
  * To facilitate this we will create a number of logging functions.
  *
- * rev: 20080517 - franciscom - exclude mktime() logs 
+ * rev: 20090603 - franciscom - adding table prefix management
+ *
+ *      20080517 - franciscom - exclude mktime() logs 
  *
  *      20080316 - franciscom - added getEnableLoggingStatus() methods
  *                              refactored access to enable logging status info.
@@ -44,7 +46,7 @@ class tlLogger extends tlObject
 	static $logLevels = null;
 	static $revertedLogLevels = null;
 
-  // to enable/disable loggin for all loggers
+    // to enable/disable loggin for all loggers
 	protected $doLogging = true;
 
  	// must be changed is db field len changes
@@ -65,7 +67,7 @@ class tlLogger extends tlObject
 	protected $logLevelFilter = null;
 
 	protected $eventManager;
-
+    
 	public function __construct(&$db)
 	{
 		parent::__construct();
@@ -185,12 +187,9 @@ class tlLogger extends tlObject
         if (!isset(self::$s_instance))
 		{
 			//create the logging instance
-			self::$logLevels = array (self::DEBUG => "DEBUG",
-							 self::INFO => "INFO",
-							 self::WARNING => "WARNING",
-							 self::ERROR => "ERROR",
-							self::AUDIT => "AUDIT",
-							);
+			self::$logLevels = array (self::DEBUG => "DEBUG", self::INFO => "INFO",
+							          self::WARNING => "WARNING", self::ERROR => "ERROR",
+							          self::AUDIT => "AUDIT");
 			self::$revertedLogLevels = array_flip(self::$logLevels);
             $c = __CLASS__;
             self::$s_instance = new $c($db);
@@ -244,7 +243,10 @@ class tlLogger extends tlObject
 	public function endTransaction($name = "DEFAULT")
 	{
 		if (!isset($this->transactions[$name]))
+		{
 			return tl::ERROR;
+		}
+		
 		$this->transactions[$name]->close();
 		unset($this->transactions[$name]);
 	}
@@ -269,10 +271,13 @@ class tlTransaction extends tlDBObject
 	public $sessionID = null;
 
 	protected $events = null;
-
+    private $tables='';
+   
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
+	    $this->tables = array('transactions' => DB_TABLE_PREFIX . 'transactions',
+                              'events' => DB_TABLE_PREFIX . 'events' );
 	}
 
 	public function initialize(&$logger,$entryPoint,$name,$userID,$sessionID)
@@ -305,6 +310,7 @@ class tlTransaction extends tlDBObject
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 	}
+	
 	/*
 		closes the transaction
 	*/
@@ -330,10 +336,12 @@ class tlTransaction extends tlDBObject
 
 		return tl::OK;
 	}
+	
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = " SELECT id,entry_point,start_time,end_time,user_id,session_id FROM transactions ";
+		$query = " SELECT id,entry_point,start_time,end_time,user_id,session_id " .
+		         " FROM {$this->tables['transactions']} ";
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "id = {$this->dbID}";
@@ -351,6 +359,7 @@ class tlTransaction extends tlDBObject
 		}
 		return $info ? tl::OK : tl::ERROR;
 	}
+	
 	public function writeToDB(&$db)
 	{
 		if (!$this->dbID)
@@ -361,27 +370,34 @@ class tlTransaction extends tlDBObject
 			$userID = $db->prepare_int($this->userID);
 			$sessionID = "NULL";
 			if (!is_null($this->sessionID))
+			{
 				$sessionID = "'".$db->prepare_string($this->sessionID)."'";
-
-			$query = "INSERT INTO transactions (entry_point,start_time,end_time,user_id,session_id) " .
+            }
+            
+			$query = "INSERT INTO {$this->tables['transactions']} " .
+			         "(entry_point,start_time,end_time,user_id,session_id) " .
 			         "VALUES ('{$entryPoint}',{$startTime},{$endTime},{$userID},{$sessionID})";
 			$result = $db->exec_query($query);
 			if ($result)
+			{
 				$this->dbID = $db->insert_id('transactions');
+			}	
 		}
 		else
 		{
 			$endTime = $db->prepare_int(time());
-			$query = "UPDATE transactions SET end_time = {$endTime} WHERE id = {$this->dbID}";
+			$query = "UPDATE {$this->tables['transactions']} SET end_time = {$endTime} WHERE id = {$this->dbID}";
 			$result = $db->exec_query($query);
 		}
 		return $result ? tl::OK : tl::ERROR;
 	}
+	
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 
+	
 	protected function writeEvent(&$e)
 	{
 		foreach($this->loggers as $key => $loggerObj)
@@ -404,24 +420,34 @@ class tlTransaction extends tlDBObject
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlEvent::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
+	
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
+	
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 }
+
 class tlEventManager extends tlObjectWithDB
 {
 	private static $s_instance;
+    private $tables='';
+
 
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
+  	    $this->tables = array('transactions' => DB_TABLE_PREFIX . 'transactions',
+                              'events' => DB_TABLE_PREFIX . 'events' );
+
+    
 	}
+	
     public static function create(&$db)
     {
         if (!isset(self::$s_instance))
@@ -473,12 +499,14 @@ class tlEventManager extends tlObjectWithDB
 		}
 		if (!is_null($startTime))
 			$clauses[] = "fired_at >= {$startTime}";
+
 		if (!is_null($endTime))
 			$clauses[] = "fired_at <= {$endTime}";
 
 		$query = "SELECT id FROM events";
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
+
 		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
 		return tlEvent::createObjectsFromDBbySQL($this->db,$query,'id',"tlEvent",true,
 		                                         tlEvent::TLOBJ_O_GET_DETAIL_FULL,$limit);
@@ -496,17 +524,20 @@ class tlEventManager extends tlObjectWithDB
 		if (!is_null($startTime))
 			$clauses[] = "fired_at < {$startTime}";
 			
-		$query = "DELETE FROM events";
+		$query = "DELETE FROM {$this->tables['events']} ";
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
+		}
 		
 		$this->db->exec_query($query);
-		$query = "SELECT id FROM transactions t WHERE (SELECT COUNT(*) FROM events e WHERE e.transaction_id = t.id) = 0";
+		$query = "SELECT id FROM {$this->tables['transactions']} t " .
+		         "WHERE (SELECT COUNT(0) FROM {$this->tables['events']} e WHERE e.transaction_id = t.id) = 0";
 		$transIDs = $this->db->fetchColumnsIntoArray($query,"id");
 		if ($transIDs)
 		{
 			$transIDs = implode(",",$transIDs);
-			$query = "DELETE FROM transactions WHERE id IN ({$transIDs})";
+			$query = "DELETE FROM {$this->tables['transactions']} WHERE id IN ({$transIDs})";
 			$this->db->exec_query($query);
 		}
 	}
@@ -523,14 +554,15 @@ class tlEvent extends tlDBObject
 	public $userID = null;
 	public $sessionID = null;
 	public $transactionID = null;
-	//hm?
 	public $activityCode = null;
 	public $objectID = null;
 	public $objectType = null;
 
 	public $transaction = null;
+    private $tables='';
 
-		//detail leveles
+
+    //detail leveles
 	const TLOBJ_O_GET_DETAIL_TRANSACTION = 1;
 
 	public function getLogLevel()
@@ -541,7 +573,10 @@ class tlEvent extends tlDBObject
 	public function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
+	    $this->tables = array('transactions' => DB_TABLE_PREFIX . 'transactions',
+                              'events' => DB_TABLE_PREFIX . 'events' );
 	}
+	
 	public function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->logLevel = null;
@@ -639,14 +674,16 @@ class tlEvent extends tlDBObject
 			$firedAt = $db->prepare_int($this->timestamp);
 			$transactionID = $db->prepare_int($this->transactionID);
 
-			$query = "INSERT INTO events (transaction_id,log_level,description,source," .
+			$query = "INSERT INTO {$this->tables['events']} (transaction_id,log_level,description,source," .
 			         "fired_at,object_id,object_type,activity) " .
 			         "VALUES ({$transactionID},{$logLevel},'{$description}',{$source}," .
 			         "{$firedAt},{$objectID},{$objectType},{$activityCode})";
 
 			$result = $db->exec_query($query);
 			if ($result)
-				$this->dbID = $db->insert_id('events');
+			{
+				$this->dbID = $db->insert_id($this->tables['events']);
+			}	
 		}
 	}
 

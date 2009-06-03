@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.242 $
- * @modified $Date: 2009/06/03 12:57:22 $ by $Author: havlat $
+ * @version $Revision: 1.243 $
+ * @modified $Date: 2009/06/03 21:15:54 $ by $Author: franciscom $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -95,6 +95,11 @@ $tlCfg->validation_cfg = new stdClass();
 
 /** Include database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
+
+if( !defined('DB_TABLE_PREFIX') )
+{
+    define('DB_TABLE_PREFIX','' );
+}  
 
 /** The root dir for the testlink installation with trailing slash */
 define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);

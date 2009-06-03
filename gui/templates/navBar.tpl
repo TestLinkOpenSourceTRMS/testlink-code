@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.41 2009/05/17 16:58:44 havlat Exp $
+	$Id: navBar.tpl,v 1.42 2009/06/03 19:51:45 schlundus Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -103,7 +103,7 @@
 		       
 		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"
 		     title="{$labels.search_testcase}" alt="{$labels.search_testcase}"
-		     onclick="document.getElementById('searchTC').submit()" /> |
+		     onclick="document.getElementById('searchTC').submit()" class="clickable" /> |
 		<input type="hidden" name="edit" value="testcase"/>
 		<input type="hidden" name="allow_edit" value="0"/>
 		</form>

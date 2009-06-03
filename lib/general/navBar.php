@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/05/18 20:22:10 $ $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/06/03 19:51:45 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -55,12 +55,12 @@ if ($gui->tprojectID && isset($user->tprojectRoles[$gui->tprojectID]))
 {
 	// test project specific role applied
 	$role = $user->tprojectRoles[$gui->tprojectID];
-	$testprojectRole = $role->name;
+	$testprojectRole = $role->getDisplayName();
 }
 else
 {
 	// general role applied
-	$testprojectRole = $user->globalRole->name;
+	$testprojectRole = $user->globalRole->getDisplayName();
 }	
 $gui->whoami = $user->getDisplayName() . ' ' . $tlCfg->gui->role_separator_open . 
 	            $testprojectRole . $tlCfg->gui->role_separator_close;

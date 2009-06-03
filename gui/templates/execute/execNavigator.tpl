@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.24 2009/03/25 20:53:11 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.25 2009/06/03 19:51:45 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -94,15 +94,17 @@ rev :
 		</tr>
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>
-			<td><select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+			<td>
+				<select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<td>{$labels.priority}</td>
-			<td><select name="urgencyImportance">
-				<option value=""/>{$gui->str_option_any}</option>
+			<td>
+				<select name="urgencyImportance">
+				<option value="">{$gui->str_option_any}</option>
 				{html_options options=$gsmarty_option_importance selected=$gui->urgencyImportance}
 				</select>
 			</td>
@@ -111,26 +113,27 @@ rev :
 				<td>{$labels.filter_result}</td>
 			<td>
 			  {if $gui->advancedFilterMode }
-			  <select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
+			  	<select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
 			  {else}
-			  <select name="filter_status">
+			  	<select name="filter_status">
 			  {/if}
-			  {html_options options=$gui->optResult selected=$gui->optResultSelected}
-			  </select>
+			  	{html_options options=$gui->optResult selected=$gui->optResultSelected}
+			  	</select>
 			</td>
 		</tr>
 		
 		<tr>
-				<td>{$labels.filter_result_all_prev_builds}</td>
+			<td>{$labels.filter_result_all_prev_builds}</td>
 			<td>
-			  <select name="filter_status_all_prev_builds" onchange=''>
-			  {html_options options=$gui->resultAllPrevBuilds selected=$gui->resultAllPrevBuildsSelected}
+				<select name="filter_status_all_prev_builds">
+			  	{html_options options=$gui->resultAllPrevBuilds selected=$gui->resultAllPrevBuildsSelected}
+			  	</select>
 			</td>
 			<td>
-			  {html_radios name='resultAllPrevBuildsFilterType' 
-                     options=$gui->resultAllPrevBuildsFilterType->options
-                   	 selected=$gui->resultAllPrevBuildsFilterType->selected }
-      </td>
+			  	{html_radios name='resultAllPrevBuildsFilterType' 
+                	options=$gui->resultAllPrevBuildsFilterType->options
+                   	selected=$gui->resultAllPrevBuildsFilterType->selected }
+      		</td>
 		</tr>
 		
 		
@@ -146,7 +149,7 @@ rev :
 				<select name="filter_assigned_to">
 			  {/if}
 					{html_options options=$gui->users selected=$gui->filter_assigned_to}
-				</select>
+			  </select>
 			{/if}
 			</td>
 		</tr>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/04/27 07:51:54 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -375,7 +375,8 @@ function deleteRole(&$db,$roleID)
 	if ($role->deleteFromDB($db) < tl::OK)
 		$userFeedback = lang_get("error_role_deletion");
 	else
-		logAuditEvent(TLS("audit_role_deleted",$role->name),"DELETE",$roleID,"roles");
-  return $userFeedback;
+		logAuditEvent(TLS("audit_role_deleted",$role->getDisplayName()),"DELETE",$roleID,"roles");
+	
+	return $userFeedback;
 }
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planView.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/05/17 16:25:45 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/06/03 19:51:45 $ $Author: schlundus $
  *
 */
 require_once('../../config.inc.php');
@@ -18,6 +18,7 @@ $templateCfg = templateConfiguration();
 $args=init_args();
 
 $gui = new stdClass();
+$gui->tproject_id = $args->tproject_id;
 $gui->tplans = null;
 $gui->user_feedback = '';
 $gui->grants = new stdClass();

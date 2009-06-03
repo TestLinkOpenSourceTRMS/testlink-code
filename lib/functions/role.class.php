@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/05/07 18:55:59 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/06/03 19:51:45 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -155,6 +155,17 @@ class tlRole extends tlDBObject
 	{
 		return is_blank($name) ? self::E_NAMELENGTH : tl::OK;
 	}
+	
+	public function getDisplayName()
+	{
+		$displayName = $this->name;
+		if ($displayName{0} == "<")
+		{
+			$displayName = lang_get($displayName);
+		}
+		return $displayName;
+	}
+	
 	public function deleteFromDB(&$db)
 	{
 		$result = $this->deleteRightsFromDB($db);
@@ -184,59 +195,94 @@ class tlRole extends tlDBObject
 	 * Gets all users with a certain global role
 	 *
 	 * @param object $db [ref] the db-object
-	 * @param int $roleID the role id
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	protected function getUsersWithGlobalRole(&$db)
 	{
+		$ids = $this->getUserIDsWithGlobalRole($db);
+		return self::createObjectsFromDB($db,$ids,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+	}
+	
+	/**
+	 * Gets all users with a certain global role
+	 *
+	 * @param object $db [ref] the db-object
+	 * @return array returns array of userids
+	 **/
+	protected function getUserIDsWithGlobalRole(&$db)
+	{
 		$query = "SELECT id FROM users WHERE role_id = {$this->dbID}";
-		return self::createObjectsFromDBbySQL($db,$query,'id',"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+		$ids = $db->fetchColumnsIntoArray($query,"id");
+		
+		return $ids; 
 	}
 	/**
 	 * Gets all users with a certain testproject role
 	 *
 	 * @param object $db [ref] the db-object
-	 * @param int $roleID the role id
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	protected function getUsersWithTestProjectRole(&$db)
 	{
-		$query = "SELECT id FROM users,user_testproject_roles WHERE users.id = user_testproject_roles.user_id";
-		$query .= " AND user_testproject_roles.role_id = {$this->dbID}";
-		return self::createObjectsFromDBbySQL($db,$query,'id',"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+		$ids = $this->getUserIDsWithTestProjectRole($db);
+		return self::createObjectsFromDB($db,$ids,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+	}
+	
+/**
+	 * Gets all users with a certain testproject role
+	 *
+	 * @param object $db [ref] the db-object
+	 * @return array returns array of userids
+	 **/
+	protected function getUserIDsWithTestProjectRole(&$db)
+	{
+		$query = "SELECT DISTINCT id FROM users,user_testproject_roles WHERE users.id = user_testproject_roles.user_id";
+		$query .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
+		$ids = $db->fetchColumnsIntoArray($query,"id");
+		
+		return $ids; 
+	}
+	/**
+	 * Gets all users with a certain testplan role
+	 *
+	 * @param object $db [ref] the db-object
+	 * @return array returns assoc map with the userids as the keys
+	 **/
+	protected function getUsersWithTestPlanRole(&$db)
+	{
+		$ids = $this->getUserIDsWithTestPlanRole($db);
+		return self::createObjectsFromDB($db,$ids,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
 	
 	/**
 	 * Gets all users with a certain testplan role
 	 *
 	 * @param object $db [ref] the db-object
-	 * @param int $roleID the role id
-	 * @return array returns assoc map with the userids as the keys
+	 * @return array returns array of userids
 	 **/
-	protected function getUsersWithTestPlanRole(&$db)
+	protected function getUserIDsWithTestPlanRole(&$db)
 	{
-		$query = "SELECT id FROM users,user_testplan_roles WHERE  users.id = user_testplan_roles.user_id";
+		$query = "SELECT DISTINCT id FROM users,user_testplan_roles WHERE  users.id = user_testplan_roles.user_id";
 		$query .= " AND user_testplan_roles.role_id = {$this->dbID}";
-		return self::createObjectsFromDBbySQL($db,$query,'id',"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
+		$ids = $db->fetchColumnsIntoArray($query,"id");
+		
+		return $ids; 
 	}
-	
 	/**
 	 * Gets all users which have a certain global,testplan or testproject role
 	 *
 	 * @param object $db [ref] the db-object
-	 * @param int $roleID the role id
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	public function getAllUsersWithRole(&$db)
 	{
-		$global_users = $this->getUsersWithGlobalRole($db);
-		$tplan_users = $this->getUsersWithTestPlanRole($db);
-		$tproject_users = $this->getUsersWithTestProjectRole($db);
-		
+		$global_users = $this->getUserIDsWithGlobalRole($db);
+		$tplan_users = $this->getUserIDsWithTestPlanRole($db);
+		$tproject_users = $this->getUserIDsWithTestProjectRole($db);
 		$affectedUsers = (array)$global_users + (array)$tplan_users + (array)$tproject_users;
-		if (!$affectedUsers)
-			$affectedUsers = null;
-		return $affectedUsers;
+		$affectedUsers = array_unique($affectedUsers);
+		
+		return self::createObjectsFromDB($db,$affectedUsers,"tlUser",true,self::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
 	/*
 		check if a role has requested right
@@ -327,7 +373,7 @@ class tlRole extends tlDBObject
 		$roles = tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
 		
 		$inheritedRole = new tlRole(TL_ROLES_INHERITED);
-		$inheritedRole->name = lang_get('inherited_role');
+		$inheritedRole->name = "<inherited>";
 		$roles[TL_ROLES_INHERITED] = $inheritedRole;
 		
 		return $roles;

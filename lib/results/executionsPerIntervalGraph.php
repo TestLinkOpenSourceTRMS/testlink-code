@@ -1,7 +1,9 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: executionsPerIntervalGraph.php,v 1.1 2007/07/28 23:23:13 kevinlevy Exp $ 
+* $Id: executionsPerIntervalGraph.php,v 1.2 2009/06/03 19:51:45 schlundus Exp $ 
+*
+* * @TODO: schlundus, this file doesn't seems to be in use
 *
 * @author	Kevin Levy
 */

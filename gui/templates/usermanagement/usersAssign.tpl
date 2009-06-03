@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.13 2009/04/27 07:57:59 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.14 2009/06/03 19:51:45 schlundus Exp $ 
 
 rev:
     20090426 - franciscom - BUGID 2442- added bulk setting management
@@ -104,7 +104,7 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
         <select name="allUsersRole" id="allUsersRole">
 		      {foreach key=role_id item=role from=$gui->optRights}
 		        <option value="{$role_id}">
-                {$role->name|escape}
+                {$role->getDisplayName()|escape}
 		        </option>
 		      {/foreach}
 			  </select>
@@ -148,8 +148,8 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 		               $gui->userFeatureRoles[$uID].is_inherited==0) || 
 		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
 		                $gui->userFeatureRoles[$uID].is_inherited==1) }
-		            selected="selected" {/if}  >
-                {$role->name|escape}
+		            selected="selected" {/if} >
+                {$role->getDisplayName()|escape}
                 {if $role_id == $smarty.const.TL_ROLES_INHERITED}
                   {$inherited_role_name|escape} 
                 {/if}

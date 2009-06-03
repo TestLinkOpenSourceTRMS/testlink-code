@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.55 $ $Author: schlundus $
- * @modified $Date: 2009/05/09 17:59:19 $
+ * @version $Revision: 1.56 $ $Author: schlundus $
+ * @modified $Date: 2009/06/03 19:51:45 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -48,6 +48,7 @@ if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 {
 	tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
 	redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
+	exit();
 }
 // ----------------------------------------------------------------------
 
@@ -95,7 +96,7 @@ $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) :
 if ($testPlanID && isset($currentUser->tplanRoles[$testPlanID]))
 {
 	$role = $currentUser->tplanRoles[$testPlanID];
-	$testPlanRole = $tlCfg->gui->role_separator_open . $role->name . $tlCfg->gui->role_separator_close;
+	$testPlanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
 $rights2check = array('testplan_execute','testplan_create_build',

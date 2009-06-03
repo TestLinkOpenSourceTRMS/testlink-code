@@ -1,9 +1,8 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.6 2008/09/28 10:01:50 franciscom Exp $     
+ $Id: metricsDashboard.tpl,v 1.7 2009/06/03 19:51:45 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
-                                                                 
- rev :                                                   
+                                                 
 *}
 {lang_get var="labels"
           s="generated_by_TestLink_on,testproject,test_plan,th_total_tc,th_active_tc,th_executed_tc,

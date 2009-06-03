@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/05/17 16:19:02 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -29,7 +29,15 @@ $tproject_mgr = new testproject($db);
 $smarty = new TLSmarty();
 $do_display=false;
 $template = null;
-$args = init_args($_REQUEST,$_SESSION);
+$args = init_args($_REQUEST);
+if (!$args->tproject_id)
+{
+	$smarty->assign('title', lang_get('fatal_page_title'));
+	$smarty->assign('content', lang_get('error_no_testprojects_present'));
+	$smarty->display('workAreaSimple.tpl');
+	exit();
+}
+
 $gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = null;
@@ -207,14 +215,14 @@ if( $do_display )
  *
  *
  * @parameter hash request_hash the $_REQUEST
- * @parameter hash session_hash the $_SESSION
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
  * 20060103 - fm
 */
-function init_args($request_hash, $session_hash)
+function init_args($request_hash)
 {
+	$session_hash = $_SESSION;
 	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
 

@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.23 2009/06/03 17:46:40 franciscom Exp $
+$Id: usersEdit.tpl,v 1.24 2009/06/03 19:51:45 schlundus Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -214,7 +214,7 @@ function validateForm(f,check_password)
 				<select name="rights_id">
 				{foreach key=role_id item=role from=$optRights}
 		        <option value="{$role_id}" {if $role_id == $selected_role} selected="selected" {/if}>
-					{$role->name|escape}
+					{$role->getDisplayName()|escape}
 				</option>
 				{/foreach}
 				</select>

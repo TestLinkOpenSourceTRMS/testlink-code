@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.116 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2009/06/03 19:51:46 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -413,7 +413,7 @@ $TLS_filter_result_all_prev_builds = "Ergebnis ALLER vorangegangener Builds";
 $TLS_th_my_perc_completed = "Mein Erledigungsgrad [%]";
 $TLS_th_perc_completed = "Abgearbeitet [%]";
 $TLS_title_your_tp_metrics = "Ihre Testplan Metriken";
-
+$TLS_error_no_testprojects_present = "There are currently no testproject defined!";
 
 // gui/templates/metrics_dashbord.tpl
 $TLS_th_total_tc = "Testfall-Nummer";

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.19 2009/05/17 16:19:02 franciscom Exp $ 
+$Id: planView.tpl,v 1.20 2009/06/03 19:51:45 schlundus Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -27,7 +27,7 @@ Rev:
           s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
-          btn_testplan_create,th_id'}
+          btn_testplan_create,th_id,error_no_testprojects_present'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg" }
@@ -54,9 +54,10 @@ var del_action=fRoot+'{$deleteAction}';
 
 <div class="workBack">
 <div id="testplan_management_list">
-{if $gui->tplans eq ''}
+{if $gui->tproject_id <= 0}
+	{$labels.error_no_testprojects_present}
+{elseif $gui->tplans eq ''}
 	{$labels.testplan_txt_empty_list}
-
 {else}
 	<table id='item_view'class="simple sortable" width="95%">
 		<tr>
@@ -115,7 +116,7 @@ var del_action=fRoot+'{$deleteAction}';
 {/if}
 </div>
 
- {if $gui->grants->testplan_create}
+ {if $gui->grants->testplan_create && $gui->tproject_id > 0}
  <div class="groupBtn">
     <form method="post" action="{$createAction}">
       <input type="submit" name="create_testplan" value="{$labels.btn_testplan_create}" />

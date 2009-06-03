@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -21,7 +21,6 @@ require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db,false,false,"checkRights");
 init_global_rights_maps();
-
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($editorCfg['type']);
@@ -53,6 +52,7 @@ switch($args->doAction)
 }
 
 $gui = complete_gui($db,$gui,$args,$op->role,$owebeditor);
+
 $gui->userFeedback = $op->userFeedback;
 
 $smarty = new TLSmarty();

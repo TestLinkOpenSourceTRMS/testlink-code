@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2009/05/27 18:42:07 $ by $Author: schlundus $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296
@@ -44,7 +44,7 @@ $gui->tree = $treeMenu->menustring;
 
 if( !is_null($treeMenu->rootnode) )
 {
-    $gui->ajaxTree=new stdClass();
+    $gui->ajaxTree = new stdClass();
     $gui->ajaxTree->loader = '';
     $gui->ajaxTree->root_node = new stdClass();
     $gui->ajaxTree->root_node = $treeMenu->rootnode;
@@ -54,8 +54,6 @@ if( !is_null($treeMenu->rootnode) )
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-// Warning: the following variable names CAN NOT BE Changed,
-// because there is global coupling on template logic
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
 
@@ -73,7 +71,7 @@ function init_args(&$dbHandler,$cfgObj)
   	$_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
     
-    $args->tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user = $_SESSION['currentUser'];
     $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
@@ -81,7 +79,7 @@ function init_args(&$dbHandler,$cfgObj)
 
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
-    $args->advancedFilterMode=isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
+    $args->advancedFilterMode = isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
     $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : null;
 
     if(!is_null($args->targetTestCase) && !empty($args->targetTestCase))
@@ -89,7 +87,7 @@ function init_args(&$dbHandler,$cfgObj)
 	  	// need to get internal Id from External ID
 	  	$item_mgr = new testcase($dbHandler);
 	  	$cfg = config_get('testcase_cfg');
-	  	$args->tcase_id=$item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
+	  	$args->tcase_id = $item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
 	  	
 	  	if($args->tcase_id == 0)
 	  	{
@@ -126,27 +124,27 @@ function init_args(&$dbHandler,$cfgObj)
     switch($cfgObj->exec->user_filter_default)
     {
     	case 'logged_user':
-          $user_filter_default = $args->user->dbID;
-      break;
+        	$user_filter_default = $args->user->dbID;
+      		break;
 
     	case 'none':
-    	default:
-    	break;
+	    default:
+	    	break;
     }
     
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? $_REQUEST['filter_assigned_to'] : $user_filter_default;
     if( !is_null($args->filter_assigned_to) )
     {
         $args->filter_assigned_to = (array)$args->filter_assigned_to;
-        if( in_array(TL_USER_ANYBODY, $args->filter_assigned_to) )
+        if(in_array(TL_USER_ANYBODY, $args->filter_assigned_to))
         {
             $args->filter_assigned_to = array(TL_USER_ANYBODY);  
         }
-        else if( in_array(TL_USER_NOBODY, $args->filter_assigned_to) )
+        else if(in_array(TL_USER_NOBODY, $args->filter_assigned_to))
         {
             $args->filter_assigned_to = array(TL_USER_NOBODY);    
         } 
-        else if( !$args->advancedFilterMode && count($args->filter_assigned_to) > 0)
+        else if(!$args->advancedFilterMode && count($args->filter_assigned_to) > 0)
         {
             // Because user has switched to simple mode we will get ONLY first status
             $args->filter_assigned_to=array($args->filter_assigned_to[0]);
@@ -160,29 +158,27 @@ function init_args(&$dbHandler,$cfgObj)
     }
     $args->optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : -1;
 
-    // Checkbox
-    $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+    $args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
-    // 20081225 - franciscom 
-    $keyname="resultAllPrevBuildsFilterType";
-    $args->resultAllPrevBuildsFilterType=isset($_REQUEST[$keyname]) ? $_REQUEST[$keyname] : 'IN';
+    $keyname = "resultAllPrevBuildsFilterType";
+    $args->resultAllPrevBuildsFilterType = isset($_REQUEST[$keyname]) ? $_REQUEST[$keyname] : 'IN';
 
     
     // 20081227 - BUGID 1913
-    $key='resultAllPrevBuildsSelected';
+    $key = 'resultAllPrevBuildsSelected';
     $args->$key = isset($_REQUEST['filter_status_all_prev_builds']) ? 
                   (array)$_REQUEST['filter_status_all_prev_builds'] : null;
-    if( !is_null($args->$key) )
+    if(!is_null($args->$key))
     {
-        if( in_array($cfgObj->results['status_code']['all'], $args->$key) )
+        if(in_array($cfgObj->results['status_code']['all'], $args->$key))
         {
             $args->$key = array($cfgObj->results['status_code']['all']);
         }
-        else if( !$args->advancedFilterMode && count($args->$key) > 0)
+        else if(!$args->advancedFilterMode && count($args->$key) > 0)
         {
             // Because user has switched to simple mode we will get ONLY first status
-            $dummy=$args->$key;
-            $args->$key=array($dummy[0]);
+            $dummy = $args->$key;
+            $args->$key = array($dummy[0]);
         }
     }
     return $args;
@@ -197,10 +193,6 @@ function init_args(&$dbHandler,$cfgObj)
   args:
 
   returns:
-
-  rev: 20080427 - franciscom - added cfgObj arguments
-       20080224 - franciscom - added include_unassigned
-
 */
 function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 {
@@ -208,10 +200,9 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     $settings = '&build_id=' . $argsObj->optBuildSelected .
   	            '&include_unassigned=' . $argsObj->include_unassigned;
 
-    // 20080428 - franciscom  
-    if( is_array($argsObj->keyword_id) )
+    if(is_array($argsObj->keyword_id))
     {
-       $kl=implode(',',$argsObj->keyword_id);
+       $kl = implode(',',$argsObj->keyword_id);
        $settings .= '&keyword_id=' . $kl;
     }
     else if($argsObj->keyword_id > 0)
@@ -229,15 +220,12 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     	$settings .= "&urgencyImportance={$argsObj->urgencyImportance}";
     }
         
-    // 20081220 - franciscom
     if( !is_null($argsObj->filter_assigned_to) &&
         !in_array(TL_USER_ANYBODY,$argsObj->filter_assigned_to) )
     {
     	  $settings .= '&filter_assigned_to='. serialize($argsObj->filter_assigned_to);
     }   
        
-       
-    // 20081220 - franciscom
     if( !is_null($argsObj->optResultSelected) && 
         !in_array($cfgObj->results['status_code']['all'],$argsObj->optResultSelected) )
     {
@@ -270,10 +258,11 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 */
 function getCfg()
 {
-    $cfg=new stdClass();
+    $cfg = new stdClass();
     $cfg->gui = config_get('gui');
     $cfg->exec = config_get('exec_cfg');
     $cfg->results = config_get('results');
+    
     return $cfg;
 }
 
@@ -295,9 +284,6 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     
     $effective_role = $argsObj->user->getEffectiveRole($dbHandler,$argsObj->tproject_id,$argsObj->tplan_id);
     
-    // SCHLUNDUS: hmm, for user defined roles, this wont work correctly
-    // Need to check right no role
-    //
     // 20081217 - franciscom
     // If we check right 'testplan_execute', we do not get desired effect, because we are not able
     // to treat in a different way a SIMPLE TESTER from a SENIOR TESTER.
@@ -315,7 +301,7 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     //
     //
     //
-    $simple_tester_roles=array_flip($cfgObj->exec->simple_tester_roles);
+    $simple_tester_roles = array_flip($cfgObj->exec->simple_tester_roles);
  	$can_execute = $effective_role->hasRight('testplan_execute');
 	$can_manage = $effective_role->hasRight('testplan_planning');
     $use_exec_cfg = isset($simple_tester_roles[$effective_role->dbID]) || ($can_execute && !$can_manage);
@@ -333,8 +319,6 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     		$guiObj->assigned_to_user = $argsObj->user->getDisplayName();
     		break;
     }
-    
-    
 }
 
 
@@ -360,34 +344,6 @@ function initBuildInfo(&$dbHandler,&$guiObj,&$argsObj,&$tplanMgr)
     
     return $argsObj->optBuildSelected;
 }
-
-
-
-
-/*
-  function: initKeywordInfo
-
-  args :
-  
-  returns: 
-
-*/
-// function initKeywordInfo($tplanID,&$tplanMgr)
-// {
-//     $kmap = $tplanMgr->get_keywords_map($tplanID,' order by keyword ');
-//     if(!is_null($kmap))
-//     {
-//        
-//     	// add the blank option
-//     	// 0 -> id for no keyword
-//     	//$blank_map[0] = '';
-//     	//$kmap = $blank_map + $kmap;
-//     }
-//     return $kmap;
-// }
-
-
-
 
 /*
   function: buildTree
@@ -477,7 +433,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     $additionalInfo->useCounters = $cfgObj->exec->enable_tree_testcase_counters;
     
-    $additionalInfo->useColours=new stdClass();
+    $additionalInfo->useColours = new stdClass();
     $additionalInfo->useColours->testcases = $cfgObj->exec->enable_tree_testcases_colouring;
     $additionalInfo->useColours->counters = $cfgObj->exec->enable_tree_counters_colouring;
 
@@ -515,16 +471,16 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
         
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs();
     $gui->menuUrl = 'lib/execute/execSetResults.php';
-    $gui->src_workframe=null;    
-    $gui->getArguments=null;
+    $gui->src_workframe = null;    
+    $gui->getArguments = null;
     
-    $gui->treeColored=$argsObj->treeColored;
-    $gui->tplan_name=$argsObj->tplan_name;
-    $gui->tplan_id=$argsObj->tplan_id;
+    $gui->treeColored = $argsObj->treeColored;
+    $gui->tplan_name = $argsObj->tplan_name;
+    $gui->tplan_id = $argsObj->tplan_id;
     $gui->optResultSelected = $argsObj->optResultSelected;
-    $gui->include_unassigned=$argsObj->include_unassigned;
+    $gui->include_unassigned = $argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
-    $gui->targetTestCase=$argsObj->targetTestCase;
+    $gui->targetTestCase = $argsObj->targetTestCase;
     $gui->resultAllPrevBuildsSelected = $argsObj->resultAllPrevBuildsSelected;
     
     // Only active builds no matter user role
@@ -532,24 +488,18 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->optBuildSelected=initBuildInfo($dbHandler,$guiObj,$argsObj,$tplanMgr); 
        
        
-    // -------------------------------------------------------
-    // 20090118 - franciscom    
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
     $gui->keywordsFilterItemQty = 0;
 
     $gui->keyword_id = $argsObj->keyword_id; 
-    $gui->keywords_map=$tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
+    $gui->keywords_map = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
     if(!is_null($gui->keywords_map))
     {
         $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
         $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
     }
-    
-                 
-    // 20081217 - franciscom             
-    // $gui->users = getUsersForHtmlOptions($dbHandler,null,true);
     
     // 20090517 - francisco.mancardi@gruppotesi.com
     // Assigned to combo must contain ALSO inactive users
@@ -569,24 +519,25 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
 
 
     $gui->advancedFilterMode=$argsObj->advancedFilterMode;
-    if( $gui->advancedFilterMode )
+    if($gui->advancedFilterMode)
     {
         $label = 'btn_simple_filters';
-        $gui->statusFilterItemQty=4;  // Standard: not run,passed,failed,blocked
-        $gui->assigneeFilterItemQty=4; // as good as any other number
+        $qty = 4; // Standard: not run,passed,failed,blocked
     }
     else
     {
-        $label='btn_advanced_filters';
-        $gui->statusFilterItemQty=1;   
-        $gui->assigneeFilterItemQty=1;
+        $label = 'btn_advanced_filters';
+        $qty = 1;
     }
+    
+   	$gui->statusFilterItemQty = $qty;   
+    $gui->assigneeFilterItemQty = $qty;
     $gui->toggleFilterModeLabel=lang_get($label);
  
  
     // BUGID 1913
     $gui->resultAllPrevBuildsFilterType=new stdClass();                                 
-    $gui->resultAllPrevBuildsFilterType->options = array('IN' => 'In' , 'OUT' =>'Out'); 
+    $gui->resultAllPrevBuildsFilterType->options = array('IN' => lang_get('In') , 'OUT' => lang_get('Out')); 
     $gui->resultAllPrevBuildsFilterType->selected=$argsObj->resultAllPrevBuildsFilterType;         
 
     return $gui;

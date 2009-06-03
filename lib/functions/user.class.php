@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/05/18 20:22:10 $ $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/06/03 15:06:12 $ $Author: franciscom $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -163,11 +163,13 @@ class tlUser extends tlDBObject
 		return $info ? tl::OK : tl::ERROR;
 	}
 	
-	public function readTestProjectRoles(&$db,$rolesForTestProjectID = null)
+	public function readTestProjectRoles(&$db,$testProjectID = null)
 	{
 		$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$this->dbID}";
-		if ($rolesForTestProjectID)
-			$query .= " AND testproject_id = {$rolesForTestProjectID}";
+		if ($testProjectID)
+		{
+			$query .= " AND testproject_id = {$testProjectID}";
+		}
 		$allRoles = $db->fetchColumnsIntoMap($query,'testproject_id','role_id');
 		$this->tprojectRoles = null;
 		if (sizeof($allRoles))
@@ -191,12 +193,14 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
-	public function readTestPlanRoles(&$db,$rolesForTestPlanID = null)
+	public function readTestPlanRoles(&$db,$testPlanID = null)
 	{
 		$query = "SELECT testplan_id,role_id FROM user_testplan_roles WHERE user_id = {$this->dbID}";
-		if ($rolesForTestPlanID)
-			$query .= " AND testplan_id = {$rolesForTestPlanID}";
-
+		if ($testPlanID)
+		{
+			$query .= " AND testplan_id = {$testPlanID}";
+        }
+        
 		$allRoles = $db->fetchColumnsIntoMap($query,'testplan_id','role_id');
 		$this->tplanRoles = null;
 		if (sizeof($allRoles))

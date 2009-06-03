@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2009/05/17 16:28:26 $ $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2009/06/03 17:46:41 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -113,7 +113,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
 			$the_users=array();
 			foreach($users as $id => $user)
 			{
-				if($user->bActive == $active_filter)
+				if($user->isActive == $active_filter)
 				{
 					$the_users[$id] = $users[$id];
 				}	
@@ -155,7 +155,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 		foreach($users as $id => $user)
 		{
 			$usersMap[$id] = $user->getDisplayName();
-			if($user->bActive==0)
+			if($user->isActive==0)
 			{
 			    $usersMap[$id] = $inactivePrefix . ' ' . $usersMap[$id];
 			} 
@@ -345,7 +345,7 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null,
     foreach($users_roles as $keyUserID => $roleInfo)
     {
         if($roleInfo['effective_role']->hasRight('testplan_execute') && 
-           ($orOperand || $roleInfo['user']->bActive == $activeTarget) )
+           ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
         {
             
              $userFilter[$keyUserID] = $roleInfo['user'];

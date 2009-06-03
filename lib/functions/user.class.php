@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: user.class.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/06/03 15:06:12 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/06/03 17:46:41 $ $Author: franciscom $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -20,7 +20,7 @@ class tlUser extends tlDBObject
 	public $lastName;
 	public $emailAddress;
 	public $locale;
-	public $bActive;
+	public $isActive;
 	public $defaultTestprojectID;
 	public $globalRole;
 	public $globalRoleID;
@@ -72,7 +72,7 @@ class tlUser extends tlDBObject
 		
 		$this->globalRoleID = config_get('default_roleid');
 		$this->locale = config_get('default_language');
-		$this->bActive = 1;
+		$this->isActive = 1;
 		$this->tprojectRoles = null;
 		$this->tplanRoles = null;
 	}
@@ -84,7 +84,7 @@ class tlUser extends tlDBObject
 		$this->emailAddress = null;
 		$this->locale = null;
 		$this->password = null;
-		$this->bActive = null;
+		$this->isActive = null;
 		$this->defaultTestprojectID = null;
 		$this->globalRoleID = null;
 		$this->tprojectRoles = null;
@@ -157,7 +157,7 @@ class tlUser extends tlDBObject
 			
 			$this->locale = $info['locale'];
 			$this->password = $info['password'];
-			$this->bActive = $info['active'];
+			$this->isActive = $info['active'];
 			$this->defaultTestprojectID = $info['default_testproject_id'];
 		}
 		return $info ? tl::OK : tl::ERROR;
@@ -238,7 +238,7 @@ class tlUser extends tlDBObject
 				   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
 				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
 				   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
-				   ", active = ". $db->prepare_string($this->bActive);
+				   ", active = ". $db->prepare_string($this->isActive);
 				$query .= " WHERE id=" . $this->dbID;
 				$result = $db->exec_query($query);
 			}
@@ -249,7 +249,7 @@ class tlUser extends tlDBObject
 							$db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
 							$db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
 							$db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
-							$db->prepare_string($this->locale). "'," . $this->bActive . ")";
+							$db->prepare_string($this->locale). "'," . $this->isActive . ")";
 				$result = $db->exec_query($query);
 				if($result)
 				{
@@ -347,7 +347,7 @@ class tlUser extends tlDBObject
 		$this->lastName = trim($this->lastName);
 		$this->emailAddress = trim($this->emailAddress);
 		$this->locale = trim($this->locale);
-		$this->bActive = intval($this->bActive);
+		$this->isActive = intval($this->isActive);
 		$this->login = trim($this->login);
 	
 		$result = self::checkEmailAdress($this->emailAddress);

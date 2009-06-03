@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.22 2009/05/13 19:30:17 schlundus Exp $
+$Id: usersEdit.tpl,v 1.23 2009/06/03 17:46:40 franciscom Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -238,7 +238,7 @@ function validateForm(f,check_password)
 		<tr>
 			<th style="background:none;">{$labels.th_active}</th>
 			<td>
-			  <input type="checkbox"  name="user_is_active" {if $userData->bActive eq 1} checked {/if} />
+			  <input type="checkbox"  name="user_is_active" {if $userData->isActive eq 1} checked {/if} />
 			</td>
 		</tr>
 

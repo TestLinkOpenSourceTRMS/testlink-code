@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.13 2008/09/21 19:02:48 schlundus Exp $
+$Id: usersView.tpl,v 1.14 2009/06/03 17:46:41 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -97,7 +97,7 @@ Purpose: smarty template - users overview
 				 {$optLocale[$userLocale]|escape}
 				</td>
 				<td align="center">
-					{if $user->bActive eq 1}
+					{if $user->isActive eq 1}
 				  		<img style="border:none" title="{$labels.alt_active_user}"
   				                             alt="{$labels.alt_active_user}"  src="{$checked_img}"/>
   			  {else}

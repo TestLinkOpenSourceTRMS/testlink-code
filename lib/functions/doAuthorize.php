@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/06/03 17:46:41 $ by $Author: franciscom $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial authentication for login and creates all user session variables.
@@ -29,7 +29,7 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 		if ($login_exists)
 	    {
 			$password_check = auth_does_password_match($user,$pwd);
-			if ($password_check->status_ok && $user->bActive)
+			if ($password_check->status_ok && $user->isActive)
 			{
 				// 20051007 MHT Solved  0000024 Session confusion 
 				// Disallow two sessions within one browser

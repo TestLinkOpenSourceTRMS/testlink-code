@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.33 $
-* @modified $Date: 2009/05/09 17:59:19 $ $Author: schlundus $
+* @version $Revision: 1.34 $
+* @modified $Date: 2009/06/03 17:46:41 $ $Author: franciscom $
 *
 * Allows editing a user
 */
@@ -261,7 +261,7 @@ function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
                                   'decode' => 'decodeRoleId',
                                   'label' => 'audit_user_role_changed');
 
-  $key2compare['numeric'][]=array('old' => 'bActive',
+  $key2compare['numeric'][]=array('old' => 'isActive',
                                   'new' => 'user_is_active',
                                   'label' => 'audit_user_active_status_changed');
 
@@ -320,7 +320,7 @@ function initializeUserProperties(&$userObj,&$argsObj)
 	$userObj->lastName = $argsObj->lastName;
 	$userObj->globalRoleID = $argsObj->rights_id;
 	$userObj->locale = $argsObj->locale;
-	$userObj->bActive = $argsObj->user_is_active;
+	$userObj->isActive = $argsObj->user_is_active;
 }
 
 

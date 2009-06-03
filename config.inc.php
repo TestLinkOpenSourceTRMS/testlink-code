@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.241 $
- * @modified $Date: 2009/05/26 14:32:13 $ by $Author: havlat $
+ * @version $Revision: 1.242 $
+ * @modified $Date: 2009/06/03 12:57:22 $ by $Author: havlat $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -158,6 +158,8 @@ $tlCfg->sessionInactivityTimeout = 60;
  */
 //ini_set('session.gc_maxlifetime', 54000);
 
+/** Left empty. See #1137 */
+$tlCfg->db_table_prefix = '';
 
 // ----------------------------------------------------------------------------
 /** [LOGGING] */

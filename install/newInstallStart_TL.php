@@ -4,12 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: newInstallStart_TL.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/01/28 09:43:22 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/06/03 18:34:25 $ by $Author: franciscom $
  * 
  * Verify environment and collect DB input data
  *
+ * IMPORTANT:
+ * every HTML input defined, will create an entry on $_SESSION array  automagically.
+ *
  * Revisions:
+ * 20090603 - franciscom - added table prefix management
  * 20090127 - franciscom - missing variable error 
  * 20080914 - franciscom - check_php_resource_settings() 
  * 20080219 - franciscom - fixed dir permission checking
@@ -207,11 +211,10 @@ else
 		<div class="labelHolder"><label for="databasename">Database name:</label></div>
 		<input type="text" id="databasename" name="databasename"  maxlength="50" 
 					       style="width:200px" value="testlink">
-					<!--
-					20050611 - fm
-					<div class="labelHolder"><label for="tableprefix">Table prefix:</label></div>
-					<input type="text" id="tableprefix" name="tableprefix" style="width:200px" value="TestLink_">
-					-->
+		<br />
+	    <div class="labelHolder"><label for="tableprefix">Table prefix:</label></div>
+	    <input type="text" id="tableprefix" name="tableprefix" style="width:200px" value="">
+	    (optional)
 		</p>
 
 		<?php if(!$isUpgrade){ ?>

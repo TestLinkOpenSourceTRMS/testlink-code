@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/06/03 22:02:49 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/06/04 19:22:01 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -198,7 +198,7 @@ class tlRole extends tlDBObject
 			//reset all affected users by replacing the deleted role with configured role
 			$this->replaceUserRolesWith($db,$this->replacementRoleID);
 
-			$query = "DELETE FROM roles WHERE id = {$this->dbID}";
+			$query = "DELETE FROM {$this->object_table} WHERE id = {$this->dbID}";
 			$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
 		}
 		return $result;
@@ -230,7 +230,7 @@ class tlRole extends tlDBObject
 	}
 	
 	/**
-	 * Gets all users with a certain global role  @TODO WRITE RIGHT COMMENTS FROM START
+	 * Gets all userids of users with a certain global role  @TODO WRITE RIGHT COMMENTS FROM START
 	 *
 	 * @param object $db [ref] the db-object
 	 * @return array of userids
@@ -239,11 +239,12 @@ class tlRole extends tlDBObject
 	{
 		$query = "SELECT id FROM {$this->tables['users']} WHERE role_id = {$this->dbID}";
 		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		
 		return $idSet; 
 	}
 
 	/**
-	 * Gets all users with a certain testproject role @TODO WRITE RIGHT COMMENTS FROM START
+	 * Gets all userids of users with a certain testproject role @TODO WRITE RIGHT COMMENTS FROM START
 	 *
 	 * @param object $db [ref] the db-object
 	 * @return array returns array of userids
@@ -255,11 +256,12 @@ class tlRole extends tlDBObject
 		         " WHERE users.id = user_testproject_roles.user_id";
 		$query .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
 		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		
 		return $idSet; 
 	}
 
 	/**
-	 * Gets all users with a certain testplan role @TODO WRITE RIGHT COMMENTS FROM START
+	 * Gets all userids of users with a certain testplan role @TODO WRITE RIGHT COMMENTS FROM START
 	 *
 	 * @param object $db [ref] the db-object
 	 * @return array returns array of userids
@@ -271,6 +273,7 @@ class tlRole extends tlDBObject
 		         " WHERE  users.id = user_testplan_roles.user_id";
 		$query .= " AND user_testplan_roles.role_id = {$this->dbID}";
 		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		
 		return $idSet; 
 	}
 	
@@ -292,7 +295,6 @@ class tlRole extends tlDBObject
 	 * Gets all users with a certain testplan role
 	 *
 	 * @param object $db [ref] the db-object
-	 * @param int $roleID the role id
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	protected function getUsersWithTestPlanRole(&$db)
@@ -339,9 +341,14 @@ class tlRole extends tlDBObject
 		return $status;
 	}
 	
+	/** Delete the rights of a role from the db
+	 * @param $db [ref] the database connection
+	 * @return returns tl::OK on success, tl::ERROR else
+	 */
 	protected function deleteRightsFromDB(&$db)
 	{
-		$query = "DELETE FROM role_rights WHERE role_id = {$this->dbID}";
+		$tablename = $this->tables['role_rights'];
+		$query = "DELETE FROM {$tablename} WHERE role_id = {$this->dbID}";
 		$result = $db->exec_query($query);
 		
 		return $result ? tl::OK : tl::ERROR;
@@ -360,10 +367,11 @@ class tlRole extends tlDBObject
 		$bSuccess = 1;
 		if ($this->rights)
 		{
+			$tablename = $this->tables['role_rights'];
 			foreach($this->rights as $right)
 			{
 				$rightID = $right->dbID;
-				$query = "INSERT INTO role_rights (role_id,right_id) VALUES ({$this->dbID},{$rightID})";
+				$query = "INSERT INTO {$tablename} (role_id,right_id) VALUES ({$this->dbID},{$rightID})";
 				$bSuccess = $bSuccess && ($db->exec_query($query) ? 1 : 0);
 			}
 		}
@@ -372,7 +380,9 @@ class tlRole extends tlDBObject
 	
 	protected function readRights(&$db)
 	{
-		$query = "SELECT right_id,description FROM role_rights a JOIN rights b ON a.right_id = b.id " .
+		$roleRightsTableName = $this->tables['role_rights'];
+		$rightsTableName = $this->tables['rights'];
+		$query = "SELECT right_id,description FROM {$roleRightsTableName} a JOIN {$rightsTableName} b ON a.right_id = b.id " .
 		         "WHERE role_id = {$this->dbID}";
 		$rightInfo = $db->get_recordset($query);
 		$this->rights = buildRightsArray($rightInfo);

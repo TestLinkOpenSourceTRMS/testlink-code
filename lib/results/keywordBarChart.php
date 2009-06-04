@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: keywordBarChart.php,v 1.14 2009/06/03 19:51:45 schlundus Exp $ 
+ * $Id: keywordBarChart.php,v 1.15 2009/06/04 19:22:01 schlundus Exp $ 
  *
  * @author	Kevin Levy
  *
@@ -50,7 +50,6 @@ function getDataAndScale(&$dbHandler)
 	        $item_descr[$elem['keyword_name']] = $keyword_id;
 	    }  
 	    ksort($item_descr);
-	    // -----------------------------------------------------
 	    
 	    foreach($item_descr as $name => $keyword_id)
 	    {
@@ -90,7 +89,6 @@ function getDataAndScale(&$dbHandler)
 	    
 	return $obj;
 }
-
 
 function checkRights(&$db,&$user)
 {

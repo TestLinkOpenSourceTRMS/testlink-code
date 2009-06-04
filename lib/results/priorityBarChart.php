@@ -1,4 +1,5 @@
 <?php
+//@TODO this file seems not to be in use
 include "../../third_party/charts/charts.php";
 
 require_once('../functions/results.class.php');

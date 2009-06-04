@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2008/09/29 19:48:12 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/06/04 19:22:01 $ by $Author: schlundus $
  * @author kevinlevy
  * 
  * rev :
@@ -18,7 +18,7 @@ require('../../config.inc.php');
 require_once('results.class.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
-testlinkInitPage($db);
+testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -96,27 +96,20 @@ $totalResolvedBugs = count($resolvedBugs);
 $totalBugs = $totalOpenBugs + $totalResolvedBugs;
 $totalCasesWithBugs = count($arrData);
 
-
-
 $smarty = new TLSmarty;
 $smarty->assign('user',$args->user);
-//$smarty->assign('printDate', strftime($g_date_format, time()) );
 $smarty->assign('printDate','');
 $smarty->assign('tproject_name', $tproject_info['name']);
 $smarty->assign('tplan_name', $tplan_info['name'] );
 $smarty->assign('title', lang_get('link_report_total_bugs'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
-
 $smarty->assign('totalOpenBugs', $totalOpenBugs);
 $smarty->assign('totalResolvedBugs', $totalResolvedBugs);
 $smarty->assign('totalBugs', $totalBugs);
 $smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-?>
 
-
-<?php
 /*
   function: 
 
@@ -127,30 +120,18 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray)
 {
-   $linkString = $bugInfo['link_to_bts'];
-   $position = strpos($linkString,"<del>");
-   $position2 = strpos($linkString,"</del>");
-   if ((!$position)&&(!$position2)) {
-	tallyOpenBug($bugID, $openBugsArray);
-   }
-   else {
-	tallyResolvedBug($bugID, $resolvedBugsArray);
-   } 
-}
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function tallyOpenBug($bugID, &$array) 
-{
-	if (!in_array($bugID, $array)) {
-		array_push($array, $bugID);
+	$linkString = $bugInfo['link_to_bts'];
+	$position = strpos($linkString,"<del>");
+	$position2 = strpos($linkString,"</del>");
+	if ((!$position) && (!$position2))
+	{
+		$bugArray = $openBugsArray;
 	}
+	else
+	{
+		$bugArray = $resolvedBugsArray;
+   	} 
+   	tallyBug($bugID, $bugArray);
 }
 
 /*
@@ -161,7 +142,7 @@ function tallyOpenBug($bugID, &$array)
   returns: 
 
 */
-function tallyResolvedBug($bugID, &$array) 
+function tallyBug($bugID, &$array) 
 {
 	if (!in_array($bugID, $array)) {
 		array_push($array, $bugID);
@@ -207,13 +188,21 @@ function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 */
 function init_args()
 {
+	$iParams = array(
+		"format" => array(tlInputParameter::INT_N),
+		"tplan_id" => array(tlInputParameter::INT_N),
+   	);
 	$args = new stdClass();
-	$_REQUEST = strings_stripSlashes($_REQUEST);
-  
-	$args->tplan_id=$_REQUEST['tplan_id'];
-	$args->tproject_id=$_SESSION['testprojectID'];
+	$pParams = R_PARAMS($iParams,$args);
+	
+	$args->tproject_id = $_SESSION['testprojectID'];
 	$args->user = $_SESSION['currentUser'];
 
 	return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
 }
 ?>

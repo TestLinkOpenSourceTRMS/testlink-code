@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.52 2009/06/02 09:50:03 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.53 2009/06/04 19:22:01 schlundus Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -67,7 +67,7 @@ if($gui->do_report['status_ok'])
 }
 
 // get All test Plans for combobox
-$gui->tplans = $tplan_mgr->getTestPlanNamesById($tproject_id,FALSE);
+$gui->tplans = $tplan_mgr->getTestPlanNamesById($args->tproject_id,FALSE);
 
 
 $smarty = new TLSmarty();

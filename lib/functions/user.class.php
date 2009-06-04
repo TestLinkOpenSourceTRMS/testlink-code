@@ -6,8 +6,8 @@
  *
  * @package TestLink
  * Filename $RCSfile: user.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/06/04 12:05:47 $ $Author: havlat $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/06/04 19:22:01 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -24,7 +24,7 @@
 class tlUser extends tlDBObject
 {
 	private $object_table = "users";
-    private $tables='';
+    private $tables = '';
 
 	public $firstName;
 	public $lastName;
@@ -70,6 +70,10 @@ class tlUser extends tlDBObject
     const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
 
 	
+	/**
+	 * Constructor, creates the user object
+	 * @param $dbID database id of the object
+	 */
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
@@ -81,8 +85,6 @@ class tlUser extends tlDBObject
 	                          'rights' => DB_TABLE_PREFIX . 'rights'); 
 
 		$this->object_table = $this->tables['users']; 
-		
-		
 		
 		$authCfg = config_get('authentication');
 		$this->usernameFormat = config_get('username_format');
@@ -97,6 +99,9 @@ class tlUser extends tlDBObject
 		$this->tplanRoles = null;
 	}
 	
+	/* Cleans the object by resetting the members to default values
+	 * @param $options tlUser/tlObject options
+	 */
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->firstName = null;
@@ -122,19 +127,51 @@ class tlUser extends tlDBObject
 		}
 	}
 	
+	/** Checks if password management is external (like LDAP)...
+	 * @TODO should be moved inside a super tl configuration class
+	 * @return boolean return true if password management is external, else false
+	 */
 	static public function isPasswordMgtExternal()
 	{
 		$authCfg = config_get('authentication');
 		return ($authCfg['method'] != '' &&  $authCfg['method'] != 'MD5') ? true : false;
 	}
 	
-	/** @TODO fills the members  */
+	/*
+	 *  you can choose the number of alphanumeric characters to add and 
+	 *  the number of non-alphanumeric characters. 
+	 *  You obtain a more secure password. 
+	 *  You can add another characters to the non-alphanumeric list if you need.
+	 *           
+	 * 	@param $numAlpha
+	 *  @param $numNonAlpha
+	 * 
+	 * 	@returns string the generated password
+	*/
+	static public function generatePassword($numAlpha = 6,$numNonAlpha = 2)
+	{
+	  $listAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	  $listNonAlpha = ',;:!?.$/*-+&@_+;./*&?$-!,';
+	  
+	  return str_shuffle(substr(str_shuffle($listAlpha),0,$numAlpha) .
+	                      substr(str_shuffle($listNonAlpha),0,$numNonAlpha));
+	}
+	
+	/** @TODO fills the members
+	 * not used at the moment, only placeholder
+	 * 
+	 * @return unknown_type  */
 	function create()
 	{
 	}
 	
 	//BEGIN interface iDBSerialization
 	/** @TODO define purpose and using */
+	/* Reads an user object identified by its database id from the given database
+	 * @param $db [ref] the databse object
+	 * @param $options tlUser/tlObject options
+	 * @return returns tl::OK if the object could be read from the db, else tl::ERROR
+	*/
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
@@ -249,6 +286,10 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
+	/* Writes the object into the database
+	 * @param $db [ref] the database handler
+	 * @return returns tl::OK if the object could be written to the db, else error code
+	 */
 	public function writeToDB(&$db)
 	{
 		$result = $this->checkDetails($db);

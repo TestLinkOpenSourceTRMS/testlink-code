@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2009/06/03 17:46:41 $ $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2009/06/04 19:22:01 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -172,9 +172,6 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
         reference to error string
 
   returns:
-  
-  rev: 20080822 - franciscom
-       use generatePassword()
 
 */
 function resetPassword(&$db,$userID,&$errorMsg)
@@ -188,7 +185,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	{
 		if ($user->emailAddress != "")
 		{
-			$newPassword = generatePassword(8,4); 
+			$newPassword = tlUser::generatePassword(8,4); 
 			$result = $user->setPassword($newPassword);
 
 			if ($result >= tl::OK)
@@ -428,27 +425,5 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
     }
     
     return $grants;
-}
-
-/*
-  function: generatePassword
-            code taken from PHP manual user's notes. 
-            you can choose the number of alphanumeric characters to add and 
-            the number of non-alphanumeric characters. 
-            You obtain a more secure password. 
-            You can add another characters to the non-alphanumeric list if you need.
-            
-  args:numAlpha
-       numNonAlpha
-  
-  returns: string
-
-*/
-function generatePassword($numAlpha=6,$numNonAlpha=2)
-{
-  $listAlpha = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  $listNonAlpha = ',;:!?.$/*-+&@_+;./*&?$-!,';
-  return str_shuffle( substr(str_shuffle($listAlpha),0,$numAlpha) .
-                      substr(str_shuffle($listNonAlpha),0,$numNonAlpha) );
 }
 ?>

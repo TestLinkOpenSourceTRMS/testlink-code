@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.66 2009/01/23 08:08:14 franciscom Exp $
+* $Id: resultsMoreBuilds.php,v 1.67 2009/06/04 19:22:01 schlundus Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -20,10 +20,13 @@ require_once('common.php');
 require_once('results.class.php');
 require_once('exec.inc.php');
 require_once('users.inc.php');
-testlinkInitPage($db);
+testlinkInitPage($db,true,false,"checkRights");
 
 $template_dir = 'results/';
-$gui = initializeGui($db);
+
+$args = init_args();
+$gui = initializeGui($db,$args);
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($template_dir .'resultsMoreBuilds_query_form.tpl');
@@ -60,7 +63,7 @@ function get_status_for_reports_html_options()
   returns: 
 
 */
-function initializeGui(&$dbHandler)
+function initializeGui(&$dbHandler,$args)
 {
     $gui = new stdClass();  
     $tplan_mgr = new testplan($dbHandler);
@@ -72,8 +75,8 @@ function initializeGui(&$dbHandler)
     $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
     $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
     
-    $gui->tplan_id = $_REQUEST['tplan_id'];
-    $gui->tproject_id = $_SESSION['testprojectID'];
+    $gui->tplan_id = $args->tplan_id;
+    $gui->tproject_id = $args->tproject_id;
     
     
     $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
@@ -118,8 +121,7 @@ function initializeGui(&$dbHandler)
     $gui->builds->qty = count($gui->builds->items);
     $gui->testsuites->qty = count($gui->testsuites->items);
     $gui->status_code_label = get_status_for_reports_html_options();
-    $gui->report_type = isset($_REQUEST['format']) ? intval($_REQUEST['format']) : null;
-    $gui->build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
+    $gui->report_type = $args->format;
 
     $reports_cfg = config_get('reportsCfg');
     $startDate = time() - ($reports_cfg->start_date_offset);
@@ -129,5 +131,26 @@ function initializeGui(&$dbHandler)
     $gui->selected_end_date = null;
     $gui->selected_end_time = null;
     return $gui;
+}
+
+function init_args()
+{
+	$iParams = array(
+		"format" => array(tlInputParameter::INT_N),
+		"tplan_id" => array(tlInputParameter::INT_N),
+	);
+
+	$args = new stdClass();
+	$pParams = R_PARAMS($iParams,$args);
+
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+
+    return $args;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'testplan_metrics');
 }
 ?>

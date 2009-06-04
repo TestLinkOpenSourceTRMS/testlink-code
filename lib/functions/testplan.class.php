@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.114 $
- * @modified $Date: 2009/06/04 07:24:59 $ by $Author: franciscom $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2009/06/04 19:22:01 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -335,13 +335,13 @@ function get_all()
  */
 public function getTestPlanNames($projectId, $activeOnly=TRUE)
 {
-	$sql = 'SELECT nodes_hierarchy.id, nodes_hierarchy.name ' .
-			'FROM {$this->nodes_hierarchy_table} nodes_hierarchy ' .
-			'JOIN {$this->testplans_table} testplans ON nodes_hierarchy.id=testplans.id ' .
-			'WHERE testplans.testproject_id=' . $projectId;
+	$sql = "SELECT nodes_hierarchy.id, nodes_hierarchy.name " .
+			"FROM {$this->nodes_hierarchy_table} nodes_hierarchy " .
+			"JOIN {$this->testplans_table} testplans ON nodes_hierarchy.id = testplans.id " .
+			"WHERE testplans.testproject_id = " . $projectId;
 	if ($activeOnly)
 	{
-		$sql .= 'AND testplans.active=1 ';
+		$sql .= 'AND testplans.active = 1 ';
 	}
 	$sql .= ' ORDER BY nodes_hierarchy.name';
 

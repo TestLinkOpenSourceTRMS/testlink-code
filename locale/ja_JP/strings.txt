@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/05/27 06:14:26 $ by $Author: tosikawa $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/06/04 05:26:30 $ by $Author: tosikawa $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -58,7 +58,7 @@
  * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
  * Yukiko Kajino
  *
- * @modified $Date: 2009/05/27 06:14:26 $ $Author: tosikawa $
+ * @modified $Date: 2009/06/04 05:26:30 $ $Author: tosikawa $
  *-------------------------------------------------------------------
 **/
 
@@ -85,6 +85,7 @@ $TLS_help = "ヘルプ";
 $TLS_hour = "時";
 $TLS_importance = "重要度";
 $TLS_imported = "インポートする";
+$TLS_In = "In";
 $TLS_keyword = "キーワード";
 $TLS_manual = "手動";
 $TLS_Milestone = "マイルストーン";
@@ -95,6 +96,7 @@ $TLS_nobody = "なし";
 $TLS_not_imported = "インポートしない";
 $TLS_none = "なし";
 $TLS_ok = "OK";
+$TLS_Out = "Out";
 $TLS_priority = "優先度";
 $TLS_project = "プロジェクト";
 $TLS_requirement = "要件";
@@ -109,6 +111,7 @@ $TLS_status = "ステータス";
 $TLS_test_case = "テストケース";
 $TLS_testcase = $TLS_test_case; // obsolete
 $TLS_testcaseversion = 'テストケースバージョン';
+$TLS_tester = "テスト担当者";
 $TLS_test_plan = "テスト計画";
 $TLS_testplan = $TLS_test_plan; // obsolete
 $TLS_testproject = "テストプロジェクト";
@@ -509,7 +512,7 @@ $TLS_filter_result_all_prev_builds = "以前のすべてのビルドにおける
 $TLS_th_my_perc_completed = "私の完了率 [%]";
 $TLS_th_perc_completed = "完了率 [%]";
 $TLS_title_your_tp_metrics = "あなたのテスト計画メトリクス";
-
+$TLS_error_no_testprojects_present = "テストプロジェクトが定義されていません!";
 
 // ----- gui/templates/metrics_dashbord.tpl -----
 $TLS_th_total_tc = "総テストケース数";
@@ -2046,6 +2049,9 @@ $TLS_list_of_failed = "失敗したテストケース";
 $TLS_list_of_not_run = "未実行のテストケース";
 
 
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "カスタムフィールド情報とテスト計画";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
 // ----- lib/results/resultsTC.php -----
 

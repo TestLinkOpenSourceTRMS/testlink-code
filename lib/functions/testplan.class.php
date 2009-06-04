@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.113 $
- * @modified $Date: 2009/06/02 09:50:03 $ by $Author: havlat $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2009/06/04 07:24:59 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -86,6 +86,7 @@ class testplan extends tlObjectWithAttachments
  	var $cfield_design_values_table="cfield_design_values";
   	var $cfield_execution_values_table="cfield_execution_values";
   	var $cfield_testplan_design_values_table="cfield_testplan_design_values";  
+  	var $cfield_testprojects_table='cfield_testprojects';
   	var $cfield_node_types_table="cfield_node_types";
   	var $execution_bugs_table="execution_bugs";
   	var $executions_table='executions';
@@ -94,8 +95,11 @@ class testplan extends tlObjectWithAttachments
   	var $tcversions_table='tcversions';
   	var $testplans_table="testplans";
 	var $testplan_tcversions_table="testplan_tcversions";
-
-
+    var $user_assignments_table='user_assignments';
+    var $user_testplan_roles_table='user_testplan_roles';
+    var $testcase_keywords_table='testcase_keywords';
+    var $keywords_table='keywords';
+    
 	var $assignment_types;
 	var $assignment_status;
 	var $user_feedback_message = '';
@@ -117,6 +121,20 @@ class testplan extends tlObjectWithAttachments
       
     	$this->cfield_mgr = new cfield_mgr($this->db);
     	$this->tcase_mgr = New testcase($this->db);
+    	
+    	$key2loop = array('builds_table','nodes_hierarchy_table','keywords_table',
+	                      'testplans_table','execution_bugs_table','executions_table',
+	                      'cfield_design_values_table','testcase_keywords_table',
+	                      'custom_fields_table','cfield_testprojects_table',
+	                      'testplan_tcversions_table','milestones_table',
+	                      'cfield_node_types_table','cfield_testplan_design_values_table',
+	                      'user_assignments_table','user_testplan_roles_table',
+	                      'testplan_tcversions_table','tcversions_table');
+
+        foreach($key2loop as $table_name)
+        {
+            $this->$table_name = DB_TABLE_PREFIX . $this->$table_name ;    
+        }
     	
 	    tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
@@ -318,8 +336,8 @@ function get_all()
 public function getTestPlanNames($projectId, $activeOnly=TRUE)
 {
 	$sql = 'SELECT nodes_hierarchy.id, nodes_hierarchy.name ' .
-			'FROM nodes_hierarchy ' .
-			'JOIN testplans ON nodes_hierarchy.id=testplans.id ' .
+			'FROM {$this->nodes_hierarchy_table} nodes_hierarchy ' .
+			'JOIN {$this->testplans_table} testplans ON nodes_hierarchy.id=testplans.id ' .
 			'WHERE testplans.testproject_id=' . $projectId;
 	if ($activeOnly)
 	{
@@ -601,7 +619,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	
 	if(trim($keywords_filter) != "")
 	{
-	    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";
+	    $keywords_join = " JOIN {$this->testcase_keywords_table} TK ON NHA.parent_id = TK.testcase_id ";
 	}
 	
 	if (!is_null($tcase_id) )
@@ -619,22 +637,6 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	// --------------------------------------------------------------
 	if(!is_null($exec_status) )
 	{
-	    // if( $exec_status == $status_not_run)
-	    // {
-	    //   $executions_filter=" AND E.status IS NULL ";
-	    // }
-	    // else
-	    // {
-	    //   // 20081220 - franciscom
-	    //   // $executions_filter=" AND E.status='" . $exec_status . "' ";
-	    //   // Remember status code are characters non numbers, then we need to use
-	    //   // single quotes on IN clause elements
-	    //   $executions_filter=" AND E.status IN ('" . implode("','",$exec_status) . "') ";
-	    //   $sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
-      //                 "               FROM  executions " .
-      //                 "               WHERE testplan_id={$id} " .
-      //                 "               GROUP BY tcversion_id,testplan_id )";
-	    // }
 	    $executions_filter='';
 	    $notrun_filter=null;
 	    $otherexec_filter=null;
@@ -650,7 +652,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	    {
           $otherexec_filter=" E.status IN ('" . implode("','",$exec_status) . "') ";
 	        $sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
-                        "               FROM  executions " .
+                        "               FROM  {$this->executions_table} executions " .
                         "               WHERE testplan_id={$id} " .
                         "               GROUP BY tcversion_id,testplan_id )";
                         
@@ -685,7 +687,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	{
      $executions_join = " LEFT OUTER ";
 	}
-	$executions_join .= " JOIN executions E ON " .
+	$executions_join .= " JOIN {$this->executions_table} E ON " .
 	                    " (NHA.id = E.tcversion_id AND " .
 	                    "  E.testplan_id=T.testplan_id {$build_filter}) ";
 
@@ -727,7 +729,7 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	       " JOIN  {$this->tcversions_table} TCV ON NHA.id = TCV.id {$tcversion_exec_type_filter} " .
 	       " {$executions_join} " .
 	       " {$keywords_join} " .
-	       " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
+	       " LEFT OUTER JOIN {$this->user_assignments_table} UA ON UA.feature_id = T.id " .
 	       " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
 	       " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
 	       $executions_filter;
@@ -769,7 +771,8 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 		else if($urgencyImportance == LOW)
 			$sql .= " AND (urgency * importance) < ".$urgencyImportanceCfg->threshold['low'];
 		else
-			$sql .= " AND ( ((urgency * importance) >= ".$urgencyImportanceCfg->threshold['low']." AND  ((urgency * importance) < ".$urgencyImportanceCfg->threshold['high']."))) ";
+			$sql .= " AND ( ((urgency * importance) >= " . $urgencyImportanceCfg->threshold['low'] . 
+			        " AND  ((urgency * importance) < ".$urgencyImportanceCfg->threshold['high']."))) ";
 	}
 	
 	  // test suites filter
@@ -903,7 +906,7 @@ function unlink_tcversions($id,&$items)
 
       // First get the executions id if any exist
       $sql=" SELECT id AS execution_id
-             FROM executions
+             FROM {$this->executions_table}
              WHERE testplan_id = {$id} ${in_clause}";
       $exec_ids = $this->db->fetchRowsIntoMap($sql,'execution_id');
 
@@ -914,11 +917,11 @@ function unlink_tcversions($id,&$items)
           $exec_id_where= " WHERE execution_id IN (" . implode(",",$exec_ids) . ")";
 
           // Remove bugs if any exist
-          $sql=" DELETE FROM execution_bugs {$exec_id_where} ";
+          $sql=" DELETE FROM {$this->execution_bugs_table} {$exec_id_where} ";
           $result = $this->db->exec_query($sql);
 
           // now remove executions
-          $sql=" DELETE FROM executions
+          $sql=" DELETE FROM {$this->executions_table}
                  WHERE testplan_id = {$id} ${in_clause}";
           $result = $this->db->exec_query($sql);
       }
@@ -972,7 +975,8 @@ function get_keywords_map($id,$order_by_clause='')
      $tc_id_list = implode(",",array_keys($linked_items));
 
   	 $sql = "SELECT DISTINCT keyword_id,keywords.keyword
-	           FROM testcase_keywords,keywords
+	           FROM {$this->testcase_keywords_table} testcase_keywords,
+	           {$this->keywords_table} keywords
 	           WHERE keyword_id = keywords.id
 	           AND testcase_id IN ( {$tc_id_list} )
 	           {$order_by_clause}";
@@ -1019,7 +1023,8 @@ function get_keywords_tcases($id,$keyword_id=0)
      // 20081116 - franciscom -
      // Does DISTINCT is needed ? Humm now I think no.
   	 $sql = "SELECT DISTINCT testcase_id,keyword_id,keyword
-	           FROM testcase_keywords,keywords
+	           FROM {$this->testcase_keywords_table} testcase_keywords,
+	           {$this->keywords_table} keywords
 	           WHERE keyword_id = keywords.id
 	           AND testcase_id IN ( {$tc_id_list} )
  		         {$keyword_filter}
@@ -1245,7 +1250,7 @@ private function copy_user_roles($original_tplan_id, $new_tplan_id)
 	{
     	foreach($rs as $elem)
     	{
-      		$sql="INSERT INTO user_testplan_roles " .
+      		$sql="INSERT INTO {$this->user_testplan_roles_table}  " .
            		"(testplan_id,user_id,role_id) " .
            		"VALUES({$new_tplan_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
       		$this->db->exec_query($sql);
@@ -1263,8 +1268,9 @@ private function copy_user_roles($original_tplan_id, $new_tplan_id)
  **/
 	function getUserRoleIDs($testPlanID)
 	{
-		$query = "SELECT user_id,role_id FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
-		$roles = $this->db->fetchRowsIntoMap($query,'user_id');
+		$sql = "SELECT user_id,role_id FROM {$this->user_testplan_roles_table} " .
+		       "WHERE testplan_id = {$testPlanID}";
+		$roles = $this->db->fetchRowsIntoMap($sql,'user_id');
 		return $roles;
 	}
 
@@ -1281,16 +1287,18 @@ private function copy_user_roles($original_tplan_id, $new_tplan_id)
 
 function addUserRole($userID,$testPlanID,$roleID)
 {
-	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES " .
-			" ({$userID},{$testPlanID},{$roleID})";
-	if ($this->db->exec_query($query))
+	$sql = "INSERT INTO {$this->user_testplan_roles_table} (user_id,testplan_id,role_id) VALUES " .
+		   " ({$userID},{$testPlanID},{$roleID})";
+	if ($this->db->exec_query($sql))
 	{
 		$testPlan = $this->get_by_id($testPlanID);
 		$role = tlRole::getByID($this->db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 		$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 		if ($user && $testPlan && $role)
+		{
 			logAuditEvent(TLS("audit_users_roles_added_testplan",$user->getDisplayName(),
-			$testPlan['name'],$role->name),"ASSIGN",$testPlanID,"testplans");
+			              $testPlan['name'],$role->name),"ASSIGN",$testPlanID,"testplans");
+		}
 		return tl::OK;
 	}
 	return tl::ERROR;
@@ -1306,12 +1314,13 @@ function addUserRole($userID,$testPlanID,$roleID)
  **/
 function deleteUserRoles($testPlanID)
 {
-	$query = "DELETE FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
+	$query = "DELETE FROM {$this->user_testplan_roles_table} WHERE testplan_id = {$testPlanID}";
 	if ($this->db->exec_query($query))
 	{
 		$testPlan = $this->get_by_id($testPlanID);
 		if ($testPlan)
-			logAuditEvent(TLS("audit_all_user_roles_removed_testplan",$testPlan['name']),"ASSIGN",$testPlanID,"testplans");
+			logAuditEvent(TLS("audit_all_user_roles_removed_testplan",
+			              $testPlan['name']),"ASSIGN",$testPlanID,"testplans");
 		return tl::OK;
 	}
 	return tl::ERROR;
@@ -1459,9 +1468,9 @@ function get_max_build_id($id,$active = null,$open = null)
 }
 
 /*
-  function: get_testsuites
+   function: get_testsuites
 
-  args :
+    args :
 	$id     : test plan id.
 	
   
@@ -1471,7 +1480,8 @@ function get_max_build_id($id,$active = null,$open = null)
 function get_testsuites($id)
 {
     $sql = "SELECT nhgrandparent.name, nhgrandparent.id " . 
-    "FROM testplan_tcversions tptcv, nodes_hierarchy nh, nodes_hierarchy nhparent, nodes_hierarchy nhgrandparent " . 
+    "FROM {$this->testplan_tcversions_table}  tptcv, {$this->nodes_hierarchy_table}  nh, " .
+    " {$this->nodes_hierarchy_table} nhparent, {$this->nodes_hierarchy_table} nhgrandparent " . 
     "WHERE tptcv.tcversion_id = nh.id " .
     "AND nh.parent_id = nhparent.id " .
     "AND nhparent.parent_id = nhgrandparent.id " .
@@ -1487,7 +1497,7 @@ function get_testsuites($id)
     $superset = $recordset;
     foreach($recordset as $value)
     {
-	$superset = array_merge($superset, $this->get_parenttestsuites($value['id']));
+	    $superset = array_merge($superset, $this->get_parenttestsuites($value['id']));
     }    
     
     //At this point there may be duplicates
@@ -1537,7 +1547,7 @@ If passed node id isn't the product then it's merged into result set.
 private function get_parenttestsuites($id)
 {
     $sql = "SELECT name, id, parent_id " .
-	    "FROM nodes_hierarchy nh " .
+	    "FROM {$this->nodes_hierarchy_table}  nh " .
 	    "WHERE nh.node_type_id <> 1 " .
 	    "AND nh.id = " . $id;
 	    
@@ -1546,10 +1556,9 @@ private function get_parenttestsuites($id)
     $myarray = array();
     if (count($recordset) > 0)
     {        
-	//Don't want parentid in final result so just adding in attributes we want.
-	$myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
-	
-	$myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
+	    //Don't want parentid in final result so just adding in attributes we want.
+	    $myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
+	    $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
     }
     
     return $myarray;            
@@ -1667,7 +1676,8 @@ function get_build_by_id($id,$build_id)
  */
 function getNumberOfBuilds($tplanID)
 {
-	$sql = "SELECT count(id) AS num_builds FROM builds WHERE builds.testplan_id = " . $tplanID;
+	$sql = "SELECT count(id) AS num_builds FROM {$this->builds_table} builds " .
+	       "WHERE builds.testplan_id = " . $tplanID;
 	return $this->db->fetchOneValue($sql);
 }
 
@@ -1713,7 +1723,6 @@ function _natsort_builds($builds_map)
   rev: 20080217 - franciscom - added build_id argument
 
 */
-//@TODO: schlundus, this is only a special case of get_build_id_by_name, so it should be refactored
 function check_build_name_existence($tplan_id,$build_name,$build_id=null,$case_sensitive=0)
 {
  	$sql = " SELECT id, name, notes " .
@@ -1762,7 +1771,7 @@ Ignores case
 function get_build_id_by_name($tplan_id,$build_name)
 {
      $sql = " SELECT builds.id, builds.name, builds.notes " .
-	   " FROM builds " .
+	   " FROM {$this->builds_table} builds " .
 	   " WHERE builds.testplan_id = {$tplan_id} ";
 
       $build_name=strtoupper($build_name);        
@@ -1901,7 +1910,8 @@ function get_linked_cfields_id($tproject_id)
 	$field_map = new stdClass();
 	
 	$sql = "SELECT field_id,label
-			FROM cfield_testprojects, custom_fields
+			FROM {$this->cfield_testprojects_table} cfield_testprojects, 
+			     {$this->custom_fields_table} custom_fields
 			WHERE
 			custom_fields.id = cfield_testprojects.field_id 
 			and cfield_testprojects.active = 1 
@@ -2002,12 +2012,10 @@ function html_table_of_custom_field_values($id,$scope='design',$filters=null,$fo
 
     if( $scope=='design' )
     {
-    	//@TODO: schlundus, can this be speed up with tprojectID?
       $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
     }
     else
     {
-    	//@TODO: schlundus, can this be speed up with tprojectID?
       $cf_map=$this->get_linked_cfields_at_execution($id);
     }
     
@@ -2297,19 +2305,19 @@ function get_same_status_for_build_set($id,$buildSet,$status)
     {
       
         $sql = " SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
-               " FROM testplan_tcversions T " .
-               " JOIN nodes_hierarchy NH ON T.tcversion_id=NH.id " .
+               " FROM {$this->testplan_tcversions_table}  T " .
+               " JOIN {$this->nodes_hierarchy_table}  NH ON T.tcversion_id=NH.id " .
                " AND NH.node_type_id={$node_types['testcase_version']} " .
-               " LEFT OUTER JOIN executions E ON T.tcversion_id = E.tcversion_id " .
+               " LEFT OUTER JOIN {$this->executions_table} E ON T.tcversion_id = E.tcversion_id " .
                " AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
                " WHERE T.testplan_id={$id} AND E.build_id IS NULL ";
     }
     else
     {
         $sql = " SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id, COUNT(EE.status) AS exec_qty " .
-               " FROM executions EE, nodes_hierarchy NH," .
+               " FROM {$this->executions_table} EE, {$this->nodes_hierarchy_table} NH," .
                " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
-               " FROM executions E " .
+               " FROM {$this->executions_table} E " .
                " WHERE E.build_id IN ({$build_in}) " .
                " GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
                " WHERE EE.build_id IN ({$build_in}) " .
@@ -2353,6 +2361,7 @@ class build_mgr
 	function build_mgr(&$db)
 	{
 		$this->db = &$db;
+		$this->builds_table = DB_TABLE_PREFIX . $this->builds_table;
 	}
 
 
@@ -2528,6 +2537,7 @@ class milestone_mgr
     var $testplans_table="testplans";
 	var $testplan_tcversions_table="testplan_tcversions";
 
+
   /*
    function:
 
@@ -2539,6 +2549,18 @@ class milestone_mgr
 	function milestone_mgr(&$db)
 	{
 		$this->db = &$db;
+    	$key2loop = array('builds_table','cfield_design_values_table',
+                          'cfield_execution_values_table',
+                          'cfield_testplan_design_values_table',
+                          'execution_bugs_table', 'executions_table',
+                          'nodes_hierarchy_table','milestones_table',
+                          'tcversions_table','testplans_table','testplan_tcversions_table');
+
+        foreach($key2loop as $table_name)
+        {
+            $this->$table_name = DB_TABLE_PREFIX . $this->$table_name ;    
+        }
+
 	}
 
 
@@ -2697,7 +2719,7 @@ function check_name_existence($tplan_id,$milestone_name,$milestone_id=null,$case
 
 	  $sql=" SELECT M.id, M.name, M.a AS high_percentage, M.b AS medium_percentage, M.c AS low_percentage, " .
 	       " M.target_date, M.testplan_id, NH.name as testplan_name " .   
-         " FROM {$this->milestones_table} M, {$this->nodes_hierarchy_table} NH " .
+           " FROM {$this->milestones_table} M, {$this->nodes_hierarchy_table} NH " .
 	       " WHERE testplan_id={$tplan_id} AND NH.id = testplan_id " .
 	       " ORDER BY M.target_date,M.name";
     $rs=$this->db->get_recordset($sql);

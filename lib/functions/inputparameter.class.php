@@ -3,48 +3,53 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: inputparameter.class.php,v $
- *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/05/15 17:42:50 $ by $Author: franciscom $
+ * @package TestLink
+ * @author Andreas Morsing
+ * @copyright 2009, TestLink community 
+ * @version CVS: $Id: inputparameter.class.php,v 1.11 2009/06/04 19:48:30 havlat Exp $
+ * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
+ * @link http://www.teamst.org
+ * @since 1.9
  * 
-**/
+ **/
 
 /**
  * Helper class for Input parameter
- *
+ * 
+ * @author Andreas Morsing
+ * @TODO Add an example of using, unclear the purpose, validating?
  */
 class tlInputParameter extends tlObject
 {
-	//the supported types of Input parameters
-	// integer
+	/** the supported parameter type: integer */
 	const INT = 1;
-	//non-negative integer
+	/** the supported parameter type: non-negative integer */
 	const INT_N = 2;
-	//normalized (trimmed) string
+	/** the supported parameter type: normalized (trimmed) string */
 	const STRING_N = 3;
-	//array of integers
+	/** the supported parameter type: array of integers */
 	const ARRAY_INT = 4;
-	//array of normalized strings
+	/** the supported parameter type: array of normalized strings */
 	const ARRAY_STRING_N = 5;
-	//checkbox boolean
+	/** the supported parameter type: checkbox boolean */
 	const CB_BOOL = 6;
 	
 	/**
-	 * @var tlParameterInfo Information about the parameter
+	 * @var object tlParameterInfo Information about the parameter
+	 * @see class tlParameterInfo
 	 */
 	private $parameterInfo = null;
 	/**
-	 * @var bool was the parameter fetched?
+	 * @var boolean was the parameter fetched?
 	 */
 	private $bFetched = false;
 	
 	/**
-	 * @var unknown_type tainted value, fetched but not validated
+	 * @var mixed tainted value, fetched but not validated
 	 */
 	protected $taintValue = null;
 	/**
-	 * @var unknown_type normalized and maybe validated value
+	 * @var mixed normalized and maybe validated value
 	 */
 	protected $normalizedValue = null;
 	
@@ -53,7 +58,7 @@ class tlInputParameter extends tlObject
 	 */
 	protected $validationInfo = null;
 	/**
-	 * @var bool is the parameter valid?
+	 * @var boolean is the parameter valid?
 	 */
 	protected $bValid = false;
 	
@@ -61,7 +66,6 @@ class tlInputParameter extends tlObject
 	 * constructor
 	 * @param tlInputParameter $parameterInfo Infos about the parameter source
 	 * @param tl<TYPE>ValidationInfo $validationInfo Info about the validation of the parameter
-	 * @return unknown_type
 	 */
 	function __construct($parameterInfo,$validationInfo = null)
 	{
@@ -77,7 +81,7 @@ class tlInputParameter extends tlObject
 	
 	/**
 	 * Returns the FETCH state
-	 * @return bool returns true if the parameter is fetched, else false 
+	 * @return boolean returns true if the parameter is fetched, else false 
 	 */
 	protected function isFetched()
 	{
@@ -86,14 +90,15 @@ class tlInputParameter extends tlObject
 	
 	/**
 	 * Return the VALID state
-	 * @return bool returns true if the parameter was validated, else false
+	 * @return boolean returns true if the parameter was validated, else false
 	 */
 	protected function isValid()
 	{
 		return $this->bValid;
 	}
 	
-	/* Cleans up the object
+	/** 
+	 * Cleans up the object
 	 */
 	protected function _clean()
 	{
@@ -180,7 +185,7 @@ class tlInputParameter extends tlObject
 	
 	/**
 	 * Returns the value of the parameter, after it was fetched and validated
-	 * @return <ANYTYPE> return the value if it was fetched AND validated, null else
+	 * @return mixed return the value if it was fetched AND validated, null else
 	 */
 	public function value()
 	{
@@ -192,9 +197,11 @@ class tlInputParameter extends tlObject
 	}
 }
 
+
 /**
  * Helper class which holds information about the InputParameter
  *
+ * @TODO havlatm: what kind of info? 
  */
 class tlParameterInfo 
 {
@@ -359,12 +366,12 @@ class tlStringValidationInfo
 class tlIntegerValidationInfo
 {
 	/**
-	 * @var int the maxVal of the parameter
+	 * @var integer the maxVal of the parameter
 	 */
 	public $maxVal = PHP_INT_MAX;
 	
 	/**
-	 * @var int the minVal of the parameter
+	 * @var integer the minVal of the parameter
 	 */
 	public $minVal = -2147483648;
 	/**

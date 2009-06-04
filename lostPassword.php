@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/05/13 16:31:39 $ $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/06/04 19:53:27 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -70,6 +70,7 @@ $smarty->display($templateCfg->default_template);
 function init_args()
 {
 	$iParams = array("login" => array(tlInputParameter::STRING_N,0,30));
+	
 	$args = new stdClass();
 	$pParams = P_PARAMS($iParams,$args); // WHY TO ASSIGN A VALUE THAT IS NEVER USED ?????
 

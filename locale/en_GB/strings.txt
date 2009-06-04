@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.448 $
- * @modified $Date: 2009/06/03 19:51:46 $ by $Author: schlundus $
+ * @version $Revision: 1.449 $
+ * @modified $Date: 2009/06/04 19:53:27 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1750,7 +1750,8 @@ $TLS_error_role_no_rights = "You cannot save roles without any rights!";
 $TLS_error_role_no_rolename = "You must enter a name for the role!";
 $TLS_inherited_role = "<inherited>";
 $TLS_mgt_testplan_create = "Test Plan create/edit";
-
+$TLS_inherited = "inherited";
+$TLS_no_rights = "no rights";
 
 
 // ----- lib/functions/testproject.class.php -----

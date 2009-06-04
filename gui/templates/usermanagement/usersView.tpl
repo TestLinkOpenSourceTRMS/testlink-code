@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.15 2009/06/03 19:51:45 schlundus Exp $
+$Id: usersView.tpl,v 1.16 2009/06/04 19:53:27 schlundus Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -77,10 +77,11 @@ Purpose: smarty template - users overview
 			{section name=row loop=$users start=0}
 				{assign var="user" value="$users[row]"}
 				{assign var="userLocale" value=$user->locale}
+				{assign var="r_n" value=$user->globalRole->name}
 				{assign var="r_d" value=$user->globalRole->getDisplayName()}
 				{assign var="userID" value=$user->dbID}
 
-				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
+				<tr {if $role_colour[$r_n] neq ''} style="background-color: {$role_colour[$r_n]};" {/if}>
 				<td><a href="{$editUserAction}{$user->dbID}">
 				    {$user->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}

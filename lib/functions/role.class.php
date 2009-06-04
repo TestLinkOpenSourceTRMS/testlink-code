@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/06/04 19:22:01 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/06/04 19:53:27 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -185,7 +185,8 @@ class tlRole extends tlDBObject
 		$displayName = $this->name;
 		if ($displayName{0} == "<")
 		{
-			$displayName = lang_get($displayName);
+			$roleName = str_replace(" ","_",substr($displayName,1,-1));
+			$displayName = "<".lang_get($roleName).">";
 		}
 		return $displayName;
 	}
@@ -418,7 +419,7 @@ class tlRole extends tlDBObject
 		$roles = tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
 		
 		$inheritedRole = new tlRole(TL_ROLES_INHERITED);
-		$inheritedRole->name = lang_get('inherited_role');
+		$inheritedRole->name = "<inherited>";
 		$roles[TL_ROLES_INHERITED] = $inheritedRole;
 		
 		return $roles;

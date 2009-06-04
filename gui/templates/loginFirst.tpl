@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.15 2009/01/13 19:34:01 schlundus Exp $
+$Id: loginFirst.tpl,v 1.16 2009/06/04 19:53:27 schlundus Exp $
 Purpose: smarty template - first login
 *}
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
@@ -16,7 +16,7 @@ window.onload=function(){
  Nifty("div#login_div","big");
  Nifty("div.messages","normal");
  // set focus on login text box
- focusInputField('loginName');
+ focusInputField('login');
 }
 </script>
 {/literal}
@@ -32,7 +32,7 @@ window.onload=function(){
 <form method="post" action="firstLogin.php">
 
 	<p class="label">{$labels.login_name}<br />
-	<input type="text" name="loginName" id="loginName" 
+	<input type="text" name="login" id="login" 
 	       size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$login|escape}"/></p>
 
   {if $external_password_mgmt eq 0}
@@ -53,7 +53,7 @@ window.onload=function(){
      <p>{$labels.password_mgmt_is_external}<p>
 	{/if}
 
-	<br /><input type="submit" name="editUser" value="{$labels.btn_add_user_data}" />
+	<br /><input type="submit" name="bEditUser" value="{$labels.btn_add_user_data}" />
 </form>
 <hr />
 <p><a href="login.php">{$labels.link_back_to_login}</a></p>

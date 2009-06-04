@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/04/27 19:35:12 $ -  $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/06/04 19:53:27 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -178,7 +178,7 @@ function getRoleColourCfg(&$dbHandler)
     unset($roles[TL_ROLES_UNDEFINED]);
     foreach($roles as $roleObj)
     {
-        if(!isset($role_colour[$roleObj->name]))
+    	if(!isset($role_colour[$roleObj->name]))
         {
             $role_colour[$roleObj->name] = '';
         }

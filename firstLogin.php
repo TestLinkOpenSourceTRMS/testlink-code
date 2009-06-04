@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/05/20 21:38:18 $ $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/06/04 19:53:27 $ $Author: schlundus $
  *
  */
 require_once('config.inc.php');
@@ -67,25 +67,17 @@ $smarty->display('loginFirst.tpl');
 function init_args()
 {
 	$iParams = array(
-		"editUser" => array(tlInputParameter::STRING_N,0,1),
-		"loginName" => array(tlInputParameter::STRING_N,0,30),
+		"bEditUser" => array(tlInputParameter::STRING_N,0,1),
+		"login" => array(tlInputParameter::STRING_N,0,30),
 		"password" => array(tlInputParameter::STRING_N,0,32),
 		"password2" => array(tlInputParameter::STRING_N,0,32),
 		"first" => array(tlInputParameter::STRING_N,0,30),
 		"last" => array(tlInputParameter::STRING_N,0,30),
 		"email" => array(tlInputParameter::STRING_N,0,100),
 	);
-	$pParams = P_PARAMS($iParams);
-	
 	$args = new stdClass();
-	$args->bEditUser = $pParams["editUser"];
-	$args->login = $pParams["loginName"];
-	$args->password = $pParams["password"];
-	$args->password2 = $pParams["password2"];
-	$args->first = $pParams["first"];
-	$args->last = $pParams["last"];
-	$args->email = $pParams["email"];
-
+	$pParams = P_PARAMS($iParams,$args);
+	
 	return $args;
 }
 ?>

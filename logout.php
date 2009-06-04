@@ -5,22 +5,29 @@
  * 
  * Filename $RCSfile: logout.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2008/10/12 08:11:56 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/06/04 19:53:27 $
 **/
 require_once('config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
-
-$userID = $_SESSION['userID'] ?  $_SESSION['userID'] : null;
-if ($userID)
+$args = init_args();
+if ($args->userID)
 {
-	$userName = $_SESSION['currentUser']->getDisplayName();
-	logAuditEvent(TLS("audit_user_logout",$userName),"LOGOUT",$userID,"users");  
+	logAuditEvent(TLS("audit_user_logout",$args->userName),"LOGOUT",$args->userID,"users");  
 }
 session_unset();
 session_destroy();
 
 redirect("login.php");
 exit();
+
+function init_args()
+{
+	$args = new stdClass();
+	$args->userID = isset($_SESSION['userID']) ?  $_SESSION['userID'] : null;
+	$args->userName = $args->userID ? $_SESSION['currentUser']->getDisplayName() : "";
+	
+	return $args;
+}
 ?>

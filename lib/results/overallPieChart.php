@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: overallPieChart.php,v 1.8 2008/10/29 07:58:25 franciscom Exp $ 
+ * $Id: overallPieChart.php,v 1.9 2009/06/04 03:08:36 tosikawa Exp $ 
  *
  * @author	Kevin Levy
  *
@@ -60,7 +60,7 @@ foreach( $series_color as $key => $hexrgb)
 }
  
 // Draw the pie chart   
-$Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);   
+$Test->setFontProperties(config_get('charts_font_path'),config_get('charts_font_size'));
 $Test->AntialiasQuality = 0;
 $Test->drawBasicPieGraph($graph->data,$graph->description,
                          $pChartCfg->centerX,$pChartCfg->centerY,$pChartCfg->radius,PIE_PERCENTAGE,255,255,218);   

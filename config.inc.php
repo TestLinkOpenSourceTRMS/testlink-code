@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.243 $
- * @modified $Date: 2009/06/03 21:15:54 $ by $Author: franciscom $
+ * @version $Revision: 1.244 $
+ * @modified $Date: 2009/06/04 03:08:36 $ by $Author: tosikawa $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -136,6 +136,10 @@ $tlCfg->gui_title_separator_2 = ' - '; // parent - child
 // testCasePrefix . g_testcase_cfg->glue_character . external_id
 // CAN NOT BE EMPTY
 $tlCfg->testcase_cfg->glue_character = '-';
+
+// used to draw charts:
+$tlCfg->charts_font_path = TL_ABS_PATH . "third_party/pchart/Fonts/tahoma.ttf";
+$tlCfg->charts_font_size = 8;
 
 
 // ----------------------------------------------------------------------------

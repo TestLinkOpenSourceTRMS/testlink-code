@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: charts.inc.php,v 1.1 2008/11/13 14:22:37 franciscom Exp $ 
+ * $Id: charts.inc.php,v 1.2 2009/06/04 03:08:36 tosikawa Exp $ 
  *
  * @author	Francisco Mancardi - francisco.mancardi@gmail.com
  *
@@ -67,7 +67,7 @@ function createChart(&$info,&$cfg)
     $Test->setGraphArea($chartCfg->graphArea->beginX,$chartCfg->graphArea->beginY,
                         $chartCfg->graphArea->endX,$chartCfg->graphArea->endY);
     
-    $Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);
+    $Test->setFontProperties(config_get('charts_font_path'),config_get('charts_font_size'));
        
     if($info->canDraw)
     {
@@ -101,7 +101,7 @@ function createChart(&$info,&$cfg)
         $Test->drawStackedBarGraph($chartData,$chartLegend,70);
         
         // Draw the legend
-        $Test->setFontProperties(PCHART_PATH . "/Fonts/tahoma.ttf",8);
+        $Test->setFontProperties(config_get('charts_font_path'),config_get('charts_font_size'));
         $Test->drawLegend($chartCfg->legend->X,$chartCfg->legend->Y,$chartLegend,
                           $chartCfg->legend->color['R'],$chartCfg->legend->color['G'],
                           $chartCfg->legend->color['B']);

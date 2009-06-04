@@ -1,17 +1,26 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * This script is distributed under the GNU General Public License 2 or later.
+ * @copyright Copyright &copy; 2009, TestLink community 
  *
+ * @package TestLink
  * Filename $RCSfile: user.class.php,v $
- *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/06/03 21:21:10 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/06/04 12:05:47 $ $Author: havlat $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
  *      20081213 - franciscom - removed global coupling to access config parameters
  */
+ 
+/**
+ * a class for handling authentication, authorization to see or edit pages and edit user data
+ * 
+ * @author Andreas Morsing
+ * @uses config.inc.php
+ * @since 1.7
+ */ 
 class tlUser extends tlDBObject
 {
 	private $object_table = "users";
@@ -119,12 +128,13 @@ class tlUser extends tlDBObject
 		return ($authCfg['method'] != '' &&  $authCfg['method'] != 'MD5') ? true : false;
 	}
 	
-	/* fills the members  */
+	/** @TODO fills the members  */
 	function create()
 	{
 	}
 	
 	//BEGIN interface iDBSerialization
+	/** @TODO define purpose and using */
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
@@ -275,7 +285,12 @@ class tlUser extends tlDBObject
 		}
 		return $result;
 	}	
-	
+
+	/** 
+	 * @deprecated 1.8.3 
+	 * WARNING: DO NOT USE THE FUNCTION - CAUSES DB INCONSISTENCE!  Inactivate.
+	 * @see #2407 
+	 **/	
 	public function deleteFromDB(&$db)
 	{
 		$querySet = array();
@@ -301,9 +316,9 @@ class tlUser extends tlDBObject
 	/**
 	 * Deletes all testproject related role assignments for a given user
 	 *
-	 * @param object $db [ref] the db-object
-	 * @param int $userID the user id
-	 * @return tl::OK on success, tl:ERROR else
+	 * @param resource $db [ref] the db-object
+	 * @param integer $userID the user ID
+	 * @return mixed tl::OK on success, tl:ERROR else
 	 **/
 	 protected function deleteTestProjectRoles(&$db)
 	{
@@ -398,14 +413,14 @@ class tlUser extends tlDBObject
 		return $result;
 	}
 	
-	/*
-		Returns the id of the effective role in the context of ($tproject_id,$tplan_id)
-	  	@param object $db [ref] the db-object
-		@param int $tproject_id the testproject id
-		@param int $tplan_id the plan id
-  
-		@return tlRole the effective role
-	*/
+	/**
+	 * Returns the id of the effective role in the context of ($tproject_id,$tplan_id)
+	 * 
+	 * @param resource $db [ref] the db-object
+	 * @param integer $tproject_id the testproject id
+	 * @param integer $tplan_id the plan id
+	 * @return tlRole the effective role
+	 */
 	function getEffectiveRole(&$db,$tproject_id,$tplan_id)
 	{
 		$default_role = $this->globalRole;
@@ -420,13 +435,13 @@ class tlUser extends tlDBObject
 		
 		return $effective_role;
 	}
+
 	
 	/**
-     * 
      * check right on effective role for user, using test project and test plan,
      * means that check right on effective role.
      *
-     * returns: yes or null
+     * @return string|null 'yes' or null
      */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{

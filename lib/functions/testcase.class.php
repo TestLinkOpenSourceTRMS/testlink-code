@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.170 $
- * @modified $Date: 2009/05/30 15:05:56 $ $Author: franciscom $
+ * @version $Revision: 1.171 $
+ * @modified $Date: 2009/06/05 14:33:15 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -90,6 +90,9 @@ class testcase extends tlObjectWithAttachments
     private $testcase_keywords_table="testcase_keywords";
     private $testplan_tcversions_table="testplan_tcversions";
 
+    private $tables='';
+
+
     const AUTOMATIC_ID=0;
     const DEFAULT_ORDER=0;
     const ALL_VERSIONS=0;
@@ -121,6 +124,20 @@ class testcase extends tlObjectWithAttachments
 
 	function testcase(&$db)
 	{
+        $this->tables = array('tcversions' => DB_TABLE_PREFIX . 'tcversions', 
+	                          'testprojects' => DB_TABLE_PREFIX . 'testprojects',
+                              'users' => DB_TABLE_PREFIX . 'users',
+                              'builds' => DB_TABLE_PREFIX . 'builds',
+                              'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                              'keywords' => DB_TABLE_PREFIX . 'keywords',
+	                          'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
+	                          'req_coverage'  => DB_TABLE_PREFIX . 'req_coverage',
+	                          'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
+	                          'executions' => DB_TABLE_PREFIX . 'executions',
+	                          'user_assignments' => DB_TABLE_PREFIX . 'user_assignments',
+	                          'cfield_execution_values' => DB_TABLE_PREFIX . 'cfield_execution_values',
+	                          'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions');
+
 		$this->db = &$db;
 		$this->tproject_mgr = New testproject($this->db);
 		$this->tree_manager = &$this->tproject_mgr->tree_manager;
@@ -136,7 +153,7 @@ class testcase extends tlObjectWithAttachments
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
 		$this->execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
-                                   TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
+                                       TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
 
 
 		tlObjectWithAttachments::__construct($this->db,"nodes_hierarchy");
@@ -361,7 +378,7 @@ function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
 	// get a new id
 	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 
-	$sql = "INSERT INTO {$this->tcversions_table} " .
+	$sql = "INSERT INTO {$this->tables['tcversions']} " .
 	     " (id,tc_external_id,version,summary,steps,expected_results,author_id,creation_ts," .
   	     "execution_type,importance) VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
   	     $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
@@ -394,7 +411,8 @@ function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
 function getDuplicatesByName($name, $parent_id)
 {
     $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
-		       " FROM {$this->nodes_hierarchy_table} NHA, {$this->nodes_hierarchy_table} NHB, tcversions TCV  " .
+		       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
+		       " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
 		       " WHERE NHA.node_type_id = {$this->my_node_type} " .
 		       " AND NHA.name = '{$this->db->prepare_string($name)}' " .
 		       " AND NHB.parent_id=NHA.id " .
@@ -432,11 +450,13 @@ function get_by_name($name, $tsuite_name = '', $tproject_name = '')
     
     $sql = " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
            " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
-		       " FROM {$this->nodes_hierarchy_table} NH_TCASE, {$this->nodes_hierarchy_table} NH_TCASE_PARENT, " .
-		       " {$this->nodes_hierarchy_table} NH_TCVERSIONS,tcversions TCV  " .
+		       " FROM {$this->tables['nodes_hierarchy']} NH_TCASE, " .
+		       " {$this->tables['nodes_hierarchy']} NH_TCASE_PARENT, " .
+		       " {$this->tables['nodes_hierarchy']} NH_TCVERSIONS," .
+		       " {$this->tables['tcversions']}  TCV  " .
 		       " WHERE NH_TCASE.node_type_id = {$this->my_node_type} " .
 		       " AND NH_TCASE.name = '{$this->db->prepare_string($name)}' " .
-			" AND TCV.id=NH_TCVERSIONS.id " .
+			   " AND TCV.id=NH_TCVERSIONS.id " .
 		       " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
 		       " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id ";
    
@@ -471,7 +491,7 @@ Every array element contains an assoc array with testcase info
 function get_all()
 {
 	$sql = " SELECT nodes_hierarchy.name, nodes_hierarchy.id
-	         FROM  {$this->nodes_hierarchy_table}
+	         FROM  {$this->tables['nodes_hierarchy']} nodes_hierarchy
 	         WHERE nodes_hierarchy.node_type_id={$my_node_type}";
 	$recordset = $this->db->get_recordset($sql);
 
@@ -730,7 +750,7 @@ function update($id,$tcversion_id,$name,$summary,$steps,
   if($ret['status_ok'])
   {    
       $sql=array();
-	    $sql[] = " UPDATE {$this->nodes_hierarchy_table} SET name='" .
+	    $sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
 	               $this->db->prepare_string($name) . "' WHERE id= {$id}";
 
 	    // test case version
@@ -784,7 +804,7 @@ private function updateKeywordAssignment($id,$keywords_id)
 	{
 		$a_keywords = explode(",",trim($keywords_id));
 		$sql = " SELECT id,keyword " .
-	       " FROM {$this->keywords_table} " .
+	       " FROM {$this->tables['keywords']} " .
 	       " WHERE id IN (" . implode(',',$a_keywords) . ")";
 	       
 		$items['requested'] = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
@@ -839,13 +859,13 @@ function check_name_is_unique($id,$name)
 		$ret['status_ok'] = 1;
 		$ret['msg'] = '';
     
-    $sql = " SELECT count(0) AS qty FROM {$this->nodes_hierarchy_table} NHA " .
+    $sql = " SELECT count(0) AS qty FROM {$this->tables['nodes_hierarchy']} NHA " .
 		       " WHERE NHA.name = '" . $this->db->prepare_string($name) . "'" .
 		       " AND NHA.node_type_id = {$this->my_node_type} " .
 		       " AND NHA.id <> {$id} " .
 		       " AND NHA.parent_id=" .
 		       " (SELECT NHB.parent_id " .
-		       "  FROM {$this->nodes_hierarchy_table} NHB" .
+		       "  FROM {$this->tables['nodes_hierarchy']} NHB" .
 		       "  WHERE NHB.id = {$id}) ";
 		       
 		$result = $this->db->exec_query($sql);
@@ -915,7 +935,7 @@ function delete($id,$version_id = self::ALL_VERSIONS)
   if($version_id == self::ALL_VERSIONS)
   {
     // I'm trying to speedup the next deletes
-    $sql="SELECT nodes_hierarchy.id FROM {$this->nodes_hierarchy_table} ";
+    $sql="SELECT nodes_hierarchy.id FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy";
     if( is_array($id) )
     {
       $sql .= " WHERE nodes_hierarchy.parent_id IN (" .implode(',',$id) . ") ";
@@ -992,16 +1012,16 @@ function get_linked_versions($id,$exec_status="ALL",$active_status='ALL',$tplan_
 	switch ($exec_status)
 	{
 		case "ALL":
-			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
-						         tcversions.*,
-						         TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name
-					    FROM   {$this->nodes_hierarchy_table} NH,tcversions,testplan_tcversions TTC,
-					           nodes_hierarchy NHB
-					    WHERE  TTC.tcversion_id = tcversions.id
-              {$active_filter}
-					    AND    tcversions.id = NH.id
-					    AND    NHB.id = TTC.testplan_id
-					    AND    NH.parent_id = {$id}";
+			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id, " .
+				   "tcversions.*, TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name " .
+				   "FROM   {$this->tables['nodes_hierarchy']} NH," .
+				   " {$this->tables['tcversions']} tcversions," .
+				   " {$this->tables['testplan_tcversions']} TTC, " .
+				   " {$this->tables['nodes_hierarchy']} NHB    " .
+				   " WHERE  TTC.tcversion_id = tcversions.id {$active_filter} " .
+				   " AND    tcversions.id = NH.id " . 
+				   " AND    NHB.id = TTC.testplan_id " .
+				   " AND    NH.parent_id = {$id}";
 					    
       if(!is_null($tplan_id))
       {
@@ -1041,15 +1061,15 @@ function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 
     if( $version_id == self::ALL_VERSIONS)
     {
-	    $sql[]="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
-	    $sql[]="DELETE FROM req_coverage WHERE testcase_id = {$id}";
+	    $sql[]="DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
+	    $sql[]="DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
 
 	    $children_list=implode(',',$children);
-	    $sql[]="DELETE FROM testplan_tcversions " .
+	    $sql[]="DELETE FROM {$this->tables['testplan_tcversions']}  " .
 	           " WHERE tcversion_id IN ({$children_list})";
 
-      $sql[]="DELETE FROM tcversions " .
-	           " WHERE id IN ({$children_list})";
+      $sql[]="DELETE FROM {$this->tables['tcversions']}  " .
+	         " WHERE id IN ({$children_list})";
 
       $this->deleteAttachments($id);
       $this->cfield_mgr->remove_all_design_values_from_node($id);
@@ -1058,10 +1078,8 @@ function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
     }
     else
     {
-		  $sql[] = "DELETE FROM testplan_tcversions
-				        WHERE tcversion_id = {$version_id}";
-      $sql[] = "DELETE FROM tcversions
-                WHERE tcversions.id = {$version_id}";
+		  $sql[] = " DELETE FROM {$this->tables['testplan_tcversions']}  WHERE tcversion_id = {$version_id}";
+          $sql[] = "DELETE FROM {$this->tables['tcversions']} WHERE id = {$version_id}";
 
     	$item_id = $version_id;
     }
@@ -1086,30 +1104,30 @@ function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 		if( $version_id	== self::ALL_VERSIONS )
 		{
 	    $children_list=implode(',',$children);
-    	$sql[]="DELETE FROM execution_bugs
-        		  WHERE execution_id IN (SELECT id FROM executions
+    	$sql[]="DELETE FROM {$this->tables['execution_bugs']}
+        		  WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} 
             		                     WHERE tcversion_id IN ({$children_list}))";
 
       // 20070603 - franciscom
-      $sql[]="DELETE FROM cfield_execution_values " .
+      $sql[]="DELETE FROM {$this->tables['cfield_execution_values']}  " .
       		   " WHERE tcversion_id IN ({$children_list})";
 
-      $sql[]="DELETE FROM executions " .
+      $sql[]="DELETE FROM {$this->tables['executions']}  " .
       		   " WHERE tcversion_id IN ({$children_list})";
 
 
     }
     else
     {
-    		$sql[]="DELETE FROM execution_bugs
-        	  	  WHERE execution_id IN (SELECT id FROM executions
+    		$sql[]="DELETE FROM {$this->tables['execution_bugs']}
+        	  	  WHERE execution_id IN (SELECT id FROM {$this->tables['executions']}
               		                     WHERE tcversion_id = {$version_id})";
 
         // 20070603 - franciscom
-        $sql[]="DELETE FROM cfield_execution_values " .
+        $sql[]="DELETE FROM {$this->tables['cfield_execution_values']} " .
         		   " WHERE tcversion_id = {$version_id}";
 
-    		$sql[]="DELETE FROM executions " .
+    		$sql[]="DELETE FROM {$this->tables['executions']} " .
         		   " WHERE tcversion_id = {$version_id}";
     }
 
@@ -1291,7 +1309,8 @@ function get_last_version_info($id)
 	$tcInfo = null;
 	if ($max_version)
 	{
-		$sql = "SELECT tcversions.* FROM tcversions,nodes_hierarchy ".
+		$sql = "SELECT tcversions.* FROM {$this->tables['tcversions']} tcversions," .
+		       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
 		       "WHERE version = {$max_version} AND nodes_hierarchy.id = tcversions.id".
 			   " AND nodes_hierarchy.parent_id = {$id}";
 
@@ -1314,13 +1333,13 @@ function get_last_version_info($id)
 function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 {
     $now = $this->db->db_now();
-		$sql="INSERT INTO tcversions (id,version,tc_external_id,author_id,creation_ts," .
-		     "                        summary,steps,expected_results,importance,execution_type) " .
+    $sql="INSERT INTO {$this->tables['tcversions']} (id,version,tc_external_id,author_id,creation_ts," .
+         "                        summary,steps,expected_results,importance,execution_type) " .
          " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
          "        tc_external_id, " .
          "        {$user_id} AS author_id, {$now} AS creation_ts," .
          "        summary,steps,expected_results,importance,execution_type " .
-         " FROM tcversions " .
+         " FROM {$this->tables['tcversions']} " .
          " WHERE id={$from_tcversion_id} ";
 
     $result = $this->db->exec_query($sql);
@@ -1364,19 +1383,20 @@ function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_
       $tcversion_id_filter=" AND tcversions.id IN (" . implode(",",(array)$version_id) . ") ";
   }
 
-	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id,
-	                tcversions.*, users.first AS author_first_name, users.last AS author_last_name,
-	                '' AS updater_first_name, '' AS updater_last_name
-	         FROM {$this->nodes_hierarchy_table} JOIN tcversions ON nodes_hierarchy.id = tcversions.id
-                          LEFT OUTER JOIN users ON tcversions.author_id = users.id
-           {$where_clause} {$tcversion_id_filter} ORDER BY tcversions.version DESC";
+	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, ".
+	       " tcversions.*, users.first AS author_first_name, users.last AS author_last_name, " .
+	       " '' AS updater_first_name, '' AS updater_last_name " .
+	       " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+	       " JOIN {$this->tables['tcversions']}  ON nodes_hierarchy.id = tcversions.id " .
+           " LEFT OUTER JOIN {$this->tables['users']} users ON tcversions.author_id = users.id " .
+           " {$where_clause} {$tcversion_id_filter} ORDER BY tcversions.version DESC";
   $recordset = $this->db->get_recordset($sql);
 
   if($recordset)
   {
   	 // get the names
 	   $sql = " SELECT nodes_hierarchy.id AS testcase_id, nodes_hierarchy.name
-	            FROM {$this->nodes_hierarchy_table} {$where_clause_names} ";
+	            FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy {$where_clause_names} ";
 
 	   $the_names = $this->db->get_recordset($sql);
      if($the_names)
@@ -1396,10 +1416,11 @@ function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_
   	 }
 
 
-	 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name
-	           FROM {$this->nodes_hierarchy_table} JOIN tcversions ON nodes_hierarchy.id = tcversions.id
-                           LEFT OUTER JOIN users ON tcversions.updater_id = users.id
-             {$where_clause} and tcversions.updater_id IS NOT NULL ";
+	 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name " .
+	        " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+	        " JOIN {$this->tables['tcversions']} tcversions ON nodes_hierarchy.id = tcversions.id " .
+            " LEFT OUTER JOIN {$this->tables['users']} users ON tcversions.updater_id = users.id " .
+            " {$where_clause} and tcversions.updater_id IS NOT NULL ";
 
     $updaters = $this->db->get_recordset($sql);
 
@@ -1499,17 +1520,17 @@ function get_by_id($id,$version_id = self::ALL_VERSIONS,
     	}
 	}
 
-	$sql = "SELECT	U.login AS updater_login,users.login as author_login,
+	$sql = "SELECT U.login AS updater_login,users.login as author_login,
 		     NHB.name,NHB.node_order,NHA.parent_id AS testcase_id, tcversions.*,
 		     users.first AS author_first_name,
 		     users.last AS author_last_name,
 		     U.first AS updater_first_name,
 		     U.last  AS updater_last_name
-         FROM {$this->nodes_hierarchy_table} NHA
-         JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id
-         JOIN tcversions ON NHA.id = tcversions.id
-         LEFT OUTER JOIN users ON tcversions.author_id = users.id
-         LEFT OUTER JOIN users U ON tcversions.updater_id = U.id
+         FROM {$this->tables['nodes_hierarchy']} NHA
+         JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
+         JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
+         LEFT OUTER JOIN {$this->tables['users']} users ON tcversions.author_id = users.id
+         LEFT OUTER JOIN {$this->tables['users']} U ON tcversions.updater_id = U.id
          $where_clause
          $active_filter
          ORDER BY tcversions.version DESC";
@@ -1605,17 +1626,18 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
     $execution_join=" LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id {$testplan_filter})";
 
  	$sqlx=  " SELECT TCV.id,TCV.version " .
-            " FROM {$this->nodes_hierarchy_table} NHA " .
-            " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
-            " JOIN tcversions TCV ON NHA.id = TCV.id " .
+            " FROM {$this->tables['nodes_hierarchy']} NHA " .
+            " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
+            " JOIN {$this->tables['tcversions']}  TCV ON NHA.id = TCV.id " .
             " WHERE  NHA.parent_id = {$id}";
+            
 	$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
 
 	$sql="SELECT DISTINCT NH.id AS tcversion_id,T.tcversion_id AS linked,
 	                      E.tcversion_id AS executed,E.tcversion_number,TCV.version
-	      FROM   {$this->nodes_hierarchy_table} NH
-          JOIN tcversions TCV ON (TCV.id = NH.id )
-	      LEFT OUTER JOIN {$this->testplan_tcversions_table} T ON T.tcversion_id = NH.id
+	      FROM   {$this->tables['nodes_hierarchy']} NH
+          JOIN {$this->tables['tcversions']} TCV ON (TCV.id = NH.id )
+	      LEFT OUTER JOIN {$this->tables['testplan_tcversions']} T ON T.tcversion_id = NH.id
 	      {$execution_join}
 	      WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
 
@@ -1696,15 +1718,15 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=n
   
     // Get info about tcversions of this test case
     $sqlx = " SELECT TCV.id,TCV.version,TCV.active" .
-          " FROM {$this->nodes_hierarchy_table} NHA " .
-          " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
-          " JOIN tcversions TCV ON NHA.id = TCV.id ";
+          " FROM {$this->tables['nodes_hierarchy']} NHA " .
+          " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
+          " JOIN {$this->tables['tcversions']}  TCV ON NHA.id = TCV.id ";
           
     $where_clause = " WHERE  NHA.parent_id = {$id}";
           
     if(!is_null($tplan_id))
     {
-        $sqlx .= " JOIN testplan_tcversions TTCV ON TTCV.tcversion_id = TCV.id ";
+        $sqlx .= " JOIN {$this->tables['testplan_tcversions']}  TTCV ON TTCV.tcversion_id = TCV.id ";
         $where_clause .= " AND TTCV.tplan_id = {$tplan_id} "; 
     }    
     $sqlx .= $where_clause; 
@@ -1716,11 +1738,11 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=n
 		             E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan,
 		             E.tcversion_number,
 		             T.testplan_id, NHB.name AS tplan_name, TCV.version
-		      FROM   {$this->nodes_hierarchy_table} NH
-		      JOIN testplan_tcversions T ON T.tcversion_id = NH.id
-		      JOIN tcversions TCV ON T.tcversion_id = TCV.id
-		      JOIN {$this->nodes_hierarchy_table} NHB ON T.testplan_id = NHB.id
-		      LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
+		      FROM   {$this->tables['nodes_hierarchy']} NH
+		      JOIN {$this->tables['testplan_tcversions']}  T ON T.tcversion_id = NH.id
+		      JOIN {$this->tables['tcversions']}  TCV ON T.tcversion_id = TCV.id
+		      JOIN {$this->tables['nodes_hierarchy']} NHB ON T.testplan_id = NHB.id
+		      LEFT OUTER JOIN {$this->tables['executions']}  E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
 		      WHERE  NH.parent_id = {$id} ";
 		
 	if(!is_null($tplan_id))
@@ -1894,7 +1916,7 @@ function getInternalID($stringID,$glueCharacter)
 		$externalID = $this->db->prepare_string($pieces[1]);
 
 		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
-               " FROM {$this->tcversions_table} TCV, {$this->nodes_hierarchy_table} NH" .
+               " FROM {$this->tcversions_table} TCV, {$this->tables['nodes_hierarchy']} NH" .
                " WHERE TCV.id = NH.id " .
                " AND  TCV.tc_external_id = '{$externalID}'";
 
@@ -1957,7 +1979,7 @@ function filterByKeyword($id,$keyword_id=0, $keyword_filter_type='OR')
 		        $subquery = "AND testcase_id IN (" .
 		                    " SELECT MAFALDA.testcase_id FROM
 		                      ( SELECT COUNT(testcase_id) AS HITS,testcase_id
-		                        FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		                        FROM {$this->tables['keywords']} K, {$this->tables['testcase_keywords']}
 		                        WHERE keyword_id = K.id
 		                        {$keyword_filter}
 		                        GROUP BY testcase_id ) AS MAFALDA " .
@@ -1973,7 +1995,7 @@ function filterByKeyword($id,$keyword_id=0, $keyword_filter_type='OR')
 		
 		$map_keywords = null;
 		$sql = " SELECT testcase_id,keyword_id,keyword
-		         FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		         FROM {$this->tables['keywords']} K, {$this->tables['testcase_keywords']}
 		         WHERE keyword_id = K.id
 		         {$testcase_filter}
 		         {$keyword_filter} {$subquery}
@@ -2001,7 +2023,7 @@ function filterByKeyword($id,$keyword_id=0, $keyword_filter_type='OR')
 function getKeywords($tcID,$kwID = null,$column = 'keyword_id',$orderByClause = null)
 {
 	$sql = "SELECT keyword_id,keywords.keyword,keywords.notes,testcase_id
-	        FROM testcase_keywords,keywords
+	        FROM {$this->tables['testcase_keywords']} testcase_keywords, {$this->tables['keywords']} keywords
 	        WHERE keyword_id = keywords.id AND testcase_id ";
 	$bCumulative = 0;
 	if (is_array($tcID))
@@ -2042,7 +2064,7 @@ function getKeywords($tcID,$kwID = null,$column = 'keyword_id',$orderByClause = 
 function get_keywords_map($id,$order_by_clause='')
 {
 	$sql = "SELECT keyword_id,keywords.keyword
-	        FROM testcase_keywords,keywords
+	        FROM {$this->tables['testcase_keywords']} testcase_keywords, {$this->tables['keywords']} keywords
 	        WHERE keyword_id = keywords.id ";
 	if (is_array($id))
 		$sql .= " AND testcase_id IN (".implode(",",$id).") ";
@@ -2068,7 +2090,7 @@ function addKeyword($id,$kw_id,$audit=self::AUDIT_ON)
 	$kw = $this->getKeywords($id,$kw_id);
 	if (sizeof($kw))
 		return 1;
-	$sql = " INSERT INTO testcase_keywords (testcase_id,keyword_id) " .
+	$sql = " INSERT INTO {$this->tables['testcase_keywords']} (testcase_id,keyword_id) " .
 		     " VALUES ($id,$kw_id)";
 
 	$result = ($this->db->exec_query($sql) ? 1 : 0);
@@ -2077,7 +2099,10 @@ function addKeyword($id,$kw_id,$audit=self::AUDIT_ON)
 		$tcInfo = $this->tree_manager->get_node_hierachy_info($id);
 		$keyword = tlKeyword::getByID($this->db,$kw_id);
 		if ($keyword && $tcInfo && $audit == self::AUDIT_ON)
-			logAuditEvent(TLS("audit_keyword_assigned_tc",$keyword->name,$tcInfo['name']),"ASSIGN",$id,"nodes_hierarchy");
+		{
+			logAuditEvent(TLS("audit_keyword_assigned_tc",$keyword->name,$tcInfo['name']),
+			                  "ASSIGN",$id,"nodes_hierarchy");
+		}	
 	}
 	return $result;
 }
@@ -2144,7 +2169,7 @@ function copyKeywordsTo($id,$destID)
 */
 function deleteKeywords($tcID,$kwID = null,$audit=self::AUDIT_ON)
 {
-	$sql = " DELETE FROM testcase_keywords WHERE testcase_id = {$tcID} ";
+	$sql = " DELETE FROM {$this->tables['testcase_keywords']}  WHERE testcase_id = {$tcID} ";
 	if (!is_null($kwID))
 	{
 		if(is_array($kwID))
@@ -2309,22 +2334,20 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 		    e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type,
 		    e.build_id AS build_id,
 		    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
-	    FROM {$this->nodes_hierarchy_table} NHA
-        JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id
-        JOIN tcversions ON NHA.id = tcversions.id
-        JOIN executions e ON NHA.id = e.tcversion_id
+	    FROM {$this->tables['nodes_hierarchy']} NHA
+        JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
+        JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
+        JOIN {$this->tables['executions']} executions e ON NHA.id = e.tcversion_id
                                      AND e.testplan_id = {$tplan_id}
                                      {$build_id_filter}
-        JOIN builds b ON e.build_id=b.id
-        LEFT OUTER JOIN users ON e.tester_id = users.id
+        JOIN {$this->tables['builds']}  b ON e.build_id=b.id
+        LEFT OUTER JOIN {$this->tables['users']}  ON e.tester_id = users.id
         $where_clause
         ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$exec_id_order}";
 
   $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
   return($recordset ? $recordset : null);
 }
-
-
 
 
 /*
@@ -2408,8 +2431,8 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
     $build_id_filter=" AND e.build_id = {$build_id} ";
   }
   $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id " .
-  	   " FROM {$this->nodes_hierarchy_table} NHA " .
-       " JOIN executions e ON NHA.id = e.tcversion_id  AND e.testplan_id = {$tplan_id} " .
+  	   " FROM {$this->tables['nodes_hierarchy']} NHA " .
+       " JOIN {$this->tables['executions']}  e ON NHA.id = e.tcversion_id  AND e.testplan_id = {$tplan_id} " .
        " {$build_id_filter} AND e.status IS NOT NULL " .
        " $where_clause_1 GROUP BY tcversion_id";
 
@@ -2429,7 +2452,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   		}
   }
 
-  $executions_join=" JOIN executions e ON NHA.id = e.tcversion_id
+  $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id
                                            AND e.testplan_id = {$tplan_id}
                                            {$and_exec_id}
                                            {$build_id_filter} ";
@@ -2464,13 +2487,13 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 		users.last AS tester_last_name, e.tester_id AS tester_id,
 		e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
 		builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open
-	    FROM {$this->nodes_hierarchy_table} NHA
-        JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id
-        JOIN tcversions ON NHA.id = tcversions.id
+	    FROM {$this->tables['nodes_hierarchy']} NHA
+        JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
+        JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
         {$executions_join}
-        LEFT OUTER JOIN builds     ON builds.id = e.build_id
+        LEFT OUTER JOIN {$this->tables['builds']} builds     ON builds.id = e.build_id
                            AND builds.testplan_id = {$tplan_id}
-        LEFT OUTER JOIN users ON e.tester_id = users.id
+        LEFT OUTER JOIN {$this->tables['users']} users ON e.tester_id = users.id
         $where_clause_2
         ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
   $recordset = $this->db->fetchRowsIntoMap($sql,'id');
@@ -2618,8 +2641,8 @@ function get_version_exec_assignment($tcversion_id,$tplan_id)
 {
 	$sql = "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
 			"       UA.user_id,UA.type,UA.status,UA.assigner_id ".
-			" FROM testplan_tcversions T " .
-			" LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
+			" FROM {$this->tables['testplan_tcversions']}  T " .
+			" LEFT OUTER JOIN {$this->tables['user_assignments']}  UA ON UA.feature_id = T.id " .
 			" WHERE T.testplan_id={$tplan_id} " .
 			" AND   T.tcversion_id = {$tcversion_id} " .
 			" AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] .
@@ -2673,9 +2696,9 @@ function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null
     $sql="SELECT testprojects.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
          "TCV.version,TCV.tc_external_id, NHB.id AS testcase_id, NHB.name, testprojects.prefix, " .
          "UA.creation_ts ,UA.deadline_ts " .
-         "FROM user_assignments UA, testplan_tcversions TPTCV, " .
-         "tcversions TCV, {$this->nodes_hierarchy_table} NHA, {$this->nodes_hierarchy_table} NHB, " .
-         "{$this->nodes_hierarchy_table} NHC, testprojects " .
+         "FROM {$this->tables['user_assignments']}  UA, {$this->tables['testplan_tcversions']}  TPTCV, " .
+         "{$this->tables['tcversions']}  TCV, {$this->tables['nodes_hierarchy']} NHA, {$this->tables['nodes_hierarchy']} NHB, " .
+         "{$this->tables['nodes_hierarchy']} NHC, {$this->tables['testprojects']} testprojects " .
          "WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
          "AND UA.user_id = {$user_id} " .
          "AND testprojects.id IN (" . implode(',', array($tproject_id)) .") " .
@@ -2766,8 +2789,8 @@ function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null
 */
 function update_active_status($id,$tcversion_id,$active_status)
 {
-	$sql = " UPDATE tcversions SET active={$active_status}" .
-			   " WHERE tcversions.id = {$tcversion_id}";
+	$sql = " UPDATE {$this->tables['tcversions']} tcversions SET active={$active_status}" .
+		   " WHERE tcversions.id = {$tcversion_id}";
 
 	$result = $this->db->exec_query($sql);
 
@@ -2803,7 +2826,7 @@ function update_external_id($id,$external_id)
 {
   $sql="UPDATE {$this->tcversions_table} " .
        "SET tc_external_id={$external_id} " .
-       "WHERE id IN ( SELECT id FROM {$this->nodes_hierarchy_table} WHERE parent_id={$id} ) ";
+       "WHERE id IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} WHERE parent_id={$id} ) ";
       
   $result=$this->db->exec_query($sql);
 	return $result ? 1: 0;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.80 $
- * @modified $Date: 2009/05/25 20:42:47 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2009/06/05 15:09:55 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  *
@@ -412,7 +412,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	    	$code .= "<a name=\"tc{$id}\"></a>\n";
 	}
       
- 	  $code .= '<div><table class="tc" width="90%">';
+ 	  $code .= '<div> <table class="tc" width="90%">';
  	  $code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . 
  	  		htmlspecialchars($external_id) . ": " . $name;
     

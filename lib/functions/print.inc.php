@@ -3,14 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.81 $
- * @modified $Date: 2009/06/05 15:09:55 $ by $Author: havlat $
- *
+ * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
+ * @copyright 2007-2009, TestLink community 
+ * @version $Id: print.inc.php,v 1.82 2009/06/05 15:24:18 havlat Exp $
+ * @uses printDocument.php
  *
- * Library for documents generation
- * Used by printDocument.php
+ * @internal Library for documents generation
  *
  * Revisions:
  *      20090330 - franciscom - fixed internal bug when decoding user names
@@ -56,7 +55,7 @@
  *	20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
  *	20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  *
- * ----------------------------------------------------------------------------------- */
+ */ 
 
 require_once("exec.inc.php");
 
@@ -255,11 +254,12 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 /**
  * get user name from pool (save used names in session to improve performance)
+ * @author havlatm
+ * 
  * @param integer $db DB connection identifier 
  * @param integer $userId
+ * 
  * @return string readable user name
- * @version 1.0
- * @author havlatm
  */
 function gendocGetUserName(&$db, $userId)
 {
@@ -293,14 +293,12 @@ function gendocGetUserName(&$db, $userId)
  * render Test Case content for generated documents
  * @param $integer db DB connection identifier 
  * @return string generated html code
- * @version 1.5
-
-    rev :
-       20080819 - franciscom - removed mysql only code
-       20071014 - franciscom - display test case version
-       20070509 - franciscom - added Contribution
-       20090517 - havlatm - fixed execution layot; added tester name
-*/
+ * @version 
+ *      20080819 - franciscom - removed mysql only code
+ *      20071014 - franciscom - display test case version
+ *      20070509 - franciscom - added Contribution
+ *      20090517 - havlatm - fixed execution layot; added tester name
+ */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
                                    $tplan_id=0,$prefix = null,$tprojectID = 0)
 {
@@ -412,7 +410,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	    	$code .= "<a name=\"tc{$id}\"></a>\n";
 	}
       
- 	  $code .= '<div> <table class="tc" width="90%">';
+ 	  $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%">';
  	  $code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . 
  	  		htmlspecialchars($external_id) . ": " . $name;
     
@@ -567,9 +565,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 }
 
 
-/*
-  havlatm: Remaining part of renderProjectNodeForPrinting
-  @todo refactore
+/**
+   Remaining part of renderProjectNodeForPrinting
+  @todo havlatm: refactore
 */
 function renderToc(&$printingOptions)
 {
@@ -666,9 +664,9 @@ function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
 /** 
  * Render HTML for estimated and real execute duration 
  * based on contribution (BUGID 1670)
+ * 
  * @param array_of_strings $statistics
  * @return string HTML code
- * @version 1.0
  */
 function renderTestDuration($statistics)
 {

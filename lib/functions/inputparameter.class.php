@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.11 2009/06/04 19:48:30 havlat Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.12 2009/06/05 16:54:02 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -60,7 +60,7 @@ class tlInputParameter extends tlObject
 	/**
 	 * @var boolean is the parameter valid?
 	 */
-	protected $bValid = false;
+	protected $isValid = false;
 	
 	/**
 	 * constructor
@@ -94,7 +94,7 @@ class tlInputParameter extends tlObject
 	 */
 	protected function isValid()
 	{
-		return $this->bValid;
+		return $this->isValid;
 	}
 	
 	/** 
@@ -109,7 +109,7 @@ class tlInputParameter extends tlObject
 		$this->bFetched = false;
 		
 		$this->validationInfo = null;
-		$this->bValid = false;
+		$this->isValid = false;
 	}
 	
 	/**
@@ -180,7 +180,7 @@ class tlInputParameter extends tlObject
 		{
 			$this->validationInfo->validate($this->normalizedValue);
 		}
-		$this->bValid = true;
+		$this->isValid = true;
 	}	
 	
 	/**

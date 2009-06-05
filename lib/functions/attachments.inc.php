@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/06/05 16:54:02 $ by $Author: franciscom $
  *
  * functions related to attachments
  *
@@ -59,7 +59,7 @@ function storeAttachmentsInSession($attachmentInfos,$counter = 0)
 
 function checkAttachmentID(&$db,$id,$attachmentInfo)
 {
-	$bValid = false;
+	$isValid = false;
 	if ($attachmentInfo)
 	{
 		$sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
@@ -68,11 +68,11 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
 			$info = $sLastAttachmentInfos[$i];
 			if ($info['id'] == $id)
 			{
-				$bValid = true;
+				$isValid = true;
 				break;
 			}
 		}
 	}
-	return $bValid;	
+	return $isValid;	
 }
 ?>

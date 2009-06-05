@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.13 2009/04/22 08:28:17 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.14 2009/06/05 22:08:21 havlat Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -8,7 +8,7 @@ rev: 20090422 - franciscom - BUGID 2414
 *}
 
 {lang_get var="labels"
-          s="warning,warning_empty_tc_title,btn_save,cancel"}
+          s="warning,warning_empty_tc_title,btn_save,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
@@ -26,11 +26,12 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
-{literal}
+
 <script type="text/javascript">
-{/literal}
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 var alert_box_title = "{$labels.warning}";
+var UNLOAD_MSG = "{$labels.warning_unsaved}";
+var TC_EDITOR = "{$tlCfg->text_editor.all.type}";
 {literal}
 function validateForm(f)
 {
@@ -68,7 +69,44 @@ function validateForm(f)
 	  return true;
 }
 </script>
+
+<script type="text/javascript">
+// Notify on exit with unsaved data 
+// @TODO use EXTJS dialog
+
+var IGNORE_UNLOAD = true;
+
+function doBeforeUnload() 
+{
+   checkFCKEditorChanged(); //check FCKeditors 
+   if(IGNORE_UNLOAD) return; // Let the page unload
+
+   if(window.event)
+      window.event.returnValue = UNLOAD_MSG; // IE
+   else
+      return UNLOAD_MSG; // FX
+}
+
+if(window.body)
+   window.body.onbeforeunload = doBeforeUnload; // IE
+else
+   window.onbeforeunload = doBeforeUnload; // FX
+
+// verify if content of any editor changed
+function checkFCKEditorChanged()
+{
+	if (TC_EDITOR == "fckeditor")
+	{
+		var edSummary = FCKeditorAPI.GetInstance('summary') ;
+		var edSteps = FCKeditorAPI.GetInstance('steps') ;
+		var edExpResults = FCKeditorAPI.GetInstance('expected_results') ;
+
+		if(edSummary.IsDirty() || edSteps.IsDirty() || edExpResults.IsDirty()) 
+			IGNORE_UNLOAD = false;
+	}
+}
 {/literal}
+</script>
 
 </head>
 
@@ -105,14 +143,14 @@ function validateForm(f)
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
-		       onclick="doAction.value='doUpdate'"   value="{$labels.btn_save}" />
+		       onclick="IGNORE_UNLOAD = true; doAction.value='doUpdate'"   value="{$labels.btn_save}" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: history.back();"/>
 	</div>	
 </form>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].testcase_name.focus()
+   	document.forms[0].testcase_name.focus();
 </script>
 
 </div>

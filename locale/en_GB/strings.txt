@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.449 $
- * @modified $Date: 2009/06/04 19:53:27 $ by $Author: schlundus $
+ * @version $Revision: 1.450 $
+ * @modified $Date: 2009/06/05 22:08:21 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -1203,7 +1203,8 @@ $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment 
 
 // ----- gui/templates/tcEdit.tpl -----
 $TLS_title_edit_tc = "Edit Test Case";
-$TLS_warning_editing_executed_tc = "Warning!: This Test Case version has been executed";
+$TLS_warning_editing_executed_tc = "Warning! This Test Case version has been executed.";
+$TLS_warning_unsaved = "You will lose any unsaved changes!";
 
 
 

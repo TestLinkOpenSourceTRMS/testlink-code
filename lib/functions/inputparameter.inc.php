@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/05/14 18:39:53 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/06/06 14:54:57 $ by $Author: franciscom $
  * 
 **/
 require_once("object.class.php");
 require_once("inputparameter.class.php");
 
+// @TODO COMMENT ALL FUNCTIONS
 function P_PARAMS($paramInfo,&$args = null)
 {
 	return GPR_PARAMS("POST",$paramInfo,$args);
@@ -43,7 +44,7 @@ function I_PARAMS($paramInfo,&$args = null)
 	{
 		$source = $info[0];
 		$type = $info[1];
-		for($i = 1;$i <= 5;$i++)
+		for($i = 1;$i <= 5;$i++)  //  @TODO REMOVE MAGIC NUMBER BREAKS DEVELOPMENT STANDARDS
 		{
 			$varName = "p{$i}";
 			$value = isset($info[$i+1]) ? $info[$i+1] : null;

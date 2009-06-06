@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/05/17 16:20:17 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/06/06 14:53:15 $ $Author: franciscom $
  * @author jbarchibald
  *
  * rev :
@@ -17,7 +17,7 @@
 class exec_cfield_mgr extends cfield_mgr
 {
 	var $db;
-  var $cf_map;
+    var $cf_map;
 
 	function exec_cfield_mgr(&$db,$tproject_id)
 	{

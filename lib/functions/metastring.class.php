@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: metastring.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2008/02/20 21:21:45 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/06/06 14:54:57 $ $Author: franciscom $
  * @author schlundus
  */
+ 
+//@TODO COMMENT ALL FUNCTIONS 
 
 //shorthand function for creating meta strings
 function TLS($label,$params = null)

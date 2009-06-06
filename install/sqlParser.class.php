@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.10 2009/06/03 21:16:17 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.11 2009/06/06 17:49:39 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
@@ -42,8 +42,12 @@ class SqlParser {
   */
 function process($filename) 
 {
-    $target=array('create' => "CREATE TABLE ", 'insert' => "INSERT INTO ");
-    $new_value=array('create' => '', 'insert' => '');
+    $target=array('create' => "CREATE TABLE ", 'insert' => "INSERT INTO ",
+                  'comment_on_table'=> null, 'sequence' => null,
+                  'index_on' => null, 'foreing_key' => null);
+                  
+    $new_value=null;
+    // $new_value=array('create' => '', 'insert' => '');
 
     // -----------------------------------------------------------------
     // part of this logic has been copied from the setup of EVENTUM 
@@ -63,7 +67,11 @@ function process($filename)
           
         case 'postgres':
         $target['create'] = $target['create'] . '"';
-        $target['insert'] = $target['insert'] . '"';
+        // $target['insert'] = $target['insert'] . '"';
+        $target['foreing_key'] = "REFERENCES ";
+        $target['index_on'] = '" ON "';
+        $target['comment_on_table']='COMMENT ON TABLE ';
+        $target['sequence'] = "SELECT setval('";
         $cfil = array_filter($contents,array($this,"only_good_sql"));
         break;
         
@@ -78,11 +86,42 @@ function process($filename)
     $r2d2 = implode("", $cfil);
     if( $do_replace)
     {
-        $new_value['create'] = $target['create'] . $this->db_table_prefix ; 
-        $new_value['insert'] = $target['insert'] . $this->db_table_prefix ; 
-       
-        $r2d2 = str_replace($target['create'],$new_value['create'],$r2d2);
-        $r2d2 = str_replace($target['insert'],$new_value['insert'],$r2d2);
+        
+        foreach($target as $key => $value)
+        {
+            if( !is_null($value) )
+            {
+                $new_value[$key] = $value . $this->db_table_prefix ;         
+                $r2d2 = str_replace($value,$new_value[$key],$r2d2);
+            }
+        }
+        // if($adjust_sequence)
+        // {
+        //     $new_s=SELECT setval('
+        //     $r2d2 = str_replace($value,$new_value[$key],$r2d2);
+        // }
+        // SELECT setval('
+        // $new_value['create'] = $target['create'] . $this->db_table_prefix ; 
+        // $new_value['insert'] = $target['insert'] . $this->db_table_prefix ; 
+        // 
+        // $r2d2 = str_replace($target['create'],$new_value['create'],$r2d2);
+        // $r2d2 = str_replace($target['insert'],$new_value['insert'],$r2d2);
+        // 
+        // 
+        // 
+        // if( !is_null($target['foreing_key']) )
+        // {
+        //     $new_value['foreing_key'] = $target['foreing_key'] . $this->db_table_prefix ;         
+        //     $r2d2 = str_replace($target['foreing_key'],$new_value['foreing_key'],$r2d2);
+        // }
+        // 
+        // if( !is_null($target['index_on']) )
+        // {
+        //     $new_value['index_on'] = $target['index_on'] . $this->db_table_prefix ;         
+        //     $r2d2 = str_replace($target['index_on'],$new_value['index_on'],$r2d2);
+        // }
+        
+
     }
 
     $sql_array = explode(";", $r2d2);

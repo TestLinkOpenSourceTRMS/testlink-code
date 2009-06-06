@@ -1,11 +1,16 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.35 2009/05/13 05:55:49 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.36 2009/06/06 17:49:39 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 -- ATTENTION: do not use a different naming convention, that one already in use.
 -- 
+-- CRITIC:
+--        Because this file will be processed during installation doing text replaces
+--        to add TABLE PREFIX NAME, any NEW DDL CODE added must be respect present
+--        convention regarding case and spaces between DDL keywords.
+--
 -- 
 -- Rev :
 --      20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
@@ -76,7 +81,7 @@ CREATE INDEX "nodes_hierarchy_pid_m_nodeorder" ON "nodes_hierarchy" ("parent_id"
 --
 --
 --
-CREATE TABLE  "transactions" (
+CREATE TABLE "transactions" (
   "id" BIGSERIAL NOT NULL,
   "entry_point" varchar(45) NOT NULL default '',
   "start_time" INT NOT NULL default '0',
@@ -569,7 +574,7 @@ CREATE TABLE "user_assignments" (
   "status" INTEGER NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
-CREATE INDEX feature_id ON user_assignments ("feature_id");
+CREATE INDEX "feature_id" ON "user_assignments" ("feature_id");
 
 
 --
@@ -594,7 +599,7 @@ CREATE TABLE "user_testproject_roles" (
 ); 
 
 --
-CREATE TABLE text_templates (
+CREATE TABLE "text_templates" (
   id BIGSERIAL NOT NULL,
   type INT NOT NULL,
   title varchar(100) NOT NULL,
@@ -609,7 +614,7 @@ COMMENT ON TABLE text_templates IS 'Global Project Templates';
 
 
 --
-CREATE TABLE user_group (
+CREATE TABLE "user_group" (
   id BIGSERIAL NOT NULL,
   title varchar(100) NOT NULL,
   description text,
@@ -620,7 +625,7 @@ CREATE TABLE user_group (
 );
 
 --
-CREATE TABLE user_group_assign (
+CREATE TABLE "user_group_assign" (
   usergroup_id BIGINT NOT NULL REFERENCES user_group (id),
   user_id BIGINT NOT NULL REFERENCES users (id)
 );

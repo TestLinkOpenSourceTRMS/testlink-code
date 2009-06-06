@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.20 2009/04/27 07:50:13 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.21 2009/06/06 17:49:39 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -20,7 +20,7 @@
 
 
 --  Database version -
-INSERT INTO "db_version" ("version","upgrade_ts","notes") VALUES ('DB 1.2',now(),'first version with API feature');
+INSERT INTO db_version ("version","upgrade_ts","notes") VALUES ('DB 1.3',now(),'first version with API feature');
 
 
 --  Node types -
@@ -150,13 +150,12 @@ INSERT INTO users (login,password,role_id,email,first,last,locale,active)
 
 
 -- assignment_status
-INSERT INTO "assignment_status" ("id","description") VALUES (1,'open');
-INSERT INTO "assignment_status" ("id","description") VALUES (2,'closed');
-INSERT INTO "assignment_status" ("id","description") VALUES (3,'completed');
-INSERT INTO "assignment_status" ("id","description") VALUES (4,'todo_urgent');
-INSERT INTO "assignment_status" ("id","description") VALUES (5,'todo');
+INSERT INTO assignment_status ("id","description") VALUES (1,'open');
+INSERT INTO assignment_status ("id","description") VALUES (2,'closed');
+INSERT INTO assignment_status ("id","description") VALUES (3,'completed');
+INSERT INTO assignment_status ("id","description") VALUES (4,'todo_urgent');
+INSERT INTO assignment_status ("id","description") VALUES (5,'todo');
 
 -- assignment_types
-INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (1,'testplan_tcversions','testcase_execution');
-INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcversions','testcase_review');
-
+INSERT INTO assignment_types ("id","fk_table","description") VALUES (1,'testplan_tcversions','testcase_execution');
+INSERT INTO assignment_types ("id","fk_table","description") VALUES (2,'tcversions','testcase_review');

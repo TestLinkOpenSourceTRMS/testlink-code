@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/06/04 19:53:27 $ $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/06/06 17:50:10 $ $Author: franciscom $
  *
  */
 require_once('config.inc.php');
@@ -28,10 +28,12 @@ $args = init_args();
 doDBConnect($db);
 
 $message = lang_get('your_info_please');
-if($args->bEditUser)
+if($args->doEditUser)
 {
 	if(strcmp($args->password,$args->password2))
+	{
 		$message = lang_get('passwd_dont_match');
+	}
 	else
 	{
 		$user = new tlUser();	
@@ -51,7 +53,9 @@ if($args->bEditUser)
 			exit();
 		}
 		else 
+		{
 			$message = getUserErrorMessage($result);
+		}	
 	}
 }
 
@@ -64,16 +68,17 @@ $smarty->assign('email', $args->email);
 $smarty->assign('message',$message);
 $smarty->display('loginFirst.tpl');
 
+
 function init_args()
 {
-	$iParams = array(
-		"bEditUser" => array(tlInputParameter::STRING_N,0,1),
-		"login" => array(tlInputParameter::STRING_N,0,30),
-		"password" => array(tlInputParameter::STRING_N,0,32),
-		"password2" => array(tlInputParameter::STRING_N,0,32),
-		"first" => array(tlInputParameter::STRING_N,0,30),
-		"last" => array(tlInputParameter::STRING_N,0,30),
-		"email" => array(tlInputParameter::STRING_N,0,100),
+    //@TODO   REMOVE ALL MAGIC NUMBERS => NOT COMPLIANT WITH DEVELOPMENT STANDARDS
+	$iParams = array("doEditUser" => array(tlInputParameter::STRING_N,0,1),
+		             "login" => array(tlInputParameter::STRING_N,0,30),
+		             "password" => array(tlInputParameter::STRING_N,0,32),
+		             "password2" => array(tlInputParameter::STRING_N,0,32),
+		             "first" => array(tlInputParameter::STRING_N,0,30),
+		             "last" => array(tlInputParameter::STRING_N,0,30),
+		             "email" => array(tlInputParameter::STRING_N,0,100),
 	);
 	$args = new stdClass();
 	$pParams = P_PARAMS($iParams,$args);

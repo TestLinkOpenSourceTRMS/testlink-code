@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.112 $
- * @modified $Date: 2009/06/03 21:18:07 $  $Author: franciscom $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2009/06/06 14:56:20 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090512 - franciscom - added setPublicStatus()
@@ -58,7 +58,7 @@ class testproject extends tlObjectWithAttachments
 
 	private $object_table='testprojects';
 	private $requirements_table='requirements';
-	private $requirement_spec_table='req_specs';
+	private $req_specs_table='req_specs';
 	private $req_coverage_table="req_coverage";
 	private $nodes_hierarchy_table="nodes_hierarchy";
 	private $keywords_table = "keywords";
@@ -102,7 +102,7 @@ class testproject extends tlObjectWithAttachments
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr=new cfield_mgr($this->db);
 
-        $key2loop = array('object_table','requirements_table','requirement_spec_table',
+        $key2loop = array('object_table','requirements_table','req_specs_table',
                           'req_coverage_table','nodes_hierarchy_table','keywords_table',
 	                      'testcase_keywords_table', 'testplans_table',
 	                      'custom_fields_table','cfield_testprojects_table',
@@ -1101,7 +1101,7 @@ function setPublicStatus($id,$status)
   		$additional_join=" AND SRS.id = REQ.srs_id ";
   	}
     $sql = " SELECT SRS.id,NH.name AS title " .
-           " FROM req_specs SRS, {$this->nodes_hierarchy_table} NH " . $additional_table .
+           " FROM {$this->req_specs_table} SRS, {$this->nodes_hierarchy_table} NH " . $additional_table .
            " WHERE testproject_id={$tproject_id} " .
            " AND SRS.id=NH.id " .
            $additional_join .
@@ -1246,7 +1246,7 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
                 "RSPEC.modification_ts,NH.name AS title";
     
     $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-    $sql = " SELECT {$fields} FROM {$this->requirement_spec_table} RSPEC, " .
+    $sql = " SELECT {$fields} FROM {$this->req_specs_table} RSPEC, " .
            " {$this->nodes_hierarchy_table} NH " .
            " WHERE testproject_id={$testproject_id} " .
            " AND RSPEC.id=NH.id ";
@@ -1289,7 +1289,7 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
     $chk=$this->check_srs_title($testproject_id,$title,$ignore_case);
 		if ($chk['status_ok'])
 		{
-			$sql = "INSERT INTO req_specs (testproject_id, title, scope, type, total_req, author_id, creation_ts)
+			$sql = "INSERT INTO {$this->req_specs_table} (testproject_id, title, scope, type, total_req, author_id, creation_ts)
 					    VALUES (" . $testproject_id . ",'" . $this->db->prepare_string($title) . "','" .
 					                $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" .
 					                $this->db->prepare_string($countReq) . "'," . $this->db->prepare_string($user_id) . ", " .
@@ -1301,7 +1301,7 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
 			}
 			else
 			{
-			  $result['id']=$this->db->insert_id('req_specs');
+			  $result['id']=$this->db->insert_id($this->req_specs_table);
         $result['status_ok'] = 1;
 		    $result['msg'] = 'ok';
 			}

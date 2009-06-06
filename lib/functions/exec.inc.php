@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/05/14 19:01:57 $ $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/06/06 14:52:54 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -69,6 +69,8 @@ function createResultsMenu()
 */
 function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build_id,$map_last_exec)
 {
+  $executions_table = DB_TABLE_PREFIX . 'executions';
+   
   $resultsCfg = config_get('results');
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
@@ -121,7 +123,7 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 		{ 
 		  
 			$my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
-			$sql = "INSERT INTO executions ".
+			$sql = "INSERT INTO {$executions_table} ".
 				     "(build_id,tester_id,status,testplan_id,tcversion_id," .
 				     " execution_ts,notes,tcversion_number)".
 				     " VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
@@ -162,17 +164,19 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 */
 function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 {
+    $execution_bugs = DB_TABLE_PREFIX . 'execution_bugs';
+    
 	// Instead of Check if record exists before inserting, do delete + insert
 	$prep_bug_id = $db->prepare_string($bug_id);
 	
-	$sql = "DELETE FROM execution_bugs " .
+	$sql = "DELETE FROM {$execution_bugs} " .
 	       "WHERE execution_id={$exec_id} " .
 	       "AND bug_id='" . $prep_bug_id ."'";
 	$result = $db->exec_query($sql);
 	
 	if(!$just_delete)
 	{
-    	$sql = "INSERT INTO execution_bugs " .
+    	$sql = "INSERT INTO {$execution_bugs} " .
     	      "(execution_id,bug_id) " .
     	      "VALUES({$exec_id},'" . $prep_bug_id . "')";
     	$result = $db->exec_query($sql);  	     
@@ -180,12 +184,17 @@ function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 	return $result ? 1 : 0;
 }
 
-// 20060916 - franciscom
 function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 {
-  $bug_list=array();
+    
+    $tables['execution_bugs'] = DB_TABLE_PREFIX . 'execution_bugs';
+    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
+    $tables['builds'] = DB_TABLE_PREFIX . 'builds';
+
+    $bug_list=array();
 	$sql = "SELECT execution_id,bug_id,builds.name AS build_name " .
-	       "FROM execution_bugs,executions,builds ".
+	       "FROM {$tables['execution_bugs']}, {$tables['executions']} executions, " .
+	       " {$tables['builds']} builds ".
 	       "WHERE execution_id={$execution_id} " .
 	       "AND   execution_id=executions.id " .
 	       "AND   executions.build_id=builds.id " .
@@ -206,16 +215,15 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 // 20060916 - franciscom
 function get_execution(&$db,$execution_id)
 {
+    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
+    
 	$sql = "SELECT * " .
-	       "FROM executions ".
+	       "FROM {$tables['executions']} ".
 	       "WHERE id={$execution_id} ";
 	       
 	$map = $db->get_recordset($sql);
   return($map);
 }
-
-
-
 
 /*
   function: delete_execution
@@ -229,22 +237,25 @@ function get_execution(&$db,$execution_id)
 */
 function delete_execution(&$db,$exec_id)
 {
-  $sql=array();
-  
-  // delete bugs
-  $sql[]="DELETE FROM execution_bugs WHERE execution_id = {$exec_id}";
+    $tables['execution_bugs'] = DB_TABLE_PREFIX . 'execution_bugs';
+    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
+    $tables['cfield_execution_values'] = DB_TABLE_PREFIX . 'cfield_execution_values';
 
- 
-  // delete custom field values
-  $sql[]="DELETE FROM cfield_execution_values WHERE execution_id = {$exec_id}";
- 
-  // delete execution 
-  $sql[]="DELETE FROM executions WHERE id = {$exec_id}";
-
-  foreach ($sql as $the_stm)
-  {
-  		$result = $db->exec_query($the_stm);
-  }
-
+    $sql=array();
+    
+    // delete bugs
+    $sql[]="DELETE FROM {$tables['execution_bugs']} WHERE execution_id = {$exec_id}";
+    
+    
+    // delete custom field values
+    $sql[]="DELETE FROM {$tables['cfield_execution_values']} WHERE execution_id = {$exec_id}";
+    
+    // delete execution 
+    $sql[]="DELETE FROM {$tables['executions']} WHERE id = {$exec_id}";
+    
+    foreach ($sql as $the_stm)
+    {
+    		$result = $db->exec_query($the_stm);
+    }
 }
 ?>

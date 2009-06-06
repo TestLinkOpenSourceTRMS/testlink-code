@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/05/25 20:42:47 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/06/06 14:56:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -49,14 +49,10 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   const CASE_SENSITIVE=0;
   const CASE_INSENSITIVE=1;
   
-	var $db;
+  var $db;
   var $cfield_mgr;
   var $tree_mgr;
-
-  var $object_table="req_specs";
-  var $requirements_table="requirements";
-  var $req_coverage_table='req_coverage';
-  var $nodes_hierarchy_table="nodes_hierarchy";
+  var $tables;
 
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)",
@@ -78,6 +74,15 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	function requirement_spec_mgr(&$db)
 	{
 		$this->db = &$db;
+        $this->tables = array('req_specs' => DB_TABLE_PREFIX . 'req_specs',
+                              'requirements' => DB_TABLE_PREFIX . 'requirements',
+                              'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
+                              'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                              'tcversions' => DB_TABLE_PREFIX . 'tcversions');
+        
+	    $this->object_table=$this->tables['req_specs'];
+
+		
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
 		$this->tree_mgr =  new tree($this->db);
@@ -193,7 +198,7 @@ function get_by_id($id)
                 "RSPEC.modification_ts,NH.name AS title";
     
     $sql = " SELECT {$fields2get}, '' AS author, '' AS modifier, NH.node_order " .
-    	   " FROM {$this->object_table} RSPEC,  {$this->nodes_hierarchy_table} NH" .
+    	   " FROM {$this->object_table} RSPEC,  {$this->tables['nodes_hierarchy']} NH" .
     	   " WHERE RSPEC.id = NH.id " . 
     	   " AND RSPEC.id = {$id}";
  	       
@@ -255,7 +260,7 @@ function get_coverage($id)
 	// get requirements
 	// amitkhullar- BUGID : 2439
 	$sql_common = " SELECT REQ.id,REQ.req_doc_id,NH.name AS title " .
-	              " FROM {$this->requirements_table} REQ, {$this->nodes_hierarchy_table} NH" .
+	              " FROM {$this->tables['requirements']} REQ, {$this->tables['nodes_hierarchy']} NH" .
 	              " WHERE REQ.srs_id={$id} AND REQ.id=NH.id";
 	$sql = $sql_common . $statusFilter . " {$order_by}";
 	$arrReq = $this->db->get_recordset($sql);
@@ -301,12 +306,12 @@ function get_metrics($id)
 
 	// get nottestable REQs
 	$sql = "SELECT count(0) AS cnt " .
-	       " FROM {$this->requirements_table} WHERE srs_id={$id} " .
+	       " FROM {$this->tables['requirements']} WHERE srs_id={$id} " .
 		   " AND status='" . TL_REQ_STATUS_NOT_TESTABLE . "'";
 
 	$output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 
-	$sql = "SELECT count(0) AS cnt FROM {$this->requirements_table} WHERE srs_id={$id}";
+	$sql = "SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
 	$output['total'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 
 	$sql = "SELECT total_req FROM {$this->object_table} WHERE id={$id}";
@@ -316,7 +321,7 @@ function get_metrics($id)
 		$output['expectedTotal'] = $output['total'];
 	
 	$sql = " SELECT DISTINCT requirements.id " .
-	       " FROM {$this->requirements_table} requirements, {$this->req_coverage_table} req_coverage " .
+	       " FROM {$this->tables['requirements']} requirements, {$this->tables['req_coverage']} req_coverage " .
 	       " WHERE requirements.srs_id={$id}" .
 		   " AND requirements.id=req_coverage.req_id";
 	$result = $this->db->exec_query($sql);
@@ -361,7 +366,7 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
                 "RSPEC.modification_ts,NH.name AS title";
 
 	$sql = "SELECT {$fields2get}, NH.node_order " .
-	       " FROM {$this->object_table} RSPEC, {$this->nodes_hierarchy_table} NH " .
+	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
 	       " WHERE NH.id=RSPEC.id" .
 	       " AND testproject_id={$tproject_id}";
 
@@ -418,7 +423,7 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
         if( $result['status_ok'] )
         {
   	        // need to update node on tree
-            $sql = " UPDATE {$this->nodes_hierarchy_table} " .
+            $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
   	    	       " SET name='" . $this->db->prepare_string($title) . "'" .
   	    	       " WHERE id={$id}";
         
@@ -483,7 +488,7 @@ function delete($id)
 		  $sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
 		  $result = $this->db->exec_query($sql);
 
-		  $sql = "DELETE FROM {$this->nodes_hierarchy_table} WHERE id = {$id}";
+		  $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id}";
 		  $result = $this->db->exec_query($sql);
 
 		  if($result)
@@ -539,15 +544,15 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 	{
 		case 'all';
 			$sql = " SELECT {$fields2get}" .
-			       " FROM {$this->requirements_table} REQ, {$this->nodes_hierarchy_table} NH" .
+			       " FROM {$this->tables['requirements']} REQ, {$this->tables['nodes_hierarchy']} NH" .
 			       " WHERE REQ.id=NH.id " .
 			       " AND REQ.srs_id={$id}";
 			break;
 
 		case 'assigned':
 			$sql = " SELECT {$fields2get}" . 
-			       " FROM {$this->requirements_table} REQ, {$this->nodes_hierarchy_table} NH, " .
-			       " {$this->req_coverage_table} req_coverage " .
+			       " FROM {$this->tables['requirements']} REQ, {$this->tables['nodes_hierarchy']} NH, " .
+			       " {$this->tables['req_coverage']} req_coverage " .
 		           " WHERE REQ.id=NH.id " .
 			       " AND req_coverage.req_id=REQ.id " .
 			       " AND REQ.srs_id={$id} ";
@@ -600,7 +605,7 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	$output=null;
   	$title=trim($title);
     $the_title=$this->db->prepare_string($title);
-  	$sql = "SELECT {$fields2get} FROM {$this->object_table} RSPEC, {$this->nodes_hierarchy_table} NH";
+  	$sql = "SELECT {$fields2get} FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH";
 
     switch ($case_analysis)
     {
@@ -706,15 +711,15 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
 	    {
 	      case 'all';
 	      $sql = " SELECT count(id) AS requirements_qty" .
-	             " FROM {$this->requirements_table}" .
+	             " FROM {$this->tables['requirements']}" .
 	             " WHERE srs_id={$id}";
 	      break;
       
       
 	      case 'assigned':
 	    	$sql = " SELECT count(requirements.id) AS requirements_qty" .
-	    	       " FROM {$this->requirements_table} requirements, " .
-	    	       " {$this->req_coverage_table} req_coverage " .
+	    	       " FROM {$this->tables['requirements']} requirements, " .
+	    	       " {$this->tables['req_coverage']} req_coverage " .
 	             " WHERE req_coverage.req_id=requirements.id " .
 	    	       " AND srs_id={$id} ";
 	    	       

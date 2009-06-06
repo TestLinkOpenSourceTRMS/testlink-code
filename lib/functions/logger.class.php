@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/06/03 21:20:31 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/06/06 14:54:03 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -380,7 +380,7 @@ class tlTransaction extends tlDBObject
 			$result = $db->exec_query($query);
 			if ($result)
 			{
-				$this->dbID = $db->insert_id('transactions');
+				$this->dbID = $db->insert_id($this->tables['transactions']);
 			}	
 		}
 		else

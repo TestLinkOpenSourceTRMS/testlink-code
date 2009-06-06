@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.15 2009/04/17 19:57:32 schlundus Exp $
-* @modified $Date: 2009/04/17 19:57:32 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.16 2009/06/06 14:54:03 franciscom Exp $
+* @modified $Date: 2009/06/06 14:54:03 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 **/
@@ -17,17 +17,19 @@ require_once( dirname(__FILE__) . '/xml.inc.php');
 //this class will be later moved to an extra file
 class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV
 {
-	//the name of the keyword
+	//the name of the keyword  @REMOVE USELESS sentences
 	public $name;
 
-	//the notes for the keyword
+	//the notes for the keyword @REMOVE USELESS sentences
 	public $notes;
 
-	// the testprojectID the keyword belongs to
+	// testprojectID the keyword belongs to
 	public $testprojectID;
 
-	// config valuze
+	// config valuze  -> @TODOfind meaning ov valuze
 	protected $allowDuplicateKeywords; 
+	
+	var $tables;
 	
 	//Some error codes
 	const E_NAMENOTALLOWED = -1;
@@ -42,20 +44,30 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = null;
 		$this->testprojectID = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
+			
 	}
 	
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
 	
+	    $this->tables=array('keywords' => DB_TABLE_PREFIX . 'keywords',
+	                        'object_keywords'  => DB_TABLE_PREFIX . 'object_keywords',
+	                        'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords');
+	    
+	
 		$this->allowDuplicateKeywords = config_get('allow_duplicate_keywords');
 	}
+	
 	function __destruct()
 	{
 		parent::__destruct();
 		$this->_clean();
 	}
+	
 	/* fills the members  */
 	function initialize($testprojectID,$name,$notes)
 	{
@@ -63,17 +75,22 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = $notes;
 		$this->testprojectID = $testprojectID;
 	}
+	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = " SELECT id,keyword,notes,testproject_id FROM keywords ";
+		$query = " SELECT id,keyword,notes,testproject_id FROM {$this->tables['keywords']} ";
 		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+		{
 			$clauses[] = "id = {$this->dbID}";		
+		}
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
+		}
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
@@ -95,18 +112,21 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 
 			if ($this->dbID)
 			{
-				$query = "UPDATE keywords SET keyword = '{$name}',notes='{$notes}',testproject_id={$this->testprojectID}" .
-						" WHERE id = {$this->dbID}";
+				$query = "UPDATE {$this->tables['keywords']} " .
+				         " SET keyword = '{$name}',notes='{$notes}',testproject_id={$this->testprojectID}" .
+						 " WHERE id = {$this->dbID}";
 				$result = $db->exec_query($query);
 			}
 			else
 			{
-				$query = " INSERT INTO keywords (keyword,testproject_id,notes) " .
+				$query = " INSERT INTO {$this->tables['keywords']} (keyword,testproject_id,notes) " .
 						 " VALUES ('" . $name .	"'," . $this->testprojectID . ",'" . $notes . "')";
 				
 				$result = $db->exec_query($query);
 				if ($result)
-					$this->dbID = $db->insert_id('keywords');
+				{
+					$this->dbID = $db->insert_id($this->tables['keywords']);
+				}	
 			}
 			$result = $result ? tl::OK : self::E_DBERROR;
 		}
@@ -120,25 +140,28 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		
 		$result = tl::OK;
 		if (!$this->allowDuplicateKeywords)
+		{
 			$result = tlKeyword::doesKeywordExist($db,$this->name,$this->testprojectID,$this->dbID);
+		}
 		if ($result >= tl::OK)
+		{
 			$result = tlKeyword::checkKeywordName($this->name);
-			
+		}	
 		return $result;
 	}
 
 	public function deleteFromDB(&$db)
 	{
-		$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $this->dbID;
+		$sql = "DELETE FROM {$this->tables['testcase_keywords']} WHERE keyword_id = " . $this->dbID;
 		$result = $db->exec_query($sql);
 		if ($result)
 		{
-			$sql = "DELETE FROM object_keywords WHERE keyword_id = " . $this->dbID;
+			$sql = "DELETE FROM {$this->tables['object_keywords']}  WHERE keyword_id = " . $this->dbID;
 			$result = $db->exec_query($sql);
 		}
 		if ($result)
 		{
-			$sql = "DELETE FROM keywords WHERE id = " . $this->dbID;
+			$sql = "DELETE FROM {$this->tables['keywords']} WHERE id = " . $this->dbID;
 			$result = $db->exec_query($sql);
 		}
 		return $result ? tl::OK : tl::ERROR;	
@@ -154,7 +177,8 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 
-	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
+	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
@@ -163,12 +187,8 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	/* for legacy purposes */
 	public function getInfo()
 	{
-		return array(
-			"id" => $this->dbID,
-			"keyword" => $this->name,
-			"notes" => $this->notes,
-			"testproject_id" => $this->testprojectID,
-		);
+		return array("id" => $this->dbID,"keyword" => $this->name,
+			         "notes" => $this->notes,"testproject_id" => $this->testprojectID);
 	}
 	
 	/**
@@ -186,29 +206,36 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				$result = self::E_NAMENOTALLOWED;
 		}
 		else
+		{
 			$result = self::E_NAMELENGTH;
-
+        }
 		return $result;
 	}
+	
 	/**
 	 * checks if a keyword already exists in the database
 	 **/
 	static public function doesKeywordExist(&$db,$name,$tprojectID,$kwID)
 	{
+		$result = tl::OK;
+		$object_table=DB_TABLE_PREFIX . 'keywords';
 		$name = $db->prepare_string(strtoupper($name));
-		$query = " SELECT id FROM keywords " .
+		$query = " SELECT id FROM {$object_table} " .
 				 " WHERE UPPER(keyword) ='" . $name.
 			     "' AND testproject_id = " . $tprojectID ;
 		
 		if ($kwID)
+		{
 			$query .= " AND id <> " .$kwID;
+		}
 		
-		$result = tl::OK;
 		if ($db->fetchFirstRow($query))
+		{
 			$result = self::E_NAMEALREADYEXISTS;
-		
+		}
 		return $result;
 	}
+
 	//BEGIN interface iSerializationToXML
 	
 	/**
@@ -230,11 +257,13 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 						);
 		$xml .= exportDataToXML($keywords,"{{XMLCODE}}",$keywordElemTpl,$keywordInfo,$bNoHeader);
 	}
+
 	public function readFromXML($xml)
 	{
 		$keyword = simplexml_load_string($xml);
 		return $this->readFromSimpleXML($keyword);
 	}
+
 	public function readFromSimpleXML($keyword)
 	{
 		$this->name = NULL;
@@ -260,6 +289,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	{
 		return "keyword;notes";
 	}
+
 	public function writeToCSV(&$csv,$delimiter = ';')
 	{
 		$keyword = array($this->getInfo());
@@ -269,9 +299,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				   );
 		$csv .= exportDataToCSV($keyword,$sKeys,$sKeys);
 	}
+
 	public function readFromCSV($csv,$delimiter = ';')
 	{
-		$delimiter = ';';
+		$delimiter = ';';   // @TODO REMOVE 
 		$data = explode($delimiter,$csv);
 	 					
 		$this->name = isset($data[0]) ? $data[0] : null;

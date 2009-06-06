@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2009/05/18 20:22:10 $ by $Author: schlundus $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2009/06/06 14:54:39 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
@@ -44,8 +44,8 @@ class tree
 	var $ROOT_NODE_PARENT_ID = NULL;
 	
 	var $db;
-  var $obj_table = 'nodes_hierarchy';
-  var $node_types_table = 'node_types';
+    var $obj_table = 'nodes_hierarchy';
+    var $node_types_table = 'node_types';
     
 
   /*
@@ -61,6 +61,9 @@ class tree
 	{
 		$this->db = &$db;
 		$this->node_descr_id = array_flip($this->node_types);
+	    $this->obj_table = DB_TABLE_PREFIX . $this->obj_table;
+        $this->node_types_table = DB_TABLE_PREFIX . $this->node_types_table;
+   
 	}
 
   /*

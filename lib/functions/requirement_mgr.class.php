@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/05/25 20:42:47 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/06/06 14:56:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -35,13 +35,7 @@ class requirement_mgr extends tlObjectWithAttachments
 {
 	var $db;
 	var $cfield_mgr;
-
-	var $object_table='requirements';
-	var $requirement_spec_table='req_specs';
-	var $req_coverage_table="req_coverage";
-	var $nodes_hierarchy_table="nodes_hierarchy";
-    private $tcversions_table="tcversions";
-
+    var $tables;
 	var $my_node_type;
 	var $tree_mgr;
 
@@ -57,8 +51,15 @@ class requirement_mgr extends tlObjectWithAttachments
 	function requirement_mgr(&$db)
 	{
 		$this->db = &$db;
-		$this->cfield_mgr=new cfield_mgr($this->db);
+        $this->tables = array('req_specs' => DB_TABLE_PREFIX . 'req_specs',
+                              'requirements' => DB_TABLE_PREFIX . 'requirements',
+                              'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
+                              'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                              'tcversions' => DB_TABLE_PREFIX . 'tcversions');
+        
+	    $this->object_table=$this->tables['requirements'];
 
+		$this->cfield_mgr=new cfield_mgr($this->db);
 		$this->tree_mgr =  new tree($this->db);
 		$node_types_descr_id= $this->tree_mgr->get_available_node_types();
 		$node_types_id_descr=array_flip($node_types_descr_id);
@@ -85,8 +86,8 @@ function get_by_id($id)
   
 	$sql = " SELECT {$field2get}, REQ_SPEC.testproject_id, NH_RSPEC.name AS req_spec_title, " .
 	       " NH_REQ.node_order " .
-	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC," .
-	       " {$this->nodes_hierarchy_table} NH_REQ, {$this->nodes_hierarchy_table} NH_RSPEC " .
+	       " FROM {$this->object_table} REQ, {$this->tables['req_specs']} REQ_SPEC," .
+	       " {$this->tables['nodes_hierarchy']} NH_REQ, {$this->tables['nodes_hierarchy']} NH_RSPEC " .
 	       " WHERE REQ.srs_id = REQ_SPEC.id " .
 	       " AND REQ.id = NH_REQ.id " .
 	       " AND REQ.srs_id = NH_RSPEC.id " .
@@ -169,13 +170,6 @@ function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
 		$name=$title;
 		$req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
 		$db_now = $this->db->db_now();
-		//sql = " INSERT INTO {$this->object_table} " .
-		//      " (id, srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
-        //      " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" .
-		//  	$this->db->prepare_string($title) . "','" . $this->db->prepare_string($scope) . "','" .
-		//  	$this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
-		//  	"{$user_id}, {$db_now})";
-
 		$sql = " INSERT INTO {$this->object_table} " .
 		       " (id, srs_id, req_doc_id, scope, status, type, author_id, creation_ts)" .
                " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" .
@@ -243,7 +237,7 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_co
 	  	if ($this->db->exec_query($sql))
 	  	{
         // need to update node on tree
-  		  $sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  		  $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
   		         " SET name='" . $this->db->prepare_string($title) . "'" .
   		         " WHERE id={$id}";
 
@@ -303,7 +297,7 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_co
 	    $this->cfield_mgr->remove_all_design_values_from_node($id);
 	
 	  	// delete dependencies with test specification
-	  	$sql = "DELETE FROM {$this->req_coverage_table} " . $where_clause_coverage;
+	  	$sql = "DELETE FROM {$this->tables['req_coverage']} " . $where_clause_coverage;
 	  	$result = $this->db->exec_query($sql);
 	
 		  if ($result)
@@ -331,7 +325,7 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_co
 
 	  	if ($result)
 	  	{
-	  		$sql = "DELETE FROM {$this->nodes_hierarchy_table} " . $where_clause_this;
+	  		$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_this;
 	  		$result = $this->db->exec_query($sql);
 	  	}
 	
@@ -349,10 +343,10 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_co
 function get_coverage($id)
 {
     $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
-  	       " FROM {$this->nodes_hierarchy_table} NHA, " .
-  	       " {$this->nodes_hierarchy_table} NHB, " .
-  	       " {$this->tcversions_table} TCV, " .
-  	       " {$this->req_coverage_table} RC " .
+  	       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
+  	       " {$this->tables['nodes_hierarchy']} NHB, " .
+  	       " {$this->tables['tcversions']} TCV, " .
+  	       " {$this->tables['req_coverage']} RC " .
            " WHERE RC.testcase_id = NHA.id " .
   		   " AND NHB.parent_id=NHA.id " .
            " AND TCV.id=NHB.id " .
@@ -431,7 +425,7 @@ function get_by_docid($reqdoc_id,$srs_id=null)
                 "NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
                 "REQ.modification_ts,NH.name AS title";
 
-	$sql = "SELECT {$fields2get} FROM {$this->object_table} REQ, {$this->nodes_hierarchy_table} NH " .
+	$sql = "SELECT {$fields2get} FROM {$this->object_table} REQ, {$this->tables['nodes_hierarchy']} NH " .
 	       " WHERE req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'"  .
 	       " AND REQ.id = NH.id ";
 
@@ -457,7 +451,7 @@ function get_by_title($title,$ignore_case=0)
 
   	$output = array();
     $sql = "SELECT SELECT {$fields2get} FROM {$this->object_table} REQ, " .
-  	       "{$this->nodes_hierarchy_table} NH ";
+  	       "{$this->tables['nodes_hierarchy']} NH ";
 
     $the_title=$this->db->prepare_string($title);
   	if($ignore_case)
@@ -516,8 +510,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   	if ( $req_cfg->use_req_spec_as_testsuite_name )
   	{
   	    // SRS Title
-        $sql = " SELECT {$fields2get} FROM {$this->requirement_spec_table} RSPEC," .
-  	           " {$this->nodes_hierarchy_table} NH " .
+        $sql = " SELECT {$fields2get} FROM {$this->tables['req_specs']} RSPEC," .
+  	           " {$this->tables['nodes_hierarchy']} NH " .
                " WHERE RSPEC.id = {$srs_id} AND RSPEC.id=NH.id ";
     	$arrSpec = $this->db->get_recordset($sql);
   	    $testproject_id=$arrSpec[0]['testproject_id'];
@@ -527,7 +521,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   	// find container with the following characteristics:
   	// 1. testproject_id is its father
   	// 2. has the searched name
-  	$sql="SELECT id FROM {$this->nodes_hierarchy_table} NH " .
+  	$sql="SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
   	     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
   	     " AND parent_id=" . $testproject_id . " " .
   	     " AND node_type_id=" . $node_descr_type['testsuite'];
@@ -598,7 +592,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     {
         $items = (array)$req_id;
   	    $in_clause = implode(",",$items);
-    	$sql = " SELECT req_id,testcase_id FROM {$this->req_coverage_table} " .
+    	$sql = " SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
   		       " WHERE req_id IN ({$in_clause}) AND testcase_id = {$testcase_id}";
  	    $coverage = $this->db->fetchRowsIntoMap($sql,'req_id');
    	    
@@ -607,7 +601,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
    	    {
    	        if( is_null($coverage) || !isset($coverage[$items[$idx]]) )
    	        {
-   	            $sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
+   	            $sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id) " .
          	           "VALUES ({$items[$idx]},{$testcase_id})";
            	    $result = $this->db->exec_query($sql);
          	    if ($this->db->affected_rows() == 1)
@@ -646,7 +640,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
 	function unassign_from_tcase($req_id,$testcase_id)
 	{
 		$output = 0;
-		$sql = " DELETE FROM {$this->req_coverage_table} " .
+		$sql = " DELETE FROM {$this->tables['req_coverage']} " .
 		     " WHERE req_id={$req_id} " .
 		     " AND testcase_id={$testcase_id}";
 	
@@ -657,7 +651,10 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
 			$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
 			$reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
 			if($tcInfo && $reqInfo)
-				logAuditEvent(TLS("audit_req_assignment_removed_tc",$reqInfo['name'],$tcInfo['name']),"ASSIGN",$this->object_table);
+			{
+				logAuditEvent(TLS("audit_req_assignment_removed_tc",$reqInfo['name'],
+				                  $tcInfo['name']),"ASSIGN",$this->object_table);
+			}
 			$output = 1;
 		}
 		return $output;
@@ -695,12 +692,12 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     
     // Get coverage for this set of requirements and testcase, to be used
     // to understand if insert if needed
-    $sql = " SELECT req_id,testcase_id FROM {$this->req_coverage_table} " .
+    $sql = " SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
   		   " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
     $coverage = $this->db->fetchMapRowsIntoMap($sql,'req_id','testcase_id');
    
    
-  	$insert_sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) ";
+  	$insert_sql = "INSERT INTO {$this->tables['req_coverage']} (req_id,testcase_id) ";
   	foreach($tcaseSet as $tcid)
   	{
   	    foreach($requirementSet as $reqid)
@@ -728,8 +725,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   function get_relationships($req_id)
   {
   	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
-  	       " FROM {$this->nodes_hierarchy_table} nodes_hierarchy, " .
-  	       "      {$this->req_coverage_table} req_coverage " .
+  	       " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy, " .
+  	       "      {$this->tables['req_coverage']} req_coverage " .
   			   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
   			   " AND  req_coverage.req_id={$req_id}";
 
@@ -758,10 +755,10 @@ function get_all_for_tcase($testcase_id, $srs_id = 'all')
   	$sql = " SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " .
   	       " NHB.name AS req_spec_title,req_coverage.testcase_id " .
   	       " FROM {$this->object_table} REQ, " .
-  	       "      {$this->req_coverage_table} REQ_COVERAGE," .
-  	       "      {$this->nodes_hierarchy_table} NHA," .
-  	       "      {$this->nodes_hierarchy_table} NHB," .
-  	       "      {$this->requirement_spec_table} RSPEC " ;
+  	       "      {$this->tables['req_coverage']} REQ_COVERAGE," .
+  	       "      {$this->tables['nodes_hierarchy']} NHA," .
+  	       "      {$this->tables['nodes_hierarchy']} NHB," .
+  	       "      {$this->tables['req_specs']} RSPEC " ;
   	
   	$idList = implode(",",(array)$testcase_id);
   	$sql .= " WHERE REQ_COVERAGE.testcase_id  IN (" . $idList . ")";

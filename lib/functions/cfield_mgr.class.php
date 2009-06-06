@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/05/30 15:03:02 $  $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2009/06/06 14:52:54 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
@@ -96,28 +96,8 @@ class cfield_mgr
 
 	var $db;
 	var $tree_manager;
+	var $tables;
 
-  // Why we are doing this ?
-  // To be ready in future to add a prefix on table names
-  //
-  var $users_table="users";
-  var $builds_table="builds";
-
-
-  var $object_table="custom_fields";
-  var $custom_fields_table="custom_fields";
-  var $cfield_design_values_table="cfield_design_values";
-  var $cfield_execution_values_table="cfield_execution_values";
-  var $cfield_testplan_design_values_table="cfield_testplan_design_values";
-  var $cfield_testprojects_table='cfield_testprojects';
-  var $cfield_node_types_table="cfield_node_types";
-
-  var $execution_bugs_table="execution_bugs";
-  var $executions_table='executions';
-  var $tcversions_table='tcversions';
-
-  var $nodes_hierarchy_table="nodes_hierarchy";
-  var $node_types_table="node_types";
 
 
   // Hold string keys used on this object and pages that manages CF,
@@ -274,6 +254,23 @@ var $node_types = array('testsuite','testplan','testcase','requirement_spec','re
 		{
 		    $this->possible_values_cfg +=$gui_cfg->custom_fields->possible_values_cfg;
 		}
+
+        $this->tables=array('users' => DB_TABLE_PREFIX . "users",
+                            'builds' => DB_TABLE_PREFIX . "builds",
+                            'custom_fields' => DB_TABLE_PREFIX . "custom_fields",
+                            'cfield_design_values' => DB_TABLE_PREFIX . "cfield_design_values",
+                            'cfield_execution_values' => DB_TABLE_PREFIX . "cfield_execution_values",
+                            'cfield_testplan_design_values' => DB_TABLE_PREFIX . "cfield_testplan_design_values",
+                            'cfield_testprojects' => DB_TABLE_PREFIX . 'cfield_testprojects',
+                            'cfield_node_types' => DB_TABLE_PREFIX . "cfield_node_types",
+                            'execution_bugs' => DB_TABLE_PREFIX . "execution_bugs",
+                            'executions' => DB_TABLE_PREFIX . 'executions',
+                            'tcversions' => DB_TABLE_PREFIX . 'tcversions',
+                            'nodes_hierarchy' => DB_TABLE_PREFIX . "nodes_hierarchy",
+                            'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
+                            'node_types' => DB_TABLE_PREFIX . "node_types");
+        
+        $this->object_table=$this->tables["custom_fields"];
 	}
 
     /**
@@ -501,13 +498,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         $hash_descr_id = $this->tree_manager->get_available_node_types();
         $node_type_id=$hash_descr_id[$node_type];
 
-        $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
+        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
                              " AND CFNT.node_type_id={$node_type_id} ";
     }
     if( !is_null($node_id) )
     {
       $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
-      $additional_join .= " LEFT OUTER JOIN cfield_design_values CFDV ON CFDV.field_id=CF.id " .
+      $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.field_id=CF.id " .
                           " AND CFDV.node_id={$node_id} ";
     }
 
@@ -531,9 +528,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
             $additional_filter .= " AND CF.enable_on_testplan_design=1 ";
         }   
            
-           
-           
-        // 20090420 - franciscom
         if( isset($filters['cfield_id']) && !is_null($filters['cfield_id']) )
         {
             $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
@@ -543,7 +537,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM {$this->object_table} CF " .
-         " JOIN {$this->cfield_testprojects_table} CFTP ON CFTP.field_id=CF.id " .
+         " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
          " WHERE CFTP.testproject_id={$tproject_id} " .
          " AND   CFTP.active=1     " .
@@ -810,8 +804,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         $value = $type_and_value['cf_value'];
 
         // do I need to update or insert this value?
-        $sql = "SELECT value FROM cfield_design_values " .
-    		 			 " WHERE field_id={$field_id} AND	node_id={$node_id}";
+        $sql = "SELECT value FROM {$this->tables['cfield_design_values']} " .
+    		   " WHERE field_id={$field_id} AND	node_id={$node_id}";
 
         $result = $this->db->exec_query($sql);
 
@@ -824,7 +818,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         if($this->db->num_rows( $result ) > 0 )
         {
 
-          $sql = "UPDATE cfield_design_values " .
+          $sql = "UPDATE {$this->tables['cfield_design_values']} " .
                  " SET value='{$safe_value}' " .
     		 			   " WHERE field_id={$field_id} AND	node_id={$node_id}";
         }
@@ -834,7 +828,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
-  		    $sql = "INSERT INTO cfield_design_values " .
+  		    $sql = "INSERT INTO {$this->tables['cfield_design_values']} " .
   					     " ( field_id, node_id, value ) " .
   				       " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
   		  }
@@ -862,7 +856,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   function remove_all_design_values_from_node($node_id)
   {
 
-    $sql="DELETE FROM cfield_design_values ";
+    $sql="DELETE FROM {$this->tables['cfield_design_values']} ";
     if( is_array($node_id) )
     {
 
@@ -895,9 +889,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       $not_in_clause=" AND CF.id NOT IN (" .implode(',',$id2exclude) .") ";
     }
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id " .
-         " FROM custom_fields CF, " .
-         "     cfield_node_types CFNT, " .
-         "     node_types NT " .
+         " FROM {$this->object_table} CF, " .
+         "     {$this->tables['cfield_node_types']} CFNT, " .
+         "     {$this->tables['node_types']} NT " .
          " WHERE CF.id=CFNT.field_id " .
          " AND NT.id=CFNT.node_type_id " .
          $not_in_clause .
@@ -925,8 +919,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          "       CFTP.display_order, CFTP.active " .
          " FROM custom_fields CF, " .
          "      cfield_testprojects CFTP, " .
-         "      cfield_node_types CFNT, " .
-         "      node_types NT " .
+         "      {$this->tables['cfield_node_types']} CFNT, " .
+         "      {$this->tables['node_types']} NT " .
          " WHERE CF.id=CFNT.field_id " .
          " AND   CF.id=CFTP.field_id " .
          " AND   NT.id=CFNT.node_type_id " .
@@ -1067,8 +1061,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	  $my_name=$this->db->prepare_string(trim($name));
 
 	  $sql="SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
-	       " FROM {$this->custom_fields_table} CF, {$this->cfield_node_types_table} CFNT," .
-	       " {$this->node_types_table} NT" .
+	       " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_node_types']} CFNT," .
+	       " {$this->tables['node_types']} NT" .
 	       " WHERE CF.id=CFNT.field_id " .
 	       " AND CFNT.node_type_id=NT.id " .
 	       " AND name='{$my_name}' ";
@@ -1087,7 +1081,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_by_id($id)
 	{
 	  $sql="SELECT CF.*, CFNT.node_type_id" .
-	       " FROM custom_fields CF, cfield_node_types CFNT" .
+	       " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
 	       " WHERE CF.id=CFNT.field_id " .
 	       " AND   CF.id={$id} ";
     return($this->db->fetchRowsIntoMap($sql,'id'));
@@ -1106,8 +1100,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function get_available_item_type($id)
 	{
 	  $sql=" SELECT CFNT.field_id,CFNT.node_type_id ".
-	       " FROM {$this->cfield_node_types_table} CFNT, " .
-	       "      {$this->nodes_types_table} NT " .
+	       " FROM {$this->tables['cfield_node_types']} CFNT, " .
+	       "      {$this->tables['nodes_types']} NT " .
 	       " WHERE NT.id=CFNT.node_type_id " .
 	       " CFNt.field_id={$id} ";
 
@@ -1146,7 +1140,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     $my_pvalues=$this->db->prepare_string($cf['possible_values']);
 
 
-    $sql="INSERT INTO custom_fields " .
+    $sql="INSERT INTO {$this->object_table} " .
          " (name,label,type,possible_values, " .
          "  show_on_design,enable_on_design, " .
          "  show_on_testplan_design,enable_on_testplan_design, " .
@@ -1160,9 +1154,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
    	if ($result)
   	{
   	  // at least for Postgres DBMS table name is needed.
-  	  $field_id=$this->db->insert_id('custom_fields');
+  	  $field_id=$this->db->insert_id($this->object_table);
 
-      $sql="INSERT INTO cfield_node_types " .
+      $sql="INSERT INTO {$this->tables['cfield_node_types']} " .
            " (field_id,node_type_id) " .
            " VALUES({$field_id},{$cf['node_type_id']}) ";
       $result=$this->db->exec_query($sql);
@@ -1214,7 +1208,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
 		if ($result)
 		{
-			$sql = "UPDATE cfield_node_types " .
+			$sql = "UPDATE {$this->tables['cfield_node_types']} " .
 				" SET node_type_id={$cf['node_type_id']}" .
 				" WHERE field_id={$cf['id']}";
 			$result = $this->db->exec_query($sql);
@@ -1246,7 +1240,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		    }
 		}
 		
-		$sql="DELETE FROM cfield_node_types WHERE field_id={$id}";
+		$sql="DELETE FROM {$this->tables['cfield_node_types']} WHERE field_id={$id}";
 		$result=$this->db->exec_query($sql);
 		if($result)
 		{
@@ -1268,13 +1262,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function is_used($id)
 	{
-	  $sql="SELECT field_id FROM {$this->cfield_design_values_table} " .
+	  $sql="SELECT field_id FROM {$this->tables['cfield_design_values']} " .
 	       "WHERE  field_id={$id} " .
 	       "UNION " .
-	       "SELECT field_id FROM {$this->cfield_testplan_design_values_table} " .
+	       "SELECT field_id FROM {$this->tables['cfield_testplan_design_values']} " .
 	       "WHERE  field_id={$id} " .
 	       "UNION " .
-	       "SELECT field_id FROM {$this->cfield_execution_values_table} " .
+	       "SELECT field_id FROM {$this->tables['cfield_execution_values']} " .
 	       "WHERE  field_id={$id} ";
 	  $result=$this->db->exec_query($sql);
 	  return($this->db->num_rows( $result ) > 0 ? 1 : 0);
@@ -1290,9 +1284,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function whoIsUsingMe($id)
 	{
 	  $sql=" SELECT field_id,name ".
-	       " FROM {$this->cfield_design_values_table} CFDV, ".
-	       "      {$this->cfield_node_types_table} CFNT, " .
-	       "      {$this->nodes_hierarchy_table} NH " .
+	       " FROM {$this->tables['cfield_design_values']} CFDV, ".
+	       "      {$this->tables['cfield_node_types']} CFNT, " .
+	       "      {$this->tables['nodes_hierarchy']} NH " .
 	       " WHERE CFDV.field_id=CFNT.field_id " .
 	       " AND NH.id=CFDV.node_id " .
 	       " CFDV.field_id={$id} ";
@@ -1451,14 +1445,14 @@ function name_is_unique($id,$name)
    		$hash_descr_id = $this->tree_manager->get_available_node_types();
         $node_type_id=$hash_descr_id[$node_type];
 
-        $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
+        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
                                " AND CFNT.node_type_id={$node_type_id} ";
     }
     
     if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
     {
         $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
-        $additional_join .= " LEFT OUTER JOIN cfield_execution_values CFEV ON CFEV.field_id=CF.id " .
+        $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                             " AND CFEV.tcversion_id={$node_id} " .
                             " AND CFEV.execution_id={$execution_id} " .
                             " AND CFEV.testplan_id={$testplan_id} ";
@@ -1475,20 +1469,20 @@ function name_is_unique($id,$name)
 	                                "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " . 
                                   "B.id AS builds_id,B.name AS build_name, U.login AS tester " ;
             
-            $additional_join .= " JOIN {$this->cfield_execution_values_table} CFEV ON CFEV.field_id=CF.id " .
+            $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                                 " AND CFEV.testplan_id={$testplan_id} " .
-                                " JOIN {$this->executions_table} EXEC ON CFEV.tcversion_id = EXEC.tcversion_id " .
+                                " JOIN {$this->tables['executions']} EXEC ON CFEV.tcversion_id = EXEC.tcversion_id " .
                                 " AND CFEV.execution_id = EXEC.id " ;
             
-            $additional_join .= " JOIN {$this->builds_table} B ON B.id = EXEC.build_id " .
+            $additional_join .= " JOIN {$this->tables['builds']} B ON B.id = EXEC.build_id " .
                                 " AND B.testplan_id = EXEC.testplan_id " ;
 
-            $additional_join .= " JOIN {$this->tcversions_table} TCV ON TCV.version = EXEC.tcversion_number " .
+            $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.version = EXEC.tcversion_number " .
 			                          " AND TCV.id = EXEC.tcversion_id " ;
             
-            $additional_join .= " JOIN {$this->users_table} U ON  U.id = EXEC.tester_id " .
-                                " JOIN {$this->nodes_hierarchy_table} NHA ON NHA.id = EXEC.tcversion_id " .
-                                " JOIN {$this->nodes_hierarchy_table} NHB ON NHB.id = NHA.parent_id  " ;
+            $additional_join .= " JOIN {$this->tables['users']} U ON  U.id = EXEC.tester_id " .
+                                " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = EXEC.tcversion_id " .
+                                " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
 
 			      // $order_clause="ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
             $order_clause="ORDER BY EXEC.tcversion_id,exec_status,exec_id";
@@ -1563,7 +1557,7 @@ function name_is_unique($id,$name)
 
 
         // do I need to update or insert this value?
-        $sql = " SELECT value FROM {$this->cfield_execution_values_table} " . $where_clause;
+        $sql = " SELECT value FROM {$this->tables['cfield_execution_values']} " . $where_clause;
         $result = $this->db->exec_query($sql); 			   
 
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
@@ -1575,7 +1569,7 @@ function name_is_unique($id,$name)
         if($this->db->num_rows( $result ) > 0 )
         {
 
-          $sql = "UPDATE {$this->cfield_execution_values_table} " .
+          $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .
     	         $where_clause;
         }
@@ -1586,7 +1580,7 @@ function name_is_unique($id,$name)
   		  # Always store the value, even if it's the default value
   		  # This is important, as the definitions might change but the
   		  #  values stored with a bug must not change
-  		  $sql = "INSERT INTO {$this->cfield_execution_values_table} " .
+  		  $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
   				 " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
   			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
         }
@@ -1888,7 +1882,8 @@ function getXMLServerParams($node_id)
 		$srv_cfg->path=$prefix . "server_path";
 
 		$sql = "SELECT cf.name, cfdv.value " .
-		       "FROM cfield_design_values cfdv,custom_fields cf " .
+		       "FROM {$this->tables['cfield_design_values']} cfdv," .
+		       " {$this->tables['custom_fields']}  cf " .
 		       "WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
 
 		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
@@ -1982,7 +1977,7 @@ function getXMLServerParams($node_id)
       {
         $value = $type_and_value['cf_value'];
         // do I need to update or insert this value?
-        $sql = "SELECT value FROM {$this->cfield_testplan_design_values_table} " .
+        $sql = "SELECT value FROM {$this->tables['cfield_testplan_design_values']} " .
     		 			 " WHERE field_id={$field_id} AND	link_id={$link_id}";
 
         $result = $this->db->exec_query($sql);
@@ -1996,9 +1991,9 @@ function getXMLServerParams($node_id)
         if($this->db->num_rows( $result ) > 0 )
         {
 
-          $sql = "UPDATE {$this->cfield_testplan_design_values_table} " .
+          $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
                  " SET value='{$safe_value}' " .
-    		 			   " WHERE field_id={$field_id} AND	link_id={$link_id}";
+    		     " WHERE field_id={$field_id} AND	link_id={$link_id}";
         }
         else
         {
@@ -2006,9 +2001,9 @@ function getXMLServerParams($node_id)
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
-  		    $sql = "INSERT INTO {$this->cfield_testplan_design_values_table} " .
-  					     " ( field_id, link_id, value ) " .
-  				       " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
+  		    $sql = "INSERT INTO {$this->tables['cfield_testplan_design_values']} " .
+  				   " ( field_id, link_id, value ) " .
+  				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
   		  }
         $this->db->exec_query($sql);
       } //foreach($cfield
@@ -2078,26 +2073,9 @@ function getXMLServerParams($node_id)
    		$hash_descr_id = $this->tree_manager->get_available_node_types();
         $node_type_id=$hash_descr_id[$node_type];
 
-        $additional_join  .= " JOIN {$this->cfield_node_types_table} CFNT ON CFNT.field_id=CF.id " .
+        $additional_join  .= " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
                            " AND CFNT.node_type_id={$node_type_id} ";
     }
-    
-    /*
-    if( !is_null($node_id) && !is_null($link_id) && !is_null($testplan_id) )
-    {
-      $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
-      $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values} CFTDV ON CFEV.field_id=CF.id " .
-                          " AND CFTDV.tcversion_id={$node_id} " .
-                          " AND CFTDV.link_id={$link_id} " .
-                          " AND CFTDV.testplan_id={$testplan_id} ";
-    }
-    */
-    
-    // if( !is_null($node_id) && !is_null($link_id) )
-    // {
-    //   $additional_values .= ",CFTDV.value AS value,{$node_id} AS node_id";
-    //   $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values} CFTDV ON CFTDV.field_id=CF.id " .
-    //                       " AND CFTDV.link_id={$link_id} " .
     // }
     
     //-amitkhullar - Created this logic to get the linked tcversions for a testplan 
@@ -2109,16 +2087,16 @@ function getXMLServerParams($node_id)
                               "TCV.tc_external_id ";
                                //"TCV.tc_external_id, exec.status ";
                                
-        $additional_join .= "JOIN testplan_tcversions TPTC" .
+        $additional_join .= "JOIN {$this->tables['testplan_tcversions']} TPTC" .
                           " ON TPTC.testplan_id = {$testplan_id}" .
-        				  " JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
+        				  " JOIN {$this->tables['cfield_testplan_design_values']} CFTDV " .
                           " ON CFTDV.field_id=CF.id " .
                           " AND CFTDV.link_id = TPTC.id ";
         
-        $additional_join .= " JOIN {$this->tcversions_table} TCV ON TCV.id = TPTC.tcversion_id " .
+        $additional_join .= " JOIN {$this->tables['tcversions']} TCV ON TCV.id = TPTC.tcversion_id " .
 		                    " AND TCV.id = TPTC.tcversion_id " .
-         					" JOIN {$this->nodes_hierarchy_table} NHA ON NHA.id = TPTC.tcversion_id " .
-                            " JOIN {$this->nodes_hierarchy_table} NHB ON NHB.id = NHA.parent_id  " ;
+         					" JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = TPTC.tcversion_id " .
+                            " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
         
         //$additional_join .= " JOIN executions EXEC on TPTC.tcversion_id = EXEC.tcversion_id  ";
         
@@ -2131,7 +2109,7 @@ function getXMLServerParams($node_id)
     elseif( !is_null($link_id) )
     {
         $additional_values .= ",CFTDV.value AS value, CFTDV.link_id AS node_id";
-        $additional_join .= " LEFT OUTER JOIN {$this->cfield_testplan_design_values_table} CFTDV " .
+        $additional_join .= " LEFT OUTER JOIN {$this->tables['cfield_testplan_design_values']} CFTDV " .
                             " ON CFTDV.field_id=CF.id " .
                             " AND CFTDV.link_id={$link_id} ";
     }
@@ -2140,8 +2118,8 @@ function getXMLServerParams($node_id)
     
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
-         " FROM {$this->custom_fields_table} CF " .
-         " JOIN {$this->cfield_testprojects_table} CFTP ON CFTP.field_id=CF.id " .
+         " FROM {$this->tables['custom_fields']} CF " .
+         " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
          " WHERE CFTP.testproject_id={$tproject_id} " .
          " AND   CFTP.active=1     " .
@@ -2297,9 +2275,9 @@ function remove_all_scopes_values($id)
 {
     // some sort of blind delete
     $sql=array();
-    $sql[]="DELETE FROM {$this->cfield_design_values_table} WHERE field_id={$id} ";
-    $sql[]="DELETE FROM {$this->cfield_execution_values_table} WHERE field_id={$id} ";
-    $sql[]="DELETE FROM {$this->cfield_testplan_design_values_table} WHERE field_id={$id} ";
+    $sql[]="DELETE FROM {$this->tables['cfield_design_values']} WHERE field_id={$id} ";
+    $sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE field_id={$id} ";
+    $sql[]="DELETE FROM {$this->tables['cfield_testplan_design_values']} WHERE field_id={$id} ";
   
     foreach($sql as $s)
     {
@@ -2317,7 +2295,7 @@ function remove_all_scopes_values($id)
 function get_linked_testprojects($id)
 {
     $sql=" SELECT NH.id, NH.name " .
-         " FROM {$this->cfield_testprojects_table} CFTP, {$this->nodes_hierarchy_table} NH " .
+         " FROM {$this->tables['cfield_testprojects']} CFTP, {$this->tables['nodes_hierarchy']} NH " .
          " WHERE CFTP.testproject_id=NH.id " .
          " AND CFTP.field_id = {$id} ORDER BY NH.name ";
 

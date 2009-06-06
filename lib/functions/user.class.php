@@ -6,8 +6,8 @@
  *
  * @package TestLink
  * Filename $RCSfile: user.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/06/04 19:22:01 $ $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/06/06 14:56:55 $ $Author: franciscom $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -297,7 +297,7 @@ class tlUser extends tlDBObject
 		{		
 			if($this->dbID)
 			{
-				$query = "UPDATE users " .
+				$query = "UPDATE {$this->tables['users']} " .
 			       "SET first='" . $db->prepare_string($this->firstName) . "'" .
 			       ", last='" .  $db->prepare_string($this->lastName)    . "'" .
 			       ", email='" . $db->prepare_string($this->emailAddress)   . "'" .
@@ -310,7 +310,7 @@ class tlUser extends tlDBObject
 			}
 			else
 			{
-				$query = "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
+				$query = "INSERT INTO {$this->tables['users']} (login,password,first,last,email,role_id,locale,active) 
 							VALUES ('" . 
 							$db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
 							$db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
@@ -319,7 +319,7 @@ class tlUser extends tlDBObject
 				$result = $db->exec_query($query);
 				if($result)
 				{
-					$this->dbID = $db->insert_id('users');
+					$this->dbID = $db->insert_id($this->tables['users']);
 				}	
 			}
 			$result = $result ? tl::OK : self::E_DBERROR;
@@ -598,12 +598,15 @@ class tlUser extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$users = null;
-		for($i = 0;$i < sizeof($ids);$i++)
+		$qty=sizeof($ids);
+		for($idx = 0;$idx < $qty; $idx++)
 		{
-			$id = $ids[$i];
+			$id = $ids[$idx];
 			$user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 			if ($user)
+			{
 				$users[$id] = $user;
+			}	
 		}
 		return $users ? $users : null;
 	}
@@ -611,7 +614,8 @@ class tlUser extends tlDBObject
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		$query = " SELECT id FROM users";
+		$tables['users']=DB_TABLE_PREFIX . 'users';
+		$query = " SELECT id FROM {$tables['users']} ";
 		if (!is_null($whereClause))
 		{
 			$query .= ' '.$whereClause;

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.113 $
- * @modified $Date: 2009/06/06 14:56:20 $  $Author: franciscom $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2009/06/06 17:51:40 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090606 - franciscom - get_by_prefix() interface changes
  * 20090512 - franciscom - added setPublicStatus()
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
  *                                      getFreeTestCases()
@@ -56,7 +57,7 @@ class testproject extends tlObjectWithAttachments
 	const GET_EMPTY_REQSPEC = 0;
 
 
-	private $object_table='testprojects';
+	var $object_table='testprojects';
 	private $requirements_table='requirements';
 	private $req_specs_table='req_specs';
 	private $req_coverage_table="req_coverage";
@@ -102,10 +103,10 @@ class testproject extends tlObjectWithAttachments
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr=new cfield_mgr($this->db);
 
-        $key2loop = array('object_table','requirements_table','req_specs_table',
+        $key2loop = array('requirements_table','req_specs_table',
                           'req_coverage_table','nodes_hierarchy_table','keywords_table',
 	                      'testcase_keywords_table', 'testplans_table',
-	                      'custom_fields_table','cfield_testprojects_table',
+	                      'custom_fields_table','cfield_testprojects_table','users_table',
 	                      'cfield_node_types_table', 'user_testproject_roles_table',
 	                      'node_types_table','testplan_tcversions_table','tcversions_table');
                           
@@ -113,6 +114,8 @@ class testproject extends tlObjectWithAttachments
         {
             $this->$table_name = DB_TABLE_PREFIX . $this->$table_name ;    
         }
+
+        $this->object_table = DB_TABLE_PREFIX . $this->object_table;    
 
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
 	}
@@ -305,7 +308,8 @@ public function setSessionProject($projectId)
 function get_by_name($name, $addClause = null)
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
-	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
+	       " FROM {$this->object_table} testprojects, " .
+	       " {$this->nodes_hierarchy_table} nodes_hierarchy".
 	       " WHERE testprojects.id = nodes_hierarchy.id AND".
 	       "  nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
    
@@ -326,7 +330,8 @@ function get_by_name($name, $addClause = null)
 public function get_by_id($id)
 {
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
-	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
+	       " FROM {$this->object_table} testprojects, " .
+	       " {$this->nodes_hierarchy_table} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ".
 	       " AND testprojects.id = {$id}";
 	$recordset = $this->db->get_recordset($sql);
@@ -337,14 +342,21 @@ public function get_by_id($id)
 /**
  * Get Test project data according to prefix
  * @param string $prefix 
+ * @param string $addClause optional additional SQL 'AND filter' clause
  * @return array map with test project info; null if query fails
  */
-public function get_by_prefix($prefix)
+public function get_by_prefix($prefix, $addClause = null)
 {
+    $safe_prefix = $this->db->prepare_string($prefix);
+    
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
-	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
+	       " FROM {$this->object_table} testprojects, " .
+	       " {$this->nodes_hierarchy_table} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ".
-	       " AND testprojects.prefix = '{$prefix}'";
+	       " AND testprojects.prefix = '{$safe_prefix}'";
+	       
+	$sql .= is_null($addClause) ? '' : " AND {$addClause} ";
+	       
 	$recordset = $this->db->get_recordset($sql);
 	return ($recordset ? $recordset[0] : null);
 }
@@ -365,7 +377,8 @@ rev:
 function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
-	       " FROM {$this->object_table}, {$this->nodes_hierarchy_table} ".
+	       " FROM {$this->object_table} testprojects, " .
+	       " {$this->nodes_hierarchy_table} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ";
 	
 	if (!is_null($active) )
@@ -725,10 +738,10 @@ function count_testcases($id)
 	{
 	   	$check_op['msg'] = '';
 		 	$check_op['status_ok'] = 1;
-		
+	
       $sql = " SELECT id FROM {$this->object_table} " .
    	         " WHERE prefix='" . $this->db->prepare_string($prefix) . "'";
-		    	   " AND id <> {$id}";
+		     " AND id <> {$id}";
 
 		  $rs = $this->db->get_recordset($sql);
 		  if(!is_null($rs))
@@ -787,10 +800,8 @@ function count_testcases($id)
   function getTestCasePrefix($id)
   {
   	$ret=null;
-  	$sql = " SELECT testprojects.prefix ".
-  	       " FROM {$this->object_table} " .
-  	       " WHERE testprojects.id = {$id}";
-	  $ret = $this->db->fetchOneValue($sql);
+  	$sql = "SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
+	$ret = $this->db->fetchOneValue($sql);
   	return ($ret);
   }
 
@@ -808,13 +819,10 @@ function count_testcases($id)
   {
   	$ret=null;
     $sql = " UPDATE {$this->object_table} " .
-           " SET tc_counter=tc_counter+1 " .
-  	       " WHERE testprojects.id = {$id}";
+           " SET tc_counter=tc_counter+1  WHERE id = {$id}";
   	$recordset = $this->db->exec_query($sql);
 
-  	$sql = " SELECT tc_counter ".
-  	       " FROM {$this->object_table} " .
-  	       " WHERE testprojects.id = {$id}";
+  	$sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
   	$recordset = $this->db->get_recordset($sql);
     $ret=$recordset[0]['tc_counter'];
   	return ($ret);
@@ -826,7 +834,7 @@ function count_testcases($id)
 function setPublicStatus($id,$status)
 {
     $isPublic = val($status) > 0 ? 1 : 0; 
-	$sql = "UPDATE testprojects SET is_public={$isPublic} WHERE id={$id}";
+	$sql = "UPDATE {$this->object_table} SET is_public={$isPublic} WHERE id={$id}";
 	$result = $this->db->exec_query($sql);
 	return $result ? 1 : 0;
 }

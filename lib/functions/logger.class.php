@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/06/06 14:54:03 $ $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/06/06 17:51:40 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -503,7 +503,7 @@ class tlEventManager extends tlObjectWithDB
 		if (!is_null($endTime))
 			$clauses[] = "fired_at <= {$endTime}";
 
-		$query = "SELECT id FROM events";
+		$query = "SELECT id FROM {$this->tables['events']} ";
 		if ($clauses)
 			$query .= " WHERE " . implode(" AND ",$clauses);
 
@@ -612,7 +612,7 @@ class tlEvent extends tlDBObject
 	{
 		$this->_clean($options);
 		$query = " SELECT id,transaction_id,log_level,source,description,fired_at,object_id,object_type,activity " .
-		         " FROM events ";
+		         " FROM {$this->tables['events']} ";
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "id = {$this->dbID}";
@@ -626,9 +626,10 @@ class tlEvent extends tlDBObject
 			$this->logLevel = $info['log_level'];
 			$this->source = $info['source'];
 			$this->description = $info['source'];
-			$tmp = tlMetaString::unserialize($info['description']);
-			if ($tmp)
+			if( ($tmp = tlMetaString::unserialize($info['description'])) )
+			{
 				$this->description = $tmp;
+			}
 			$this->timestamp = $info['fired_at'];
 			$this->objectID = $info['object_id'];
 			$this->objectType = $info['object_type'];

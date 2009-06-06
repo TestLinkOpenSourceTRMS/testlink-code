@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/05/13 05:55:49 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/06/06 17:51:40 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -366,11 +366,12 @@ function edit(&$argsObj,&$tprojectMgr)
 
   returns: -
 
+  rev: 20090606 - franciscom - minor refactoring
 */
 function crossChecks($argsObj,&$tprojectMgr)
 {
     $op = new stdClass();
-    $updateAdditionalSQL = null;
+    $updateAdditionalSQLFilter = null ;
     $op = $tprojectMgr->checkName($argsObj->tprojectName);
 
     $check_op = array();
@@ -378,22 +379,20 @@ function crossChecks($argsObj,&$tprojectMgr)
     $check_op['status_ok'] = $op['status_ok'];
 
     if($argsObj->doAction == 'doUpdate')
-		    $updateAdditionalSQL = "testprojects.id <> {$argsObj->tprojectID}";
-
+    {
+        $updateAdditionalSQLFilter = " testprojects.id <> {$argsObj->tprojectID}";
+    }
+    
     if($check_op['status_ok'])
     {
-		    if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQL))
+		    if($tprojectMgr->get_by_name($argsObj->tprojectName,$updateAdditionalSQLFilter))
 		    {
 		    	$check_op['msg'][] = sprintf(lang_get('error_product_name_duplicate'),$argsObj->tprojectName);
 		    	$check_op['status_ok'] = 0;
 		    }
-
-		    $sql = "SELECT id FROM testprojects " .
-		    	     "WHERE prefix='" . $tprojectMgr->db->prepare_string($argsObj->tcasePrefix) . "'";
-		    if(!is_null($updateAdditionalSQL))
-		    	$sql .= " AND {$updateAdditionalSQL} ";
-
-		    $rs = $tprojectMgr->db->get_recordset($sql);
+            
+            // Check prefix no matter what has happen with previous check
+		    $rs = $tprojectMgr->get_by_prefix($argsObj->tcasePrefix,$updateAdditionalSQLFilter);
 		    if(!is_null($rs))
 		    {
 		    	$check_op['msg'][] = sprintf(lang_get('error_tcase_prefix_exists'),$argsObj->tcasePrefix);
@@ -401,7 +400,9 @@ function crossChecks($argsObj,&$tprojectMgr)
 		    }
     }
     else
+    {
          $check_op['msg'][] = $op['msg'];
+    }
     return $check_op;
 }
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.114 $
- * @modified $Date: 2009/06/06 17:51:40 $  $Author: franciscom $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2009/06/07 12:58:56 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090606 - franciscom - get_by_prefix() interface changes
@@ -55,25 +55,7 @@ class testproject extends tlObjectWithAttachments
 	const TESTCASE_PREFIX_MAXLEN = 16; // must be changed if field dimension changes
 	const GET_NOT_EMPTY_REQSPEC = 1;
 	const GET_EMPTY_REQSPEC = 0;
-
-
-	var $object_table='testprojects';
-	private $requirements_table='requirements';
-	private $req_specs_table='req_specs';
-	private $req_coverage_table="req_coverage";
-	private $nodes_hierarchy_table="nodes_hierarchy";
-	private $keywords_table = "keywords";
-	private $testcase_keywords_table="testcase_keywords";
-	private $testplans_table="testplans";
-	private $custom_fields_table="custom_fields";
-	private $cfield_testprojects_table="cfield_testprojects";
-	private $cfield_node_types_table="cfield_node_types";
-	private $user_testproject_roles_table="user_testproject_roles";
-	private $node_types_table="node_types";
-	private $testplan_tcversions_table="testplan_tcversions";
-	private $tcversions_table="tcversions";
-    private $users_table='users';
-
+	
 	var $db;
 	var $tree_manager;
 	var $cfield_mgr;
@@ -102,22 +84,8 @@ class testproject extends tlObjectWithAttachments
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr=new cfield_mgr($this->db);
-
-        $key2loop = array('requirements_table','req_specs_table',
-                          'req_coverage_table','nodes_hierarchy_table','keywords_table',
-	                      'testcase_keywords_table', 'testplans_table',
-	                      'custom_fields_table','cfield_testprojects_table','users_table',
-	                      'cfield_node_types_table', 'user_testproject_roles_table',
-	                      'node_types_table','testplan_tcversions_table','tcversions_table');
-                          
-        foreach($key2loop as $table_name)
-        {
-            $this->$table_name = DB_TABLE_PREFIX . $this->$table_name ;    
-        }
-
-        $this->object_table = DB_TABLE_PREFIX . $this->object_table;    
-
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
+        $this->object_table=$this->tables['testprojects'];
 	}
 
 /**
@@ -233,7 +201,7 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation,
 	if ($result)
 	{
 		// update related node
-		$sql = "UPDATE {$this->nodes_hierarchy_table} SET name='" .
+		$sql = "UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
 				$this->db->prepare_string($name) .
 				"' WHERE id= {$id}";
 		$result = $this->db->exec_query($sql);
@@ -309,7 +277,7 @@ function get_by_name($name, $addClause = null)
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->nodes_hierarchy_table} nodes_hierarchy".
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
 	       " WHERE testprojects.id = nodes_hierarchy.id AND".
 	       "  nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
    
@@ -331,7 +299,7 @@ public function get_by_id($id)
 {
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->nodes_hierarchy_table} nodes_hierarchy ".
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ".
 	       " AND testprojects.id = {$id}";
 	$recordset = $this->db->get_recordset($sql);
@@ -351,7 +319,7 @@ public function get_by_prefix($prefix, $addClause = null)
     
 	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->nodes_hierarchy_table} nodes_hierarchy ".
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ".
 	       " AND testprojects.prefix = '{$safe_prefix}'";
 	       
@@ -378,7 +346,7 @@ function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->nodes_hierarchy_table} nodes_hierarchy ".
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ";
 	
 	if (!is_null($active) )
@@ -432,15 +400,15 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     $items = array();
 
     // Get default role
-    $sql = " SELECT id,role_id FROM {$this->users_table}  where id={$user_id}";
+    $sql = " SELECT id,role_id FROM {$this->tables['users']}  where id={$user_id}";
     $user_info = $this->db->get_recordset($sql);
 	$role_id=$user_info[0]['role_id'];
 
 
 	$sql =  " SELECT nodes_hierarchy.name,testprojects.*
- 	          FROM {$this->nodes_hierarchy_table} nodes_hierarchy
+ 	          FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy
  	          JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id
-	          LEFT OUTER JOIN {$this->user_testproject_roles_table} user_testproject_roles
+	          LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles
 		        ON testprojects.id = user_testproject_roles.testproject_id AND
 		 	      user_testproject_roles.user_id = {$user_id} WHERE ";
 
@@ -761,7 +729,7 @@ function count_testcases($id)
 	 */
 	function activateTestProject($id, $status)
 	{
-		$sql = "UPDATE testprojects SET active=" . $status . " WHERE id=" . $id;
+		$sql = "UPDATE {$this->tables['testprojects']} SET active=" . $status . " WHERE id=" . $id;
 		$result = $this->db->exec_query($sql);
 
 		return $result ? 1 : 0;
@@ -819,7 +787,7 @@ function count_testcases($id)
   {
   	$ret=null;
     $sql = " UPDATE {$this->object_table} " .
-           " SET tc_counter=tc_counter+1  WHERE id = {$id}";
+           " SET tc_counter=tc_counter+1 WHERE id = {$id}";
   	$recordset = $this->db->exec_query($sql);
 
   	$sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
@@ -956,7 +924,7 @@ function setPublicStatus($id,$status)
    */
 	protected function getKeywordIDsFor($testproject_id)
 	{
-		$query = " SELECT id FROM keywords " .
+		$query = " SELECT id FROM {$this->tables['keywords']}  " .
 			   " WHERE testproject_id = {$testproject_id}" .
 			   " ORDER BY keyword ASC";
 		$keywordIDs = $this->db->fetchColumnsIntoArray($query,'id');
@@ -972,15 +940,16 @@ function setPublicStatus($id,$status)
 	 **/
 	public function exportKeywordsToXML($testproject_id,$bNoXMLHeader = false)
 	{
-		//SCHLUNDUS: mayvbe a keywordCollection object should be used instead?
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
 		$xmlCode = '';
 		if (!$bNoXMLHeader)
-			$xmlCode .= TL_XMLEXPORT_HEADER."\n";
-		$xmlCode .= "<keywords>";
-		for($i = 0;$i < sizeof($kwIDs);$i++)
 		{
-			$keyword = new tlKeyword($kwIDs[$i]);
+			$xmlCode .= TL_XMLEXPORT_HEADER."\n";
+		}
+		$xmlCode .= "<keywords>";
+		for($idx = 0;$idx < sizeof($kwIDs);$idx++)
+		{
+			$keyword = new tlKeyword($kwIDs[$idx]);
 			$keyword->readFromDb($this->db);
 			$keyword->writeToXML($xmlCode,true);
 		}
@@ -996,12 +965,11 @@ function setPublicStatus($id,$status)
 	 **/
 	function exportKeywordsToCSV($testproject_id,$delim = ';')
 	{
-		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
 		$csv = null;
-		for($i = 0;$i < sizeof($kwIDs);$i++)
+		for($idx = 0;$idx < sizeof($kwIDs);$idx++)
 		{
-			$keyword = new tlKeyword($kwIDs[$i]);
+			$keyword = new tlKeyword($kwIDs[$idx]);
 			$keyword->readFromDb($this->db);
 			$keyword->writeToCSV($csv,$delim);
 		}
@@ -1010,7 +978,6 @@ function setPublicStatus($id,$status)
 
 	function importKeywordsFromCSV($testproject_id,$fileName,$delim = ';')
 	{
-		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
 		$handle = fopen($fileName,"r");
 		if ($handle)
 		{
@@ -1028,7 +995,9 @@ function setPublicStatus($id,$status)
 			return tl::OK;
 		}
 		else
+		{
 			return ERROR;
+		}	
 	}
 
 	function importKeywordsFromXMLFile($testproject_id,$fileName)
@@ -1039,7 +1008,6 @@ function setPublicStatus($id,$status)
 
 	function importKeywordsFromXML($testproject_id,$xml)
 	{
-		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
 		$xml = simplexml_load_string($xml);
 		return $this->importKeywordsFromSimpleXML($testproject_id,$xml);
 	}
@@ -1105,11 +1073,11 @@ function setPublicStatus($id,$status)
     $additional_join='';
     if( $get_not_empty )
     {
-  		$additional_table=", requirements REQ ";
+  		$additional_table=", {$this->tables['requirements']} REQ ";
   		$additional_join=" AND SRS.id = REQ.srs_id ";
   	}
     $sql = " SELECT SRS.id,NH.name AS title " .
-           " FROM {$this->req_specs_table} SRS, {$this->nodes_hierarchy_table} NH " . $additional_table .
+           " FROM {$this->tables['req_specs']} SRS, {$this->tables['nodes_hierarchy']} NH " . $additional_table .
            " WHERE testproject_id={$tproject_id} " .
            " AND SRS.id=NH.id " .
            $additional_join .
@@ -1254,8 +1222,8 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
                 "RSPEC.modification_ts,NH.name AS title";
     
     $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-    $sql = " SELECT {$fields} FROM {$this->req_specs_table} RSPEC, " .
-           " {$this->nodes_hierarchy_table} NH " .
+    $sql = " SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
+           " {$this->tables['nodes_hierarchy']} NH " .
            " WHERE testproject_id={$testproject_id} " .
            " AND RSPEC.id=NH.id ";
            
@@ -1297,7 +1265,8 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
     $chk=$this->check_srs_title($testproject_id,$title,$ignore_case);
 		if ($chk['status_ok'])
 		{
-			$sql = "INSERT INTO {$this->req_specs_table} (testproject_id, title, scope, type, total_req, author_id, creation_ts)
+			$sql = "INSERT INTO {$this->tables['req_specs']} " .
+			       " (testproject_id, title, scope, type, total_req, author_id, creation_ts)
 					    VALUES (" . $testproject_id . ",'" . $this->db->prepare_string($title) . "','" .
 					                $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" .
 					                $this->db->prepare_string($countReq) . "'," . $this->db->prepare_string($user_id) . ", " .
@@ -1309,7 +1278,7 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
 			}
 			else
 			{
-			  $result['id']=$this->db->insert_id($this->req_specs_table);
+			  $result['id']=$this->db->insert_id($this->tables['req_specs']);
         $result['status_ok'] = 1;
 		    $result['msg'] = 'ok';
 			}
@@ -1421,7 +1390,7 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
  **/
 function deleteUserRoles($tproject_id)
 {
-	$query = "DELETE FROM {$this->user_testproject_roles_table} " . 
+	$query = "DELETE FROM {$this->tables['user_testproject_roles']} " . 
 	         " WHERE testproject_id = {$tproject_id}";
 	if ($this->db->exec_query($query))
 	{
@@ -1444,7 +1413,7 @@ function deleteUserRoles($tproject_id)
  **/
 function getUserRoleIDs($tproject_id)
 {
-	$query = "SELECT user_id,role_id FROM {$this->user_testproject_roles_table} " .
+	$query = "SELECT user_id,role_id FROM {$this->tables['user_testproject_roles']} " .
 	         "WHERE testproject_id = {$tproject_id}";
 	$roles = $this->db->fetchRowsIntoMap($query,'user_id');
 
@@ -1460,7 +1429,7 @@ function getUserRoleIDs($tproject_id)
  **/
 function addUserRole($userID,$tproject_id,$roleID)
 {
-	$query = "INSERT INTO {$this->user_testproject_roles_table} " .
+	$query = "INSERT INTO {$this->tables['user_testproject_roles']} " .
 	         "(user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
 	if($this->db->exec_query($query))
 	{
@@ -1523,7 +1492,8 @@ function delete($id)
   
 
 	$a_sql[] = array(
-			"UPDATE {$this->users_table}  SET default_testproject_id = NULL WHERE default_testproject_id = {$id}",
+			"UPDATE {$this->tables['users']}  SET default_testproject_id = NULL " .
+			" WHERE default_testproject_id = {$id}",
 			 'info_resetting_default_project_fails',
 	);
 
@@ -1534,7 +1504,9 @@ function delete($id)
 			$sql = $oneSQL[0];
 			$result = $this->db->exec_query($sql);
 			if (!$result)
+			{
 				$error .= lang_get($oneSQL[1]);
+			}	
 		}
 	}
 
@@ -1575,7 +1547,7 @@ function delete($id)
   if (empty($error))
 	{
     $this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
-    $sql="DELETE FROM {$this->nodes_hierarchy_table} WHERE id = {$id} ";
+    $sql="DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
     $this->db->exec_query($sql);
   }
 
@@ -1609,7 +1581,7 @@ function delete($id)
 			$tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
 			$tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
 		}
-		$sql = "SELECT id,node_type_id from {$this->tree_manager->obj_table} WHERE parent_id IN ({$idList})";
+		$sql = "SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} WHERE parent_id IN ({$idList})";
 		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
 		$result = $this->db->exec_query($sql);
@@ -1675,7 +1647,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
 		        $subquery = "AND testcase_id IN (" .
 		                    " SELECT FOXDOG.testcase_id FROM
 		                      ( SELECT COUNT(testcase_id) AS HITS,testcase_id
-		                        FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		                        FROM {$this->tables['keywords']} K, {$this->tables['testcase_keywords']}
 		                        WHERE keyword_id = K.id
 		                        AND testproject_id = {$testproject_id}
 		                        {$keyword_filter}
@@ -1692,7 +1664,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
 		
 		$map_keywords = null;
 		$sql = " SELECT testcase_id,keyword_id,keyword
-		         FROM {$this->keywords_table} K, {$this->testcase_keywords_table}
+		         FROM {$this->tables['keywords']} K, {$this->tables['testcase_keywords']}
 		         WHERE keyword_id = K.id
 		         AND testproject_id = {$testproject_id}
 		         {$keyword_filter} {$subquery}
@@ -1728,7 +1700,7 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
 function get_all_testplans($testproject_id,$filters=null)
 {
 	$sql = " SELECT NH.id,NH.name,notes,active,is_public,testproject_id " .
-	       " FROM {$this->nodes_hierarchy_table} NH,{$this->testplans_table} TPLAN";
+	       " FROM {$this->tables['nodes_hierarchy']} NH,{$this->tables['testplans']} TPLAN";
 	       
 	$where = " WHERE NH.id=TPLAN.id ";
     $where .= ' AND (testproject_id = ' . $testproject_id . " ";
@@ -1786,9 +1758,9 @@ function get_all_testplans($testproject_id,$filters=null)
 function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 {
 	$sql = " SELECT NH.id, NH.name, testproject_id " .
-	       " FROM {$this->nodes_hierarchy_table} NH, {$this->testplans_table} " .
-         " WHERE NH.id=testplans.id " .
-         " AND testproject_id = {$tproject_id} ";
+	       " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['testplans']} testplans " .
+           " WHERE NH.id=testplans.id " .
+           " AND testproject_id = {$tproject_id} ";
 
 	if($case_sensitive)
 	{
@@ -1863,11 +1835,11 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
 function getTCasesLinkedToAnyTPlan($id)
 {
     $sql=" SELECT DISTINCT parent_id AS testcase_id " .
-         " FROM {$this->nodes_hierarchy_table} WHERE id IN " .
-         " ( SELECT tcversion_id FROM {$this->testplan_tcversions_table} " .
+         " FROM {$this->tables['nodes_hierarchy']} WHERE id IN " .
+         " ( SELECT tcversion_id FROM {$this->tables['testplan_tcversions']} " .
          "   WHERE testplan_id IN " .
          "   ( SELECT NH.id AS tplan_id " .
-         "     FROM {$this->nodes_hierarchy_table} NH, {$this->node_types_table} NT" .
+         "     FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['node_types']} NT" .
          "     WHERE NH.node_type_id=NT.id AND NT.description='testplan' AND NH.parent_id={$id}))";
 
     $rs=$this->db->fetchRowsIntoMap($sql,'testcase_id');
@@ -1903,8 +1875,8 @@ function getFreeTestCases($id,$options=null)
         $in_clause=implode(',',array_keys($free));
    	    $sql = " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
    	           " NHA.parent_id AS id, NHB.name " .
-   	           " FROM {$this->tcversions_table} TCV,{$this->nodes_hierarchy_table} NHA, " .
-	           "      {$this->nodes_hierarchy_table} NHB " .
+   	           " FROM {$this->tables['tcversions']} TCV,{$this->tables['nodes_hierarchy']} NHA, " .
+	           "      {$this->tables['nodes_hierarchy']} NHB " .
 	           " WHERE NHA.parent_id IN ({$in_clause}) " .
    	           " AND TCV.id = NHA.id " .
    	           " AND NHB.id = NHA.parent_id " .
@@ -1973,12 +1945,12 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
  		$hash_descr_id = $this->tree_manager->get_available_node_types();
     $node_type_id=$hash_descr_id[$node_type];
 
-    $additional_table=",{$this->cfield_node_types_table} CFNT ";
+    $additional_table=",{$this->tables['cfield_node_types']} CFNT ";
     $additional_join=" AND CFNT.field_id=CF.id AND CFNT.node_type_id={$node_type_id} ";
   }
   
   $sql="SELECT CF.*,CFTP.display_order " .
-       " FROM {$this->custom_fields_table} CF, {$this->cfield_testprojects_table} CFTP " .
+       " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_testprojects']} CFTP " .
        $additional_table .
        " WHERE CF.id=CFTP.field_id " .
        " AND   CFTP.testproject_id={$id} " .

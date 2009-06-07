@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/06/04 19:53:27 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/06/07 12:59:23 $ $Author: franciscom $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -21,13 +21,9 @@ class tlRole extends tlDBObject
 	public $rights;
 
 	private $object_table = "";
-	private $tables = "";
 	protected $replacementRoleID;
 	
-	//options
 	const ROLE_O_SEARCH_BYNAME = 2;
-	
-	//detail levels
 	const TLOBJ_O_GET_DETAIL_RIGHTS = 1;
 		
 	const E_DBERROR = -2;	
@@ -38,13 +34,6 @@ class tlRole extends tlDBObject
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
-	    $this->tables = array('roles' => DB_TABLE_PREFIX . 'roles', 
-	                          'users' => DB_TABLE_PREFIX . 'users',
-                              'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                              'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
-	                          'role_rights' => DB_TABLE_PREFIX . 'role_rights',
-	                          'rights' => DB_TABLE_PREFIX . 'rights'); 
-	
 		$this->object_table = $this->tables['roles']; 
 		$this->replacementRoleID = config_get('role_replace_for_deleted_roles');
 	}

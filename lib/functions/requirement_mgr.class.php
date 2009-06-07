@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/06/06 14:56:20 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/06/07 13:04:27 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -35,7 +35,6 @@ class requirement_mgr extends tlObjectWithAttachments
 {
 	var $db;
 	var $cfield_mgr;
-    var $tables;
 	var $my_node_type;
 	var $tree_mgr;
 
@@ -51,21 +50,17 @@ class requirement_mgr extends tlObjectWithAttachments
 	function requirement_mgr(&$db)
 	{
 		$this->db = &$db;
-        $this->tables = array('req_specs' => DB_TABLE_PREFIX . 'req_specs',
-                              'requirements' => DB_TABLE_PREFIX . 'requirements',
-                              'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
-                              'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                              'tcversions' => DB_TABLE_PREFIX . 'tcversions');
-        
-	    $this->object_table=$this->tables['requirements'];
-
 		$this->cfield_mgr=new cfield_mgr($this->db);
 		$this->tree_mgr =  new tree($this->db);
+
+		tlObjectWithAttachments::__construct($this->db,'requirements');
+
 		$node_types_descr_id= $this->tree_mgr->get_available_node_types();
 		$node_types_id_descr=array_flip($node_types_descr_id);
 		$this->my_node_type=$node_types_descr_id['requirement'];
+	    $this->object_table=$this->tables['requirements'];
 
-		tlObjectWithAttachments::__construct($this->db,$this->object_table);
+
 	}
 
 

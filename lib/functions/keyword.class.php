@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.16 2009/06/06 14:54:03 franciscom Exp $
-* @modified $Date: 2009/06/06 14:54:03 $ by $Author: franciscom $
+* @version $Id: keyword.class.php,v 1.17 2009/06/07 13:01:53 franciscom Exp $
+* @modified $Date: 2009/06/07 13:01:53 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 **/
@@ -53,12 +53,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
-	
-	    $this->tables=array('keywords' => DB_TABLE_PREFIX . 'keywords',
-	                        'object_keywords'  => DB_TABLE_PREFIX . 'object_keywords',
-	                        'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords');
-	    
-	
 		$this->allowDuplicateKeywords = config_get('allow_duplicate_keywords');
 	}
 	

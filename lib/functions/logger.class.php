@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logger.class.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/06/06 17:51:40 $ $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/06/07 13:03:21 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -271,13 +271,10 @@ class tlTransaction extends tlDBObject
 	public $sessionID = null;
 
 	protected $events = null;
-    private $tables='';
    
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
-	    $this->tables = array('transactions' => DB_TABLE_PREFIX . 'transactions',
-                              'events' => DB_TABLE_PREFIX . 'events' );
 	}
 
 	public function initialize(&$logger,$entryPoint,$name,$userID,$sessionID)
@@ -436,16 +433,9 @@ class tlTransaction extends tlDBObject
 class tlEventManager extends tlObjectWithDB
 {
 	private static $s_instance;
-    private $tables='';
-
-
 	public function __construct(&$db)
 	{
 		parent::__construct($db);
-  	    $this->tables = array('transactions' => DB_TABLE_PREFIX . 'transactions',
-                              'events' => DB_TABLE_PREFIX . 'events' );
-
-    
 	}
 	
     public static function create(&$db)
@@ -559,10 +549,8 @@ class tlEvent extends tlDBObject
 	public $objectType = null;
 
 	public $transaction = null;
-    private $tables='';
 
-
-    //detail leveles
+    //detail leveles  @TODO DOCUMENT DETAILS OF WHAT ?
 	const TLOBJ_O_GET_DETAIL_TRANSACTION = 1;
 
 	public function getLogLevel()
@@ -573,9 +561,7 @@ class tlEvent extends tlDBObject
 	public function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
-	    $this->tables = array('transactions' => DB_TABLE_PREFIX . 'transactions',
-                              'events' => DB_TABLE_PREFIX . 'events' );
-	}
+	}    
 	
 	public function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{

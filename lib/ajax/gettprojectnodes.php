@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.12 2008/12/15 08:32:34 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.13 2009/06/07 12:55:58 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -61,6 +61,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $tcprefix,$show_tcases=1,$operation='manage') 
 {             
     static $showTestCaseID;
+    $tables=array('tcversions' => DB_TABLE_PREFIX . 'tcversions',
+                  'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                  'node_types' => DB_TABLE_PREFIX . 'node_types');
+
     $external='';
     $nodes=null;
     $filter_node_type=$show_tcases ? '' : ",'testcase'";
@@ -81,7 +85,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
 
     $sql = " SELECT NHA.*, NT.description AS node_type " . 
-           " FROM nodes_hierarchy NHA, node_types NT " .
+           " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']} NT " .
            " WHERE NHA.node_type_id=NT.id " .
            " AND parent_id = {$parent} " .
            " AND NT.description NOT IN " .
@@ -102,8 +106,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     {  
         // Get external id, used on test case nodes   
         $sql =  " SELECT DISTINCT tc_external_id,NHA.parent_id " .
-                " FROM tcversions TCV JOIN nodes_hierarchy NHA  ON NHA.id = TCV.id  " .
-                " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " . 
+                " FROM {$tables['tcversions']} TCV " .
+                " JOIN {$tables['nodes_hierarchy']} NHA  ON NHA.id = TCV.id  " .
+                " JOIN {$tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " . 
                 " WHERE NHB.parent_id = {$parent} AND NHA.node_type_id = 4"; 
         // file_put_contents('d:\sql_display_node1.txt', $sql); 
         $external=$dbHandler->fetchRowsIntoMap($sql,'parent_id');

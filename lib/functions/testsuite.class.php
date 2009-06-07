@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2009/05/17 16:26:18 $ - $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2009/06/07 12:58:56 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20090514 - franciscom - typo bug on html_table_of_custom_field_inputs()
@@ -60,32 +60,31 @@ require_once( dirname(__FILE__) . '/files.inc.php');
 
 class testsuite extends tlObjectWithAttachments
 {
-  const NODE_TYPE_FILTER_OFF=null;
-  const CHECK_DUPLICATE_NAME=1;
-  const DONT_CHECK_DUPLICATE_NAME=0;
-  const DEFAULT_ORDER=0;
+    const NODE_TYPE_FILTER_OFF=null;
+    const CHECK_DUPLICATE_NAME=1;
+    const DONT_CHECK_DUPLICATE_NAME=0;
+    const DEFAULT_ORDER=0;
   
  	var $db;
 	var $tree_manager;
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
-  var $cfield_mgr;
+    var $cfield_mgr;
 
-	private $nodes_hierarchy_table = "nodes_hierarchy";
-	private $obj_table = "testsuites";
+	private $object_table;
 
-  var $import_file_types = array("XML" => "XML");
-  var $export_file_types = array("XML" => "XML");
+    var $import_file_types = array("XML" => "XML");
+    var $export_file_types = array("XML" => "XML");
  
-  // Node Types (NT)
-  var $nt2exclude=array('testplan' => 'exclude_me',
+    // Node Types (NT)
+    var $nt2exclude=array('testplan' => 'exclude_me',
 	                      'requirement_spec'=> 'exclude_me',
 	                      'requirement'=> 'exclude_me');
 													                        
 
-  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
-													       'requirement_spec'=> 'exclude_my_children');
+    var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+							       'requirement_spec'=> 'exclude_my_children');
 
 
   /*
@@ -109,6 +108,7 @@ class testsuite extends tlObjectWithAttachments
 	$this->cfield_mgr=new cfield_mgr($this->db);
 	
 	tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
+    $this->object_table = $this->tables['testsuites'];
   }
 
   /*
@@ -192,11 +192,10 @@ function create($parent_id,$name,$details,$order=null,
 	if ($check_duplicate_name)
 	{
 		
-    $sql = " SELECT count(TS.id) AS qty FROM {$this->obj_table} TS, {$this->nodes_hierarchy_table} NH
-		         WHERE NH.name = '" . $this->db->prepare_string($name) . "'" . 
-		       " AND TS.id=NH.id
-		         AND node_type_id = {$this->my_node_type} 
-		         AND NH.parent_id={$parent_id} "; 
+        $sql = " SELECT count(TS.id) AS qty FROM {$this->object_table} TS, " .
+               " {$this->tables['nodes_hierarchy']} NH " .
+	    	   " WHERE NH.name = '" . $this->db->prepare_string($name) . "'" . 
+	    	   " AND TS.id=NH.id AND node_type_id = {$this->my_node_type} AND NH.parent_id={$parent_id} "; 
 		
 		$result = $this->db->exec_query($sql);
 		$myrow = $this->db->fetch_array($result);
@@ -216,7 +215,7 @@ function create($parent_id,$name,$details,$order=null,
 					$ret['status_ok'] = 1;
 					$desired_name=$name;      
 					$name = config_get('prefix_name_for_copy') . " " . $desired_name ;      
-				  $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);	
+				    $ret['msg'] = sprintf(lang_get('created_with_new_name'),$name,$desired_name);	
 				}
 			}
 		}       
@@ -227,8 +226,8 @@ function create($parent_id,$name,$details,$order=null,
 		// get a new id
 		$tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,
 		                                           $name,$node_order);
-		$sql = "INSERT INTO testsuites (id,details) " .
-				   "VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
+		$sql = "INSERT INTO {$this->tables['testsuites']} (id,details) " .
+			   " VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
 		             
 		$result = $this->db->exec_query($sql);
 		if ($result)
@@ -248,14 +247,14 @@ function update($id, $name, $details)
   $ret = $this->tree_manager->check_name_is_unique($id,$name,$this->my_node_type);
   if($ret['status_ok'])
   {
-	    $sql = " UPDATE testsuites
-	             SET details = '" . $this->db->prepare_string($details) . "'" .
+	    $sql = " UPDATE {$this->tables['testsuites']} " .
+	           " SET details = '" . $this->db->prepare_string($details) . "'" .
 	           " WHERE id = {$id}";
 	    $result = $this->db->exec_query($sql);
       
 	    if ($result)
 	    {
-	    	$sql = " UPDATE nodes_hierarchy SET name='" . 
+	    	$sql = " UPDATE {$this->tables['nodes_hierarchy']}  SET name='" . 
 	    			$this->db->prepare_string($name) . "' WHERE id= {$id}";
 	    	$result = $this->db->exec_query($sql);
 	    }
@@ -309,10 +308,10 @@ function delete($id)
   $this->deleteKeywords($id);
 
   
-  $sql = "DELETE FROM {$this->obj_table} WHERE id={$id}";
+  $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
   $result = $this->db->exec_query($sql);
   
-  $sql = "DELETE FROM {$this->nodes_hierarchy_table} WHERE id={$id}";
+  $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
   $result = $this->db->exec_query($sql);
 
 }
@@ -334,9 +333,9 @@ function delete($id)
 function get_by_name($name)
 {
 	$sql = " SELECT testsuites.*, nodes_hierarchy.name " .
-		   " FROM testsuites, nodes_hierarchy " .
-		   " WHERE nodes_hierarchy.name = '" . 
-			$this->db->prepare_string($name) . "'";
+		   " FROM {$this->tables['testsuites']} testsuites, " .
+		   " {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
+		   " WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
 	
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
@@ -361,12 +360,12 @@ function get_by_name($name)
 */
 function get_by_id($id)
 {
-	$sql = " SELECT testsuites.*, NH.name, NH.node_type_id, NH.node_order
-	         FROM testsuites,nodes_hierarchy NH 
-	         WHERE testsuites.id = NH.id
-	         AND testsuites.id = {$id}";
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset ? $recordset[0] : null);
+	$sql = " SELECT testsuites.*, NH.name, NH.node_type_id, NH.node_order " .
+	       "  FROM {$this->tables['testsuites']} testsuites, " .
+	       " {$this->tables['nodes_hierarchy']}  NH " .
+	       "  WHERE testsuites.id = NH.id  AND testsuites.id = {$id}";
+    $recordset = $this->db->get_recordset($sql);
+    return($recordset ? $recordset[0] : null);
 }
 
 
@@ -382,9 +381,11 @@ function get_by_id($id)
 */
 function get_all()
 {
-	$sql = " SELECT testsuites.*, nodes_hierarchy.name
-	         FROM testsuites,nodes_hierarchy
-	         WHERE testsuites.id = nodes_hierarchy.id";
+	$sql = " SELECT testsuites.*, nodes_hierarchy.name " .
+	       " FROM {$this->tables['testsuites']} testsuites, " .
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy " . 
+	       " WHERE testsuites.id = nodes_hierarchy.id";
+	       
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
 }
@@ -866,7 +867,7 @@ private function read_file($file_name)
 function getKeywords($id,$kw_id = null)
 {
 	$sql = "SELECT keyword_id,keywords.keyword, notes " .
-	       " FROM object_keywords,keywords " .
+	       " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
 	       " WHERE keyword_id = keywords.id AND fk_id = {$id}";
 	if (!is_null($kw_id))
 	{
@@ -901,9 +902,9 @@ function getKeywords($id,$kw_id = null)
 */
 function get_keywords_map($id,$order_by_clause='')
 {
-	$sql = "SELECT keyword_id,keywords.keyword 
-	        FROM object_keywords,keywords 
-	        WHERE keyword_id = keywords.id ";
+	$sql = "SELECT keyword_id,keywords.keyword " .
+	       " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
+	       " WHERE keyword_id = keywords.id ";
 	if (is_array($id))
 		$sql .= " AND fk_id IN (".implode(",",$id).") ";
 	else
@@ -924,7 +925,7 @@ function addKeyword($id,$kw_id)
 	{
 		return 1;
 	}	
-	$sql = " INSERT INTO object_keywords (fk_id,fk_table,keyword_id) " .
+	$sql = " INSERT INTO {$this->tables['object_keywords']} (fk_id,fk_table,keyword_id) " .
 		     " VALUES ($id,'nodes_hierarchy',$kw_id)";
 
 	return ($this->db->exec_query($sql) ? 1 : 0);
@@ -961,7 +962,7 @@ function addKeywords($id,$kw_ids)
 */
 function deleteKeywords($id,$kw_id = null)
 {
-	$sql = " DELETE FROM object_keywords WHERE fk_id = {$id} ";
+	$sql = " DELETE FROM {$this->tables['object_keywords']} WHERE fk_id = {$id} ";
 	if (!is_null($kw_id))
 	{
 		$sql .= " AND keyword_id = {$kw_id}";

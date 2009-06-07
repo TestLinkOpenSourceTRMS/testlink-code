@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.5 2009/05/02 15:18:22 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.6 2009/06/07 12:55:58 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -43,6 +43,10 @@ echo json_encode($nodes);
 function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $show_children=ON,$operation='manage') 
 {             
+    $tables=array('requirements' => DB_TABLE_PREFIX . 'requirements',
+                  'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                  'nodes_types' => DB_TABLE_PREFIX . 'nodes_types');
+    
     switch($operation)
     {
         // case 'print':
@@ -61,7 +65,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $filter_node_type = $show_children ? '' : ",'requirement'";
 
     $sql = " SELECT NHA.*, NT.description AS node_type " . 
-           " FROM nodes_hierarchy NHA, node_types NT " .
+           " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']}  NT " .
            " WHERE NHA.node_type_id=NT.id " .
            " AND parent_id = {$parent} " .
            " AND NT.description NOT IN " .
@@ -78,9 +82,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	{
         // BUGID 2309
         $sql =  " SELECT DISTINCT req_doc_id AS docid,NHA.id" .
-                " FROM requirements REQ JOIN nodes_hierarchy NHA ON NHA.id = REQ.id  " .
-                " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " . 
-                " JOIN node_types NT ON NT.id = NHA.node_type_id " .
+                " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
+                " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 
+                " JOIN {$tables['node_types']} NT ON NT.id = NHA.node_type_id " .
                 " WHERE NHB.id = {$parent} AND NT.description = 'requirement'";
         $requirements=$dbHandler->fetchRowsIntoMap($sql,'id');
 

@@ -5,17 +5,18 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2009/06/06 14:54:39 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2009/06/07 12:58:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20090607 - franciscom - refactoring to manage table prefix
  * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
  * 20090313 - franciscom - added getTreeRoot()
  * 20090207 - franciscom - new method check_name_is_unique()
  * 20081227 - franciscom - new method - get_full_path_verbose()
 */
 
-class tree 
+class tree extends tlObject
 {
 	// configurable values - pseudoconstants
 	var $node_types = array( 1 => 'testproject','testsuite',
@@ -44,9 +45,6 @@ class tree
 	var $ROOT_NODE_PARENT_ID = NULL;
 	
 	var $db;
-    var $obj_table = 'nodes_hierarchy';
-    var $node_types_table = 'node_types';
-    
 
   /*
     function: tree
@@ -57,13 +55,12 @@ class tree
     returns: new instance of a tree (manager)
 
   */
-	function tree(&$db) 
+	function __construct(&$db) 
 	{
+   		parent::__construct();
 		$this->db = &$db;
 		$this->node_descr_id = array_flip($this->node_types);
-	    $this->obj_table = DB_TABLE_PREFIX . $this->obj_table;
-        $this->node_types_table = DB_TABLE_PREFIX . $this->node_types_table;
-   
+        $this->object_table = $this->tables['nodes_hierarchy'];
 	}
 
   /*
@@ -84,7 +81,7 @@ class tree
 		static $s_nodeTypes;
 		if (!$s_nodeTypes)
 		{
-			$sql = " SELECT * FROM node_types "; 
+			$sql = " SELECT * FROM {$this->tables['node_types']} "; 
 			$s_nodeTypes = $this->db->fetchColumnsIntoMap($sql,"description","id");
 		}
 		return $s_nodeTypes;
@@ -104,7 +101,7 @@ class tree
 	function new_root_node($name = '') 
 	{
 		$this->new_node(null,$this->ROOT_NODE_TYPE_ID,$name,1);
-		return $this->db->insert_id($this->obj_table);
+		return $this->db->insert_id($this->object_table);
 	}
 
 	/*
@@ -125,7 +122,7 @@ class tree
   */
 	function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
 	{
-		$sql = "INSERT INTO {$this->obj_table} " .
+		$sql = "INSERT INTO {$this->object_table} " .
 		       "(name,node_type_id,node_order";
 
 		$values=" VALUES('" . $this->db->prepare_string($name). "'," .
@@ -143,10 +140,10 @@ class tree
 		else
 		{
 			$sql .= ",parent_id) {$values},{$parent_id})";
-    }
+        }
 
 		$this->db->exec_query($sql);
-		return ($this->db->insert_id($this->obj_table));
+		return ($this->db->insert_id($this->object_table));
  	}
 
 	/*
@@ -170,7 +167,7 @@ class tree
   */
 	function get_node_hierachy_info($node_id) 
 	{
-	  $sql = "SELECT * FROM {$this->obj_table} WHERE id";
+	  $sql = "SELECT * FROM {$this->object_table} WHERE id";
 	  $getidx=-1;
 	  $result=null;
 	  
@@ -222,7 +219,7 @@ class tree
   */
 	function _get_subtree_list($node_id,&$node_list,$node_type_id=null)
 	{
-		$sql = "SELECT * from {$this->obj_table} WHERE parent_id = {$node_id}";
+		$sql = "SELECT * from {$this->object_table} WHERE parent_id = {$node_id}";
 		if( !is_null($node_type_id) )
 		{
 		    $sql .=  " AND node_type_id = {$node_type_id} "; 
@@ -259,7 +256,7 @@ class tree
 		{
 			$id2del .= ",{$children}";	
 		}
-		$sql = "DELETE FROM {$this->obj_table} WHERE id IN ({$id2del})";
+		$sql = "DELETE FROM {$this->object_table} WHERE id IN ({$id2del})";
 	
 		$result = $this->db->exec_query($sql);
 	}
@@ -381,7 +378,7 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
 {
 	
 // look up the parent of this node
- $sql = " SELECT * from {$this->obj_table} 
+ $sql = " SELECT * from {$this->object_table} 
           WHERE id = {$node_id} ";
  
  $result = $this->db->exec_query($sql);
@@ -508,7 +505,7 @@ function change_parent($node_id, $parent_id)
 
 function get_children($id,$exclude_node_types=null) 
 {
-  $sql = " SELECT * from {$this->obj_table}
+  $sql = " SELECT * from {$this->object_table}
           WHERE parent_id = {$id} ORDER BY node_order,id";
 
   $node_list=array();  
@@ -554,7 +551,7 @@ function change_order_bulk($nodes)
 	{
 		$order = abs(intval($order));
 		$node_id = intval($node_id);
-	  $sql = "UPDATE {$this->obj_table} SET node_order = {$order}
+	  $sql = "UPDATE {$this->object_table} SET node_order = {$order}
 	      	    WHERE id = {$node_id}";
 	  $result = $this->db->exec_query($sql);
 	}
@@ -589,7 +586,7 @@ function change_child_order($parent_id,$node_id,$top_bottom,$exclude_node_types=
     }
     
     $sql = " SELECT NH.id, NH.node_order, NH.name " .
-           " FROM {$this->obj_table} NH, {$this->node_types_table} NT " .
+           " FROM {$this->object_table} NH, {$this->tables['node_types']} NT " .
            " WHERE NH.node_type_id=NT.id " .
            " AND NH.parent_id = {$parent_id} AND NH.id <> {$node_id} " . 
            $node_type_filter .
@@ -630,7 +627,7 @@ function change_child_order($parent_id,$node_id,$top_bottom,$exclude_node_types=
 function getBottomOrder($parentID)
 {
     $sql="SELECT MAX(node_order) AS TOP_ORDER" .
-         " FROM {$this->obj_table} " . 
+         " FROM {$this->object_table} " . 
          " WHERE parent_id={$parentID} " .
          " GROUP BY parent_id";
     $rs=$this->db->get_recordset($sql);
@@ -780,7 +777,7 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
     switch($order_cfg['type'] )
     {
         case 'spec_order':
-  	    $sql = " SELECT * from {$this->obj_table} " .
+  	    $sql = " SELECT * from {$this->object_table} " .
   	           " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
 		           " ORDER BY node_order,id";
 		    break;
@@ -789,7 +786,7 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
         $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
              "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
              "                NH.name, NH.node_type_id" .
-             "                FROM nodes_hierarchy NH,node_types NT" .
+             "                FROM {$this->object_table} NH, {$this->tables['node_types']} NT" .
              "                WHERE parent_id = {$node_id}" .
              "                AND NH.node_type_id=NT.id" .
              "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
@@ -797,8 +794,8 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
              "                SELECT NHA.node_order AS spec_order, " .
              "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
              "                       NHA.name, NHA.node_type_id" .
-             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
-             "                     testplan_tcversions T,node_types NT" .
+             "                FROM {$this->object_table} NHA, {$this->object_table} NHB," .
+             "                     {$this->tables['testplan_tcversions']}  T,{$this->tables['node_types']} NT" .
              "                WHERE NHA.id=NHB.parent_id " .
              "                AND NHA.node_type_id=NT.id" .
              "                AND NHB.id=T.tcversion_id " .
@@ -873,7 +870,7 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
     switch($order_cfg['type'])
     {
         case 'spec_order':
-  	    	$sql = " SELECT * from {$this->obj_table} " .
+  	    	$sql = " SELECT * FROM {$this->object_table} " .
   	           	   " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
 		           " ORDER BY node_order,id";
 		    break;
@@ -882,15 +879,16 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
 		        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 		             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 		             "                NH.name, NH.node_type_id" .
-		             "                FROM nodes_hierarchy NH" .
+		             "                FROM {$this->tables['nodes_hierarchy']}  NH" .
 		             "                WHERE parent_id = {$node_id}" .
 		             "                AND node_type_id <> {$s_testCaseNodeTypeID} {$and_not_in_clause}" .
 		             "                UNION" .
 		             "                SELECT NHA.node_order AS spec_order, " .
 		             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
 		             "                       NHA.name, NHA.node_type_id" .
-		             "                FROM nodes_hierarchy NHA, nodes_hierarchy NHB," .
-		             "                     testplan_tcversions T" .
+		             "                FROM {$this->tables['nodes_hierarchy']} NHA, " .
+		             "                     {$this->tables['nodes_hierarchy']} NHB," .
+		             "                     {$this->tables['testplan_tcversions']} T" .
 		             "                WHERE NHA.id=NHB.parent_id " .
 		             "                AND NHA.node_type_id = {$s_testCaseNodeTypeID}" .
 		             "                AND NHB.id=T.tcversion_id " .
@@ -998,7 +996,7 @@ function get_full_path_verbose(&$items,$options=null)
     
     // get only different items, to get descriptions
     $unique_nodes=implode(',',array_unique($all_nodes));
-    $sql="SELECT id,name FROM nodes_hierarchy WHERE id IN ({$unique_nodes})"; 
+    $sql="SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
     $decode=$this->db->fetchRowsIntoMap($sql,'id');
     foreach($path_to as $key => $elem)
     {
@@ -1025,13 +1023,13 @@ function check_name_is_unique($id,$name,$node_type_id)
 		$ret['status_ok'] = 1;
 		$ret['msg'] = '';
     
-    $sql = " SELECT count(id) AS qty FROM {$this->obj_table} NHA " .
+    $sql = " SELECT count(id) AS qty FROM {$this->object_table} NHA " .
 		       " WHERE NHA.name = '" . $this->db->prepare_string($name) . "'" .
 		       " AND NHA.node_type_id = {$node_type_id} " .
 		       " AND NHA.id <> {$id} " .
 		       " AND NHA.parent_id=" .
 		       " (SELECT NHB.parent_id " .
-		       "  FROM {$this->obj_table} NHB" .
+		       "  FROM {$this->object_table} NHB" .
 		       "  WHERE NHB.id = {$id}) ";
 		       
 		$result = $this->db->exec_query($sql);
@@ -1074,7 +1072,7 @@ function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_childr
         $root_id=$node_id;  
     }
     
-	  $sql = " SELECT NH.* FROM {$this->obj_table} NH " .
+	  $sql = " SELECT NH.* FROM {$this->object_table} NH " .
        	   " WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
     
     $rs = $this->db->get_recordset($sql);
@@ -1121,7 +1119,7 @@ function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_childr
         $children = $this->db->get_recordset($sql);
         if( is_null($children) || count($children) == 0 )
         {
-  	        $sql2 = " SELECT NH.* FROM {$this->obj_table} NH " .
+  	        $sql2 = " SELECT NH.* FROM {$this->object_table} NH " .
        	            " WHERE NH.id = {$node_id}";
             $node_info = $this->db->get_recordset($sql2);
             $className = $this->class_name[$node_info[0]['node_type_id']];

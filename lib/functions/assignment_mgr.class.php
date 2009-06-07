@@ -5,20 +5,21 @@
  *
  * Filename $RCSfile: assignment_mgr.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2008/10/21 17:23:53 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/06/07 12:56:40 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for assignment activities
  *
  * 20060908 - franciscom - 
 */
-class assignment_mgr 
+class assignment_mgr extends tlObject
 {
 	var $db;
 
 	function assignment_mgr(&$db) 
 	{
+	    parent::__construct();
 		$this->db = &$db;
 	}
 
@@ -31,7 +32,7 @@ class assignment_mgr
 		static $s_hash_types;
 		if (!$s_hash_types)
 		{
-			$sql = "SELECT * FROM assignment_types";
+			$sql = "SELECT * FROM {$this->tables['assignment_types']}";
 			$s_hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
 		}
 		return $s_hash_types;
@@ -46,7 +47,7 @@ class assignment_mgr
 		static $s_hash_types;
 		if (!$s_hash_types)
 		{
-			$sql = " SELECT * FROM assignment_status "; 
+			$sql = " SELECT * FROM {$this->tables['assignment_status']} "; 
 			$s_hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
 		}
 		
@@ -66,7 +67,7 @@ class assignment_mgr
 	    {
 			$where_clause = " WHERE feature_id={$feature_id}";
 	    }
-		$sql = " DELETE FROM user_assignments {$where_clause}"; 
+		$sql = " DELETE FROM {$this->tables['user_assignments']}  {$where_clause}"; 
 		$result = $this->db->exec_query($sql);
 	}
 
@@ -80,7 +81,7 @@ class assignment_mgr
 	{
 		foreach($feature_map as $feature_id => $elem)
 		{
-			$sql = "INSERT INTO user_assignments " .
+			$sql = "INSERT INTO {$this->tables['user_assignments']} " .
 					"(feature_id,user_id,assigner_id," .
 					"type,status,creation_ts";
 			
@@ -111,7 +112,7 @@ class assignment_mgr
 		foreach($feature_map as $feature_id => $elem)
 		{
 			$sepa = "";
-			$sql = "UPDATE user_assignments SET ";
+			$sql = "UPDATE {$this->tables['user_assignments']} SET ";
 			$simple_fields = array('user_id','assigner_id','type','status');
 			$date_fields = array('deadline_ts','creation_ts');  
 		

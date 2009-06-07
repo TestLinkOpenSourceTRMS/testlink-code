@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: priority.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/06/06 17:51:40 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/06/07 13:03:21 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -27,7 +27,7 @@ class testPlanUrgency extends testPlan
 {
 public function setTestUrgency($testplan_id, $tc_id, $urgency)
 {
-    $sql="UPDATE {$this->testplan_tcversions_table} SET urgency={$urgency} " .
+    $sql="UPDATE {$this->tables['testplan_tcversions']} SET urgency={$urgency} " .
          "WHERE testplan_id={$testplan_id} AND tcversion_id={$tc_id}";
 	$result = $this->db->exec_query($sql);
     $retval=$result ? OK : ERROR;
@@ -49,13 +49,13 @@ public function setSuiteUrgency($testplan_id, $node_id, $urgency)
 		       ' WHERE testplan_tcversions.testplan_id=' . $testplan_id .
 	 	       ' AND NHB.parent_id=' .	$node_id; 
 	 	*/
-	   $sql = " UPDATE {$this->testplan_tcversions_table} " . 
+	   $sql = " UPDATE {$this->tables['testplan_tcversions']} " . 
             " SET urgency={$urgency} ".
             " WHERE testplan_id= {$testplan_id} " .
             " AND tcversion_id IN (" .
             " SELECT NHB.id " . 
-            " FROM {$this->nodes_hierarchy_table}  NHA, "
-            " {$this->nodes_hierarchy_table} NHB, {$this->node_types_table}  NT" .
+            " FROM {$this->tables['nodes_hierarchy']}  NHA, "
+            " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['node_types']}  NT" .
             " WHERE NHA.node_type_id = NT.id " .
             " AND NT.description='testcase' " . 
             " AND NHB.parent_id = NHA.id " . 
@@ -83,7 +83,7 @@ function getSuiteUrgency($testplan_id, $node_id, $testproject_id=null)
 	$testcase_cfg = config_get('testcase_cfg');  
  	
  	
- 	$sql = " SELECT testprojects.prefix  FROM {$this->testprojects_table} testprojects " .
+ 	$sql = " SELECT testprojects.prefix  FROM {$this->tables['testprojects']} testprojects " .
   	       " WHERE testprojects.id = ";
   	
     
@@ -93,7 +93,7 @@ function getSuiteUrgency($testplan_id, $node_id, $testproject_id=null)
   }	     
   else
   {
- 	    $sql .= "( SELECT parent_id AS testproject_id FROM {$this->nodes_hierarchy_table} " .
+ 	    $sql .= "( SELECT parent_id AS testproject_id FROM {$this->tables['nodes_hierarchy']} " .
                 " WHERE id={$testplan_id} ) ";
 	}
 	
@@ -102,11 +102,11 @@ function getSuiteUrgency($testplan_id, $node_id, $testproject_id=null)
 	
 	$sql = " SELECT DISTINCT '{$tcprefix}' AS tcprefix, NHB.name, NHB.node_order," .
 	       " NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.urgency".
-           " FROM {$this->nodes_hierarchy_table} NHA " .
-           " JOIN {$this->nodes_hierarchy_table} NHB ON NHA.parent_id = NHB.id " .
-		     " JOIN {$this->testplan_tcversions_table} testplan_tcversions " .
+           " FROM {$this->tables['nodes_hierarchy']} NHA " .
+           " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
+		     " JOIN {$this->tables['testplan_tcversions']} testplan_tcversions " .
 		     " ON testplan_tcversions.tcversion_id=NHA.id " .
-		     " JOIN {$this->tcversions_table}  TCV ON TCV.id = testplan_tcversions.tcversion_id " .
+		     " JOIN {$this->tables['tcversions']}  TCV ON TCV.id = testplan_tcversions.tcversion_id " .
 		     " WHERE testplan_tcversions.testplan_id={$testplan_id}" .
 	 	     " AND NHB.parent_id={$node_id}" . 
 		     " ORDER BY NHB.node_order";

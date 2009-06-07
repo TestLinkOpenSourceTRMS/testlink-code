@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/06/07 12:56:40 $ by $Author: franciscom $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -240,7 +240,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 	}
 	protected function getAttachmentContentFromFS($id)
 	{
-		$query = "SELECT file_size,compression_type,file_path FROM attachments WHERE id = {$id}";
+		$query = "SELECT file_size,compression_type,file_path " .
+		         " FROM {$this->tables['attachments']} WHERE id = {$id}";
 		$row = $this->db->fetchFirstRow($query);
 
 		$content = null;
@@ -254,6 +255,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 				case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 					$content = getFileContents($destFPath);
 					break;
+					
 				case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
 					$content = gzip_readFileContent($destFPath,$fileSize);
 					break;
@@ -272,7 +274,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 	//SCHLUNDUS: should be protected
 	public function getAttachmentContentFromDB($id)
 	{
-		$query = "SELECT content,file_size,compression_type FROM attachments WHERE id = {$id}";
+		$query = "SELECT content,file_size,compression_type " .
+		         " FROM {$this->tables['attachments']} WHERE id = {$id}";
 		$row = $this->db->fetchFirstRow($query);
 
 		$content = null;
@@ -284,6 +287,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 			{
 				case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 					break;
+					
 				case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
 					$content = gzip_uncompress_content($content,$fileSize);
 					break;
@@ -292,20 +296,23 @@ class tlAttachmentRepository extends tlObjectWithDB
 
 		return $content;
 	}
+	
 	public function deleteAttachmentsFor($fkid,$fkTableName)
 	{
 		$bSuccess = true;
 		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		for($i = 0;$i < sizeof($attachmentIDs);$i++)
+		for($idx = 0;$idx < sizeof($attachmentIDs);$idx++)
 		{
-			$id = $attachmentIDs[$i];
+			$id = $attachmentIDs[$idx];
 			$bSuccess = ($this->deleteAttachment($id) && $bSuccess);
 		}
 		if ($bSuccess)
 		{
 			$folder = $this->buildRepositoryFolderFor($fkTableName,$fkid);
 			if (is_dir($folder))
+			{
 				rmdir($folder);
+			}	
 		}
 		return $bSuccess;
 	}
@@ -315,27 +322,33 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$info = null;
 		$attachment = new tlAttachment($id);
 		if ($attachment->readFromDB($this->db))
+		{
 			$info = $attachment->getInfo();
-
+        }
 		return $info;
 	}
+	
 	public function getAttachmentInfosFor($fkid,$fkTableName)
 	{
 		$attachmentInfos = null;
 		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		for($i = 0;$i < sizeof($attachmentIDs);$i++)
+		for($idx = 0; $idx < sizeof($attachmentIDs); $idx++)
 		{
-			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$i]);
+			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
 			if ($attachmentInfo)
+			{
 				$attachmentInfos[] = $attachmentInfo;
+			}	
 		}
 		return $attachmentInfos;
 	}
+	
 	public function getAttachmentIDsFor($fkid,$fkTableName)
 	{
 		$order_by = $this->attachmentCfg->order_by;
 
-		$query = "SELECT id FROM attachments WHERE fk_id = {$fkid} AND fk_table = '" . $this->db->prepare_string($fkTableName). "' " . $order_by;
+		$query = "SELECT id FROM {$this->tables['attachments']} WHERE fk_id = {$fkid} " .
+		         " AND fk_table = '" . $this->db->prepare_string($fkTableName). "' " . $order_by;
 		$attachmentIDs = $this->db->fetchColumnsIntoArray($query,'id');
 
 		return $attachmentIDs;

@@ -6,8 +6,8 @@
  *
  * @package TestLink
  * Filename $RCSfile: user.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/06/06 14:56:55 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/06/07 12:58:56 $ $Author: franciscom $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -24,7 +24,7 @@
 class tlUser extends tlDBObject
 {
 	private $object_table = "users";
-    private $tables = '';
+    // private $tables = '';
 
 	public $firstName;
 	public $lastName;
@@ -77,12 +77,12 @@ class tlUser extends tlDBObject
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
-	    $this->tables = array('roles' => DB_TABLE_PREFIX . 'roles', 
-	                          'users' => DB_TABLE_PREFIX . 'users',
-                              'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                              'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
-	                          'role_rights' => DB_TABLE_PREFIX . 'role_rights',
-	                          'rights' => DB_TABLE_PREFIX . 'rights'); 
+	    // $this->tables = array('roles' => DB_TABLE_PREFIX . 'roles', 
+	    //                       'users' => DB_TABLE_PREFIX . 'users',
+        //                       'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
+        //                       'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
+	    //                       'role_rights' => DB_TABLE_PREFIX . 'role_rights',
+	    //                       'rights' => DB_TABLE_PREFIX . 'rights'); 
 
 		$this->object_table = $this->tables['users']; 
 		

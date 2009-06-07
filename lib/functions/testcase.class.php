@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.171 $
- * @modified $Date: 2009/06/05 14:33:15 $ $Author: franciscom $
+ * @version $Revision: 1.172 $
+ * @modified $Date: 2009/06/07 12:59:23 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -90,9 +90,6 @@ class testcase extends tlObjectWithAttachments
     private $testcase_keywords_table="testcase_keywords";
     private $testplan_tcversions_table="testplan_tcversions";
 
-    private $tables='';
-
-
     const AUTOMATIC_ID=0;
     const DEFAULT_ORDER=0;
     const ALL_VERSIONS=0;
@@ -124,20 +121,6 @@ class testcase extends tlObjectWithAttachments
 
 	function testcase(&$db)
 	{
-        $this->tables = array('tcversions' => DB_TABLE_PREFIX . 'tcversions', 
-	                          'testprojects' => DB_TABLE_PREFIX . 'testprojects',
-                              'users' => DB_TABLE_PREFIX . 'users',
-                              'builds' => DB_TABLE_PREFIX . 'builds',
-                              'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                              'keywords' => DB_TABLE_PREFIX . 'keywords',
-	                          'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
-	                          'req_coverage'  => DB_TABLE_PREFIX . 'req_coverage',
-	                          'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
-	                          'executions' => DB_TABLE_PREFIX . 'executions',
-	                          'user_assignments' => DB_TABLE_PREFIX . 'user_assignments',
-	                          'cfield_execution_values' => DB_TABLE_PREFIX . 'cfield_execution_values',
-	                          'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions');
-
 		$this->db = &$db;
 		$this->tproject_mgr = New testproject($this->db);
 		$this->tree_manager = &$this->tproject_mgr->tree_manager;
@@ -298,20 +281,19 @@ function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self:
                            $check_duplicate_name=0,
                            $action_on_duplicate_name='generate_new')
 {
-  $ret['id'] = -1;
-  $ret['external_id']=0;
-  $ret['status_ok'] = 1;
-  $ret['msg'] = 'ok';
+    $ret['id'] = -1;
+    $ret['external_id']=0;
+    $ret['status_ok'] = 1;
+    $ret['msg'] = 'ok';
 	$ret['new_name'] = '';
 	$ret['version_number'] = 1;
 	$ret['has_duplicate'] = false;
 	
 
-  $doCreate=true;
-  
+    $doCreate=true;
  	if ($check_duplicate_name)
 	{
-    $myrow = $this->getDuplicatesByName($name,$parent_id);		
+        $myrow = $this->getDuplicatesByName($name,$parent_id);		
 		if( !is_null($myrow) && count($myrow) > 0 )
 		{
 	    $ret['has_duplicate'] = true;
@@ -1300,7 +1282,9 @@ function create_new_version($id,$user_id)
 */
 function get_last_version_info($id)
 {
-	$sql = "SELECT MAX(version) AS version FROM tcversions,nodes_hierarchy WHERE ".
+	$sql = "SELECT MAX(version) AS version " .
+	       " FROM {$this->tables['tcversions']} tcversions," .
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy WHERE ".
 	       " nodes_hierarchy.id = tcversions.id ".
 	       " AND nodes_hierarchy.parent_id = {$id} ";
 
@@ -1623,7 +1607,8 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
     {
       $testplan_filter=" AND E.testplan_id = {$testplan_id} ";
     }
-    $execution_join=" LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id {$testplan_filter})";
+    $execution_join=" LEFT OUTER JOIN {$this->tables['executions']} E " .
+                    " ON (E.tcversion_id = NH.id {$testplan_filter})";
 
  	$sqlx=  " SELECT TCV.id,TCV.version " .
             " FROM {$this->tables['nodes_hierarchy']} NHA " .
@@ -1633,13 +1618,12 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
             
 	$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
 
-	$sql="SELECT DISTINCT NH.id AS tcversion_id,T.tcversion_id AS linked,
-	                      E.tcversion_id AS executed,E.tcversion_number,TCV.version
-	      FROM   {$this->tables['nodes_hierarchy']} NH
-          JOIN {$this->tables['tcversions']} TCV ON (TCV.id = NH.id )
-	      LEFT OUTER JOIN {$this->tables['testplan_tcversions']} T ON T.tcversion_id = NH.id
-	      {$execution_join}
-	      WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
+	$sql="SELECT DISTINCT NH.id AS tcversion_id,T.tcversion_id AS linked, " .
+	     " E.tcversion_id AS executed,E.tcversion_number,TCV.version " .
+	     " FROM   {$this->tables['nodes_hierarchy']} NH " .
+         " JOIN {$this->tables['tcversions']} TCV ON (TCV.id = NH.id ) " .
+	     " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} T ON T.tcversion_id = NH.id " .
+	     " {$execution_join} WHERE  NH.parent_id = {$id} {$tcversion_filter} ORDER BY executed DESC";
 
 	$rs = $this->db->get_recordset($sql);
 

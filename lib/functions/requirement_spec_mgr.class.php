@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/06/06 14:56:20 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/06/07 13:04:27 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -52,8 +52,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $db;
   var $cfield_mgr;
   var $tree_mgr;
-  var $tables;
-
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)",
                                  "XML" => "XML",
@@ -74,23 +72,15 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	function requirement_spec_mgr(&$db)
 	{
 		$this->db = &$db;
-        $this->tables = array('req_specs' => DB_TABLE_PREFIX . 'req_specs',
-                              'requirements' => DB_TABLE_PREFIX . 'requirements',
-                              'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
-                              'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                              'tcversions' => DB_TABLE_PREFIX . 'tcversions');
-        
-	    $this->object_table=$this->tables['req_specs'];
-
-		
 		$this->cfield_mgr = new cfield_mgr($this->db);
-
 		$this->tree_mgr =  new tree($this->db);
+
 		$node_types_descr_id=$this->tree_mgr->get_available_node_types();
 		$node_types_id_descr=array_flip($node_types_descr_id);
 		$this->my_node_type=$node_types_descr_id['requirement_spec'];
 
-		tlObjectWithAttachments::__construct($this->db,$this->object_table);
+		tlObjectWithAttachments::__construct($this->db,'req_specs');
+	    $this->object_table=$this->tables['req_specs'];
 	}
 
   /*
@@ -1189,7 +1179,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters=null)
     $req_mgr = new requirement_mgr($this->db);
     $copy_reqspec=null;
     $copy_req=null;
-    new dBug($filters);
     $has_filters=!is_null($filters);
     
     if($has_filters)
@@ -1202,15 +1191,9 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters=null)
             }
         }
     }
-    
-    echo "has_filters::" . $has_filters . "<br>";
-    new dBug($copy_reqspec);
-    new dBug($copy_req);
-    
+   
     $loop2do=count($items);
     $container_id[0]=is_null($parent_id) || $parent_id==0 ? $tproject_id : $parent_id;
-    echo 'loop2do::' . $loop2do .'<br>';
-    new dBug($items);
     
     for($idx = 0;$idx < $loop2do; $idx++)
     {
@@ -1219,7 +1202,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters=null)
         
         echo "Going to create reqspec:" . $copy_reqspec[$idx] . ":" . $elem['title'] . "<br>";
         $result=$this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
-        new dBug($result);
         if($result['status_ok'])
         {
             $container_id[$depth+1]=$result['id']; 

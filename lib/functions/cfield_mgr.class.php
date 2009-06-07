@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2009/06/06 14:52:54 $  $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2009/06/07 13:01:53 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20090607 - franciscom - refactoring to manage table prefix
  * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
  * 20090523 - franciscom - changes on show_on, enable_on logics
  * 20090426 - franciscom - new method getSizeLimit()
@@ -78,7 +79,7 @@ if( count($cf_files) > 0 )
     }   
 }
 
-class cfield_mgr
+class cfield_mgr extends tlObject
 {
     const DEFAULT_INPUT_SIZE=50;
     const MULTISELECTIONLIST_WINDOW_SIZE=5;
@@ -96,25 +97,24 @@ class cfield_mgr
 
 	var $db;
 	var $tree_manager;
-	var $tables;
 
 
 
-  // Hold string keys used on this object and pages that manages CF,
-  // identifying in what areas/features something will be done
-  // 'execution' => mainly on test execution pages,
-  //                identifies TL features/pages to record test results
-  // 
-  // 'design'    => test suites, test cases creation
-  //                identifies TL features/pages to create test specification
-  // 
-  // 'testplan_design' => link test cases to test plan (assign testcase option)
-  //
-  // IMPORTANT: this values are used as access keys in several properties of this object.
-  //            then if you add one here, remember to update other properties.
-  //
-  // var $application_areas=array('execution','design','testplan_design');
-  var $application_areas=array('execution','design','testplan_design');
+    // Hold string keys used on this object and pages that manages CF,
+    // identifying in what areas/features something will be done
+    // 'execution' => mainly on test execution pages,
+    //                identifies TL features/pages to record test results
+    // 
+    // 'design'    => test suites, test cases creation
+    //                identifies TL features/pages to create test specification
+    // 
+    // 'testplan_design' => link test cases to test plan (assign testcase option)
+    //
+    // IMPORTANT: this values are used as access keys in several properties of this object.
+    //            then if you add one here, remember to update other properties.
+    //
+    // var $application_areas=array('execution','design','testplan_design');
+    var $application_areas=array('execution','design','testplan_design');
 
 	// I'm using the same codes used by Mantis (franciscom)
 	//
@@ -122,77 +122,70 @@ class cfield_mgr
 	// Values will be displayed in "Custom Field Type" combo box when 
 	// users create custom fields. No localization is applied
 	// 
-  // 20080809 - franciscom
-  // Added specific type for test automation related custom fields.
-  // Start at code 500
-  var $custom_field_types = array(0=>'string',
-                                  1=>'numeric',
-                                  2=>'float',
-                                  4=>'email',
-                                  5=>'checkbox',
-                                  6=>'list',
-                                  7=>'multiselection list',
-                                  8=>'date',
-                                  9=>'radio',
-                                  10=>'datetime',
-							      20=>'text area',
-							      500=>'script',
-							      501=>'server');
+    // 20080809 - franciscom
+    // Added specific type for test automation related custom fields.
+    // Start at code 500
+    var $custom_field_types = array(0=>'string',
+                                    1=>'numeric',
+                                    2=>'float',
+                                    4=>'email',
+                                    5=>'checkbox',
+                                    6=>'list',
+                                    7=>'multiselection list',
+                                    8=>'date',
+                                    9=>'radio',
+                                    10=>'datetime',
+		  					        20=>'text area',
+							        500=>'script',
+							        501=>'server');
 
-  // Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
-  // Keys of this map must be the values present in:
-  // $this->custom_field_types
-  // 
-  var $possible_values_cfg = array('string' => 0,
-                                   'numeric'=> 0,
-                                   'float'=> 0,
-                                   'email'=> 0,
-                                   'checkbox' => 1,
-                                   'list' => 1,
-                                   'multiselection list' => 1,
-                                   'date' => 0,
-                                   'radio' => 1,
-                                   'datetime' =>0,
-								                   'text area' => 0,
-								                   'script'=> 0,
-								                   'server' => 0);
-
-// only the types listed here can have custom fields
-//var $node_types = array('testproject',
-//                        'testsuite',
-//                        'testcase',
-//                        'testplan');
-//
-var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
+    // Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
+    // Keys of this map must be the values present in:
+    // $this->custom_field_types
+    // 
+    var $possible_values_cfg = array('string' => 0,
+                                     'numeric'=> 0,
+                                     'float'=> 0,
+                                     'email'=> 0,
+                                     'checkbox' => 1,
+                                     'list' => 1,
+                                     'multiselection list' => 1,
+                                     'date' => 0,
+                                     'radio' => 1,
+                                     'datetime' =>0,
+                                     'text area' => 0,
+    							     'script'=> 0,
+    							     'server' => 0);
+    
+    // only the types listed here can have custom fields
+    var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
 
 
-  // 20090523 - changes in configuration
-  //
-  // Needed to manage user interface, when creating Custom Fields.
-  // When user choose a item type (test case, etc), a javascript logic
-  // uses this information to hide/show enable_on, and show_on combos.
-  //
-  // 0 => combo will not displayed
-  //
-  var $enable_on_cfg=array('execution' => array('testsuite' => 0,
-	                                            'testplan'  => 0,
-	                                            'testcase'  => 1,
-	                                            'requirement_spec' => 0,
-	                                            'requirement' => 0),
-                           'design' => array('testsuite' => 1,
-	                                         'testplan'  => 1,
-	                                         'testcase'  => 1,
-	                                         'requirement_spec' => 0,
-	                                         'requirement' => 0),
-                           'testplan_design' => array('testsuite' => 0,
-	                                                  'testplan'  => 0,
-	                                                  'testcase'  => 1,
-	                                                  'requirement_spec' => 0,
-	                                                  'requirement' => 0));
+    // 20090523 - changes in configuration
+    //
+    // Needed to manage user interface, when creating Custom Fields.
+    // When user choose a item type (test case, etc), a javascript logic
+    // uses this information to hide/show enable_on, and show_on combos.
+    //
+    // 0 => combo will not displayed
+    //
+    var $enable_on_cfg=array('execution' => array('testsuite' => 0,
+                                                    'testplan'  => 0,
+                                                    'testcase'  => 1,
+                                                    'requirement_spec' => 0,
+                                                    'requirement' => 0),
+                             'design' => array('testsuite' => 1,
+                                                 'testplan'  => 1,
+                                                 'testcase'  => 1,
+                                                 'requirement_spec' => 0,
+                                                 'requirement' => 0),
+                             'testplan_design' => array('testsuite' => 0,
+                                                          'testplan'  => 0,
+                                                          'testcase'  => 1,
+                                                          'requirement_spec' => 0,
+                                                          'requirement' => 0));
 
   // 0 => combo will not displayed
-  // 20080809 - franciscom 
-  // Added 'testplan_design' key
   var $show_on_cfg=array('execution'=>array('testsuite' => 1,
 	                                          'testplan'  => 1,
 	                                          'testcase'  => 1,
@@ -210,37 +203,34 @@ var $node_types = array('testsuite','testplan','testcase','requirement_spec','re
 	                                         'requirement' => 0 )
 	                                         );
 
-  // the name of html input will have the following format
-  // <name_prefix>_<custom_field_type_id>_<progressive>
-  //
-  var $name_prefix='custom_field_';
-
-  var $sizes = null;
-
-  // EDIT HERE IF YOU CUSTOMIZE YOUR DB
-  // must be equal to the lenght of:
-  // value column on cfield_*_values tables
-  // default_value column on custom_fields table
-  // 0 -> no limit
-  var $max_length_value=255;
-
-  // EDIT HERE IF YOU CUSTOMIZE YOUR DB
-  // must be equal to the lenght of:
-  // possible_values column on custom_fields table
-  // 0 -> no limit
-  var $max_length_possible_values=255;
-
-  /*
-    function: cfield_mgr
-              class constructor
-  */
-	function cfield_mgr(&$db)
+    // the name of html input will have the following format
+    // <name_prefix>_<custom_field_type_id>_<progressive>
+    //
+    var $name_prefix='custom_field_';
+    var $sizes = null;
+    
+    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
+    // must be equal to the lenght of:
+    // value column on cfield_*_values tables
+    // default_value column on custom_fields table
+    // 0 -> no limit
+    var $max_length_value=255;
+    
+    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
+    // must be equal to the lenght of:
+    // possible_values column on custom_fields table
+    // 0 -> no limit
+    var $max_length_possible_values=255;
+    
+    
+	function __construct(&$db)
 	{
+   		parent::__construct();
+
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
 
 		global $tlCfg;
-
 		$gui_cfg = $tlCfg->gui;
 		$this->sizes = $gui_cfg->custom_fields->sizes;
 		
@@ -254,29 +244,9 @@ var $node_types = array('testsuite','testplan','testcase','requirement_spec','re
 		{
 		    $this->possible_values_cfg +=$gui_cfg->custom_fields->possible_values_cfg;
 		}
-
-        $this->tables=array('users' => DB_TABLE_PREFIX . "users",
-                            'builds' => DB_TABLE_PREFIX . "builds",
-                            'custom_fields' => DB_TABLE_PREFIX . "custom_fields",
-                            'cfield_design_values' => DB_TABLE_PREFIX . "cfield_design_values",
-                            'cfield_execution_values' => DB_TABLE_PREFIX . "cfield_execution_values",
-                            'cfield_testplan_design_values' => DB_TABLE_PREFIX . "cfield_testplan_design_values",
-                            'cfield_testprojects' => DB_TABLE_PREFIX . 'cfield_testprojects',
-                            'cfield_node_types' => DB_TABLE_PREFIX . "cfield_node_types",
-                            'execution_bugs' => DB_TABLE_PREFIX . "execution_bugs",
-                            'executions' => DB_TABLE_PREFIX . 'executions',
-                            'tcversions' => DB_TABLE_PREFIX . 'tcversions',
-                            'nodes_hierarchy' => DB_TABLE_PREFIX . "nodes_hierarchy",
-                            'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
-                            'node_types' => DB_TABLE_PREFIX . "node_types");
-        
         $this->object_table=$this->tables["custom_fields"];
 	}
 
-    /**
-     * 
-     *
-     */
     function getSizeLimit()
     {
         return $this->max_length_value;    
@@ -291,8 +261,8 @@ var $node_types = array('testsuite','testplan','testcase','requirement_spec','re
   */
 	function get_application_areas()
 	{
-    return($this->application_areas);
-  }
+        return($this->application_areas);
+    }
 
 
   /*
@@ -1194,7 +1164,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		$my_label = $this->db->prepare_string($cf['label']);
 		$my_pvalues = $this->db->prepare_string($cf['possible_values']);
 
-		$sql ="UPDATE custom_fields " .
+		$sql ="UPDATE {$this->tables['custom_fields']}  " .
 			 " SET name='{$my_name}',label='{$my_label}'," .
 			 "     type={$cf['type']},possible_values='{$my_pvalues}'," .
 			 "     show_on_design={$cf['show_on_design']}," .

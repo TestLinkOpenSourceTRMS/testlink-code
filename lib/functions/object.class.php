@@ -5,10 +5,13 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.20 2009/04/21 09:35:08 franciscom Exp $
-* @modified $Date: 2009/04/21 09:35:08 $ by $Author: franciscom $
+* @version $Id: object.class.php,v 1.21 2009/06/07 12:55:29 franciscom Exp $
+* @modified $Date: 2009/06/07 12:55:29 $ by $Author: franciscom $
 *
+* 20090607 - franciscom - added array with tables names as property to be used on
+*                         all other classes, to manage table prefix
 **/
+
 /* Namespace for TestLink, here we can safely define constants and other stuff, 
    without risk of collision with other stuff 
 */
@@ -18,6 +21,7 @@ abstract class tl
 	//all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK
 	//so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
 	const OK = 1;
+	
 	//all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
 	//so we can check for ERRORS with <= tl::ERROR, and for SUCCESS with > tl::ERROR
 	const ERROR = 0;
@@ -39,10 +43,57 @@ abstract class tlObject implements iSerialization
 	/* supported serialization Interfaces */	
 	protected $serializationInterfaces;
 	protected $serializationFormatDescriptors;
+
+    protected $tables;
 	
 	/* standard constructor, set's the object id */
 	public function __construct()
 	{
+	    
+        $this->tables=array('assignment_status' => DB_TABLE_PREFIX . 'assignment_status',
+                            'assignment_types' => DB_TABLE_PREFIX . 'assignment_types', 
+                            'attachments' => DB_TABLE_PREFIX . 'attachments',
+                            'builds' => DB_TABLE_PREFIX . 'builds',
+                            'cfield_design_values' => DB_TABLE_PREFIX . 'cfield_design_values',
+                            'cfield_execution_values' => DB_TABLE_PREFIX . 'cfield_execution_values',
+                            'cfield_node_types' => DB_TABLE_PREFIX . 'cfield_node_types',
+                            'cfield_testplan_design_values' => DB_TABLE_PREFIX . 'cfield_testplan_design_values',
+                            'cfield_testprojects' => DB_TABLE_PREFIX . 'cfield_testprojects',
+                            'custom_fields' => DB_TABLE_PREFIX . 'custom_fields',
+                            'db_version' => DB_TABLE_PREFIX . 'db_version',
+                            'events' => DB_TABLE_PREFIX . 'events',
+                            'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
+                            'executions' => DB_TABLE_PREFIX . 'executions',
+                            'keywords' => DB_TABLE_PREFIX . 'keywords',
+                            'milestones' => DB_TABLE_PREFIX . 'milestones',
+                            'node_types' => DB_TABLE_PREFIX . 'node_types',
+                            'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                            'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
+                            'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
+                            'req_specs' => DB_TABLE_PREFIX . 'req_specs',
+                            'req_suites' => DB_TABLE_PREFIX . 'req_suites',
+                            'requirements' => DB_TABLE_PREFIX . 'requirements',
+                            'rights' => DB_TABLE_PREFIX . 'rights',
+                            'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
+                            'role_rights' => DB_TABLE_PREFIX . 'role_rights',
+                            'roles' => DB_TABLE_PREFIX . 'roles',
+                            'tcversions' => DB_TABLE_PREFIX . 'tcversions',
+                            'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
+                            'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
+                            'testplans' => DB_TABLE_PREFIX . 'testplans',
+                            'testprojects' => DB_TABLE_PREFIX . 'testprojects',
+                            'testsuites' => DB_TABLE_PREFIX . 'testsuites',
+                            'text_templates' => DB_TABLE_PREFIX . 'text_templates',
+                            'transactions' => DB_TABLE_PREFIX . 'transactions',
+                            'user_assignments' => DB_TABLE_PREFIX . 'user_assignments',
+                            'user_group' => DB_TABLE_PREFIX . 'user_group',
+                            'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
+                            'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
+                            'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
+                            'users' => DB_TABLE_PREFIX . 'users');
+
+
+
 		$this->objectID = str_replace(".","",uniqid("", true));
 		
 		/*

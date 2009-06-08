@@ -3,24 +3,24 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: const.inc.php,v $
- *
- * @version $Revision: 1.105 $
- * @modified $Date: 2009/06/01 21:41:06 $ by $Author: havlat $
- * @author Martin Havlat
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: const.inc.php,v 1.106 2009/06/08 09:53:36 havlat Exp $
+ * @see 		config.inc.php
  *
  * SCOPE:
  * Global Constants used throughout TestLink 
  * The script is included via config.inc.php
  * 
- * 
+ * @internal 
  * No revisions logged here but each parameter must be described!
  *
  * ----------------------------------------------------------------------------------- */
 
-/** [GLOBAL SETTINGS] */
+/* [GLOBAL SETTINGS] */
 
-/** TestLink Release (MUST BE changed before the release day) */
+/** TestLink Release version (MUST BE changed before the release day) */
 define('TL_VERSION', '1.9 (Dev)'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
@@ -32,15 +32,15 @@ if (!defined('TL_ABS_PATH'))
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
         '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR);
 
-/** Other TestLink file paths */
+/** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 
 
 
 // --------------------------------------------------------------------------------------
-/** [GENERAL MAGIC NUMBERS] */
+/* [GENERAL MAGIC NUMBERS] */
 
-// Basicly true/false
+/** Descriptive constant names (actually true/false) */
 define('ENABLED', 	1 );
 define('DISABLED', 	0 );
 define('ON',		1 );
@@ -56,13 +56,14 @@ define('MEDIUM', 	2 );
 define('LOW', 		1 );
 
 
+/** @TODO havlatm: use 'OFF' constant */
 define('TL_FILTER_OFF',null);
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS', 0);
 define('TP_ALL_STATUS', null);
 define('FILTER_BY_PRODUCT', 1);
-define('FILTER_BY_TESTPROJECT', FILTER_BY_PRODUCT);
+define('FILTER_BY_TESTPROJECT', 1);
 define('TP_STATUS_ACTIVE', 1);
 
 define('DO_LANG_GET',1 );
@@ -150,20 +151,24 @@ define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 // --------------------------------------------------------------------------------------
 /** [GUI] */
 
-// havlatm: @todo remove (must be solved via css)
-// planAddTC_m1-tpl
+/** 
+ * @todo havlatm: remove (must be solved via css)
+ * @uses planAddTC_m1-tpl 
+ **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
 /** default filenames of CSS files of current GUI theme */
 define('TL_CSS_MAIN', 'testlink.css');
 define('TL_CSS_PRINT', 'tl_print.css');
 define('TL_CSS_DOCUMENTS', 'tl_documents.css');
+/** @todo havlatm: remove - probably obsolete from 1.9 */
 define('TL_CSS_TREEMENU', 'tl_treemenu.css');
 
-
+/** Browser Cookie keeptime */
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
-/** Configurable templates this can help if you want to use a non standard template.
+/** 
+ * Configurable templates this can help if you want to use a non standard template.
  * i.e. you want to develop a new one without loosing the original template.
  */
 $g_tpl = array(
@@ -190,7 +195,7 @@ define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css
 /** String that will used as prefix, to generate an string when a label to be localized
  * is passed to lang_get() to be translated, by the label is not present in the strings file.
  * The resulting string will be:  TL_LOCALIZE_TAG . label
- * Example:   code specifies the key of string: lang_get('hello') -> shows "LOCALIZE: Hello"
+ * @example code specifies the key of string: lang_get('hello') -> shows "LOCALIZE: Hello"
  */
 define('TL_LOCALIZE_TAG','LOCALIZE: ');
 
@@ -293,7 +298,7 @@ $g_locales_html_select_date_field_order = array(
 
 
 // --------------------------------------------------------------------------------------
-/** ATTACHMENTS */
+/* ATTACHMENTS */
 
 /** Attachment key constants (do not change) */
 define('TL_REPOSITORY_TYPE_DB',1);
@@ -323,38 +328,24 @@ $att_model_m2->show_upload_column = true;
 
 
 // --------------------------------------------------------------------------------------
-/** [Test execution status] */
+/* [Test execution status] */
 /** 
  * Note: do not change existing values (you can enhance arrays of course more into custom_config)
  *           If you add new statuses, please use custom_strings.txt to add your localized strings
  */
 
-/** List of Test Case execution results */
-// Note: for GUI use rather
-//
-//       $results_cfg = config_get('results');
-//       lang_get($results_cfg['status_label']["passed"]);        
-//
-// Do not do localisation here, i.e do not change "passed"
-//           with the corresponding word in your national language.
-//           These strings ARE NOT USED at User interface level.
-//
-//           Labels showed to users will be created using lang_get()
-//           function, getting key from:
-//                                      $tlCfg->results['status_label']
-//           example:
-//                   $results_cfg = config_get('results');
-//                   lang_get($results_cfg['status_label']["passed"]);        
-//
-// Attention!!!:
-// if you add a new status_code (Remember: do not edit this file use custom_config.inc.pgp)
-// and you want new status available on reports, you need to configure also:
-//
-//                 $tlCfg->reportsCfg->exec_status.
-// 
-// Also remember to add new status on charts config.
-//
-//
+/** 
+ * @var array List of Test Case execution results (status_key -> DB code). 
+ * The code is used in DB to store results (not GUI).  
+ * Do not do localisation here, i.e do not change "passed" by your national language.
+ *
+ * How to add a new status:
+ * - add a new record to the array
+ * 		- do not edit this file use custom_config.inc.php
+ * - you also need to add the new status to: $tlCfg->results['status_label'], 
+ * 		$tlCfg->reportsCfg->exec_status, charts config
+ *
+ */ 
 $tlCfg->results['status_code'] = array (
 	'failed'        => 'f',
 	'blocked'       => 'b',
@@ -369,8 +360,15 @@ $tlCfg->results['status_code'] = array (
 /** 
  * Used to get localized string to show to users
  * Order is important, because this will be display order on GUI
- * key: status
+ * 
+ * @var array key: status ID
  * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
+ * 
+ * @example use the next code to get localized string of a status
+ * <code>
+ *		$results_cfg = config_get('results');
+ *		lang_get($results_cfg['status_label']["passed"]);
+ * </code>        
  */
 $tlCfg->results['status_label'] = array(
 	'not_run'  		=> 'test_status_not_run',
@@ -401,7 +399,10 @@ $tlCfg->results['status_label_for_exec_ui'] = array(
 	'blocked' 		=> 'test_status_blocked'
 );
 
-/** Selected execution result by default. Values is key from $tlCfg->results['status_label'] */
+/** 
+ * Selected execution result by default. Values is key from $tlCfg->results['status_label']
+ * @var string 
+ **/
 $tlCfg->results['default_status'] = 'not_run';
 
 
@@ -434,13 +435,15 @@ $tlCfg->reportsCfg=new stdClass();
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
 
-// Offset in seconds, to substract from current date to create start date on
-// reports that have start / end dates
+/** 
+ * Default Offset in seconds for reporting start date (reports with date range)
+ * @uses lib/results/resultsMoreBuilds.php
+ */
 $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 
 // --------------------------------------------------------------------------------------
-/** [Users & Roles] */
+/* [Users & Roles] */
 define('TL_USER_NOBODY', -1);
 define('TL_NO_USER', TL_USER_NOBODY);
 define('TL_USER_ANYBODY', 0);
@@ -475,10 +478,7 @@ $g_role_colour = array (
 
 
 // --------------------------------------------------------------------------------------
-/** [LDAP authentication errors */
- 
-// Based on mantis issue tracking system code
-// ERROR_LDAP_*
+/** LDAP authentication errors */
 define( 'ERROR_LDAP_AUTH_FAILED',				1400 );
 define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
 define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
@@ -487,21 +487,23 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
 
 // --------------------------------------------------------------------------------------
-/** [Priority, Urgency, Importance] */
-// Priority = Importance x Urgency(Risk)
+/* [Priority, Urgency, Importance] */
+/** @var array descriptionPriority is computed as Importance x Urgency */
 $tlCfg->priority_levels = array( 
-	  HIGH => 6, // high priority include 6 and more
-    MEDIUM => 3,
-    LOW => 1
+	HIGH => 6, // high priority include 6 and more
+	MEDIUM => 3,
+	LOW => 1
 );
 
+/** @var integer Default Test case Importance offered in GUI */
 $tlCfg->testcase_importance_default = MEDIUM;
+/** @var integer Default Test case Urgency offered in GUI */
 $tlCfg->testcase_urgency_default = MEDIUM;
 
 
 
 /** 
- * Used to get localized string to show to users
+ * @var array Used to get localized string to show to users
  * key: numeric code
  * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
  */
@@ -515,37 +517,49 @@ $tlCfg->urgency['code_label'] = array(
 // --------------------------------------------------------------------------------------
 /** [MISC] */
 
-// used to mark up inactive objects (test projects, etc)
+/** Mark up inactive objects (test projects, etc) in GUI lists */
 define('TL_INACTIVE_MARKUP', '* ');
 
-// used when created a test suite path, concatenating test suite names
+/** @var string Delimiter used when created a test suite path, concatenating test suite names */
 $g_testsuite_sep='/';
 
-// using niftycorners
-// martin: @TODO remove to smarty
+/**
+ * using niftycorners 
+ * @TODO havlatm: move to smarty templates - configuration should not contain HTML elements 
+ **/
 define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE', '</div><br />');
 
-/** Bug tracking objects - unknown meaning (do not change)*/
-// @TODO move to appropriate file - not configuration
+/** 
+ * Bug tracking objects (do not change)
+ * @TODO unknown meaning 
+ * @TODO move to appropriate file - not configuration
+ **/
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;
 
 
 // --------------------------------------------------------------------------------------
-/** [Requirements] */
+/* [Requirements] */
 
 /** 
  * data status constants are applicable for data like requirement, test case 
  * TL_REVIEW_STATUS_VALID is default value if review process is disabled
  * Note: review process is not implemented yet (1.8)
  **/ 
-define('TL_REVIEW_STATUS_VALID', 	'V'); // data was reviewed; only these ones could be used for next work
-define('TL_REVIEW_STATUS_DRAFT', 	'D'); // data wait for review
-define('TL_REVIEW_STATUS_OBSOLETE', 'O'); // data should not be available in analyse, reports and assignment
-define('TL_REVIEW_STATUS_TODO', 	'T'); // data need update (not ready for review)
-define('TL_REVIEW_STATUS_FUTURE', 	'F'); // data are not aplicable for the current work (planned to used in future)
+/** Review status: data was reviewed and are available for using */
+define('TL_REVIEW_STATUS_VALID', 	'V');
+/** Review status: design phase; data are not available for review or using */ 
+define('TL_REVIEW_STATUS_DRAFT', 	'D');
+/** Review status: data wait for review */ 
+define('TL_REVIEW_STATUS_REVIEW', 	'R');
+define('TL_REVIEW_STATUS_OBSOLETE', 'O'); 
+/** Review status: data need update (not listed in reports and lists, review disabled) */ 
+define('TL_REVIEW_STATUS_TODO', 	'T');
+/** Review status: data are not aplicable for using (not listed in reports and lists) */ 
+define('TL_REVIEW_STATUS_FUTURE', 	'F'); 
 
+/** @var array localization identifiers for review statuses */
 $tlCfg->review_status_labels = array(
 		TL_REVIEW_STATUS_VALID => 'review_status_valid', 
 		TL_REVIEW_STATUS_DRAFT => 'review_status_draft',
@@ -553,7 +567,7 @@ $tlCfg->review_status_labels = array(
 		TL_REVIEW_STATUS_FUTURE => 'review_status_future', 
 		TL_REVIEW_STATUS_TODO => 'review_status_todo');
 
-// martin: @TODO remove (use consts above)
+/** @TODO havlatm: obsolete - remove (use consts above) */
 define('TL_REQ_STATUS_VALID', 		'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');
 define('TL_REQ_STATUS_DRAFT', 		'D');
@@ -575,6 +589,7 @@ define('TL_REQ_TYPE_INTERFACE','I'); // user interface, communication protocols
 define('TL_REQ_TYPE_NON_FUNCTIONAL','N'); // performance, infrastructure, robustness, security, safety, etc.
 define('TL_REQ_TYPE_CONSTRAIN','N'); // Constraints and Limitations
 
+/** @var array localization identifiers for requirements types */
 $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_INFO => 'req_type_info', 
 		TL_REQ_TYPE_FEATURE => 'req_type_feature',
@@ -584,7 +599,7 @@ $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain');
 
 
-// havlatm: @todo replace by $tlCfg->req_cfg->type_labels
+/** @todo havlatm: replace by $tlCfg->req_cfg->type_labels */
 define('TL_REQ_TYPE_1', 'V');
 define('TL_REQ_TYPE_2', 'N');
 
@@ -593,11 +608,14 @@ define('VALID_REQ', 'v');
 
 
 
-// havlatm: @TODO remove
+/**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
-// Used to force the max len of this field, during the automatic creation of requirements
-// or other import features
+/** 
+ * Used to force the max len of this field, during the automatic creation of requirements
+ * or other import features
+ * @todo havlatm: convert to $tlCfg->gui object
+ */ 
 $g_field_size = new stdClass();
 $g_field_size->testsuite_name = 100;
 $g_field_size->testcase_name = 100;
@@ -611,9 +629,11 @@ $g_field_size->requirement_title = 100;
 // --------------------------------------------------------------------------------------
 /** [MISC] */
 
-// Applied to HTML inputs created to get/show custom field contents
-// For string,numeric,float,email: size & maxlenght of the input type text.
-// For list,email size of the select input.
+/**
+ * Custom field constrains for HTML inputs use values to created to get/show custom field contents
+ * <ul><li>for string,numeric,float,email: size & maxlenght of the input type text.</li>
+ * <li>for list,email size of the select input.</li></ul>
+ */
 $tlCfg->gui->custom_fields->sizes = array( 
 	'string' => 50,
 	'numeric'=> 10,

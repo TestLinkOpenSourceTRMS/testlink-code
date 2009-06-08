@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.172 $
- * @modified $Date: 2009/06/07 12:59:23 $ $Author: franciscom $
+ * @version $Revision: 1.173 $
+ * @modified $Date: 2009/06/08 16:58:34 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -83,13 +83,6 @@ define("TC_COPY_KEYWORDS",0);
 
 class testcase extends tlObjectWithAttachments
 {
-	private $tcversions_table = "tcversions";
-	private $testprojects_table = "testprojects";
-	private $nodes_hierarchy_table = "nodes_hierarchy";
-	private $keywords_table = "keywords";
-    private $testcase_keywords_table="testcase_keywords";
-    private $testplan_tcversions_table="testplan_tcversions";
-
     const AUTOMATIC_ID=0;
     const DEFAULT_ORDER=0;
     const ALL_VERSIONS=0;
@@ -1900,14 +1893,14 @@ function getInternalID($stringID,$glueCharacter)
 		$externalID = $this->db->prepare_string($pieces[1]);
 
 		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
-               " FROM {$this->tcversions_table} TCV, {$this->tables['nodes_hierarchy']} NH" .
+               " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .
                " WHERE TCV.id = NH.id " .
                " AND  TCV.tc_external_id = '{$externalID}'";
 
 		$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		if(!is_null($testCases))
 		{
-      		$sql = 	"SELECT id  FROM {$this->testprojects_table} " .
+      		$sql = 	"SELECT id  FROM {$this->tables['testprojects']} " .
                		"WHERE prefix = '" . $testCasePrefix . "'";
 			$recordset = $this->db->get_recordset($sql);
 			$tproject_id = $recordset[0]['id'];
@@ -2808,7 +2801,7 @@ function update_order($id,$order)
 */
 function update_external_id($id,$external_id)
 {
-  $sql="UPDATE {$this->tcversions_table} " .
+  $sql="UPDATE {$this->tables['tcversions']} " .
        "SET tc_external_id={$external_id} " .
        "WHERE id IN ( SELECT id FROM {$this->tables['nodes_hierarchy']} WHERE parent_id={$id} ) ";
       

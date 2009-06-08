@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.127 $
- * @modified $Date: 2009/05/30 15:04:45 $ $Author: franciscom $
+ * @version $Revision: 1.128 $
+ * @modified $Date: 2009/06/08 17:02:55 $ $Author: franciscom $
  *
  * rev:
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
@@ -408,21 +408,26 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
 */
 function get_ts_name_details(&$db,$tcase_id)
 {
+    $tables['testsuites'] = DB_TABLE_PREFIX . 'testsuites';
+    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
+
+    
 	$rs = '';
 	$do_query = true;
-	$sql = "Select ts.id as tsuite_id, ts.details, 
-	             nha.id as tc_id, nhb.name as tsuite_name 
-	      FROM testsuites ts, nodes_hierarchy nha, nodes_hierarchy nhb
-	      WHERE ts.id=nha.parent_id
-	      AND   nhb.id=nha.parent_id ";
+	$sql = "SELECT TS.id AS tsuite_id, TS.details, 
+	             NHA.id AS tc_id, NHB.name AS tsuite_name 
+	      FROM {$tables['testsuites']} TS, {$tables['nodes_hierarchy']} NHA, 
+	           {$tables['nodes_hierarchy']} NHB
+	      WHERE TS.id=NHA.parent_id
+	      AND   NHB.id=NHA.parent_id ";
 	if( is_array($tcase_id) && count($tcase_id) > 0)
 	{
 		$in_list = implode(",",$tcase_id);
-		$sql .= "AND nha.id IN (" . $in_list . ")";
+		$sql .= "AND NHA.id IN (" . $in_list . ")";
 	}
 	else if(!is_null($tcase_id))
 	{
-		$sql .= "AND nha.id={$tcase_id}";
+		$sql .= "AND NHA.id={$tcase_id}";
 	}
 	else
 	{

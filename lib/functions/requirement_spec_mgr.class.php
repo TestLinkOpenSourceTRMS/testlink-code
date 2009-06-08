@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/06/07 13:04:27 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -242,10 +242,12 @@ function get_by_id($id)
 function get_coverage($id)
 {
     $req_mgr = new requirement_mgr($this->db);
-    $statusFilter="AND status IN('" . implode("','",array(upper(VALID_REQ),VALID_REQ)) ."') ";
-    $order_by=" ORDER BY req_doc_id,title";
-	$output = array( 'covered' => array(), 'uncovered' => array(),
-					         'nottestable' => array()	);
+    $statusFilter = " AND status IN('" . strtoupper(VALID_REQ)."','".VALID_REQ."') ";
+    $order_by = " ORDER BY req_doc_id,title";
+	$output = array( 'covered' => array(), 
+					 'uncovered' => array(),
+					 'nottestable' => array()
+	);
 
 	// get requirements
 	// amitkhullar- BUGID : 2439

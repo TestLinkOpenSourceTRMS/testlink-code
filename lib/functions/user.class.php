@@ -6,8 +6,8 @@
  *
  * @package TestLink
  * Filename $RCSfile: user.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/06/07 12:58:56 $ $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/06/08 17:40:22 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -15,7 +15,7 @@
  */
  
 /**
- * a class for handling authentication, authorization to see or edit pages and edit user data
+ * a class for handling users in TestLink
  * 
  * @author Andreas Morsing
  * @uses config.inc.php
@@ -26,13 +26,37 @@ class tlUser extends tlDBObject
 	private $object_table = "users";
     // private $tables = '';
 
+	/**
+	 * @var string the first name of the user
+	 */
 	public $firstName;
+	/**
+	 * @var string the last name of the user
+	 */
 	public $lastName;
+	/**
+	 * @var string the email address of the user
+	 */
 	public $emailAddress;
+	/**
+	 * @var string the locale of the user (eG de_DE, en_GB)
+	 */
 	public $locale;
+	/**
+	 * @var boolean true if the user is active, false else
+	 */
 	public $isActive;
+	/**
+	 * @var integer the default testprojectID of the user
+	 */
 	public $defaultTestprojectID;
+	/**
+	 * @var tlRole the global role of the user
+	 */
 	public $globalRole;
+	/**
+	 * @var integer the id of global role of the user
+	 */
 	public $globalRoleID;
 	public $tprojectRoles; 
 	public $tplanRoles;
@@ -65,8 +89,7 @@ class tlUser extends tlDBObject
 	//detail leveles
 	const TLOBJ_O_GET_DETAIL_ROLES = 1;
 
-    // 20090425 - franciscom
-	const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
+    const SKIP_CHECK_AT_TESTPROJECT_LEVEL = -1;
     const SKIP_CHECK_AT_TESTPLAN_LEVEL = -1;
 
 	
@@ -128,7 +151,7 @@ class tlUser extends tlDBObject
 	}
 	
 	/** Checks if password management is external (like LDAP)...
-	 * @TODO should be moved inside a super tl configuration class
+	 * @TODO schlundus, should be moved inside a super tl configuration class
 	 * @return boolean return true if password management is external, else false
 	 */
 	static public function isPasswordMgtExternal()
@@ -221,6 +244,14 @@ class tlUser extends tlDBObject
 		return $info ? tl::OK : tl::ERROR;
 	}
 	
+	/**
+	 * Fetches all the testproject roles of of the user, and store them into the object. 
+	 * Result could be limited to a certain testproject
+	 * 
+	 * @param $db [ref] the database connection
+	 * @param $testProjectID integer the id of the testproject to read the roles for, if null all roles are read
+	 * @return integer returns tl::OK 
+	 */
 	public function readTestProjectRoles(&$db,$testProjectID = null)
 	{
 		$query = "SELECT testproject_id,role_id " .
@@ -253,6 +284,14 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
+	/**
+	 * Fetches all the testplan roles of of the user, and store them into the object. 
+	 * Result could be limited to a certain testplan
+	 * 
+	 * @param $db [ref] the database connection
+	 * @param $testPlanID integer the id of the testplan to read the roles for, if null all roles are read
+	 * @return integer returns tl::OK 
+	 */
 	public function readTestPlanRoles(&$db,$testPlanID = null)
 	{
 		$query = "SELECT testplan_id,role_id " . 
@@ -298,14 +337,14 @@ class tlUser extends tlDBObject
 			if($this->dbID)
 			{
 				$query = "UPDATE {$this->tables['users']} " .
-			       "SET first='" . $db->prepare_string($this->firstName) . "'" .
-			       ", last='" .  $db->prepare_string($this->lastName)    . "'" .
-			       ", email='" . $db->prepare_string($this->emailAddress)   . "'" .
+			       "SET first = '" . $db->prepare_string($this->firstName) . "'" .
+			       ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
+			       ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
 				   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
 				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
 				   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
 				   ", active = ". $db->prepare_string($this->isActive);
-				$query .= " WHERE id=" . $this->dbID;
+				$query .= " WHERE id = " . $this->dbID;
 				$result = $db->exec_query($query);
 			}
 			else
@@ -501,6 +540,7 @@ class tlUser extends tlDBObject
 		}
 		else
 		{
+			//@TODO schlundus, should not be there
 			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 		}
 		
@@ -511,6 +551,7 @@ class tlUser extends tlDBObject
 		}
 		else
 		{
+			//@TODO schlundus, should not be there
 			$testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 		}
 		
@@ -553,6 +594,11 @@ class tlUser extends tlDBObject
 		return checkForRights($allRights,$roleQuestion);
 	}
 	
+	/**
+	 * Checks the correctness of an email address
+	 * @param $email
+	 * @return integer returns tl::OK on success, errorcode else
+	 */
 	static public function checkEmailAdress($email)
 	{
 		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
@@ -598,15 +644,12 @@ class tlUser extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$users = null;
-		$qty=sizeof($ids);
-		for($idx = 0;$idx < $qty; $idx++)
+		for($i = 0;$i < sizeof($ids);$i++)
 		{
-			$id = $ids[$idx];
+			$id = $ids[$i];
 			$user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 			if ($user)
-			{
 				$users[$id] = $user;
-			}	
 		}
 		return $users ? $users : null;
 	}

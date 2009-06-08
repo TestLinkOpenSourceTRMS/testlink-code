@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: editExecution.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/05/30 15:00:04 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/06/08 17:40:21 $ by $Author: schlundus $
  *
  * Edit an execution notes and custom fields
  *
@@ -98,5 +98,4 @@ function init_args()
 
     return $args; 
 }
-
 ?>

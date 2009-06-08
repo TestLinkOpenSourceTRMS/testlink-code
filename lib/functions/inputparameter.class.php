@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.12 2009/06/05 16:54:02 franciscom Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.13 2009/06/08 17:40:21 schlundus Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -201,7 +201,6 @@ class tlInputParameter extends tlObject
 /**
  * Helper class which holds information about the InputParameter
  *
- * @TODO havlatm: what kind of info? 
  */
 class tlParameterInfo 
 {

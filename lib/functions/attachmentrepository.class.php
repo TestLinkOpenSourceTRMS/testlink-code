@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/06/07 12:56:40 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/06/08 17:40:21 $ by $Author: schlundus $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -301,9 +301,9 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$bSuccess = true;
 		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		for($idx = 0;$idx < sizeof($attachmentIDs);$idx++)
+		for($i = 0;$i < sizeof($attachmentIDs);$i++)
 		{
-			$id = $attachmentIDs[$idx];
+			$id = $attachmentIDs[$i];
 			$bSuccess = ($this->deleteAttachment($id) && $bSuccess);
 		}
 		if ($bSuccess)
@@ -312,7 +312,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 			if (is_dir($folder))
 			{
 				rmdir($folder);
-			}	
+			}
 		}
 		return $bSuccess;
 	}
@@ -332,13 +332,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$attachmentInfos = null;
 		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		for($idx = 0; $idx < sizeof($attachmentIDs); $idx++)
+		for($i = 0;$i < sizeof($attachmentIDs);$i++)
 		{
-			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
+			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$i]);
 			if ($attachmentInfo)
 			{
 				$attachmentInfos[] = $attachmentInfo;
-			}	
+			}
 		}
 		return $attachmentInfos;
 	}

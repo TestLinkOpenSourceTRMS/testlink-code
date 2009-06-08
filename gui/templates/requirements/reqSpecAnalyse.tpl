@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.8 2009/03/05 07:32:29 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.9 2009/06/08 17:40:21 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
@@ -63,7 +63,7 @@
 			<td><span class="bold"><a href="{$action_req_view}{$coverage.covered[row].id}">
 			{$coverage.covered[row].title|escape}</a></span></td>
 		<td>{section name=subrow loop=$coverage.covered[row].coverage}
-    <a href="lib/testcases/archiveData.php?id={$coverage.covered[row].coverage[subrow].id|escape}&amp;edit=testcase&allow_edit=0">{$tcprefix|escape}{$coverage.covered[row].coverage[subrow].tc_external_id}</a>:{$coverage.covered[row].coverage[subrow].name|escape}<br />
+    <a href="lib/testcases/archiveData.php?id={$coverage.covered[row].coverage[subrow].id|escape}&amp;edit=testcase&amp;allow_edit=0">{$tcprefix|escape}{$coverage.covered[row].coverage[subrow].tc_external_id}</a>:{$coverage.covered[row].coverage[subrow].name|escape}<br />
 		{/section}</td>
 	</tr>
 {if $smarty.section.row.last}

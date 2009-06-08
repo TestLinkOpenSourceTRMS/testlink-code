@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2009/06/04 19:22:01 $ $Author: schlundus $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2009/06/08 17:40:22 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -97,20 +97,20 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
   rev :
        20071228 - franciscom - added active_filter
 */
-function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter=null,$users = null)
+function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = null, $active_filter = null,$users = null)
 {
 	$users_map = null;
 	if (!$users)
 	{
 		$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-  }
+	}
   
-	$the_users=$users;
+	$the_users = $users;
 	if ($users)
 	{
 		if(!is_null($active_filter))
 		{
-			$the_users=array();
+			$the_users = array();
 			foreach($users as $id => $user)
 			{
 				if($user->isActive == $active_filter)
@@ -141,12 +141,12 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
 function buildUserMap($users,$add_options = false, $additional_options=null)
 {
 	$usersMap = null;
-	$inactivePrefix=lang_get('tag_for_inactive_users');
+	$inactivePrefix = lang_get('tag_for_inactive_users');
 	if ($users)
 	{
 		if($add_options)
 		{
-		  $my_options=is_null($additional_options) ? array( 0 => '') : $additional_options;
+		  $my_options = is_null($additional_options) ? array( 0 => '') : $additional_options;
 		  foreach($my_options as $code => $verbose_code)
 		  {
 			    $usersMap[$code] = $verbose_code;
@@ -155,7 +155,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 		foreach($users as $id => $user)
 		{
 			$usersMap[$id] = $user->getDisplayName();
-			if($user->isActive==0)
+			if($user->isActive == 0)
 			{
 			    $usersMap[$id] = $inactivePrefix . ' ' . $usersMap[$id];
 			} 
@@ -315,27 +315,24 @@ function getAllUsersRoles(&$db,$order_by = null)
  * @param string $activeStatus. values: 'active','inactive','any'  
  */
 function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null, 
-                                  $additional_testers=null,$activeStatus='active')
+                                  $additional_testers = null,$activeStatus = 'active')
 {
+	$orOperand = false;
+    $activeTarget = 1;
     switch ($activeStatus)
     {
         case 'any':
-            $orOperand=true;
-            $activeTarget=1;
+            $orOperand = true;
         break;
         
         case 'inactive':
-            $orOperand=false;
-            $activeTarget=0;
-        break;
+            $activeTarget = 0;
+    	break;
         
         case 'active':
         default:
-            $orOperand=false;
-            $activeTarget=1;
-        break;
+	    break;
     }
-
 
     $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID,null,$users);
     $userFilter = array();
@@ -412,9 +409,9 @@ function getGrantsForUserMgmt(&$dbHandler,&$userObj,$tprojectID=null,$tplanID=nu
                                                                  $tprojectID,$tplanID);
         
         
-        $answers->user_role_assignment=$userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
+        $answers->user_role_assignment = $userObj->hasRight($dbHandler,"user_role_assignment",null,-1);
         $answers->testproject_user_role_assignment=$userObj->hasRight($dbHandler,"testproject_user_role_assignment",$tprojectID,-1);
-        if( $answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes" )
+        if($answers->user_role_assignment == "yes" || $answers->testproject_user_role_assignment == "yes")
         {    
             $grants->tproject_user_role_assignment = "yes";
         }

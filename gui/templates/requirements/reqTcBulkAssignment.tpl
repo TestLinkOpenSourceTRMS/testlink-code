@@ -48,13 +48,13 @@ function check_action_precondition(form_id,action)
     <div class="workBack">
       <h2>{$labels.req_title_bulk_assign}</h2>
       <form id="SRS_switch" name="SRS_switch" method="post">
- 	      <input type="hidden" name="doAction" id="doAction" value="switchspec">
- 	      <input type="hidden" name="id" id="id" value="{$gui->tsuite_id}">
+ 	      <input type="hidden" name="doAction" id="doAction" value="switchspec" />
+ 	      <input type="hidden" name="id" id="id" value="{$gui->tsuite_id}" />
         <p><span class="labelHolder">{$labels.req_spec}</span>
       	<select name="idSRS" onchange="form.submit()">
       	{html_options options=$gui->req_specs selected=$gui->selectedReqSpec}</select>
       </form>
-      {if $gui->user_feedback != ''}<br><br>{/if}
+      {if $gui->user_feedback != ''}<br /><br />{/if}
       {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
     </div>
     <div class="workBack">
@@ -101,7 +101,7 @@ function check_action_precondition(form_id,action)
     
         {if $smarty.section.row.total > 0}
         	<div class="groupBtn">
-        	  <input type="hidden" name="doAction" id="doAction" value="bulkassign">
+        	  	<input type="hidden" name="doAction" id="doAction" value="bulkassign" />
         		<input type="submit" name="actionButton" value="{$labels.btn_assign}"
  		    		       onclick="return check_action_precondition('reqList');"/>
         	</div>

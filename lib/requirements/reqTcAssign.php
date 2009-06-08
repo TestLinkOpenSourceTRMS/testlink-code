@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/02/14 10:14:28 $  $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/06/08 17:40:22 $  $Author: schlundus $
  * 
  * @author Martin Havlat
  *
@@ -18,24 +18,23 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args=init_args();
+$args = init_args();
 
 $gui = new stdClass();
 $gui->showCloseButton = $args->showCloseButton;
-$gui->user_feedback='';
+$gui->user_feedback = '';
 $gui->tcTitle = null;
 $gui->arrAssignedReq = null;
 $gui->arrUnassignedReq = null;
 $gui->arrReqSpec = null;
-$gui->selectedReqSpec=$args->idReqSpec;
+$gui->selectedReqSpec = $args->idReqSpec;
 
-$bulkCounter=0;
-$bulkDone=false;
-$pfn=null;
+$bulkCounter = 0;
+$bulkDone = false;
+$pfn = null;
 
 switch($args->doAction)
 {
@@ -48,48 +47,46 @@ switch($args->doAction)
 	    break;  
 
     case 'bulkassign':
-      $bulkCounter=doBulkAssignment($db,$args);
-      $bulkDone=true;
-      $args->edit='testsuite';
+      	$bulkCounter = doBulkAssignment($db,$args);
+      	$bulkDone = true;
+      	$args->edit = 'testsuite';
 	    break;  
 
     case 'switchspec':
-      $args->edit='testsuite';
+      	$args->edit = 'testsuite';
 	    break;  
-
 }
 
 if(!is_null($pfn))
 {
-    $gui=doSingleTestCaseOperation($db,$args,$gui,$pfn);
+    $gui = doSingleTestCaseOperation($db,$args,$gui,$pfn);
 }
 
 
 switch($args->edit)
 {
     case 'testproject':
-	       show_instructions('assignReqs');
-	       exit();
+	    show_instructions('assignReqs');
+	    exit();
     break;
     
     case 'testsuite':
-         $gui=processTestSuite($db,$args,$gui);
-         $templateCfg->default_template='reqTcBulkAssignment.tpl';
-         if( $bulkDone)
+         $gui = processTestSuite($db,$args,$gui);
+         $templateCfg->default_template = 'reqTcBulkAssignment.tpl';
+         if($bulkDone)
          {
-             $gui->user_feedback=sprintf(lang_get('bulk_assigment_done'),$bulkCounter); 
+             $gui->user_feedback = sprintf(lang_get('bulk_assigment_done'),$bulkCounter); 
          }    
     break;
       
-   case 'testcase':
-        $gui=processTestCase($db,$args,$gui);
-   break;
+   	case 'testcase':
+        $gui = processTestCase($db,$args,$gui);
+   	break;
   
-  default:
-	tlog("Wrong GET/POST arguments.", 'ERROR');
-	exit();
-  break;
-
+	default:
+		tlog("Wrong GET/POST arguments.", 'ERROR');
+		exit();
+	break;
 }
 
 $smarty = new TLSmarty();
@@ -108,42 +105,46 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args()
 {
-  
-    $args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"id" => array(tlInputParameter::INT_N),
+			"req_id" => array(tlInputParameter::ARRAY_INT),
+			"req" => array(tlInputParameter::INT_N),
+			"showCloseButton" => array(tlInputParameter::STRING_N,0,1),
+			"doAction" => array(tlInputParameter::STRING_N,0,100),
+			"edit" => array(tlInputParameter::STRING_N,0,100),
+			"unassign" => array(tlInputParameter::STRING_N,0,1),
+			"assign" => array(tlInputParameter::STRING_N,0,1),
+			"idSRS" => array(tlInputParameter::INT_N),
+	);	
+		
+	$args = new stdClass();
+	$pParams = R_PARAMS($iParams,$args);
 
-    $args->idReqSpec = null;
-    $args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-    $args->edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
-    $args->idReq = isset($_REQUEST['req']) ? intval($_REQUEST['req']) : null;
-    $args->reqIdSet = isset($_REQUEST['req_id']) ? $_REQUEST['req_id'] : null;
-    $args->showCloseButton = isset($_REQUEST['showCloseButton']) ? 1 : 0;
-    $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+	$args->idReqSpec = null;
+    $args->idReq = $args->req;
+    $args->reqIdSet = $args->req_id;
     if(is_null($args->doAction))
     {
-        $args->doAction = isset($_REQUEST['unassign']) ? 'unassign' : null;
-        
+    	$args->doAction = ($args->unassign != "") ? "unassign" : null;
     }
     if(is_null($args->doAction))
     {
-        $args->doAction = isset($_REQUEST['assign']) ? 'assign' : null;
-        
+        $args->doAction = ($args->assign != "") ? "assign" : null;
     }
 
-
-	  // 20081103 - sisajr - hold choosen SRS (saved for a session)
-	  if (isset($_REQUEST['idSRS']) && intval($_REQUEST['idSRS']) > 0)
-	  {
-	  	$args->idReqSpec = intval($_REQUEST['idSRS']);
+	// 20081103 - sisajr - hold choosen SRS (saved for a session)
+	if ($args->idSRS)
+	{
+	  	$args->idReqSpec = $args->idSRS;
 	  	$_SESSION['currentSrsId'] = $args->idReqSpec;
-	  }
-	  else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0)
-	  {
-	  	$args->idReqSpec = intval($_SESSION['currentSrsId']);
-	  }
+	}
+	else if(isset($_SESSION['currentSrsId']) && intval($_SESSION['currentSrsId']) > 0)
+	{
+		$args->idReqSpec = intval($_SESSION['currentSrsId']);
+	}
 
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
+	
     return $args;
 }
 
@@ -202,16 +203,14 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
 */
 function doBulkAssignment(&$dbHandler,&$argsObj)
 {
-  
-    
-    $req_mgr = new requirement_mgr($dbHandler);
-    $assignmentCounter=0;
-	  $requirements = array_keys($argsObj->reqIdSet);
-    if( !is_null($requirements) && count($requirements) > 0 )
+	$req_mgr = new requirement_mgr($dbHandler);
+    $assignmentCounter = 0;
+	$requirements = array_keys($argsObj->reqIdSet);
+    if(!is_null($requirements) && count($requirements) > 0)
     {
         $tsuite_mgr = new testsuite($dbHandler);
-        $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
-        $assignmentCounter=$req_mgr->bulk_assignment($requirements,$tcase_set);
+        $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
+        $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set);
     } 
     return $assignmentCounter;
 }

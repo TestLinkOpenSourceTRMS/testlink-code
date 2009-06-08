@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.47 2009/05/18 20:22:10 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.48 2009/06/08 17:40:22 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -56,9 +56,8 @@ switch($args->feature)
 			$viewerArgs['display_parent_testsuite'] = 1;
 
 			// need to get internal Id from External ID
-			$cfg = config_get('testcase_cfg');
-			$args->id = $item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
-      
+			$args->id = $item_mgr->getInternalID($args->targetTestCase);
+
             if($args->id > 0)
             {
                 $get_path_info = true;
@@ -99,7 +98,7 @@ function init_args(&$viewerCfg)
 			"edit" => array(tlInputParameter::STRING_N,0,50),
 			"id" => array(tlInputParameter::INT_N),
 			"tcversion_id" => array(tlInputParameter::INT_N),
-			"targetTestCase" => array(tlInputParameter::INT_N),
+			"targetTestCase" => array(tlInputParameter::STRING_N,0,100),
 			"show_path" => array(tlInputParameter::INT_N),
 			"tcasePrefix" => array(tlInputParameter::STRING_N,0,100),
 		);
@@ -131,9 +130,13 @@ function init_args(&$viewerCfg)
 			}
         	break;
     }
-
-    return $args;
+    /* @TODO schlundus, disabled until discussion is finished
+    $cfg = config_get('testcase_cfg');
+    if (strpos($args->targetTestCase,$cfg->glue_character) === false)
+    {
+    	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
+    }
+	*/
+	return $args;
 }
-
 ?>
-

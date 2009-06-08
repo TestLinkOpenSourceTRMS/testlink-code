@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/01/16 20:26:14 $ by $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -54,30 +54,30 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 */
 function init_args()
 {
-	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$iParams = array(
+			"requirement_id" => array(tlInputParameter::INT_N),
+			"req_spec_id" => array(tlInputParameter::INT_N),
+			"reqDocId" => array(tlInputParameter::STRING_N,0,32),
+			"req_title" => array(tlInputParameter::STRING_N,0,100),
+			"scope" => array(tlInputParameter::STRING_N),
+			"reqStatus" => array(tlInputParameter::STRING_N,0,1),
+			"countReq" => array(tlInputParameter::INT_N),
+			"doAction" => array(tlInputParameter::STRING_N,0,100),
+			"req_id_cbox" => array(tlInputParameter::ARRAY_INT),
+	);	
+		
 	$args = new stdClass();
-	$args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : null;
-	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
-	$args->reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;
-	$args->title = isset($_REQUEST['req_title']) ? trim($_REQUEST['req_title']) : null;
-	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
-	$args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;
-	$args->reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
-	$args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
+	$pParams = R_PARAMS($iParams,$args);
 
-	$args->arrReqIds = isset($_POST['req_id_cbox']) ? $_POST['req_id_cbox'] : null;
+	$args->req_id = $args->requirement_id;
+	$args->title = $args->req_title;
+	$args->arrReqIds = $args->req_id_cbox;
 
-	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction']:null;
-	$args->do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
-	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-	$args->do_create_tc_from_req = isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
-	$args->do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
 
-	$args->basehref=$_SESSION['basehref'];
+	$args->basehref = $_SESSION['basehref'];
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-	$args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
 
 	return $args;
 }
@@ -94,7 +94,7 @@ function init_args()
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
-    $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
+    $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                            'doDelete' => '', 'doReorder' => '', 'reorder' => '',
                            'createTestCases' => 'doCreateTestCases',
                            'doCreateTestCases' => 'doCreateTestCases',

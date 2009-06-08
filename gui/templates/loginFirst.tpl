@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.17 2009/06/06 17:50:11 franciscom Exp $
+$Id: loginFirst.tpl,v 1.18 2009/06/08 17:40:21 schlundus Exp $
 Purpose: smarty template - first login
 *}
 {include file="inc_head.tpl" title="TestLink - New Account" openHead='yes'}
@@ -53,7 +53,7 @@ window.onload=function(){
      <p>{$labels.password_mgmt_is_external}<p>
 	{/if}
 
-	<br /><input type="submit" name="doEditUser" value="{$labels.btn_add_user_data}" />
+	<br /><input type="submit" name="bEditUser" value="{$labels.btn_add_user_data}" />
 </form>
 <hr />
 <p><a href="login.php">{$labels.link_back_to_login}</a></p>

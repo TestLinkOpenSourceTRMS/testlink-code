@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.77 2009/05/30 15:00:03 franciscom Exp $
+// $Id: testlink_library.js,v 1.78 2009/06/08 17:40:21 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -842,10 +842,10 @@ function showEventHistoryFor(objectID,objectType)
 */
 function openReqWindow(tcase_id)
 {                        
-  var feature_url="lib/requirements/reqTcAssign.php";
-  feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
+	var feature_url = "lib/requirements/reqTcAssign.php";
+	feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
 
-  // second parameter(window name) with spaces generate bug on IE
+	// second parameter(window name) with spaces generate bug on IE
 	window.open(fRoot+feature_url,"TestCase_Requirement_link",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
@@ -860,14 +860,11 @@ function openReqWindow(tcase_id)
 */
 function toggleInput(oid)
 {
-    if(document.getElementById(oid).value == 1)
-    {
-        document.getElementById(oid).value=0;
-    }
-    else
-    {
-        document.getElementById(oid).value=1;
-    }
+	var iField = document.getElementById(oid);
+	if (!iField)
+		return;
+	
+    iField.value = iField.value ? 0 : 1;
 }
 
 

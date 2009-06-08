@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -26,7 +26,7 @@ $args = init_args();
 $gui = initialize_gui($editorCfg['type']);
 $op = initialize_op();
 
-$owebeditor = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
+$owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
 $owebeditor->Value = null;
 $canManage = has_rights($db,"role_management") ? true : false;
 
@@ -80,6 +80,8 @@ function init_args()
 
 	$args = new stdClass();
 	$pParams = I_PARAMS($iParams,$args);
+	
+	$args->basehref = $_SESSION['basehref'];
 	
 	return $args;
 }

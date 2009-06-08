@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/06/04 19:53:27 $ -  $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/06/08 17:40:22 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -19,7 +19,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$grants = getGrantsForUserMgmt($db,$_SESSION['currentUser']);
+$grants = getGrantsForUserMgmt($db,$args->currentUser);
 
 $sqlResult = null;
 $action = null;
@@ -33,7 +33,7 @@ switch($args->operation)
 {
 	case 'delete':
 		//user cannot delete itself
-		if ($args->user_id != $_SESSION['currentUser']->dbID)
+		if ($args->user_id != $args->currentUserID)
 		{
 			$user = new tlUser($args->user_id);
 			$sqlResult = $user->readFromDB($db);
@@ -89,7 +89,7 @@ $smarty->assign('reload',0);
 $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
-$smarty->assign('base_href', $_SESSION['basehref']);
+$smarty->assign('base_href', $args->basehref);
 $smarty->assign('grants',$grants);
 $smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
 
@@ -153,6 +153,10 @@ function init_args()
     $args->order_by_dir["order_by_login_dir"] = ($pParams["order_by_login_dir"] != '') ? $pParams["order_by_login_dir"] : 'asc';
     $args->user_id = $pParams['user'];
 
+    $args->currentUser = $_SESSION['currentUser'];
+    $args->currentUserID = $_SESSION['currentUser']->dbID;
+    $args->basehref =  $_SESSION['basehref'];
+    
     return $args;
 }
 

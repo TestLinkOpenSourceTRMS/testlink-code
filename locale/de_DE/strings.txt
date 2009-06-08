@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.118 $
- * @modified $Date: 2009/06/04 19:53:27 $ by $Author: schlundus $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -627,7 +627,7 @@ $TLS_action_create_srs = "Anforderungen spezifieren";
 $TLS_Author = "Autor";
 $TLS_last_edit = "Zuletzt geändert durch ";
 $TLS_warning_delete_requirement = "Sind Sie sicher, dass Sie die Anforderung: %s löschen wollen?";
-
+$TLS_review_status_valid = "Gültig";
 
 // gui/templates/inc_res_by_comp.tpl
 $TLS_title_res_by_top_level_suites = "Ergebnisse nach Top-Level Suites";

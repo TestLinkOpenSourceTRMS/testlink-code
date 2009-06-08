@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.173 $
- * @modified $Date: 2009/06/08 16:58:34 $ $Author: franciscom $
+ * @version $Revision: 1.174 $
+ * @modified $Date: 2009/06/08 17:40:22 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -1883,8 +1883,13 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=n
   rev:
       20080126 - franciscom - BUGID 1313
 */
-function getInternalID($stringID,$glueCharacter)
+function getInternalID($stringID,$glueCharacter = null)
 {
+	if (is_null($glueCharacter))
+	{
+		$cfg = config_get('testcase_cfg');
+		$glueCharacter = $cfg->glue_character;
+	}
 	$internalID = 0;
 	$pieces = explode($glueCharacter,$stringID);
 	if(count($pieces) == 2)

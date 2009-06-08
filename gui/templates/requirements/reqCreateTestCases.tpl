@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.10 2009/01/13 19:34:01 schlundus Exp $
+$Id: reqCreateTestCases.tpl,v 1.11 2009/06/08 17:40:21 schlundus Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -96,7 +96,7 @@ function check_action_precondition(form_id,action,msg)
     		<th style="width: 15px;">
     						    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
                          onclick='cs_all_checkbox_in_div("req_div","req_id_cbox","toggle_req");'
-                         title="{lang_get s='check_uncheck_all_checkboxes'}" /></th>
+                         title="{lang_get s='check_uncheck_all_checkboxes'}" class="clickable"/></th>
         {/if}
     		
     		<th>{lang_get s="req_doc_id"}</th>

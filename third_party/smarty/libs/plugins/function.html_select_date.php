@@ -199,7 +199,7 @@ function smarty_function_html_select_date($params, &$smarty)
             $days[] = sprintf($day_format, $i);
             $day_values[] = sprintf($day_value_format, $i);
         }
-       
+
         $day_result .= '<select name=';
         if (null !== $field_array){
             $day_result .= '"' . $field_array . '[' . $prefix . 'Day]"';

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -52,7 +52,7 @@ $highlight->view_roles = 1;
 
 $smarty = new TLSmarty();
 $smarty->assign('highlight',$highlight);
-$smarty->assign('grants',getGrantsForUserMgmt($db,$_SESSION['currentUser']));
+$smarty->assign('grants',getGrantsForUserMgmt($db,$args->currentUser));
 $smarty->assign('roles',$roles);
 $smarty->assign('id',$args->roleid);
 $smarty->assign('sqlResult',$userFeedback);
@@ -70,8 +70,8 @@ function init_args()
 	$args = new stdClass();
 	$pParams = R_PARAMS($iParams,$args);
     
-	$args->userID = $_SESSION['currentUser']->dbID;
-
+	$args->currentUser = $_SESSION['currentUser'];
+	
     return $args;
 }
 

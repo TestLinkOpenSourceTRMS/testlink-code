@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.17 2009/06/07 13:01:53 franciscom Exp $
-* @modified $Date: 2009/06/07 13:01:53 $ by $Author: franciscom $
+* @version $Id: keyword.class.php,v 1.18 2009/06/08 17:40:21 schlundus Exp $
+* @modified $Date: 2009/06/08 17:40:21 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -296,7 +296,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 
 	public function readFromCSV($csv,$delimiter = ';')
 	{
-		$delimiter = ';';   // @TODO REMOVE 
 		$data = explode($delimiter,$csv);
 	 					
 		$this->name = isset($data[0]) ? $data[0] : null;

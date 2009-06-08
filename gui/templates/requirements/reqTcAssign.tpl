@@ -61,7 +61,8 @@ function check_action_precondition(form_id,action)
   <form id="SRS_switch" name="SRS_switch" method="post">
     <p><span class="labelHolder">{$labels.req_spec}</span>
   	<select name="idSRS" onchange="form.submit()">
-  	{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}</select>
+  		{html_options options=$gui->arrReqSpec selected=$gui->selectedReqSpec}
+  	</select>
   </form>
 </div>
 
@@ -88,7 +89,7 @@ function check_action_precondition(form_id,action)
     	</tr>
     	{section name=row loop=$gui->arrAssignedReq}
     	<tr>
-    		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}"
+    		<td><input type="checkbox" id="assigned_req{$gui->arrAssignedReq[row].id}" value="{$gui->arrAssignedReq[row].id}"
     		                           name="req_id[{$gui->arrAssignedReq[row].id}]" /></td>
     		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
     		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
@@ -139,7 +140,7 @@ function check_action_precondition(form_id,action)
       	{section name=row2 loop=$gui->arrUnassignedReq}
       	<tr>
       		<td><input type="checkbox"
-      		           id="free_req{$gui->arrUnassignedReq[row2].id}"
+      		           id="free_req{$gui->arrUnassignedReq[row2].id}" value="{$gui->arrUnassignedReq[row2].id}"
       		           name="req_id[{$gui->arrUnassignedReq[row2].id}]" /></td>
 
       		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>

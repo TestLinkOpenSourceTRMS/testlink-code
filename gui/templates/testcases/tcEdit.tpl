@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.14 2009/06/05 22:08:21 havlat Exp $ 
+$Id: tcEdit.tpl,v 1.15 2009/06/08 20:11:58 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -31,7 +31,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 var alert_box_title = "{$labels.warning}";
 var UNLOAD_MSG = "{$labels.warning_unsaved}";
-var TC_EDITOR = "{$tlCfg->text_editor.all.type}";
+var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
 {literal}
 function validateForm(f)
 {

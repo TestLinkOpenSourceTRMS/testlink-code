@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2009/06/07 13:01:53 $  $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2009/06/08 20:14:26 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090607 - franciscom - refactoring to manage table prefix
@@ -799,8 +799,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
   		    $sql = "INSERT INTO {$this->tables['cfield_design_values']} " .
-  					     " ( field_id, node_id, value ) " .
-  				       " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
+  				   " ( field_id, node_id, value ) " .
+  				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
   		  }
         $this->db->exec_query($sql);
       } //foreach($cfield
@@ -887,8 +887,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   {
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
          "       CFTP.display_order, CFTP.active " .
-         " FROM custom_fields CF, " .
-         "      cfield_testprojects CFTP, " .
+         " FROM {$this->object_table} CF, " .
+         "      {$this->tables['cfield_testprojects']} CFTP, " .
          "      {$this->tables['cfield_node_types']} CFNT, " .
          "      {$this->tables['node_types']} NT " .
          " WHERE CF.id=CFNT.field_id " .
@@ -925,7 +925,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
-			$sql = "INSERT INTO cfield_testprojects " .
+			$sql = "INSERT INTO {$this->tables['cfield_testprojects']} " .
 			   	" (testproject_id,field_id) " .
 			   	" VALUES({$tproject_id},{$field_id})";
 
@@ -1214,7 +1214,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		$result=$this->db->exec_query($sql);
 		if($result)
 		{
-			$sql="DELETE FROM custom_fields WHERE id={$id}";
+			$sql="DELETE FROM {$this->tables['custom_fields']} WHERE id={$id}";
 			$result=$this->db->exec_query($sql);
 		}
 		return $result ? 1 : 0;
@@ -1464,8 +1464,8 @@ function name_is_unique($id,$name)
 
     $sql = "SELECT {$base_values} CFTP.display_order" .
            $additional_values .
-           " FROM custom_fields CF " .
-           " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
+           " FROM {$this->tables['custom_fields']} CF " .
+           " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
            $additional_join .
            " WHERE CFTP.testproject_id={$tproject_id} " .
            " AND   CFTP.active=1     " .

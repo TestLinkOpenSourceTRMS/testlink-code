@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/06/08 20:11:59 $ by $Author: franciscom $
  *
  * Deletes an attachment by a given id
  */
@@ -19,33 +19,33 @@ if (!config_get("attachments")->enabled)
 	exit();
 
 $args = init_args();	
-$bDeleted = false;
+$deleteDone = false;
 if ($args->id)
 {
 	$attachmentRepository = tlAttachmentRepository::create($db);
 	$attachmentInfo = $attachmentRepository->getAttachmentInfo($args->id);
 	if ($attachmentInfo && checkAttachmentID($db,$args->id,$attachmentInfo))
 	{
-		$bDeleted = $attachmentRepository->deleteAttachment($args->id,$attachmentInfo);
-		if ($bDeleted)
-			logAuditEvent(TLS("audit_attachment_deleted",$attachmentInfo['title']),"DELETE",$id,"attachments");
+		$deleteDone = $attachmentRepository->deleteAttachment($args->id,$attachmentInfo);
+		if ($deleteDone)
+		{
+			logAuditEvent(TLS("audit_attachment_deleted",$attachmentInfo['title']),"DELETE",$args->id,"attachments");
+		}	
 	}
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('bDeleted',$bDeleted);
+$smarty->assign('bDeleted',$deleteDone);
 $smarty->display('attachmentdelete.tpl');
+
 
 function init_args()
 {
 	//the id (attachments.id) of the attachment to be downloaded
-	$iParams = array(
-		"id" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("id" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
-	$pParams = G_PARAMS($iParams,$args);
-	
-	
+	// $pParams = G_PARAMS($iParams,$args);
+	G_PARAMS($iParams,$args);
 	return $args;
 }
 ?>

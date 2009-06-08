@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/04/02 20:16:15 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/06/08 20:11:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
 */
@@ -130,7 +130,7 @@ class tlAttachment extends tlDBObject
 	{
 		$this->_clean($options);
 		$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,".
-				"compression_type,file_path,fk_id,fk_table FROM attachments ";
+				"compression_type,file_path,fk_id,fk_table FROM {$this->tables['attachments']} ";
 				
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
@@ -185,7 +185,7 @@ class tlAttachment extends tlDBObject
 		//for FS-repository the contents are null
 		$fContents = is_null($this->fContents) ? 'NULL' : "'".$db->prepare_string($this->fContents)."'";
 		
-		$query = "INSERT INTO attachments 
+		$query = "INSERT INTO {$this->tables['attachments']} 
 	       (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
     	    VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," . $db->db_now() . 
        		",$fContents,{$this->compressionType},'{$title}')";
@@ -199,7 +199,7 @@ class tlAttachment extends tlDBObject
 	
 	public function deleteFromDB(&$db)
 	{
-		$query = "DELETE FROM attachments WHERE id = {$this->dbID}";
+		$query = "DELETE FROM {$this->tables['attachments']} WHERE id = {$this->dbID}";
 		$result = $db->exec_query($query);
 		
 		return $result ? tl::OK : tl::ERROR;
@@ -220,5 +220,4 @@ class tlAttachment extends tlDBObject
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 };
-
 ?>

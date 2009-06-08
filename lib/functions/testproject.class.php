@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.115 $
- * @modified $Date: 2009/06/07 12:58:56 $  $Author: franciscom $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2009/06/08 20:15:10 $  $Author: franciscom $
  * @author franciscom
  *
  * 20090606 - franciscom - get_by_prefix() interface changes
@@ -1524,7 +1524,7 @@ function delete($id)
 	// attachments
 	if (empty($error))
 	{
-    $sql="DELETE FROM cfield_testprojects WHERE testproject_id = {$id} ";
+    $sql="DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
     $this->db->exec_query($sql);
 
 		$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";

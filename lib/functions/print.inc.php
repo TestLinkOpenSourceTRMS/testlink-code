@@ -6,7 +6,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.82 2009/06/05 15:24:18 havlat Exp $
+ * @version $Id: print.inc.php,v 1.83 2009/06/08 20:16:31 franciscom Exp $
  * @uses printDocument.php
  *
  * @internal Library for documents generation
@@ -381,14 +381,17 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
  * using existent methods - franciscom - 20090329 
  * Need to get CF with execution scope
  */
+    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
+    $tables['builds'] = DB_TABLE_PREFIX . 'builds';
+     
 	$sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, " .
 	          " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
 	          " B.name AS build_name " .
-	          " FROM executions E, builds B" .
+	          " FROM {$tables['executions']} E, {$tables['builds']} B" .
 	          " WHERE E.build_id= B.id " . 
 	          " AND E.tcversion_id = {$versionID} " .
 	          " AND E.testplan_id = {$tplan_id} " .
-	  		    " ORDER BY execution_id DESC";
+	  		  " ORDER BY execution_id DESC";
 	$exec_info = $db->get_recordset($sql,null,1);
 
     if(!is_null($exec_info ))

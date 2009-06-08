@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/06/06 14:53:15 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/06/08 20:16:31 $ $Author: franciscom $
  * @author jbarchibald
  *
  * rev :
@@ -19,14 +19,14 @@ class exec_cfield_mgr extends cfield_mgr
 	var $db;
     var $cf_map;
 
-	function exec_cfield_mgr(&$db,$tproject_id)
+	function __constructor(&$db,$tproject_id)
 	{
         // you would think we could inherit the parent $db declaration
         // but it fails to work without this.
         $this->db = &$db;
 
         // instantiate the parent constructor.
-        parent::cfield_mgr($this->db);
+        parent::__constructor($this->db);
 
         $this->cf_map = $this->get_linked_cfields($tproject_id);
 

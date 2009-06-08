@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.22 2009/04/21 10:08:34 franciscom Exp $
+$Id: tcView.tpl,v 1.23 2009/06/08 20:11:59 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -38,6 +38,9 @@ rev:
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
+{if !isset($refresh_tree) }
+  {assign var="refresh_tree" value=false}
+{/if}
 {include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
 
 <div class="workBack">

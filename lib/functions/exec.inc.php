@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/06/06 14:52:54 $ $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/06/08 20:14:26 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -133,7 +133,7 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 			$db->exec_query($sql);  	
 			
 			// at least for Postgres DBMS table name is needed. 
-			$execution_id=$db->insert_id('executions');
+			$execution_id=$db->insert_id($executions_table);
 			
       if( $has_custom_fields )
       {

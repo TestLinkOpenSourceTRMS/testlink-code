@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.18 2009/06/08 17:40:21 schlundus Exp $
-* @modified $Date: 2009/06/08 17:40:21 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.19 2009/06/08 21:21:40 schlundus Exp $
+* @modified $Date: 2009/06/08 21:21:40 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -28,8 +28,6 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 
 	// config valuze  -> @TODOfind meaning ov valuze
 	protected $allowDuplicateKeywords; 
-	
-	var $tables;
 	
 	//Some error codes
 	const E_NAMENOTALLOWED = -1;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.119 $
- * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2009/06/08 21:21:40 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -76,7 +76,7 @@ $TLS_urgency = "Dringlichkeit";
 $TLS_not_imported = "Nicht importiert";
 $TLS_imported = "Importiert";
 $TLS_nobody = "Niemand";
-
+$TLS_container = "Container";
 
 // Actions (used wide) 
 $TLS_add = "Hinzufügen";
@@ -279,10 +279,10 @@ $TLS_title_delete_attachment = "Anhang löschen";
 $TLS_btn_yes_del_comp = "Testsuite löschen?";
 $TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed = "Verknüpft mit einem oder mehreren Testplänen, aber noch nicht ausgeführt";
-$TLS_question_del = "Löschen?";
+$TLS_question_del_testsuite = "Wollen Sie die Testsuite löschen?";
 $TLS_th_link_exec_status = "Verknüpfung- und Ausführungs-Status";
-
-
+$TLS_no_links = "Keine Verknüpfungen";
+$TLS_testsuite_successfully_deleted = "Die Testsuite wurde erfolgreich gelöscht";
 
 // ----- gui/templates/containerNew.tpl -----
 $TLS_btn_create_testsuite = "Erstellen";

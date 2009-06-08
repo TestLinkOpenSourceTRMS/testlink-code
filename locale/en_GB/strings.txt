@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.450 $
- * @modified $Date: 2009/06/05 22:08:21 $ by $Author: havlat $
+ * @version $Revision: 1.451 $
+ * @modified $Date: 2009/06/08 21:21:41 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -95,6 +95,7 @@ $TLS_total = "Total";
 $TLS_Unknown = "Unknown";
 $TLS_urgency = "Urgency";
 $TLS_weeks = "weeks";
+$TLS_container = "container";
 
 
 // Actions (used wide) 
@@ -352,9 +353,9 @@ $TLS_title_delete_attachment = "Delete attachment";
 $TLS_btn_yes_del_comp = "Yes, delete Test Suite";
 $TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed = "Linked to one or more Test Plan, but not executed";
-$TLS_question_del = "Really delete?";
+$TLS_question_del_testsuite = "Really delete the Test Suite?";
 $TLS_th_link_exec_status = "Link and execution status";
-
+$TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
 
 
 // ----- gui/templates/containerNew.tpl -----
@@ -392,7 +393,6 @@ $TLS_include_nested = "Including nested data (copy only).";
 $TLS_sorry_further = "I'm sorry there are no further ";
 $TLS_title_move_cp = "Move/Copy";
 $TLS_title_move_cp_testcases = "Move/Copy Test Cases";
-
 
 // ----- gui/templates/reqCreate.tpl -----
 $TLS_req_create = "Create a requirement";

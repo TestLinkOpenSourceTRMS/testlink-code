@@ -1,6 +1,6 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.4 2009/05/18 20:22:10 schlundus Exp $ 
+	$Id: containerDelete.tpl,v 1.5 2009/06/08 21:21:40 schlundus Exp $ 
 	Purpose: smarty template - delete containers in test specification
 
 rev : 
@@ -20,10 +20,15 @@ rev :
 {if $sqlResult == '' && $objectID != ''}
 	{if $warning neq ""}
 		<table class="link_and_exec">
-		<th>{lang_get s='test_case'}</th>
-		<th>{lang_get s='th_link_exec_status'}</th>
+		<tr>
+			<th>{lang_get s='test_case'}</th>
+			<th>{lang_get s='th_link_exec_status'}</th>
+		</tr>
 		{section name=idx loop=$warning}
-			<tr><td>{$warning[idx]}&nbsp;</td> <td>{lang_get s=$link_msg[idx]}<td></tr>
+			<tr>
+				<td>{$warning[idx]|escape}&nbsp;</td>
+				<td>{lang_get s=$link_msg[idx]}<td>
+			</tr>
 		{/section}
 		</table>
 		{if $delete_msg neq ''}  
@@ -31,9 +36,8 @@ rev :
 		{/if}
 	{/if}
   
-	<p>{lang_get s='question_del'} {$level|escape}?</p>
-
-	<form method="post" 
+	<p>{lang_get s='question_del_testsuite'}</p>
+		<form method="post" 
 			action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID}">
 	    
 	<input type="submit" name="delete_testsuite" value="{lang_get s='btn_yes_del_comp'}" />
@@ -41,7 +45,7 @@ rev :
 	{* 20070213 - franciscom - BUGID 0000629 *}
 	<input type="button" name="cancel_delete_testsuite" value="{lang_get s='btn_no'}"
 			onclick='javascript: location.href=fRoot+
-			"lib/testcases/archiveData.php?&edit=testsuite&id={$objectID}";' />
+			"lib/testcases/archiveData.php?&amp;edit=testsuite&amp;id={$objectID}";' />
 	</form>
 {/if}
 

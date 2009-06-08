@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.21 2009/06/07 12:55:29 franciscom Exp $
-* @modified $Date: 2009/06/07 12:55:29 $ by $Author: franciscom $
+* @version $Id: object.class.php,v 1.22 2009/06/08 21:21:40 schlundus Exp $
+* @modified $Date: 2009/06/08 21:21:40 $ by $Author: schlundus $
 *
 * 20090607 - franciscom - added array with tables names as property to be used on
 *                         all other classes, to manage table prefix
@@ -44,13 +44,15 @@ abstract class tlObject implements iSerialization
 	protected $serializationInterfaces;
 	protected $serializationFormatDescriptors;
 
-    protected $tables;
-	
+	//@TODO schlundus, should be moved inside a tlConfig class
+    static protected $tables = null;
+    
 	/* standard constructor, set's the object id */
 	public function __construct()
 	{
-	    
-        $this->tables=array('assignment_status' => DB_TABLE_PREFIX . 'assignment_status',
+		if (!isset($this->tables))
+		{
+			$this->tables = array('assignment_status' => DB_TABLE_PREFIX . 'assignment_status',
                             'assignment_types' => DB_TABLE_PREFIX . 'assignment_types', 
                             'attachments' => DB_TABLE_PREFIX . 'attachments',
                             'builds' => DB_TABLE_PREFIX . 'builds',
@@ -91,8 +93,7 @@ abstract class tlObject implements iSerialization
                             'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
                             'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
                             'users' => DB_TABLE_PREFIX . 'users');
-
-
+		}
 
 		$this->objectID = str_replace(".","",uniqid("", true));
 		

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.48 2009/06/08 17:40:22 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.49 2009/06/08 21:21:40 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -31,7 +31,6 @@ $args = init_args($viewerArgs);
 $path_info = null;
 $smarty = new TLSmarty();
 $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
-
 
 switch($args->feature)
 {
@@ -71,8 +70,8 @@ switch($args->feature)
 		}
 			
 		$attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;
-
-        $smarty->assign('id',$args->id);
+	
+		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
 		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
 		                $viewerArgs,$path_info);
@@ -130,13 +129,12 @@ function init_args(&$viewerCfg)
 			}
         	break;
     }
-    /* @TODO schlundus, disabled until discussion is finished
     $cfg = config_get('testcase_cfg');
     if (strpos($args->targetTestCase,$cfg->glue_character) === false)
     {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
     }
-	*/
-	return $args;
+	
+    return $args;
 }
 ?>

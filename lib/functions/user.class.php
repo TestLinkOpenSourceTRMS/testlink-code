@@ -6,8 +6,8 @@
  *
  * @package TestLink
  * Filename $RCSfile: user.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/06/08 17:40:22 $ $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/06/08 21:21:40 $ $Author: schlundus $
  *
  * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
  *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -23,9 +23,11 @@
  */ 
 class tlUser extends tlDBObject
 {
+	/**
+	 * @var the name of the table the object is stored into
+	 */
 	private $object_table = "users";
-    // private $tables = '';
-
+    
 	/**
 	 * @var string the first name of the user
 	 */
@@ -58,13 +60,29 @@ class tlUser extends tlDBObject
 	 * @var integer the id of global role of the user
 	 */
 	public $globalRoleID;
+	/**
+	 * @var array of tlRole, holds the roles of the user for the different testprojects 
+	 */
 	public $tprojectRoles; 
+	/**
+	 * @var array of tlRole, holds the roles of the user for the different testplans 
+	 */
 	public $tplanRoles;
+	/**
+	 * @var string the login of the user
+	 */
 	public $login;
+	/**
+	 * @var string the API Key for the user
+	 */
 	public $userApiKey;
+	/**
+	 * @var string the password of the user
+	 */
 	protected $password;
 	
 	//configuration options
+	//@TODO should be moved inside a tlConfig class
 	protected $usernameFormat;
 	protected $loginMethod;
 	protected $maxLoginLength;
@@ -100,12 +118,6 @@ class tlUser extends tlDBObject
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
-	    // $this->tables = array('roles' => DB_TABLE_PREFIX . 'roles', 
-	    //                       'users' => DB_TABLE_PREFIX . 'users',
-        //                       'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-        //                       'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
-	    //                       'role_rights' => DB_TABLE_PREFIX . 'role_rights',
-	    //                       'rights' => DB_TABLE_PREFIX . 'rights'); 
 
 		$this->object_table = $this->tables['users']; 
 		
@@ -183,7 +195,7 @@ class tlUser extends tlDBObject
 	/** @TODO fills the members
 	 * not used at the moment, only placeholder
 	 * 
-	 * @return unknown_type  */
+	 * @return void  */
 	function create()
 	{
 	}
@@ -406,6 +418,9 @@ class tlUser extends tlDBObject
 		return $db->exec_query($query) ? tl::OK : tl::ERROR;
 	}
 
+	/** Returns a user friendly representation of the user name
+	 * @return string the display nmae
+	 */
 	public function getDisplayName()
 	{
 		$keys = array('%first%','%last%','%login%','%email%');
@@ -416,6 +431,11 @@ class tlUser extends tlDBObject
 		return $displayName;
 	}
 	
+	/**
+	 * Encrypts a given password with MD5
+	 * @param $pwd the password to encrypt
+	 * @return string the encrypted password
+	 */
 	protected function encryptPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
@@ -424,6 +444,10 @@ class tlUser extends tlDBObject
 		return md5($pwd);
 	}
 	
+	/**
+	 * @param $pwd the new password
+	 * @return integer return tl::OK is the password is stored, else errorcode
+	 */
 	public function setPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
@@ -436,11 +460,21 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
+	/**
+	 * Getter for the password of the user
+	 * @return string returns the password of the user
+	 */
 	public function getPassword()
 	{
 		return $this->password;
 	}
 	
+	/**
+	 * compares a given password with the current password of the user
+	 * 
+	 * @param $pwd the password to compate with the password actually set 
+	 * @return integer returns tl::OK if the password's match, else errorcode
+	 */
 	public function comparePassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())

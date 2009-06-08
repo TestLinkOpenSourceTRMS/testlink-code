@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.175 $
- * @modified $Date: 2009/06/08 20:21:56 $ $Author: franciscom $
+ * @version $Revision: 1.176 $
+ * @modified $Date: 2009/06/08 21:21:40 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -587,8 +587,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
     }
     $gui->show_mode=$mode;
     $gui->can_do = $this->getShowViewerActions($mode);
-    $gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
-
+    
 	if(is_array($id))
 	{
 		$a_id = $id;
@@ -598,8 +597,7 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	    $status_ok = $id > 0 ? 1 : 0;
 		$a_id = array($id);
 	}
-
-    if( $status_ok )
+	if($status_ok)
     {
         $path2root=$this->tree_manager->get_path($a_id[0]);
         $tproject_id=$path2root[0]['parent_id'];
@@ -620,11 +618,16 @@ function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
             $gui->parentTestSuiteName = $path2root[$parent_idx]['name'];
         }
     
-        $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
+        $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($tproject_id);
         if(trim($tcasePrefix) != "")
         {
-        	$tcasePrefix .= $tcase_cfg->glue_character;
-        }
+        	//Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
+        	if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
+	    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
+			else
+				$gui->can_do->add2tplan = 'no';
+			$tcasePrefix .= $tcase_cfg->glue_character;
+	   	}
     }
     
     if (sizeof($a_id))

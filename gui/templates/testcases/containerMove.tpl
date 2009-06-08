@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMove.tpl,v 1.8 2008/05/18 16:54:32 franciscom Exp $
+$Id: containerMove.tpl,v 1.9 2009/06/08 21:21:40 schlundus Exp $
 Purpose: smarty template - form for move/copy container in test specification
 
 rev :
@@ -9,7 +9,7 @@ rev :
      removed checkbox copy nested data
 *}
 {include file="inc_head.tpl"}
-{assign var='parent' value='container'}
+{lang_get s='container' var='parent'}
 {lang_get var="labels"
           s="cont_move_first,sorry_further,title_move_cp,cont_copy_first,defined_exclam,
              cont_move_second,cont_copy_second,choose_target,copy_keywords,

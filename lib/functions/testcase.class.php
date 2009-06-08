@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.174 $
- * @modified $Date: 2009/06/08 17:40:22 $ $Author: schlundus $
+ * @version $Revision: 1.175 $
+ * @modified $Date: 2009/06/08 20:21:56 $ $Author: franciscom $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -729,20 +729,21 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 	               $this->db->prepare_string($name) . "' WHERE id= {$id}";
 
 	    // test case version
-	    $sql[] = " UPDATE tcversions SET summary='" . $this->db->prepare_string($summary) . "'," .
-	    		     " steps='" . $this->db->prepare_string($steps) . "'," .
-	    		     " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
-	    		     " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
-	    		     " execution_type={$execution_type}, importance={$importance} " .
-	    		     " WHERE tcversions.id = {$tcversion_id}";
+	    $sql[] = " UPDATE {$this->tables['tcversions']} tcversions " .
+	             " SET summary='" . $this->db->prepare_string($summary) . "'," .
+	    		 " steps='" . $this->db->prepare_string($steps) . "'," .
+	    		 " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
+	    		 " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
+	    		 " execution_type={$execution_type}, importance={$importance} " .
+	    		 " WHERE tcversions.id = {$tcversion_id}";
 
       foreach($sql as $stm)
       {
           $result = $this->db->exec_query($stm);
           if( !$result )
           {
-	    	      $ret['status_ok'] = 0;
-	    	      $ret['msg'] = $this->db->error_msg;
+	    	  $ret['status_ok'] = 0;
+	    	  $ret['msg'] = $this->db->error_msg;
               break;
           }
       }
@@ -1881,6 +1882,7 @@ function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=n
  
   
   rev:
+      20090608 - franciscom - fixed error on management of numeric part (externalID)
       20080126 - franciscom - BUGID 1313
 */
 function getInternalID($stringID,$glueCharacter = null)
@@ -1895,12 +1897,12 @@ function getInternalID($stringID,$glueCharacter = null)
 	if(count($pieces) == 2)
 	{
     	$testCasePrefix = $this->db->prepare_string($pieces[0]);
-		$externalID = $this->db->prepare_string($pieces[1]);
+        $externalID = is_numeric($pieces[1]) ?  intval($pieces[1]) : 0;
 
 		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
                " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .
                " WHERE TCV.id = NH.id " .
-               " AND  TCV.tc_external_id = '{$externalID}'";
+               " AND  TCV.tc_external_id = {$externalID}";
 
 		$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		if(!is_null($testCases))

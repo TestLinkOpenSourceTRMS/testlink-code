@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/05/21 20:28:30 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/06/09 12:49:22 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *      20090521 - franciscom - refactoring to manage DB_TABLE_PREFIX
  *      20090521 - franciscom - getTestCase() - development started
  *      20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
  *                              getTestCaseAttachments(), test case external id can be used on call
@@ -90,25 +91,12 @@ require_once(dirname(__FILE__) . "/../functions/user.class.php");
 class TestlinkXMLRPCServer extends IXR_Server
 {
     public static $version = "1.0 Beta 5";
+ 
     
     const   OFF=false;
     const   ON=true;
     const   BUILD_GUESS_DEFAULT_MODE=OFF;
     const   SET_ERROR=true;
-
-    	
-    private $custom_fields_table="custom_fields";
-    private $nodes_hierarchy_table="nodes_hierarchy";
-    private $node_types_table="node_types";
-    private $testplans_table="testplans";
-    private $testprojects_table="testprojects";
-    private $testsuites_table="testsuites";
-    private $builds_table="builds";
-    private $executions_table="executions";  
-    private $testplan_tcversions_table="testplan_tcversions";
-    private $keywords_table="keywords";  
-    private $tcversions_table="tcversions";
-    private $execution_bugs_table="execution_bugs";		  
     	
 	/**
 	 * The DB object used throughout the class
@@ -116,6 +104,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @access private
 	 */
 	private $dbObj = null;
+	private $tables = null;
+
+	private $tcaseMgr =  null;
+	private $tprojectMgr = null;
+	private $tplanMgr = null;
+	private $reqSpecMgr = null;
+    private $reqMgr = null;
 
 	/** Whether the server will run in a testing mode */
 	private  $testMode = false;
@@ -140,7 +135,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 	//   
 	private $tcVersionID = null;
 	
-    private $tcaseMgr=null;
 	
 	/**#@+
 	 * string for parameter names are all defined statically
@@ -213,6 +207,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->dbObj->db->SetFetchMode(ADODB_FETCH_ASSOC);
 		$this->_connectToDB();
 		
+		$this->tcaseMgr=new testcase($this->dbObj);
+	    $this->tprojectMgr=new testproject($this->dbObj);
+	    $this->tplanMgr=new testplan($this->dbObj);
+	    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
+        $this->reqMgr=new requirement_mgr($this->dbObj);
+		
+		$this->tables = $this->tcaseMgr->getDBTables();
+		
 		$resultsCfg = config_get('results');
         foreach($resultsCfg['status_label_for_exec_ui'] as $key => $label )
         {
@@ -226,13 +228,9 @@ class TestlinkXMLRPCServer extends IXR_Server
         $this->codeStatus=array_flip($this->statusCode);
     	
         
-	    $this->tcaseMgr=new testcase($this->dbObj);
-	    $this->tprojectMgr=new testproject($this->dbObj);
-	    $this->tplanMgr=new testplan($this->dbObj);
-	    $this->reqSpecMgr=new requirement_spec_mgr($this->dbObj);
-        $this->reqMgr=new requirement_mgr($this->dbObj);
-        
+	    
 	    $this->methods = array( 'tl.reportTCResult' => 'this:reportTCResult',
+	                            'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
 	                            'tl.createBuild' => 'this:createBuild',
 	                            'tl.createTestCase' => 'this:createTestCase',
 	                            'tl.createTestProject' => 'this:createTestProject',
@@ -493,7 +491,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{    		
     		// See if this TPID exists in the db
 		    $tplanid = $this->dbObj->prepare_int($this->args[self::$testPlanIDParamName]);
-        	$query = "SELECT id FROM {$this->testplans_table} WHERE id={$tplanid}";
+        	$query = "SELECT id FROM {$this->tables['testplans']} WHERE id={$tplanid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -538,7 +536,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{    		
             // See if this Test Project ID exists in the db
 		    $testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
-        	$query = "SELECT id FROM {$this->testprojects_table} WHERE id={$testprojectid}";
+        	$query = "SELECT id FROM {$this->tables['testprojects']} WHERE id={$testprojectid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
@@ -913,10 +911,10 @@ class TestlinkXMLRPCServer extends IXR_Server
         {
     	    // must be of type 'testcase' and show up in the nodes_hierarchy    	
             $tcaseid = $this->dbObj->prepare_int($tcaseid);
-		    $query = "SELECT nodes_hierarchy.id AS id " .
-		             "FROM {$this->nodes_hierarchy_table}, {$this->node_types_table} " .
-				     "WHERE nodes_hierarchy.id={$tcaseid} AND node_type_id=node_types.id " .
-				     "AND node_types.description='testcase'";
+		    $query = "SELECT NH.id AS id " .
+		             "FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['node_types']} NT" .
+				     "WHERE NH.id={$tcaseid} AND node_type_id=NT.id " .
+				     "AND NT.description='testcase'";
 		    $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
 		    $status_ok = is_null($result) ? false : true; 
         }
@@ -945,7 +943,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         {   
         	$this->userID = null;
         	$this->devKey = $this->dbObj->prepare_string($devKey);
-        	$query = "SELECT id FROM users WHERE script_key='{$this->devKey}'";
+        	$query = "SELECT id FROM {$this->tables['users']} WHERE script_key='{$this->devKey}'";
         	$this->userID = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
         	    	
         	if(null == $this->userID)
@@ -1161,10 +1159,10 @@ class TestlinkXMLRPCServer extends IXR_Server
         if( $status_ok )
         {
             // get all, then return last
-            $sql = " SELECT * FROM {$this->executions_table} " .
+            $sql = " SELECT * FROM {$this->tables['executions']} " .
                    " WHERE testplan_id = {$this->args[self::$testPlanIDParamName]} " .
                    " AND tcversion_id IN (" .
-                   " SELECT id FROM {$this->nodes_hierarchy_table} " .
+                   " SELECT id FROM {$this->tables['nodes_hierarchy']} " .
                    " WHERE parent_id = {$this->args[self::$testCaseIDParamName]})" .
                    " ORDER BY id DESC";
                    
@@ -1220,14 +1218,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 		
 		$execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
 
-		$query = "INSERT INTO {$this->executions_table} " .
-		         "(build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
+		$query = "INSERT INTO {$this->tables['executions']} " .
+		         " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
 		         " execution_type {$notes_field} ) " .
-				     "VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
-				     "{$tcversion_id},{$execution_type} {$notes_value})";
+				 " VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
+				 " {$tcversion_id},{$execution_type} {$notes_value})";
 
 		$this->dbObj->exec_query($query);
-		return $this->dbObj->insert_id($this->executions_table);		
+		return $this->dbObj->insert_id($this->tables['executions']);		
 	}
 	
 	
@@ -1705,17 +1703,21 @@ class TestlinkXMLRPCServer extends IXR_Server
 
         if( $status_ok )
         {
-          if($this->_isParamPresent(self::$keywordNameParamName))
-          {
-              // Check that all keyword exists for target test project
-              $keywordSet=$this->getValidKeywordSetByName($this->args[self::$keywordNameParamName],
-                                                          $this->args[self::$testProjectIDParamName]);
-          }
-		      else if ($this->_isParamPresent(self::$keywordIDParamName))
-		      {
-              $keywordSet=$this->getValidKeywordSetById($this->args[self::$keywordIDParamName],
-                                                        $this->args[self::$testProjectIDParamName]);
-		      }
+            $kMethod=null;
+            if($this->_isParamPresent(self::$keywordNameParamName))
+            {
+                $kMethod='getValidKeywordSetByName';
+            }
+		    else if ($this->_isParamPresent(self::$keywordIDParamName))
+		    {
+		        $kMethod='getValidKeywordSetById';
+		    }
+		    
+		    if( !is_null($kMethod) )
+		    {
+                $keywordSet=$this->$kMethod($this->args[self::$testProjectIDParamName],
+                                            $this->args[self::$keywordIDParamName]);
+		    }
         }
 
         if( $status_ok )
@@ -2235,19 +2237,19 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @access private
 	 */
-	private function getValidKeywordSetByName($keywords,$tproject_id)
+	private function getValidKeywordSetByName($tproject_id,$keywords)
 	{ 
-		return getValidKeywordSet(true,$keywords,$tproject_id);
+		return getValidKeywordSet($tproject_id,$keywords,true);
 	}
 	
  	/**
  	 * Retruns the 
- 	 * @param $byName set this to true if $keywords is an array of keywords, false if it's an array of keywordIDs
- 	 * @param $keywords array of keywords or keywordIDs
  	 * @param $tproject_id the testprojectID the keywords belong
+ 	 * @param $keywords array of keywords or keywordIDs
+ 	 * @param $byName set this to true if $keywords is an array of keywords, false if it's an array of keywordIDs
  	 * @return string that represent a list of keyword id (comma is character separator)
  	 */
-	private function getValidKeywordSet($byName,$keywords,$tproject_id)
+	private function getValidKeywordSet($tproject_id,$keywords,$byName)
 	{
 		$keywordSet = '';
 		$keywords = trim($keywords);
@@ -2260,13 +2262,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 				$a_keywords[$idx] = trim($a_keywords[$idx]);
 	        }
 	        $itemsSet = implode("','",$a_keywords);
-	        $sql = " SELECT keyword,id FROM {$this->keywords_table} " .
+	        $sql = " SELECT keyword,id FROM {$this->tables['keywords']} " .
 	               " WHERE testproject_id = {$tproject_id} ";
 	        
 	        if ($byName)
+	        {
 	        	$sql .= " AND keyword IN ('{$itemsSet}')";
+	        }
 	        else
+	        {
 	        	$sql .= " AND id IN ({$itemsSet})";
+	        }
 	         	
 	        $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
 	        if(!is_null($keywordMap))
@@ -2287,6 +2293,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}  
 		return $keywordSet;
  	}
+ 	
   /**
 	 * getValidKeywordSetById()
 	 *  
@@ -2294,10 +2301,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @access private
 	 */
-  private function  getValidKeywordSetById($keywords,$tproject_id)
-  {
-		return getValidKeywordSet(false,$keywords,$tproject_id);
-  }
+    private function  getValidKeywordSetById($tproject_id,$keywords)
+    {
+		return getValidKeywordSet($tproject_id,$keywords,false);
+    }
 
 
   // 20090126 - franciscom
@@ -2358,7 +2365,7 @@ class TestlinkXMLRPCServer extends IXR_Server
            $tproject_id=$this->args[self::$testProjectIDParamName];
            $tplan_id=$this->args[self::$testPlanIDParamName];
            
-           $sql=" SELECT id FROM {$this->testplans_table}" .
+           $sql=" SELECT id FROM {$this->tables['testplans']}" .
                 " WHERE testproject_id={$tproject_id} AND id = {$tplan_id}";         
             
            $rs=$this->dbObj->get_recordset($sql);
@@ -2391,7 +2398,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $tcase_id=$this->args[self::$testCaseIDParamName];
             $version_number=$this->args[self::$versionNumberParamName];
             $sql = " SELECT TCV.version,TCV.id " . 
-                   " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
+                   " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
                    " WHERE NH.parent_id = {$tcase_id} " .
                    " AND TCV.version = {$version_number} " .
                    " AND TCV.id = NH.id ";
@@ -2442,7 +2449,7 @@ class TestlinkXMLRPCServer extends IXR_Server
           // requested version already is part of Test Plan.
           // 
           $sql = " SELECT TCV.version,TCV.id " . 
-                 " FROM {$this->nodes_hierarchy_table} NH, {$this->tcversions_table} TCV " .
+                 " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
                  " WHERE NH.parent_id = {$tcase_id} " .
                  " AND TCV.id = NH.id ";
                  
@@ -2451,7 +2458,7 @@ class TestlinkXMLRPCServer extends IXR_Server
           if( count($id_set) > 0 )
           {
               $in_clause=implode(",",$id_set);
-              $sql=" DELETE FROM {$this->testplan_tcversions_table} " .
+              $sql=" DELETE FROM {$this->tables['testplan_tcversions']} " .
                    " WHERE testplan_id={$tplan_id}  AND tcversion_id IN({$in_clause}) ";
            		$this->dbObj->exec_query($sql);
           }
@@ -2463,18 +2470,19 @@ class TestlinkXMLRPCServer extends IXR_Server
              $fields .= ',' . $dummy; 
           }
           
-          $sql_values="{$tplan_id},{$target_tcversion[$version_number]['id']},{$this->userID},{$this->dbObj->db_now()}";
+          $sql_values="{$tplan_id},{$target_tcversion[$version_number]['id']}," .
+                      "{$this->userID},{$this->dbObj->db_now()}";
           if( !is_null($additional_values) )
           {
              $dummy = implode(",",$additional_values);
              $sql_values .= ',' . $dummy; 
           }
 
-          $sql=" INSERT INTO {$this->testplan_tcversions_table} ({$fields}) VALUES({$sql_values})"; 
+          $sql=" INSERT INTO {$this->tables['testplan_tcversions']} ({$fields}) VALUES({$sql_values})"; 
           $this->dbObj->exec_query($sql);
           
           $op_result['operation']=$operation;
-          $op_result['feature_id']=$this->dbObj->insert_id($this->testplan_tcversions_table);
+          $op_result['feature_id']=$this->dbObj->insert_id($this->tables['testplan_tcversions']);
           $op_result['status']=true;
           $op_result['message']='';
        }
@@ -2715,26 +2723,23 @@ class TestlinkXMLRPCServer extends IXR_Server
 	**/
 	private function _insertExecutionBug($executionID, $bugID)
 	{
-		
 		// Check for existence of executionID
-		$sql="SELECT id FROM {$this->executions_table} WHERE id={$executionID}";
+		$sql="SELECT id FROM {$this->tables['executions']} WHERE id={$executionID}";
 		$rs=$this->dbObj->fetchRowsIntoMap($sql,'id');
-    $status_ok = !(is_null($rs) || $bugID == '');		
+        $status_ok = !(is_null($rs) || $bugID == '');		
 		if($status_ok)
 		{
-       $safeBugID=$this->dbObj->prepare_string($bugID);
-       
-		   $sql="SELECT execution_id FROM {$this->execution_bugs_table} " .  
-		        "WHERE execution_id={$executionID} AND bug_id='{$safeBugID}'";
+            $safeBugID=$this->dbObj->prepare_string($bugID);
+       	    $sql="SELECT execution_id FROM {$this->tables['execution_bugs']} " .  
+		         "WHERE execution_id={$executionID} AND bug_id='{$safeBugID}'";
         
-       if( is_null($this->dbObj->fetchRowsIntoMap($sql, 'execution_id')) )
-       {
-			     $sql = "INSERT INTO {$this->execution_bugs_table} " .
-                  "(execution_id,bug_id) VALUES({$executionID},'{$safeBugID}')";
-           $result = $this->dbObj->exec_query($sql); 
-           $status_ok=$result ? true : false ;
-       }
-    
+            if( is_null($this->dbObj->fetchRowsIntoMap($sql, 'execution_id')) )
+            {
+            	     $sql = "INSERT INTO {$this->tables['execution_bugs']} " .
+                       "(execution_id,bug_id) VALUES({$executionID},'{$safeBugID}')";
+                $result = $this->dbObj->exec_query($sql); 
+                $status_ok=$result ? true : false ;
+            }
 		}
 		return $status_ok;
 	}
@@ -2749,13 +2754,13 @@ private function _getBugsForExecutionId($execution_id)
     $rs=null;
     if( !is_null($execution_id) && $execution_id <> '' )
     {
-        $sql = "SELECT execution_id,bug_id,builds.name AS build_name " .
-               "FROM execution_bugs,executions,builds ".
+        $sql = "SELECT execution_id,bug_id, B.name AS build_name " .
+               "FROM {$this->tables['execution_bugs']} ," .
+               " {$this->tables['executions']} E, {$this->tables['builds']} B ".
                "WHERE execution_id={$execution_id} " .
-               "AND   execution_id=executions.id " .
-               "AND   executions.build_id=builds.id " .
-               "ORDER BY builds.name,bug_id";
-               
+               "AND   execution_id=E.id " .
+               "AND   E.build_id=B.id " .
+               "ORDER BY B.name,bug_id";
         $rs=$this->dbObj->fetchRowsIntoMap($sql,'bug_id');
     }
     return $rs;   

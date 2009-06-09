@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/02/10 11:27:07 $by $Author: havlat $
+ * @package 	TestLink
  * @author GrdScarabe, Thomas Courbon, Alexandre Da Costa, brice.grichy
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: strings.txt,v 1.21 2009/06/09 21:47:20 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
  * French translation
  *
- * Revisions:
+ * @internal Revisions:
+ * 20090612 - postb99 
  * 20090210 - brice.grichy at conseils-plus.fr
  * 20060117 - Alexandre Da Costa alexandre.da-costa_at_iseo.fr
  * 20061129 - Thomas Courbon: added missing localisations for testlink 1.6.2
@@ -294,7 +296,7 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 $TLS_btn_add_bug = "Ajouter une anomalie";
 $TLS_bug_id = "Identifiant de l'anomalie";
 $TLS_button_enter_bug 	= "Cr&eacute;er un nouveau Bug";
-$TLS_link_bts_create_bug = "Accéder à Mantis";
+$TLS_link_bts_create_bug = "Accéder à l'outil de Gestion de Bugs ";
 $TLS_title_bug_add = "Ajouter une anomalie";
 
 
@@ -824,7 +826,7 @@ $TLS_alt_active_user = "Active user";
 
 
 // gui/templates/login.tpl
-$TLS_btn_login = "Nom d'utilisateur";
+$TLS_btn_login = "Envoyer";
 $TLS_login_name = "Nom d'utilisateur :";
 $TLS_lost_password_q = "Mot de passe &eacute;gar&eacute; ?";
 $TLS_new_user_q = "Nouvel utilisateur ?";
@@ -1926,29 +1928,34 @@ $TLS_title_metrics_x_build = " - M&eacute;trique des r&eacute;sultats par Sessio
 
 // ----- lib/results/resultsByStatus.php -----
 $TLS_list_of_blocked = "Liste des Cas de Tests bloques";
-$TLS_list_of_failed = "Liste des Cas de Tests ayant echoues";	// pas de diacritiques ???
-$TLS_list_of_not_run = "Not Run Test Cases";
+$TLS_list_of_failed = "Liste des Cas de Tests ayant echoue";	// modified - pas de diacritiques ???
+$TLS_list_of_not_run = "Liste des Cas de Tests non executes"; // modified
 
-
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Plans de Tests comportant des champs d'information personnalisés"; //added
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf; // added
 
 // ----- lib/results/resultsTC.php -----
-
-
+$TLS_link_report_tcases_with_cf = "Cas de Tests comportant des champs d'information personnalisés"; // added
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf; // added
 
 // ----- lib/results/resultsNavigator.php -----
-$TLS_link_charts = "Charts";
+$TLS_link_charts = "Graphiques"; // modified
 $TLS_link_report_blocked_tcs = "Cas de Tests bloqu&eacute;s";
-$TLS_link_report_failed = "Cas de Tests ayant &eacute;chou&eacute;s";
+$TLS_link_report_failed = "Cas de Tests ayant &eacute;chou&eacute;"; // modified
 $TLS_link_report_general_tp_metrics = "M&eacute;trique g&eacute;n&eacute;rales du Plan de Tests";
 $TLS_link_report_metrics_active_build = "M&eacute;trique de la Session active";
 $TLS_link_report_metrics_more_builds = "Requ&ecirc;te sur les M&eacute;triques";
-$TLS_link_report_not_run = "Not run Test Cases";
+$TLS_link_report_not_run = "Cas de Tests non exécutés"; // modified
 $TLS_link_report_overall_build	= "Statut complet de la Session";
 $TLS_link_report_reqs_coverage	= "Rapport sur les Exigences";
-$TLS_link_report_test		= "Rapport de test";
+$TLS_link_report_test		= "Rapport de Test";
 $TLS_link_report_total_bugs	= "Nombre total de Bugs pour chaque Cas de Tests";
-$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
-$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
+$TLS_link_report_uncovered_testcases = "Cas de Tests sans Exigences Fonctionnelles"; // modified
+$TLS_link_report_tcases_without_tester = "Cas de Tests non assignés à un testeur"; // modified
+
+$TLS_no_linked_tc_cf="Il n'y a pas de Plans de Tests comportant des champs d'information personnalisés"; // added
+$TLS_no_linked_tp_cf="Il n'y a pas de Cas de Tests comportant des champs d'information personnalisés"; // added
 
 // ----- lib/results/resultsSend.php -----
 $TLS_send_to_empty_email_warning = "D&eacute;sol&eacute; mais l'E-mail ne peut pas &ecirc;tre envoy&eacute; si un des champs est vide. Merci de rentrer une adresse valide.";

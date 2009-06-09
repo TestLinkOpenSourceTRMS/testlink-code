@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.24 2009/06/09 12:54:06 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.25 2009/06/09 19:21:09 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -49,16 +49,21 @@ require_once('int_serialization.php');
  */
 abstract class tlObject implements iSerialization
 {	
-	/** @var integer the unique object id */
+	/** @var string the unique object id */
 	protected $objectID;
 		
-	/** supported serialization Interfaces */	
+	/**
+	 * @var array supported serialization interfaces
+	 */
 	protected $serializationInterfaces;
+	/**
+	 * @var array of format descriptors for the interfaces
+	 */
 	protected $serializationFormatDescriptors;
 
 	//@TODO schlundus, should be moved inside a tlConfig class
 	// havlatm rev: this is not configuration, so it is correct here
-    static protected $tables = null;
+    protected $tables = null;
 	
 	/** class constructor */
 	public function __construct()
@@ -111,7 +116,7 @@ abstract class tlObject implements iSerialization
 		$this->objectID = str_replace(".","",uniqid("", true));
 		
 		/*
-			Any supported import/Export Serialization Interfaces must be prefixed with iSerializationTo 
+			Any supported import/Export Serialization Interface must be prefixed with iSerializationTo 
 			so we can automatically detected the interfaces
 		*/
 		$prefix = "iSerializationTo";
@@ -137,6 +142,10 @@ abstract class tlObject implements iSerialization
 		$this->getSupportedSerializationFormatDescriptions();
 	}
 	
+	/**
+	 * Getter for the unique objectID
+	 * @return string the ID of the object 
+	 */
 	public function getObjectID()
 	{	
 		return $this->objectID;
@@ -148,7 +157,9 @@ abstract class tlObject implements iSerialization
 		$this->_clean();
 	}
 	
-	/** magic method for usage with print() or echo() , dumps out the object */
+	/** magic method for usage with print() or echo() , dumps out the object 
+	 * @return string a dump of the object
+	 */
 	public function __toString()
 	{
 		return __CLASS__.", ".print_r($this,true);
@@ -159,7 +170,10 @@ abstract class tlObject implements iSerialization
 	{
 	}
 	
-	/** @return all supported Import/Export Interfaces  */
+	/* Gets all serializationInterfaces the object supports
+	 * 
+	 * @return all supported Import/Export Interfaces  
+	 **/
 	function getSupportedSerializationInterfaces()
 	{
 		return $this->serializationInterfaces;
@@ -185,7 +199,6 @@ abstract class tlObject implements iSerialization
 
 
 	/**
-     * getDBTables()
      * useful to manage DB where TL table names must have a prefix.
      *
      * @return map key=table name without prefix, value=table name on db
@@ -195,10 +208,6 @@ abstract class tlObject implements iSerialization
 	{
 	    return $this->tables;    
 	}
-};
-
-
-
 };
 
 /**
@@ -235,7 +244,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	 * Class constructor
 	 *  
 	 * @param object [ref] $db the database connection
-	 * @param string $attachmentTableName the foreign key table name to store the attachements
+	 * @param string $attachmentTableName the foreign key table name to store the attachments
 	 */
 	function __construct(&$db,$attachmentTableName)
 	{
@@ -249,7 +258,8 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	 *  	
 	 * @param integer $id this is the fkid of the attachments table
 	 * @return array returns map with the infos of the attachment, keys are the column names of the attachments table 
-	 * @TODO SCHLUNDUS: legacy function to keep existing code, should be replaced by a function which returns objects 
+	 *
+	 * @TODO schlundus: legacy function to keep existing code, should be replaced by a function which returns objects 
 	 */
 	function getAttachmentInfos($id)
 	{
@@ -284,18 +294,29 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
  */
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
+	/**
+	 * @var integer the database id of the object
+	 */
 	public $dbID;
+	/**
+	 * @var int the detail level, used to configure how much information about the object is read from
+	 * 			the database
+	 */
 	protected $detailLevel;
 	
-	/** standard get options, all other get options must be greater than this */
+	/** standard get option, all other get options must be greater than this */
 	const TLOBJ_O_SEARCH_BY_ID = 1;
 	
 	//standard detail levels, can be used to get only some specific details when reading an object
 	//to avoid unneccessary DB queries (when the info is actual not used and not needed)
 	const TLOBJ_O_GET_DETAIL_MINIMUM = 0;
+	//get all information
 	const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
 	
-	/** Class constructor */
+	/* Class constructor
+	 *
+	 * @param $dbID the database identifier
+	 */
 	function __construct($dbID = null)
 	{
 		parent::__construct();
@@ -306,14 +327,16 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	
 	/**
 	 * if we fetch an object, we can set here different details levels for the objects, because we 
-	 * don't always all nested data 
-	 */		
+	 * don't always need all nested data 
+	
+	 * @param $level integer any combination of TLOBJ_O_GET_DETAIL_? constancts
+	 */
 	public function setDetailLevel($level = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$this->detailLevel = $level;
 	}
 	
-	/* some factory functions to be used to create objects */
+	/* some factory functions to be used to create tl managed objects */
 	/**
 	 * create any tl-managed objects
 	 * 

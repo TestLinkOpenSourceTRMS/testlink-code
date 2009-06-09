@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: priority.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/06/07 13:03:21 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -54,7 +54,7 @@ public function setSuiteUrgency($testplan_id, $node_id, $urgency)
             " WHERE testplan_id= {$testplan_id} " .
             " AND tcversion_id IN (" .
             " SELECT NHB.id " . 
-            " FROM {$this->tables['nodes_hierarchy']}  NHA, "
+            " FROM {$this->tables['nodes_hierarchy']}  NHA, " .
             " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['node_types']}  NT" .
             " WHERE NHA.node_type_id = NT.id " .
             " AND NT.description='testcase' " . 

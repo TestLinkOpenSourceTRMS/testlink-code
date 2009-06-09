@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/06/08 20:11:59 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
  */
@@ -44,7 +44,6 @@ function init_args()
 	//the id (attachments.id) of the attachment to be downloaded
 	$iParams = array("id" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
-	// $pParams = G_PARAMS($iParams,$args);
 	G_PARAMS($iParams,$args);
 	return $args;
 }

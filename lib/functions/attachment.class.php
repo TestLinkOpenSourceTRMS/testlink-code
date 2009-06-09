@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/06/08 20:11:59 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -17,30 +17,66 @@ require_once( dirname(__FILE__) . '/object.class.php' );
 */
 class tlAttachment extends tlDBObject 
 {
+	/**
+	 * @var integer error code for invalid title length
+	 */
 	const E_TITLELENGTH = -1;
-	/*
-	 * @param object $db [ref] the db-object
-	 * @param int $fkid the foreign key id (attachments.fk_id)
-	 * @param string $fktableName the tablename to which the $id refers to (attachments.fk_table)
-	 * @param string $fName the filename
-	 * @param string $destFPath the file path 
-	 * @param string $fContents the contents of the file
-	 * @param string $fType the mime-type of the file
-	 * @param int $fSize the filesize (uncompressed)
-	 * @param string $title the title used for the attachment
+	
+
+	/**
+	 * @var int $fkid the foreign key id (attachments.fk_id)
 	 */
 	protected $fkID;
+	/**
+	 * @var string $fktableName the tablename to which the $id refers to (attachments.fk_table)
+	 */
 	protected $fkTableName;
+	/**
+	 * @var string the filename the attachment is stored to
+	 */
 	protected $fName;
+	/**
+	 * @var string the title used for the attachment
+	 */
 	protected $title;
+	/**
+	 * @var string $fType the mime-type of the file
+	 */
 	protected $fType;
+	/**
+	 * @var int $fSize the filesize (uncompressed)
+	 */
 	protected $fSize;
+	/**
+	 * @var string $destFPath the path to file within the repository
+	 */
 	protected $destFPath; 
+	/**
+	 * @var string $fContents the contents of the file
+	 */
 	protected $fContents;
+	/**
+	 * 
+	 * @var int the compression type used for the attachment
+	 * @see TL_REPOSITORY_COMPRESSIONTYPE_NONE 
+	 * @see TL_REPOSITORY_COMPRESSIONTYPE_GZIP
+	 * */
 	protected $compressionType;
+	/**
+	 * @var string a description for the attachment
+	 */
 	protected $description;
+	/**
+	 * @var timestamp the timestampe when the attachment was added
+	 */
 	protected $dateAdded;
+	/**
+	 * @var string the path to the repository
+	 */
 	protected $repositoryPath;
+	/**
+	 * @var unknown_type
+	 */
 	protected $attachmentCfg;
 	
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/06/09 13:30:06 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -64,7 +64,6 @@ class tlAttachmentRepository extends tlObjectWithDB
 	**/
 	public function insertAttachment($fkid,$fkTableName,$title,$fInfo)
 	{
-	    $fileUploaded = false;
 		$fName = isset($fInfo['name']) ? $fInfo['name'] : null;
 		$fType = isset($fInfo['type']) ? $fInfo['type'] : '';
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
@@ -102,7 +101,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 			else
 			{ 
 				@unlink($destFPath);
-			}	
+			}
 		}
 
 		return $fileUploaded;

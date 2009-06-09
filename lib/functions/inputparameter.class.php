@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.13 2009/06/08 17:40:21 schlundus Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.14 2009/06/09 13:26:41 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -23,14 +23,19 @@ class tlInputParameter extends tlObject
 {
 	/** the supported parameter type: integer */
 	const INT = 1;
+	
 	/** the supported parameter type: non-negative integer */
 	const INT_N = 2;
+
 	/** the supported parameter type: normalized (trimmed) string */
 	const STRING_N = 3;
+
 	/** the supported parameter type: array of integers */
 	const ARRAY_INT = 4;
+
 	/** the supported parameter type: array of normalized strings */
 	const ARRAY_STRING_N = 5;
+
 	/** the supported parameter type: checkbox boolean */
 	const CB_BOOL = 6;
 	
@@ -39,6 +44,7 @@ class tlInputParameter extends tlObject
 	 * @see class tlParameterInfo
 	 */
 	private $parameterInfo = null;
+
 	/**
 	 * @var boolean was the parameter fetched?
 	 */

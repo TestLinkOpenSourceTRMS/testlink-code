@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.451 $
- * @modified $Date: 2009/06/08 21:21:41 $ by $Author: schlundus $
+ * @version $Revision: 1.452 $
+ * @modified $Date: 2009/06/09 20:24:49 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -2302,6 +2302,7 @@ $TLS_API_TESTPLANNAME_DOESNOT_EXIST="Test Plan (name:%s) does not exist on Test 
 $TLS_API_INVALID_PARENT_TESTSUITEID = "Test Suite ID (%s) provided as PARENT for Test Suite (name:%s) do not belongs to a Test Suite present on system!";
 
 $TLS_API_NO_TESTCASE_FOUND = "No Test Case found for search criteria.";
+$TLS_API_TESTPLANNAME_ALREADY_EXISTS="Test Plan (name:%s) Already EXITS on Test Project (name:%s).";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

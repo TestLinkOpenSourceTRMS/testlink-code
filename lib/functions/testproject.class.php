@@ -1,10 +1,16 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
+ * 
+ * @package 	TestLink
+ * @author 		franciscom
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: testproject.class.php,v 1.117 2009/06/09 22:38:56 havlat Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
+ * @link 		http://www.teamst.org/index.php
  *
- * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.116 $
- * @modified $Date: 2009/06/08 20:15:10 $  $Author: franciscom $
- * @author franciscom
+ * @internal Revisions:
  *
  * 20090606 - franciscom - get_by_prefix() interface changes
  * 20090512 - franciscom - added setPublicStatus()
@@ -46,7 +52,9 @@
 require_once('attachments.inc.php');
 require_once('keyword.class.php');
 
-
+/**
+ * class is responsible to get project related data and CRUD test project
+ */
 class testproject extends tlObjectWithAttachments
 {
 	const RECURSIVE_MODE = true;
@@ -69,16 +77,11 @@ class testproject extends tlObjectWithAttachments
     var $nt2exclude_children=array('testcase' => 'exclude_my_children',
 							       'requirement_spec'=> 'exclude_my_children');
 
-
-  /*
-    function: testproject
-              Constructor
-
-    args:
-
-    returns:
-
-  */
+	/** 
+	 * Class constructor
+	 * 
+	 * @param object &$db reference to DB resource
+	 */
 	function testproject(&$db)
 	{
 		$this->db = &$db;
@@ -90,19 +93,18 @@ class testproject extends tlObjectWithAttachments
 
 /**
  * Create a new test project
+ * 
  * @param string $name
  * @param string $color
- * @param string $optReq [1,0]
+ * @param boolean $optReq [1,0]
  * @param string $notes
  * @param boolean $active [1,0] optional
  * @param string $tcasePrefix [''] 
  * @param boolean $is_public [1,0] optional
  *
+ * @return integer test project id or 0 (if fails)
  *
- * @return everything OK -> test project id
- *         problems      -> 0 (invalid node id)
- *
- * Revisions:
+ * @internal Revisions:
  * 20060709 - franciscom - return type changed
  *                         added new optional argument active
  * 20080112 - franciscom - added $tcasePrefix
@@ -112,7 +114,6 @@ class testproject extends tlObjectWithAttachments
  * @TODO havlatm: $is_public parameter need review (do not agreed in team)
  * @TODO havlatm: described return parameter differs from reality
  * @TODO havlatm: parameter $options should be 
- *
  */
 function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 {
@@ -160,8 +161,10 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
  * @param type $color documentation
  * @param type $opt_req documentation
  * @param type $notes documentation
+ * 
  * @return type documentation
  *
+ * @internal
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
@@ -226,8 +229,8 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation,
 
 /**
  * Set session data related to a Test project
+ * 
  * @param integer $projectId Project ID; zero causes unset data
- * @version 1.1
  */
 public function setSessionProject($projectId)
 {
@@ -269,8 +272,10 @@ public function setSessionProject($projectId)
 
 /**
  * Get Test project data according to name
+ * 
  * @param integer $name 
  * @param string $addClause (optional) additional SQL condition(s)
+ * 
  * @return array map with test project info; null if query fails
  */
 function get_by_name($name, $addClause = null)
@@ -292,6 +297,7 @@ function get_by_name($name, $addClause = null)
 
 /**
  * Get Test project data according to ID
+ * 
  * @param integer $id test project
  * @return array map with test project info; null if query fails
  */
@@ -309,8 +315,10 @@ public function get_by_id($id)
 
 /**
  * Get Test project data according to prefix
+ * 
  * @param string $prefix 
  * @param string $addClause optional additional SQL 'AND filter' clause
+ * 
  * @return array map with test project info; null if query fails
  */
 public function get_by_prefix($prefix, $addClause = null)
@@ -361,7 +369,7 @@ function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
 	return $recordset;
 }
 
-/**
+/*
 function: get_accessible_for_user
           get list of testprojects, considering user roles.
           Remember that user has:
@@ -506,18 +514,13 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
 
 
 /**
- * Function: show
- *           displays smarty template to show test project info
- *           to users.
+ * displays smarty template to show test project info to users.
  *
  * @param type $smarty [ref] smarty object
  * @param type $id test project
  * @param type $sqlResult [default = '']
  * @param type $action [default = 'update']
  * @param type $modded_item_id [default = 0]
- * @return -
- *
- *
  **/
 function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
@@ -546,15 +549,13 @@ function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modd
 }
 
 
-/*
-  function: count_testcases
-            Count testcases without considering active/inactive status.
-
-  args : id: testproject id
-
-  returns: int: test cases presents on test project.
-
-*/
+/**
+ * Count testcases without considering active/inactive status.
+ * 
+ * @param integer $id: testproject id
+ * @return integer count of test cases presents on test project.
+ * 
+ */
 function count_testcases($id)
 {
 	$tcIDs = array();
@@ -723,7 +724,9 @@ function count_testcases($id)
 
 
 
-	/** allow activate or deactivate a test project
+	/** 
+	 * allow activate or deactivate a test project
+	 * 
 	 * @param integer $id test project ID
 	 * @param integer $status 1=active || 0=inactive
 	 */
@@ -735,17 +738,9 @@ function count_testcases($id)
 		return $result ? 1 : 0;
 	}
 
-  /*
-    function:
-
-    args:
-
-    returns:
-
-  */
-
-  function formatTcPrefix($str)
-  {
+	/** @TODO add description */
+	function formatTcPrefix($str)
+	{
 	    // limit tcasePrefix len.
 	    $fstr = trim($str);
 	    if(tlStringLen($fstr) > self::TESTCASE_PREFIX_MAXLEN)
@@ -753,7 +748,7 @@ function count_testcases($id)
 			$tcprefix = substr($fstr,self::TESTCASE_PREFIX_MAXLEN);
 	    }
 		return $fstr;
-  }
+	}
 
   /*
     function: getTestCasePrefix
@@ -831,7 +826,6 @@ function setPublicStatus($id,$status)
 	/**
 	 * updates the keyword with the given id
 	 *
-	 *
 	 * @param type $testprojectID
 	 * @param type $id
 	 * @param type $keyword
@@ -851,21 +845,20 @@ function setPublicStatus($id,$status)
 	/**
 	 * gets the keyword with the given id
 	 *
-	 *
 	 * @param type $kwid
-	 *
 	 **/
 	public function getKeyword($id)
 	{
 		return tlDBObject::createObjectFromDB($this->db,$id,"tlKeyword");
 	}
+	
 	/**
 	 * Gets the keywords of the given test project
 	 *
 	 * @param int $tprojectID the test project id
 	 * @param int $keywordID [default = null] the optional keyword id
+	 * 
 	 * @return array, every elemen is map with following structure:
-	 *
 	 *                id
 	 *                keyword
 	 *                notes
@@ -900,10 +893,10 @@ function setPublicStatus($id,$status)
 		return $result;
 	}
 
-  /**
-   * deleteKeywords
-   *
-   */
+	/**
+	 * delete Keywords
+	 *
+	 */
 	function deleteKeywords($testproject_id)
 	{
 		$result = tl::OK;
@@ -918,10 +911,10 @@ function setPublicStatus($id,$status)
 	}
 
 
-  /**
-   * getKeywordIDsFor
-   *
-   */
+	/**
+	 * 
+	 *
+	 */
 	protected function getKeywordIDsFor($testproject_id)
 	{
 		$query = " SELECT id FROM {$this->tables['keywords']}  " .
@@ -934,7 +927,6 @@ function setPublicStatus($id,$status)
 
 	/**
 	 * Exports the given keywords to a XML file
-	 *
 	 *
 	 * @return strings the generated XML Code
 	 **/
@@ -1034,12 +1026,12 @@ function setPublicStatus($id,$status)
 		return tl::OK;
 	}
 
-	/*
-	*        Returns all testproject keywords
-	*
-	*	@param  int $testproject_id the ID of the testproject
-	*	@returns: map: key: keyword_id, value: keyword
-	*/
+	/**
+	 * Returns all testproject keywords
+	 *
+	 *	@param  integer $testproject_id the ID of the testproject
+	 *	@return array 	map: key: keyword_id, value: keyword
+	 */
 	function get_keywords_map($testproject_id)
 	{
 		$keywordMap = null;
@@ -1056,17 +1048,16 @@ function setPublicStatus($id,$status)
 	/* END KEYWORDS RELATED */
 
 	/* REQUIREMENTS RELATED */
-  /**
-   * get list of all SRS for a test project
-   *
-   *
-   * @return associated array List of titles according to IDs
-   *
-   * @author Martin Havlat
-   *
-   * rev :
-   *      20070104 - franciscom - added [$get_not_empy]
-   **/
+	/**
+	 * get list of all SRS for a test project
+	 * 
+	 * @author Martin Havlat
+	 * @return associated array List of titles according to IDs
+	 * 
+	 * @internal
+	 * rev :
+	 *    20070104 - franciscom - added [$get_not_empy]
+	 **/
   function getOptionReqSpec($tproject_id,$get_not_empty=self::GET_EMPTY_REQSPEC)
   {
     $additional_table='';
@@ -1086,11 +1077,11 @@ function setPublicStatus($id,$status)
   } // function end
 
 
-  /**
-   *
+	/**
+	 * TBD
    * @author Francisco Mancardi - francisco.mancardi@gmail.com
    *
-   * rev :
+   * @internal rev :
    *      20090125 - franciscom
    **/
 	function genComboReqSpec($id,$mode='dotted')
@@ -1149,92 +1140,96 @@ function setPublicStatus($id,$status)
                                10   array(name =>	'TS2', level 	=> 2)
 
   */
-  private function _createHierarchyMap($array2map,$mode='dotted')
+  protected function _createHierarchyMap($array2map,$mode='dotted')
   {
-      $hmap=array();
-			$the_level = 1;
-			$level = array();
+		$hmap=array();
+		$the_level = 1;
+		$level = array();
   		$pivot = $array2map[0];
 
-			foreach($array2map as $elem)
+		foreach($array2map as $elem)
+		{
+			$current = $elem;
+
+			if ($pivot['id'] == $current['parent_id'])
 			{
-				$current = $elem;
+				$the_level++;
+				$level[$current['parent_id']]=$the_level;
+			}
+			else if ($pivot['parent_id'] != $current['parent_id'])
+			{
+				$the_level = $level[$current['parent_id']];
+			}
 
-				if ($pivot['id'] == $current['parent_id'])
-				{
-					$the_level++;
-					$level[$current['parent_id']]=$the_level;
-				}
-				else if ($pivot['parent_id'] != $current['parent_id'])
-				{
-					$the_level = $level[$current['parent_id']];
-				}
-
-				switch($mode)
-				{
+			switch($mode)
+			{
   				case 'dotted':
-				  $hmap[$current['id']] = str_repeat('.',$the_level) . $current['name'];
-          break;
+					$hmap[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+					break;
 
   				case 'array':
-				  $hmap[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
-				  break;
-        }
-
-				// update pivot
-				$level[$current['parent_id']]= $the_level;
-				$pivot=$elem;
+					$hmap[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
+					break;
 			}
+
+			// update pivot
+			$level[$current['parent_id']]= $the_level;
+			$pivot=$elem;
+		}
+		
 	    return $hmap;
   }
 
 
 
-/**
- * collect information about current list of Requirements Specification
- *
- * @param numeric $testproject_id
- * @param string  $id optional id of the requirement specification
- *
- * @return null if no srs exits, or no srs exists for id
- *         array, where each element is a map with SRS data.
- *
- *         map keys:
- *         id
- *         testproject_id
- *         title
- *         scope
- *         total_req
- *         type
- *         author_id
- *         creation_ts
- *         modifier_id
- *         modification_ts
- *
- * @author Martin Havlat
- * @rev: 20090506 - francisco.mancardi@gruppotesi.com
- *       Requirements Refactoring
- **/
-function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
-{
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+	/**
+	 * collect information about current list of Requirements Specification
+	 *
+	 * @param integer $testproject_id
+	 * @param string  $id optional id of the requirement specification
+	 *
+	 * @return mixed 
+	 * 		null if no srs exits, or no srs exists for id
+	 * 		array, where each element is a map with SRS data.
+	 *
+	 *         map keys:
+	 *         id
+	 *         testproject_id
+	 *         title
+	 *         scope
+	 *         total_req
+	 *         type
+	 *         author_id
+	 *         creation_ts
+	 *         modifier_id
+	 *         modification_ts
+	 *
+	 * @author Martin Havlat
+	 * @internal rev: 
+	 * 20090506 - francisco.mancardi@gruppotesi.com - Requirements Refactoring
+	 *       
+	 **/
+	public function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
+	{
+    	$fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
     
-    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-    $sql = " SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
-           " {$this->tables['nodes_hierarchy']} NH " .
-           " WHERE testproject_id={$testproject_id} " .
-           " AND RSPEC.id=NH.id ";
+	    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
+    	$sql = " SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
+       			" {$this->tables['nodes_hierarchy']} NH " .
+           		" WHERE testproject_id={$testproject_id} " .
+				" AND RSPEC.id=NH.id ";
            
-    if (!is_null($id))
-    {
-        $sql .= " AND RSPEC.id=" . $id;
-    }
-    $sql .= "  ORDER BY title";
-    $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);  
-	return $rs;
-}
+		if (!is_null($id))
+	    {
+    	    $sql .= " AND RSPEC.id=" . $id;
+	    }
+    	$sql .= "  ORDER BY title";
+	    $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);
+	      
+		return $rs;
+	}
 
 	/**
 	 * create a new System Requirements Specification
@@ -1252,17 +1247,16 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
 	 */
 	function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
 	{
-	  $ignore_case=1;
-
+		$ignore_case=1;
 		$result=array();
 
-    $result['status_ok'] = 0;
+		$result['status_ok'] = 0;
 		$result['msg'] = 'ko';
 		$result['id'] = 0;
 
-    $title=trim($title);
+    	$title=trim($title);
 
-    $chk=$this->check_srs_title($testproject_id,$title,$ignore_case);
+    	$chk=$this->check_srs_title($testproject_id,$title,$ignore_case);
 		if ($chk['status_ok'])
 		{
 			$sql = "INSERT INTO {$this->tables['req_specs']} " .
@@ -1279,13 +1273,13 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
 			else
 			{
 			  $result['id']=$this->db->insert_id($this->tables['req_specs']);
-        $result['status_ok'] = 1;
+        	$result['status_ok'] = 1;
 		    $result['msg'] = 'ok';
 			}
 		}
 		else
 		{
-		  $result['msg']=$chk['msg'];
+			$result['msg']=$chk['msg'];
 		}
 		return $result;
 	}
@@ -1315,27 +1309,27 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
                     modifier_id
                     modification_ts
   */
-  function get_srs_by_title($testproject_id,$title,$ignore_case=0)
-  {
-  	$output=null;
-  	$title=trim($title);
-
-  	$sql = "SELECT * FROM req_specs ";
-
-  	if($ignore_case)
-  	{
-  	  $sql .= " WHERE UPPER(title)='" . strtoupper($this->db->prepare_string($title)) . "'";
-  	}
-  	else
-  	{
-  	   $sql .= " WHERE title='" . $this->db->prepare_string($title) . "'";
-  	}
-  	$sql .= " AND testproject_id={$testproject_id}";
+	public function get_srs_by_title($testproject_id,$title,$ignore_case=0)
+	{
+		$output=null;
+		$title=trim($title);
+		
+		$sql = "SELECT * FROM req_specs ";
+		
+		if($ignore_case)
+		{
+			$sql .= " WHERE UPPER(title)='" . strtoupper($this->db->prepare_string($title)) . "'";
+		}
+		else
+		{
+			$sql .= " WHERE title='" . $this->db->prepare_string($title) . "'";
+		}
+		$sql .= " AND testproject_id={$testproject_id}";
 		$output = $this->db->fetchRowsIntoMap($sql,'id');
-
-  	return $output;
-  }
-
+		
+		return $output;
+	}
+	
 
 
   /*
@@ -1354,211 +1348,214 @@ function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
     returns:
 
   */
-  function check_srs_title($testproject_id,$title,$ignore_case=0)
-  {
-    $ret['status_ok'] = 1;
-    $ret['msg'] = '';
-
-    $title = trim($title);
-
-  	if ($title == "")
-  	{
-		$ret['status_ok'] = 0;
-  		$ret['msg'] = lang_get("warning_empty_req_title");
-  	}
-
-  	if($ret['status_ok'])
-  	{
-	    $ret['msg'] = 'ok';
-		$rs = $this->get_srs_by_title($testproject_id,$title,$ignore_case);
-	
-	    if(!is_null($rs))
-	    {
-	    	$ret['msg'] = lang_get("warning_duplicate_req_title");
-	        $ret['status_ok'] = 0;
-	    }
+	function check_srs_title($testproject_id,$title,$ignore_case=0)
+	{
+		$ret['status_ok'] = 1;
+		$ret['msg'] = '';
+		
+		$title = trim($title);
+		
+		if ($title == "")
+		{
+			$ret['status_ok'] = 0;
+			$ret['msg'] = lang_get("warning_empty_req_title");
+		}
+		
+		if($ret['status_ok'])
+		{
+			$ret['msg'] = 'ok';
+			$rs = $this->get_srs_by_title($testproject_id,$title,$ignore_case);
+			
+			if(!is_null($rs))
+			{
+				$ret['msg'] = lang_get("warning_duplicate_req_title");
+				$ret['status_ok'] = 0;
+			}
+		}
+		return $ret;
 	}
-  	return $ret;
-  }
 /* END REQUIREMENT RELATED */
 // ----------------------------------------------------------------------------------------
-/**
- * Deletes all testproject related role assignments for a given testproject
- *
- * @param int $tproject_id
- * @returns tl::OK on success, tl::ERROR else
- **/
-function deleteUserRoles($tproject_id)
-{
-	$query = "DELETE FROM {$this->tables['user_testproject_roles']} " . 
-	         " WHERE testproject_id = {$tproject_id}";
-	if ($this->db->exec_query($query))
+
+
+	/**
+	 * Deletes all testproject related role assignments for a given testproject
+	 *
+	 * @param integer $tproject_id
+	 * @return integer tl::OK on success, tl::ERROR else
+	 **/
+	function deleteUserRoles($tproject_id)
 	{
-		$testProject = $this->get_by_id($tproject_id);
-		if ($testProject)
+		$query = "DELETE FROM {$this->tables['user_testproject_roles']} " . 
+			" WHERE testproject_id = {$tproject_id}";
+		if ($this->db->exec_query($query))
 		{
-			logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),
-			                  "ASSIGN",$tproject_id,"testprojects");
+			$testProject = $this->get_by_id($tproject_id);
+			if ($testProject)
+			{
+				logAuditEvent(TLS("audit_all_user_roles_removed_testproject",$testProject['name']),
+					"ASSIGN",$tproject_id,"testprojects");
+			}
+			return tl::OK;
 		}
-		return tl::OK;
+		
+		return tl::ERROR;
 	}
-	return tl::ERROR;
-}
 
-/**
- * Gets all testproject related role assignments
- *
- * @param int $tproject_id
- * @return array assoc array with keys take from the user_id column
- **/
-function getUserRoleIDs($tproject_id)
-{
-	$query = "SELECT user_id,role_id FROM {$this->tables['user_testproject_roles']} " .
-	         "WHERE testproject_id = {$tproject_id}";
-	$roles = $this->db->fetchRowsIntoMap($query,'user_id');
-
-	return $roles;
-}
-/**
- * Inserts a testproject related role for a given user
- *
- * @param int $userID the id of the user
- * @param int $tproject_id
- * @param int $roleID the role id
- * @returns tl::OK on success, tl::ERROR else
- **/
-function addUserRole($userID,$tproject_id,$roleID)
-{
-	$query = "INSERT INTO {$this->tables['user_testproject_roles']} " .
-	         "(user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
-	if($this->db->exec_query($query))
+	/**
+	 * Gets all testproject related role assignments
+	 *
+	 * @param integer $tproject_id
+	 * @return array assoc array with keys take from the user_id column
+	 **/
+	function getUserRoleIDs($tproject_id)
 	{
-		$testProject = $this->get_by_id($tproject_id);
-		$role = tlRole::getByID($this->db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
-		$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
-		if ($user && $testProject && $role)
+		$query = "SELECT user_id,role_id FROM {$this->tables['user_testproject_roles']} " .
+			"WHERE testproject_id = {$tproject_id}";
+		$roles = $this->db->fetchRowsIntoMap($query,'user_id');
+		
+		return $roles;
+	}
+
+	/**
+	 * Inserts a testproject related role for a given user
+	 *
+	 * @param integer $userID the id of the user
+	 * @param integer $tproject_id
+	 * @param integer $roleID the role id
+	 * 
+	 * @return integer tl::OK on success, tl::ERROR else
+	 **/
+	function addUserRole($userID,$tproject_id,$roleID)
+	{
+		$query = "INSERT INTO {$this->tables['user_testproject_roles']} " .
+			"(user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
+		if($this->db->exec_query($query))
 		{
-			logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),
-			                  $testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
+			$testProject = $this->get_by_id($tproject_id);
+			$role = tlRole::getByID($this->db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+			$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+			if ($user && $testProject && $role)
+			{
+				logAuditEvent(TLS("audit_users_roles_added_testproject",$user->getDisplayName(),
+					$testProject['name'],$role->name),"ASSIGN",$tproject_id,"testprojects");
+			}
+			return tl::OK;
 		}
-		return tl::OK;
+		
+		return tl::ERROR;
 	}
-	return tl::ERROR;
-}
-/*
-  function: delete
-            delete test project from system, deleting all dependent data:
-            keywords, requirements, custom fields, testsuites, testplans,
-            testcases, results, testproject related roles,
-
-
-  args :id: testproject id
-
-  returns: -
-
-*/
-function delete($id)
-{
-  $ret['msg']='ok';
-  $ret['status_ok']=1;
-
-	$error = '';
-  $reqspec_mgr = new requirement_spec_mgr($this->db);
-
-	$a_sql = array();
-
-	$this->deleteKeywords($id);
-	$this->deleteAttachments($id);
- 
-  $reqSpecSet=$reqspec_mgr->get_all_in_testproject($id);
-	if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 )
+	
+	/**
+	 * delete test project from system, deleting all dependent data:
+	 *      keywords, requirements, custom fields, testsuites, testplans,
+	 *      testcases, results, testproject related roles,
+	 * 
+	 * @param integer $id test project id
+	 * @return integer status
+	 * 
+	 */
+	function delete($id)
 	{
-	    foreach($reqSpecSet as $reqSpec)
-	    {
-	          $reqspec_mgr->delete_deep($reqSpec['id']);
-	    }      
-	}
-  
-  $tplanSet = $this->get_all_testplans($id);
-  if( !is_null($tplanSet) && count($tplanSet) > 0 )
-  {
-      $tplan_mgr = new testplan($this->db);
-      $items=array_keys($tplanSet);     
-      foreach($items as $key)
-      {
-            $tplan_mgr->delete($key);
-      }
-  }
-  
-
-	$a_sql[] = array(
+		$ret['msg']='ok';
+		$ret['status_ok']=1;
+		
+		$error = '';
+		$reqspec_mgr = new requirement_spec_mgr($this->db);
+		
+		$a_sql = array();
+		
+		$this->deleteKeywords($id);
+		$this->deleteAttachments($id);
+		
+		$reqSpecSet=$reqspec_mgr->get_all_in_testproject($id);
+		if( !is_null($reqSpecSet) && count($reqSpecSet) > 0 )
+		{
+			foreach($reqSpecSet as $reqSpec)
+			{
+				$reqspec_mgr->delete_deep($reqSpec['id']);
+			}      
+		}
+		
+		$tplanSet = $this->get_all_testplans($id);
+		if( !is_null($tplanSet) && count($tplanSet) > 0 )
+		{
+			$tplan_mgr = new testplan($this->db);
+			$items=array_keys($tplanSet);     
+			foreach($items as $key)
+			{
+				$tplan_mgr->delete($key);
+			}
+		}
+		
+		$a_sql[] = array(
 			"UPDATE {$this->tables['users']}  SET default_testproject_id = NULL " .
 			" WHERE default_testproject_id = {$id}",
-			 'info_resetting_default_project_fails',
-	);
+			'info_resetting_default_project_fails',
+		);
+		
+		foreach ($a_sql as $oneSQL)
+		{
+			if (empty($error))
+			{
+				$sql = $oneSQL[0];
+				$result = $this->db->exec_query($sql);
+				if (!$result)
+				{
+					$error .= lang_get($oneSQL[1]);
+				}	
+			}
+		}
+		
+		
+		if ($this->deleteUserRoles($id) < tl::OK)
+		{
+			$error .= lang_get('info_deleting_project_roles_fails');
+		}
+		
 
-	foreach ($a_sql as $oneSQL)
-	{
+		// ---------------------------------------------------------------------------------------
+		// delete product itself and items directly related to it like:
+		// custom fields assignments
+		// custom fields values ( right now we are not using custom fields on test projects)
+		// attachments
 		if (empty($error))
 		{
-			$sql = $oneSQL[0];
+			$sql="DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
+			$this->db->exec_query($sql);
+			
+			$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
+			
 			$result = $this->db->exec_query($sql);
-			if (!$result)
+			if ($result)
 			{
-				$error .= lang_get($oneSQL[1]);
+				$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
+				if ($id == $tproject_id_on_session)
+				{
+					setSessionTestProject(null);
+				}	
+			}
+			else
+			{
+				$error .= lang_get('info_product_delete_fails');
 			}	
 		}
-	}
-
-
-	if ($this->deleteUserRoles($id) < tl::OK)
-	{
-		$error .= lang_get('info_deleting_project_roles_fails');
-  }
-	
-
-	// ---------------------------------------------------------------------------------------
-	// delete product itself and items directly related to it like:
-	// custom fields assignments
-	// custom fields values ( right now we are not using custom fields on test projects)
-	// attachments
-	if (empty($error))
-	{
-    $sql="DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
-    $this->db->exec_query($sql);
-
-		$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
-
-		$result = $this->db->exec_query($sql);
-		if ($result)
+		
+		if (empty($error))
 		{
-			$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
-			if ($id == $tproject_id_on_session)
-			{
-				setSessionTestProject(null);
-			}	
+			$this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
+			$sql="DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
+			$this->db->exec_query($sql);
 		}
-		else
+		
+		if( !empty($error) )
 		{
-			$error .= lang_get('info_product_delete_fails');
-		}	
+			$ret['msg']=$error;
+			$ret['status_ok']=0;
+		}
+		
+		return $ret;
 	}
-
-  if (empty($error))
-	{
-    $this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
-    $sql="DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
-    $this->db->exec_query($sql);
-  }
-
-  if( !empty($error) )
-  {
-    $ret['msg']=$error;
-    $ret['status_ok']=0;
-  }
-
-	return $ret;
-}
 
 
 /*

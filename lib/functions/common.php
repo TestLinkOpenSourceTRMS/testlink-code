@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.151 $ $Author: havlat $
- * @modified $Date: 2009/06/01 11:20:46 $
- * @author 	Martin Havlat, Chad Rosen
+ * @package 	TestLink
+ * @author 		Martin Havlat, Chad Rosen
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: common.php,v 1.152 2009/06/09 22:38:22 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * SCOPE:
  * Load core functions for TestLink GUI
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
@@ -16,8 +16,8 @@
  * Note: this file cannot include a feature specific code for performance and 
  * readability reason
  *
- * -----------------------------------------------------------------------------------
- * Revisions:
+ * @internal Revisions:
+ * 
  * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
  * 20090409 - amitkhullar- BUGID 2354
  * 20090111 - franciscom - commented some required_once and some global coupling
@@ -76,7 +76,8 @@ require_once("plan.core.inc.php");
 
 require_once("inputparameter.inc.php");
 
-/** load the php4 to php5 domxml wrapper if the php5 is used and 
+/** 
+ * load the php4 to php5 domxml wrapper if the php5 is used and 
  * the domxml extension is not loaded 
  **/
 if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
@@ -85,6 +86,7 @@ if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 		'domxml-php4-to-php5.php');
 }
 
+/** @TODO havlatm: could not be printed to log on debug level? */
 function printPageStatistics($startupMemory,$startupTime)
 {
 /*
@@ -117,15 +119,12 @@ function __autoload($class_name)
 
 // --------------------------------------------------------------------------------------
 /**
-* TestLink connects to the database
-*
-* @return assoc array
-*         aa['status'] = 1 -> OK , 0 -> KO
-*         aa['dbms_msg''] = 'ok', or $db->error_msg().
-*
-* 20050416 - fm
-*
-*/
+ * TestLink connects to the database
+ *
+ * @return array
+ *         aa['status'] = 1 -> OK , 0 -> KO
+ *         aa['dbms_msg''] = 'ok', or $db->error_msg().
+ */
 function doDBConnect(&$db)
 {
 	global $g_tlLogger;

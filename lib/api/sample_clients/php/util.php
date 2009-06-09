@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: util.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/05/01 20:36:57 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/06/09 20:22:54 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -19,13 +19,15 @@ function show_api_db_sample_msg()
     echo '</h1><hr><br />';   
 }
 
-function runTest(&$client,$method,$args)
+function runTest(&$client,$method,$args,$feedback_id=1)
 {
     new dBug($args);
+    $html_id="result_{$feedback_id}";
+    
     $msg_click_to_show="click to show XML-RPC Client Debug Info";
-    echo "<br /><a onclick=\"return DetailController.toggle('result')\" href=\"nowhere/\">
+    echo "<br /><a onclick=\"return DetailController.toggle('{$html_id}')\" href=\"nowhere/\">
     <img src='img/icon-foldout.gif' align='top' title='show/hide'>{$msg_click_to_show}</a>";
-    echo '<div class="detail-container" id="result" style="display: none;">';
+    echo '<div class="detail-container" id="' . $html_id . '" style="display: none;">';
     
     if(!$client->query("tl.{$method}", $args))
     {

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/06/09 12:49:22 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/06/09 20:22:53 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,9 @@
  * 
  *
  * rev : 
+ *      20090609 - franciscom - createTestPlan() - new method
+ *                              WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
+ *
  *      20090521 - franciscom - refactoring to manage DB_TABLE_PREFIX
  *      20090521 - franciscom - getTestCase() - development started
  *      20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
@@ -90,7 +93,7 @@ require_once(dirname(__FILE__) . "/../functions/user.class.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-    public static $version = "1.0 Beta 5";
+    public static $version = "1.0";
  
     
     const   OFF=false;
@@ -184,6 +187,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $bugIDParamName = "bugid";		
 	public static $parentIDParamName = "parentid";		
 	public static $testPlanNameParamName = "testplanname";
+	public static $activeParamName = "active";
+    public static $publicParamName = "public";
+
 
 	// public static $executionRunTypeParamName		= "executionruntype";
 		
@@ -233,6 +239,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.setTestCaseExecutionResult' => 'this:reportTCResult',
 	                            'tl.createBuild' => 'this:createBuild',
 	                            'tl.createTestCase' => 'this:createTestCase',
+	                            'tl.createTestPlan' => 'this:createTestPlan',
 	                            'tl.createTestProject' => 'this:createTestProject',
 	                            'tl.createTestSuite' => 'this:createTestSuite',
                                 'tl.assignRequirements' => 'this:assignRequirements',     
@@ -1316,7 +1323,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 			
 			} else {
 				//Build doesn't exist so create one
-				$insertID = $this->tplanMgr->create_build($testPlanID,$buildName,$buildNotes,$active=1,$open=1);
+				// ,$active=1,$open=1);
+				$insertID = $this->tplanMgr->create_build($testPlanID,$buildName,$buildNotes);
 			}
 			
 			$resultInfo[0]["id"] = $insertID;	
@@ -1461,7 +1469,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param int $args["testprojectname"]
 	 * @param int $args["testcaseprefix"]
 	 * @param int $args["notes"]
-   *	 
+     *	 
 	 * @return mixed $resultInfo
 	 */
 	public function createTestProject($args)
@@ -3117,6 +3125,91 @@ public function getTestCase($args)
 }
 
 
+
+	/**
+	 * create a test plan
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testplanname"]
+	 * @param int $args["testprojectname"]
+	 * @param string $args["notes"], optional
+	 * @param string $args["active"], optional default value 1
+	 * @param string $args["public"], optional default value 1
+     *	 
+	 * @return mixed $resultInfo
+	 */
+	public function createTestPlan($args)
+	{
+	    $this->_setArgs($args);
+	    $status_ok=true;    
+        $msg_prefix="(" . __FUNCTION__ . ") - ";
+
+    	if($this->authenticate() && $this->userHasRight("mgt_modify_product"))
+    	{
+            $keys2check = array(self::$testPlanNameParamName,
+                                self::$testProjectNameParamName);
+            foreach($keys2check as $key)
+            {
+                $names[$key]=$this->_isParamPresent($key,$msg_prefix,self::SET_ERROR) ? trim($this->args[$key]) : '';
+                if($names[$key]=='')
+                {
+                    $status_ok=false;    
+                    breack;
+                }
+            }
+        }
+
+        if( $status_ok )
+        {
+            $name=trim($this->args[self::$testProjectNameParamName]);
+            $check_op=$this->tprojectMgr->checkNameExistence($name);
+            $status_ok=!$check_op['status_ok'];     
+            if($status_ok) 
+            {
+                $tprojectInfo=current($this->tprojectMgr->get_by_name($name));
+            }
+            else     
+            {
+                $status_ok=false;
+                $msg = $msg_prefix . sprintf(TESTPROJECTNAME_DOESNOT_EXIST_STR,$name);
+                $this->errors[] = new IXR_Error(TESTPROJECTNAME_DOESNOT_EXIST, $msg);
+            }
+        }
+
+        if( $status_ok )
+        {
+    	    $name=trim($names[self::$testPlanNameParamName]);
+            $info = $this->tplanMgr->get_by_name($name,$tprojectInfo['id']);
+            $status_ok=is_null($info);
+            
+            if( !($status_ok=is_null($info)))
+            {
+                $msg = $msg_prefix . sprintf(TESTPLANNAME_ALREADY_EXISTS_STR,$name,$tprojectInfo['name']);
+                $this->errors[] = new IXR_Error(TESTPLANNAME_ALREADY_EXISTS, $msg);
+            }
+        }
+
+        if( $status_ok )
+        {
+            $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
+                                self::$noteParamName => '');
+  		    foreach($keys2check as $key => $value)
+  		    {
+  		        $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
+  		    }
+            $retval = $this->tplanMgr->create(htmlspecialchars($name),
+                                              htmlspecialchars($optional[self::$noteParamName]),
+                                              $tprojectInfo['id'],$optional[self::$activeParamName],
+                                              $optional[self::$publicParamName]);
+
+		    $resultInfo = array();
+		    $resultInfo[]= array("operation" => __FUNCTION__,"additionalInfo" => null,
+			                     "status" => true, "id" => $retval, "message" => GENERAL_SUCCESS_STR);
+        }
+
+        return $status_ok ? $resultInfo : $this->errors;
+	} // public function createTestPlan
 
 } // class end
 

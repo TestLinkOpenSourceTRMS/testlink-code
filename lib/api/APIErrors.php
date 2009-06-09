@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.22 2009/05/21 20:27:22 franciscom Exp $
+ * $Id: APIErrors.php,v 1.23 2009/06/09 20:22:53 franciscom Exp $
  */
 
 /** 
@@ -118,6 +118,10 @@ define('BAD_BUILD_FOR_TPLAN_STR', lang_get('API_BAD_BUILD_FOR_TPLAN',null,1));
 
 define('TESTPLANNAME_DOESNOT_EXIST', 3033);
 define('TESTPLANNAME_DOESNOT_EXIST_STR', lang_get('API_TESTPLANNAME_DOESNOT_EXIST',null,1));
+
+define('TESTPLANNAME_ALREADY_EXISTS', 3034);
+define('TESTPLANNAME_ALREADY_EXISTS_STR', lang_get('API_TESTPLANNAME_ALREADY_EXISTS',null,1));
+
 
 /**
  * 4000 level - Build errors

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/06/07 12:59:23 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/06/09 20:24:04 $ $Author: franciscom $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -58,17 +58,17 @@ class tlRole extends tlDBObject
 		$this->_clean($options);
 		$getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
 		
-		$query = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
+		$sql = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
 		if ($getFullDetails)
 		{
-			$query .= " ,c.id AS right_id,c.description ";
+			$sql .= " ,c.id AS right_id,c.description ";
 		}
 		
-		$query .= " FROM {$this->object_table} a ";
+		$sql .= " FROM {$this->object_table} a ";
 		
 		if ($getFullDetails)
 		{
-			$query .= " LEFT OUTER JOIN {$this->tables['role_rights']} b ON a.id = b.role_id " . 
+			$sql .= " LEFT OUTER JOIN {$this->tables['role_rights']} b ON a.id = b.role_id " . 
 			          " LEFT OUTER JOIN {$this->tables['rights']}  c ON b.right_id = c.id ";
 		}
 		
@@ -78,9 +78,9 @@ class tlRole extends tlDBObject
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "a.id = {$this->dbID}";		
 		if ($clauses)
-			$query .= " WHERE " . implode(" AND ",$clauses);
+			$sql .= " WHERE " . implode(" AND ",$clauses);
 			
-		$rightInfo = $db->get_recordset($query);			 
+		$rightInfo = $db->get_recordset($sql);			 
 		if ($rightInfo)
 		{
 			$this->dbID = $rightInfo[0]['role_id'];
@@ -113,17 +113,19 @@ class tlRole extends tlDBObject
 				$result = $this->deleteRightsFromDB($db);
 				if ($result >= tl::OK)
 				{
-					$query = "UPDATE {$this->object_table} SET description = '".$db->prepare_string($this->name)."',".
-							     "notes ='".$db->prepare_string($this->description)."'".
-							     " WHERE id = {$this->dbID}";
-					$result = $db->exec_query($query);	
+					$sql = "UPDATE {$this->object_table} " .
+					       " SET description = '".$db->prepare_string($this->name)."',".
+						   " notes ='".$db->prepare_string($this->description)."'".
+						   " WHERE id = {$this->dbID}";
+					$result = $db->exec_query($sql);	
 				}
 			}
 			else
 			{
-				$query = "INSERT INTO {$this->object_table} (description,notes) VALUES ('".$db->prepare_string($this->name)."',".
-						 "'".$db->prepare_string($this->description)."')";
-				$result = $db->exec_query($query);	
+				$sql = "INSERT INTO {$this->object_table} (description,notes) " .
+				       " VALUES ('".$db->prepare_string($this->name)."',".
+					   "'" . $db->prepare_string($this->description)."')";
+				$result = $db->exec_query($sql);	
 				if($result)
 				{
 					$this->dbID = $db->insert_id($this->object_table);
@@ -160,7 +162,9 @@ class tlRole extends tlDBObject
 		$role = new tlRole();
 		$role->name = $name;
 		if ($role->readFromDB($db,self::ROLE_O_SEARCH_BYNAME) >= tl::OK && $role->dbID != $id)
+		{
 			return $role->dbID;
+		}
 		return null;
 	}
 	
@@ -188,8 +192,8 @@ class tlRole extends tlDBObject
 			//reset all affected users by replacing the deleted role with configured role
 			$this->replaceUserRolesWith($db,$this->replacementRoleID);
 
-			$query = "DELETE FROM {$this->object_table} WHERE id = {$this->dbID}";
-			$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
+			$sql = "DELETE FROM {$this->object_table} WHERE id = {$this->dbID}";
+			$result = $db->exec_query($sql) ? tl::OK : tl::ERROR;
 		}
 		return $result;
 	}
@@ -201,8 +205,8 @@ class tlRole extends tlDBObject
 		foreach($tables as $table)
 		{
 		    $table_name = DB_TABLE_PREFIX . $table;
-			$query = "UPDATE {$table_name} SET role_id = {$newRole} WHERE role_id = {$this->dbID}";
-			$result = $result && ($db->exec_query($query) ? true : false);
+			$sql = "UPDATE {$table_name} SET role_id = {$newRole} WHERE role_id = {$this->dbID}";
+			$result = $result && ($db->exec_query($sql) ? true : false);
 		}
 		return $result ? tl::OK : tl::ERROR;
 	}
@@ -227,8 +231,9 @@ class tlRole extends tlDBObject
 	 **/
 	protected function getUserIDsWithGlobalRole(&$db)
 	{
-		$query = "SELECT id FROM {$this->tables['users']} WHERE role_id = {$this->dbID}";
-		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		$sql = "SELECT id FROM {$this->tables['users']} " .
+		       " WHERE role_id = {$this->dbID}";
+		$idSet = $db->fetchColumnsIntoArray($sql,"id");
 		
 		return $idSet; 
 	}
@@ -241,11 +246,11 @@ class tlRole extends tlDBObject
 	 **/
 	protected function getUserIDsWithTestProjectRole(&$db)
 	{
-		$query = "SELECT DISTINCT id FROM {$this->tables['users']} users," .
+		$sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," .
 		         " {$this->tables['user_testproject_roles']} user_testproject_roles " .
 		         " WHERE users.id = user_testproject_roles.user_id";
-		$query .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
-		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		$sql .= " AND user_testproject_roles.role_id = {$this->dbID} AND users.id < 10";
+		$idSet = $db->fetchColumnsIntoArray($sql,"id");
 		
 		return $idSet; 
 	}
@@ -258,11 +263,11 @@ class tlRole extends tlDBObject
 	 **/
 	protected function getUserIDsWithTestPlanRole(&$db)
 	{
-		$query = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
+		$sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
 		         " {$this->tables['user_testplan_roles']} user_testplan_roles " .
 		         " WHERE  users.id = user_testplan_roles.user_id";
-		$query .= " AND user_testplan_roles.role_id = {$this->dbID}";
-		$idSet = $db->fetchColumnsIntoArray($query,"id");
+		$sql .= " AND user_testplan_roles.role_id = {$this->dbID}";
+		$idSet = $db->fetchColumnsIntoArray($sql,"id");
 		
 		return $idSet; 
 	}
@@ -338,43 +343,34 @@ class tlRole extends tlDBObject
 	protected function deleteRightsFromDB(&$db)
 	{
 		$tablename = $this->tables['role_rights'];
-		$query = "DELETE FROM {$tablename} WHERE role_id = {$this->dbID}";
-		$result = $db->exec_query($query);
+		$sql = "DELETE FROM {$tablename} WHERE role_id = {$this->dbID}";
+		$result = $db->exec_query($sql);
 		
 		return $result ? tl::OK : tl::ERROR;
 	}
 
-	/*
-    function: 
-
-    args :
-    
-    returns: 
-
-  */
 	protected function addRightsToDB(&$db)
 	{
-		$bSuccess = 1;
+		$status_ok = 1;
 		if ($this->rights)
 		{
-			$tablename = $this->tables['role_rights'];
 			foreach($this->rights as $right)
 			{
 				$rightID = $right->dbID;
-				$query = "INSERT INTO {$tablename} (role_id,right_id) VALUES ({$this->dbID},{$rightID})";
-				$bSuccess = $bSuccess && ($db->exec_query($query) ? 1 : 0);
+				$sql = "INSERT INTO {$this->tables['role_rights']} (role_id,right_id) " .
+				       "VALUES ({$this->dbID},{$rightID})";
+				$status_ok = $status_ok && ($db->exec_query($sql) ? 1 : 0);
 			}
 		}
-		return $bSuccess ? tl::OK : tl::ERROR;
+		return $status_ok ? tl::OK : tl::ERROR;
 	}
 	
 	protected function readRights(&$db)
 	{
-		$roleRightsTableName = $this->tables['role_rights'];
-		$rightsTableName = $this->tables['rights'];
-		$query = "SELECT right_id,description FROM {$roleRightsTableName} a JOIN {$rightsTableName} b ON a.right_id = b.id " .
+		$sql = "SELECT right_id,description FROM {$this->tables['role_rights']} a " .
+		       "JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
 		         "WHERE role_id = {$this->dbID}";
-		$rightInfo = $db->get_recordset($query);
+		$rightInfo = $db->get_recordset($sql);
 		$this->rights = buildRightsArray($rightInfo);
 		return tl::OK;
 	}	
@@ -382,15 +378,16 @@ class tlRole extends tlDBObject
 	protected function buildRightsArray($rightInfo)
 	{
 		$rights = null;
-		for($i = 0;$i < sizeof($rightInfo);$i++)
+		for($idx = 0; $idx < sizeof($rightInfo); $idx++)
 		{
-			$id = $rightInfo[$i];
+			$id = $rightInfo[$idx];
 			$right = new tlRight($id['right_id']);
 			$right->name = $id['description'];
 			$rights[] = $right;
 		}
 		return $rights;
 	}
+	
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
@@ -399,13 +396,15 @@ class tlRole extends tlDBObject
 	static public function getAll(&$db,$whereClause = null,$column = null,
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		$query = " SELECT id FROM roles";
+	    $tables['roles'] = DB_TABLE_PREFIX . 'roles';
+		$sql = " SELECT id FROM {$tables['roles']} ";
 		if (!is_null($whereClause))
-			$query .= ' '.$whereClause;
+		{
+			$sql .= ' '.$whereClause;
+	    }
+		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
 	
-		$query .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
-	
-		$roles = tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
+		$roles = tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 		
 		$inheritedRole = new tlRole(TL_ROLES_INHERITED);
 		$inheritedRole->name = "<inherited>";
@@ -413,6 +412,7 @@ class tlRole extends tlDBObject
 		
 		return $roles;
 	}
+	
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
@@ -432,7 +432,9 @@ class tlRight extends tlDBObject
 	{
 		$this->name = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	}
 	
 	public function __toString()
@@ -444,15 +446,15 @@ class tlRight extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = "SELECT id,description FROM rights";
+		$sql = "SELECT id,description FROM {$this->tables['rights']} ";
 		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "id = {$this->dbID}";		
 		if ($clauses)
-			$query .= " WHERE " . implode(" AND ",$clauses);
+			$sql .= " WHERE " . implode(" AND ",$clauses);
 			
-		$info = $db->fetchFirstRow($query);			 
+		$info = $db->fetchFirstRow($sql);			 
 		if ($info)
 			$this->name = $info['description'];
 
@@ -467,9 +469,13 @@ class tlRight extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if (!sizeof($ids))
+		{
 			return null;
-		$query = "SELECT id,description FROM rights WHERE id IN (".implode(",",$ids).")";
-		$rows = $db->fetchArrayRowsIntoMap($query,"id");
+		}
+			
+		$sql = "SELECT id,description FROM {$this->tables['rights']} " .
+		       " WHERE id IN (".implode(",",$ids).")";
+		$rows = $db->fetchArrayRowsIntoMap($sql,"id");
 		$rights = null;
 		foreach($rows as $id => $row)
 		{
@@ -483,12 +489,15 @@ class tlRight extends tlDBObject
 	static public function getAll(&$db,$whereClause = null,$column = null,
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		$query = " SELECT id FROM rights";
+		$tables['rights'] = DB_TABLE_PREFIX . 'rights';
+		$sql = " SELECT id FROM {$tables['rights']} ";
 		if (!is_null($whereClause))
-			$query .= ' '.$whereClause;
-	
-		$query .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
-		return tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
+		{
+			$sql .= ' '.$whereClause;
+	    }
+	    
+		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
+		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
 
 	public function writeToDB(&$db)

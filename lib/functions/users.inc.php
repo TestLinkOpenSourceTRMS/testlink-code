@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2009/06/08 17:40:22 $ $Author: schlundus $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/06/09 20:24:04 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -287,10 +287,14 @@ function getUserErrorMessage($code)
 */
 function getAllUsersRoles(&$db,$order_by = null)
 {
-	$query = "SELECT users.id FROM users LEFT OUTER JOIN roles ON users.role_id = roles.id ";
-	$query .= is_null($order_by) ? " ORDER BY login " : $order_by;
+    $tables['users'] = DB_TABLE_PREFIX . 'users';
+    $tables['roles'] = DB_TABLE_PREFIX . 'roles';
+    
+	$sql = "SELECT users.id FROM {$tables['users']} users " .
+	         " LEFT OUTER JOIN {$tables['roles']} roles ON users.role_id = roles.id ";
+	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
 
-	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+	$users = tlDBObject::createObjectsFromDBbySQL($db,$sql,"id","tlUser",false,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 	return $users;
 }
 

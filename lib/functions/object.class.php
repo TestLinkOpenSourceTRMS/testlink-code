@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.23 2009/06/09 10:34:27 havlat Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.24 2009/06/09 12:54:06 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20090609 - franciscom - added method getDBTables()
  * 20090607 - franciscom - added array with tables names as property to be used on
  *                         all other classes, to manage table prefix
  **/
@@ -181,6 +182,23 @@ abstract class tlObject implements iSerialization
 		trigger_error("Method ".$fName." called which is not implemented",E_USER_WARNING);
 		return tl::E_NOT_IMPLEMENTED;
 	}
+
+
+	/**
+     * getDBTables()
+     * useful to manage DB where TL table names must have a prefix.
+     *
+     * @return map key=table name without prefix, value=table name on db
+     *
+     */
+	public function getDBTables()
+	{
+	    return $this->tables;    
+	}
+};
+
+
+
 };
 
 /**

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/06/08 17:40:21 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/06/09 13:30:06 $ by $Author: franciscom $
  * @author Andreas Morsing
  *
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
@@ -64,6 +64,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	**/
 	public function insertAttachment($fkid,$fkTableName,$title,$fInfo)
 	{
+	    $fileUploaded = false;
 		$fName = isset($fInfo['name']) ? $fInfo['name'] : null;
 		$fType = isset($fInfo['type']) ? $fInfo['type'] : '';
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
@@ -78,27 +79,33 @@ class tlAttachmentRepository extends tlObjectWithDB
 		if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
 		{
 		 	$destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
-			$bUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
+			$fileUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
 		}
 		else
 		{
 			$fContents = $this->getFileContentsForDBRepository($fTmpName,$destFName);
-			$bUploaded = sizeof($fContents);
-			if($bUploaded)
+			$fileUploaded = sizeof($fContents);
+			if($fileUploaded)
+			{
 		    	@unlink($fTmpName);	
+		    }	
 		}
 
-		if ($bUploaded)
+		if ($fileUploaded)
 		{
 			$attachment = new tlAttachment();
-			$bUploaded = ($attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
-			if ($bUploaded)
-				$bUploaded = $attachment->writeToDb($this->db);
-			else 
+			$fileUploaded = ($attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title) >= tl::OK);
+			if ($fileUploaded)
+			{
+				$fileUploaded = $attachment->writeToDb($this->db);
+			}
+			else
+			{ 
 				@unlink($destFPath);
+			}	
 		}
 
-		return $bUploaded;
+		return $fileUploaded;
 	}
 
 	/**
@@ -162,15 +169,16 @@ class tlAttachmentRepository extends tlObjectWithDB
 		switch($this->repositoryCompressionType)
 		{
 			case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
-				$bUploaded = move_uploaded_file($fTmpName,$destFPath);
+				$fileUploaded = move_uploaded_file($fTmpName,$destFPath);
 				break;
+				
 			case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
 				//add the gz extension and compress the file
 				$destFPath .= ".gz";
-				$bUploaded = gzip_compress_file($fTmpName,$destFPath);
+				$fileUploaded = gzip_compress_file($fTmpName,$destFPath);
 				break;
 		}
-		return $bUploaded;
+		return $fileUploaded;
 	}
 
 	/**

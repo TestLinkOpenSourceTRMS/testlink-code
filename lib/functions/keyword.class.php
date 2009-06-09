@@ -1,35 +1,39 @@
 <?php
 /** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* This script is distributed under the GNU General Public License 2 or later. 
-*
-* Filename $RCSfile: keyword.class.php,v $
-* 
-* @version $Id: keyword.class.php,v 1.19 2009/06/08 21:21:40 schlundus Exp $
-* @modified $Date: 2009/06/08 21:21:40 $ by $Author: schlundus $
-*
-* Functions for support keywords management. 
-**/
-require_once( dirname(__FILE__) . '/object.class.php');
-require_once( dirname(__FILE__) . '/csv.inc.php');
-require_once( dirname(__FILE__) . '/xml.inc.php');
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: keyword.class.php,v 1.20 2009/06/09 10:34:27 havlat Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
+ * @link 		http://www.teamst.org/index.php
+ *
+ **/
 
-//this class will be later moved to an extra file
+require_once('object.class.php');
+require_once('csv.inc.php');
+require_once('xml.inc.php');
+
+/**
+ * Support for keywords management
+ */ 
 class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV
 {
-	//the name of the keyword  @REMOVE USELESS sentences
+	/** @var string the name of the keyword */
 	public $name;
 
-	//the notes for the keyword @REMOVE USELESS sentences
+	/** @var string the notes for the keyword */
 	public $notes;
 
-	// testprojectID the keyword belongs to
+	/** @var string the testprojectID the keyword belongs to */
 	public $testprojectID;
 
-	// config valuze  -> @TODOfind meaning ov valuze
+	// config value
+	/** @TODO havlatm: remove this option - no duplicity allowed */
 	protected $allowDuplicateKeywords; 
 	
-	//Some error codes
+	/** error codes */
 	const E_NAMENOTALLOWED = -1;
 	const E_NAMELENGTH = -2;
 	const E_NAMEALREADYEXISTS = -4;
@@ -96,7 +100,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 
 	public function writeToDB(&$db)
 	{
-		$result = $this->checkDetails($db);
+		$result = $this->checkKeyword($db);
 		if ($result >= tl::OK)
 		{
 			$name = $db->prepare_string($this->name);
@@ -125,7 +129,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		return $result;
 	}
 
-	public function checkDetails(&$db)
+	/**
+	 * Check if keyword name is not duplicated
+	 */
+	protected function checkKeyword(&$db)
 	{
 		$this->name = trim($this->name);
 		$this->notes = trim($this->notes);
@@ -176,7 +183,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	}
 
 	//END interface iDBSerialization
-	/* for legacy purposes */
+	/** @TODO remove - for legacy purposes */
 	public function getInfo()
 	{
 		return array("id" => $this->dbID,"keyword" => $this->name,

@@ -2,20 +2,21 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
- * @copyright Copyright &copy; 2009, TestLink community 
+ * 
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: user.class.php,v 1.43 2009/06/09 10:34:27 havlat Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
+ * @link 		http://www.teamst.org/index.php
  *
- * @package TestLink
- * Filename $RCSfile: user.class.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/06/08 21:21:40 $ $Author: schlundus $
- *
- * rev: 20090419 - franciscom - refactoring replace product with test project (where possible).
- *      20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
- *      20081213 - franciscom - removed global coupling to access config parameters
+ * @internal Revisions:
+ * 	20090419 - franciscom - refactoring replace product with test project (where possible).
+ *  20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
+ *  20081213 - franciscom - removed global coupling to access config parameters
  */
  
 /**
- * a class for handling users in TestLink
+ * Class for handling users in TestLink
  * 
  * @author Andreas Morsing
  * @uses config.inc.php
@@ -494,7 +495,7 @@ class tlUser extends tlDBObject
 		$this->isActive = intval($this->isActive);
 		$this->login = trim($this->login);
 	
-		$result = self::checkEmailAdress($this->emailAddress);
+		$result = self::checkEmailAddress($this->emailAddress);
 		if ($result >= tl::OK)
 		{
 			$result = $this->checkLogin($this->login);
@@ -633,7 +634,7 @@ class tlUser extends tlDBObject
 	 * @param $email
 	 * @return integer returns tl::OK on success, errorcode else
 	 */
-	static public function checkEmailAdress($email)
+	static public function checkEmailAddress($email)
 	{
 		$result = is_blank($email) ? self::E_EMAILLENGTH : tl::OK;
 		if ($result == tl::OK)

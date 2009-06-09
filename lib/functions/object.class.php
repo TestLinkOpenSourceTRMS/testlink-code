@@ -1,53 +1,65 @@
 <?php
 /** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* This script is distributed under the GNU General Public License 2 or later. 
-*
-* Filename $RCSfile: object.class.php,v $
-* 
-* @version $Id: object.class.php,v 1.22 2009/06/08 21:21:40 schlundus Exp $
-* @modified $Date: 2009/06/08 21:21:40 $ by $Author: schlundus $
-*
-* 20090607 - franciscom - added array with tables names as property to be used on
-*                         all other classes, to manage table prefix
-**/
-
-/* Namespace for TestLink, here we can safely define constants and other stuff, 
-   without risk of collision with other stuff 
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: object.class.php,v 1.23 2009/06/09 10:34:27 havlat Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
+ * 20090607 - franciscom - added array with tables names as property to be used on
+ *                         all other classes, to manage table prefix
+ **/
+ 
+/** 
+ * Namespace for TestLink, here we can safely define constants and other stuff, 
+ * without risk of collision with other stuff
+ * @abstract 
+ */
 abstract class tl
 {
-	//error and status codes
-	//all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK
-	//so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
+	/**
+	 * error and status codes:
+	 * all SUCCESS error codes and SUCCESS status codes should be greater than tl::OK 
+	 * so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
+	 */
 	const OK = 1;
-	
-	//all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
-	//so we can check for ERRORS with <= tl::ERROR, and for SUCCESS with > tl::ERROR
+	/** 
+	 * error and status codes:
+	 * all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
+	 * so we can check for ERRORS with <= tl::ERROR, and for SUCCESS with > tl::ERROR
+	 */
 	const ERROR = 0;
 	
-	//return code for not implemented interface functions
+	/** 
+	 * error and status codes:
+	 * return code for not implemented interface functions 
+	 */
 	const E_NOT_IMPLEMENTED = -0xFFFFFFFF;
 };
 
 
-require_once(dirname(__FILE__) . '/int_serialization.php');
-/*
-	The base class for all managed TestLink objects, all tl-managed objects should extend this base class
-*/
+require_once('int_serialization.php');
+/**
+ * The base class for all managed TestLink objects, all tl-managed objects should extend this base class
+ */
 abstract class tlObject implements iSerialization
 {	
-	/* the unique object id */
+	/** @var integer the unique object id */
 	protected $objectID;
 		
-	/* supported serialization Interfaces */	
+	/** supported serialization Interfaces */	
 	protected $serializationInterfaces;
 	protected $serializationFormatDescriptors;
 
 	//@TODO schlundus, should be moved inside a tlConfig class
+	// havlatm rev: this is not configuration, so it is correct here
     static protected $tables = null;
-    
-	/* standard constructor, set's the object id */
+	
+	/** class constructor */
 	public function __construct()
 	{
 		if (!isset($this->tables))
@@ -123,54 +135,66 @@ abstract class tlObject implements iSerialization
 		}
 		$this->getSupportedSerializationFormatDescriptions();
 	}
+	
 	public function getObjectID()
 	{	
 		return $this->objectID;
 	}
-	/* standard destructor */
+	
+	/** class destructor */
 	public function __destruct()
 	{
 		$this->_clean();
 	}
-	/* magic method for usage with print() or echo() , dumps out the object */
+	
+	/** magic method for usage with print() or echo() , dumps out the object */
 	public function __toString()
 	{
 		return __CLASS__.", ".print_r($this,true);
 	}
 	
-	/* function used for resetting the object's internal data */
+	/** function used for resetting the object's internal data */
 	protected function _clean()
 	{
 	}
-	/* returns all supported Import/Export Interfaces  */
+	
+	/** @return all supported Import/Export Interfaces  */
 	function getSupportedSerializationInterfaces()
 	{
 		return $this->serializationInterfaces;
 	}
-	/* returns all supported Import/Export Interfaces  Format Descriptors */
+	
+	/** @return all supported Import/Export Interfaces - Format Descriptors */
 	function getSupportedSerializationFormatDescriptions()
 	{
 		return $this->serializationFormatDescriptors;
 	}
 	
-	/* should be called whenever a not implemented method is called  */	
+	/** 
+	 * should be called whenever a not implemented method is called
+	 * 
+	 * @param string name of method
+	 * @return integer error code "not implemented"
+	 **/	
 	protected function handleNotImplementedMethod($fName = "<unknown>")
 	{
 		trigger_error("Method ".$fName." called which is not implemented",E_USER_WARNING);
 		return tl::E_NOT_IMPLEMENTED;
 	}
 };
-/*
-	The base class for all managed TestLink objects which need a db connection
-*/
+
+/**
+ * The base class for all managed TestLink objects which need a db connection
+ */
 abstract class tlObjectWithDB extends tlObject
 {	
-	/* the db connection to the testlink database */
+	/** @var resource the db connection to the testlink database */
 	protected $db;
 	
-	/* 
-	*	@param object [ref] $db the database connection
-	*/
+	/**
+	 * Class contructor 
+	 * @param object [ref] $db the database connection
+	 */
 	function __construct(&$db)
 	{
 		tlObject::__construct();
@@ -178,62 +202,74 @@ abstract class tlObjectWithDB extends tlObject
 	}
 }
 
-/*
-	The base class for all managed TestLink objects which support attachments
-*/
+/**
+ * The base class for all managed TestLink objects which support attachments
+ * @abstract
+ */
 abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
-	/* the attachment repository object */
+	/** @var object the attachment repository object */
 	protected $attachmentRepository;
-	/* the foreign key table name to store the attachements */
+	/** @var string the foreign key table name to store the attachements */
 	protected $attachmentTableName;
 	
-	/* 
-	*	@param object [ref] $db the database connection
-	*	@param string $attachmentTableName the foreign key table name to store the attachements
-	*/
+	/**
+	 * Class constructor
+	 *  
+	 * @param object [ref] $db the database connection
+	 * @param string $attachmentTableName the foreign key table name to store the attachements
+	 */
 	function __construct(&$db,$attachmentTableName)
 	{
 		tlObjectWithDB::__construct($db);
 		$this->attachmentRepository = tlAttachmentRepository::create($this->db);
 		$this->attachmentTableName = $attachmentTableName;
 	}
-	/*
-	*	gets all infos about the attachments of the object specified by $id 	
-	*	//SCHLUNDUS: legacy function to keep existing code, should be replaced by a function which returns objects 
-	*	@param int $id this is the fkid of the attachments table
-	*
-	*	@return , returns map with the infos of the attachment, keys are the column names of the attachments table 
-	*/
+	
+	/**
+	 * gets all infos about the attachments of the object specified by $id
+	 *  	
+	 * @param integer $id this is the fkid of the attachments table
+	 * @return array returns map with the infos of the attachment, keys are the column names of the attachments table 
+	 * @TODO SCHLUNDUS: legacy function to keep existing code, should be replaced by a function which returns objects 
+	 */
 	function getAttachmentInfos($id)
 	{
 		return $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName);
 	}
-	/*
-	*	deletes all attachments of the object specified by $id 	
-	*
-	*	@param int $id this is the fkid of the attachments table
-	*
-	*	@return returns tl::OK on success, else error code
-	*/
+	
+	/**
+	 * deletes all attachments of the object specified by $id 	
+	 *
+	 * @param int $id this is the fkid of the attachments table
+	 * @return returns tl::OK on success, else error code
+	 */
 	function deleteAttachments($id)
 	{
 		return $this->attachmentRepository->deleteAttachmentsFor($id,$this->attachmentTableName);
 	}
 	
-	/* function used for resetting the object's internal data */
+	/**
+	 *  function used for resetting the object's internal data 
+	 **/
 	protected function _clean()
 	{
 		$this->attachmentRepository = null;
 		$this->attachmentTableName = null;
 	}
 }
+
+
+/**
+ * class implement basic support for work with DB
+ * @abstract
+ */
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
 	public $dbID;
 	protected $detailLevel;
 	
-	//standard get options, all other get options must be greater than this
+	/** standard get options, all other get options must be greater than this */
 	const TLOBJ_O_SEARCH_BY_ID = 1;
 	
 	//standard detail levels, can be used to get only some specific details when reading an object
@@ -241,7 +277,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	const TLOBJ_O_GET_DETAIL_MINIMUM = 0;
 	const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
 	
-	/* standard constructor */
+	/** Class constructor */
 	function __construct($dbID = null)
 	{
 		parent::__construct();
@@ -250,26 +286,27 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		$this->detailLevel = self::TLOBJ_O_GET_DETAIL_FULL;
 	}
 	
-	/* 
-		if we fetch an object, we can set here different details levels for the objects, because we 
-		don't always all nested data 
-	*/		
+	/**
+	 * if we fetch an object, we can set here different details levels for the objects, because we 
+	 * don't always all nested data 
+	 */		
 	public function setDetailLevel($level = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$this->detailLevel = $level;
 	}
+	
 	/* some factory functions to be used to create objects */
-	/*
-		This one can be used to create any tl-managed objects
-		
-		@param object [ref] $db the database connection
-		@param int $id the id of the object to be created (must exist in the database)
-		@param string $className the  class name of the object
-		@param int $options some additional options for creating the options (these are class specific)
-		@param int $detailLevel the detail level of the object
-		
-		@return the newly created object on success, or null else
-	*/
+	/**
+	 * create any tl-managed objects
+	 * 
+	 * @param object [ref] $db the database connection
+	 * @param int $id the id of the object to be created (must exist in the database)
+	 * @param string $className the  class name of the object
+	 * @param int $options some additional options for creating the options (these are class specific)
+	 * @param int $detailLevel the detail level of the object
+	 * 
+	 * @return the newly created object on success, or null else
+	 */
 	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID,
 	                                          $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
@@ -282,37 +319,39 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		}
 		return null;
 	}
-	/*
-		This one can be used to create any tl-managed objects
-		
-		@param object [ref] $db the database connection
-		@param string $query the ids of the objects to be created are obtained by this query
-		@param string $column the  name of the column which delivers the ids
-		@param string $className the  class name of the objects
-		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, 
-		            if false they are returned in a normal array
-		@param int $detailLevel the detail level of the object
-		
-		@return the newly created objects on success, or null else
-	*/
+	
+	/**
+	 * This one can be used to create any tl-managed objects
+	 * 
+	 * @param object [ref] $db the database connection
+	 * @param string $query the ids of the objects to be created are obtained by this query
+	 * @param string $column the  name of the column which delivers the ids
+	 * @param string $className the  class name of the objects
+	 * @param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids,
+	 *             if false they are returned in a normal array
+	 * @param int $detailLevel the detail level of the object
+	 * 
+	 * @return the newly created objects on success, or null else
+	 */
 	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,
 	                                                $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL,$limit = -1)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column,$limit);
 		return self::createObjectsFromDB($db,$ids,$className,$bAssoc,$detailLevel);
 	}
-	/*
-		This one can be used to create any tl-managed objects
-		
-		@param object [ref] $db the database connection
-		@param array $ids the ids of the objects to be created
-		@param string $className the class name of the objects
-		@param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids, 
-		            if false they are returned in a normal array
-		@param int $detailLevel the detail level of the object
-		
-		@return the newly created objects on success, or null else
-	*/
+	
+	/**
+	 * This one can be used to create any tl-managed objects
+	 * 
+	 * @param object [ref] $db the database connection
+	 * @param array $ids the ids of the objects to be created
+	 * @param string $className the class name of the objects
+	 * @param boolean $bAssoc if set to true, to objects are returned in a map whose keys are the ids,
+	 *             if false they are returned in a normal array
+	 * @param integer $detailLevel the detail level of the object
+	 * 
+	 * @return mixed the newly created objects on success, or null else
+	 */
 	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$items = null;
@@ -330,13 +369,16 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 		}
 		return $items;
 	}
-	/*
-		deletes an tl-Managed object from the DB
-		
-		@param object [rerf] $db the database connection
-		@param int $id the database-id of the object which should be deleted
-		@param string $className the class name of the object
-	*/
+	
+	/**
+	 * deletes an tl-Managed object from the DB
+	 * 
+	 * @param object [rerf] $db the database connection
+	 * @param int $id the database-id of the object which should be deleted
+	 * @param string $className the class name of the object
+	 * 
+	 * @return integer result code
+	 */
 	static public function deleteObjectFromDB(&$db,$id,$className)
 	{
 		if ($id)

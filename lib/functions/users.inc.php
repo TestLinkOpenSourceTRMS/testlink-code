@@ -3,11 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: users.inc.php,v $
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2006-2009, TestLink community 
+ * @version    	CVS: $Id: users.inc.php,v 1.95 2009/06/10 09:14:05 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2009/06/09 20:24:04 $ $Author: franciscom $
- *
+ * @internal
  * Functions for usermanagement
  *
  * rev: 20090517 - franciscom - getTestersForHtmlOptions() interface changes
@@ -20,8 +22,10 @@
  *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
  *
  */
+
 require_once("common.php");
 require_once("user.class.php");
+
 $authCfg = config_get('authentication');
 if( 'LDAP' == $authCfg['method'] )
 {
@@ -31,15 +35,18 @@ if( 'LDAP' == $authCfg['method'] )
 /**
  * set session data after modification or authorization
  *
- * @param type $db [ref] documentation
- * @param type $user
- * @param type $id
- * @param type $roleID documentation
- * @param type $email documentation
- * @param type $locale [default = null] documentation
- * @param type $active [default = null] documentation
- * @return type documentation
-
+ * @param resource &$db reference to DB identifier
+ * @param string $user
+ * @param integer $id
+ * @param integer $roleID 
+ * @param string $email 
+ * @param string $locale [default = null]
+ * @param boolean $active [default = null] documentation
+ * 
+ * @return integer status code
+ * 
+ * @TODO havlatm: move to tlSession class
+ * @TODO fix return functionality
  **/
 function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null)
 {
@@ -164,16 +171,16 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 	return $usersMap;
 }
 
-/*
-  function: resetPassword
 
-  args: db: dbHandler
-        userID:
-        reference to error string
-
-  returns:
-
-*/
+/**
+ * reset user password in DB
+ * 
+ * @param resource &$db reference to DB identifier
+ * @param integer $userID 
+ * @param string &$errorMsg reference to error message
+ * 
+ * @return integer result status code
+ */
 function resetPassword(&$db,$userID,&$errorMsg)
 {
 

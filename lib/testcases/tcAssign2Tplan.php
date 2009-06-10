@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: tcAssign2Tplan.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/03/08 11:46:35 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  * 
  * For a (test case, test case version), 
@@ -102,7 +102,7 @@ function init_args()
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$args = new stdClass();
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	$args->tcase_id = isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id'] : 0;
 	$args->tcversion_id = isset($_REQUEST['tcversion_id']) ? $_REQUEST['tcversion_id'] : 0;

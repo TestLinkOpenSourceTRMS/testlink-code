@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -76,10 +76,10 @@ switch($args->do_action)
 			              "DELETE",$args->tplan_id,"testplan");
 		}
 		//unset the session test plan if it is deleted
-		if (isset($_SESSION['testPlanId']) && ($_SESSION['testPlanId'] = $args->tplan_id))
+		if (isset($_SESSION['testplanID']) && ($_SESSION['testplanID'] = $args->tplan_id))
 		{
-			$_SESSION['testPlanId'] = 0;
-			$_SESSION['testPlanName'] = null;
+			$_SESSION['testplanID'] = 0;
+			$_SESSION['testplanName'] = null;
 		}
 		break;
 
@@ -107,9 +107,9 @@ switch($args->do_action)
 				$cf_map = $tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
 				$tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
 
-				if(isset($_SESSION['testPlanId']) && ($args->tplan_id == $_SESSION['testPlanId']))
+				if(isset($_SESSION['testplanID']) && ($args->tplan_id == $_SESSION['testplanID']))
 				{
-					$_SESSION['testPlanName'] = $args->testplan_name;
+					$_SESSION['testplanName'] = $args->testplan_name;
                 }
 				$status_ok = true;
 				$template = null;

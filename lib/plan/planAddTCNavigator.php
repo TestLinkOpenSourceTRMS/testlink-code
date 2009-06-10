@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.45 2009/04/15 20:21:09 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.46 2009/06/10 19:36:00 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -54,7 +54,7 @@ function init_args()
     // Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user_id = $_SESSION['userID'];

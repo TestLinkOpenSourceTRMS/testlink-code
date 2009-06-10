@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/05/27 18:42:07 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
@@ -109,7 +109,7 @@ function init_args(&$tplan_mgr)
     $args->tplan_name = '';
     if(!$args->tplan_id)
     {
-        $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
     }
 
     if($args->tplan_id > 0)

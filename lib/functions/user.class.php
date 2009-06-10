@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.43 2009/06/09 10:34:27 havlat Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.44 2009/06/10 19:36:00 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -576,7 +576,7 @@ class tlUser extends tlDBObject
 		else
 		{
 			//@TODO schlundus, should not be there
-			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+			$testPlanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 		}
 		
 		$userTestPlanRoles = $this->tplanRoles;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesView.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/05/26 19:06:04 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
 **/
@@ -37,8 +37,8 @@ function init_args()
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 
-	$args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-	$args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : "";
+	$args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+	$args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : "";
 
 	return $args;
 }

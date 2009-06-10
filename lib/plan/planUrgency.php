@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/02/07 19:44:03 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author Martin Havlat
@@ -74,8 +74,8 @@ function init_args()
     $args->show_help = (isset($_REQUEST['level']) && $_REQUEST['level']=='testproject');
     
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
-    $args->tplan_name = $_SESSION['testPlanName'];
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+    $args->tplan_name = $_SESSION['testplanName'];
     $args->node_type = isset($_REQUEST['level']) ? $_REQUEST['level'] : OFF;
     $args->node_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : ERROR;
 

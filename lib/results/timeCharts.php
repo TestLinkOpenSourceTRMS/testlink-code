@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: timeCharts.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/05/27 18:42:07 $  $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/06/10 19:36:00 $  $Author: franciscom $
  * @author kevin
  *
  * @TODO: schlundus, this file doesn't seems to be in use
@@ -13,7 +13,7 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../../third_party/charts/charts.php');
 testlinkInitPage($db);
-$testPlanName = $_SESSION['testPlanName']; 
+$testPlanName = $_SESSION['testplanName']; 
 
 $pathToCharts = "third_party/charts";
 $pathToScripts = "lib/results";

@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.71 2009/04/28 19:22:33 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.72 2009/06/10 19:36:00 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -141,7 +141,7 @@ function init_args()
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
 	$args = new stdClass();
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->object_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 	$args->item_level = isset($_REQUEST['edit']) ? trim($_REQUEST['edit']) : null;
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : "default";

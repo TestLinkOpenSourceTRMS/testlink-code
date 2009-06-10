@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.35 2009/03/08 22:26:14 havlat Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.36 2009/06/10 19:36:00 franciscom Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -189,7 +189,7 @@ function init_args()
 	  $args->tproject_id = $_SESSION['testprojectID'];
 	  $args->tproject_name = $_SESSION['testprojectName'];
       
-	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
       
 	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,

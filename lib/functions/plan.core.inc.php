@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/06/06 14:56:20 $ $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -78,21 +78,21 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$tpID = null)
 	for($idx = 0; $idx < $tplanQty ;$idx++)
 	{
 		$testPlan = $testPlans[$idx];
-	 	if ($idx == 0 && (!isset($_SESSION['testPlanId']) || !$_SESSION['testPlanId']))
+	 	if ($idx == 0 && (!isset($_SESSION['testplanID']) || !$_SESSION['testplanID']))
 		{
-        	$_SESSION['testPlanId'] = $testPlan['id'];
-	        $_SESSION['testPlanName'] = $testPlan['name'];
+        	$_SESSION['testplanID'] = $testPlan['id'];
+	        $_SESSION['testplanName'] = $testPlan['name'];
 		}	
 	
-		$selected = ($testPlan['id'] == $_SESSION['testPlanId']) ? 'selected="selected"' : null ;
+		$selected = ($testPlan['id'] == $_SESSION['testplanID']) ? 'selected="selected"' : null ;
 		$arrPlans[] =  array( 'id' => $testPlan['id'], 'name' => $testPlan['name'],
 							            'selected' => $selected);
 	}
 	
 	if (!sizeof($testPlans))
 	{
-		  unset($_SESSION['testPlanId']);
-	    unset($_SESSION['testPlanName']);
+		  unset($_SESSION['testplanID']);
+	    unset($_SESSION['testplanName']);
 	}
 	
 	return $arrPlans;

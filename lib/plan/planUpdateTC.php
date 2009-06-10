@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.34 2009/02/07 19:44:03 schlundus Exp $
+ * @version $Id: planUpdateTC.php,v 1.35 2009/06/10 19:36:00 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -123,8 +123,8 @@ function init_args(&$tplanMgr)
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
     if($args->tplan_id == 0)
     {
-        $args->tplan_id = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
-        $args->tplan_name = $_SESSION['testPlanName'];
+        $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+        $args->tplan_name = $_SESSION['testplanName'];
     }
     else
     {

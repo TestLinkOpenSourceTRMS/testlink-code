@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.56 $ $Author: schlundus $
- * @modified $Date: 2009/06/03 19:51:45 $
+ * @version $Revision: 1.57 $ $Author: franciscom $
+ * @modified $Date: 2009/06/10 19:36:00 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -92,7 +92,7 @@ $num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$fil
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$userID);
 
 $testPlanRole = null;
-$testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
+$testPlanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 if ($testPlanID && isset($currentUser->tplanRoles[$testPlanID]))
 {
 	$role = $currentUser->tplanRoles[$testPlanID];

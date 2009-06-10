@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.11 2009/02/28 17:21:24 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.12 2009/06/10 19:36:00 franciscom Exp $ 
  * 
  *
  * rev :
@@ -103,7 +103,7 @@ function init_args()
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
     
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
     
     $args->id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;

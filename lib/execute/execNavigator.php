@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2009/06/10 19:35:59 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296
@@ -74,8 +74,8 @@ function init_args(&$dbHandler,$cfgObj)
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->user = $_SESSION['currentUser'];
-    $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-    $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
+    $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+    $args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : 'null';
 
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;

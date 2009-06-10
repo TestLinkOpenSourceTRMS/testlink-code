@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/05/14 18:39:53 $  by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/06/10 19:36:00 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -399,7 +399,7 @@ function init_args()
   
   $args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
   $args->userID=$_SESSION['userID'];
-  $args->tplan_id=$_SESSION['testPlanId'];
+  $args->tplan_id=$_SESSION['testplanID'];
   $args->testprojectName=$_SESSION['testprojectName'];
 
   return $args;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.116 $
- * @modified $Date: 2009/06/07 12:58:56 $ by $Author: franciscom $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -16,10 +16,13 @@
  *
  * --------------------------------------------------------------------------------------
  * @todo class for builds and milestones should extend testPlan class
+ *       Disagree can be contained on test plan class - franciscom
+ *  
  * @todo create class testplanEdit (as extension of testplan class) and 
  *		move here create,edit,delete,copy related stuff
  * @todo remove dependency to tree.class.php, assignment_mgr.class.php, attachments.inc.php
  * 		add object.class.php
+ *      who has said is right implementation remove these dependencies ? franciscom
  *
  * --------------------------------------------------------------------------------------
  * Revisions:

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.23 $
-* @modified $Date: 2009/05/07 18:55:59 $ $Author: schlundus $
+* @version $Revision: 1.24 $
+* @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -134,7 +134,7 @@ function init_args()
     // This value is used when doing Test Plan role assignment
     $args->testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    $args->testplanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+    $args->testplanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 
     $args->user = $_SESSION['currentUser'];
     $args->userID = $args->user->dbID;

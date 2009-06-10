@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: executionsPerIntervalGraph.php,v 1.2 2009/06/03 19:51:45 schlundus Exp $ 
+* $Id: executionsPerIntervalGraph.php,v 1.3 2009/06/10 19:36:00 franciscom Exp $ 
 *
 * * @TODO: schlundus, this file doesn't seems to be in use
 *
@@ -51,7 +51,7 @@ for ($i = 0; $i < $numberOfDates; $i++) {
 // in increasing order
 $arrayOfDates = array_reverse($arrayOfDates);
 // END CREATE DATES ARRAY
-$tpID = $_SESSION['testPlanId']; 
+$tpID = $_SESSION['testplanID']; 
 $tp = new testplan($db);
 $tcsExecuted = array();
 array_push($tcsExecuted, "total");

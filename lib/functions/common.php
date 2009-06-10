@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.152 2009/06/09 22:38:22 havlat Exp $
+ * @version    	CVS: $Id: common.php,v 1.153 2009/06/10 19:36:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -168,15 +168,15 @@ function setSessionTestPlan($tplan_info)
 {
 	if ($tplan_info)
 	{
-		$_SESSION['testPlanId'] = $tplan_info['id'];
-		$_SESSION['testPlanName'] = $tplan_info['name'];
+		$_SESSION['testplanID'] = $tplan_info['id'];
+		$_SESSION['testplanName'] = $tplan_info['name'];
 
 		tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
 	}
 	else
 	{
-		unset($_SESSION['testPlanId']);
-		unset($_SESSION['testPlanName']);
+		unset($_SESSION['testplanID']);
+		unset($_SESSION['testplanName']);
 	}
 }
 
@@ -190,7 +190,9 @@ function setSessionTestPlan($tplan_info)
 function setPaths()
 {
 	if (!isset($_SESSION['basehref']))
+	{
 		$_SESSION['basehref'] = get_home_url();
+	}	
 }
 
 
@@ -198,7 +200,7 @@ function setPaths()
 /** Verify if user is log in. Redirect to login page if not. */
 function checkSessionValid(&$db)
 {
-	$bSessionValid = false;
+	$isValidSession = false;
 	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
 	{
 		/** @TODO martin: 
@@ -218,10 +220,10 @@ function checkSessionValid(&$db)
 			$user = new tlUser($_SESSION['userID']);
 			$user->readFromDB($db);
 			$_SESSION['currentUser'] = $user;
-			$bSessionValid = true;
+			$isValidSession = true;
 		}
 	}
-	if (!$bSessionValid)
+	if (!$isValidSession)
 	{
         $ip = $_SERVER["REMOTE_ADDR"];
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
@@ -241,14 +243,15 @@ function checkSessionValid(&$db)
 
 // --------------------------------------------------------------------------------------
 /**
- * Function start session
+ * Function doSessionStart
  */
 function doSessionStart()
 {
 	session_set_cookie_params(99999);
-
 	if(!isset($_SESSION))
+	{
 		session_start();
+	}	
 }
 
 // --------------------------------------------------------------------------------------
@@ -294,7 +297,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	
 	// set a Test Plan
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+	$tplan_id    = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
 	// Now we need to validate the TestPlan
 	if($user_sel["tplan_id"] != 0)
 	{

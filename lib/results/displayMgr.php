@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -23,7 +23,7 @@ function generateHtmlEmail($template_file, &$smarty, $buildName = null)
 	$html_report = $smarty->fetch($template_file);
 	$emailIsHtml = true;
  	$send_cc_to_myself = false;
-	$subjectOfMail =  $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
+	$subjectOfMail =  $_SESSION['testplanName'] . ": " . $template_file . " " . $buildName;
   
 	$emailFrom = $_SESSION['currentUser']->emailAddress;
 	$emailTo = $emailFrom;
@@ -55,7 +55,7 @@ function displayReport($template_file, &$smarty, $doc_format, $buildName = null)
 		  		
 			$smarty = new TLSmarty();
 			$smarty->assign('message', $message);
-			$smarty->assign('title', $_SESSION['testPlanName']);
+			$smarty->assign('title', $_SESSION['testplanName']);
 		  	$template_file = "emailSent.tpl";
       		break;
 	} 

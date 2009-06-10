@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/05/09 15:11:27 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
  *
  * rev:
  *      20090509 - franciscom - minor refactoring      
@@ -23,8 +23,8 @@ $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
 $gui = new StdClass();
-$gui->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$gui->tplan_name = $_SESSION['testPlanName'];
+$gui->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+$gui->tplan_name = $_SESSION['testplanName'];
 $gui->buildSet = $tplan_mgr->get_builds($gui->tplan_id);
 $gui->user_feedback = null;
 

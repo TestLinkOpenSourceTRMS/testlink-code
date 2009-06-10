@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.128 $
- * @modified $Date: 2009/06/08 17:02:55 $ $Author: franciscom $
+ * @version $Revision: 1.129 $
+ * @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
  *
  * rev:
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
@@ -353,7 +353,7 @@ function init_args()
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	
 	//BUGID 2267
-	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->user = $_SESSION['currentUser'];
 
 

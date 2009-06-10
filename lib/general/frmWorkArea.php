@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/05/26 19:06:04 $ by $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -74,10 +74,10 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 if (in_array($showFeature,array('executeTest','showMetrics')))
 {
 	// Check if for test project selected at least a test plan exist (BUGID 623)
-	if( isset($_SESSION['testPlanId']) )
+	if( isset($_SESSION['testplanID']) )
 	{
-  		validateBuildAvailability($db,$_SESSION['testPlanId'],
-	    		$_SESSION['testPlanName'], $_SESSION['testprojectName']);
+  		validateBuildAvailability($db,$_SESSION['testplanID'],
+	    		$_SESSION['testplanName'], $_SESSION['testprojectName']);
 	}
   	else
 	{

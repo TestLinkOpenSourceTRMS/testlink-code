@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/05/25 07:27:08 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * rev: 
@@ -76,7 +76,7 @@ function init_args(&$dbHandler)
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
 	if( $args->tplan_id == 0 )
 	{
-	    $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+	    $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 	}
 	if( $args->tplan_id > 0 )
 	{

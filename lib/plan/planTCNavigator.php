@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.30 2009/03/25 20:53:18 schlundus Exp $
+ * @version $Id: planTCNavigator.php,v 1.31 2009/06/10 19:36:00 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -113,12 +113,12 @@ function init_args(&$tplanMgr)
     // 20070120 - franciscom -
     // is possible to call this page using a Test Project that have no test plans
     // in this situation the next to entries are undefined in SESSION
-    $args->tplan_id = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
-    $args->tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+    $args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : '';
 
     if($args->tplan_id != 0)
     {
-		    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+		    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 		    $tplan_info = $tplanMgr->get_by_id($args->tplan_id);
 		    $args->tplan_name = $tplan_info['name'];
     }

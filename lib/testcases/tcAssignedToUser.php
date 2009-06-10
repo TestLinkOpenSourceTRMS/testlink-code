@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/01/31 19:54:17 $  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/06/10 19:36:00 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
 */
@@ -71,7 +71,7 @@ function init_args()
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
     if( $args->tplan_id == 0)
     {
-        $args->tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
     }
     
     $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;

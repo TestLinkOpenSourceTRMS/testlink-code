@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/06/10 06:41:27 $ by $Author: franciscom $
  *
  * Deletes an attachment by a given id
  */
@@ -15,8 +15,10 @@ require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
-if (!config_get("attachments")->enabled)
+if(!config_get("attachments")->enabled)
+{
 	exit();
+}
 
 $args = init_args();	
 $deleteDone = false;
@@ -29,7 +31,8 @@ if ($args->id)
 		$deleteDone = $attachmentRepository->deleteAttachment($args->id,$attachmentInfo);
 		if ($deleteDone)
 		{
-			logAuditEvent(TLS("audit_attachment_deleted",$attachmentInfo['title']),"DELETE",$args->id,"attachments");
+			logAuditEvent(TLS("audit_attachment_deleted",
+			              $attachmentInfo['title']),"DELETE",$args->id,"attachments");
 		}	
 	}
 }

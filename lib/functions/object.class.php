@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.25 2009/06/09 19:21:09 schlundus Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.26 2009/06/10 15:50:21 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -18,6 +18,8 @@
 /** 
  * Namespace for TestLink, here we can safely define constants and other stuff, 
  * without risk of collision with other stuff
+ * 
+ * @package 	TestLink
  * @abstract 
  */
 abstract class tl
@@ -46,6 +48,9 @@ abstract class tl
 require_once('int_serialization.php');
 /**
  * The base class for all managed TestLink objects, all tl-managed objects should extend this base class
+ * 
+ * @package 	TestLink
+ * @abstract 
  */
 abstract class tlObject implements iSerialization
 {	
@@ -212,6 +217,9 @@ abstract class tlObject implements iSerialization
 
 /**
  * The base class for all managed TestLink objects which need a db connection
+ * 
+ * @package 	TestLink
+ * @abstract 
  */
 abstract class tlObjectWithDB extends tlObject
 {	
@@ -231,7 +239,9 @@ abstract class tlObjectWithDB extends tlObject
 
 /**
  * The base class for all managed TestLink objects which support attachments
- * @abstract
+ * 
+ * @package 	TestLink
+ * @abstract 
  */
 abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
@@ -290,7 +300,9 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 
 /**
  * class implement basic support for work with DB
- * @abstract
+ * 
+ * @package 	TestLink
+ * @abstract 
  */
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {

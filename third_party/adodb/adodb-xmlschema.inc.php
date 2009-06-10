@@ -12,7 +12,7 @@
  *
  * Last Editor: $Author: franciscom $
  * @author Richard Tango-Lowy & Dan Cech
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.5 $
  *
  * @package axmls
  * @tutorial getting_started.pkg
@@ -463,10 +463,12 @@ class dbTable extends dbObject {
 	* @return array Options
 	*/
 	function addTableOpt( $opt ) {
-		$this->opts[] = $opt;
-		
+		if(isset($this->currentPlatform)) {
+			$this->opts[$this->parent->db->databaseType] = $opt;
+		}
 		return $this->opts;
 	}
+
 	
 	/**
 	* Generates the SQL that will create the table in the database
@@ -1209,7 +1211,7 @@ class dbQuerySet extends dbObject {
 * @tutorial getting_started.pkg
 *
 * @author Richard Tango-Lowy & Dan Cech
-* @version $Revision: 1.3 $
+* @version $Revision: 1.5 $
 *
 * @package axmls
 */

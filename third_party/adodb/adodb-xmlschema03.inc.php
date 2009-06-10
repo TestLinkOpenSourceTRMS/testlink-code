@@ -12,7 +12,7 @@
  *
  * Last Editor: $Author: franciscom $
  * @author Richard Tango-Lowy & Dan Cech
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.4 $
  *
  * @package axmls
  * @tutorial getting_started.pkg
@@ -504,11 +504,12 @@ class dbTable extends dbObject {
 	* @return array Options
 	*/
 	function addTableOpt( $opt ) {
-		if( $this->currentPlatform ) {
-		$this->opts[] = $opt;
+		if(isset($this->currentPlatform)) {
+			$this->opts[$this->parent->db->databaseType] = $opt;
 		}
 		return $this->opts;
 	}
+
 	
 	/**
 	* Generates the SQL that will create the table in the database
@@ -1309,7 +1310,7 @@ class dbQuerySet extends dbObject {
 * @tutorial getting_started.pkg
 *
 * @author Richard Tango-Lowy & Dan Cech
-* @version $Revision: 1.2 $
+* @version $Revision: 1.4 $
 *
 * @package axmls
 */
@@ -1497,7 +1498,7 @@ class adoSchema {
 					$mode = XMLS_MODE_INSERT;
 					break;
 				default:
-					$mode = XMLS_EXISITNG_DATA;
+					$mode = XMLS_EXISTING_DATA;
 					break;
 			}
 			$this->existingData = $mode;

@@ -1,7 +1,7 @@
 <?php
   
 /*
-V4.80 8 Mar 2006  (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -296,12 +296,12 @@ ADOLoadCode('oci805');
 ADOLoadCode("oci8po");
 	
 if (!empty($testoracle)) {
-	$dsn = "oci8po://juris10:natsoft@sherkhan?persist";
+	$dsn = "oci8po";//://scott:natsoft@kk2?persist";
 	$db = ADONewConnection($dsn );//'oci8');
 	
 	//$db->debug=1;
 	print "<h1>Connecting $db->databaseType...</h1>";
-	if (true || $db->Connect('', "scott", "natsoft",''))
+	if ($db->Connect('', "scott", "natsoft",'condor'))
 		testdb($db,"create table ADOXYZ (id int, firstname varchar(24), lastname varchar(24),created date)");
 	else 
 		print "ERROR: Oracle test requires an Oracle server setup with scott/natsoft".'<BR>'.$db->ErrorMsg();
@@ -357,23 +357,23 @@ flush();
 }
 
 
-$server = 'sherkhan';
+$server = 'localhost';
 
 
 
 ADOLoadCode("mssqlpo");
-if (!empty($testmssql)) { // MS SQL Server -- the extension is buggy -- probably better to use ODBC
+if (false && !empty($testmssql)) { // MS SQL Server -- the extension is buggy -- probably better to use ODBC
 	$db = ADONewConnection("mssqlpo");
 	//$db->debug=1;
 	print "<h1>Connecting $db->databaseType...</h1>";
 	
-	$ok = $db->Connect('','adodb','natsoft','northwind');
-
-	if ($ok or $db->PConnect("mangrove", "sa", "natsoft", "ai")) {
+	$ok = $db->Connect('','sa','natsoft','northwind');
+	echo $db->ErrorMsg();
+	if ($ok /*or $db->PConnect("mangrove", "sa", "natsoft", "ai")*/) {
 		AutoDetect_MSSQL_Date_Order($db);
 	//	$db->Execute('drop table adoxyz');
 		testdb($db,"create table ADOXYZ (id int, firstname char(24) null, lastname char(24) null,created datetime null)");
-	} else print "ERROR: MSSQL test 2 requires a MS SQL 7 on a server='192.168.0.1', userid='adodb', password='natsoft', database='ai'".'<BR>'.$db->ErrorMsg();
+	} else print "ERROR: MSSQL test 2 requires a MS SQL 7 on a server='$server', userid='adodb', password='natsoft', database='ai'".'<BR>'.$db->ErrorMsg();
 	
 }
 
@@ -385,8 +385,8 @@ if (!empty($testmssql)) { // MS SQL Server via ODBC
 	print "<h1>Connecting $db->databaseType...</h1>";
 	
 	$dsn = "PROVIDER=MSDASQL;Driver={SQL Server};Server=$server;Database=northwind;";
-	
-	if ($db->PConnect($dsn, "adodb", "natsoft", ""))  {
+	$dsn = 'condor';
+	if ($db->PConnect($dsn, "sa", "natsoft", ""))  {
 		testdb($db,"create table ADOXYZ (id int, firstname char(24) null, lastname char(24) null,created datetime null)");
 	}
 	else print "ERROR: MSSQL test 1 requires a MS SQL 7 server setup with DSN setup";

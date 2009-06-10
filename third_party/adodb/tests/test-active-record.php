@@ -24,6 +24,16 @@
 	            ) ENGINE=MyISAM;
 	           ");
 			   
+	$db->Execute("CREATE TEMPORARY TABLE `children` (
+	                `id` int(10) unsigned NOT NULL auto_increment,
+					`person_id` int(10) unsigned NOT NULL,
+	                `name_first` varchar(100) NOT NULL default '',
+	                `name_last` varchar(100) NOT NULL default '',
+	                `favorite_pet` varchar(100) NOT NULL default '',
+	                PRIMARY KEY  (`id`)
+	            ) ENGINE=MyISAM;
+	           ");
+			   
 	class Person extends ADOdb_Active_Record{}
 	$person = new Person();
 	
@@ -71,12 +81,59 @@
 	$person2 = new Person();
 	$person2->Load('id=2');
 	
-	var_dump($person2);
-	
-	$activeArr = $db->GetActiveRecordsClass($class = "Person",$table = "persons","id=".$db->Param(0),array(2));
+	$activeArr = $db->GetActiveRecordsClass($class = "Person",$table = "Persons","id=".$db->Param(0),array(2));
 	$person2 = $activeArr[0];
-	echo "<p>Name (should be John): ",$person->name_first, " <br> Class (should be Person): ",get_class($person2);	
+	echo "<p>Name (should be John): ",$person->name_first, " <br> Class (should be Person): ",get_class($person2),"<br>";	
 	
+	$db->Execute("insert into children (person_id,name_first,name_last) values (2,'Jill','Lim')");
+	$db->Execute("insert into children (person_id,name_first,name_last) values (2,'Joan','Lim')");
+	$db->Execute("insert into children (person_id,name_first,name_last) values (2,'JAMIE','Lim')");
+	
+	$newperson2 = new Person();
+	$person2->HasMany('children','person_id');
+	$person2->Load('id=2');
+	$person2->name_last='green';
+	$c = $person2->children;
+	$person2->save();
 
+	if (is_array($c) && sizeof($c) == 3 && $c[0]->name_first=='Jill' && $c[1]->name_first=='Joan'
+		&& $c[2]->name_first == 'JAMIE') echo "OK Loaded HasMany</br>";
+	else {
+		var_dump($c);
+		echo "error loading hasMany should have 3 array elements Jill Joan Jamie<br>";
+	}
+	
+	class Child extends ADOdb_Active_Record{};
+	$ch = new Child('children',array('id'));
+	$ch->BelongsTo('person','person_id','id');
+	$ch->Load('id=1');
+	if ($ch->name_first !== 'Jill') echo "error in Loading Child<br>";
+	
+	$p = $ch->person;
+	if ($p->name_first != 'John') echo "Error loading belongsTo<br>";
+	else echo "OK loading BelongTo<br>";
 
+	$p->hasMany('children','person_id');
+	$p->LoadRelations('children', "	Name_first like 'J%' order by id",1,2);
+	if (sizeof($p->children) == 2 && $p->children[1]->name_first == 'JAMIE') echo "OK LoadRelations<br>";
+	else echo "error LoadRelations<br>";
+	
+		$db->Execute("CREATE TEMPORARY TABLE `persons2` (
+	                `id` int(10) unsigned NOT NULL auto_increment,
+	                `name_first` varchar(100) NOT NULL default '',
+	                `name_last` varchar(100) NOT NULL default '',
+	                `favorite_color` varchar(100) default '',
+	                PRIMARY KEY  (`id`)
+	            ) ENGINE=MyISAM;
+	           ");
+	
+	$p = new adodb_active_record('persons2');
+	$p->name_first = 'James';
+	
+	$p->name_last = 'James';
+	
+	$p->HasMany('children','person_id');
+	$p->children;
+	var_dump($p);
+	$p->Save();
 ?>

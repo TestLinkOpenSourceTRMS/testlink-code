@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.04a 25 Mar 2008   (c) 2000-2008 John Lim (jlim#natsoft.com.my). All rights reserved.
+V5.08 6 Apr 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -103,6 +103,7 @@ class ADODB_mssql extends ADOConnection {
 	var $identitySQL = 'select SCOPE_IDENTITY()'; // 'select SCOPE_IDENTITY'; # for mssql 2000
 	var $uniqueOrderBy = true;
 	var $_bindInputArray = true;
+	var $forceNewConnect = false;
 	
 	function ADODB_mssql() 
 	{		
@@ -152,7 +153,11 @@ class ADODB_mssql extends ADOConnection {
 	// the same scope. A scope is a module -- a stored procedure, trigger, 
 	// function, or batch. Thus, two statements are in the same scope if 
 	// they are in the same stored procedure, function, or batch.
+        if ($this->lastInsID !== false) {
+            return $this->lastInsID; // InsID from sp_executesql call
+        } else {
 			return $this->GetOne($this->identitySQL);
+		}
 	}
 
 	function _affectedrows()
@@ -206,7 +211,11 @@ class ADODB_mssql extends ADOConnection {
 		if ($nrows > 0 && $offset <= 0) {
 			$sql = preg_replace(
 				'/(^\s*select\s+(distinctrow|distinct)?)/i','\\1 '.$this->hasTop." $nrows ",$sql);
-			$rs = $this->Execute($sql,$inputarr);
+				
+			if ($secs2cache)
+				$rs = $this->CacheExecute($secs2cache, $sql, $inputarr);
+			else
+				$rs = $this->Execute($sql,$inputarr);
 		} else
 			$rs = ADOConnection::SelectLimit($sql,$nrows,$offset,$inputarr,$secs2cache);
 	
@@ -279,8 +288,8 @@ class ADODB_mssql extends ADOConnection {
 	{
 		if ($this->transOff) return true; 
 		$this->transCnt += 1;
-	   	$this->Execute('BEGIN TRAN');
-	   	return true;
+	   	$ok = $this->Execute('BEGIN TRAN');
+	   	return $ok;
 	}
 		
 	function CommitTrans($ok=true) 
@@ -288,15 +297,15 @@ class ADODB_mssql extends ADOConnection {
 		if ($this->transOff) return true; 
 		if (!$ok) return $this->RollbackTrans();
 		if ($this->transCnt) $this->transCnt -= 1;
-		$this->Execute('COMMIT TRAN');
-		return true;
+		$ok = $this->Execute('COMMIT TRAN');
+		return $ok;
 	}
 	function RollbackTrans()
 	{
 		if ($this->transOff) return true; 
 		if ($this->transCnt) $this->transCnt -= 1;
-		$this->Execute('ROLLBACK TRAN');
-		return true;
+		$ok = $this->Execute('ROLLBACK TRAN');
+		return $ok;
 	}
 	
 	function SetTransactionMode( $transaction_mode ) 
@@ -361,7 +370,7 @@ class ADODB_mssql extends ADOConnection {
 
 		$indexes = array();
 		while ($row = $rs->FetchRow()) {
-			if (!$primary && $row[5]) continue;
+			if ($primary && !$row[5]) continue;
 			
             $indexes[$row[0]]['unique'] = $row[6];
             $indexes[$row[0]]['columns'][] = $row[1];
@@ -504,11 +513,11 @@ order by constraint_name, referenced_table_name, keyno";
 	   else return -1;
 	}
 	
-	// returns true or false
-	function _connect($argHostname, $argUsername, $argPassword, $argDatabasename)
+	// returns true or false, newconnect supported since php 5.1.0.
+	function _connect($argHostname, $argUsername, $argPassword, $argDatabasename,$newconnect=false)
 	{
 		if (!function_exists('mssql_pconnect')) return null;
-		$this->_connectionID = mssql_connect($argHostname,$argUsername,$argPassword);
+		$this->_connectionID = mssql_connect($argHostname,$argUsername,$argPassword,$newconnect);
 		if ($this->_connectionID === false) return false;
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
 		return true;	
@@ -531,6 +540,11 @@ order by constraint_name, referenced_table_name, keyno";
 		return true;	
 	}
 	
+	function _nconnect($argHostname, $argUsername, $argPassword, $argDatabasename)
+    {
+		return $this->_connect($argHostname, $argUsername, $argPassword, $argDatabasename, true);
+    }
+
 	function Prepare($sql)
 	{
 		$sqlarr = explode('?',$sql);
@@ -539,7 +553,7 @@ order by constraint_name, referenced_table_name, keyno";
 		for ($i = 1, $max = sizeof($sqlarr); $i < $max; $i++) {
 			$sql2 .=  '@P'.($i-1) . $sqlarr[$i];
 		} 
-		return array($sql,$this->qstr($sql2),$max);
+		return array($sql,$this->qstr($sql2),$max,$sql2);
 	}
 	
 	function PrepareSP($sql)
@@ -655,7 +669,7 @@ order by constraint_name, referenced_table_name, keyno";
 	}
 	
 	// returns query ID if successful, otherwise false
-	function _query($sql,$inputarr)
+	function _query($sql,$inputarr=false)
 	{
 		$this->_errorMsg = false;
 		if (is_array($inputarr)) {
@@ -663,6 +677,11 @@ order by constraint_name, referenced_table_name, keyno";
 			# bind input params with sp_executesql: 
 			# see http://www.quest-pipelines.com/newsletter-v3/0402_F.htm
 			# works only with sql server 7 and newer
+            $getIdentity = false;
+            if (!is_array($sql) && preg_match('/^\\s*insert/i', $sql)) {
+                $getIdentity = true;
+                $sql .= (preg_match('/;\\s*$/i', $sql) ? ' ' : '; ') . $this->identitySQL;
+            }
 			if (!is_array($sql)) $sql = $this->Prepare($sql);
 			$params = '';
 			$decl = '';
@@ -702,13 +721,20 @@ order by constraint_name, referenced_table_name, keyno";
 			$decl = $this->qstr($decl);
 			if ($this->debug) ADOConnection::outp("<font size=-1>sp_executesql N{$sql[1]},N$decl,$params</font>");
 			$rez = mssql_query("sp_executesql N{$sql[1]},N$decl,$params", $this->_connectionID);
+            if ($getIdentity) {
+                $arr = @mssql_fetch_row($rez);
+                $this->lastInsID = isset($arr[0]) ? $arr[0] : false;
+                @mssql_data_seek($rez, 0);
+            }
 			
 		} else if (is_array($sql)) {
 			# PrepareSP()
 			$rez = mssql_execute($sql[1]);
+            $this->lastInsID = false;
 			
 		} else {
 			$rez = mssql_query($sql,$this->_connectionID);
+            $this->lastInsID = false;
 		}
 		return $rez;
 	}

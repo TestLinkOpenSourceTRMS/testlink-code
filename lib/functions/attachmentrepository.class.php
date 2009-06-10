@@ -3,18 +3,24 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: attachmentrepository.class.php,v $
+ * @package 	TestLink
+ * @author 		Andreas Morsing
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: attachmentrepository.class.php,v 1.19 2009/06/10 21:50:03 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
- * @author Andreas Morsing
- *
+ * @internal
  * rev: 20080901 - franciscom - solved minor unlink() bug in insertAttachment()
  *
-*/
+ */
 
+/** attachment management */
 require_once( dirname(__FILE__) . '/attachment.class.php' );
 
+/**
+ * class store and load attachments
+ * @package 	TestLink
+ */
 class tlAttachmentRepository extends tlObjectWithDB
 {
 	  //the one and only attachment repository object

@@ -1,17 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * 
- * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/06/03 19:51:45 $ by $Author: schlundus $
- * @author Martin Havlat, Chad Rosen
- * 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ *
  * This script provides the get_rights and has_rights functions for
- *           verifying user level permissions.
+ * verifying user level permissions.
  *
- *
- * Default USER RIGHTS:
+ * Default Role definition (1.6 version):
  *
  * 'guest' 	- testplan_metrics, mgt_view_tc, mgt_view_key
  * 'tester' - testplan_execute, testplan_metrics
@@ -22,25 +18,32 @@
  *				mgt_view_tc, mgt_modify_tc, mgt_view_key, mgt_modify_key,
  *				mgt_modify_product, mgt_users
  *
- *
- * OPTIONS: FUNCTIONALITY ALLOWED FOR USER:
+ * Basic right identifiers:
  * 
- * mgt_view_tc, testplan_metrics, mgt_view_key - allow browse basic data
- * testplan_execute - edit Test Results
- * mgt_modify_tc - edit Test Cases
- * mgt_modify_key - edit Keywords
- * mgt_modify_req - edit Requirements
- * testplan_planning, testplan_create_build, testplan_assign_rights - Test Leader plans/prepares a testing
- * mgt_modify_product, mgt_users - just Admin edits Products and Users
+ * 	mgt_view_tc, testplan_metrics, mgt_view_key - allow browse basic data
+ * 	testplan_execute - edit Test Results
+ * 	mgt_modify_tc - edit Test Cases
+ * 	mgt_modify_key - edit Keywords
+ * 	mgt_modify_req - edit Requirements
+ * 	testplan_planning, testplan_create_build, testplan_assign_rights 
+ * 			- Test Leader plans/prepares a testing
+ * 	mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
- * rev: 
+ * @package 	TestLink
+ * @author 		Martin Havlat, Chad Rosen
+ * @copyright 	2006-2009, TestLink community 
+ * @version    	CVS: $Id: roles.inc.php,v 1.55 2009/06/10 21:50:03 havlat Exp $
+ * 
+ *
+ * @internal rev: 
  *      20090425 - franciscom - BUGID 2417 - new right for test projects
  *      20081030 - franciscom - added new rights -> system
  *      20070901 - franciscom - BUGID 1016
  *      20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
  */
- 
+
+/** localization support */ 
 require_once( dirname(__FILE__). '/lang_api.php' );
 
 // 
@@ -56,23 +59,12 @@ require_once( dirname(__FILE__). '/lang_api.php' );
 init_global_rights_maps();
 
 
-/*
-  function: init_global_rights_maps
-            init global map with user rights and user rights description localized.
-            
-
-  args: -
-  
-  returns:  
-
-  rev: added system rights, and moved event rights from users to system.
-*/
-
+/**
+ * init global map with user rights and user rights description localized.
+ */
 function init_global_rights_maps()
 {
-	// Important:
 	// Every array, defines a section in the define role page
-	//
 	global $g_rights_tp;
 	global $g_rights_mgttc;
 	global $g_rights_kw;
@@ -85,14 +77,12 @@ function init_global_rights_maps()
 	global $g_propRights_global;
 	global $g_propRights_product;
 	
-	
 	$g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
 							"testplan_create_build" => lang_get('desc_testplan_create_build'),
 							"testplan_metrics" => lang_get('desc_testplan_metrics'),
 							"testplan_planning" => lang_get('desc_testplan_planning'),
 							"testplan_user_role_assignment" => lang_get('desc_user_role_assignment'),
 						);
-	
 						
 	$g_rights_mgttc = array (	"mgt_view_tc" => lang_get('desc_mgt_view_tc'),
 								"mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
@@ -108,8 +98,6 @@ function init_global_rights_maps()
 								"mgt_modify_req" => lang_get('desc_mgt_modify_req'),
 							);
 	
-							
-	// 20090425 - franciscom - BUGID - 						
 	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
 	                          "testproject_user_role_assignment" => lang_get('desc_user_role_assignment')
 							  );						
@@ -118,7 +106,7 @@ function init_global_rights_maps()
 								"cfield_view" => lang_get('desc_cfield_view'),
 								"cfield_management" => lang_get('desc_cfield_management'));
 	
-	// Global means test project indipendent.
+	// Global means test project independent.
 	$g_rights_users_global = array (	
 								"mgt_users" => lang_get('desc_mgt_modify_users'),
 								"role_management" => lang_get('desc_role_management'),
@@ -130,30 +118,30 @@ function init_global_rights_maps()
 	$g_rights_system = array ("mgt_view_events" => lang_get('desc_mgt_view_events'),
 	                          "events_mgt" => lang_get('desc_events_mgt'));
 							
-							
-	// 20090425 - franciscom - BUGID - 						
 	$g_propRights_global = array_merge($g_rights_users_global,$g_rights_system,$g_rights_product);
     unset($g_propRights_global["testproject_user_role_assignment"]);
     
 	$g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 }
 
+
 /** 
-* function takes a roleQuestion from a specified link and returns whether 
-* the user has rights to view it
-*/
+ * function takes a roleQuestion from a specified link and returns whether 
+ * the user has rights to view it
+ * 
+ * @param resource &$db reference to database handler
+ * @param string $roleQuestion a right identifier
+ * @param integer $tprojectID (optional)
+ * @param integer $tplanID (optional)
+ * 
+ * @see tlUser
+ */
 function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 {
 	return $_SESSION['currentUser']->hasRight($db,$roleQuestion,$tprojectID,$tplanID);
 }
 
-/*
-  function: 
 
-  args :
-   
-  returns: 
-*/
 function propagateRights($fromRights,$propRights,&$toRights)
 {
 	// the mgt_users right isn't test project related so this right is inherited from
@@ -167,13 +155,14 @@ function propagateRights($fromRights,$propRights,&$toRights)
 	}
 }
 
+
 /**
- * Function-Documentation
+ * TBD
  *
- * @param type $rights documentation
- * @param type $roleQuestion documentation
- * @param type $bAND [default = 1] documentation
- * @return type 'yes' or null
+ * @param string $rights 
+ * @param mixed $roleQuestion 
+ * @param boolean $bAND [default = 1] 
+ * @return mixed 'yes' or null
  *
  * @author Andreas Morsing <schlundus@web.de>
  * @since 20.02.2006, 20:30:07
@@ -210,34 +199,28 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 	return $ret;
 }
 
-/*
-  function: get_tproject_effective_role()
-            Get info about user(s) role at test project level,
-            with indication about the nature of role: inherited or assigned.
-             
-            To get a user role we consider a 3 layer model:
-            
-            layer 1 - user           <--- uplayer
-            layer 2 - test project   <--- in this fuction we are interested in this level.
-            layer 3 - test plan
-            
-            
-  
-  args : $tproject_id
-         [$user_id]
-  
-  returns: map with effetive_role in context ($tproject_id)
-           key: user_id 
-           value: map with keys:
-                  login                (from users table - useful for debug)
-                  user_role_id         (from users table - useful for debug)
-                  uplayer_role_id      (always = user_role_id)
-                  uplayer_is_inherited
-                  effective_role_id  user role for test project
-                  is_inherited
-  
-
-*/
+/**
+ * Get info about user(s) role at test project level,
+ * with indication about the nature of role: inherited or assigned.
+ * 
+ * To get a user role we consider a 3 layer model:
+ *          layer 1 - user           <--- uplayer
+ *          layer 2 - test project   <--- in this fuction we are interested in this level.
+ *          layer 3 - test plan
+ * 
+ * args : $tproject_id
+ *        [$user_id]
+ * 
+ * @return array map with effetive_role in context ($tproject_id)
+ *          key: user_id 
+ *          value: map with keys:
+ *                 login                (from users table - useful for debug)
+ *                 user_role_id         (from users table - useful for debug)
+ *                 uplayer_role_id      (always = user_role_id)
+ *                 uplayer_is_inherited
+ *                 effective_role_id  user role for test project
+ *                 is_inherited
+ */
 function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = null)
 {
 	$effective_role = array();
@@ -278,23 +261,20 @@ function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = 
 }
 
 
-/*
-  function: get_tplan_effective_role()
-            Get info about user(s) role at test plan level,
-            with indication about the nature of role: inherited or assigned.
-
-            To get a user role we consider a 3 layer model:
-            
-            layer 1 - user
-            layer 2 - test project   <--- uplayer
-            layer 3 - test plan      <--- in this fuction we are interested in this level.
-             
+/**
+ * Get info about user(s) role at test plan level,
+ * with indication about the nature of role: inherited or assigned.
+ * 
+ * To get a user role we consider a 3 layer model:
+ *          layer 1 - user           <--- uplayer
+ *          layer 2 - test project   <--- in this fuction we are interested in this level.
+ *          layer 3 - test plan
   
   args : $tplan_id
          $tproject_id
          [$user_id]
   
-  returns: map with effetive_role in context ($tplan_id)
+ * @return array map with effetive_role in context ($tplan_id)
            key: user_id 
            value: map with keys:
                   login                (from users table - useful for debug)
@@ -302,12 +282,9 @@ function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = 
                   uplayer_role_id      user role for test project
                   uplayer_is_inherited 1 -> uplayer role is inherited 
                                        0 -> uplayer role is written in table
-                                       
                   effective_role_id    user role for test plan
                   is_inherited       
-  
-
-*/
+ */
 function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id = null,$users = null)
 {
 	$effective_role = get_tproject_effective_role($db,$tproject_id,$user_id,$users);   
@@ -329,6 +306,7 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id = null,$u
 	}
 	return $effective_role;
 }
+
 
 function getRoleErrorMessage($code)
 {
@@ -359,14 +337,6 @@ function getRoleErrorMessage($code)
 }
 
 
-/*
-  function: deleteRole
-
-  args :
-  
-  returns: 
-
-*/
 function deleteRole(&$db,$roleID)
 {
 	$userFeedback = '';

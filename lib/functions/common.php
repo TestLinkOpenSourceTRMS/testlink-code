@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.153 2009/06/10 19:36:00 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.154 2009/06/10 21:50:03 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -36,7 +36,7 @@
  *
  * ----------------------------------------------------------------------------------- */
 
-
+/** core and parenthal classes */
 require_once('object.class.php');
 require_once('metastring.class.php');
 
@@ -243,11 +243,12 @@ function checkSessionValid(&$db)
 
 // --------------------------------------------------------------------------------------
 /**
- * Function doSessionStart
+ * start session
  */
 function doSessionStart()
 {
 	session_set_cookie_params(99999);
+
 	if(!isset($_SESSION))
 	{
 		session_start();

@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.44 2009/06/10 19:36:00 franciscom Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.45 2009/06/10 21:50:03 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -18,14 +18,16 @@
 /**
  * Class for handling users in TestLink
  * 
- * @author Andreas Morsing
- * @uses config.inc.php
- * @since 1.7
+ * @package TestLink
+ * @author 	Andreas Morsing
+ * @uses 	config.inc.php
+ * @since 	1.7
  */ 
 class tlUser extends tlDBObject
 {
 	/**
 	 * @var the name of the table the object is stored into
+	 * @access private
 	 */
 	private $object_table = "users";
     
@@ -79,16 +81,17 @@ class tlUser extends tlDBObject
 	public $userApiKey;
 	/**
 	 * @var string the password of the user
+	 * @access protected
 	 */
 	protected $password;
 	
-	//configuration options
+	/** configuration options */
 	//@TODO should be moved inside a tlConfig class
 	protected $usernameFormat;
 	protected $loginMethod;
 	protected $maxLoginLength;
 	
-	//error codes
+	/** error codes */
 	const E_LOGINLENGTH = -1;
 	const E_EMAILLENGTH = -2;
 	const E_NOTALLOWED = -4;
@@ -114,7 +117,8 @@ class tlUser extends tlDBObject
 	
 	/**
 	 * Constructor, creates the user object
-	 * @param $dbID database id of the object
+	 * 
+	 * @param resource $db database handler
 	 */
 	function __construct($dbID = null)
 	{
@@ -135,8 +139,10 @@ class tlUser extends tlDBObject
 		$this->tplanRoles = null;
 	}
 	
-	/* Cleans the object by resetting the members to default values
-	 * @param $options tlUser/tlObject options
+	/** 
+	 * Cleans the object by resetting the members to default values
+	 * 
+	 * @param mixed $options tlUser/tlObject options
 	 */
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -163,9 +169,11 @@ class tlUser extends tlDBObject
 		}
 	}
 	
-	/** Checks if password management is external (like LDAP)...
-	 * @TODO schlundus, should be moved inside a super tl configuration class
+	/** 
+	 * Checks if password management is external (like LDAP)...
+	 * 
 	 * @return boolean return true if password management is external, else false
+	 * @TODO schlundus, should be moved inside a super tl configuration class
 	 */
 	static public function isPasswordMgtExternal()
 	{
@@ -173,16 +181,16 @@ class tlUser extends tlDBObject
 		return ($authCfg['method'] != '' &&  $authCfg['method'] != 'MD5') ? true : false;
 	}
 	
-	/*
-	 *  you can choose the number of alphanumeric characters to add and 
+	/**
+	 *  Obtain a secure password. 
+	 *  You can choose the number of alphanumeric characters to add and 
 	 *  the number of non-alphanumeric characters. 
-	 *  You obtain a more secure password. 
 	 *  You can add another characters to the non-alphanumeric list if you need.
 	 *           
-	 * 	@param $numAlpha
-	 *  @param $numNonAlpha
+	 * 	@param integer $numAlpha number alphanumeric characters in generated password
+	 *  @param integer $numNonAlpha number special characters in generated password
 	 * 
-	 * 	@returns string the generated password
+	 * 	@return string the generated password
 	*/
 	static public function generatePassword($numAlpha = 6,$numNonAlpha = 2)
 	{
@@ -193,21 +201,25 @@ class tlUser extends tlDBObject
 	                      substr(str_shuffle($listNonAlpha),0,$numNonAlpha));
 	}
 	
-	/** @TODO fills the members
+	/** 
 	 * not used at the moment, only placeholder
 	 * 
-	 * @return void  */
+	 * @return void
+	 * @TODO implement  
+	 **/
 	function create()
 	{
 	}
 	
-	//BEGIN interface iDBSerialization
-	/** @TODO define purpose and using */
-	/* Reads an user object identified by its database id from the given database
-	 * @param $db [ref] the databse object
-	 * @param $options tlUser/tlObject options
-	 * @return returns tl::OK if the object could be read from the db, else tl::ERROR
-	*/
+	//----- BEGIN interface iDBSerialization -----
+	/** 
+	 * Reads an user object identified by its database id from the given database
+	 * 
+	 * @param resource &$db reference to database handler
+	 * @param mixed $options (optional) tlUser/tlObject options
+	 * 
+	 * @return integer tl::OK if the object could be read from the db, else tl::ERROR
+	 */
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
@@ -215,6 +227,7 @@ class tlUser extends tlDBObject
 		         " login AS fullname, active,default_testproject_id, script_key " .
 		         " FROM {$this->object_table}";
 		$clauses = null;
+
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 		{
 			$clauses[] = "id = {$this->dbID}";		
@@ -261,8 +274,10 @@ class tlUser extends tlDBObject
 	 * Fetches all the testproject roles of of the user, and store them into the object. 
 	 * Result could be limited to a certain testproject
 	 * 
-	 * @param $db [ref] the database connection
-	 * @param $testProjectID integer the id of the testproject to read the roles for, if null all roles are read
+	 * @param resource &$db reference to database handler
+	 * @param integer $testProjectID Identifier of the testproject to read the roles for, 
+	 * 		if null all roles are read
+	 * 
 	 * @return integer returns tl::OK 
 	 */
 	public function readTestProjectRoles(&$db,$testProjectID = null)
@@ -301,8 +316,9 @@ class tlUser extends tlDBObject
 	 * Fetches all the testplan roles of of the user, and store them into the object. 
 	 * Result could be limited to a certain testplan
 	 * 
-	 * @param $db [ref] the database connection
-	 * @param $testPlanID integer the id of the testplan to read the roles for, if null all roles are read
+	 * @param resource &$db reference to database handler
+	 * @param integer $testPlanID Identifier of the testplan to read the roles for, if null all roles are read
+	 * 
 	 * @return integer returns tl::OK 
 	 */
 	public function readTestPlanRoles(&$db,$testPlanID = null)
@@ -338,9 +354,11 @@ class tlUser extends tlDBObject
 		return tl::OK;
 	}
 	
-	/* Writes the object into the database
-	 * @param $db [ref] the database handler
-	 * @return returns tl::OK if the object could be written to the db, else error code
+	/** 
+	 * Writes the object into the database
+	 * 
+	 * @param resource &$db reference to database handler
+	 * @return integer tl::OK if the object could be written to the db, else error code
 	 */
 	public function writeToDB(&$db)
 	{
@@ -380,8 +398,9 @@ class tlUser extends tlDBObject
 	}	
 
 	/** 
+	 * WARNING: DO NOT USE THE FUNCTION - CAUSES DB INCONSISTENCE! 
+	 *  
 	 * @deprecated 1.8.3 
-	 * WARNING: DO NOT USE THE FUNCTION - CAUSES DB INCONSISTENCE!  Inactivate.
 	 * @see #2407 
 	 **/	
 	public function deleteFromDB(&$db)
@@ -409,17 +428,20 @@ class tlUser extends tlDBObject
 	/**
 	 * Deletes all testproject related role assignments for a given user
 	 *
-	 * @param resource $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @param integer $userID the user ID
-	 * @return mixed tl::OK on success, tl:ERROR else
+	 * 
+	 * @return integer tl::OK on success, tl:ERROR else
 	 **/
-	 protected function deleteTestProjectRoles(&$db)
+	protected function deleteTestProjectRoles(&$db)
 	{
 		$query = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = {$this->dbID}";
 		return $db->exec_query($query) ? tl::OK : tl::ERROR;
 	}
 
-	/** Returns a user friendly representation of the user name
+	/** 
+	 * Returns a user friendly representation of the user name
+	 * 
 	 * @return string the display nmae
 	 */
 	public function getDisplayName()
@@ -434,6 +456,7 @@ class tlUser extends tlDBObject
 	
 	/**
 	 * Encrypts a given password with MD5
+	 * 
 	 * @param $pwd the password to encrypt
 	 * @return string the encrypted password
 	 */
@@ -446,7 +469,9 @@ class tlUser extends tlDBObject
 	}
 	
 	/**
-	 * @param $pwd the new password
+	 * Set encrypted password
+	 * 
+	 * @param string $pwd the new password
 	 * @return integer return tl::OK is the password is stored, else errorcode
 	 */
 	public function setPassword($pwd)
@@ -463,7 +488,8 @@ class tlUser extends tlDBObject
 	
 	/**
 	 * Getter for the password of the user
-	 * @return string returns the password of the user
+	 * 
+	 * @return string the password of the user
 	 */
 	public function getPassword()
 	{
@@ -473,7 +499,7 @@ class tlUser extends tlDBObject
 	/**
 	 * compares a given password with the current password of the user
 	 * 
-	 * @param $pwd the password to compate with the password actually set 
+	 * @param string $pwd the password to compate with the password actually set 
 	 * @return integer returns tl::OK if the password's match, else errorcode
 	 */
 	public function comparePassword($pwd)
@@ -485,6 +511,7 @@ class tlUser extends tlDBObject
 			return tl::OK;
 		return self::E_PWDDONTMATCH;		
 	}
+
 	
 	public function checkDetails(&$db)
 	{
@@ -514,6 +541,7 @@ class tlUser extends tlDBObject
 		}
 		return $result;
 	}
+
 	
 	public function checkLogin($login)
 	{
@@ -531,10 +559,11 @@ class tlUser extends tlDBObject
 	/**
 	 * Returns the id of the effective role in the context of ($tproject_id,$tplan_id)
 	 * 
-	 * @param resource $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @param integer $tproject_id the testproject id
 	 * @param integer $tplan_id the plan id
-	 * @return tlRole the effective role
+	 * 
+	 * @return integer tlRole the effective role
 	 */
 	function getEffectiveRole(&$db,$tproject_id,$tplan_id)
 	{
@@ -576,7 +605,7 @@ class tlUser extends tlDBObject
 		else
 		{
 			//@TODO schlundus, should not be there
-			$testPlanID = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
+			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 		}
 		
 		$userTestPlanRoles = $this->tplanRoles;
@@ -631,7 +660,8 @@ class tlUser extends tlDBObject
 	
 	/**
 	 * Checks the correctness of an email address
-	 * @param $email
+	 * 
+	 * @param string $email
 	 * @return integer returns tl::OK on success, errorcode else
 	 */
 	static public function checkEmailAddress($email)

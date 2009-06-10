@@ -3,18 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: attachment.class.php,v $
+ * @package 	TestLink
+ * @author 		Francisco Mancardi
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: attachment.class.php,v 1.18 2009/06/10 21:50:03 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/06/09 19:21:09 $ by $Author: schlundus $
- * @author Francisco Mancardi
- *
-*/
-require_once( dirname(__FILE__) . '/object.class.php' );
-/*
-	An attachment helper class used to manage the storage of the attachment's meta information
-	Attachments contents are handled by the repository
-*/
+ */
+ 
+/** parenthal class */
+require_once( 'object.class.php' );
+
+/**
+ * An attachment helper class used to manage the storage of the attachment's meta information
+ * Attachments contents are handled by the repository
+ * @package 	TestLink
+ */
 class tlAttachment extends tlDBObject 
 {
 	/**

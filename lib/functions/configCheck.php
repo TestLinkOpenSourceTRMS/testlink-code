@@ -3,16 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: configCheck.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/06/03 21:17:22 $ by $Author: franciscom $
- *
- * @author Martin Havlat
- * 
- * Scope: Check configuration and system 
+ * Check configuration and system 
  * Using: Installer, sysinfo.php and Login
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: configCheck.php,v 1.48 2009/06/10 21:50:03 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * @see			sysinfo.php
  *
- * Revisions:
+ * @internal Revisions:
  * 	
  *  20090416 - havlatm - checking: database, GD lib and browser support
  *  20090126 - franciscom - check_php_extensions() refactoring
@@ -26,7 +27,8 @@
 require_once('plan.core.inc.php');
 
 /**
- * get home url.
+ * get home URL
+ * 
  * @author adapted from Mantis Bugtracking system
  * @return string URL 
  */
@@ -105,8 +107,8 @@ function checkConfiguration()
 
 /** 
  * checks if installation is done
+ * 
  * @return bool returns true if the installation was already executed, false else
- * @version 1.1
  * @author Martin Havlat
  **/
 function checkInstallStatus()
@@ -121,7 +123,6 @@ function checkInstallStatus()
  *
  * @return string resulted message ('OK' means pass)
  * @author Martin Havlat 
- * @version 1.1
  **/
 function checkLibGd()
 {
@@ -170,8 +171,6 @@ function checkForExtensions(&$msg)
  * checks if the install dir is present
  *
  * @return bool returns true if the install dir is present, false else
- *
- * @version 1.0
  * @author Andreas Morsing 
  **/
 function checkForInstallDir()
@@ -189,9 +188,8 @@ function checkForInstallDir()
 /**
  * checks if the default password for the admin accout is still set
  *
- * @return bool returns true if the default password for the admin account is set, 
+ * @return boolean returns true if the default password for the admin account is set, 
  * 				false else
- * @version 1.0
  * @author Andreas Morsing 
  **/
 function checkForAdminDefaultPwd(&$db)
@@ -222,11 +220,9 @@ function checkForLDAPExtension()
  * these notes should be displayed!
  *
  * @return array returns the security issues, or null if none found!
- *
- * @version 1.0
  * @author Andreas Morsing 
  *
- * rev :
+ * @internal rev :
  *      20081015 - franciscom - LDAP checks refactored
  *      20080925 - franciscom - added option to not show results
  *      20070626 - franciscom - added LDAP checks  
@@ -332,10 +328,8 @@ function getSecurityNotes(&$db)
 /**
  * checks if the connection to the Bug Tracking System database is working
  *
- * @return bool returns true if ok
+ * @return boolean returns true if ok
  * 				false else
- *
- * @version 1.0
  * @author franciscom 
  **/
 function checkForBTSConnection()
@@ -350,9 +344,9 @@ function checkForBTSConnection()
 
 /** 
  * Check if server OS is comercional one 
+ * 
  * @return boolean TRUE if mikrosoft
  * @author havlatm
- * @version 1.0
  */ 
 function isServerMswind()
 {
@@ -422,10 +416,9 @@ function checkForRepositoryDir($the_dir)
 /**
  * Check if DB schema is valid
  * 
- * @todo Update list of versions
  * @param pointer $db Database class
- * @version 1.1
  * @return string message
+ * @todo Update list of versions
  */
 function checkSchemaVersion(&$db)
 {
@@ -474,8 +467,6 @@ function checkSchemaVersion(&$db)
  * checks if the install dir is present
  *
  * @return msg returns if there are any test plans without a test project 
- *
- * @version 1.0
  * @author Asiel Brumfield 
  **/
 function checkForTestPlansWithoutTestProjects(&$db)
@@ -519,7 +510,7 @@ function checkEmailConfig()
 
 /** 
  * checking register global = OFF (doesn't cause error')
- * @param integer &$errCounter pointer to error counter
+ * @param integer &$errCounter reference to error counter
  * @return string html table row
  */
 function check_php_settings(&$errCounter)
@@ -559,7 +550,6 @@ function check_php_settings(&$errCounter)
  * @param integer &$errCounter pointer to error counter
  * @return string html table rows
  * @author Martin Havlat
- * @version 1.0
  * @todo martin: Do we require "Checking DOM XML support"? It seems that we use internal library.
  *			if (function_exists('domxml_open_file'))
  */
@@ -615,7 +605,8 @@ function checkPhpExtensions(&$errCounter)
 
 /**
  * Check if web server support session data
- * @param integer &$errCounter pointer to error counter
+ * 
+ * @param integer &$errCounter reference to error counter
  * @return string html row with result 
  */
 function check_session(&$errCounter)
@@ -642,7 +633,8 @@ function check_session(&$errCounter)
 
 /**
  * check PHP defined timeout
- * @param integer &$errCounter pointer to error counter
+ * 
+ * @param integer &$errCounter reference to error counter
  * @return string html row with result 
  */
 function check_timeout(&$errCounter)
@@ -673,8 +665,10 @@ function check_timeout(&$errCounter)
 
 /**
  * check Database type
- * @param integer &$errCounter pointer to error counter
+ * 
+ * @param integer &$errCounter reference to error counter
  * @param string $type valid PHP database type label
+ * 
  * @return string html row with result 
  */
 function checkDbType(&$errCounter, $type)
@@ -701,6 +695,7 @@ function checkDbType(&$errCounter, $type)
 
 /**
  * Display Operating System
+ * 
  * @return string html table row
  */
 function checkServerOs()
@@ -714,9 +709,9 @@ function checkServerOs()
 
 /**
  * check minimal required PHP version
+ * 
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
- * @version 2.0
  */
  /* Revision
   		- havlatm: converted to table format, error passed via argument, 
@@ -761,10 +756,10 @@ function checkPhpVersion(&$errCounter)
  * OK result is for state:
  * 		a) installation - writable
  * 		b) installed - readable
+ * 
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
  * @author Martin Havlat
- * @version 1.0
  */
 function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bCritical=FALSE)
 {
@@ -839,10 +834,10 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bC
 /**
  * Check read/write permissions for directories
  * based on check_with_feedback($dirs_to_check);
+ * 
  * @param integer &$errCounter pointer to error counter
  * @return string html row with result 
  * @author Martin Havlat
- * @version 1.0
  */
 function check_dir_permissions(&$errCounter)
 {
@@ -888,7 +883,6 @@ function check_dir_permissions(&$errCounter)
  *  
  * @param integer &$errCounter pointer to error counter
  * @author Martin Havlat
- * @version 1.0
  **/
 function reportCheckingBrowser(&$errCounter)
 {
@@ -914,10 +908,10 @@ function reportCheckingBrowser(&$errCounter)
 
 
 /** 
- * print table with system checking results 
- * @param integer &$errCounter pointer to error counter
+ * print table with system checking results
+ *  
+ * @param integer &$errCounter reference to error counter
  * @author Martin Havlat
- * @version 1.0
  **/
 function reportCheckingSystem(&$errCounter)
 {
@@ -931,9 +925,8 @@ function reportCheckingSystem(&$errCounter)
 /** 
  * print table with database checking
  *  
- * @param integer &$errCounter pointer to error counter
+ * @param integer &$errCounter reference to error counter
  * @author Martin Havlat
- * @version 1.0
  **/
 function reportCheckingDatabase(&$errCounter, $type = null)
 {
@@ -954,9 +947,9 @@ function reportCheckingDatabase(&$errCounter, $type = null)
 
 /** 
  * print table with system checking results 
- * @param integer &$errCounter pointer to error counter
+ * 
+ * @param integer &$errCounter reference to error counter
  * @author Martin Havlat
- * @version 1.0
  **/
 function reportCheckingWeb(&$errCounter)
 {
@@ -970,11 +963,12 @@ function reportCheckingWeb(&$errCounter)
 
 
 /** 
- * print table with system checking results 
+ * print table with system checking results
+ *  
  * @param integer &$errCounter pointer to error counter
  * @param string inst_type: useful when this function is used on installer
+ * 
  * @author Martin Havlat
- * @version 1.0
  **/
 function reportCheckingPermissions(&$errCounter,$inst_type='none')
 {

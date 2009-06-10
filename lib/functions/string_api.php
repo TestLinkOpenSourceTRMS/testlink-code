@@ -3,20 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * @filesource $RCSfile: string_api.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/05/18 20:22:10 $  $Author: schlundus $
- * @author franciscom
+ * String Processing functions
  * 
- *	### String Processing functions ###
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: string_api.php,v 1.9 2009/06/10 21:50:03 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  * 
- * rev: 
+ * @internal rev: 
  *  20080822 - franciscom - restored missed string_email_links() 
  * 	20080606 - havlatm - remove useles mantis related code
  * 	20071104 - franciscom - changes to string_email_links()
  *     
- * ----------------------------------------------------------------------------------- */
- // The original code was developed by:
+ **/
+ // The base for certain code was adapted from:
  // Mantis - a php based bugtracking system
  // Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  // -------------------------------------------------------------------------------------
@@ -62,21 +62,23 @@ function string_no_break( $p_string ) {
 }
 
 /** 
- * Similar to nl2br, but fixes up a problem where new lines are doubled between <pre> tags.
+ * Similar to nl2br, but fixes up a problem where new lines are doubled between < pre > tags.
  * additionally, wrap the text an $p_wrap character intervals if the config is set
+ * 
+ * @author Mantis BT team
  */
 function string_nl2br( $p_string, $p_wrap = 100 ) 
 {
 		$p_string = nl2br( $p_string );
 
-		# fix up eols within <pre> tags (#1146)
+		// fix up eols within <pre> tags
 		$pre2 = array();
 		preg_match_all("/<pre[^>]*?>(.|\n)*?<\/pre>/", $p_string, $pre1);
 		for ( $x = 0; $x < count($pre1[0]); $x++ ) 
 		{
 			$pre2[$x] = preg_replace("/<br[^>]*?>/", "", $pre1[0][$x]);
-			# @@@ thraxisp - this may want to be replaced by html_entity_decode (or equivalent)
-			#     if other encoded characters are a problem
+			// this may want to be replaced by html_entity_decode (or equivalent)
+			//     if other encoded characters are a problem
 			$pre2[$x] = preg_replace("/&nbsp;/", " ", $pre2[$x]);
 			if ( ON == config_get( 'wrap_in_preformatted_text' ) ) 
 			{

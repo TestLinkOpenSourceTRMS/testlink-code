@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.117 2009/06/09 22:38:56 havlat Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.118 2009/06/10 21:50:03 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -48,7 +48,8 @@
  * 20070128 - franciscom - added check_tplan_name_existence()
  *
  **/
- 
+
+/** related functions */ 
 require_once('attachments.inc.php');
 require_once('keyword.class.php');
 
@@ -80,7 +81,7 @@ class testproject extends tlObjectWithAttachments
 	/** 
 	 * Class constructor
 	 * 
-	 * @param object &$db reference to DB resource
+	 * @param resource &$db reference to database handler
 	 */
 	function testproject(&$db)
 	{

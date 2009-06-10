@@ -2,21 +2,27 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
+ * 
+ * Management and assignment of keywords
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: keyword.class.php,v 1.20 2009/06/09 10:34:27 havlat Exp $
+ * @version    	CVS: $Id: keyword.class.php,v 1.21 2009/06/10 21:50:03 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  **/
 
+/** parenthal classes */
 require_once('object.class.php');
+
+/** export/import */
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 
 /**
  * Support for keywords management
+ * @package 	TestLink
  */ 
 class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV
 {
@@ -131,6 +137,8 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 
 	/**
 	 * Check if keyword name is not duplicated
+	 * 
+	 * @param resource &$db reference to database handler
 	 */
 	protected function checkKeyword(&$db)
 	{

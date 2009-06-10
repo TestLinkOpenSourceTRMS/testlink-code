@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: priority.class.php,v 1.9 2009/06/09 22:16:18 havlat Exp $
+ * @version    	CVS: $Id: priority.class.php,v 1.10 2009/06/10 21:50:03 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -15,14 +15,16 @@
  *
  */ 
 
+/** parent class */
 require_once('testplan.class.php');
 
 /** 
  * Class testPlanUrgency extends testPlan functionality by Test Urgency functions 
  * - modify and list Test Urgency
  * 
- * @author 		Martin Havlat
- * @since 1.8 - 17.7.2008
+ * @package TestLink
+ * @author 	Martin Havlat
+ * @since 	1.8 - 17.7.2008
  */
 class testPlanUrgency extends testPlan
 {
@@ -55,12 +57,12 @@ class testPlanUrgency extends testPlan
 	 * 
 	 * @internal 
 	 * 20081212 - franciscom - Postgres do not like SQL syntax with JOIN
-		 $sql = 'UPDATE testplan_tcversions ' . 
-		 ' JOIN nodes_hierarchy NHA ON testplan_tcversions.tcversion_id = NHA.id '.
-		 ' JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id' .
-		 ' SET urgency=' . $urgency .
-		 ' WHERE testplan_tcversions.testplan_id=' . $testplan_id .
-		 ' AND NHB.parent_id=' .	$node_id; 
+	 *  $sql = 'UPDATE testplan_tcversions ' .
+	 *  ' JOIN nodes_hierarchy NHA ON testplan_tcversions.tcversion_id = NHA.id '.
+	 *  ' JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id' .
+	 *  ' SET urgency=' . $urgency .
+	 *  ' WHERE testplan_tcversions.testplan_id=' . $testplan_id .
+	 *  ' AND NHB.parent_id=' .	$node_id; 
 	 */	
 	public function setSuiteUrgency($testplan_id, $node_id, $urgency)
 	{
@@ -88,7 +90,7 @@ class testPlanUrgency extends testPlan
 	 * @param integer $node_id Test Suite 
 	 * @param integer $testproject_id
 	 *
-	 * @return array of array: testcase_id, name, urgency, tcprefix, tc_external_id 
+	 * @return array of array testcase_id, name, urgency, tcprefix, tc_external_id 
 	 * 
 	 * @internal Revisions:
 	 * 	20081210 - franciscom - added testproject_id argument to avoid

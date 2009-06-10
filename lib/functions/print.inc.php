@@ -3,13 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * Library for documents generation
+ *
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.83 2009/06/08 20:16:31 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.84 2009/06/10 21:50:03 havlat Exp $
  * @uses printDocument.php
  *
- * @internal Library for documents generation
+ * @internal 
  *
  * Revisions:
  *      20090330 - franciscom - fixed internal bug when decoding user names
@@ -57,13 +59,16 @@
  *
  */ 
 
+/** uses get_bugs_for_exec() */
 require_once("exec.inc.php");
 
 /**
  * render HTML header
  * Standard: HTML 4.01 trans (because is more flexible to bugs in user data)
+ * 
  * @param string $title
  * @param string $base_href Base URL
+ * 
  * @return string html data
  */
 function renderHTMLHeader($title,$base_href)
@@ -88,7 +93,8 @@ function renderHTMLHeader($title,$base_href)
 
 /**
  * Generate initial page of document
- * @param singleton $doc_info data with the next string values: 
+ * 
+ * @param object $doc_info data with the next string values: 
  *                  title
  *                  type_name: what does this means ???
  *                  author, tproject_name, testplan_name  
@@ -144,8 +150,10 @@ function renderFirstPage($doc_info)
 
 /**
  * Generate a chapter to a document
+ * 
  * @param string $title
  * @param string $content
+ * 
  * @return string html
  * @author havlatm
  */
@@ -254,12 +262,12 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 
 /**
  * get user name from pool (save used names in session to improve performance)
- * @author havlatm
  * 
  * @param integer $db DB connection identifier 
  * @param integer $userId
  * 
  * @return string readable user name
+ * @author havlatm
  */
 function gendocGetUserName(&$db, $userId)
 {
@@ -291,9 +299,10 @@ function gendocGetUserName(&$db, $userId)
 
 /**
  * render Test Case content for generated documents
+ * 
  * @param $integer db DB connection identifier 
  * @return string generated html code
- * @version 
+ * @internal 
  *      20080819 - franciscom - removed mysql only code
  *      20071014 - franciscom - display test case version
  *      20070509 - franciscom - added Contribution
@@ -517,7 +526,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 
 
 	  // collect REQ for TC
-	  // MHT: based on contribution by JMU (1045)
+	  // based on contribution by JMU (#1045)
 	  if ($printingOptions['requirement'])
 	  {
 	    if(!$req_mgr)
@@ -543,7 +552,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  }
 	  
 	  // collect keywords for TC
-	  // MHT: based on contribution by JMU (1045)
+	  // based on contribution by JMU (#1045)
 	  if ($printingOptions['keyword'])
 	  {
 	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['keywords'].':</span><td>';
@@ -569,9 +578,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 
 
 /**
-   Remaining part of renderProjectNodeForPrinting
-  @todo havlatm: refactore
-*/
+ * Remaining part of renderProjectNodeForPrinting
+ * 
+ * @todo havlatm: refactore
+ */
 function renderToc(&$printingOptions)
 {
 	$code = '';
@@ -726,7 +736,11 @@ function renderTestDuration($statistics)
 }
 
 
-/** @return string final markup for HTML */
+/** 
+ * get final markup for HTML
+ * 
+ * @return string HTML 
+ **/
 function renderEof()
 {
 	return "\n</body>\n</html>";
@@ -735,6 +749,7 @@ function renderEof()
 
 /**
  * compose html text for metrics (meantime estimated time only)
+ * 
  * @return string html
  */
 function buildTestPlanMetrics($statistics)

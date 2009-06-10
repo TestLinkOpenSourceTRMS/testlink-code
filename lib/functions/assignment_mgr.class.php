@@ -3,16 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: assignment_mgr.class.php,v $
- *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/06/07 12:56:40 $ by $Author: franciscom $
- * @author Francisco Mancardi
- *
  * Manager for assignment activities
  *
- * 20060908 - franciscom - 
-*/
+ * @package 	TestLink
+ * @author 		Francisco Mancardi
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.7 2009/06/10 21:50:03 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ */
+ 
+/**
+ * class manage assignment users for testing
+ * @package 	TestLink
+ */ 
 class assignment_mgr extends tlObject
 {
 	var $db;

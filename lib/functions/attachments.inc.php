@@ -3,20 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: attachments.inc.php,v $
- *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/06/05 16:54:02 $ by $Author: franciscom $
- *
  * functions related to attachments
  *
-**/
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: attachments.inc.php,v 1.15 2009/06/10 21:50:03 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ **/
+
+/** core functions */
 require_once('common.php');
 require_once( dirname(__FILE__) . '/attachment.class.php' );
 require_once( dirname(__FILE__) . '/attachmentrepository.class.php' );
 require_once( dirname(__FILE__) . '/files.inc.php' );
 
-/*
+/**
  * Get infos about the attachments of a given object
  * 
  * @param object $attachmentRepository [ref] the attachment Repository

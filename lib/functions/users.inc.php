@@ -3,16 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * Functions for usermanagement
+ * 
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.95 2009/06/10 09:14:05 havlat Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.96 2009/06/10 21:50:03 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
- * @internal
- * Functions for usermanagement
- *
- * rev: 20090517 - franciscom - getTestersForHtmlOptions() interface changes
+ * @internal Revision:
+ * 
+ *  	20090517 - franciscom - getTestersForHtmlOptions() interface changes
  *                              buildUserMap() added prefix to tag inactive users
  *      20081221 - franciscom - buildUserMap() interface changes
  *      20081213 - franciscom - refactoring removing old config options 
@@ -23,13 +24,17 @@
  *
  */
 
+/** core functions */
 require_once("common.php");
+
+/** conqueror of user functionality */
 require_once("user.class.php");
 
 $authCfg = config_get('authentication');
 if( 'LDAP' == $authCfg['method'] )
 {
-	require_once(dirname(__FILE__) . "/ldap_api.php");
+	/** support for LDAP authentication */
+	require_once("ldap_api.php");
 }
 
 /**
@@ -175,7 +180,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 /**
  * reset user password in DB
  * 
- * @param resource &$db reference to DB identifier
+ * @param resource &$db reference to database handler
  * @param integer $userID 
  * @param string &$errorMsg reference to error message
  * 
@@ -318,12 +323,14 @@ function getAllUsersRoles(&$db,$order_by = null)
  * returns users that have role on ($tplanID,$tprojectID) with right
  * to execute a test case.
  *
- * @param $db reference to db handler
- * @param int $tplanID test plan id
- * @param int $tprojectID test project id
- * @param     $users
- * @param
- * @param string $activeStatus. values: 'active','inactive','any'  
+ * @param resource &$db reference to database handler
+ * @param integer $tplanID test plan id
+ * @param integer $tprojectID test project id
+ * @param $users UNUSED - remove
+ * @param $additional_testers TBD
+ * @param string $activeStatus. values: 'active','inactive','any'
+ * 
+ * @return array TBD  
  */
 function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null, 
                                   $additional_testers = null,$activeStatus = 'active')

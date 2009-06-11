@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.48 2009/06/11 18:50:55 schlundus Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.49 2009/06/11 18:52:53 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -423,7 +423,7 @@ class tlUser extends tlDBObject
 	{
 		$sqlSet = array();
 		$sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$this->dbID}";
-		$sqlSet[] = "DELETE FROM {$this->table['users']  WHERE id = {$this->dbID}";
+		$sqlSet[] = "DELETE FROM {$this->table['users']}  WHERE id = {$this->dbID}";
 
 	    foreach($sqlSet as $sql)
 	    {

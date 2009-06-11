@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.14 2009/06/09 13:26:41 franciscom Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.15 2009/06/11 18:12:31 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -54,6 +54,7 @@ class tlInputParameter extends tlObject
 	 * @var mixed tainted value, fetched but not validated
 	 */
 	protected $taintValue = null;
+	
 	/**
 	 * @var mixed normalized and maybe validated value
 	 */
@@ -63,6 +64,7 @@ class tlInputParameter extends tlObject
 	 * @var tl<TYPE>ValidationInfo Info how the value of the parameter should be validated
 	 */
 	protected $validationInfo = null;
+	
 	/**
 	 * @var boolean is the parameter valid?
 	 */
@@ -133,24 +135,27 @@ class tlInputParameter extends tlObject
 			case "POST":
 				$src = $_POST;
 				break;
+	
 			case "GET":
 				$src = $_GET;
 				break;
+	
 			case "REQUEST":
 				$src = $_REQUEST;
 				break;
 		}
+	
 		$value = null;
-		$bFetched = false;
+		$hasBeenFetched = false;
 		if ($src)
 		{	
 			if (isset($src[$parameterName]))
 			{
 				$value = $src[$parameterName];
-				$bFetched = true;
+				$hasBeenFetched = true;
 			}
 		}
-		$this->bFetched = $bFetched;
+		$this->bFetched = $hasBeenFetched;
 		$this->taintValue = $value;
 	}
 
@@ -251,7 +256,7 @@ class tlStringValidationInfo
 	/**
 	 * @var bool should we strip slashes?
 	 */
-	public $bStripSlashes = false;
+	public $doStripSlashes = false;
 	
 	/**
 	 * @var string regular expression which can be used for validation
@@ -282,7 +287,7 @@ class tlStringValidationInfo
 		else
 		{
 			$value = $this->trim($value);
-			if ($this->bStripSlashes)	
+			if ($this->doStripSlashes)	
 			{
 				$value = $this->stripslashes($value);
 			}	

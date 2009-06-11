@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.39 2009/06/11 17:47:27 schlundus Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.40 2009/06/11 18:20:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -32,6 +32,16 @@
  *                          See ADODB manuals
  */
  
+ # -------------------------------------------------------------------------------
+ # This piece of software has been taken from Mantis and modified
+ # to be used on TestLink (franciscom@sourceforgeusers.com)
+ # -------------------------------------------------------------------------------
+ # Mantis - a php based bugtracking system
+ # Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
+ # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+ # This program is distributed under the terms and conditions of the GPL
+ # See the README and LICENSE files for details
+ # -------------------------------------------------------------------------------
 
 /** 
  * As stated on ADODB documentation this set will improve performance but have a side
@@ -40,11 +50,8 @@
 // $ADODB_COUNTRECS=FALSE;
 $ADODB_COUNTRECS=TRUE;
 
-/**
- * Path to ADODB library
- * To use a different version of ADODB that provided with TL, define your localition
- * of library via custom_config.inc.php 
- */
+// To use a different version of ADODB that provided with TL, use a similar bunch of lines
+// on custom_config.inc.php
 if( !defined('TL_ADODB_RELATIVE_PATH') )
 {
     define('TL_ADODB_RELATIVE_PATH','/../../third_party/adodb/adodb.inc.php' );

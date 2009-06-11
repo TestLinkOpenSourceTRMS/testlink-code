@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/06/11 17:47:27 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/06/11 18:16:53 $ $Author: franciscom $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -14,6 +14,7 @@
  *                             due to wrong table name in insert_id() call.
  *     
  */
+//@TODO STILL FUNCTIONS WITH WRONG COMMENTS
 class tlRole extends tlDBObject
 {
 	public $name;
@@ -95,11 +96,17 @@ class tlRole extends tlDBObject
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)
+		{
 			$clauses[] = "a.description = '".$db->prepare_string($this->name)."'";
+		}
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+		{
 			$clauses[] = "a.id = {$this->dbID}";		
+		}
 		if ($clauses)
+		{
 			$sql .= " WHERE " . implode(" AND ",$clauses);
+		}
 			
 		$rightInfo = $db->get_recordset($sql);			 
 		if ($rightInfo)

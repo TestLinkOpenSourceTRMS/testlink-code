@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/06/06 14:54:57 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/06/11 18:12:24 $ by $Author: franciscom $
  * 
 **/
 require_once("object.class.php");
 require_once("inputparameter.class.php");
 
+// @TODO COMMENT ALL FUNCTIONS
 // @TODO COMMENT ALL FUNCTIONS
 function P_PARAMS($paramInfo,&$args = null)
 {
@@ -99,13 +100,13 @@ function I_PARAMS($paramInfo,&$args = null)
 	return $params;
 }
 
-
+//@TODO comment
 function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = null,
                             $pfnValidation = null,$pfnNormalization = null)
 {
 	$vInfo = new tlStringValidationInfo();
 	$vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
-	$vInfo->bStripSlashes = true;
+	$vInfo->doStripSlashes = true;
 
     $items2check = array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
     foreach($items2check as $item)
@@ -124,6 +125,7 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
 	return $iParam->value();
 }
 
+//@TODO comment
 function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation = null)
 {
 	$vInfo = new tlIntegerValidationInfo();
@@ -145,21 +147,25 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 	return $iParam->value();
 }
 
+//@TODO comment
 function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
 }
 
+//@TODO comment
 function GPR_PARAM_ARRAY_INT($gpr,$name,$pfnValidation = null)
 {
 	return GPR_PARAM_ARRAY($gpr,tlInputParameter::INT,$name,$pfnValidation);
 }
 
+//@TODO comment
 function GPR_PARAM_ARRAY_STRING_N($gpr,$name,$pfnValidation = null)
 {
 	return GPR_PARAM_ARRAY($gpr,tlInputParameter::STRING_N,$name,$pfnValidation);
 }
 
+//@TODO comment
 function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 {
 	$vInfo = new tlArrayValidationInfo();
@@ -184,6 +190,7 @@ function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 	return $iParam->value();
 }
 
+//@TODO comment
 function GPR_PARAM_CB_BOOL($gpr,$name)
 {
 	$vInfo = new tlCheckBoxValidationInfo();

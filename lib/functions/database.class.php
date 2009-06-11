@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.40 2009/06/11 18:20:59 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.41 2009/06/11 18:21:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -33,6 +33,7 @@
  */
  
  # -------------------------------------------------------------------------------
+ # This comments has to leave here in place
  # This piece of software has been taken from Mantis and modified
  # to be used on TestLink (franciscom@sourceforgeusers.com)
  # -------------------------------------------------------------------------------

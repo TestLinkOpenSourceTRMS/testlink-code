@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.22 2009/03/13 12:45:11 havlat Exp $
+$Id: planAddTC_m1.tpl,v 1.23 2009/06/11 06:58:02 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
+rev: 20090610 - franciscom - display date when test case version was linked to test plan
+     20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
      20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
 *}
 
@@ -12,7 +13,7 @@ rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 65
              th_id,th_test_case,version,execution_order,
              no_testcase_available,btn_save_custom_fields,
              has_been_executed,inactive_testcase,btn_save_exec_order,
-             executed_can_not_be_removed,
+             executed_can_not_be_removed,added_on_date,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
@@ -130,6 +131,10 @@ rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 65
                  title="{$labels.check_uncheck_all_checkboxes}" />
 				    {$labels.remove_tc}
 				    </td>
+            {* 20090610 - franciscom *}
+				    <td>
+				    {$labels.added_on_date}
+				    </td>
            {/if}
           </tr>   
           
@@ -235,6 +240,14 @@ rev: 20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 65
                            &nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}
                     {/if}
           				</td>
+          				{* 20090610 - franciscom *}
+          				<td>
+          				{if $tcase.linked_ts != ''}
+          				  {localize_date d=$tcase.linked_ts}
+          				{else} &nbsp;  
+          				{/if}  
+          				</td>
+          				
                 {/if}
                 {* ------------------------------------------------------------------------- *}      
  

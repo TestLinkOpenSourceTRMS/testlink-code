@@ -2,12 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: specview.php,v $
- * @version $Revision: 1.30 $ $Author: franciscom $
- * @modified $Date: 2009/05/30 15:05:08 $
+ * @version $Revision: 1.31 $ $Author: franciscom $
+ * @modified $Date: 2009/06/11 06:58:02 $
  *
  * @author 	Francisco Mancardi (francisco.mancardi@gmail.com)
  *
  * rev:
+ *     20090325 - franciscom - added new info about when and who has linked a tcversion
  *     20090325 - franciscom - BUGID - better implementation of BUGID 1497
  *     20081116 - franciscom - BUGID
  *     20081109 - franciscom - fixed filter on getTestSpecFromNode()
@@ -139,6 +140,10 @@ returns: array where every element is an associative array with the following
                                     [feature_id] => 12   ---> testplan_tcversions.id
                                     [execution_order] => 20
                                     [external_id] => 2
+                                    [linked_ts] => 2009-06-10 23:00
+                                    [linked_by] => 2
+                                    
+                                    
                                 )
 
                                [81] => Array( [id] => 81
@@ -173,27 +178,27 @@ added new data on output: [tcversions_qty]
        
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
-                            $tobj_id,$id,$name,&$linked_items,
-                            $map_node_tccount,$keyword_id = 0,$tcase_id = null,
-							              $write_button_only_if_linked = 0,
-							              $prune_unlinked_tcversions=0,$add_custom_fields=0,$tproject_id = null)
+                       $tobj_id,$id,$name,&$linked_items,
+                       $map_node_tccount,$keyword_id = 0,$tcase_id = null,
+			           $write_button_only_if_linked = 0,
+					   $prune_unlinked_tcversions=0,$add_custom_fields=0,$tproject_id = null)
 {
-	  $write_status = $write_button_only_if_linked ? 'no' : 'yes';
-	  $is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
-	  $is_uncovered_view_type=$spec_view_type == 'uncoveredtestcases' ? 1 : 0;
+    $write_status = $write_button_only_if_linked ? 'no' : 'yes';
+	$is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
+	$is_uncovered_view_type=$spec_view_type == 'uncoveredtestcases' ? 1 : 0;
 
     if( !$is_tplan_view_type && is_null($tproject_id) )
     {
         $tproject_id=$tobj_id;
     }
 	  
-	  $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
-	  $out = array(); 
-	  
-	  $tcase_mgr = new testcase($db); 
-	  
-	  $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
-	  $hash_id_descr = array_flip($hash_descr_id);
+    $result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
+    $out = array(); 
+    
+    $tcase_mgr = new testcase($db); 
+    
+    $hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
+    $hash_id_descr = array_flip($hash_descr_id);
     
     $filters=array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id, 
                    'tcase_node_type_id' => $hash_descr_id['testcase']);
@@ -208,8 +213,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$out[$idx]['write_buttons'] = 'no';
   	$out[$idx]['testcase_qty'] = 0;
   	$out[$idx]['level'] = 1;
-		$out[$idx]['linked_testcase_qty'] = 0;
-    
+	$out[$idx]['linked_testcase_qty'] = 0;
+	
+	// 20090610 - franciscom
+	$out[$idx]['linked_ts'] = null;                                          
+    $out[$idx]['linked_by'] = 0;                                          
+                                          
     $idx++;
     $tsuite_tcqty=array($id => 0);
     $parent_idx=-1;
@@ -256,6 +265,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				    // useful for tc_exec_assignment.php          
   				    $out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
   				    $out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
+  				    
+  				    // 20090610 - franciscom
+  				    $out[$parent_idx]['testcases'][$tc_id]['linked_by'] = 0;
+  				    $out[$parent_idx]['testcases'][$tc_id]['linked_ts'] = null;
+  				    
           }
   				$out[$parent_idx]['testcase_qty']++;
   				$a_tcid[] = $current['id'];
@@ -410,32 +424,49 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   				foreach($linked_items as $linked_testcase)
   				{
   					if(($linked_testcase['tc_id'] == $the_tc['testcase_id']) &&
-  						($linked_testcase['tcversion_id'] == $the_tc['id']) )
+  					   ($linked_testcase['tcversion_id'] == $the_tc['id']) )
   					{
-       				if( !isset($out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']]) )
-       				{
-        				$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
-  	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 0;
-                $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
+       				    if( !isset($out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']]) )
+       				    {
+        				    $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+  	    			        $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 0;
+                            $out[$parent_idx]['testcases'][$tc_id]['external_id'] = $the_tc['tc_external_id'];
 
-                // 20080811 - franciscom - BUGID 1650 (REQ)
-  	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'][$the_tc['id']] = $the_tc['execution_type'];
-				      }
+                            // 20080811 - franciscom - BUGID 1650 (REQ)
+  	    			        $out[$parent_idx]['testcases'][$tc_id]['tcversions_execution_type'][$the_tc['id']] = $the_tc['execution_type'];
+				        }
   						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $linked_testcase['tcversion_id'];
-              $exec_order= isset($linked_testcase['execution_order'])? $linked_testcase['execution_order']:0;
-              $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $exec_order;
+                        $exec_order= isset($linked_testcase['execution_order'])? $linked_testcase['execution_order']:0;
+                        $out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $exec_order;
   						$out[$parent_idx]['write_buttons'] = 'yes';
   						$out[$parent_idx]['linked_testcase_qty']++;
   						
   						$result['has_linked_items'] = 1;
   						
   						if(intval($linked_testcase['executed']))
+  						{
   							$out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
-  						
+  						}
   						if( isset($linked_testcase['user_id']))
+  						{
   							$out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($linked_testcase['user_id']);
+  						}
   						if( isset($linked_testcase['feature_id']))
+  						{
   							$out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($linked_testcase['feature_id']);
+  						}
+  						
+  						// 20090610 - franciscom
+  						if( isset($linked_testcase['linked_by']))
+  						{
+  							$out[$parent_idx]['testcases'][$tc_id]['linked_by']=intval($linked_testcase['linked_by']);
+  						}
+
+  						// 20090610 - franciscom
+  						if( isset($linked_testcase['linked_ts']))
+  						{
+  							$out[$parent_idx]['testcases'][$tc_id]['linked_ts']=$linked_testcase['linked_ts'];
+  						}
   						break;
   					}
   				}

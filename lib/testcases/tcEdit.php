@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2009/05/30 15:03:49 $  by $Author: franciscom $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2009/06/11 06:58:02 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -148,9 +148,6 @@ if($args->edit_tc)
   	}
 
 	$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
-	
-	new dBug($cf_smarty);
-	
     $smarty->assign('cf',$cf_smarty);
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);

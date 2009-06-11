@@ -1,25 +1,18 @@
 <?php
-////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.72 2009/06/10 19:36:00 franciscom Exp $
-// File:     planAddTC.php
-// Purpose:  link/unlink test cases to a test plan
-//
-//
-// rev :
-//      20081030 - franciscom - improved use of custom fields on gen_spec_view()
-//      20081019 - franciscom - removed new argument in call gen_spec_view()
-//                              that remove empty test suite because generates
-//                              a bug, due to implementation in gen_spec_view():
-//                              Reenabled use of custom fields in gen_spec_view();
-// 
-//      20080813 - franciscom - BUGID 1650 (REQ)
-//      20080629 - franciscom - fixed missing variable bug
-//      20080510 - franciscom - multiple keyword filter with AND type
-//      20080404 - franciscom - reorder logic
-//      20080114 - franciscom - added testCasePrefix management
-//      use show_help.php to apply css configuration to help pages
-//
-////////////////////////////////////////////////////////////////////////////////
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: planAddTC.php,v 1.73 2009/06/11 06:58:02 franciscom Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal Revisions:
+ *           link/unlink test cases to a test plan
+ **/
+
 require_once('../../config.inc.php');
 require_once("common.php");
 require("specview.php");
@@ -96,19 +89,21 @@ if($do_display)
 		
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
-	
 	$testCaseSet = null;
 	if(!is_null($keywordsFilter))
 	{ 
 	    // With this pieces we implement the AND type of keyword filter.
 	    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
-	                                                                             $keywordsFilter->type);
+	                                                            $keywordsFilter->type);
 	    
 		if (sizeof($keywordsTestCases))
+		{
 			$testCaseSet = array_keys($keywordsTestCases);
+		}	
 	}
 	define('DONT_PRUNE',0);
 	define('WRITE_BUTTON_ALWAYS',0);
+	
 	
 	// Choose enable/disable display of custom fields, analysing if this kind of custom fields
 	// exists on this test project.
@@ -117,7 +112,7 @@ if($do_display)
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$args->keyword_id,
 	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,$add_custom_fields);
-	  
+  
 	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];

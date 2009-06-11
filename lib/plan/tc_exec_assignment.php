@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.36 2009/06/10 19:36:00 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.37 2009/06/11 06:58:02 franciscom Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -51,43 +51,42 @@ if(!is_null($args->doAction))
 		$open = $status_map['open']['id'];
 		$db_now = $db->db_now();
 
-		$features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
-	  $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id');
-	  $called = array( 'upd' => false, 'ins' => false, 'del' => false);
+        $features2 = array( 'upd' => array(), 'ins' => array(), 'del' => array());
+	    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id');
+	    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
 		foreach($args->achecked_tc as $key_tc => $value_tcversion)
 		{
 			$feature_id = $args->feature_id[$key_tc];
-
 			if($args->has_prev_assignment[$key_tc] > 0)
 			{
          
 				if($args->tester_for_tcid[$key_tc] > 0)  
 				{
-          // Do only is tester has changed
-				  if( $args->has_prev_assignment[$key_tc] != $args->tester_for_tcid[$key_tc])
-				  {
-			        $op='upd';
+                    // Do only is tester has changed
+				    if( $args->has_prev_assignment[$key_tc] != $args->tester_for_tcid[$key_tc])
+				    {
+			            $op='upd';
 					    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
 					    $features2[$op][$feature_id]['type'] = $task_test_execution;
 					    $features2[$op][$feature_id]['status'] = $open;
 					    $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
 					    $features2[$op][$feature_id]['tcase_id'] = $key_tc;
 					    $features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
-              $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
+                        $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
 					}
 				} 
 				else
 				{
-	          $op='del';
-					  $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-					  $features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
-            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
+                    $op='del';
+					$features2[$op][$feature_id]['tcase_id'] = $key_tc;
+					$features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
+                    $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
 				}	
 			}
 			else if($args->tester_for_tcid[$key_tc] > 0)
 			{
-			  $op='ins';
+			    $op='ins';
 				$features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
 				$features2[$op][$feature_id]['type'] = $task_test_execution;
 				$features2[$op][$feature_id]['status'] = $open;
@@ -143,7 +142,7 @@ switch($args->level)
 		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-				    		            $linked_items,null,$keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+						        $linked_items,null,$keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.

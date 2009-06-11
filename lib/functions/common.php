@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.154 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: common.php,v 1.155 2009/06/11 15:42:53 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -252,7 +252,7 @@ function doSessionStart()
 	if(!isset($_SESSION))
 	{
 		session_start();
-	}	
+	}
 }
 
 // --------------------------------------------------------------------------------------
@@ -298,7 +298,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	
 	// set a Test Plan
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$tplan_id    = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
+	$tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
 	// Now we need to validate the TestPlan
 	if($user_sel["tplan_id"] != 0)
 	{

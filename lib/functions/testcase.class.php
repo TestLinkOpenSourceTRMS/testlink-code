@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.176 $
- * @modified $Date: 2009/06/08 21:21:40 $ $Author: schlundus $
+ * @version $Revision: 1.177 $
+ * @modified $Date: 2009/06/11 15:42:53 $ $Author: schlundus $
  * @author franciscom
  *
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -2829,7 +2829,7 @@ function update_external_id($id,$external_id)
   returns: -
 
 */
-//@ TODO schlundus, copy attachments should be repository functionality
+//@ TODO schlundus, copy attachments should be a repository functionality
 function copy_attachments($source_id,$target_id)
 {
   $table_name = $this->attachmentTableName;

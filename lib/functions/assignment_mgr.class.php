@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.7 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.8 2009/06/11 15:42:53 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */
@@ -17,14 +17,12 @@
  * class manage assignment users for testing
  * @package 	TestLink
  */ 
-class assignment_mgr extends tlObject
+class assignment_mgr extends tlObjectWithDB
 {
-	var $db;
 
 	function assignment_mgr(&$db) 
 	{
-	    parent::__construct();
-		$this->db = &$db;
+	    parent::__construct($db);
 	}
 
 	/*

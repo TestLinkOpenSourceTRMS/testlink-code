@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.73 2009/06/11 06:58:02 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.74 2009/06/11 15:42:54 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -99,7 +99,7 @@ if($do_display)
 		if (sizeof($keywordsTestCases))
 		{
 			$testCaseSet = array_keys($keywordsTestCases);
-		}	
+		}
 	}
 	define('DONT_PRUNE',0);
 	define('WRITE_BUTTON_ALWAYS',0);

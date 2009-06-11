@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/06/09 20:24:04 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/06/11 15:42:53 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -378,9 +378,9 @@ class tlRole extends tlDBObject
 	protected function buildRightsArray($rightInfo)
 	{
 		$rights = null;
-		for($idx = 0; $idx < sizeof($rightInfo); $idx++)
+		for($i = 0;$i < sizeof($rightInfo);$i++)
 		{
-			$id = $rightInfo[$idx];
+			$id = $rightInfo[$i];
 			$right = new tlRight($id['right_id']);
 			$right->name = $id['description'];
 			$rights[] = $right;
@@ -397,11 +397,9 @@ class tlRole extends tlDBObject
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 	    $tables['roles'] = DB_TABLE_PREFIX . 'roles';
-		$sql = " SELECT id FROM {$tables['roles']} ";
+		$sql = "SELECT id FROM {$tables['roles']} ";
 		if (!is_null($whereClause))
-		{
 			$sql .= ' '.$whereClause;
-	    }
 		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
 	
 		$roles = tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
@@ -432,9 +430,7 @@ class tlRight extends tlDBObject
 	{
 		$this->name = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-		{
 			$this->dbID = null;
-		}	
 	}
 	
 	public function __toString()
@@ -469,10 +465,8 @@ class tlRight extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if (!sizeof($ids))
-		{
 			return null;
-		}
-			
+
 		$sql = "SELECT id,description FROM {$this->tables['rights']} " .
 		       " WHERE id IN (".implode(",",$ids).")";
 		$rows = $db->fetchArrayRowsIntoMap($sql,"id");
@@ -492,10 +486,8 @@ class tlRight extends tlDBObject
 		$tables['rights'] = DB_TABLE_PREFIX . 'rights';
 		$sql = " SELECT id FROM {$tables['rights']} ";
 		if (!is_null($whereClause))
-		{
 			$sql .= ' '.$whereClause;
-	    }
-	    
+	
 		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}

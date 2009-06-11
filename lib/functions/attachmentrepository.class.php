@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachmentrepository.class.php,v 1.19 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: attachmentrepository.class.php,v 1.20 2009/06/11 15:42:53 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
@@ -23,26 +23,34 @@ require_once( dirname(__FILE__) . '/attachment.class.php' );
  */
 class tlAttachmentRepository extends tlObjectWithDB
 {
-	  //the one and only attachment repository object
-	  private static $s_instance;
-	
-	  private $repositoryType;
-	  private $repositoryCompressionType;
+	//the one and only attachment repository object
+	private static $s_instance;
 
-	  protected $repositoryPath;
-	  protected $attachmentCfg;
+	/**
+	 * @var int the type of the repository
+	 */
+	private $repositoryType;
+	/**
+	 * @var int the compression type for the attachments
+	 */
+	private $repositoryCompressionType;
+
+	/**
+	 * @var string the path to the repository if filesystem 
+	 */
+	protected $repositoryPath;
+	/**
+	 * @var array additional attachment configuration
+	 */
+	protected $attachmentCfg;
 
 
 	function __construct(&$db)
 	{
-		global $g_repositoryType;
-		global $g_repositoryCompressionType;
-		global $g_repositoryPath;
-
 		tlObjectWithDB::__construct($db);
-    	$this->repositoryType = $g_repositoryType;
-    	$this->repositoryCompressionType = $g_repositoryCompressionType;
-		$this->repositoryPath = $g_repositoryPath;
+    	$this->repositoryType = self::getType();
+    	$this->repositoryCompressionType = self::getCompression();
+		$this->repositoryPath = self::getPathToRepository();
 		$this->attachmentCfg = config_get('attachments');
 	}
 
@@ -57,6 +65,44 @@ class tlAttachmentRepository extends tlObjectWithDB
         return self::$s_instance;
     }
 
+    /**
+     * Returns the type of the repository, like filesystem, database,...
+     * 
+     * @return integer the type of the repository 
+     */
+    public static function getType()
+    {
+    	//@TODO schlundus, type should came from configuration class
+    	global $g_repositoryType;
+    	
+    	return $g_repositoryType;
+    }
+	/**
+	 * returns the compression type of the repository
+	 * 
+	 * @return integer the compression type
+	 */
+	public static function getCompression()
+    {
+    	//@TODO schlundus, type should came from configuration class
+    	global $g_repositoryCompressionType;
+    	
+    	return $g_repositoryCompressionType;
+    }
+    /**
+     * returns the path to the repository
+     * 
+     * @return string path to the repository
+     */
+    public static function getPathToRepository()
+    {
+    	//@TODO schlundus, path should came from configuration class
+    	global $g_repositoryPath;
+    	
+    	return $g_repositoryPath;
+    }
+    
+    
 	/**
 	* Inserts the information about an attachment into the db
 	*
@@ -284,7 +330,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 *
 	 * @return string returns the contents of the attachment
 	*/
-	//SCHLUNDUS: should be protected
+	//@TODO schlundus, should be protected, but blocker is testcase::copy_attachments
 	public function getAttachmentContentFromDB($id)
 	{
 		$query = "SELECT content,file_size,compression_type " .

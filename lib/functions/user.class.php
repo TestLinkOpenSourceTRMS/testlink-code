@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.45 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.46 2009/06/11 15:42:54 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -722,7 +722,7 @@ class tlUser extends tlDBObject
 	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null,
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		$tables['users']=DB_TABLE_PREFIX . 'users';
+		$tables = tlObject::getDBTables('users');
 		$query = " SELECT id FROM {$tables['users']} ";
 		if (!is_null($whereClause))
 		{

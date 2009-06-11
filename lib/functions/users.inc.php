@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.96 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.97 2009/06/11 15:42:54 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -299,8 +299,7 @@ function getUserErrorMessage($code)
 */
 function getAllUsersRoles(&$db,$order_by = null)
 {
-    $tables['users'] = DB_TABLE_PREFIX . 'users';
-    $tables['roles'] = DB_TABLE_PREFIX . 'roles';
+    $tables = tlObject::getDBTables(array('users','roles'));
     
 	$sql = "SELECT users.id FROM {$tables['users']} users " .
 	         " LEFT OUTER JOIN {$tables['roles']} roles ON users.role_id = roles.id ";

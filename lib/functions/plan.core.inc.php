@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/06/11 15:42:53 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -91,7 +91,7 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$tpID = null)
 	
 	if (!sizeof($testPlans))
 	{
-		  unset($_SESSION['testplanID']);
+		unset($_SESSION['testplanID']);
 	    unset($_SESSION['testplanName']);
 	}
 	

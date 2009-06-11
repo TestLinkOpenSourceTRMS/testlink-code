@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.37 2009/06/08 20:12:31 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.38 2009/06/11 06:53:43 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -13,6 +13,7 @@
 --
 -- 
 -- Rev :
+--      20090611 - franciscom - builds.closed_on_date 
 --      20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
 --      20090507 - franciscom - BUGID  new builds structure
 --      20090411 - franciscom - BUGID 2369 - testplan_tcversions
@@ -192,6 +193,7 @@ CREATE TABLE "builds" (
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "release_date" DATE NULL,
+  "closed_on_date" DATE NULL,
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","name")
 ); 
@@ -605,7 +607,7 @@ CREATE TABLE "text_templates" (
   title varchar(100) NOT NULL,
   template_data text,
   author_id BIGINT default NULL REFERENCES users (id),
-  create_ts TIMESTAMP NOT NULL default now(),
+  creation_ts TIMESTAMP NOT NULL default now(),
   is_public INT2 NOT NULL default '0',
   PRIMARY KEY ("id"),
   UNIQUE (type,title)

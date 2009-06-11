@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.33 2009/04/14 16:53:07 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.34 2009/06/11 06:53:42 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -301,6 +301,9 @@ CREATE TABLE [builds](
 	[notes] [text]  NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_builds_active]  DEFAULT ((1)),
 	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_builds_open]  DEFAULT ((1)),
+	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_builds_creation_ts]  DEFAULT (getdate()),
+	[release_date] [datetime] NULL,
+	[closed_on_date] [datetime] NULL,
  CONSTRAINT [PK_builds] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

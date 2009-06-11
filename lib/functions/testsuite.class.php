@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.67 2009/06/11 16:39:45 havlat Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.68 2009/06/11 17:39:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -61,7 +61,7 @@
  *
  */
 
-/** include supoort for attachments */
+/** include support for attachments */
 require_once( dirname(__FILE__) . '/attachments.inc.php');
 require_once( dirname(__FILE__) . '/files.inc.php');
 

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.119 2009/06/11 09:24:02 havlat Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.120 2009/06/11 17:45:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -56,6 +56,7 @@ require_once( dirname(__FILE__) . '/attachments.inc.php' );
  * @package 	TestLink
  * @todo havlatm: create class testplanEdit (as extension of testplan class) and 
  *		move here create,edit,delete,copy related stuff
+ * @TODO franciscom - absolutely disagree with suggested approach, see no value - 20090611
  */
 class testplan extends tlObjectWithAttachments
 {
@@ -78,6 +79,7 @@ class testplan extends tlObjectWithAttachments
    
 	var $assignment_types;
 	var $assignment_status;
+
 	/** message to show on GUI */
 	var $user_feedback_message = '';
 	
@@ -86,7 +88,7 @@ class testplan extends tlObjectWithAttachments
 	 * 
 	 * @param resource &$db reference to database handler
 	 */
-	function testplan(&$db)
+	function __construct(&$db)
 	{
 	    $this->db = &$db;
 	    $this->tree_manager = New tree($this->db);
@@ -1752,7 +1754,7 @@ class testplan extends tlObjectWithAttachments
 		$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id; 
 		
 		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,
-			$show_on_execution,'testplan',$id);
+			                                                      $show_on_execution,'testplan',$id);
 		
 		return $cf_map;
 	}

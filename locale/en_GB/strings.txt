@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.452 $
- * @modified $Date: 2009/06/09 20:24:49 $ by $Author: franciscom $
+ * @version $Revision: 1.453 $
+ * @modified $Date: 2009/06/11 06:56:22 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -209,6 +209,7 @@ $TLS_design = "Test Spec Design";
 $TLS_execution = "Test Execution";
 $TLS_testplan_design = "Test Plan Desing";
 $TLS_enable_on = "Enable on";
+$TLS_closed_on_date="Closed on ";
 
 
 // ----- JAVASCRIPT -----
@@ -1029,6 +1030,7 @@ $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 // ----- gui/templates/planAddTC_m1.tpl -----
 $TLS_add_tc = "Add";
+$TLS_added_on_date = "Added on date";
 $TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
 $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";

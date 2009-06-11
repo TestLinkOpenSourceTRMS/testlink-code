@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.26 2009/06/10 15:50:21 havlat Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.27 2009/06/11 06:56:22 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -61,6 +61,7 @@ abstract class tlObject implements iSerialization
 	 * @var array supported serialization interfaces
 	 */
 	protected $serializationInterfaces;
+
 	/**
 	 * @var array of format descriptors for the interfaces
 	 */
@@ -247,6 +248,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
 	/** @var object the attachment repository object */
 	protected $attachmentRepository;
+
 	/** @var string the foreign key table name to store the attachements */
 	protected $attachmentTableName;
 	
@@ -267,9 +269,11 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	 * gets all infos about the attachments of the object specified by $id
 	 *  	
 	 * @param integer $id this is the fkid of the attachments table
-	 * @return array returns map with the infos of the attachment, keys are the column names of the attachments table 
+     * @return array returns map with the infos of the attachment, 
+     *         keys are the column names of the attachments table 
 	 *
-	 * @TODO schlundus: legacy function to keep existing code, should be replaced by a function which returns objects 
+	 * @TODO schlundus: legacy function to keep existing code, should be replaced by a 
+	 *                  function which returns objects 
 	 */
 	function getAttachmentInfos($id)
 	{
@@ -310,9 +314,10 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	 * @var integer the database id of the object
 	 */
 	public $dbID;
+	
 	/**
-	 * @var int the detail level, used to configure how much information about the object is read from
-	 * 			the database
+	 * @var int the detail level, used to configure how much information 
+	 *          about the object is read from the database
 	 */
 	protected $detailLevel;
 	
@@ -322,6 +327,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	//standard detail levels, can be used to get only some specific details when reading an object
 	//to avoid unneccessary DB queries (when the info is actual not used and not needed)
 	const TLOBJ_O_GET_DETAIL_MINIMUM = 0;
+	
 	//get all information
 	const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
 	
@@ -368,56 +374,65 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 			$item = new $className($id);
 			$item->setDetailLevel($detailLevel);
 			if ($item->readFromDB($db,$options) >= tl::OK)
+			{
 				return $item;
+			}	
 		}
 		return null;
 	}
 	
 	/**
-	 * This one can be used to create any tl-managed objects
+	 * used to create any tl-managed objects
 	 * 
 	 * @param object [ref] $db the database connection
 	 * @param string $query the ids of the objects to be created are obtained by this query
 	 * @param string $column the  name of the column which delivers the ids
 	 * @param string $className the  class name of the objects
-	 * @param bool $bAssoc if set to true, to objects are returned in a map whose keys are the ids,
-	 *             if false they are returned in a normal array
+	 * @param boolean $returnAsMap if set to true, to objects are returned in a 
+	 *                map whose keys are the ids, else they are returned in a normal array.
+
 	 * @param int $detailLevel the detail level of the object
 	 * 
 	 * @return the newly created objects on success, or null else
 	 */
-	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false,
+	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$returnAsMap = false,
 	                                                $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL,$limit = -1)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column,$limit);
-		return self::createObjectsFromDB($db,$ids,$className,$bAssoc,$detailLevel);
+		return self::createObjectsFromDB($db,$ids,$className,$returnAsMap,$detailLevel);
 	}
 	
 	/**
-	 * This one can be used to create any tl-managed objects
+	 * used to create any tl-managed objects
 	 * 
 	 * @param object [ref] $db the database connection
 	 * @param array $ids the ids of the objects to be created
 	 * @param string $className the class name of the objects
-	 * @param boolean $bAssoc if set to true, to objects are returned in a map whose keys are the ids,
-	 *             if false they are returned in a normal array
+	 * @param boolean $returnAsMap if set to true, to objects are returned in a 
+	 *                map whose keys are the ids, else they are returned in a normal array.
 	 * @param integer $detailLevel the detail level of the object
 	 * 
 	 * @return mixed the newly created objects on success, or null else
 	 */
-	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	static public function createObjectsFromDB(&$db,$ids,$className,$returnAsMap = false,
+	                                           $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$items = null;
-		for($i = 0;$i < sizeof($ids);$i++)
+		$loop2do = sizeof($ids);
+		for($idx = 0;$idx < $loop2do; $idx++)
 		{
-			$id = $ids[$i];
+			$id = $ids[$idx];
 			$item = self::createObjectFromDB($db,$id,$className,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 			if ($item)
 			{
-				if ($bAssoc)
+				if ($returnAsMap)
+				{
 					$items[$id] = $item;
+				}
 				else
+				{
 					$items[] = $item;
+				}	
 			}
 		}
 		return $items;

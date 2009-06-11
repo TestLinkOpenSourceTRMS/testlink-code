@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.117 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2009/06/11 06:56:22 $ by $Author: franciscom $
  * 
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
@@ -26,6 +26,11 @@
  *
  * --------------------------------------------------------------------------------------
  * Revisions:
+ *
+ *  20090610 - franciscom - get_linked_tcversions()
+ *                          added testplan_tcversions.author_id,testplan_tcversions.creation_ts
+ *                          on output recordset
+ *                          build_mgr - setClosedOnDate() new method
  *
  *  20090516 - franciscom - BUGID - is_public
  *                          create(),update() changed
@@ -666,10 +671,10 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	//							and (IMHO) he is right
 	// 20070917 - added version
 	// 20080331 - added T.node_order
-  //	
-  $more_tcase_fields = '';
-  $join_for_parent = '';
-  $more_parent_fields = '';
+    //	
+    $more_tcase_fields = '';
+    $join_for_parent = '';
+    $more_parent_fields = '';
 	if($details == 'full')
 	{
 	    $more_tcase_fields = 'TCV.summary,TCV.steps,TCV.expected_results,';
@@ -680,7 +685,8 @@ public function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed
 	$sql = " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
 	       " NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
 	       " T.tcversion_id AS tcversion_id, T.id AS feature_id, " .
-	       " T.node_order AS execution_order, TCV.version AS version, TCV.active," .
+	       " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by," .
+	       " TCV.version AS version, TCV.active," .
 	       " TCV.tc_external_id AS external_id, TCV.execution_type," .
 	       " E.id AS exec_id, E.tcversion_number," .
 	       " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
@@ -2350,7 +2356,7 @@ class build_mgr extends tlObject
   {
     $targetDate=trim($release_date);
   	$sql = " INSERT INTO {$this->tables['builds']} " .
-  	       " (testplan_id,name,notes,release_date,active,is_open) " .
+  	       " (testplan_id,name,notes,release_date,active,is_open,creation_ts) " .
   	       " VALUES ('". $tplan_id . "','" .
   	                     $this->db->prepare_string($name) . "','" .
   	                     $this->db->prepare_string($notes) . "',";
@@ -2362,8 +2368,13 @@ class build_mgr extends tlObject
     {
   	    $sql .= "'" . $this->db->prepare_string($targetDate) . "',";
     }
-    $sql .= "{$active},{$open})"; 	                     
-
+    
+    
+    // Important: MySQL do not support default values on datetime columns that are functions
+    // that's why we are using db_now().
+    $sql .= "{$active},{$open},{$this->db->db_now()})"; 	                     
+  
+    
   	$new_build_id = 0;
   	$result = $this->db->exec_query($sql);
   	if ($result)
@@ -2384,16 +2395,17 @@ class build_mgr extends tlObject
           $notes
           [$active]: default: null
           [$open]: default: null
-          [$release_date]=''
-
+          [$release_date]=''    FORMAT YYYY-MM-DD
+          [$closed_on_date]=''  FORMAT YYYY-MM-DD
 
 
     returns:
 
     rev :
   */
-  function update($id,$name,$notes,$active=null,$open=null,$release_date='')
+  function update($id,$name,$notes,$active=null,$open=null,$release_date='',$closed_on_date='')
   {
+    $closure_date = '';
     $targetDate=trim($release_date);
   	$sql = " UPDATE {$this->tables['builds']} " .
   	       " SET name='" . $this->db->prepare_string($name) . "'," .
@@ -2414,8 +2426,25 @@ class build_mgr extends tlObject
 
   	if( !is_null($open) )
   	{
-  	   $sql .=" , is_open=" . intval($open);
+  	   $open_status=intval($open) ? 1 : 0; 
+  	   $sql .=" , is_open=" . $open_status;
+  	   
+  	   if($open_status == 1)
+  	   {
+         $closure_date = ''; 
+  	   }
   	}
+  	
+    if($closure_date == '')
+  	{
+  	    $sql .= ",closed_on_date=NULL";
+  	}       
+    else
+    {
+         // may be will be useful validate date format
+  	     $sql .= ",closed_on_date='" . $this->db->prepare_string($closure_date) . "'";
+    }
+  	
   	$sql .= " WHERE id={$id}";
   	$result = $this->db->exec_query($sql);
   	return $result ? 1 : 0;
@@ -2438,14 +2467,14 @@ class build_mgr extends tlObject
   */
   function delete($id)
   {
-
-    //
-  	$sql = " DELETE FROM executions " .
+    // 20090611 - franciscom
+    // Need to be fixed, because execution bugs are not delete
+    
+  	$sql = " DELETE FROM {$this->tables['executions']}  " .
   	       " WHERE build_id={$id}";
 
   	$result=$this->db->exec_query($sql);
 
-  	//
   	$sql = " DELETE FROM {$this->tables['builds']} " .
   	       " WHERE id={$id}";
 
@@ -2476,6 +2505,27 @@ class build_mgr extends tlObject
   	$result = $this->db->exec_query($sql);
   	$myrow = $this->db->fetch_array($result);
   	return $myrow;
+  }
+
+  /**
+   * @param string $targetDate, format YYYY-MM-DD. can be null
+   *
+   */
+  function setClosedOnDate($id,$targetDate)
+  {
+  	$sql = " UPDATE {$this->tables['builds']} ";
+  	
+  	if( is_null($targetDate) )
+  	{
+  	    $sql .= " SET closed_on_date=NULL ";
+  	}
+  	else
+  	{
+        $sql .= " SET closed_on_date='" . $this->db->prepare_string($targetDate) . "'";  	    
+  	}
+  	$sql .= " WHERE id={$id} "; 
+  	$result = $this->db->exec_query($sql);
+    
   }
 
 

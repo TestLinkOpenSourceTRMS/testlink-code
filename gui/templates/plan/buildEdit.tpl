@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.12 2009/05/09 15:11:27 franciscom Exp $
+$Id: buildEdit.tpl,v 1.13 2009/06/11 06:56:22 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -22,7 +22,7 @@ Rev :
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
-             open,builds_description,cancel,release_date"}          
+             open,builds_description,cancel,release_date,closure_date,closed_on_date"}          
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -43,12 +43,27 @@ function validateForm(f)
   }
   return true;
 }
+
+
+function hide_element(oid,hide)
+{
+    var domobj=document.getElementById(oid);
+  	if( hide )
+  	{
+  	  domobj.style.display = "none";
+    }
+    else
+    {
+      domobj.style.display = "";
+    }
+}
+
 </script>
 {/literal}
 </head>
 
 
-<body>
+<body onload="hide_element('closure_date',{$is_open})">
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -87,7 +102,10 @@ function validateForm(f)
     <tr>
 		    <th style="background:none;">{$labels.open}</th>
 		    <td><input type="checkbox"  name="is_open" id="is_open"  
-		               {if $is_open eq 1} checked {/if} />
+		               {if $is_open eq 1} checked {/if} 
+		               onclick="hide_element('closure_date',this.checked)"/>
+            <span id="closure_date" style="display:none;">{$labels.closed_on_date}: {localize_date d=$gui->closed_on_date}</span>
+            <input type="hidden" name="closed_on_date" value={$gui->closed_on_date}>
         </td>
 		</tr>
 
@@ -97,7 +115,7 @@ function validateForm(f)
 		    {html_select_date prefix="release_date_"  time=$gui->release_date
                   month_format='%m' end_year="+1"
                   day_value_format="%02d"
-                  all_empty=' '
+                  all_empty=' ' month_empty= ' '
                   field_order=$gsmarty_html_select_date_field_order}
         </td>
 		</tr>

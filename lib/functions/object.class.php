@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.28 2009/06/11 15:42:53 schlundus Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.29 2009/06/11 17:47:27 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -226,6 +226,16 @@ abstract class tlObject implements iSerialization
 	}
 };
 
+//@TODO schlundus, comment this
+	
+interface iCacheable
+{
+	public function addToCache();
+	
+	public function removeFromCache();
+	
+	public function readFromCache();
+}
 /**
  * The base class for all managed TestLink objects which need a db connection
  * 
@@ -318,8 +328,10 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
  * @package 	TestLink
  * @abstract 
  */
-abstract class tlDBObject extends tlObject implements iDBSerialization
+abstract class tlDBObject extends tlObject implements iDBSerialization, iCacheable
 {
+	static protected $objectCache = null;
+	protected $activateCaching = false; 
 	/**
 	 * @var integer the database id of the object
 	 */
@@ -464,5 +476,26 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 			return $item->deleteFromDB($db);
 		}
 		return tl::ERROR;
+	}
+	//@TODO schlundus, comment this
+	public function addToCache()
+	{
+		if ($this->activateCaching)
+			self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID] = $this;
+		return tl::OK; 
+	}
+	//@TODO schlundus, comment this
+	public function removeFromCache()
+	{
+		if ($this->activateCaching)
+			unset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]);
+		return tl::OK;
+	}
+	
+	//@TODO schlundus, comment this
+	public function readFromCache()
+	{
+		if (!$this->activateCaching)
+			return tl::OK;
 	}
 }

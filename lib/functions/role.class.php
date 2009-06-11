@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/06/11 15:42:53 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/06/11 17:47:27 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -36,6 +36,7 @@ class tlRole extends tlDBObject
 		parent::__construct($dbID);
 		$this->object_table = $this->tables['roles']; 
 		$this->replacementRoleID = config_get('role_replace_for_deleted_roles');
+		$this->activateCaching = true;
 	}
 
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
@@ -51,10 +52,30 @@ class tlRole extends tlDBObject
 			$this->dbID = null;
 		}	
 	}
+	//@TODO schlundus, comment this
+	public function readFromCache()
+	{
+		if (!$this->activateCaching)
+		{
+			return tl::ERROR;
+		}
+		if (isset(self::$objectCache[__CLASS__][$this->detailLevel][$this->dbID]))
+		{
+			$role = self::$objectCache[__CLASS__][$this->detailLevel][$this->dbID];
+			$this->description = $role->description;
+			$this->rights = $role->rights;
+			$this->name = $role->name;
+			return tl::OK;
+		}
+		return tl::ERROR;
+	}
 	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
+		if ($this->readFromCache() >= tl::OK)
+			return tl::OK;
+
 		$this->_clean($options);
 		$getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
 		
@@ -92,7 +113,11 @@ class tlRole extends tlDBObject
 				$this->rights = $this->buildRightsArray($rightInfo);
 			}	
 		}
-		return $rightInfo ? tl::OK : tl::ERROR;
+		$readSucceeded = $rightInfo ? tl::OK : tl::ERROR;
+		if ($readSucceeded >= tl::OK)
+			$this->addToCache();
+		
+		return $readSucceeded;
 	}
 
 	/*
@@ -105,6 +130,11 @@ class tlRole extends tlDBObject
   */
 	public function writeToDB(&$db)
 	{
+		//@TODO schlundus, now i removed the potentially modified object from the cache
+		//another optimization could be read the new contents if storing was successfully into the
+		//cache
+		$this->removeFromCache();
+		
 		$result = $this->checkDetails($db);
 		if ($result >= tl::OK)
 		{		
@@ -186,6 +216,8 @@ class tlRole extends tlDBObject
 	
 	public function deleteFromDB(&$db)
 	{
+		$this->removeFromCache();
+ 
 		$result = $this->deleteRightsFromDB($db);
 		if ($result >= tl::OK)
 		{
@@ -483,7 +515,7 @@ class tlRight extends tlDBObject
 	static public function getAll(&$db,$whereClause = null,$column = null,
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		$tables['rights'] = DB_TABLE_PREFIX . 'rights';
+		$tables = tlObject::getDBTables('rights');
 		$sql = " SELECT id FROM {$tables['rights']} ";
 		if (!is_null($whereClause))
 			$sql .= ' '.$whereClause;

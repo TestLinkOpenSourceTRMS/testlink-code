@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.78 2009/06/08 17:40:21 schlundus Exp $
+// $Id: testlink_library.js,v 1.79 2009/06/11 17:47:27 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -299,28 +299,17 @@ function TPLAN_PTC(id)
 	parent.workframe.location = my_location;
 }
 
-//==========================================
-// Set DIV ID to hide
-//==========================================
-function my_hide_div(itm)
+function showOrHideElement(oid,hide)
 {
-	if (!itm)
-		return;
-
-	itm.style.display = "none";
+	var obj = document.getElementById(oid);
+    if (!obj)
+    	return;
+    var displayValue = "";
+  	if(hide)
+  		displayValue = "none";
+    
+  	obj.style.display = displayValue;
 }
-
-//==========================================
-// Set DIV ID to show
-//==========================================
-function my_show_div(itm)
-{
-	if (!itm)
-		return;
-
-	itm.style.display = "";
-}
-
 
 /**
  * Display a confirmation dlg before modifying roles

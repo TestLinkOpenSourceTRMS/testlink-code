@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.38 2009/06/11 09:51:59 havlat Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.39 2009/06/11 17:47:27 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -172,7 +172,6 @@ class database
 		{
 		    tLog($message,$logLevel,"DATABASE");
 		}
-		
 		// 20080927 - may be this causes lot of memory usage
 		if($this->logQueries)
 		{

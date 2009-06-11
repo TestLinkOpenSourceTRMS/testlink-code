@@ -1,6 +1,6 @@
-{* 
+{*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.13 2009/06/11 06:56:22 franciscom Exp $
+$Id: buildEdit.tpl,v 1.14 2009/06/11 17:47:27 schlundus Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -43,27 +43,12 @@ function validateForm(f)
   }
   return true;
 }
-
-
-function hide_element(oid,hide)
-{
-    var domobj=document.getElementById(oid);
-  	if( hide )
-  	{
-  	  domobj.style.display = "none";
-    }
-    else
-    {
-      domobj.style.display = "";
-    }
-}
-
 </script>
 {/literal}
 </head>
 
 
-<body onload="hide_element('closure_date',{$is_open})">
+<body onload="showOrHideElement('closure_date',{$is_open})">
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -103,7 +88,7 @@ function hide_element(oid,hide)
 		    <th style="background:none;">{$labels.open}</th>
 		    <td><input type="checkbox"  name="is_open" id="is_open"  
 		               {if $is_open eq 1} checked {/if} 
-		               onclick="hide_element('closure_date',this.checked)"/>
+		               onclick="showOrHideElement('closure_date',this.checked)"/>
             <span id="closure_date" style="display:none;">{$labels.closed_on_date}: {localize_date d=$gui->closed_on_date}</span>
             <input type="hidden" name="closed_on_date" value={$gui->closed_on_date}>
         </td>

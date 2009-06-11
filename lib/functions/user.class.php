@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.46 2009/06/11 15:42:54 schlundus Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.47 2009/06/11 17:56:25 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -35,50 +35,62 @@ class tlUser extends tlDBObject
 	 * @var string the first name of the user
 	 */
 	public $firstName;
+
 	/**
 	 * @var string the last name of the user
 	 */
 	public $lastName;
+
 	/**
 	 * @var string the email address of the user
 	 */
 	public $emailAddress;
+
 	/**
 	 * @var string the locale of the user (eG de_DE, en_GB)
 	 */
 	public $locale;
+
 	/**
 	 * @var boolean true if the user is active, false else
 	 */
 	public $isActive;
+
 	/**
 	 * @var integer the default testprojectID of the user
 	 */
 	public $defaultTestprojectID;
+
 	/**
 	 * @var tlRole the global role of the user
 	 */
 	public $globalRole;
+
 	/**
 	 * @var integer the id of global role of the user
 	 */
 	public $globalRoleID;
+
 	/**
 	 * @var array of tlRole, holds the roles of the user for the different testprojects 
 	 */
 	public $tprojectRoles; 
+
 	/**
 	 * @var array of tlRole, holds the roles of the user for the different testplans 
 	 */
 	public $tplanRoles;
+
 	/**
 	 * @var string the login of the user
 	 */
 	public $login;
+
 	/**
 	 * @var string the API Key for the user
 	 */
 	public $userApiKey;
+
 	/**
 	 * @var string the password of the user
 	 * @access protected
@@ -223,7 +235,7 @@ class tlUser extends tlDBObject
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
-		$query = "SELECT id,login,password,first,last,email,role_id,locale, " .
+		$sql = "SELECT id,login,password,first,last,email,role_id,locale, " .
 		         " login AS fullname, active,default_testproject_id, script_key " .
 		         " FROM {$this->object_table}";
 		$clauses = null;
@@ -238,9 +250,9 @@ class tlUser extends tlDBObject
 		}
 		if ($clauses)
 		{
-			$query .= " WHERE " . implode(" AND ",$clauses);
+			$sql .= " WHERE " . implode(" AND ",$clauses);
 		}
-		$info = $db->fetchFirstRow($query);	
+		$info = $db->fetchFirstRow($sql);	
 		if ($info)
 		{
 			$this->dbID = $info['id'];
@@ -282,14 +294,14 @@ class tlUser extends tlDBObject
 	 */
 	public function readTestProjectRoles(&$db,$testProjectID = null)
 	{
-		$query = "SELECT testproject_id,role_id " .
+		$sql = "SELECT testproject_id,role_id " .
 		         " FROM {$this->tables['user_testproject_roles']} user_testproject_roles " .
 		         " WHERE user_id = {$this->dbID}";
 		if ($testProjectID)
 		{
-			$query .= " AND testproject_id = {$testProjectID}";
+			$sql .= " AND testproject_id = {$testProjectID}";
 		}
-		$allRoles = $db->fetchColumnsIntoMap($query,'testproject_id','role_id');
+		$allRoles = $db->fetchColumnsIntoMap($sql,'testproject_id','role_id');
 		$this->tprojectRoles = null;
 		if (sizeof($allRoles))
 		{
@@ -298,15 +310,17 @@ class tlUser extends tlDBObject
 			{
 				if (!isset($roleCache[$roleID]))
 				{
-					$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
-					$roleCache[$roleID] = $tpRole;
+					$tprojectRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
+					$roleCache[$roleID] = $tprojectRole;
 				}
 				else
 				{
-					$tpRole = clone($roleCache[$roleID]);
+					$tprojectRole = clone($roleCache[$roleID]);
 				}
-				if ($tpRole)
-					$this->tprojectRoles[$tprojectID] = $tpRole;
+				if ($tprojectRole)
+				{
+					$this->tprojectRoles[$tprojectID] = $tprojectRole;
+				}	
 			}
 		}
 		return tl::OK;
@@ -323,15 +337,15 @@ class tlUser extends tlDBObject
 	 */
 	public function readTestPlanRoles(&$db,$testPlanID = null)
 	{
-		$query = "SELECT testplan_id,role_id " . 
+		$sql = "SELECT testplan_id,role_id " . 
 		         " FROM {$this->tables['user_testplan_roles']} user_testplan_roles " .
 		         " WHERE user_id = {$this->dbID}";
 		if ($testPlanID)
 		{
-			$query .= " AND testplan_id = {$testPlanID}";
+			$sql .= " AND testplan_id = {$testPlanID}";
         }
         
-		$allRoles = $db->fetchColumnsIntoMap($query,'testplan_id','role_id');
+		$allRoles = $db->fetchColumnsIntoMap($sql,'testplan_id','role_id');
 		$this->tplanRoles = null;
 		if (sizeof($allRoles))
 		{
@@ -340,15 +354,17 @@ class tlUser extends tlDBObject
 			{
 				if (!isset($roleCache[$roleID]))
 				{
-					$tpRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
-					$roleCache[$roleID] = $tpRole;
+					$tplanRole = tlRole::createObjectFromDB($db,$roleID,"tlRole",true);
+					$roleCache[$roleID] = $tplanRole;
 				}
 				else
 				{
-					$tpRole = clone($roleCache[$roleID]);
+					$tplanRole = clone($roleCache[$roleID]);
 				}
-				if ($tpRole)
-					$this->tplanRoles[$tplanID] = $tpRole;
+				if ($tplanRole)
+				{
+					$this->tplanRoles[$tplanID] = $tplanRole;
+				}	
 			}
 		}
 		return tl::OK;
@@ -367,7 +383,7 @@ class tlUser extends tlDBObject
 		{		
 			if($this->dbID)
 			{
-				$query = "UPDATE {$this->tables['users']} " .
+				$sql = "UPDATE {$this->tables['users']} " .
 			       "SET first = '" . $db->prepare_string($this->firstName) . "'" .
 			       ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
 			       ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
@@ -375,18 +391,18 @@ class tlUser extends tlDBObject
 				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
 				   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
 				   ", active = ". $db->prepare_string($this->isActive);
-				$query .= " WHERE id = " . $this->dbID;
-				$result = $db->exec_query($query);
+				$sql .= " WHERE id = " . $this->dbID;
+				$result = $db->exec_query($sql);
 			}
 			else
 			{
-				$query = "INSERT INTO {$this->tables['users']} (login,password,first,last,email,role_id,locale,active) 
-							VALUES ('" . 
-							$db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
-							$db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
-							$db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
-							$db->prepare_string($this->locale). "'," . $this->isActive . ")";
-				$result = $db->exec_query($query);
+				$sql = "INSERT INTO {$this->tables['users']} (login,password,first,last,email,role_id,locale,active) 
+					   VALUES ('" . 
+					   $db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
+					   $db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
+					   $db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
+					   $db->prepare_string($this->locale). "'," . $this->isActive . ")";
+				$result = $db->exec_query($sql);
 				if($result)
 				{
 					$this->dbID = $db->insert_id($this->tables['users']);
@@ -405,13 +421,13 @@ class tlUser extends tlDBObject
 	 **/	
 	public function deleteFromDB(&$db)
 	{
-		$querySet = array();
-		$querySet[] = "DELETE FROM user_assignments WHERE user_id = {$this->dbID}";
-		$querySet[] = "DELETE FROM users WHERE id = {$this->dbID}";
+		$sqlSet = array();
+		$sqlSet[] = "DELETE FROM {$this->table['user_assignments']} WHERE user_id = {$this->dbID}";
+		$sqlSet[] = "DELETE FROM {$this->table['users']  WHERE id = {$this->dbID}";
 
-	    foreach($querySet as $query)
+	    foreach($sqlSet as $sql)
 	    {
-			$result = $db->exec_query($query) ? tl::OK : tl::ERROR;
+			$result = $db->exec_query($sql) ? tl::OK : tl::ERROR;
 		    if($result == tl::ERROR) 
 		    {
 		        break;  
@@ -435,8 +451,8 @@ class tlUser extends tlDBObject
 	 **/
 	protected function deleteTestProjectRoles(&$db)
 	{
-		$query = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = {$this->dbID}";
-		return $db->exec_query($query) ? tl::OK : tl::ERROR;
+		$sql = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = {$this->dbID}";
+		return $db->exec_query($sql) ? tl::OK : tl::ERROR;
 	}
 
 	/** 
@@ -448,9 +464,7 @@ class tlUser extends tlDBObject
 	{
 		$keys = array('%first%','%last%','%login%','%email%');
 		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
-		
 		$displayName = trim(str_replace($keys,$values,$this->usernameFormat));
-
 		return $displayName;
 	}
 	
@@ -463,8 +477,9 @@ class tlUser extends tlDBObject
 	protected function encryptPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
+		{
 			return self::S_PWDMGTEXTERNAL;
-
+        }
 		return md5($pwd);
 	}
 	
@@ -477,11 +492,14 @@ class tlUser extends tlDBObject
 	public function setPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
+		{
 			return self::S_PWDMGTEXTERNAL;
-
+        }
 		$pwd = trim($pwd);	
 		if ($pwd == "")
+		{
 			return self::E_PWDEMPTY;
+		}
 		$this->password = $this->encryptPassword($pwd);
 		return tl::OK;
 	}
@@ -723,13 +741,13 @@ class tlUser extends tlDBObject
 	                              $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$tables = tlObject::getDBTables('users');
-		$query = " SELECT id FROM {$tables['users']} ";
+		$sql = " SELECT id FROM {$tables['users']} ";
 		if (!is_null($whereClause))
 		{
-			$query .= ' '.$whereClause;
+			$sql .= ' '.$whereClause;
 	    }
-		$query .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
-		return tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true,$detailLevel);
+		$sql .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
+		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
 }
 ?>

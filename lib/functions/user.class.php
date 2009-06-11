@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.47 2009/06/11 17:56:25 franciscom Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.48 2009/06/11 18:50:55 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -452,6 +452,7 @@ class tlUser extends tlDBObject
 	protected function deleteTestProjectRoles(&$db)
 	{
 		$sql = "DELETE FROM {$this->tables['user_testproject_roles']} WHERE user_id = {$this->dbID}";
+	
 		return $db->exec_query($sql) ? tl::OK : tl::ERROR;
 	}
 
@@ -465,6 +466,7 @@ class tlUser extends tlDBObject
 		$keys = array('%first%','%last%','%login%','%email%');
 		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
 		$displayName = trim(str_replace($keys,$values,$this->usernameFormat));
+
 		return $displayName;
 	}
 	
@@ -477,9 +479,8 @@ class tlUser extends tlDBObject
 	protected function encryptPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
-		{
 			return self::S_PWDMGTEXTERNAL;
-        }
+
 		return md5($pwd);
 	}
 	
@@ -492,14 +493,11 @@ class tlUser extends tlDBObject
 	public function setPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
-		{
 			return self::S_PWDMGTEXTERNAL;
-        }
+
 		$pwd = trim($pwd);	
 		if ($pwd == "")
-		{
 			return self::E_PWDEMPTY;
-		}
 		$this->password = $this->encryptPassword($pwd);
 		return tl::OK;
 	}
@@ -747,6 +745,7 @@ class tlUser extends tlDBObject
 			$sql .= ' '.$whereClause;
 	    }
 		$sql .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
+		
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
 }

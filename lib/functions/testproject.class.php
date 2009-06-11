@@ -5,9 +5,8 @@
  * 
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.118 2009/06/10 21:50:03 havlat Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: testproject.class.php,v 1.119 2009/06/11 16:39:45 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -55,6 +54,7 @@ require_once('keyword.class.php');
 
 /**
  * class is responsible to get project related data and CRUD test project
+ * @package 	TestLink
  */
 class testproject extends tlObjectWithAttachments
 {
@@ -65,6 +65,7 @@ class testproject extends tlObjectWithAttachments
 	const GET_NOT_EMPTY_REQSPEC = 1;
 	const GET_EMPTY_REQSPEC = 0;
 	
+	/** @var database handler */
 	var $db;
 	var $tree_manager;
 	var $cfield_mgr;
@@ -874,10 +875,9 @@ function setPublicStatus($id,$status)
 	 * Deletes the keyword with the given id
 	 *
 	 * @param int $id the keywordID
-	 *
 	 * @return int returns 1 on success, 0 else
 	 *
-	 * @todo: should we now increment the tcversion also?
+	 * @todo should we now increment the tcversion also?
 	 **/
 	function deleteKeyword($id)
 	{
@@ -896,7 +896,6 @@ function setPublicStatus($id,$status)
 
 	/**
 	 * delete Keywords
-	 *
 	 */
 	function deleteKeywords($testproject_id)
 	{

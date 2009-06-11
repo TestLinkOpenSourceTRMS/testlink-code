@@ -1,27 +1,31 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- *
- * Filename $RCSfile: tlsmarty.inc.php,v $
- *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/04/28 19:22:33 $ $Author: schlundus $
- *
- * @author Martin Havlat
- *
- * SCOPE:
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
+ * 
  * TLSmarty class implementation used in all templates
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.8 2009/06/11 16:39:45 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * Revisions:
+ * @internal Revisions:
+ *
  * 20090304 - franciscom - removed some MAGIC NUMBERS 
  * 20081027 - havlatm - moved to include Smarty library
  * 20080424 - havlatm - added $tlCfg
- * ----------------------------------------------------------------------------------- */
+ */
 
+/** include parent extrenal component */
 require_once( TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
 	            DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'Smarty.class.php');
 
-
+/**
+ * TestLink wrapper for external Smarty class
+ * @package 	TestLink
+ */
 class TLSmarty extends Smarty
 {
     function TLSmarty()
@@ -136,7 +140,6 @@ class TLSmarty extends Smarty
                                                          MEDIUM => lang_get('medium_importance'), 
                                                          LOW => lang_get('low_importance')));
            
-        
         // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
         $this->assign('openHead', 'no');
         
@@ -184,7 +187,6 @@ class TLSmarty extends Smarty
         " src=\"{$api_info_img}\" align=\"left\" />";
         $this->assign("toggle_api_info_img",$toggle_api_info_img);
         
-        
         // Some useful values for Sort Table Engine
         switch (TL_SORT_TABLE_ENGINE)
         {
@@ -216,4 +218,5 @@ class TLSmarty extends Smarty
     } // end of function TLSmarty()
 
 } // end of class TLSmarty
+
 ?>

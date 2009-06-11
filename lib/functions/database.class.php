@@ -1,12 +1,17 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/05/08 06:44:56 $ by $Author: franciscom $
- * @author Francisco Mancardi
- * 
+ * @package 	TestLink
+ * @author 		Francisco Mancardi
+ * @copyright 	2006-2009, TestLink community 
+ * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+ * 				(Parts of code has been adapted from Mantis BT)
+ * @version    	CVS: $Id: database.class.php,v 1.38 2009/06/11 09:51:59 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
  *
  * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
  * 20081129 - franciscom - Added CUMULATIVE constant
@@ -25,28 +30,21 @@
  *                          problems due to connection reuse, when
  *                          you wanto to connect to more than one database at once
  *                          See ADODB manuals
-*/
+ */
  
- # -------------------------------------------------------------------------------
- # This piece of software has been taken from Mantis and modified
- # to be used on TestLink (franciscom@sourceforgeusers.com)
- # -------------------------------------------------------------------------------
- # Mantis - a php based bugtracking system
- # Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- # This program is distributed under the terms and conditions of the GPL
- # See the README and LICENSE files for details
- # -------------------------------------------------------------------------------
 
-// 20080315 - francisco
-// As stated on ADODB documentation this set will improve performance but have a side
-// effect, for DBMS like POSTGRES method num_rows() will return ALWAYS -1, causing problems
-//
+/** 
+ * As stated on ADODB documentation this set will improve performance but have a side
+ * effect, for DBMS like POSTGRES method num_rows() will return ALWAYS -1, causing problems
+ */
 // $ADODB_COUNTRECS=FALSE;
 $ADODB_COUNTRECS=TRUE;
 
-// To use a different version of ADODB that provided with TL, use a similar bunch of lines
-// on custom_config.inc.php
+/**
+ * Path to ADODB library
+ * To use a different version of ADODB that provided with TL, define your localition
+ * of library via custom_config.inc.php 
+ */
 if( !defined('TL_ADODB_RELATIVE_PATH') )
 {
     define('TL_ADODB_RELATIVE_PATH','/../../third_party/adodb/adodb.inc.php' );
@@ -54,28 +52,29 @@ if( !defined('TL_ADODB_RELATIVE_PATH') )
 require_once( dirname(__FILE__). TL_ADODB_RELATIVE_PATH );
 require_once( dirname(__FILE__). '/logging.inc.php' );
 
+/**
+ * TestLink wrapper for ADODB component
+ * @package 	TestLink
+ */
 class database 
 {
-  const CUMULATIVE=1;
-  
+	const CUMULATIVE=1;
+	
 	var $db;
 	var $queries_array = array();
 	var $is_connected=false;
 	var $nQuery = 0;
 	var $overallDuration = 0;
-  private $logEnabled=0;
-  private $logQueries=0;
+	private $logEnabled=0;
+	private $logQueries=0;
   
-	
-  
-	# ------------------------------------------------------
-	# timer analysis
+	// timer analysis
 	function microtime_float() {
 		list( $usec, $sec ) = explode( " ", microtime() );
 		return ( (float)$usec + (float)$sec );
 	}
-  
-  function setLogEnabled($value)
+	
+	function setLogEnabled($value)
 	{
 	    $this->logEnabled=$value?1:0;
 	}
@@ -84,7 +83,7 @@ class database
 	    return $this->logEnabled;
 	}
 	
-  function setLogQueries($value)
+	function setLogQueries($value)
 	{
 	    $this->logQueries=$value?1:0;
 	}
@@ -96,38 +95,34 @@ class database
   
 	function database($db_type)
 	{
-	  // 20080719 - franciscom
-	  $fetch_mode=ADODB_FETCH_ASSOC;
-	  $this->db = NewADOConnection($db_type);
-    
-    // added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
-    if($db_type == 'mssql')
-    {
-        $fetch_mode=ADODB_FETCH_BOTH;
-    }
-    $this->db->SetFetchMode($fetch_mode);
+		// 20080719 - franciscom
+		$fetch_mode=ADODB_FETCH_ASSOC;
+		$this->db = NewADOConnection($db_type);
+		
+		// added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
+		if($db_type == 'mssql')
+		{
+			$fetch_mode=ADODB_FETCH_BOTH;
+		}
+		$this->db->SetFetchMode($fetch_mode);
 	}
 
 
-  // access to the ADODB object
+	// access to the ADODB object
 	function get_dbmgr_object()
 	{
-	  return($this->db);
+		return($this->db);
 	}
 
 	
 	
-	# Make a connection to the database
-	# 
+	/** Make a connection to the database */
 	# 20060708 - franciscom -  changed Connect() to NConnect() see ADODB Manuals
-	#             
 	function connect( $p_dsn, $p_hostname = null, $p_username = null, 
-	                          $p_password = null, $p_database_name = null ) {
-		
-		
-
+	                          $p_password = null, $p_database_name = null ) 
+	{
 		$result = array('status' => 1, 'dbms_msg' => 'ok');
-   	
+		
 		if(  $p_dsn === false ) {
 			$t_result = $this->db->NConnect($p_hostname, $p_username, $p_password, $p_database_name );
 		} else {
@@ -135,16 +130,16 @@ class database
 		}
 		
 		if ( $t_result ) {
-		  $this->is_connected = true;
+			$this->is_connected = true;
 		} else {
-		  $result['status'] = 0;
-		  $result['dbms_msg']=$this->error();
+			$result['status'] = 0;
+			$result['dbms_msg']=$this->error();
 		}
 		return ($result);
 	}
 
-	# --------------------
-	# execute query, requires connection to be opened
+
+	/** execute query, requires connection to be opened */
 	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
 	{
 		$this->nQuery++;
@@ -178,15 +173,15 @@ class database
 		    tLog($message,$logLevel,"DATABASE");
 		}
 		
-    // 20080927 - may be this causes lot of memory usage
-    if($this->logQueries)
-    {
-		    array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
-    }
-    
+		// 20080927 - may be this causes lot of memory usage
+		if($this->logQueries)
+		{
+			array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
+		}
+		
 		if ( !$t_result ) {
 			echo "ERROR ON exec_query() - database.class.php <br>" . $this->error($p_query) . "<br>";
-      echo "<br> THE MESSAGE :: $message <br>";			
+			echo "<br> THE MESSAGE :: $message <br>";			
 			return false;
 		} else {
 			return $t_result;
@@ -194,19 +189,17 @@ class database
 	}
 
 
-
-	# --------------------
-	function fetch_array( &$p_result ) {
-
+	function fetch_array( &$p_result ) 
+	{
 		if ( $p_result->EOF ) {
 			return false;
 		}		
-
+		
 		# mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
 		if( $this->db->databaseType == 'mysql' ) {	
 			$t_array = $p_result->fields;
 			
- 			$p_result->MoveNext();
+			$p_result->MoveNext();
 			return $t_array;
 		} else { 
 			$test = $p_result->GetRowAssoc(false);
@@ -426,15 +419,17 @@ class database
 		return $this->db->ErrorNo();
 	}
 
-	# --------------------
+
 	function error_msg() {
 		return $this->db->ErrorMsg();
 	}
 
-	# --------------------
-	# returns a message string with: 
-	# error num, error msg and query.
-	#
+
+	/** 
+	 * returns a message string with: error num, error msg and query.
+	 * 
+	 * @return string the message
+	 */
 	function error( $p_query=null ) {
 		$msg= $this->error_num() . " - " . $this->error_msg();
 		
@@ -445,12 +440,12 @@ class database
 		return $msg;
 	}
 
-	# --------------------
+
 	function num_rows( $p_result ) {
 		return $p_result->RecordCount( );
 	}
 
-	# --------------------
+
 	function affected_rows() {
 		return $this->db->Affected_Rows( );
 	}
@@ -461,6 +456,7 @@ class database
 	 *
 	 * @param string $query the query to be executed
 	 * @param string $column the name of the column which shall be returned
+	 * 
 	 * @return mixed the value of the column
 	 **/
 	function fetchFirstRowSingleColumn($query,$column)
@@ -517,6 +513,7 @@ class database
 	 *
 	 * @param string $query the query to be executed
 	 * @param string $column the name of the column
+	 * 
 	 * @return array an enumerated array, which contains all the values
 	 **/
 	function fetchColumnsIntoArray($query,$column,$limit = -1)
@@ -531,6 +528,7 @@ class database
 	
 		return $items;
 	}
+
 
 	/**
 	 * Fetches all rows into a map whose keys are the values of columns
@@ -559,6 +557,8 @@ class database
 		
 		return $items;
 	}
+	
+	
 	/**
 	 * Fetches the values of two columns from all rows into a map
 	 *
@@ -604,15 +604,12 @@ class database
 		return $items;
 	}
 
+
 	/**
 	 * database server information
-	 *
 	 * wrapper for adodb method ServerInfo
 	 *
 	 * @return assoc array members 'version' and 'description'
-	 *
-	 * @rev: 
-	 *      20051231- fm
 	 **/
 	function get_version_info()
 	{
@@ -643,6 +640,7 @@ class database
 	 *
 	 * @param string $query the query to be executed
 	 * @param string $column the name of the column
+	 * 
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
@@ -661,6 +659,7 @@ class database
 		return $items;
 	}
 
+
 	function fetchMapRowsIntoMap($query,$column_main_key,$column_sec_key,$limit = -1)
 	{
 		$items = null;
@@ -677,34 +676,31 @@ class database
 	}
 
 
+	// 20071010 - franciscom - corrected syntax for mssql
+	function build_sql_create_db($db_name)
+	{
+		$db_type = $this->db->databaseType;
+		$sql='';
+		
+		switch($db_type)
+		{
+			case 'postgres7':
+				$sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
+				break;
+				
+				// 20071010 - franciscom
+			case 'mssql':
+				$sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
+				break;
+				
+			case 'mysql':
+			default:
+				$sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
+			break;
+		}
+		return ($sql);
+	}
 
-  // 20071010 - franciscom - corrected syntax for mssql
-  // 20060523 - franciscom
-  function build_sql_create_db($db_name)
-  {
-    $db_type = $this->db->databaseType;
-    $sql='';
-    
-    switch($db_type)
-    {
-      case 'postgres7':
-      $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
-      break;
- 
-      // 20071010 - franciscom
-      case 'mssql':
-      $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
-      break;
-      
-      case 'mysql':
-      default:
-      $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
-      break;
-    }
-    return ($sql);
-  }
+} // end of database class
 
-
-
-}
 ?>

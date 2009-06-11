@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.29 2009/06/11 17:47:27 schlundus Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.30 2009/06/11 18:24:10 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -30,6 +30,7 @@ abstract class tl
 	 * so we can check for SUCCESS with >= tl::OK, and for ERROR with < tl::OK
 	 */
 	const OK = 1;
+
 	/** 
 	 * error and status codes:
 	 * all ERROR error codes and ERROR status codes should be lesser than tl::ERROR
@@ -46,8 +47,9 @@ abstract class tl
 
 
 require_once('int_serialization.php');
+
 /**
- * The base class for all managed TestLink objects, all tl-managed objects should extend this base class
+ * Base class for all managed TestLink objects, all tl-managed objects should extend this base class
  * 
  * @package 	TestLink
  * @abstract 

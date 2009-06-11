@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.41 2009/06/11 18:21:48 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.42 2009/06/11 18:23:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -86,6 +86,7 @@ class database
 	{
 	    $this->logEnabled=$value?1:0;
 	}
+	
 	function getLogEnabled($value)
 	{
 	    return $this->logEnabled;
@@ -95,6 +96,7 @@ class database
 	{
 	    $this->logQueries=$value?1:0;
 	}
+	
 	function getLogQueries($value)
 	{
 	    return $this->logQueries;
@@ -216,9 +218,9 @@ class database
 	}
 
 	# --------------------
-  # 20080315 - franciscom
-  # Got new code from Mantis, that manages FETCH_MODE_ASSOC
-  #
+    # 20080315 - franciscom
+    # Got new code from Mantis, that manages FETCH_MODE_ASSOC
+    #
 	function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
 
 		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) {
@@ -683,7 +685,6 @@ class database
 	}
 
 
-	// 20071010 - franciscom - corrected syntax for mssql
 	function build_sql_create_db($db_name)
 	{
 		$db_type = $this->db->databaseType;
@@ -695,7 +696,6 @@ class database
 				$sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
 				break;
 				
-				// 20071010 - franciscom
 			case 'mssql':
 				$sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
 				break;
@@ -709,5 +709,4 @@ class database
 	}
 
 } // end of database class
-
 ?>

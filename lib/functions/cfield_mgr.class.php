@@ -1,10 +1,14 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
- * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2009/06/08 20:14:26 $  $Author: franciscom $
- * @author franciscom
+ * @package 	TestLink
+ * @author 		franciscom
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.63 2009/06/12 11:00:30 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
  *
  * 20090607 - franciscom - refactoring to manage table prefix
  * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
@@ -65,6 +69,8 @@
  *                  execution_values_to_db()
  *
 **/
+
+/** load conversion functions */
 require_once(dirname(__FILE__) . '/date_api.php');
 require_once(dirname(__FILE__) . '/string_api.php');
 
@@ -81,12 +87,12 @@ if( count($cf_files) > 0 )
 
 class cfield_mgr extends tlObject
 {
-    const DEFAULT_INPUT_SIZE=50;
-    const MULTISELECTIONLIST_WINDOW_SIZE=5;
+    const DEFAULT_INPUT_SIZE = 50;
+    const MULTISELECTIONLIST_WINDOW_SIZE = 5;
     const TEXTAREA_MAX_SIZE = 255;
 
     // EDIT HERE IF YOU CUSTOMIZE YOUR DB
-    // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
+    /** for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size */
     const TEXTAREA_DEFAULT_COLS = 70;
     const TEXTAREA_DEFAULT_ROWS = 4;
 
@@ -94,11 +100,8 @@ class cfield_mgr extends tlObject
     const ENABLED = 1;
     const DISABLED = 0;
     
-
 	var $db;
 	var $tree_manager;
-
-
 
     // Hold string keys used on this object and pages that manages CF,
     // identifying in what areas/features something will be done
@@ -114,7 +117,7 @@ class cfield_mgr extends tlObject
     //            then if you add one here, remember to update other properties.
     //
     // var $application_areas=array('execution','design','testplan_design');
-    var $application_areas=array('execution','design','testplan_design');
+    var $application_areas = array('execution','design','testplan_design');
 
 	// I'm using the same codes used by Mantis (franciscom)
 	//
@@ -169,7 +172,7 @@ class cfield_mgr extends tlObject
     //
     // 0 => combo will not displayed
     //
-    var $enable_on_cfg=array('execution' => array('testsuite' => 0,
+    var $enable_on_cfg = array('execution' => array('testsuite' => 0,
                                                     'testplan'  => 0,
                                                     'testcase'  => 1,
                                                     'requirement_spec' => 0,
@@ -223,6 +226,11 @@ class cfield_mgr extends tlObject
     var $max_length_possible_values=255;
     
     
+	/**
+	 * Class constructor
+	 * 
+	 * @param resource &$db reference to the database handler
+	 */
 	function __construct(&$db)
 	{
    		parent::__construct();

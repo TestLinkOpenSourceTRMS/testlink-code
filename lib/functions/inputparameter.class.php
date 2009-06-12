@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.15 2009/06/11 18:12:31 franciscom Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.16 2009/06/12 18:00:31 schlundus Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -14,10 +14,9 @@
  **/
 
 /**
- * Helper class for Input parameter
+ * Helper class for Input parameters (parameters fetched from POST/GET/REQUEST
  * 
  * @author Andreas Morsing
- * @TODO Add an example of using, unclear the purpose, validating?
  */
 class tlInputParameter extends tlObject
 {
@@ -146,16 +145,16 @@ class tlInputParameter extends tlObject
 		}
 	
 		$value = null;
-		$hasBeenFetched = false;
+		$fetched = false;
 		if ($src)
 		{	
 			if (isset($src[$parameterName]))
 			{
 				$value = $src[$parameterName];
-				$hasBeenFetched = true;
+				$fetched = true;
 			}
 		}
-		$this->bFetched = $hasBeenFetched;
+		$this->bFetched = $fetched;
 		$this->taintValue = $value;
 	}
 
@@ -178,7 +177,7 @@ class tlInputParameter extends tlObject
 	}
 		
 	/**
-	 * validated the value of the parameter
+	 * validates the value of the parameter
 	 */
 	protected function validate()
 	{
@@ -210,7 +209,7 @@ class tlInputParameter extends tlObject
 
 
 /**
- * Helper class which holds information about the InputParameter
+ * Helper class which holds some information like source and name about the InputParameter
  *
  */
 class tlParameterInfo 
@@ -227,24 +226,24 @@ class tlParameterInfo
 }
 
 /**
- * Helper class for validating Strings
+ * Helper class for validating strings
  *
  */
 class tlStringValidationInfo 
 {
-	//some TRIM related constants
+	//some trimming related constants
 	const TRIM_NONE = 0;
 	const TRIM_LEFT = 1;
 	const TRIM_RIGHT = 2;
 	const TRIM_BOTH = 3;
 	
 	/**
-	 * @var int maxLen of the string
+	 * @var int maximum length of the string
 	 */
 	public $maxLen;
 	
 	/**
-	 * @var int minLen of the string
+	 * @var int mininum length of the string
 	 */
 	public $minLen;
 	
@@ -274,7 +273,7 @@ class tlStringValidationInfo
 	public $pfnNormalization = null;
 		
 	/**
-	 * @param unknown_type $value the value to be normalized
+	 * @param string $value the value to be normalized
 	 * @return string returns the normalized string-typed value
 	 */
 	public function normalize($value)
@@ -296,8 +295,8 @@ class tlStringValidationInfo
 	}
 	
 	/**
-	 * @param string $value
-	 * @return string return 
+	 * @param string $value the string to strip the slashes of
+	 * @return string returns the stripped value 
 	 */
 	public function stripslashes($value)
 	{
@@ -333,7 +332,7 @@ class tlStringValidationInfo
 	
 	/**
 	 * @param string $value the string which should be validated
-	 * @return bool return true if the value was successfully validated, else throws an Exception
+	 * @return bool returns true if the value was successfully validated, else throws an Exception
 	 */
 	public function validate($value)
 	{
@@ -376,12 +375,12 @@ class tlStringValidationInfo
 class tlIntegerValidationInfo
 {
 	/**
-	 * @var integer the maxVal of the parameter
+	 * @var integer the maximum value of the parameter
 	 */
 	public $maxVal = PHP_INT_MAX;
 	
 	/**
-	 * @var integer the minVal of the parameter
+	 * @var integer the minimum value of the parameter
 	 */
 	public $minVal = -2147483648;
 	/**
@@ -436,14 +435,14 @@ class tlIntegerValidationInfo
 class tlArrayValidationInfo
 {
 	/**
-	 * @var tl<TYPE>ValidationInfo the validationb info which should be use to validated
-	 * 							    the member of the array
+	 * @var tl<TYPE>ValidationInfo the validation info which should be use to validated
+	 * 		the member of the array
 	 */
 	public $validationInfo = null;
-	//@TODO schlundus, future purposes
 	/**
 	 * @var function callback function which can be used for validation
 	 */
+	//@TODO schlundus, future purposes
 	public $pfnValidation = null;
 	
 	/**
@@ -479,14 +478,14 @@ class tlArrayValidationInfo
 
 
 /**
- * Helper class for validating Checkbox submitted via POST/GET 
+ * Helper class for validating checkboxex submitted via POST/GET 
  *
  */
 class tlCheckBoxValidationInfo
 {
 	/**
 	 * @param string $value the value which should be normalized
-	 * @return array returns the normalized bool-typed value, true if value == on, false else
+	 * @return array returns the normalized bool-typed value, true if value == "on", false else
 	 */
 	public function normalize($value)
 	{

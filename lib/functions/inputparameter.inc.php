@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/06/11 18:12:24 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/06/12 18:00:31 $ by $Author: schlundus $
  * 
 **/
 require_once("object.class.php");
@@ -14,21 +14,55 @@ require_once("inputparameter.class.php");
 
 // @TODO COMMENT ALL FUNCTIONS
 // @TODO COMMENT ALL FUNCTIONS
+/**
+ * Fetches the input parameters from POST
+ * 
+ * @param $paramInfo generic array about the parameter see examples below of usage
+ * @param $args object an optional object to which each parameter is added as a property
+ * 
+ * @return array returns the array with the fetched parameter, keys are the same as in $paramInfo
+ */
 function P_PARAMS($paramInfo,&$args = null)
 {
 	return GPR_PARAMS("POST",$paramInfo,$args);
 }
 
+/**
+ * Fetches the input parameters from GET
+ * 
+ * @param $paramInfo generic array about the parameter see examples below of usage
+ * @param $args object an optional object to which each parameter is added as a property
+ * 
+ * @return array returns the array with the fetched parameter, keys are the same as in $paramInfo
+ */
 function G_PARAMS($paramInfo,&$args = null)
 {
 	return GPR_PARAMS("GET",$paramInfo,$args);
 }
+
+/**
+ * Fetches the input parameters from REQUEST
+ * 
+ * @param $paramInfo generic array about the parameter see examples below of usage
+ * @param $args object an optional object to which each parameter is added as a property
+ * 
+ * @return array returns the array with the fetched parameter, keys are the same as in $paramInfo
+ */
 
 function R_PARAMS($paramInfo,&$args = null)
 {
 	return GPR_PARAMS("REQUEST",$paramInfo,$args);
 }
 
+/**
+ * Fetches the input parameters from POST
+ * 
+ * @param $source string name of the source to fetch could be "POST", "GET", "REQUEST"
+ * @param $paramInfo generic array about the parameter see examples below of usage
+ * @param $args object an optional object to which each parameter is added as a property
+ * 
+ * @return array returns the array with the fetched parameter, keys are the same as in $paramInfo
+ */
 function GPR_PARAMS($source,$paramInfo,&$args = null)
 {
 	foreach($paramInfo as $pName => &$info)
@@ -38,6 +72,14 @@ function GPR_PARAMS($source,$paramInfo,&$args = null)
 	return I_PARAMS($paramInfo,$args);
 }
 
+/**
+ * Fetches the input parameters from the sources specified in $paramInfo
+ * 
+ * @param $paramInfo generic array about the parameter see examples below of usage
+ * @param $args object an optional object to which each parameter is added as a property
+ * 
+ * @return array returns the array with the fetched parameter, keys are the same as in $paramInfo
+ */
 function I_PARAMS($paramInfo,&$args = null)
 {
 	$params = null;
@@ -101,6 +143,19 @@ function I_PARAMS($paramInfo,&$args = null)
 }
 
 //@TODO comment
+/**
+ * Process a string type value from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ * @param $minLen integer the minimum length of the string
+ * @param $maxLen integer the maximum length of the string
+ * @param $regExp string a regular Expression for preg_ functions used the validate
+ * @param $pfnValidation string a callback function used to validate
+ * @param $pfnNormalization string a callback function used to normalize
+ 
+ * @return string the value of the parameter
+ */
 function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = null,
                             $pfnValidation = null,$pfnNormalization = null)
 {
@@ -108,13 +163,11 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
 	$vInfo->trim = tlStringValidationInfo::TRIM_BOTH;
 	$vInfo->doStripSlashes = true;
 
-    $items2check = array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
-    foreach($items2check as $item)
+    $parameters = array("minLen","maxLen","regExp","pfnValidation","pfnNormalization");
+    foreach($parameters as $parameter)
     {
-        if (!is_null($$item))
-        {
-            $vInfo->$item=$$item;
-        }
+        if (!is_null($$parameter))
+            $vInfo->$parameter = $parameter;
     }
    
 	$pInfo = new tlParameterInfo();
@@ -122,21 +175,31 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
 	$pInfo->name = $name;
 	
 	$iParam = new tlInputParameter($pInfo,$vInfo);
+	
 	return $iParam->value();
 }
 
 //@TODO comment
+/**
+ * Process a integer type value from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ * @param $minVal integer the minimum value 
+ * @param $maxVal integer the maximum value
+ * @param $pfnValidation string a callback function used to validate
+ 
+ * @return integer the value of the parameter
+ */
 function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation = null)
 {
 	$vInfo = new tlIntegerValidationInfo();
 
-    $items2check = array("minVal","maxVal","pfnValidation");
-    foreach($items2check as $item)
+    $parameters = array("minVal","maxVal","pfnValidation");
+	foreach($parameters as $parameter)
     {
-        if (!is_null($$item))
-        {
-            $vInfo->$item=$$item;
-        }
+        if (!is_null($$parameter))
+            $vInfo->$parameter = $parameter;
     }
 		
 	$pInfo = new tlParameterInfo();
@@ -144,43 +207,77 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 	$pInfo->name = $name;
 	
 	$iParam = new tlInputParameter($pInfo,$vInfo);
+	
 	return $iParam->value();
 }
 
 //@TODO comment
+/**
+ * Process a non-negative integer type value from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ * @param $maxVal integer the maximum value
+ * @param $pfnValidation string a callback function used to validate
+ 
+ * @return integer the value of the parameter
+ */
 function GPR_PARAM_INT_N($gpr,$name,$maxVal = null,$pfnValidation = null)
 {
 	return GPR_PARAM_INT($gpr,$name,0,$maxVal,$pfnValidation);
 }
 
 //@TODO comment
+/**
+ * Process an array of integer type values from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ * @param $pfnValidation string a callback function used to validate
+ 
+ * @return array the array of integer values from the parameter
+ */
 function GPR_PARAM_ARRAY_INT($gpr,$name,$pfnValidation = null)
 {
 	return GPR_PARAM_ARRAY($gpr,tlInputParameter::INT,$name,$pfnValidation);
 }
 
 //@TODO comment
+/**
+ * Process an array of string_n type values from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ * @param $pfnValidation string a callback function used to validate
+ 
+ * @return array the array of string values from the parameter
+ */
 function GPR_PARAM_ARRAY_STRING_N($gpr,$name,$pfnValidation = null)
 {
 	return GPR_PARAM_ARRAY($gpr,tlInputParameter::STRING_N,$name,$pfnValidation);
 }
 
 //@TODO comment
+/**
+ * Process an array of string_n type values from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ * @param $pfnValidation string a callback function used to validate
+ 
+ * @return array the array of string values from the parameter
+ */
 function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 {
 	$vInfo = new tlArrayValidationInfo();
 	if (!is_null($pfnValidation))
-	{
 		$vInfo->pfnValidation = $pfnValidation;
-    }
-    if ($type == tlInputParameter::STRING_N) 
-    {
-		$vInfo->validationInfo = new tlStringValidationInfo();
-	}
+    
+	if ($type == tlInputParameter::STRING_N) 
+    	$vInfo->validationInfo = new tlStringValidationInfo();
 	else
-	{
 		$vInfo->validationInfo = new tlIntegerValidationInfo();
-	}
+	
 	$pInfo = new tlParameterInfo();
 	$pInfo->source = $gpr;
 	$pInfo->name = $name;
@@ -191,6 +288,14 @@ function GPR_PARAM_ARRAY($gpr,$type,$name,$pfnValidation)
 }
 
 //@TODO comment
+/**
+ * Process an array of "checkbox" (string equal to "on") type values from GET/POST/REQUEST 
+ * 
+ * @param $gpr string the name of the source, "GET","POST","REQUEST"
+ * @param $name string the name of the parameter
+ 
+ * @return array the array of boolean values from the parameter
+ */
 function GPR_PARAM_CB_BOOL($gpr,$name)
 {
 	$vInfo = new tlCheckBoxValidationInfo();
@@ -202,4 +307,51 @@ function GPR_PARAM_CB_BOOL($gpr,$name)
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
+
+/* Examples of using tlInputParameter related functions */
+/*
+ $params = array( 
+	//string, from POST[„HelloString“], minLen 1, maxLen 15
+	"HelloString1" => array("POST",tlInputParameter::STRING_N,1,15),
+	//non negativ integer, from POST[„HelloInt1“]
+	"HelloInt1" =>  array("POST",tlInputParameter::INT_N),
+	//string, from POST[„HelloString2“], minLen 1, maxLen 15, checked with a regExp 
+	"HelloString2" => array("POST",tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
+	//string, from POST[„HelloString3“], minLen 1, maxLen 15, checked with a check function to 	//ensure its either „foo“ or „bar“ and normalization function which replaces „,“ with „.“ 
+	"HelloString3" => 			
+				array("GET",tlInputParameter::STRING_N,1,15,null,“checkFunction“,“normFunction“),
+	//non negativ integer, from GET[„HelloInt2“], minValue = 20, maxValue = 40. checked to 	//ensure it's odd by using a chechkFunction
+	"HelloInt2" =>  array("POST",tlInputParameter::INT_N.20,40,“checkOdd“),
+	
+);
+$pageParams = I_PARAMS($params)
+
+function checkOdd($value)
+{
+	if ($value % 2)
+	r	eturn false;
+	return true;
+}
+function checkFunction($value)
+{
+	if ($value != „foo“  && $value != „bar“)
+		return false;
+	return true;
+}
+function normFunctio($value)
+{
+	return str_replace(„,“,“.“,$value);
+}
+
+$params = array( 
+	"HelloString1" => array(tlInputParameter::STRING_N,1,15),
+	"HelloInt1" =>  array(tlInputParameter::INT_N),
+	"HelloString2" => array(tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
+	"HelloString3" => 			array(,tlInputParameter::STRING_N,1,15,null,“checkFunction“,“normFunction“),
+	"HelloInt2" =>  array(tlInputParameter::INT_N.20,40,“checkOdd“),
+	
+);
+
+$pageParams = P_PARAMS($params);
+*/ 
 ?>

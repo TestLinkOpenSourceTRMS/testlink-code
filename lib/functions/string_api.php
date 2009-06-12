@@ -1,13 +1,15 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
- * 
+ * This script is distributed under the GNU General Public License 2 or later.
+ *  
  * String Processing functions
  * 
  * @package 	TestLink
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: string_api.php,v 1.9 2009/06/10 21:50:03 havlat Exp $
+ * @copyright 	2007-2009, TestLink community
+ * @copyright 	Copyright (C) 2002 - 2004  Mantis Team
+ * 				The base for certain code was adapted from Mantis - a php based bugtracking system
+ * @version    	CVS: $Id: string_api.php,v 1.10 2009/06/12 10:53:23 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal rev: 
@@ -16,43 +18,45 @@
  * 	20071104 - franciscom - changes to string_email_links()
  *     
  **/
- // The base for certain code was adapted from:
- // Mantis - a php based bugtracking system
- // Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- // -------------------------------------------------------------------------------------
 
 
-/** Preserve spaces at beginning of lines. Lines must be separated by \n rather than <br /> */
+/** 
+ * Preserve spaces at beginning of lines. 
+ * Lines must be separated by \n rather than < br / > 
+ **/
 function string_preserve_spaces_at_bol( $p_string ) 
 {
 	$lines = explode( "\n", $p_string );
 	$line_count = count( $lines );
 	for ( $i = 0; $i < $line_count; $i++ ) {
-			$count	= 0;
-			$prefix	= '';
-
+		$count	= 0;
+		$prefix	= '';
+		
+		$t_char = substr( $lines[$i], $count, 1 );
+		$spaces = 0;
+		while ( ( $t_char  == ' ' ) || ( $t_char == "\t" ) ) {
+			if ( $t_char == ' ' )
+				$spaces++;
+			else
+				$spaces += 4; // 1 tab = 4 spaces, can be configurable.
+			
+			$count++;
 			$t_char = substr( $lines[$i], $count, 1 );
-			$spaces = 0;
-			while ( ( $t_char  == ' ' ) || ( $t_char == "\t" ) ) {
-				if ( $t_char == ' ' )
-					$spaces++;
-				else
-					$spaces += 4; // 1 tab = 4 spaces, can be configurable.
-
-				$count++;
-				$t_char = substr( $lines[$i], $count, 1 );
-			}
-
-			for ( $j = 0; $j < $spaces; $j++ ) {
-				$prefix .= '&nbsp;';
-			}
-
-			$lines[$i] = $prefix . substr( $lines[$i], $count );
+		}
+		
+		for ( $j = 0; $j < $spaces; $j++ ) {
+			$prefix .= '&nbsp;';
+		}
+		
+		$lines[$i] = $prefix . substr( $lines[$i], $count );
 	}
 	return implode( "\n", $lines );
 }
 
-/** Prepare a string to be printed without being broken into multiple lines */
+
+/** 
+ * Prepare a string to be printed without being broken into multiple lines 
+ **/
 function string_no_break( $p_string ) {
 	if ( strpos( $p_string, ' ' ) !== false ) {
 		return '<span class="nowrap">' . $p_string . "</span>";
@@ -90,7 +94,10 @@ function string_nl2br( $p_string, $p_wrap = 100 )
 		return preg_replace( $pre1[0], $pre2, $p_string );
 }
 
-/** Prepare a multiple line string for display to HTML */
+
+/** 
+ * Prepare a multiple line string for display to HTML 
+ **/
 function string_display( $p_string ) 
 {	
 	$p_string = string_strip_hrefs( $p_string );
@@ -102,14 +109,17 @@ function string_display( $p_string )
 	return $p_string;
 }
 
+
 /** Prepare a single line string for display to HTML */
 function string_display_line( $p_string ) 
 {
 	$p_string = string_strip_hrefs( $p_string );
 	$p_string = string_html_specialchars( $p_string );
 	$p_string = string_restore_valid_html_tags( $p_string, /* multiline = */ false );
+	
 	return $p_string;
 }
+
 
 /** 
  * Prepare a string for display to HTML and add href anchors for URLs, emails,
@@ -121,6 +131,7 @@ function string_display_links( $p_string )
 	$p_string = string_insert_hrefs( $p_string );
 	return $p_string;
 }
+
 
 /** 
  * Prepare a single line string for display to HTML and add href anchors for
@@ -134,13 +145,14 @@ function string_display_line_links( $p_string )
 	return $p_string;
 }
 
+
 /** Prepare a string for display in rss */
 function string_rss_links( $p_string ) 
 {
-	# rss can not start with &nbsp; which spaces will be replaced into by string_display().
+	// rss can not start with &nbsp; which spaces will be replaced into by string_display().
 	$t_string = trim( $p_string );
 
-	# same steps as string_display_links() without the preservation of spaces since &nbsp; is undefined in XML.
+	// same steps as string_display_links() without the preservation of spaces since &nbsp; is undefined in XML.
 	$t_string = string_strip_hrefs( $t_string );
 	$t_string = string_html_specialchars( $t_string );
 	$t_string = string_restore_valid_html_tags( $t_string );
@@ -156,89 +168,103 @@ function string_rss_links( $p_string )
 }
 
    
-/** Prepare a string for plain text display in email */
+/** 
+ * Prepare a string for plain text display in email 
+ **/
 function string_email( $p_string ) 
 {
 	$p_string = string_strip_hrefs( $p_string );
 	return $p_string;
 }
+ 
   
-/**  Prepare a string for plain text display in email and add URLs for bug
-     links and cvs links
-*/     
+/**  
+ * Prepare a string for plain text display in email and add URLs for bug
+ * links and cvs links
+ */     
 function string_email_links( $p_string ) {
 	$p_string = string_email( $p_string );
   return $p_string;
 }
 
-/** Process a string for display in a textarea box */
+
+/** 
+ * Process a string for display in a textarea box 
+ **/
 function string_textarea( $p_string ) 
 {
 	$p_string = string_html_specialchars( $p_string );
 	return $p_string;
 }
 
-	# --------------------
-	# Process a string for display in a text box
-	function string_attribute( $p_string ) {
-		$p_string = string_html_specialchars( $p_string );
 
-		return $p_string;
-	}
+/** 
+ * Process a string for display in a text box
+ */
+function string_attribute( $p_string ) 
+{
+	$p_string = string_html_specialchars( $p_string );
 
-	# --------------------
-	# Process a string for inclusion in a URL as a GET parameter
-	function string_url( $p_string ) {
-		$p_string = rawurlencode( $p_string );
+	return $p_string;
+}
 
-		return $p_string;
-	}
 
-	# --------------------
-	# validate the url as part of this site before continuing
-	function string_sanitize_url( $p_url ) {
+/** 
+ * Process a string for inclusion in a URL as a GET parameter 
+ */
+function string_url( $p_string ) 
+{
+	$p_string = rawurlencode( $p_string );
 
-		$t_url = strip_tags( urldecode( $p_url ) );
-		if ( preg_match( '?http(s)*://?', $t_url ) > 0 ) { 
-			// no embedded addresses
-			if ( preg_match( '?^' . config_get( 'path' ) . '?', $t_url ) == 0 ) { 
-				// url is ok if it begins with our path, if not, replace it
-				$t_url = 'index.php';
-			}
-		}
-		if ( $t_url == '' ) {
+	return $p_string;
+}
+
+
+/** 
+ * validate the url as part of this site before continuing 
+ **/
+function string_sanitize_url( $p_url ) {
+
+	$t_url = strip_tags( urldecode( $p_url ) );
+	if ( preg_match( '?http(s)*://?', $t_url ) > 0 ) { 
+		// no embedded addresses
+		if ( preg_match( '?^' . config_get( 'path' ) . '?', $t_url ) == 0 ) { 
+			// url is ok if it begins with our path, if not, replace it
 			$t_url = 'index.php';
 		}
-		
-		// split and encode parameters
-		if ( strpos( $t_url, '?' ) !== FALSE ) {
-			list( $t_path, $t_param ) = split( '\?', $t_url, 2 );
-			if ( $t_param !== "" ) {
-				$t_vals = array();
-				parse_str( $t_param, $t_vals );
-				$t_param = '';
-				foreach($t_vals as $k => $v) {
-					if ($t_param != '') {
-						$t_param .= '&'; 
-					}
-					$t_param .= "$k=" . urlencode( strip_tags( urldecode( $v ) ) );
-				}
-				return $t_path . '?' . $t_param;
-			} else {
-				return $t_path;
-			}
-		} else {
-			return $t_url;
-		}
+	}
+	if ( $t_url == '' ) {
+		$t_url = 'index.php';
 	}
 	
+	// split and encode parameters
+	if ( strpos( $t_url, '?' ) !== FALSE ) {
+		list( $t_path, $t_param ) = split( '\?', $t_url, 2 );
+		if ( $t_param !== "" ) {
+			$t_vals = array();
+			parse_str( $t_param, $t_vals );
+			$t_param = '';
+			foreach($t_vals as $k => $v) {
+				if ($t_param != '') {
+					$t_param .= '&'; 
+				}
+				$t_param .= "$k=" . urlencode( strip_tags( urldecode( $v ) ) );
+			}
+			return $t_path . '?' . $t_param;
+		} else {
+			return $t_path;
+		}
+	} else {
+		return $t_url;
+	}
+}
+	
 
+// ----- Tag Processing -------------------------------------------------------
 
-	#===================================
-	# Tag Processing
-	#===================================
-
-/** Detect URLs and email addresses in the string and replace them with href anchors */
+/** 
+ * Detect URLs and email addresses in the string and replace them with href anchors 
+ **/
 function string_insert_hrefs( $p_string ) 
 {
 	if ( !config_get('html_make_links') ) {
@@ -251,7 +277,7 @@ function string_insert_hrefs( $p_string )
 		ini_set( 'magic_quotes_sybase', false );
 	}
 
-	# Find any URL in a string and replace it by a clickable link
+	// Find any URL in a string and replace it by a clickable link
 	$p_string = preg_replace( '/(([[:alpha:]][-+.[:alnum:]]*):\/\/(%[[:digit:]A-Fa-f]{2}|[-_.!~*\';\/?%^\\\\:@&={\|}+$#\(\),\[\][:alnum:]])+)/se',
                               "'<a href=\"'.rtrim('\\1','.').'\">\\1</a> [<a href=\"'.rtrim('\\1','.').'\" target=\"_blank\">^</a>]'", $p_string);
                               
@@ -292,7 +318,10 @@ function string_insert_hrefs( $p_string )
 	return $p_string;
 }
 
-/** Detect href anchors in the string and replace them with URLs and email addresses */
+
+/** 
+ * Detect href anchors in the string and replace them with URLs and email addresses 
+ **/
 function string_strip_hrefs( $p_string ) 
 {
 	# First grab mailto: hrefs.  We don't care whether the URL is actually
@@ -306,9 +335,12 @@ function string_strip_hrefs( $p_string )
 	return $p_string;
 }
 
-# This function looks for text with htmlentities
-# like &lt;b&gt; and converts is into corresponding
-# html <b> based on the configuration presets
+
+/**
+ * This function looks for text with htmlentities
+ * like &lt;b&gt; and converts is into corresponding
+ * html &lt;b&gt; based on the configuration presets
+ */
 function string_restore_valid_html_tags( $p_string, $p_multiline = true ) 
 {
 	$t_html_valid_tags = config_get( $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line' );
@@ -334,110 +366,126 @@ function string_restore_valid_html_tags( $p_string, $p_multiline = true )
 }
 
 
-	# --------------------
-	# Return a string with the $p_character pattern repeated N times.
-	# $p_character - pattern to repeat
-	# $p_repeats - number of times to repeat.
-	function string_repeat_char( $p_character, $p_repeats ) {
-		return str_pad( '', $p_repeats, $p_character );
-	}
+/**	
+ * Return a string with the $p_character pattern repeated N times.
+ * 
+ * @param string $p_character - pattern to repeat
+ * @param integer $p_repeats - number of times to repeat.
+ */
+function string_repeat_char( $p_character, $p_repeats ) {
+	return str_pad( '', $p_repeats, $p_character );
+}
 
-	# --------------------
-	# Format date for display
-	// martin: @todo update and integrate
-	function string_format_complete_date( $p_date ) {
-		$t_timestamp = db_unixtimestamp( $p_date );
-		return date( config_get( 'complete_date_format' ), $t_timestamp );
-	}
 
-	# --------------------
-	# Shorten a string for display on a dropdown to prevent the page rendering too wide
-	#  ref issues #4630, #5072, #5131
+/**
+ * Format date for display
+ */ 
+function string_format_complete_date( $p_date ) {
+	$t_timestamp = db_unixtimestamp( $p_date );
+	return date( config_get( 'complete_date_format' ), $t_timestamp );
+}
 
-	function string_shorten( $p_string ) {
-		$t_max = config_get( 'max_dropdown_length' );
-		if ( ( tlStrLen($p_string ) > $t_max ) && ( $t_max > 0 ) ){
-			$t_pattern = '/([\s|.|,|\-|_|\/|\?]+)/';
-			$t_bits = preg_split( $t_pattern, $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
 
-			$t_string = '';
-			$t_last = $t_bits[ count( $t_bits ) - 1 ];
-			$t_last_len = tlStrLen( $t_last );
+/** 
+ * Shorten a string for display on a dropdown to prevent the page rendering too wide
+ */
+function string_shorten( $p_string ) {
+	$t_max = config_get( 'max_dropdown_length' );
+	if ( ( tlStrLen($p_string ) > $t_max ) && ( $t_max > 0 ) ){
+		$t_pattern = '/([\s|.|,|\-|_|\/|\?]+)/';
+		$t_bits = preg_split( $t_pattern, $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
 
-			foreach ( $t_bits as $t_bit ) {
-				if ( ( tlStrLen( $t_string ) + tlStrLen( $t_bit ) + $t_last_len + 3 <= $t_max )
-					|| ( strpos( $t_bit, '.,-/?' ) > 0 ) ) {
-					$t_string .= $t_bit;
-				} else {
-					break;
-				}
+		$t_string = '';
+		$t_last = $t_bits[ count( $t_bits ) - 1 ];
+		$t_last_len = tlStrLen( $t_last );
+
+		foreach ( $t_bits as $t_bit ) {
+			if ( ( tlStrLen( $t_string ) + tlStrLen( $t_bit ) + $t_last_len + 3 <= $t_max )
+				|| ( strpos( $t_bit, '.,-/?' ) > 0 ) ) {
+				$t_string .= $t_bit;
+			} else {
+				break;
 			}
-			$t_string .= '...' . $t_last;
-			return $t_string;
-		} else {
-			return $p_string;
 		}
-	}
-
-	# --------------------
-	# remap a field name to a string name (for sort filter)
-
-	function string_get_field_name( $p_string ) {
-
-		$t_map = array(
-				'last_updated' => 'last_update',
-				'id' => 'email_bug'
-				);
-
-		$t_string = $p_string;
-		if ( isset( $t_map[ $p_string ] ) ) {
-			$t_string = $t_map[ $p_string ];
-		}
-		return lang_get_defaulted( $t_string );
-	}
-
-	# --------------------
-	# Calls htmlentities on the specified string, passing along
-	# the current charset.
-	function string_html_entities( $p_string ) {
-		return htmlentities( $p_string, ENT_COMPAT, config_get('charset') );
-	}
-
-	# --------------------
-	# Calls htmlspecialchars on the specified string, passing along
-	# the current charset, if the current PHP version supports it.
-	function string_html_specialchars( $p_string ) {
-		# achumakov: @ added to avoid warning output in unsupported codepages
-		# e.g. 8859-2, windows-1257, Korean, which are treated as 8859-1.
-		# This is VERY important for Eastern European, Baltic and Korean languages
-		return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", @htmlspecialchars( $p_string, ENT_COMPAT, config_get('charset') ) );
-	}
-	
-	# --------------------
-	# Prepares a string to be used as part of header().
-	function string_prepare_header( $p_string ) {
-		$t_string = $p_string;
-
-		$t_truncate_pos = strpos($p_string, "\n");
-		if ($t_truncate_pos !== false ) {
-			$t_string = substr($t_string, 0, $t_truncate_pos);
-		}
-
-		$t_truncate_pos = strpos($p_string, "\r");
-		if ($t_truncate_pos !== false ) {
-			$t_string = substr($t_string, 0, $t_truncate_pos);
-		}
-
+		$t_string .= '...' . $t_last;
 		return $t_string;
+	} else {
+		return $p_string;
+	}
+}
+
+
+/**
+ * remap a field name to a string name (for sort filter)
+ */
+function string_get_field_name( $p_string ) {
+
+	$t_map = array(
+			'last_updated' => 'last_update',
+			'id' => 'email_bug'
+			);
+
+	$t_string = $p_string;
+	if ( isset( $t_map[ $p_string ] ) ) {
+		$t_string = $t_map[ $p_string ];
+	}
+	return lang_get_defaulted( $t_string );
+}
+
+
+/** 
+ * Calls htmlentities on the specified string, passing along
+ * the current charset.
+ */
+function string_html_entities( $p_string ) {
+	return htmlentities( $p_string, ENT_COMPAT, config_get('charset') );
+}
+
+
+/** 
+ * Calls htmlspecialchars on the specified string, passing along
+ * the current charset, if the current PHP version supports it.
+ */
+function string_html_specialchars( $p_string ) {
+	# achumakov: @ added to avoid warning output in unsupported codepages
+	# e.g. 8859-2, windows-1257, Korean, which are treated as 8859-1.
+	# This is VERY important for Eastern European, Baltic and Korean languages
+	return preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", @htmlspecialchars( $p_string, ENT_COMPAT, config_get('charset') ) );
+}
+
+
+/** 
+ * Prepares a string to be used as part of header().
+ */
+function string_prepare_header( $p_string ) {
+	$t_string = $p_string;
+
+	$t_truncate_pos = strpos($p_string, "\n");
+	if ($t_truncate_pos !== false ) {
+		$t_string = substr($t_string, 0, $t_truncate_pos);
 	}
 
-	# --------------------
-	# Checks the supplied string for scripting characters, if it contains any, then return true, otherwise return false.
-	function string_contains_scripting_chars( $p_string ) {
-		if ( ( strstr( $p_string, '<' ) !== false ) || ( strstr( $p_string, '>' ) !== false ) ) {
-			return true;
-		}
-
-		return false;
+	$t_truncate_pos = strpos($p_string, "\r");
+	if ($t_truncate_pos !== false ) {
+		$t_string = substr($t_string, 0, $t_truncate_pos);
 	}
+
+	return $t_string;
+}
+
+
+/** 
+ * Checks the supplied string for scripting characters, if it contains any, then return true, otherwise return false.
+ * 
+ * @param string $p_string
+ * @return boolean
+ */
+function string_contains_scripting_chars( $p_string ) {
+	if ( ( strstr( $p_string, '<' ) !== false ) || ( strstr( $p_string, '>' ) !== false ) ) {
+		return true;
+	}
+
+	return false;
+}
+
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/06/12 18:00:31 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/06/12 18:32:06 $ by $Author: schlundus $
  * 
 **/
 require_once("object.class.php");
@@ -167,7 +167,7 @@ function GPR_PARAM_STRING_N($gpr,$name,$minLen = null,$maxLen = null,$regExp = n
     foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
-            $vInfo->$parameter = $parameter;
+            $vInfo->$parameter = $$parameter;
     }
    
 	$pInfo = new tlParameterInfo();
@@ -199,7 +199,7 @@ function GPR_PARAM_INT($gpr,$name,$minVal = null,$maxVal = null,$pfnValidation =
 	foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
-            $vInfo->$parameter = $parameter;
+            $vInfo->$parameter = $$parameter;
     }
 		
 	$pInfo = new tlParameterInfo();

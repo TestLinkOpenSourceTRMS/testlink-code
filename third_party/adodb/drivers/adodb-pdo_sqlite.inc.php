@@ -143,7 +143,7 @@ class ADODB_pdo_sqlite extends ADODB_pdo {
 
 
     // mark newnham
-	function MetaColumns($tab,$normalize=true))
+	function MetaColumns($tab,$normalize=true)
 	{
 	  global $ADODB_FETCH_MODE;
 

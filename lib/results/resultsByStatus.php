@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.67 2009/05/21 19:24:05 schlundus Exp $
+* $Id: resultsByStatus.php,v 1.68 2009/06/12 20:40:04 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -186,7 +186,7 @@ function initializeGui($statusCode,&$argsObj)
     // Humm this may be can be configured ???
     foreach(array('failed','blocked','not_run') as $verbose_status)
     {
-        if( $argsObj->type == $statusCode[$verbose_status])
+        if($argsObj->type == $statusCode[$verbose_status])
         {
             $guiObj->title = lang_get('list_of_' . $verbose_status);
             break;

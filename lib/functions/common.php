@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.155 2009/06/11 15:42:53 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.156 2009/06/12 20:40:04 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -84,24 +84,6 @@ if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 {
 	require_once(TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 
 		'domxml-php4-to-php5.php');
-}
-
-/** @TODO havlatm: could not be printed to log on debug level? */
-function printPageStatistics($startupMemory,$startupTime)
-{
-/*
-	global $db;
-	
-	print "<div style=\"color:red;font-weight:bold\">";	
-	print "startup: Memory: $startupMemory <br />";
-	echo $startupTime."<br />";
-	tlTimingStop();
-	$finishingTime = tlTimingCurrent();
-	$finishingMemory  = memory_get_peak_usage(true)."--".memory_get_usage(true);
-	print "finished: {$db->nQuery} SQL; Memory: $finishingMemory ";
-	print "took ".($finishingTime - $startupTime)." secs\n";
-	print "</div>";
-*/
 }
 
 // -------------------------------------------------------------------------------------
@@ -341,7 +323,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 	doSessionStart();
 	setPaths();
 	set_dt_formats();
-
+	
 	doDBConnect($db);
 	if (!$bDontCheckSession)
 		checkSessionValid($db);

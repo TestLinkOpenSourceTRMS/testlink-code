@@ -6,11 +6,10 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachment.class.php,v 1.19 2009/06/11 15:42:53 schlundus Exp $
+ * @version    	CVS: $Id: attachment.class.php,v 1.20 2009/06/12 20:40:04 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */
- 
 /** parenthal class */
 require_once( 'object.class.php' );
 

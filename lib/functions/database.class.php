@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.42 2009/06/11 18:23:21 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.43 2009/06/12 20:40:04 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -178,7 +178,7 @@ class database
 			$message .= "\nQuery failed: errorcode[" . $ec . "]". "\n\terrormsg:".$emsg;
 			$logLevel = 'ERROR';
 		}
-		if( $this->logEnabled )
+		if($this->logEnabled)
 		{
 		    tLog($message,$logLevel,"DATABASE");
 		}

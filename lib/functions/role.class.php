@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: role.class.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/06/11 18:16:53 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/06/15 20:14:59 $ $Author: schlundus $
  *
  * rev:
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
@@ -53,23 +53,15 @@ class tlRole extends tlDBObject
 			$this->dbID = null;
 		}	
 	}
-	//@TODO schlundus, comment this
-	public function readFromCache()
+	public function copyFromCache($role)
 	{
-		if (!$this->activateCaching)
-		{
-			return tl::ERROR;
-		}
-		if (isset(self::$objectCache[__CLASS__][$this->detailLevel][$this->dbID]))
-		{
-			$role = self::$objectCache[__CLASS__][$this->detailLevel][$this->dbID];
-			$this->description = $role->description;
-			$this->rights = $role->rights;
-			$this->name = $role->name;
-			return tl::OK;
-		}
-		return tl::ERROR;
+		$this->description = $role->description;
+		$this->rights = $role->rights;
+		$this->name = $role->name;
+		
+		return tl::OK;
 	}
+	
 	
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
@@ -456,15 +448,32 @@ class tlRole extends tlDBObject
 	}
 }
 
+/**
+ * class which represents a right in TestLink
+ *
+ */
 class tlRight extends tlDBObject
 {
+	/**
+	 * @var string the name of the right
+	 */
 	public $name;
 	
+	/**
+	 * constructor
+	 * 
+	 * @param $dbID integer the database identifier of the right
+	 */
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
 	}
 	
+	/* 
+	 * brings the object to a clean state
+	 * 
+	 * @param $options integer any combination of TLOBJ_O_ Flags
+	 */
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->name = null;
@@ -472,12 +481,24 @@ class tlRight extends tlDBObject
 			$this->dbID = null;
 	}
 	
+	/* 
+	 * Magic function, called by PHP whenever right object should be printed
+	 * @return string returns the name of the right
+	 */
 	public function __toString()
 	{
 		return $this->name;
 	}
 	
 	//BEGIN interface iDBSerialization
+	/* 
+	 * Read a right object from the database
+	 *
+	 * @param $db resource the database connection used to read the object
+	 * @param $option interger any combination of TLOBJ_O_ flags
+	 * 
+	 * @return integer returns tl::OK on success, tl::ERROR else
+	 */
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
@@ -496,6 +517,15 @@ class tlRight extends tlDBObject
 		return $info ? tl::OK : tl::ERROR;
 	}
 
+	/**
+	 * Get a right by its database id
+	 * 
+	 * @param $db [ref] resource the database connection
+	 * @param $id integer the database identifier
+	 * @param $detailLevel integer the detail level, any combination TLOBJ_O_GET_DETAIL_ flags
+	 *
+	 * @return tlRight returns the create right or null
+	 */
 	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);

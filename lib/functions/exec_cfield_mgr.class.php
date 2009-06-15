@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/06/11 17:45:46 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/06/15 20:14:59 $ $Author: schlundus $
  * @author jbarchibald
  *
  * rev :
@@ -26,7 +26,7 @@ class exec_cfield_mgr extends cfield_mgr
         $this->db = &$db;
 
         // instantiate the parent constructor.
-        parent::__constructor($this->db);
+        parent::__construct($this->db);
 
         $this->cf_map = $this->get_linked_cfields($tproject_id);
 

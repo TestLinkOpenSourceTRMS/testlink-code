@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.156 2009/06/12 20:40:04 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.157 2009/06/15 20:14:59 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -55,6 +55,7 @@ require_once('tlsmarty.inc.php');
 /** logging functions */
 require_once('logging.inc.php');
 require_once('logger.class.php');
+require_once('pagestatistics.class.php');
 
 /** BTS interface */
 /** @TODO martin: remove from global loading - limited using */ 
@@ -76,6 +77,7 @@ require_once("plan.core.inc.php");
 
 require_once("inputparameter.inc.php");
 
+//@TODO schlundus, i think we can remove php4 legacy stuff?
 /** 
  * load the php4 to php5 domxml wrapper if the php5 is used and 
  * the domxml extension is not loaded 
@@ -110,7 +112,7 @@ function __autoload($class_name)
 function doDBConnect(&$db)
 {
 	global $g_tlLogger;
-	// global $tlCfg;
+	
 	$charSet = config_get('charset');
 	$result = array('status' => 1, 'dbms_msg' => 'ok');
 
@@ -325,6 +327,11 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 	set_dt_formats();
 	
 	doDBConnect($db);
+	
+	static $pageStatistics = null;
+	if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
+		$pageStatistics = new tlPageStatistics($db);
+	
 	if (!$bDontCheckSession)
 		checkSessionValid($db);
 

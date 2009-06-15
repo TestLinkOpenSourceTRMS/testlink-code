@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.31 2009/06/15 19:42:38 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.32 2009/06/15 20:14:59 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -225,25 +225,12 @@ abstract class tlObject implements iSerialization
             $tableNames = array_flip($tableNames);			
 			$tables = array_intersect_key($tables,$tableNames);
 			if (sizeof($tables) != sizeof($tableNames))
-			{
 				throw new Exception("Wrong table name(s) for getDBTables() detected!");
-			}	
 		}
 		
 	    return $tables;
 	}
 };
-
-//@TODO schlundus, comment this
-	
-interface iCacheable
-{
-	public function addToCache();
-	
-	public function removeFromCache();
-	
-	public function readFromCache();
-}
 
 /**
  * The base class for all managed TestLink objects which need a db connection
@@ -337,10 +324,20 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
  * @package 	TestLink
  * @abstract 
  */
-abstract class tlDBObject extends tlObject implements iDBSerialization, iCacheable
+abstract class tlDBObject extends tlObject implements iDBSerialization
 {
+	/**
+	 * @var array this is the static object cache for all tlDBObject. objects are stored like this
+	 * 			 [classname][detailLevel][databaseID]
+	 */
 	static protected $objectCache = null;
+	
+	/**
+	 * @var boolean activate Caching or not, default is set to false, because it all brings performance to certain 
+	 * 				objects
+	 */
 	protected $activateCaching = false; 
+	
 	/**
 	 * @var integer the database id of the object
 	 */
@@ -387,7 +384,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization, iCacheab
 	
 	/* some factory functions to be used to create tl managed objects */
 	/**
-	 * create any tl-managed objects
+	 * creates any tl-managed objects
 	 * 
 	 * @param object [ref] $db the database connection
 	 * @param int $id the id of the object to be created (must exist in the database)
@@ -486,25 +483,58 @@ abstract class tlDBObject extends tlObject implements iDBSerialization, iCacheab
 		}
 		return tl::ERROR;
 	}
-	//@TODO schlundus, comment this
-	public function addToCache()
+	
+	/**
+	 * Adds the object to the cache if caching is activated
+	 * 
+	 * @return integer returns always tl::OK
+	 */
+	protected function addToCache()
 	{
 		if ($this->activateCaching)
 			self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID] = $this;
 		return tl::OK; 
 	}
-	//@TODO schlundus, comment this
-	public function removeFromCache()
+	
+	/**
+	 * Remove the object from the cache
+	 * 
+	 * @return integer returns always tl::OK
+	 */
+	protected function removeFromCache()
 	{
 		if ($this->activateCaching)
 			unset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]);
 		return tl::OK;
 	}
 	
-	//@TODO schlundus, comment this
+	/**
+	 * Dummy implementation, each cachable object needs only to implement this function
+	 * The function must read the members (but not the internal ones) from object and copy it to itself
+	 * 
+	 * @param $object the object to read from
+	 * @return integer returns always tl::OK
+	 */
+	protected function copyFromCache($object)
+	{
+		return tl::OK;
+	}
+	
+	/**
+	 * @return @return integer returns tl::ERROR if caching is not activated or a cache miss happens
+	 * 					else it returns the result of copyFromCache
+	 */
 	public function readFromCache()
 	{
 		if (!$this->activateCaching)
-			return tl::OK;
+			return tl::ERROR;
+
+		if (isset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]))
+		{
+			$role = self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID];
+			return $this->copyFromCache($role);
+			
+		}
+		return tl::ERROR;
 	}
 }

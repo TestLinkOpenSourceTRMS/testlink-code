@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachmentrepository.class.php,v 1.21 2009/06/12 20:40:04 schlundus Exp $
+ * @version    	CVS: $Id: attachmentrepository.class.php,v 1.22 2009/06/15 20:14:59 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
@@ -44,6 +44,11 @@ class tlAttachmentRepository extends tlObjectWithDB
 	protected $attachmentCfg;
 
 
+	/**
+	 * class constructor
+	 * 
+	 * @param $db [ref] resource the database connection
+	 */
 	function __construct(&$db)
 	{
 		tlObjectWithDB::__construct($db);
@@ -53,6 +58,12 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$this->attachmentCfg = config_get('attachments');
 	}
 
+    /**
+     * Creates the one and only repository object
+     * 
+     * @param $db [ref] resource the database connection
+     * @return tlAttachmenRepository
+     */
     public static function create(&$db)
     {
         if (!isset(self::$s_instance))
@@ -240,8 +251,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 *
 	 * @return string returns the full path for the folder
 	 **/
- 	//SCHLUNDUS: should be protected
-	public function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
+ 	protected function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
 	{
 		$path = $this->repositoryPath.DIRECTORY_SEPARATOR.$tableName;
 		if ($mkDir && !file_exists($path))
@@ -253,6 +263,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $path;
 	}
 
+	/**
+	 * Deletes an attachment from the filesystem
+	 * 
+	 * @param $dummy not used, only there to keep the interface equal to deleteAttachmentFromDB
+	 * @param $attachmentInfo array with information about the attachments
+	 * @return interger returns tl::OK on success, tl::ERROR else
+	 */
 	protected function deleteAttachmentFromFS($dummy,$attachmentInfo = null)
 	{
 		$filePath = $attachmentInfo['file_path'];
@@ -261,6 +278,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return @unlink($destFPath) ? tl::OK : tl::ERROR;
 	}
 
+	/**
+	 * Deletes an attachment from the database
+	 * 
+	 * @param $id integer the database identifier of the attachment
+	 * @param $dummy not used, only there to keep the interface equal to deleteAttachmentFromDB
+	 * @return interger returns tl::OK on success, tl::ERROR else
+	 */
 	protected function deleteAttachmentFromDB($id,$dummy = null)
 	{
 		$attachment = new tlAttachment($id);
@@ -281,6 +305,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		}
 		return $bResult ? tl::OK : tl::ERROR;
 	}
+	
 	public function getAttachmentContent($id,$attachmentInfo = null)
 	{
 		$content = null;
@@ -296,6 +321,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		}
 		return $content;
 	}
+	
 	protected function getAttachmentContentFromFS($id)
 	{
 		$query = "SELECT file_size,compression_type,file_path " .

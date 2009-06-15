@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.17 2009/06/15 19:42:38 franciscom Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.18 2009/06/15 20:19:26 schlundus Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -224,10 +224,10 @@ class tlParameterInfo
 	 */
 	public $name = null;
 	
-	function __construct($source=null,$name=null)
+	function __construct($source = null,$name = null)
 	{
-	    $this->source=$source;
-	    $this->name=$name;    
+	    $this->source = $source;
+	    $this->name = $name;    
 	}
 	
 }

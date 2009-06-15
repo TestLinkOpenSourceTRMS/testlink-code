@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.30 2009/06/11 18:24:10 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.31 2009/06/15 19:42:38 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20090615 - franciscom - fixed bug on getDBTables()
  * 20090609 - franciscom - added method getDBTables()
  * 20090607 - franciscom - added array with tables names as property to be used on
  *                         all other classes, to manage table prefix
@@ -171,57 +172,62 @@ abstract class tlObject implements iSerialization
      *
      * @param $tableNames array of tablenames, to get only some of the tables
 	 * @return map key=table name without prefix, value=table name on db
+	 *
+	 * @since 20090615 - franciscom - fixed bug that render useless function when using $tablesNames argument
     */
 	static public function getDBTables($tableNames = null)
 	{
 		$tables = array('assignment_status' => DB_TABLE_PREFIX . 'assignment_status',
-        			'assignment_types' => DB_TABLE_PREFIX . 'assignment_types', 
-                    'attachments' => DB_TABLE_PREFIX . 'attachments',
-                    'builds' => DB_TABLE_PREFIX . 'builds',
-                    'cfield_design_values' => DB_TABLE_PREFIX . 'cfield_design_values',
-                    'cfield_execution_values' => DB_TABLE_PREFIX . 'cfield_execution_values',
-                    'cfield_node_types' => DB_TABLE_PREFIX . 'cfield_node_types',
-                    'cfield_testplan_design_values' => DB_TABLE_PREFIX . 'cfield_testplan_design_values',
-                    'cfield_testprojects' => DB_TABLE_PREFIX . 'cfield_testprojects',
-                    'custom_fields' => DB_TABLE_PREFIX . 'custom_fields',
-                    'db_version' => DB_TABLE_PREFIX . 'db_version',
-                    'events' => DB_TABLE_PREFIX . 'events',
-                    'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
-                    'executions' => DB_TABLE_PREFIX . 'executions',
-                    'keywords' => DB_TABLE_PREFIX . 'keywords',
-                    'milestones' => DB_TABLE_PREFIX . 'milestones',
-                    'node_types' => DB_TABLE_PREFIX . 'node_types',
-                    'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                    'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
-                    'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
-                    'req_specs' => DB_TABLE_PREFIX . 'req_specs',
-                    'req_suites' => DB_TABLE_PREFIX . 'req_suites',
-                    'requirements' => DB_TABLE_PREFIX . 'requirements',
-                    'rights' => DB_TABLE_PREFIX . 'rights',
-                    'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
-                    'role_rights' => DB_TABLE_PREFIX . 'role_rights',
-                    'roles' => DB_TABLE_PREFIX . 'roles',
-                    'tcversions' => DB_TABLE_PREFIX . 'tcversions',
-                    'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
-                    'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
-                    'testplans' => DB_TABLE_PREFIX . 'testplans',
-                    'testprojects' => DB_TABLE_PREFIX . 'testprojects',
-                    'testsuites' => DB_TABLE_PREFIX . 'testsuites',
-                    'text_templates' => DB_TABLE_PREFIX . 'text_templates',
-                    'transactions' => DB_TABLE_PREFIX . 'transactions',
-                    'user_assignments' => DB_TABLE_PREFIX . 'user_assignments',
-                    'user_group' => DB_TABLE_PREFIX . 'user_group',
-                    'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
-                    'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
-                    'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                    'users' => DB_TABLE_PREFIX . 'users'); 
+        			    'assignment_types' => DB_TABLE_PREFIX . 'assignment_types', 
+                        'attachments' => DB_TABLE_PREFIX . 'attachments',
+                        'builds' => DB_TABLE_PREFIX . 'builds',
+                        'cfield_design_values' => DB_TABLE_PREFIX . 'cfield_design_values',
+                        'cfield_execution_values' => DB_TABLE_PREFIX . 'cfield_execution_values',
+                        'cfield_node_types' => DB_TABLE_PREFIX . 'cfield_node_types',
+                        'cfield_testplan_design_values' => DB_TABLE_PREFIX . 'cfield_testplan_design_values',
+                        'cfield_testprojects' => DB_TABLE_PREFIX . 'cfield_testprojects',
+                        'custom_fields' => DB_TABLE_PREFIX . 'custom_fields',
+                        'db_version' => DB_TABLE_PREFIX . 'db_version',
+                        'events' => DB_TABLE_PREFIX . 'events',
+                        'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
+                        'executions' => DB_TABLE_PREFIX . 'executions',
+                        'keywords' => DB_TABLE_PREFIX . 'keywords',
+                        'milestones' => DB_TABLE_PREFIX . 'milestones',
+                        'node_types' => DB_TABLE_PREFIX . 'node_types',
+                        'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+                        'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
+                        'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
+                        'req_specs' => DB_TABLE_PREFIX . 'req_specs',
+                        'req_suites' => DB_TABLE_PREFIX . 'req_suites',
+                        'requirements' => DB_TABLE_PREFIX . 'requirements',
+                        'rights' => DB_TABLE_PREFIX . 'rights',
+                        'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
+                        'role_rights' => DB_TABLE_PREFIX . 'role_rights',
+                        'roles' => DB_TABLE_PREFIX . 'roles',
+                        'tcversions' => DB_TABLE_PREFIX . 'tcversions',
+                        'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
+                        'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
+                        'testplans' => DB_TABLE_PREFIX . 'testplans',
+                        'testprojects' => DB_TABLE_PREFIX . 'testprojects',
+                        'testsuites' => DB_TABLE_PREFIX . 'testsuites',
+                        'text_templates' => DB_TABLE_PREFIX . 'text_templates',
+                        'transactions' => DB_TABLE_PREFIX . 'transactions',
+                        'user_assignments' => DB_TABLE_PREFIX . 'user_assignments',
+                        'user_group' => DB_TABLE_PREFIX . 'user_group',
+                        'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
+                        'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
+                        'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
+                        'users' => DB_TABLE_PREFIX . 'users'); 
 
 		if ($tableNames != null)
 		{	
 			$tableNames = (array)$tableNames;
-			$tables = array_intersect($tables,$tableNames);
+            $tableNames = array_flip($tableNames);			
+			$tables = array_intersect_key($tables,$tableNames);
 			if (sizeof($tables) != sizeof($tableNames))
+			{
 				throw new Exception("Wrong table name(s) for getDBTables() detected!");
+			}	
 		}
 		
 	    return $tables;
@@ -238,6 +244,7 @@ interface iCacheable
 	
 	public function readFromCache();
 }
+
 /**
  * The base class for all managed TestLink objects which need a db connection
  * 

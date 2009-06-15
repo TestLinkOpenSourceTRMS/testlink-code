@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.16 2009/06/12 18:00:31 schlundus Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.17 2009/06/15 19:42:38 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -212,17 +212,24 @@ class tlInputParameter extends tlObject
  * Helper class which holds some information like source and name about the InputParameter
  *
  */
-class tlParameterInfo 
+class tlParameterInfo
 {
 	/**
-	 * @var string the source of the parameter (eG POST,GET,...)
+	 * @var string source of the parameter input value (eG POST,GET,...)
 	 */
 	public $source = null;
 	
 	/**
-	 * @var string the name of the parameter
+	 * @var string name of the parameter
 	 */
 	public $name = null;
+	
+	function __construct($source=null,$name=null)
+	{
+	    $this->source=$source;
+	    $this->name=$name;    
+	}
+	
 }
 
 /**

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachmentrepository.class.php,v 1.22 2009/06/15 20:14:59 schlundus Exp $
+ * @version    	CVS: $Id: attachmentrepository.class.php,v 1.23 2009/06/15 20:40:47 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
@@ -283,7 +283,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * 
 	 * @param $id integer the database identifier of the attachment
 	 * @param $dummy not used, only there to keep the interface equal to deleteAttachmentFromDB
-	 * @return interger returns tl::OK on success, tl::ERROR else
+	 * @return integer returns tl::OK on success, tl::ERROR else
 	 */
 	protected function deleteAttachmentFromDB($id,$dummy = null)
 	{
@@ -291,6 +291,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $attachment->deleteFromDB($this->db);
 	}
 
+	/**
+	 * Deletes the attachment with the given database id
+	 * 
+	 * @param $id integer the database identifier of the attachment
+	 * @param $attachmentInfo array, optional information about the attachment
+	 * @return integer returns tl::OK on success, tl::ERROR else
+	 */
 	public function deleteAttachment($id,$attachmentInfo = null)
 	{
 		$bResult = tl::ERROR;
@@ -306,6 +313,13 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $bResult ? tl::OK : tl::ERROR;
 	}
 	
+	/**
+	 * Gets the contents of the attachments from the repository
+	 * 
+	 * @param $id integer the database identifier of the attachment
+	 * @param $attachmentInfo array, optional information about the attachment
+	 * @return string the contents of the attachment or null on error
+	 */
 	public function getAttachmentContent($id,$attachmentInfo = null)
 	{
 		$content = null;
@@ -322,6 +336,12 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $content;
 	}
 	
+	/**
+	 * Gets the contents of the attachment given by it's database identifier from the filesystem 
+	 * 
+	 * @param $id integer the database identifier of the attachment
+	 * @return string the contents of the attachment or null on error
+	 */
 	protected function getAttachmentContentFromFS($id)
 	{
 		$query = "SELECT file_size,compression_type,file_path " .
@@ -381,6 +401,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $content;
 	}
 	
+	/**
+	 * Deletes all attachments of a certain object of a given type
+	 * 
+	 * @param $fkid integer the id of the object whose attachments should be deleted
+	 * @param $fkTableName the "type" of the object, or the table the object is stored in 
+	 * 
+	 * @return boolean returns bSuccess if all attachments are deleted, false else
+	 */
 	public function deleteAttachmentsFor($fkid,$fkTableName)
 	{
 		$bSuccess = true;
@@ -401,6 +429,12 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $bSuccess;
 	}
 
+	/**
+	 * Reads the information about the attachment with the given database id
+	 * 
+	 * @param $id integer the database identifier of the attachment
+	 * @return array the information about the attachment
+	 */
 	public function getAttachmentInfo($id)
 	{
 		$info = null;
@@ -412,6 +446,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $info;
 	}
 	
+	/**
+	 * Reads all attachments for a certain object of a given type
+	 * 
+	 * @param $fkid integer the id of the object whose attachments should be read
+	 * @param $fkTableName the "type" of the object, or the table the object is stored in 
+	 * 
+	 * @return arrays returns an array with the attachments of the objects, or null on error
+	 */
 	public function getAttachmentInfosFor($fkid,$fkTableName)
 	{
 		$attachmentInfos = null;
@@ -427,6 +469,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 		return $attachmentInfos;
 	}
 	
+	/**
+	 * Yields all attachmentids for a certain object of a given type
+	 * 
+	 * @param $fkid integer the id of the object whose attachments should be read
+	 * @param $fkTableName the "type" of the object, or the table the object is stored in 
+	 * 
+	 * @return arrays returns an array with the attachments of the objects, or null on error
+	 */
 	public function getAttachmentIDsFor($fkid,$fkTableName)
 	{
 		$order_by = $this->attachmentCfg->order_by;

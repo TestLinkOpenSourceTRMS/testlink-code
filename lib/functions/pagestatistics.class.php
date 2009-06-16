@@ -5,8 +5,9 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: pagestatistics.class.php,v 1.2 2009/06/16 10:20:25 havlat Exp $
+ * @version    	CVS: $Id: pagestatistics.class.php,v 1.3 2009/06/16 10:49:04 havlat Exp $
  * @link 		http://www.teamst.org/index.php
+ * @since 		1.9 - Jun, 2009
  *
  * @internal Revisions:
  * 	None
@@ -18,7 +19,8 @@
  * to collect some performance related things
  * 
  * @package TestLink
- * @author Andreas Morsing
+ * @author 	Andreas Morsing
+ * @since 	1.9 - Jun, 2009
  */
 class tlPageStatistics extends tlObjectWithDB
 {
@@ -91,8 +93,10 @@ class tlPageStatistics extends tlObjectWithDB
 /** 
  * @package TestLink
  * @author Andreas Morsing
+ * @since 1.9 - Jun, 2009
  * @TODO schlundus, comment class...., at the moment i'm not sure
  * 		about the class, maybe there should three classes... 
+ * 		havlatm: you should write a design at first (maybe UML) ... it should helps with the decision
  */ 
 class tlPerformanceCounter extends tlObjectWithDB
 {

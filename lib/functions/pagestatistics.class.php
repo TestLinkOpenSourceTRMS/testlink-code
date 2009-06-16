@@ -1,7 +1,24 @@
 <?php
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: pagestatistics.class.php,v 1.2 2009/06/16 10:20:25 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
+ * 	None
+ **/
+
+
 /**
  * Class which handles the "performance" footer on the end of each page, can also be used
  * to collect some performance related things
+ * 
+ * @package TestLink
+ * @author Andreas Morsing
  */
 class tlPageStatistics extends tlObjectWithDB
 {
@@ -13,8 +30,7 @@ class tlPageStatistics extends tlObjectWithDB
 	/**
 	 * Class constructor
 	 * 
-	 * @param $db [ref] resouzrce the databse connection
-	 * @return unknown_type
+	 * @param resource &$db reference to resource of the database connection
 	 */
 	function __construct(&$db)
 	{
@@ -33,8 +49,8 @@ class tlPageStatistics extends tlObjectWithDB
 	/**
 	 * starts a new performance counter with the given title and type
 	 * 
-	 * @param $title string the title of the performance counter
-	 * @param $type integer the type of the performance Counter, any combination of 
+	 * @param string $title the title of the performance counter
+	 * @param integer $type the type of the performance Counter, any combination of 
 	 * 				tlPerformanceCounter::TYPE_ Flags
 	 */
 	public function startPerformanceCounter($title,$type)
@@ -42,7 +58,7 @@ class tlPageStatistics extends tlObjectWithDB
 		$this->performanceCounters[$title] = new tlPerformanceCounter($this->db,$type);
 	}
 	
-	/* 
+	/** 
 	 * Class destructor, echoes the contents of the counter 
 	 */
 	public function __destruct()
@@ -50,8 +66,9 @@ class tlPageStatistics extends tlObjectWithDB
 		echo (string) $this;
 	}
 	
-	/* 
+	/** 
 	 * Magic function called by php whenever a tlPageStatistics should be used as string
+	 * 
 	 * @return string returns a string representation of the counter
 	 */
 	public function __toString()
@@ -69,8 +86,14 @@ class tlPageStatistics extends tlObjectWithDB
 	
 	}
 }
-//@TODO schlundus, comment class...., at the moment i'm not sure 
-//about the class, maybe there should three classes...
+
+
+/** 
+ * @package TestLink
+ * @author Andreas Morsing
+ * @TODO schlundus, comment class...., at the moment i'm not sure
+ * 		about the class, maybe there should three classes... 
+ */ 
 class tlPerformanceCounter extends tlObjectWithDB
 {
 	const TYPE_MEMORY = 1;

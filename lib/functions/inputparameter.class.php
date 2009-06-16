@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.18 2009/06/15 20:19:26 schlundus Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.19 2009/06/16 22:21:09 havlat Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -16,6 +16,7 @@
 /**
  * Helper class for Input parameters (parameters fetched from POST/GET/REQUEST
  * 
+ * @package TestLink
  * @author Andreas Morsing
  */
 class tlInputParameter extends tlObject
@@ -210,7 +211,7 @@ class tlInputParameter extends tlObject
 
 /**
  * Helper class which holds some information like source and name about the InputParameter
- *
+ * @package TestLink
  */
 class tlParameterInfo
 {
@@ -234,7 +235,7 @@ class tlParameterInfo
 
 /**
  * Helper class for validating strings
- *
+ * @package TestLink
  */
 class tlStringValidationInfo 
 {
@@ -377,7 +378,7 @@ class tlStringValidationInfo
 
 /**
  * Helper class for validating Integers
- *
+ * @package TestLink
  */
 class tlIntegerValidationInfo
 {
@@ -437,7 +438,7 @@ class tlIntegerValidationInfo
 
 /**
  * Helper class for validating Arrays
- *
+ * @package TestLink
  */
 class tlArrayValidationInfo
 {
@@ -486,7 +487,7 @@ class tlArrayValidationInfo
 
 /**
  * Helper class for validating checkboxex submitted via POST/GET 
- *
+ * @package TestLink
  */
 class tlCheckBoxValidationInfo
 {

@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.33 2009/06/16 16:50:24 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.34 2009/06/16 22:21:09 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -126,7 +126,9 @@ abstract class tlObject implements iSerialization
 		$this->_clean();
 	}
 	
-	/** magic method for usage with print() or echo() , dumps out the object 
+	/** 
+	 * magic method for usage with print() or echo() , dumps out the object
+	 *  
 	 * @return string a dump of the object
 	 */
 	public function __toString()
@@ -139,7 +141,8 @@ abstract class tlObject implements iSerialization
 	{
 	}
 	
-	/* Gets all serializationInterfaces the object supports
+	/** 
+	 * Gets all serializationInterfaces the object supports
 	 * 
 	 * @return all supported Import/Export Interfaces  
 	 **/
@@ -148,7 +151,9 @@ abstract class tlObject implements iSerialization
 		return $this->serializationInterfaces;
 	}
 	
-	/** @return all supported Import/Export Interfaces - Format Descriptors */
+	/** 
+	 * @return all supported Import/Export Interfaces - Format Descriptors 
+	 **/
 	function getSupportedSerializationFormatDescriptions()
 	{
 		return $this->serializationFormatDescriptors;
@@ -233,6 +238,7 @@ abstract class tlObject implements iSerialization
 	    return $tables;
 	}
 };
+
 
 /**
  * The base class for all managed TestLink objects which need a db connection
@@ -361,9 +367,10 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	//get all information
 	const TLOBJ_O_GET_DETAIL_FULL = 0xFFFFFFFF;
 	
-	/* Class constructor
+	/** 
+	 * Class constructor
 	 *
-	 * @param $dbID the database identifier
+	 * @param resource $dbID (optional) the database identifier
 	 */
 	function __construct($dbID = null)
 	{
@@ -523,7 +530,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	}
 	
 	/**
-	 * @return @return integer returns tl::ERROR if caching is not activated or a cache miss happens
+	 * @return integer returns tl::ERROR if caching is not activated or a cache miss happens
 	 * 					else it returns the result of copyFromCache
 	 */
 	public function readFromCache()

@@ -1,13 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- *
- * Filename $RCSfile: logger.class.php,v $
- *
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/06/07 13:03:21 $ $Author: franciscom $
- *
- * @author Andreas Morsing
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Log Functions
  *
@@ -15,28 +9,39 @@
  * the log messages through your code and turn them on and off with a single command.
  * To facilitate this we will create a number of logging functions.
  *
- * rev: 20090603 - franciscom - adding table prefix management
- *
+ * @package TestLink
+ * @author Andreas Morsing
+ * @copyright 2005-2009, TestLink community 
+ * @version CVS: $Id: logger.class.php,v 1.43 2009/06/16 22:21:09 havlat Exp $
+ * @link http://www.teamst.org
+ * @since 1.8
+ * 
+ * @internal Revisions:
+ * 
+ * 		20090603 - franciscom - adding table prefix management
  *      20080517 - franciscom - exclude mktime() logs 
- *
  *      20080316 - franciscom - added getEnableLoggingStatus() methods
  *                              refactored access to enable logging status info.
  *                              refactored enable/disable logging
  *                              Added code to configure individual loggers using new config $g_loggerCfg
- *
  *      20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
  *                              watchPHPErrors() - added new error to suppress
  *      20080216 - franciscom - limit length of entryPoint
  *
-**/
+ **/
+ 
+/**
+ * @package TestLink
+ */
 class tlLogger extends tlObject
 {
-	//loglevels
-	/* There are 5 logging levels available. Log messages will only be displayed
-	* if they are at a level less verbose than that currently set. So, we can turn
-	* on logging with the following command:
-	*
-	*/
+	/** 
+	 * Log levels
+	 * There are 5 logging levels available. Log messages will only be displayed
+	 * if they are at a level less verbose than that currently set. So, we can turn
+	 * on logging with the following command:
+	 *
+	 */
 	const ERROR = 1;
 	const WARNING = 2;
  	const INFO = 4;
@@ -46,7 +51,7 @@ class tlLogger extends tlObject
 	static $logLevels = null;
 	static $revertedLogLevels = null;
 
-    // to enable/disable loggin for all loggers
+    /** @var boolean to enable/disable loggin for all loggers */
 	protected $doLogging = true;
 
  	// must be changed is db field len changes
@@ -63,7 +68,7 @@ class tlLogger extends tlObject
 	protected $loggers = null;
 
 	//log only event which pass the filter,
-	//SCHLUNDUS: should use $g_log_level
+	/** @TODO SCHLUNDUS: should use $g_log_level */
 	protected $logLevelFilter = null;
 
 	protected $eventManager;
@@ -102,10 +107,10 @@ class tlLogger extends tlObject
 		return $this->eventManager->deleteEventsFor($logLevels,$startTime);
 	}
 	
-	/*
-		set the log level filter, only events which matches the filter can pass
-		can be combination of any of the tlLogger::LogLevels
-	*/
+	/**
+	 * set the log level filter, only events which matches the filter can pass
+	 * can be combination of any of the tlLogger::LogLevels
+	 */
 	public function setLogLevelFilter($filter)
 	{
 		$this->logLevelFilter = $filter;
@@ -116,15 +121,13 @@ class tlLogger extends tlObject
 		return tl::OK;
 	}
 
-  /*
-    function: disableLogging
-
-    args: [$logger]: default null => all loggers
-                     string representing a list of keys to access loggers map.
-
-    returns:
-
-  */
+	/**
+	 * disable logging
+	 * 
+	 * @param TBD $logger (optional) default null = all loggers
+	 *            string representing a list of keys to access loggers map.
+	 * 
+	 */
 	public function disableLogging($logger = null)
 	{
 	    if(is_null($logger))
@@ -139,15 +142,13 @@ class tlLogger extends tlObject
 		}
 	}
 
-  /*
-    function: enableLogging
-
-    args: [$logger]: default null => all loggers
-                     string representing a list of keys to access loggers map.
-
-    returns:
-
-  */
+	/**
+	 * enable logging
+	 * 
+	 * @param TBD $logger (optional) default null = all loggers
+	 *            string representing a list of keys to access loggers map.
+	 * 
+	 */
 	public function enableLogging($logger=null)
 	{
 	    if(is_null($logger))
@@ -170,26 +171,28 @@ class tlLogger extends tlObject
 			return $this->loggers[$logger]->getEnableLoggingStatus();
 	}
 
-	/*
-		returns the transaction with the specified name, null else
-	*/
+	/**
+	 * returns the transaction with the specified name, null else
+	 */
 	public function getTransaction($name = "DEFAULT")
 	{
 		if (isset($this->transactions[$name]))
 			return $this->transactions[$name];
 		return null;
 	}
-	/*
-		create the logger for TestLink
-	*/
+	
+	/**
+	 * create the logger for TestLink
+	 * @param resource &$db reference to database handler
+	 */
 	static public function create(&$db)
     {
         if (!isset(self::$s_instance))
 		{
 			//create the logging instance
-			self::$logLevels = array (self::DEBUG => "DEBUG", self::INFO => "INFO",
-							          self::WARNING => "WARNING", self::ERROR => "ERROR",
-							          self::AUDIT => "AUDIT");
+			self::$logLevels = array (self::DEBUG => 'DEBUG', self::INFO => 'INFO',
+							          self::WARNING => 'WARNING', self::ERROR => 'ERROR',
+							          self::AUDIT => 'AUDIT');
 			self::$revertedLogLevels = array_flip(self::$logLevels);
             $c = __CLASS__;
             self::$s_instance = new $c($db);
@@ -197,11 +200,13 @@ class tlLogger extends tlObject
         return self::$s_instance;
     }
 
-	/*
-		starts a transaction
 
-		rev: 20080216 - franciscom - entrypoint len limiting
-	*/
+	/**
+	 * starts a transaction
+	 * 
+	 * @internal 
+	 * rev: 20080216 - franciscom - entrypoint len limiting
+	 */
 	public function startTransaction($name = "DEFAULT",$entryPoint = null,$userID = null)
 	{
 		//if we have already a transaction with this name, return
@@ -237,9 +242,9 @@ class tlLogger extends tlObject
 		return $this->transactions[$name];
 	}
 
-	/*
-		ends a transaction
-	*/
+	/**
+	 * ends a transaction
+	 */
 	public function endTransaction($name = "DEFAULT")
 	{
 		if (!isset($this->transactions[$name]))
@@ -252,11 +257,12 @@ class tlLogger extends tlObject
 	}
 }
 
-/*
 
-  transaction class
-
-*/
+/**
+ * transaction class
+ * @package 	TestLink
+ * 
+ */
 class tlTransaction extends tlDBObject
 {
 	//the attached loggers
@@ -430,6 +436,9 @@ class tlTransaction extends tlDBObject
 	}
 }
 
+/**
+ * @package 	TestLink
+ */
 class tlEventManager extends tlObjectWithDB
 {
 	private static $s_instance;
@@ -534,7 +543,10 @@ class tlEventManager extends tlObjectWithDB
 }
 
 
-//the event class
+/**
+ * the event class
+ * @package 	TestLink
+ */
 class tlEvent extends tlDBObject
 {
 	public $logLevel = null;
@@ -697,9 +709,11 @@ class tlEvent extends tlDBObject
 
 }
 
-// ********************************************************
-// class for logging events to datebase event tables
-//
+
+/** 
+ * class for logging events to datebase event tables
+ * @package 	TestLink
+ */
 class tlDBLogger extends tlObjectWithDB
 {
 	protected $logLevelFilter = null;
@@ -808,7 +822,11 @@ class tlDBLogger extends tlObjectWithDB
 
 }
 
-//class for logging events to file
+/**
+ * class for logging events to file
+ * @package 	TestLink
+ * @TODO watch the logfile size, display warning / shrink it,....
+ */
 class tlFileLogger extends tlObject
 {
 	static protected $eventFormatString = "\t[%timestamp][%errorlevel][%sessionid][%source]\n\t\t%description\n";
@@ -935,23 +953,28 @@ class tlFileLogger extends tlObject
 		return $tlCfg->log_path . "audits.log";
 	}
 
-	/*
-	* You can empty the log at any time with:
-	*  resetLogFile
-	* @author Andreas Morsing - logfilenames are dynamic
-	*/
+	/**
+	 * You can empty the log at any time with:
+	 *  resetLogFile
+	 * @author Andreas Morsing - logfilenames are dynamic
+	 */
 	static public function resetLogFile()
 	{
 		@unlink($this->getLogFileName());
 	}
-	//todo: watch the logfile size, display warning / shrink it,....
 }
 
-//SCHLUNDUS: idea of a debug "to screen logger", to be defined,
+
+/**
+ * @TODO SCHLUNDUS: idea of a debug "to screen logger", to be defined,
+ * @package 	TestLink
+ */
 class tlHTMLLogger
 {
 
 }
+
+
 //create the global TestLink Logger, and open the initial default transaction
 global $g_loggerCfg;
 $g_tlLogger = tlLogger::create($db);
@@ -968,15 +991,12 @@ $g_tlLogger->startTransaction();
 
 set_error_handler("watchPHPErrors");
 
-/*
-    function: watchPHPErrors
-
-    args:
-
-    returns:
-
-    rev: 20080504 - franciscom - added xmlrpc.inc,xmlrpcs.inc,xmlrpc_wrappers.inc in exclude set
-*/
+/**
+ * include php errors, warnings and notices to TestLink log
+ * 
+ * @internal 
+ * rev: 20080504 - franciscom - added xmlrpc.inc,xmlrpcs.inc,xmlrpc_wrappers.inc in exclude set
+ */
 function watchPHPErrors($errno, $errstr, $errfile, $errline)
 {
 	$errors = array (
@@ -1012,7 +1032,9 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 	}
 }
 
-//we need a save way to shutdown the logger, or the current transaction will not be closed
+/** 
+ * we need a save way to shutdown the logger, or the current transaction will not be closed
+ */
 register_shutdown_function("shutdownLogger");
 function shutdownLogger()
 {

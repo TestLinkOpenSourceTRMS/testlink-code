@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: inputparameter.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/06/15 20:19:26 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/06/16 16:49:23 $ by $Author: franciscom $
  * 
 **/
 require_once("object.class.php");
@@ -167,7 +167,9 @@ function GPR_PARAM_STRING_N($inputSource,$name,$minLen = null,$maxLen = null,$re
     foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
+        {
             $vInfo->$parameter = $$parameter;
+        }    
     }
    
   	$pInfo = new tlParameterInfo($inputSource,$name);
@@ -196,7 +198,9 @@ function GPR_PARAM_INT($inputSource,$name,$minVal = null,$maxVal = null,$pfnVali
 	foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
+        {
             $vInfo->$parameter = $$parameter;
+        }    
     }
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
@@ -264,13 +268,17 @@ function GPR_PARAM_ARRAY($inputSource,$type,$name,$pfnValidation)
 {
 	$vInfo = new tlArrayValidationInfo();
 	if (!is_null($pfnValidation))
+	{
 		$vInfo->pfnValidation = $pfnValidation;
-    
+    }
 	if ($type == tlInputParameter::STRING_N) 
+	{
     	$vInfo->validationInfo = new tlStringValidationInfo();
+	}
 	else
+	{
 		$vInfo->validationInfo = new tlIntegerValidationInfo();
-	
+	}
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	

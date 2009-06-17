@@ -1,29 +1,30 @@
 <?php
-/** -------------------------------------------------------------------------------------
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2008/10/30 11:25:50 $ $Author: havlat $
- * @author Martin Havlat
+ * Localization: English (en_GB) texts - default development localization (World-wide English)
  *
- * LOCALIZATION:
- * === English (en_GB) strings === - default development localization (World-wide English)
- *
- * @ABSTRACT
+ * 
  * The file contains global variables with html text. These variables are used as 
  * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
  * 
- * Contributors:
+ * Contributors howto:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
  * No revision is stored for the the file - see CVS history
- * The initial data are based on help files stored in gui/help/<lang>/ directory. 
- * This directory is obsolete now. It serves as source for localization contributors only. 
+ * 
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: description.php,v 1.7 2009/06/17 21:17:40 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * ----------------------------------------------------------------------------------- */
+ **/
+
 
 // printFilter.html
 $TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>

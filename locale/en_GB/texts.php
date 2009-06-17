@@ -3,14 +3,6 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
- * @author Martin Havlat and reviewers from TestLink Community
- *
- * --------------------------------------------------------------------------------------
- *
- * Scope:
  * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
  * are stored in strings.txt pages.
  *
@@ -22,8 +14,14 @@
  *
  *
  * Revisions history is not stored for the file
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: texts.php,v 1.18 2009/06/17 21:17:40 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * ------------------------------------------------------------------------------------ */
+ **/
 
 
 $TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";

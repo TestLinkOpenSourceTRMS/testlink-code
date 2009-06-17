@@ -1,0 +1,2110 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Finnish (fi_FI) (Finnish localization up to 90%)
+ *
+ * This list of labels is defined as GLOBAL string variables. The first sections are general 
+ * for strings used over all GUI. These definition should not be redefined. Next sections are 
+ * related to particular pages. Comment with page filename indicate a begin of section. There 
+ * must be defined all other strings. 
+ *
+ * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
+ * This must be a reserved prefix. The second part of variable name (after 
+ * prefix) should indicate usage (warning, title), the third one indicate the page relation
+ * and text at the end.
+ *
+ * Warning: be careful about format - the file is parsed by script
+ * Warning: if JS string you must use \\n to get \n for end of line
+ * Note: API interface is not localized (except error messages)
+ * 
+ * @package 	TestLink
+ * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi
+ * @author 		Heikki Alonen, Jari Ahonen, Otto Moilanen
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: strings.txt,v 1.1 2009/06/17 21:19:23 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * 
+ * 
+ */
+
+// Define character set of this file (UTF-8 is common value)
+$TLS_STRINGFILE_CHARSET = "UTF-8";
+
+//----- General terms (used wide) ----------------------------
+$TLS_active = "Aktiivinen";
+$TLS_asc = "Nousevasti";
+$TLS_any = "Joku";
+$TLS_author = "Laatija";
+$TLS_automated = "Automatisoitu";
+$TLS_automatic = "Automaattinen";
+$TLS_build = "Buildi";
+$TLS_check_uncheck_all = "Käännä kaikki valinnat";
+$TLS_days = "päivät";
+$TLS_desc = "Laskeva";
+$TLS_description = "Description";
+$TLS_delete_confirm_question = "Haluatko varmasti poistaa?";
+$TLS_file_type = "Tiedostotyyppi";
+$TLS_help = "Apua";
+$TLS_hour = "Tunti";
+$TLS_importance = "Tärkeys";
+$TLS_imported = "Tuodut";
+$TLS_keyword = "Avainsana";
+$TLS_manual = "Manuaali";
+$TLS_Milestone = "Välietappi";
+$TLS_months = "Kuukaudet";
+$TLS_name = "Nimi";
+$TLS_not_aplicable = "N/A";
+$TLS_nobody = "Ei kukaan";
+$TLS_not_imported = "Ei tuotu";
+$TLS_none = "Ei yksikään";
+$TLS_ok = "OK";
+$TLS_priority = "Prioriteetti";
+$TLS_project = "Projekti";
+$TLS_requirement = "Vaatimus";
+$TLS_reqs = "Vaatimukset";
+$TLS_req_spec = "Vaatimusmäärittelydokumentti";
+$TLS_req_spec_short = "Req. Spec.";
+$TLS_srs = "SRS";
+$TLS_Role = "Rooli";
+$TLS_sort_table_by_column = "Klikkaa vaihtaaksesi lajittelujärjestystä";
+$TLS_scope = "Soveltuvuusalue";
+$TLS_status = "Tila";
+$TLS_test_case = "Testitapaus";
+$TLS_testcase = $TLS_test_case;// obsolete
+$TLS_testcaseversion = 'Testitapausversio';
+$TLS_test_plan = "Testaussuunnitelma";
+$TLS_testplan = $TLS_test_plan; // obsolete
+$TLS_testproject = "Testausprojekti";
+$TLS_test_report = "Testausraportti";
+$TLS_test_suite = "Testitapausjakso";
+$TLS_testsuite_created = "Testitapausjakso luotu";
+$TLS_title = "Nimike";
+$TLS_total = "Loppusumma";
+$TLS_Unknown = "Tuntematon";
+$TLS_urgency = "Kiireellisyys";
+$TLS_weeks = "Viikot";
+//Actions (used wide)
+$TLS_add = "Lisää";
+$TLS_assigned = "Arvo asetettu";
+$TLS_create = "Luo uusi";
+$TLS_copy = "Kopioi";
+$TLS_delete = "Poista";
+$TLS_executed = "Suoritettu";
+$TLS_move = "Siirrä";
+$TLS_remove = "Poista";
+$TLS_unassigned = "Arvo poistettu";
+
+//Buttons (used wide)
+$TLS_btn_apply = "Ota käyttöön";
+$TLS_btn_add = "Lisää";
+$TLS_btn_add_to_testplans = "Lisää testaussuunnitelmiin";
+$TLS_btn_assign = "Aseta arvo";
+$TLS_btn_cancel = "Peruuta";
+$TLS_btn_check = "Varmista";
+$TLS_btn_close = "Sulje";
+$TLS_btn_cp = "Kopioi";
+$TLS_btn_create = "Luo uusi";
+$TLS_btn_delete = "Poista";
+$TLS_btn_edit = "Muokkaa";
+$TLS_btn_export = "Vie";
+$TLS_btn_find = "Etsi";
+$TLS_btn_goback = "Paluu";
+$TLS_btn_import = "Tuo";
+$TLS_btn_move = "Siirrä";
+$TLS_btn_no = "Ei";
+$TLS_btn_ok = "Ok";
+$TLS_btn_print = "Tulosta";
+$TLS_btn_save = "Tallenna";
+$TLS_btn_unassign = "Poista arvo";
+$TLS_btn_uncheck = "Poista valinta";
+$TLS_btn_update = "Päivitä";
+$TLS_btn_upd = $TLS_btn_update;// obsolete
+$TLS_btn_upload = "Upload";
+$TLS_btn_advanced_filters = "Edistynyt suodin";
+$TLS_btn_simple_filters = "Yksinkertainen suodin";
+
+//Status (used wide)
+$TLS_test_status_all = "Kaikki";
+$TLS_test_status_any = "Jokin";
+$TLS_test_status_not_run = "Ei ajettu";
+$TLS_test_status_blocked = "Estetty";
+$TLS_test_status_failed = "Epäonnistui";
+$TLS_test_status_passed = "Hyväksytty";
+$TLS_test_status_not_available = "Ei saatavilla";
+$TLS_test_status_unknown = "Tuntematon";
+
+$TLS_review_status_valid = "Voimassa";
+$TLS_review_status_draft = 'Luonnos';
+$TLS_review_status_future = 'Tuleva';
+$TLS_review_status_obsolete = 'Vanhentunut';
+$TLS_review_status_todo = 'Tehtävänä';
+
+$TLS_req_type_info = "Tiedote";
+$TLS_req_type_feature = 'Ominaispiirre';
+$TLS_req_type_use_case = 'Käyttötapaus';
+$TLS_req_type_interface = 'Rajapinta';
+$TLS_req_type_non_functional = 'Ei toiminnallinen';
+$TLS_req_type_constrain = 'Rajoite';
+
+$TLS_req_status_not_testable = "Ei testattavissa";// defined for historical reason (should be replaced by $TLS_req_type_info)
+
+//----- unsorted (TODO move) -------------------------------------
+$TLS_problems_loading_xml_content = "Ei pysty lataamaan XML dataa, tarkista tiedostosi.";
+$TLS_search_type_like = "Haku tällä arvolla tehdään LIKE -moodissa";
+$TLS_exec_assign_no_testcase = "Valitse vähintään yksi testitapaus.";
+$TLS_select_at_least_one_testcase = "//Valitse vähintään yksi testitapaus ja kohde//!";
+$TLS_no_testcases_available = "Ei testitapausta tai kohdetta testitapausjaksolle saatavilla!";
+$TLS_warning_must_be_number = "Arvon täytyy olla numero";
+
+$TLS_estimated_time_hours = "Arvioitu suoritusaika %s testitapaukselle (tuntia):";
+$TLS_estimated_time_min = "Arvioitu suoritusaika %s testitapaukselle (min):";
+$TLS_real_time_hours = "Suoritukseen käytetty aika %s testitapaukselle (tuntia):";
+$TLS_real_time_min = "Suoritukseen käytetty aika %s testitapaukselle (min):";
+
+$TLS_th_active = $TLS_active;// obsolete
+$TLS_th_name = $TLS_name; //obsolete
+$TLS_th_notes = $TLS_description;// obsolete
+$TLS_th_testcase = $TLS_test_case; //obsolete
+$TLS_th_delete = $TLS_delete;// obsolete
+$TLS_th_requirement_feature = "Projektilla vaatimusmäärittely";
+
+$TLS_import_file_type = "Tuo tiedostotyyppi";
+$TLS_max_file_size_is = "Suurin sallittu tiedostokoko ";
+$TLS_supported_file_formats = "Tuetut tiedostomuodot";
+$TLS_no_permissions_for_action = "Sinulla ei ole käyttöoikeuksia suorittaa tätä toimintoa!" .
+" Olkaa hyvä ja ottakaa yhteys ylläpitäjään.";
+
+$TLS_name_already_exists = "Nimi:%s on jo olemassa";
+$TLS_created_with_new_name = "Luo seuraavalla nimellä:%s, koska nimi:%s on jo olemassa";
+
+$TLS_click_to_open='Klikkaa avataksesi';
+$TLS_testplan_usage="Testaussuunnitelman käyttö";
+
+$TLS_add_tcversion_to_plans = "Lisää Testitapausversio testaussuunnitelmaan";
+$TLS_please_select_one_testplan = "Valitse vähintään yksi testaussuunnitelma.";
+
+//----- JAVASCRIPT -----//
+// Used on javascript logic to validate Custom Field values
+$TLS_warning_numeric_cf = "Mukautettu kenttä %s hyväksyy ainoastaan numero arvoja";
+$TLS_warning_float_cf = "Mukautettu kenttä %s hyväksyy ainoastaan numeroita tai liukulukuja";
+$TLS_warning_email_cf = "Mukautettu kenttä %s hyväksyy ainoastaan sähköpostiosoitteita";
+
+//Installation/Migration (TODO remove - migration is English only)
+$TLS_start_warning = "---- Varoitus ----";
+$TLS_testlink_warning = "TestLink Varoitus";
+$TLS_testcase_name_too_long = "Testitapauksen nimi on liian pitkä (%s merkkiä) > %s => nimi on katkaistu";
+$TLS_original_name = "Alkuperäinen nimi";
+$TLS_end_warning = "---- *** ----";
+
+// -----------
+//----- firstLogin.php -----
+$TLS_cant_create_user = " Valitettavasti käyttäjätunnustasi ei voitu luoda. Olkaa hyvä ja ottakaa yhteys ylläpitäjään!";
+$TLS_empty_email_address = " Et voi jättää sähköpostiosoitekenttää tyhjäksi!";
+$TLS_empty_first_name = " Et voi jättää etunimikenttää tyhjäksi!";
+$TLS_empty_last_name = " Et voi jättää sukunimikenttää tyhjäksi!";
+$TLS_fatal_page_title = "TestLink ::: Vakava virhe";
+$TLS_invalid_user_name = "Käyttäjätunnus ei kelpaa. Olkaa hyvä ja valitkaa jokin toinen.";
+$TLS_no_good_email_address = "Sähköpostiosoitteen muotoilu ei näytä hyvältä";
+$TLS_passwd_dont_match = "Kaksi syötettyä salasanaa eivät vastaa toisiaan. Huomio salasanassa ison ja pienen kirjaimen ero. " .
+"Olkaa hyvä ja yrittäkää uudestaan.";
+$TLS_user_cant_be_created_because = "Asiakastiliäsi ei voitu luoda, koska:";
+$TLS_user_name_exists = "Käyttäjätunnus on jo käytössä, olkaa hyvä ja valitkaa jokin toinen.";
+$TLS_valid_user_name_format = "Käyttäjätunnus voi sisältää ainoastaan kirjaimia, numeroita, välilyöntejä, tavuviivoja ja alaviivoja.";
+$TLS_warning_empty_pwd = "Salasana ei saa olla tyhjä!";
+$TLS_your_info_please = "Anna käyttäjätiedot";//
+
+// ----- archiveData.php -----
+$TLS_container_title_testcase = $TLS_test_case;
+$TLS_high_priority = "Korkea";
+$TLS_medium_priority = "Keskitaso";
+$TLS_low_priority = "Matala";
+$TLS_high_importance = "Korkea";
+$TLS_medium_importance = "Keskitaso";
+$TLS_low_importance = "Matala";
+$TLS_urgency_high = "Korkea";
+$TLS_urgency_medium = "Keskitaso";
+$TLS_urgency_low = "Matala";
+$TLS_test_importance = "Testin tärkeys";
+$TLS_testcases_assigned_to_user = "Testausprojekti: %s - testitapaukset osoitettu käyttäjälle: %s";
+$TLS_assigned_on = "Asetuspäivämäärä";
+
+//----- index.php -----
+$TLS_main_page_title = "TestLink ::: Pääsivu";
+$TLS_config_check_warnings = "Huomioi turvallisuustiedotteet. " .
+"Katso tarkemmat tiedot tiedostosta: %s. " .
+"Poistaaksesi kaikki varoitukset käytöstä, aseta \$tlCfg->config_check_warning_mode = 'SILENT';";
+
+// ----- keywordsimport.php -----
+$TLS_please_choose_keywords_file = "Valitse siirrettävä tiedosto";
+$TLS_keywords_file = "Avainsanatiedosto";
+$TLS_wrong_keywords_file = "Väärä avainsanatiedosto (väärä muotoilu)";
+
+// ----- lostPassword.php -----
+$TLS_bad_user = "Käyttäjää ei löytynyt, olkaa hyvä ja yrittäkää uudestaan";
+$TLS_contact_admin = "<br/>Jos teillä on edelleen ongelmia, ottakaa yhteyttä ylläpitäjään.";
+$TLS_mail_empty_address = "Käyttäjäprofiiliinne ei ole määritelty sähköpostiosoitetta! " .
+" Salasanan palauttamiseksi, olkaa hyvä ja ottakaa yhteys TestLinkin ylläpitäjään!";
+$TLS_mail_passwd_subject = "Uusi TestLink salasananne.";
+$TLS_mail_problems = "Virhe sähköpostiasetuksissa, olkaa hyvä ja ottakaa yhteys ylläpitäjään.";
+$TLS_page_title_lost_passwd = "TestLink - Unohtuiko salasana";
+$TLS_your_info_for_passwd = "Anna käyttäjätiedot, jotta uusi salasana voidaan lähettää sinulle.";
+$TLS_your_password_is = "Uusi TestLink salasanasi on: <br/>";//
+
+// ----- login.php -----
+$TLS_bad_user_passwd = "Yritä uudestaan! Väärä käyttäjätunnus tai salasana!";
+$TLS_login_msg_session_exists1 = "Selaimellasi on vielä voimassa oleva sisäänkirjautuminen. <br/> Käytä seuraava linkkiä >>> ";
+$TLS_login_msg_session_exists2 = " <<< jos haluat jatkaa istuntoasi.";
+$TLS_logout_link = "Kirjaudu ulos";
+$TLS_passwd_lost = "Salasanasi on lähetetty sähköpostiin, jonka olet määritellyt " .
+"käyttäjätunnuksen luomisen yhteydessä. Olkaa hyvä ja tarkistakaa postilaatikkonne. " .
+"Jos teillä on muita ongelmia, olkaa hyvä ja ottakaa yhteys TestLinkin ylläpitäjään.";
+$TLS_password_reseted = "Uusi salasana on lähetetty sähköpostitse";
+$TLS_please_login = "Sisäänkirjautuminen ...";
+$TLS_session_expired = "Istuntosi on vanhentunut! Sisäänkirjaudu uudelleen.";
+$TLS_your_first_login = "Tervetuloa TestLinkiin! Teillä on nyt vierailijan oikeudet. Kirjaudu sisään ...";
+
+//----- newest_tcversions.php -----
+$TLS_no_linked_tcversions = "ei yhteyttä testitapausversioihin";//resultsGeneral.php
+$TLS_report_tspec_has_no_tsuites = "Testausprojektille ei ole määritelty testitapausjaksoa, <br/>".
+"suoritusdataa ei siten esiinny => raporttia ei voida luoda";
+
+//----- resultsNavigator.php -----
+$TLS_title_nav_results = "Raportit ja metriikka";
+$TLS_report_tplan_has_no_build = "Testaussuunnitelmassa ei ole määritelty buildia, <br/>".
+"suoritusdataa ei siten esiinny => raporttia ei voida luoda";
+$TLS_report_tplan_has_no_tcases = "Testaussuunnitelmalla ei ole yhteyttä testitapauksiin, <br/>".
+"//suoritusdataa ei siten esiinny// //=>// //raporttia ei voida luoda//";//
+
+//----- tcEdit.php -----
+$TLS_tc_copied = "Testitapaus %s onnistui kopioida <br/> testitapausjaksoon %s";
+$TLS_tc_created = "Testitapaus %s luominen onnistui";
+$TLS_tc_deleted = "Testitapaus %s poistaminen onnistui";
+$TLS_tc_updated = "Testitapaus %s päivittäminen onnistui";
+$TLS_tc_new_version = "Testitapausversio %d luominen onnistui";
+$TLS_tc_updated = "Testitapaus %s päivittäminen onnistui";
+$TLS_tc_update_failed = "Testitapaus %s päivittäminen epäonnistui!";
+$TLS_tc_version_deleted = "Testitapaus %s versio %d poistaminen onnistui";
+$TLS_assign_requirements = "Aseta vaatimukset";
+
+//----- tcexecute.php -----
+$TLS_check_test_automation_server = "Tarkistakaa palvelinasetukset";
+$TLS_result_after_exec = "Suorituksen tulokset: ";
+$TLS_service_not_supported = "Tätä palvelua ei tueta";
+$TLS_tcexec_notes = "Testauksen yksityiskohtaiset tiedot";
+$TLS_tcexec_result = "Tulokset";
+$TLS_tcexec_results_for = "Result for ";
+
+//----- gui/templates/attachment404.tpl -----
+$TLS_error_attachment_not_found = "Virhe: Liitetiedostoa ei löydy!";
+$TLS_title_downloading_attachment = "Ladataan liitetiedostoa";
+
+//----- gui/templates/attachmentdelete.tpl -----
+$TLS_deleting_was_ok = "Liitetiedosto poistettiin!";
+$TLS_error_attachment_delete = "Virhe liitetiedostoa poistettaessa!";
+$TLS_title_delete_attachment = "Poista liitetiedosto";//
+
+//---- gui/templates/containerDelete.tpl -----
+$TLS_btn_yes_del_comp = "Kyllä, poista testitapausjakso";
+$TLS_container_title_testsuite = $TLS_test_suite;
+$TLS_linked_but_not_executed = "Liitetty yhteen tai useampaan testaussuunnitelmaan, mutta ei suoritettu";
+$TLS_question_del = "Poistetaanko varmasti?";
+$TLS_th_link_exec_status = "Link and execution status";
+
+//----- gui/templates/containerNew.tpl -----
+$TLS_btn_create_testsuite = "Luo testitapausjakso";
+$TLS_tc_keywords = "Avainsanat";
+$TLS_title_create = "Luo";
+$TLS_warning_empty_testsuite_name = "Anna testitapausjaksolle nimi";//
+
+//----- gui/templates/bug_add.tpl -----
+$TLS_btn_add_bug = "Lisää bugi";
+$TLS_bug_id = "Bugin ID";
+$TLS_button_enter_bug = "Luo uusi bugi";
+$TLS_link_bts_create_bug = "Pääsy vianjäljitysjärjestelmään ";
+$TLS_title_bug_add = "Lisää vikaraportti";
+
+//----- gui/templates/bug_delete.tpl -----
+$TLS_title_delete_bug = "Poista vikaraportti";
+
+//----- gui/templates/containerMove.tpl -----
+$TLS_as_first_testsuite = "Destination position top";
+$TLS_as_last_testsuite = "Destination position bottom";
+$TLS_choose_target = "Valitse kohde";
+$TLS_cont_copy_first = $TLS_copy;
+$TLS_cont_copy_second = "to Any";
+$TLS_cont_move_first = $TLS_move;
+$TLS_cont_move_second = "to a different";
+$TLS_copy_keywords = "Kopioi avainsanat";
+$TLS_defined_exclam = "määritelty !";
+$TLS_include_nested = "Sisältää verkottunutta dataa (vain kopiointi).";
+$TLS_sorry_further = "Valitettavasti ei enempää ";
+$TLS_title_move_cp = "Siirrä/kopioi";
+$TLS_title_move_cp_testcases = "Siirrä/kopioi testitapaus";
+
+
+//----- gui/templates/reqCreate.tpl -----
+$TLS_req_create = "Luo vaatimus";
+$TLS_req_doc_id = "Dokumentin ID";
+$TLS_warning_empty_req_title = "Vaatimusotsikko ei voi olla tyhjä!";
+$TLS_warning_empty_reqdoc_id = "Vaatimus dokumentin ID ei voi olla tyhjä!";
+$TLS_create_testcase_from_req = " Luo testitapauksia vaatimuksista";
+
+//----- gui/templates/containerOrder.tpl ---
+$TLS_no_nodes_to_reorder = "I'm sorry there is nothing to reorder!";
+$TLS_node = $TLS_name;
+$TLS_th_id = "ID";
+$TLS_th_node_type = "Test Case / Test Suite";
+$TLS_th_order = "Order";
+$TLS_title_change_node_order = "Change children order";
+$TLS_node_type_dbtable_testsuites = $TLS_test_suite;
+$TLS_node_type_dbtable_testcases = $TLS_testcase;
+
+//----- gui/templates/containerView.tpl -----
+$TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites and Test Cases)";
+$TLS_alt_edit_testsuite = "Muokkaa tämän testitapausjakson data ja otsikko";
+$TLS_alt_move_cp_testsuite = "Siirrä tai kopioi tämä testitapausjakso toiseen testausprojektiin";
+$TLS_alt_move_cp_testcases = "Siirrä/kopioi testitapaukset";
+$TLS_btn_del_testsuite = "Poista testitapausjakso";
+$TLS_btn_edit_testsuite = $TLS_btn_edit;
+$TLS_btn_execute_automatic_testcases = "Suorita kaikki automaattiset testitapaukset";
+$TLS_btn_export_all_testsuites = "Vie kaikki testitapausjaksot";
+$TLS_btn_export_tc = "Export child Test Cases";
+$TLS_btn_export_testsuite = "Vie testitapausjakso";
+$TLS_btn_import_tc = "Tuo testitapaukset";
+$TLS_btn_import_testsuite = "Tuo testitapausjaksoe";
+$TLS_btn_move_cp_testsuite = "Siirrä/kopioi";
+$TLS_btn_move_cp_testcases = "Siirrä/kopioi testitapaukset";
+$TLS_btn_new_testsuite = "New child Test Suite";
+$TLS_btn_new_tc = "Luo testitapaukset";
+$TLS_btn_reorder = "Reorder children";
+$TLS_container_title_testproject = $TLS_testproject;
+$TLS_edit_testproject_basic_data = "Edit Test Project basic data";
+$TLS_th_product_name = "Testausprojektin nimi";
+
+//----- gui/templates/cfields/cfieldsEdit.tpl -----
+$TLS_available_on = "Available for";
+$TLS_custom_field = "Custom field";
+$TLS_enable_on_design = "Enable on <br/>test specification";
+$TLS_enable_on_exec = "Enable on <br/>test execution";
+$TLS_enable_on_testplan_design = "Enable on <br/>test plan design";
+$TLS_label = "Label";
+$TLS_popup_delete_custom_field = "Are you sure you want to delete the custom field?";
+$TLS_possible_values = "Possible values";
+$TLS_show_on_design = "Display on <br/>test specification";
+$TLS_show_on_exec = "Display on <br/>test execution";
+$TLS_show_on_testplan_design = "Display on <br/>test plan design";
+$TLS_testcase = $TLS_test_case;
+$TLS_title_cfields_mgmt = "Custom fields";
+$TLS_title_cfield_edit = "Edit ";
+$TLS_type = "Type";
+$TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";
+$TLS_warning_empty_cfield_name = "Please enter the name of this custom field.";
+$TLS_warning_is_in_use = "You can neither delete, either change type <br/> " .
+"because a value has been assigned to this custom field <br/>" .
+"by user on an test specification or execution ";
+
+//----- gui/templates/inc_update.tpl -----
+$TLS_info_failed_db_upd = "Tietokannan päivittäminen epäonnistui!";
+$TLS_info_failed_db_upd_details = "Tietokannan päivittäminen epäonnistui! - tarkemmat tiedot:";
+$TLS_invalid_query = "Virhe";
+$TLS_warning = "Varoitus!!!";
+$TLS_was_success = " onnistui ";
+
+//----- gui/templates/execNavigator.tpl -----
+$TLS_TestPlan = $TLS_testplan;
+$TLS_btn_apply_filter = $TLS_btn_apply;
+$TLS_btn_update_menu = "Päivitä valikko";
+$TLS_caption_nav_filter_settings = "Suodin & Asetukset...";
+$TLS_current_build = "Nykyinen buildi";
+$TLS_filter_owner = "Assigned to";
+$TLS_filter_result = "Tulos";
+$TLS_filter_tcID = "Testitapaus ID";
+$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
+$TLS_test_status_all_status = $TLS_test_status_all;
+$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
+
+//----- gui/templates/mainPage.tpl -----
+$TLS_th_my_perc_completed = "My completed [%]";
+$TLS_th_perc_completed = "Valmiina[%]";
+$TLS_title_your_tp_metrics = "Testausuunnitelmasi metriikka";
+
+//----- gui/templates/metrics_dashbord.tpl -----
+$TLS_th_total_tc = "Testitapauksen numero";
+$TLS_th_active_tc = "Aktiiviset testitapaukset";
+$TLS_th_executed_tc = "Suoritetut testitapaukset";
+$TLS_th_executed_vs_active = "Suoritettu/Aktiivinen [%]";
+$TLS_th_executed_vs_total = "Suoritettu/Total [%]";
+
+//----- gui/templates/newest_tcversions.tpl -----
+$TLS_linked_version = "Linked version";
+$TLS_newest_version = "Uusin saatavilla oleva aktiivinen versio";
+$TLS_title_newest_tcversions = "Newest versions of linked Test Cases";
+$TLS_no_newest_version_of_linked_tcversions = "All linked Test Case Versions are current";
+
+//----- gui/templates/emailSent.tpl -----
+$TLS_send_test_report = "- Lähetä testausraportti";
+
+//----- gui/templates/reqImport.tpl -----
+$TLS_Result = "Result";
+$TLS_btn_back2srs = "Back to Req. Specification";
+$TLS_btn_upload_file = "Upload file";
+$TLS_check_req_file_structure = "Please check the file format, seems is not possible get any requirement";
+$TLS_local_file = "File";
+$TLS_max_size_cvs_file1 = "Max. size of the file is";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_req_import_check_note = "Please verify possible conflicts, set an appropriate solution and then start import process.";
+$TLS_req_import_dont_empty = "Do not import items with empty Scope";
+$TLS_req_import_option_double = "Add a new one with the same title";
+$TLS_req_import_option_header = "Set conflict solution";
+$TLS_req_import_option_overwrite = "Update an existing one";
+$TLS_req_import_option_skip = "Skip import of doubled requirements";
+$TLS_req_import_type = "Type";
+$TLS_req_msg_norequirement = "No requirement";
+$TLS_required_cvs_format = "The required file format";
+$TLS_title_choose_file_type = "Choose file type";
+$TLS_title_choose_local_file = "Choose a Local File to Upload";
+$TLS_title_req_import = "Import requirements";
+$TLS_title_req_import_check_input = "Check import data";
+
+//----- gui/templates/inc_attachments.tpl
+$TLS_alt_delete_build = "Klikkaa tästä poistaaksesi tämä buildi";
+$TLS_alt_delete_attachment = "Klikkaa tästä poistaaksesi tämä liite";
+$TLS_attached_files = "Liitetiedostot";
+$TLS_attachment_feature_disabled = "liite on vaurioitunut";
+$TLS_button_upload = $TLS_btn_upload;
+$TLS_upload_file_new_file = "Lataa uusi tiedosto";
+$TLS_warning_delete_attachment = "Haluatko varmasti poistaa tämän liitetiedoston?";
+
+//----- gui/templates/resultsNavigator.tpl
+$TLS_note_email_sent_t = "note: email format sent to user's email";
+$TLS_send_results = "Lähetä tulokset";
+$TLS_send_to = "Kenelle:";
+$TLS_subject = "Aihe:";
+$TLS_title_active_build = "Aktiivinen buildi";
+$TLS_title_report_type = "Report Format";
+$TLS_via_email = "sähköpostitse";
+$TLS_link_results_import = "Tuo tulokset";
+
+//------ gui/templates/inc_attachments_upload.tpl
+
+//----- gui/templates/cfields/cfieldsView.tpl
+$TLS_btn_cfields_create = $TLS_btn_create;
+$TLS_manage_cfield = "Manage custom field";
+
+//----- cfieldsExport.php
+$TLS_export_cfields = "Export Custom fields";
+
+//----- cfieldsImport.php
+$TLS_import_cfields = "Import Custom fields";
+$TLS_custom_field_already_exists="Custom field %s already exists.";
+$TLS_custom_field_imported="Custom field %s imported.";
+
+//---- gui/templates/inc_cat_viewer_ro_m0.tpl
+$TLS_cat_scope = "Scope and Objective";
+$TLS_category = "Testitapausjakso"; //obsolete
+$TLS_configuration = "Konfiguraatio";
+$TLS_data = "Data";
+$TLS_not_defined = "Ei määritelty.";
+$TLS_tools = "Työkalut";
+
+//---- gui/templates/inc_cat_viewer_rw.tpl
+$TLS_cat_alt_name = "Lisää testitapausjakson nimi. Tämä arvo on pakollinen.";
+$TLS_cat_config = "Konfiguraatio";
+$TLS_cat_data = "Data";
+$TLS_cat_name = "Testitapausjakson nimi";
+$TLS_cat_tools = $TLS_tools; //obsolete
+
+//---- gui/templates/reqEdit.tpl
+$TLS_by = "by";
+$TLS_coverage = "Coverage";
+$TLS_popup_delete_req = "Haluatko varmasti poistaa vaatimuksen?";
+$TLS_req_edit = "Muokkaa vaatimuksia";
+$TLS_req_msg_notestcase = "Ei yhdistetty testitapaukseen";
+$TLS_requirement_spec = "Vaatimusmäärittelydokumentti";
+$TLS_test_case_id = "ID";
+$TLS_title_created = "Luontipäivämäärä";
+$TLS_title_last_mod = "Viimeksi muutettu ";
+
+//---- gui/templates/buildEdit.tpl
+$TLS_enter_build = "Otsikko";
+$TLS_enter_build_notes = "Kuvaus";//
+$TLS_msg_build = "Huomio: Jokaiseen buildiin liittyy aktiivinen testaussuunnitelma. " .
+//"Kuvauksen pitäisi sisältää: list of delivered packages, approvals, status,etc.";
+$TLS_open = "Avaa";
+$TLS_title_build_2 = "Build management";
+$TLS_title_build_create = "Luo uusi buildi";
+$TLS_title_build_update = "Päivita buildi";
+$TLS_title_build_edit = "Muokkaa buildia";
+$TLS_warning_empty_build_name = "Anna buildille nimi!";
+$TLS_copy_to_all_tplans = "Kopioi kaikkiin testaussuunnitelmiin";
+
+//---- gui/templates/inc_comp_viewer_ro.tpl
+$TLS_component = $TLS_test_suite; //obsolete
+$TLS_introduction = "Johdanto";
+$TLS_limitations = "Rajoitukset";
+$TLS_methodology = "Metodologia";
+$TLS_references = "References";
+
+//---- gui/templates/inc_comp_viewer_rw.tpl
+$TLS_comp_alt_name = "Lisää testitapausjakson nimi. Tämä arvo on pakollinen.";
+$TLS_comp_intro = "Intro";
+$TLS_comp_lim = "Rajoitukset";
+$TLS_comp_method = "Metodologia";
+$TLS_comp_name = "Testitapausjakson nimi";
+$TLS_comp_ref = "References";
+$TLS_comp_scope = "Scope";
+
+//---- gui/templates/reqSpecView.tpl
+$TLS_btn_analyse = "Analysoi";
+$TLS_btn_check_all = "Valitse kaikki";
+$TLS_btn_delete_spec = "Poista dokumentti";
+$TLS_btn_edit_spec = "Muokkaa dokumenttia";
+$TLS_btn_export_reqs = "Vie vaatimukset";
+$TLS_btn_req_create = "Luo vaatimukset";
+$TLS_btn_spec_list = "Luettelo kaikista dokumenteista";
+$TLS_btn_uncheck_all = "Poista kaikki";
+$TLS_cant_delete_req_nothing_sel = "Valitse vaatimus!";
+$TLS_popup_sure_delete = "Haluatko varmasti poistaa vaatimusmäärittelydokumentin?";
+$TLS_req_select_create_tc = "Luo testitapaukset";
+$TLS_req_select_delete = "Poista vaatimukset";
+$TLS_req_title_list = "Luettelo vaatimuksista";
+$TLS_req_total = "Overwritten count of REQs";
+$TLS_req_reorder = "Reorder requirements";
+$TLS_select_at_least_one_req = "Valitse jokin vaatimus!";
+$TLS_warning_delete_requirements = "Haluatko varmasti poistaa valitut vaatimukset?";
+$TLS_warning_delete_req_spec = "Olet poistamassa: %s <br/><br/> Oletko varma?";
+$TLS_title_change_req_order = "Vaihda vaatimusjärjestystä";
+
+//----- gui/templates/inc_copyrightnotice.tpl -----
+$TLS_gnu_gpl = "GNU GPL";
+$TLS_lic_home = "Etusivu";
+$TLS_lic_product = "TestLink projekti";
+$TLS_licensed_under = "TestLink on lisensoitu";
+
+//----- gui/templates/containerEdit.tpl -----
+$TLS_btn_update_testsuite = "Päivitä testitapausjakso";
+$TLS_title_edit_level = "Muokkaa";
+
+//-----  gui/templates/reqSpecAnalyse.tpl -----
+$TLS_edit = $TLS_btn_edit;
+$TLS_req = $TLS_requirement;
+$TLS_req_spec_change = "Change Requirements Specification document to";
+$TLS_req_title_analyse = "Analyse Requirements Specification document ";
+$TLS_req_title_covered = "Requirements covered by Test Cases";
+$TLS_req_title_in_tl = "Requirements within TestLink";
+$TLS_req_title_nottestable = "Not testable Requirements";
+$TLS_req_title_uncovered = "Requirements uncovered by Test Cases";
+$TLS_req_title_not_in_tl = "Uncovered or not-testable requirements";
+$TLS_req_total_count = "Total count of requirements";
+
+//----- gui/templates/reqSpecCreate.tpl -----
+$TLS_action_create_srs = "Create Requirement Specification document";
+
+//-----  gui/templates/inc_reqView.tpl -----
+$TLS_last_edit = "Viimeksi muokattu";
+$TLS_warning_delete_requirement = "Olet poistamassa: %s <br/><br/> Oletko varma?";
+
+//gui/templates/inc_res_by_comp.tpl
+$TLS_title_res_by_top_level_suites = "Results by top level Test Suites";
+$TLS_trep_blocked = $TLS_test_status_blocked;
+$TLS_trep_comp = $TLS_test_suite;
+$TLS_trep_comp_perc = "Suoritettu[%]";
+$TLS_trep_failed = $TLS_test_status_failed;
+$TLS_trep_not_run = $TLS_test_status_not_run;
+$TLS_trep_passed = $TLS_test_status_passed;
+$TLS_trep_total = "Total";
+
+//-----  gui/templates/inc_res_by_keyw.tpl -----
+$TLS_title_res_by_kw = "Results by Keyword";
+$TLS_trep_kw = $TLS_keyword;
+
+//gui/templates/inc_res_by_owner.tpl
+$TLS_title_res_by_owner = "Testaajan tulokset";
+$TLS_trep_owner = "Testaaja";
+$TLS_title_res_by_tester = "Testaajan tulokset";
+$TLS_trep_tester = "Testaaja";
+
+//----- gui/templates/inc_res_by_prio.tpl
+$TLS_tit_end_date = "Päättymispäivä";
+$TLS_tit_milestone = $TLS_Milestone;
+$TLS_title_res_by_prio = "Tulokset tärkeysjärjestyksessä";
+$TLS_trep_milestone_goal = "Välietappi tavoite [%]";
+$TLS_trep_prio = $TLS_priority;
+$TLS_trep_status = $TLS_status;
+
+//gui/templates/inc_res_by_ts.tpl
+$TLS_title_res_by_ts = "Results by Test Suite";
+$TLS_trep_imp = $TLS_importance;
+$TLS_trep_risk = "Riski";
+$TLS_trep_ts = $TLS_test_suite;
+
+//--- gui/templates/reqSpecEdit.tpl
+$TLS_req_total_description = "Use this parameter to overwrite real count " .
+"of requirements within the document. '0' means unused.";
+
+//--- gui/templates/inc_show_bug_table.tpl
+$TLS_caption_bugtable = "Merkitykselliset bugit";
+$TLS_delete_bug ="poista bugi";
+$TLS_del_bug_warning_msg = "Haluatko varmasti poistaa tämän bugin?";
+
+//----- gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc = "Määritä testitapaus";
+$TLS_no_docs = "Ei dokumentteja saatavilla.";
+$TLS_req_list_docs = "Vaatimusmäärittelydokumentit";
+
+//----- gui/templates/tcEdit_New_viewer.tpl -----
+$TLS_alt_add_tc_name = "Lisää testitapauksen nimi. Tämä tieto on pakollinen.";
+$TLS_expected_results = "Odotetut tulokset";
+$TLS_steps = "Steps";
+$TLS_summary = "Yhteenveto";
+$TLS_tc_title = "Testitapauksen otsikko";
+
+//-----  gui/templates/show_exec_notes.tpl -----
+$TLS_title_execution_notes = "Execution notes";
+
+//----- gui/templates/rolesedit.tpl -----
+$TLS_btn_create_role = $TLS_btn_create;
+$TLS_btn_edit_role = $TLS_btn_save;
+$TLS_caption_define_role = "Määrittele rooli";
+$TLS_caption_possible_affected_users = "Possibly affected users by role delete operation";
+$TLS_enter_role_notes = "Roolin kuvaus";
+$TLS_menu_assign_product_roles = "Assign Test Project roles";
+$TLS_menu_assign_testplan_roles = "Assign Test Plan roles";
+$TLS_menu_define_roles = "Uusi rooli";
+$TLS_menu_mod_user = "Muuta käyttäjää";
+$TLS_menu_new_user = "Uusi käyttäjä";
+$TLS_menu_edit_user = "Muokkaa käyttäjää";
+$TLS_menu_edit_role = "Muokkaa roolia";
+$TLS_menu_view_users = "Näytä Käyttäjät";
+$TLS_menu_view_roles = "Näytä roolit";
+$TLS_th_cf_rights = "Mukautettu kenttä";
+$TLS_th_kw_rights = $TLS_keyword;
+$TLS_th_mgttc_rights = "Test Case management";
+$TLS_th_product_rights = "Testausprojekti";
+$TLS_th_req_rights = "Vaatimukset";
+$TLS_th_rights = "Oikeudet";
+$TLS_th_rolename = "Roolin nimi";
+$TLS_th_system_rights = "Järjestelmän oikeudet";
+$TLS_th_tp_rights = "Testaussuunnitelma";
+$TLS_th_user_rights = "Käyttäjä";
+$TLS_title_user_mgmt = "Käyttäjien hallinta";
+$TLS_warning_empty_role_name = "Anna roolille nimi";
+$TLS_warning_modify_role = "Haluatko varmasti muuttaa roolin?";
+
+//-----  gui/templates/tcSearchForm.tpl -----
+$TLS_caption_search_form = "Etsi testitapauksia";
+$TLS_custom_field_value ="Custom-kentän arvo";
+$TLS_not_applied = "Not applied";
+$TLS_th_tcid = "Testitapauksen ID";
+$TLS_th_tcversion = "Versio";
+$TLS_th_title = "Otsikko";
+$TLS_title_search_tcs = "Etsi";
+$TLS_requirement_document_id = "Req. Doc. ID";
+
+//----- gui/templates/testcases/searchData.tpl -----
+$TLS_too_wide_search_criteria = "Liian paljon tuloksia. Aseta täsmällisempi Too many results. Please, set a more specific " .
+"hakuehto.";
+
+//----- gui/templates/infoWindow.tpl -----
+
+//----- gui/templates/tcDelete.tpl -----
+$TLS_btn_yes_iw2del = "Kyllä, poista testitapaus!";
+$TLS_question_del_tc = "Haluatko varmasti poistaa testitapauksen?";
+$TLS_th_executed = "Suoritettu";
+$TLS_th_linked_to_tplan = "Linked to Test Plan";
+$TLS_th_version = "Versio";
+
+//-----  gui/templates/tcNew.tpl -----
+$TLS_title_new_tc = "Luo testitapaus";
+$TLS_warning_empty_tc_title = "Anna testitapaukselle otsikko";
+
+//----- gui/templates/tcImport.tpl -----
+$TLS_title_imp_tc_data = "Tuo testitapauksen tiedot";
+$TLS_view_file_format_doc = "(View file formats documentation)";
+
+//-----   gui/templates/keywordsimport.tpl -----
+$TLS_title_keyword_import_to = "Import keywords to";
+$TLS_title_keyword_import = "Import keywords";
+
+//----- gui/templates/keywordsExport.tpl -----
+$TLS_export_keywords="Export keywords";
+$TLS_title_req_import_to = "Import requirements to document";
+
+//-----   gui/templates/cfields_tproject_assign.tpl -----
+$TLS_btn_cfields_active_mgmt = "Update active status";
+$TLS_btn_cfields_display_order = "Save display order";
+$TLS_cfields_active = "Aktiivinen";
+$TLS_cfields_tproject_assign = "Assign custom fields";
+$TLS_display_order = "Display order";
+$TLS_title_assigned_cfields = "Assigned custom fields";
+$TLS_title_available_cfields = "Available custom fields";
+
+//----- gui/templates/usersview.tpl -----
+$TLS_No = "Ei";
+$TLS_Yes = "Kyllä";
+$TLS_alt_delete_user = "Haluatko varmasti poistaa valitun käyttäjän?";
+$TLS_alt_edit_user = "Muokkaa käyttäjää";
+$TLS_order_by_login = "Järjestä käyttäjätunnuksen mukaan";
+$TLS_order_by_role_descr = "Järjestä roolin kuvauksen mukaan";
+$TLS_th_email = "Sähköpostiosoite";
+$TLS_th_first_name = "Etunimi";
+$TLS_th_last_name = "Sukunimi";
+$TLS_th_locale = "Kieli";
+$TLS_th_login = "Käyttäjätunnus";
+$TLS_th_role = "Rooli";
+$TLS_th_api = "API Tunnus";//
+$TLS_api_gen_key_action = "Generate";
+$TLS_warning_delete_user = "Olet poistamassa: %s <br/><br/> Oletko varma?";
+$TLS_order_by_login_dir = "Järjestä käyttäjätunnuksen mukaan";
+$TLS_order_by_role_dir = "Järjestä roolin mukaan";
+$TLS_alt_active_user = "Aktiivinen käyttäjä";
+
+//----- gui/templates/login.tpl -----
+$TLS_btn_login = "Kirjaudu";
+$TLS_login_name = "Kirjaudu nimellä";
+$TLS_lost_password_q = "Unohtuiko salasana?";
+$TLS_new_user_q = "Uusi käyttäjä?";
+$TLS_password = "Salasana";
+
+//-----   gui/templates/loginFirst.tpl -----
+$TLS_btn_add_user_data = "Lisää käyttäjätiedot";
+$TLS_e_mail = "Sähköpostiosoite (tarvitaan uuden salasanan lähettämiseen)";
+$TLS_first_name = "Etunimi";
+$TLS_last_name = "Sukunimi";
+$TLS_link_back_to_login = "Back to login";
+$TLS_password_again = "Toista salasana";
+$TLS_password_mgmt_is_external = "Password management is external";
+$TLS_user_login_valid_regex = "The Login Name contains invalid characters!";
+
+//----- gui/templates/tcMove.tpl -----
+$TLS_as_first_testcase = "Destination position top";
+$TLS_as_last_testcase = "Destination position bottom";
+$TLS_btn_mv = "Siirrä";
+$TLS_choose_container = "Valitse testitapausjakso";
+$TLS_inst_copy = "Kopioi testitapaus johonkin testitapausjaksoon.";
+$TLS_inst_move = "Siirrä testitapaus toiseen testitapausjaksoon.";
+$TLS_inst_copy_move_warning = "Tärkeää: Voit valita vain testitapausjaksoja, jotka kuuluvat tähän testausprojektiin.";
+$TLS_title_mv_cp_tc = "Siirrä/kopioi testitapaus";
+
+//-----   gui/templates/loginLost.tpl -----
+$TLS_btn_send = "Lähetä";
+$TLS_password_reset = "Resetoi salasana";
+
+//----- gui/templates/tcView.tpl -----
+$TLS_no_records_found = "Hakusi ei tuottanut tuloksia!";
+$TLS_other_versions = 'Muut versiot';
+$TLS_match_count = "Osumien lukumäärä";
+
+//-----   gui/templates/execSetResults.tpl -----
+$TLS_alt_attachment_mgmt = "liitteet";
+$TLS_alt_notes = "Huomautuksia";
+$TLS_assigned_to = "Assigned to";
+$TLS_attachment_mgmt = "liitteet";
+$TLS_btn_history_off = "Näytä vain viimeinen suoritus";
+$TLS_btn_history_off_any_build = "Näytä ainoastaan viimeisin suoritus (jokin buildi)Show only last execution (any Build)";
+$TLS_btn_history_on = "Näytä kokonainen suoritus historia";
+$TLS_btn_save_all_tests_results = "Tallenna kaikki suoritukset";
+$TLS_btn_save_tc_exec_results = "Tallenna suoritukset";
+$TLS_bug_mgmt = "BUG management";
+$TLS_build_is_closed = "Buildi suljettu";
+$TLS_builds_notes = "Buildin kuvaus";
+$TLS_bulk_tc_status_management = "Bulk TC status management";
+$TLS_closed_build = "suljettu buildi. toimenpidettä ei voida tehdä";
+$TLS_date_time_run = "Päivämäärä";
+$TLS_details = "Yksityiskohdat";
+$TLS_edit_notes = "Muokkaa muistiot";
+$TLS_execute_and_save_results ="Suorita ja tallenna tulokset";
+$TLS_exec_any_build = "(jokin buildi)";
+$TLS_exec_current_build = "(tämänhetkinen buildi)";
+$TLS_exec_notes = "Muistiot";
+$TLS_exec_status = $TLS_status;
+$TLS_execution_history = "Execution history";
+$TLS_execution_type_manual = "Manual";
+$TLS_execution_type_auto = "Automated";
+$TLS_has_no_assignment = "No tester assigned";
+$TLS_img_title_bug_mgmt = "Virhehallinta";
+$TLS_img_title_delete_execution = "Delete execution";
+$TLS_import_xml_results = "Import XML Results";
+$TLS_just_last_execution_for_this_build = "Last execution for build";
+$TLS_last_execution = "Last execution";
+$TLS_no_data_available = "Ei dataa saatavissa";
+$TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
+$TLS_or_unassigned_test_cases = " Or without tester assignment";
+$TLS_run_mode = "Run mode";
+$TLS_set_all_tc_to = "Set all to status ";
+$TLS_show_hide = "Näytä / piilota";
+$TLS_tc_not_tested_yet = "Ei testattu vielä";
+$TLS_test_cases_cannot_be_executed = "Testitapauksia ei voida suorittaa";
+$TLS_testcase_version_is_inactive_on_exec = "This version is inactive => Can not be executed";
+$TLS_test_exec_by = "Testannut";
+$TLS_test_exec_expected_r = "Odotettu tulos";
+$TLS_test_exec_last_run_date = "Most recent Run";
+$TLS_test_exec_notes = "Notes / Description";
+$TLS_test_exec_on_build = "on Build";
+$TLS_test_exec_result = "Tulos";
+$TLS_test_exec_steps = "Vaiheet";
+$TLS_test_exec_summary = "Yhteenveto";
+$TLS_test_plan_notes = "Test plan notes";
+$TLS_th_test_case_id = "ID ";
+$TLS_th_testsuite = $TLS_test_suite;
+$TLS_title_t_r_on_build = "Test Results on Build";
+$TLS_title_t_r_owner = " Assigned to";
+$TLS_title_test_case = $TLS_test_case;
+$TLS_version = "Versio";
+$TLS_warning_delete_execution = "Olet poistamassa suoritusta<br/><br/> Oletko varma?";;
+$TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
+
+//----- gui/templates/inc_testsuite_viewer_ro.tpl -----
+$TLS_keywords = "Keywords";
+
+//-----   gui/templates/navBar.tpl -----
+$TLS_access_doc = "Dokumentaatio";
+$TLS_home = "Etusivu";
+$TLS_link_logout = "Kirjaudu ulos";
+$TLS_navbar_user_management = "Käyttäjät";
+$TLS_product = "Testausprojektit";
+$TLS_product_role = "Testausprojekti rooli ";
+$TLS_search_testcase = "Etsi";
+$TLS_title_edit_personal_data = "Omat tiedot";
+$TLS_title_events = "Tapahtumat";
+$TLS_title_execute = "Suorita";
+$TLS_title_results = "Tulokset";
+$TLS_title_specification = "Määrittely";
+$TLS_session_inactivity_timeout_at = "Session idle timeout at";
+
+//----- gui/templates/inc_testsuite_viewer_rw.tpl -----
+//-----   gui/templates/planAddTC_m1.tpl -----
+$TLS_add_tc = "Lisää";
+$TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
+$TLS_btn_add_remove_selected_tc = "Lisää / poista valitut";
+$TLS_btn_add_selected_tc = "Lisää valittu";
+$TLS_btn_save_exec_order = "Tallenna järjestys";
+$TLS_btn_save_custom_fields ="Tallenna mukautettu kenttä";
+$TLS_check_uncheck_tc = "Kaikki testitapaukset testitapausjaksossa.";
+$TLS_check_uncheck_all_checkboxes = "valitse/poista kaikki";
+$TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
+$TLS_executed_can_not_be_removed = "Suoritettuja testitapauksia ei voida poistaa.";
+$TLS_execution_order = "Suoritusjärjestys" ;
+$TLS_execution_order = "Select/deselect all Test Cases to add";
+$TLS_select_all_to_remove = "Select/deselect all Test Cases to remove";
+$TLS_has_been_executed = "on suoritettu";
+$TLS_inactive_testcase = "inactive";
+$TLS_no_testcase_available = "Ei testitapausta saatavilla";
+$TLS_note_keyword_filter = "Test Cases are filtered by keyword";
+$TLS_remove_tc = "Poista";
+$TLS_show_tcase_spec = "Show Test Case specification";
+$TLS_th_test_case = "Testitapaus";
+$TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to/from Test Plan";
+$TLS_title_add_test_to_plan = "Add Test Cases to Test Plan";
+$TLS_warning_add_remove_selected_tc = "Varoitus! Haluatko varmasti poistaa valitut testitapaukset testaussuunnitelmasta?";
+
+//----- gui/templates/planAddTCNavigator.tpl -----
+$TLS_title_navigator = "Navigaattori";
+$TLS_keywords_filter_help = "Voit käyttää JA/TAI suodatusta";
+
+//-----   gui/templates/planTCNavigator.tpl -----
+$TLS_btn_update_all_testcases_to_latest_version = "Päivitä kaikki testitapaukset viimeisimpään versioon";
+
+//----- gui/templates/planPriority.tpl -----
+$TLS_btn_upd_prio = "Päivitä";
+$TLS_title_priority = "Define priority rules for Test Plan";
+$TLS_tr_th_importance = "Importance";
+$TLS_tr_th_prio_cba = "Prioriteetti (C/B/A)";
+$TLS_tr_th_risk = "Risk/Importance";
+
+//-----   gui/templates/planUpdateTC.tpl -----
+$TLS_btn_update_testplan_tcversions = "Päivitä testaussuunnitelma";
+$TLS_update_to_version = "Päivitä versio";
+$TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
+$TLS_update_testcase_versions = "Update Linked Test Case Versions";
+$TLS_no_testcase_checked = "Ei löytynyt tarkastettuja testaustapauksia. Mitään ei tehdä";
+$TLS_tplan_updated = "Testaussuunnitelma päivitettiin";
+$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+
+//----- gui/templates/planEdit.tpl -----
+$TLS_btn_testplan_create = "Luo";
+$TLS_cancel = "Peruuta";
+$TLS_opt_no = "Ei";
+$TLS_testplan_question_create_tp_from = "Luo olemassa olevasta testaussuunnitelmasta?";
+$TLS_testplan_th_active = "Aktiivinen";
+$TLS_testplan_th_name = "Nimi";
+$TLS_testplan_th_notes = "Kuvaus";
+$TLS_testplan_title_create = "Luo uusi testaussuunnitelma";
+$TLS_testplan_title_edit = "Muokkaa " . $TLS_test_plan . " - ";
+$TLS_testplan_title_for_project = "Testausprojektia varten ";
+$TLS_testplan_title_tp_management = "Test Plan Management";
+$TLS_testplan_txt_notes = "Testaussuunnitelmien pitäisi pitää sisällään (sarja) selkeästi määriteltyjä tehtäviä, joilla on aikataulu ja sisältö. " .
+"They can be created for everything from simple change requests to new product versions." .
+"It is recommended that the description field be used to document links to project plans " .
+"and related documentation, lists of features to be tested, risks, etc." .
+"Voit luoda uuden testaussuunnitelman jo olemassa olevasta testaussuunnitelmasta. " .
+"Kopioitavat osiot sisältävät: buildit, testitapaukset, prioriteetit, välietapit ja käyttäjäroolit." .
+"Testaussuunnitelmat voidaan kytkeä pois käytöstä (esim. editing and changing of results change are not allowed). " .
+"Deactivated test plans are visible only via 'Reporting' and this page.";
+$TLS_warning_empty_tp_name = "Et voi syöttää testaussuunnitelmaa ilman nimeä!";
+
+$TLS_testplan_copy_tcases = "Kopioi testitapaukset";
+$TLS_testplan_copy_tcases_latest = "Viimeisin saatavilla oleva versio";
+$TLS_testplan_copy_tcases_current = "Current linked version";
+$TLS_testplan_copy_builds = "Kopioi Buildit";
+$TLS_testplan_copy_priorities = "Kopioi prioriteetit";
+$TLS_testplan_copy_milestones = "Kopioi välietapit";
+$TLS_testplan_copy_user_roles = "Kopioi käyttäjäroolit";
+
+//-----   gui/templates/planNew.tpl -----
+$TLS_testplan_btn_edit = "Päivitä";
+$TLS_testplan_btn_new = "Luo";
+$TLS_testplan_menu_create = "Luo";
+$TLS_testplan_menu_edit = "Muokkaa";
+$TLS_testplan_menu_list = "Luettelo";
+
+//----- gui/templates/planMilestones*.tpl -----
+$TLS_alt_delete_milestone = "Poista välietappi?";
+$TLS_btn_edit_milestone = "Muokkaa";
+$TLS_btn_new_milestone = "Luo";
+$TLS_info_milestones_date = "Välietapit täytyy päivätä tänään tai myöhemmin luoduiksi";
+$TLS_no_milestones = "Tälle testaussuunnitelmalle ei löydy välietappeja!";
+$TLS_popup_delete_milestones = "Haluatko varmasti poistaa välietappi: %NAME% ?";
+$TLS_warning_delete_milestone = "Olet poistamassa: %s <br/> <br/> Oletko varma?";
+$TLS_warning_empty_milestone_name="Välietapin nimeä ei voi jättää tyhjäksi!";
+
+$TLS_th_date_format = "Tavoite päivämäärä";
+$TLS_th_perc_a_prio = "Valmiit korkean prioriteetin testit [0-100%]";
+$TLS_th_perc_b_prio = "Valmiit keskitason prioriteetin testit [0-100%]";
+$TLS_th_perc_c_prio = " valmiit matalan prioriteetin testit [0-100%]";
+$TLS_th_perc_testcases = "Valmiit testit [0-100%]";
+$TLS_title_existing_milestones = "Olemassa olevat välietapit";
+$TLS_title_milestones = "Testaussuunnitelman välietapit";
+$TLS_title_new_milestone = "Määrittele uusi välietappi";
+$TLS_title_edit_milestone = "Muokkaa välietappia";
+$TLS_delete_milestone = "Poista välietappi";
+$TLS_milestone_deleted = "Välietappi %s poistettiin onnistuneesti";
+$TLS_create_milestone = "Luo välietappi";
+$TLS_edit_milestone = "Muokkaa välietappia %s";
+$TLS_warning_empty_low_priority_tcases = "Arvo ei voi olla tyhjä";
+$TLS_warning_empty_medium_priority_tcases = "//Arvo ei voi olla tyhjä//";
+$TLS_warning_empty_high_priority_tcases = "//Arvo ei voi olla tyhjä//";
+$TLS_milestone_created = "Välietappi Luotu";
+
+//-----   gui/templates/projectEdit.tpl -----
+$TLS_btn_activate = "Aktivoi";
+$TLS_btn_del = "Poista";
+$TLS_btn_edit_del = "Muokkaa / poista";
+$TLS_btn_inactivate = "Inactivate";
+$TLS_caption_edit_tproject = "Muokkaa %s";
+$TLS_caption_new_tproject = "Luo uusi testausprojekti";
+$TLS_color = "Väri";
+$TLS_enable_requirements = "Requirements Management";
+$TLS_enable_priority = "Priority Management";
+$TLS_enable_automation = "Testausautomaatio";
+$TLS_info_failed_loc_prod = "Testausprojektin paikantaminen ei onnistunut.";
+$TLS_notes = "Related Notes";
+$TLS_testproject_alt_delete = "Poista testausprojekti";
+$TLS_testproject_alt_active = "Aktiivinen";
+$TLS_testproject_alt_requirement_feature = "Requirements enabled";
+$TLS_testproject_alt_edit = "Muokkaa testausprojektia";
+$TLS_testproject_txt_empty_list = "Ei ole määriteltyjä testausprojekteja!";
+
+//Warning!!! - if JS string you must use \\n to get \n
+$TLS_popup_product_delete = "Varoitus! Tämä toimenpide poistaa peruuttamattomasti kaiken testausprojektiin liittyvän " .
+"datan (mukaanlukien testaustulokset, suunnitelmat jne.). " .
+"Voit myös poistamisen sijaan deaktivoida.\\n" .
+"Suositus: Execute a dump of database at first.\\n" .
+"Haluatko varmasti poistaa testausprojektin?";
+
+$TLS_tcase_id_prefix = "Testitapauksen ID-etuliite";
+$TLS_warning_empty_tcase_prefix = "Testitapauksen ID -etuliite ei voi olla tyhjä!";
+$TLS_warning_empty_tproject_name = "Testausprojektin nimi ei voi olla tyhjänä!";
+
+//-----   gui/templates/projectView.tpl -----
+$TLS_title_testproject_management = "Test Project Management";
+
+//----- gui/templates/reqAssign.tpl -----
+$TLS_please_select_a_req = "Valitse vaatimus";
+$TLS_req_msg_norequirement66 = "Ei vaatimusta";
+$TLS_req_title_assign = "Määritä testitapauksen vaatimukset";
+$TLS_req_title_assigned = "Assigned Requirements";
+$TLS_req_title_unassigned = "Available Requirements";
+$TLS_warning_req_tc_assignment_impossible = "Et <b>voi tehdä</b> the assignment " .
+"johtuen joistain seuraavista syistä:" .
+"<br/><ul><li>Vaatimusmäärittelydokumenttia ei ole määritelty</li>" .
+"<li>Vaatimusmäärittelydokumentti on tyhjä.</li></ul>";
+
+//-----   gui/templates/tcEdit.tpl -----
+$TLS_title_edit_tc = "Muokkaa testitapausta";
+$TLS_warning_editing_executed_tc = "Varoitus!: Tämä testitapausversio on suoritettu";
+
+//----- gui/templates/planOwner.tpl -----
+$TLS_assign_ownership = "Assign ownership";
+$TLS_def_prio_rules = "Määrittele prioriteettisäännöt";
+$TLS_opt_label_none = "none";
+$TLS_th_imp = "Merkitys";
+$TLS_th_owner = "Testaaja";
+$TLS_th_risk = "Riski";
+$TLS_th_test_suite = "Testitapausjakso";
+$TLS_title_plan_ownership = "Testaussuunnitelman omistusoikeus";
+
+//-----   gui/templates/tcView_viewer.tpl -----
+$TLS_activate_this_tcversion = "Aktivoi tämä versio";
+$TLS_Requirements = "Vaatimukset";
+$TLS_btn_del_this_version = "Poista tämä versio";
+$TLS_btn_execute_automatic_testcase = "Suorita automaattinen testitapaus";
+$TLS_btn_mv_cp = "Siirrä / Kopioi";
+$TLS_btn_new_version = "Luo uusi versio";
+$TLS_can_not_edit_tc = "Et voi muokata tätä versiota, koska se on suoritettu";
+$TLS_deactivate_this_tcversion = "Deaktivoi tämä versio";
+$TLS_execution_type = 'Suoritustyyppi';
+$TLS_tcversion_is_inactive_msg = "Tämä versio on INACTIVE => ei tule olemaan saatavilla testaussuunnitelmaan sisällytettäväksi";
+
+//----- gui/templates/planRemoveTC_m1.tpl -----
+$TLS_btn_remove_selected_tc = "Poista valitut tc:t";
+$TLS_remove_ok = "Poistaminen ok";
+$TLS_title_remove_test_from_plan = "Poista tc testaussuunnitelmasta";
+
+//-----   gui/templates/keywordsAssign.tpl -----
+$TLS_keyword_assignment_empty_tsuite = "Tässä testitapausjaksossa ei ole testitapauksia => hakusanalla hakeminen ei ole mahdollista";
+$TLS_menu_assign_kw_to_tc = "Assign to Test Cases";
+$TLS_menu_manage_keywords = "Keyword Management";
+$TLS_title_keywords = "Keywords";
+
+//----- gui/templates/planTestersNavigator.tpl -----
+$TLS_label_list_of = "Luettelo";
+$TLS_opt_test_plans = "Testaussuunnitelmat";
+$TLS_opt_users = "Käyttäjät";
+
+//-----   gui/templates/planUpdateTC.tpl -----
+$TLS_btn_upd_ck_tc = "Päivitä valitut testitapaukset";
+$TLS_info_all_tc_uptodate = "Kaikki testitapaukset ovat ajankohtaisia.";
+$TLS_th_category = $TLS_test_suite;
+$TLS_th_component = $TLS_test_suite;
+$TLS_th_id_tc = "[ID] Testitapaus";
+$TLS_th_reason = "Päivittämisen syy";
+$TLS_th_spec_version = "Vaatim. versio";
+$TLS_th_status = "Status";
+$TLS_th_suite_version = "Tapausjakso versio";
+$TLS_th_update = "Päivitä";
+$TLS_title_upd_mod_tc = "Päivitä muokatut testitapaukset ";
+
+//----- gui/templates/keywordsView.tpl -----
+$TLS_alt_delete_keyword = "Poista avainsana?";
+$TLS_btn_create_keyword = "Luo avainsana";
+$TLS_btn_edit_keyword = "Muokkaa";
+$TLS_btn_export_keywords = "Vie";
+$TLS_btn_import_keywords = "Tuo";
+$TLS_th_keyword = "Avainsana";
+$TLS_warning_delete_keyword = "Olet poistamassa: %s <br/><br/> Oletko varma?";
+$TLS_warning_enter_at_least1 = "Anna vähintään ";
+$TLS_warning_enter_at_least2 = " merkkiä.";
+$TLS_warning_enter_less1 = "Anna korkeintaan ";
+$TLS_warning_enter_less2 = " merkkiä.";
+
+//-----   gui/templates/reqexport.tpl -----
+$TLS_title_req_export = "Export requirements";
+
+//----- gui/templates/resultsAllBuilds.tpl -----
+$TLS_th_build = "Buildi";
+$TLS_th_tc_total = "TC Total";
+$TLS_title_met_of_build = "Buildin metriikka";
+
+//-----   gui/templates/resultsBugs.tpl -----
+$TLS_bugs_open = "Avaa";
+$TLS_bugs_resolved = "Ratkaistu";
+$TLS_bugs_total = "total";
+$TLS_date = "Päivämäärä";
+$TLS_printed_by = "Tulostanut";
+$TLS_tcs_with_bugs = "Testitapaukset, joissa bugeja";
+$TLS_title_test_case_bugs = "Testitapaus bugit";
+$TLS_title_test_case_timestamp = "Testitapaus aikaleima";
+$TLS_title_test_case_title = $TLS_test_case;
+$TLS_title_test_suite_name = $TLS_test_suite;
+
+//----- gui/templates/resultsByStatus.tpl -----
+$TLS_info_test_results = "Vain viimeisimmät testi tulokset ovat listattuna. " .
+"Eli testitapausta ei näytetä jos testitapauksen tulos tulee myöhemmin " .
+"buildilla on muu status (paitsi ei run).";
+$TLS_th_bugs = "Bugit";
+$TLS_th_date = "Päivämäärä";
+$TLS_th_run_by = "Ajettu";
+$TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
+$TLS_th_assigned_to = "Assigned To";
+
+//-----   gui/templates/resultsGeneral.tpl -----
+$TLS_title_gen_test_rep = "Testaussuunnitelman metriikka";
+$TLS_title_report_tc_priorities = "Testitulokset testiprioriteettien mukaan";
+$TLS_title_report_milestones = "Status of Milestones";
+$TLS_th_completed = "Valmis";
+$TLS_th_milestone = "Välietappi [päivämääär]";
+$TLS_th_not_run = "Ei ajettu";
+$TLS_th_tc_priority_high = "Korkea prioriteetti";
+$TLS_th_tc_priority_medium = "Keskitason prioriteetti";
+$TLS_th_tc_priority_low = "Matala prioriteetti";
+$TLS_th_progress = "Testin edistyminen [%]";
+$TLS_th_goal = "Suoritus tavoite [%]";
+$TLS_th_overall_priority = "Koko testin prioriteetti";
+$TLS_th_expected = "Odotettu";
+$TLS_th_overall = "Kaiken kaikkiaan";
+
+//----- gui/templates/resultsMoreBuilds_query_form.tpl -----
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_results_latest = "Vain viimeiset tulokset";
+$TLS_results_all = "Kaikki tulokset";
+$TLS_display_results_tc = "Tulosryhmä";
+$TLS_last_status_any = "Jokin";
+$TLS_last_status_blocked = $TLS_test_status_blocked;
+$TLS_last_status_failed = $TLS_test_status_failed;
+$TLS_last_status_not_run = $TLS_test_status_not_run;
+$TLS_last_status_passed = $TLS_test_status_passed;
+$TLS_select_builds_header = "Valitse buildit";
+$TLS_select_components_header = "Ylimmän tason testitapausjaksot";
+$TLS_select_keyword_header = "Valitse avainsana";
+$TLS_select_last_result_header = "Show Executions of Status";
+$TLS_select_owner_header = "Assigned to";
+$TLS_select_report_format_header = "Select Report Format";
+$TLS_submit_query = "Esitä kysely";
+$TLS_test_plan_header = $TLS_testplan;
+$TLS_query_metrics_report = "Query Metrics Report";
+$TLS_enter_start_time = "Aloitusaika";
+$TLS_enter_end_time = "Lopetusaika";
+$TLS_year = "vuosi";
+$TLS_month = "kuukausi";
+$TLS_day = "päivä";
+$TLS_hour = "tunti";
+$TLS_search_in_notes = "etsi merkkijono huomautuksista";
+$TLS_executor = "suorittanut";
+
+//-----   gui/templates/resultsMoreBuilds_report.tpl -----
+$TLS_caption_show_collapse = "Show / Collapse";
+$TLS_caption_user_selected_query_parameters = "Kyselyn parametrit";
+$TLS_not_yet_executed = "Ei vielä suoritettu";
+$TLS_show_hide_all = "Näytä / piilota kaikki";
+$TLS_th_builds = "Buildit";
+$TLS_th_execution_ts = "Aika";
+$TLS_th_last_result = "Viimeisin tulos";
+$TLS_th_report_format = "Raportin tyyppi";
+$TLS_th_test_plan = $TLS_testplan;
+$TLS_th_test_suites = "Suites";
+$TLS_th_tester_id = "Testaaja";
+$TLS_th_total_block = "#" . $TLS_test_status_blocked;
+$TLS_th_total_cases = "#Test Cases";
+$TLS_th_total_fail = "#" . $TLS_test_status_failed;
+$TLS_th_total_not_run = "#" . $TLS_test_status_not_run;
+$TLS_th_total_pass = "#" . $TLS_test_status_passed;
+$TLS_th_start_time = "Aloitusaika";
+$TLS_th_end_time = "Lopetusaika";
+$TLS_th_executor = "Suorittanut";
+$TLS_th_search_notes_string = "notes search string";
+$TLS_true = "tosi";
+$TLS_false = "epätosi";
+$TLS_display_suite_summaries = "Testitapausjaksojen yhteenvedot";
+$TLS_display_query_params = "Kyselyn parametrit";
+$TLS_display_totals = "Kaikki";
+$TLS_display_test_cases = "Testitapauset";
+$TLS_report_display_options = "Report display options";
+
+//----- gui/templates/resultsReqs.tpl -----
+$TLS_no_srs_defined = "No Requirements Specification available for this Test Project";
+$TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
+
+//IMPORTANT for dynamic generation labels
+//$TLS_req_title_<test case status>
+//If user add a new test case status he/she MUST add a new label
+$TLS_req_title_blocked = "Blocked Requirements";
+$TLS_req_title_failed = "Failed Requirements";
+$TLS_req_title_not_run = "Unexecuted Requirements";
+$TLS_req_title_passed = "Passed Requirements";
+
+$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+$TLS_title_test_plan = $TLS_testplan;
+
+//----- gui/templates/resultsSend.tpl -----
+$TLS_btn_send_report = "Lähetä raportti";
+$TLS_check_send_to_me = "Lähetä kopio itselleni";
+$TLS_mail_body = "Runko:";
+$TLS_mail_report = "Raportti:";
+$TLS_mail_subject = "Aihe:";
+$TLS_mail_to = "Kenelle:";
+$TLS_status_for_build = "Buildin status";
+$TLS_tp_status = "Yleinen testaussuunnitelma status";
+$TLS_tp_status_for_build = "Buildin testaussuunnitelmastatus";
+
+//-----   gui/templates/resultsTC.tpl -----
+$TLS_generated_by_TestLink_on = "Generated by TestLink on ";
+
+//----- gui/templates/resultsImport.tpl -----
+$TLS_results_import_format = "XML tiedoston on oltava seuraavassa muodossa: ";
+$TLS_title_results_import_to = "Tuo tulokset";
+
+//-----   gui/templates/plan/setUrgency.tpl -----
+$TLS_title_plan_urgency = "Testin kiireellisyys testitapausjaksossa";
+$TLS_th_urgency = "Kiireellisyys";
+$TLS_label_set_urgency = "Aseta testin kiireellisyys: ";
+$TLS_urgency_description = "//Urgency value affects priority of test cases// " .
+"for execution and reporting. Medium test urgency is default value.";
+$TLS_feedback_urgency_fail = "Testin kiireellisyyden päivittäminen epäonnistui! Katso tapahtumalokista yksityiskohdat.";
+$TLS_feedback_urgency_ok = "Testin kiireellisyyttä muokattiin.";
+$TLS_testsuite_is_empty = 'Testitapausjaksolla ei ole testitapauksia. Mitään ei voida tehdä';
+
+//----- gui/templates/printDocOptions.tpl -----
+$TLS_doc_opt_title = "Document options";
+$TLS_doc_opt_guide = "Modify options for required structure of document. Select the top line in tree menu for all or a required suite to generate a document content.";
+$TLS_tr_td_show_as = "Show as";
+
+//-----   gui/templates/tcReorder.tpl -----
+$TLS_no_tc_to_reorder = "Uudelleen järjesteltäviä testitapauksia ei ole!";
+$TLS_title_change_tc_order = "Vaihda tämän testitapausjakson testitapausten järjestystä.";
+$TLS_drag_and_drop_to_reorder = "Vedä ja pudota kohteet järjestääksesi ne uudelleen";
+
+//----- gui/templates/tcTree.tpl -----
+$TLS_button_refresh = "Päivitä avoin sivu";
+$TLS_button_update_tree = "Päivitä puu";
+$TLS_do_auto_update = "Päivitä puu jokaisen vaiheen jälkeen";
+$TLS_no_tc_spec_av = "Ei testausmäärittelyä saatavilla!";
+
+//-----   gui/templates/tc_exec_assignment.tpl -----
+$TLS_assign_to = "Assign to";
+$TLS_btn_do = "Tee";
+$TLS_btn_update_selected_tc = "Tallenna";
+$TLS_can_not_execute = " (Ei suoritusoikeutta)";
+$TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
+$TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
+$TLS_user = "Käyttäjä";
+$TLS_user_bulk_assignment = "Bulk user assignment";
+
+//----- tc_exec_assignment.php -----
+$TLS_mail_subject_testcase_assigned = 'Test Link - Test Case Assignment - Test Plan';
+$TLS_mail_subject_testcase_assignment_removed = 'Test Link - Test Case Assignment REMOVED - Test Plan';
+$TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s by %s <br/><br/>";
+$TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments AS BEEN REMOVED by %s <br/><br/>";
+$TLS_send_mail_to_tester = "Lähetä sähköposti-ilmoitus testaajalle";
+
+//-----   gui/templates/testSetNavigator.tpl -----
+
+//----- gui/templates/userInfo.tpl -----
+$TLS_btn_change_passwd = "Vaihda salasana";
+$TLS_btn_upd_user_data = "Päivitä";
+$TLS_btn_apikey_generate = "Tuota uusi avain";
+$TLS_th_new_passwd = "Uusi salasana";
+$TLS_th_new_passwd_again = "Vahvista uusi salasana";
+$TLS_th_old_passwd = "Vanha salasana";
+$TLS_title_account_settings = "Tilin asetukset";
+$TLS_title_personal_data = "Henkilökohtainen data";
+$TLS_title_personal_passwd = "Henkilökohtainen salasana";
+$TLS_title_api_interface = "API interface";
+$TLS_warning_different_pwd = "Kirjoita uudelleen uusi salasanasi. Lisätyt arvot olivat erilaiset.";
+$TLS_warning_empty_pwd = "Salasana ei saa jäädä tyhjäksi!";
+$TLS_your_password_is_external = "Salasanaasi hallinnoi ulkopuolinen järjestelmä.<br/>".
+"Et voi muuttaa sitä TestLinkiä käyttämällä.";
+$TLS_user_api_key = "Personal API access key";
+$TLS_audit_login_history = "Sisäänkirjautumishistoria";
+$TLS_audit_last_succesful_logins = "Viimeiset onnistuneet sisäänkirjautumiset";
+$TLS_audit_last_failed_logins = "Viimeiset epäonnistuneet sisäänkirjautumiset";
+$TLS_result_password_changed = "Salasanasi muuttaminen onnistui";
+$TLS_result_apikey_create_ok = "New API key was generated";
+$TLS_result_user_changed = "Henkilökohtaiset tiedot muuttuivat";
+$TLS_empty_old_passwd = "Tyhjä vanha salasana. Kirjoita vanha salasanasi";
+$TLS_never_logged = "Ei sisäänkirjautunut vielä";
+
+//-----   gui/templates/usersassign.tpl -----
+$TLS_TestProject = "Testausprojektit";
+$TLS_User = "Käyttäjä";
+$TLS_btn_change = "Vaihda";
+$TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
+$TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
+$TLS_menu_assign_testproject_roles = "Assign Test Project roles";
+$TLS_th_roles = "Rooli";
+$TLS_th_roles_testplan = "Testaussuunnitelmarooli";
+$TLS_th_roles_testproject = "Testausprojektirooli";
+$TLS_title_assign_roles = "Määritä roolit";
+
+//----- gui/templates/usersedit.tpl -----
+$TLS_button_reset_password = "Resetoi salasana";
+$TLS_caption_user_details = "Käyttäjän tiedot";
+$TLS_th_password = "Salasana";
+$TLS_warning_empty_first_name = "Kirjoita nimi";
+$TLS_warning_empty_last_name = "Kirjoita sukunimiPlease enter a surname";
+$TLS_warning_empty_login = "Kirjoita käyttäjätunnus";
+
+//-----   gui/templates/attachmentupload.tpl -----
+$TLS_attachment_upload_ok = "Tiedosto ladataan";
+$TLS_enter_attachment_title = "Kirjoita liitteelle otsikko";
+$TLS_import_was_ok = "Tuonti onnistui";
+$TLS_max_size_cvs_file = "Max. tiedostonkoko on";
+$TLS_title_upload_attachment = "Lataa liitetiedosto";
+$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "Tiedoston koko " .
+"on suurempi kuin php.ini :ssä määritetty suurin arvo!";
+$TLS_error_file_size_larger_than_maximum_size = "Tiedoston koko on suurempi " .
+"kuin suurin määritetty arvo TestLink:ssä!";
+$TLS_error_file_upload = "Tiedostoa ei voitu ladata!";
+
+//----- gui/templates/rolesview.tpl -----
+$TLS_N_A = $TLS_not_aplicable;
+$TLS_alt_delete_role = "Poista rooli";
+$TLS_alt_edit_role = "Muokkaa roolia";
+$TLS_btn_confirm_delete = "Poista";
+$TLS_delete_role = "Poista rooli";
+$TLS_no_roles = "Ei roolia";
+$TLS_th_role_description = $TLS_description;
+$TLS_title_roles = "Saatavilla olevat roolit";
+$TLS_warning_delete_role = "Olet poistamassa: %s <br/><br/> Oletko varma?";
+$TLS_warning_users_will_be_reset = "Affected users will get role:";
+
+//-----   gui/templates/tcexport.tpl -----
+$TLS_export_filename = "Vie tiedostonimi";
+$TLS_export_with_keywords = "Export with keywords";
+$TLS_warning_empty_filename = "Anna tiedostonimi";
+
+//----- gui/templates/buildView.tpl -----
+$TLS_alt_active_build = "Aktiivinen buildi";
+$TLS_alt_edit_build = "Klikkaa tästä muokataksesi tätä buildia";
+$TLS_alt_open_build = "Avaa buildi";
+$TLS_btn_build_create = "Luo";
+$TLS_no_builds = "Buildeja ei ole määritelty tässä testaussuunnitelmassa!";
+$TLS_th_description = "Kuvaus";
+$TLS_th_open = "Avaa";
+$TLS_title_build_list = "Luettelo olemassa olevista buildeista";
+$TLS_warning_delete_build = "<p>Olet poistamassa: %s </p>" .
+"<p>Kaikki riippuvainen data (ts. testitulokset) poistetaan myös!</p>" .
+"<p>Oletko varma?</p>";
+$TLS_builds_description = "Buildi tunnistetaan sen otsikosta. Jokainen buildi " .
+"liittyy aktiiviseen testaussuunnitelmaan.<br/>Kuvauksen pitäisi sisältää:&nbsp;" .
+"luettelo toimitetuista paketeista, korjauksista tai ominaisuuksista, hyväksytyistä, statuksesta jne.<br/>" .
+"Buildilla on kaksi atribuuttia:<br/>" .
+"Aktiivinen / Ei-aktiivinen &ndash; määrittelee sen voiko buildia käyttää. " .
+"Ei-aktiiviset buildit eivät ole lueteltuna suoritus- ja raportointisivuilla.<br/>" .
+"Avoimet / Suljetut &ndash; Vain avoimien buildien testituloksia voi tarvittaessa muokata.";
+$TLS_build_copy_help = "Jos valitset vaihtoehdon: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
+"&nbsp;,Buildin nimi etsitään jokaisesta tämän testausprojektin testaussuunnitelmasta " .
+"ja jos nimeä ei vielä ole olemassa, buildi luodaan.";
+
+//-----   gui/templates/planView.tpl -----
+$TLS_testplan_alt_delete_tp = "Poistetaanko testaussuunnitelma?";
+$TLS_testplan_alt_edit_tp = "Muokkaa testaussuunnitelmaa";
+$TLS_testplan_msg_delete_confirm = "Oletko varma, että haluat poistaa kokonaisen ".
+"Testaussuunnitelman? Voit käyttää deaktivointia Testaussuunnitelman hallinnointisivujen kautta.";
+$TLS_testplan_th_delete = "Poista";
+$TLS_testplan_title_list = "Luettelo olemassa olevista testaussuunnitelmista";
+$TLS_testplan_txt_empty_list = "Testaussuunnitelmaa ei ole määritelty! Create one to allow test execution functionality";
+$TLS_alt_active_testplan = "Aktiivinen testaussuunnitelma";
+$TLS_warning_delete_testplan = "<p>Olet poistamassa: %s </p><p>Oletko varma?</p>";
+
+//----- gui/templates/mainPage_left.tpl -----
+$TLS_href_assign_user_roles = "Määritä roolit";
+$TLS_href_browse_tc = "Selaa testitapauksia";
+$TLS_href_cfields_management = "Määritä custom-kenttä";
+$TLS_href_cfields_tproject_assign = "Liittä custom-kenttä";
+$TLS_href_edit_tc = "Muokkaa testitapauksia";
+$TLS_href_keywords_assign = "Määritä avainsanoja";
+$TLS_href_keywords_manage = "Avainsanojen hallinta";
+$TLS_href_keywords_view = "Näytä avainsanat";
+$TLS_href_print_tc = "Luo testimääritely dokumentti";
+$TLS_href_req_assign = "Linkitä vaatimukset";
+$TLS_href_req_spec = "Vaatimusmäärittelydokumentti";
+$TLS_href_roles_management = "Roolin hallinta";
+$TLS_href_search_tc = "Etsi testitapauksia";
+$TLS_href_tproject_management = "Testausprojektien hallinta";
+$TLS_href_user_management = "Käyttäjän hallinta";
+$TLS_href_admin_modules = "Järjestelmän konfiguraatio";
+$TLS_title_requirements = "Vaatimukset";
+$TLS_title_test_spec = "Testausmäärittely";
+$TLS_title_product_mgmt = "Testausprojekti";
+$TLS_href_plan_define_priority = "Testaussuunniteman prioriteetti";
+$TLS_href_my_testcase_assignments="Minulle osoitetut testitapaukset";
+
+//-----   gui/templates/mainPage_right.tpl -----
+$TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
+$TLS_href_add_remove_test_cases = "Lisää / poista testitapauksia";
+$TLS_href_build_new = "Ohjelmiston julkistukset";
+$TLS_href_execute_test = "Suorita testejä";
+$TLS_href_metrics_dashboard = "Metriikkanäyttö";
+$TLS_href_newest_tcversions = "Näytä testitapausten uusimmat versiot";
+$TLS_href_plan_assign_urgency = "Aseta kiireelliset testit";
+$TLS_href_plan_management = "Testaussuunnitelman hallinta";
+$TLS_href_plan_mstones = "Etappien yhteenvedot";
+$TLS_href_rep_and_metrics = "Testausraportit ja metriikka";
+$TLS_href_tc_exec_assignment = "Jaa testitapaukset testaajille";
+$TLS_href_update_tplan = "Päivitä uusimmat testiversiot";
+
+$TLS_href_upd_mod_tc = "Päivitä muokatut testitapaukset";
+$TLS_msg_no_rights_for_tp = "<br/> Sinulla ei ole käyttöoikeuksia yhteenkään AKTIIVISEEN testaussuunnitelmaan";
+$TLS_testplan_role = "Testaussuunnitelman rooli ";
+$TLS_title_test_case_suite = "Testaussuunnitelman sisältö";
+$TLS_title_test_execution = "Testin suoritus";
+$TLS_title_test_plan_mgmt = "Testaussuunnitelma";
+
+//----- lib/execute/bug_add.php -----
+$TLS_bug_added = "Bugi lisätty";
+$TLS_error_bug_does_not_exist_on_bts = "Bugin ID ei ole BTS:ssä!";
+$TLS_error_wrong_BugID_format = "Väärä bugin ID muotoilu!";
+
+//-----   lib/execute/bug_delete.php -----
+$TLS_bugdeleting_was_ok = "Bugin poistaminen onnistui!";
+
+//----- lib/functions/doAuthorize.php -----
+$TLS_error_ldap_auth_failed = "LDAP authentication failed";
+$TLS_error_ldap_bind_failed = "LDAP binding failed (invalid credentials)";
+$TLS_error_ldap_server_connect_failed = "Connecting to the LDAP server failed ".
+"(check hostname, port and LDAP version).";
+$TLS_error_ldap_update_failed = "Updating LDAP failed";
+$TLS_error_ldap_user_not_found = "LDAP user not found";
+
+//-----   lib/functions/product.inc.php -----
+$TLS_info_product_delete_fails = "Tapahtui virhe poistettaessa testausprojektia";
+
+//----- lib/results/resultsImport.php -----
+$TLS_imp_result_ko = '- tuloksia ei ole tuotu!';
+$TLS_invalid_execution_timestamp = "Testitapaus %s - virheellinen suoritus aikaleima %s " . $TLS_imp_result_ko;
+$TLS_invalid_tester = "Testitapaus %s - testaajaa käyttäjätunnuksella// //%s ei löydy " . $TLS_imp_result_ko;
+$TLS_import_results_tc_not_found = "Testitapaus %s ei löydy testaussuunnitelmasta" . $TLS_imp_result_ko;
+$TLS_import_results_invalid_result = "Testitapauksella %s on virheellinen tulos %s " . $TLS_imp_result_ko;
+$TLS_import_results_ok = "Testitapauksen %s - versio %s - Testaaja: %s - Tulost: %s - Suoritus aikaleima: %s - Tuotu!";
+$TLS_import_results_tc_exists = "Testitapaus %s - versio = %s - on testaussuunnitelmassa.";
+$TLS_tcase_external_id_do_not_exists = "Testitapaus, jolla on ulkoinen id=%s, ei löydy " . $TLS_imp_result_ko;
+$TLS_tcase_internal_id_do_not_exists = "Testitapaus, jolla on sisäinen id=%s, ei löydy " . $TLS_imp_result_ko;
+$TLS_tcase_id_is_not_number = "Testitapauksen sisäinen id=%s ei ole numero " . $TLS_imp_result_ko;
+
+//-----   lib/functions/results.inc.php -----
+$TLS_trep_failing = "Failing";
+$TLS_trep_passing = "Passing";
+$TLS_trep_status_for_build = "Status for build";
+$TLS_trep_status_for_ts = "Status for Test Suite";
+$TLS_unassigned = "unassigned";
+
+//----- lib/functions/resultsMoreBuilds.inc.php -----
+$TLS_bugs = "Related Bugs";
+$TLS_builds_selected = "Buildit";
+$TLS_case_not_run_warning = "Testitapausta ei ole ajettu";
+$TLS_category_header = "Testitapausjakso =";
+$TLS_daterun = "Suorituspäivämäärä";
+$TLS_last_status = "Last Status";
+$TLS_number_blocked = "# " . $TLS_test_status_blocked;
+$TLS_number_cases = "# Cases";
+$TLS_number_executions = "# Test Cases Run";
+$TLS_number_failed = "# " . $TLS_test_status_failed;
+$TLS_number_not_run = "# " . $TLS_test_status_not_run;
+$TLS_number_passed = "# " . $TLS_test_status_passed;
+$TLS_owner = "Testaaja";
+$TLS_owner_header = $TLS_owner. " =";
+$TLS_runby = "Ajettu";
+$TLS_test_plan_name = $TLS_testplan;
+
+//-----   lib/functions/roles.inc.php -----
+$TLS_desc_cfield_management = "Mukautetun kentän hallinta";
+$TLS_desc_cfield_view = "Näytä mukautettu kenttä (vain lukuoikeus)";
+$TLS_desc_mgt_modify_key = "Avainsanan hallinta";
+$TLS_desc_mgt_modify_product = "Testausprojektin hallinta";
+$TLS_desc_mgt_modify_req = "Vaatimusten hallinta";
+$TLS_desc_mgt_modify_tc = "Testitapaus luo/muokkaa";
+$TLS_desc_mgt_modify_users = "Käyttäjän hallinta";
+$TLS_desc_mgt_view_key = "Näytä avainsana (vain lukuoikeus)";
+$TLS_desc_mgt_view_req = "Näytä vaatimuksen (vain lukuoikeus)";
+$TLS_desc_mgt_view_tc = "Näytä testitapauksen (vain lukuoikeus)";
+$TLS_desc_mgt_view_events = "Tapahtuman katselu (vain lukuoikeus)";
+$TLS_desc_events_mgt = "Tapahtuman hallinta";
+$TLS_desc_role_management = "Roolin hallinta";
+$TLS_desc_testplan_create_build = "Buildi luo/muokkaa";
+$TLS_desc_testplan_execute = "Testaussuunnitelman suorittaminen";
+$TLS_desc_testplan_metrics = "Testaussuunnitelman metriikat";
+$TLS_desc_testplan_planning = "Testaussuunnitelman suunnittelu";
+$TLS_desc_user_role_assignment = "Roolien osoittaminen";
+$TLS_error_duplicate_rolename = "Tällä nimellä on jo rooli!";
+$TLS_error_role_no_rights = "Et voi tallentaa rooleja ilman tiettyjä oikeuksia!";
+$TLS_error_role_no_rolename = "Roolille täytyy antaa nimi!";
+$TLS_inherited_role = "<peritty>";
+$TLS_mgt_testplan_create = "Testaussuunnitelma luo/muokkaa";
+
+//----- lib/functions/testproject.class.php -----
+$TLS_error_creating_req_spec = "Tapahtui virhe vaatimusmäärittelydokumenttia luotaessa";
+$TLS_info_product_name_empty = "Tyhjä nimi ei ole mahdollinen.";
+$TLS_keyword_already_exists = "Tämä avainsana on jo olemassa";
+$TLS_string_contains_bad_chars = "Nimi sisältää vääriä merkkejä, joita ei voida käyttää";
+$TLS_warning_duplicate_req_title = "Tällä otsikolla on jo vaatimus! (%s)";
+
+//-----   lib/functions/requirements.inc.php -----
+$TLS_conflict = "Ristiriita";
+$TLS_error_deleting_req = "Tapahtui virhe vaatimuksia poistettaessa";
+$TLS_error_inserting_req = "Tapahtui virhe lisättäessä vaatimuksia";
+$TLS_error_updating_req = "Tapahtui virhe päivitettäessä vaatimuksia";
+$TLS_error_updating_reqspec = "Tapahtui virhe päivitettäessä vaatimusmäärittelydokumenttia";
+$TLS_file_is_not_xml = "Tiedosto ei ole oikein muotoiltu XML-tiedosto. Ei voida käyttää";
+$TLS_req_import_format_description1 = " - CSV tyyppi vaatii kolme kentää jokaiselle riville:" .
+" 'req_doc_id','title','description'";
+$TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
+$TLS_req_import_format_docbook = " - DocBook XML format";
+$TLS_req_import_result_overwritten = "Kirjoitetaan päälle!";
+$TLS_req_import_result_skipped = "Ohitetaan";
+$TLS_warning_duplicate_reqdoc_id = "Duplikoi dokumentin id";
+
+//----- lib/functions/testcase.class.php -----
+$TLS_create_new_version="Luotu uusi versio %s";
+$TLS_testcase_name_already_exists = "Tällä otsikolla esiintyy jo testitapaus (%s)";
+$TLS_created_with_title = "Luotu otsikko (%s)";
+$TLS_the_format_tc_xml_import = "";
+
+//-----   lib/functions/testsuite.class.php -----
+$TLS_component_name_already_exists = "Tällä nimellä esiintyy jo testitapausjakso: %s";
+$TLS_testsuite = $TLS_test_suite;
+
+//----- lib/functions/exec.inc.php -----
+$TLS_test_results_submitted = "Testitulokset jätetty.";
+
+//-----   lib/functions/info.inc.php -----
+$TLS_email_sent_message = "Sähköpostiviestisi on lähetetty";
+
+//----- lib/functions/print.inc.php -----
+$TLS_printed_by_TestLink_on = "Printed by TestLink on";
+$TLS_title_toc = "Sisällysluettelo";
+$TLS_passfail = "Testitulokset";
+$TLS_testnotes = "Testaamisen huomautukset";
+$TLS_last_exec_result = "Viimeiset tulokset";
+$TLS_test_project_notes = "Testausprojektin kuvaus";
+
+//-----   lib/functions/users.inc.php -----
+$TLS_duplicate_login = "Käyttäjä tällä käyttäjätunnuksella on jo olemassa!";
+$TLS_login_must_not_be_empty = "Käyttäjätunnus ei voi olla tyhjänä!";
+$TLS_wrong_old_password = "Väärä vanha salasana!";
+
+//----- lib/functions/email_api.php -----
+$TLS_stmp_host_unconfigured = "SMTP palvelin ei ole konfiguroitu oikein!";
+
+// ----- lib/functions/common.php -----
+$TLS_test_automation_exec_ok = " Suoritus onnistui!";
+$TLS_test_automation_server_conn_failure = " Ei voitu yhdistää HTTP-palvelimeen.";
+$TLS_XMLRPC_error_number = "XML-RPC Vikanumero:- ";
+
+//----- lib/functions/configCheck.php -----
+$TLS_attachments_dir = "hakemisto liitteille:";
+$TLS_bts_connection_problems = "Yhteys vianhallintajärjestelmään ei onnistunut:<br/>
+Tarkista asetuksesi.<br/>
+Varo, tämä ongelma huonontaa TestLinkin suorituskykyä.";
+$TLS_but_directory_is_not_writable = "Hakemisto ei ole kirjoitettavissa!";
+$TLS_check_email_config="Tarkista seuraavat parametrit sähköpostin ominaisuuksista:";
+$TLS_directory_is_writable = "Hakemisto on kirjoitettavissa";
+$TLS_does_not_exist = "ei ole olemassa";
+$TLS_exists = "on olemassa";
+$TLS_ldap_extension_not_loaded = "Login method is configured as LDAP<br/>" .
+"but PHP LDAP extension is not loaded => " .
+"Et voi kirjautua sisään.<br/>".
+"Olkaa hyvä ja ottakaa yhteys TestLinkin ylläpitäjään";
+$TLS_sec_note_admin_default_pwd = "Sinun tulee muuttaa 'admin'-tilin oletuksena oleva salasana!";
+$TLS_sec_note_remove_install_dir = "Asennushakemisto on poistettava!";
+$TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
+$TLS_error_gd_missing = "PHP extension for GD library is not available. Charts will not work. Configure PHP.";
+$TLS_error_gd_png_support_disabled = "PHP extension for GD library is available without PNG format support.
+Charts will not work. Configure PHP.";
+
+//-----   lib/functions/cfield_mgr.class.php -----
+$TLS_text_counter_feedback = "Voit syöttää enintään %d merkkiä. Jäljellä ";
+
+//----- lib/general/frmWorkArea.php -----
+$TLS_create_a_build = "Luo uusi buildi";
+$TLS_no_build_warning_part1 = "Tähän testaussuunnitelmaan ei ole luotu buildeja ";
+$TLS_no_build_warning_part2 = "Luo se ensin tai kysy ylläpitäjältä.";
+
+//-----   lib/general/myTPInfo.php -----
+$TLS_no_testplans_available = "Valitettavasti testaussuunnitelmia ei ole saatavilla";
+
+//----- lib/general/tlsmarty.inc.php -----
+$TLS_show_hide_api_info = "Show / Hide API Info";
+
+//-----   lib/keywords/keywords.inc.php -----
+$TLS_empty_keyword_no = "Et voi jättää avainsanaa tyhjäksi!";
+$TLS_keywords_char_not_allowed = "Pilkut ja lainausmerkit eivät ole sallittuja avainsanoissa!";
+$TLS_tc_kw_update_fails1 = "Testitapaus";
+$TLS_tc_kw_update_fails2 = "Epäonnistui";
+$TLS_the_format_keyword_csv_import = "keyword;notes";
+
+//----- lib/keywords/keywordsView.php -----
+$TLS_kw_delete_fails = "Avainsanalla poistaminen epäonnistui!";
+$TLS_kw_update_fails = "Päivittäminen epäonnistui";
+
+//-----   lib/keywords/keywordsAssign.php -----
+$TLS_assigned_kword = "Assigned Keywords";
+$TLS_available_kword = "Available Keywords";
+
+//----- lib/plan/buildNew.php -----
+$TLS_cannot_add_build = "Buildia ei voida lisätä!";
+$TLS_cannot_delete_build = "Buildia ei voida poistaa!";
+$TLS_cannot_update_build = "Tapahtui virhe buildia päivitettäessä!";
+$TLS_warning_duplicate_build = "Tällä tunnisteella on jo buildi";
+
+//-----   lib/plan/plan.inc.php -----
+$TLS_warning_enter_valid_date = "Sinun on annettava kelvollinen päivämäärä!";
+$TLS_warning_invalid_percentage_value = "Prosenttiarvot täytyy olla välillä 0...100%";
+$TLS_warning_milestone_date = "Välietapit täytyy luontipäivämäärä täytyy olla tänään tai myöhemmin!";
+$TLS_warning_percentage_value_higher_than_100 = "Kaikkien prosenttiosuuksien yhteenlaskettu summa ei voi olla yli 100";
+
+//----- lib/plan/planMilestone*.php -----
+$TLS_milestone_delete_fails = "Välietappia ei voitu poistaa!";
+$TLS_warning_milestone_add_failed = "Välietappia ei voida lisätä!";
+$TLS_warning_milestone_update_failed = "Välietappia ei voitu päivittää!";
+$TLS_milestone_name_already_exists = "Välietappi tällä nimellä on jo olemassa (%s)";
+
+//-----   lib/plan/planTestersEdit.php -----
+$TLS_title_assign_tp = "Assign Test Plans to the user ";
+$TLS_title_assign_users = "Assign Users to the Test Plan ";
+
+//----- lib/plan/planTestersNavigator.php -----
+$TLS_nav_test_plan = "Navigator - Test Plans";
+$TLS_nav_users = "Navigator - Users";
+
+//-----  lib/plan/planUpdateTC.php -----
+$TLS_deleted = "poistetaan";
+$TLS_different_versions = "Eri versiot";
+$TLS_plan_update_no_tc_updated = "Testitapauksia ei päivitetty";
+$TLS_updated = "päivitetty";
+$TLS_all_versions_where_latest = "Ei tehdä mitään - Kaikki testitapausversiot ovat " .
+"uusimmat saatavilla olevat";
+$TLS_num_of_updated = "%d Test Cases has been updated";
+
+//----- lib/plan/testSetNavigator.php -----
+$TLS_title_test_plan_navigator = "Test plan navigator";
+
+//-----   lib/plan/testSetRemove.php -----
+$TLS_tcase_removed_from_tplan = "Test Case removed from Test Plan";
+$TLS_multiple_tcase_removed_from_tplan = "Test Cases removed from Test Plan";
+
+//----- lib/plan/planEdit.php -----
+$TLS_testplan_created_ok = "Test Plan was created";
+$TLS_update_tp_failed1 = "Update of Test Plan '";
+$TLS_update_tp_failed2 = "' failed";
+$TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name. " .
+"Please choose another name!";
+
+//-----   lib/results/printDocOptions.php -----
+$TLS_opt_show_toc = "Table of Contents";
+$TLS_opt_show_suite_txt = "Test Suite description";
+$TLS_opt_show_tplan_txt = "Test Plan description";
+$TLS_opt_show_tc_body = "Test Case Scenario";
+$TLS_opt_show_tc_summary = "Test Case Summary";
+$TLS_opt_show_tc_author = "Test Case Author";
+$TLS_opt_show_tc_reqs = "Test Case related Requirements";
+$TLS_opt_show_tc_keys = "Test Case keywords";
+$TLS_opt_show_cfields = "Test Case Custom Fields";
+$TLS_opt_show_passfail = "Test results";
+$TLS_opt_show_metrics = "Metrics";
+$TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
+$TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
+
+//----- lib/project/projectedit.php -----
+$TLS_error_product_name_duplicate = "There's already Test Project named %s.";
+$TLS_error_tcase_prefix_exists = "Test Case ID prefix %s already exists";
+$TLS_info_no_more_prods = "No more Test Projects.";
+$TLS_info_product_activated = "Test Project was activated.";
+$TLS_info_product_inactivated = "Test Project was deactivated.";
+$TLS_info_product_not_deleted_check_log = "Test Project was not deleted. Please check TestLink log.";
+$TLS_info_product_was_deleted = "Test Project was successfully deleted.";
+$TLS_refer_to_log = " Please refer to TestLink log for more information.";
+$TLS_test_project_activated = "Test Project %s was successfully activated";
+$TLS_test_project_created = "Test Project %s was successfully created";
+$TLS_test_project_deleted = "Test Project %s was successfully deleted";
+$TLS_test_project_inactivated = "Test Project %s was successfully inactivated";
+$TLS_test_project_updated = "Test Project %s was successfully updated";
+$TLS_test_project_update_failed = "Update of Test Project %s failed!";
+
+//-----   lib/results/charts.php -----
+$TLS_graphical_reports = "Graphical Reports";
+$TLS_overall_metrics = "Overall Metrics";
+$TLS_results_by_keyword = "Results by Keyword";
+$TLS_results_by_tester = "Results by Tester";
+$TLS_results_top_level_suites = "Results for Top Level Suites";
+$TLS_chart_report = "Report";
+$TLS_chart_assigned_testers = "Owners";
+$TLS_chart_keywords = "Keywords";
+$TLS_chart_testsuites = "Test Suites";
+
+//----- lib/req/reqImport.php -----
+$TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
+$TLS_file_is_not_text = "File is not a text file. Cannot be used";
+$TLS_please_choose_req_file = "Please choose the file to upload";
+$TLS_req_import_finished = "The import is finished!";
+
+//-----   lib/req/reqSpecView.php -----
+$TLS_cant_create_tc_from_req_nothing_sel = "Please select a requirement!";
+$TLS_req_created = "Requirement %s was successfully created";
+
+//----- lib/req/reqTcAssign.php -----
+$TLS_req_msg_noselect = "Nothing selected";
+$TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements ";
+$TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
+'<br/>belonging to test suites present on selected branch.';
+$TLS_bulk_assigment_done = '%s assignments has been done';
+$TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
+$TLS_req_title_available = 'Available Requirements';
+$TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
+
+//-----   lib/results/resultsBugs.php -----
+$TLS_title_test_report_all_builds = "Test Report: Results of Test Cases for all Builds";
+
+//----- lib/results/resultsAllBuilds.php -----
+$TLS_title_metrics_x_build = "Overall Build Status";
+
+//-----   lib/results/resultsByStatus.php -----
+$TLS_list_of_blocked = "Blocked Test Cases";
+$TLS_list_of_failed = "Failed Test Cases";
+$TLS_list_of_not_run = "Not Run Test Cases";
+
+//----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
+
+//-----   lib/results/resultsTC.php -----
+
+//----- lib/results/resultsNavigator.php -----
+$TLS_link_charts = "Charts";
+$TLS_link_report_blocked_tcs = "Blocked Test Cases";
+$TLS_link_report_failed = "Failed Test Cases";
+$TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
+$TLS_link_report_metrics_active_build = "Metrics of Active Build";
+$TLS_link_report_metrics_more_builds = "Query Metrics";
+$TLS_link_report_not_run = "Not run Test Cases";
+$TLS_link_report_overall_build = "Overall Build Status";
+$TLS_link_report_reqs_coverage = "Requirements based Report";
+$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
+$TLS_link_report_test = "Test result matrix";
+$TLS_link_report_total_bugs = "Bugs per Test Case";
+$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
+$TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+
+$TLS_no_linked_tc_cf='There are no Test Cases with Custom Field information';
+
+$TLS_format_html = 'HTML';
+$TLS_format_odt = 'OpenOffice Writer';
+$TLS_format_ods = 'OpenOffice Calc';
+$TLS_format_xls = 'MS Excel';
+$TLS_format_msword = 'MS Word';
+$TLS_format_pdf = 'PDF';
+$TLS_format_mail_html = 'Email (HTML)';
+
+//-----   lib/results/resultsSend.php -----
+$TLS_send_to_empty_email_warning = "I'm sorry but email cannot be sent with " .
+"a blank to field. Please enter a valid address.";
+$TLS_warning_create_build_first = "You must create builds or import data at first.";
+
+//----- lib/results/displayMgr.php -----
+$TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, ".
+"please edit email credentials in 'Personal' tab";
+
+//-----   lib/testcases/archive.inc.php -----
+
+//----- lib/testcases/listTestCases.php -----//-----   lib/testcases/tcImport.php -----
+$TLS_action_on_duplicated_name = "Action for duplicated names";
+$TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
+$TLS_please_choose_file_to_import = "Please choose file to import";
+$TLS_title_tc_import_to = "Import Test Cases";
+$TLS_title_tsuite_import_to = "Import Test Suite";
+$TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
+$TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
+$TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' ".
+"can not be imported because there is no Custom Field with this name " .
+"and Available for %s on this Test Project";
+$TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
+"because is not direct child of Req. Spec: %s";
+$TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not be " .
+"linked to testcase";
+$TLS_update_last_testcase_version='Update data on Latest version';
+$TLS_create_new_testcase_version='Create a new version';
+$TLS_generate_new_testcase='Create a new test case with different title';
+$TLS_no_cf_defined_can_not_import="Custom Field values are present on import file ".
+"but can not be imported because there are no Custom Fields with Test Spec. Design Scope on this Test Project";
+$TLS_no_reqspec_defined_can_not_import="Requirements are present on import file ".
+"but can not be imported because there are no Requirement Specification defined for this Test Project";
+
+//----- lib/testcases/tcexport.php -----
+$TLS_no_testcases_to_export = "There are no Test Cases to export";
+$TLS_no_testsuites_to_export = "There are no Test Suites to export";
+$TLS_title_tc_export = "Export Test Case";
+$TLS_title_tc_export_all = "Export all Test Cases";
+$TLS_title_tsuite_export = "Export Test Suite";
+$TLS_title_tsuite_export_all = "Export all Test Suites";
+
+//-----   lib/testcases/containerEdit.php -----
+$TLS_delete = "Delete";
+$TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
+$TLS_warning_empty_com_name = "Please give a name to Test Suite";
+
+//----- lib/testcases/tcEdit.php -----
+$TLS_current = "current";
+$TLS_delete_linked = "Links to test plans will be removed";
+$TLS_delete_linked_and_exec = "Links to test plans, and execution related information will be removed";
+$TLS_error_tc_add = "There was an error while adding the Test Case";
+$TLS_title_del_tc = "Delete Test Case ";
+
+//-----   lib/usermanagement/rolesview.php -----
+$TLS_error_role_deletion = "The role couldn't be deleted!";
+
+//----- lib/usermanagement/usersassign.php -----
+$TLS_no_test_projects = "There are no Test Projects defined";
+$TLS_no_test_plans = "There are no Test Plans defined for this Test Project";
+$TLS_test_project_user_roles_updated = "User Roles updated";
+$TLS_test_plan_user_roles_updated = "User Roles updated";
+
+//-----   lib/usermanagement/usersedit.php -----
+$TLS_user_created = "User %s was successfully created";
+$TLS_user_deleted = "User %s was successfully deleted";
+$TLS_user_not_added = "The user wasn't added!";
+$TLS_error_user_not_updated = "The user couldn't be updated!";
+$TLS_error_user_not_deleted = "The user couldn't be deleted!";
+$TLS_error_user_login_length_error = "The login was either too short or too long!";
+
+//----- lib/usermanagement/rolesedit.php -----
+$TLS_error_role_creation = "The role couldn't be created!";
+$TLS_error_role_update = "The role couldn't be updated!";
+
+//-----   lib/cfields/cfields_edit.php -----
+$TLS_cf_name_exists = "Custom field name already exists. Please choose a new one";
+$TLS_error_creating_cf = "The custom field couldn't be created!";
+$TLS_do_update = "updated";
+$TLS_do_delete = "deleted";
+$TLS_do_add = "added";
+$TLS_warning_delete_cf = "You are going to delete: %s <br/><br/> Are you sure?";
+
+//----- lib/project/fix_tplans.php -----
+$TLS_list_inactive_tplans1 = "Listing ";
+$TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
+$TLS_assoc_test_project = "Associated Test Project";
+$TLS_btn_fix_tplans = "Update";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br/>Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+
+//-----   lib/project/project_req_spec_mgmt.tpl -----
+$TLS_btn_new_req_spec = "New Requirement Specification";
+$TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
+
+//----- reqSpecEdit.php -----
+$TLS_delete_req_spec = "Delete Requirement Specification";
+$TLS_req_spec_created = "Requirement Specification: %s was successfully created";
+$TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
+$TLS_title_req_spec = "Requirement Specifications";
+$TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
+$TLS_create_req_spec = "Create Requirements Specification";
+$TLS_create_child_req_spec = "Create Child Req Specification";
+$TLS_edit_req_spec = "Edit Requirements Specification";
+
+//-----   reqEdit.php -----
+$TLS_create_req = "Create Requirement";
+$TLS_delete_req = "Delete Requirement";
+$TLS_edit_req = "Edit Requirement";
+$TLS_req_created = "Requirement: %s was successfully created";
+$TLS_req_deleted = "Requirement: %s was successfully deleted";
+
+//----- reqSpecReorder.tpl -----
+$TLS_title_change_req_spec_order = "Change Requirement Specifications order";
+
+//-----   requirement_mgr -----
+$TLS_created_on_testsuite = "Test Cases has been created on Test Suite %s";
+$TLS_testsuite_name_created = "Test Suite %s has been created";
+
+//----- keywordsEdit.php -----
+$TLS_keyword_management = "Keyword management";
+$TLS_create_keyword = "Create keyword";
+$TLS_edit_keyword = "Edit keyword";
+$TLS_warning_empty_keyword = "Keyword must not be empty!";
+
+//-----   api/TestlinkXMLRPCServerErrors.php -----
+$TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
+$TLS_API_INSUFFICIENT_RIGHTS = "User corresponding to Developer Key has insufficient rights to perform this action";
+$TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
+$TLS_API_NO_TCASEID = "No Test Case ID provided. A valid Test Case ID must be provided!";
+$TLS_API_NO_TCASEEXTERNALID = "No Test Case External ID provided. A valid Test Case External ID must be provided!";
+$TLS_API_NO_TPLANID = "No test plan id provided. A valid test plan id must be provided!";
+$TLS_API_NO_TEST_MODE = "A test Mode must be provided!";
+$TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
+$TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
+$TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
+$TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
+$TLS_API_NO_TPID = "No testplan ID (tpid) provided. A valid tpid must be provided!";
+$TLS_API_NO_TCID = "No testcase ID (tcid) provided. A valid tcid must be provided!";
+$TLS_API_INVALID_TCASEID= "The Test Case ID (tcid) provided does not exist!";
+$TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
+$TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
+$TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
+$TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
+
+$TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
+$TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
+$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
+$TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
+$TLS_API_BUILDNAME_ALREADY_EXISTS = "Returning ID of existing build by name (case insensitive): ";
+$TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
+$TLS_API_TCASEID_NOT_IN_TPLANID = "Test Case (name=%s/id=%s) is not associated with Test Plan (name=%s/id=%s).";
+$TLS_API_GENERAL_SUCCESS = "Success!";
+$TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided does not exist!";
+$TLS_API_INVALID_TESTSUITEID = "ID %s do not belongs to a Test Suite present on system!";
+$TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
+$TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
+"No Custom Field exists with the name provided!";
+
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
+
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+
+$TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";
+$TLS_API_TCASE_VERSION_NUMBER_KO="Version (%s) does not exist for Test Case (%s:%s).";
+
+$TLS_API_TPROJECT_IS_EMPTY="Test Project (%s) is empty.";
+$TLS_API_TPROJECT_PREFIX_ALREADY_EXISTS="Prefix (%s) is already in used on Test Project (%s)";
+
+$TLS_API_REQSPEC_TPROJECT_KO="Requirements Spec (title=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
+
+$TLS_API_REQSPEC_KO="Requirements Spec (id=%s) does not exist on system";
+$TLS_API_REQ_KO="Requirement (id=%s) does not exist on system";
+$TLS_API_REQSPEC_IS_EMPTY="Requirements Spec (title=%s / id=%s) has NO requirements";
+$TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to Req. Spec. (title=%s / id=%s)";
+$TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
+$TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
+
+$TLS_API_BAD_BUILD_FOR_TPLAN = "Build (id:%s), do not exist for Test Plan (name:%s/id:%s).";
+
+$TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE="Custom Field (name:%s), can not be used on %s, but on %s";
+
+$TLS_API_NO_TESTSUITENAME="No testsuitename provided. A test suite name must be provided!";
+$TLS_API_TESTSUITENAME_NOT_STRING = "testsuitename must be a string!";
+$TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) with id:%s do not belongs to Test Project(name=%s / id=%s)";
+
+//----- audit log entries -----
+$TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
+$TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
+$TLS_audit_role_saved = "Role '{%1}' was saved";
+$TLS_audit_role_created = "Role '{%1}' was created";
+$TLS_audit_role_deleted = "Role '{%1}' was deleted";
+
+$TLS_audit_cfield_created = "Custom field '{%1}' was created";
+$TLS_audit_cfield_saved = "Custom field '{%1}' was saved";
+$TLS_audit_cfield_deleted = "Custom field '{%1}' was deleted";
+$TLS_audit_cfield_assigned = "Custom field '{%1}' was assigned to Test Project '{%2}'";
+$TLS_audit_cfield_unassigned = "Custom field '{%1}' was unassigned from Test Project '{%2}'";
+$TLS_audit_cfield_display_order_changed = "Display order of custom fields from Test Project '{%1}' was saved";
+$TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project '{%2}'";
+$TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
+
+$TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
+$TLS_audit_user_saved = "User '{%1}' was saved";
+$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
+$TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
+$TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
+$TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
+$TLS_audit_user_created = "User '{%1}' was created";
+$TLS_audit_user_deleted = "User '{%1}' was deleted";
+$TLS_audit_user_logout = "Logout of '{%1}'";
+$TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
+$TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
+$TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
+$TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='{%2}' new='{%3}'";
+
+$TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
+
+$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
+$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";
+$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' was deleted";
+
+$TLS_audit_keyword_created = "Keyword '{%1}' was created";
+$TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
+$TLS_audit_keyword_deleted = "Keyword '{%1}' was deleted";
+$TLS_audit_keyword_assigned_tc = "Keyword '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_keyword_assignment_removed_tc = "Keyword '{%1}' was unassigned from Test Case '{%2}'";
+$TLS_audit_all_keyword_assignments_removed_tc = "All keywords were unassigned from the Test Case '{%1}'";
+
+$TLS_audit_executionbug_added = "Bug '{%1}' was added during execution";
+$TLS_audit_executionbug_deleted = "Bug '{%1}' was deleted during execution";
+
+$TLS_audit_attachment_deleted = "Attachment '{%1}' was deleted";
+$TLS_audit_attachment_created = "Attachment '{%1}' - file '{%2}' was created";
+
+$TLS_audit_req_spec_created = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was created";
+$TLS_audit_req_spec_saved = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was saved";
+$TLS_audit_req_spec_deleted = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' was deleted";
+$TLS_audit_req_spec_renamed = $TLS_testproject . " '{%1}' - Requirement specification '{%2}' renamed to '{%3}'";
+
+$TLS_audit_requirement_created = "Requirement '{%1}' was created";
+$TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
+$TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
+$TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
+$TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
+
+$TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
+$TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";
+$TLS_audit_build_deleted = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was deleted";
+
+$TLS_audit_testplan_deleted = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was deleted";
+$TLS_audit_testplan_saved = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was saved";
+$TLS_audit_testplan_created = $TLS_testproject . " '{%1}' - Test Plan '{%2}' was created";
+$TLS_audit_milestone_deleted = "Test Plan '{%1}' - Milestone '{%2}' was deleted";
+$TLS_audit_milestone_created = "Test Plan '{%1}' - Milestone '{%2}' was created";
+$TLS_audit_milestone_saved = "Test Plan '{%1}' - Milestone '{%2}' was saved";
+
+$TLS_audit_tc_added_to_testplan = "Test Case '{%1}' version {%2} was added to Test Plan {%3}";
+$TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed from Test Plan {%3}";
+
+$TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
+
+$TLS_audit_events_deleted = "User '{%1}' deleted all events";
+
+//-----   eventviewer.php -----
+$TLS_th_loglevel = "Log level";
+$TLS_th_timestamp = "Timestamp";
+$TLS_th_activity = "Activity";
+$TLS_label_startdate = "Start date";
+$TLS_label_enddate = "End date";
+$TLS_log_level_AUDIT = "Audit";
+$TLS_log_level_WARNING = "Warning";
+$TLS_log_level_INFO = "Info";
+$TLS_log_level_ERROR = "Error";
+$TLS_log_level_DEBUG = "Debug";
+$TLS_event_viewer = "Event viewer";
+$TLS_th_session_info = "Session information";
+$TLS_th_sessionID = "Session ID";
+$TLS_th_source = "Source";
+$TLS_click_on_event_info = "Click on any event to see it's details.";
+$TLS_th_activity_code = "Activity";
+$TLS_th_object_id = "Object ID";
+$TLS_th_object_type = "Object Type";
+$TLS_message_please_wait = "Please wait ...";
+$TLS_title_eventinfo = "Event information";
+$TLS_title_eventdetails = "Event details";
+$TLS_th_user = "User";
+$TLS_show_event_history = "Show the event history";
+$TLS_btn_clear_events = "Clear All Events";
+$TLS_th_event_description = "Kuvaus";
+
+//----- int_mantis.php -----//
+// Used to display at User interface label as title attribute
+$TLS_issue_status_new = "New issue";
+$TLS_issue_status_feedback = "Feedback";
+$TLS_issue_status_acknowledged = "Acknowledged issue ";
+$TLS_issue_status_confirmed = "Confirmed issue";
+$TLS_issue_status_assigned = "Assigned issue";
+$TLS_issue_status_resolved = "Resolved issue";
+$TLS_issue_status_closed = "Closed issue";
+$TLS_access_to_bts="Access issue tracking system";
+
+//----- uncoveredTestCases.php -----
+$TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
+$TLS_no_uncovered_testcases = "No uncovered Test Cases";
+$TLS_testproject_has_no_reqspec = "There are no Requirement Spec. defined";
+$TLS_testproject_has_no_requirements = "There are no Requirements defined";
+
+//-----   testCasesWithoutTester -----
+$TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
+$TLS_all_testcases_have_tester = "All Test Cases have Tester Assigned";
+
+//----- timeCharts -----
+$TLS_interval_end_date = "Last Interval Date";
+$TLS_interval_header = "Interval Type";
+$TLS_interval_number = "Number of Intervals";
+$TLS_link_time_charts = "Time Charts";
+$TLS_time_charts_metrics = "Time Charts Metrics";
+$TLS_time_charts_title = "Time Charts";
+
+//-----   END ------------------------------------------------------------------
+?>

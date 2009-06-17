@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.9 2009/06/17 22:04:35 havlat Exp $
+$Id: planUrgency.tpl,v 1.10 2009/06/17 22:10:17 havlat Exp $
 
 Smarty template - manage test case urgency
 
@@ -15,7 +15,7 @@ Revisions:
 {assign var="ownURL" value="lib/plan/planUrgency.php"}
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
-             label_set_urgency_ts, label_set_urgency_tc, urgency_description,testsuite_is_empty'}
+             label_set_urgency_ts, btn_set_urgency_tc, urgency_description,testsuite_is_empty'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -28,7 +28,7 @@ Revisions:
 {if $gui->listTestCases != ''}
 	<div class="groupBtn">
     <form method="post" action="{$ownURL}" id="set_urgency">
-	<span>{$labels.label_set_urgency}
+	<span>{$labels.label_set_urgency_ts}
     	<input type="submit" name="high_urgency" value="{$labels.urgency_high}" />
     	<input type="submit" name="medium_urgency" value="{$labels.urgency_medium}" />
     	<input type="submit" name="low_urgency" value="{$labels.urgency_low}" />
@@ -83,7 +83,7 @@ Revisions:
 	{/foreach}
 	</table>
 	<div class="groupBtn">
-		<input type="submit" value="{$labels.label_set_urgency_tc}" />
+		<input type="submit" value="{$labels.btn_set_urgency_tc}" />
 	</div>
 	</form>
 {* ------------------------------------------------------------------------------------------- *}

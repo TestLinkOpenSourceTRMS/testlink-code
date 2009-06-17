@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.454 2009/06/17 22:04:35 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.455 2009/06/17 22:10:17 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1441,8 +1441,8 @@ $TLS_wrong_results_import_format = "Wrong xml Results file (see documentation)";
 // ----- gui/templates/plan/setUrgency.tpl -----
 $TLS_title_plan_urgency = "Test urgency for the Test suite";
 $TLS_th_urgency = "Urgency";
-$TLS_label_set_urgency = "Set all Test suite urgency: ";
-$TLS_label_set_urgency_tc = "Set urgency for individual testcases";
+$TLS_label_set_urgency_ts = "Set all Test suite urgency: ";
+$TLS_btn_set_urgency_tc = "Set urgency for individual testcases";
 $TLS_urgency_description = "Urgency value affects priority of test cases " .
 		"for execution and reporting. Medium test urgency is default value.";
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";

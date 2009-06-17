@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planUrgency.tpl,v 1.8 2009/02/09 21:41:22 havlat Exp $
+$Id: planUrgency.tpl,v 1.9 2009/06/17 22:04:35 havlat Exp $
 
-Purpose: smarty template - manage test case urgency
+Smarty template - manage test case urgency
 
-Revision: 20080901 - franciscom - display testcase external id
-
-          20080721 - franciscom 
+Revisions: 
+	20080901 - franciscom - display testcase external id
+    20080721 - franciscom 
           1. if test suite has no test case, then give message and remove all controls
           2. use labels instead of code to display urgency
           3. remove feedback -> user get feedback seeing his/her changes has been applied
@@ -15,7 +15,7 @@ Revision: 20080901 - franciscom - display testcase external id
 {assign var="ownURL" value="lib/plan/planUrgency.php"}
 {lang_get var="labels" 
           s='title_plan_urgency, th_testcase, th_urgency, urgency_low, urgency_medium, urgency_high,
-             label_set_urgency, urgency_description,testsuite_is_empty'}
+             label_set_urgency_ts, label_set_urgency_tc, urgency_description,testsuite_is_empty'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -39,20 +39,53 @@ Revision: 20080901 - franciscom - display testcase external id
 	</div>
 
 {* ------------------------------------------------------------------------------------------- *}
+	<form method="post" action="{$ownURL}" id="set_urgency_tc">
+	<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+	<input type="hidden" name="id" value="{$gui->node_id}" />
 	<table class="simple" style="width: 600px; text-align: center">
 	<tr>
 		<th style="text-align: left;">{$labels.th_testcase}</th>
-		<th>{$labels.th_urgency}</th>
+		<th colspan="3">{$labels.th_urgency}</th>
 	</tr>
 
 	{foreach item=res from=$gui->listTestCases}
 	<tr>
 			<td style="text-align: left;">{$res.tcprefix|escape}{$res.tc_external_id}&nbsp;:&nbsp;{$res.name|escape}</td>
   			{assign var=urgencyCode value=$res.urgency}
-  			<td>{lang_get s=$gui->urgencyCfg.code_label[$urgencyCode]}</td>
+			<td><input type="radio"
+					   name="urgency[{$res.tcversion_id}]"
+					   value="{$smarty.const.HIGH}" 
+					   {if $urgencyCode == $smarty.const.HIGH}
+						checked="checked"
+					   {/if}
+						/>
+				<span style="vertical-align:middle;">{$labels.urgency_high}</span>
+			</td>
+			<td><input type="radio"
+					   name="urgency[{$res.tcversion_id}]"
+					   value="{$smarty.const.MEDIUM}" 
+					   {if $urgencyCode == $smarty.const.MEDIUM}
+						checked="checked"
+					   {/if}
+						/>
+				<span style="vertical-align:middle;">{$labels.urgency_medium}</span>
+			</td>
+			<td><input type="radio"
+					   name="urgency[{$res.tcversion_id}]"
+					   value="{$smarty.const.LOW}" 
+					   {if $urgencyCode == $smarty.const.LOW}
+						checked="checked"
+					   {/if}
+						/>
+				<span style="vertical-align:middle;">{$labels.urgency_low}</span>
+			</td>
 	</tr>
 	{/foreach}
 	</table>
+	<div class="groupBtn">
+		<input type="submit" value="{$labels.label_set_urgency_tc}" />
+	</div>
+	</form>
 {* ------------------------------------------------------------------------------------------- *}
 	<p>{$labels.urgency_description}</p>
 {else}

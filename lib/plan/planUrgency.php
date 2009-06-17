@@ -3,21 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @filesource $RCSfile: planUrgency.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
- * 
- * @copyright Copyright (c) 2008, TestLink community
- * @author Martin Havlat
- * 
  * Define urgency of a Test Suite. 
  * It requires "prioritization" feature enabled.
  *
- * --------------------------------------------------------------------------------------
- * Revision: 20080925 - franciscom - BUGID 1746
- *           20080721 - franciscom
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: planUrgency.php,v 1.13 2009/06/17 22:04:35 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal Revisions:
+ * 		20080925 - franciscom - BUGID 1746
+ *      20080721 - franciscom
  *           code refactored to follow last development standard.
- * ------------------------------------------------------------------------------------ */
+ **/
  
 require('../../config.inc.php');
 require_once('common.php');
@@ -43,11 +42,20 @@ $gui->tplan_id = $args->tplan_id;
 $gui->tplan_name = $args->tplan_name;
 
 
+// Set urgency for test suite
 if($args->urgency != OFF)
 {
 	$gui->user_feedback['type'] = $tplan_mgr->setSuiteUrgency($args->tplan_id, $args->node_id, $args->urgency);
 	$msg_key = ($gui->user_feedback['type'] == OK) ? "feedback_urgency_ok" : "feedback_urgency_fail";
 	$gui->user_feedback['message'] = lang_get($msg_key);
+}
+
+// Set urgency for individual testcases
+if(isset($args->urgency_tc))
+{
+	foreach ($args->urgency_tc as $id => $urgency) {
+		$tplan_mgr->setTestUrgency($args->tplan_id, $id, $urgency);
+	}
 }
 
 // get the current urgency for child test cases
@@ -79,6 +87,7 @@ function init_args()
     $args->node_type = isset($_REQUEST['level']) ? $_REQUEST['level'] : OFF;
     $args->node_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : ERROR;
 
+	// Sets urgency for suite
     if (isset($_REQUEST['high_urgency']))
     	$args->urgency = HIGH;
     elseif (isset($_REQUEST['medium_urgency']))
@@ -87,6 +96,11 @@ function init_args()
     	$args->urgency = LOW;
     else
     	$args->urgency = OFF;
+
+	// Sets urgency for every single tc
+	if (isset($_REQUEST['urgency'])) {
+		$args->urgency_tc = $_REQUEST['urgency'];
+	}
     	
     return $args;
 }
@@ -95,4 +109,5 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_planning');
 }
+
 ?>

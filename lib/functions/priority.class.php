@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: priority.class.php,v 1.10 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: priority.class.php,v 1.11 2009/06/17 22:04:35 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -93,6 +93,7 @@ class testPlanUrgency extends testPlan
 	 * @return array of array testcase_id, name, urgency, tcprefix, tc_external_id 
 	 * 
 	 * @internal Revisions:
+	 *  20090616 - Eloff - added tcversion id in return data
 	 * 	20081210 - franciscom - added testproject_id argument to avoid
 	 *                              subquery when testproject_id is available
 	 *	20080901 - franciscom - added tcprefix, tc_external_id  in return data
@@ -118,7 +119,7 @@ class testPlanUrgency extends testPlan
 		$tcprefix = $this->db->prepare_string($tcprefix);
 		
 		$sql = " SELECT DISTINCT '{$tcprefix}' AS tcprefix, NHB.name, NHB.node_order," .
-			" NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.urgency".
+			" NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.tcversion_id, testplan_tcversions.urgency".
 			" FROM {$this->tables['nodes_hierarchy']} NHA " .
 			" JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
 			" JOIN {$this->tables['testplan_tcversions']} testplan_tcversions " .
@@ -132,5 +133,6 @@ class testPlanUrgency extends testPlan
 	}
 	
 } // end of class
+
 
 ?>

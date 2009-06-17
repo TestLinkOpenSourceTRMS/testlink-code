@@ -3,20 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @package 	TestLink
- * @author 		Martin Havlat
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.106 2009/06/08 09:53:36 havlat Exp $
- * @see 		config.inc.php
- *
- * SCOPE:
  * Global Constants used throughout TestLink 
  * The script is included via config.inc.php
  * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: const.inc.php,v 1.107 2009/06/17 21:37:36 havlat Exp $
+ * @see 		config.inc.php
+ *
  * @internal 
  * No revisions logged here but each parameter must be described!
  *
- * ----------------------------------------------------------------------------------- */
+ **/
+ 
 
 /* [GLOBAL SETTINGS] */
 
@@ -149,7 +149,7 @@ define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
 
 // --------------------------------------------------------------------------------------
-/** [GUI] */
+/* [GUI] */
 
 /** 
  * @todo havlatm: remove (must be solved via css)
@@ -187,12 +187,26 @@ define('TL_DRAG_DROP_JS_DIR', TL_DRAG_DROP_DIR. 'js/');
 define('TL_DRAG_DROP_FOLDER_CSS', TL_DRAG_DROP_DIR . 'css/drag-drop-folder-tree.css');
 define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css');
 
+/** Mark up inactive objects (test projects, etc) in GUI lists */
+define('TL_INACTIVE_MARKUP', '* ');
+
+/** @var string Delimiter used when created a test suite path, concatenating test suite names */
+$g_testsuite_sep='/';
+
+/**
+ * using niftycorners 
+ * @TODO havlatm: move to smarty templates - configuration should not contain HTML elements 
+ **/
+define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
+define('MENU_ITEM_CLOSE', '</div><br />');
+
 
 
 // --------------------------------------------------------------------------------------
-/** [LOCALIZATION] */
+/* [LOCALIZATION] */
 
-/** String that will used as prefix, to generate an string when a label to be localized
+/** 
+ * String that will used as prefix, to generate an string when a label to be localized
  * is passed to lang_get() to be translated, by the label is not present in the strings file.
  * The resulting string will be:  TL_LOCALIZE_TAG . label
  * @example code specifies the key of string: lang_get('hello') -> shows "LOCALIZE: Hello"
@@ -211,6 +225,7 @@ $g_locales = array(
 	'en_US' => 'English (US)',
 	'es_AR' => 'Spanish (Argentine)',
 	'es_ES' => 'Spanish',
+	'fi_FI' => 'Finnish',
 	'fr_FR' => 'Fran&ccedil;ais',
 	'id_ID' => 'Indonesian',
 	'it_IT' => 'Italian',
@@ -241,6 +256,7 @@ $g_locales_date_format = array(
 	'en_US' => '%m/%d/%Y',
 	'es_AR' => '%d/%m/%Y',
 	'es_ES' => '%d/%m/%Y',
+	'fi_FI' => '%d/%m/%Y',
 	'fr_FR' => '%d/%m/%Y',
 	'id_ID' => '%d/%m/%Y',
 	'it_IT' => '%d/%m/%Y',
@@ -261,6 +277,7 @@ $g_locales_timestamp_format = array(
 	'en_US' => '%m/%d/%Y %H:%M:%S',
 	'es_AR' => '%d/%m/%Y %H:%M:%S',
 	'es_ES' => '%d/%m/%Y %H:%M:%S',
+	'fi_FI' => '%d/%m/%Y %H:%M:%S',
 	'fr_FR' => '%d/%m/%Y %H:%M:%S',
 	'id_ID' => '%d/%m/%Y %H:%M:%S',
 	'it_IT' => '%d/%m/%Y %H:%M:%S',
@@ -281,6 +298,7 @@ $g_locales_html_select_date_field_order = array(
 	'en_US' => 'mdY',
 	'es_AR' => 'dmY',
 	'es_ES' => 'dmY',
+	'fi_FI' => 'dmY',
 	'fr_FR' => 'dmY',
 	'id_ID' => 'dmY',
 	'it_IT' => 'dmY',
@@ -328,7 +346,7 @@ $att_model_m2->show_upload_column = true;
 
 
 // --------------------------------------------------------------------------------------
-/* [Test execution status] */
+/* [Test execution] */
 /** 
  * Note: do not change existing values (you can enhance arrays of course more into custom_config)
  *           If you add new statuses, please use custom_strings.txt to add your localized strings
@@ -418,7 +436,7 @@ $tlCfg->results['charts']['status_colour']=array(
 
 
 // --------------------------------------------------------------------------------------
-/** [Reports] */
+/* [Reports] */
 
 /** Displayed execution statuses to use on reports (ordered). */
 // Note: report generation must be changed to manage new statuses
@@ -444,6 +462,7 @@ $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 // --------------------------------------------------------------------------------------
 /* [Users & Roles] */
+
 define('TL_USER_NOBODY', -1);
 define('TL_NO_USER', TL_USER_NOBODY);
 define('TL_USER_ANYBODY', 0);
@@ -488,6 +507,7 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
 // --------------------------------------------------------------------------------------
 /* [Priority, Urgency, Importance] */
+
 /** @var array descriptionPriority is computed as Importance x Urgency */
 $tlCfg->priority_levels = array( 
 	HIGH => 6, // high priority include 6 and more
@@ -497,10 +517,9 @@ $tlCfg->priority_levels = array(
 
 /** @var integer Default Test case Importance offered in GUI */
 $tlCfg->testcase_importance_default = MEDIUM;
+
 /** @var integer Default Test case Urgency offered in GUI */
 $tlCfg->testcase_urgency_default = MEDIUM;
-
-
 
 /** 
  * @var array Used to get localized string to show to users
@@ -512,31 +531,6 @@ $tlCfg->urgency['code_label'] = array(
 	MEDIUM => 'urgency_medium',
 	LOW => 'urgency_low'
 );
-
-
-// --------------------------------------------------------------------------------------
-/** [MISC] */
-
-/** Mark up inactive objects (test projects, etc) in GUI lists */
-define('TL_INACTIVE_MARKUP', '* ');
-
-/** @var string Delimiter used when created a test suite path, concatenating test suite names */
-$g_testsuite_sep='/';
-
-/**
- * using niftycorners 
- * @TODO havlatm: move to smarty templates - configuration should not contain HTML elements 
- **/
-define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
-define('MENU_ITEM_CLOSE', '</div><br />');
-
-/** 
- * Bug tracking objects (do not change)
- * @TODO unknown meaning 
- * @TODO move to appropriate file - not configuration
- **/
-$g_bugInterfaceOn = false;
-$g_bugInterface = null;
 
 
 // --------------------------------------------------------------------------------------
@@ -627,7 +621,7 @@ $g_field_size->requirement_title = 100;
 
 
 // --------------------------------------------------------------------------------------
-/** [MISC] */
+/* [CUSTOM FIELDS] */
 
 /**
  * Custom field constrains for HTML inputs use values to created to get/show custom field contents
@@ -643,6 +637,7 @@ $tlCfg->gui->custom_fields->sizes = array(
 	'multiselection list' => 5,
 	'text area' => array('cols' => 40, 'rows' => 6)
 );
+
 
 
 // 20080815 - franciscom
@@ -666,7 +661,19 @@ $tlCfg->gui->custom_fields->possible_values_cfg = null;
 // We can not use $g_timestamp_format, because format strings for date() and strftime() 
 // uses same LETTER with different meanings (Bad Luck!)
 $tlCfg->gui->custom_fields->time_format = 'H:i:s';                                                       
+
+
+// --------------------------------------------------------------------------------------
+/* [MISC] */
                                                        
+/** 
+ * Bug tracking objects (do not change)
+ * @TODO unknown meaning 
+ * @TODO move to appropriate file - not configuration
+ **/
+$g_bugInterfaceOn = false;
+$g_bugInterface = null;
+
 
 // ----- END ----------------------------------------------------------------------------
 ?>

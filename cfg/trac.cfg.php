@@ -1,18 +1,24 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * $Id: trac.cfg.php,v 1.3 2008/07/04 02:42:30 tosikawa Exp $ 
- * 
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  * 
  * [Trac Settings]
  * The XmlRpcPlugin plugin should be installed in your Trac.
- * @link http://trac-hacks.swapoff.org/wiki/XmlRpcPlugin/ "Trac XmlRpcPlugin"
- *
+ * 
  * In addition, you should add the permission of 'TICKET_VIEW' and 'XML_RPC'
  * to the user 'anonymous' in Trac.
+ * 
+ * @package 	TestLink
+ * @author 		tosikawa
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: trac.cfg.php,v 1.4 2009/06/17 22:28:00 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * @link http://trac-hacks.org/wiki/XmlRpcPlugin/ "Trac XmlRpcPlugin"
+ *
  **/
 
 //Set the bug tracking system Interface to Trac 0.10.x
@@ -23,7 +29,7 @@
 /** Trac Project Root */
 define('BUG_TRACK_DB_HOST', 'http://<YourTracServer>/trac/');
 
-/** Mapping TL test project name vs trac project url */
+/** @var array Mapping TL test project name vs trac project url */
 $g_interface_bugs_project_name_mapping = array(
     '<YourTLTestProjectName1>' => '<YourTracProject1>',
     '<YourTLTestProjectName2>' => '<YourTracProject2>',

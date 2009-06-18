@@ -11,7 +11,7 @@
  * 	$params = array( 
  *		//string, from POST['HelloString'], minLen 1, maxLen 15
  *		"HelloString1" => array("POST",tlInputParameter::STRING_N,1,15),
- *		//non negativ integer, from POST['HelloInt1']
+ *		//non negativE integer, from POST['HelloInt1']
  *		"HelloInt1" =>  array("POST",tlInputParameter::INT_N),
  *		//string, from POST['HelloString2'], minLen 1, maxLen 15, checked with a regExp 
  *		"HelloString2" => array("POST",tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
@@ -39,7 +39,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.17 2009/06/18 16:03:03 schlundus Exp $
+ * @version    	CVS: $Id: inputparameter.inc.php,v 1.18 2009/06/18 17:18:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 
@@ -121,15 +121,16 @@ function GPR_PARAMS($source,$paramInfo,&$args = null)
  */
 function I_PARAMS($paramInfo,&$args = null)
 {
+    define('MAX_NUM_OF_PARAMS',5);
 	$params = null;
 	foreach($paramInfo as $pName => $info)
 	{
 		$source = $info[0];
 		$type = $info[1];
-		for($i = 1;$i <= 5;$i++)  //  @TODO Magic number 5 could be defined as constants/var
+		for($idx = 1;$idx <= MAX_NUM_OF_PARAMS;$idx++)  //  @TODO Magic number 5 could be defined as constants/var
 		{
-			$varName = "p{$i}";
-			$value = isset($info[$i+1]) ? $info[$i+1] : null;
+			$varName = "p{$idx}";
+			$value = isset($info[$idx+1]) ? $info[$idx+1] : null;
 			$$varName = $value;
 		}
 		
@@ -206,7 +207,9 @@ function GPR_PARAM_STRING_N($inputSource,$name,$minLen = null,$maxLen = null,$re
     foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
+        {
             $vInfo->$parameter = $$parameter;
+        }    
     }
    
   	$pInfo = new tlParameterInfo($inputSource,$name);
@@ -235,7 +238,9 @@ function GPR_PARAM_INT($inputSource,$name,$minVal = null,$maxVal = null,$pfnVali
 	foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
+        {
             $vInfo->$parameter = $$parameter;
+        }    
     }
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
@@ -302,13 +307,18 @@ function GPR_PARAM_ARRAY($inputSource,$type,$name,$pfnValidation)
 {
 	$vInfo = new tlArrayValidationInfo();
 	if (!is_null($pfnValidation))
+	{
 		$vInfo->pfnValidation = $pfnValidation;
+    }
     
-	if ($type == tlInputParameter::STRING_N) 
+	if ($type == tlInputParameter::STRING_N)
+	{ 
     	$vInfo->validationInfo = new tlStringValidationInfo();
+	}
 	else
+	{
 		$vInfo->validationInfo = new tlIntegerValidationInfo();
-	
+	}
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	
@@ -331,6 +341,4 @@ function GPR_PARAM_CB_BOOL($inputSource,$name)
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	return $iParam->value();
 }
-
-
 ?>

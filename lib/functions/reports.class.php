@@ -6,7 +6,7 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2009/06/18 17:25:23 $ by $Author: franciscom $
+ * @modified $Date: 2009/06/18 17:42:37 $ by $Author: franciscom $
  *
  * Scope:
  * Encapsulates most functionality necessary to query the database for results 
@@ -28,7 +28,7 @@ require_once('common.php');
 class tlReports extends tlObjectWithDB
 {
 	// class references passed in by constructor
-	private $db = null;
+	var $db = null;
 	private $tp = null;
 	private $testPlanID = -1;
 	private	$tprojectID = -1;

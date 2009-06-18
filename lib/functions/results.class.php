@@ -5,12 +5,13 @@
  *
  * @filesource $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.139 $
- * @modified $Date: 2009/05/20 21:35:25 $ by $Author: schlundus $
+ * @version $Revision: 1.140 $
+ * @modified $Date: 2009/06/18 17:42:37 $ by $Author: franciscom $
  * @copyright Copyright (c) 2008, TestLink community
  * @author franciscom
  *-------------------------------------------------------------------------
  * Revisions:
+ * 20090618 - franciscom - BUGID 0002621 
  * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
  * 20090413 - amitkhullar - BUGID 2267 - SQL Error in linked Test Cases
  * 20090409 - amitkhullar - Created an results_overloaded function for extending the base class
@@ -50,7 +51,7 @@ require_once('exec.inc.php'); // used for bug string lookup
 * for results to publish in reports.  It returns data structures to the gui layer in a
 * manner that are easy to display in smarty templates.
 */
-class results
+class results extends tlObjectWithDB
 {
 	/*
 	* only call get_linked_tcversions() only once, and save it to
@@ -60,7 +61,7 @@ class results
 	private $suitesSelected = "";
 
 	// class references passed in by constructor
-	private $db = null;
+	var  $db = null;
 	private $tplanMgr = null;
 	private $testPlanID = -1;
 	private	$tprojectID = -1;
@@ -235,6 +236,8 @@ class results
 		$this->testCaseCfg = config_get('testcase_cfg');
 
   		$this->db = $db;
+  		
+  		tlObjectWithDB::__construct($db);
   		$this->tplanMgr = $tplan_mgr;
   		$this->map_tc_status = $this->resultsCfg['status_code'];
     
@@ -709,11 +712,13 @@ class results
 	*/
 	function getUserForFeature($feature_id)
 	{
-		$sql = "SELECT user_id FROM user_assignments WHERE feature_id = "  . $feature_id ;
+		$sql = " SELECT user_id FROM {$this->tables['user_assignments']} " .
+		       " user_assignments WHERE feature_id = "  . $feature_id ;
 		$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
 		$owner_id = $owner_row['user_id'];
 		return $owner_id;
 	}	// end function
+	
 	/**
 	* function addLastResultToMap()
 	* @author kevinlevy
@@ -737,8 +742,6 @@ class results
 	private function addLastResultToMap($suiteId, $suiteName, $exec,$lastResultToTrack)
 	{
 
-    // just to avoid a lot of refactoring
-    //echo "<pre>debug 20080602 - \ - " . __FUNCTION__ . " --- "; print_r($exec); echo "</pre>";
 		$testcase_id=$exec['testcaseID'];
 		$external_id=$exec['external_id'];
 	  	$buildNumber=$exec['build_id'];
@@ -757,8 +760,8 @@ class results
 		}
 		
 		$execution_ts=$exec['execution_ts'];
-    		$notes=$exec['notes'];
-    		$executions_id=$exec['executions_id'];
+  		$notes=$exec['notes'];
+   		$executions_id=$exec['executions_id'];
 	  	$name=$exec['name'];
 		$tester_id=$exec['tester_id'];
 		$feature_id=$exec['feature_id'];
@@ -793,14 +796,21 @@ class results
 				$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];
 				$execIDInMap = $this->mapOfCaseResults[$testcase_id]['execID'];
 				if (($buildInMap < $buildNumber) || ($buildInMap == $buildNumber && $execIDInMap < $executions_id))
+				{
 					$bInsert = true;
+				}	
 			}
-			else // handle case where suite is in mapOfLastResult but test case has not been added
+			else 
+			{
 				$bInsert = true;
+			}
+			
 		}
-		else // handle case where suite has not been added to mapOfLastResult
+		else 
+		{
 			$bInsert = true;
-
+        }
+        
 		if ($bInsert)
 		{
 			// owner assignments
@@ -1058,12 +1068,6 @@ class results
 	                                    $owner = null, $startTime, $endTime, $executor,
 	                                    $search_notes_string, $executeLinkBuild, $all_results = 1)
 	{
-		
-    // $mem=array();		
-    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-    // $xmem=current($mem);
-    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-    // ob_flush();flush();
     	$searchBugs= config_get('bugInterfaceOn');
                                                     
 		// first make sure we initialize the executionsMap
@@ -1159,7 +1163,7 @@ class results
 				// TO-DO - this is where we can include the searching of results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids
-				$sql = "SELECT * FROM executions " .
+				$sql = "SELECT * FROM {$this->tables['executions']} executions " .
 				       "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " ;
 
 		        $sql .= $sqlFilters;
@@ -1442,14 +1446,16 @@ class results
 		{
 			for($importance=1; $importance <= 3; $importance++)
 			{	
-				$sql = "SELECT COUNT( DISTINCT(testplan_tcversions.id ))
-						FROM testplan_tcversions JOIN executions ON
-						testplan_tcversions.tcversion_id = executions.tcversion_id
-                        JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id
-						WHERE testplan_tcversions.testplan_id = $this->testPlanID
-						AND executions.testplan_id = $this->testPlanID " .
-						"AND NOT executions.status = '{$this->map_tc_status['not_run']}' " . 
-			    		"AND tcversions.importance={$importance} AND testplan_tcversions.urgency={$urgency}";
+				$sql = "SELECT COUNT(DISTINCT(TPTCV.id )) " .
+					   " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+					   " JOIN {$this->tables['executions']} E ON " .
+					   " TPTCV.tcversion_id = E.tcversion_id " .
+                       " JOIN {$this->tables['tcversions']} TCV ON " .
+                       " TPTCV.tcversion_id = TCV.id " .
+					   " WHERE TPTCV.testplan_id = {$this->testPlanID} " .
+					   " AND E.testplan_id = {$this->testPlanID} " .
+					   " AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
+			    	   " AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
 
 				if( !is_null($milestoneDate) )
 					$sql .= " AND execution_ts < '{$milestoneDate}'";
@@ -1488,15 +1494,16 @@ class results
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
 		
+		//@TODO - REFACTOR IS OUT OF STANDARD MAGIC NUMBERS
 		for($urgency=1; $urgency <= 3; $urgency++)
 		{
 			for($importance=1; $importance <= 3; $importance++)
 			{	
 				// get total count of related TCs
-				$sql = "SELECT COUNT( testplan_tcversions.id ) FROM testplan_tcversions " .
-						" JOIN tcversions ON testplan_tcversions.tcversion_id = tcversions.id " .
-						" WHERE testplan_tcversions.testplan_id = " . $this->testPlanID .
-			    		" AND tcversions.importance={$importance} AND testplan_tcversions.urgency={$urgency}";
+				$sql = "SELECT COUNT( TPTCV.id ) FROM {$this->tables['testplan_tcversions']} TPTCV " .
+						" JOIN {$this->tables['tcversions']} TCV ON TPTCV.tcversion_id = TCV.id " .
+						" WHERE TPTCV.testplan_id = " . $this->testPlanID .
+			    		" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
 
 				$tmpResult = $this->db->fetchOneValue($sql);
 
@@ -1552,13 +1559,19 @@ class results
 			$nodeID = $node['id'];
 			$tcase_counters = 1;
 			if ($tck_map && !isset($tck_map[$nodeID]))
+			{
 				$tcase_counters = 0;
+			}
 			else if ($tplan_tcases)
 			{
 				if (!isset($tplan_tcases[$nodeID]))
+				{
 					$tcase_counters = 0;
+				}
 				else if ($assignedTo && ($tplan_tcases[$nodeID]['user_id'] != $assignedTo))
+				{
 					$tcase_counters = 0;
+				}	
 			}
 			$node = null;
 			return $tcase_counters;
@@ -1569,12 +1582,14 @@ class results
 			{
 				$childNodes = &$node['childNodes'];
 				$nSize = sizeof($childNodes);
-				for($i = 0;$i < $nSize;$i++)
+				for($idx = 0;$idx < $nSize;$idx++)
 				{
-					$current = &$childNodes[$i];
+					$current = &$childNodes[$idx];
 					// I use set an element to null to filter out leaf menu items
 					if(is_null($current))
+					{
 						continue;
+		  			}
 		  			$tcCount = $this->removeEmptySuites($current,$hash_id_descr,
 					                            $tck_map,$tplan_tcases,
 					                            $assignedTo);
@@ -1588,7 +1603,9 @@ class results
 				}
 			}
 	 		else if ($tplan_tcases)
+	 		{
 				$node = null;
+			}	
 		}
 		
 		return $tcase_counters;

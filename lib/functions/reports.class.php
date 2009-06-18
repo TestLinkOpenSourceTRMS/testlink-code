@@ -6,26 +6,26 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2009/05/21 19:24:05 $ by $Author: schlundus $
+ * @modified $Date: 2009/06/18 17:25:23 $ by $Author: franciscom $
  *
  * Scope:
- * This class is encapsulates most functionality necessary to query the database
- * for results to publish in reports.  It returns data structures to the gui layer in a 
+ * Encapsulates most functionality necessary to query the database for results 
+ * to publish in reports.  It returns data structures to the gui layer in a 
  * manner that are easy to display in smarty templates.
  *   
  *-------------------------------------------------------------------------
  * Revisions:
- *
+ *           20090618 - franciscom - BUGID 0002621 
  **/
 require_once('../../config.inc.php');
 require_once('../../cfg/reports.cfg.php');
 require_once('common.php');
 
 
-	/**
-	* Functions to create reports and metrics (except query included in class results)
-	*/ 
-class tlReports
+/**
+* Functions to create reports and metrics (except query included in class results)
+*/ 
+class tlReports extends tlObjectWithDB
 {
 	// class references passed in by constructor
 	private $db = null;
@@ -37,10 +37,11 @@ class tlReports
   
 
 	/** class constructor */    
-	public function tlReports(&$db, &$tplanId = null)
+	public function __construct(&$db, &$tplanId = null)
 	{
 		$this->db = $db;	
 		$this->testPlanID = $tplanId;
+		tlObjectWithDB::__construct($db);
 	}
 
 
@@ -56,7 +57,8 @@ class tlReports
 		foreach ($reportList as &$reportItem) {
 
 			// check validity of report		
-			if (($reportItem['enabled'] == 'all') || (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||
+			if (($reportItem['enabled'] == 'all') || (($reportItem['enabled'] == 'req') && 
+			     $req_mgmt_enabled) ||
 			    (($reportItem['enabled'] == 'bts') && $bug_interface_on)) 
 			{
 				// check format availability
@@ -84,7 +86,8 @@ class tlReports
  */ 
 public function get_count_builds($active=1, $open=null)
 {
-	$sql = " SELECT COUNT(*) FROM builds WHERE builds.testplan_id = {$this->testPlanID} ";
+	$sql = " SELECT COUNT(0) FROM {$this->tables['builds']} builds " . 
+	       " WHERE builds.testplan_id = {$this->testPlanID} ";
 	       
  	if( !is_null($active) )
  	{
@@ -100,12 +103,13 @@ public function get_count_builds($active=1, $open=null)
 
 
 /** 
- * get count of builds
+ * get count of testcase linked to a testplan
  * @return count || null
  */ 
 public function get_count_testcase4testplan()
 {
-	$sql = " SELECT COUNT(*) FROM testplan_tcversions WHERE testplan_id = {$this->testPlanID} ";
+	$sql = " SELECT COUNT(0) FROM {$this->tables['testplan_tcversions']} testplan_tcversions " .
+	       " WHERE testplan_id = {$this->testPlanID} ";
 	return $this->db->fetchOneValue($sql);
 }
 		

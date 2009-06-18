@@ -39,7 +39,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.18 2009/06/18 17:18:54 franciscom Exp $
+ * @version    	CVS: $Id: inputparameter.inc.php,v 1.19 2009/06/18 17:42:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 
@@ -121,13 +121,13 @@ function GPR_PARAMS($source,$paramInfo,&$args = null)
  */
 function I_PARAMS($paramInfo,&$args = null)
 {
-    define('MAX_NUM_OF_PARAMS',5);
+	static $MAX_NUM_OF_PARAMS=5;
 	$params = null;
 	foreach($paramInfo as $pName => $info)
 	{
 		$source = $info[0];
 		$type = $info[1];
-		for($idx = 1;$idx <= MAX_NUM_OF_PARAMS;$idx++)  //  @TODO Magic number 5 could be defined as constants/var
+		for($idx = 1; $idx <= $MAX_NUM_OF_PARAMS; $idx++)  //  @TODO Magic number 5 could be defined as constants/var
 		{
 			$varName = "p{$idx}";
 			$value = isset($info[$idx+1]) ? $info[$idx+1] : null;

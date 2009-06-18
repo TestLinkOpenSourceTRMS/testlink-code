@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planUrgency.php,v 1.13 2009/06/17 22:04:35 havlat Exp $
+ * @version    	CVS: $Id: planUrgency.php,v 1.14 2009/06/18 16:03:03 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -109,5 +109,4 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_planning');
 }
-
 ?>

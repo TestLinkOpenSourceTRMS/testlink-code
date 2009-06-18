@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.34 2009/06/16 22:21:09 havlat Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.35 2009/06/18 16:03:03 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -230,9 +230,7 @@ abstract class tlObject implements iSerialization
             $tableNames = array_flip($tableNames);			
 			$tables = array_intersect_key($tables,$tableNames);
 			if (sizeof($tables) != sizeof($tableNames))
-			{
 				throw new Exception("Wrong table name(s) for getDBTables() detected!");
-			}	
 		}
 		
 	    return $tables;
@@ -370,7 +368,7 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	/** 
 	 * Class constructor
 	 *
-	 * @param resource $dbID (optional) the database identifier
+	 * @param integer $dbID (optional) the database identifier
 	 */
 	function __construct($dbID = null)
 	{

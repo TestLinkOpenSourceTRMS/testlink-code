@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/05/17 04:29:07 $ by $Author: havlat $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/06/22 12:19:09 $ by $Author: havlat $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Milton Campos
@@ -14,8 +14,8 @@
  *
  * Revision: 
  * 	2009/16/03 - Milton Campos - 1.8 RC5
- *
  * 	2009/25/05 - Julio Rodrigues - 1.8.1
+ *	2009/22/06 - eliasn - 0002643: Description about Summary in pt-br is wrong 
  *
  * Scripted update according en_GB string file (version: 1.408)
  * Scripted update according en_GB string file (version: 1.413) 
@@ -732,9 +732,9 @@ $TLS_req_list_docs = "Especificações de requisitos";
 
 // ----- gui/templates/tcEdit_New_viewer.tpl -----
 $TLS_alt_add_tc_name = "Informe nome do Caso de Teste. Esse campo é obrigatório.";
-$TLS_expected_results = "RESULTADOS ESPERADOS:";
-$TLS_steps = "PASSOS:";
-$TLS_summary = "PRÉ-CONDIÇÃO:";
+$TLS_expected_results = "Resultados Esperados:";
+$TLS_steps = "Passos:";
+$TLS_summary = "Sumário:";
 $TLS_tc_title = "Título do Caso de Teste";
 
 
@@ -945,13 +945,13 @@ $TLS_tc_not_tested_yet = "Não testado ainda";
 $TLS_test_cases_cannot_be_executed = "Caso de Teste não pode ser executado";
 $TLS_testcase_version_is_inactive_on_exec = "Esta versão está inativa => Não pode ser executada";
 $TLS_test_exec_by = "Testador";
-$TLS_test_exec_expected_r = "<br>RESULTADOS ESPERADOS:";
+$TLS_test_exec_expected_r = "<br>Resultados Esperados:";
 $TLS_test_exec_last_run_date = "Execução mais recente";
 $TLS_test_exec_notes = "Notas / Descrição";
 $TLS_test_exec_on_build = "sobre Baseline";
-$TLS_test_exec_result = "RESULTADOS: ";
-$TLS_test_exec_steps = "<br>PASSOS: ";
-$TLS_test_exec_summary = "PRÉ-CONDIÇÃO: ";
+$TLS_test_exec_result = "Resultados: ";
+$TLS_test_exec_steps = "<br>Passos: ";
+$TLS_test_exec_summary = "Sumário: ";
 $TLS_test_plan_notes = "Notas do Plano de Teste";
 $TLS_th_test_case_id = "ID ";
 $TLS_th_testsuite = $TLS_test_suite;
@@ -971,7 +971,7 @@ $TLS_keywords = "Palavras-chave";
 // ----- gui/templates/navBar.tpl -----
 $TLS_access_doc = "documentação";
 $TLS_home = "Início";
-$TLS_link_logout = "SAIR";
+$TLS_link_logout = "Sair";
 $TLS_navbar_user_management = "Usuários";
 $TLS_product = "Projeto de Teste";
 $TLS_product_role = "Perfil do Projeto";
@@ -1190,7 +1190,7 @@ $TLS_btn_mv_cp = "Mover / Copiar";
 $TLS_btn_new_version = "Criar uma nova versão";
 $TLS_can_not_edit_tc = "Você não pode editar esta versão porque ela foi executada";
 $TLS_deactivate_this_tcversion = "Desativar esta versão";
-$TLS_execution_type= '<br />TIPO DE EXECUÇÃO';
+$TLS_execution_type= '<br />Tipo de Execução';
 $TLS_tcversion_is_inactive_msg = "Esta versão está INATIVA => não estará disponivel para incluir no Plano de Teste";
 
 
@@ -1785,7 +1785,7 @@ $TLS_does_not_exist = "não existe";
 $TLS_exists = " existe";
 $TLS_ldap_extension_not_loaded = "Método de Login está configurado como LDAP<br>" .
                                "mas a extensï¿½o PHP LDAP não está carregada => " .
-                               "Vocï¿½ nï¿½o poderï¿½ fazer o login.<br>".
+                               "Você não poderia fazer o login.<br>".
                                "Favor entrar em contato com o administrador do TestLink";
 $TLS_sec_note_admin_default_pwd = "Você deve mudar a senha padrão da conta 'admin'!";
 $TLS_sec_note_remove_install_dir = "A pasta de instalação (install) deve ser removida!";

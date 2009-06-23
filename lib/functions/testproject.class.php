@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.125 2009/06/18 17:04:40 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.126 2009/06/23 19:12:57 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1831,15 +1831,12 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
  */
 function getTCasesLinkedToAnyTPlan($id)
 {
-   $sql=" SELECT DISTINCT parent_id AS testcase_id " .
-        " FROM {$this->tables['nodes_hierarchy']} WHERE id IN " .
-        " ( SELECT tcversion_id FROM {$this->tables['testplan_tcversions']} " .
-        "   WHERE testplan_id IN " .
-        "   ( SELECT NH.id AS tplan_id " .
-        "     FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['node_types']} NT" .
-        "     WHERE NH.node_type_id=NT.id AND NT.description='testplan' AND NH.parent_id={$id}))";
-
-    $rs=$this->db->fetchRowsIntoMap($sql,'testcase_id');
+	$nodeType = $this->tree_manager->node_descr_id['testplan'];
+	
+    $sql = " SELECT DISTINCT  NT.parent_id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NT JOIN {$this->tables['testplan_tcversions']} ON NT.id = tcversion_id ";
+    $sql .= " JOIN {$this->tables['nodes_hierarchy']} NH ON testplan_id = NH.id  WHERE NH.node_type_id = {$nodeType} AND NH.parent_id ={$id}";
+    $rs = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+    
     return $rs;
 }
 

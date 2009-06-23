@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.244 $
- * @modified $Date: 2009/06/04 03:08:36 $ by $Author: tosikawa $
+ * @version $Revision: 1.245 $
+ * @modified $Date: 2009/06/23 19:12:57 $ by $Author: schlundus $
  *
  * SCOPE:
  * 		Constants and configuration parameters used throughout TestLink 
@@ -890,12 +890,6 @@ $g_ereg_forbidden = "[|]";
    if the name exist.
  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
-
-// TRUE  -> you can create multiple time the same keyword 
-//           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) 
-// FALSE ->   [STANDARD BEHAIVOUR]
-// @TODO havlatm: remove the possibility duplicate it (have no sense)
-$g_allow_duplicate_keywords = FALSE;
 
 /** 
  * martin: @TODO remove - $g_action_on_duplicate_name is enough to define behaviour

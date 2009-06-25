@@ -3,12 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: config.inc.php,v $
- * @version $Revision: 1.245 $
- * @modified $Date: 2009/06/23 19:12:57 $ by $Author: schlundus $
- *
- * SCOPE:
- * 		Constants and configuration parameters used throughout TestLink 
+ * Constants and configuration parameters used throughout TestLink 
  * 
  * 		There are included extra files: 
  * 			- your settings - custom_config.inc.php
@@ -21,10 +16,13 @@
  * 		replace values of TestLink configuration variables. 
  *    It saves your changes	for the next upgrade in one extra file.
  * 
- * 
- *  -----------------------------------------------------------------------------
+ * @package 	TestLink
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: config.inc.php,v 1.246 2009/06/25 20:09:19 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * Revisions:
+ * @internal Revisions:
+ * 
  *     20090304 - franciscom - BUGID 2171
  *     20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
  *                                   $tlCfg->exec_cfg->enable_tree_counters_colouring
@@ -47,7 +45,7 @@
  *     20080805 - franciscom - api configuration refactoring
  *     20080805 - franciscom - BUGID 1660 - extjs tree is default
  *     20080504 - franciscom - removed gui->enable_custom_fields
- * 		 20080419 - havlatm - documentation update; minor refactorization
+ * 		20080419 - havlatm - documentation update; minor refactorization
  *     20080326 - franciscom - restored configuration parameters removed without reasons.
  *
  * 	   20080423 - havlatm - added $tlCfg as standard configuration holder
@@ -73,13 +71,12 @@
  *                             text area custom field
  *
  *     20070415 - franciscom -  added config for drag and drop feature
- *     20070301 - franciscom - 
- *     BUGID 695 - $g_user_self_signup (fawel contribute)
+ *     20070301 - franciscom - #695 - $g_user_self_signup (fawel contribute)
  *
  **/
 
 // ----------------------------------------------------------------------------
-/** [INITIALIZATION] - DO NOT CHANGE THE SECTION */
+/* [INITIALIZATION] - DO NOT CHANGE THE SECTION */
 
 /** @global array Global configuration class */
 $tlCfg = new stdClass();
@@ -109,7 +106,7 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 
 
 // ----------------------------------------------------------------------------
-/** [LOCALIZATION] */
+/* [LOCALIZATION] */
 
 /** Default localization for users */
 // The value must be available in $g_locales (see cfg/const.inc.php).
@@ -143,7 +140,7 @@ $tlCfg->charts_font_size = 8;
 
 
 // ----------------------------------------------------------------------------
-/** [SERVER ENVIRONMENT] */
+/* [SERVER ENVIRONMENT] */
 
 /** Error reporting - do we want php errors to show up for users */
 error_reporting(E_ALL);
@@ -167,11 +164,14 @@ $tlCfg->sessionInactivityTimeout = 60;
  */
 //ini_set('session.gc_maxlifetime', 54000);
 
-/** Left empty. See #1137 */
+/** 
+ * DB Table prefix to support more products in one database space
+ * Left empty. See #1137 
+ **/
 $tlCfg->db_table_prefix = '';
 
 // ----------------------------------------------------------------------------
-/** [LOGGING] */
+/* [LOGGING] */
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 $tlCfg->log_level = 'ERROR';
@@ -207,12 +207,12 @@ $g_removeEventsOlderThan = 30;
 
 
 // ----------------------------------------------------------------------------
-/** [Bug Tracking systems] */
+/* [Bug Tracking systems] */
 /** 
- * TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
- * and closed bugs. If they are it will strike through them
+ * TestLink collaborates with bug tracking systems to check if displayed bugs resolved, 
+ * verified, and closed reports. 
  *
- * @var STRING g_interface_bugs = [
+ * @var string $g_interface_bugs = [
  * 'NO'        : no bug tracking system integration (DEFAULT)
  * 'BUGZILLA'  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
  * 'MANTIS'    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
@@ -227,7 +227,7 @@ $g_removeEventsOlderThan = 30;
 $g_interface_bugs = 'NO';
 
 // ----------------------------------------------------------------------------
-/** [SMTP] */
+/* [SMTP] */
 
 // Developer Note:
 // these config variable names has been choosed to maintain compatibility
@@ -255,7 +255,7 @@ $g_smtp_password    = '';  # password
 
 
 // ----------------------------------------------------------------------------
-/** [User Authentication] */                 
+/* [User Authentication] */                 
 
 /** 
  * Login authentication method:
@@ -291,7 +291,7 @@ $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \-]+$/';
 $tlCfg->validation_cfg->user_email_valid_regex_js = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
 $tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/U";
 // --------------------------------------------------------------------------------------
-/** [API] */
+/* [API] */
 
 /** XML-RPC API availability (disabled by default) */ 
 $tlCfg->api->enabled = FALSE;
@@ -301,7 +301,7 @@ $tlCfg->api->id_format = "[ID: %s ]";
 
 
 // --------------------------------------------------------------------------------------
-/** [GUI LAYOUT] */
+/* [GUI LAYOUT] */
 
 /** GUI themes (base for CSS and images)- modify if you create own one */
 $tlCfg->theme_dir = 'gui/themes/default/';
@@ -320,14 +320,15 @@ $tlCfg->login_info = ''; // Empty by default
 /** Image for main menu item bullet (just filename) */
 $tlCfg->bullet_image = 'slide_gripper.gif';  // = [arrow_org.gif, slide_gripper.gif]
 
-/** Availability of Test Project specific background colour */
-// 'background'  -> standard behaviour for 1.6.x you can have a different
-//                  background colour for every test project.
-// 'none'        -> new behaviour no background color change 
-// $tlCfg->gui->testproject_coloring = 'background'; // Francisco, do not change it!
+/** 
+ * @var string Availability of Test Project specific background colour 
+ * 'background'  -> standard behaviour for 1.6.x you can have a different
+ *                  background colour for every test project.
+ * 'none'        -> new behaviour no background color change 
+ */
 $tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring using coloring is a pain
                                             // and useless
-// @TODO Ok, then merge these two attributes into one                                           
+/** @TODO havlatm4francisco Ok, then merge these two attributes into one */                                          
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';
 
@@ -428,7 +429,7 @@ $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 
                                           'testPlanContents' => 3);
 
 // ----------------------------------------------------------------------------
-/** [GUI: TREE] */
+/* [GUI: TREE] */
 
 /** Default ordering value for new Test Suites and Test Cases to separate them */
 $tlCfg->treemenu_default_testsuite_order = 1;
@@ -439,7 +440,7 @@ $tlCfg->treemenu_show_testcase_id = TRUE;
 
 
 // ----------------------------------------------------------------------------
-/** [GUI: Javascript libraries] */
+/* [GUI: Javascript libraries] */
 
 /** ENABLED -> use EXT JS library; DISABLED - simple html */
 $g_use_ext_js_library = ENABLED;
@@ -452,7 +453,7 @@ $g_sort_table_engine='kryogenix.org';
 
 
 // ----------------------------------------------------------------------------
-/** [GENERATED DOCUMENTATION] */
+/* [GENERATED DOCUMENTATION] */
 
 /**
  * Texts and settings for printed documents
@@ -472,7 +473,7 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 
 
 // ----------------------------------------------------------------------------
-/** [Test Executions] */
+/* [Test Executions] */
 
 // ENABLED -> enable XML-RPC calls to external test automation server
 //      new buttons will be displayed on execution pages
@@ -560,7 +561,7 @@ $tlCfg->exec_cfg->user_filter_default='none';
 
 
 // ----------------------------------------------------------------------------
-/** [Test Specification] */
+/* [Test Specification] */
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
@@ -621,7 +622,7 @@ $g_testsuite_template->details->value = '';
 
 
 // ----------------------------------------------------------------------------
-/** [ATTACHMENTS] */
+/* [ATTACHMENTS] */
 
 /** Attachment feature availability */
 $g_attachments->enabled = TRUE;
@@ -677,7 +678,7 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 
 
 // ----------------------------------------------------------------------------
-/** [Requirements] */
+/* [Requirements] */
 
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
@@ -738,7 +739,7 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed'
 
 
 // ----------------------------------------------------------------------------
-/** [MISC FUNCTIONALITY] */
+/* [MISC FUNCTIONALITY] */
 
 /** Maximum uploadfile size to importing stuff in TL */
 // Also check your PHP settings (default is usually 2MBs)

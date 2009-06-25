@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/06/25 19:47:15 $ by $Author: schlundus $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -200,7 +200,7 @@ switch($args->do_action)
         $do_display=true;
 		break;
 }
-if( $do_display )
+if($do_display)
 {
     $smarty->assign('gui',$gui);
     $smarty->display($templateCfg->template_dir . $template);
@@ -279,22 +279,24 @@ function checkRights(&$db,&$user)
 function initializeGui(&$dbHandler,&$argsObj,&$editorCfg,&$tprojectMgr)
 {
     $guiObj = new stdClass();
-    $guiObj->editorType=$editorCfg['type'];
+    $guiObj->tproject_id = $argsObj->tproject_id; 
+    $guiObj->editorType = $editorCfg['type'];
     $guiObj->tplans = $tprojectMgr->get_all_testplans($argsObj->tproject_id);
-    $guiObj->tproject_name=$argsObj->tproject_name;
-    $guiObj->main_descr=lang_get('testplan_title_tp_management'). " - " .
-                        lang_get('testproject') . ' ' . $argsObj->tproject_name;
+    $guiObj->tproject_name = $argsObj->tproject_name;
+    $guiObj->main_descr = lang_get('testplan_title_tp_management'). " - " .
+                         lang_get('testproject') . ' ' . $argsObj->tproject_name;
     $guiObj->testplan_name = null;
     $guiObj->tplan_id = null;
     $guiObj->is_active = 0;
     $guiObj->is_public = 0;
-    $guiObj->cfields='';
-    $guiObj->user_feedback='';               
+    $guiObj->cfields = '';
+    $guiObj->user_feedback = '';               
     
-    $guiObj->grants=new stdClass();  
-    $guiObj->grants->testplan_create=$_SESSION['currentUser']->hasRight($dbHandler,"mgt_testplan_create");
-    $guiObj->grants->mgt_view_events=$_SESSION['currentUser']->hasRight($dbHandler,"mgt_view_events");
-    $guiObj->notes='';
+    $guiObj->grants = new stdClass();  
+    $guiObj->grants->testplan_create = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_testplan_create");
+    $guiObj->grants->mgt_view_events = $_SESSION['currentUser']->hasRight($dbHandler,"mgt_view_events");
+    $guiObj->notes = '';
+    
     return $guiObj;
 }
 ?>

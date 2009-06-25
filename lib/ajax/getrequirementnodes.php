@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.6 2009/06/07 12:55:58 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.7 2009/06/25 19:47:15 schlundus Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -34,7 +34,7 @@ $show_children=isset($_REQUEST['show_children']) ? $_REQUEST['show_children'] : 
 $operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
 // for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
-$nodes=display_children($db,$root_node,$node,$filter_node,$show_children,$operation);
+$nodes = display_children($db,$root_node,$node,$filter_node,$show_children,$operation);
 echo json_encode($nodes);
 
 /*
@@ -43,9 +43,7 @@ echo json_encode($nodes);
 function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $show_children=ON,$operation='manage') 
 {             
-    $tables=array('requirements' => DB_TABLE_PREFIX . 'requirements',
-                  'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                  'nodes_types' => DB_TABLE_PREFIX . 'nodes_types');
+    $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types'));
     
     switch($operation)
     {
@@ -56,9 +54,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         
         case 'manage':
         default:
-            $js_function=array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
-                               'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
-        break;  
+            $js_function = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
+                                'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
+        	break;  
     }
     
     $nodes = null;
@@ -73,12 +71,12 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 
     if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
     {
-       $sql .=" AND NHA.id = {$filter_node} ";  
+       $sql .= " AND NHA.id = {$filter_node} ";  
     }
     $sql .= " ORDER BY NHA.node_order ";    
 
     $nodeSet = $dbHandler->get_recordset($sql);
-	if( !is_null($nodeSet) ) 
+	if(!is_null($nodeSet)) 
 	{
         // BUGID 2309
         $sql =  " SELECT DISTINCT req_doc_id AS docid,NHA.id" .
@@ -86,8 +84,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                 " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 
                 " JOIN {$tables['node_types']} NT ON NT.id = NHA.node_type_id " .
                 " WHERE NHB.id = {$parent} AND NT.description = 'requirement'";
-        $requirements=$dbHandler->fetchRowsIntoMap($sql,'id');
-
+        $requirements = $dbHandler->fetchRowsIntoMap($sql,'id');
 
 	    $tproject_mgr = new testproject($dbHandler);
 	    foreach($nodeSet as $key => $row)
@@ -108,21 +105,19 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
             switch($row['node_type'])
             {
                 case 'testproject':
-                $path['href'] = "javascript:EP({$path['id']})";
-                break;
-                
+	                $path['href'] = "javascript:EP({$path['id']})";
+	                break;
                 case 'requirement_spec':
-                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-                break;
-                
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                break;
                 case 'requirement':
-                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-                $path['text'] = htmlspecialchars($requirements[$row['id']]['docid'] . ":") . $path['text'];
-                $path['leaf']	= true;
-                break;
+	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                $path['text'] = htmlspecialchars($requirements[$row['id']]['docid'] . ":") . $path['text'];
+	                $path['leaf']	= true;
+	                break;
             }
             $nodes[] = $path;                                                                        
-	    }	// foreach	
+	    }	
     }
 	return $nodes;                                                                             
 }                                                                                               

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/06/08 17:40:22 $  $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/06/25 19:47:15 $  $Author: schlundus $
  * 
  * @author Martin Havlat
  *
@@ -95,14 +95,6 @@ $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req"));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-/*
-  function: init_args()
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$iParams = array(
@@ -148,59 +140,43 @@ function init_args()
     return $args;
 }
 
-/*
-  function: processTestSuite
-
-  args:
-  
-  returns: 
-
-*/
 function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
 {
     $tproject_mgr = new testproject($dbHandler);
 
-    $guiObj->bulkassign_warning_msg='';
-    $guiObj->tsuite_id=$argsObj->id;
+    $guiObj->bulkassign_warning_msg = '';
+    $guiObj->tsuite_id = $argsObj->id;
     
-    $tsuite_info=$tproject_mgr->tree_manager->get_node_hierachy_info($guiObj->tsuite_id);
+    $tsuite_info = $tproject_mgr->tree_manager->get_node_hierachy_info($guiObj->tsuite_id);
     $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
     $get_not_empty = 1;
-	  $guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,$get_not_empty);
+	$guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,$get_not_empty);
     $guiObj->selectedReqSpec = $argsObj->idReqSpec;
-    $guiObj->tcase_number=0;
-    $guiObj->has_req_spec=false;
-    $guiObj->tsuite_id=$argsObj->id;
-    if( !is_null($guiObj->req_specs) && count($guiObj->req_specs) > 0)
+    $guiObj->tcase_number = 0;
+    $guiObj->has_req_spec = false;
+    $guiObj->tsuite_id = $argsObj->id;
+    if(!is_null($guiObj->req_specs) && count($guiObj->req_specs))
     {  
-       $guiObj->has_req_spec=true;
+       $guiObj->has_req_spec = true;
        
-       if( is_null($argsObj->idReqSpec) )
+       if(is_null($argsObj->idReqSpec))
        {
-          $guiObj->selectedReqSpec=key($guiObj->req_specs);
+          $guiObj->selectedReqSpec = key($guiObj->req_specs);
        }
        
        $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-       $guiObj->requirements=$req_spec_mgr->get_requirements($guiObj->selectedReqSpec);
+       $guiObj->requirements =$req_spec_mgr->get_requirements($guiObj->selectedReqSpec);
        
        $tsuite_mgr = new testsuite($dbHandler);
-       $tcase_set=$tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
-       $guiObj->tcase_number=count($tcase_set);    
-       $guiObj->bulkassign_warning_msg=sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);
+       $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
+       $guiObj->tcase_number = count($tcase_set);    
+       $guiObj->bulkassign_warning_msg = sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);
     }
 
     return $guiObj;
 }
 
-/*
-  function: doBulkAssignment
-
-  args:
-  
-  returns: 
-
-*/
 function doBulkAssignment(&$dbHandler,&$argsObj)
 {
 	$req_mgr = new requirement_mgr($dbHandler);
@@ -215,22 +191,13 @@ function doBulkAssignment(&$dbHandler,&$argsObj)
     return $assignmentCounter;
 }
 
-  
-/*
-  function: doSingleTestCaseOperation
-
-  args:
-  
-  returns: 
-
-*/
 function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn)
 {
-  $msg='';
+	$msg = '';
 	$req_ids = array_keys($argsObj->reqIdSet);
 	if (count($req_ids))
 	{
-    $req_mgr = new requirement_mgr($dbHandler);
+    	$req_mgr = new requirement_mgr($dbHandler);
 		foreach ($req_ids as $idOneReq)
 		{
 			$result = $req_mgr->$pfn($idOneReq,$argsObj->id);
@@ -248,36 +215,27 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn)
 	else
 	{
 		$guiObj->user_feedback = lang_get('req_msg_noselect');
-  }
-  return $guiObj;
+  	}
+	return $guiObj;
 } 
 
-
-/*
-  function: processTestCase
-
-  args:
-  
-  returns: 
-
-*/
 function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 {
-	 $get_not_empty = 1;
-   $tproject_mgr = new testproject($dbHandler);
-	 $guiObj->arrReqSpec = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,$get_not_empty);
-	 $SRS_qty = count($guiObj->arrReqSpec);
+	$get_not_empty = 1;
+   	$tproject_mgr = new testproject($dbHandler);
+	$guiObj->arrReqSpec = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,$get_not_empty);
+	$SRS_qty = count($guiObj->arrReqSpec);
   
-	 if($SRS_qty > 0)
-	 {
-	   	$tc_mgr = new testcase($dbHandler);
+	if($SRS_qty > 0)
+	{
+		$tc_mgr = new testcase($dbHandler);
 	   	$arrTc = $tc_mgr->get_by_id($argsObj->id);
-	   	if ($arrTc)
+	   	if($arrTc)
 	   	{
 	   		$guiObj->tcTitle = $arrTc[0]['name'];
 	   	
 	   		// get first ReqSpec if not defined
-	   		if( is_null($argsObj->idReqSpec) )
+	   		if(is_null($argsObj->idReqSpec))
 	   		{
 	   			reset($guiObj->arrReqSpec);
 	   			$argsObj->idReqSpec = key($guiObj->arrReqSpec);
@@ -285,13 +243,13 @@ function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 
 	   		if($argsObj->idReqSpec)
 	   		{
-	   		  $req_spec_mgr = new requirement_spec_mgr($dbHandler);
+	   		  	$req_spec_mgr = new requirement_spec_mgr($dbHandler);
 	   			$guiObj->arrAssignedReq = $req_spec_mgr->get_requirements($argsObj->idReqSpec, 'assigned', $argsObj->id);
 	   			$guiObj->arrAllReq = $req_spec_mgr->get_requirements($argsObj->idReqSpec);
 	   			$guiObj->arrUnassignedReq = array_diff_byId($guiObj->arrAllReq, $guiObj->arrAssignedReq);
 	   		}
 	   	}
-	 }  // if( $SRS_qty > 0 )	
+	 } 
 	 return $guiObj;
 }
 

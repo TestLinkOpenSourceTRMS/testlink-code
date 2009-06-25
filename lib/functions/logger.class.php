@@ -12,7 +12,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.43 2009/06/16 22:21:09 havlat Exp $
+ * @version CVS: $Id: logger.class.php,v 1.44 2009/06/25 19:47:15 schlundus Exp $
  * @link http://www.teamst.org
  * @since 1.8
  * 
@@ -834,7 +834,7 @@ class tlFileLogger extends tlObject
 	static protected $closedTransactionFormatString = "[%prefix][%transactionID][%name][%entryPoint][%startTime][%endTime][took %duration secs]\n";
 	protected $logLevelFilter = null;
 
-	protected $doLogging=true;
+	protected $doLogging = true;
 
 
 	public function __construct()

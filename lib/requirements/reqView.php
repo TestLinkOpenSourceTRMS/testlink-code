@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/06/25 19:47:15 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -28,15 +28,6 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$iParams = array(
@@ -55,14 +46,6 @@ function init_args()
     return $args;
 }
 
-/*
-function: initialize_gui
-
-args :
-
-returns: 
-
-*/
 function initialize_gui(&$dbHandler,$argsObj)
 {
     $tproject_mgr = new testproject($dbHandler);
@@ -94,14 +77,6 @@ function initialize_gui(&$dbHandler,$argsObj)
     return $gui;
 }
 
- /*
-   function: checkRights
-
-   args:
-   
-   returns: 
-
- */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_view_req');

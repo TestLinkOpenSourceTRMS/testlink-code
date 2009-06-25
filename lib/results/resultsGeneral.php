@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/05/20 21:35:25 $ by $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/06/25 19:47:15 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -164,9 +164,12 @@ else // do report
 		    $item['results'] = $re->getPrioritizedResults($item['target_date']);
         
         	$low_percentage = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
+		    $item['result_low_percentage'] = $low_percentage;
 		    $medium_percentage = get_percentage($arrPrioritizedTCs[MEDIUM], $item['results'][MEDIUM]); 
+		    $item['result_medium_percentage'] = $medium_percentage;
 		    $high_percentage = get_percentage($arrPrioritizedTCs[HIGH], $item['results'][HIGH]); 
-		    
+		    $item['result_high_percentage'] = $high_percentage;
+		    		    
 		    $item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
 		    $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
         

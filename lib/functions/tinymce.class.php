@@ -3,13 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tinymce.class.php,v $
- *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/09/26 20:21:46 $ by $Author: schlundus $
+ * TestLink support for TINYMCE web editor
  * 
- * Rev :
- *      20071201 - francisco.mancardi@gruppotesi.com
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: tinymce.class.php,v 1.4 2009/06/25 19:37:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
+ * 
+ *	20071201 - francisco.mancardi@gruppotesi.com
  *      code created using as starting point:
  *      fckeditor_php5.php from
  *      FCKeditor - The text editor for Internet - http://www.fckeditor.net
@@ -18,6 +21,9 @@
  *
  **/
 
+/**
+ * @package 	TestLink
+ */
 class tinymce
 {
 	var $InstanceName;
@@ -56,4 +62,6 @@ class tinymce
 	}
 
 } // class end
+
+
 ?>

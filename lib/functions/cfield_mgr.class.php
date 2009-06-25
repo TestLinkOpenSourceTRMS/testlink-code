@@ -1,11 +1,13 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package 	TestLink
  * @author 		franciscom
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.63 2009/06/12 11:00:30 havlat Exp $
+ * @copyright 	2005-2009, TestLink community
+ * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.64 2009/06/25 19:37:53 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -85,6 +87,11 @@ if( count($cf_files) > 0 )
     }   
 }
 
+
+/**
+ * class is responsible for logic and store Custom Fields functionality 
+ * @package 	TestLink
+ */
 class cfield_mgr extends tlObject
 {
     const DEFAULT_INPUT_SIZE = 50;
@@ -100,31 +107,31 @@ class cfield_mgr extends tlObject
     const ENABLED = 1;
     const DISABLED = 0;
     
+	/** @var resource the database handler */
 	var $db;
+	/** @var object tree class */
 	var $tree_manager;
 
-    // Hold string keys used on this object and pages that manages CF,
-    // identifying in what areas/features something will be done
-    // 'execution' => mainly on test execution pages,
-    //                identifies TL features/pages to record test results
-    // 
-    // 'design'    => test suites, test cases creation
-    //                identifies TL features/pages to create test specification
-    // 
-    // 'testplan_design' => link test cases to test plan (assign testcase option)
-    //
-    // IMPORTANT: this values are used as access keys in several properties of this object.
-    //            then if you add one here, remember to update other properties.
-    //
-    // var $application_areas=array('execution','design','testplan_design');
+    /**
+     *  @var array $application_areas=array('execution','design','testplan_design');
+     * Hold string keys used on this object and pages that manages CF,
+     * identifying in what areas/features something will be done
+     * 'execution' => mainly on test execution pages,
+     *                identifies TL features/pages to record test results
+     * 'design'    => test suites, test cases creation
+     *                identifies TL features/pages to create test specification
+     * 'testplan_design' => link test cases to test plan (assign testcase option)
+     * 
+     * IMPORTANT: this values are used as access keys in several properties of this object.
+     *            then if you add one here, remember to update other properties.
+     */
     var $application_areas = array('execution','design','testplan_design');
 
-	// I'm using the same codes used by Mantis (franciscom)
-	//
-	// Define type of custom fields managed.
-	// Values will be displayed in "Custom Field Type" combo box when 
-	// users create custom fields. No localization is applied
-	// 
+	/**
+	 * @var array Define type of custom fields managed.
+	 * Values will be displayed in "Custom Field Type" combo box when
+	 * users create custom fields. No localization is applied
+	 */ 
     // 20080809 - franciscom
     // Added specific type for test automation related custom fields.
     // Start at code 500
@@ -142,10 +149,11 @@ class cfield_mgr extends tlObject
 							        500=>'script',
 							        501=>'server');
 
-    // Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
-    // Keys of this map must be the values present in:
-    // $this->custom_field_types
-    // 
+    /** 
+     * @var array Configures for what type of CF "POSSIBLE_VALUES" field need to be manage at GUI level
+     * Keys of this map must be the values present in:
+     * <code>$this->custom_field_types</code>
+     */ 
     var $possible_values_cfg = array('string' => 0,
                                      'numeric'=> 0,
                                      'float'=> 0,
@@ -160,7 +168,7 @@ class cfield_mgr extends tlObject
     							     'script'=> 0,
     							     'server' => 0);
     
-    // only the types listed here can have custom fields
+    /**  @var array only the types listed here can have custom fields */
     var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
 
 
@@ -260,89 +268,65 @@ class cfield_mgr extends tlObject
         return $this->max_length_value;    
     }
 
-  /*
-    function: get_application_areas
-
-    returns: 
-    
-    rev: 20080810 - franciscom
-  */
 	function get_application_areas()
 	{
         return($this->application_areas);
     }
 
 
-  /*
-    function: get_available_types
-
-    returns: hash with custom field available types
-             key: numeric id
-             value: short description
-  */
+	/**
+	 * @return hash with custom field available types
+	 *       key: numeric id
+	 *       value: short description
+	 */
 	function get_available_types()
 	{
-    return($this->custom_field_types);
-  }
+		return($this->custom_field_types);
+	}
 
-  /*
-    function: get_name_prefix
-
-    returns: string
-  */
+	/** 
+	 * @return string 
+	 */
 	function get_name_prefix()
 	{
-    return($this->name_prefix);
-  }
+		return($this->name_prefix);
+	}
 
-
-
-  /*
-    function: get_allowed_nodes
-
-    returns: hash with node types id, that can have custom fields.
-             key:   short description (node_types.description)
-             value: node_type_id      (node_types.id)
-
-  */
+	/**
+	 * @return hash with node types id, that can have custom fields.
+	 *       key:   short description (node_types.description)
+	 *       value: node_type_id      (node_types.id)
+	 */ 
 	function get_allowed_nodes()
 	{
-    $allowed_nodes=array();
-    $tl_node_types=$this->tree_manager->get_available_node_types();
-    foreach($this->node_types as $verbose_type )
-    {
-      $allowed_nodes[$verbose_type]=$tl_node_types[$verbose_type];
-    }
-    return($allowed_nodes);
-  }
+		$allowed_nodes=array();
+		$tl_node_types=$this->tree_manager->get_available_node_types();
+		foreach($this->node_types as $verbose_type )
+		{
+			$allowed_nodes[$verbose_type]=$tl_node_types[$verbose_type];
+		}
+		return($allowed_nodes);
+	}
+
+	/**
+	 * @return hash with node types id, that can have custom fields with enabled_on_$ui_mode.
+	 *       key  : node_type_id      (node_types.id)
+	 *       value: 1 -> enable on exec can be configured by user
+	 */
+	function get_enable_on_cfg($ui_mode)
+	{
+		$mgmt_cfg=array();
+		$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->enable_on_cfg[$ui_mode]);
+		return($mgmt_cfg);
+	}
 
 
-
-  /*
-    function: get_enable_on_cfg
-
-    returns: hash with node types id, that can have custom fields with enabled_on_$ui_mode.
-             key  : node_type_id      (node_types.id)
-             value: 1 -> enable on exec can be configured by user
-
-
-  */
-function get_enable_on_cfg($ui_mode)
-{
-    $mgmt_cfg=array();
-    $mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->enable_on_cfg[$ui_mode]);
-    return($mgmt_cfg);
-}
-
-
-function get_show_on_cfg($ui_mode)
-{
-    $mgmt_cfg=array();
-  	$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->show_on_cfg[$ui_mode]);
-    return($mgmt_cfg);
-}
-
-
+	function get_show_on_cfg($ui_mode)
+	{
+		$mgmt_cfg=array();
+		$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->show_on_cfg[$ui_mode]);
+		return($mgmt_cfg);
+	}
 
 
   /*
@@ -1824,33 +1808,33 @@ function name_is_unique($id,$name)
 
 
 /**
-* function: getXMLServerParams
-* @note Retrieves the XML Server Parameters specified through custom fields.
-* @param: $node_id, <b>Accepts current node id from nodes hierarchy level</b>
-* @return: An array of config params if found, else returns null
-*
-* rev:
-*     20071102 - franciscom - refactoring
-*     200710xx - creation - Swanand
-**/
+ * Retrieves the XML Server Parameters specified through custom fields.
+ * 
+ * @param integer $node_id Accepts current node id from nodes hierarchy level
+ * @return mixed An array of config params if found, else returns null
+ *
+ * @internal rev:
+ *     20071102 - franciscom - refactoring
+ *     200710 - creation - Swanand
+ **/
 function getXMLServerParams($node_id)
 {
-  $srv_cfg = new stdClass();
-  
-  $node_type=$this->tree_manager->get_available_node_types();
+	$srv_cfg = new stdClass();
+	
+	$node_type=$this->tree_manager->get_available_node_types();
 	$node_info=$this->tree_manager->get_node_hierachy_info($node_id);
-  $ret=null;
-
-  if( !is_null($node_info) )
-  {
+	$ret=null;
+	
+	if( !is_null($node_info) )
+	{
 		$prefix = "";
 		$ret = array( 'xml_server_host' => null,
-				        	'xml_server_port' => null,
-					        'xml_server_path' => null);
-
+			'xml_server_port' => null,
+			'xml_server_path' => null);
+		
 		$node_info=$this->tree_manager->get_node_hierachy_info($node_id);
-
-
+		
+		
 		if( $node_info['node_type_id'] == $node_type['testcase'])
 		{
 			$prefix = "tc_";
@@ -1858,41 +1842,40 @@ function getXMLServerParams($node_id)
 		$srv_cfg->host=$prefix . "server_host";
 		$srv_cfg->port=$prefix . "server_port";
 		$srv_cfg->path=$prefix . "server_path";
-
+		
 		$sql = "SELECT cf.name, cfdv.value " .
-		       "FROM {$this->tables['cfield_design_values']} cfdv," .
-		       " {$this->tables['custom_fields']}  cf " .
-		       "WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
-
+			"FROM {$this->tables['cfield_design_values']} cfdv," .
+			" {$this->tables['custom_fields']}  cf " .
+			"WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
+		
 		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
-    $server_cfg_is_ok=0;
-    $server_use_host_port=0;
-    $server_use_path=0;
-
-    if( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host] != "") &&
-		    (isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port] != "") )
+		$server_cfg_is_ok=0;
+		$server_use_host_port=0;
+		$server_use_path=0;
+		
+		if( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host] != "") &&
+				(isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port] != "") )
 		{
-		    $server_cfg_is_ok=1;
-			  $ret['xml_server_host'] = $server_info[$srv_cfg->host];
-			  $ret['xml_server_port'] = $server_info[$srv_cfg->port];
+			$server_cfg_is_ok=1;
+			$ret['xml_server_host'] = $server_info[$srv_cfg->host];
+			$ret['xml_server_port'] = $server_info[$srv_cfg->port];
 		}
 		else if (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path] != "")
 		{
-		    $server_cfg_is_ok=1;
-			  $ret['xml_server_path'] = $server_info[$srv_cfg->path];
+			$server_cfg_is_ok=1;
+			$ret['xml_server_path'] = $server_info[$srv_cfg->path];
 		}
 		else
 		{
 			if($node_info['parent_id'] != "")
 			{
-				 $ret=$this->getXMLServerParams($node_info['parent_id']);
+				$ret=$this->getXMLServerParams($node_info['parent_id']);
 			}
 		}
 	} // if( !is_null($node_info) )
-
-  return $ret;
+	
+	return $ret;
 } //function end
-
 
 
   /*

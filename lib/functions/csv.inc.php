@@ -3,14 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: csv.inc.php,v $
- *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
- *
  * functions related to csv export
  *
-**/
+ * @package 	TestLink
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: csv.inc.php,v 1.5 2009/06/25 19:37:53 havlat Exp $
+ * @link 		http://www.teamst.org/
+ *
+ * @TODO havlatm: move both functions to appropriate object
+ **/
+ 
+/** @uses keywors.class.php, requirements.inc.php */ 
 function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter = ';')
 {
 	$csvContent = '';
@@ -45,6 +48,7 @@ function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter
 // added [$num_fields] number of fields a line must have to be valid
 //                     if the number is not verified the line is discarded silently.
 //
+/** @uses requirements.inc.php */ 
 function importCSVData($fileName,$destKeys,$delimiter = ';',$num_fields=0,
                        $bWithHeader = false,$bSkipHeader = true)
 {

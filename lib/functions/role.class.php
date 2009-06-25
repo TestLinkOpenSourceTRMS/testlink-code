@@ -3,18 +3,24 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: role.class.php,v $
+ * @package 	TestLink
+ * @copyright 	2004-2009, TestLink community 
+ * @version    	CVS: $Id: role.class.php,v 1.33 2009/06/25 19:37:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/06/15 20:14:59 $ $Author: schlundus $
- *
- * rev:
+ * @internal Revisions:
+ * 
  *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
  *     20090101 - franciscom - writeToDB() problems with Postgres
  *                             due to wrong table name in insert_id() call.
- *     
+ * 
+ * @TODO Improve description  
  */
-//@TODO STILL FUNCTIONS WITH WRONG COMMENTS
+
+/**
+ * 
+ * @package 	TestLink
+ */
 class tlRole extends tlDBObject
 {
 	public $name;
@@ -32,6 +38,10 @@ class tlRole extends tlDBObject
 	const E_NAMEALREADYEXISTS = -4;
 	const E_EMPTYROLE = -5;
 		
+	/** 
+	 * class constructor 
+	 * @param resource &$db reference to database handler
+	 **/    
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
@@ -53,6 +63,7 @@ class tlRole extends tlDBObject
 			$this->dbID = null;
 		}	
 	}
+	
 	public function copyFromCache($role)
 	{
 		$this->description = $role->description;
@@ -119,14 +130,9 @@ class tlRole extends tlDBObject
 		return $readSucceeded;
 	}
 
-	/*
-    function: writeToDB
-
-    args: db: dbHandler
-    
-    returns: 
-
-  */
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	public function writeToDB(&$db)
 	{
 		//@TODO schlundus, now i removed the potentially modified object from the cache
@@ -170,6 +176,9 @@ class tlRole extends tlDBObject
 		return $result;
 	}
 	
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	public function checkDetails(&$db)
 	{
 		$this->name = trim($this->name);
@@ -186,6 +195,9 @@ class tlRole extends tlDBObject
 		return $result;
 	}
 	
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	static public function doesRoleExist(&$db,$name,$id)
 	{
 		$role = new tlRole();
@@ -213,6 +225,9 @@ class tlRole extends tlDBObject
 		return $displayName;
 	}
 	
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	public function deleteFromDB(&$db)
 	{
 		$this->removeFromCache();
@@ -229,6 +244,9 @@ class tlRole extends tlDBObject
 		return $result;
 	}
 	
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	protected function replaceUserRolesWith(&$db,$newRole)
 	{
 		$result = true;
@@ -245,7 +263,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all users with a certain global role
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array assoc map with the user ids as the keys
 	 **/
 	protected function getUsersWithGlobalRole(&$db)
@@ -257,7 +275,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all userids of users with a certain global role  @TODO WRITE RIGHT COMMENTS FROM START
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array of userids
 	 **/
 	protected function getUserIDsWithGlobalRole(&$db)
@@ -272,7 +290,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all userids of users with a certain testproject role @TODO WRITE RIGHT COMMENTS FROM START
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array returns array of userids
 	 **/
 	protected function getUserIDsWithTestProjectRole(&$db)
@@ -289,7 +307,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all userids of users with a certain testplan role @TODO WRITE RIGHT COMMENTS FROM START
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array returns array of userids
 	 **/
 	protected function getUserIDsWithTestPlanRole(&$db)
@@ -307,7 +325,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all users with a certain testproject role
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	protected function getUsersWithTestProjectRole(&$db)
@@ -320,7 +338,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all users with a certain testplan role
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	protected function getUsersWithTestPlanRole(&$db)
@@ -333,7 +351,7 @@ class tlRole extends tlDBObject
 	/**
 	 * Gets all users which have a certain global,testplan or testproject role
 	 *
-	 * @param object $db [ref] the db-object
+	 * @param resource &$db reference to database handler
 	 * @return array returns assoc map with the userids as the keys
 	 **/
 	public function getAllUsersWithRole(&$db)
@@ -367,8 +385,10 @@ class tlRole extends tlDBObject
 		return $status;
 	}
 	
-	/** Delete the rights of a role from the db
-	 * @param $db [ref] the database connection
+	/** 
+	 * Delete the rights of a role from the db
+	 * 
+	 * @param resource &$db reference to database handler
 	 * @return returns tl::OK on success, tl::ERROR else
 	 */
 	protected function deleteRightsFromDB(&$db)
@@ -450,7 +470,7 @@ class tlRole extends tlDBObject
 
 /**
  * class which represents a right in TestLink
- *
+ * @package 	TestLink
  */
 class tlRight extends tlDBObject
 {
@@ -462,17 +482,17 @@ class tlRight extends tlDBObject
 	/**
 	 * constructor
 	 * 
-	 * @param $dbID integer the database identifier of the right
+	 * @param resource $db database handler
 	 */
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
 	}
 	
-	/* 
+	/** 
 	 * brings the object to a clean state
 	 * 
-	 * @param $options integer any combination of TLOBJ_O_ Flags
+	 * @param integer $options any combination of TLOBJ_O_ Flags
 	 */
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -481,8 +501,9 @@ class tlRight extends tlDBObject
 			$this->dbID = null;
 	}
 	
-	/* 
+	/** 
 	 * Magic function, called by PHP whenever right object should be printed
+	 * 
 	 * @return string returns the name of the right
 	 */
 	public function __toString()
@@ -491,11 +512,11 @@ class tlRight extends tlDBObject
 	}
 	
 	//BEGIN interface iDBSerialization
-	/* 
+	/** 
 	 * Read a right object from the database
 	 *
-	 * @param $db resource the database connection used to read the object
-	 * @param $option interger any combination of TLOBJ_O_ flags
+	 * @param resource &$db reference to database handler
+	 * @param interger $option any combination of TLOBJ_O_ flags
 	 * 
 	 * @return integer returns tl::OK on success, tl::ERROR else
 	 */
@@ -520,9 +541,9 @@ class tlRight extends tlDBObject
 	/**
 	 * Get a right by its database id
 	 * 
-	 * @param $db [ref] resource the database connection
-	 * @param $id integer the database identifier
-	 * @param $detailLevel integer the detail level, any combination TLOBJ_O_GET_DETAIL_ flags
+	 * @param resource &$db reference to database handler
+	 * @param integer $id the database identifier
+	 * @param integer $detailLevel the detail level, any combination TLOBJ_O_GET_DETAIL_ flags
 	 *
 	 * @return tlRight returns the create right or null
 	 */
@@ -531,6 +552,9 @@ class tlRight extends tlDBObject
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 	}
 	
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		if (!sizeof($ids))
@@ -549,6 +573,9 @@ class tlRight extends tlDBObject
 		return $rights;
 	}
 
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	static public function getAll(&$db,$whereClause = null,$column = null,
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
@@ -561,14 +588,22 @@ class tlRight extends tlDBObject
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
 
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	public function writeToDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 	
+	/** 
+	 * @param resource &$db reference to database handler
+	 **/    
 	public function deleteFromDB(&$db)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 }
+
+
 ?>

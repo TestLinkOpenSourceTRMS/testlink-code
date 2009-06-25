@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: results.class.php,v $
+ * @package 	TestLink
+ * @author 		Kevin Levy, franciscom
+ * @copyright 	2004-2009, TestLink community 
+ * @version    	CVS: $Id: results.class.php,v 1.141 2009/06/25 19:37:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * @uses		config.inc.php 
+ * @uses		common.php 
  *
- * @version $Revision: 1.140 $
- * @modified $Date: 2009/06/18 17:42:37 $ by $Author: franciscom $
- * @copyright Copyright (c) 2008, TestLink community
- * @author franciscom
- *-------------------------------------------------------------------------
- * Revisions:
+ * @internal Revisions:
+ * 
  * 20090618 - franciscom - BUGID 0002621 
  * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
  * 20090413 - amitkhullar - BUGID 2267 - SQL Error in linked Test Cases
@@ -38,30 +40,33 @@
  * 20070505 - franciscom - removing timer.php
  * 20070219 - kevinlevy - nearing completion for 1.7 release
  * 20060829 - kevinlevy - development in progress
-**/
-require_once("../../config.inc.php");
-require_once('common.php');
+ **/
+
+/** TBD */
 require_once('treeMenu.inc.php');
 require_once('users.inc.php');
 require_once('exec.inc.php'); // used for bug string lookup
 
 /**
-* @author kevinlevy
-* This class is encapsulates most functionality necessary to query the database
-* for results to publish in reports.  It returns data structures to the gui layer in a
-* manner that are easy to display in smarty templates.
-*/
+ * This class is encapsulates most functionality necessary to query the database
+ * for results to publish in reports.  It returns data structures to the gui layer in a
+ * manner that are easy to display in smarty templates.
+ * 
+ * @package TestLink
+ * @author kevinlevy
+ */
 class results extends tlObjectWithDB
 {
-	/*
-	* only call get_linked_tcversions() only once, and save it to
-	* $this->linked_tcversions
-	*/
+	/**
+	 * only call get_linked_tcversions() only once, and save it to
+	 * $this->linked_tcversions
+	 */
 	private $linked_tcversions = null;
 	private $suitesSelected = "";
 
-	// class references passed in by constructor
+	/** @var resource references passed in by constructor */
 	var  $db = null;
+	/** @var object class references passed in by constructor */
 	private $tplanMgr = null;
 	private $testPlanID = -1;
 	private	$tprojectID = -1;
@@ -190,6 +195,11 @@ class results extends tlObjectWithDB
   	var $import_file_types = array("XML" => "XML");
   	var $export_file_types = array("XML" => "XML");
   
+	/** 
+	 * class constructor 
+	 * @param resource &$db reference to database handler
+	 * @param object &$tplan_mgr reference to instance of testPlan class
+	 **/    
 	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
 	                        $builds_to_query = -1, $lastResult = 'a', 
@@ -210,19 +220,19 @@ class results extends tlObjectWithDB
 	}
 	
 	/**
-	* $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
-	* most logic in constructor from executing/ executions table from being queried
-	* if keyword = 0, search by keyword would not be performed
-	* @author kevinlevy
-	*
-	* rev :
-	* 	   20090327 - amitkhullar - added parameter $latest_results to get the latest results only.	
-	*      20071013 - franciscom - changes to fix MSSQL problems
-	*                 $startTime = "0000-00-00 00:00:00" -> null
-  	*                 $endTime = "9999-01-01 00:00:00" -> null
-  	*
-	*      20070916 - franciscom - interface changes
-	*/
+	 * $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
+	 * most logic in constructor from executing/ executions table from being queried
+	 * if keyword = 0, search by keyword would not be performed
+	 * @author kevinlevy
+	 *
+	 * @internal Revisions:
+	 * 	   20090327 - amitkhullar - added parameter $latest_results to get the latest results only.	
+	 *      20071013 - franciscom - changes to fix MSSQL problems
+	 *                 $startTime = "0000-00-00 00:00:00" -> null
+  	 *                 $endTime = "9999-01-01 00:00:00" -> null
+  	 *
+	 *      20070916 - franciscom - interface changes
+	 */
 	public function results_overload(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
 	                        $builds_to_query = -1, $lastResult = 'a',
@@ -331,84 +341,76 @@ class results extends tlObjectWithDB
 	} // end results constructor
 
 
-  	/*
-    function: get_export_file_types
-    args: -
-    @returns: map
-             key: export file type code
-             value: export file type verbose description
-  	*/
+  	/** 
+  	 * get_export_file_types
+  	 * @return array map of
+  	 *       key: export file type code
+  	 *       value: export file type verbose description
+  	 */
 	function get_export_file_types()
 	{
     	return $this->export_file_types;
 	}
 
 
-  	/*
-    function: get_import_file_types
-    args: -
-    returns: map
-             key: import file type code
-             value: import file type verbose description
-	*/
+  	/**
+  	 * get_import_file_types
+  	 * @return array map of
+  	 *       key: export file type code
+  	 *       value: export file type verbose description
+  	 */
 	function get_import_file_types()
 	{
     	return $this->import_file_types;
   	}
 
 	/**
-	* 
-	* tallyKeywordResults($keywordResults, $keywordIdNamePairs)
-	*
-	* keywordResultsformat:
-	* Array ([keyword id] => Array ( [test case id] => result ))
-	*
-	* example:
-	* Array ( [128] => Array ( [14308] => p [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n )
-	*			 [11] => Array ( [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ))
-	*
-	* @return map indexed using Keyword ID, where each element is a map with following structure:
-	*
-	*          [keyword_name] => K1
-	*          [total_tc] => 2
-	*          [percentage_completed] => 100.00
-  	*          [details] => Array
-  	*              (
-  	*                  [passed] => Array
-  	*                      (
-  	*                          [qty] => 1
-  	*                          [percentage] => 50.00
-  	*                      )
-  	*
-  	*                  [failed] => Array
-  	*                      (
-  	*                          [qty] => 1
-  	*                          [percentage] => 50.00
-  	*                      )
-  	*
-  	*                  [blocked] => Array
-  	*                      (
-  	*                          [qty] => 0
-  	*                          [percentage] => 0.00
-  	*                      )
-  	*
-  	*                  [unknown] => Array
-  	*                      (
-  	*                          [qty] => 0
-  	*                          [percentage] => 0.00
-  	*                      )
-  	*
-  	*                  [not_run] => Array
-  	*                      (
-  	*                          [qty] => 0
-  	*                          [percentage] => 0.00
-  	*                      )
-  	*              )
-  	*      )
-	*
-	*      IMPORTANT:
-	*                keys on details map dependends of configuration map $tlCfg->results['status_label']
-	*/
+	 * tallyKeywordResults($keywordResults, $keywordIdNamePairs)
+	 * 
+	 * @param array $keywordResults Array ([keyword id] => Array ( [test case id] => result ))
+	 * 		example:
+	 * 		<code>
+	 * 		Array ( [128] => Array ( [14308] => p [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n )
+	 *			 [11] => Array ( [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ))
+	 * 		</code>
+	 *
+	 * @return array map indexed using Keyword ID, where each element is a map with following structure:
+	 *		<code>
+	 *          [keyword_name] => K1
+	 *          [total_tc] => 2
+	 *          [percentage_completed] => 100.00
+  	 *          [details] => Array
+  	 *              (
+  	 *                  [passed] => Array
+  	 *                      (
+  	 *                          [qty] => 1
+  	 *                          [percentage] => 50.00
+  	 *                      )
+  	 *                  [failed] => Array
+  	 *                      (
+  	 *                          [qty] => 1
+  	 *                          [percentage] => 50.00
+  	 *                      )
+  	 *                  [blocked] => Array
+  	 *                      (
+  	 *                          [qty] => 0
+  	 *                          [percentage] => 0.00
+  	 *                      )
+  	 *                  [unknown] => Array
+  	 *                      (
+  	 *                          [qty] => 0
+  	 *                          [percentage] => 0.00
+  	 *                      )
+  	 *                  [not_run] => Array
+  	 *                      (
+  	 *                          [qty] => 0
+  	 *                          [percentage] => 0.00
+  	 *                      )
+  	 *              )
+  	 *      )
+	 *		</code>
+	 * IMPORTANT: keys on details map dependends of configuration map $tlCfg->results['status_label']
+	 */
 	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs)
 	{
 		if ($keywordResults == null)
@@ -430,54 +432,49 @@ class results extends tlObjectWithDB
 
 
 	/**
-	* tallyOwnerResults($ownerResults, $ownerIdNamePairs)
-	*   returns testers results
-	*
-	* ownerResults format:
-	* Array ([owner id] => Array ( [test case id] => result ))
-	*
-	* output format :
-	*          [tester_name] => johndoe
-  *          [total_tc] => 2
-  *          [percentage_completed] => 100.00
-  *          [details] => Array
-  *              (
-  *                  [passed] => Array
-  *                      (
-  *                          [qty] => 1
-  *                          [percentage] => 50.00
-  *                      )
-  *
-  *                  [failed] => Array
-  *                      (
-  *                          [qty] => 1
-  *                          [percentage] => 50.00
-  *                      )
-  *
-  *                  [blocked] => Array
-  *                      (
-  *                          [qty] => 0
-  *                          [percentage] => 0.00
-  *                      )
-  *
-  *                  [unknown] => Array
-  *                      (
-  *                          [qty] => 0
-  *                          [percentage] => 0.00
-  *                      )
-  *
-  *                  [not_run] => Array
-  *                      (
-  *                          [qty] => 0
-  *                          [percentage] => 0.00
-  *                      )
-  *              )
-  *      )
-	*
-	*      IMPORTANT:
-	*                keys on details map dependends of configuration map $tlCfg->results['status_label']
-	*
-	*/
+	 *
+	 * @param array $ownerResults format:
+	 * <code>Array ([owner id] => Array ( [test case id] => result ))</code>
+	 *
+	 * @return array map
+	 * Example of output format :
+	 * <code>
+	 *          [tester_name] => johndoe
+	 *          [total_tc] => 2
+	 *          [percentage_completed] => 100.00
+	 *          [details] => Array
+	 *              (
+	 *                  [passed] => Array
+	 *                      (
+	 *                          [qty] => 1
+	 *                          [percentage] => 50.00
+	 *                      )
+	 *                  [failed] => Array
+	 *                      (
+	 *                          [qty] => 1
+	 *                          [percentage] => 50.00
+	 *                      )
+	 *                  [blocked] => Array
+	 *                      (
+	 *                          [qty] => 0
+	 *                          [percentage] => 0.00
+	 *                      )
+	 *                  [unknown] => Array
+	 *                      (
+	 *                          [qty] => 0
+	 *                          [percentage] => 0.00
+	 *                      )
+	 *                  [not_run] => Array
+	 *                      (
+	 *                          [qty] => 0
+	 *                          [percentage] => 0.00
+	 *                      )
+	 *              )
+	 *      )
+	 * </code>
+	 *
+	 * IMPORTANT: keys on details map dependends of configuration map $tlCfg->results['status_label']
+	 */
 	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs)
 	{
 		if ($ownerResults == null)
@@ -487,6 +484,7 @@ class results extends tlObjectWithDB
 
 		$no_tester_assigned = lang_get('unassigned');
 		$rValue = null;
+		
     	foreach($ownerResults as $ownerId => $results)
     	{
 	    	$item_name = 'tester_name';
@@ -500,81 +498,77 @@ class results extends tlObjectWithDB
 
 
 	/**
-	* tallyBuildResults()
-	*
-	* parameter1 format:
-	* Array ([owner id] => Array ( [test case id] => result ))
-	*
-	* output format :
-	* Array ( [owner id] => Array ( total, passed, failed, blocked, not run))
-	*/
+	 *
+	 * parameter1 format:
+	 * Array ([owner id] => Array ( [test case id] => result ))
+	 *
+	 * @return array map
+	 * <code>Array ( [owner id] => Array ( total, passed, failed, blocked, not run))</code>
+	 */
 	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
 	{
 		if ($buildResults == null)
 		{
 			return null;
 		}
-
-	  // OK go ahead
+		
+		// OK go ahead
 		$totalCases = $finalResults['total'];
 		$rValue = null;
 		foreach($arrBuilds as $buildId => $buildInfo)
 		{
-	    $item_name='build_name';
-		  $results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
-      $element=$this->tallyResults($results,$totalCases,$item_name);
-  			if (!is_null ($element))
-  			{
-  				$element[$item_name]=$buildInfo['name'];
-  				$rValue[$buildId] = $element;
-  			}
+			$item_name='build_name';
+			$results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
+			$element=$this->tallyResults($results,$totalCases,$item_name);
+			if (!is_null ($element))
+			{
+				$element[$item_name]=$buildInfo['name'];
+				$rValue[$buildId] = $element;
+			}
 		} // end  foreach
-      
-    unset($element);       
+		
+		unset($element);       
 		unset($results);
+		
 		return $rValue;
-	} // end function
+	}
 
 
 
 	/**
-	* returns total / pass / fail / blocked / not run results for each keyword id
-	* @return array
-	*/
+	 * @return array total / pass / fail / blocked / not run results for each keyword id
+	 */
 	public function getAggregateKeywordResults() {
 		return $this->aggregateKeywordResults;
 	}
 
 	/**
-	* returns total / pass / fail / blocked / not run results for each owner id
-	* unassigned test cases show up under owner id = -1
-	* @return array
-	*/
+	 * @return array total / pass / fail / blocked / not run results for each owner id
+	 * unassigned test cases show up under owner id = -1
+	 */
 	public function getAggregateOwnerResults() {
 		return $this->aggregateOwnerResults;
 	}
 
 	/**
-	* returns total / pass / fail / blocked / not run results for each build id
-	* @return array
-	*/
+	 * @return array total / pass / fail / blocked / not run results for each build id
+	 */
 	public function getAggregateBuildResults() {
 		return $this->aggregateBuildResults;
 	}
 
 	/**
-	* TO-DO: rename this method to getExecutionsMap()
-	* (resultsTC.php is 1 file (may not be only file) that references this method)
-	* @return array
-	*/
+	 * @TODO rename this method to getExecutionsMap()
+	 * (resultsTC.php is 1 file (may not be only file) that references this method)
+	 * @return array
+	 */
 	public function getSuiteList(){
 		return $this->executionsMap;
 	}
 
 	/**
-	* returns array which describes suite hierachy
-	* @return array
-	*/
+	 * @return array array which describes suite hierachy
+	 */
 	public function getSuiteStructure(){
 		return $this->suiteStructure;
 	}
@@ -584,15 +578,15 @@ class results extends tlObjectWithDB
 	}
 
 	/**
-	* @return array
-	*/
+	 * @return array
+	 */
 	public function getMapOfSuiteSummary(){
 		return $this->mapOfSuiteSummary;
 	}
 
 	/**
-	* @return array
-	*/
+	 * @return array
+	 */
 	public function getMapOfLastResult() {
 		return $this->mapOfLastResult;
 	}
@@ -605,111 +599,99 @@ class results extends tlObjectWithDB
 	}
 
 	/**
-	* @return array
-	*/
+	 * @return array
+	 */
 	public function getTotalsForPlan(){
 		return $this->totalsForPlan;
 	}
 
 	/**
-	* single-dimension array
-	* with pattern level, suite name, suite id
-	* @return array
-	*/
+	 * @return array single-dimension array with pattern level, suite name, suite id
+	 */
 	public function getFlatArray(){
 		return $this->flatArray;
 	}
 
-  /*
-    function: tallyResults
-
-    args :
-          results: map: key tc_id
-                        value status_code
-
-    returns: map with following keys
-
-
-  */
-
+	/**
+	 * @param array $results map: key tc_id  => value status_code
+	 * @return mixed array or null
+	 */
 	private function tallyResults($results,$totalCases,$item_name=null)
 	{
 		if ($results == null)
 		{
 			return null;
 		}
-
-	  // OK go ahead
-	  $code_verbose=array_flip($this->tc_status_for_statistics);
+		
+		// OK go ahead
+		$code_verbose=array_flip($this->tc_status_for_statistics);
 		$element = null;
 		foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
 		{
-		    $total[$status_verbose]=0;
-		    $percentage[$status_verbose]=0;
+			$total[$status_verbose]=0;
+			$percentage[$status_verbose]=0;
 		}
-
+		
 		$dummy=0;
 		foreach($results as $tc_id => $result_code)
 		{
-	      $status_verbose=$code_verbose[$result_code];
-
-        // Check if user has configured and add not_run.
-        // Standard TestLink behavior:
-        // 1. do not show not_run as a choice on execute pages
-        // 2. do not save on DB not_run executions
-        //
-        if( $status_verbose !='' && $status_verbose != 'not_run')
-        {
-		      $total[$status_verbose]++;
-          $dummy++;
-        }
-  	}
-
-    // not_run is an special status
+			$status_verbose=$code_verbose[$result_code];
+			
+			// Check if user has configured and add not_run.
+			// Standard TestLink behavior:
+			// 1. do not show not_run as a choice on execute pages
+			// 2. do not save on DB not_run executions
+			//
+			if( $status_verbose !='' && $status_verbose != 'not_run')
+			{
+				$total[$status_verbose]++;
+				$dummy++;
+			}
+		}
+		
+		// not_run is an special status
 		$total['not_run'] = abs($totalCases - $dummy);
-    $percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
-
+		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
+		
 		$percentCompleted = 0;
 		if ($totalCases != 0)
 		{
 			$percentCompleted = (($totalCases - $total['not_run']) / $totalCases) * 100;
-
-		  foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
-		  {
-		      $percentage[$status_verbose]=(($total[$status_verbose]) / $totalCases) * 100;
-		      $percentage[$status_verbose]=number_format($percentage[$status_verbose],2);
-		  }
+			
+			foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+			{
+				$percentage[$status_verbose]=(($total[$status_verbose]) / $totalCases) * 100;
+				$percentage[$status_verbose]=number_format($percentage[$status_verbose],2);
+			}
 		}
 		$percentCompleted = number_format($percentCompleted,2);
-
+		
 		// Because I want to have this as first key on map, just for easy reading.
 		// Value will be setted by caller.
 		if( !is_null($item_name) )
 		{
-		    $element[$item_name]='';
+			$element[$item_name]='';
 		}
 		$element['total_tc']=$totalCases;
-    $element['percentage_completed']=$percentCompleted;
-
-    $element['details']=array();
-    foreach($total as $status_verbose => $counter)
-    {
-         $element['details'][$status_verbose]['qty']=$counter;
-         $element['details'][$status_verbose]['percentage']=$percentage[$status_verbose];
-    }
-
+		$element['percentage_completed']=$percentCompleted;
+		
+		$element['details']=array();
+		foreach($total as $status_verbose => $counter)
+		{
+			$element['details'][$status_verbose]['qty']=$counter;
+			$element['details'][$status_verbose]['percentage']=$percentage[$status_verbose];
+		}
+		
 		return $element;
 	} // end function
 
+
 	/**
-	* function getUserForFeature()
-	* @author amitkhullar
-	*
-	* Gets the user for a specific feature_id
-	* 
-	* @return void
-	* 
-	*/
+	 * Gets the user for a specific feature_id
+	 * @author amitkhullar
+	 * 
+	 * @return integer User identifier
+	 */
 	function getUserForFeature($feature_id)
 	{
 		$sql = " SELECT user_id FROM {$this->tables['user_assignments']} " .
@@ -718,56 +700,55 @@ class results extends tlObjectWithDB
 		$owner_id = $owner_row['user_id'];
 		return $owner_id;
 	}	// end function
+
 	
 	/**
-	* function addLastResultToMap()
-	* @author kevinlevy
-	*
-	* Creates $this->mapOfLastResult - which provides information on the last result
-	* for each test case.
-	*
-	* $this->mapOfLastResult is an array of suite ids
-	* each suiteId -> arrayOfTCresults, arrayOfSummaryResults
-	* arrayOfTCresults      ->  array of rows containing (buildIdLastExecuted, result) where row id = testcaseId
-	*
-	* currently it does not account for user expliting marking a case "not run".
-	*
-	* @return void
-	*
-	* rev :
-	*      20070919 - franciscom - interface changes
-	*      20070825 - franciscom - added node_order
-	*
-	*/
+	 * Fill $this->mapOfLastResult - which provides information on the last result
+	 * for each test case.
+	 *
+	 * $this->mapOfLastResult is an array of suite ids
+	 * each suiteId -> arrayOfTCresults, arrayOfSummaryResults
+	 * arrayOfTCresults      ->  array of rows containing (buildIdLastExecuted, result) where row id = testcaseId
+	 *
+	 * currently it does not account for user expliting marking a case "not run".
+	 *
+	 * @author kevinlevy
+	 *
+	 * @return void
+	 *
+	 * @internal Revisions:
+	 * 
+	 *      20070919 - franciscom - interface changes
+	 *      20070825 - franciscom - added node_order
+	 */
 	private function addLastResultToMap($suiteId, $suiteName, $exec,$lastResultToTrack)
 	{
-
-		$testcase_id=$exec['testcaseID'];
-		$external_id=$exec['external_id'];
-	  	$buildNumber=$exec['build_id'];
-		$result=$exec['status'];
-		$tcversion_id=$exec['tcversion_id'];
+		$testcase_id = $exec['testcaseID'];
+		$external_id = $exec['external_id'];
+		$buildNumber = $exec['build_id'];
+		$result = $exec['status'];
+		$tcversion_id = $exec['tcversion_id'];
 		
 		// 20080602 - franciscom
 		// Maybe this check is not more needed, because $exec has been changed using same logic
 		if( isset($exec['tcversion_number']) && !is_null($exec['tcversion_number']) )
 		{
-		    $version=$exec['tcversion_number'];
+			$version=$exec['tcversion_number'];
 		}
 		else
 		{
-		    $version=$exec['version'];
+			$version=$exec['version'];
 		}
 		
 		$execution_ts=$exec['execution_ts'];
-  		$notes=$exec['notes'];
-   		$executions_id=$exec['executions_id'];
-	  	$name=$exec['name'];
+		$notes=$exec['notes'];
+		$executions_id=$exec['executions_id'];
+		$name=$exec['name'];
 		$tester_id=$exec['tester_id'];
 		$feature_id=$exec['feature_id'];
 		$assigner_id=$exec['assigner_id'];
-
-
+		
+		
 		if ($buildNumber)
 		{
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
@@ -783,8 +764,8 @@ class results extends tlObjectWithDB
 		if ($this->keywordData != null && array_key_exists($testcase_id, $this->keywordData))
 		{
 			$associatedKeywords = $this->keywordData[$testcase_id];
-    }
-    
+		}
+		
 		$bInsert = false;
 		$bClean = false;
 		// handle case where suite has already been added to mapOfLastResult
@@ -809,8 +790,8 @@ class results extends tlObjectWithDB
 		else 
 		{
 			$bInsert = true;
-        }
-        
+		}
+		
 		if ($bInsert)
 		{
 			// owner assignments
@@ -825,48 +806,48 @@ class results extends tlObjectWithDB
 			
 			$this->mapOfCaseResults[$testcase_id]['buildNumber'] = $buildNumber;
 			$this->mapOfCaseResults[$testcase_id]['execID'] = $executions_id;
-
+			
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber,
-	                                                           "result" => $result,
-												 		                                 "tcversion_id" => $tcversion_id,
-		                                                         "external_id" => $external_id,
-												 		                                 "version" => $version,
-	                                                           "execution_ts" => $execution_ts,
-														                                 "notes" => $notes,
-	                                                           "suiteName" => $suiteName,
-	                                                           "executions_id" => $executions_id,
-	                                                           "name" => $name,
-														                                 "tester_id" => $tester_id);
+				"result" => $result,
+				"tcversion_id" => $tcversion_id,
+				"external_id" => $external_id,
+				"version" => $version,
+				"execution_ts" => $execution_ts,
+				"notes" => $notes,
+				"suiteName" => $suiteName,
+				"executions_id" => $executions_id,
+				"name" => $name,
+				"tester_id" => $tester_id);
 		}
 	} // end function
 
 	/**
-	*  Creates statistics on each suite
-	*  @return void
-	*/
+	 *  Creates statistics on each suite
+	 *  @return void
+	 */
 	private function createMapOfSuiteSummary(&$mapOfLastResult)
 	{
 		if ($mapOfLastResult)
 		{
-	    $code_verbose=array_flip($this->tc_status_for_statistics);
-      $code_verbose[$this->map_tc_status['not_run']]='not_run';
-
+			$code_verbose=array_flip($this->tc_status_for_statistics);
+			$code_verbose[$this->map_tc_status['not_run']]='not_run';
+			
 			foreach($mapOfLastResult as $suiteId => $tcaseResults)
 			{
-
-		    foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
-		    {
-		        $total[$status_verbose]=0;
-		    }
-	      $total['not_run']=0;
-
-        foreach($tcaseResults as $testcase_id => $value)
-        {
-					$currentResult =  $tcaseResults[$testcase_id]['result'];
-  		    $status_verbose=$code_verbose[$currentResult];
-	   	    $total[$status_verbose]++;
+				
+				foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+				{
+					$total[$status_verbose]=0;
 				}
-
+				$total['not_run']=0;
+				
+				foreach($tcaseResults as $testcase_id => $value)
+				{
+					$currentResult =  $tcaseResults[$testcase_id]['result'];
+					$status_verbose=$code_verbose[$currentResult];
+					$total[$status_verbose]++;
+				}
+				
 				$total['total'] = count($tcaseResults);
 				$this->mapOfSuiteSummary[$suiteId] =  $total;
 			}
@@ -874,93 +855,91 @@ class results extends tlObjectWithDB
 	} // end function
 
 	/**
-	*  tallies total cases, total pass/fail/blocked/not run for each suite
-	*  it takes into account sub-suite tallies within that suite
-	*  ex : if suite A contains suites A.1 and A.2, this function
-	*  adds up A.1, A.2, and test cases within A
-	*/
+	 *  tallies total cases, total pass/fail/blocked/not run for each suite
+	 *  it takes into account sub-suite tallies within that suite
+	 *  ex : if suite A contains suites A.1 and A.2, this function
+	 *  adds up A.1, A.2, and test cases within A
+	 */
 	private function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary)
 	{
-	    $loop_qty=count($suiteStructure);
-  		for ($idx = 0; $idx < $loop_qty; $idx++ )
-  		{
-  			$suiteId = 0;
-  		  $tpos=$idx % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE;
-  			if ($tpos ==  $this->ID_IN_SUITE_STRUCTURE)
-  			{
-  				// register a suite that we will use to increment aggregate results for
-  				$suiteId = $suiteStructure[$idx];
-  				array_push($this->aggSuiteList, $suiteId);
-
- 				  if ($mapOfSuiteSummary && array_key_exists($suiteId, $mapOfSuiteSummary))
- 				  {
- 					  $summaryArray = $mapOfSuiteSummary[$suiteId];
- 					  $this->addResultsToAggregate($summaryArray);
- 				  }
- 			  }
-			  elseif ($tpos ==  $this->ARRAY_IN_SUITE_STRUCTURE)
-			  {
-  				if (is_array($suiteStructure[$idx]))
-  				{
-  					// go get child totals
-  					$newSuiteStructure = $suiteStructure[$idx];
-  					$this->createAggregateMap($newSuiteStructure, $mapOfSuiteSummary);
-				  }
-
-				  // it's very important to pop a suite off the list at this point
-				  // and only this point
-				  array_pop($this->aggSuiteList);
-  			}
-
-  		} // end for
+		$loop_qty=count($suiteStructure);
+		for ($idx = 0; $idx < $loop_qty; $idx++ )
+		{
+			$suiteId = 0;
+			$tpos=$idx % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE;
+			if ($tpos ==  $this->ID_IN_SUITE_STRUCTURE)
+			{
+				// register a suite that we will use to increment aggregate results for
+				$suiteId = $suiteStructure[$idx];
+				array_push($this->aggSuiteList, $suiteId);
+				
+				if ($mapOfSuiteSummary && array_key_exists($suiteId, $mapOfSuiteSummary))
+				{
+					$summaryArray = $mapOfSuiteSummary[$suiteId];
+					$this->addResultsToAggregate($summaryArray);
+				}
+			}
+			elseif ($tpos ==  $this->ARRAY_IN_SUITE_STRUCTURE)
+			{
+				if (is_array($suiteStructure[$idx]))
+				{
+					// go get child totals
+					$newSuiteStructure = $suiteStructure[$idx];
+					$this->createAggregateMap($newSuiteStructure, $mapOfSuiteSummary);
+				}
+				
+				// it's very important to pop a suite off the list at this point
+				// and only this point
+				array_pop($this->aggSuiteList);
+			}
+			
+		} // end for
 	} // end function
 
 	/**
-	* iterates over top level suites and adds up totals using data from mapOfAggregate
-	*/
+	 * iterates over top level suites and adds up totals using data from mapOfAggregate
+	 */
 	private function createTotalsForPlan($suiteStructure)
 	{
-	  $counters['total']=0;
-	  $counters['not_run']=0;
-    foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
-    {
-        $counters[$status_verbose]=0;
-    }
-
+		$counters['total']=0;
+		$counters['not_run']=0;
+		foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+		{
+			$counters[$status_verbose]=0;
+		}
+		
 		$loop_qty=count($suiteStructure);
 		for ($idx = 0 ; $idx < $loop_qty ; $idx++)
 		{
 			if (($idx % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE)
 			{
-
+				
 				$suiteId = $suiteStructure[$idx];
 				$resultsForSuite = isset($this->mapOfAggregate[$suiteId]) ? $this->mapOfAggregate[$suiteId] : null;
-		    if( !is_null($resultsForSuite) )
-		    {
-		        foreach($counters as $code_verbose => $value)
-		        {
-		            $counters[$code_verbose]+=$resultsForSuite[$code_verbose];
-		        }
-		    }
+				if( !is_null($resultsForSuite) )
+				{
+					foreach($counters as $code_verbose => $value)
+					{
+						$counters[$code_verbose]+=$resultsForSuite[$code_verbose];
+					}
+				}
 			} // end if
 		}
-
+		
 		return $counters;
 	} // end function
 
 	/**
-	*
-	*
-	* results: map with following keys:
-	*          'total','not_run', other keys depends of status configured by user
-	*          If users leave untouched TestLink Factory configuration:
-	*          'total','not_run','passed','failed','blocked'
-	*/
+	 * @return array map with following keys:
+	 *		'total','not_run', other keys depends of status configured by user
+	 *		If users leave untouched TestLink Factory configuration:
+	 *		'total','not_run','passed','failed','blocked'
+	 */
 	private function addResultsToAggregate($results)
 	{
-	  $loop_qty=count($this->aggSuiteList);
-
-
+		$loop_qty=count($this->aggSuiteList);
+		
+		
 		for ($idx = 0 ; $idx < $loop_qty ; $idx++)
 		{
 			$suiteId = $this->aggSuiteList[$idx];
@@ -971,58 +950,60 @@ class results extends tlObjectWithDB
 			}
 			else
 			{
- 			    $currentSuite['total'] = 0;
-		      foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
-		      {
-		          $currentSuite[$status_verbose]=0;
-		      }
-			    $currentSuite['not_run'] = 0;
+				$currentSuite['total'] = 0;
+				foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
+				{
+					$currentSuite[$status_verbose]=0;
+				}
+				$currentSuite['not_run'] = 0;
 			}
-
-      foreach($currentSuite as $key => $value)
-      {
-          $currentSuite[$key] += $results[$key];
-      }
-
+			
+			foreach($currentSuite as $key => $value)
+			{
+				$currentSuite[$key] += $results[$key];
+			}
+			
 			$this->mapOfAggregate[$suiteId] = $currentSuite;
-		} // end for loop
+		} 
 	} // end function
 
+
 	/**
-	*
-	*/
+	 * @return array map testcase_id, keyword_id
+	 */
 	private function getKeywordData($keywordsInPlan) 
 	{
-	  $CUMULATIVE=1;
+		$CUMULATIVE=1;
 		
 		// limit the sql query to just those keys in this test plan
 		if ($keywordsInPlan == null) {
 			return null;
 		}
-
+		
 		$keys = implode(',',$keywordsInPlan);
 		$sql = " SELECT testcase_id, keyword_id" .
-		       " FROM testcase_keywords" .
-		       " WHERE keyword_id IN ($keys)";
+			" FROM testcase_keywords" .
+			" WHERE keyword_id IN ($keys)";
 		
 		$returnMap =  $this->db->fetchColumnsIntoMap($sql,'testcase_id', 'keyword_id',$CUMULATIVE);
+		
 		return $returnMap;
 	} // end function
 
+
 	/**
-	*
-	*
-	* rev :
-	*/
-	private function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult){
+	 *
+	 */
+	private function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult)
+	{
 		$suiteName = null;
-		$totalSuites=count($suiteStructure);
-
-
+		$totalSuites = count($suiteStructure);
+		
 		for ($i = 0; $i < $totalSuites; $i++){
 			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
 				$suiteName = $suiteStructure[$i];
 			}
+			
 			elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {
 				$suiteId = $suiteStructure[$i];
 				$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;
@@ -1030,7 +1011,8 @@ class results extends tlObjectWithDB
 					$cexec = $executionsMap[$suiteId][$j];
 					$this->addLastResultToMap($suiteId, $suiteName,$cexec,$lastResult);
 				}
-	  	}
+			}
+			
 			elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE){
 				if (is_array($suiteStructure[$i])){
 					$childSuite = $suiteStructure[$i];
@@ -1041,73 +1023,71 @@ class results extends tlObjectWithDB
 	} // end function
 
 	/**
-	* Builds $executionsMap map. $executionsMap contains all execution information for suites and test cases.
-	*
-	*
-	* $executionsMap = [testsuite_id_1_array, test_suite_id_2_array, ...]
-	*
-	* testsuite_id_1_array = []
-	* all test cases are included, even cases that have not been executed yet
-	*
-	* rev :
-	* 	20090302 - amitkhullar - added a parameter $all_results to get latest results (0) only otherwise 
-	* 								all results are displayed in reports (1). 
-	*      20080928 - franciscom - seems that adding a control to avoid call to buildBugString()
-	*                              reduces dramatically memory usage();
-	*                              IMPORTANT:
-	*                              we need to refactor this method, because if we had to call buildBugsString()
-	*                              probably will crash again.
-	*                              We need to think about function that got bug for all test cases, with one
-	*                              call, may be is the solution.
-	*
-	*      20070916 - franciscom - removed session coupling
-	*
-	*      added node_order
-	*/
+	 * Builds $executionsMap map. $executionsMap contains all execution information for suites and test cases.
+	 *
+	 *
+	 * $executionsMap = [testsuite_id_1_array, test_suite_id_2_array, ...]
+	 *
+	 * testsuite_id_1_array = []
+	 * all test cases are included, even cases that have not been executed yet
+	 *
+	 * @internal Revisions:
+	 * 
+	 *	20090302 - amitkhullar - added a parameter $all_results to get latest results (0) only otherwise 
+	 * 				all results are displayed in reports (1). 
+	 *	20080928 - franciscom - seems that adding a control to avoid call to buildBugString()
+	 *				reduces dramatically memory usage();
+	 *				IMPORTANT:
+	 *				we need to refactor this method, because if we had to call buildBugsString()
+	 *				probably will crash again.
+	 *				We need to think about function that got bug for all test cases, with one
+	 *				call, may be is the solution.
+	 *
+	 *	20070916 - franciscom - removed session coupling
+	 *				added node_order
+	 */
 	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0,
 	                                    $owner = null, $startTime, $endTime, $executor,
 	                                    $search_notes_string, $executeLinkBuild, $all_results = 1)
 	{
-    	$searchBugs= config_get('bugInterfaceOn');
-                                                    
+		$searchBugs= config_get('bugInterfaceOn');
+		
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
-
+		
 		// for execution link
 		$bCanExecute = has_rights($this->db,"tp_execute");
-
-		// ------------------------------------------------------
-    // Build Sql additional filters
+		
+		// Build Sql additional filters
 		$sqlFilters='';
 		if( !is_null($startTime) )
 		{
-		  $sqlFilters .= " AND execution_ts > '{$startTime}'";
+			$sqlFilters .= " AND execution_ts > '{$startTime}'";
 		}
-
+		
 		if( !is_null($endTime) )
 		{
-		  $sqlFilters .= " AND execution_ts < '{$endTime}' ";
+			$sqlFilters .= " AND execution_ts < '{$endTime}' ";
 		}
-
+		
 		if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) ||
-		    ($lastResult == $this->map_tc_status['blocked'])){
+				($lastResult == $this->map_tc_status['blocked'])){
 			$sqlFilters .= " AND status = '" . $lastResult . "' ";
 		}
 		if (($builds_to_query != -1) && ($builds_to_query != 'a')) {
 			$sqlFilters .= " AND build_id IN ($builds_to_query) ";
 		}
 		if (!is_null($executor)) {
-		    $sqlFilters .= " AND tester_id = $executor ";
+			$sqlFilters .= " AND tester_id = $executor ";
 		}
 		if ($search_notes_string != null) {
-		    $sqlFilters .= " AND notes LIKE '%" . $search_notes_string ."%' ";
+			$sqlFilters .= " AND notes LIKE '%" . $search_notes_string ."%' ";
 		}
-		// ------------------------------------------------------
-
+		
 		$suffixLink = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character);
-    
-    	foreach($this->linked_tcversions as $testcaseID => $info)
+		
+		foreach($this->linked_tcversions as $testcaseID => $info)
 		{
 			$executionExists = true;
 			$currentSuite = null;
@@ -1118,10 +1098,10 @@ class results extends tlObjectWithDB
 				$currentSuite = $executionsMap[$info['testsuite_id']];
 			}
 			
-	    	$version = $info['version'];
+			$version = $info['version'];
 			if(isset($info['tcversion_number']) && !is_null($info['tcversion_number']))
-		  	{
-			    $version = $info['tcversion_number'];
+			{
+				$version = $info['tcversion_number'];
 			}
 			
 			$owner_id = $this->getUserForFeature($info['feature_id']);
@@ -1130,24 +1110,23 @@ class results extends tlObjectWithDB
 				$owner_id = -1;
 			}
 			// BUGID - 2374: Show Assigned User in the Not Run Test Cases Report 
-      		$infoToSave = array('testcaseID' => $testcaseID,
-      		                    'testcasePrefix' => $this->testCasePrefix . $this->testCaseCfg->glue_character,
-			                        'external_id' => $info['external_id'],
-			                        'tcversion_id' => $info['tcversion_id'],
-			                        'version' => $version,
-			                        'build_id' => '',
-			                        'tester_id' => $owner_id,
-			                        'execution_ts' => '',
-			                        'status' => $this->map_tc_status['not_run'],
-			                        'executions_id' => '',
-			                        'notes' => '',
-			                        'bugString' => '',
-			                        'name' => $info['name'],
-			                        'assigner_id' => $info['assigner_id'],
-			                        'feature_id' => $info['feature_id'],
-			                        'execute_link' => '');
-      
-
+			$infoToSave = array('testcaseID' => $testcaseID,
+				'testcasePrefix' => $this->testCasePrefix . $this->testCaseCfg->glue_character,
+				'external_id' => $info['external_id'],
+				'tcversion_id' => $info['tcversion_id'],
+				'version' => $version,
+				'build_id' => '',
+				'tester_id' => $owner_id,
+				'execution_ts' => '',
+				'status' => $this->map_tc_status['not_run'],
+				'executions_id' => '',
+				'notes' => '',
+				'bugString' => '',
+				'name' => $info['name'],
+				'assigner_id' => $info['assigner_id'],
+				'feature_id' => $info['feature_id'],
+				'execute_link' => '');
+			
 			if ($info['tcversion_id'] != $info['executed'])
 			{
 				$executionExists = false;
@@ -1157,64 +1136,65 @@ class results extends tlObjectWithDB
 					array_push($currentSuite, $infoToSave);
 				}
 			}
-
+			
 			if ($executionExists) 
 			{
 				// TO-DO - this is where we can include the searching of results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids
 				$sql = "SELECT * FROM {$this->tables['executions']} executions " .
-				       "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " ;
-
-		        $sql .= $sqlFilters;
-
+					"WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " ;
+				
+				$sql .= $sqlFilters;
+				
 				// mht: fix 966
 				// mike_h - 20070806 - when ordering executions by the timestamp, 
 				// the results are represented correctly in the report "Test Report".
 				// amitkhullar - BUGID 2156 - added option to get latest/all results in Query metrics report.				
-
-		        	if ($all_results == 0)
+				
+				if ($all_results == 0)
 				{
 					$sql .= " ORDER BY execution_ts DESC limit 1";
 				}
 				else 				
 				{
 					$sql .= " ORDER BY execution_ts ASC ";
-
+					
 				}
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
 				{
-	  				if ($lastResult != $this->map_tc_status['not_run']) 
-	  				{
-	              		foreach($execQuery as $executions_id => $execInfo)
+					if ($lastResult != $this->map_tc_status['not_run']) 
+					{
+						foreach($execQuery as $executions_id => $execInfo)
 						{
-					    	$exec_row = $execInfo[0];
-						    	
-					    	$infoToSave['build_id'] = $exec_row['build_id'];
-					    	$infoToSave['tester_id'] = $exec_row['tester_id'];
-					    	$infoToSave['status'] = $exec_row['status'];
-					    	$infoToSave['notes'] = $exec_row['notes'];
-					    	$infoToSave['executions_id'] = $executions_id;
-					    	//@todo: Refactor for this code - BUGID 2242 
-					    	$infoToSave['bugString'] = $searchBugs ? $this->buildBugString($this->db, $executions_id) : '';
-
-					    	$dummy = null;
-					    	$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
-					    	                                                       $exec_row['execution_ts']);
+							$exec_row = $execInfo[0];
+							
+							$infoToSave['build_id'] = $exec_row['build_id'];
+							$infoToSave['tester_id'] = $exec_row['tester_id'];
+							$infoToSave['status'] = $exec_row['status'];
+							$infoToSave['notes'] = $exec_row['notes'];
+							$infoToSave['executions_id'] = $executions_id;
+							//@todo: Refactor for this code - BUGID 2242 
+							$infoToSave['bugString'] = $searchBugs ? $this->buildBugString($this->db, $executions_id) : '';
+							
+							$dummy = null;
+							$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
+								$exec_row['execution_ts']);
 							//-amitkhullar - BugID:2267
-					 		$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
-    						$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . 
-							"&tplan_id=" . $this->testPlanID . '">' .  
-			               	$suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
-								    	                                                       
-					   		array_push($currentSuite, $infoToSave);
-					    } // end foreach
+							$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
+							$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . 
+								"&tplan_id=" . $this->testPlanID . '">' .  
+								$suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
+							
+							array_push($currentSuite, $infoToSave);
+						} // end foreach
 					}  
 				} // end if($execQuery)
+
 				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) 
 				{
-				  // HANDLE scenario where execution does not exist
+					// HANDLE scenario where execution does not exist
 					array_push($currentSuite, $infoToSave);
 				}
 			} // end if($executionExists)
@@ -1228,34 +1208,37 @@ class results extends tlObjectWithDB
 	} // end function
 
 	/**
-	* TO-DO - figure out what file to include so i don't have
-	* to redefine this
-	* builds bug information for execution id
-	* written by Andreas, being implemented again by KL
-	*/
+	 * TO-DO - figure out what file to include so i don't have
+	 * to redefine this
+	 * builds bug information for execution id
+	 * written by Andreas, being implemented again by KL
+	 */
 	function buildBugString(&$db,$execID) 
 	{
 		$bugString = null;
-	    if (!$execID)
-	    {
-		     return $bugString;
-		  }
-		  $bug_interface = config_get("bugInterface");
-		  $bugs = get_bugs_for_exec($db,$bug_interface,$execID);
-		  if ($bugs) 
-		  {
-			  foreach($bugs as $bugID => $bugInfo) 
-			  {
-				  $bugString .= $bugInfo['link_to_bts']."<br />";
-			  }
-		  }
+		if (!$execID)
+		{
+			return $bugString;
+		}
+		
+		$bug_interface = config_get("bugInterface");
+		$bugs = get_bugs_for_exec($db,$bug_interface,$execID);
+		if ($bugs) 
+		{
+			foreach($bugs as $bugID => $bugInfo) 
+			{
+				$bugString .= $bugInfo['link_to_bts']."<br />";
+			}
+		}
+		
 		return $bugString;
 	} // end function
 
 	/**
-	* return map of suite id to suite name pairs of all suites
-	*/
-	public function getAllSuites() {
+	 * @return array map of suite id to suite name pairs of all suites
+	 */
+	public function getAllSuites() 
+	{
 		$returnList = null;
 		$name = null;
 		$suiteId = null;
@@ -1272,53 +1255,53 @@ class results extends tlObjectWithDB
 	} // end function
 
 	/**
-	* return map of suite id to suite name pairs of top level suites
-	* iterates over top level suites and adds up totals using data from mapOfAggregate
-	*/
-	public function getTopLevelSuites(){
+	 * return map of suite id to suite name pairs of top level suites
+	 * iterates over top level suites and adds up totals using data from mapOfAggregate
+	 */
+	public function getTopLevelSuites()
+	{
 		$returnList = null;
 		$name = null;
 		$suiteId = null;
 		for ($i = 0 ; $i < count($this->suiteStructure) ; $i++) {
 			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
 				$name = $this->suiteStructure[$i];
-			} // end if
+			}
 			else if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {
 				$suiteId = $this->suiteStructure[$i];
 				$returnList[$i] = array('name' => $name, 'id' => $suiteId);
-			} // end else if
+			}
 		} // end for loop
+		
 		return $returnList;
 	} // end function getTopLevelSuites
 
+
 	/**
-	* generateExecTree()
-	* KL took this code from menuTree.inc.php.
-	* Builds both $this->flatArray and $this->suiteStructure
-	*
-	* initializes linked_tcversions object
-	*
-	* Builds a multi-dimentional array which represents the tree structure.
-	* Specifically an array is returned in the following pattern
-	* every 3rd index is null if suite does not contain other suites
-	* or array of same pattern if it does contain suites
-	*
-	*  suite[0] = suite id
-	*	suite[1] = suite name
-	*	suite[2] = array() of child suites or null
-	*	suite[3] = suite id
-	*	suite[4] = suite name
-	*	suite[5] = array() of child suites or null
-	*
-	*/
+	 * initializes linked_tcversions object
+	 *
+	 * Builds a multi-dimentional array which represents the tree structure.
+	 * Specifically an array is returned in the following pattern
+	 * every 3rd index is null if suite does not contain other suites
+	 * or array of same pattern if it does contain suites
+	 *
+	 * KL took this code from menuTree.inc.php.
+	 * Builds both $this->flatArray and $this->suiteStructure
+	 *
+	 * @param resource &$db reference to database handler
+	 * 
+	 * @return array structured map
+	 * 
+	 *  suite[0] = suite id
+	 *	suite[1] = suite name
+	 *	suite[2] = array() of child suites or null
+	 *	suite[3] = suite id
+	 *	suite[4] = suite name
+	 *	suite[5] = array() of child suites or null
+	 *
+	 */
 	private function generateExecTree(&$db,$keyword_id = 0, $owner = null) 
 	{
-	    // $mem=array();		
-	    // $mem[]=self::memory_status(__CLASS__,__FILE__,__FUNCTION__,__LINE__);
-	    // $xmem=current($mem);
-	    // echo "<pre>debug 20080928 - \ - " . __FUNCTION__ . " --- "; print_r($xmem['msg']); echo "</pre>";  
-	    // ob_flush();flush();
-	
 		$RECURSIVE_MODE = true;
 		$tplan_mgr = $this->tplanMgr;
 		$tproject_mgr = new testproject($this->db);
@@ -1350,13 +1333,14 @@ class results extends tlObjectWithDB
 		// ob_flush();flush();
 			                              
 		$suiteStructure = $this->processExecTreeNode(1,$test_spec,$hash_id_descr);
+		
 		return $suiteStructure;
 	}
 	
 	/**
-	* parent_suite_name is used to construct the full hierachy name of the suite
-	* ex: "A->A.A->A.A.A"
-	*/
+	 * parent_suite_name is used to construct the full hierachy name of the suite
+	 * ex: "A->A.A->A.A.A"
+	 */
 	private function processExecTreeNode($level,&$node,$hash_id_descr,$parent_suite_name = '')
 	{
 		$currentNode = null;
@@ -1387,7 +1371,7 @@ class results extends tlObjectWithDB
 					else {
 						$hierarchySuiteName = $current['name'];
 					}
-					/** flat array logic */
+					/* flat array logic */
 					$CONSTANT_DEPTH_ADJUSTMENT = 2;
 					$this->depth = $level - $CONSTANT_DEPTH_ADJUSTMENT  ;
 					$changeInDepth = $this->depth - $this->previousDepth;
@@ -1399,45 +1383,46 @@ class results extends tlObjectWithDB
 					$this->flatArrayIndex++;
 					$this->flatArray[$this->flatArrayIndex] = $id;
 					$this->flatArrayIndex++;
-					/** end flat array logic */
-					/** suiteStructure logic */
+					/* end flat array logic */
+					/* suiteStructure logic */
 					$currentNode[$currentNodeIndex] = $hierarchySuiteName;
 					$currentNodeIndex++;
 					$currentNode[$currentNodeIndex] = $id;
 					$currentNodeIndex++;
 					$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descr,$hierarchySuiteName);
 					$currentNodeIndex++;
-					/** end suiteStructure logic */
-				} // end if
+					/* end suiteStructure logic */
+				}
 			} // end for
-		} // end if
+		}
+		
 		return $currentNode;
-	} //end function
+	}
 
 	/**
-	* Function 
-	* @return string Link of Test ID + Title
-	*/
+	 * 
+	 * @return string Link of Test ID + Title
+	 */
 	function getTCLink($rights, $tcID, $tcExternalID,$tcversionID, $title, $buildID,$tplanID)
 	{
 		$title = htmlspecialchars($title);
 		$suffix = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character . $tcExternalID) .
-		          ":&nbsp;<b>" . $title. "</b></a>";
+			":&nbsp;<b>" . $title. "</b></a>";
 		//BUGID 2267
 		$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
-				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'&tplan_id=' . $tplanID.'">';
+			. $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'&tplan_id=' . $tplanID.'">';
 		$testTitle .= $suffix;
-
-	  return $testTitle;
+		
+		return $testTitle;
 	}
 
-	// ----------------------------------------------------------------------------------
+
 	/**
-	* Function returns prioritized test result counter
-	* 
-	* @param timestamp $milestoneDate - optional milestone deadline
-	* @return array with three priority counters
-	*/
+	 * Function returns prioritized test result counter
+	 * 
+	 * @param timestamp $milestoneDate - (optional) milestone deadline
+	 * @return array with three priority counters
+	 */
 	public function getPrioritizedResults($milestoneDate = null)
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
@@ -1447,19 +1432,19 @@ class results extends tlObjectWithDB
 			for($importance=1; $importance <= 3; $importance++)
 			{	
 				$sql = "SELECT COUNT(DISTINCT(TPTCV.id )) " .
-					   " FROM {$this->tables['testplan_tcversions']} TPTCV " .
-					   " JOIN {$this->tables['executions']} E ON " .
-					   " TPTCV.tcversion_id = E.tcversion_id " .
-                       " JOIN {$this->tables['tcversions']} TCV ON " .
-                       " TPTCV.tcversion_id = TCV.id " .
-					   " WHERE TPTCV.testplan_id = {$this->testPlanID} " .
-					   " AND E.testplan_id = {$this->testPlanID} " .
-					   " AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
-			    	   " AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
-
+					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+					" JOIN {$this->tables['executions']} E ON " .
+					" TPTCV.tcversion_id = E.tcversion_id " .
+					" JOIN {$this->tables['tcversions']} TCV ON " .
+					" TPTCV.tcversion_id = TCV.id " .
+					" WHERE TPTCV.testplan_id = {$this->testPlanID} " .
+					" AND E.testplan_id = {$this->testPlanID} " .
+					" AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
+					" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
+				
 				if( !is_null($milestoneDate) )
 					$sql .= " AND execution_ts < '{$milestoneDate}'";
-
+				
 				$tmpResult = $this->db->fetchOneValue($sql);
 				// parse results into three levels of priority
 				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
@@ -1479,22 +1464,21 @@ class results extends tlObjectWithDB
 				}	
 			}
 		}
-					
+		
 		return $output;
 	}
 
 
-	// ----------------------------------------------------------------------------------
 	/**
-	* Function returns prioritized test case counter (in Test Plan)
-	* 
-	* @return array with three priority counters
-	*/
+	 * Function returns prioritized test case counter (in Test Plan)
+	 * 
+	 * @return array with three priority counters
+	 */
 	public function getPrioritizedTestCases()
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
 		
-		//@TODO - REFACTOR IS OUT OF STANDARD MAGIC NUMBERS
+		/** @TODO - REFACTOR IS OUT OF STANDARD MAGIC NUMBERS */
 		for($urgency=1; $urgency <= 3; $urgency++)
 		{
 			for($importance=1; $importance <= 3; $importance++)
@@ -1529,23 +1513,26 @@ class results extends tlObjectWithDB
 		return $output;
 	}
 
-  /* utility method to trace memory usage
-  
-  */
+
+	/** 
+	 * utility method to trace memory usage
+	 * @TODO havlatm: this function should be in some parent
+	 */
 	function memory_status($pclass,$pfile,$pfunction,$pline)
 	{
-	  
-	  $status=array('msg'=>'','mem'=>0,'peak'=>0); 
-    if( function_exists('memory_get_usage') )
-    {
-        $status['mem']=memory_get_usage();
-        $status['peak']=memory_get_peak_usage();
-
-        $status['msg']='<pre> Class:' . $pclass . ' - File:' . $pfile . '<br>';
-        $status['msg'] .= 'Function:' . $pfunction . ' - Line:' . $pline . ' - ';
-        $status['msg'] .="Mem Usage: ". $status['mem'] ." | Peak: ". $status['peak'] .'<br> </pre>';
-    }
-    return $status;
+		$status=array('msg'=>'','mem'=>0,'peak'=>0);
+		
+		if( function_exists('memory_get_usage') )
+		{
+			$status['mem']=memory_get_usage();
+			$status['peak']=memory_get_peak_usage();
+			
+			$status['msg']='<pre> Class:' . $pclass . ' - File:' . $pfile . '<br>';
+			$status['msg'] .= 'Function:' . $pfunction . ' - Line:' . $pline . ' - ';
+			$status['msg'] .="Mem Usage: ". $status['mem'] ." | Peak: ". $status['peak'] .'<br> </pre>';
+		}
+		
+		return $status;
 	}
 
 	
@@ -1589,21 +1576,21 @@ class results extends tlObjectWithDB
 					if(is_null($current))
 					{
 						continue;
-		  			}
-		  			$tcCount = $this->removeEmptySuites($current,$hash_id_descr,
-					                            $tck_map,$tplan_tcases,
-					                            $assignedTo);
-		 			$tcase_counters += $tcCount;
-		      	}
-		
+					}
+					$tcCount = $this->removeEmptySuites($current,$hash_id_descr,
+						$tck_map,$tplan_tcases,
+						$assignedTo);
+					$tcase_counters += $tcCount;
+				}
+				
 				if ((!is_null($tck_map) || !is_null($tplan_tcases)) && 
-				     !$tcase_counters && ($node_type != 'testproject'))
+						!$tcase_counters && ($node_type != 'testproject'))
 				{
 					$node = null;
 				}
 			}
-	 		else if ($tplan_tcases)
-	 		{
+			else if ($tplan_tcases)
+			{
 				$node = null;
 			}	
 		}
@@ -1612,6 +1599,13 @@ class results extends tlObjectWithDB
 	}
 
 } // ---- end class result -----
+
+
+/**
+ * 
+ * @package 	TestLink
+ * @TODO havlatm: what is that?
+ */
 class newResults extends results
 {
 	public function newResults(&$db, &$tplan_mgr,$tproject_info, $tplan_info,

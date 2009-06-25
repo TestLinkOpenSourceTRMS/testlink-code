@@ -3,26 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *  
- * Filename $RCSfile: xml.inc.php,v $
- *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
- *
- * Scope: support for XML
+ * support for XML
  * 
- * Revisions:
+ * @package 	TestLink
+ * @copyright 	2004-2009, TestLink community 
+ * @version    	CVS: $Id: xml.inc.php,v 1.11 2009/06/25 19:37:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
+ * 
  *	20081027 - martin - exportKeywordDataToXML moved here
  *
- * ----------------------------------------------------------------------------------- */
+ */
 
-/*
-  function: 
 
-  args:
-  
-  returns: 
-
-*/
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
 	if (!$items)
@@ -67,14 +61,7 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 	return $result;
 }
 
-/*
-  function: 
 
-  args:
-  
-  returns: 
-
-*/
 function getNodeContent(&$node,$tag)
 {
 	if (!$node)
@@ -87,18 +74,18 @@ function getNodeContent(&$node,$tag)
 	return null;
 }
 
+
 /**
  * Exports the given keywords to a XML file
  * 
- *
  * @param type $keywords the keywords to export in the form
  * 				 keywordData[$i]['keyword'] => the keyword itself
  * 				 keywordData[$i]['notes'] => the notes of keyword
  *
  * @return strings the generated XML Code
- **/
-//SCHLUNDUS: will soon be removed
-// martin: moved from deleted keywords.inc.php; not used anywhere; I guess it could be removed
+ * @todo SCHLUNDUS: will soon be removed
+ * 		martin: moved from deleted keywords.inc.php; not used anywhere; I guess it could be removed
+ */
 function exportKeywordDataToXML($keywords,$bNoHeader = false)
 {
 	$keywordRootElem = "<keywords>{{XMLCODE}}</keywords>";

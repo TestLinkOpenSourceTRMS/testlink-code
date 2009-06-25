@@ -1,12 +1,20 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.10 $ $Author: franciscom $
- * @modified $Date: 2008/12/31 15:07:19 $
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
+ *  
+ * Support for web editor switching
+ * 
+ * @package 	TestLink
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: web_editor.php,v 1.11 2009/06/25 19:37:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * @uses 		config.inc.php
+ * @uses 		common.php
  *
+ * @internal Revisions:
  *
- * rev: 20080826 - franciscom - BUGID 1692
+ * 	20080826 - franciscom - BUGID 1692
  *      refactoring to allow use of different editor type in different TL features/areas
  **/
 

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.120 2009/06/11 17:45:40 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.121 2009/06/26 14:14:50 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -309,12 +309,13 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
-	 * get array 'ID'=>'Name' of Test Plans
+	 * get map of Test Plans
+	 * @author havlatm
+	 * 
 	 * @param integer $projectId
 	 * @param boolean $activeOnly (optional) default TRUE
+	 * 
 	 * @return array structured 'ID'=>'Name' 
-	 * @version 1.0
-	 * @author havlatm
 	 */
 	public function getTestPlanNamesById($projectId, $activeOnly=TRUE)
 	{

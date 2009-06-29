@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.457 2009/06/25 19:47:15 schlundus Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.458 2009/06/29 11:15:59 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -354,6 +354,8 @@ $TLS_linked_but_not_executed = "Linked to one or more Test Plan, but not execute
 $TLS_question_del_testsuite = "Really delete the Test Suite?";
 $TLS_th_link_exec_status = "Link and execution status";
 $TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
+$TLS_no_links = "No dependent data.";
+$TLS_linked_and_executed = "Test case was added into a Test Plan and has results.";
 
 
 // ----- gui/templates/containerNew.tpl -----

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.27 2009/03/16 21:35:39 schlundus Exp $
+$Id: inc_head.tpl,v 1.28 2009/06/29 10:45:24 havlat Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -21,7 +21,7 @@ rev :
 	<meta name="robots" content="NOFOLLOW" />
 	<base href="{$basehref}"/>
 	<title>{$pageTitle|default:"TestLink"}</title>
-	<link rel="TestLink icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}/favicon.ico" />
+	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 	
 {* ----- load CSS ------------------------------------------------------------------- *} 
 	<style media="all" type="text/css">@import "{$css}";</style>

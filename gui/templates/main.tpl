@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: main.tpl,v 1.7 2009/04/01 10:32:50 havlat Exp $ *}
+{* $Id: main.tpl,v 1.8 2009/06/29 10:45:24 havlat Exp $ *}
 {* Purpose: smarty template - main frame *}
 {*******************************************************************}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -13,6 +13,7 @@
 	<meta name="robots" content="NOFOLLOW" />
 	<title>TestLink {$tlVersion|escape}</title>
 	<meta name="description" content="TestLink - {$title|default:"Main page"}" />
+	<link rel="icon" href="{$basehref}{$smarty.const.TL_THEME_IMG_DIR}favicon.ico" type="image/x-icon" />
 </head>
 
 {* 20060226 - franciscom - changes in dimensions due to logo on navbar*}

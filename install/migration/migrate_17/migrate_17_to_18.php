@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18.php,v 1.8 2009/01/28 09:43:22 franciscom Exp $ 
+$Id: migrate_17_to_18.php,v 1.9 2009/06/30 10:59:23 havlat Exp $ 
 
 Migrate from 1.7.2 to 1.8.0
 
@@ -39,7 +39,12 @@ if( !isset($_SESSION) )
   session_start();
 }
 
-set_time_limit(60*40); // set_time_limit(t) -> t in seconds
+// assure that no timeout happens for large data
+$tlCfg->sessionInactivityTimeout = 300;
+ini_set('session.cache_expire',900); // min
+ini_set('session.gc_maxlifetime', 18000); // sec
+set_time_limit(0); // set_time_limit(t) -> t in seconds; 0 = not used
+
 $inst_type = $_SESSION['installationType'];
 $tl_and_version = "TestLink {$_SESSION['testlink_version']}";
 ?>

@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.22 2008/04/09 12:49:36 havlat Exp $ 
+$Id: migrate_16_to_17.php,v 1.23 2009/06/30 10:59:23 havlat Exp $ 
 
 20070515 - franciscom - 
 improved controls on source db version
@@ -43,7 +43,12 @@ if( !isset($_SESSION) )
   session_start();
 }
 
-set_time_limit(60*40); // set_time_limit(t) -> t in seconds
+// assure that no timeout happens for large data
+$tlCfg->sessionInactivityTimeout = 300;
+ini_set('session.cache_expire',900); // min
+ini_set('session.gc_maxlifetime', 18000); // sec
+set_time_limit(0); // set_time_limit(t) -> t in seconds; 0 = not used
+
 $inst_type = $_SESSION['installationType'];
 $tl_and_version = "TestLink {$_SESSION['testlink_version']}";
 ?>

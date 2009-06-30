@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.43 2009/06/12 20:40:04 schlundus Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.44 2009/06/30 10:59:53 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -149,7 +149,16 @@ class database
 	}
 
 
-	/** execute query, requires connection to be opened */
+	/** 
+	 * execute SQL query, 
+	 * requires connection to be opened
+	 * 
+	 * @param string $p_query SQL request
+	 * @param integer $p_limit (optional) number of rows
+	 * @param integer $p_offset (optional) begining row number
+	 * 
+	 * @return boolean result of request 
+	 **/
 	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
 	{
 		$this->nQuery++;
@@ -187,7 +196,11 @@ class database
 		{
 			array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 		}
-		
+
+		/** 
+		 * @TODO havlatm: we should avoid direct write to screen; a page should get error
+		 * message from $db object 
+		 **/ 		
 		if ( !$t_result ) {
 			echo "ERROR ON exec_query() - database.class.php <br>" . $this->error($p_query) . "<br>";
 			echo "<br> THE MESSAGE :: $message <br>";			

@@ -2,14 +2,16 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
- *
- * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.81 $
- * @modified $Date: 2009/04/10 10:39:59 $ by $Author: amkhullar $
- *
- * @author Martin Havlat <havlat@users.sourceforge.net>
- *
+ * 
  * Functions for support requirement based testing
+ *
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: requirements.inc.php,v 1.82 2009/06/30 10:59:52 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
  *
  * Revisions:
  * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
@@ -22,39 +24,48 @@
  * 20070310 - franciscom - changed return type createRequirement()
  */
 
+/** inlude basic functions for printing Test Specification document */
 require_once("print.inc.php");
+
+/** @var array formats for import */
 $g_reqFormatStrings = array (
-							"csv" => lang_get('req_import_format_description1'),
-							"csv_doors" => lang_get('req_import_format_description2'),
-							"XML" => lang_get('the_format_req_xml_import'),
-							"DocBook" => lang_get('req_import_format_docbook')
-							);
+	"csv" => lang_get('req_import_format_description1'),
+	"csv_doors" => lang_get('req_import_format_description2'),
+	"XML" => lang_get('the_format_req_xml_import'),
+	"DocBook" => lang_get('req_import_format_docbook')
+);
+
 
 /**
  * render Requirement Specification
- *
- * @param integer $srs_id
+ * @author Martin Havlat
+ * 
+ * @param resource &$db reference to database handler
+ * @param object &$db reference to testProject class instance
+ * @param integer $srs_id requirements specification identifier
  * @param string $tproject_name
  * @param string $tproject_id
  * @param string $user_id
  * @param string $base_href
+ * 
+ * @return string complete HTML source
  *
- * @author Martin Havlat
- *
+ * @uses print.inc.php 
+ * @todo havlatm: refactore and move to other printing functions
+ *  
  **/
 function renderSRS(&$db,&$tproject_mgr,$srs_id, $tproject_name, $tproject_id, $user_id, $base_href)
 {
-  
-  $tprojectInfo = $tproject_mgr->get_by_id($tproject_id);
-  
-  $doc_info = new stdClass(); 
-  $doc_info->tproject_name = htmlspecialchars($tproject_name);
-  $doc_info->tproject_scope = $tprojectInfo['notes'];
-  $doc_info->author='';
-  $doc_info->title='';
-  $doc_info->type_name='';
-  
-  
+	$tprojectInfo = $tproject_mgr->get_by_id($tproject_id);
+	
+	$doc_info = new stdClass(); 
+	$doc_info->tproject_name = htmlspecialchars($tproject_name);
+	$doc_info->tproject_scope = $tprojectInfo['notes'];
+	$doc_info->author='';
+	$doc_info->title='';
+	$doc_info->type_name='';
+	
+	
 	$arrSpec = $tproject_mgr->getReqSpec($tproject_id,$srs_id);
 	$output =  renderHTMLHeader($arrSpec[0]['title'],$base_href);
 	$output .= renderFirstPage($doc_info);
@@ -62,7 +73,7 @@ function renderSRS(&$db,&$tproject_mgr,$srs_id, $tproject_name, $tproject_id, $u
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
 	$output .= renderRequirements($db,$srs_id);
 	$output .= "\n</body>\n</html>";
-
+	
 	return $output;
 }
 

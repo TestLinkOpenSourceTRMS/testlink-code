@@ -3,19 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: files.inc.php,v $
+ * @package 	TestLink
+ * @author 		franciscom
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: files.inc.php,v 1.5 2009/06/30 10:59:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/04/30 18:46:36 $ by $Author: schlundus $
- * @author Francisco Mancardi
- *
-*/
+ */
 
 /**
  * Gets an unique file name to be used for the attachment
  *
  * @param string $fExt the file extension
- *
  * @return string the filename
  **/
 function getUniqueFileName($fExt)
@@ -24,6 +23,7 @@ function getUniqueFileName($fExt)
 
 	return $destFName;
 }
+
 
 /**
  * gets the extension from a file name
@@ -44,11 +44,11 @@ function getFileExtension($fName,$default)
 	return $fExt;
 }
 
+
 /**
  * get the contents of a file
  *
  * @param string $fName the name of the file to read
- *
  * @return string the file contents
  **/
 function getFileContents($fName)
@@ -82,6 +82,7 @@ function gzip_compress_file($srcName, $dstName)
 	return $bSuccess;
 }
 
+
 /**
  * Writes contents to a gzip-file
  *
@@ -101,6 +102,8 @@ function gzip_writeToFile($dstName,$data)
 	}
 	return false;
 }
+
+
 /**
  * uncompresses arbitrary gzipped content
  *
@@ -108,8 +111,7 @@ function gzip_writeToFile($dstName,$data)
  * @param int $fileSize the original size of the uncompressed content
  *
  * @return string returns the uncompressed contents on success or null on error
-
-*/
+ */
 function gzip_uncompress_content($content,$fileSize)
 {
 	global $g_repositoryPath;
@@ -125,6 +127,15 @@ function gzip_uncompress_content($content,$fileSize)
 	return null;
 }
 
+
+/**
+ * Read contents from a gzip-file
+ *
+ * @param string $fName the filename
+ * @param int $fileSize the original size of the uncompressed content
+ *
+ * @return string returns the uncompressed contents on success or null on error
+ **/
 function gzip_readFileContent($fName,$fileSize)
 {
 	$content = null;
@@ -137,4 +148,6 @@ function gzip_readFileContent($fName,$fileSize)
 	}
 	return $content;
 }
+
+
 ?>

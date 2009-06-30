@@ -1,26 +1,32 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: info.inc.php,v 1.7 2009/03/08 22:26:14 havlat Exp $
-* 
-* @author Martin Havlat
-* 
-* KL - 20070109 - altered to allow for html reports if caller so chooses
-* Functions for GUI Communication
-*/
-require_once('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("../functions/lang_api.php");
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Functions for GUI support
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: info.inc.php,v 1.8 2009/06/30 10:59:53 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ * @uses 		common.php
+ *
+ * @internal Revisions:
+ * 
+ * 20070109 - KL - altered to allow for html reports if caller so chooses
+ */
 
-// 20051106 - fm 
+/** @uses email_api.php */
 require_once("../functions/email_api.php");
 
 
 /**
-* Display simple info and exit
-*
-* @param string $title
-* @param string $message
-*/
+ * Display simple info and exit
+ *
+ * @param string $title
+ * @param string $message
+ */
 function displayInfo($title, $message)
 {
 	$smarty = new TLSmarty;
@@ -31,35 +37,25 @@ function displayInfo($title, $message)
 	exit();
 }
 
+
 /**
-* Display simple info and exit
-*
-* @param string $from
-* @param string $to
-* @param string $title
-* @param string $message
-* @param string $cc (optional) yes = send a copy myself
-*
-* @return string Ok message.
-*
-* 20051106 - fm - use of email_send()
-* 20050906 - fm - added from
-*/
+ * Display simple info and exit
+ *
+ * @param string $from
+ * @param string $to
+ * @param string $title
+ * @param string $message
+ * @param string $cc (optional) yes = send a copy myself
+ *
+ * @return string Ok message.
+ *
+ * @internal Revisions:
+ * 20051106 - fm - use of email_send()
+ * 20050906 - fm - added from
+ * @todo use email_send() directly - remove
+ */
 function sendMail($from,$to, $title, $message, $send_cc_to_myself = false, $isHtmlFormat = false)
 {
-	
-	// 20051106 - fm
-	// Create headers 
-	/*$headers  = "MIME-Version: 1.0\r\n";
-	$headers .= "Content-type: text/plain; charset=utf-8\r\n"; // Content-type: text/html
-	$headers .= "From: " . $from . "\r\n";
-	
-
-	if ($cc == 'yes')
-	{
-		$headers = "Cc: " . $from . "\r\n";
-	}
-	*/
 	$cc = '';
 	if ($send_cc_to_myself)
 	{

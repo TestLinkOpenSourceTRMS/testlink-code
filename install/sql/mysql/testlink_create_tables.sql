@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.51 2009/06/11 06:53:43 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.52 2009/07/08 14:12:34 havlat Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -99,7 +99,7 @@
 # --------------------------------------------------------
 #
 #
-CREATE TABLE builds (
+CREATE TABLE /*tblprefix*/builds (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
@@ -114,14 +114,14 @@ CREATE TABLE builds (
   KEY `testplan_id` (`testplan_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Available builds';
 
-CREATE TABLE db_version (
+CREATE TABLE /*tblprefix*/db_version (
   `version` varchar(50) NOT NULL default 'unknown',
   `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `notes` text
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE events (
+CREATE TABLE /*tblprefix*/events (
   `id` int(10) unsigned NOT NULL auto_increment,
   `transaction_id` int(10) unsigned NOT NULL default '0',
   `log_level` smallint(5) unsigned NOT NULL default '0',
@@ -136,14 +136,14 @@ CREATE TABLE events (
   KEY `fired_at` (`fired_at`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE execution_bugs (
+CREATE TABLE /*tblprefix*/execution_bugs (
   `execution_id` int(10) unsigned NOT NULL default '0',
   `bug_id` varchar(16) NOT NULL default '0',
   PRIMARY KEY  (`execution_id`,`bug_id`)
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE executions (
+CREATE TABLE /*tblprefix*/executions (
   `id` int(10) unsigned NOT NULL auto_increment,
   `build_id` int(10) NOT NULL default '0',
   `tester_id` int(10) unsigned default NULL,
@@ -160,7 +160,7 @@ CREATE TABLE executions (
 
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE keywords (
+CREATE TABLE /*tblprefix*/keywords (
   `id` int(10) unsigned NOT NULL auto_increment,
   `keyword` varchar(100) NOT NULL default '',
   `testproject_id` int(10) unsigned NOT NULL default '0',
@@ -170,7 +170,7 @@ CREATE TABLE keywords (
   KEY `keyword` (`keyword`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE milestones (
+CREATE TABLE /*tblprefix*/milestones (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `target_date` date NOT NULL default '0000-00-00',
@@ -184,13 +184,13 @@ CREATE TABLE milestones (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE node_types (
+CREATE TABLE /*tblprefix*/node_types (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default 'testproject',
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE nodes_hierarchy (
+CREATE TABLE /*tblprefix*/nodes_hierarchy (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) default NULL,
   `parent_id` int(10) unsigned default NULL,
@@ -201,13 +201,13 @@ CREATE TABLE nodes_hierarchy (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE req_coverage (
+CREATE TABLE /*tblprefix*/req_coverage (
   `req_id` int(10) NOT NULL,
   `testcase_id` int(10) NOT NULL,
   KEY `req_testcase` (`req_id`,`testcase_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
 
-CREATE TABLE req_specs (
+CREATE TABLE /*tblprefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
@@ -223,7 +223,7 @@ CREATE TABLE req_specs (
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
 /*   `node_order` int(10) unsigned NOT NULL default '1', */
-CREATE TABLE requirements (
+CREATE TABLE /*tblprefix*/requirements (
   `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
   `req_doc_id` varchar(32) default NULL,
@@ -240,7 +240,7 @@ CREATE TABLE requirements (
   UNIQUE KEY `req_doc_id` (`srs_id`,`req_doc_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE rights (
+CREATE TABLE /*tblprefix*/rights (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`),
@@ -248,7 +248,7 @@ CREATE TABLE rights (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE risk_assignments (
+CREATE TABLE /*tblprefix*/risk_assignments (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `node_id` int(10) unsigned NOT NULL default '0',
@@ -258,7 +258,7 @@ CREATE TABLE risk_assignments (
   UNIQUE KEY `tp_node_id` (`testplan_id`,`node_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE user_assignments (
+CREATE TABLE /*tblprefix*/user_assignments (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` int(10) unsigned NOT NULL default '1',
   `feature_id` int(10) unsigned NOT NULL default '0',
@@ -273,13 +273,13 @@ CREATE TABLE user_assignments (
 
 
 
-CREATE TABLE role_rights (
+CREATE TABLE /*tblprefix*/role_rights (
   `role_id` int(10) NOT NULL default '0',
   `right_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`role_id`,`right_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE roles (
+CREATE TABLE /*tblprefix*/roles (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default '',
   `notes` text,
@@ -289,13 +289,13 @@ CREATE TABLE roles (
 
 
 
-CREATE TABLE testcase_keywords (
+CREATE TABLE /*tblprefix*/testcase_keywords (
   `testcase_id` int(10) unsigned NOT NULL default '0',
   `keyword_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`testcase_id`,`keyword_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE tcversions (
+CREATE TABLE /*tblprefix*/tcversions (
   `id` int(10) unsigned NOT NULL,
   `tc_external_id` int(10) unsigned NULL,
   `version` smallint(5) unsigned NOT NULL default '1',
@@ -314,7 +314,7 @@ CREATE TABLE tcversions (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE testplan_tcversions (
+CREATE TABLE /*tblprefix*/testplan_tcversions (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `tcversion_id` int(10) unsigned NOT NULL default '0',
@@ -327,7 +327,7 @@ CREATE TABLE testplan_tcversions (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE testplans (
+CREATE TABLE /*tblprefix*/testplans (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL default '0',
   `notes` text,
@@ -338,7 +338,7 @@ CREATE TABLE testplans (
   KEY `testproject_id_active` (`testproject_id`,`active`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE testprojects (
+CREATE TABLE /*tblprefix*/testprojects (
   `id` int(10) unsigned NOT NULL,
   `notes` text,
   `color` varchar(12) NOT NULL default '#9BD',
@@ -355,13 +355,13 @@ CREATE TABLE testprojects (
   
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE testsuites (
+CREATE TABLE /*tblprefix*/testsuites (
   `id` int(10) unsigned NOT NULL,
   `details` text,
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE transactions (
+CREATE TABLE /*tblprefix*/transactions (
   `id` int(10) unsigned NOT NULL auto_increment,
   `entry_point` varchar(45) NOT NULL default '',
   `start_time` int(10) unsigned NOT NULL default '0',
@@ -371,7 +371,7 @@ CREATE TABLE transactions (
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE users (
+CREATE TABLE /*tblprefix*/users (
   `id` int(10) unsigned NOT NULL auto_increment,
   `login` varchar(30) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
@@ -387,14 +387,14 @@ CREATE TABLE users (
   UNIQUE KEY `login` (`login`)
 ) DEFAULT CHARSET=utf8 COMMENT='User information';
 
-CREATE TABLE cfield_node_types (
+CREATE TABLE /*tblprefix*/cfield_node_types (
   `field_id` int(10) NOT NULL default '0',
   `node_type_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`node_type_id`),
   KEY `idx_custom_fields_assign` (`node_type_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE cfield_testprojects (
+CREATE TABLE /*tblprefix*/cfield_testprojects (
   `field_id` int(10) unsigned NOT NULL default '0',
   `testproject_id` int(10) unsigned NOT NULL default '0',
   `display_order` smallint(5) unsigned NOT NULL default '1',
@@ -404,7 +404,7 @@ CREATE TABLE cfield_testprojects (
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE cfield_design_values (
+CREATE TABLE /*tblprefix*/cfield_design_values (
   `field_id` int(10) NOT NULL default '0',
   `node_id` int(10) NOT NULL default '0',
   `value` varchar(255) NOT NULL default '',
@@ -412,7 +412,7 @@ CREATE TABLE cfield_design_values (
   KEY `idx_cfield_design_values` (`node_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE cfield_execution_values (
+CREATE TABLE /*tblprefix*/cfield_execution_values (
   `field_id`     int(10) NOT NULL default '0',
   `execution_id` int(10) NOT NULL default '0',
   `testplan_id` int(10) NOT NULL default '0',
@@ -421,7 +421,7 @@ CREATE TABLE cfield_execution_values (
   PRIMARY KEY  (`field_id`,`execution_id`,`testplan_id`,`tcversion_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE cfield_testplan_design_values (
+CREATE TABLE /*tblprefix*/cfield_testplan_design_values (
   `field_id` int(10) NOT NULL default '0',
   `link_id` int(10) NOT NULL default '0' COMMENT 'point to testplan_tcversion id',   
   `value` varchar(255) NOT NULL default '',
@@ -432,7 +432,7 @@ CREATE TABLE cfield_testplan_design_values (
 
 # 20080809 - franciscom - new fields to display custom fields in new areas
 #                         test case linking to testplan (test plan design)
-CREATE TABLE custom_fields (
+CREATE TABLE /*tblprefix*/custom_fields (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
   `label` varchar(64) NOT NULL default '' COMMENT 'label to display on user interface' ,
@@ -453,21 +453,21 @@ CREATE TABLE custom_fields (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE user_testproject_roles (
+CREATE TABLE /*tblprefix*/user_testproject_roles (
   `user_id` int(10) NOT NULL default '0',
   `testproject_id` int(10) NOT NULL default '0',
   `role_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE user_testplan_roles (
+CREATE TABLE /*tblprefix*/user_testplan_roles (
   `user_id` int(10) NOT NULL default '0',
   `testplan_id` int(10) NOT NULL default '0',
   `role_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`testplan_id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE attachments (
+CREATE TABLE /*tblprefix*/attachments (
   `id` int(10) unsigned NOT NULL auto_increment,
   `fk_id` int(10) unsigned NOT NULL default '0',
   `fk_table` varchar(250) default '',
@@ -483,7 +483,7 @@ CREATE TABLE attachments (
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8; 
 
-CREATE TABLE object_keywords (
+CREATE TABLE /*tblprefix*/object_keywords (
   `id` int(10) unsigned NOT NULL auto_increment,
   `fk_id` int(10) unsigned NOT NULL default '0',
   `fk_table` varchar(30) default '',
@@ -492,21 +492,21 @@ CREATE TABLE object_keywords (
 ) DEFAULT CHARSET=utf8; 
 
 
-CREATE TABLE assignment_types (
+CREATE TABLE /*tblprefix*/assignment_types (
   `id` int(10) unsigned NOT NULL auto_increment,
   `fk_table` varchar(30) default '',
   `description` varchar(100) NOT NULL default 'unknown',
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE assignment_status (
+CREATE TABLE /*tblprefix*/assignment_status (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default 'unknown',
   PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
 /* mht - 0000774: Global Project Template */
-CREATE TABLE text_templates (
+CREATE TABLE /*tblprefix*/text_templates (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` smallint(5) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
@@ -520,7 +520,7 @@ CREATE TABLE text_templates (
 
 
 /* mht - group users for large companies */
-CREATE TABLE user_group (
+CREATE TABLE /*tblprefix*/user_group (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(100) NOT NULL,
   `description` text,
@@ -528,7 +528,7 @@ CREATE TABLE user_group (
   UNIQUE KEY (`title`)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE user_group_assign (
+CREATE TABLE /*tblprefix*/user_group_assign (
   `usergroup_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   UNIQUE KEY `idx_user_group_assign` (`usergroup_id`,`user_id`)

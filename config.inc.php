@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.246 2009/06/25 20:09:19 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.247 2009/07/08 13:01:40 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -145,10 +145,11 @@ $tlCfg->charts_font_size = 8;
 /** Error reporting - do we want php errors to show up for users */
 error_reporting(E_ALL);
 
-/** Set the session timeout for inactivity (in minutes).
-* Default is 60 minutes
-*/
-$tlCfg->sessionInactivityTimeout = 60;
+/** 
+ * Set the session timeout for inactivity (in minutes).
+ * Default is 10 hours 
+ */
+$tlCfg->sessionInactivityTimeout = 600;
 
 /** Set the session timeout value (in minutes).
  * This will prevent sessions timing out after very short periods of time 
@@ -164,11 +165,6 @@ $tlCfg->sessionInactivityTimeout = 60;
  */
 //ini_set('session.gc_maxlifetime', 54000);
 
-/** 
- * DB Table prefix to support more products in one database space
- * Left empty. See #1137 
- **/
-$tlCfg->db_table_prefix = '';
 
 // ----------------------------------------------------------------------------
 /* [LOGGING] */

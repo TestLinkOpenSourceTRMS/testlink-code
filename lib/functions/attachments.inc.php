@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachments.inc.php,v 1.16 2009/06/23 19:12:57 schlundus Exp $
+ * @version    	CVS: $Id: attachments.inc.php,v 1.17 2009/07/09 10:24:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -24,17 +24,18 @@ require_once( dirname(__FILE__) . '/files.inc.php' );
  * @param object $attachmentRepository [ref] the attachment Repository
  * @param int $fkid the id of the object (attachments.fk_id);
  * @param string $fkTableName the name of the table $fkid refers to (attachments.fk_table)
- * @param bool $bStoreListInSession if true, the attachment list will be stored within the session
+ * @param bool $storeListInSession if true, the attachment list will be stored within the session
  * @param int $counter if $counter > 0 the attachments are appended to existing attachments within the session
  *
- * @return array returns infos about the attachment on success, NULL else
+ * @return array infos about the attachment on success, NULL else
 */
-function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$bStoreListInSession = true,$counter = 0)
+function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeListInSession = true,$counter = 0)
 {
 	$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
-	if ($bStoreListInSession)
+	if ($storeListInSession)
+	{
 		storeAttachmentsInSession($attachmentInfos,$counter);
-	
+	}
 	return $attachmentInfos;
 }
 
@@ -43,17 +44,18 @@ function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$bStoreLis
  * 
  * @param tlObjectWithAttachments $object The object whose attachment should be fetched
  * @param int $fkid the id of the object (attachments.fk_id);
- * @param bool $bStoreListInSession if true, the attachment list will be stored within the session
+ * @param bool $storeListInSession if true, the attachment list will be stored within the session
  * @param int $counter if $counter > 0 the attachments are appended to existing attachments within the session
  *
  * @return array returns infos about the attachment on success, NULL else
  */
-function getAttachmentInfosFrom(&$object,$fkid,$bStoreListInSession = true,$counter = 0)
+function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$counter = 0)
 {
 	$attachmentInfos = $object->getAttachmentInfos($fkid);
-	if ($bStoreListInSession)
+	if ($storeListInSession)
+	{
 		storeAttachmentsInSession($attachmentInfos,$counter);
-	
+	}
 	return $attachmentInfos;
 }
 
@@ -66,13 +68,21 @@ function getAttachmentInfosFrom(&$object,$fkid,$bStoreListInSession = true,$coun
 function storeAttachmentsInSession($attachmentInfos,$counter = 0)
 {
 	if (!$attachmentInfos)
+	{
 		$attachmentInfos = array();
+	}
 	if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
+	{
 		$_SESSION['s_lastAttachmentInfos'] = array();
+	}
 	if ($counter == 0) 
+	{
 		$_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
+	}
 	else
+	{
 		$_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
+	}	
 }
 
 /**
@@ -89,10 +99,10 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
 	if ($attachmentInfo)
 	{
 		$sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
-		for($i = 0;$i < sizeof($sLastAttachmentInfos);$i++)
+		$attachmentQty=sizeof($sLastAttachmentInfos);
+		for($idx = 0;$idx < $attachmentQty ; $idx++)
 		{
-			$info = $sLastAttachmentInfos[$i];
-			if ($info['id'] == $id)
+			if ($sLastAttachmentInfos[$idx]['id'] == $id)
 			{
 				$isValid = true;
 				break;

@@ -10,7 +10,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reports.class.php,v 1.9 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: reports.class.php,v 1.10 2009/07/09 10:24:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses		common.php
@@ -35,7 +35,6 @@ class tlReports
 {
 	/** resource of database handler; reference is passed in by constructor */
 	var $db = null;
-	private $tp = null;
 
 	/** Test Plan Identifier; reference is passed in by constructor */
 	private $testPlanID = -1;

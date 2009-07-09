@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.7 2009/06/25 19:47:15 schlundus Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.8 2009/07/09 10:23:40 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -107,9 +107,11 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                 case 'testproject':
 	                $path['href'] = "javascript:EP({$path['id']})";
 	                break;
+
                 case 'requirement_spec':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                break;
+
                 case 'requirement':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                $path['text'] = htmlspecialchars($requirements[$row['id']]['docid'] . ":") . $path['text'];
@@ -117,7 +119,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                break;
             }
             $nodes[] = $path;                                                                        
-	    }	
+	    }	// foreach	
     }
 	return $nodes;                                                                             
 }                                                                                               

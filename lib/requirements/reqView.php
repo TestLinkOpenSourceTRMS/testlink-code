@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/06/25 19:47:15 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/07/09 10:25:30 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -30,16 +30,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	$iParams = array(
-			"requirement_id" => array(tlInputParameter::INT_N),
-			"showReqSpecTitle" => array(tlInputParameter::INT_N),
-	);	
+	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
+			         "showReqSpecTitle" => array(tlInputParameter::INT_N));	
 		
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
-	
+	R_PARAMS($iParams,$args);
     $args->req_id = $args->requirement_id;
-    
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     

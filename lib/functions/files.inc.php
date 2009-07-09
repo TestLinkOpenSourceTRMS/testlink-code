@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: files.inc.php,v 1.5 2009/06/30 10:59:53 havlat Exp $
+ * @version    	CVS: $Id: files.inc.php,v 1.6 2009/07/09 10:24:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */
@@ -37,10 +37,13 @@ function getFileExtension($fName,$default)
 {
 	$fExt = pathinfo($fName);
 	if (isset($fExt['extension']))
+	{
 		$fExt = $fExt['extension'];
+	}
 	else
+	{
 		$fExt = $default;
-
+    }
 	return $fExt;
 }
 
@@ -73,13 +76,13 @@ function getFileContents($fName)
  **/
 function gzip_compress_file($srcName, $dstName)
 {
-	$bSuccess = false;
-
+	$success = false;
 	$data = getFileContents($srcName);
 	if ($data != "")
-		$bSuccess = gzip_writeToFile($dstName,$data);
-
-	return $bSuccess;
+	{
+		$success = gzip_writeToFile($dstName,$data);
+    }
+	return $success;
 }
 
 
@@ -94,13 +97,14 @@ function gzip_compress_file($srcName, $dstName)
 function gzip_writeToFile($dstName,$data)
 {
 	$zp = gzopen($dstName, "wb9");
+	$status_ok=false;
 	if ($zp)
 	{
 		gzwrite($zp, $data);
 		gzclose($zp);
-		return true;
+		$status_ok=true;
 	}
-	return false;
+	return $status_ok;
 }
 
 
@@ -148,6 +152,4 @@ function gzip_readFileContent($fName,$fileSize)
 	}
 	return $content;
 }
-
-
 ?>

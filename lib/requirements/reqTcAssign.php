@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/06/25 19:47:15 $  $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/07/09 10:25:30 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -97,20 +97,18 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	$iParams = array(
-			"id" => array(tlInputParameter::INT_N),
-			"req_id" => array(tlInputParameter::ARRAY_INT),
-			"req" => array(tlInputParameter::INT_N),
-			"showCloseButton" => array(tlInputParameter::STRING_N,0,1),
-			"doAction" => array(tlInputParameter::STRING_N,0,100),
-			"edit" => array(tlInputParameter::STRING_N,0,100),
-			"unassign" => array(tlInputParameter::STRING_N,0,1),
-			"assign" => array(tlInputParameter::STRING_N,0,1),
-			"idSRS" => array(tlInputParameter::INT_N),
-	);	
+	$iParams = array("id" => array(tlInputParameter::INT_N),
+			         "req_id" => array(tlInputParameter::ARRAY_INT),
+			         "req" => array(tlInputParameter::INT_N),
+			         "showCloseButton" => array(tlInputParameter::STRING_N,0,1),
+			         "doAction" => array(tlInputParameter::STRING_N,0,100),
+			         "edit" => array(tlInputParameter::STRING_N,0,100),
+			         "unassign" => array(tlInputParameter::STRING_N,0,1),
+			         "assign" => array(tlInputParameter::STRING_N,0,1),
+			         "idSRS" => array(tlInputParameter::INT_N));	
 		
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 
 	$args->idReqSpec = null;
     $args->idReq = $args->req;

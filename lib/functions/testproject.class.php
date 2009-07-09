@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.126 2009/06/23 19:12:57 schlundus Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.127 2009/07/09 10:25:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -275,7 +275,7 @@ public function setSessionProject($projectId)
 /**
  * Get Test project data according to name
  * 
- * @param integer $name 
+ * @param string $name 
  * @param string $addClause (optional) additional SQL condition(s)
  * 
  * @return array map with test project info; null if query fails
@@ -563,7 +563,6 @@ function count_testcases($id)
 	$tcIDs = array();
 	$this->get_all_testcases_id($id,$tcIDs);
 	$qty = sizeof($tcIDs);
-	
 	return $qty;
 }
 
@@ -1578,7 +1577,8 @@ function setPublicStatus($id,$status)
 			$tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
 			$tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
 		}
-		$sql = "SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} WHERE parent_id IN ({$idList})";
+		$sql = " SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
+		       " WHERE parent_id IN ({$idList})";
 		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
 		$result = $this->db->exec_query($sql);
@@ -1711,10 +1711,6 @@ function get_all_testplans($testproject_id,$filters=null)
             $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
         }                
         
-        // if($get_tp_without_tproject_id)
-	      // {
-	      // 		$where .= " OR testproject_id = 0 ";
-	      // }
 	      $where .= " ) ";
     
 	      if(!is_null($plan_status))
@@ -1765,14 +1761,14 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 	}
 	else
 	{
-      $tplan_name=strtoupper($tplan_name);
+        $tplan_name=strtoupper($tplan_name);
 	    $sql .= " AND UPPER(NH.name)=";
 	}
 	$sql .= "'" . $this->db->prepare_string($tplan_name) . "'";
-  $result = $this->db->exec_query($sql);
-  $status= $this->db->num_rows($result) ? 1 : 0;
+    $result = $this->db->exec_query($sql);
+    $status= $this->db->num_rows($result) ? 1 : 0;
 
-	return($status);
+	return $status;
 }
 
 
@@ -1831,10 +1827,16 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
  */
 function getTCasesLinkedToAnyTPlan($id)
 {
-	$nodeType = $this->tree_manager->node_descr_id['testplan'];
+	$tplanNodeType = $this->tree_manager->node_descr_id['testplan'];
 	
-    $sql = " SELECT DISTINCT  NT.parent_id AS testcase_id FROM {$this->tables['nodes_hierarchy']} NT JOIN {$this->tables['testplan_tcversions']} ON NT.id = tcversion_id ";
-    $sql .= " JOIN {$this->tables['nodes_hierarchy']} NH ON testplan_id = NH.id  WHERE NH.node_type_id = {$nodeType} AND NH.parent_id ={$id}";
+	// len of lines must be <= 100/110 as stated on development standard guide.
+    $sql = " SELECT DISTINCT  NHA.parent_id AS testcase_id " .
+           " FROM {$this->tables['nodes_hierarchy']} NHA " .
+           " JOIN {$this->tables['testplan_tcversions']} ON NHA.id = tcversion_id ";
+    
+    // get testplan id for target testèproject, to get test case versions linked to testplan.
+    $sql .= " JOIN {$this->tables['nodes_hierarchy']} NH ON testplan_id = NH.id  " .
+            " WHERE NH.node_type_id = {$tplanNodeType} AND NH.parent_id ={$id}";
     $rs = $this->db->fetchRowsIntoMap($sql,'testcase_id');
     
     return $rs;
@@ -1846,13 +1848,15 @@ function getTCasesLinkedToAnyTPlan($id)
  *
  *
  * @param int $id test project id
- * 
+ * @param $options for future uses.
  */
 function getFreeTestCases($id,$options=null)
 {
     $retval['items']=null;
     $retval['allfree']=false;
     
+    // @TODO here there is a problem $all is undefined!!!
+    $all=array(); 
     $this->get_all_testcases_id($id,$all);
     $linked=array();
     $free=null;
@@ -1887,7 +1891,6 @@ function getFreeTestCases($id,$options=null)
 // -------------------------------------------------------------------------------
 // Custom field related methods
 // -------------------------------------------------------------------------------
-// The
 /*
   function: get_linked_custom_fields
             Get custom fields that has been linked to testproject.
@@ -1936,7 +1939,7 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
 
   if( !is_null($node_type) )
   {
- 		$hash_descr_id = $this->tree_manager->get_available_node_types();
+    $hash_descr_id = $this->tree_manager->get_available_node_types();
     $node_type_id=$hash_descr_id[$node_type];
 
     $additional_table=",{$this->tables['cfield_node_types']} CFNT ";
@@ -1955,5 +1958,4 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
 }
 
 } // end class
-
 ?>

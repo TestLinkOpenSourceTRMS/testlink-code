@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.247 2009/07/08 13:01:40 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.248 2009/07/09 19:02:55 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -835,8 +835,6 @@ if(false !== $serverLanguage)
 		$tlCfg->default_language = $serverLanguage;
 }
 define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
-
-require_once(TL_ABS_PATH .'cfg'.DIRECTORY_SEPARATOR.'userRightMatrix.php');
 
 // Reverted execution status is used for two applications.
 // 1. To map code to CSS, Please if you add an status you need to add a corresponding CSS Class

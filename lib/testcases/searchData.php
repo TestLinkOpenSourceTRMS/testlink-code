@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.44 2009/06/08 20:15:10 franciscom Exp $
+ * $Id: searchData.php,v 1.45 2009/07/09 19:02:55 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -109,9 +109,7 @@ if ($args->tprojectID)
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }
    
-   
-    // BUGID
-    if( !is_null($args->requirement_doc_id) )
+   	if($args->requirement_doc_id != "")
     {
        $args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
        $from['by_requirement_doc_id']= " , {$tables['requirements']} REQ, " .
@@ -134,6 +132,7 @@ if ($args->tprojectID)
     {
         $sql .= implode("",$filter);
     }
+    
     $map = $db->fetchRowsIntoMap($sql,'testcase_id');	
 }
 

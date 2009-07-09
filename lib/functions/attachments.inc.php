@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachments.inc.php,v 1.17 2009/07/09 10:24:07 franciscom Exp $
+ * @version    	CVS: $Id: attachments.inc.php,v 1.18 2009/07/09 19:02:55 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -33,9 +33,8 @@ function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeList
 {
 	$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
 	if ($storeListInSession)
-	{
 		storeAttachmentsInSession($attachmentInfos,$counter);
-	}
+	
 	return $attachmentInfos;
 }
 
@@ -53,9 +52,8 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
 {
 	$attachmentInfos = $object->getAttachmentInfos($fkid);
 	if ($storeListInSession)
-	{
 		storeAttachmentsInSession($attachmentInfos,$counter);
-	}
+	
 	return $attachmentInfos;
 }
 
@@ -68,21 +66,13 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
 function storeAttachmentsInSession($attachmentInfos,$counter = 0)
 {
 	if (!$attachmentInfos)
-	{
 		$attachmentInfos = array();
-	}
 	if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
-	{
 		$_SESSION['s_lastAttachmentInfos'] = array();
-	}
 	if ($counter == 0) 
-	{
 		$_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
-	}
 	else
-	{
 		$_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
-	}	
 }
 
 /**
@@ -99,10 +89,10 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
 	if ($attachmentInfo)
 	{
 		$sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
-		$attachmentQty=sizeof($sLastAttachmentInfos);
-		for($idx = 0;$idx < $attachmentQty ; $idx++)
+		for($i = 0;$i < sizeof($sLastAttachmentInfos);$i++)
 		{
-			if ($sLastAttachmentInfos[$idx]['id'] == $id)
+			$info = $sLastAttachmentInfos[$i];
+			if ($info['id'] == $id)
 			{
 				$isValid = true;
 				break;

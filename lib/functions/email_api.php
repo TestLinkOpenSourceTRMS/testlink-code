@@ -3,18 +3,20 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
+ * Email API (adapted from third party code)
+ *
  * @package 	TestLink
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: email_api.php,v 1.10 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: email_api.php,v 1.11 2009/07/10 21:21:44 havlat Exp $
  * @link 		http://www.teamst.org/
  *
  */
 
 
+/** @uses class.phpmailer.php */
 define( 'PHPMAILER_PATH', dirname(__FILE__). '/../../third_party/phpmailer' . DIRECTORY_SEPARATOR );
-
 require_once( PHPMAILER_PATH . 'class.phpmailer.php' );
 
 require_once( 'lang_api.php' );
@@ -24,8 +26,6 @@ require_once( 'string_api.php');
 
 /** @var mixed reusable object of class SMTP */
 $g_phpMailer_smtp = null;
-
-// Email API
 
 
 /** 

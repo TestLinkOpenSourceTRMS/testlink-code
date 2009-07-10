@@ -9,7 +9,7 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.3 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.4 2009/07/10 21:21:44 havlat Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
@@ -19,7 +19,12 @@
  *       
  */
  
-
+/**
+ * create html code for months combo-box
+ * @param integer $p_month (optional) selected month
+ * @return array 
+ * @todo havlatm: do we use it? Remove?
+ */
 function create_month_option_list( $p_month = 0 ) 
 {
 	$month_option=''; 
@@ -114,7 +119,7 @@ function create_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0)
 
 
 // Added contribution (done on mantis) to manage datetime
-/** @uses cfield_mgr.class.php only */
+/** used in cfield_mgr.class.php only */
 function create_date_selection_set( $p_name, $p_format, $p_date=0, 
                                     $p_default_disable=false, $p_allow_blank=false, 
                                     $p_year_start=0, $p_year_end=0) 

@@ -1,24 +1,39 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/06/15 20:14:59 $ $Author: schlundus $
- * @author jbarchibald
+ * 
  *
- * rev :
+ * @package 	TestLink
+ * @author 		jbarchibald
+ * @copyright 	2006, TestLink community 
+ * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.10 2009/07/10 21:21:44 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
  *      20090514 - franciscom - localize label
  *      20071006 - franciscom - exec_cfield_mgr() interface change
  *                              get_linked_cfields() interface change
  *                              solved bug on get_linked_cfields() when
  *                              no custom field is assigned to test project
-*/
+ */
 
+/**
+ * custom fields for execution assignment
+ * @package 	TestLink
+ */
 class exec_cfield_mgr extends cfield_mgr
 {
 	var $db;
     var $cf_map;
 
+	/**
+	 * Class constructor
+	 * 
+	 * @param resource &$db reference to the database handler
+	 * @param integer project identifier
+	 */
 	function __construct(&$db,$tproject_id)
 	{
         // you would think we could inherit the parent $db declaration

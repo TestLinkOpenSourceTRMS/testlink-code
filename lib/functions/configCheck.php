@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.48 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.49 2009/07/13 18:39:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
  * @internal Revisions:
  * 	
+ *  20090713 - franciscom - tested is_writable() on windows with PHP 5.
+ *                          minor refactoring
  *  20090416 - havlatm - checking: database, GD lib and browser support
  *  20090126 - franciscom - check_php_extensions() refactoring
  *  20090109 - havlatm - import checking functions from Installer 
@@ -130,8 +132,9 @@ function checkLibGd()
 	{
 		$arrLibConf = gd_info();
 		$msg = lang_get("error_gd_png_support_disabled");
-		if ($arrLibConf["PNG Support"])
+		if ($arrLibConf["PNG Support"]){
 			$msg = 'OK';
+		}	
 	}
 	else
 	{
@@ -175,13 +178,10 @@ function checkForExtensions(&$msg)
  **/
 function checkForInstallDir()
 {
-	$installer_dir = TL_ABS_PATH. DIRECTORY_SEPARATOR . "install"  . DIRECTORY_SEPARATOR;
+	$installerDir = TL_ABS_PATH. DIRECTORY_SEPARATOR . "install"  . DIRECTORY_SEPARATOR;
 	clearstatcache();
-	$bPresent = false;
-	if(is_dir($installer_dir))
-		$bPresent = true;
-	
-	return $bPresent;	
+	$dirExists=	(is_dir($installerDir)) ? true : false;
+	return $dirExists;	
 }
 
 
@@ -194,15 +194,16 @@ function checkForInstallDir()
  **/
 function checkForAdminDefaultPwd(&$db)
 {
-	$bDefaultPwd = false;
+	$passwordHasDefaultValue = false;
 	
 	$user = new tlUser();
 	$user->login = "admin";
 	if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) >= tl::OK && 
 		 $user->comparePassword("admin") >= tl::OK)
-		$bDefaultPwd = true;
-		
-	return $bDefaultPwd;
+	{	 
+		$passwordHasDefaultValue = true;
+	}	
+	return $passwordHasDefaultValue;
 }
 
 /*
@@ -343,18 +344,16 @@ function checkForBTSConnection()
 }
 
 /** 
- * Check if server OS is comercional one 
+ * Check if server OS is microsoft Windows flavour
  * 
- * @return boolean TRUE if mikrosoft
+ * @return boolean TRUE if microsoft
  * @author havlatm
  */ 
-function isServerMswind()
+function isMSWindowsServer()
 {
-	$os_id = strtoupper(substr(PHP_OS, 0, 3));
-	if( strcmp('WIN',$os_id) == 0 )
-		return TRUE;
-	else
-		return FALSE;
+	$osID = strtoupper(substr(PHP_OS, 0, 3));
+	$isWindows = (strcmp('WIN',$osID) == 0) ? true: false;
+	return $isWindows; 
 }
 
 /*
@@ -371,38 +370,37 @@ function checkForRepositoryDir($the_dir)
   	
 	if(is_dir($the_dir)) 
 	{
-		$ret['msg'] .= lang_get('exists');
-		$ret['status_ok'] = false;
+		$ret['msg'] .= lang_get('exists') . ' ';
+		$ret['status_ok'] = true;
 
 		// There is a note on PHP manual that points that on windows
 		// is_writable() has problems => need a workaround
 		/** @TODO verify if it's valid for PHP5 */
-    
-	    //echo substr(sprintf('%o', fileperms($the_dir)), -4);
-    
-		if( isServerMswind() )
-		{
-			$test_dir= $the_dir . '/requirements/';
-			if(is_dir($test_dir))
-/** @TODO check this code */
-//				$test_dir= $the_dir . '/'.datetime().'/';
-			// try to make the dir
-			if(file_exists($test_dir) || @mkdir($test_dir) )
-	        	$ret['status_ok'] = true;
-	        	// todo delete
-		}
-		else
-		{
-			if(is_writable($the_dir)) 
-	        	$ret['status_ok'] = true;
-    	}
+		// if( isMSWindowsServer() )
+		// {
+        //     $test_dir= $the_dir . '/requirements/';
+        //     if(!is_dir($test_dir))
+        //     {
+        //       // try to make the dir
+        //       $stat = @mkdir($test_dir);
+        //       $ret['status_ok']=$stat;
+        //     }
+		// }
+		// else
+		// {
+		// 	$ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
+    	// }
+        // 20090713 - franciscom - tested on windows XP with PHP 5.2.9 seems OK
+ 	    $ret['status_ok'] = (is_writable($the_dir)) ? true : false; 
 
 		if($ret['status_ok']) 
 		{
    	    	$ret['msg'] .= lang_get('directory_is_writable');
    		}
        	else
+       	{
    	    	$ret['msg'] .= lang_get('but_directory_is_not_writable');
+   	    }	
 	} 
 	else
 	{
@@ -522,24 +520,36 @@ function check_php_settings(&$errCounter)
 
     $final_msg = '<tr><td>Checking max. execution time (Parameter max_execution_time)</td>';
     if($max_execution_time < $max_execution_time_recommended)
-        $final_msg .=  "<td><span class='tab-warning'>{$max_execution_time} seconds - We suggest {$max_execution_time_recommended} " .
-                  "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
+    {
+        $final_msg .=  "<td><span class='tab-warning'>{$max_execution_time} seconds - " .
+                       "We suggest {$max_execution_time_recommended} " .
+                       "seconds in order to manage hundred of test cases (edit php.ini)</span></td>";
+    }
     else
+    {
         $final_msg .= '<td><span class="tab-success">OK ('.$max_execution_time.' seconds)</span></td></tr>';
-
-    $final_msg .=  "<tr><td>Check maximal allowed memory (Parameter memory_limit)</td>";
+    }
+    $final_msg .=  "<tr><td>Checking maximal allowed memory (Parameter memory_limit)</td>";
     if($memory_limit < $memory_limit_recommended)
-       $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - We suggest {$memory_limit_recommended} MB" .
+    {
+       $final_msg .= "<td><span class='tab-warning'>$memory_limit MegaBytes - " .
+                     "We suggest {$memory_limit_recommended} MB" .
                      " in order to manage hundred of test cases</span></td></tr>";
+    }
     else
+    {
         $final_msg .= '<td><span class="tab-success">OK ('.$memory_limit.' MegaBytes)</span></td></tr>';
-    
+    }
 	$final_msg .= "<tr><td>Checking if Register Globals is disabled</td>";
 	if(ini_get('register_globals')) 
-		$final_msg .=  "<td><span class='tab-warning'>Failed! is enabled - Please change the setting in your php.ini file</span></td></tr>";
-	else 
+	{
+		$final_msg .=  "<td><span class='tab-warning'>Failed! is enabled - " .
+		               "Please change the setting in your php.ini file</span></td></tr>";
+	}
+	else
+	{ 
 		$final_msg .= "<td><span class='tab-success'>OK</span></td></tr>\n";
-
+    }
 	return ($final_msg);
 }
 

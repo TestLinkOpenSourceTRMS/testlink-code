@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: editExecution.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/06/08 17:40:21 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/07/13 18:36:34 $ by $Author: franciscom $
  *
  * Edit an execution notes and custom fields
  *
@@ -64,8 +64,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function doUpdate(&$dbHandler,&$argsObj,&$tcaseMgr,&$request)
 {
-    $sql = "UPDATE executions " .
-           "SET notes='{$argsObj->notes}'" .
+    $targetTable=tlObjectWithDB::getDBTables('executions');
+    $sql = "UPDATE {$targetTable['executions']} " .
+           "SET notes='" . $dbHandler->prepare_string($argsObj->notes) . "' " .
            "WHERE id={$argsObj->exec_id}";
     $dbHandler->exec_query($sql);     
     

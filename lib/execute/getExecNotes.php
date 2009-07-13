@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/06/03 21:16:17 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/07/13 18:36:34 $ by $Author: franciscom $
  *
  *
  * 20090530: franciscom - try to improve usability in order to allow edit online
@@ -29,14 +29,17 @@ $args = init_args();
 $webeditorCfg = getWebEditorCfg('execution');
 $map = get_execution($db,$args->exec_id);
 
-$notes_editor=createExecNotesWebEditor($args->exec_id,$_SESSION['basehref'],$webeditorCfg,$map[0]['notes']);
-
-
+if( $webeditorCfg['type'] != 'none' )
+{
+    $notesContent=createExecNotesWebEditor($args->exec_id,$_SESSION['basehref'],$webeditorCfg,$map[0]['notes']);
+}
+else
+{
+    $notesContent=$map[0]['notes'];
+}
 
 $smarty = new TLSmarty();
-$smarty->assign('notes',$map[0]['notes']);
-$smarty->assign('notes',$notes_editor);
-
+$smarty->assign('notes',$notesContent);
 $smarty->assign('webeditorType',$webeditorCfg['type']);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 

@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.8 2009/05/30 15:01:23 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.9 2009/07/13 18:36:33 franciscom Exp $
 Purpose: 
 Author: franciscom
 
 Rev:  
+    20090713 - franciscom - refactoring of edit execution.
+                            layout changed, added check on buid is open
     20090526 - franciscom -  inc_exec_test_spec.tpl, added args_testplan_design_time_cf
     20090418 - franciscom - deleted user crash
     20090418 - franciscom - BUGID 2364 - access to test spec to edit it.
@@ -134,6 +136,8 @@ Rev:
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $gui->other_execs.$tcversion_id}
+      {assign var="my_colspan" value=$attachment_model->num_cols}
+      
       {if $gui->history_on == 0 && $show_current_build}
    		   <div class="exec_history_title">
   			    {$labels.last_execution} {$labels.exec_current_build}
@@ -143,8 +147,9 @@ Rev:
 
 		  <table cellspacing="0" class="exec_history">
 			 <tr>
-				{if $gui->grants->edit_exec_notes }				
-        <th style="text-align:left">&nbsp;</th>
+			  {* Only if Any of Builds under analisys is Open *}
+				{if $gui->grants->edit_exec_notes}				
+        {* <th style="text-align:left">&nbsp;</th> *}
         {/if}
 				<th style="text-align:left">{$labels.date_time_run}</th>
         
@@ -157,7 +162,8 @@ Rev:
 
 				{if $attachment_model->show_upload_column && !$att_download_only}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
-            {assign var="my_colspan" value=$attachment_model->num_cols}
+				{else}		
+            {assign var="my_colspan" value=$my_colspan-1}
         {/if}
 
 				{if $g_bugInterfaceOn}
@@ -171,8 +177,7 @@ Rev:
         {/if}
 
         <th style="text-align:left">{$labels.run_mode}</th>
-        {assign var="my_colspan" value=$my_colspan+1}
-
+        {assign var="my_colspan" value=$my_colspan+2}
 			 </tr>
 
 			{* ----------------------------------------------------------------------------------- *}
@@ -181,15 +186,17 @@ Rev:
 
    			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
 
-  			  {if $gui->grants->edit_exec_notes }
   			  <td>
+          {* Check also that Build is Open *}
+  			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
   		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_execution}"
   		           onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
   		                                                   {$gui->tplan_id},{$gui->tproject_id});">
-  			  </td>
  			    {/if}
+  			  {localize_timestamp ts=$tc_old_exec.execution_ts}
+  			  </td>
 
-  				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
+  				{* <td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td> *}
 
 				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}

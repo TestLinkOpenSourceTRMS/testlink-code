@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package 	TestLink
- * @author 		franciscom
+ * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.178 2009/06/11 16:39:45 havlat Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.179 2009/07/13 18:37:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090713 - franciscom - solved bug on get_executions() (bad SQL statement).
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
  * 20090526 - franciscom - html_table_of_custom_field_values() - added scope 'testplan_design'
  * 20090521 - franciscom - get_by_id() added version_number argument
@@ -2315,7 +2316,7 @@ class testcase extends tlObjectWithAttachments
 	  // 20080103 - franciscom - added execution_type
 	  // 20071113 - franciscom - added JOIN builds b ON e.build_id=b.id
 	  //
-	  $sql="SELECT	NHB.name,NHA.parent_id AS testcase_id, tcversions.*,
+	  $sql="SELECT NHB.name,NHA.parent_id AS testcase_id, tcversions.*,
 			    users.login AS tester_login,
 			    users.first AS tester_first_name,
 			    users.last AS tester_last_name,
@@ -2327,11 +2328,11 @@ class testcase extends tlObjectWithAttachments
 		    FROM {$this->tables['nodes_hierarchy']} NHA
 	        JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
 	        JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
-	        JOIN {$this->tables['executions']} executions e ON NHA.id = e.tcversion_id
+	        JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id
 	                                     AND e.testplan_id = {$tplan_id}
 	                                     {$build_id_filter}
 	        JOIN {$this->tables['builds']}  b ON e.build_id=b.id
-	        LEFT OUTER JOIN {$this->tables['users']}  ON e.tester_id = users.id
+	        LEFT OUTER JOIN {$this->tables['users']} users ON e.tester_id = users.id
 	        $where_clause
 	        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$exec_id_order}";
 	

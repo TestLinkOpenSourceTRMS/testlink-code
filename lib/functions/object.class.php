@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.35 2009/06/18 16:03:03 schlundus Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.36 2009/07/13 18:38:19 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -178,7 +178,7 @@ abstract class tlObject implements iSerialization
      * @param $tableNames array of tablenames, to get only some of the tables
 	 * @return map key=table name without prefix, value=table name on db
 	 *
-	 * @since 20090615 - franciscom - fixed bug that render useless function when using $tablesNames argument
+	 * @since 20090615 - franciscom - fixed bug that render useless function when using $tableNames argument
     */
 	static public function getDBTables($tableNames = null)
 	{
@@ -230,7 +230,9 @@ abstract class tlObject implements iSerialization
             $tableNames = array_flip($tableNames);			
 			$tables = array_intersect_key($tables,$tableNames);
 			if (sizeof($tables) != sizeof($tableNames))
+			{
 				throw new Exception("Wrong table name(s) for getDBTables() detected!");
+			}	
 		}
 		
 	    return $tables;

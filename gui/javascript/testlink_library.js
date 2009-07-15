@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.79 2009/06/11 17:47:27 schlundus Exp $
+// $Id: testlink_library.js,v 1.80 2009/07/15 17:26:54 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -116,14 +116,21 @@ function close_help()
 */
 function open_popup(page)
 {
-	window.open(page, "_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
+  var windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
+                "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
+                "width=400,height=650";
+	window.open(page, "_blank",windowCfg);
 	return true;
 }
 
 // middle window (information, TC)
 function open_top(page)
 {
-	window.open(page, "_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=400")
+  var windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
+                "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
+                "width=600,height=400";
+  
+	window.open(page, "_blank", windowCfg);
 	return true;
 }
 
@@ -301,13 +308,17 @@ function TPLAN_PTC(id)
 
 function showOrHideElement(oid,hide)
 {
-	var obj = document.getElementById(oid);
-    if (!obj)
-    	return;
-    var displayValue = "";
-  	if(hide)
-  		displayValue = "none";
+	  var obj = document.getElementById(oid);
+	  var displayValue = "";
     
+    if (!obj)
+    {
+    	return;
+    }
+  	if(hide)
+  	{
+  		displayValue = "none";
+    }
   	obj.style.display = displayValue;
 }
 
@@ -319,10 +330,12 @@ function showOrHideElement(oid,hide)
  **/
 function modifyRoles_warning()
 {
+  var ret=false;
 	if (confirm(warning_modify_role))
-		return true;
-
-	return false;
+	{
+		ret=true;
+  } 
+	return ret;
 }
 
 /**
@@ -346,8 +359,9 @@ function changeFeature(feature)
 
 function openFileUploadWindow(id,tableName)
 {
+  var windowCfg="width=510,height=300,resizable=yes,dependent=yes";
 	window.open(fRoot+"lib/attachments/attachmentupload.php?id="+id+"&tableName="+tableName,
-	            "FileUpload","width=510,height=300,resizable=yes,dependent=yes");
+	            "FileUpload",windowCfg);
 }
 
 
@@ -362,7 +376,11 @@ function openFileUploadWindow(id,tableName)
 function deleteAttachment_onClick(btn,txt,id)
 {
 	if (btn == 'yes')
-		window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+id,"Delete","width=510,height=150,resizable=yes,dependent=yes");
+	{
+	  var windowCfg="width=510,height=150,resizable=yes,dependent=yes";
+		window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+id,
+		            "Delete",windowCfg);
+	}	
 }
 
 function attachmentDlg_onUnload()
@@ -375,7 +393,9 @@ function attachmentDlg_onUnload()
 	try
 	{
 		if (attachmentDlg_refWindow == top.opener)
+		{
 			top.opener.location = attachmentDlg_refLocation;
+		}	
 	}
 	catch(e)
 	{}
@@ -392,18 +412,20 @@ function attachmentDlg_onLoad()
 		attachmentDlg_refWindow = top.opener;
 		attachmentDlg_refLocation = top.opener.location;
 		if (attachmentDlg_refWindow.attachment_reloadOnCancelURL)
+		{
 			attachmentDlg_refLocation = attachmentDlg_refWindow.attachment_reloadOnCancelURL;
+		}	
 	}
 	catch(e)
 	{}
 }
 
-function attachmentDlg_onSubmit(bAllowEmptyTitle)
+function attachmentDlg_onSubmit(allowEmptyTitle)
 {
 	var bSuccess = true;
 	attachmentDlg_bNoRefresh = true;
 
-	if (!bAllowEmptyTitle)
+	if (!allowEmptyTitle)
 	{
 		var titleField = document.getElementById('title');
 		if (isWhitespace(titleField.value))
@@ -452,7 +474,7 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 }
 
 /*
-  function:
+  function: tree_getPrintPreferences
 
   args :
 
@@ -469,21 +491,26 @@ function tree_getPrintPreferences()
 	var fields = ['header','summary','toc','body','passfail', 'cfields','testplan', 'metrics', 
 	              'tcspec_refresh_on_action','author','requirement','keyword'];
 
-  for (var i= 0;i < fields.length;i++)
+  for (var idx= 0;idx < fields.length;idx++)
 	{
-		var v = tree_getCheckBox(fields[i]);
+		var v = tree_getCheckBox(fields[idx]);
 		if (v)
+		{
 			params.push(v);
+		}	
 	}
 	var f = document.getElementById('format');
 	if(f)
+	{
 		params.push("format="+f.value);
-
+  }
 	params = params.join('&');
 
 	return params;
 }
 
+
+// TODO understand where is used - 20090715 - franciscom
 function tree_getCheckBox(id)
 {
 	var	cb = document.getElementById('cb'+id);
@@ -500,6 +527,7 @@ function open_bug_add_window(exec_id)
 	window.open(fRoot+"lib/execute/bugAdd.php?exec_id="+exec_id,"bug_add",
 	            "width=510,height=270,resizable=yes,dependent=yes");
 }
+
 function bug_dialog()
 {
 	this.refWindow = null;
@@ -570,6 +598,7 @@ function deleteBug_onClick(execution_id,bug_id,warning_msg)
 	}
 }
 
+// seems is not used => do more checks and remove
 function planRemoveTC(warning_msg)
 {
 	var cbs = document.getElementsByTagName('input');
@@ -594,20 +623,6 @@ function planRemoveTC(warning_msg)
 }
 
 /*
-  function: openExecNotesWindow
-
-  args :
-
-  returns:
-
-*/
-function openExecNotesWindow(exec_id)
-{
-	window.open(fRoot+"lib/execute/execNotes.php?doAction=edit&exec_id="+exec_id,
-	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes");
-}
-
-/*
   function: open_help_window
 
   args :
@@ -617,31 +632,45 @@ function openExecNotesWindow(exec_id)
 */
 function open_help_window(help_page,locale)
 {
-	window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
+    var windowCfg='';
+    windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
+               "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no," + 
+               "location=no,width=400,height=650");
+    window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank",windowCfg);
 }
 
 
 /*
-  function:
+  function: openTCaseWindow
 
-  args :
+  args: tcase_id: test case id
+        tcversion_id: test case version id
+        show_mode: string used on testcase.show() to manage refresh 
+                   logic of frames when Edit Test case page is closed.
+                   This argument was added to allow automatic referesh
+                   of frames when user uses the feature that allows 
+                   edit a test case while execution it.
 
   returns:
 
   rev :
+       20090715 - franciscom - added documentation
        20070930 - franciscom - REQ - BUGID 1078
 
 */
 function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 {
-	//@TODO schlundus, what is show_mode? not used in archiveData.php
-	var feature_url = "lib/testcases/archiveData.php";
-    feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
-                  tcase_id+"&tcversion_id="+tcversion_id;
-
+	  //@TODO schlundus, what is show_mode? not used in archiveData.php
+	  //You are right: problem fixed see documentation added on header (franciscom)
+	  // 
+    var windowCfg='';
+	  var feature_url = "lib/testcases/archiveData.php";
+	  feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
+                    tcase_id+"&tcversion_id="+tcversion_id;
+    
     // second parameter(window name) with spaces caused bug on IE
-	window.open(fRoot+feature_url,"TestCaseSpec",
-	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
+	  windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	  window.open(fRoot+feature_url,"TestCaseSpec",windowCfg);
 }
 
 
@@ -792,10 +821,14 @@ function showEventHistoryFor(objectID,objectType)
 	{
 		f = document.createElement("form");
 		if (!f)
+		{
 			return;
+		}
 		var b = document.getElementsByTagName('body')[0];
 		if (!b)
+		{
 			return;
+		}
 		b.appendChild(f);
 		f.style.display = "none";
 		f.id = "eventhistory";
@@ -830,13 +863,15 @@ function showEventHistoryFor(objectID,objectType)
 
 */
 function openReqWindow(tcase_id)
-{                        
+{ 
+  var windowCfg='';                       
 	var feature_url = "lib/requirements/reqTcAssign.php";
+	
 	feature_url +="?edit=testcase&showCloseButton=1&id="+tcase_id;
 
 	// second parameter(window name) with spaces generate bug on IE
-	window.open(fRoot+feature_url,"TestCase_Requirement_link",
-	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
+	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+feature_url,"TestCase_Requirement_link",windowCfg);
 }
 
 /*
@@ -851,9 +886,13 @@ function toggleInput(oid)
 {
 	var iField = document.getElementById(oid);
 	if (!iField)
+	{
 		return;
-	
+	}
+	else
+	{  
     iField.value = iField.value ? 0 : 1;
+  }  
 }
 
 
@@ -868,7 +907,7 @@ function toggleInput(oid)
 function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
 {
   var target_url="lib/execute/editExecution.php";
-  
+  var windowCfg="width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes";
 	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
-	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes");
+	            "execution_notes",windowCfg);
 }

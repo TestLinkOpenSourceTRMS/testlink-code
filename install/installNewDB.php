@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.47 2009/06/03 21:16:17 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.48 2009/07/15 17:25:57 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,10 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20090715 - franciscom - changed way to manage replace of table prefix on
+                        SQL statements to run.
+                        Improvements on Drop of table if Datat Base Exists
+                        
 20090603 - franciscom - write on config file table prefix
 20080102 - franciscom - added DB 1.2
 20071018 - franciscom - added DB 1.1 
@@ -26,6 +30,7 @@ require_once("installUtils.php");
 require_once("sqlParser.class.php");
 require_once("../lib/functions/object.class.php");
 require_once("../lib/functions/metastring.class.php");
+require_once("../third_party/dBug/dBug.php");
 
 // 20080315 - franciscom
 // Better to avoid use of logger during installation
@@ -466,20 +471,38 @@ switch($db_type)
 // --------------------------------------------------------------------------------------------
 if( $inst_type=='new' && $conn_result['status'] != 0 )
 {
-  // Drop tables
+  // Drop tables to allow re-run Installation
+  // From 1.9 and up we have detail of tables.
+  $schema = tlObjectWithDB::getDBTables();
+  new dBug();
+  
+  // tables present on target db
   $my_ado=$db->get_dbmgr_object();
   $the_tables =$my_ado->MetaTables('TABLES');  
   if( count($the_tables) > 0 && isset($the_tables[0]))
   {
-    echo "<br>Dropping all existent tables:";
-    foreach($the_tables as $table2drop )
+    echo "<br>Dropping all TL existent tables:<br>";
+    foreach($schema as $tablePlainName => $tableFullName)
     {
-      // Need to add option (CASCADE ?) to delete dependent object
-      // echo $table2drop . "<br>";
-      $sql="DROP TABLE {$table2drop} CASCADE";
-      $db->exec_query($sql);
+      $targetTable=$db_table_prefix . $tablePlainName;	
+      if( in_array($targetTable,$the_tables) )
+      {
+      	// Need to add option (CASCADE ?) to delete dependent object
+      	echo "Droping $targetTable" . "<br>";
+      	$sql="DROP TABLE $targetTable CASCADE";
+      	$db->exec_query($sql);
+      }  	
     }
-   echo "<span class='ok'>Done!</span>";
+    
+    
+    // foreach($the_tables as $table2drop )
+    // {
+    //   	// Need to add option (CASCADE ?) to delete dependent object
+    //   	// echo $table2drop . "<br>";
+    //   	$sql="DROP TABLE {$table2drop} CASCADE";
+    //   	$db->exec_query($sql);
+    // }
+    echo "<span class='ok'>Done!</span>";
   }
 }  
 // --------------------------------------------------------------------------------------------

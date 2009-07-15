@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: newInstallStart_TL.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/06/03 18:34:25 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/07/15 17:25:58 $ by $Author: franciscom $
  * 
  * Verify environment and collect DB input data
  *
@@ -218,13 +218,19 @@ else
 		</p>
 
 		<?php if(!$isUpgrade){ ?>
-		<p class="tab-warning"><b>Warning:</b></br>
- 			The database name can contain any character that is allowed in 
- 			a directory name, except '/', '\', or '.'.<br />
-			Testlink can not be installed (using this installer) on a existing database 
-			used by another application, because part of the installation process consist 
-			on dropping all tables present on the database/schema. The existing data 
-			will be destroyed without notice.
+        <p/><b>***** WARNING - Allowed characters in Database Name *****</b>
+		<p class="tab-warning">
+ 			The database name can contains any character that is allowed in 
+ 			a directory name, except '/', '\', or '.'.
+		</p>
+		
+		<b>***** WARNING - Using a Database shared with other applications *****</b>
+		<p class="tab-warning">
+			Testlink can be installed (using this installer) on a existing database 
+			used by another application, <br />using a table prefix.<br />
+			Anyway PLEASE BE VERY carefull because PART OF INSTALLATION PROCESS CONSISTS 
+			on dropping all TestLink tables present on the database/schema (if any TestLink table exists). 
+			<br />Please Backup your Database Before installing.
 		</p>
 		<?php } ?>
 

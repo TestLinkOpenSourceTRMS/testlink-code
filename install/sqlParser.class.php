@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.11 2009/06/06 17:49:39 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.12 2009/07/15 17:25:58 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
@@ -29,7 +29,7 @@ class SqlParser {
 	{
 		$this->db_conn = $db_conn;
 		$this->db_type = $db_type;
-		$this->db_table_prefix = $db_table_prefix;
+		$this->db_table_prefix = trim($db_table_prefix);
 	}
 
 
@@ -42,23 +42,22 @@ class SqlParser {
   */
 function process($filename) 
 {
-    $target=array('create' => "CREATE TABLE ", 'insert' => "INSERT INTO ",
-                  'comment_on_table'=> null, 'sequence' => null,
-                  'index_on' => null, 'foreing_key' => null);
+    // $target=array('create' => "CREATE TABLE ", 'insert' => "INSERT INTO ",
+    //               'comment_on_table'=> null, 'sequence' => null,
+    //               'index_on' => null, 'foreing_key' => null);
                   
     $new_value=null;
-    // $new_value=array('create' => '', 'insert' => '');
 
     // -----------------------------------------------------------------
     // part of this logic has been copied from the setup of EVENTUM 
     $contents = file($filename);
-    
     $do_replace = trim($this->db_table_prefix) != '';
     
     // From PHP Manual Notes on using a class function as Filter
     // This FAILS!!!
     // $cfil = array_filter($contents,"only_good_sql");
     //
+    $do_additional_replace=false;
     switch($this->db_type)
     {
         case 'mysql':
@@ -66,62 +65,42 @@ function process($filename)
         break;
           
         case 'postgres':
-        $target['create'] = $target['create'] . '"';
-        // $target['insert'] = $target['insert'] . '"';
-        $target['foreing_key'] = "REFERENCES ";
-        $target['index_on'] = '" ON "';
-        $target['comment_on_table']='COMMENT ON TABLE ';
+        // $target['create'] = $target['create'] . '"';
+        // $target['foreing_key'] = "REFERENCES ";
+        // $target['index_on'] = '" ON "';
+        // $target['comment_on_table']='COMMENT ON TABLE ';
         $target['sequence'] = "SELECT setval('";
+        $do_additional_replace=true; 
         $cfil = array_filter($contents,array($this,"only_good_sql"));
         break;
         
         case 'mssql':
-        # $target['create'] = 'CREATE TABLE [';
-        $target['create'] = $target['create'] . '[';
-        $target['insert'] = $target['insert'] . '[';
+        // $target['create'] = $target['create'] . '[';
+        // $target['insert'] = $target['insert'] . '[';
         $cfil = array_filter($contents,array($this,"only_good_sql"));
         break;
     }
 
     $r2d2 = implode("", $cfil);
+    // echo "<pre>debug 20090715 - \ - " . __FUNCTION__ . " --- "; print_r($r2d2); echo "</pre>";
+
     if( $do_replace)
     {
-        
-        foreach($target as $key => $value)
-        {
-            if( !is_null($value) )
-            {
-                $new_value[$key] = $value . $this->db_table_prefix ;         
-                $r2d2 = str_replace($value,$new_value[$key],$r2d2);
-            }
-        }
-        // if($adjust_sequence)
-        // {
-        //     $new_s=SELECT setval('
-        //     $r2d2 = str_replace($value,$new_value[$key],$r2d2);
-        // }
-        // SELECT setval('
-        // $new_value['create'] = $target['create'] . $this->db_table_prefix ; 
-        // $new_value['insert'] = $target['insert'] . $this->db_table_prefix ; 
-        // 
-        // $r2d2 = str_replace($target['create'],$new_value['create'],$r2d2);
-        // $r2d2 = str_replace($target['insert'],$new_value['insert'],$r2d2);
-        // 
-        // 
-        // 
-        // if( !is_null($target['foreing_key']) )
-        // {
-        //     $new_value['foreing_key'] = $target['foreing_key'] . $this->db_table_prefix ;         
-        //     $r2d2 = str_replace($target['foreing_key'],$new_value['foreing_key'],$r2d2);
-        // }
-        // 
-        // if( !is_null($target['index_on']) )
-        // {
-        //     $new_value['index_on'] = $target['index_on'] . $this->db_table_prefix ;         
-        //     $r2d2 = str_replace($target['index_on'],$new_value['index_on'],$r2d2);
-        // }
-        
+        $r2d2 = str_replace('/*prefix*/',$this->db_table_prefix,$r2d2);
 
+        // just to solve problem with sequence on PostGres when creating start up data
+        // (need to find a better way)
+        if($do_additional_replace)
+        {
+        	foreach($target as $key => $value)
+        	{
+        	    if( !is_null($value) )
+        	    {
+        	        $new_value[$key] = $value . $this->db_table_prefix ;         
+        	        $r2d2 = str_replace($value,$new_value[$key],$r2d2);
+        	    }
+        	}
+        }
     }
 
     $sql_array = explode(";", $r2d2);

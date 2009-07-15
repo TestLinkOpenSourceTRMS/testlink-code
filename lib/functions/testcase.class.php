@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.179 2009/07/13 18:37:41 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.180 2009/07/15 17:28:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -625,11 +625,12 @@ class testcase extends tlObjectWithAttachments
 	        $tcasePrefix = $this->tproject_mgr->getTestCasePrefix($tproject_id);
 	        if(trim($tcasePrefix) != "")
 	        {
-	        	//Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
+	        	// Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
+	        	$gui->can_do->add2tplan = 'no';
 	        	if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
+	        	{
 		    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
-				else
-					$gui->can_do->add2tplan = 'no';
+				}
 				$tcasePrefix .= $tcase_cfg->glue_character;
 		   	}
 	    }
@@ -685,7 +686,9 @@ class testcase extends tlObjectWithAttachments
 	    // Removing duplicate and NULL id's
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
-		
+
+        new dBug($gui);
+        		
 		$smarty->assign('cf',$cf_smarty);
 		$smarty->assign('gui',$gui);
 		$smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);

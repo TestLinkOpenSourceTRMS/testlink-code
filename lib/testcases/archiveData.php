@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.49 2009/06/08 21:21:40 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.50 2009/07/15 17:28:04 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -74,7 +74,7 @@ switch($args->feature)
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
 		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
-		                $viewerArgs,$path_info);
+		                $viewerArgs,$path_info,$args->show_mode);
 		break;
 
 	default:
@@ -93,29 +93,33 @@ switch($args->feature)
 */
 function init_args(&$viewerCfg)
 {
-	$iParams = array(
-			"edit" => array(tlInputParameter::STRING_N,0,50),
-			"id" => array(tlInputParameter::INT_N),
-			"tcversion_id" => array(tlInputParameter::INT_N),
-			"targetTestCase" => array(tlInputParameter::STRING_N,0,100),
-			"show_path" => array(tlInputParameter::INT_N),
-			"tcasePrefix" => array(tlInputParameter::STRING_N,0,100),
-		);
-		
+	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
+			         "id" => array(tlInputParameter::INT_N),
+			         "tcversion_id" => array(tlInputParameter::INT_N),
+			         "targetTestCase" => array(tlInputParameter::STRING_N,0,100),
+			         "show_path" => array(tlInputParameter::INT_N),
+			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
+			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16));
+
 	$args = new stdClass();
-    $pParams = R_PARAMS($iParams,$args);
+    R_PARAMS($iParams,$args);
+	
+	new dBug($args);
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
 
    	if (!$args->tcversion_id)
+   	{
    		 $args->tcversion_id = testcase::ALL_VERSIONS;
+    }
     switch($args->feature)
     {
 		case 'testsuite':
         	$_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
         	break;
+     
         case 'testcase':
 			$args->id = is_null($args->id) ? 0 : $args->id;
 			$spec_cfg = config_get('spec_cfg');

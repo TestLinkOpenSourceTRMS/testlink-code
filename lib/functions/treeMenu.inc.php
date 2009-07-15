@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.103 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.104 2009/07/15 17:28:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -34,7 +34,7 @@ require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 /**
 *	strip potential newlines and other unwanted chars from strings
 *	Mainly for stripping out newlines, carriage returns, and quotes that were 
-*	causing problems in javascript espicially using jtree
+*	causing problems in javascript using jtree
 *
 *	@param string $str
 *	@return string string with the newlines removed

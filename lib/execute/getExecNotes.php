@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/07/13 18:36:34 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/07/15 17:28:04 $ by $Author: franciscom $
  *
  *
  * 20090530: franciscom - try to improve usability in order to allow edit online
@@ -68,8 +68,7 @@ function init_args()
 {
     $iParams = array("exec_id" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
-    
+	R_PARAMS($iParams,$args);
     return $args; 
 }
 ?>

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.13 2009/06/07 12:55:58 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.14 2009/07/15 17:28:04 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -61,9 +61,13 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $tcprefix,$show_tcases=1,$operation='manage') 
 {             
     static $showTestCaseID;
-    $tables=array('tcversions' => DB_TABLE_PREFIX . 'tcversions',
-                  'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
-                  'node_types' => DB_TABLE_PREFIX . 'node_types');
+    
+    // $tables=array('tcversions' => DB_TABLE_PREFIX . 'tcversions',
+    //               'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
+    //               'node_types' => DB_TABLE_PREFIX . 'node_types');
+    // 
+    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','node_types'));
+
 
     $external='';
     $nodes=null;
@@ -145,11 +149,11 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	              
               case 'testcase':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-                  // BUGID 1928
-                  if( is_null($showTestCaseID) )
-                  {
-                      $showTestCaseID=config_get('treemenu_show_testcase_id');
-                  }
+                  	// BUGID 1928
+                  	if( is_null($showTestCaseID) )
+                  	{
+                  	    $showTestCaseID=config_get('treemenu_show_testcase_id');
+                  	}
 	                if( $showTestCaseID )
 	                {
 	                   $path['text'] = htmlspecialchars($tcprefix . $external[$row['id']]['tc_external_id'] . ":") .

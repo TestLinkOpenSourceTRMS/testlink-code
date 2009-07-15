@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNotes.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/07/15 17:28:04 $ by $Author: franciscom $
  *
  * Edit an execution note
  *
@@ -54,9 +54,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function doUpdate(&$dbHandler,&$argsObj)
 {
-    $sql = "UPDATE executions " .
-          "SET notes='{$argsObj->notes}'" .
-          "WHERE id={$argsObj->exec_id}";
+    $tables = tlObjectWithDB::getDBTables('executions');
+    $sql = "UPDATE {$tables['executions']} " .
+           " SET notes='" . $dbHandler->prepare_string($argsObj->notes) . "' " .
+           " WHERE id={$argsObj->exec_id} ";
     $dbHandler->exec_query($sql);     
 }
 
@@ -71,14 +72,11 @@ function doUpdate(&$dbHandler,&$argsObj)
 */
 function init_args()
 {
-    $iParams = array(
-		"exec_id" => array(tlInputParameter::INT_N),
-		"doAction" => array(tlInputParameter::STRING_N,0,100),
-   		"notes" => array(tlInputParameter::STRING_N),
-	);
+    $iParams = array("exec_id" => array(tlInputParameter::INT_N),
+		             "doAction" => array(tlInputParameter::STRING_N,0,100),
+   		             "notes" => array(tlInputParameter::STRING_N));
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
-    
+    R_PARAMS($iParams,$args);
     return $args; 
 }
 

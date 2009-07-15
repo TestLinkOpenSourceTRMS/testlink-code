@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.80 2009/07/15 17:26:54 franciscom Exp $
+// $Id: testlink_library.js,v 1.81 2009/07/15 18:15:03 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -635,7 +635,7 @@ function open_help_window(help_page,locale)
     var windowCfg='';
     windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
                "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no," + 
-               "location=no,width=400,height=650");
+               "location=no,width=400,height=650";
     window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank",windowCfg);
 }
 

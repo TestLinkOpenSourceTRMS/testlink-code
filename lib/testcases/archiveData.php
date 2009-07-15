@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.50 2009/07/15 17:28:04 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.51 2009/07/15 18:16:06 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -103,8 +103,6 @@ function init_args(&$viewerCfg)
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
-	
-	new dBug($args);
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature

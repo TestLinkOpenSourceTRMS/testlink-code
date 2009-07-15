@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.48 2009/07/15 17:25:57 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.49 2009/07/15 18:16:05 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -474,8 +474,7 @@ if( $inst_type=='new' && $conn_result['status'] != 0 )
   // Drop tables to allow re-run Installation
   // From 1.9 and up we have detail of tables.
   $schema = tlObjectWithDB::getDBTables();
-  new dBug();
-  
+ 
   // tables present on target db
   $my_ado=$db->get_dbmgr_object();
   $the_tables =$my_ado->MetaTables('TABLES');  

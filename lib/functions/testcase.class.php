@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.180 2009/07/15 17:28:04 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.181 2009/07/15 18:16:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -687,7 +687,7 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-        new dBug($gui);
+        // new dBug($gui);
         		
 		$smarty->assign('cf',$cf_smarty);
 		$smarty->assign('gui',$gui);

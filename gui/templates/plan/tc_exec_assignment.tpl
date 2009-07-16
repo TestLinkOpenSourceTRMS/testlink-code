@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.16 2009/03/04 19:56:13 schlundus Exp $
+$Id: tc_exec_assignment.tpl,v 1.17 2009/07/16 14:05:47 havlat Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -55,11 +55,17 @@ function check_action_precondition(container_id,action)
 {assign var="add_cb" value="achecked_tc"}
   
 <form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
-<div class="workBack" style="height: 450px; overflow-y: auto;">
-	
+<div class="workBack">
+
+	<div class="groupBtn">    
+		<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
+		<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
+		{$labels.send_mail_to_tester}
+		</span>
+	</div>
+
+	<div style="height: 650px; overflow-y: auto;">	
 	{assign var=top_level value=$gui->items[0].level}
-	<div style="text-align:center;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
-	{$labels.send_mail_to_tester}</div>
 	
 	{foreach from=$gui->items item=ts key=idx name="div_drawing"}
 	  {assign var="ts_id" value=$ts.testsuite.id}
@@ -67,7 +73,7 @@ function check_action_precondition(container_id,action)
 	  
 	  {if $ts_id != '' }
 	  
-	    <div id="{$div_id}" style="margin:0px 0px 0px {$ts.level}0px;border:1;">
+	    <div id="{$div_id}" style="margin-left:{$ts.level}0px; border:1;">
       <br />
       {* check/uncheck on ALL contained test suites is implemented with this clickable image *}
 	    <h3 class="testlink"><img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
@@ -97,45 +103,44 @@ function check_action_precondition(container_id,action)
               	     
 
         {if $ts.testcase_qty gt 0 }
-            <table cellspacing="0" style="font-size:small;" width="100%">
-             <tr style="background-color:blue;font-weight:bold;color:white">
-			       <td width="5" align="center">
+		<table cellspacing="0" style="font-size:small;" width="100%">
+			<tr style="background-color:#059; font-weight:bold; color:white">
+				<td width="5" align="center">
 			           <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			                onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                       title="{$labels.check_uncheck_all_checkboxes}" />
-			       </td>
+				</td>
             	<td class="tcase_id_cell">{$labels.th_id}</td> 
-              <td>{$labels.th_test_case}</td>
-            	<td align="center">&nbsp;&nbsp;{$labels.version}</td>
+            	<td>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
+            		{$labels.version}{$gsmarty_gui->role_separator_close}</td>
             	<td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
             	<td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
             </tr>
             {foreach from=$ts.testcases item=tcase }
             	{if $tcase.linked_version_id ne 0}
-            	  <tr>
-              	  <td>
+				<tr>
+					<td>
+          				<input type="checkbox"  name='{$add_cb}[{$tcase.id}]' align="middle"
+    	  			                            id='{$add_cb}_{$ts_id}_{$tcase.id}' 
+          				                        value="{$tcase.linked_version_id}" />
 			  			<input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}" />
 			  			<input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}" />
 			  			<input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}" />
-          				<input type="checkbox"  name='{$add_cb}[{$tcase.id}]' 
-    	  			                            id='{$add_cb}_{$ts_id}_{$tcase.id}' 
-          				                        value="{$tcase.linked_version_id}" />
-         				  </td>
-              	  <td>
-              	  {$gui->testCasePrefix|escape}{$tcase.external_id|escape}
-                  </td>
-              	  <td title="{$labels.show_tcase_spec}">
-              	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
-                  </td>
-                  <td align="center">
-          				{$tcase.tcversions[$tcase.linked_version_id]}
-                  </td>
-                  <td align="center">
-                  {if $tcase.user_id > 0}
-       	          	{$gui->users[$tcase.user_id]|escape}
-                  	{if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if}
-                  {/if}
-                  </td>
+					</td>
+					<td>
+						{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
+					</td>
+					<td title="{$labels.show_tcase_spec}">
+						&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
+						&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
+						{$gsmarty_gui->role_separator_close}
+					</td>
+					<td align="center">
+					{if $tcase.user_id > 0}
+						{$gui->users[$tcase.user_id]|escape}
+						{if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if}
+					{/if}
+					</td>
                   	<td align="center">
         		  		<select name="tester_for_tcid[{$tcase.id}]" 
         		  		        id="tester_for_tcid_{$tcase.id}"
@@ -162,18 +167,14 @@ function check_action_precondition(container_id,action)
       {/if}
       {if $smarty.foreach.div_drawing.last}</div> {/if}
     
-    {/if} {* {if $ts_id != '' } *}
+    {/if} {* $ts_id != '' *}
 	{/foreach}
+	</div>
 </div>
-
-<div class="workBack">    
-	<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
-</div>
-
 </form>
 
 {else}
- <h2>{lang_get s='no_testcase_available'}</h2>
+	<div class="workBack">{lang_get s='no_testcase_available'}</div>
 {/if}
 
 </body>

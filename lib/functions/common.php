@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.157 2009/06/15 20:14:59 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.158 2009/07/16 14:55:25 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -704,6 +704,22 @@ function init_labels($map_code_label)
 	}
 	return $map_code_label;
 }
+
+/*
+ * Converts a priority weight (urgency * importance) to HIGH, MEDUIM or LOW
+ *
+ * @return HIGH, MEDUIM or LOW
+ */
+function priority_to_level($priority) {
+	$levels = config_get('priority_levels');
+	if ($priority >= $levels[HIGH])
+		return HIGH;
+	else if ($priority >= $levels[MEDIUM])
+		return MEDIUM;
+	else
+		return LOW;
+}
+
 
 
 // --------------------------------------------------------------------------------------

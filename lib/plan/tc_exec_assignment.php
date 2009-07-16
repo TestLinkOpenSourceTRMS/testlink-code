@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.37 2009/06/11 06:58:02 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.38 2009/07/16 14:55:06 havlat Exp $ 
  * 
  * rev :
  *       20090201 - franciscom - new feature send mail to tester
@@ -166,6 +166,11 @@ $gui->items = $out['spec_view'];
 $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
+
+if ($_SESSION['testprojectOptPriority']) {
+	$urgencyCfg = config_get('urgency');
+	$gui->priority_labels = init_labels($urgencyCfg["code_label"]);
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);

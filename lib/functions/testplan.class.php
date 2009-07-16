@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.121 2009/06/26 14:14:50 havlat Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.122 2009/07/16 14:55:06 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -666,7 +666,8 @@ class testplan extends tlObjectWithAttachments
 			" E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 			" E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
 			" UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
-			" COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
+			" COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ".
+			" (urgency * importance) AS priority " .
 			" FROM {$this->tables['nodes_hierarchy']} NHA " .
 			" JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
 			$join_for_parent .

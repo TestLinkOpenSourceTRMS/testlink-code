@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.17 2009/07/16 14:05:47 havlat Exp $
+$Id: tc_exec_assignment.tpl,v 1.18 2009/07/16 14:55:06 havlat Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -14,7 +14,7 @@ rev :
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
                           send_mail_to_tester,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter'}
+                          th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -113,6 +113,7 @@ function check_action_precondition(container_id,action)
             	<td class="tcase_id_cell">{$labels.th_id}</td> 
             	<td>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
             		{$labels.version}{$gsmarty_gui->role_separator_close}</td>
+				{if $session['testprojectOptPriority']}<td align="center">{$labels.priority}</td>{/if}
             	<td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
             	<td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
             </tr>
@@ -131,10 +132,13 @@ function check_action_precondition(container_id,action)
 						{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
 					</td>
 					<td title="{$labels.show_tcase_spec}">
-						&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
+						&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
 						&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
 						{$gsmarty_gui->role_separator_close}
 					</td>
+					{if $session['testprojectOptPriority']}
+						<td align="center">{$gui->priority_labels[$tcase.priority]}</td>
+					{/if}
 					<td align="center">
 					{if $tcase.user_id > 0}
 						{$gui->users[$tcase.user_id]|escape}

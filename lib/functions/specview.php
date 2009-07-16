@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.32 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: specview.php,v 1.33 2009/07/16 14:55:06 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -78,7 +78,8 @@
  *                              [status] =>            
  *                              [assigner_id] =>       
  *                              [urgency] => 2         
- *                              [exec_status] => b     
+ *                              [exec_status] => b
+ *                              [priority] => 4		// urgency*importance     
  * @param array $map_node_tccount
  *		[keyword_id] default 0
  *		[tcase_id] default null, can be an array
@@ -131,6 +132,7 @@
  *                                  [external_id] => 2
  *                                  [linked_ts] => 2009-06-10 23:00
  *                                  [linked_by] => 2
+ *                                  [priority] => HIGH, MEDIUM or LOW
  *                              )
  *                                [81] => Array( [id] => 81
  *                                           [name] => TC88)
@@ -155,6 +157,7 @@
  *                        and inactive test cases.
  *                        Counts the quantity of active versions of a test case.
  *                        If 0 => test case is considered INACTIVE
+ * 	20090625 - Eloff - added priority output
  */
 function gen_spec_view(&$db,$spec_view_type='testproject',
                        $tobj_id,$id,$name,&$linked_items,
@@ -189,7 +192,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$hash_id_pos[$id] = $idx;
 	$out[$idx]['testsuite'] = array('id' => $id, 'name' => $name);
 	$out[$idx]['testcases'] = array();
-	$out[$idx]['write_buttons'] = 'no';
+	$out[$idx]['write_buttons'] =	 'no';
 	$out[$idx]['testcase_qty'] = 0;
 	$out[$idx]['level'] = 1;
 	$out[$idx]['linked_testcase_qty'] = 0;
@@ -417,6 +420,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 							$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $linked_testcase['tcversion_id'];
 							$exec_order= isset($linked_testcase['execution_order'])? $linked_testcase['execution_order']:0;
 							$out[$parent_idx]['testcases'][$tc_id]['execution_order'] = $exec_order;
+							// 20090625 - Eloff
+							$out[$parent_idx]['testcases'][$tc_id]['priority'] = priority_to_level($linked_testcase['priority']);
 							$out[$parent_idx]['write_buttons'] = 'yes';
 							$out[$parent_idx]['linked_testcase_qty']++;
 							

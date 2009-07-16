@@ -1,10 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.6 2008/11/09 16:25:05 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.7 2009/07/16 21:30:52 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20081109 - franciscom - refactoring 
         20070113 - franciscom - use of smarty config file
 *}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes"}
 
 {literal}
@@ -22,39 +24,37 @@ function pre_submit()
 </script>
 {/literal}
 </head>
+
 <body>
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{lang_get s='title_nav_results'}</h1>
 
+<div style="margin:0px; padding:0px;">
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
-<div class="menu_bar">
-	<span style="float: right;">{lang_get s='title_report_type'}
-	<select name="format" onchange="this.form.submit();">
+	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
+	<input type="hidden" id="called_url" name="called_url" value="" />
+
+	<div class="menu_bar">
+		<span>{lang_get s='title_report_type'}
+		<select name="format" onchange="this.form.submit();">
 		    {html_options options=$arrReportTypes selected=$selectedReportType}
-	</select></span>
+		</select>
+		</span>
 
-	<span><input type="button" name="print" value="{lang_get s='btn_print'}" 
-	onclick="javascript: reportPrint();" style="margin-left:5px;" /></span>
-</div>
+		<span style="margin-left:20px;"><input type="button" name="print" value="{lang_get s='btn_print'}" 
+			onclick="javascript: reportPrint();" style="margin-left:5px;" /></span>
+	</div>
 
-<div style="margin:3px" >
-  <input type="hidden" id="called_by_me" name="called_by_me" value="1" />
-  <input type="hidden" id="called_url" name="called_url" value="" />
+	<div style="margin:3px" >
 
-  <table>
-	<tr><td style="padding-right: 10px">{lang_get s='test_plan'}</td><td>
-	<select name="tplan_id" onchange="pre_submit();this.form.submit()">
-		{html_options options=$gui->tplans selected=$gui->tplan_id}
-	</select><br />
-	</td></tr>
-	<tr><td style="padding-right: 10px"></td><td>
-	</td></tr>
-  </table>
-	
-</div>
+		<span style="padding-right: 10px">{lang_get s='test_plan'} 
+		<select name="tplan_id" onchange="pre_submit();this.form.submit()">
+			{html_options options=$gui->tplans selected=$gui->tplan_id}
+		</select>
+		</span>
+	</div>
 </form>
+</div>
 
 <div style="margin:3px; padding: 15px 0px" >
 {* Build href menu *}

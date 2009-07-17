@@ -7,10 +7,13 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.64 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.65 2009/07/17 17:05:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20090717 - franciscom - get_linked_cfields_at_design() - added filter by location
+ *                         get_linked_cfields_at_execution() - location argument
  *
  * 20090607 - franciscom - refactoring to manage table prefix
  * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
@@ -407,6 +410,11 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 			   ['cfield_id']: if exists use it's value to filter on custom field id
                               null or not exists -> don't filter
 
+			   ['location']: new concept used to define on what location on screen
+			                 custom field will be designed.
+			                 Initally used with CF available for Test cases, to
+			                 implement pre-requisites.
+
 
     [$node_type]: default: null
                   verbose id ('testcase', 'testsuite', etc) of a node type.
@@ -494,9 +502,17 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         {
             $additional_filter .= " AND CF.id={$filters['cfield_id']} ";
         }
+        
+        // 20090717 - franciscom
+        $filterKey='location';
+        if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
+        {
+            $additional_filter .= " AND CF.id={$filters[$filterKey]} ";
+        }
+        
     }
 
-    $sql="SELECT CF.*,CFTP.display_order" .
+    $sql="SELECT CF.*,CFTP.display_order,CFTP.location" .
          $additional_values .
          " FROM {$this->object_table} CF " .
          " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
@@ -1377,13 +1393,17 @@ function name_is_unique($id,$name)
 
     [execution_id]
     [testplan_id]
-
+    [access_key]
+    [location]
 
     returns: hash
              key: custom field id
 
 
     rev :
+          20090717 - franciscom
+          added location argument
+          
           20070526 - franciscom
           changed order by clause
 
@@ -1392,7 +1412,7 @@ function name_is_unique($id,$name)
   function get_linked_cfields_at_execution($tproject_id,$enabled,
                                            $node_type=null,$node_id=null,
                                            $execution_id=null,$testplan_id=null,
-                                           $access_key='id')
+                                           $access_key='id',$location=null)
   {
     $base_values="CF.*,";
     $additional_join="";
@@ -1454,16 +1474,21 @@ function name_is_unique($id,$name)
         }
     }
 
-    $sql = "SELECT {$base_values} CFTP.display_order" .
+    if( !is_null($location) )
+    {
+    	$additional_filter .= " AND CF.id= " . intval($location) . " ";
+    }
+
+    $sql = "SELECT {$base_values} CFTP.display_order,CFTP.location" .
            $additional_values .
            " FROM {$this->tables['custom_fields']} CF " .
            " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
            $additional_join .
            " WHERE CFTP.testproject_id={$tproject_id} " .
-           " AND   CFTP.active=1     " .
-           " AND   CF.enable_on_execution={$enabled} " .
-           " AND   CF.show_on_execution=1 {$order_clause} ";
- 
+           " AND CFTP.active=1 " .
+           " AND CF.enable_on_execution={$enabled} " .
+           " AND CF.show_on_execution=1 {$additional_filter} {$order_clause} ";
+   
     $map = $this->db->$fetchMethod($sql,$access_key);
     return $map;
   }

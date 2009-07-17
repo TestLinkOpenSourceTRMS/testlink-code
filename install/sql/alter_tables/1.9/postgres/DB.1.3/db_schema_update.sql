@@ -1,5 +1,5 @@
--- $Revision: 1.2 $
--- $Date: 2009/05/13 05:55:49 $
+-- $Revision: 1.3 $
+-- $Date: 2009/07/17 17:08:35 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -9,7 +9,8 @@
 -- To remove any default value, use:
 -- ALTER TABLE products ALTER COLUMN price DROP DEFAULT;
 -- This is effectively the same as setting the default to null. 
--- As a consequence, it is not an error to drop a default where one hadn't been defined, because the default is implicitly the null value.
+-- As a consequence, it is not an error to drop a default where one hadn't been defined, 
+-- because the default is implicitly the null value.
 --
 -- Changing a Column's Data Type
 -- ALTER TABLE products ALTER COLUMN price TYPE numeric(10,2);
@@ -20,6 +21,10 @@
 -- USE SEMICOLONS ONLY to signal END of SQL Statements.
 --
 --
+-- internal revision:
+--  20090717 - franciscom
+--  cfield_testprojects new field location
+--
 -- Step 1 - Drops if needed
 
 
@@ -28,29 +33,31 @@
 -- Step 3 - table changes
 
 -- testprojects
-ALTER TABLE testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
 
 -- testplans
-ALTER TABLE testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
 
 
 -- testplan_tcversions
-ALTER TABLE testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
-ALTER TABLE testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
-COMMENT ON TABLE testplan_tcversions IS 'Updated to TL 1.9.0 Development - DB 1.3';
+ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
+ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
+COMMENT ON TABLE /*prefix*/testplan_tcversions IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- users
--- ALTER TABLE users ALTER COLUMN email TYPE VARCHAR(320);
+-- ALTER TABLE /*prefix*/users ALTER COLUMN email TYPE VARCHAR(320);
 
 -- builds
-ALTER TABLE builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
-ALTER TABLE builds ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
-ALTER TABLE builds ADD COLUMN relase_date DATE NOT NULL;
-COMMENT ON TABLE builds IS 'Updated to TL 1.9.0 Development - DB 1.3';
+ALTER TABLE /*prefix*/builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
+ALTER TABLE /*prefix*/builds ADD COLUMN relase_date DATE NOT NULL;
+COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
+-- cfield_testprojects
+ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
 
 
 -- db_version
-ALTER TABLE db_version ADD COLUMN notes  text;
-COMMENT ON TABLE db_version IS 'Updated to TL 1.9.0 Development - DB 1.3';
+ALTER TABLE /*prefix*/db_version ADD COLUMN notes  text;
+COMMENT ON TABLE /*prefix*/db_version IS 'Updated to TL 1.9.0 Development - DB 1.3';
 

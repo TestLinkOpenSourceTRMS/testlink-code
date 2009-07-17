@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.35 2009/07/15 17:25:58 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.36 2009/07/17 17:08:35 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,6 +11,7 @@
 -- 
 -- Rev :
 --
+--      20090717 - franciscom - added cfield_testprojects.location field
 --      20090411 - franciscom - BUGID 2369 - testplan_tcversions
 --      20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
 --      20090103 - franciscom - milestones table - added new unique index
@@ -149,6 +150,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
 	[testproject_id] [int] NOT NULL CONSTRAINT [/*prefix*/DF_cfield_testprojects_testproject_id]  DEFAULT ((0)),
 	[display_order] [smallint] NOT NULL CONSTRAINT [/*prefix*/DF_cfield_testprojects_display_order]  DEFAULT ((1)),
 	[active] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_cfield_testprojects_active]  DEFAULT ((1)),
+	[location] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_cfield_testprojects_location]  DEFAULT ((1)),
 	[required_on_design] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_cfield_testprojects_required_on_design]  DEFAULT ((0)),
 	[required_on_execution] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_cfield_testprojects_required_on_execution]  DEFAULT ((0)),
  CONSTRAINT [/*prefix*/PK_cfield_testprojects] PRIMARY KEY CLUSTERED 
@@ -301,6 +303,7 @@ CREATE TABLE /*prefix*/builds (
 	[notes] [text]  NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_builds_active]  DEFAULT ((1)),
 	[is_open] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_builds_open]  DEFAULT ((1)),
+	[author_id] [int] NULL,
 	[creation_ts] [datetime] NOT NULL CONSTRAINT [/*prefix*/DF_builds_creation_ts]  DEFAULT (getdate()),
 	[release_date] [datetime] NULL,
 	[closed_on_date] [datetime] NULL,

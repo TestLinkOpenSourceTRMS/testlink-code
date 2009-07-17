@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.81 2009/07/15 18:15:03 franciscom Exp $
+// $Id: testlink_library.js,v 1.82 2009/07/17 08:35:34 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -881,17 +881,14 @@ function openReqWindow(tcase_id)
   
   returns: 
 
+  rev: 20090716 - franciscom - fixed refactored that does not work
 */
 function toggleInput(oid)
 {
-	var iField = document.getElementById(oid);
-	if (!iField)
+	var elem = document.getElementById(oid);
+	if (elem)
 	{
-		return;
-	}
-	else
-	{  
-    iField.value = iField.value ? 0 : 1;
+    elem.value = (elem.value == 1) ? 0 : 1;
   }  
 }
 

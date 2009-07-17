@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.44 2009/06/30 10:59:53 havlat Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.45 2009/07/17 17:05:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -557,12 +557,12 @@ class database
 	 *
 	 * @param string $query the query to be executed
 	 * @param string $column the name of the column
-	 * @param booleam $bCumulative default 0
+	 * @param booleam $cumulative default 0
 	 *
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
-	function fetchRowsIntoMap($query,$column,$bCumulative = 0,$limit = -1)
+	function fetchRowsIntoMap($query,$column,$cumulative = 0,$limit = -1)
 	{
 		$items = null;
 		$result = $this->exec_query($query,$limit);
@@ -570,10 +570,14 @@ class database
 		{
 			while($row = $this->fetch_array($result))
 			{
-				if ($bCumulative)
+				if ($cumulative)
+				{
 					$items[$row[$column]][] = $row;
+				}
 				else
+				{
 					$items[$row[$column]] = $row;
+				}	
 			}
 		}
 		

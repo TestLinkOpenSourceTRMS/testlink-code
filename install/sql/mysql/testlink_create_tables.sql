@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.53 2009/07/15 17:25:58 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.54 2009/07/17 17:10:42 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090717 - franciscom - added cfield_testprojects.location field
 # 20090512 - franciscom - BUGID - builds release_date
 #                         BUGID - is_public attribute for testprojects and testplans
 #
@@ -397,6 +398,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   `field_id` int(10) unsigned NOT NULL default '0',
   `testproject_id` int(10) unsigned NOT NULL default '0',
   `display_order` smallint(5) unsigned NOT NULL default '1',
+  `location` smallint(5) unsigned NOT NULL default '1',
   `active` tinyint(1) NOT NULL default '1',
   `required_on_design` tinyint(1) NOT NULL default '0',
   `required_on_execution` tinyint(1) NOT NULL default '0',

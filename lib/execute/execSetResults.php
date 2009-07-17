@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.129 $
- * @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
+ * @version $Revision: 1.130 $
+ * @modified $Date: 2009/07/17 08:33:40 $ $Author: franciscom $
  *
  * rev:
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
@@ -169,8 +169,10 @@ if(!is_null($linked_tcversions))
     $testerid = null;
     if( $cfg->exec_cfg->show_last_exec_any_build )
     {
+    	// 20090716 - franciscom - get_last_execution() interface changes
+		$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
-                                                                       ANY_BUILD,GET_NO_EXEC);
+                                                                       ANY_BUILD,$options);
         
         //Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
@@ -1007,8 +1009,10 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
 */
 function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&$tcaseMgr)
 {      
+	// 20090716 - franciscom - get_last_execution() interface changes
+	$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
     $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
-                                               $argsObj->build_id,GET_NO_EXEC);
+                                               $argsObj->build_id,$options);
 
     if( !is_null($last_exec) )
     {

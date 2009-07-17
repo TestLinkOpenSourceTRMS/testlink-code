@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.25 2009/06/03 19:51:45 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.26 2009/07/17 08:33:40 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -15,7 +15,7 @@ rev :
 *}
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,TestPlan,
-             filter_result_all_prev_builds,
+             filter_result_all_prev_builds,filter_result_any_prev_builds,
              btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases,priority"}
        
        
@@ -136,6 +136,17 @@ rev :
       		</td>
 		</tr>
 		
+		<tr>
+			<td>{$labels.filter_result_any_prev_builds}</td>
+			<td>
+				<select name="statusAnyOfPrevBuilds">
+			  	{html_options options=$gui->statusAnyOfPrevBuilds selected=$gui->statusAnyOfPrevBuildsSelected}
+			  	</select>
+			</td>
+		</tr>
+
+
+
 		
 		<tr>
 			<td>{$labels.filter_owner}</td>

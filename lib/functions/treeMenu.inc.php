@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.104 2009/07/15 17:28:04 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.105 2009/07/17 08:33:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *
+ *		
+ *		20090716 - franciscom - BUGID 2692
  * 		20090328 - franciscom - BUGID 2299 - introduced on 20090308.
  *                              Added logic to remove Empty Top level test suites 
  *                              (have neither test cases nor test suites inside) when applying 
@@ -535,7 +536,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$any_exec_status = null;
 	$tplan_tcases = null;
 	$tck_map = null;
-	
+    $idx=0;
+    $testCaseQty=0;
+    $testCaseSet=null;
+    	
 	$keyword_id = 0;
 	$keywordsFilterType ='OR';
 	if( property_exists($filters,'keyword') && !is_null($filters->keyword) )
@@ -566,8 +570,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$hash_id_descr = array_flip($hash_descr_id);	    
 	$decoding_hash = array('node_id_descr' => $hash_id_descr,
-		'status_descr_code' =>  $resultsCfg['status_code'],
-		'status_code_descr' =>  $resultsCfg['code_status']);
+		                   'status_descr_code' =>  $resultsCfg['status_code'],
+		                   'status_code_descr' =>  $resultsCfg['code_status']);
 	
 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	
@@ -580,7 +584,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
 	$test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
-		null,'',RECURSIVE_MODE,$order_cfg);
+		                                    null,'',RECURSIVE_MODE,$order_cfg);
 	
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
 	$test_spec['id'] = $tproject_id;
@@ -588,6 +592,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$map_node_tccount = array();
 	
 	$tplan_tcases = null;
+    $apply_other_filters=true;
 	if($test_spec)
 	{
 		if(is_null($tc_id) || $tc_id >= 0)
@@ -601,9 +606,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
-				null,$assignedTo,$status,$build_id,
-				$cf_hash,$filters->include_unassigned,
-				$urgencyImportance);
+				                                              null,$assignedTo,$status,$build_id,
+				                                              $cf_hash,$filters->include_unassigned,
+				                                              $urgencyImportance);
 			
 			if($doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
@@ -613,7 +618,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 		}   
 		
-		$apply_other_filters=true;
 		if (is_null($tplan_tcases))
 		{
 			$tplan_tcases = array();
@@ -621,10 +625,69 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		}
 		
 		if( $apply_other_filters && !is_null($filters->statusAllPrevBuilds) &&
-				!in_array($resultsCfg['status_code']['all'],(array)$filters->statusAllPrevBuilds) )
+			!in_array($resultsCfg['status_code']['all'],(array)$filters->statusAllPrevBuilds) )
 		{
 			$tplan_tcases = filter_by_same_status_for_build_set($tplan_mgr,$tplan_tcases,$tplan_id,$filters);
+			if (is_null($tplan_tcases))
+			{
+				$tplan_tcases = array();
+				$apply_other_filters=false;
+			}
 		}
+		
+		// 20090716 - franciscom - BUGID 2692
+		if( $apply_other_filters && !is_null($filters->statusAnyOfPrevBuilds) &&
+		    !in_array($resultsCfg['status_code']['all'],(array)$filters->statusAnyOfPrevBuilds) )
+		{
+			$buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
+			if( !is_null($buildSet) )
+			{
+				$buildSetQty=count($buildSet);
+ 			    $targetStatus=current($filters->statusAnyOfPrevBuilds);
+
+				$buildIdList=array_keys($buildSet);
+				$testCaseSet=array_keys($tplan_tcases);
+				$testCaseQty=count($testCaseSet);
+				for($idx=0; $idx < $testCaseQty; $idx++ )
+				{
+					$tcversionSet[]=$tplan_tcases[$testCaseSet[$idx]]['tcversion_id'];
+		    	}
+				
+				// $lastExecSet = $tcase_mgr->get_last_execution($testCaseSet,$tcversionSet,$tplan_id,testcase::ANY_BUILD);
+				// we will get records only for executed test cases
+				$options=null;
+				$options=array('groupByBuild' => 
+				               $targetStatus == $resultsCfg['status_code']['not_run'] ? 1 : 0);
+				$lastExecSet = $tcase_mgr->get_last_execution($testCaseSet,$tcversionSet,
+				    	                                          $tplan_id,$buildIdList,$options);
+				                                              
+				new dBug($lastExecSet);                                              
+				$keySet=array_keys($lastExecSet);
+				$keySetQty=count($keySet);
+				
+				if( $targetStatus == $resultsCfg['status_code']['not_run'])
+				{
+					for($idx=0; $idx < $keySetQty; $idx++ )
+					{
+						if( count($lastExecSet[$keySet[$idx]]) == $buildSetQty)
+						{
+							unset($tplan_tcases[$lastExecSet[$keySet[$idx]][0]['testcase_id']]);
+					    }
+		    		}
+		    	}
+		    	else
+		    	{
+					for($idx=0; $idx < $keySetQty; $idx++ )
+					{
+						if($lastExecSet[$keySet[$idx]]['status'] != $targetStatus)
+						{
+							unset($tplan_tcases[$lastExecSet[$keySet[$idx]]['testcase_id']]);
+						}
+		    		}
+		        }
+			}
+        }
+		
 		
 		// 20080224 - franciscom - 
 		// After reviewing code, seems that assignedTo has no sense because tp_tcs
@@ -640,7 +703,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		 * franciscom -  but we need EXTERNAL ID!!!!
 		 */
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		$tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
+		                                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
 
 		foreach($testcase_counters as $key => $value)
 		{
@@ -995,11 +1058,13 @@ function filter_by_same_status_for_build_set(&$tplan_mgr,&$tcase_set,$tplan_id,$
 	$key2remove=null;
 	$buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
 	
+	new dBug($buildSet);
 	if( !is_null($buildSet) )
 	{
 		$target_status=current($filters->statusAllPrevBuilds);
 		$tcase_build_set = $tplan_mgr->get_same_status_for_build_set($tplan_id,
-			array_keys($buildSet),$target_status);  
+		                                                             array_keys($buildSet),$target_status);  
+		                                                             
 		if($filters->statusAllPrevBuildsFilterType == 'IN')
 		{
 			if( is_null($tcase_build_set) )

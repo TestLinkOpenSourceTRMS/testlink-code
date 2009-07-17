@@ -6,10 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.181 2009/07/15 18:16:05 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.182 2009/07/17 08:33:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20090716 - franciscom - get_last_execution() - BUGID 2692
+ *                         interface changes.
  *
  * 20090713 - franciscom - solved bug on get_executions() (bad SQL statement).
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
@@ -106,7 +109,11 @@ class testcase extends tlObjectWithAttachments
     const CHECK_DUPLICATE_NAME=1;
     const DONT_CHECK_DUPLICATE_NAME=0;
     const ENABLED=1;
-    const ALL_TESTPLANS=null;    
+    const ALL_TESTPLANS=null;
+    const ANY_BUILD=null;
+    const GET_NO_EXEC=1; 
+    
+        
     
 	/** @var database handler */
 	var $db;
@@ -152,7 +159,8 @@ class testcase extends tlObjectWithAttachments
                                        TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
 
 
-		tlObjectWithAttachments::__construct($this->db,"nodes_hierarchy");
+		// tlObjectWithAttachments::__construct($this->db,"nodes_hierarchy");
+		parent::__construct($this->db,"nodes_hierarchy");
 	}
 
 
@@ -1850,16 +1858,19 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    $recordset = null;
-	    foreach($target as $idx)
-		  {
-		     $elem=$rs[$idx];
-	       if( $active_status=='ALL' ||
-	           $active_status='ACTIVE' && $elem['active'] ||
-	           $active_status='INACTIVE' && $elem['active']==0 )
-	       {    
-	           $recordset[$elem['tcversion_id']][$elem['testplan_id']]=$elem;
-	       }    
-	    }	  
+	    if( !is_null($target) )   // minor fix - 20090716 - franciscom
+	    {
+	    	foreach($target as $idx)
+			{
+			     $elem=$rs[$idx];
+	    	   if( $active_status=='ALL' ||
+	    	       $active_status='ACTIVE' && $elem['active'] ||
+	    	       $active_status='INACTIVE' && $elem['active']==0 )
+	    	   {    
+	    	       $recordset[$elem['tcversion_id']][$elem['testplan_id']]=$elem;
+	    	   }    
+	    	}
+	    }		  
 	    if( !is_null($recordset) )
 	    {
 	        ksort($recordset);
@@ -2349,6 +2360,8 @@ class testcase extends tlObjectWithAttachments
 	
 	  args :
 	
+	  
+	
 	  returns: map:
 	           key: tcversion_id
 	           value: map with following keys:
@@ -2384,15 +2397,39 @@ class testcase extends tlObjectWithAttachments
 	            			build_is_open
 	
 	   rev:
+	       20090716 - franciscom - added options argument, removed get_no_executions
 	       20080103 - franciscom - added execution_type
 	
-	
 	*/
-	function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executions=0)
+	function get_last_execution($id,$version_id,$tplan_id,$build_id,$options=null)
 	{
 		$build_id_filter='';
 		$where_clause_1 = '';
 		$where_clause_2= '';
+        $add_columns='';
+	    $add_groupby='';
+        $cumulativeMode=0;
+        
+		// getNoExecutions: 1 -> if testcase/version_id has not been executed return anyway
+		//                       standard return stricture.
+		//                  0 -> default
+		//
+		// groupByBuild: 0 -> default, get last execution on ANY BUILD, then for a testcase/version_id
+		//                    only a record will be present on return struture.
+		//
+		//               1 -> get last execution on EACH BUILD.
+		//   
+		$localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0);
+        if(!is_null($options) && is_array($options))
+        {
+        	$localOptions=array_merge($localOptions,$options);		
+        }
+        if( $localOptions['groupByBuild'] )
+        {
+        	$add_columns=', e.build_id';
+	        $add_groupby=$add_columns;
+            $cumulativeMode=1;
+        }
 	
 		if( is_array($id) )
 		{
@@ -2420,42 +2457,63 @@ class testcase extends tlObjectWithAttachments
 				}
 		}
 	
-	  if( !is_null($build_id) )
-	  {
-	    $build_id_filter=" AND e.build_id = {$build_id} ";
-	  }
-	  $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id " .
+		// 20090716 - franciscom - BUGID 2692
+		if( !is_null($build_id) )
+		{
+			$build_id_filter=" AND e.build_id ";
+			if( is_array($build_id) )
+			{
+		    	$build_list = implode(",",$build_id);
+		  		$build_id_filter .= " IN ({$build_list}) ";
+		  	}
+		  	else
+		  	{
+		  		$build_id_filter .= " = {$build_id} ";
+		  	}
+		}
+
+      // get list of max exec id, to be used filter in next query
+	  $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id {$add_columns}" .
 	  	   " FROM {$this->tables['nodes_hierarchy']} NHA " .
 	       " JOIN {$this->tables['executions']}  e ON NHA.id = e.tcversion_id  AND e.testplan_id = {$tplan_id} " .
 	       " {$build_id_filter} AND e.status IS NOT NULL " .
-	       " $where_clause_1 GROUP BY tcversion_id";
-	
-	  $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
+	       " $where_clause_1 GROUP BY tcversion_id {$add_groupby}";
+   
+      echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+      // 20090716 - order of columns changed
+	  $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
+	  new dBug($recordset);
+
+	  $rs = $this->db->fetchRowsIntoMap($sql,'execution_id');
+	  new dBug($rs);
 	
 	  $and_exec_id='';
 	  if( !is_null($recordset) )
 	  {
-	  	  $the_list = implode(",",$recordset);
+	  	  $the_list = implode(",", array_keys($recordset));
+	  	  // $the_list = implode(",",$recordset);
 	  	  if( count($recordset) > 1 )
 	  	  {
-	  			$and_exec_id = " AND e.id IN (". $the_list . ") ";
-	  		}
-	  		else
-	  		{
+	  			$and_exec_id = " AND e.id IN ($the_list) ";
+	  	  }
+	  	  else
+	  	  {
 	  		  $and_exec_id = " AND e.id = $the_list ";
-	  		}
+	  	  }
 	  }
 	
 	  $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id
 	                                           AND e.testplan_id = {$tplan_id}
 	                                           {$and_exec_id}
 	                                           {$build_id_filter} ";
-	  if( $get_no_executions )
+	  if( $localOptions['getNoExecutions'] )
 	  {
 	     $executions_join = " LEFT OUTER " . $executions_join;
 	  }
 	  else
 	  {
+	  	 // @TODO understand if this condition is really needed - 20090716 - franciscom
 	     $executions_join .= " AND e.status IS NOT NULL ";
 	  }
 	
@@ -2490,8 +2548,12 @@ class testcase extends tlObjectWithAttachments
 	        LEFT OUTER JOIN {$this->tables['users']} users ON e.tester_id = users.id
 	        $where_clause_2
 	        ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
-	  $recordset = $this->db->fetchRowsIntoMap($sql,'id');
-	  return($recordset ? $recordset : null);
+	        
+      
+		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
+	  
+	  	new dBug($recordset);
+	  	return($recordset ? $recordset : null);
 	}
 	
 	

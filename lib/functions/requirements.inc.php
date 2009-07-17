@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.82 2009/06/30 10:59:52 havlat Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.83 2009/07/17 08:36:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -773,6 +773,7 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
   
   returns: 
 
+  rev: 20090716 - franciscom - get_last_execution() interface changes
 */
 function getLastExecutions(&$db,$tcaseSet,$tplanId)
 {
@@ -780,19 +781,19 @@ function getLastExecutions(&$db,$tcaseSet,$tplanId)
 	if (sizeof($tcaseSet))
 	{
 		$tcase_mgr = new testcase($db);
-    $items=array_keys($tcaseSet);
-    $path_info=$tcase_mgr->tree_manager->get_full_path_verbose($items);
-
+    	$items=array_keys($tcaseSet);
+    	$path_info=$tcase_mgr->tree_manager->get_full_path_verbose($items);
+		$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
 		foreach($tcaseSet as $tcaseId => $tcInfo)
 		{
 		    $execMap[$tcaseId] = $tcase_mgr->get_last_execution($tcaseId,$tcInfo['tcversion_id'],
-		                                                         $tplanId,ANY_BUILD,GET_NO_EXEC);
-        unset($path_info[$tcaseId][0]); // remove test project name
-        $path_info[$tcaseId][]='';
+		                                                         $tplanId,ANY_BUILD,$options);
+        	unset($path_info[$tcaseId][0]); // remove test project name
+        	$path_info[$tcaseId][]='';
 		    $execMap[$tcaseId][$tcInfo['tcversion_id']]['tcase_path']=implode(' / ',$path_info[$tcaseId]);
 		}
 
-    unset($tcase_mgr); 
+    	unset($tcase_mgr); 
 	}
 	return $execMap;
 }

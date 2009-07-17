@@ -10,7 +10,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reports.class.php,v 1.10 2009/07/09 10:24:57 franciscom Exp $
+ * @version    	CVS: $Id: reports.class.php,v 1.11 2009/07/17 08:36:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses		common.php
@@ -31,7 +31,7 @@ require_once('../../cfg/reports.cfg.php');
  * @since 1.7 
  * @link results.class.php advance reporting data query
  */ 
-class tlReports
+class tlReports extends tlObjectWithDB
 {
 	/** resource of database handler; reference is passed in by constructor */
 	var $db = null;
@@ -53,7 +53,8 @@ class tlReports
 	{
 		$this->db = $db;	
 		$this->testPlanID = $tplanId;
-		tlObjectWithDB::__construct($db);
+		// tlObjectWithDB::__construct($db);
+		parent::__construct($this->db);
 	}
 
 

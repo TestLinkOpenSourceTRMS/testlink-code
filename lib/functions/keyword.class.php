@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: keyword.class.php,v 1.22 2009/06/23 19:12:57 schlundus Exp $
+ * @version    	CVS: $Id: keyword.class.php,v 1.23 2009/07/17 08:36:45 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -52,7 +52,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = null;
 		$this->testprojectID = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	}
 	
 	/**
@@ -277,7 +279,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			//we shouldnt allow " and , in keywords any longer
 			$dummy = null;
 			if (preg_match("/(\"|,)/",$name,$dummy))
+			{
 				$result = self::E_NAMENOTALLOWED;
+			}	
 		}
 		else
 		{
@@ -306,8 +310,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			     "' AND testproject_id = " . $tprojectID ;
 		
 		if ($kwID)
+		{
 			$query .= " AND id <> " .$kwID;
-		
+		}
 		if ($db->fetchFirstRow($query))
 		{
 			$result = self::E_NAMEALREADYEXISTS;
@@ -331,18 +336,16 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	 * Writes the keyword to XML representation
 	 *
 	 * @param string $xml [ref] the generated XML Code will be appended here
-	 * @param boolean $bNoHeader set this to true if no XML Header should be generated
+	 * @param boolean $noHeader set this to true if no XML Header should be generated
 	 */
-	public function writeToXML(&$xml,$bNoHeader = false)
+	public function writeToXML(&$xml,$noHeader = false)
 	{
 		//@TODO schlundus, maybe written with SimpleXML ?
 		$keywords = array($this->getInfo());
-		$keywordElemTpl = '<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>".'</notes></keyword>'."\n";
-		$keywordInfo = array (
-							"{{NAME}}" => "keyword",
-							"||NOTES||" => "notes",
-						);
-		$xml .= exportDataToXML($keywords,"{{XMLCODE}}",$keywordElemTpl,$keywordInfo,$bNoHeader);
+		$keywordElemTpl = '<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>" . 
+		                  '</notes></keyword>'."\n";
+		$keywordInfo = array ("{{NAME}}" => "keyword","||NOTES||" => "notes");
+		$xml .= exportDataToXML($keywords,"{{XMLCODE}}",$keywordElemTpl,$keywordInfo,$noHeader);
 	}
 
 	/* 
@@ -370,16 +373,21 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = NULL;
 		
 		if (!$keyword || $keyword->getName() != 'keyword')
+		{
 			return self::E_WRONGFORMAT;
+		}
 			
 		$attributes = $keyword->attributes();
 		if (!isset($attributes['name']))
+		{
 			return self::E_WRONGFORMAT;
+		}
 			
 		$this->name = (string)$attributes['name'];
 		if ($keyword->notes)
+		{
 			$this->notes = (string)$keyword->notes[0];
-			
+		}	
 		return tl::OK;
 	}
 	//END interface iSerializationToXML
@@ -403,10 +411,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	public function writeToCSV(&$csv,$delimiter = ';')
 	{
 		$keyword = array($this->getInfo());
-		$sKeys = array(
-					"keyword",
-					"notes",
-				   );
+		$sKeys = array(	"keyword","notes" );
 		$csv .= exportDataToCSV($keyword,$sKeys,$sKeys);
 	}
 

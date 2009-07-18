@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.11 2009/05/26 20:21:50 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.12 2009/07/18 17:42:34 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+    20090718 - franciscom - added design time custom field location management
     20090526 - franciscom - added testplan_design custom field management
 *}	
     {assign var="getReqAction" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
@@ -45,6 +46,14 @@ Rev:
 		<tr>
 			<td colspan="2">{$args_tc_exec.summary}</td>
 		</tr>
+
+		{* 20090718 - franciscom - CF location management*}
+    {if $args_design_time_cf[$testcase_id].before_steps_results != ''}
+		<tr>
+      <td> {$args_design_time_cf[$testcase_id].before_steps_results}</td>
+		</tr>
+		{/if}
+
 		<tr>
 			<th width="50%">{$args_labels.test_exec_steps}</th>
 			<th width="50%">{$args_labels.test_exec_expected_r}</th>
@@ -77,9 +86,10 @@ Rev:
     
   	<tr>
 		  <td colspan="2">
-      {if $args_design_time_cf[$testcase_id] neq ''}
+		  {* 20090718 - franciscom - CF location management*}
+      {if $args_design_time_cf[$testcase_id].standard_location neq ''}
 					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
-					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id]}
+					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id].standard_location}
 					</div>
 		  {/if} 
 			</td>

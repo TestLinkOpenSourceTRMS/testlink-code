@@ -6,12 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.183 2009/07/18 14:45:09 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.184 2009/07/18 17:42:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * 20090718  - franciscom -
+ * 20090718  - franciscom - new method buildCFLocationMap();
  * 20090716 - franciscom - get_last_execution() - BUGID 2692
  *                         interface changes.
  *
@@ -554,17 +554,20 @@ class testcase extends tlObjectWithAttachments
 
 	    
 	    // 20090718 - franciscom
-	    $dummy = $this->cfield_mgr->getLocations();
-	    $verboseLocationCode = array_flip($dummy['testcase']);
 	    $cf_smarty = null;
-	    $cfx=0;
-	    $filters=null;
 	    $formatOptions=null;
-        foreach($verboseLocationCode as $key => $value)
-        {
-        	$filters[$key]['location']=$value;
-            $formatOptions[$key]['add_table'] = ($key == 'before_steps_results' ? false : true);
-        }	     
+	    $cfx=0;
+        $filters=$this->buildCFLocationMap();
+        
+	    // $dummy = $this->cfield_mgr->getLocations();
+	    // $verboseLocationCode = array_flip($dummy['testcase']);
+	    // $filters=null;
+        // foreach($verboseLocationCode as $key => $value)
+        // {
+        // 	$filters[$key]['location']=$value;
+        //     $formatOptions[$key]['add_table'] = ($key == 'before_steps_results' ? false : true);
+        // }
+        	     
 	    if( !is_null($mode) && $mode=='editOnExec' )
 	    {
 	        // refers to two javascript functions present in testlink_library.js
@@ -699,14 +702,15 @@ class testcase extends tlObjectWithAttachments
 		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 		  		$arrReqs[] = $tcReqs;
 		  		
-		  		foreach($verboseLocationCode as $locationKey => $locationCode)
+		  		// foreach($verboseLocationCode as $locationKey => $locationCode)
+		  		foreach($filters as $locationKey => $locationFilter)
 		  		{ 
 		  			//	function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
 	                //                           $testplan_id=null,$tproject_id = null,
 	                //                           $formatOptions=null,$link_id=null)
                     //
 		  			$cf_smarty[$cfx][$locationKey] = 
-		  				$this->html_table_of_custom_field_values($tc_id,'design',$filters[$locationKey],
+		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  				                                         null,null,$tproject_id);
 		  		}	
 		  		$cfx++;
@@ -3538,6 +3542,19 @@ class testcase extends tlObjectWithAttachments
 		                                                                   $id,$link_id,$testplan_id);
 		return $cf_map;
 	}
+	
+	
+	/**
+	 * returns map with key: verbose location (see custom field class $locations
+	 *                  value: array with fixed key 'location'
+	 *                         value: location code
+	 *
+	 */
+	function buildCFLocationMap()
+	{
+		$ret = $this->cfield_mgr->buildLocationMap('testcase');
+		return $ret;
+    }
 	
 } // end class
 

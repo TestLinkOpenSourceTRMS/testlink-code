@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.66 2009/07/18 14:45:09 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.67 2009/07/18 17:42:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090718 - franciscom - buildLocationMap()
  * 20090717 - franciscom - get_linked_cfields_at_design() - added filter by location
  *                         get_linked_cfields_at_execution() - location argument
  *                         
@@ -2345,6 +2346,31 @@ function get_linked_testprojects($id)
     $rs=$this->db->fetchRowsIntoMap($sql,'id');
     return $rs;
 }
+
+
+/**
+ * @param string node type in verbose form. Example 'testcase'
+ *
+ * returns map with key: verbose location (see custom field class $locations)
+ *                  value: array with fixed key 'location'
+ *                         value: location code
+ *
+ */
+function buildLocationMap($nodeType)
+{
+	$locationMap=null;
+    $dummy = $this->getLocations();
+	$verboseLocationCode = array_flip($dummy[$nodeType]);
+	if( !is_null($verboseLocationCode) && count($verboseLocationCode) > 0 )
+	{
+		foreach($verboseLocationCode as $key => $value)
+		{
+			$locationMap[$key]['location']=$value;
+		}
+	}	     
+    return $locationMap; 
+}
+
 
 } // end class
 ?>

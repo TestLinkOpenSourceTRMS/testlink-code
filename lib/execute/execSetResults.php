@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.130 $
- * @modified $Date: 2009/07/17 08:33:40 $ $Author: franciscom $
+ * @version $Revision: 1.131 $
+ * @modified $Date: 2009/07/18 17:42:34 $ $Author: franciscom $
  *
  * rev:
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
@@ -955,13 +955,18 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   
   returns: 
 
-  rev: 20080811 - franciscom - BUGID 1650 (REQ)
+  rev: 
+  	20090718 - franciscom - cfield location management
+  	20080811 - franciscom - BUGID 1650 (REQ)
   
 */
 function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
                          &$treeMgr,&$tcaseMgr,&$docRepository)
 {     
     $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
+    $locationFilters=$tcaseMgr->buildCFLocationMap();
+
+    
     $guiObj->design_time_cfields='';
   	$guiObj->testplan_design_time_cfields='';
   	
@@ -970,16 +975,22 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	$tcversion_id = $linked_tcversions[$argsObj->id]['tcversion_id'];
   	$link_id = $linked_tcversions[$argsObj->id]['feature_id'];
   	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
-    
-    $guiObj->design_time_cfields[$argsObj->id] = 
-  	         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$cf_filters,null,null,$argsObj->tproject_id);
 
-    // 20090526 - franciscom
-    $guiObj->testplan_design_time_cfields[$argsObj->id] = 
-  	         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
-  	                                                      null,null,$argsObj->tproject_id,null,$link_id);
-
-    
+	foreach($locationFilters as $locationKey => $filterValue)
+	{
+		// 20090718 - franciscom
+		$finalFilters=$cf_filters+$filterValue;
+    	$guiObj->design_time_cfields[$argsObj->id][$locationKey] = 
+  		         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$finalFilters,
+  		                                                      null,null,$argsObj->tproject_id);
+    	
+    	// 20090718 - franciscom - TO BE refactored
+    	// 20090526 - franciscom
+    	$guiObj->testplan_design_time_cfields[$argsObj->id] = 
+  		         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
+  		                                                      null,null,$argsObj->tproject_id,null,$link_id);
+    	
+    }
     // BUGID 856: Guest user can execute test case
   	if($guiObj->grants->execute)
   	{
@@ -992,6 +1003,7 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
 	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
 		                                                                   'nodes_hierarchy',true,1);
 		                                                                      
+
     return array($tcase_id,$tcversion_id);
 }
 
@@ -1092,6 +1104,7 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
 function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
                           &$treeMgr,&$tcaseMgr,&$docRepository)
 {
+    $locationFilters=$tcaseMgr->buildCFLocationMap();
     $testSet=new stdClass();
     $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)    
     
@@ -1120,6 +1133,15 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     // Get the path for every test case, grouping test cases that have same parent.
     if( count($testSet->tcase_id) > 0 )
     {
+       	// 20090718 - franciscom 
+		$dummy = $tcaseMgr->cfield_mgr->getLocations();
+		$verboseLocationCode = array_flip($dummy['testcase']);
+		$filters=null;
+    	foreach($verboseLocationCode as $key => $value)
+    	{
+    		$filters[$key]['location']=$value;
+    	}	     
+
         foreach($testSet->tcase_id as $testcase_id)
         {
             $path_f = $treeMgr->get_path($testcase_id,null,'full');
@@ -1127,39 +1149,43 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
             {
             	if( $path_elem['parent_id'] == $argsObj->id )
             	{
-            	 // Can be added because is present in the branch the user wants to view
-            	 // ID of branch starting node is in $argsObj->id
-            	 $guiObj->tcAttachments[$testcase_id] = getAttachmentInfos($docRepository,$testcase_id,
-            	                                                             'nodes_hierarchy',true,1);
-            
-            	 $guiObj->design_time_cfields[$testcase_id] = $tcaseMgr->html_table_of_custom_field_values($testcase_id,
-            			                                                                       'design',$cf_filters);
-            			                     
-                 // 20090526 - franciscom
-                 $guiObj->testplan_design_time_cfields[$argsObj->id] = 
-  	                     $tcaseMgr->html_table_of_custom_field_values($testcase_id,'testplan_design',$cf_filters,
-  	                                                                  null,null,$argsObj->tproject_id);
-            			                     
-            			                     
+            		// Can be added because is present in the branch the user wants to view
+            		// ID of branch starting node is in $argsObj->id
+            		$guiObj->tcAttachments[$testcase_id] = getAttachmentInfos($docRepository,$testcase_id,
+            		                                                            'nodes_hierarchy',true,1);
+                	
+	            	foreach($locationFilters as $locationKey => $filterValue)
+	            	{
+	            		// 20090718 - franciscom
+                        $finalFilters=$cf_filters+$filterValue;
+            			$guiObj->design_time_cfields[$testcase_id][$locationKey] = 
+            				$tcaseMgr->html_table_of_custom_field_values($testcase_id,'design',$finalFilters);
+                		
+                		// 20090526 - franciscom - typo bug
+                		$guiObj->testplan_design_time_cfields[$testcase_id] = 
+  	            		        $tcaseMgr->html_table_of_custom_field_values($testcase_id,'testplan_design',$cf_filters,
+  	            		                                                     null,null,$argsObj->tproject_id);
             			                                                                        
-                // BUGID 856: Guest user can execute test case
-                if($guiObj->grants->execute)
-                {
-            			$guiObj->execution_time_cfields[$testcase_id] = 
-            			$tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution',   
-            			                                             "_".$testcase_id,null,null,
-            			                                             $argsObj->tproject_id);
-                }
-            } // if( $path_elem['parent_id'] == $argsObj->id )
+            		}	                     
+
+                	// BUGID 856: Guest user can execute test case
+                	if($guiObj->grants->execute)
+                	{
+            				$guiObj->execution_time_cfields[$testcase_id] = 
+            				$tcaseMgr->html_table_of_custom_field_inputs($testcase_id, null,'execution',   
+            				                                             "_".$testcase_id,null,null,
+            				                                             $argsObj->tproject_id);
+                	}
+            	} // if( $path_elem['parent_id'] == $argsObj->id )
             	
-              // We do this because do not know if some test case not yet analised will be direct
-              // child of this test suite, then we get this info in advance.
-              // In situations where only last test suite on branch have test cases, we are colleting
-              // info we will never use.
-              if($path_elem['node_table'] == 'testsuites' && !isset($guiObj->tSuiteAttachments[$path_elem['id']]))
-              {
-            	   $guiObj->tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($docRepository,$path_elem['id'],
-            	                                                                     'nodes_hierarchy',true,1);
+              	// We do this because do not know if some test case not yet analised will be direct
+              	// child of this test suite, then we get this info in advance.
+              	// In situations where only last test suite on branch have test cases, we are colleting
+              	// info we will never use.
+              	if($path_elem['node_table'] == 'testsuites' && !isset($guiObj->tSuiteAttachments[$path_elem['id']]))
+              	{
+              		$guiObj->tSuiteAttachments[$path_elem['id']] = 
+            	   		getAttachmentInfos($docRepository,$path_elem['id'],'nodes_hierarchy',true,1);
             	}
             	   
              } //foreach($path_f as $key => $path_elem) 

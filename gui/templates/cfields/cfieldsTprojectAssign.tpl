@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.5 2009/07/18 14:42:22 franciscom Exp $
+$Id: cfieldsTprojectAssign.tpl,v 1.6 2009/07/18 17:42:34 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
@@ -62,7 +62,8 @@ rev :
       		           size="{#DISPLAY_ORDER_SIZE#}" maxlength="{#DISPLAY_ORDER_MAXLEN#}" /></td>
       		           
       		<td>
-      		{if $cf.node_description == 'testcase'}
+      		{* 20090718 - franciscom - location will NOT apply to EXEC only CF *}
+      		{if $cf.node_description == 'testcase' && $cf.enable_on_execution ==0}
 			  	<select name="location[{$cf.id}]">
 			  	  {html_options options=$gui->locations selected=$cf.location}
 			  	</select>

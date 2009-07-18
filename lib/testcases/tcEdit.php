@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2009/07/18 14:45:09 $  by $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2009/07/18 17:42:34 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -148,24 +148,23 @@ if($args->edit_tc)
   	}
 
     // -----------------------------------------------------------------------------	
-	$dummy = $tcase_mgr->cfield_mgr->getLocations();
-	$verboseLocationCode = array_flip($dummy['testcase']);
-	// $cf_smarty = null;
-	$cfx=0;
-	$filters=null;
-    foreach($verboseLocationCode as $key => $value)
-    {
-    	$filters[$key]['location']=$value;
-    }	     
-	foreach($verboseLocationCode as $locationKey => $locationCode)
+	// $dummy = $tcase_mgr->cfield_mgr->getLocations();
+	// $verboseLocationCode = array_flip($dummy['testcase']);
+	// $filters=null;
+    // foreach($verboseLocationCode as $key => $value)
+    // {
+    // 	$filters[$key]['location']=$value;
+    // }
+    $filters=$tcase_mgr->buildCFLocationMap();
+	// foreach($verboseLocationCode as $locationKey => $locationCode)
+	foreach($filters as $locationKey => $locationFilter)
 	{ 
 		// 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
 	    //                                        $link_id=null,$tplan_id=null,
 	    //                                        $tproject_id = null,$filters=null)
-
 		$cf_smarty[$locationKey] = 
 			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,null,'design','',
-			                                              null,null,null,$filters[$locationKey]);
+			                                              null,null,null,$locationFilter);
 	}	
 	// -----------------------------------------------------------------------------
 	

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.29 2009/05/09 17:59:19 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.30 2009/07/18 14:43:05 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -197,6 +197,14 @@ rev:
 	<tr>
 		<td colspan="2">{$args_testcase.summary}</td>
 	</tr>
+	{* 20090718 - franciscom *}
+	{if $args_cf.before_steps_results neq ''}
+	<tr>
+	  <td>
+    {$args_cf.before_steps_results}
+    </td>
+	</tr>
+	{/if}
 	<tr>
 		<th width="50%">{$labels.steps}</th>
 		<th width="50%">{$labels.expected_results}</th>
@@ -220,9 +228,10 @@ rev:
 	</div>
 	{/if}
 
-	{if $args_cf neq ''}
+  {* 20090718 - franciscom *}
+	{if $args_cf.standard_location neq ''}
 	<div>
-        <div id="cfields_design_time" class="custom_field_container">{$args_cf}</div>
+        <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
 	</div>
 	{/if}
 

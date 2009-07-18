@@ -7,14 +7,14 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.65 2009/07/17 17:05:24 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.66 2009/07/18 14:45:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20090717 - franciscom - get_linked_cfields_at_design() - added filter by location
  *                         get_linked_cfields_at_execution() - location argument
- *
+ *                         
  * 20090607 - franciscom - refactoring to manage table prefix
  * 20090530 - franciscom - execution_values_to_db() added logic to manage insert or update.
  * 20090523 - franciscom - changes on show_on, enable_on logics
@@ -112,12 +112,13 @@ class cfield_mgr extends tlObject
     
 	/** @var resource the database handler */
 	var $db;
+
 	/** @var object tree class */
 	var $tree_manager;
 
     /**
-     *  @var array $application_areas=array('execution','design','testplan_design');
-     * Hold string keys used on this object and pages that manages CF,
+     *  @var array $application_areas
+     * Holds string keys used on this object and pages that manages CF,
      * identifying in what areas/features something will be done
      * 'execution' => mainly on test execution pages,
      *                identifies TL features/pages to record test results
@@ -174,6 +175,27 @@ class cfield_mgr extends tlObject
     /**  @var array only the types listed here can have custom fields */
     var $node_types = array('testsuite','testplan','testcase','requirement_spec','requirement');
 
+   /**
+     *  @var map of maps $locations
+     *  
+     *  Location is place on page where to display custom field.
+     *  This concept has been created to implement a user contribution, that allows for
+     *  test cases, display custom fields in a different location (standard location is after
+     *  all test case definition), to implemente Prerequisites using CF.
+     *
+     *  First map key: node type: 'testcase','testsuite', etc.
+     *  Each element will be a map with following structure:
+     *  key:Holds string keys used on this object and pages that manages CF.
+     *      current options: 1 -> standard location, i.e. work as done before this implementation.
+     *                       2 -> before steps and results, => between summary and steps/results.
+     *
+     *  value: used to get translated label to use on User Interface.
+     * 
+     * IMPORTANT: if you add a new key, this values are used as access keys in several properties of this object.
+     *            then if you add one here, remember to update other properties.
+     */
+    var $locations = array( 'testcase' => 
+                            array( 1 => 'standard_location', 2 => 'before_steps_results'));
 
     // 20090523 - changes in configuration
     //
@@ -249,7 +271,8 @@ class cfield_mgr extends tlObject
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
 
-		global $tlCfg;
+		global $tlCfg;    // NO GOOD global coupling, config_get() must be used instead.
+		
 		$gui_cfg = $tlCfg->gui;
 		$this->sizes = $gui_cfg->custom_fields->sizes;
 		
@@ -274,6 +297,16 @@ class cfield_mgr extends tlObject
 	function get_application_areas()
 	{
         return($this->application_areas);
+    }
+
+    /**
+	 * @return hash with available locatipons
+	 * 
+	 * 
+     */
+	function getLocations()
+	{
+        return($this->locations);
     }
 
 
@@ -401,20 +434,20 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     [$filters]:default: null
                map with keys:
-               [$show_on_execution]: 1 -> filter on field show_on_execution=1
+               [show_on_execution]: 1 -> filter on field show_on_execution=1
                                      0 or null or not exists -> don't filter
 
-               [$show_on_testplan_design]: 1 -> filter on field show_on_execution=1
+               [show_on_testplan_design]: 1 -> filter on field show_on_execution=1
                                            0 or null or not exists -> don't filter
 
-			   ['cfield_id']: if exists use it's value to filter on custom field id
+			   [cfield_id]: if exists use it's value to filter on custom field id
                               null or not exists -> don't filter
 
-			   ['location']: new concept used to define on what location on screen
+			   [location]: new concept used to define on what location on screen
 			                 custom field will be designed.
 			                 Initally used with CF available for Test cases, to
 			                 implement pre-requisites.
-
+                             null => no filtering
 
     [$node_type]: default: null
                   verbose id ('testcase', 'testsuite', etc) of a node type.
@@ -507,9 +540,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         $filterKey='location';
         if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
         {
-            $additional_filter .= " AND CF.id={$filters[$filterKey]} ";
+            $additional_filter .= " AND CFTP.$filterKey={$filters[$filterKey]} ";
         }
-        
     }
 
     $sql="SELECT CF.*,CFTP.display_order,CFTP.location" .
@@ -523,6 +555,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          " AND   CF.enable_on_design={$enabled} " .
          $additional_filter .
          " ORDER BY display_order,CF.id ";
+
+    // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
     return($map);
@@ -890,11 +924,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     returns: hash:
              key: custom field id
 
+    internal revision:
+		20090717 - franciscom - added location to result recordset
   */
   function get_linked_to_testproject($tproject_id,$active=null)
   {
     $sql="SELECT CF.*,NT.description AS node_description,NT.id AS node_type_id, " .
-         "       CFTP.display_order, CFTP.active " .
+         "       CFTP.display_order, CFTP.active, CFTP.location " .
          " FROM {$this->object_table} CF, " .
          "      {$this->tables['cfield_testprojects']} CFTP, " .
          "      {$this->tables['cfield_node_types']} CFNT, " .
@@ -1010,8 +1046,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		foreach($cfield_ids as $field_id)
 		{
 			// BUGID 0000677
-			$sql = "DELETE FROM cfield_testprojects WHERE field_id = {$field_id}" .
-				   " AND testproject_id = {$tproject_id} ";
+			$sql = "DELETE FROM {$this->tables['cfield_testprojects']} " .
+			       " WHERE field_id = {$field_id} AND testproject_id = {$tproject_id} ";
 			if ($this->db->exec_query($sql))
 			{
 				$cf = $this->get_by_id($field_id);
@@ -1799,19 +1835,40 @@ function name_is_unique($id,$name)
  	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
     foreach($map_field_id_display_order as $field_id => $display_order)
     {
-		$sql = "UPDATE cfield_testprojects " .
+		$sql = "UPDATE {$this->tables['cfield_testprojects']}  " .
 		      " SET display_order=" . intval($display_order) .
-		      " WHERE testproject_id={$tproject_id} " .
-		      " AND field_id={$field_id} ";
-
+		      " WHERE testproject_id={$tproject_id} AND field_id={$field_id} ";
 		$this->db->exec_query($sql);
-
     }
 	if ($tproject_info)
-		logAuditEvent(TLS("audit_cfield_display_order_changed",$tproject_info['name']),"SAVE",$tproject_id,"testprojects");
-
+	{
+		logAuditEvent(TLS("audit_cfield_display_order_changed",$tproject_info['name']),
+		                  "SAVE",$tproject_id,"testprojects");
+	}	
  } // function end
 
+
+/**
+ * set value of location attribute for one or multiple custom fields.
+ *
+ * 
+ */
+ function setDisplayLocation($tproject_id, $field_id_location)
+ {
+ 	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+    foreach($field_id_location as $field_id => $location)
+    {
+		$sql = "UPDATE {$this->tables['cfield_testprojects']}  " .
+		      " SET location=" . intval($location) .
+		      " WHERE testproject_id={$tproject_id} AND field_id={$field_id} ";
+		$this->db->exec_query($sql);
+    }
+	if ($tproject_info)
+	{
+		logAuditEvent(TLS("audit_cfield_location_changed",$tproject_info['name']),
+		                  "SAVE",$tproject_id,"testprojects");
+	}	
+ } // function end
 
 
  # code from mantis helper_api.php

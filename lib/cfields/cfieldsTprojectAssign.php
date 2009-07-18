@@ -5,16 +5,15 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/04/09 08:15:52 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/07/18 14:43:05 $ by $Author: franciscom $
  *
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
 
-$template_dir = 'cfields/';
-$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+$templateCfg = templateConfiguration();
 
 $args = init_args();
 $cfield_mgr = new cfield_mgr($db);
@@ -34,6 +33,10 @@ switch($args->doAction)
     case 'doReorder':
 	    $cfield_ids = array_keys($args->display_order);
 	    $cfield_mgr->set_display_order($args->testproject_id,$args->display_order);
+        if( !is_null($args->location) )
+        {
+        	$cfield_mgr->setDisplayLocation($args->testproject_id,$args->location);
+        }
 	    break;
 
     case 'doActiveMgmt':
@@ -73,36 +76,71 @@ switch($args->doAction)
 // Get all available custom fields
 $cfield_map = $cfield_mgr->get_all();
 
-$my_cfield_map = $cfield_mgr->get_linked_to_testproject($args->testproject_id);
-$cf2exclude = is_null($my_cfield_map) ? null :array_keys($my_cfield_map);
-$other_cfield_map = $cfield_mgr->get_all($cf2exclude);
+$gui = new stdClass();
+$gui->locations=createLocationsMenu($cfield_mgr->getLocations());
+$gui->tproject_name = $args->testproject_name;
+$gui->my_cf = $cfield_mgr->get_linked_to_testproject($args->testproject_id);
+$cf2exclude = is_null($gui->my_cf) ? null :array_keys($gui->my_cf);
+$gui->other_cf = $cfield_mgr->get_all($cf2exclude);
 
 $smarty = new TLSmarty();
-$smarty->assign('tproject_name',$args->testproject_name);
-$smarty->assign('my_cf',$my_cfield_map);
-$smarty->assign('other_cf',$other_cfield_map);
-$smarty->display($template_dir . $default_template);
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
+/**
+ * create object with all user inputs
+ *
+ */
 function init_args()
 {
   	$_REQUEST = strings_stripSlashes($_REQUEST);
     $args = new stdClass();
      
-    $my_keys = array('doAction','cfield','display_order','hidden_active_cfield','active_cfield');
-    foreach($my_keys as $key)
+    $key2search = array('doAction','cfield','display_order','location','hidden_active_cfield','active_cfield');
+    
+    foreach($key2search as $key)
     {
         $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : null;
     }
-	  if (!$args->cfield)
-		  $args->cfield = array();
-	  $args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	  $args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
+    
+    // Need comments
+    if (!$args->cfield)
+	{
+	  $args->cfield = array();
+	}
+	
+	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
 
-	  return $args;
+	return $args;
 }
+
 
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,"cfield_management");
 }
+
+/**
+ * @parame map of maps with locations of CF
+ *         key: item type: 'testcase','testsuite', etc
+ *
+ */
+function createLocationsMenu($locations)
+{
+	$menuContents=null;
+	$items = $locations['testcase'];
+	
+	// loop over status for user interface, because these are the statuses
+	// user can assign while executing test cases
+	
+	foreach($items as $code => $key4label)
+	{
+		$menuContents[$code] = lang_get($key4label); 
+	}
+	
+	return $menuContents;
+}
+
 ?>

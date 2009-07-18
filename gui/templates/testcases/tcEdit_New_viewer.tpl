@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.12 2009/06/05 22:08:21 havlat Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.13 2009/07/18 14:43:04 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
+    20090718 - franciscom - added management of custom field location
     20080512 - franciscom - BUGID 
     20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
 *}
@@ -44,7 +45,18 @@ Rev:
 
 		<div class="labelHolder">{$labels.summary}</div>
 		<div>{$summary}</div>
+
+	  {* Custom fields - with before steps & results location - 20090718 - franciscom *}
+    <br />
+	  {if $cf.before_steps_results neq ""}
+	       <br/>
+	       <div id="cfields_design_time_before" class="custom_field_container">
+	       {$cf.before_steps_results}
+	       </div>
+	       
+	  {/if}
 		{$layout1}
+
 		<div class="labelHolder">{$labels.steps}</div>
 		<div>{$steps}</div>
 		{$layout2}
@@ -71,11 +83,11 @@ Rev:
     	
     </div>
 
-	{* Custom fields *}
-	{if $cf neq ""}
+	{* Custom fields - with standard location - 20090718 - franciscom *}
+	{if $cf.standard_location neq ""}
 	     <br/>
 	     <div id="cfields_design_time" class="custom_field_container">
-	     {$cf}
+	     {$cf.standard_location}
 	     </div>
 	{/if}
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2009/06/11 06:58:02 $  by $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2009/07/18 14:45:09 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -147,7 +147,28 @@ if($args->edit_tc)
   	  	$smarty->assign($key, $of->CreateHTML($rows,$cols));
   	}
 
-	$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
+    // -----------------------------------------------------------------------------	
+	$dummy = $tcase_mgr->cfield_mgr->getLocations();
+	$verboseLocationCode = array_flip($dummy['testcase']);
+	// $cf_smarty = null;
+	$cfx=0;
+	$filters=null;
+    foreach($verboseLocationCode as $key => $value)
+    {
+    	$filters[$key]['location']=$value;
+    }	     
+	foreach($verboseLocationCode as $locationKey => $locationCode)
+	{ 
+		// 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
+	    //                                        $link_id=null,$tplan_id=null,
+	    //                                        $tproject_id = null,$filters=null)
+
+		$cf_smarty[$locationKey] = 
+			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,null,'design','',
+			                                              null,null,null,$filters[$locationKey]);
+	}	
+	// -----------------------------------------------------------------------------
+	
     $smarty->assign('cf',$cf_smarty);
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);

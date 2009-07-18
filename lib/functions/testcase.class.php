@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.182 2009/07/17 08:33:40 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.183 2009/07/18 14:45:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090718  - franciscom -
  * 20090716 - franciscom - get_last_execution() - BUGID 2692
  *                         interface changes.
  *
@@ -534,6 +535,10 @@ class testcase extends tlObjectWithAttachments
 		$gui->tprojectName='';
 	    $gui->linked_versions=null;
 		$gui->tc_current_version = array();
+	    $gui->bodyOnLoad="";
+	    $gui->bodyOnUnload="";
+	    $gui->submitCode="";
+	    $gui->dialogName='';
 	
 		$gui_cfg = config_get('gui');
 		$the_tpl = config_get('tpl');
@@ -546,14 +551,20 @@ class testcase extends tlObjectWithAttachments
 		$keywords_map = array();
 		$arrReqs = array();
 	    $userid_array = array();
-	    $cf_smarty = array();
-	
-	    // 20090418 - franciscom
-	    $gui->bodyOnLoad="";
-	    $gui->bodyOnUnload="";
-	    $gui->submitCode="";
-	    $gui->dialogName='';
-	   
+
+	    
+	    // 20090718 - franciscom
+	    $dummy = $this->cfield_mgr->getLocations();
+	    $verboseLocationCode = array_flip($dummy['testcase']);
+	    $cf_smarty = null;
+	    $cfx=0;
+	    $filters=null;
+	    $formatOptions=null;
+        foreach($verboseLocationCode as $key => $value)
+        {
+        	$filters[$key]['location']=$value;
+            $formatOptions[$key]['add_table'] = ($key == 'before_steps_results' ? false : true);
+        }	     
 	    if( !is_null($mode) && $mode=='editOnExec' )
 	    {
 	        // refers to two javascript functions present in testlink_library.js
@@ -686,8 +697,20 @@ class testcase extends tlObjectWithAttachments
 		  			}
 		  		}
 		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
-		  		$arrReqs[] = $tcReqs; 
-		  		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id,'design',null,null,null,$tproject_id);
+		  		$arrReqs[] = $tcReqs;
+		  		
+		  		foreach($verboseLocationCode as $locationKey => $locationCode)
+		  		{ 
+		  			//	function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
+	                //                           $testplan_id=null,$tproject_id = null,
+	                //                           $formatOptions=null,$link_id=null)
+                    //
+		  			$cf_smarty[$cfx][$locationKey] = 
+		  				$this->html_table_of_custom_field_values($tc_id,'design',$filters[$locationKey],
+		  				                                         null,null,$tproject_id);
+		  		}	
+		  		$cfx++;
+		  		
 		  	} // foreach($a_id as $key => $tc_id)
 	    } // if (sizeof($a_id))
 	  
@@ -695,8 +718,6 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-        // new dBug($gui);
-        		
 		$smarty->assign('cf',$cf_smarty);
 		$smarty->assign('gui',$gui);
 		$smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
@@ -2479,15 +2500,11 @@ class testcase extends tlObjectWithAttachments
 	       " {$build_id_filter} AND e.status IS NOT NULL " .
 	       " $where_clause_1 GROUP BY tcversion_id {$add_groupby}";
    
-      echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+      // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
       // 20090716 - order of columns changed
 	  $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
-	  new dBug($recordset);
-
 	  $rs = $this->db->fetchRowsIntoMap($sql,'execution_id');
-	  new dBug($rs);
-	
 	  $and_exec_id='';
 	  if( !is_null($recordset) )
 	  {
@@ -2552,7 +2569,6 @@ class testcase extends tlObjectWithAttachments
       
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 	  
-	  	new dBug($recordset);
 	  	return($recordset ? $recordset : null);
 	}
 	
@@ -3040,6 +3056,13 @@ class testcase extends tlObjectWithAttachments
 	                                              
 	                                              0 or null -> don't filter
 	
+	                   [location] new concept used to define on what location on screen
+			                      custom field will be designed.
+			                      Initally used with CF available for Test cases, to
+			                      implement pre-requisites.
+                                  null => no filtering
+	
+	
 	                   More comments/instructions on cfield_mgr->get_linked_cfields_at_design()
 	                   
 	  returns: map/hash
@@ -3078,7 +3101,8 @@ class testcase extends tlObjectWithAttachments
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
 		}
-		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,self::ENABLED,$filters,'testcase',$id);
+		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
+		                                                          self::ENABLED,$filters,'testcase',$id);
 		return $cf_map;
 	}
 	
@@ -3167,7 +3191,8 @@ class testcase extends tlObjectWithAttachments
 	
 	*/
 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
-	                                           $link_id=null,$tplan_id=null,$tproject_id = null)
+	                                           $link_id=null,$tplan_id=null,
+	                                           $tproject_id = null,$filters=null)
 	{
 		$cf_smarty = '';
 	
@@ -3182,7 +3207,8 @@ class testcase extends tlObjectWithAttachments
 	      break;
 	
 	      case 'design':
-	      		$cf_map = $this->$method_name($id,$parent_id,null,$tproject_id);    
+	          // added $filters
+	      		$cf_map = $this->$method_name($id,$parent_id,$filters,$tproject_id);    
 	      break;
 	      	
 	      case 'execution':
@@ -3252,6 +3278,12 @@ class testcase extends tlObjectWithAttachments
 	                                              
 	                                              0 or null -> don't filter
 	
+	                   [location] new concept used to define on what location on screen
+			                      custom field will be designed.
+			                      Initally used with CF available for Test cases, to
+			                      implement pre-requisites.
+                                  null => no filtering
+	                   
 	                   More comments/instructions on cfield_mgr->get_linked_cfields_at_design()
 	                              
 	
@@ -3288,6 +3320,14 @@ class testcase extends tlObjectWithAttachments
 	    } 
 		
 		$cf_smarty = '';
+		
+		$location=null; // no filter
+        $filterKey='location';
+        if( isset($filters[$filterKey]) && !is_null($filters[$filterKey]) )
+        {
+            $location = $filters[$filterKey];
+        }
+
 	    switch($scope)
 	    {
 	        case 'design':
@@ -3300,8 +3340,8 @@ class testcase extends tlObjectWithAttachments
 	        break;
 	    
 	        case 'execution':
-	            $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,
-			                                                     $execution_id,$testplan_id,$tproject_id);
+	            $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,$execution_id,
+	                                                             $testplan_id,$tproject_id,$location);
 	        break;
 	    }   
 	       
@@ -3344,6 +3384,10 @@ class testcase extends tlObjectWithAttachments
 	        [$show_on_execution]: default: null
 	                              1 -> filter on field show_on_execution=1
 	                              0 or null -> don't filter
+	                              //@TODO - 20090718 - franciscom 
+	                              // this filter has any sense ? 
+	                              // review and remove if needed
+	
 	
 	        [$execution_id]: null -> get values for all executions availables for testcase
 	                         !is_null -> only get values or this execution_id
@@ -3375,7 +3419,8 @@ class testcase extends tlObjectWithAttachments
 	
 	*/
 	function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
-	                                         $execution_id=null,$testplan_id=null,$tproject_id = null)
+	                                         $execution_id=null,$testplan_id=null,
+	                                         $tproject_id = null, $location=null)
 	{
 		if (!$tproject_id)
 		{
@@ -3387,7 +3432,7 @@ class testcase extends tlObjectWithAttachments
 		// execution data is related to tcversion NO testcase
 		//
 		$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,'testcase',
-		                                                             $id,$execution_id,$testplan_id);
+		                                                             $id,$execution_id,$testplan_id,$location);
 		return $cf_map;
 	}
 	

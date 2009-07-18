@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.15 2009/06/08 20:11:58 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.16 2009/07/18 14:42:22 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -71,6 +71,8 @@ function validateForm(f)
 </script>
 
 <script type="text/javascript">
+// @TODO - Always ADD on internal revisions NEW FEATURES, thing that has not been do
+// 
 // Notify on exit with unsaved data 
 // @TODO use EXTJS dialog
 
@@ -82,15 +84,23 @@ function doBeforeUnload()
    if(IGNORE_UNLOAD) return; // Let the page unload
 
    if(window.event)
+   {
       window.event.returnValue = UNLOAD_MSG; // IE
+   }
    else
+   {
       return UNLOAD_MSG; // FX
+   }   
 }
 
 if(window.body)
+{
    window.body.onbeforeunload = doBeforeUnload; // IE
+}
 else
+{
    window.onbeforeunload = doBeforeUnload; // FX
+}
 
 // verify if content of any editor changed
 function checkFCKEditorChanged()
@@ -102,7 +112,10 @@ function checkFCKEditorChanged()
 		var edExpResults = FCKeditorAPI.GetInstance('expected_results') ;
 
 		if(edSummary.IsDirty() || edSteps.IsDirty() || edExpResults.IsDirty()) 
+		{
+		  // ABSOLUTELY BAD naming convention, why has to be UPPER CASE ????
 			IGNORE_UNLOAD = false;
+		}	
 	}
 }
 {/literal}

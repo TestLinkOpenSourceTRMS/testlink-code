@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.105 2009/07/17 08:33:40 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.106 2009/07/18 14:49:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -661,10 +661,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				$lastExecSet = $tcase_mgr->get_last_execution($testCaseSet,$tcversionSet,
 				    	                                          $tplan_id,$buildIdList,$options);
 				                                              
-				new dBug($lastExecSet);                                              
 				$keySet=array_keys($lastExecSet);
 				$keySetQty=count($keySet);
-				
 				if( $targetStatus == $resultsCfg['status_code']['not_run'])
 				{
 					for($idx=0; $idx < $keySetQty; $idx++ )
@@ -1058,7 +1056,6 @@ function filter_by_same_status_for_build_set(&$tplan_mgr,&$tcase_set,$tplan_id,$
 	$key2remove=null;
 	$buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
 	
-	new dBug($buildSet);
 	if( !is_null($buildSet) )
 	{
 		$target_status=current($filters->statusAllPrevBuilds);

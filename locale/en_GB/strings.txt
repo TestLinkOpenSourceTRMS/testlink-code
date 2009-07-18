@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.459 2009/07/17 08:36:45 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.460 2009/07/18 14:49:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -871,11 +871,17 @@ $TLS_title_req_import_to = "Import requirements to document";
 // ----- gui/templates/cfields_tproject_assign.tpl -----
 $TLS_btn_cfields_active_mgmt = "Update active status";
 $TLS_btn_cfields_display_order = "Save display order";
+$TLS_btn_cfields_display_attr = "Save display order and location";
 $TLS_cfields_active = "Active";
 $TLS_cfields_tproject_assign = "Assign custom fields";
 $TLS_display_order = "Display order";
 $TLS_title_assigned_cfields = "Assigned custom fields";
 $TLS_title_available_cfields = "Available custom fields";
+$TLS_location = "Location";
+$TLS_standard_location = "standard";
+$TLS_before_steps_results = "Before steps";
+
+
 
 
 

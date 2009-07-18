@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2009/07/17 08:33:40 $ by $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2009/07/18 14:49:36 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - BUGID 2296 - filter by Last Exec Result on Any of previous builds
@@ -37,8 +37,6 @@ $cfg = getCfg();
 $args = init_args($db,$cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $gui = initializeGui($db,$args,$cfg,$exec_cfield_mgr,$tplan_mgr);
-
-new dBug($args);
 
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
@@ -201,8 +199,6 @@ function init_args(&$dbHandler,$cfgObj)
             $args->$key = array($dummy[0]);
         }
     }
-    
-    // new dBug($args);
     return $args;
 }
 
@@ -261,8 +257,6 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
         $settings .= '&filter_status_all_prev_builds='. serialize($argsObj->resultAllPrevBuildsSelected);
     }
 
-    // new dBug($argsObj);
-    
     // BUGID 2692
     $key='statusAnyOfPrevBuildsSelected';
     if( !is_null($argsObj->$key) && 
@@ -387,7 +381,6 @@ function initBuildInfo(&$dbHandler,&$guiObj,&$argsObj,&$tplanMgr)
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 {
-	// new dBug($guiObj);
     $filters = new stdClass();
     $additionalInfo = new stdClass();
     

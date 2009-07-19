@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.22 2009/07/15 17:25:58 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.23 2009/07/19 19:24:14 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -159,3 +159,4 @@ INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (5,'todo');
 -- assignment_types
 INSERT INTO /*prefix*/assignment_types ("id","fk_table","description") VALUES (1,'testplan_tcversions','testcase_execution');
 INSERT INTO /*prefix*/assignment_types ("id","fk_table","description") VALUES (2,'tcversions','testcase_review');
+SELECT setval('assignment_types_seq', 2);           

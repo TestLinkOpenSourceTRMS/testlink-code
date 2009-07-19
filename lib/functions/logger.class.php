@@ -12,7 +12,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.44 2009/06/25 19:47:15 schlundus Exp $
+ * @version CVS: $Id: logger.class.php,v 1.45 2009/07/19 19:24:14 franciscom Exp $
  * @link http://www.teamst.org
  * @since 1.8
  * 
@@ -1014,16 +1014,16 @@ function watchPHPErrors($errno, $errstr, $errfile, $errline)
 		// suppress some kind of errors
 		// strftime(),strtotime(),date()
 		if( ($errno == E_NOTICE && strpos($errstr,"unserialize()") !== false) ||
-        ($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
+        	($errno == E_NOTICE && strpos($errstr,"ob_end_clean()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strftime()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"mktime()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"date()") !== false) ||
 		    ($errno == E_STRICT && strpos($errstr,"strtotime()") !== false) ||
-        ($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||
-        ($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
-        ($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
+        	($errno == E_STRICT && strpos($errfile,"xmlrpc.inc") !== false) ||
+        	($errno == E_STRICT && strpos($errfile,"xmlrpcs.inc") !== false) ||
+        	($errno == E_STRICT && strpos($errfile,"xmlrpc_wrappers.inc") !== false) ||
 		    (strpos($errfile,"Smarty_Compiler.class.php") !== false) ||
-        ($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false)
+        	($errno == E_NOTICE && strpos($errfile,"Config_File.class.php") !== false)
 		    )
 		{
 			return;

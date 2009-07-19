@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.8 2009/06/11 15:42:53 schlundus Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.9 2009/07/19 19:24:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */
@@ -31,13 +31,13 @@ class assignment_mgr extends tlObjectWithDB
 	*/
 	function get_available_types($key_field='description') 
 	{
-		static $s_hash_types;
-		if (!$s_hash_types)
+		static $hash_types;
+		if (!$hash_types)
 		{
-			$sql = "SELECT * FROM {$this->tables['assignment_types']}";
-			$s_hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
+	    	$sql = "SELECT * FROM {$this->tables['assignment_types']}";
+			$hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
 		}
-		return $s_hash_types;
+		return $hash_types;
 	}
 
   /*
@@ -46,14 +46,14 @@ class assignment_mgr extends tlObjectWithDB
   */
 	function get_available_status($key_field='description') 
 	{
-		static $s_hash_types;
-		if (!$s_hash_types)
+		static $hash_types;
+		if (!$hash_types)
 		{
 			$sql = " SELECT * FROM {$this->tables['assignment_status']} "; 
-			$s_hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
+			$hash_types = $this->db->fetchRowsIntoMap($sql,$key_field);
 		}
 		
-		return $s_hash_types;
+		return $hash_types;
 	}
 
 	// $feature_id can be an scalar or an array
@@ -73,12 +73,10 @@ class assignment_mgr extends tlObjectWithDB
 		$result = $this->db->exec_query($sql);
 	}
 
-  // $feature_map['feature_id']['user_id']
-  // $feature_map['feature_id']['type']
-  // $feature_map['feature_id']['status']
-  // $feature_map['feature_id']['assigner_id']
-  //
-  //
+  	// $feature_map['feature_id']['user_id']
+  	// $feature_map['feature_id']['type']
+  	// $feature_map['feature_id']['status']
+  	// $feature_map['feature_id']['assigner_id']
 	function assign($feature_map) 
 	{
 		foreach($feature_map as $feature_id => $elem)
@@ -102,12 +100,12 @@ class assignment_mgr extends tlObjectWithDB
 	}
 	
 
-  // 
-  // $feature_map: key   => feature_id
-  //               value => hash with optional keys 
-  //                        that have the same name of user_assignment fields
-  //
-  //
+  	// 
+  	// $feature_map: key   => feature_id
+  	//               value => hash with optional keys 
+  	//                        that have the same name of user_assignment fields
+  	//
+  	//
 	function update($feature_map) 
 	{
 	  

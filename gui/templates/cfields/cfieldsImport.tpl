@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsImport.tpl,v 1.1 2008/09/23 07:01:46 franciscom Exp $
+$Id: cfieldsImport.tpl,v 1.2 2009/07/19 19:23:05 franciscom Exp $
 Purpose: smarty template - manage import of custom fields
 
 rev: 
@@ -77,14 +77,15 @@ function validateForm(f)
     	</td>
     	</tr>
     	<tr><td>{$labels.local_file} </td>
-    	    <td><input type="file" name="targetFilename" value="{$gui->targetFilename}"
+    	    <td><input type="file" name="targetFilename" value=""
     	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
     	</tr>
     	</table>
     	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
     	<div class="groupBtn">
     		<input type="hidden" name="doAction" id="doAction" value="doImport" />
-    		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> {* restrict file size *}
+    		{* restrict file size - input name must be UPPER CASE ??? *}
+    		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> 
     		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
     		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		                     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"

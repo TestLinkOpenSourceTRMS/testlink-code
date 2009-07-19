@@ -8,7 +8,7 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.45 2009/07/17 17:05:53 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.46 2009/07/19 19:23:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -564,12 +564,39 @@ class database
 	 **/
 	function fetchRowsIntoMap($query,$column,$cumulative = 0,$limit = -1)
 	{
+	    //try 
+	    //{
+	    // if( $column ='')
+	    // {
+	    //     echo '<br>EMPTY COL<br>';
+	    // 	echo $query;
+	    // 	echo '<br>EMPTY COL ------------ <br>';
+	    // 	
+	    // }
+	    // else if ($column == 'description')
+	    // {
+	    // 	echo $query;
+	    // 
+	    // }
 		$items = null;
 		$result = $this->exec_query($query,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
 			{
+				 
+				// 20090719 - franciscom - found it while
+				// testing reports. 
+				// We must to understand why is happening 
+                if( !isset($row[$column]) || $column =='')
+                {
+	        	    // new dBug($row);
+	        		// echo '<br>MISSI COL<br>';
+	    			// echo $query . '<br>';
+	    			// echo "column:$column<br>";
+	    			// echo '<br>EMPTY COL ------------ <br>';
+                	return;
+                }
 				if ($cumulative)
 				{
 					$items[$row[$column]][] = $row;
@@ -582,6 +609,16 @@ class database
 		}
 		
 		return $items;
+		
+		//}   
+		//catch (Exception $exception)
+		//{
+		//	die('00');
+		//     throw(_FUNCTION_ . 'Caught exception running query: ' . $query);
+		//	//echo _FUNCTION_ . 'Caught exception running query: ' ,  $query, "\n";
+	    //	//echo _FUNCTION_ . 'Caught exception: ',  $exception->getMessage(), "\n";
+	    //	//die();
+	    //}
 	}
 	
 	

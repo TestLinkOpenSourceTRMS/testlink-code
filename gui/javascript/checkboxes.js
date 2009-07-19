@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.9 2008/03/30 17:16:26 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.10 2009/07/19 19:22:29 franciscom Exp $ 
 //
 //
 // rev :
@@ -23,12 +23,14 @@
 function box(myDiv, checkBoxStatus)
 {
 	var frm = document.getElementById(myDiv).getElementsByTagName('input');
-	for(var i = 0; i < frm.length; i++)
+	for(var idx = 0; idx < frm.length; idx++)
 	{
-		var elemType = frm[i].type;		
+		var elemType = frm[idx].type;		
 		
 		if(elemType == "checkbox")
-			frm[i].checked = checkBoxStatus;
+		{
+			frm[idx].checked = checkBoxStatus;
+		}	
 	}
 }
 
@@ -82,7 +84,9 @@ function checkOrUncheckAll(ml,bCheck)
 	{
 		var e = my_form.elements[idx];
 		if (e.type == "checkbox")
+		{
 			e.checked = bCheck;
+		}	
 	}
 }
 
@@ -246,8 +250,6 @@ function cs_all_checkbox_in_div(div_id, cb_id_prefix,memory_id)
 		if(inputs[idx].type == "checkbox" && 
 		  (inputs[idx].id.indexOf(cb_id_prefix)==0) )
 		{
-      // inputs[idx].checked = status;
-      
       inputs[idx].checked = (memory.value == "1") ? false : true;
 		}	
 	} // for

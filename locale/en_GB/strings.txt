@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.460 2009/07/18 14:49:36 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.461 2009/07/19 19:22:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1462,8 +1462,12 @@ $TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
 // ----- gui/templates/printDocOptions.tpl -----
 $TLS_doc_opt_title = 'Document options';
-$TLS_doc_opt_guide = 'Modify options for required structure of document. Select the top line in tree menu for all or a required suite to generate a document content.';
+$TLS_doc_opt_guide = 'Modify options for required structure of document. ' .
+                     '<br />Select the top line in tree menu for all or a required ' .
+                     'suite to generate a document content.';
 $TLS_tr_td_show_as = "Show as";
+$TLS_check_uncheck_all_options = "check/uncheck all";
+
 
 
 // ----- gui/templates/tcReorder.tpl -----
@@ -1964,19 +1968,22 @@ $TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name
 
 
 // ----- lib/results/printDocOptions.php -----
-$TLS_opt_show_toc 			= "Table of Contents";
-$TLS_opt_show_suite_txt 	= "Test Suite description";
-$TLS_opt_show_tplan_txt 	= "Test Plan description";
-$TLS_opt_show_tc_body 		= "Test Case Scenario";
+$TLS_opt_show_toc = "Table of Contents";
+$TLS_opt_show_suite_txt = "Test Suite description";
+$TLS_opt_show_tplan_txt = "Test Plan description";
+$TLS_opt_show_tc_body = "Test Case Scenario";
 $TLS_opt_show_tc_summary 	= "Test Case Summary";
-$TLS_opt_show_tc_author 	= "Test Case Author";
-$TLS_opt_show_tc_reqs 		= "Test Case related Requirements";
-$TLS_opt_show_tc_keys 		= "Test Case keywords";
-$TLS_opt_show_cfields		= "Test Case Custom Fields";
-$TLS_opt_show_passfail 		= "Test results";
-$TLS_opt_show_metrics 		= "Metrics";
+$TLS_opt_show_tc_author = "Test Case Author";
+$TLS_opt_show_tc_reqs = "Test Case related Requirements";
+$TLS_opt_show_tc_keys = "Test Case keywords";
+$TLS_opt_show_cfields	= "Test Case Custom Fields";
+$TLS_opt_show_passfail = "Test results";
+$TLS_opt_show_metrics = "Metrics";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
+$TLS_testplan_report = "Test Plan Report";
+$TLS_testspecification_report = "Test Specification Report";
+
 
 
 // ----- lib/project/projectedit.php -----
@@ -2078,24 +2085,24 @@ $TLS_link_report_free_testcases_on_testproject = "Test Cases not assigned to Any
 
 $TLS_no_linked_tc_cf='There are no Test Cases with Custom Field information';
 
-$TLS_format_html 		= 'HTML';
-$TLS_format_odt 		= 'OpenOffice Writer';
-$TLS_format_ods 		= 'OpenOffice Calc';
-$TLS_format_xls 		= 'MS Excel';
-$TLS_format_msword 		= 'MS Word';
-$TLS_format_pdf 		= 'PDF';
-$TLS_format_mail_html 	= 'Email (HTML)';
+$TLS_format_html = 'HTML';
+$TLS_format_odt = 'OpenOffice Writer';
+$TLS_format_ods = 'OpenOffice Calc';
+$TLS_format_xls = 'MS Excel';
+$TLS_format_msword = 'MS Word';
+$TLS_format_pdf = 'PDF';
+$TLS_format_mail_html = 'Email (HTML)';
 
 
 // ----- lib/results/resultsSend.php -----
 $TLS_send_to_empty_email_warning = "I'm sorry but email cannot be sent with " .
-		"a blank to field. Please enter a valid address.";
+		                               "a blank to field. Please enter a valid address.";
 $TLS_warning_create_build_first = "You must create builds or import data at first.";
 
 
 // ----- lib/results/displayMgr.php -----
 $TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, ".
-		"please edit email credentials in 'Personal' tab";
+		                                         "please edit email credentials in 'Personal' tab";
 
 
 
@@ -2118,17 +2125,22 @@ $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
 $TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%s' ".
     "can not be imported because there is no Custom Field with this name " .
     "and Available for %s on this Test Project"; 
+
 $TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
-		"because is not direct child of Req. Spec: %s";
+		                                   "because is not direct child of Req. Spec: %s";
+
 $TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not be " .
-		"linked to testcase";
+		                           "linked to testcase";
+
 $TLS_update_last_testcase_version='Update data on Latest version';
 $TLS_create_new_testcase_version='Create a new version';
 $TLS_generate_new_testcase='Create a new test case with different title';
 $TLS_no_cf_defined_can_not_import="Custom Field values are present on import file ".
-    "but can not be imported because there are no Custom Fields with Test Spec. Design Scope on this Test Project"; 
+                                  "but can not be imported because there are no " .
+                                  "Custom Fields with Test Spec. Design Scope on this Test Project"; 
 $TLS_no_reqspec_defined_can_not_import="Requirements are present on import file ".
-    "but can not be imported because there are no Requirement Specification defined for this Test Project"; 
+                                       "but can not be imported because there are no " .
+                                       "Requirement Specification defined for this Test Project"; 
 
 
 // ----- lib/testcases/tcexport.php -----
@@ -2264,7 +2276,8 @@ $TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist
 
 $TLS_API_TCASEID_NOT_INTEGER = "Test Case ID (testcaseid) must be an integer!";
 $TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
-$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the test plan id provided! A build must be created to report results.";
+$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the test plan id provided! " . 
+                                "A build must be created to report results.";
 $TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
 $TLS_API_BUILDNAME_ALREADY_EXISTS = "Build name (%s) already exists (id:%s)";
 $TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
@@ -2304,13 +2317,15 @@ $TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE="Custom Field (name:%s), can not be u
 
 $TLS_API_NO_TESTSUITENAME="No testsuitename provided. A test suite name must be provided!";
 $TLS_API_TESTSUITENAME_NOT_STRING = "testsuitename must be a string!";
-$TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) with id:%s do not belongs to Test Project(name=%s / id=%s)";
+$TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) " .
+                                             "with id:%s do not belongs to Test Project(name=%s / id=%s)";
 
 $TLS_API_CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE="Custom Field (name:%s), is not configured for Design Scope";
 $TLS_API_CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT="Custom Field (name:%s), is not assigned to Test Project(name=%s / id=%s)";
 $TLS_API_TESTPROJECTNAME_DOESNOT_EXIST="Test Project (name:%s) does not exist.";
 $TLS_API_TESTPLANNAME_DOESNOT_EXIST="Test Plan (name:%s) does not exist on Test Project (name:%s).";
-$TLS_API_INVALID_PARENT_TESTSUITEID = "Test Suite ID (%s) provided as PARENT for Test Suite (name:%s) do not belongs to a Test Suite present on system!";
+$TLS_API_INVALID_PARENT_TESTSUITEID = "Test Suite ID (%s) provided as PARENT for Test Suite (name:%s) " .
+                                      "do not belongs to a Test Suite present on system!";
 
 $TLS_API_NO_TESTCASE_FOUND = "No Test Case found for search criteria.";
 $TLS_API_TESTPLANNAME_ALREADY_EXISTS="Test Plan (name:%s) Already EXITS on Test Project (name:%s).";

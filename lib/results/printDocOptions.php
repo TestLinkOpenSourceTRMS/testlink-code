@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/05/17 16:39:35 $ by $Author: havlat $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/07/19 19:22:29 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -33,39 +33,38 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION['basehref']);
 
-$arrFormat = array(
-	FORMAT_HTML => lang_get('format_html'), 
-	FORMAT_ODT => lang_get('format_odt'), 
-	FORMAT_MSWORD => lang_get('format_msword')
-);
 
 // Important Notice:
 // If you made add/remove elements from this array, you must update
 // $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
 $arrCheckboxes = array(
-	array( 'value' => 'toc', 	'description' => 'opt_show_toc', 		'checked' => 'n'),
-	array( 'value' => 'header', 'description' => 'opt_show_suite_txt', 	'checked' => 'n'),
+	array( 'value' => 'toc', 'description' => 'opt_show_toc', 'checked' => 'n'),
+	array( 'value' => 'header', 'description' => 'opt_show_suite_txt', 'checked' => 'n'),
 	array( 'value' => 'summary', 'description' => 'opt_show_tc_summary', 'checked' => 'y'),
-	array( 'value' => 'body', 	'description' => 'opt_show_tc_body',	'checked' => 'n'),
- 	array( 'value' => 'author',	'description' => 'opt_show_tc_author', 	'checked' => 'n'),
-	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 	'checked' => 'n'),
+	array( 'value' => 'body', 'description' => 'opt_show_tc_body', 'checked' => 'n'),
+ 	array( 'value' => 'author', 'description' => 'opt_show_tc_author', 'checked' => 'n'),
+	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 'checked' => 'n'),
 	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'n')
 );
 
 if($_SESSION['testprojectOptReqs'])
 {
-	$arrCheckboxes[] = array( 'value' => 'requirement', 'description' => 'opt_show_tc_reqs', 'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'requirement', 
+	                          'description' => 'opt_show_tc_reqs', 'checked' => 'n');
 }
 
 if( $args->doc_type == 'testplan')
 {
-	$arrCheckboxes[] = array( 'value' => 'testplan', 'description' => 'opt_show_tplan_txt', 'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'testplan', 
+	                          'description' => 'opt_show_tplan_txt', 'checked' => 'n');
 }
 
 if( $args->doc_type == 'testreport')
 {
-	$arrCheckboxes[] = array( 'value' => 'passfail', 'description' => 'opt_show_passfail', 'checked' => 'y');
-	$arrCheckboxes[] = array( 'value' => 'metrics', 'description' => 'opt_show_metrics', 'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'passfail', 
+	                          'description' => 'opt_show_passfail', 'checked' => 'y');
+	$arrCheckboxes[] = array( 'value' => 'metrics', 
+	                          'description' => 'opt_show_metrics', 'checked' => 'n');
 }
 
 // process setting for doc builder
@@ -87,7 +86,9 @@ foreach($arrCheckboxes as $key => $elem)
 $workPath = 'lib/results/printDocument.php';
 $getArguments = "&type=" . $args->doc_type; //$gui->doc_type; 
 if (($args->doc_type == 'testplan') || ($args->doc_type == 'testreport'))
+{
 	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
+}
 
 // generate tree for Test Specification
 $treeString = null;
@@ -125,7 +126,8 @@ switch($args->doc_type)
   	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
         
 		$treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-				$args->tplan_id,$testplan_name,$getArguments,$filters,$additionalInfo);
+				                         $args->tplan_id,$testplan_name,$getArguments,
+				                         $filters,$additionalInfo);
         
       	$treeString = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
@@ -146,7 +148,7 @@ $tree = $treeString;
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
-$smarty->assign('arrFormat', $arrFormat);
+// $smarty->assign('arrFormat', $arrFormat);
 $smarty->assign('selFormat', $args->format);
 $smarty->assign('docType', $args->doc_type);
 $smarty->assign('docTestPlanId', $args->tplan_id);
@@ -198,6 +200,7 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
     $tcaseCfg = config_get('testcase_cfg');
         
     $gui = new stdClass();
+    $gui->mainTitle = '';
     $tprojectMgr = new testproject($dbHandler);
     $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
 
@@ -211,11 +214,12 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
      
     // Prefix for cookie used to save tree state
     $gui->ajaxTree->cookiePrefix='print' . str_replace(' ', '_', $argsObj->doc_type) . '_';
+    $gui->doc_type = $argsObj->doc_type;    
     
     switch($argsObj->doc_type)
     {
         case 'testspec':
-	          $gui->tree_title=lang_get('title_tc_print_navigator');
+	         $gui->tree_title=lang_get('title_tc_print_navigator');
             
             $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
                                    "root_node={$argsObj->tproject_id}&" .
@@ -228,18 +232,27 @@ function initializeGui(&$dbHandler,$argsObj,$basehref)
 
             $tcase_qty = $tprojectMgr->count_testcases($argsObj->tproject_id);
             $gui->ajaxTree->root_node->name=$argsObj->tproject_name . " ($tcase_qty)";
-            
             $gui->ajaxTree->cookiePrefix .=$gui->ajaxTree->root_node->id . "_" ;
-	      break;
+	        $gui->mainTitle = lang_get('testspecification_report');
+	    break;
+	    
+	    case 'testreport':
+	        $gui->mainTitle = lang_get('test_report');
+	    break;
 	      
         case 'testplan':
 	          $gui->tree_title=lang_get('title_tp_print_navigator');
 	          $gui->ajaxTree->loadFromChildren=1;
 	          $gui->ajaxTree->loader='';
-	      break;
+	          $gui->mainTitle = lang_get('testplan_report');
+	    break;
     }
+    $gui->mainTitle .=  ' - ' . lang_get('doc_opt_title');
 
-    $gui->doc_type = $argsObj->doc_type;    
+    
+    $gui->outputFormat = array(FORMAT_HTML => lang_get('format_html'), 
+	                           FORMAT_ODT => lang_get('format_odt'), 
+	                           FORMAT_MSWORD => lang_get('format_msword'));
     return $gui;  
 }
 ?>

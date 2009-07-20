@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.184 2009/07/18 17:42:34 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.185 2009/07/20 16:56:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2715,7 +2715,7 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function get_version_exec_assignment($tcversion_id,$tplan_id)
 	{
-		$sql = "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
+		$sql =  "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
 				"       UA.user_id,UA.type,UA.status,UA.assigner_id ".
 				" FROM {$this->tables['testplan_tcversions']}  T " .
 				" LEFT OUTER JOIN {$this->tables['user_assignments']}  UA ON UA.feature_id = T.id " .

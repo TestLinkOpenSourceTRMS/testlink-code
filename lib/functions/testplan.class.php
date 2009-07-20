@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.122 2009/07/16 14:55:06 havlat Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.123 2009/07/20 16:58:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -93,10 +93,10 @@ class testplan extends tlObjectWithAttachments
 	    $this->db = &$db;
 	    $this->tree_manager = New tree($this->db);
       
-	    $this->assignment_mgr = New assignment_mgr($this->db);
+	    $this->assignment_mgr = new assignment_mgr($this->db);
 	    $this->assignment_types = $this->assignment_mgr->get_available_types();
 	    $this->assignment_status = $this->assignment_mgr->get_available_status();
-      
+
     	$this->cfield_mgr = new cfield_mgr($this->db);
     	$this->tcase_mgr = New testcase($this->db);
    	
@@ -656,7 +656,9 @@ class testplan extends tlObjectWithAttachments
 			$more_parent_fields = 'NHC.name as tsuite_name,';
 		}
 		
-		$sql = " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
+		// 20090719 - added SQL comment on query text to make debug simpler.
+		$sql = "/* get_linked_tcversions */ " .
+		    " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
 			" NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .
 			" T.tcversion_id AS tcversion_id, T.id AS feature_id, " .
 			" T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by," .
@@ -737,6 +739,7 @@ class testplan extends tlObjectWithAttachments
 		if (!is_null($cf_hash)) {
 			$recordset = $this->filter_cf_selection($recordset, $cf_hash);
 		}
+
 		return $recordset;
 	}
 

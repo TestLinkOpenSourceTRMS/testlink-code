@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.106 2009/07/18 14:49:36 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.107 2009/07/20 16:56:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -624,7 +624,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$apply_other_filters=false;
 		}
 		
-		if( $apply_other_filters && !is_null($filters->statusAllPrevBuilds) &&
+		if( $apply_other_filters && property_exists($filters,'statusAllPrevBuilds') && 
+		    !is_null($filters->statusAllPrevBuilds) &&
 			!in_array($resultsCfg['status_code']['all'],(array)$filters->statusAllPrevBuilds) )
 		{
 			$tplan_tcases = filter_by_same_status_for_build_set($tplan_mgr,$tplan_tcases,$tplan_id,$filters);
@@ -636,9 +637,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		}
 		
 		// 20090716 - franciscom - BUGID 2692
-		if( $apply_other_filters && !is_null($filters->statusAnyOfPrevBuilds) &&
+		if( $apply_other_filters && property_exists($filters,'statusAnyOfPrevBuilds') && 
+		    !is_null($filters->statusAnyOfPrevBuilds) &&
 		    !in_array($resultsCfg['status_code']['all'],(array)$filters->statusAnyOfPrevBuilds) )
 		{
+			//@TODO - 20090719 - franciscom - refactor creating a function
 			$buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
 			if( !is_null($buildSet) )
 			{

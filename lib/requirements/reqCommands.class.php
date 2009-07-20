@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/01/03 17:30:30 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/07/20 16:56:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -89,33 +89,34 @@ class reqCommands
   */
 	function doCreate(&$argsObj,$request)
 	{
-		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-
-      $obj=new stdClass();
-      $obj->req = null;
-		  $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
-		  $obj->action_descr = lang_get('create_req');
-		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-		  $obj->submit_button_label=lang_get('btn_save');
-		  $obj->template = null;
-      $obj->reqStatusDomain=$this->reqStatusDomain;
- 		  $obj->req_spec_id = $argsObj->req_spec_id;
+		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$obj=new stdClass();
+      	$obj->req = null;
+		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$obj->action_descr = lang_get('create_req');
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		$obj->submit_button_label=lang_get('btn_save');
+		$obj->template = null;
+      	$obj->reqStatusDomain=$this->reqStatusDomain;
+ 		$obj->req_spec_id = $argsObj->req_spec_id;
 	
-		  $ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
-		                               $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,$argsObj->reqType);
+	    // 20090719 - franciscom - seems that TYPE has been removed from user interface
+		$ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
+		                             $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus);
+		                             // ,$argsObj->reqType);
 
-		  $obj->user_feedback = $ret['msg'];
-		  if($ret['status_ok'])
-		  {
-		  	logAuditEvent(TLS("audit_requirement_created",$argsObj->reqDocId),"CREATE",$ret['id'],"requirements");
-		  	$obj->user_feedback = sprintf(lang_get('req_created'), $argsObj->reqDocId);
-		  	$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
-		  	$this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
-  		  $obj->template = 'reqEdit.tpl';
-  		  $obj->req_id = $ret['id'];
-		  }
-		  $argsObj->scope = '';
-      return $obj;	
+		$obj->user_feedback = $ret['msg'];
+		if($ret['status_ok'])
+		{
+			logAuditEvent(TLS("audit_requirement_created",$argsObj->reqDocId),"CREATE",$ret['id'],"requirements");
+			$obj->user_feedback = sprintf(lang_get('req_created'), $argsObj->reqDocId);
+			$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
+			$this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
+  			$obj->template = 'reqEdit.tpl';
+  			$obj->req_id = $ret['id'];
+		}
+		$argsObj->scope = '';
+		return $obj;	
   }
 
 
@@ -129,10 +130,11 @@ class reqCommands
   */
 	function doUpdate(&$argsObj,$request)
 	{
-      $obj=new stdClass();
+		$obj=new stdClass();
 	    $descr_prefix = lang_get('req') . TITLE_SEP;
-		  $ret = $this->reqMgr->update($argsObj->req_id,trim($argsObj->reqDocId),$argsObj->title,
-		  				                     $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,$argsObj->reqType);
+		$ret = $this->reqMgr->update($argsObj->req_id,trim($argsObj->reqDocId),$argsObj->title,
+		  				               $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus);
+		  				                     //,$argsObj->reqType);
 
       $obj=$this->edit($argsObj);
       $obj->user_feedback = $ret['msg'];

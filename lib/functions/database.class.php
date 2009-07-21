@@ -8,11 +8,12 @@
  * @copyright 	2006-2009, TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.46 2009/07/19 19:23:05 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.47 2009/07/21 06:50:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090720 - franciscom - fetchRowsIntoMap() - added some error management code 
  * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
  * 20081129 - franciscom - Added CUMULATIVE constant
  * 20081116 - franciscom - fetchColumnsIntoMap() added cumulative argument
@@ -564,43 +565,45 @@ class database
 	 **/
 	function fetchRowsIntoMap($query,$column,$cumulative = 0,$limit = -1)
 	{
-	    //try 
-	    //{
-	    // if( $column ='')
-	    // {
-	    //     echo '<br>EMPTY COL<br>';
-	    // 	echo $query;
-	    // 	echo '<br>EMPTY COL ------------ <br>';
-	    // 	
-	    // }
-	    // else if ($column == 'description')
-	    // {
-	    // 	echo $query;
-	    // 
-	    // }
 		$items = null;
 		$result = $this->exec_query($query,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
 			{
-				 
-				// 20090719 - franciscom - found it while
-				// testing reports. 
-				// We must to understand why is happening 
-                if( !isset($row[$column]) || $column =='')
+				// -----------------------------------------------
+                // Error management Code 				 
+				$empty_column = (trim($column)=='');
+				$missing_column = false;
+				if( !$empty_column )
+				{
+					$missing_column = !isset($row[$column]);
+				}
+		        $shoot=$missing_column || $empty_column;
+				$errorMsg=__CLASS__ . '/' . __FUNCTION__ . ' - ';
+                if( $missing_column )
                 {
-	        	    // new dBug($row);
-	        		// echo '<br>MISSI COL<br>';
-	    			// echo $query . '<br>';
-	    			// echo "column:$column<br>";
-	    			// echo '<br>EMPTY COL ------------ <br>';
-                	return;
+	        	    $errorMsg .= 'missing column:' . $column;
                 }
+                else if( $empty_column )
+                {
+                	$errorMsg .= 'empty column';
+                }
+                if($shoot)
+                {
+                	// new dBug(debug_backtrace());
+                	// die();
+    			    $errorMsg .= ' - SQL:' . $query;
+    				trigger_error($errorMsg,E_USER_NOTICE);
+    				return null;
+    			}	
+                // -----------------------------------------------
+                
 				if ($cumulative)
 				{
 					$items[$row[$column]][] = $row;
 				}
+
 				else
 				{
 					$items[$row[$column]] = $row;
@@ -609,16 +612,6 @@ class database
 		}
 		
 		return $items;
-		
-		//}   
-		//catch (Exception $exception)
-		//{
-		//	die('00');
-		//     throw(_FUNCTION_ . 'Caught exception running query: ' . $query);
-		//	//echo _FUNCTION_ . 'Caught exception running query: ' ,  $query, "\n";
-	    //	//echo _FUNCTION_ . 'Caught exception: ',  $exception->getMessage(), "\n";
-	    //	//die();
-	    //}
 	}
 	
 	

@@ -6,12 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.185 2009/07/20 16:56:22 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.186 2009/07/21 06:50:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * 20090718  - franciscom - new method buildCFLocationMap();
+ * 20090720 - franciscom - found bug in get_linked_cfields_at_execution()
+ *                         when calling cfield_mgr class method
+ *
+ * 20090718 - franciscom - new method buildCFLocationMap();
  * 20090716 - franciscom - get_last_execution() - BUGID 2692
  *                         interface changes.
  *
@@ -3426,6 +3429,7 @@ class testcase extends tlObjectWithAttachments
 	                                         $execution_id=null,$testplan_id=null,
 	                                         $tproject_id = null, $location=null)
 	{
+		$thisMethod=__FUNCTION__;
 		if (!$tproject_id)
 		{
 		    $tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
@@ -3435,8 +3439,9 @@ class testcase extends tlObjectWithAttachments
 		// I'm setting node type to test case, but $id is the tcversion_id, because
 		// execution data is related to tcversion NO testcase
 		//
-		$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,self::ENABLED,'testcase',
-		                                                             $id,$execution_id,$testplan_id,$location);
+		$cf_map = $this->cfield_mgr->$thisMethod($tproject_id,self::ENABLED,'testcase',
+		                                         $id,$execution_id,$testplan_id,'id',
+		                                         $location);
 		return $cf_map;
 	}
 	

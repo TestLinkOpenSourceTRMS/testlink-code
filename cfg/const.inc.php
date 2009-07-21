@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.107 2009/06/17 21:37:36 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.108 2009/07/21 15:33:37 havlat Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -56,7 +56,7 @@ define('MEDIUM', 	2 );
 define('LOW', 		1 );
 
 
-/** @TODO havlatm: use 'OFF' constant */
+/** @TODO havlatm: use ON || 'OFF' constant */
 define('TL_FILTER_OFF',null);
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
@@ -122,6 +122,7 @@ define('ANY_OWNER', null);
 define('ALL_BUILDS', 'a');
 define('ALL_TEST_SUITES', 'all');
 
+/** @todo use consts ACTIVE || INACTIVE, OPEN || CLOSED*/
 define('GET_ACTIVE_BUILD', 1);
 define('GET_INACTIVE_BUILD', 0);
 define('GET_OPEN_BUILD', 1);
@@ -142,10 +143,9 @@ define('DO_PRUNE', 1);
 define('AUTOMATION_RESULT_KO', -1);
 define('AUTOMATION_NOTES_KO', -1);
 
-// testcase.class.php
+/** @uses testcase.class.php */
 define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
-
 
 
 // --------------------------------------------------------------------------------------
@@ -200,6 +200,19 @@ $g_testsuite_sep='/';
 define('MENU_ITEM_OPEN', '<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE', '</div><br />');
 
+/** 
+ * Used to force the max len of this field, during the automatic creation of requirements
+ * or other import features
+ * @todo havlatm: convert to $tlCfg->gui object
+ */ 
+$g_field_size = new stdClass();
+$g_field_size->testsuite_name = 100;
+$g_field_size->testcase_name = 100;
+
+// requirements and req_spec tables field sizes
+$g_field_size->req_docid = 32;
+$g_field_size->req_title = 100;
+$g_field_size->requirement_title = 100;
 
 
 // --------------------------------------------------------------------------------------
@@ -534,54 +547,64 @@ $tlCfg->urgency['code_label'] = array(
 
 
 // --------------------------------------------------------------------------------------
-/* [Requirements] */
+/* [States & Review] */
+
+/**
+ * data status constants are applicable for data like requirement, test case 
+ * <b>Warning: keys must be compliant with ENUM values for DB tables</b>: tcversions, requirements, testplan
+ */
+/** Review status: data was reviewed and are available for using */
+define('TL_REVIEW_STATUS_FINAL', 	'FINAL');
+/** Review status: design phase; data are not available for review or using */ 
+define('TL_REVIEW_STATUS_DRAFT', 	'DRAFT');
+/** Review status: data wait for review */ 
+define('TL_REVIEW_STATUS_REVIEW', 	'REVIEW');
+/** Review status: data are not applicable for using (not listed in reports and lists) */ 
+define('TL_REVIEW_STATUS_OBSOLETE', 'OBSOLETE'); 
+define('TL_REVIEW_STATUS_FUTURE', 	'FUTURE'); 
 
 /** 
- * data status constants are applicable for data like requirement, test case 
- * TL_REVIEW_STATUS_VALID is default value if review process is disabled
- * Note: review process is not implemented yet (1.8)
- **/ 
-/** Review status: data was reviewed and are available for using */
-define('TL_REVIEW_STATUS_VALID', 	'V');
-/** Review status: design phase; data are not available for review or using */ 
-define('TL_REVIEW_STATUS_DRAFT', 	'D');
-/** Review status: data wait for review */ 
-define('TL_REVIEW_STATUS_REVIEW', 	'R');
-define('TL_REVIEW_STATUS_OBSOLETE', 'O'); 
-/** Review status: data need update (not listed in reports and lists, review disabled) */ 
-define('TL_REVIEW_STATUS_TODO', 	'T');
-/** Review status: data are not aplicable for using (not listed in reports and lists) */ 
-define('TL_REVIEW_STATUS_FUTURE', 	'F'); 
-
-/** @var array localization identifiers for review statuses */
-$tlCfg->review_status_labels = array(
-		TL_REVIEW_STATUS_VALID => 'review_status_valid', 
-		TL_REVIEW_STATUS_DRAFT => 'review_status_draft',
+ * @var array localization identifiers for review statuses
+ * @since 1.9 review process is not implemented yet (1.8)
+ **/
+$tlCfg->text_status_labels = array(
+		TL_REVIEW_STATUS_DRAFT => 'review_status_draft', 
+		TL_REVIEW_STATUS_REVIEW => 'review_status_review',
+		TL_REVIEW_STATUS_FINAL => 'review_status_final', 
 		TL_REVIEW_STATUS_OBSOLETE => 'review_status_obsolete', 
-		TL_REVIEW_STATUS_FUTURE => 'review_status_future', 
-		TL_REVIEW_STATUS_TODO => 'review_status_todo');
+		TL_REVIEW_STATUS_FUTURE => 'review_status_future');
 
-/** @TODO havlatm: obsolete - remove (use consts above) */
+/** 
+ * @TODO havlatm: obsolete - remove (use consts above) 
+ * TL_REQ_STATUS_NOT_TESTABLE -> TL_REQ_TYPE_INFO
+ * TL_REQ_STATUS_VALID -> TL_REQ_TYPE_FEATURE
+ **/
 define('TL_REQ_STATUS_VALID', 		'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');
-define('TL_REQ_STATUS_DRAFT', 		'D');
-define('TL_REQ_STATUS_OBSOLETE', 	'O');
-define('TL_REQ_STATUS_TODO', 		'T');
 
 // key: status; value: text label
 $g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
-					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable'/*,
-					TL_REQ_STATUS_DRAFT => 'review_status_draft',
-					TL_REQ_STATUS_OBSOLETE => 'review_status_obsolete', 
-					TL_REQ_STATUS_TODO => 'review_status_todo'*/);
+					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable'
+					);
 
-/** Types of requirements (only info is not testable) */
-define('TL_REQ_TYPE_INFO','N'); // not testable requirements (informational character, project and user documentation)
-define('TL_REQ_TYPE_FEATURE','V'); // valid and testable functional definition
-define('TL_REQ_TYPE_USE_CASE','U'); 
-define('TL_REQ_TYPE_INTERFACE','I'); // user interface, communication protocols
-define('TL_REQ_TYPE_NON_FUNCTIONAL','N'); // performance, infrastructure, robustness, security, safety, etc.
-define('TL_REQ_TYPE_CONSTRAIN','N'); // Constraints and Limitations
+/** 
+ * Types of requirements (with respect to standards)
+ * <ul>
+ * <li><b>Info</b> -informational character, project and user documentation.
+ * 		The type is not testable = not used for testing logic (except metrics).</li>
+ * <li><b>Feature</b> - valid and testable functional definition (default selection)</li>
+ * <li><b>Use case</b></li>
+ * <li><b>Interface</b> - user interface, communication protocols</li>
+ * <li><b>Non-functional</b> - performance, infrastructure, robustness, security, safety, etc.</li>
+ * <li><b>Constrain</b> - Constraints and Limitations</li>
+ * </ul>
+ **/
+define('TL_REQ_TYPE_INFO','INFO');
+define('TL_REQ_TYPE_FEATURE','FEATURE');
+define('TL_REQ_TYPE_USE_CASE','USE_CASE'); 
+define('TL_REQ_TYPE_INTERFACE','INTERFACE');
+define('TL_REQ_TYPE_NON_FUNCTIONAL','NON_FUNC');
+define('TL_REQ_TYPE_CONSTRAIN','CONSTRAIN');
 
 /** @var array localization identifiers for requirements types */
 $tlCfg->req_cfg->type_labels = array(
@@ -601,32 +624,15 @@ define('NON_TESTABLE_REQ', 'n');
 define('VALID_REQ', 'v');
 
 
-
-/**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  
-define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
-
-/** 
- * Used to force the max len of this field, during the automatic creation of requirements
- * or other import features
- * @todo havlatm: convert to $tlCfg->gui object
- */ 
-$g_field_size = new stdClass();
-$g_field_size->testsuite_name = 100;
-$g_field_size->testcase_name = 100;
-
-// requirements and req_spec tables field sizes
-$g_field_size->req_docid = 32;
-$g_field_size->req_title = 100;
-$g_field_size->requirement_title = 100;
-
-
 // --------------------------------------------------------------------------------------
 /* [CUSTOM FIELDS] */
 
 /**
  * Custom field constrains for HTML inputs use values to created to get/show custom field contents
- * <ul><li>for string,numeric,float,email: size & maxlenght of the input type text.</li>
- * <li>for list,email size of the select input.</li></ul>
+ * <ul>
+ * <li>for string,numeric,float,email: size & maxlenght of the input type text.</li>
+ * <li>for list,email size of the select input.</li>
+ * </ul>
  */
 $tlCfg->gui->custom_fields->sizes = array( 
 	'string' => 50,
@@ -665,6 +671,22 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
 
 // --------------------------------------------------------------------------------------
 /* [MISC] */
+
+/** 
+ * Review types
+ * @since 1.9 
+ **/
+$tlCfg->review_types = array( 
+	'n' => 'type_undefined',
+	't' => 'typo', 
+	'r' => 'recommendation', 
+	'q' => 'question', 
+	'u' => 'unclear', 
+	'm' => 'major problem'
+);
+
+/**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  
+define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
                                                        
 /** 
  * Bug tracking objects (do not change)

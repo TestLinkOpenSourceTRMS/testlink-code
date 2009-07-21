@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/06/11 15:42:53 $ $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/07/21 15:34:24 $ $Author: havlat $
  *  
  * 
  * @author 	Martin Havlat
@@ -38,12 +38,12 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$tpID = null)
      	
 	$my_user_id = $user_id ? $user_id : $currentUser->dbID;
 	
-	$sql = "SELECT nodes_hierarchy.id, nodes_hierarchy.name, testplans.active " .
-	       "  FROM {$tables['nodes_hierarchy']} nodes_hierarchy " .
-	       "  JOIN {$tables['testplans']} testplans ON nodes_hierarchy.id=testplans.id  " .
-	       "  LEFT OUTER JOIN {$tables['user_testplan_roles']} user_testplan_roles " .
-	       "  ON testplans.id = user_testplan_roles.testplan_id " .
-	       "  AND user_testplan_roles.user_id = {$my_user_id} WHERE active=1 AND  ";
+	$sql = "SELECT {$tables['nodes_hierarchy']}.id, {$tables['nodes_hierarchy']}.name, {$tables['testplans']}.active " .
+	       "  FROM {$tables['nodes_hierarchy']} " .
+	       "  JOIN {$tables['testplans']} testplans ON {$tables['nodes_hierarchy']}.id={$tables['testplans']}.id  " .
+	       "  LEFT OUTER JOIN {$tables['user_testplan_roles']} " .
+	       "  ON {$tables['testplans']}.id = {$tables['user_testplan_roles']}.testplan_id " .
+	       "  AND {$tables['user_testplan_roles']}.user_id = {$my_user_id} WHERE active=1 AND  ";
 
 	$sql .= " testproject_id = {$testproject_id} AND ";
 	
@@ -128,10 +128,10 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$tp
     $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
 
 
-	$sql = " SELECT nodes_hierarchy.id, nodes_hierarchy.name, " .
+	$sql = " SELECT {$tables['nodes_hierarchy']}.id, {$tables['nodes_hierarchy']}.name, " .
 	       "        notes,active, testproject_id " .
 	       " FROM {$tables['nodes_hierarchy']} nodes_hierarchy, {$tables['testplans']} testplans";
-	$where = " WHERE nodes_hierarchy.id=testplans.id ";
+	$where = " WHERE {$tables['nodes_hierarchy']}.id=testplans.id ";
 	
 	if ($testproject_id != ALL_PRODUCTS)
   {
@@ -146,7 +146,7 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$tp
 	
 	if (!is_null($tpID))
 	{
-		$where .= " AND testplans.id = " . $tpID;
+		$where .= " AND {$tables['testplans']}.id = " . $tpID;
 	}
 	
 	$sql .= $where . " ORDER BY name";
@@ -168,7 +168,7 @@ function getTestPlansWithoutProject(&$db)
     $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
     $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
     
-	$sql = "select id,name from {$tables['nodes_hierarchy']} WHERE id " . 
+	$sql = "SELECT id,name FROM {$tables['nodes_hierarchy']} WHERE id " . 
 	       " IN( SELECT id FROM {$tables['testplans']}  " .
 		   " WHERE testproject_id=0 and active=1)";
 	$testPlans = $db->get_recordset($sql);

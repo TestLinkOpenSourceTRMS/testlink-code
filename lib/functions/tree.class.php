@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.63 2009/06/16 22:21:09 havlat Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.64 2009/07/22 17:29:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -464,7 +464,7 @@ class tree extends tlObject
 		{
 			$where_clause=" WHERE id = {$node_id}";
 		}
-		$sql = "UPDATE nodes_hierarchy SET parent_id = {$parent_id} {$where_clause}";
+		$sql = "UPDATE {$this->object_table} SET parent_id = {$parent_id} {$where_clause}";
 		
 		$result = $this->db->exec_query($sql);
 		

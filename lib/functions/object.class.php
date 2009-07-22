@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.36 2009/07/13 18:38:19 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.37 2009/07/22 17:29:43 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -70,8 +70,6 @@ abstract class tlObject implements iSerialization
 	 */
 	protected $serializationFormatDescriptors;
 
-	//@TODO schlundus, should be moved inside a tlConfig class
-	// havlatm rev: this is not configuration, so it is correct here
     protected $tables = null;
 	
 	/** class constructor */

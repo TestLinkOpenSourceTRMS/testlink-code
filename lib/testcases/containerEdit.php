@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2009/06/08 21:21:40 $ by $Author: schlundus $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2009/07/22 17:30:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -638,16 +638,17 @@ function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
 */
 function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$argsObj)
 {
+	$tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
 	$testcase_cfg = config_get('testcase_cfg');
 	$glue = $testcase_cfg->glue_character;
 	
 	// $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID),
 	//                                                   array($argsObj->testsuiteID => 'exclude'));
 	//                                                   
-  // 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
-  //            when you want to move lots of testcases from one testsuite to it's children
-  //            testsuites. (in this situation tree drag & drop is not ergonomic).
-  $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);	                                                  
+  	// 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
+  	//            when you want to move lots of testcases from one testsuite to it's children
+  	//            testsuites. (in this situation tree drag & drop is not ergonomic).
+  	$testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);	                                                  
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
    // 20081225 - franciscom
@@ -658,13 +659,14 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
    // Solution: have changed case on Smarty to lower case.
    //         
  	 $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
-        " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
-        " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, node_types NT, tcversions TCV " .
-        " WHERE NHB.parent_id=NHA.id " .
-        " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
-        " AND NHA.parent_id={$argsObj->testsuiteID} " .
-        " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
-        " ORDER BY TCORDER,TCNAME";
+            " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
+            " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
+            " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
+            " WHERE NHB.parent_id=NHA.id " .
+            " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
+            " AND NHA.parent_id={$argsObj->testsuiteID} " .
+            " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
+            " ORDER BY TCORDER,TCNAME";
 
   $children = $dbHandler->get_recordset($sql);
     

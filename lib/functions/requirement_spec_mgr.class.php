@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/07/22 17:29:43 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -522,7 +522,7 @@ function delete_deep($id)
 
     returns: array of rows
 
-    rev: 20080830 - franciscom - changed to get node_order from nodes_hierarchy table
+    rev: 20080830 - franciscom - changed to get node_order from nodes hierarchy table
   */
 function get_requirements($id, $range = 'all', $testcase_id = null,
                           $order_by=" ORDER BY NH.node_order,title,req_doc_id")

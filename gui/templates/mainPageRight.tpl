@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.15 2009/04/27 07:55:10 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.16 2009/07/27 07:23:54 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -115,7 +115,7 @@
 		     <select style="width:50%;z-index:1"  name="testplan" onchange="this.form.submit();">
 		     	{section name=tPlan loop=$arrPlans}
 		     		<option value="{$arrPlans[tPlan].id}"
-		     		        {$arrPlans[tPlan].selected}
+		     		        {if $arrPlans[tPlan].selected} selected="selected" {/if}
 		     		        title="{$arrPlans[tPlan].name|escape}">
 		     		        {$arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
 		     		</option>

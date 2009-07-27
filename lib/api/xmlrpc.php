@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/06/09 20:22:53 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/07/27 07:22:51 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *      20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
  *      20090609 - franciscom - createTestPlan() - new method
  *                              WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
  *
@@ -189,7 +190,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $testPlanNameParamName = "testplanname";
 	public static $activeParamName = "active";
     public static $publicParamName = "public";
-
+    public static $nodeIDParamName = "nodeid";
 
 	// public static $executionRunTypeParamName		= "executionruntype";
 		
@@ -259,6 +260,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getFirstLevelTestSuitesForTestProject' => 'this:getFirstLevelTestSuitesForTestProject',     
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 	                            'tl.getTestCase' => 'this:getTestCase',
+                                'tl.getFullPath' => 'this:getFullPath',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
                     			// ping is an alias for sayHello
@@ -3210,6 +3212,49 @@ public function getTestCase($args)
 
         return $status_ok ? $resultInfo : $this->errors;
 	} // public function createTestPlan
+
+
+	/**
+	 * Gets full path from the given node till the top using nodes_hierarchy_table
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param mixed $args["nodeID"] node id      
+	 * @return mixed $resultInfo			
+	 * @access public
+	 */		
+	public function getFullPath($args)
+	{
+	  	$this->_setArgs($args);
+	  	$operation=__FUNCTION__;
+	    $msg_prefix="({$operation}) - ";
+	    $checkFunctions = array('authenticate');
+	    $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
+	               $this->_isParamPresent(self::$nodeIDParamName,$msg_prefix,self::SET_ERROR) ;
+	  
+	    if( $status_ok )
+	    {
+	        $nodeID=$this->args[self::$nodeIDParamName];
+	    	if( !is_int($nodeID) || $nodeID <= 0 )
+	    	{
+	            $msg = $msg_prefix . sprintf(NODEID_IS_NOT_INTEGER_STR);
+	            $this->errors[] = new IXR_Error(NODEID_IS_NOT_INTEGER, $msg);
+	            $status_ok=false;
+	        } 
+	    }
+	    
+	    if( $status_ok )
+	    {
+	        $full_path = $this->tprojectMgr->tree_manager->get_full_path_verbose($nodeID);
+	        if(is_null($full_path))
+	        {
+	            $msg = $msg_prefix . sprintf(NODEID_DOESNOT_EXIST_STR,$nodeID);
+	            $this->errors[] = new IXR_Error(NODEID_DOESNOT_EXIST, $msg);
+	            $status_ok=false;
+	        }
+		}
+	    return $status_ok ? $full_path : $this->errors;
+	}
 
 } // class end
 

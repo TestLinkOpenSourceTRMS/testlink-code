@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.23 2009/06/09 20:22:53 franciscom Exp $
+ * $Id: APIErrors.php,v 1.24 2009/07/27 07:22:51 franciscom Exp $
  */
 
 /** 
@@ -86,6 +86,12 @@ define('PARAMETER_NOT_INT_STR', lang_get('API_PARAMETER_NOT_INT',null,1));
 
 define('NO_TESTSUITENAME', 220);
 define('NO_TESTSUITENAME_STR', lang_get('API_NO_TESTSUITENAME',null,1));
+
+define('NODEID_IS_NOT_INTEGER',230);
+define('NODEID_IS_NOT_INTEGER_STR',lang_get('API_NODEID_IS_NOT_INTEGER',null,1));
+
+define('NODEID_DOESNOT_EXIST',231);
+define('NODEID_DOESNOT_EXIST_STR',lang_get('API_NODEID_DOESNOT_EXIST',null,1));
 
 
 
@@ -200,6 +206,7 @@ define('REQSPEC_TPROJECT_KO_STR',lang_get('API_REQSPEC_TPROJECT_KO',null,1));
 
 define('TESTPROJECTNAME_DOESNOT_EXIST',7011);
 define('TESTPROJECTNAME_DOESNOT_EXIST_STR',lang_get('API_TESTPROJECTNAME_DOESNOT_EXIST',null,1));
+
 
 
 /**

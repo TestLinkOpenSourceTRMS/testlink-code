@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.12 2009/06/10 19:36:00 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.13 2009/07/27 07:26:14 franciscom Exp $ 
  * 
  *
  * rev :
@@ -68,7 +68,7 @@ else
     $gui->user_feedback = lang_get('no_linked_tcversions');  
 }
 
-$tplans = getAccessibleTestPlans($db,$args->tproject_id,$args->user_id);
+$tplans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$args->tproject_id);
 foreach($tplans as $key => $value)
 {
 	$gui->tplans[$value['id']] = $value['name'];
@@ -76,16 +76,6 @@ foreach($tplans as $key => $value)
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-
-// $smarty->assign('tcasePrefix',$tcasePrefix . $testcase_cfg->glue_character);
-// $smarty->assign('tplans', $map_tplans);
-// $smarty->assign('tplan_id', $args->tplan_id);
-// $smarty->assign('can_manage_testplans', has_rights($db,"mgt_testplan_create"));
-// $smarty->assign('show_details', $show_details );
-// $smarty->assign('user_feedback', $user_feedback);
-// $smarty->assign('testPlanName', $tplan_name);
-// $smarty->assign('tproject_name', $args->tproject_name);
-// $smarty->assign('testcases', $tcases);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

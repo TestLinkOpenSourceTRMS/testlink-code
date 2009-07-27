@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.57 $ $Author: franciscom $
- * @modified $Date: 2009/06/10 19:36:00 $
+ * @version $Revision: 1.58 $ $Author: franciscom $
+ * @modified $Date: 2009/07/27 07:26:14 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -85,19 +85,55 @@ $smarty->assign('rights_configuration', has_rights($db,"system_configuraton"));
 $smarty->assign('rights_usergroups', has_rights($db,"mgt_view_usergroups"));
 
 // ----- Test Plan Section ----------------------------------
+//
+// @TODO - franciscom - 
+// we must understand if these two calls are really needed,
+// or is enough just call to getAccessibleTestPlans()
+// 
 $filters = array('plan_status' => ACTIVE);
 $num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
 
 // get Test Plans available for the user 
-$arrPlans = getAccessibleTestPlans($db,$testprojectID,$userID);
+$arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
+
+// Need to set select test plan based on session information 
+$testPlanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+if($testPlanID > 0)
+{
+	// if this test plan is present on $arrPlans
+	//	  OK we will set it on $arrPlans as selected one.
+	// else 
+	//    need to set test plan on session
+	//
+	$index=0;
+	$testPlanFound=0;
+	$loop2do=count($arrPlans);
+	for($idx=0; $idx < $loop2do; $idx++)
+	{
+    	if( $arrPlans[$idx]['id'] == $testPlanID )
+    	{
+        	$testPlanFound = 1;
+        	$index = $idx;
+        	$break;
+        }
+    }
+    if( $testPlanFound == 0 )
+    {
+        // update test plan id
+		$testPlanID = $arrPlans[0]['id'];
+		setSessionTestPlan($arrPlans[0]);     	
+    } 
+    $arrPlans[$index]['selected']=1;
+}
+
 
 $testPlanRole = null;
-$testPlanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
 if ($testPlanID && isset($currentUser->tplanRoles[$testPlanID]))
 {
 	$role = $currentUser->tplanRoles[$testPlanID];
 	$testPlanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
+
 
 $rights2check = array('testplan_execute','testplan_create_build',
                     'testplan_metrics','testplan_planning',

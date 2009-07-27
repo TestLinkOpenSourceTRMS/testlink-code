@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.158 2009/07/16 14:55:25 havlat Exp $
+ * @version    	CVS: $Id: common.php,v 1.159 2009/07/27 07:26:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -245,16 +245,11 @@ function doSessionStart()
 //    Update this value at Session Level, to set it available in other
 //    pieces of the application
 //
-//
-// Calling getUserProdTestPlans() instead of getUserTestPlans()
-//         to add ptoduct filtering of TP
-//
 // rev :
-//      20070906 - franciscom - getAccessibleTestPlans() interface changes
+//      20090726 - franciscom - getAccessibleTestPlans() now is method on user class
 function upd_session_tplan_tproject(&$db,$hash_user_sel)
 {
 	$tproject = new testproject($db);
-
 	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
 	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
 	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
@@ -266,7 +261,6 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	{
 		$tproject_id = $user_sel["tproject_id"];
 	}
-
 	// We need to do checks before updating the SESSION to cover the case that not defined but exists
 	if (!$tproject_id)
 	{
@@ -277,10 +271,10 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 			$tproject_id = $tproject_data['id'];
 		}
 	}
-	
 	$tproject->setSessionProject($tproject_id);
 	
 	// set a Test Plan
+	// Refresh test project id after call to setSessionProject
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : null;
 	// Now we need to validate the TestPlan
@@ -289,21 +283,20 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 		$tplan_id = $user_sel["tplan_id"];
 	}
   
-	//check if the specific combination of testprojectid and testplanid is valid
-	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],$tplan_id);
+	// check if the specific combination of testprojectid and testplanid is valid
+	$tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$tplan_id);
+	if(is_null($tplan_data))
+	{
+		// Need to get first accessible test plan for user, if any exists.
+		$tplan_data = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
+    }
+	
 	if(!is_null($tplan_data))
 	{
 		$tplan_data = $tplan_data[0];
 		setSessionTestPlan($tplan_data);
-		return;
 	}
-
-	//get the first accessible TestPlan
-	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID']);
-	if(!is_null($tplan_data))
-		$tplan_data = $tplan_data[0];
-
-	setSessionTestPlan($tplan_data);
+   
 }
 
 
@@ -342,7 +335,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 	if ($initProject)
 	{
 		upd_session_tplan_tproject($db,$_REQUEST);
-  }
+    }
    
 	// used to disable the attachment feature if there are problems with repository path
 	/** @TODO this check should not be done anytime but on login and using */

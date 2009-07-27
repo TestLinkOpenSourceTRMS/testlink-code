@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.31 2009/06/10 19:36:00 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.32 2009/07/27 07:26:14 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -165,7 +165,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;         
 
     // filter using user roles
-    $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id);
+    $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     $gui->map_tplans = array();
     foreach($tplans as $key => $value)
     {

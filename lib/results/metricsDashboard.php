@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/06/03 19:51:45 $ $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/07/27 07:26:14 $ $Author: franciscom $
  *
  * @author franciscom
  *
@@ -28,7 +28,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function getMetrics(&$db,$args)
 {
-	$user_id = $args->currentUser;
+	$user_id = $args->currentUserID;
 	$tproject_id = $args->tproject_id;
 	$linked_tcversions = array();
 	$metrics = array();
@@ -36,7 +36,7 @@ function getMetrics(&$db,$args)
   
 	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
-	$test_plans = getAccessibleTestPlans($db,$tproject_id,$user_id);
+	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$user_id);
 
 	// Get count of testcases linked to every testplan
 	foreach($test_plans as $key => $value)
@@ -106,7 +106,7 @@ function init_args()
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-	$args->currentUser = $_SESSION['currentUser']->dbID;
+	$args->currentUserID = $_SESSION['currentUser']->dbID;
 	
 	return $args;
 }

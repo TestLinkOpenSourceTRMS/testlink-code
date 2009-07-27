@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.123 2009/07/20 16:58:02 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.124 2009/07/27 07:26:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -214,9 +214,10 @@ class testplan extends tlObjectWithAttachments
 	function get_by_name($name,$tproject_id = 0)
 	{
 		$sql = " SELECT testplans.*, NH.name " .
-			" FROM {$this->tables['testplans']} testplans, {$this->tables['nodes_hierarchy']} NH" .
-			" WHERE testplans.id=NH.id " .
-			" AND NH.name = '" . $this->db->prepare_string($name) . "'";
+			   " FROM {$this->tables['testplans']} testplans, " .
+			   " {$this->tables['nodes_hierarchy']} NH" .
+			   " WHERE testplans.id=NH.id " .
+			   " AND NH.name = '" . $this->db->prepare_string($name) . "'";
 		
 		if($tproject_id > 0 )
 		{
@@ -244,10 +245,10 @@ class testplan extends tlObjectWithAttachments
 	 */
 	function get_by_id($id)
 	{
-		$sql = " SELECT testplans.*,NH.name,NH.parent_id
-			FROM {$this->tables['testplans']} testplans, {$this->tables['nodes_hierarchy']} NH
-			WHERE testplans.id = NH.id
-			AND   testplans.id = {$id}";
+		$sql = " SELECT testplans.*,NH.name,NH.parent_id " .
+			   " FROM {$this->tables['testplans']} testplans, " .
+			   " {$this->tables['nodes_hierarchy']} NH " .
+			   " WHERE testplans.id = NH.id AND  testplans.id = {$id}";
 		$recordset = $this->db->get_recordset($sql);
 		return($recordset ? $recordset[0] : null);
 	}
@@ -272,9 +273,10 @@ class testplan extends tlObjectWithAttachments
 	*/
 	function get_all()
 	{
-		$sql = " SELECT testplans.*, nodes_hierarchy.name
-			FROM {$this->tables['testplans']} testplans, {$this->tables['nodes_hierarchy']} nodes_hierarchy
-			WHERE testplans.id=nodes_hierarchy.id";
+		$sql = " SELECT testplans.*, NH.name " .
+			   " FROM {$this->tables['testplans']} testplans, " .
+			   " {$this->tables['nodes_hierarchy']} NH " .
+			   " WHERE testplans.id=NH.id";
 		$recordset = $this->db->get_recordset($sql);
 		return $recordset;
 	}
@@ -293,15 +295,16 @@ class testplan extends tlObjectWithAttachments
 	 */
 	public function getTestPlanNames($projectId, $activeOnly=TRUE)
 	{	
-		$sql = "SELECT nodes_hierarchy.id, nodes_hierarchy.name " .
-			"FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
-			"JOIN {$this->tables['testplans']} testplans ON nodes_hierarchy.id = testplans.id " .
-			"WHERE testplans.testproject_id = " . $projectId;
+		$sql = "/* getTestPlanNames */ " . 
+		       " SELECT NH.id, NH.name " .
+			   " FROM {$this->tables['nodes_hierarchy']} NH " .
+			   " JOIN {$this->tables['testplans']} testplans ON NH.id = testplans.id " .
+			   " WHERE testplans.testproject_id = " . $projectId;
 		if ($activeOnly)
 		{
 			$sql .= 'AND testplans.active = 1 ';
 		}
-		$sql .= ' ORDER BY nodes_hierarchy.name';
+		$sql .= ' ORDER BY NH.name';
 		
 		$recordset = $this->db->get_recordset($sql);
 		return($recordset ? $recordset : null);
@@ -340,11 +343,14 @@ class testplan extends tlObjectWithAttachments
 	  args: id: testplan id
 
 	  returns: number
+	  
+	  @TODO when Platform development will be added this must be changed
+	        adding new argument $platform_id=0
 	*/
 	public function count_testcases($id)
 	{
-		$sql = "SELECT COUNT(testplan_id) AS qty FROM {$this->tables['testplan_tcversions']}
-			WHERE testplan_id={$id}";
+		$sql = " SELECT COUNT(testplan_id) AS qty FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id={$id}";
 		$recordset = $this->db->get_recordset($sql);
 		$qty = 0;
 		if(!is_null($recordset))
@@ -1188,15 +1194,15 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
-	 * Gets all testplan related user assignments
+	 * Gets all testplan related user roles
 	 *
-	 * @param integer $testPlanID the testplan id
+	 * @param integer $id the testplan id
 	 * @return array assoc map with keys taken from the user_id column
 	 **/
-	function getUserRoleIDs($testPlanID)
+	function getUserRoleIDs($id)
 	{
 		$sql = "SELECT user_id,role_id FROM {$this->tables['user_testplan_roles']} " .
-		       "WHERE testplan_id = {$testPlanID}";
+		       "WHERE testplan_id = {$id}";
 		$roles = $this->db->fetchRowsIntoMap($sql,'user_id');
 		return $roles;
 	}
@@ -1206,55 +1212,59 @@ class testplan extends tlObjectWithAttachments
 	 * Inserts a testplan related role for a given user
 	 *
 	 * @param int $userID the id of the user
-	 * @param int $testPlanID the testplan id
+	 * @param int $id the testplan id
 	 * @param int $roleID the role id
 	 * 
 	 * @return integer returns tl::OK on success, tl::ERROR else
 	 **/
 	
-	function addUserRole($userID,$testPlanID,$roleID)
+	function addUserRole($userID,$id,$roleID)
 	{
+		$status = tl::ERROR;
 		$sql = "INSERT INTO {$this->tables['user_testplan_roles']} (user_id,testplan_id,role_id) VALUES " .
-			   " ({$userID},{$testPlanID},{$roleID})";
+			   " ({$userID},{$id},{$roleID})";
 		if ($this->db->exec_query($sql))
 		{
-			$testPlan = $this->get_by_id($testPlanID);
+			$testPlan = $this->get_by_id($id);
 			$role = tlRole::getByID($this->db,$roleID,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 			$user = tlUser::getByID($this->db,$userID,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 			if ($user && $testPlan && $role)
 			{
 				logAuditEvent(TLS("audit_users_roles_added_testplan",$user->getDisplayName(),
-				              $testPlan['name'],$role->name),"ASSIGN",$testPlanID,"testplans");
+				              $testPlan['name'],$role->name),"ASSIGN",$id,"testplans");
 			}
-			return tl::OK;
+			$status = tl::OK;
 		}
-		return tl::ERROR;
+		return $status;
 	}
 
 
 	/**
 	 * Deletes all testplan related role assignments for a given testplan
 	 *
-	 * @param int $testPlanID the testplan id
+	 * @param int $id the testplan id
 	 * @return tl::OK  on success, tl::FALSE else
 	 **/
-	function deleteUserRoles($testPlanID)
+	function deleteUserRoles($id)
 	{
-		$query = "DELETE FROM {$this->tables['user_testplan_roles']} " .
-		         " WHERE testplan_id = {$testPlanID}";
-		if ($this->db->exec_query($query))
+		$status = tl::ERROR;
+		$sql = "DELETE FROM {$this->tables['user_testplan_roles']} " .
+		       " WHERE testplan_id = {$id}";
+		if ($this->db->exec_query($sql))
 		{
-			$testPlan = $this->get_by_id($testPlanID);
+			$testPlan = $this->get_by_id($id);
 			if ($testPlan)
+			{
 				logAuditEvent(TLS("audit_all_user_roles_removed_testplan",
-				              $testPlan['name']),"ASSIGN",$testPlanID,"testplans");
-			return tl::OK;
+				              $testPlan['name']),"ASSIGN",$id,"testplans");
+			}
+			$status = tl::OK;
 		}
-		return tl::ERROR;
+		return $status;
 	}
 
 
-	//        20070129 - franciscom - added custom field management
+	// 20070129 - franciscom - added custom field management
 	function delete($id)
 	{
 		$the_sql=array();
@@ -1265,7 +1275,7 @@ class testplan extends tlObjectWithAttachments
 		
 		// CF used on testplan_design are linked by testplan_tcversions.id
 		$the_sql[]="DELETE FROM {$this->tables['cfield_testplan_design_values']} WHERE link_id ".
-			"IN (SELECT id FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id})";
+			       "IN (SELECT id FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id})";
 		
 		$the_sql[]="DELETE FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id}";
 		

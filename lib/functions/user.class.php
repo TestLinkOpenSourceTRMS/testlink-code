@@ -5,11 +5,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.49 2009/06/11 18:52:53 schlundus Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.50 2009/07/27 07:25:47 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20090726 - franciscom - new method getAccessibleTestPlans()
  * 	20090419 - franciscom - refactoring replace product with test project (where possible).
  *  20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
  *  20081213 - franciscom - removed global coupling to access config parameters
@@ -130,7 +131,7 @@ class tlUser extends tlDBObject
 	/**
 	 * Constructor, creates the user object
 	 * 
-	 * @param resource $db database handler
+	 * @param resource $db database handler  
 	 */
 	function __construct($dbID = null)
 	{
@@ -583,16 +584,17 @@ class tlUser extends tlDBObject
 	 */
 	function getEffectiveRole(&$db,$tproject_id,$tplan_id)
 	{
-		$default_role = $this->globalRole;
 		$tprojects_role = $this->tprojectRoles;
 		$tplans_role = $this->tplanRoles;
-
-		$effective_role = $default_role;
+		$effective_role = $this->globalRole;
 		if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
+		{
 			$effective_role = $tplans_role[$tplan_id];  
+		}
 		else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
+		{
 			$effective_role = $tprojects_role[$tproject_id];  
-		
+		}
 		return $effective_role;
 	}
 
@@ -621,6 +623,7 @@ class tlUser extends tlDBObject
 		else
 		{
 			//@TODO schlundus, should not be there
+			// 20090726 - franciscom -> yes must be moved ASAP
 			$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 		}
 		
@@ -673,6 +676,67 @@ class tlUser extends tlDBObject
 		
 		return checkForRights($allRights,$roleQuestion);
 	}
+
+	/**
+     * get array with accessible test plans for user on a test project, 
+     * analising user roles.
+     *
+     * @param resource $db database handler  
+     * @param int testprojectID 
+     * @param int testplanID: default null. 
+     *            Used as filter when you want to check if this test plan
+     *            is accessible.
+     *
+     * @return array if 0 accessible test plans => null
+     */
+	function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null)
+	{
+		$debugTag = 'Class:' .  __CLASS__ . '- Method:' . __FUNCTION__ . '-'; 
+		$sql = " /* $debugTag */ " .
+		       " SELECT NH.id, NH.name, TPLAN.active, 0 AS selected " .
+		       " FROM {$this->tables['nodes_hierarchy']} NH" .
+		       " JOIN {$this->tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
+		       " LEFT OUTER JOIN {$this->tables['user_testplan_roles']} USER_TPLAN_ROLES" .
+		       " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
+		       " AND USER_TPLAN_ROLES.user_id = $this->dbID WHERE active=1 AND  ";
+	
+		$sql .= " testproject_id = {$testprojectID} AND ";
+	  	if (!is_null($testplanID))
+	  	{
+			$sql .= " NH.id = {$testplanID} AND ";
+	  	}
+		
+		$globalNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
+		$projectNoRights = 0;
+		$analyseGlobalRole = 1;
+		if( ($analyseGlobalRole = isset($this->tprojectRoles[$testprojectID]->dbID)) )
+		{
+			$projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+		}
+		
+	  	if( $projectNoRights || ($analyseGlobalRole && $globalNoRights))
+	  	{
+	  	  $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
+	  	}	
+	  	else
+	  	{
+	  	  $sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+	  	}
+			
+		$sql .= " ORDER BY name";
+		$testPlanSet = $db->get_recordset($sql);
+		return $testPlanSet;
+	}
+
+
+
+
+
+
+
+
+
+
 	
 	/**
 	 * Checks the correctness of an email address
@@ -748,5 +812,6 @@ class tlUser extends tlDBObject
 		
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
+	
 }
 ?>

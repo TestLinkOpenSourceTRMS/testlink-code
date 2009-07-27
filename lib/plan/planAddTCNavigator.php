@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.46 2009/06/10 19:36:00 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.47 2009/07/27 07:26:14 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -98,7 +98,7 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
     }
 
     // filter using user roles
-    $tplans = getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,$argsObj->user_id);
+    $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     $gui->map_tplans = array();
     foreach($tplans as $key => $value)
     {

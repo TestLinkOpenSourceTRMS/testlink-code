@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.64 2009/07/22 17:29:43 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.65 2009/07/27 07:26:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090726 - franciscom - BUGID 2728 
  * 20090607 - franciscom - refactoring to manage table prefix
  * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
  * 20090313 - franciscom - added getTreeRoot()
@@ -986,17 +987,25 @@ class tree extends tlObject
 	        $all_nodes = array_merge($all_nodes,$path_to[$item_id]);
 	    }
 	    
-	    // get only different items, to get descriptions
-	    $unique_nodes=implode(',',array_unique($all_nodes));
-	    $sql="SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
-	    $decode=$this->db->fetchRowsIntoMap($sql,'id');
-	    foreach($path_to as $key => $elem)
+	    // BUGID 2728 - added check to avoid crash
+        if( !is_null($all_nodes) && count($all_nodes) > 0)
+        { 
+	        // get only different items, to get descriptions
+	    	$unique_nodes=implode(',',array_unique($all_nodes));
+	    	$sql="SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
+	    	$decode=$this->db->fetchRowsIntoMap($sql,'id');
+	    	foreach($path_to as $key => $elem)
+	    	{
+	    	     foreach($elem as $idx => $node_id)
+	    	     {
+	    	           $path_to[$key][$idx]=$decode[$node_id]['name'];
+	    	     }
+	    	}
+	    }  
+	    else
 	    {
-	         foreach($elem as $idx => $node_id)
-	         {
-	               $path_to[$key][$idx]=$decode[$node_id]['name'];
-	         }
-	    }   
+	    	$path_to=null;
+	    } 
 	    return $path_to; 
 	}
 

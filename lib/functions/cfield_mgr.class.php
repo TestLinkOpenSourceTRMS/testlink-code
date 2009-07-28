@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.68 2009/07/28 07:07:39 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.69 2009/07/28 17:31:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1575,7 +1575,7 @@ function name_is_unique($id,$name)
        return;
     }
 
-    new dBug($hash);
+    // new dBug($hash);
     
     if( is_null($hash_type) )
     {
@@ -1585,7 +1585,7 @@ function name_is_unique($id,$name)
     {
       $cfield=$hash;
     }
-
+    // file_put_contents('c:\request.txt', serialize($cfield));                            
 
     if( !is_null($cfield) )
     {
@@ -1597,10 +1597,13 @@ function name_is_unique($id,$name)
  			            " AND execution_id={$execution_id} AND testplan_id={$testplan_id}" ;
 
 
-
         // do I need to update or insert this value?
-        $sql = " SELECT value FROM {$this->tables['cfield_execution_values']} " . $where_clause;
-        $result = $this->db->exec_query($sql); 			   
+        $sql = " SELECT value,field_id,execution_id " .
+               " FROM {$this->tables['cfield_execution_values']} " . $where_clause;
+        // file_put_contents('c:\sql.txt',$sql);
+
+        $rs = $this->db->get_recordset($sql); 			   
+        // file_put_contents('c:\sql-dd.txt',serialize($rs));
 
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
@@ -1608,12 +1611,13 @@ function name_is_unique($id,$name)
         }
         $safe_value=$this->db->prepare_string($value);
 
-        if($this->db->num_rows( $result ) > 0 )
+        // file_put_contents('c:\sql-count.txt',$this->db->num_rows( $result ));
+        if( count($rs) > 0 )   //$this->db->num_rows($result) > 0 )
         {
-
           $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .
     	         $where_clause;
+    	    // file_put_contents('c:\update.txt',$sql);         
         }
         else
         {
@@ -1625,11 +1629,14 @@ function name_is_unique($id,$name)
   		  $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
   				 " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
   			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
-        }
+          // file_put_contents('c:\insert.txt',$sql);  
         
+        }
+                               
         $this->db->exec_query($sql);
       } //foreach($cfield
     } //if( !is_null($cfield) )
+          // file_put_contents('c:\bye.txt','bye');
 
   } //function end
 

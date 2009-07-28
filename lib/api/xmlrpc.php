@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/07/27 07:22:51 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2009/07/28 17:31:15 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *      20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
  *      20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
  *      20090609 - franciscom - createTestPlan() - new method
  *                              WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
@@ -191,6 +192,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $activeParamName = "active";
     public static $publicParamName = "public";
     public static $nodeIDParamName = "nodeid";
+    public static $customFieldsParamName = "customfields";
 
 	// public static $executionRunTypeParamName		= "executionruntype";
 		
@@ -920,10 +922,14 @@ class TestlinkXMLRPCServer extends IXR_Server
         {
     	    // must be of type 'testcase' and show up in the nodes_hierarchy    	
             $tcaseid = $this->dbObj->prepare_int($tcaseid);
-		    $query = "SELECT NH.id AS id " .
-		             "FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['node_types']} NT" .
-				     "WHERE NH.id={$tcaseid} AND node_type_id=NT.id " .
-				     "AND NT.description='testcase'";
+		    $query = " SELECT NH.id AS id " .
+		             " FROM {$this->tables['nodes_hierarchy']} NH, " .
+		             " {$this->tables['node_types']} NT " .
+				     " WHERE NH.id={$tcaseid} AND node_type_id=NT.id " .
+				     " AND NT.description='testcase'";
+			
+			file_put_contents('c:\tmp\request.txt', $query); 
+			
 		    $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
 		    $status_ok = is_null($result) ? false : true; 
         }
@@ -1211,8 +1217,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$db_now=$this->dbObj->db_now();
 		
 		$notes='';
-    $notes_field="";
-    $notes_value="";  
+        $notes_field="";
+        $notes_value="";  
 
 		if($this->_isNotePresent())
 		{
@@ -1817,6 +1823,19 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @param string $args["bugid"] - optional
      *
+     * @param string $args["customfields"] - optional
+     *               contains an map with key:Custom Field Name, value: value for CF.
+     *               VERY IMPORTANT: value must be formatted in the way it's written to db,
+     *               this is important for types like:
+     *
+     *               DATE: strtotime()
+     *               DATETIME: mktime()
+     *               MULTISELECTION LIST / CHECKBOX / RADIO: se multipli selezione ! come separatore
+     *
+     *
+     *               these custom fields must be configured to be writte during execution.
+     *               If custom field do not meet condition value will not be written
+     *
 	 * @return mixed $resultInfo 
 	 * 				[status]	=> true/false of success
 	 * 				[id]		  => result id or error code
@@ -1830,9 +1849,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    $msg_prefix="({$operation}) - ";
 
 		$this->_setArgs($args);              
+		$resultInfo[0]["status"] = true;
 		
         $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
                                 'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');       
+                                
         $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
 	
 		if($status_ok && $this->userHasRight("testplan_execute"))
@@ -1846,8 +1867,15 @@ class TestlinkXMLRPCServer extends IXR_Server
 			// Do we need to insert a bug ?
     	    if($this->_isParamPresent(self::$bugIDParamName))
     	    {
-    	            $bugID = $this->args[self::$bugIDParamName];
-		    	    $resultInfo[0]["bugidstatus"] = $this->_insertExecutionBug($executionID, $bugID);
+    	    	$bugID = $this->args[self::$bugIDParamName];
+		    	$resultInfo[0]["bugidstatus"] = $this->_insertExecutionBug($executionID, $bugID);
+    	    }
+    	    
+    	    
+    	    if($this->_isParamPresent(self::$customFieldsParamName))
+    	    {
+    	    	$resultInfo[0]["customfieldstatus"] =  
+    	    		$this->_insertCustomFieldExecValues($executionID);   
     	    }
 			return $resultInfo;
 		}
@@ -1855,6 +1883,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			return $this->errors;			
 		}
+
 	}
 	
 	
@@ -1921,6 +1950,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    $glueCharacter=$tcaseCfg->glue_character;
 		    $tcaseID=$this->tcaseMgr->getInternalID($tcaseExternalID,$glueCharacter);
             $status = $tcaseID > 0 ? true : false;
+            
             //Invalid TestCase ID
             if( !$status )
             {
@@ -1928,11 +1958,11 @@ class TestlinkXMLRPCServer extends IXR_Server
                                              sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
             }
 		}
-        else
-		{  
-		    $my_errors[] = new IXR_Error(NO_TCASEID, $messagePrefix . NO_TCASEID_STR);
-		   	$status=false;
-		}
+        // else
+		// {  
+		//     $my_errors[] = new IXR_Error(NO_TCASEID, $messagePrefix . NO_TCASEID_STR);
+		//    	$status=false;
+		// }
 	    if( $status )
 	    {
 	        $my_errors=null;
@@ -2729,7 +2759,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param  string $bugID
 	 * @return boolean
 	 * @access private
-   * contribution by hnishiyama
+     * contribution by hnishiyama
 	**/
 	private function _insertExecutionBug($executionID, $bugID)
 	{
@@ -3255,6 +3285,65 @@ public function getTestCase($args)
 		}
 	    return $status_ok ? $full_path : $this->errors;
 	}
+
+    /**
+ 	 * 
+     *
+     */
+	private function _insertCustomFieldExecValues($executionID)
+	{
+		// // Check for existence of executionID   
+		$status_ok=true;
+		$sql="SELECT id FROM {$this->tables['executions']} WHERE id={$executionID}";
+		$rs=$this->dbObj->fetchRowsIntoMap($sql,'id');
+		// 
+        $cfieldSet=$this->args[self::$customFieldsParamName];
+        $tprojectID=$this->tcaseMgr->get_testproject($this->args[self::$testCaseIDParamName]);
+        $tplanID=$this->args[self::$testPlanIDParamName];
+        $cfieldMgr=$this->tprojectMgr->cfield_mgr;        
+        $cfieldsMap = $cfieldMgr->get_linked_cfields_at_execution($tprojectID, 1,'testcase',
+                                                                  null,null,null,'name');
+        // 
+        // // 
+		// // id, name, label, type,
+		// // possible_values, default_value
+		// // valid_regexp,
+		// // length_min, length_max,
+		// // show_on_design, enable_on_design,
+		// // show_on_execution, enable_on_execution,
+		// // show_on_testplan_design, enable_on_testplan_design
+		// // display_order, location 	1
+		// // value 	asasa
+		// // node_id        
+        // 
+        // // $cfield[$key]=array("type_id"  => $value['type'],
+        // //                    "cf_value" => '');
+        // 
+        // 
+        // // $this->tcVersionID;
+        // // new dBug($cfieldsMap);
+        $status_ok = !(is_null($rs) || is_null($cfieldSet) || count($cfieldSet) == 0);		
+        $cfield4write = null;
+        if( $status_ok && !is_null($cfieldsMap) )
+        {
+        	foreach($cfieldSet as $name => $value)
+        	{
+             	if( isset($cfieldsMap[$name]) )
+             	{
+         	    	$cfield4write[$cfieldsMap[$name]['id']] = array("type_id"  => $cfieldsMap[$name]['type'],
+                                                              "cf_value" => $value);
+		       	}
+             }	
+             if( !is_null($cfield4write) )
+             {
+             	$cfieldMgr->execution_values_to_db($cfield4write,$this->tcVersionID,$executionID,$tplanID,
+                                                    null,'write-through');
+             }
+        }        
+		return $status_ok;
+	}
+
+
 
 } // class end
 

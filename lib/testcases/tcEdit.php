@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2009/07/18 17:42:34 $  by $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2009/07/28 07:07:40 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -36,6 +36,8 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
+
+// echo __FILE__;
 
 $cfg=getCfg();
 require_once(require_web_editor($cfg->webEditorCfg['type']));
@@ -156,7 +158,6 @@ if($args->edit_tc)
     // 	$filters[$key]['location']=$value;
     // }
     $filters=$tcase_mgr->buildCFLocationMap();
-	// foreach($verboseLocationCode as $locationKey => $locationCode)
 	foreach($filters as $locationKey => $locationFilter)
 	{ 
 		// 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
@@ -167,7 +168,6 @@ if($args->edit_tc)
 			                                              null,null,null,$locationFilter);
 	}	
 	// -----------------------------------------------------------------------------
-	
     $smarty->assign('cf',$cf_smarty);
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);
@@ -186,7 +186,7 @@ else if($args->do_create)
 	if ($name_ok)
 	{
 		$user_feedback = lang_get('error_tc_add');
-    $sqlResult = 'ko';
+        $sqlResult = 'ko';
 		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->steps,
 		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
 		                            $cfg->treemenu_default_testcase_order,testcase::AUTOMATIC_ID,
@@ -314,7 +314,7 @@ else if($args->do_delete)
 	  	$user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
 	}
 
-  $smarty->assign('gui',$gui); 
+    $smarty->assign('gui',$gui); 
 	$smarty->assign('title', $the_title);
 	$smarty->assign('testcase_name', $tcinfo[0]['name']);
 	$smarty->assign('user_feedback', $user_feedback);
@@ -477,7 +477,7 @@ if ($show_newTC_form)
 	        $rows = $oWebEditor->cfg[$key]['rows'];
 	        $cols = $oWebEditor->cfg[$key]['cols'];
       
-	    	  $of->Value = $the_value;
+	    	$of->Value = $the_value;
 	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
 	    } // foreach ($a_oWebEditor_cfg as $key)
       // ------------------------------------------------------------------------
@@ -486,30 +486,43 @@ if ($show_newTC_form)
                         'importance' => $tlCfg->testcase_importance_default,
                         'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
 	    
-	    $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
- 	    $smarty->assign('cf',$cf_smarty);
- 	    $smarty->assign('tc',$tc_default);
-	}
-  else
-  {
-      // Preserve values edited by user
-      foreach ($oWebEditor->cfg as $key => $value)
-	    {
-	        $of = &$oWebEditor->editor[$key];
-	        $rows = $oWebEditor->cfg[$key]['rows'];
-	        $cols = $oWebEditor->cfg[$key]['cols'];
-      
-	    	  $of->Value = $args->$key;
-	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	    } // foreach ($a_oWebEditor_cfg as $key)
-      $tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
-                        'execution_type' => $args->exec_type);
- 	    $smarty->assign('tc',$tc_default);
+  	}
+  	else
+  	{
+      	// Preserve values edited by user
+      	foreach ($oWebEditor->cfg as $key => $value)
+	  	{
+	  	    $of = &$oWebEditor->editor[$key];
+	  	    $rows = $oWebEditor->cfg[$key]['rows'];
+	  	    $cols = $oWebEditor->cfg[$key]['cols'];
+      	
+	  		  $of->Value = $args->$key;
+	  	    $smarty->assign($key, $of->CreateHTML($rows,$cols));
+	  	} // foreach ($a_oWebEditor_cfg as $key)
+      	
+      	$tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
+      	                'execution_type' => $args->exec_type);
+  	}
 
-	    $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
- 	    $smarty->assign('cf',$cf_smarty);
-  }
-	$smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
+	$filters=$tcase_mgr->buildCFLocationMap();
+	foreach($filters as $locationKey => $locationFilter)
+	{ 
+		// 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
+		//                                        $link_id=null,$tplan_id=null,
+		//                                        $tproject_id = null,$filters=null)
+		$cf_smarty[$locationKey] = 
+			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id,'design','',
+			                                              null,null,null,$locationFilter);
+
+    }
+
+	$smarty->assign('cf',$cf_smarty);
+	$smarty->assign('tc',$tc_default);
+  
+  
+  
+  
+  $smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
 }
 
 /*

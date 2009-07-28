@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.67 2009/07/18 17:42:34 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.68 2009/07/28 07:07:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1559,16 +1559,34 @@ function name_is_unique($id,$name)
                             some kind of custom fields (checkbox, list, multiple list)
                             when has been deselected by user.
 
+
+          [hash_type]: default null, string that can be used to change how hash
+                       is processed.
+                       
     rev:
+        20090727 - franciscom - added [hash_type], to reuse this method on API
         20070501 - franciscom - limiting lenght of value before writting
   */
-  function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,$cf_map=null)
+  function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,
+                                  $cf_map=null,$hash_type=null)
   {
     if( is_null($hash) && is_null($cf_map) )
     {
        return;
     }
-    $cfield=$this->_build_cfield($hash,$cf_map);
+
+    new dBug($hash);
+    
+    if( is_null($hash_type) )
+    {
+      $cfield=$this->_build_cfield($hash,$cf_map);
+    }
+    else
+    {
+      $cfield=$hash;
+    }
+
+
     if( !is_null($cfield) )
     {
       foreach($cfield as $field_id => $type_and_value)

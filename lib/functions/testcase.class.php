@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.186 2009/07/21 06:50:26 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.187 2009/07/28 07:07:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -530,6 +530,7 @@ class testcase extends tlObjectWithAttachments
 	function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	              $viewer_args = null,$path_info=null,$mode=null)
 	{
+		echo __FUNCTION__;
 	    $status_ok = 1;
 	
 	    $gui = new stdClass();
@@ -561,16 +562,7 @@ class testcase extends tlObjectWithAttachments
 	    $formatOptions=null;
 	    $cfx=0;
         $filters=$this->buildCFLocationMap();
-        
-	    // $dummy = $this->cfield_mgr->getLocations();
-	    // $verboseLocationCode = array_flip($dummy['testcase']);
-	    // $filters=null;
-        // foreach($verboseLocationCode as $key => $value)
-        // {
-        // 	$filters[$key]['location']=$value;
-        //     $formatOptions[$key]['add_table'] = ($key == 'before_steps_results' ? false : true);
-        // }
-        	     
+	    	     
 	    if( !is_null($mode) && $mode=='editOnExec' )
 	    {
 	        // refers to two javascript functions present in testlink_library.js
@@ -720,7 +712,7 @@ class testcase extends tlObjectWithAttachments
 		  		
 		  	} // foreach($a_id as $key => $tc_id)
 	    } // if (sizeof($a_id))
-	  
+
 	    // Removing duplicate and NULL id's
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
@@ -3349,13 +3341,10 @@ class testcase extends tlObjectWithAttachments
 	        case 'execution':
 	            $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,$execution_id,
 	                                                             $testplan_id,$tproject_id,$location);
+	            new dBug($cf_map);                                                 
 	        break;
 	    }   
 	       
-	       
-	       
-	  
-	  
 		if(!is_null($cf_map))
 		{
 			foreach($cf_map as $cf_id => $cf_info)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/06/11 06:56:22 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/07/28 07:07:40 $ $Author: franciscom $
  *
  * rev :
  *      20090611 - franciscom - closed on date
@@ -312,7 +312,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 	$op->buttonCfg = null;
 
 	$check = crossChecks($argsObj,$tplanMgr);
-
+    $targetDate=null;
 	if($check->status_ok)
 	{
 		$user_feedback = lang_get("cannot_add_build");
@@ -328,7 +328,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 		    {
 		        $targetDate=date("Y-m-d",$argsObj->closed_on_date);    
 		    }
-	        $buildMgr->setClosedOnDate($buildID,$targeDate);    
+	        $buildMgr->setClosedOnDate($buildID,$targetDate);    
 			
 			$op->user_feedback = '';
 			$op->notes = '';

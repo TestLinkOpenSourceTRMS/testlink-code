@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.8 2009/06/11 16:39:45 havlat Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.9 2009/07/30 17:20:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -21,6 +21,12 @@
 /** include parent extrenal component */
 require_once( TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
 	            DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'Smarty.class.php');
+
+/** in this way you can switch ext js version in easy way */
+if( !defined('TL_EXTJS_RELATIVE_PATH') )
+{
+    define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
+}
 
 /**
  * TestLink wrapper for external Smarty class

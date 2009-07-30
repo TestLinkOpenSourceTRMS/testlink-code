@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.2 2008/09/02 16:39:04 franciscom Exp $
+$Id: treebyloader.js,v 1.3 2009/07/30 17:21:37 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -190,8 +190,7 @@ TreePanelState.prototype.restoreState = function(defaultPath)
         }
     }
 }
-
-Ext.BLANK_IMAGE_URL = fRoot+'third_party/ext-2.0/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = fRoot+extjsLocation+'/images/default/s.gif';
 
 Ext.onReady(function(){
 

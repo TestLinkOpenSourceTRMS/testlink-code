@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.8 2009/01/03 17:30:06 franciscom Exp $
+$Id: tcTree.js,v 1.9 2009/07/30 17:21:37 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -152,8 +152,7 @@ TreePanelState.prototype.restoreState = function(defaultPath)
         }
     }
 }
-
-Ext.BLANK_IMAGE_URL = fRoot+'third_party/ext-2.0/images/default/s.gif';
+Ext.BLANK_IMAGE_URL = fRoot+extjsLocation+'/images/default/s.gif';
 
 Ext.onReady(function(){
 

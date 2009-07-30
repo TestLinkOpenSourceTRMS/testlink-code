@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.28 2009/06/29 10:45:24 havlat Exp $
+$Id: inc_head.tpl,v 1.29 2009/07/30 17:22:25 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -67,6 +67,9 @@ rev :
 	
 	// bug management (using logic similar to attachment)
 	var bug_dialog = new bug_dialog();
+
+  // for ext js
+  var extjsLocation = '{$smarty.const.TL_EXTJS_RELATIVE_PATH}';
 	</script> 
 	
 {if $openHead == "no"} {* 'no' is default defined in config *}
